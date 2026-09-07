@@ -99,8 +99,10 @@ Dark, filmic, physically grounded. Materials are industrial: painted steel,
 worn floor plate, rubber gaskets, cloth. Lighting carries the emotion:
 emergency red, sparks, flashlight spill, the slow sunrise of a restored
 deck. Volumetric smoke is a first-class material, not a decal. The target
-is 4K at 60 FPS on the dev machine (Apple M4 Max), with quality tiers for
-lesser hardware. Greybox first; art passes come after the feel is proven.
+is 4K at 60 FPS on the dev machine (Apple M4 Max), with quality tiers
+scaling within the supported hardware floor (2023 and newer GPUs;
+macOS, Windows, Linux). Greybox first; art passes come after the feel
+is proven.
 
 ## Audio direction
 
