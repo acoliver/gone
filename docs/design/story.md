@@ -23,7 +23,7 @@ pins and needles. They cross the room on unsteady feet, and try the only
 door. It shudders, clunks, and does not open. The room holds its red
 silence.
 
-That is where issue #1 ends, and where the story starts: the player must
+That is where epic #2 ends, and where the story starts: the player must
 make this door open, and everything they learn while doing it is a piece
 of what happened here.
 
@@ -94,7 +94,7 @@ avoided, or trapped rather than outgunned.
 
 ## Chapter one arc
 
-1. **Wake** (issue #1). The stasis room beat described above.
+1. **Wake** (epic #2). The stasis room beat described above.
 2. **The first repair.** Local power to the stasis room: the player finds
    the room's breaker cabinet, scavenges a fuse or bypasses the fault,
    and the door opens. The payoff is the first lighting-state crossfade

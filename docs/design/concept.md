@@ -112,7 +112,7 @@ exists at all.
 
 ## Milestones
 
-- **M1, the stasis room (issue #1).** Wake up, blink, see the room, get
+- **M1, the stasis room (epic #2).** Wake up, blink, see the room, get
   out of the pod, walk, reach the door, and the door does not open. The
   full opening beat is specified at the end of this document.
 - **M2, hands.** Interaction surfaces, toolbelt, pickup and carry, the
@@ -143,5 +143,5 @@ and the other six pods, all empty, some still closed, all dead.
 The player sits up, climbs out of the pod, stands, and walks. Movement is
 slow to steady, like limbs waking. They cross the room to the only door
 and try it. The door does not open: a shudder, a clunk, and it holds.
-That is the end of issue #1. The stuck door is the hook that pulls the
+That is the end of epic #2. The stuck door is the hook that pulls the
 player into the repair loop.

@@ -19,10 +19,20 @@ assumptions.
 
 ## Platform
 
-Primary development target is macOS on Apple Silicon (M4 Max, 40-core
-GPU, Metal). wgpu, Bevy's rendering backend, runs on Metal on this
-machine. Windows and Linux are future targets through the same wgpu
-stack; nothing in the design assumes macOS-specific APIs.
+Multi-platform is a requirement, not a port: macOS (primary development,
+M4 Max, 40-core GPU, Metal) and Windows are first-class targets, Linux is
+supported, and all three run the same wgpu stack (Metal, DirectX 12,
+Vulkan). Platform discipline: no OS-specific code outside the wgpu/winit
+layer; paths through `std::path` with forward-slash relative paths in
+artifacts and JSON; filenames stay case-sensitivity-safe; the harness
+protocol (child process, input adapter, exit codes, artifact layout) is
+OS-portable and designed against the strictest platform, since macOS
+imposes winit main-thread rules that Windows and Linux do not; per-backend
+capability recording (adapter info, clustered light limits) so rendering
+budgets are measured per platform, not assumed portable. The workspace
+cargo-checks against Windows and Linux targets from the start. Milestone
+1's performance gate is defined on M4 Max; Windows and Linux measurements
+land when representative hardware joins the loop.
 
 ## Rendering approach: raster first
 
@@ -33,19 +43,26 @@ clustered dynamic lighting on top.
   four power states: dead, emergency, partial, restored. As the player
   repairs systems, states crossfade. Bevy ships the `Lightmap` component,
   irradiance volumes, and reflection probes, plus a `mixed_lighting`
-  example with Baked/MixedDirect/MixedIndirect/RealTime modes. Bevy has
+  example with Baked/MixedDirect/MixedIndirect/RealTime modes.   Bevy has
   no first-party baker; bakes happen offline in Blender with The
-  Lightmapper addon and land as compressed ktx2 assets.
+  Lightmapper addon and land as compressed ktx2 assets. No baked
+  lightmaps ship in milestone 1: emergency lighting there is realtime red
+  fixtures. The first baked state arrives with the first repair milestone.
 - **Realtime clustered dynamic lights.** Flashlight, work lamps, sparks,
   and console glows are realtime lights over Forward+ clustered shading,
   which Bevy 0.19 does on the GPU.
 - **Volumetric atmosphere.** FogVolume entities per compartment, driven
   by the atmosphere simulation. Smoke concentrates at the ceiling in the
-  opening room because that is where the torn wiring is.
+  opening room because that is where the torn wiring is. FogVolume's
+  scalar density factor is uniform within a volume, so the ceiling
+  gradient uses the volume's 3D density texture with an authored vertical
+  ramp.
 - **Post chain.** Auto exposure with a center-weighted metering mask,
   AgX tonemapping, vignette, subtle chromatic aberration, film grain.
   Bevy has lens distortion and vignette as first-party post effects since
-  0.19, auto exposure since 0.15.
+  0.19, auto exposure since 0.15. Milestone 1 enables AgX, auto exposure
+  (with the metering-mask asset), and vignette; chromatic aberration and
+  film grain arrive with the art-pass milestone.
 - **Contact shadows** on the flashlight for close-range detail.
 - **Eyelid wake-up.** A fullscreen post pass using `FullscreenMaterial`
   (first-party since 0.18): blur, a lid mask, an exposure ramp, and a
@@ -115,7 +132,11 @@ Discipline borrowed from the sibling `stranded` reconstruction project:
   stranded enforces its sim/render separation.
 - Data-driven definitions (ship layout, compartments, systems) live in
   data files the sim consumes, so level logic is testable without a GPU.
-- WGSL-only shaders; no runtime shader compilation in release builds.
+- WGSL-only shader sources, shipped with the build. Bevy/wgpu creates
+  specialized GPU pipelines at runtime by design; a readiness handshake
+  guarantees all milestone-1 pipelines and assets are prepared before the
+  wake timeline starts, and performance measurement lanes contain no
+  pipeline compilation.
 - `#![forbid(unsafe_code)]` workspace-wide; clippy pedantic plus the
   thresholds below.
 
@@ -187,25 +208,46 @@ play it and produces evidence that vision-capable subagents then verify.
 
 - **Scripted play.** Scenarios are declared as input scripts (look
   targets, movement, interactions, timing) executed against a fixed
-  timestep with a seeded virtual clock, so runs are reproducible.
+  timestep with a seeded virtual clock, so runs are reproducible. The
+  logical timeline defines tick zero, the fixed frequency, the input
+  consumption order, and separately seeded RNG streams; button edges are
+  buffered so each edge is consumed exactly once regardless of how many
+  fixed updates run per rendered frame. Reproducibility scope is the
+  same build, configuration, and seed on the target machine;
+  pixel-identical GPU output is not promised.
 - **Input injection.** The harness feeds synthetic input events the same
   way real devices do, through the app's input layer, never by calling
   gameplay functions directly.
-- **Capture.** Screenshots at named beats (for example: eyes-closed,
-  first-blink, sparks-visible, standing, at-door, door-refused) plus a
-  structured JSON report (player transform, ship state, event log, frame
-  timings). Artifacts land under `tmp/harness/<scenario>/<run-id>/`,
-  which is gitignored. Paths are unique per run so concurrent sessions
-  cannot clobber each other.
+- **Capture.** Screenshots at named beats (eyes-closed, first-blink,
+  sparks-visible, standing, mid-room, at-door, door-refused). Temporal
+  beats (blinks, spark bursts, the door shake) are short timestamped
+  frame sequences covering before/during/after, not single frames. Each
+  capture is correlated to the simulation tick and rendered frame; the
+  runner starts scenarios only after a pipeline/asset readiness handshake
+  and waits for capture completion before reporting success or exiting.
+  A structured JSON report (player transform, ship state, event log,
+  frame timings) accompanies the captures. Artifacts land under
+  `tmp/harness/<scenario>/<run-id>/`, which is gitignored. Paths are
+  unique per run so concurrent sessions cannot clobber each other, and
+  each run records build, scenario, and checklist identities so stale or
+  cherry-picked artifacts cannot satisfy a newer run.
 - **Visual verification protocol.** The driver agent cannot read images.
   After a run, a vision-capable subagent receives the beat screenshots
-  and an expectations checklist (red emergency light, smoke denser at the
-  ceiling, sparks strobing) and returns pass/fail per expectation with
-  quotes of what it sees. The driver aggregates that with the JSON report
-  into the run verdict. No verdict is final on pixel checks alone; the
-  JSON evidence gates gameplay logic.
-- **Performance beats.** The report records frame statistics per beat so
-  "4K at 60 FPS on this machine" is a measured claim, not a hope.
+  and an expectations checklist (red light, smoke denser at the ceiling,
+  sparks strobing) and returns pass/fail per expectation with quotes of
+  what it sees. The driver aggregates that with the JSON report into the
+  run verdict. Verdicts are two-stage: machine checks passed (JSON) and
+  visual verification passed; missing, malformed, or inconclusive visual
+  results count as failures, not passes. No verdict is final on pixel
+  checks alone; the JSON evidence gates gameplay logic. The suite keeps
+  negative verification cases (spark particles with their light
+  disabled, a refusal event with no hatch animation, collision disabled
+  during a crossing) that must fail the relevant expectations, so the
+  instrument cannot silently drift into reporting success without proof.
+- **Performance beats.** The report records wall-clock frame-time
+  distributions per beat, measured in the populated room separately from
+  capture/readback overhead, so "4K at 60 FPS on this machine" is a
+  measured claim, not a hope.
 
 Precedents in the sibling projects: jefe's `scripts/validate-newissue-wrap.sh`
 drives the built TUI app in tmux, types input, captures the pane, and
@@ -217,8 +259,10 @@ vision-capable verifier.
 ## Ecosystem pins (verify at integration time)
 
 - **Physics**: Avian 0.7 (active, supports Bevy 0.19) for props, debris,
-  and door dynamics. Milestone 1 movement is a kinematic capsule and
-  needs no solver; Avian arrives with interactive objects.
+  and door dynamics. Milestone 1 movement is a kinematic capsule with a
+  custom swept-collision resolver against authored static colliders (no
+  rigid-body dynamics solver, but real collision work, owned by the
+  blockout issue); Avian arrives with interactive objects.
 - **Level authoring**: Blender greybox first. bevy_trenchbroom 0.14
   supports Bevy 0.19 but its maintainer states the crate is on life
   support; treat it as optional tooling, not infrastructure.
@@ -227,13 +271,21 @@ vision-capable verifier.
   are bevy_movie_player (ffmpeg-backed) and bevy-ffmpeg. Decide at the
   security-monitor milestone; an image-sequence fallback is always
   available.
-- **Particles**: bevy_hanabi's Bevy 0.19 pairing is unverified as of this
-  writing; milestone 1 checks it, with hand-rolled particle systems as
-  the fallback for sparks and smoke wisps.
+- **Particles**: bevy_hanabi 0.19 declares Bevy 0.19 compatibility in its
+  published metadata; execution on this machine's Metal backend is still
+  verified at milestone 1, with hand-rolled particle systems as the
+  fallback for sparks and smoke wisps.
 
 ## Performance
 
-Target: 4K, 60 FPS, on M4 Max, in the milestone 1 room, with the full
-post chain and volumetrics on. The harness report is the measurement
-instrument. Quality tiers (baseline/recommended/enhanced, as stranded
-does) come when there is something to scale.
+Milestone 1 closes only on a measured gate, not a recorded hope: the
+populated room (pods, wires, smoke, sparks active) sustains 60 FPS at
+physical 3840x2160 with render scale 1.0, in a release build, on M4 Max,
+measured wall-clock by the harness over a defined sample window with
+warmup, under simultaneous sparks and fog, separately from
+capture/readback overhead. The measured frame-time distribution and the
+configuration (adapter/backend, present mode, active effects, sample
+window) are posted on the epic. Windows and Linux equivalents are
+recorded when representative hardware joins the loop. Quality tiers
+(baseline/recommended/enhanced, as stranded does) come when there is
+something to scale.
