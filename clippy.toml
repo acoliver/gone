@@ -1,0 +1,21 @@
+# Clippy configuration for gone.
+# Enforces the project complexity limits that back the workspace lint denies.
+
+# .github/clippy/clippy.toml is a synced copy of this file so CI can point
+# CLIPPY_CONF_DIR at a stable path; `cargo xtask check clippy-allows` fails
+# when the two copies drift.
+
+# Maximum cognitive complexity per function.
+cognitive-complexity-threshold = 15
+
+# Maximum lines per function (excluding comments and blank lines).
+too-many-lines-threshold = 60
+
+# Maximum number of function arguments.
+too-many-arguments-threshold = 6
+
+# Maximum number of bool fields in a struct.
+max-struct-bools = 3
+
+# Type complexity threshold.
+type-complexity-threshold = 250

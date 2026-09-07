@@ -1,50 +1,27 @@
-//! Workspace task runner for the game `gone`.
+//! Workspace task runner for the game `gone` (issue #4).
 //!
-//! Real commands arrive with issue #4; until then the binary answers `--help`
-//! and rejects everything else loudly instead of silently doing nothing.
+//! Invoked via the `cargo xtask` alias defined in `.cargo/config.toml`.
+//! `main` stays a thin entry point over the library modules; the policy and
+//! command logic lives beside its tests in `cli`, `clippy_policy`,
+//! `rust_lexer`, `source_size`, and `architecture`.
 
-use std::ffi::OsString;
 use std::process::ExitCode;
 
-/// Usage text shown by `--help` and on every rejected invocation.
-const USAGE: &str = "\
-Usage: cargo xtask <COMMAND>
-
-Workspace task runner for `gone`.
-
-Commands:
-  (none yet; commands arrive with issue #4)
-
-Options:
-  -h, --help  Print this message
-";
+mod architecture;
+mod cli;
+mod clippy_policy;
+mod process;
+mod rust_lexer;
+mod source_size;
+#[cfg(test)]
+mod test_support;
 
 fn main() -> ExitCode {
-    match std::env::args_os().nth(1) {
-        None => reject(None),
-        Some(command) if command == "-h" || command == "--help" => {
-            print!("{USAGE}");
-            ExitCode::SUCCESS
-        }
-        Some(command) => reject(Some(command)),
-    }
-}
-
-/// Reports why the invocation was refused and exits with the standard usage
-/// error code, `2`.
-fn reject(command: Option<OsString>) -> ExitCode {
-    match command {
-        None => eprintln!("error: missing command"),
-        Some(command) => {
-            let name = command.to_string_lossy();
-            eprintln!("error: unknown command `{name}`");
-        }
-    }
-    usage();
-    ExitCode::from(2)
-}
-
-/// Prints usage to stderr so stdout stays clean for future command output.
-fn usage() {
-    eprintln!("{USAGE}");
+    // Non-UTF-8 argv entries are lossily stringified rather than panicking;
+    // every xtask command name and flag is ASCII, so nothing real is lost.
+    let argv: Vec<String> = std::env::args_os()
+        .skip(1)
+        .map(|arg| arg.to_string_lossy().into_owned())
+        .collect();
+    cli::run(&argv)
 }
