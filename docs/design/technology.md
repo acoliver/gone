@@ -222,15 +222,25 @@ play it and produces evidence that vision-capable subagents then verify.
   sparks-visible, standing, mid-room, at-door, door-refused). Temporal
   beats (blinks, spark bursts, the door shake) are short timestamped
   frame sequences covering before/during/after, not single frames. Each
-  capture is correlated to the simulation tick and rendered frame; the
-  runner starts scenarios only after a pipeline/asset readiness handshake
-  and waits for capture completion before reporting success or exiting.
+  capture is correlated to the simulation tick and rendered frame
+  (request IDs bound to render extraction; one request per target per
+  rendered frame; completion means the file was written, with save
+  failures propagated as failures), so a beat that happened entirely
+  between rendered frames cannot be fabricated. The runner starts
+  scenarios only after a pipeline/asset readiness handshake and waits
+  for capture completion before reporting success or exiting. Before
+  readiness, the window shows an intentional opaque loading/closed
+  presentation: no clear room may appear before the authored first
+  opening, the first ready fully-closed frame is captured separately,
+  and a delayed-readiness run proves the timeline starts exactly once.
   A structured JSON report (player transform, ship state, event log,
   frame timings) accompanies the captures. Artifacts land under
   `tmp/harness/<scenario>/<run-id>/`, which is gitignored. Paths are
   unique per run so concurrent sessions cannot clobber each other, and
-  each run records build, scenario, and checklist identities so stale or
-  cherry-picked artifacts cannot satisfy a newer run.
+  each run records build, scenario, and checklist identities (content
+  hashes, not just the git SHA, so dirty binaries or edited assets
+  cannot masquerade as the tested build) so stale or cherry-picked
+  artifacts cannot satisfy a newer run.
 - **Visual verification protocol.** The driver agent cannot read images.
   After a run, a vision-capable subagent receives the beat screenshots
   and an expectations checklist (red light, smoke denser at the ceiling,
@@ -244,10 +254,13 @@ play it and produces evidence that vision-capable subagents then verify.
   disabled, a refusal event with no hatch animation, collision disabled
   during a crossing) that must fail the relevant expectations, so the
   instrument cannot silently drift into reporting success without proof.
-- **Performance beats.** The report records wall-clock frame-time
-  distributions per beat, measured in the populated room separately from
-  capture/readback overhead, so "4K at 60 FPS on this machine" is a
-  measured claim, not a hope.
+- **Performance lane.** Separate from capture runs: a capture-free,
+  wall-clock lane in the populated room. Its acceptance policy (warmup,
+  sample window, camera route, concurrent effects, presentation mode,
+  frame-time statistics and thresholds, physical resolution) is
+  versioned and frozen before measurement, and a failing or missing
+  performance verdict blocks milestone acceptance rather than merely
+  being reported.
 
 Precedents in the sibling projects: jefe's `scripts/validate-newissue-wrap.sh`
 drives the built TUI app in tmux, types input, captures the pane, and
