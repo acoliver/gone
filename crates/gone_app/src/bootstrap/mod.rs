@@ -17,11 +17,17 @@
 //!   captures are [`Screenshot::image`] readbacks of that target handed to a
 //!   [`ScreenshotCaptured`] observer, which encodes the PNG. The winit window
 //!   stays open for presentation only; the offscreen image is the capture
-//!   source of truth, because `Screenshot::primary_window()` returns a fully
-//!   black image on this platform config (M4 Max / Bevy 0.19.1 / Metal — proven
-//!   by a minimal probe), so the harness never captures from the swapchain. The
-//!   runner decodes the PNG's top-left chip block and asserts it equals the
-//!   report entry, so the verified pixels are ones the GPU rendered.
+//!   source of truth because captures are exactly 1920x1080 regardless of
+//!   window scale or DPI overrides and their timing is decoupled from the
+//!   swapchain and present. (`Screenshot::primary_window()` works here with
+//!   the correct bevy feature set: an earlier probe's all-black captures were
+//!   our own feature-selection error, a missing `bevy_sprite_render`, and its
+//!   textures needed `RenderAssetUsages::default()` to appear in captures at
+//!   all. The window presents nothing during harness runs because the only
+//!   harness camera renders into the Image, so switching captures to it is a
+//!   possible future simplification.) The runner decodes the PNG's top-left
+//!   chip block and asserts it equals the report entry, so the verified pixels
+//!   are ones the GPU rendered.
 //! * **Readiness before the clock.** The scenario clock starts only after the
 //!   first capture of the offscreen target lands. That capture is the readback
 //!   of a frame the render graph actually executed into the target, so it is

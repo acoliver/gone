@@ -12,9 +12,13 @@
 //! app is the normal winit app: the `WinitPlugin` runner owns the OS event loop,
 //! which is what opens the window and presents frames (issue #15). Harness-mode
 //! captures come from an offscreen render target, not the window swapchain:
-//! `Screenshot::primary_window()` returns a fully black image on this platform
-//! config (M4 Max / Bevy 0.19.1 / Metal), so the harness camera renders into a
-//! dedicated `Image` and captures read that back instead (see `bootstrap`).
+//! they are exactly 1920x1080 regardless of window scale or DPI overrides, and
+//! their timing is decoupled from the swapchain and present. (`Screenshot::
+//! primary_window()` works here with the correct bevy feature set; an earlier
+//! probe's all-black captures were our own feature-selection error, not a
+//! platform property. The window presents nothing during harness runs, so
+//! switching captures to it is a possible future simplification. See
+//! `bootstrap`.)
 
 use std::path::{Path, PathBuf};
 

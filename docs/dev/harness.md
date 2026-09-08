@@ -50,7 +50,7 @@ spawned and passed; the app echoes them back verbatim.
 The app runs as the normal winit app: `WinitPlugin` owns the OS event loop,
 which is what opens the 1920x1080 window (scale factor forced to 1.0 so logical
 pixels equal physical pixels) and presents frames. The window is presentation
-only; captures never come from its swapchain (see the readiness section for
+only; captures never come from its swapchain (see the capture lane section for
 why). There is no manual update loop anywhere in the harness path. The runner
 owns the child lifecycle (`try_wait` poll on a 10ms cadence, `DEFAULT_TIMEOUT`
 60 seconds), and on drop (including error paths) it SIGKILLs and `wait`s so no
@@ -66,12 +66,24 @@ capture of the run is a bevy `Screenshot::image(target_handle)`: the render
 graph blits the camera's frame into a readback buffer and hands the mapped
 `Image` to the app's `ScreenshotCaptured` observer.
 
-The harness never captures from the window swapchain: on this platform config
-(M4 Max / Bevy 0.19.1 / Metal), `Screenshot::primary_window()` returns a fully
-black image regardless of content, timing, or clear color — proven by a minimal
-probe that also proved the offscreen path renders and reads back correctly. The
-winit window stays open so the app runs as a real windowed app, but the
-offscreen image is the capture source of truth.
+The harness never captures from the window swapchain. `Screenshot::
+primary_window()` works on this machine when the bevy feature set is correct:
+an earlier probe's all-black captures were our own feature-selection error,
+not a platform property. The probe's minimal feature list omitted
+`bevy_sprite_render`, so nothing drew and even clear-only captures read back
+zeros; with the corrected feature set the same probe captured correctly (and
+it still verifies that the offscreen path renders and reads back). A related
+usage error from the same probe: a texture created with
+`RenderAssetUsages::MAIN_WORLD` alone never appears in a capture; textures
+need `MAIN_WORLD | RENDER_WORLD` (`RenderAssetUsages::default()`).
+
+The harness keeps the offscreen Image capture lane for two real reasons: its
+captures are exactly 1920x1080 regardless of window scale or DPI overrides,
+and capture timing is decoupled from the swapchain and present. The OS window
+presents nothing during harness runs because the only harness camera renders
+into the Image; switching captures to `Screenshot::primary_window()` is a
+possible future simplification. The winit window stays open so the app runs as
+a real windowed app, and the offscreen image is the capture source of truth.
 
 Sprite rendering has its own feature gate in Bevy 0.19: the sprite render pass
 lives in `bevy_sprite_render`, separate from the `bevy_sprite` API crate.
