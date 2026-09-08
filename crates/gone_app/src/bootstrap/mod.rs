@@ -1,9 +1,11 @@
 //! Bootstrap plugin for the harness lane (issue #15).
 //!
 //! This module is the app side of the harness protocol from [`crate::harness`]:
-//! scenario loading, the loading presentation until the renderer has actually
-//! presented, the input-adapter resource, the frame-code sprite, the report, and
-//! a clean self-exit. The app runs as the normal winit app — a real OS window is
+//! the loading presentation until the renderer has actually presented, the
+//! input-adapter resource, the frame-code sprite, the report, and a clean
+//! self-exit — on both lanes, the capture lane (scenario beats and reads) and
+//! the perf lane (wall-clock frame-time sampling, capture-free after the
+//! readiness proof). The app runs as the normal winit app — a real OS window is
 //! open for the whole run.
 //!
 //! Design notes:
@@ -84,11 +86,14 @@ use bevy::render::view::screenshot::{Screenshot, ScreenshotCaptured};
 // target view, not of a render-resource pipeline object).
 use bevy::render::view::Msaa;
 use bevy::sprite::{Anchor, Sprite};
+use bevy::time::Time;
 use bevy::transform::components::Transform;
 
 use crate::capture::capture_to_png;
-use crate::harness::scenario::parse_scenario;
-use crate::harness::{Identity, InputAdapter, Scenario, TimedEvent, frame, report};
+use crate::harness::{
+    FrameSampleStats, Identity, InputAdapter, Pacing, PerfResolution, PerfRun, Scenario,
+    ScenarioMode, TimedEvent, frame, report,
+};
 
 use state::{
     BeatCapture, CaptureRequest, HarnessState, Readiness, drive_allowed, fail_at_deadline,
@@ -146,20 +151,18 @@ pub struct BootstrapPlugin {
 }
 
 impl BootstrapPlugin {
-    /// Build the plugin from the runner's env.
-    pub fn new(
-        scenario_path: Option<PathBuf>,
-        out_dir: Option<PathBuf>,
-        config_hash: String,
-    ) -> Self {
-        let scenario = match scenario_path {
-            Some(path) => {
-                let text = std::fs::read_to_string(&path)
-                    .unwrap_or_else(|e| panic!("cannot read scenario {}: {e}", path.display()));
-                parse_scenario(&text).unwrap_or_else(|e| panic!("bad scenario: {e}"))
-            }
-            None => panic!("GONE_HARNESS requires GONE_SCENARIO (the runner always sets it)"),
-        };
+    /// Build the plugin from an already-parsed scenario and the runner's env.
+    ///
+    /// # Panics
+    /// Panics without `GONE_OUT_DIR` (the runner always sets it), and on a
+    /// perf scenario whose sample window is empty: there is no honest
+    /// measurement to fall back to.
+    pub fn new(scenario: Scenario, out_dir: Option<PathBuf>, config_hash: String) -> Self {
+        assert!(
+            scenario.mode != ScenarioMode::Perf || scenario.sample_frames != 0,
+            "perf scenario `{}` needs a sample_frames window of at least 1 frame",
+            scenario.name
+        );
         let out_dir = out_dir.expect("GONE_HARNESS requires GONE_OUT_DIR");
         Self {
             scenario,
@@ -191,6 +194,7 @@ impl Plugin for BootstrapPlugin {
                 readiness_boundary,
                 request_beat_captures,
                 drive_ticks,
+                perf_sample,
                 finish_scan,
             )
                 .chain(),
@@ -333,6 +337,20 @@ fn drive_ticks(mut kernel: Kernel) {
     paint_chip(&mut kernel, tick, frame);
     kernel.state.tick += 1;
     kernel.state.frame += 1;
+}
+
+/// Record one wall-clock frame delta into the perf sampler (perf mode only).
+/// Runs after `drive_ticks` so every sampled update is one full rendered frame
+/// of the calibration scene, chip animation included. The delta is Bevy's real
+/// `Time` delta for this frame: wall-clock, not the fixed logical tick.
+fn perf_sample(readiness: Res<Readiness>, mut state: ResMut<HarnessState>, time: Res<Time>) {
+    if !drive_allowed(*readiness.into_inner(), &state) || state.scenario.mode != ScenarioMode::Perf
+    {
+        return;
+    }
+    state
+        .sampler
+        .record(time.into_inner().delta_secs_f64() * 1000.0);
 }
 
 /// Paint the chip texture with this frame's (tick, frame) code.
@@ -495,26 +513,30 @@ fn save_capture(out_dir: &Path, rel: &str, image: &Image) -> Result<(), String> 
 }
 
 /// Close the run: a recorded failure exits nonzero immediately (no settle
-/// window); the `max_frames` deadline with beats still uncaptured records that
-/// failure and exits nonzero in the same pass; otherwise every beat must be
-/// captured to disk and the settle window must pass before the report is
-/// written and `AppExit::Success` requested.
+/// window). On the capture lane, the `max_frames` deadline with beats still
+/// uncaptured records that failure and exits nonzero in the same pass, and
+/// otherwise every beat must be captured to disk plus a two-frame settle
+/// before the report is written. On the perf lane the report waits for the
+/// sample window to fill instead (the deadline scan does not apply: a perf
+/// scenario has no beats to miss). Then the report is written and
+/// `AppExit::Success` requested.
 fn finish_scan(mut state: ResMut<HarnessState>, mut exits: MessageWriter<AppExit>) {
     if state.done {
         return;
     }
-    fail_at_deadline(&mut state);
+    if state.scenario.mode == ScenarioMode::Capture {
+        fail_at_deadline(&mut state);
+    }
     let failed = state.failed.clone();
-    if failed.is_none()
-        && !(state.all_beats_captured() && state.frame >= state.last_beat_frame + SETTLE_FRAMES)
-    {
+    if failed.is_none() && !run_complete(&state) {
         return;
     }
     if failed.is_none() {
         let frame = state.frame;
         state.events.push(TimedEvent::Complete { frame });
     }
-    let path = write_report(&state);
+    let perf_run = perf_report_run(&state);
+    let path = write_report(&state, perf_run);
     println!("REPORT {}", path.display());
     exits.write(if failed.is_some() {
         exit_failure()
@@ -524,10 +546,40 @@ fn finish_scan(mut state: ResMut<HarnessState>, mut exits: MessageWriter<AppExit
     state.done = true;
 }
 
+/// The lane's completion test: the perf lane wants the sample window full; the
+/// capture lane wants every beat's PNG on disk and the settle window after the
+/// last capture to have passed.
+fn run_complete(state: &HarnessState) -> bool {
+    match state.scenario.mode {
+        ScenarioMode::Perf => state.sampler.is_complete(),
+        ScenarioMode::Capture => {
+            state.all_beats_captured() && state.frame >= state.last_beat_frame + SETTLE_FRAMES
+        }
+    }
+}
+
+/// The report's perf section for a perf run (`None` on the capture lane).
+/// The resolution is the run's actual capture-target extent; the pacing is
+/// what the scenario told the window to use.
+fn perf_report_run(state: &HarnessState) -> Option<PerfRun> {
+    if state.scenario.mode != ScenarioMode::Perf {
+        return None;
+    }
+    let window_stats = FrameSampleStats::from_samples(state.sampler.samples_ms())?;
+    Some(PerfRun {
+        warmup_frames: state.scenario.warmup_frames,
+        sample_frames: state.scenario.sample_frames,
+        presentation: state.scenario.pacing.unwrap_or(Pacing::FixedVsync),
+        resolution: PerfResolution::new(CAPTURE_W, CAPTURE_H),
+        samples_ms: state.sampler.samples_ms().to_vec(),
+        stats: window_stats,
+    })
+}
+
 /// Serialize and write `report.json` into the run directory; returns its path.
 /// Panics when the report cannot be written: the runner treats a missing or
 /// unparsable report as a failed run either way.
-fn write_report(state: &HarnessState) -> PathBuf {
+fn write_report(state: &HarnessState, perf_run: Option<PerfRun>) -> PathBuf {
     if let Err(err) = std::fs::create_dir_all(&state.out_dir) {
         panic!("cannot create run dir {}: {err}", state.out_dir.display());
     }
@@ -550,6 +602,7 @@ fn write_report(state: &HarnessState) -> PathBuf {
         checkpoints: state.checkpoints.clone(),
         frame_stats: crate::harness::FrameStats::default(),
         beats: state.beats.clone(),
+        perf: perf_run,
         identity,
     };
     let text = report::report_to_json(&report).expect("report json");

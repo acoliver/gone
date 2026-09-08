@@ -3,14 +3,17 @@
 //! Invoked via the `cargo xtask` alias defined in `.cargo/config.toml`.
 //! `main` stays a thin entry point over the library modules; the policy and
 //! command logic lives beside its tests in `cli`, `clippy_policy`,
-//! `rust_lexer`, `source_size`, and `architecture`.
+//! `rust_lexer`, `source_size`, `architecture`, `metadata_graph`, and
+//! `protocol_surface`.
 
 use std::process::ExitCode;
 
 mod architecture;
 mod cli;
 mod clippy_policy;
+mod metadata_graph;
 mod process;
+mod protocol_surface;
 mod rust_lexer;
 mod source_size;
 #[cfg(test)]

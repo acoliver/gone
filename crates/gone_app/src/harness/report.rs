@@ -8,6 +8,8 @@
 
 use std::collections::BTreeMap;
 
+use super::perf::PerfRun;
+
 /// One timestamped event on the timeline.
 #[derive(Clone, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(tag = "kind", content = "at")]
@@ -127,6 +129,10 @@ pub struct Report {
     pub frame_stats: FrameStats,
     /// Beat name -> capture entry.
     pub beats: BTreeMap<String, BeatEntry>,
+    /// Perf-lane section (raw wall-clock samples plus statistics); `None` on
+    /// the capture lane, which does not sample frame times.
+    #[serde(default)]
+    pub perf: Option<PerfRun>,
     /// Run identity: content hashes.
     pub identity: Identity,
 }
@@ -200,6 +206,7 @@ impl Report {
             checkpoints: Vec::new(),
             frame_stats: FrameStats::default(),
             beats: BTreeMap::new(),
+            perf: None,
             identity,
         }
     }
@@ -208,6 +215,8 @@ impl Report {
 #[cfg(test)]
 mod tests {
     use std::collections::BTreeMap;
+
+    use crate::harness::perf::PerfRun;
 
     use super::{BeatEntry, FrameStats, Identity, Report, TimedEvent};
 
@@ -242,6 +251,7 @@ mod tests {
                     request_id: 1,
                 },
             )]),
+            perf: None,
             identity: Identity {
                 app_hash: "a".into(),
                 scenario_hash: "s".into(),
@@ -255,6 +265,27 @@ mod tests {
         let json = super::report_to_json(&sample()).expect("serializes");
         let parsed = super::parse_report(&json).expect("parses");
         assert_eq!(parsed, sample());
+    }
+
+    #[test]
+    fn report_roundtrips_with_a_perf_section() {
+        let samples: Vec<f64> = (1..=100).map(f64::from).collect();
+        let mut report = sample();
+        report.perf = Some(PerfRun {
+            warmup_frames: 12,
+            sample_frames: 100,
+            presentation: crate::harness::Pacing::Uncapped,
+            resolution: crate::harness::PerfResolution::new(1920, 1080),
+            samples_ms: samples.clone(),
+            stats: crate::harness::FrameSampleStats::from_samples(&samples).expect("nonempty"),
+        });
+        let json = super::report_to_json(&report).expect("serializes");
+        let parsed = super::parse_report(&json).expect("parses");
+        assert_eq!(parsed, report);
+        assert_eq!(
+            parsed.perf.as_ref().map(|run| run.samples_ms.len()),
+            Some(100)
+        );
     }
 
     #[test]

@@ -8,21 +8,24 @@ JSON and the pixel encoding is `crates/gone_app/src/harness/`; `gone_harness`
 re-exports that surface and never defines a type of its own.
 
 The protocol version both sides embed and compare is
-`gone_app::harness::PROTOCOL_VERSION` (currently `2`). A report whose version
+`gone_app::harness::PROTOCOL_VERSION` (currently `3`). A report whose version
 does not equal the runner's is rejected. Version 2 is the real-capture protocol:
 beats are readbacks of an offscreen render target the harness camera draws into,
 the frame-code chip is a sprite rendered into the scene, input events carry
 their press/release edge, and capture failures are recorded as `Failure` events.
+Version 3 adds the performance lane: scenarios gain a `mode` (capture or perf)
+with warmup/sample window counts, reports gain the optional `perf` section, and
+the scenario `pacing` field is consumed at window creation.
 
 ## Two crates, one boundary
 
-- `gone_app` (Bevy 0.19) owns the protocol: `crates/gone_app/src/harness/{scenario,input,beat,frame,report,mod}.rs`.
+- `gone_app` (Bevy 0.19) owns the protocol: `crates/gone_app/src/harness/{scenario,input,beat,frame,report,perf,mod}.rs`.
   It reads a scenario, opens a real window, runs the fixed timeline, captures
   screenshots, writes the report, and exits by itself. The app-side lane lives
   in `crates/gone_app/src/bootstrap/`: `mod.rs` is the plugin plus the ECS
   systems and capture I/O, `state.rs` is the run-state ledger (counters, beat
-  ledgers, readiness gate, failure recording), and `tests.rs` pins the
-  accounting and readiness regressions.
+  ledgers, readiness gate, failure recording, perf sampler), and `tests.rs`
+  pins the accounting and readiness regressions.
 - `gone_harness` (no Bevy) is the runner: `crates/gone_harness/src/bin/gone_harness.rs`.
   It hashes the build and scenario, spawns the app, waits for it, decodes the
   beat PNGs, checks the report, and prints the two-stage verdict.
@@ -94,10 +97,10 @@ On that capture the app writes the proof PNG to the run dir
 (`readiness-proof.png`), prints the exact stdout line
 
 ```
-GONE_READY 2 <frame>
+GONE_READY 3 <frame>
 ```
 
-(`2` is `PROTOCOL_VERSION`, `<frame>` the rendered frame count at the boundary),
+(`3` is `PROTOCOL_VERSION`, `<frame>` the rendered frame count at the boundary),
 records `TimedEvent::Ready`, and makes the frame-code chip visible. Every later
 step (ticks, input edges, beat captures) is gated on the same readiness state by
 `drive_allowed`, so the scenario clock starts at zero and the input adapter is
@@ -219,6 +222,10 @@ Written by the app at finish (`harness/report.rs`), keyed to `PROTOCOL_VERSION`:
 - `frame_stats` — `{frames, mean_us, p95_us, median_us}` (defaults at slice A).
 - `beats` — name -> `{file, tick, frame, request_id}`; the pinned rendered
   moment the PNG shows.
+- `perf` — the perf-lane section, present only on perf-mode runs (`null` on
+  the capture lane): `{warmup_frames, sample_frames, presentation, resolution,
+  samples_ms, stats}` — raw wall-clock samples in ms plus the summary
+  statistics over them (see the performance lane below).
 - `identity` — `{app_hash, scenario_hash, config_hash}` (sha2-256 hex).
 
 The runner re-verifies `identity.app_hash`/`identity.config_hash` match what it
@@ -227,8 +234,9 @@ computed before spawning the child.
 ## Frame stats and identity
 
 `FrameStats` is emitted empty at slice A: the app does not measure present
-timestamps yet. The fields exist so a real statistics lane can fill them
-(deferred).
+timestamps into it. The fields exist so a real statistics lane can fill them
+(deferred). The perf lane reports its own `perf` section instead of
+`frame_stats`; the seeded struct stays untouched on both lanes.
 
 ## Two-stage verdict and exit code
 
@@ -252,7 +260,11 @@ Scripts never touch gameplay internals. The adapter is a pure std state machine
 (`harness/input.rs`) that feeds scripted inputs *through the same input layer*
 the game reads; gameplay has no "test mode" that skips its own code. Growing the
 button enum is a harness change, not an app change. This satisfies "the runner
-feeds synthetic input events the same way real devices do".
+feeds synthetic input events the same way real devices do". The boundary is
+machine-enforced, not just documented: `cargo xtask check architecture` fails
+when `gone_harness` declares a direct `gone_sim` dependency or when any file in
+`crates/gone_app/src/harness/` references `gone_sim` in source, with the pinning
+tests in `crates/xtask/src/architecture.rs` and `crates/xtask/src/protocol_surface.rs`.
 
 ## Compare mode
 
@@ -272,6 +284,79 @@ Beat capture events carry the pinned tick/frame; for scenarios whose beats are
 spaced further apart than the capture readback latency (one to two rendered
 frames), both runs pin identical values and the streams match.
 
+## Performance lane
+
+The perf lane measures wall-clock frame times of the calibration scene and
+judges them against a versioned, checked-in policy. It is the third runner mode
+beside `smoke` and `compare`:
+
+    gone_harness perf [scenario.json]
+    cargo xtask harness perf [scenario.json]
+
+With no argument the runner derives the calibration scenario from the policy:
+the bootstrap scene (dark clear plus the frame-code chip sprite, 1920x1080,
+scale factor 1.0) with no scripted actions and no beats. A scenario argument
+must be a perf-mode scenario (`"mode": "perf"`); a capture scenario in the perf
+lane is a caller error.
+
+### Policy (location, schema, versioning)
+
+The policy lives at `crates/gone_harness/perf-policy.json` and ships with the
+repo. Its schema (`PerfPolicy`) lives with the rest of the protocol in
+`crates/gone_app/src/harness/perf.rs`: the version string, the warmup frame
+count, the sample window frame count, the presentation pacing (`Uncapped` —
+wall-clock frame times must not be quantized by vsync; the app configures the
+window with `PresentMode::AutoNoVsync` for an uncapped run), the camera route
+description (static on the calibration scene; recorded, never simulated), the
+concurrent effects (none in the calibration scene), the physical resolution,
+the statistics the lane reports (count, mean, min, max, p50, p95, p99 of frame
+time in ms), and the thresholds the runner enforces on those statistics (mean
+and p95 ceilings).
+
+The `calibration-v1` thresholds are calibration-scene placeholders: generous
+but real (a 25 ms mean / 50 ms p95 ceiling catches gross stalls and a stalled
+or throttled clock) and deliberately machine-tolerant. They are superseded by
+the populated-room 60 FPS policy that arrives with issues #2/#10; that change
+is a new `policy_version`, never an edit in place.
+
+The policy is frozen before measurement: the runner parses and hashes the exact
+file bytes before spawning the app, and the policy identity (version string +
+sha2-256) travels into the run artifacts, so a verdict always names the policy
+it was decided by.
+
+### What the app does (capture-free by design)
+
+The perf run is capture-free by design. The app waits for readiness exactly as
+the capture lane does (loading presentation, readiness proof readback,
+`GONE_READY`), then runs the policy's warmup frames unrecorded, then records
+`sample_frames` per-frame wall-clock deltas from Bevy's real `Time` delta — no
+beats, no screenshots, no decode after the readiness proof. The raw samples
+plus the summary statistics go into the report's `perf` section, the app prints
+`REPORT <path>`, and exits 0.
+
+Frame times are wall-clock and inherently non-deterministic. The perf lane is
+excluded from the harness's compare/determinism claims: raw samples differ run
+to run by design, and the statistics are judged against policy thresholds,
+never against a second run. The event timeline the perf report carries is only
+the ready/complete skeleton — nothing about it is a determinism sample either.
+
+### Verdict and artifacts
+
+The runner reads the report, verifies the run's shape matches the policy
+(window counts, presentation, resolution — identity checks, not thresholds),
+and evaluates the recorded statistics against the policy thresholds. It prints
+one verdict line — `PERF PASS` or `PERF FAIL`, the policy identity, and on a
+fail each violated statistic with its observed value and ceiling — plus a
+distribution summary over the policy's reported statistics, writes
+`perf-verdict.json` (verdict, policy identity, violations, stats) beside
+`report.json`, and exits 0 on pass, 1 on fail or on any runner error. A perf
+run dir holds `scenario.json`, `readiness-proof.png`, `report.json`, and
+`perf-verdict.json`.
+
+`ci`'s harness step stays on the smoke lane: the perf verdict measures
+wall-clock on real GPU present, so it is a local gate, not a deterministic CI
+step.
+
 ## Deferred (stage B)
 
 Not in slice A, per the plan:
@@ -281,8 +366,9 @@ Not in slice A, per the plan:
 - Negative verification cases (a scenario that must fail naming why).
 - Lifecycle scenarios (delayed readiness, the no-content-before-ready assertion
   on the GONE_READY line).
-- Performance lane (frame-time sampling in a populated room; the empty
-  `FrameStats` is its seed).
+- The milestone performance gate: the populated room at 4K, 60 FPS (issues
+  #2/#10). The calibration lane's policy and reporting are its substrate; the
+  calibration thresholds are placeholders for that milestone's policy.
 - Windows kill-tree for the child process.
 
 ## Known limits (honest notes)
@@ -296,11 +382,13 @@ Not in slice A, per the plan:
    first later frame and its manifest entry pins that later frame. The PNG and
    the report always agree; only the beat's scenario tick and its captured frame
    may differ in that case.
-3. `FrameStats` is empty; the clock is tick-per-frame with no duration
-   measurement yet.
-4. The `pacing` scenario field is parsed but not yet consumed by the app
-   (compare uses default vsync pacing). `max_frames` is consumed as the
-   clean-close deadline described under beat capture binding.
+3. `FrameStats` is empty; the perf lane reports the `perf` section instead (the
+   seeded struct is untouched on both lanes).
+4. The `pacing` scenario field is consumed at window creation (Uncapped sets
+   `PresentMode::AutoNoVsync`). Compare scenarios leave it unset and run the
+   default vsync presentation; `max_frames` is consumed as the clean-close
+   deadline described under beat capture binding (inert on the perf lane,
+   which has no beats to miss).
 
 ## Cross-target verification
 

@@ -21,6 +21,50 @@ use bevy::ecs::prelude::{Component, Resource};
 
 use crate::harness::{Beat, BeatEntry, InputAdapter, Scenario, TimedEvent};
 
+/// Frame-time sampler for the perf lane: skips `warmup_frames` rendered frames
+/// after the readiness boundary, then records `sample_frames` wall-clock
+/// deltas. Pure accounting — the perf system feeds it exactly one delta per
+/// update, and extra records past the target are ignored (completion ends the
+/// run that frame).
+pub(super) struct PerfSampler {
+    warmup_remaining: u64,
+    target: u64,
+    samples_ms: Vec<f64>,
+}
+
+impl PerfSampler {
+    /// A sampler over a warmup + sample window (as the scenario declares).
+    pub(super) fn new(warmup_frames: u64, sample_frames: u64) -> Self {
+        Self {
+            warmup_remaining: warmup_frames,
+            target: sample_frames,
+            samples_ms: Vec::new(),
+        }
+    }
+
+    /// Record one rendered frame's wall-clock delta in ms. Warmup frames are
+    /// skipped unrecorded.
+    pub(super) fn record(&mut self, delta_ms: f64) {
+        if self.warmup_remaining > 0 {
+            self.warmup_remaining -= 1;
+            return;
+        }
+        if (self.samples_ms.len() as u64) < self.target {
+            self.samples_ms.push(delta_ms);
+        }
+    }
+
+    /// True when the sample window is full.
+    pub(super) fn is_complete(&self) -> bool {
+        self.samples_ms.len() as u64 >= self.target
+    }
+
+    /// The recorded wall-clock samples in sample order.
+    pub(super) fn samples_ms(&self) -> &[f64] {
+        &self.samples_ms
+    }
+}
+
 /// The readiness handshake state.
 #[derive(Resource, Default, PartialEq, Eq, Clone, Copy, Debug)]
 pub(super) enum Readiness {
@@ -86,6 +130,9 @@ pub(super) struct HarnessState {
     pub(super) done: bool,
     /// The first unrecoverable failure (artifact + error), if any.
     pub(super) failed: Option<String>,
+    /// The perf lane's warmup/sample ledger (derived from the scenario; the
+    /// capture lane never records into it).
+    pub(super) sampler: PerfSampler,
 }
 
 impl HarnessState {
@@ -98,6 +145,7 @@ impl HarnessState {
         config_hash: String,
         adapter: InputAdapter,
     ) -> Self {
+        let sampler = PerfSampler::new(scenario.warmup_frames, scenario.sample_frames);
         Self {
             scenario,
             out_dir,
@@ -116,6 +164,7 @@ impl HarnessState {
             capture_in_flight: None,
             done: false,
             failed: None,
+            sampler,
         }
     }
 

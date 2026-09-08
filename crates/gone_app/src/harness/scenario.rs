@@ -10,14 +10,32 @@ use crate::harness::input::ScriptedAction;
 /// used when the scenario does not override it.
 pub const TICKS_PER_SECOND: u64 = 60;
 
-/// Pacing variation used only by `harness compare`.
+/// Pacing variation: the presentation mode a run uses. Parsed per scenario and
+/// consumed at window creation: `Uncapped` sets the window to
+/// `PresentMode::AutoNoVsync` so wall-clock frame times are not quantized by
+/// vsync (the perf lane requires this; `compare` scenarios leave it unset and
+/// run the default vsync presentation).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum Pacing {
     /// Run with vsync presentation (the default).
     FixedVsync,
     /// Run with an uncapped present (present immediately), the pacing-variation
-    /// probe for compare mode.
+    /// probe for compare mode and the perf lane's requirement.
     Uncapped,
+}
+
+/// What the scenario asks the app to do.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ScenarioMode {
+    /// Drive beats and captures (the default capture lane).
+    #[default]
+    Capture,
+    /// Measure wall-clock frame times over a warmup + sample window: readiness
+    /// as usual, then no beats, no captures, no decode. The perf policy that
+    /// judges the window lives runner-side; the scenario carries only the
+    /// window shape.
+    Perf,
 }
 
 /// One scenario definition.
@@ -43,6 +61,17 @@ pub struct Scenario {
     /// as missing and fail the run with a nonzero exit.
     #[serde(default = "default_max_frames")]
     pub max_frames: u64,
+    /// What the scenario asks the app to do (capture lane by default).
+    #[serde(default)]
+    pub mode: ScenarioMode,
+    /// Perf mode only: frames run after readiness before the sample window
+    /// starts. Unused (zero) on the capture lane.
+    #[serde(default)]
+    pub warmup_frames: u64,
+    /// Perf mode only: rendered frames sampled into the perf window. Must be
+    /// at least 1 in perf mode; unused (zero) on the capture lane.
+    #[serde(default)]
+    pub sample_frames: u64,
 }
 
 impl Default for Scenario {
@@ -55,6 +84,9 @@ impl Default for Scenario {
             beats: Vec::new(),
             pacing: None,
             max_frames: default_max_frames(),
+            mode: ScenarioMode::default(),
+            warmup_frames: 0,
+            sample_frames: 0,
         }
     }
 }
@@ -94,7 +126,7 @@ pub fn index(scenarios: &[Scenario]) -> std::collections::BTreeMap<&str, &Scenar
 
 #[cfg(test)]
 mod tests {
-    use super::{Scenario, parse_scenario, scenario_to_json};
+    use super::{Pacing, Scenario, ScenarioMode, parse_scenario, scenario_to_json};
 
     const GOOD: &str = r#"{
         "name": "smoke",
@@ -128,6 +160,34 @@ mod tests {
         assert_eq!(s.ticks_per_second, 60);
         assert_eq!(s.pacing, None);
         assert_eq!(s.max_frames, 720);
+        assert_eq!(s.mode, ScenarioMode::Capture);
+        assert_eq!(s.warmup_frames, 0);
+        assert_eq!(s.sample_frames, 0);
+    }
+
+    #[test]
+    fn perf_mode_and_window_parse() {
+        let perf = r#"{
+            "name": "calibration",
+            "seed": 1,
+            "actions": [],
+            "beats": [],
+            "mode": "perf",
+            "pacing": "Uncapped",
+            "warmup_frames": 120,
+            "sample_frames": 600
+        }"#;
+        let s: Scenario = parse_scenario(perf).expect("parses");
+        assert_eq!(s.mode, ScenarioMode::Perf);
+        assert_eq!(s.pacing, Some(Pacing::Uncapped));
+        assert_eq!(s.warmup_frames, 120);
+        assert_eq!(s.sample_frames, 600);
+    }
+
+    #[test]
+    fn unknown_mode_is_a_parse_error() {
+        let bad = r#"{"name":"x","seed":0,"actions":[],"beats":[],"mode":"frobnicate"}"#;
+        assert!(parse_scenario(bad).is_err());
     }
 
     #[test]

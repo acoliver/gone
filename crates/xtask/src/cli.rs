@@ -95,9 +95,10 @@ commands:
   harness smoke        build gone_app + gone_harness (locked) and run the smoke scenario
   harness <scenario>   run one scenario file (builds both binaries first)
   harness compare <s>   run a scenario twice and diff the event timelines
+  harness perf [s]     run the perf calibration lane against the checked-in policy
   check clippy-allows  zero clippy allow/expect suppressions + clippy.toml sync
   check source-size    per-file line gate (warn 750, fail 1000)
-  check architecture   gone_sim dependency boundary gate"
+  check architecture   gone_sim/gone_harness dependency + protocol-module boundary gate"
     );
 }
 
@@ -173,7 +174,9 @@ fn named_failure(label: &str, step: &str, err: &CommandFailed) -> CommandFailed 
 
 /// `harness smoke` builds the two binaries (locked) and runs the smoke scenario;
 /// `harness <scenario-path>` runs one scenario; `harness compare <scenario>`
-/// builds once then runs the scenario twice and diffs the timelines. The runner
+/// builds once then runs the scenario twice and diffs the timelines;
+/// `harness perf [scenario]` runs the perf calibration lane against the
+/// checked-in policy (default scenario derived from the policy). The runner
 /// owns the child app's lifecycle (spawn, kill-on-timeout, reap), so xtask
 /// just forwards the exit code.
 fn run_harness_command(rest: &[String], root: &Path) -> Result<(), CommandFailed> {
@@ -196,6 +199,12 @@ fn run_harness_command(rest: &[String], root: &Path) -> Result<(), CommandFailed
         }
         [cmd] if cmd == "smoke" => {
             plan = plan.args(["smoke"]);
+        }
+        [cmd] if cmd == "perf" => {
+            plan = plan.args(["perf"]);
+        }
+        [cmd, scenario] if cmd == "perf" => {
+            plan = plan.args(["perf", scenario]);
         }
         [path, ..] => {
             plan = plan.args([path]);

@@ -11,7 +11,8 @@ use bevy::render::render_resource::{Extent3d, TextureDimension, TextureFormat};
 
 use super::save_capture;
 use super::state::{
-    CaptureRequest, HarnessState, Readiness, drive_allowed, fail_at_deadline, fail_scenario,
+    CaptureRequest, HarnessState, PerfSampler, Readiness, drive_allowed, fail_at_deadline,
+    fail_scenario,
 };
 use crate::harness::{Beat, InputAdapter, Key, Scenario, ScriptedAction, TimedEvent};
 
@@ -44,6 +45,7 @@ fn state_with_beats(beats: &[(&str, u64)]) -> HarnessState {
         capture_in_flight: None,
         done: false,
         failed: None,
+        sampler: PerfSampler::new(0, 0),
     }
 }
 
@@ -413,4 +415,33 @@ fn capture_request_binds_manifest_numbers() {
     assert_eq!(request.tick, 3);
     assert_eq!(request.frame, 4);
     assert_eq!(request.request_id, 9);
+}
+
+#[test]
+fn perf_sampler_skips_warmup_then_fills_the_window() {
+    let mut sampler = PerfSampler::new(2, 3);
+    sampler.record(99.0);
+    sampler.record(98.0);
+    assert!(sampler.samples_ms().is_empty(), "warmup is unrecorded");
+    assert!(!sampler.is_complete());
+    sampler.record(1.0);
+    sampler.record(2.0);
+    assert_eq!(sampler.samples_ms(), [1.0, 2.0]);
+    assert!(!sampler.is_complete());
+    sampler.record(3.0);
+    assert_eq!(sampler.samples_ms(), [1.0, 2.0, 3.0]);
+    assert!(sampler.is_complete());
+    // A record past the target is ignored: completion ends the run that frame.
+    sampler.record(4.0);
+    assert_eq!(sampler.samples_ms(), [1.0, 2.0, 3.0]);
+}
+
+#[test]
+fn perf_sampler_with_no_warmup_samples_from_the_first_frame() {
+    let mut sampler = PerfSampler::new(0, 2);
+    sampler.record(16.6);
+    assert_eq!(sampler.samples_ms(), [16.6]);
+    sampler.record(16.7);
+    assert!(sampler.is_complete());
+    assert_eq!(sampler.samples_ms(), [16.6, 16.7]);
 }
