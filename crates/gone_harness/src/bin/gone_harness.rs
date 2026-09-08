@@ -147,7 +147,6 @@ impl Drop for AppChild {
 }
 
 /// Spawn the app with harness env and the run-identity hashes.
-#[allow(clippy::too_many_arguments)]
 fn spawn_app(
     root: &Path,
     scenario_path: &Path,
@@ -219,31 +218,12 @@ fn verify_captures(
     Ok(())
 }
 
-/// Sample the top-left chip region from an RGBA image and decode it. Because the
-/// captured PNG is saved converted-to-rgb by bevy's `save_to_disk` (Bgra ->
-/// Rgb), merge into the shared 3-byte decode.
+/// Decode the top-left frame-code chip from a captured PNG. The crop and the
+/// lattice decode live in the shared protocol (`frame::decode_chip_from_rgb`);
+/// the runner only wraps the error with the beat name.
 fn decode_frame_chip(img: &image::DynamicImage, name: &str) -> Result<(u64, u64), RunnerError> {
     let rgb = img.to_rgb8();
-    let w = gone_harness::frame::DIGITS * gone_harness::frame::CELL_W;
-    let h = 2 * gone_harness::frame::CELL_H;
-    let (sx, sy) = gone_harness::frame::chip_origin();
-    if rgb.width() < sx + w || rgb.height() < sy + h {
-        bail!(
-            "beat `{name}` capture too small ({}x{}) to contain the {}x{} frame chip",
-            rgb.width(),
-            rgb.height(),
-            w,
-            h
-        );
-    }
-    let mut buf = Vec::with_capacity((w * h * 4) as usize);
-    for yy in sy..sy + h {
-        for xx in sx..sx + w {
-            let p = rgb.get_pixel(xx, yy);
-            buf.extend_from_slice(&[p[0], p[1], p[2], 0xff]);
-        }
-    }
-    gone_harness::frame::decode_chip_rgba(&buf)
+    gone_harness::frame::decode_chip_from_rgb(rgb.as_raw(), 3, rgb.width(), rgb.height())
         .map_err(|e| RunnerError(format!("beat `{name}` frame-code decode: {e}")))
 }
 
@@ -275,7 +255,7 @@ fn run_scenario(
     write_or("scenario copy", &scenario_copy, &scenario_bytes)?;
 
     let mut child = spawn_app(
-        &root,
+        root,
         scenario_path,
         &run_dir,
         &app_hash,
@@ -283,15 +263,12 @@ fn run_scenario(
         &config_hash,
     )?;
     let status = wait_for_app(&mut child, DEFAULT_TIMEOUT, &scenario.name)?;
-
-    if !status.success() {
-        bail!(
-            "app exited nonzero ({status}) for scenario `{}`",
-            scenario.name
-        );
-    }
     disband_scenario(&run_dir, &scenario_bytes);
 
+    // The report is the app's own account of the run, including why it exited
+    // nonzero (a deadline with uncaptured beats, a failed capture save), so
+    // verify it first: a machine-check failure names the artifact. Only a run
+    // whose report fully verifies falls back to the bare exit-status error.
     let report_path = run_dir.join("report.json");
     let report_bytes = read_or("report", &report_path)?;
     let report_text = String::from_utf8_lossy(&report_bytes);
@@ -313,6 +290,13 @@ fn run_scenario(
     }
 
     verify_captures(scenario, &parsed, &run_dir)?;
+
+    if !status.success() {
+        bail!(
+            "app exited nonzero ({status}) for scenario `{}`",
+            scenario.name
+        );
+    }
 
     Ok(run_dir)
 }

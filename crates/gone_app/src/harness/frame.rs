@@ -283,6 +283,47 @@ mod tests {
         assert_eq!(decode_chip_from_rgb(&rgb, 3, w, h).expect("chip"), (77, 88));
     }
 
+    /// Paint one chip pixel with the opposite palette color (dark<->bright).
+    fn flip_pixel(rgba: &mut [u8], width: u32, px: u32, py: u32) {
+        let i = ((py * width + px) * 4) as usize;
+        let (r, g, b) = (rgba[i], rgba[i + 1], rgba[i + 2]);
+        let (nr, ng, nb) = if super::is_on(r, g, b) {
+            super::OFF_COLOR
+        } else {
+            super::ON_COLOR
+        };
+        rgba[i..i + 3].copy_from_slice(&[nr, ng, nb]);
+    }
+
+    #[test]
+    fn flipped_lattice_cell_is_rejected_by_both_decoders() {
+        // Mutation check: the decoder is not a rubber stamp. Flip one lattice
+        // cell of an encoded chip to the opposite palette color at a position
+        // no digit pattern survives; both decode paths must return Err,
+        // including the RGBA->RGB portability conversion the runner uses.
+        let (tick, frame) = (0u64, 0u64);
+        let (width, height) = super::chip_size();
+        let mut rgba = encode_chip_rgba(tick, frame);
+        assert_eq!(
+            decode_chip_rgba(&rgba).expect("unmutated chip decodes"),
+            (tick, frame)
+        );
+        // Pixel (0, 0) is digit 0's top-left lattice cell (on); paint it off.
+        flip_pixel(&mut rgba, width, 0, 0);
+        assert!(
+            decode_chip_rgba(&rgba).is_err(),
+            "a flipped lattice cell must not decode"
+        );
+        let mut rgb = Vec::with_capacity((width * height * 3) as usize);
+        for chunk in rgba.as_chunks::<4>().0 {
+            rgb.extend_from_slice(&[chunk[0], chunk[1], chunk[2]]);
+        }
+        assert!(
+            decode_chip_from_rgb(&rgb, 3, width, height).is_err(),
+            "a flipped lattice cell must not decode through the RGB path"
+        );
+    }
+
     #[test]
     fn tiny_generated_png_roundtrip() {
         // End-to-end through a real PNG decode: encode the chip, render a tiny

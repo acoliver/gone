@@ -1,15 +1,20 @@
 //! Bevy glue layer for the game `gone` (issue #6 slice A).
 //!
 //! Contract: this crate renders state owned by `gone_sim` and owns no simulation
-//! state. This slice is the harness bootstrap: a real window, a camera rendering an
-//! intentional empty scene, a loading/closed presentation until the renderer is ready,
-//! a harness input-adapter resource (only under `GONE_HARNESS=1`), frame-coded
-//! captures, a JSON report, and a clean self-exit when the scenario completes.
+//! state. This slice is the harness bootstrap: a real OS window, a camera
+//! rendering an intentional scene, a loading/closed presentation until the
+//! renderer has actually presented, a harness input-adapter resource (only under
+//! `GONE_HARNESS=1`), frame-coded captures taken from an offscreen render
+//! target, a JSON report, and a clean self-exit when the scenario completes.
 //!
 //! Gameplay internals stay crate-private; the only public harness surface is the
-//! `harness` protocol module (which `gone_harness` re-exports). Under harness mode
-//! the app uses its own runner so it never needs an OS window; the runner survives even
-//! where a window cannot open.
+//! `harness` protocol module (which `gone_harness` re-exports). In both modes the
+//! app is the normal winit app: the `WinitPlugin` runner owns the OS event loop,
+//! which is what opens the window and presents frames (issue #15). Harness-mode
+//! captures come from an offscreen render target, not the window swapchain:
+//! `Screenshot::primary_window()` returns a fully black image on this platform
+//! config (M4 Max / Bevy 0.19.1 / Metal), so the harness camera renders into a
+//! dedicated `Image` and captures read that back instead (see `bootstrap`).
 
 use std::path::PathBuf;
 
@@ -23,10 +28,11 @@ use bevy::window::{Window, WindowPlugin};
 pub mod harness;
 
 mod bootstrap;
+mod capture;
 
-/// Main entry (delegated by `src/main.rs`). The window is created by the plugin
-/// build; under harness mode the bootstrap plugin drives scenario execution and swaps
-/// in its own runner so no visible window is required.
+/// Main entry (delegated by `src/main.rs`). In both modes the app runs under the
+/// default winit runner; under harness mode the bootstrap plugin drives scenario
+/// execution and requests the exit when the scenario completes or fails.
 pub fn run() -> AppExit {
     let mut app = App::new();
     let primary = Window {
@@ -49,7 +55,6 @@ pub fn run() -> AppExit {
             out_dir,
             config_hash,
         ));
-        app.set_runner(harness_runner);
     } else {
         app.add_systems(bevy::app::Startup, setup_camera_scene);
     }
@@ -61,21 +66,6 @@ pub fn run() -> AppExit {
 fn setup_camera_scene(mut commands: Commands) {
     commands.spawn((Camera3d::default(), Transform::from_xyz(0.0, 0.5, 5.0)));
     commands.insert_resource(ClearColor(Color::srgb(0.02, 0.02, 0.02)));
-}
-
-/// The harness runner: initialize the app then update until the bootstrap requests an
-/// exit. No OS window is opened; the render sub-app runs from extraction each update,
-/// which is all the harness capture lane needs.
-fn harness_runner(mut app: App) -> AppExit {
-    app.finish();
-    app.cleanup();
-    loop {
-        app.update();
-        if let Some(exit) = app.should_exit() {
-            return exit;
-        }
-        std::thread::sleep(std::time::Duration::from_millis(1));
-    }
 }
 
 #[cfg(test)]

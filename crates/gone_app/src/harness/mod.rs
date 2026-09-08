@@ -26,4 +26,8 @@ pub use scenario::*;
 /// Shared protocol version. The app and the runner both embed this and refuse to
 /// pair across a mismatch, so a stale binary and a stale runner fail loudly
 /// instead of misreading each other's JSON.
-pub const PROTOCOL_VERSION: u32 = 1;
+///
+/// Version 2: captures are real rendered-window screenshots (the frame-code chip
+/// is a scene sprite), input events carry their edge (`Key(Forward) press`), and
+/// a `Failure` event records capture/report errors in the report itself.
+pub const PROTOCOL_VERSION: u32 = 2;

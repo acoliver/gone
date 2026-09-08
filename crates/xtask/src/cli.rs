@@ -207,7 +207,14 @@ fn run_harness_command(rest: &[String], root: &Path) -> Result<(), CommandFailed
 /// Locked build of the two binaries the runner drives.
 fn build_harness_binaries(root: &Path) -> Result<(), CommandFailed> {
     let plan = CommandPlan::new("cargo")
-        .args(["build", "--locked", "--bin", "gone_app", "--bin", "gone_harness"])
+        .args([
+            "build",
+            "--locked",
+            "--bin",
+            "gone_app",
+            "--bin",
+            "gone_harness",
+        ])
         .current_dir(root);
     run_announced(&plan)
 }

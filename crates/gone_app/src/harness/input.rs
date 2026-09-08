@@ -15,6 +15,7 @@
 //! Bevy.
 
 use std::collections::VecDeque;
+use std::fmt;
 
 /// A mouse button the adapter can press/release.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
@@ -59,6 +60,10 @@ pub enum Edge {
     Release,
 }
 
+/// The synthetic key name [`ButtonEdge::move_delta`] uses so movement and buttons
+/// share one exactly-once delivery stream.
+pub const MOVE_DELTA_MARKER: &str = "__move";
+
 /// A single buffered button edge delivered to exactly one fixed update.
 #[derive(Clone, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct ButtonEdge {
@@ -76,8 +81,45 @@ impl ButtonEdge {
     #[must_use]
     pub fn move_delta(_forward: f32, _strafe: f32) -> Self {
         Self {
-            button: Button::Key(Key::Other("__move".to_owned())),
+            button: Button::Key(Key::Other(MOVE_DELTA_MARKER.to_owned())),
             edge: Edge::Press,
+        }
+    }
+}
+
+/// Input events name their edge so opposite edges of one button are
+/// distinguishable in events, checkpoints, and compare streams.
+impl fmt::Display for ButtonEdge {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if self.button == Button::Key(Key::Other(MOVE_DELTA_MARKER.to_owned())) {
+            return write!(f, "move-delta");
+        }
+        write!(f, "{} {}", self.button, self.edge)
+    }
+}
+
+impl fmt::Display for Edge {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(self.word())
+    }
+}
+
+impl Edge {
+    /// The edge word used in event descriptions.
+    #[must_use]
+    pub const fn word(&self) -> &'static str {
+        match self {
+            Self::Press => "press",
+            Self::Release => "release",
+        }
+    }
+}
+
+impl fmt::Display for Button {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Key(key) => write!(f, "Key({key:?})"),
+            Self::Mouse(button) => write!(f, "Mouse({button:?})"),
         }
     }
 }
@@ -224,8 +266,10 @@ impl InputAdapter {
         self.actions.make_contiguous().sort_by_key(|a| a.tick);
     }
 
-    /// Force-reset to tick zero with the given action list (called by the app at
-    /// the readiness boundary).
+    /// Force-reset to tick zero with the given action list. Part of the protocol
+    /// surface for callers that need to restart a timeline; the app does not use
+    /// it — it builds the adapter at startup and never steps it before the
+    /// readiness boundary, so the clock simply starts at zero there.
     pub fn reset(&mut self, actions: Vec<ScriptedAction>) {
         *self = Self::with_actions(actions);
     }
@@ -341,10 +385,45 @@ impl ScriptedAction {
 
 #[cfg(test)]
 mod tests {
-    use super::{Action, Button, Delta, Edge, InputAdapter, Key, ScriptedAction};
+    use super::{
+        Action, Button, ButtonEdge, Delta, Edge, InputAdapter, Key, MouseButton, ScriptedAction,
+    };
 
     fn key(tick: u64, key: Key) -> ScriptedAction {
         ScriptedAction::press(tick, key)
+    }
+
+    fn edge(button: Button, edge: Edge) -> ButtonEdge {
+        ButtonEdge { button, edge }
+    }
+
+    #[test]
+    fn press_and_release_are_distinct_in_descriptions() {
+        // Regression: the old describe_edge rendered both edges as the bare
+        // button name, so `Key(Forward) press` and the release of the same key
+        // were indistinguishable in events and compare streams.
+        let press = edge(Button::Key(Key::Forward), Edge::Press).to_string();
+        let release = edge(Button::Key(Key::Forward), Edge::Release).to_string();
+        assert_eq!(press, "Key(Forward) press");
+        assert_eq!(release, "Key(Forward) release");
+        assert_ne!(press, release);
+    }
+
+    #[test]
+    fn mouse_and_other_key_buttons_name_their_edge() {
+        assert_eq!(
+            edge(Button::Mouse(MouseButton::Primary), Edge::Press).to_string(),
+            "Mouse(Primary) press"
+        );
+        assert_eq!(
+            edge(Button::Key(Key::Activate), Edge::Release).to_string(),
+            "Key(Activate) release"
+        );
+    }
+
+    #[test]
+    fn move_delta_edge_describes_itself() {
+        assert_eq!(ButtonEdge::move_delta(1.0, 0.0).to_string(), "move-delta");
     }
 
     #[test]

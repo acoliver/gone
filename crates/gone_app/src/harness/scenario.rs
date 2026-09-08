@@ -37,8 +37,10 @@ pub struct Scenario {
     /// Optional pacing variation for the determinism compare mode.
     #[serde(default)]
     pub pacing: Option<Pacing>,
-    /// Optional wait: if present the app may run this many *rendered frames* after
-    /// the last action at most before clean-closing.
+    /// Hard clean-close deadline in *rendered frames* (one per logical tick
+    /// after the readiness boundary): the run ends at this count at the
+    /// latest. Beats still uncaptured when the count reaches it are recorded
+    /// as missing and fail the run with a nonzero exit.
     #[serde(default = "default_max_frames")]
     pub max_frames: u64,
 }
