@@ -1,4 +1,5 @@
-//! Rust-aware tokenizer used by the clippy-allow policy (issue #4).
+//! Rust-aware tokenizer used by the clippy-allow policy (issue #4) and the
+//! harness protocol-surface policy (issue #5).
 //!
 //! Scans source text while skipping comments, string/char/raw-string
 //! literals, and lifetimes; tracks nested brackets inside attributes; then
@@ -42,6 +43,43 @@ pub fn scan_source(source: &str) -> Vec<String> {
         }
     }
     found
+}
+
+/// Return the source with comments and string/char/raw-string literals
+/// replaced by a single space, leaving every other character in place. The
+/// result is safe to token-scan: text that only *mentions* an identifier
+/// (in docs or literals) is gone, while real code paths survive verbatim.
+#[must_use]
+pub fn strip_comments_and_literals(source: &str) -> String {
+    let bytes: Vec<char> = source.chars().collect();
+    let len = bytes.len();
+    let mut index = 0usize;
+    let mut out = String::with_capacity(source.len());
+    while index < len {
+        if starts_with(&bytes, index, "//") {
+            out.push(' ');
+            index = skip_line_comment(&bytes, index);
+        } else if starts_with(&bytes, index, "/*") {
+            out.push(' ');
+            index = skip_block_comment(&bytes, index);
+        } else {
+            let raw_end = skip_raw_string(&bytes, index);
+            if raw_end != index {
+                out.push(' ');
+                index = raw_end;
+            } else if bytes[index] == '"' {
+                out.push(' ');
+                index = skip_string(&bytes, index);
+            } else if bytes[index] == '\'' {
+                out.push(' ');
+                index = skip_char_literal(&bytes, index);
+            } else {
+                out.push(bytes[index]);
+                index += 1;
+            }
+        }
+    }
+    out
 }
 
 /// Does `bytes[index..]` start with `needle`?
@@ -290,7 +328,7 @@ fn clippy_path_before_close(rest: &str) -> bool {
 }
 
 /// Is `b` a Rust identifier-continue byte (alphanumeric or `_`)?
-const fn is_ident_continue(b: u8) -> bool {
+pub(crate) const fn is_ident_continue(b: u8) -> bool {
     b.is_ascii_alphanumeric() || b == b'_'
 }
 
@@ -298,7 +336,7 @@ const fn is_ident_continue(b: u8) -> bool {
 /// blindness required by the clippy-allow policy.
 #[cfg(test)]
 mod tests {
-    use super::scan_source;
+    use super::{scan_source, strip_comments_and_literals};
 
     fn flagged(source: &str) -> bool {
         !scan_source(source).is_empty()
@@ -387,5 +425,34 @@ mod tests {
         // An allow of a non-clippy tool lint whose path merely contains the
         // word clippy must not trigger.
         assert!(!flagged("#[allow(my_clippy::fake)]\nfn f() {}\n"));
+    }
+
+    #[test]
+    fn strip_keeps_code_and_drops_comment_and_literal_mentions() {
+        let source = "// gone_sim\nuse gone_sim::World; /* gone_sim */\n\
+                      const S: &str = \"gone_sim\";\n\
+                      const R: &str = r#\"gone_sim\"#;\n\
+                      fn f() {}\n";
+        let stripped = strip_comments_and_literals(source);
+        assert!(stripped.contains("use gone_sim::World;"));
+        assert!(stripped.contains("fn f() {}"));
+        assert_eq!(stripped.matches("gone_sim").count(), 1);
+    }
+
+    #[test]
+    fn strip_handles_nested_block_comments_and_char_literals() {
+        let source = "/* /* gone_sim */ still comment */\n\
+                      const C: char = '\\'';\n\
+                      const S: &str = \"gone_sim\";\n\
+                      fn f() {}\n";
+        let stripped = strip_comments_and_literals(source);
+        assert_eq!(stripped.matches("gone_sim").count(), 0);
+        assert!(stripped.contains("fn f() {}"));
+    }
+
+    #[test]
+    fn strip_consumes_only_the_lifetime_quote() {
+        let stripped = strip_comments_and_literals("fn g<'a>(x: &'a str) {}");
+        assert_eq!(stripped, "fn g< a>(x: & a str) {}");
     }
 }

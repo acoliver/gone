@@ -1,4 +1,4 @@
-//! xtask command-line surface and dispatch (issue #4).
+//! xtask command-line surface and dispatch (issue #4, harness wired in issue #5).
 //!
 //! One entry point: `cargo xtask <command>`. Argument parsing is hand-rolled
 //! over the standard library. Every cargo-backed step is a `CommandPlan`
@@ -19,7 +19,10 @@ const WINDOWS_TARGET: &str = "x86_64-pc-windows-msvc";
 /// Cross-target that must keep compiling for Linux players.
 const LINUX_TARGET: &str = "x86_64-unknown-linux-gnu";
 
-/// The aggregate `ci` ordering (fail-fast sequence, issue #4).
+/// The aggregate `ci` ordering (fail-fast sequence, issue #4). The render
+/// canary runs immediately after the harness smoke step: the smoke run
+/// exercises the headless default (no window), the render-check step is the
+/// one windowed test.
 const CI_STEPS: &[&str] = &[
     "fmt",
     "check-clippy-allows",
@@ -32,6 +35,7 @@ const CI_STEPS: &[&str] = &[
     "cross-check-windows",
     "cross-check-linux",
     "harness",
+    "render-check",
 ];
 
 /// Fast iteration: everything local, no cross-targets, no harness.
@@ -47,10 +51,6 @@ const QUICK_STEPS: &[&str] = &[
 
 /// The xtask exit code for a missing or malformed invocation.
 const EXIT_USAGE: u8 = 2;
-
-/// The message the harness step prints until the real runner lands with
-/// issue #5.
-const HARNESS_UNAVAILABLE: &str = "harness not yet available (issue #5)";
 
 /// Run the xtask CLI over `argv` (without the program name) and return the
 /// process exit code.
@@ -69,7 +69,7 @@ pub fn run(argv: &[String]) -> ExitCode {
         "complexity" => with_root(|root| run_announced(&complexity_plan(root))),
         "build" => with_root(|root| run_announced(&build_plan(root))),
         "test" => with_root(|root| run_announced(&test_plan(root))),
-        "harness" => run_harness(),
+        "harness" => with_root(|root| run_harness_command(rest, root)),
         "check" => with_root(|root| run_check(rest, root)),
         "help" | "--help" | "-h" => {
             usage();
@@ -89,17 +89,21 @@ fn usage() {
         "usage: cargo xtask <command>
 
 commands:
-  ci                   full local CI gate (fail-fast; harness step fails until issue #5)
+  ci                   full local CI gate (fail-fast; the harness steps run smoke, then the render canary)
   quick                fmt, the three policy checks, clippy, locked build + test
   fmt                  cargo fmt --all --check
   lint                 strict clippy (warnings as errors)
   complexity           clippy with the complexity-threshold lints surfaced alone
   build                locked workspace build
   test                 locked workspace test
+  harness smoke        build gone_app + gone_harness (locked) and run the smoke scenario
+  harness <scenario>   run one scenario file (builds both binaries first)
+  harness compare <s>   run a scenario twice and diff the event timelines
+  harness perf [s]     run the perf calibration lane against the checked-in policy
+  harness render-check  run the render canary: smoke scenario windowed, the one onscreen capture machine-verified
   check clippy-allows  zero clippy allow/expect suppressions + clippy.toml sync
   check source-size    per-file line gate (warn 750, fail 1000)
-  check architecture   gone_sim dependency boundary gate
-  harness              play-test harness runner (arrives with issue #5)"
+  check architecture   gone_sim/gone_harness dependency + protocol-module boundary gate"
     );
 }
 
@@ -147,7 +151,8 @@ fn run_named_step(step: &str, root: &Path) -> Result<(), CommandFailed> {
         "test" => run_announced(&test_plan(root)),
         "cross-check-windows" => run_announced(&cross_check_plan(root, WINDOWS_TARGET)),
         "cross-check-linux" => run_announced(&cross_check_plan(root, LINUX_TARGET)),
-        "harness" => run_harness(),
+        "harness" => run_harness_command(&[], root),
+        "render-check" => run_harness_command(&["render-check".to_string()], root),
         unknown => Err(CommandFailed {
             program: "xtask".into(),
             args: vec![unknown.into()],
@@ -173,17 +178,71 @@ fn named_failure(label: &str, step: &str, err: &CommandFailed) -> CommandFailed 
     }
 }
 
-/// Placeholder until issue #5 delivers the real runner: names itself and
-/// fails loudly instead of pretending to pass.
-fn run_harness() -> Result<(), CommandFailed> {
-    eprintln!("{HARNESS_UNAVAILABLE}");
-    Err(CommandFailed {
-        program: "xtask".into(),
-        args: vec!["harness".into()],
-        status: Some(1),
-        stdout: Vec::new(),
-        stderr: HARNESS_UNAVAILABLE.as_bytes().to_vec(),
-    })
+/// `harness smoke` builds the two binaries (locked) and runs the smoke scenario;
+/// `harness <scenario-path>` runs one scenario; `harness compare <scenario>`
+/// builds once then runs the scenario twice and diffs the timelines;
+/// `harness perf [scenario]` runs the perf calibration lane against the
+/// checked-in policy (default scenario derived from the policy);
+/// `harness render-check` runs the smoke scenario through the canary lane
+/// (the runner's `--render-check`: windowed, onscreen capture machine-verified,
+/// run dir prefixed `rc`). The runner owns the child app's lifecycle (spawn,
+/// kill-on-timeout, reap), so xtask just forwards the exit code.
+fn run_harness_command(rest: &[String], root: &Path) -> Result<(), CommandFailed> {
+    build_harness_binaries(root)?;
+    let mut plan = CommandPlan::new("cargo")
+        .args(["run", "-p", "gone_harness", "--bin", "gone_harness", "--"])
+        .current_dir(root);
+    match rest {
+        [] => {
+            plan = plan.args(["smoke"]);
+        }
+        [cmd] if cmd == "render-check" => {
+            plan = plan.args(["--render-check", "smoke"]);
+        }
+        [cmd, ..] if cmd == "render-check" => {
+            return Err(usage_error(
+                "harness",
+                "render-check takes no scenario (it runs the smoke scenario in the canary lane)",
+            ));
+        }
+        [cmd, scenario] if cmd == "compare" => {
+            plan = plan.args(["compare", scenario]);
+        }
+        [cmd, ..] if cmd == "compare" => {
+            return Err(usage_error(
+                "harness",
+                "too many arguments for `compare <scenario>`",
+            ));
+        }
+        [cmd] if cmd == "smoke" => {
+            plan = plan.args(["smoke"]);
+        }
+        [cmd] if cmd == "perf" => {
+            plan = plan.args(["perf"]);
+        }
+        [cmd, scenario] if cmd == "perf" => {
+            plan = plan.args(["perf", scenario]);
+        }
+        [path, ..] => {
+            plan = plan.args([path]);
+        }
+    }
+    run_announced(&plan)
+}
+
+/// Locked build of the two binaries the runner drives.
+fn build_harness_binaries(root: &Path) -> Result<(), CommandFailed> {
+    let plan = CommandPlan::new("cargo")
+        .args([
+            "build",
+            "--locked",
+            "--bin",
+            "gone_app",
+            "--bin",
+            "gone_harness",
+        ])
+        .current_dir(root);
+    run_announced(&plan)
 }
 
 fn run_check(rest: &[String], root: &Path) -> Result<(), CommandFailed> {
@@ -324,12 +383,25 @@ mod tests {
     }
 
     #[test]
-    fn ci_is_fail_fast_ending_at_harness() {
-        assert_eq!(*CI_STEPS.last().expect("nonempty"), "harness");
+    fn ci_is_fail_fast_ending_at_the_render_canary() {
+        assert_eq!(*CI_STEPS.last().expect("nonempty"), "render-check");
         assert_eq!(
             CI_STEPS.first().copied(),
             Some("fmt"),
             "fmt must run before every policy step"
+        );
+    }
+
+    #[test]
+    fn ci_render_check_runs_immediately_after_the_smoke_step() {
+        let harness_pos = CI_STEPS
+            .iter()
+            .position(|s| *s == "harness")
+            .expect("harness step");
+        assert_eq!(
+            CI_STEPS.get(harness_pos + 1),
+            Some(&"render-check"),
+            "the render canary is its own step, directly after smoke"
         );
     }
 
@@ -364,12 +436,13 @@ mod tests {
     }
 
     #[test]
-    fn quick_is_ci_without_complexity_cross_targets_and_harness() {
+    fn quick_is_ci_without_complexity_cross_targets_and_harness_lanes() {
         let excluded = [
             "complexity",
             "cross-check-windows",
             "cross-check-linux",
             "harness",
+            "render-check",
         ];
         for step in QUICK_STEPS {
             assert!(!excluded.contains(step), "{step} must not run under quick");

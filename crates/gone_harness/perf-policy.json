@@ -1,0 +1,11 @@
+{
+  "policy_version": "calibration-v1",
+  "warmup_frames": 120,
+  "sample_frames": 600,
+  "presentation": "Uncapped",
+  "camera_route": "static: the harness Camera2d on the bootstrap calibration scene (dark clear plus the frame-code chip sprite); no scripted motion, none faked",
+  "concurrent_effects": "none: nothing runs concurrent with the sampled frames in the calibration scene",
+  "resolution": { "width": 1920, "height": 1080 },
+  "statistics": ["Count", "MeanMs", "MinMs", "MaxMs", "P50Ms", "P95Ms", "P99Ms"],
+  "thresholds": { "mean_ms_max": 25.0, "p95_ms_max": 50.0 }
+}
