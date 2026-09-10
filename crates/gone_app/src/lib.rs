@@ -12,7 +12,9 @@
 //! `GONE_RENDER_CHECK=1` selects the canary: the real window opens (unfocused,
 //! so it never steals the foreground) and presents the scene through a second
 //! camera, and one onscreen capture is saved beside the first beat's PNG.
-//! Without `GONE_HARNESS` the app is the plain winit windowed game, unchanged.
+//! Without `GONE_HARNESS` the app is the windowed game: the player rig with
+//! first-person mouse look (`player`) and the explicit post chain (`post`,
+//! `AgX` tonemapping, center-weighted auto exposure, vignette).
 //!
 //! Gameplay internals stay crate-private; the only public harness surface is the
 //! `harness` protocol module (which `gone_harness` re-exports). Harness-mode
@@ -25,10 +27,7 @@
 
 use std::path::{Path, PathBuf};
 
-use bevy::app::{App, AppExit, PluginGroup, PluginGroupBuilder, ScheduleRunnerPlugin, Startup};
-use bevy::camera::ClearColor;
-use bevy::color::Color;
-use bevy::prelude::{Camera3d, Commands, Transform};
+use bevy::app::{App, AppExit, PluginGroup, PluginGroupBuilder, ScheduleRunnerPlugin};
 use bevy::window::{ExitCondition, PresentMode, Window, WindowPlugin};
 use bevy::winit::{WinitPlugin, WinitSettings};
 
@@ -40,6 +39,8 @@ pub mod harness;
 
 mod bootstrap;
 mod capture;
+mod player;
+mod post;
 
 /// Main entry (delegated by `src/main.rs`). The run mode comes from the
 /// environment (`GONE_HARNESS`, `GONE_RENDER_CHECK`); harness modes load the
@@ -54,6 +55,7 @@ mod capture;
 /// harness mode without `GONE_SCENARIO` (the runner always sets it), and on an
 /// unreadable or invalid scenario: a child that cannot load its scenario is a
 /// failed run either way.
+#[must_use = "the AppExit carries the process exit status; dropping it loses the run's verdict"]
 pub fn run() -> AppExit {
     let run_mode = bootstrap::select_run_mode(
         std::env::var("GONE_HARNESS").ok().as_deref(),
@@ -67,7 +69,10 @@ pub fn run() -> AppExit {
                 primary_window: Some(game_window()),
                 ..Default::default()
             }));
-            app.add_systems(Startup, setup_camera_scene);
+            // The game's own features (issue #6 slice B): the explicit post
+            // chain first (it provides the metering-mask resource the rig
+            // camera consumes), then first-person look (it spawns the rig).
+            app.add_plugins((post::GamePostChainPlugin, player::PlayerLookPlugin));
         }
         RunMode::Headless => {
             app.add_plugins(headless_plugins());
@@ -161,13 +166,6 @@ fn load_scenario(path: &Path) -> Scenario {
     let text = std::fs::read_to_string(path)
         .unwrap_or_else(|e| panic!("cannot read scenario {}: {e}", path.display()));
     crate::harness::scenario::parse_scenario(&text).unwrap_or_else(|e| panic!("bad scenario: {e}"))
-}
-
-/// The non-harness app is a plain window with the intentional empty scene: one
-/// camera and a dark clear color (the loading/closed presentation).
-fn setup_camera_scene(mut commands: Commands) {
-    commands.spawn((Camera3d::default(), Transform::from_xyz(0.0, 0.5, 5.0)));
-    commands.insert_resource(ClearColor(Color::srgb(0.02, 0.02, 0.02)));
 }
 
 #[cfg(test)]
