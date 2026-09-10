@@ -1,0 +1,47 @@
+[workspace]
+resolver = "3"
+members = [
+    "crates/gone_app",
+    "crates/gone_harness",
+    "crates/gone_sim",
+    "crates/xtask",
+]
+
+# Shared metadata inherited by every member via `X.workspace = true`.
+[workspace.package]
+edition = "2024"
+rust-version = "1.96"
+license = "LicenseRef-Proprietary"
+repository = "https://github.com/acoliver/gone"
+
+# unsafe is banned everywhere in this repo, not merely discouraged.
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+# Pedantic is the floor. The named denies pin down per-function and
+# per-structure limits that a group threshold does not enable, or that only
+# run at warn level by default, so each is denied by name.
+[workspace.lints.clippy]
+pedantic = "deny"
+cognitive_complexity = "deny"
+too_many_lines = "deny"
+too_many_arguments = "deny"
+type_complexity = "deny"
+struct_excessive_bools = "deny"
+
+# Keep dev iteration fast: dependencies compile with light optimization while
+# workspace code stays unoptimized for the fastest possible rebuilds.
+[profile.dev.package."*"]
+opt-level = 1
+
+# Disables incremental for dev builds; policy rationale lives in
+# .cargo/config.toml. Note: an exported CARGO_INCREMENTAL value outranks this
+# profile field, and no repo-side config can change that on cargo 1.98.
+[profile.dev]
+incremental = false
+
+# Shipping builds get size and runtime wins from LTO; thin keeps link times
+# sane for a Bevy-scale dependency tree.
+[profile.release]
+lto = "thin"
+codegen-units = 1

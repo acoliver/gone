@@ -1,0 +1,13 @@
+# Policy: incremental compilation is off for this workspace. Its artifacts
+# grow target/ without repaying the cost in rebuild speed for this workload.
+# [profile.dev] incremental = false in the workspace root enforces that for
+# normal builds; the pin below additionally exports CARGO_INCREMENTAL="0" to
+# every process cargo spawns (build scripts, rustc, tool wrappers), and
+# `force = true` stops an exported CARGO_INCREMENTAL=1 from leaking into them.
+#
+# Known limitation, verified on cargo 1.98.0: cargo reads its own
+# CARGO_INCREMENTAL environment value directly and never applies this [env]
+# table to itself, so a caller who exports CARGO_INCREMENTAL=1 still re-enables
+# incremental despite `force = true`. No repo-side config can defeat that.
+[env]
+CARGO_INCREMENTAL = { value = "0", force = true }
