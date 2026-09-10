@@ -44,25 +44,22 @@ use bevy::ecs::schedule::IntoScheduleConfigs;
 use bevy::input::ButtonInput;
 use bevy::input::keyboard::KeyCode;
 use bevy::input::mouse::AccumulatedMouseMotion;
-use bevy::math::{Quat, Vec2, Vec3};
+use bevy::math::{Quat, Vec2};
 use bevy::prelude::Camera3d;
 use bevy::transform::components::Transform;
 use bevy::window::{CursorGrabMode, CursorOptions, Window, WindowFocused};
 
 use crate::post::{PostChainAssets, camera_post_components};
+use crate::scene::PlayerSpawn;
 
 /// Look rotation per mouse pixel, in radians (≈0.126°/px). Constant by
 /// design: the same pixel delta always produces the same rotation.
 const LOOK_SENSITIVITY: f32 = 0.0022;
 
 /// Pitch hard stop in each direction, just short of the vertical so the view
-/// can never flip through the pole.
-const PITCH_LIMIT: f32 = 89.0_f32.to_radians();
-
-/// The rig spawn point: the eye position for this slice. The walkable capsule
-/// and its ground offset arrive with the movement milestone; until then the
-/// yaw parent carries the eye point directly.
-const SPAWN_POS: Vec3 = Vec3::new(0.0, 0.5, 5.0);
+/// can never flip through the pole. The scene reads it for the authored
+/// spawn pitch (one stop short of the same vertical).
+pub(crate) const PITCH_LIMIT: f32 = 89.0_f32.to_radians();
 
 /// Marks the rig's yaw parent (horizontal look only).
 #[derive(Component)]
@@ -96,25 +93,42 @@ impl Plugin for PlayerLookPlugin {
 }
 
 /// Spawn the player rig (yaw parent, pitch camera child) and the game's clear
-/// color.
+/// color, at the authored spawn pose (`scene::PlayerSpawn`, derived from the
+/// pod registry): lying in the player pod, aimed up at the ceiling.
 ///
 /// # Panics
 /// Panics without the [`PostChainAssets`] resource: the rig's camera needs
 /// the post-chain components, so a missing resource is a wiring error, not a
-/// degraded mode.
-fn setup_player_rig(mut commands: Commands, masks: Option<Res<PostChainAssets>>) {
+/// degraded mode. Panics symmetrically without the [`PlayerSpawn`] resource:
+/// the rig needs its authored spawn, and game mode always provides both.
+fn setup_player_rig(
+    mut commands: Commands,
+    masks: Option<Res<PostChainAssets>>,
+    spawn: Option<Res<PlayerSpawn>>,
+    mut angles: ResMut<LookAngles>,
+) {
     let masks = masks
         .expect("PlayerLookPlugin requires PostChainAssets (GamePostChainPlugin provides it)")
         .into_inner();
+    let pose = spawn
+        .expect("PlayerLookPlugin requires PlayerSpawn (StasisScenePlugin provides it)")
+        .into_inner()
+        .pose;
+    // The look angles are the single source of truth and the rig transforms
+    // are projections of them, so the authored pose enters through the
+    // angles, not by writing the transforms alone.
+    angles.yaw = pose.yaw_radians;
+    angles.pitch = pose.pitch_radians;
     let camera_bundle = (
         Camera3d::default(),
-        Transform::IDENTITY,
+        Transform::from_rotation(Quat::from_rotation_x(pose.pitch_radians)),
         camera_post_components(masks.metering_mask.clone()),
     );
     commands
         .spawn((
             PlayerYaw,
-            Transform::from_translation(SPAWN_POS),
+            Transform::from_translation(pose.eye)
+                .with_rotation(Quat::from_rotation_y(pose.yaw_radians)),
             // The camera child inherits visibility (Camera3d requires it);
             // carrying it on the parent too keeps the propagation chain
             // consistent (bevy warning B0004).
@@ -253,8 +267,9 @@ fn wrap_angle(angle: f32) -> f32 {
 mod tests {
     use super::{
         CursorTarget, LOOK_SENSITIVITY, LookAngles, PITCH_LIMIT, PlayerLookPlugin, PlayerPitch,
-        PlayerYaw, SPAWN_POS, apply_cursor_target, integrate_look, wrap_angle,
+        PlayerYaw, apply_cursor_target, integrate_look, wrap_angle,
     };
+    use crate::scene::{PlayerSpawn, PlayerSpawnPose};
     use bevy::app::{App, TaskPoolPlugin};
     use bevy::asset::AssetPlugin;
     use bevy::camera::Hdr;
@@ -359,6 +374,19 @@ mod tests {
         apply_cursor_target(CursorTarget::Release, &mut cursor);
     }
 
+    /// The authored spawn the test apps insert in place of the scene plugin:
+    /// a distinct, non-identity pose, so every assertion below proves the rig
+    /// actually consumes the resource instead of any local default.
+    fn test_spawn() -> PlayerSpawn {
+        PlayerSpawn {
+            pose: PlayerSpawnPose {
+                eye: bevy::math::Vec3::new(1.5, 0.62, -3.0),
+                yaw_radians: 0.7,
+                pitch_radians: 1.2,
+            },
+        }
+    }
+
     /// A test app with both game plugins built for real: the post-chain
     /// plugin loads its asset handle, the look plugin spawns the rig, and the
     /// camera carries the whole configured chain. The input resources and the
@@ -375,7 +403,8 @@ mod tests {
         ));
         app.add_message::<WindowFocused>()
             .init_resource::<ButtonInput<KeyCode>>()
-            .init_resource::<AccumulatedMouseMotion>();
+            .init_resource::<AccumulatedMouseMotion>()
+            .insert_resource(test_spawn());
         app.add_plugins((GamePostChainPlugin, PlayerLookPlugin));
         app
     }
@@ -416,6 +445,33 @@ mod tests {
         );
     }
 
+    /// The rig spawns exactly at the authored pose: eye point and yaw on the
+    /// parent, pitch on the camera child, and the look angles seeded so the
+    /// transforms stay projections of the resource from frame one.
+    #[test]
+    fn rig_spawns_at_the_authored_spawn_pose() {
+        let mut app = game_app();
+        app.update();
+        let pose = test_spawn().pose;
+        let mut yaws = app
+            .world_mut()
+            .query_filtered::<&Transform, With<PlayerYaw>>();
+        let yaw = *yaws.single(app.world()).expect("yaw parent");
+        let mut pitches = app
+            .world_mut()
+            .query_filtered::<&Transform, With<PlayerPitch>>();
+        let pitch = *pitches.single(app.world()).expect("pitch camera");
+        assert_eq!(yaw.translation, pose.eye);
+        assert_eq!(yaw.rotation, Quat::from_rotation_y(pose.yaw_radians));
+        assert_eq!(pitch.translation, bevy::math::Vec3::ZERO);
+        assert_eq!(pitch.rotation, Quat::from_rotation_x(pose.pitch_radians));
+        let angles = app.world().resource::<LookAngles>();
+        // The angles carry the pose bit-for-bit (copied, never integrated);
+        // expressed as a distance because exact float equality is banned.
+        assert!((angles.yaw - pose.yaw_radians).abs() < f32::EPSILON);
+        assert!((angles.pitch - pose.pitch_radians).abs() < f32::EPSILON);
+    }
+
     #[test]
     fn look_writes_rotation_and_never_translation() {
         let mut app = game_app();
@@ -432,6 +488,7 @@ mod tests {
             delta: Vec2::new(120.0, -40.0),
         });
         app.update();
+        let pose = test_spawn().pose;
         let mut yaws = app
             .world_mut()
             .query_filtered::<&Transform, With<PlayerYaw>>();
@@ -442,17 +499,17 @@ mod tests {
         let pitch = *pitches.single(app.world()).expect("pitch camera");
         // Translation is untouched: the rig stays at its spawn eye point and
         // the camera child at its local origin.
-        assert_eq!(yaw.translation, SPAWN_POS);
+        assert_eq!(yaw.translation, pose.eye);
         assert_eq!(pitch.translation, bevy::math::Vec3::ZERO);
-        // The rotations are exactly the pure-integration projection.
-        assert_eq!(
-            yaw.rotation,
-            Quat::from_rotation_y(-120.0 * LOOK_SENSITIVITY)
+        // The rotations are exactly the pure-integration projection from the
+        // seeded pose angles.
+        let (expected_yaw, expected_pitch) = integrate_look(
+            pose.yaw_radians,
+            pose.pitch_radians,
+            Vec2::new(120.0, -40.0),
         );
-        assert_eq!(
-            pitch.rotation,
-            Quat::from_rotation_x(40.0 * LOOK_SENSITIVITY)
-        );
+        assert_eq!(yaw.rotation, Quat::from_rotation_y(expected_yaw));
+        assert_eq!(pitch.rotation, Quat::from_rotation_x(expected_pitch));
     }
 
     #[test]
@@ -481,8 +538,12 @@ mod tests {
         });
         app.update();
         let angles = app.world().resource::<LookAngles>();
-        // Never captured, so never integrated: the angles are still zero.
-        assert!(angles.yaw.abs() < f32::EPSILON);
-        assert!(angles.pitch.abs() < f32::EPSILON);
+        // Never captured, so never integrated: the angles still hold the
+        // seeded authored pose.
+        let pose = test_spawn().pose;
+        // The angles carry the pose bit-for-bit (copied, never integrated);
+        // expressed as a distance because exact float equality is banned.
+        assert!((angles.yaw - pose.yaw_radians).abs() < f32::EPSILON);
+        assert!((angles.pitch - pose.pitch_radians).abs() < f32::EPSILON);
     }
 }

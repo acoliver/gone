@@ -27,9 +27,15 @@ repository.workspace = true
 #   the LUT textures; specializing an AgX pipeline without them panics),
 #   zstd_rust (pure-Rust zstd decoder for the LUT ktx2 files, bevy's own
 #   choice in its 3d feature; avoids the C zstd toolchain)
-# Everything else (audio, bevy_gilrs/gamepad, bevy_ui, pbr/gltf, picking,
-# bevy_material/bevy_mesh) stays off: the slice-A scene is one unlit sprite, so
-# no PBR material pipeline is compiled.
+#   bevy_mesh, bevy_pbr, bevy_light (issue #7 stage A: the stasis room
+#   greybox is meshes from primitives with StandardMaterial and point
+#   lights; bevy_mesh registers Mesh and the primitive builders, bevy_pbr
+#   StandardMaterial and the PBR render pass, bevy_light the light types and
+#   LightPlugin; bevy_pbr already turns bevy_light on, listed explicitly
+#   because the scene names bevy::light directly)
+# Everything else (audio, bevy_gilrs/gamepad, bevy_ui, gltf, picking,
+# bevy_material) stays off: the scenes are unlit sprites and greybox
+# primitives, so no asset pipeline or picking backend is compiled.
 #
 # The protocol types (scenario, report, input adapter, frame-code) live in THIS crate's
 # public `harness` module; `gone_harness` re-exports them. The app reads the
@@ -71,6 +77,9 @@ features = [
     "tonemapping_luts",
     "zstd_rust",
     "png",
+    "bevy_mesh",
+    "bevy_pbr",
+    "bevy_light",
 ]
 
 [lints]

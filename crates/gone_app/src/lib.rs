@@ -15,9 +15,11 @@
 //! winit exposes no order-in-without-activation or de-focus API) and presents
 //! the scene through a second camera, and one onscreen capture is saved beside
 //! the first beat's PNG.
-//! Without `GONE_HARNESS` the app is the windowed game: the player rig with
-//! first-person mouse look (`player`) and the explicit post chain (`post`,
-//! `AgX` tonemapping, center-weighted auto exposure, vignette).
+//! Without `GONE_HARNESS` the app is the windowed game: the stasis room
+//! greybox (`scene`, built from the `gone_sim` pod registry, game mode only),
+//! the player rig with first-person mouse look (`player`) and the explicit
+//! post chain (`post`, `AgX` tonemapping, center-weighted auto exposure,
+//! vignette).
 //!
 //! Gameplay internals stay crate-private; the only public harness surface is the
 //! `harness` protocol module (which `gone_harness` re-exports). Harness-mode
@@ -44,6 +46,7 @@ mod bootstrap;
 mod capture;
 mod player;
 mod post;
+mod scene;
 
 /// Main entry (delegated by `src/main.rs`). The run mode comes from the
 /// environment (`GONE_HARNESS`, `GONE_RENDER_CHECK`); harness modes load the
@@ -72,10 +75,17 @@ pub fn run() -> AppExit {
                 primary_window: Some(game_window()),
                 ..Default::default()
             }));
-            // The game's own features (issue #6 slice B): the explicit post
-            // chain first (it provides the metering-mask resource the rig
-            // camera consumes), then first-person look (it spawns the rig).
-            app.add_plugins((post::GamePostChainPlugin, player::PlayerLookPlugin));
+            // The game's own features (issue #6 slice B, issue #7 stage A):
+            // the explicit post chain first (it provides the metering-mask
+            // resource the rig camera consumes), then the stasis room scene
+            // (it inserts the sim contract resources and the authored player
+            // spawn the rig consumes), then first-person look (it spawns the
+            // rig).
+            app.add_plugins((
+                post::GamePostChainPlugin,
+                scene::StasisScenePlugin,
+                player::PlayerLookPlugin,
+            ));
         }
         RunMode::Headless => {
             app.add_plugins(headless_plugins());
