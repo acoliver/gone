@@ -15,16 +15,19 @@ the frame-code chip is a sprite rendered into the scene, input events carry
 their press/release edge, and capture failures are recorded as `Failure` events.
 Version 3 adds the performance lane: scenarios gain a `mode` (capture or perf)
 with warmup/sample window counts, reports gain the optional `perf` section, and
-the scenario `pacing` field is consumed at window creation.
+the scenario `pacing` field is consumed at window creation (canary runs; a
+headless run has no window, so pacing is inert there).
 
 ## Two crates, one boundary
 
 - `gone_app` (Bevy 0.19) owns the protocol: `crates/gone_app/src/harness/{scenario,input,beat,frame,report,perf,mod}.rs`.
-  It reads a scenario, opens a real window, runs the fixed timeline, captures
-  screenshots, writes the report, and exits by itself. The app-side lane lives
+  It reads a scenario, runs the fixed timeline (headless by default; a real
+  unfocused window in the render canary), captures screenshots, writes the
+  report, and exits by itself. The app-side lane lives
   in `crates/gone_app/src/bootstrap/`: `mod.rs` is the plugin plus the ECS
   systems and capture I/O, `state.rs` is the run-state ledger (counters, beat
-  ledgers, readiness gate, failure recording, perf sampler), and `tests.rs`
+  ledgers, readiness gate, failure recording, perf sampler, run mode), and
+  `tests.rs`
   pins the accounting and readiness regressions.
 - `gone_harness` (no Bevy) is the runner: `crates/gone_harness/src/bin/gone_harness.rs`.
   It hashes the build and scenario, spawns the app, waits for it, decodes the
@@ -43,28 +46,41 @@ The runner spawns `target/debug/gone_app` (the binary it was built with) with:
 - `GONE_APP_HASH=<sha256>` (of the app binary bytes; the report echoes it back).
 - `GONE_SCENARIO_HASH=<sha256>` (of the scenario file bytes; echoed back).
 - `GONE_CONFIG_HASH=<sha256>` (the runner's config string; echoed back).
+- `GONE_RENDER_CHECK=1` (canary runs only, set by the runner's
+  `--render-check` flag: the app opens the unfocused window and saves the one
+  onscreen capture at the first beat).
 
 All three hashes are real SHA-256 computed runner-side from the bytes it actually
 spawned and passed; the app echoes them back verbatim.
 
-The app runs as the normal winit app: `WinitPlugin` owns the OS event loop,
-which is what opens the 1920x1080 window (scale factor forced to 1.0 so logical
-pixels equal physical pixels) and presents frames. The window is presentation
-only; captures never come from its swapchain (see the capture lane section for
-why). There is no manual update loop anywhere in the harness path. The runner
-owns the child lifecycle (`try_wait` poll on a 10ms cadence, `DEFAULT_TIMEOUT`
+By default the app runs headless: `WinitPlugin` is disabled, no window is
+created, and the schedule runner spins updates. With `GONE_RENDER_CHECK=1` the
+app runs the canary lane: `WinitPlugin` owns the OS event loop and opens the
+1920x1080 window (scale factor forced to 1.0 so logical pixels equal physical
+pixels, `focused: false` so the run never takes the foreground). See the
+capture lane section for the two-mode contract. There is no manual update loop
+anywhere in the harness path. The runner owns the child lifecycle (the same in
+both modes: `try_wait` poll on a 10ms cadence, `DEFAULT_TIMEOUT`
 60 seconds), and on drop (including error paths) it SIGKILLs and `wait`s so no
 `gone_app` is orphaned. On macOS killing the child pid is sufficient; Windows
 kill-tree is deferred to stage B.
 
-## Capture lane (offscreen render target)
+## Capture lane (two modes: headless offscreen, plus the render canary)
 
-The harness camera renders into a dedicated offscreen `Image` render target
+Harness runs have a run mode (`RunMode` in the app's bootstrap state, derived
+from the environment; unknown values panic at launch naming the variable).
+
+The default harness run is headless: no window exists at all (`WinitPlugin`
+disabled, `ExitCondition::DontExit` so a windowless app does not exit
+immediately, `ScheduleRunnerPlugin` spinning updates). The harness camera
+renders into a dedicated offscreen `Image` render target
 (`RenderTarget::Image` on the `Camera2d`), created at startup as a 1920x1080
 `Bgra8UnormSrgb` texture with `RENDER_ATTACHMENT | TEXTURE_BINDING` usage. Every
 capture of the run is a bevy `Screenshot::image(target_handle)`: the render
 graph blits the camera's frame into a readback buffer and hands the mapped
-`Image` to the app's `ScreenshotCaptured` observer.
+`Image` to the app's `ScreenshotCaptured` observer. The offscreen captures are
+the single source of truth for readiness and beat decode, and the majority of
+runs need nothing else.
 
 The harness never captures from the window swapchain. `Screenshot::
 primary_window()` works on this machine when the bevy feature set is correct:
@@ -77,18 +93,44 @@ usage error from the same probe: a texture created with
 `RenderAssetUsages::MAIN_WORLD` alone never appears in a capture; textures
 need `MAIN_WORLD | RENDER_WORLD` (`RenderAssetUsages::default()`).
 
-The harness keeps the offscreen Image capture lane for two real reasons: its
+Headless runs keep the offscreen Image capture lane for two real reasons:
 captures are exactly 1920x1080 regardless of window scale or DPI overrides,
-and capture timing is decoupled from the swapchain and present. The OS window
-presents nothing during harness runs because the only harness camera renders
-into the Image; switching captures to `Screenshot::primary_window()` is a
-possible future simplification. The winit window stays open so the app runs as
-a real windowed app, and the offscreen image is the capture source of truth.
+and capture timing is decoupled from the swapchain and present. A headless run
+has no window and no surface, so nothing is presented at all; the canary below
+is the one run that presents to a window and reads one capture back from it.
 
 Sprite rendering has its own feature gate in Bevy 0.19: the sprite render pass
 lives in `bevy_sprite_render`, separate from the `bevy_sprite` API crate.
 Without `bevy_sprite_render` in the app's bevy features, sprites (including the
 frame-code chip) never draw anywhere; the feature is enabled.
+
+### The render canary (GONE_RENDER_CHECK=1 with GONE_HARNESS=1)
+
+The render canary is the one windowed test that answers "does the game
+actually render". The app opens a real 1920x1080 window at scale factor 1.0
+with `focused: false`, so the run never steals the foreground, and a window
+camera (order 0) presents the actual scene alongside the offscreen capture
+camera (order 1). At the first beat's request the run captures the primary
+window exactly once (`Screenshot::primary_window()`), through the same sync
+point as the beat capture, and saves it as `beats/<first-beat>.onscreen.png`
+in the run dir. The offscreen captures remain the readiness and beat source
+of truth; the window exists to prove the presented path.
+
+The runner selects the canary with `--render-check` (`cargo xtask harness
+render-check`; the `ci` step immediately after smoke) and machine-verifies the
+artifact after the run, failing fast with named errors: exactly one
+`*.onscreen.png` under `beats/` (none names the expected file, more than one
+lists them), it decodes as PNG at exactly 1920x1080, it is not entirely black
+(every pixel exactly (0,0,0) fails), and its frame-code chip lattice decodes
+to the report's frame for that beat (the same decoder as the offscreen beats;
+the window renders the same world, chip included). Canary run dirs carry an
+`rc` run-id prefix (`rc<unix-nanos>-s<seed>`) under the usual `tmp/harness`
+layout.
+
+Visual inspection of the onscreen PNG by the visual model agent is the
+follow-up judgment step, outside CI: the runner's machine checks prove the
+frame rendered, and the visual pass judges what it looks like. The canary is
+the practical use of the corrected `primary_window()` knowledge above.
 
 ## Readiness handshake (the exact signal)
 
@@ -213,12 +255,13 @@ failed scenario, never a hang; there is no waiting past the deadline.
 tmp/harness/<scenario>/<run-id>/
   readiness-proof.png   the first capture of the offscreen target (dark, no chip)
   beats/<name>.png      one PNG per beat: the rendered frame, chip at top-left
+  beats/<name>.onscreen.png  canary runs only: the single onscreen capture, at the first beat
   report.json           the run report
   scenario.json         a copy of the scenario bytes the run used
 ```
 
 `<run-id>` is `<unix-nanos>-s<seed>` so concurrent sessions cannot clobber each
-other. `tmp/` is gitignored.
+other, prefixed `rc` on render-check (canary) runs. `tmp/` is gitignored.
 
 ## report.json schema
 
@@ -255,9 +298,12 @@ timestamps into it. The fields exist so a real statistics lane can fill them
 A run has two verdict stages. Stage 1 (this slice) is the machine layer: the
 report parsed, the protocol version matched, identity matched, every scenario
 beat in the manifest, every beat PNG present and its frame-code decode equal to
-the report. Stage 2 is the vision layer (deferred): a vision-capable subagent
-looks at the beats. Machine decoding only here; visual judgments use GPT or
-Opus, never Zai.
+the report. A `--render-check` run extends stage 1 with the onscreen artifact
+checks (exactly one capture under `beats/`, 1920x1080, not entirely black,
+chip frame equal to the report). Stage 2 is the vision layer (deferred): a
+vision-capable subagent looks at the beats, and for a canary run the onscreen
+PNG joins them in that visual pass. Machine decoding only here; visual
+judgments use GPT or Opus, never Zai.
 
 - Exit 0 = machine checks passed, visual verification pending.
 - Nonzero = a machine check failed (nonzero app exit, mismatch, timeout, missing
@@ -295,6 +341,13 @@ reproducible across runs.
 Beat capture events carry the pinned tick/frame; for scenarios whose beats are
 spaced further apart than the capture readback latency (one to two rendered
 frames), both runs pin identical values and the streams match.
+
+The one exception is the terminal `Complete` frame: completion is the first
+frame at or after the settle window where every readback has landed, and on
+the headless lane readback latency measured in frames is wall-clock dependent
+(no vsync paces the frames), so it is not reproducible run to run. The runner
+normalizes the `Complete` line to drop the frame before diffing; every
+tick-scoped event (inputs, beats with their pinned numbers) compares exactly.
 
 ## Performance lane
 
@@ -365,9 +418,9 @@ distribution summary over the policy's reported statistics, writes
 run dir holds `scenario.json`, `readiness-proof.png`, `report.json`, and
 `perf-verdict.json`.
 
-`ci`'s harness step stays on the smoke lane: the perf verdict measures
-wall-clock on real GPU present, so it is a local gate, not a deterministic CI
-step.
+`ci`'s harness steps stay on the smoke and render-canary lanes: the perf
+verdict measures wall-clock on the real GPU, so it is a local gate, not a
+deterministic CI step.
 
 ## Deferred (stage B)
 
@@ -397,10 +450,17 @@ Not in slice A, per the plan:
 3. `FrameStats` is empty; the perf lane reports the `perf` section instead (the
    seeded struct is untouched on both lanes).
 4. The `pacing` scenario field is consumed at window creation (Uncapped sets
-   `PresentMode::AutoNoVsync`). Compare scenarios leave it unset and run the
-   default vsync presentation; `max_frames` is consumed as the clean-close
-   deadline described under beat capture binding (inert on the perf lane,
+   `PresentMode::AutoNoVsync`), which now means canary runs only: a headless
+   run has no window and no surface, so no present mode applies and pacing no
+   longer perturbs reports there. Compare scenarios leave it unset and run the
+   default presentation; `max_frames` is consumed as the clean-close deadline
+   described under beat capture binding (inert on the perf lane,
    which has no beats to miss).
+5. Headless frames are paced by the render pipeline, not vsync, so capture
+   readback latency measured in frames is larger and slightly variable
+   (windowed it is one to two frames). Completion therefore lands a few frames
+   after the last pinned beat and varies by a frame between runs; the compare
+   lane normalizes the terminal `Complete` frame (see compare mode).
 
 ## Cross-target verification
 

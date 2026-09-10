@@ -9,6 +9,13 @@
 //! pending". The binary is OS-portable: `std::process::Command`, forward-slash
 //! relative artifact paths, no OS-specific code (on macOS a SIGKILL to the child
 //! process id is sufficient for termination; Windows kill-tree is documented as stage-B).
+//!
+//! With `--render-check` the runner also selects the app's canary lane
+//! (`GONE_RENDER_CHECK=1`): the run opens the unfocused window and saves one
+//! onscreen capture at the first beat, which the runner machine-verifies after
+//! the run (exactly one `*.onscreen.png` under `beats/`, exactly 1920x1080, not
+//! entirely black, chip frame equal to the report's). Canary run dirs carry an
+//! `rc` run-id prefix so they are identifiable in `tmp/harness`.
 
 use std::fmt;
 use std::fmt::Write as _;
@@ -21,7 +28,7 @@ use sha2::{Digest as _, Sha256};
 use gone_harness::scenario::{Scenario, parse_scenario, scenario_to_json};
 use gone_harness::{
     FrameSampleStats, PROTOCOL_VERSION, PerfPolicy, PerfPolicyIdentity, PerfVerdict, ScenarioMode,
-    parse_perf_policy, perf_verdict_to_json, report,
+    onscreen, parse_perf_policy, perf_verdict_to_json, report,
 };
 
 const ENV_HARNESS: &str = "GONE_HARNESS";
@@ -31,6 +38,13 @@ const ENV_OUT_DIR: &str = "GONE_OUT_DIR";
 const ENV_APP_HASH: &str = "GONE_APP_HASH";
 /// The environment name for the scenario content hash the runner computed.
 const ENV_SCENARIO_HASH: &str = "GONE_SCENARIO_HASH";
+/// Selects the app's canary lane: the run opens the unfocused window and saves
+/// exactly one onscreen capture at the first beat (verified by [`onscreen`]).
+const ENV_RENDER_CHECK: &str = "GONE_RENDER_CHECK";
+/// The canary flag on the runner's own command line: every scenario run this
+/// invocation performs goes through the canary lane and its onscreen
+/// verification.
+const RENDER_CHECK_FLAG: &str = "--render-check";
 /// Scenario runtime timeout; the runner owns termination and reaping.
 const DEFAULT_TIMEOUT: Duration = Duration::from_secs(60);
 
@@ -40,7 +54,11 @@ const DEFAULT_TIMEOUT: Duration = Duration::from_secs(60);
 const PERF_POLICY_PATH: &str = "crates/gone_harness/perf-policy.json";
 
 /// The built-in smoke scenario constant: empty scene (Camera3d + clear), a couple
-/// of scripted actions, two beat captures, clean exit.
+/// of scripted actions, two beat captures, clean exit. The beats are spaced far
+/// beyond the capture readback latency: a beat whose tick passes while the lane
+/// is still busy pins a later frame, and headless latency is several frames
+/// (wall-clock dependent, no vsync pacing), so tight spacing would make the
+/// pinned frames vary between runs.
 #[must_use]
 pub fn smoke_scenario() -> Scenario {
     Scenario {
@@ -61,7 +79,7 @@ pub fn smoke_scenario() -> Scenario {
         ],
         beats: vec![
             gone_harness::Beat::new("beat-a", 2),
-            gone_harness::Beat::new("beat-b", 8),
+            gone_harness::Beat::new("beat-b", 60),
         ],
         pacing: None,
         max_frames: 600,
@@ -127,11 +145,15 @@ fn repo_root() -> Result<PathBuf, RunnerError> {
     }
 }
 
-fn run_id(seed: u64) -> String {
+/// The run id: `<unix-nanos>-s<seed>` so concurrent sessions cannot clobber
+/// each other; render-check (canary) runs carry an `rc` prefix so the windowed
+/// check runs are identifiable in `tmp/harness`.
+fn run_id(seed: u64, render_check: bool) -> String {
     let nanos = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_or(0, |d| d.as_nanos());
-    format!("{nanos}-s{seed}")
+    let prefix = if render_check { "rc" } else { "" };
+    format!("{prefix}{nanos}-s{seed}")
 }
 
 /// Real SHA-256 of `bytes`, lowercase hex, the run-identity hash used
@@ -178,14 +200,25 @@ impl Drop for AppChild {
     }
 }
 
-/// Spawn the app with harness env and the run-identity hashes.
+/// The run-identity hashes the runner computes from the exact bytes it spawns
+/// and sends; the app echoes them back in the report's identity. Each field is
+/// a sha2-256 hex string: `app` of the binary, `scenario` of the scenario
+/// file, `config` of the config string.
+struct RunIdentity<'a> {
+    app: &'a str,
+    scenario: &'a str,
+    config: &'a str,
+}
+
+/// Spawn the app with harness env and the run-identity hashes. Under
+/// `render_check` the child also gets `GONE_RENDER_CHECK=1`, selecting the
+/// canary lane (unfocused window plus the one onscreen capture).
 fn spawn_app(
     root: &Path,
     scenario_path: &Path,
     out_dir: &Path,
-    app_hash: &str,
-    scenario_hash: &str,
-    config_hash: &str,
+    identity: &RunIdentity<'_>,
+    render_check: bool,
 ) -> Result<AppChild, RunnerError> {
     let app = root.join("target").join("debug").join("gone_app");
     if !app.is_file() {
@@ -194,13 +227,18 @@ fn spawn_app(
             app.display()
         );
     }
-    let child = Command::new(&app)
+    let mut command = Command::new(&app);
+    command
         .env(ENV_HARNESS, "1")
         .env(ENV_SCENARIO, scenario_path)
         .env(ENV_OUT_DIR, out_dir)
-        .env(ENV_APP_HASH, app_hash)
-        .env(ENV_SCENARIO_HASH, scenario_hash)
-        .env("GONE_CONFIG_HASH", config_hash)
+        .env(ENV_APP_HASH, identity.app)
+        .env(ENV_SCENARIO_HASH, identity.scenario)
+        .env("GONE_CONFIG_HASH", identity.config);
+    if render_check {
+        command.env(ENV_RENDER_CHECK, "1");
+    }
+    let child = command
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
         .current_dir(root)
@@ -259,13 +297,26 @@ fn decode_frame_chip(img: &image::DynamicImage, name: &str) -> Result<(u64, u64)
         .map_err(|e| RunnerError(format!("beat `{name}` frame-code decode: {e}")))
 }
 
+/// Run one scenario end to end: spawn the app, wait, verify the report and
+/// captures, and return the run dir. Under `render_check` the app runs the
+/// canary lane and the run's single onscreen capture is machine-verified too;
+/// a beatless scenario fails fast before spawning, since the canary captures
+/// at the first beat.
 fn run_scenario(
     root: &Path,
     scenario_path: &Path,
     scenario: &Scenario,
     out_root: &Path,
+    render_check: bool,
 ) -> Result<PathBuf, RunnerError> {
-    let id = run_id(scenario.seed);
+    if render_check && scenario.beats.is_empty() {
+        bail!(
+            "render-check requires a scenario with at least one beat: the canary \
+             captures the onscreen frame at the first beat (scenario `{}` has none)",
+            scenario.name
+        );
+    }
+    let id = run_id(scenario.seed, render_check);
     let run_dir = out_root.join(&scenario.name).join(&id);
     std::fs::create_dir_all(&run_dir).map_err(|e| {
         RunnerError(format!(
@@ -282,18 +333,16 @@ fn run_scenario(
     let app_hash = sha256_hex(&app_bytes);
     let scenario_hash = sha256_hex(&scenario_bytes);
     let config_hash = sha256_hex(&scenario_bytes);
+    let identity = RunIdentity {
+        app: &app_hash,
+        scenario: &scenario_hash,
+        config: &config_hash,
+    };
 
     let scenario_copy = run_dir.join("scenario.json");
     write_or("scenario copy", &scenario_copy, &scenario_bytes)?;
 
-    let mut child = spawn_app(
-        root,
-        scenario_path,
-        &run_dir,
-        &app_hash,
-        &scenario_hash,
-        &config_hash,
-    )?;
+    let mut child = spawn_app(root, scenario_path, &run_dir, &identity, render_check)?;
     let status = wait_for_app(&mut child, DEFAULT_TIMEOUT, &scenario.name)?;
     disband_scenario(&run_dir, &scenario_bytes);
 
@@ -304,9 +353,32 @@ fn run_scenario(
     let report_path = run_dir.join("report.json");
     let report_bytes = read_or("report", &report_path)?;
     let report_text = String::from_utf8_lossy(&report_bytes);
-    let parsed = report::parse_report(&report_text)
-        .map_err(|e| RunnerError(format!("report parse: {e}")))?;
+    let parsed = verify_report(&report_text, identity.app, identity.config)?;
 
+    verify_captures(scenario, &parsed, &run_dir)?;
+    if render_check {
+        onscreen::verify_run(scenario, &parsed, &run_dir).map_err(RunnerError)?;
+    }
+
+    if !status.success() {
+        bail!(
+            "app exited nonzero ({status}) for scenario `{}`",
+            scenario.name
+        );
+    }
+
+    Ok(run_dir)
+}
+
+/// Parse the run's report and verify its protocol version and run identity
+/// against the hashes this runner computed and sent.
+fn verify_report(
+    report_text: &str,
+    app_hash: &str,
+    config_hash: &str,
+) -> Result<report::Report, RunnerError> {
+    let parsed =
+        report::parse_report(report_text).map_err(|e| RunnerError(format!("report parse: {e}")))?;
     if parsed.protocol_version != PROTOCOL_VERSION {
         bail!(
             "protocol version mismatch: report {}, runner {}",
@@ -320,17 +392,7 @@ fn run_scenario(
     if parsed.identity.config_hash != config_hash {
         bail!("run identity mismatch: config content hash differs from the scenario we spawned");
     }
-
-    verify_captures(scenario, &parsed, &run_dir)?;
-
-    if !status.success() {
-        bail!(
-            "app exited nonzero ({status}) for scenario `{}`",
-            scenario.name
-        );
-    }
-
-    Ok(run_dir)
+    Ok(parsed)
 }
 
 /// Wait for the app child to finish, killing it after `timeout` seconds.
@@ -375,30 +437,42 @@ fn main() {
     std::process::exit(dispatch(&args));
 }
 
-/// Route one command line to the smoke, perf, compare, or scenario run.
+/// Route one command line to the smoke, perf, compare, or scenario run. The
+/// `--render-check` flag may appear anywhere on the line and applies to every
+/// scenario run the invocation performs.
 fn dispatch(args: &[String]) -> i32 {
-    match args.get(1).map(String::as_str) {
-        None => {
+    let render_check = args.iter().any(|arg| arg == RENDER_CHECK_FLAG);
+    let positional: Vec<String> = args
+        .iter()
+        .filter(|arg| arg.as_str() != RENDER_CHECK_FLAG)
+        .cloned()
+        .collect();
+    match positional.get(1).map(String::as_str) {
+        // Bare invocation is the default smoke run, matching `cargo xtask
+        // harness`.
+        None | Some("smoke") => run_smoke(render_check),
+        Some("--help" | "-h") => {
             eprintln!(
-                "usage: gone-harness <smoke | perf [scenario] | compare <scenario> | <scenario.json>>"
+                "usage: gone-harness [--render-check] <smoke | perf [scenario] | compare <scenario> | <scenario.json>>
+  (no command runs the smoke scenario)
+  --render-check: canary lane (unfocused window, one onscreen capture machine-verified after the run)"
             );
-            2
+            0
         }
-        Some("smoke") => run_smoke(),
-        Some("perf") => run_perf(args),
-        Some("compare") => run_compare(args),
-        Some(path) => run_one(path),
+        Some("perf") => run_perf(&positional, render_check),
+        Some("compare") => run_compare(&positional, render_check),
+        Some(path) => run_one(path, render_check),
     }
 }
 
-fn run_smoke() -> i32 {
+fn run_smoke(render_check: bool) -> i32 {
     let scenario = smoke_scenario();
     let root = repo_root().expect("root");
     let out_root = root.join("tmp").join("harness");
     let scenario_path = root.join("tmp").join("smoke-scenario.json");
     let json = scenario_to_json(&scenario).expect("scenario json");
     write_or("smoke scenario", &scenario_path, json.as_bytes()).expect("write");
-    match run_scenario(&root, &scenario_path, &scenario, &out_root) {
+    match run_scenario(&root, &scenario_path, &scenario, &out_root, render_check) {
         Ok(run_dir) => {
             println!(
                 "MACHINE PASS: scenario `{}`; machine checks passed, visual verification pending",
@@ -415,18 +489,20 @@ fn run_smoke() -> i32 {
     }
 }
 
-fn run_compare(args: &[String]) -> i32 {
+fn run_compare(args: &[String], render_check: bool) -> i32 {
     let path_arg = args.get(2).map_or("smoke", String::as_str);
     let scenario_path = root_scenario(path_arg).expect("scenario path");
     let scenario = load_scenario(&scenario_path).expect("scenario");
     let root = repo_root().expect("root");
     let out_root = root.join("tmp").join("harness");
-    let run_a = run_scenario(&root, &scenario_path, &scenario, &out_root).expect("run A");
-    let run_b = run_scenario(&root, &scenario_path, &scenario, &out_root).expect("run B");
+    let run_a =
+        run_scenario(&root, &scenario_path, &scenario, &out_root, render_check).expect("run A");
+    let run_b =
+        run_scenario(&root, &scenario_path, &scenario, &out_root, render_check).expect("run B");
     let seq = |run: &Path| -> Vec<String> {
         let text = std::fs::read_to_string(run.join("report.json")).unwrap_or_default();
         report::parse_report(&text)
-            .map(|r| r.events.iter().map(|e| format!("{e:?}")).collect())
+            .map(|r| r.events.iter().map(compare_event_line).collect())
             .unwrap_or_default()
     };
     let (a, b) = (seq(&run_a), seq(&run_b));
@@ -440,12 +516,26 @@ fn run_compare(args: &[String]) -> i32 {
     }
 }
 
-fn run_one(path: &str) -> i32 {
+/// One event's compare line. The terminal `Complete` frame is normalized
+/// away: completion is the first frame at or after the settle window where
+/// every capture readback has landed, and readback latency measured in frames
+/// is wall-clock dependent on the headless lane (no vsync paces the frames),
+/// so the exact completion frame is not a reproducible simulation output.
+/// Every tick-scoped event (inputs, beats with their pinned tick/frame)
+/// compares exactly.
+fn compare_event_line(event: &report::TimedEvent) -> String {
+    match event {
+        report::TimedEvent::Complete { .. } => "Complete".to_owned(),
+        other => format!("{other:?}"),
+    }
+}
+
+fn run_one(path: &str, render_check: bool) -> i32 {
     let scenario_path = root_scenario(path).expect("scenario path");
     let scenario = load_scenario(&scenario_path).expect("scenario");
     let root = repo_root().expect("root");
     let out_root = root.join("tmp").join("harness");
-    match run_scenario(&root, &scenario_path, &scenario, &out_root) {
+    match run_scenario(&root, &scenario_path, &scenario, &out_root, render_check) {
         Ok(run_dir) => {
             println!(
                 "MACHINE PASS: scenario `{}`; machine checks passed, visual verification pending",
@@ -463,9 +553,11 @@ fn run_one(path: &str) -> i32 {
 
 /// The perf lane: run the calibration scenario capture-free, then judge the
 /// report's recorded frame-time statistics against the checked-in policy.
-/// Exit 0 on pass, 1 on any failure or threshold breach.
-fn run_perf(args: &[String]) -> i32 {
-    match perf_impl(args) {
+/// Exit 0 on pass, 1 on any failure or threshold breach. `render_check` is
+/// accepted for signature symmetry; a beatless perf scenario fails fast in
+/// [`run_scenario`] because the canary captures at the first beat.
+fn run_perf(args: &[String], render_check: bool) -> i32 {
+    match perf_impl(args, render_check) {
         Ok(code) => code,
         Err(e) => {
             eprintln!("{e}");
@@ -474,7 +566,7 @@ fn run_perf(args: &[String]) -> i32 {
     }
 }
 
-fn perf_impl(args: &[String]) -> Result<i32, RunnerError> {
+fn perf_impl(args: &[String], render_check: bool) -> Result<i32, RunnerError> {
     let root = repo_root()?;
     let policy_path = root.join(PERF_POLICY_PATH);
     let policy_bytes = read_or("perf policy", &policy_path)?;
@@ -488,7 +580,7 @@ fn perf_impl(args: &[String]) -> Result<i32, RunnerError> {
 
     let (scenario_path, scenario) = resolve_perf_scenario(args, &root, &policy)?;
     let out_root = root.join("tmp").join("harness");
-    let run_dir = run_scenario(&root, &scenario_path, &scenario, &out_root)?;
+    let run_dir = run_scenario(&root, &scenario_path, &scenario, &out_root, render_check)?;
 
     let report_bytes = read_or("report", &run_dir.join("report.json"))?;
     let parsed = report::parse_report(&String::from_utf8_lossy(&report_bytes))
@@ -638,6 +730,34 @@ mod tests {
     };
 
     use super::{PERF_POLICY_PATH, distribution_line, perf_calibration_scenario, verdict_line};
+
+    #[test]
+    fn compare_normalizes_only_the_terminal_complete_frame() {
+        // The completion frame is wall-clock dependent headless (readback
+        // latency in frames varies), so the compare line drops it; every
+        // tick-scoped event keeps its exact Debug form.
+        use gone_harness::report::TimedEvent;
+        let events = [
+            TimedEvent::Ready { frame: 0 },
+            TimedEvent::Beat {
+                name: "beat-a".to_owned(),
+                tick: 2,
+                frame: 2,
+                request_id: 1,
+            },
+            TimedEvent::Complete { frame: 14 },
+        ];
+        let lines: Vec<String> = events.iter().map(super::compare_event_line).collect();
+        assert_eq!(lines[0], "Ready { frame: 0 }");
+        assert_eq!(
+            lines[1],
+            r#"Beat { name: "beat-a", tick: 2, frame: 2, request_id: 1 }"#
+        );
+        assert_eq!(
+            lines[2], "Complete",
+            "the terminal frame must normalize away"
+        );
+    }
 
     /// The checked-in policy is the lane's frozen contract: it must always
     /// parse, and its thresholds must sit on statistics it reports.

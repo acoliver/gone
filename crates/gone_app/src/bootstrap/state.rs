@@ -19,6 +19,74 @@ use std::path::PathBuf;
 
 use bevy::ecs::prelude::{Component, Resource};
 
+/// How the app captures and presents this run (the two-mode capture
+/// architecture, issue #5a). [`select_run_mode`] derives it from the
+/// environment; harness runs insert it as a resource so the scene setup and
+/// the capture requester can gate window-only behavior.
+#[derive(Resource, Clone, Copy, Debug, PartialEq, Eq)]
+pub enum RunMode {
+    /// The normal game: a plain winit windowed app with no harness plugin.
+    Normal,
+    /// The harness lane's default: no window at all. The schedule runner
+    /// drives updates and the offscreen capture target is the only render
+    /// target; no onscreen capture happens and no onscreen file exists.
+    Headless,
+    /// The harness canary (`GONE_RENDER_CHECK=1`): a real, unfocused window
+    /// presents the scene through a second camera, and one onscreen capture
+    /// is saved next to the first beat's PNG.
+    Canary,
+}
+
+/// Derive the run mode from the harness environment: `GONE_HARNESS=1` selects
+/// the harness lane — headless unless `GONE_RENDER_CHECK=1` also selects the
+/// canary — and absence selects the normal game. An empty value counts as
+/// unset. Unknown values are rejected loudly: a stale or misspelled variable
+/// must fail the launch instead of silently selecting another mode.
+///
+/// # Errors
+/// A message naming the offending variable and its value.
+pub fn select_run_mode(
+    harness: Option<&str>,
+    render_check: Option<&str>,
+) -> Result<RunMode, String> {
+    let harness = non_empty(harness);
+    let render_check = non_empty(render_check);
+    match (harness, render_check) {
+        (None, None) => Ok(RunMode::Normal),
+        (Some("1"), None) => Ok(RunMode::Headless),
+        (Some("1"), Some("1")) => Ok(RunMode::Canary),
+        (Some("1"), Some(value)) => Err(format!(
+            "unknown GONE_RENDER_CHECK value `{value}` (expected `1` or unset)"
+        )),
+        (Some(value), _) => Err(format!(
+            "unknown GONE_HARNESS value `{value}` (expected `1` or unset)"
+        )),
+        (None, Some("1")) => Err("GONE_RENDER_CHECK=1 requires GONE_HARNESS=1".to_owned()),
+        (None, Some(value)) => Err(format!(
+            "unknown GONE_RENDER_CHECK value `{value}` (expected `1` or unset)"
+        )),
+    }
+}
+
+/// An env value with empty strings collapsed to absent (unset-equivalent).
+fn non_empty(value: Option<&str>) -> Option<&str> {
+    value.filter(|v| !v.is_empty())
+}
+
+/// The onscreen-capture gate: a canary run captures the primary window
+/// exactly once, at the first beat's request; a headless run has no window,
+/// so no onscreen capture is ever requested.
+pub(super) fn onscreen_capture_due(mode: RunMode, first_beat_request: bool) -> bool {
+    mode == RunMode::Canary && first_beat_request
+}
+
+/// The canary onscreen capture's file for a beat: saved next to the beat PNG
+/// in the same run directory, distinguished by the `.onscreen` infix.
+pub(super) fn onscreen_file_name(beat: &str) -> String {
+    format!("beats/{beat}.onscreen.png")
+}
+
+/// Frame-time sampler for the perf lane: skips `warmup_frames` rendered frames
 use crate::harness::{Beat, BeatEntry, InputAdapter, Scenario, TimedEvent};
 
 /// Frame-time sampler for the perf lane: skips `warmup_frames` rendered frames
@@ -93,6 +161,16 @@ pub(super) struct BeatCapture {
     pub(super) tick: u64,
     pub(super) frame: u64,
     pub(super) request_id: u64,
+}
+
+/// Marks a spawned screenshot entity as the canary run's single onscreen
+/// (primary-window) capture. The observer saves it under the beat's
+/// `.onscreen.png` name; a save failure is terminal, as for beat captures.
+#[derive(Component)]
+pub(super) struct OnscreenCapture {
+    /// The beat whose request triggered the capture: it names the file and
+    /// any failure.
+    pub(super) beat: String,
 }
 
 /// The scenario state resource.

@@ -1,6 +1,7 @@
 //! Unit tests for the harness run state and its gates: beat request/capture
-//! accounting, readiness gating, capture-lane serialization, and immediate
-//! failure recording. The accounting methods under test are pure state
+//! accounting, readiness gating, capture-lane serialization, immediate
+//! failure recording, run-mode selection from the environment, and the canary
+//! onscreen-capture gate. The accounting methods under test are pure state
 //! transitions, so no renderer is involved; only the save-failure test touches
 //! disk (into the OS temp dir).
 
@@ -11,8 +12,8 @@ use bevy::render::render_resource::{Extent3d, TextureDimension, TextureFormat};
 
 use super::save_capture;
 use super::state::{
-    CaptureRequest, HarnessState, PerfSampler, Readiness, drive_allowed, fail_at_deadline,
-    fail_scenario,
+    CaptureRequest, HarnessState, PerfSampler, Readiness, RunMode, drive_allowed, fail_at_deadline,
+    fail_scenario, onscreen_capture_due, onscreen_file_name, select_run_mode,
 };
 use crate::harness::{Beat, InputAdapter, Key, Scenario, ScriptedAction, TimedEvent};
 
@@ -384,6 +385,84 @@ fn max_frames_deadline_spares_captured_and_pre_deadline_runs() {
     state.frame = 59;
     fail_at_deadline(&mut state);
     assert!(state.failed.is_none(), "frame 59 of 60 is not the deadline");
+}
+
+#[test]
+fn without_harness_env_the_app_is_the_normal_game() {
+    // No harness vars: the plain windowed game, byte-for-byte unchanged.
+    assert_eq!(select_run_mode(None, None), Ok(RunMode::Normal));
+    // An empty value counts as unset (the pre-5a `== "1"` check treated it
+    // as off).
+    assert_eq!(select_run_mode(Some(""), None), Ok(RunMode::Normal));
+    assert_eq!(select_run_mode(Some(""), Some("")), Ok(RunMode::Normal));
+}
+
+#[test]
+fn harness_env_defaults_to_headless() {
+    // The default harness lane has no window: offscreen capture only, no
+    // onscreen capture, no onscreen file.
+    assert_eq!(select_run_mode(Some("1"), None), Ok(RunMode::Headless));
+    assert_eq!(select_run_mode(Some("1"), Some("")), Ok(RunMode::Headless));
+}
+
+#[test]
+fn render_check_selects_the_canary() {
+    assert_eq!(select_run_mode(Some("1"), Some("1")), Ok(RunMode::Canary));
+}
+
+#[test]
+fn unknown_harness_env_values_fail_loudly() {
+    let err = select_run_mode(Some("0"), None).expect_err("GONE_HARNESS=0 is not a mode");
+    assert!(err.contains("GONE_HARNESS"), "names the variable: {err}");
+    assert!(err.contains('0'), "carries the value: {err}");
+}
+
+#[test]
+fn unknown_render_check_values_fail_loudly() {
+    let err =
+        select_run_mode(Some("1"), Some("yes")).expect_err("GONE_RENDER_CHECK=yes is not a mode");
+    assert!(
+        err.contains("GONE_RENDER_CHECK"),
+        "names the variable: {err}"
+    );
+    assert!(err.contains("yes"), "carries the value: {err}");
+}
+
+#[test]
+fn render_check_without_harness_fails_loudly() {
+    // A canary run is a harness run; a dangling GONE_RENDER_CHECK is a
+    // misconfiguration, not a mode to fall back from.
+    let err = select_run_mode(None, Some("1")).expect_err("canary requires harness mode");
+    assert!(
+        err.contains("GONE_HARNESS"),
+        "points at the missing variable: {err}"
+    );
+}
+
+#[test]
+fn onscreen_capture_saves_next_to_the_beat_png() {
+    // Same run directory's beats/ folder, `.onscreen` infix before the
+    // extension so the two files of a beat never collide.
+    assert_eq!(onscreen_file_name("beat-a"), "beats/beat-a.onscreen.png");
+}
+
+#[test]
+fn headless_mode_has_no_onscreen_capture_path() {
+    // Whatever the beat schedule, headless never captures the (nonexistent)
+    // window: no onscreen request, no onscreen file.
+    assert!(!onscreen_capture_due(RunMode::Headless, true));
+    assert!(!onscreen_capture_due(RunMode::Headless, false));
+}
+
+#[test]
+fn canary_mode_captures_the_window_once_at_the_first_beat() {
+    assert!(onscreen_capture_due(RunMode::Canary, true));
+    assert!(
+        !onscreen_capture_due(RunMode::Canary, false),
+        "exactly one onscreen capture per run"
+    );
+    // The normal game never builds the harness plugin; the gate stays total.
+    assert!(!onscreen_capture_due(RunMode::Normal, true));
 }
 
 /// A small RGBA capture-shaped image; only its existence matters here (the

@@ -5,8 +5,12 @@
 //! input-adapter resource, the frame-code sprite, the report, and a clean
 //! self-exit — on both lanes, the capture lane (scenario beats and reads) and
 //! the perf lane (wall-clock frame-time sampling, capture-free after the
-//! readiness proof). The app runs as the normal winit app — a real OS window is
-//! open for the whole run.
+//! readiness proof). The app runs in one of two capture architectures
+//! ([`state::RunMode`]): headless by default — no window, the schedule runner
+//! drives updates, the offscreen Image is the only render target — or the
+//! `GONE_RENDER_CHECK=1` canary, which additionally opens the real (unfocused)
+//! window, presents the same scene through a second camera, and saves one
+//! `.onscreen.png` next to the first beat's PNG.
 //!
 //! Design notes:
 //!
@@ -15,19 +19,32 @@
 //!   tick, bottom band: frame). The harness camera renders into a dedicated
 //!   offscreen [`Image`] render target (`RenderTarget::Image`), and beat
 //!   captures are [`Screenshot::image`] readbacks of that target handed to a
-//!   [`ScreenshotCaptured`] observer, which encodes the PNG. The winit window
-//!   stays open for presentation only; the offscreen image is the capture
-//!   source of truth because captures are exactly 1920x1080 regardless of
-//!   window scale or DPI overrides and their timing is decoupled from the
-//!   swapchain and present. (`Screenshot::primary_window()` works here with
+//!   [`ScreenshotCaptured`] observer, which encodes the PNG. The offscreen
+//!   image is the capture source of truth because captures are exactly
+//!   1920x1080 regardless of window scale or DPI overrides and their timing
+//!   is decoupled from the swapchain and present. In canary mode a second
+//!   camera (ordered ahead of the capture camera) presents the same world to
+//!   the window, and the run's single onscreen capture is a
+//!   [`Screenshot::primary_window()`] readback of the presented frame.
+//!   (`Screenshot::primary_window()` works here with
 //!   the correct bevy feature set: an earlier probe's all-black captures were
 //!   our own feature-selection error, a missing `bevy_sprite_render`, and its
 //!   textures needed `RenderAssetUsages::default()` to appear in captures at
-//!   all. The window presents nothing during harness runs because the only
-//!   harness camera renders into the Image, so switching captures to it is a
-//!   possible future simplification.) The runner decodes the PNG's top-left
+//!   all. In headless mode nothing is presented at all because no window
+//!   exists; in canary mode the window camera presents the same scene the
+//!   capture camera renders.) The runner decodes the PNG's top-left
 //!   chip block and asserts it equals the report entry, so the verified pixels
 //!   are ones the GPU rendered.
+//! * **Canary onscreen capture.** `GONE_RENDER_CHECK=1` (with harness mode)
+//!   opens the real window (`focused: false`, so the run never steals the
+//!   foreground) and presents the scene through a window camera. At the first
+//!   beat's request the run also captures the primary window once — both
+//!   requests enter the same sync point, so the onscreen readback shows the
+//!   same rendered frame as the beat's PNG — and saves it as
+//!   `beats/<beat>.onscreen.png` beside the beat PNG. Same save policy as
+//!   beat captures: a failure is terminal, naming the beat and the error.
+//!   Headless mode has no onscreen path at all: no window, no capture, no
+//!   file.
 //! * **Readiness before the clock.** The scenario clock starts only after the
 //!   first capture of the offscreen target lands. That capture is the readback
 //!   of a frame the render graph actually executed into the target, so it is
@@ -72,13 +89,17 @@ mod state;
 #[cfg(test)]
 mod tests;
 
+// The run mode is lib-facing: `run` selects it from the environment and the
+// harness plugin inserts it as a resource for the window-only systems.
+pub use state::{RunMode, select_run_mode};
+
 use std::num::NonZeroU8;
 use std::path::{Path, PathBuf};
 
 use bevy::app::{App, AppExit, Plugin, Startup, Update};
 use bevy::asset::{Assets, Handle, RenderAssetUsages};
 use bevy::camera::visibility::Visibility;
-use bevy::camera::{Camera2d, ClearColor, RenderTarget};
+use bevy::camera::{Camera, Camera2d, ClearColor, RenderTarget};
 use bevy::color::Color;
 use bevy::ecs::message::MessageWriter;
 use bevy::ecs::prelude::{Commands, Entity, On, Query, Res, ResMut, Resource};
@@ -102,8 +123,8 @@ use crate::harness::{
 };
 
 use state::{
-    BeatCapture, CaptureRequest, HarnessState, Readiness, drive_allowed, fail_at_deadline,
-    fail_scenario,
+    BeatCapture, CaptureRequest, HarnessState, OnscreenCapture, Readiness, drive_allowed,
+    fail_at_deadline, fail_scenario, onscreen_capture_due, onscreen_file_name,
 };
 
 /// The frame-code chip texture width: exactly the chip block's width.
@@ -118,6 +139,13 @@ const CAPTURE_W: u32 = 1920;
 
 /// The offscreen capture target's height in pixels.
 const CAPTURE_H: u32 = 1080;
+
+/// The canary window camera's render order: the presented view draws first.
+const WINDOW_CAMERA_ORDER: isize = 0;
+
+/// The offscreen capture camera's render order, distinct from the window
+/// camera's so both cameras stay active when both exist (canary mode).
+const OFFSCREEN_CAMERA_ORDER: isize = 1;
 
 /// How many frames the run settles after the last beat capture before closing.
 const SETTLE_FRAMES: u64 = 2;
@@ -154,16 +182,24 @@ pub struct BootstrapPlugin {
     scenario: Scenario,
     out_dir: PathBuf,
     config_hash: String,
+    mode: RunMode,
 }
 
 impl BootstrapPlugin {
     /// Build the plugin from an already-parsed scenario and the runner's env.
+    /// `mode` is the capture architecture selected in `run` (headless or
+    /// canary; the normal game never builds this plugin).
     ///
     /// # Panics
     /// Panics without `GONE_OUT_DIR` (the runner always sets it), and on a
     /// perf scenario whose sample window is empty: there is no honest
     /// measurement to fall back to.
-    pub fn new(scenario: Scenario, out_dir: Option<PathBuf>, config_hash: String) -> Self {
+    pub fn new(
+        scenario: Scenario,
+        out_dir: Option<PathBuf>,
+        config_hash: String,
+        mode: RunMode,
+    ) -> Self {
         assert!(
             scenario.mode != ScenarioMode::Perf || scenario.sample_frames != 0,
             "perf scenario `{}` needs a sample_frames window of at least 1 frame",
@@ -174,12 +210,14 @@ impl BootstrapPlugin {
             scenario,
             out_dir,
             config_hash,
+            mode,
         }
     }
 }
 
 impl Plugin for BootstrapPlugin {
     fn build(&self, app: &mut App) {
+        app.insert_resource(self.mode);
         app.init_resource::<Readiness>();
         app.init_resource::<ChipTexture>();
         app.init_resource::<ChipSprite>();
@@ -210,52 +248,25 @@ impl Plugin for BootstrapPlugin {
 
 /// The loading scene: dark clear, one Camera2d rendering into the offscreen
 /// capture target (MSAA off so the chip lattice stays pixel-crisp in captures),
-/// and the chip sprite spawned hidden at the target's top-left — it becomes
-/// visible only at the readiness boundary. The target image gets
-/// `RENDER_ATTACHMENT` (the camera renders into it) plus `TEXTURE_BINDING` (the
-/// screenshot pass samples/blits it).
+/// a canary window camera presenting the same world when this run opens a
+/// window, and the chip sprite spawned hidden at the target's top-left — it
+/// becomes visible only at the readiness boundary.
 fn setup_harness_scene(
     mut commands: Commands,
+    mode: Res<RunMode>,
     mut chip: ResMut<ChipTexture>,
     mut sprite: ResMut<ChipSprite>,
     mut capture: ResMut<CaptureTarget>,
     mut images: ResMut<Assets<Image>>,
 ) {
     commands.insert_resource(ClearColor(Color::srgb(0.011, 0.011, 0.011)));
-    let mut image = Image::new_uninit(
-        Extent3d {
-            width: CAPTURE_W,
-            height: CAPTURE_H,
-            depth_or_array_layers: 1,
-        },
-        TextureDimension::D2,
-        TextureFormat::Bgra8UnormSrgb,
-        RenderAssetUsages::default(),
-    );
-    image.texture_descriptor.usage =
-        TextureUsages::RENDER_ATTACHMENT | TextureUsages::TEXTURE_BINDING;
-    let handle = images.add(image);
-    commands.spawn((
-        Camera2d,
-        RenderTarget::Image(handle.clone().into()),
-        Msaa::Off,
-    ));
+    let handle = capture_target_image(&mut images);
+    spawn_capture_camera(&mut commands, handle.clone());
+    if *mode.into_inner() == RunMode::Canary {
+        spawn_window_camera(&mut commands);
+    }
     capture.0 = Some(handle);
-    let image = Image::new(
-        Extent3d {
-            width: LANE_W,
-            height: LANE_H,
-            depth_or_array_layers: 1,
-        },
-        TextureDimension::D2,
-        frame::encode_chip_rgba(0, 0),
-        TextureFormat::Rgba8UnormSrgb,
-        // Both usages: MAIN_WORLD keeps the bytes so `paint_chip` can repaint
-        // the lattice per tick; RENDER_WORLD keeps the GPU copy the sprite
-        // renders from (MAIN_WORLD alone is never uploaded to the GPU).
-        RenderAssetUsages::default(),
-    );
-    let handle = images.add(image);
+    let handle = images.add(chip_texture_image());
     // The camera centers the target, so its top-left pixel sits at minus half
     // the extent; pinning the chip there puts it at the capture's corner.
     let chip_origin = UVec2::new(CAPTURE_W, CAPTURE_H).as_vec2() * Vec2::new(-0.5, 0.5);
@@ -269,6 +280,73 @@ fn setup_harness_scene(
         .id();
     chip.0 = Some(handle);
     sprite.0 = Some(entity);
+}
+
+/// The offscreen capture target: `RENDER_ATTACHMENT` (the camera renders into
+/// it) plus `TEXTURE_BINDING` (the screenshot pass samples/blits it), at the
+/// full capture resolution.
+fn capture_target_image(images: &mut Assets<Image>) -> Handle<Image> {
+    let mut image = Image::new_uninit(
+        Extent3d {
+            width: CAPTURE_W,
+            height: CAPTURE_H,
+            depth_or_array_layers: 1,
+        },
+        TextureDimension::D2,
+        TextureFormat::Bgra8UnormSrgb,
+        RenderAssetUsages::default(),
+    );
+    image.texture_descriptor.usage =
+        TextureUsages::RENDER_ATTACHMENT | TextureUsages::TEXTURE_BINDING;
+    images.add(image)
+}
+
+/// The offscreen capture camera: renders into the target image, ordered
+/// behind the canary window camera (the two explicit orders keep both
+/// cameras active when both exist).
+fn spawn_capture_camera(commands: &mut Commands, target: Handle<Image>) {
+    commands.spawn((
+        Camera2d,
+        Camera {
+            order: OFFSCREEN_CAMERA_ORDER,
+            ..Default::default()
+        },
+        RenderTarget::Image(target.into()),
+        Msaa::Off,
+    ));
+}
+
+/// The canary window camera: presents the same world to the primary window so
+/// the window shows the actual scene the capture camera renders. Headless
+/// mode never spawns it (no window exists).
+fn spawn_window_camera(commands: &mut Commands) {
+    commands.spawn((
+        Camera2d,
+        Camera {
+            order: WINDOW_CAMERA_ORDER,
+            ..Default::default()
+        },
+        Msaa::Off,
+    ));
+}
+
+/// The frame-code chip texture, starting at (0, 0) until `paint_chip`
+/// repaints the lattice per tick.
+fn chip_texture_image() -> Image {
+    Image::new(
+        Extent3d {
+            width: LANE_W,
+            height: LANE_H,
+            depth_or_array_layers: 1,
+        },
+        TextureDimension::D2,
+        frame::encode_chip_rgba(0, 0),
+        TextureFormat::Rgba8UnormSrgb,
+        // Both usages: MAIN_WORLD keeps the bytes so `paint_chip` can repaint
+        // the lattice per tick; RENDER_WORLD keeps the GPU copy the sprite
+        // renders from (MAIN_WORLD alone is never uploaded to the GPU).
+        RenderAssetUsages::default(),
+    )
 }
 
 /// While loading, request a screenshot of the offscreen capture target every
@@ -376,10 +454,13 @@ fn paint_chip(kernel: &mut Kernel, tick: u64, frame_num: u64) {
 /// reaches the GPU one update after its paint, so pinning the pre-drive
 /// counters is what makes the PNG decode to the entry's numbers.) bevy
 /// captures at most one screenshot per render target per frame, and the
-/// capture's observer binds it back to the entry by request id.
+/// capture's observer binds it back to the entry by request id. In canary
+/// mode the first beat's request also spawns the run's single onscreen
+/// capture of the primary window.
 fn request_beat_captures(
     readiness: Res<Readiness>,
     capture: Res<CaptureTarget>,
+    mode: Res<RunMode>,
     mut state: ResMut<HarnessState>,
     mut commands: Commands,
 ) {
@@ -395,6 +476,7 @@ fn request_beat_captures(
         .clone()
         .expect("capture target exists (created in Startup, before any Update)");
     let (tick, frame) = (state.tick, state.frame);
+    let first_request = state.requested_beats == 0;
     let (name, entry) = state.pin_next_beat(tick, frame);
     commands.spawn((
         Screenshot::image(handle),
@@ -406,25 +488,37 @@ fn request_beat_captures(
         },
     ));
     state.capture_in_flight = Some(CaptureRequest {
-        name,
+        name: name.clone(),
         tick,
         frame,
         request_id: entry.request_id,
     });
+    if onscreen_capture_due(*mode.into_inner(), first_request) {
+        // The onscreen request enters the same sync point as the offscreen
+        // beat request, so its readback shows the same rendered frame: the
+        // `.onscreen.png` decodes to the chip code of the beat PNG beside it.
+        commands.spawn((Screenshot::primary_window(), OnscreenCapture { beat: name }));
+    }
 }
 
 /// The receiver for every bevy screenshot of this run. A capture carrying a
 /// [`BeatCapture`] is that beat's rendered frame: convert and write it now, no
-/// retry. Any other capture is a readiness proof.
+/// retry. One carrying an [`OnscreenCapture`] is the canary run's single
+/// primary-window capture. Any other capture is a readiness proof.
 fn on_screenshot_captured(
     mut captured: On<ScreenshotCaptured>,
     mut readiness: ResMut<Readiness>,
     mut state: ResMut<HarnessState>,
     beats: Query<&BeatCapture>,
+    onscreens: Query<&OnscreenCapture>,
 ) {
     let captured = captured.event_mut();
     if let Ok(beat) = beats.get(captured.entity) {
         capture_beat(&mut state, beat, &captured.image);
+        return;
+    }
+    if let Ok(onscreen) = onscreens.get(captured.entity) {
+        capture_onscreen(&mut state, onscreen, &captured.image);
         return;
     }
     if *readiness == Readiness::Ready {
@@ -499,6 +593,26 @@ fn capture_beat(state: &mut HarnessState, request: &BeatCapture, image: &Image) 
         Err(err) => fail_scenario(
             state,
             format!("beat `{}` capture failed: {err}", request.name),
+        ),
+    }
+}
+
+/// Convert and write the canary run's single onscreen capture next to its
+/// beat's PNG (`beats/<beat>.onscreen.png`, same run directory). Same policy
+/// as beat saves: a failure is terminal and names the beat and the
+/// underlying error.
+fn capture_onscreen(state: &mut HarnessState, request: &OnscreenCapture, image: &Image) {
+    let file = onscreen_file_name(&request.beat);
+    match save_capture(&state.out_dir, &file, image) {
+        Ok(()) => bevy::log::info!(
+            "harness: canary onscreen capture for beat `{}` saved ({file}, {}x{})",
+            request.beat,
+            image.width(),
+            image.height()
+        ),
+        Err(err) => fail_scenario(
+            state,
+            format!("onscreen capture for beat `{}` failed: {err}", request.beat),
         ),
     }
 }
