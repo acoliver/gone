@@ -4,6 +4,20 @@
 //! with no display server, no GPU, and no render code involved. It must never
 //! depend on Bevy or any render crate; the architecture gate added in
 //! issue #4 enforces that boundary mechanically.
+//!
+//! The wake phase contract for the opening beat lives in [`phase`]; the
+//! frozen first-person controller specification lives in [`controller`]; the
+//! stasis pod registry (the layout and state truth the scene is built from)
+//! lives in [`pods`].
+
+pub mod controller;
+pub mod phase;
+pub mod pods;
+
+pub use phase::{PhaseError, PhaseTransition, WakePhase};
+pub use pods::{
+    HatchPlacement, POD_COUNT, Pod, PodId, PodPlacement, PodRegistry, PodRegistryError, PodState,
+};
 
 /// Minimal stand-in for a full ship entity: enough state to prove the crate
 /// builds and its logic runs standalone until real ship systems arrive.
