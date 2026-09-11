@@ -43,6 +43,10 @@ use crate::scene::geometry::{
 };
 
 mod geometry;
+
+/// Pure world-space placements for every non-pod scene solid.
+mod placement;
+
 mod pod_body;
 
 /// Marks a stasis pod's root entity. A pod's identity, state, and placement

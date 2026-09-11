@@ -30,12 +30,14 @@ use gone_sim::pods::{POD_HEIGHT, POD_LENGTH, POD_WIDTH};
 const CAVITY_WALL: f32 = 0.06;
 
 /// Base slab thickness, in meters: the cavity floor the lying capsule
-/// rests on, under the dark floor plate.
-const CAVITY_BASE: f32 = 0.1;
+/// rests on, under the dark floor plate. `exit_path` reads it to place the
+/// lying capsule on the plate top.
+pub(crate) const CAVITY_BASE: f32 = 0.1;
 
 /// Dark cavity floor plate thickness, in meters: a thin dark floor inside
 /// the tray so the open interior reads as a cavity from across the aisle.
-const CAVITY_PLATE_THICKNESS: f32 = 0.012;
+/// `exit_path` reads it for the plate top the lying capsule rests on.
+pub(crate) const CAVITY_PLATE_THICKNESS: f32 = 0.012;
 
 /// Pod lid slab thickness, in meters (closed lid, open lid, and canopy
 /// alike).
