@@ -2184,6 +2184,9 @@ dependencies = [
 [[package]]
 name = "gone_sim"
 version = "0.1.0"
+dependencies = [
+ "glam",
+]
 
 [[package]]
 name = "gpu-allocator"
