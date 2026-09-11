@@ -60,10 +60,6 @@ pub enum Edge {
     Release,
 }
 
-/// The synthetic key name [`ButtonEdge::move_delta`] uses so movement and buttons
-/// share one exactly-once delivery stream.
-pub const MOVE_DELTA_MARKER: &str = "__move";
-
 /// A single buffered button edge delivered to exactly one fixed update.
 #[derive(Clone, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct ButtonEdge {
@@ -73,27 +69,10 @@ pub struct ButtonEdge {
     pub edge: Edge,
 }
 
-impl ButtonEdge {
-    /// A synthetic edge carrying a movement delta (the app reads it as the move
-    /// vector for this fixed update). The vector itself lives in [`Step::motion`];
-    /// this edge marks "movement happened this tick" so movement and buttons share one
-    /// exactly-once delivery stream.
-    #[must_use]
-    pub fn move_delta(_forward: f32, _strafe: f32) -> Self {
-        Self {
-            button: Button::Key(Key::Other(MOVE_DELTA_MARKER.to_owned())),
-            edge: Edge::Press,
-        }
-    }
-}
-
 /// Input events name their edge so opposite edges of one button are
 /// distinguishable in events, checkpoints, and compare streams.
 impl fmt::Display for ButtonEdge {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        if self.button == Button::Key(Key::Other(MOVE_DELTA_MARKER.to_owned())) {
-            return write!(f, "move-delta");
-        }
         write!(f, "{} {}", self.button, self.edge)
     }
 }
@@ -144,7 +123,8 @@ pub enum Action {
         /// Vertical turn delta in degrees.
         pitch_deg: f32,
     },
-    /// Move: movement is a 2D vector in world axes (forward/strafe).
+    /// Move: movement is a 2D vector in world axes (forward/strafe),
+    /// delivered in [`Step::movement`], never mixed into the look channel.
     MoveDelta {
         /// Forward/back component.
         forward: f32,
@@ -160,17 +140,6 @@ pub enum Action {
     Release {
         /// Button affected.
         button: Button,
-    },
-    /// Wait in fixed-update terms: no new input, just let the clock advance.
-    Wait {
-        /// Number of ticks to hold still.
-        ticks: u64,
-    },
-    /// Wait until the logical clock reaches `tick` (inclusive), for long-form
-    /// pacing.
-    WaitUntilTick {
-        /// Target tick.
-        tick: u64,
     },
 }
 
@@ -201,6 +170,29 @@ impl Delta {
     }
 }
 
+/// One fixed update's movement intent in scenario axes: forward/back and
+/// strafe. A distinct typed payload from look motion ([`Delta`]), so a
+/// consumer can tell forward from backward from no movement, and movement
+/// from look, by type instead of by convention.
+#[derive(Clone, Copy, Debug, Default, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct MoveMotion {
+    /// Forward/back component (positive is forward).
+    pub forward: f32,
+    /// Left/right strafe component (positive is right).
+    pub strafe: f32,
+}
+
+impl MoveMotion {
+    /// A zero movement, meaning "no scripted movement this tick".
+    #[must_use]
+    pub const fn zero() -> Self {
+        Self {
+            forward: 0.0,
+            strafe: 0.0,
+        }
+    }
+}
+
 /// Pure scripted-input state machine. Not an ECS component: the app owns one as a
 /// resource and drives it exactly once per fixed update.
 #[derive(Clone, Debug)]
@@ -208,8 +200,10 @@ pub struct InputAdapter {
     actions: VecDeque<ScriptedAction>,
     /// Pending button edges, drained one tick at a time.
     edge_queue: VecDeque<ButtonEdge>,
-    /// Motion to deliver on the next fixed update.
+    /// Look motion to deliver on the next fixed update.
     pending_motion: Delta,
+    /// Movement to deliver on the next fixed update.
+    pending_movement: MoveMotion,
     tick_floor: u64,
 }
 
@@ -237,6 +231,7 @@ impl InputAdapter {
             actions,
             edge_queue: VecDeque::new(),
             pending_motion: Delta::zero(),
+            pending_movement: MoveMotion::zero(),
             tick_floor: 0,
         }
     }
@@ -275,8 +270,8 @@ impl InputAdapter {
     }
 
     /// Advance one fixed update. Returns the edges to deliver this tick (exactly the
-    /// edges whose turn it is) and the motion for this tick. Actions whose tick is not
-    /// yet reached stay queued.
+    /// edges whose turn it is) plus this tick's look motion and movement, each in
+    /// its own payload. Actions whose tick is not yet reached stay queued.
     ///
     /// # Panics
     /// Panics if the front of the action queue is missing after checking it, which is
@@ -286,6 +281,7 @@ impl InputAdapter {
         let mut out = Step {
             edges: Vec::new(),
             motion: Delta::zero(),
+            movement: MoveMotion::zero(),
         };
         while let Some(front) = self.actions.front() {
             if front.tick > self.tick_floor {
@@ -296,6 +292,8 @@ impl InputAdapter {
         }
         out.motion = self.pending_motion;
         self.pending_motion = Delta::zero();
+        out.movement = self.pending_movement;
+        self.pending_movement = MoveMotion::zero();
         self.tick_floor += 1;
         out
     }
@@ -315,9 +313,9 @@ impl InputAdapter {
                 self.pending_motion.y += pitch_deg;
             }
             Action::MoveDelta { forward, strafe } => {
-                out.edges.push(ButtonEdge::move_delta(forward, strafe));
+                self.pending_movement.forward += forward;
+                self.pending_movement.strafe += strafe;
             }
-            Action::Wait { .. } | Action::WaitUntilTick { .. } => {}
         }
     }
 }
@@ -325,10 +323,14 @@ impl InputAdapter {
 /// One fixed update's worth of adapter output.
 #[derive(Default, Debug)]
 pub struct Step {
-    /// Edges to deliver (button presses/releases + synthetic move-delta edges).
+    /// Edges to deliver (button presses/releases).
     pub edges: Vec<ButtonEdge>,
-    /// Look motion to deliver.
+    /// Look motion to deliver, in degrees.
     pub motion: Delta,
+    /// Movement to deliver, in scenario axes. Distinct from [`Step::motion`]
+    /// so forward, backward, and zero movement stay distinguishable
+    /// downstream and can never be read as look motion.
+    pub movement: MoveMotion,
 }
 
 /// Convenience constructors for scenario definitions.
@@ -364,21 +366,12 @@ impl ScriptedAction {
         }
     }
 
-    /// Wait at `tick`.
+    /// Move at `tick` by the given forward/strafe components.
     #[must_use]
-    pub fn wait(tick: u64, ticks: u64) -> Self {
+    pub fn move_delta(tick: u64, forward: f32, strafe: f32) -> Self {
         Self {
             tick,
-            action: Action::Wait { ticks },
-        }
-    }
-
-    /// Wait until the logical clock reaches `tick` (inclusive).
-    #[must_use]
-    pub fn wait_until(tick: u64, target: u64) -> Self {
-        Self {
-            tick,
-            action: Action::WaitUntilTick { tick: target },
+            action: Action::MoveDelta { forward, strafe },
         }
     }
 }
@@ -386,7 +379,7 @@ impl ScriptedAction {
 #[cfg(test)]
 mod tests {
     use super::{
-        Action, Button, ButtonEdge, Delta, Edge, InputAdapter, Key, MouseButton, ScriptedAction,
+        Button, ButtonEdge, Delta, Edge, InputAdapter, Key, MouseButton, MoveMotion, ScriptedAction,
     };
 
     fn key(tick: u64, key: Key) -> ScriptedAction {
@@ -422,11 +415,6 @@ mod tests {
     }
 
     #[test]
-    fn move_delta_edge_describes_itself() {
-        assert_eq!(ButtonEdge::move_delta(1.0, 0.0).to_string(), "move-delta");
-    }
-
-    #[test]
     fn each_edge_consumed_once_even_over_multiple_ticks() {
         let mut adapter = InputAdapter::with_actions(vec![
             key(0, Key::Forward),
@@ -457,25 +445,47 @@ mod tests {
 
     #[test]
     fn multiple_actions_same_tick_delivered_together() {
+        // Regression for the test's own name: it used to schedule its two
+        // actions on different ticks and only ever assert one edge per step.
+        // Two presses scripted for the same tick must land together in the
+        // one step whose clock reaches that tick.
         let mut adapter = InputAdapter::with_actions(vec![
-            key(0, Key::Forward),
-            ScriptedAction::release(1, Key::Forward),
+            key(1, Key::Left),
+            key(1, Key::Right),
+            ScriptedAction::release(1, Key::Left),
         ]);
+        // Tick 0 delivers nothing: nothing is due yet.
         let first = adapter.step();
-        assert_eq!(first.edges.len(), 1);
-        assert_eq!(first.edges[0].edge, Edge::Press);
-        let _ = adapter.step();
+        assert_eq!(first.edges.len(), 0);
+        // Tick 1 delivers all three edges in one step.
+        let second = adapter.step();
+        assert_eq!(second.edges.len(), 3);
+        assert!(
+            second
+                .edges
+                .iter()
+                .all(|e| e.edge == Edge::Press || e.edge == Edge::Release)
+        );
         // Draining a tick with nothing due delivers nothing a third time.
         assert_eq!(adapter.step().edges.len(), 0);
     }
 
     #[test]
-    fn zero_fixed_updates_deliver_nothing_and_preserve_edges() {
-        // Simulates a rendered frame in which no fixed update ran: stepping the
-        // clock from nothing delivers nothing, and a later step still sees the edge.
-        let mut adapter = InputAdapter::with_actions(vec![key(0, Key::Forward)]);
-        let _ = adapter.step();
-        assert_eq!(adapter.step().edges.len(), 0);
+    fn future_edges_stay_buffered_until_their_tick() {
+        // A rendered frame can run zero fixed updates; with no step call the
+        // adapter cannot lose state, so the observable guarantee is the
+        // complementary one: fixed updates that run before a scripted
+        // action's tick deliver nothing and leave the action buffered, and
+        // the buffered action fires intact on exactly its own tick.
+        let mut adapter = InputAdapter::with_actions(vec![key(3, Key::Forward)]);
+        for _ in 0..3 {
+            let early = adapter.step();
+            assert_eq!(early.edges.len(), 0, "nothing is due before tick 3");
+            assert_eq!(early.movement, MoveMotion::zero());
+        }
+        let due = adapter.step();
+        assert_eq!(due.edges.len(), 1, "the buffered tick-3 press survives");
+        assert_eq!(due.edges[0].edge, Edge::Press);
     }
 
     #[test]
@@ -498,6 +508,56 @@ mod tests {
     }
 
     #[test]
+    fn movement_carries_its_forward_and_strafe_components() {
+        // Regression: `ButtonEdge::move_delta` discarded both arguments and
+        // emitted a marker edge, so forward, backward, and zero movement
+        // were indistinguishable downstream. Movement now arrives in its
+        // own typed payload, summed across same-tick actions.
+        let mut adapter = InputAdapter::with_actions(vec![
+            ScriptedAction::move_delta(0, 1.0, 0.0),
+            ScriptedAction::move_delta(0, 0.0, -0.5),
+            ScriptedAction::move_delta(2, -1.0, 0.25),
+        ]);
+        let s0 = adapter.step();
+        assert_eq!(
+            s0.movement,
+            MoveMotion {
+                forward: 1.0,
+                strafe: -0.5,
+            }
+        );
+        assert_eq!(s0.edges.len(), 0, "movement is not a button edge");
+        assert_eq!(s0.motion, Delta::zero(), "movement is not look motion");
+        let s1 = adapter.step();
+        assert_eq!(s1.movement, MoveMotion::zero());
+        let s2 = adapter.step();
+        assert_eq!(
+            s2.movement,
+            MoveMotion {
+                forward: -1.0,
+                strafe: 0.25,
+            }
+        );
+    }
+
+    #[test]
+    fn look_and_movement_stay_in_their_own_payloads() {
+        let mut adapter = InputAdapter::with_actions(vec![
+            ScriptedAction::look(0, 5.0, -2.0),
+            ScriptedAction::move_delta(0, 1.0, 0.0),
+        ]);
+        let step = adapter.step();
+        assert_eq!(step.motion, Delta { x: 5.0, y: -2.0 });
+        assert_eq!(
+            step.movement,
+            MoveMotion {
+                forward: 1.0,
+                strafe: 0.0,
+            }
+        );
+    }
+
+    #[test]
     fn motion_accumulates_and_resets_each_step() {
         let mut adapter = InputAdapter::with_actions(vec![
             ScriptedAction::look(0, 5.0, -2.0),
@@ -510,28 +570,6 @@ mod tests {
         assert_eq!(s1.motion, Delta { x: 1.0, y: 0.0 });
         let s2 = adapter.step();
         assert_eq!(s2.motion, Delta::zero());
-    }
-
-    #[test]
-    fn wait_actions_wait_without_new_edges() {
-        let mut adapter = InputAdapter::with_actions(vec![
-            ScriptedAction {
-                tick: 3,
-                action: Action::Wait { ticks: 5 },
-            },
-            key(3, Key::Activate),
-        ]);
-        // Stepping 0..=2 holds the key; the third step's clock is 3 where both
-        // the wait and the press fire, delivering exactly one edge.
-        let s3 = adapter.step();
-        assert!(s3.edges.is_empty());
-        let s4 = adapter.step();
-        assert!(s4.edges.is_empty());
-        let s5 = adapter.step();
-        assert!(s5.edges.is_empty());
-        let s6 = adapter.step();
-        assert_eq!(s6.edges.len(), 1);
-        let _ = adapter.step();
     }
 
     #[test]

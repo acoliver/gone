@@ -327,29 +327,39 @@ impl PodRegistry {
     }
 
     /// Build a registry over an explicit pod set, rejecting duplicate ids
-    /// and player-pod counts other than one. Placements are carried
-    /// through; the frozen layout lives in [`PodRegistry::frozen`].
+    /// and player-pod counts other than one. The stored pod set is sorted
+    /// by id, so `pod(id)` returns the pod carrying that id whatever order
+    /// the input arrived in; placements are carried through and the frozen
+    /// layout lives in [`PodRegistry::frozen`].
     ///
     /// # Errors
     /// [`PodRegistryError::DuplicatePodId`] when two pods share an id, and
     /// [`PodRegistryError::PlayerPodCount`] when the set does not carry
     /// exactly one player pod.
     pub fn try_new(pods: [Pod; POD_COUNT]) -> Result<Self, PodRegistryError> {
-        for (position, pod) in pods.iter().enumerate() {
-            if pods[..position].iter().any(|earlier| earlier.id == pod.id) {
-                return Err(PodRegistryError::DuplicatePodId { id: pod.id });
+        // Store the pods sorted by id regardless of input order: `pod(id)`
+        // indexes by id, so a valid-but-permuted input must not preserve its
+        // arrival order. Sorting first also makes duplicate ids adjacent.
+        let mut pods = pods;
+        pods.sort_by_key(|pod| pod.id);
+        for window in pods.windows(2) {
+            if window[0].id == window[1].id {
+                return Err(PodRegistryError::DuplicatePodId { id: window[1].id });
             }
         }
-        let mut player_index = None;
-        for (position, pod) in pods.iter().enumerate() {
-            if !pod.state.is_player() {
-                continue;
+        let player_index = match pods.iter().position(|pod| pod.state.is_player()) {
+            // The position scan found the first player pod; a second one
+            // could only sit after it.
+            Some(index) if !pods[index + 1..].iter().any(|pod| pod.state.is_player()) => index,
+            Some(first) => {
+                let found = 1 + pods[first + 1..]
+                    .iter()
+                    .filter(|pod| pod.state.is_player())
+                    .count();
+                return Err(PodRegistryError::PlayerPodCount { found });
             }
-            if player_index.replace(position).is_some() {
-                return Err(PodRegistryError::PlayerPodCount { found: 2 });
-            }
-        }
-        let player_index = player_index.ok_or(PodRegistryError::PlayerPodCount { found: 0 })?;
+            None => return Err(PodRegistryError::PlayerPodCount { found: 0 }),
+        };
         Ok(Self::build_with_player(pods, player_index))
     }
 
@@ -653,6 +663,42 @@ mod tests {
         for pod in frozen.pods() {
             assert_eq!(frozen.pod(pod.id()), pod);
         }
+    }
+
+    /// Regression: `try_new` used to preserve input order while `pod(id)`
+    /// indexes by id, so a valid-but-permuted pod set silently returned the
+    /// wrong pod for every id it did not keep in place. The stored set must
+    /// be ordered by id, whatever order the input arrived in.
+    #[test]
+    fn permuted_pod_sets_still_look_up_every_id_correctly() {
+        let frozen = PodRegistry::frozen();
+        // Reversed input order.
+        let mut pods = [frozen.pods()[0]; POD_COUNT];
+        pods.copy_from_slice(frozen.pods());
+        pods.reverse();
+        let reversed = PodRegistry::try_new(pods).expect("permuted set is valid");
+        assert_eq!(reversed, frozen, "order-independent registry contents");
+        for id in PodId::ALL {
+            assert_eq!(reversed.pod(id).id(), id, "reversed input, id {id:?}");
+        }
+        assert_eq!(reversed.player_pod().id(), frozen.player_pod().id());
+
+        // Two ids swapped in an otherwise ordered input.
+        let mut pods = [frozen.pods()[0]; POD_COUNT];
+        pods.copy_from_slice(frozen.pods());
+        pods.swap(1, 5);
+        let swapped = PodRegistry::try_new(pods).expect("permuted set is valid");
+        assert_eq!(swapped, frozen);
+        for id in PodId::ALL {
+            assert_eq!(swapped.pod(id).id(), id, "swapped input, id {id:?}");
+        }
+
+        // The player pod moves with its pod, not with its input position.
+        assert_eq!(
+            swapped.player_pod().placement(),
+            frozen.player_pod().placement(),
+            "the player pod is found by identity, not input position"
+        );
     }
 
     /// `PodId::new` admits exactly the bay indices, and `ALL` lists them

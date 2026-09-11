@@ -55,7 +55,7 @@ use bevy::app::{App, Plugin};
 use bevy::asset::Handle;
 use bevy::core_pipeline::tonemapping::Tonemapping;
 use bevy::ecs::prelude::Resource;
-use bevy::image::Image;
+use bevy::image::{Image, ImageLoaderSettings};
 use bevy::post_process::auto_exposure::{AutoExposure, AutoExposurePlugin};
 use bevy::post_process::effect_stack::Vignette;
 
@@ -76,8 +76,11 @@ const MASK_ASSET_PATH: &str = "post/metering_mask.png";
 const MASK_SIZE: u16 = 64;
 
 /// The auto-exposure metering mask resource for the game camera. Built by
-/// [`GamePostChainPlugin`] from the checked-in asset; consumed by the player
-/// rig spawner, which copies the handle into the camera's [`AutoExposure`].
+/// [`GamePostChainPlugin`] from the checked-in asset, loaded with explicit
+/// linear settings (`is_srgb: false`: the mask is a weight table, not a
+/// color, so its bytes must survive to the shader un-decoded); consumed by
+/// the player rig spawner, which copies the handle into the camera's
+/// [`AutoExposure`].
 #[derive(Resource)]
 pub struct PostChainAssets {
     /// The center-weighted metering mask (`AutoExposure::metering_mask`).
@@ -103,7 +106,16 @@ impl Plugin for GamePostChainPlugin {
             .world()
             .get_resource::<bevy::asset::AssetServer>()
             .expect("GamePostChainPlugin requires the asset server (DefaultPlugins provides it)");
-        let metering_mask = server.load::<Image>(MASK_ASSET_PATH);
+        // Linear load, explicit: the checked-in mask is a grayscale PNG, and
+        // bevy's default image settings mark non-color data sRGB, so the GPU
+        // would gamma-decode every weight at sample time (a mid-gray 136
+        // byte would histogram as weight 3 instead of 8). The mask is a
+        // weight table, not a color: its bytes are the values the shader
+        // must see.
+        let metering_mask = server
+            .load_builder()
+            .with_settings(|settings: &mut ImageLoaderSettings| settings.is_srgb = false)
+            .load(MASK_ASSET_PATH);
         app.insert_resource(PostChainAssets { metering_mask });
     }
 }
@@ -333,6 +345,167 @@ mod tests {
         assert_eq!(decoded.width(), width);
         assert_eq!(decoded.height(), height);
         assert_eq!(decoded.as_raw().as_slice(), bytes.as_slice());
+    }
+
+    /// The checked-in asset's bytes, decoded read-only: the game loads this
+    /// exact file, so the tests below assert against what ships, and nothing
+    /// here writes to the assets directory (the generator above is the only
+    /// writer and stays ignored).
+    fn checked_in_mask_bytes() -> image::GrayImage {
+        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("assets")
+            .join(super::MASK_ASSET_PATH);
+        image::open(&path)
+            .expect("the checked-in metering mask exists and decodes")
+            .to_luma8()
+    }
+
+    /// The checked-in PNG is the construction: center-heaviest, monotone
+    /// falloff, 16-level quantized. Regression guard for the load path: the
+    /// loader must hand the GPU these bytes as linear weights (a byte is the
+    /// weight, never a gamma-encoded color), which the loader-settings test
+    /// below pins on the resolved texture.
+    #[test]
+    fn checked_in_mask_is_center_weighted_with_monotone_falloff() {
+        let decoded = checked_in_mask_bytes();
+        assert_eq!(
+            (decoded.width(), decoded.height()),
+            (u32::from(MASK_SIZE), u32::from(MASK_SIZE)),
+            "the shipped asset is the construction's shape"
+        );
+        let bytes = decoded.as_raw();
+        let center = byte_index(MASK_SIZE / 2, MASK_SIZE / 2);
+        let mid_edge = byte_index(MASK_SIZE / 2, 0);
+        let corner = 0usize;
+        assert!(
+            bytes[center] > bytes[mid_edge] && bytes[mid_edge] > bytes[corner],
+            "center {} > mid-edge {} > corner {}",
+            bytes[center],
+            bytes[mid_edge],
+            bytes[corner]
+        );
+        // Non-increasing away from the center along the center row, the
+        // center column, and the diagonal; the 16-level quantization makes
+        // plateaus legal, rises are not.
+        for offset in 0..MASK_SIZE / 2 - 1 {
+            assert!(
+                bytes[byte_index(MASK_SIZE / 2 + offset, MASK_SIZE / 2)]
+                    >= bytes[byte_index(MASK_SIZE / 2 + offset + 1, MASK_SIZE / 2)]
+            );
+            assert!(
+                bytes[byte_index(MASK_SIZE / 2, MASK_SIZE / 2 + offset)]
+                    >= bytes[byte_index(MASK_SIZE / 2, MASK_SIZE / 2 + offset + 1)]
+            );
+            assert!(
+                bytes[byte_index(MASK_SIZE / 2 + offset, MASK_SIZE / 2 + offset)]
+                    >= bytes[byte_index(MASK_SIZE / 2 + offset + 1, MASK_SIZE / 2 + offset + 1)]
+            );
+        }
+        // Every byte is one of the shader's 16 discrete weights.
+        for byte in bytes {
+            assert_eq!(
+                u32::from(*byte) % 17,
+                0,
+                "byte {byte} is not a 16-level quantization"
+            );
+        }
+    }
+
+    /// The plugin loads the mask through bevy's image loader with linear
+    /// settings, so the decode resolves to the linear texture format (the
+    /// grayscale PNG converts to `Rgba8Unorm`, never `Rgba8UnormSrgb`): the
+    /// histogram must read the stored bytes as weights, not gamma-decode
+    /// them.
+    ///
+    /// Hermetic on purpose: the checked-in PNG bytes are read directly and
+    /// pushed through [`bevy::image::Image::from_buffer`], the exact decode
+    /// entry point bevy 0.19's `ImageLoader::load` uses for a `.png` asset
+    /// (it resolves `ImageType::Extension` from the path's suffix and
+    /// forwards every settings field to `from_buffer`; the compressed-format
+    /// mask is only consulted by the Basis/Dds/Ktx2 branches). Driving the
+    /// real asset server instead cannot run hermetically in a unit test: the
+    /// load task executes on the IO task pool's threads while a test binary
+    /// outraces them, so the mask was still `LoadState::Loading` after 100
+    /// app updates regardless of the asset root.
+    #[test]
+    fn metering_mask_resolves_linear() {
+        let png_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("assets")
+            .join(super::MASK_ASSET_PATH);
+        let png_bytes = std::fs::read(&png_path).expect("the checked-in metering mask exists");
+
+        // The app's decode call with the plugin's mask settings: the loader
+        // settings' only non-default field is `is_srgb = false`, so the
+        // closure parametrizes exactly that and keeps every other argument
+        // at the value the loader forwards from the defaults.
+        let decode = |is_srgb: bool| {
+            bevy::image::Image::from_buffer(
+                &png_bytes,
+                bevy::image::ImageType::Extension("png"),
+                bevy::image::CompressedImageFormats::NONE,
+                is_srgb,
+                bevy::image::ImageSampler::default(),
+                bevy::asset::RenderAssetUsages::default(),
+            )
+            .expect("the checked-in mask decodes through bevy's image path")
+        };
+        let linear = decode(false);
+
+        assert_eq!(
+            linear.width(),
+            u32::from(MASK_SIZE),
+            "the shipped asset's width survives the decode"
+        );
+        assert_eq!(
+            linear.texture_descriptor.format,
+            bevy::render::render_resource::TextureFormat::Rgba8Unorm,
+            "the mask must resolve linear (is_srgb false), never sRGB"
+        );
+        // The linear format is the setting's doing, not the file's: the same
+        // bytes through the default settings resolve to the sRGB variant the
+        // GPU gamma-decodes at sample time.
+        assert_eq!(
+            decode(true).texture_descriptor.format,
+            bevy::render::render_resource::TextureFormat::Rgba8UnormSrgb,
+            "is_srgb false must be the only reason the mask resolves linear"
+        );
+
+        // The linear texture carries the PNG's weights un-decoded. The
+        // histogram samples the red channel, so each RGBA pixel must be the
+        // grayscale byte replicated (R=G=B=luma, A=255): a mid-weight 136
+        // byte stays 136/255, not the ~63/255 a gamma decode turns it into
+        // (a metering level of 3 instead of 8).
+        let weights = checked_in_mask_bytes();
+        assert_eq!(
+            linear.height(),
+            u32::from(MASK_SIZE),
+            "the decoded mask is the shipped asset's shape"
+        );
+        let rgba = linear
+            .data
+            .expect("the decoded mask carries its pixel bytes");
+        assert_eq!(rgba.len(), weights.as_raw().len() * 4);
+        for (pixel, &weight) in rgba.as_chunks::<4>().0.iter().zip(weights.as_raw()) {
+            assert_eq!(*pixel, [weight, weight, weight, 255]);
+        }
+
+        // Center-weighting survives to the resolved texture, and the mid
+        // 16-level weight (byte 136, level 8 of the construction) is present
+        // and un-transformed.
+        let center = byte_index(MASK_SIZE / 2, MASK_SIZE / 2);
+        let mid_edge = byte_index(MASK_SIZE / 2, 0);
+        assert!(
+            weights.as_raw()[center] > weights.as_raw()[mid_edge],
+            "center weight {} must exceed mid-edge weight {}",
+            weights.as_raw()[center],
+            weights.as_raw()[mid_edge]
+        );
+        let mid_level = weights
+            .as_raw()
+            .iter()
+            .position(|&byte| byte == 136)
+            .expect("the 16-level construction ships a level-8 (byte 136) weight");
+        assert_eq!(rgba[mid_level * 4], 136);
     }
 
     /// Flat index of the byte nearest the mask center (size is even, so the

@@ -61,6 +61,12 @@ struct JammedHatch;
 pub(crate) struct SimWakePhase(WakePhase);
 
 impl SimWakePhase {
+    /// Build the resource at `phase`. Crate-visible so tests and the game
+    /// wiring can start the machine at an exact phase.
+    pub(crate) const fn new(phase: WakePhase) -> Self {
+        Self(phase)
+    }
+
     /// The phase the machine currently sits in.
     pub(crate) fn phase(&self) -> WakePhase {
         self.0
@@ -146,7 +152,7 @@ pub struct StasisScenePlugin;
 impl Plugin for StasisScenePlugin {
     fn build(&self, app: &mut App) {
         let registry = PodRegistry::frozen();
-        app.insert_resource(SimWakePhase(WakePhase::default()))
+        app.insert_resource(SimWakePhase::new(WakePhase::default()))
             .insert_resource(SimPodRegistry(registry))
             .insert_resource(PlayerSpawn {
                 pose: player_spawn_pose(&registry),
@@ -358,24 +364,79 @@ mod tests {
         }
     }
 
-    /// The hatch group exists exactly once, and the registry's hatch
-    /// placement is centered on the +X short wall facing into the room.
+    /// The spawned hatch group sits where the registry says: on the +X
+    /// short wall, spanning the wall's centered opening, with its door
+    /// group hinged at the -Z jamb and swung into the room. Regression for
+    /// a test that only counted group children and re-asserted registry
+    /// constants without ever reading the spawned transforms.
     #[test]
-    fn hatch_spawns_once_on_the_short_wall() {
+    fn hatch_group_spawns_on_the_registry_short_wall_with_an_ajar_door() {
         let mut app = scene_app();
         app.update();
         let mut hatches = app
             .world_mut()
-            .query_filtered::<&Transform, With<JammedHatch>>();
-        assert_eq!(hatches.iter(app.world()).count(), 1);
-        let registry = PodRegistry::frozen();
-        let hatch = registry.hatch();
+            .query_filtered::<(bevy::ecs::prelude::Entity, &bevy::ecs::hierarchy::Children), With<JammedHatch>>();
+        let (group, children) = hatches
+            .single(app.world())
+            .expect("exactly one jammed hatch group");
         assert!(
-            (hatch.center.0 - 12.0 / 2.0).abs() < 1e-6,
-            "hatch on the +X short wall"
+            app.world().get_entity(group).is_ok(),
+            "the hatch group entity is alive"
         );
-        assert!(hatch.center.1.abs() < 1e-6, "hatch centered on the wall");
-        assert!(hatch.yaw_radians.sin() < 0.0, "hatch faces into the room");
+        assert!(
+            children.len() >= 4,
+            "the frame posts, lintel, sill, and door group are spawned"
+        );
+        let hatch = PodRegistry::frozen().hatch();
+        let mut min_z = f32::INFINITY;
+        let mut max_z = f32::NEG_INFINITY;
+        let mut ajar_doors = 0usize;
+        for child in children {
+            let transform = app
+                .world()
+                .get_entity(*child)
+                .expect("hatch child exists")
+                .get::<Transform>()
+                .expect("hatch children carry transforms");
+            // Every piece is at the +X short wall and inside the room
+            // (the frame protrudes inward, the door recesses inward).
+            assert!(
+                transform.translation.x <= hatch.center.0 + f32::EPSILON,
+                "no hatch piece pokes outside the wall"
+            );
+            assert!(
+                transform.translation.x > hatch.center.0 - 0.5,
+                "every hatch piece sits at the short wall, got x {}",
+                transform.translation.x
+            );
+            assert!(
+                transform.translation.y >= 0.0,
+                "hatch pieces sit on or above the floor"
+            );
+            min_z = min_z.min(transform.translation.z);
+            max_z = max_z.max(transform.translation.z);
+            if transform.rotation != Quat::IDENTITY {
+                ajar_doors += 1;
+                // The door group hinges at the -Z jamb and leans into the
+                // room: negative yaw about Y.
+                assert!(
+                    transform.translation.z < 0.0,
+                    "the door hinges on the -Z jamb, got z {}",
+                    transform.translation.z
+                );
+                assert!(
+                    transform.rotation.y < 0.0,
+                    "negative yaw swings the free edge into the room"
+                );
+            }
+        }
+        assert_eq!(ajar_doors, 1, "exactly one ajar door group");
+        // The pieces straddle the hatch's centered z: the opening spans
+        // across the wall's center line rather than clumping on one side.
+        assert!(
+            min_z < hatch.center.1 && max_z > hatch.center.1,
+            "the frame straddles the registry's centered opening (z {min_z}..{max_z})"
+        );
     }
 
     /// The spawn pose lies in the player pod, under the lid line, aimed up

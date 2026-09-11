@@ -362,7 +362,7 @@ mod tests {
         let mut run_a = vec![
             TimedEvent::Ready { frame: 0 },
             input(0, "look 15 0"),
-            input(3, "move-delta"),
+            input(3, "move 1 0"),
             beat("beat-a", 2, 1),
             input(5, "Key(Activate) press"),
             input(5, "Key(Activate) release"),
@@ -373,7 +373,7 @@ mod tests {
         let mut run_b = vec![
             TimedEvent::Ready { frame: 0 },
             input(0, "look 15 0"),
-            input(3, "move-delta"),
+            input(3, "move 1 0"),
             input(5, "Key(Activate) press"),
             input(5, "Key(Activate) release"),
             beat("beat-a", 2, 1),
@@ -395,7 +395,7 @@ mod tests {
             TimedEvent::Ready { frame: 0 },
             input(0, "look 15 0"),
             beat("beat-a", 2, 1),
-            input(3, "move-delta"),
+            input(3, "move 1 0"),
             input(5, "Key(Activate) press"),
             input(5, "Key(Activate) release"),
             beat("beat-b", 8, 2),

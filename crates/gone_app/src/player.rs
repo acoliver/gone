@@ -19,6 +19,11 @@
 //! view coupling, no translation. Pitch is clamped to ±89° as part of the
 //! integration, before the value can over-rotate past the vertical.
 //!
+//! Look is armed only while two gates hold: the cursor is captured, and the
+//! wake phase allows look ([`WakePhase::look_allowed`], true from
+//! `AwakeInPod` onward). During the authored wake sequence neither mouse
+//! motion nor a captured cursor can rotate the view.
+//!
 //! # Cursor capture
 //!
 //! The cursor state machine has exactly two authored states: captured
@@ -50,7 +55,7 @@ use bevy::transform::components::Transform;
 use bevy::window::{CursorGrabMode, CursorOptions, Window, WindowFocused};
 
 use crate::post::{PostChainAssets, camera_post_components};
-use crate::scene::PlayerSpawn;
+use crate::scene::{PlayerSpawn, SimWakePhase};
 
 /// Look rotation per mouse pixel, in radians (≈0.126°/px). Constant by
 /// design: the same pixel delta always produces the same rotation.
@@ -213,17 +218,22 @@ fn apply_cursor_target(target: CursorTarget, cursor: &mut CursorOptions) {
 }
 
 /// Integrate this frame's mouse motion into the look angles and project them
-/// onto the rig transforms. Look is armed only while the cursor is captured:
-/// a released cursor must not rotate the view. Writes rotation only; nothing
-/// in this system can translate the player.
+/// onto the rig transforms. Look is armed only while the cursor is captured
+/// (a released cursor must not rotate the view) and only while the wake
+/// phase allows look (the authored wake sequence owns the camera until it
+/// completes). Writes rotation only; nothing in this system can translate
+/// the player.
 fn apply_mouse_look(
     motion: Res<AccumulatedMouseMotion>,
     cursor: Single<&CursorOptions>,
+    phase: Res<SimWakePhase>,
     mut angles: ResMut<LookAngles>,
     mut yaw: Single<&mut Transform, (With<PlayerYaw>, Without<PlayerPitch>)>,
     mut pitch: Single<&mut Transform, (With<PlayerPitch>, Without<PlayerYaw>)>,
 ) {
-    if cursor.into_inner().grab_mode != CursorGrabMode::Locked {
+    if cursor.into_inner().grab_mode != CursorGrabMode::Locked
+        || !phase.into_inner().phase().look_allowed()
+    {
         return;
     }
     let (yaw_angle, pitch_angle) =
@@ -286,7 +296,10 @@ mod tests {
     use bevy::transform::components::Transform;
     use bevy::window::{CursorGrabMode, CursorOptions, Window, WindowFocused};
 
+    use gone_sim::WakePhase;
+
     use crate::post::{GamePostChainPlugin, PostChainAssets};
+    use crate::scene::SimWakePhase;
 
     #[test]
     fn pitch_clamps_before_over_rotation() {
@@ -389,11 +402,13 @@ mod tests {
 
     /// A test app with both game plugins built for real: the post-chain
     /// plugin loads its asset handle, the look plugin spawns the rig, and the
-    /// camera carries the whole configured chain. The input resources and the
-    /// focus message are initialized directly (`InputPlugin` would zero the
-    /// accumulated motion each update, which is bevy's reset contract, not
-    /// this module's; the tests below insert the accumulated value they want
-    /// the look system to see).
+    /// camera carries the whole configured chain. The sim phase sits at
+    /// `AwakeInPod` (look armed) so the cursor-focused tests below see the
+    /// look system run; the phase-gate test overrides it per phase. The
+    /// input resources and the focus message are initialized directly
+    /// (`InputPlugin` would zero the accumulated motion each update, which is
+    /// bevy's reset contract, not this module's; the tests below insert the
+    /// accumulated value they want the look system to see).
     fn game_app() -> App {
         let mut app = App::new();
         app.add_plugins((
@@ -404,6 +419,7 @@ mod tests {
         app.add_message::<WindowFocused>()
             .init_resource::<ButtonInput<KeyCode>>()
             .init_resource::<AccumulatedMouseMotion>()
+            .insert_resource(SimWakePhase::new(WakePhase::AwakeInPod))
             .insert_resource(test_spawn());
         app.add_plugins((GamePostChainPlugin, PlayerLookPlugin));
         app
@@ -510,6 +526,72 @@ mod tests {
         );
         assert_eq!(yaw.rotation, Quat::from_rotation_y(expected_yaw));
         assert_eq!(pitch.rotation, Quat::from_rotation_x(expected_pitch));
+    }
+
+    #[test]
+    fn look_input_only_rotates_the_view_from_awake_in_pod_onward() {
+        // Regression: the look system checked only cursor capture, so a
+        // captured cursor rotated the view during the authored wake
+        // sequence. The phase gate must hold the camera still through
+        // Waking and release it exactly at AwakeInPod.
+        for (phase, rotates) in [
+            (WakePhase::Waking, false),
+            (WakePhase::AwakeInPod, true),
+            (WakePhase::ExitingPod, true),
+            (WakePhase::Standing, true),
+        ] {
+            let mut app = game_app();
+            app.world_mut().insert_resource(SimWakePhase::new(phase));
+            app.world_mut().spawn((
+                Window::default(),
+                CursorOptions {
+                    grab_mode: CursorGrabMode::Locked,
+                    ..CursorOptions::default()
+                },
+            ));
+            app.update();
+            app.insert_resource(AccumulatedMouseMotion {
+                delta: Vec2::new(120.0, -40.0),
+            });
+            app.update();
+            let pose = test_spawn().pose;
+            let mut yaws = app
+                .world_mut()
+                .query_filtered::<&Transform, With<PlayerYaw>>();
+            let yaw = *yaws.single(app.world()).expect("yaw parent");
+            let mut pitches = app
+                .world_mut()
+                .query_filtered::<&Transform, With<PlayerPitch>>();
+            let pitch = *pitches.single(app.world()).expect("pitch camera");
+            if rotates {
+                let (expected_yaw, expected_pitch) = integrate_look(
+                    pose.yaw_radians,
+                    pose.pitch_radians,
+                    Vec2::new(120.0, -40.0),
+                );
+                assert_eq!(
+                    yaw.rotation,
+                    Quat::from_rotation_y(expected_yaw),
+                    "look must rotate in {phase:?}"
+                );
+                assert_eq!(
+                    pitch.rotation,
+                    Quat::from_rotation_x(expected_pitch),
+                    "look must pitch in {phase:?}"
+                );
+            } else {
+                assert_eq!(
+                    yaw.rotation,
+                    Quat::from_rotation_y(pose.yaw_radians),
+                    "the wake sequence owns the camera in {phase:?}"
+                );
+                assert_eq!(
+                    pitch.rotation,
+                    Quat::from_rotation_x(pose.pitch_radians),
+                    "the wake sequence owns the camera in {phase:?}"
+                );
+            }
+        }
     }
 
     #[test]

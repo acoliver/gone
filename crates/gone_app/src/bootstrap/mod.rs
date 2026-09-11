@@ -396,9 +396,11 @@ fn readiness_boundary(
 }
 
 /// Drive one logical tick per rendered frame once ready. The adapter returns
-/// exactly this tick's edges and motion; each edge is recorded once, with its
-/// press/release state in words. Runs after [`request_beat_captures`], so the
-/// beat pins name the pre-drive counters this update renders.
+/// exactly this tick's edges and motions; each edge is recorded once, with its
+/// press/release state in words, and look motion and movement are recorded as
+/// separate named events so the report (and compare mode) can tell the two
+/// channels apart. Runs after [`request_beat_captures`], so the beat pins name
+/// the pre-drive counters this update renders.
 fn drive_ticks(mut kernel: Kernel) {
     if !drive_allowed(*kernel.readiness, &kernel.state) {
         return;
@@ -418,6 +420,13 @@ fn drive_ticks(mut kernel: Kernel) {
             tick,
             frame,
             what: format!("look {} {}", step.motion.x, step.motion.y),
+        });
+    }
+    if step.movement.forward != 0.0 || step.movement.strafe != 0.0 {
+        kernel.state.events.push(TimedEvent::Input {
+            tick,
+            frame,
+            what: format!("move {} {}", step.movement.forward, step.movement.strafe),
         });
     }
     paint_chip(&mut kernel, tick, frame);

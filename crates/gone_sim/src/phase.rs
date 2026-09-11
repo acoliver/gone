@@ -10,20 +10,29 @@
 //! # Input policy (documented and frozen)
 //!
 //! * Exit-pod intent, the restraint pop / swing-out input, is consumed only
-//!   in [`WakePhase::AwakeInPod`]. The first poll there advances the machine
-//!   to [`WakePhase::ExitingPod`].
+//!   in [`WakePhase::AwakeInPod`] and only on a fresh press edge
+//!   ([`InputEdge::Rising`]). The first fresh press polled there advances
+//!   the machine to [`WakePhase::ExitingPod`].
+//! * A continued hold ([`InputEdge::Held`]) is dropped in every phase,
+//!   including `AwakeInPod`: an exit input held from before the wake
+//!   boundary is still a hold after the boundary, and the documented
+//!   early-input policy is that it must not queue an automatic exit. The
+//!   player presses again after waking to leave the pod.
 //! * In [`WakePhase::Waking`] exit-pod intent is dropped, never buffered:
-//!   the wake sequence must finish before the body responds, and an intent
-//!   held from before the wake boundary must not queue an automatic exit.
-//!   This is the documented early-input policy.
-//! * In [`WakePhase::ExitingPod`] all input is ignored: the authored get-up
-//!   motion owns the body until it signals completion.
+//!   the wake sequence must finish before the body responds, and both fresh
+//!   presses and holds are dropped while it runs.
+//! * In [`WakePhase::ExitingPod`] exit intent and locomotion are ignored
+//!   (the authored get-up motion owns the body until it signals
+//!   completion), but look stays allowed per the look policy below: user
+//!   look composes with the authored get-up pose without resetting it.
+//!   "All input is ignored" never appears in this contract; the ignored
+//!   inputs are named exactly.
 //! * In [`WakePhase::Standing`] exit-pod intent is unbound and dropped.
 //! * Together these rules make held and repeated exit intent transition the
-//!   machine exactly once: only the first poll after the wake boundary finds
-//!   [`WakePhase::AwakeInPod`], and every later poll lands in a phase whose
-//!   policy drops the intent. No transition can be duplicated and none can
-//!   skip.
+//!   machine exactly once: only a fresh press polled in
+//!   [`WakePhase::AwakeInPod`] finds a consuming phase, every other poll
+//!   lands on a hold edge or a phase whose policy drops the intent. No
+//!   transition can be duplicated and none can skip.
 //! * [`WakePhase::wake_complete`] and [`WakePhase::get_up_complete`] are
 //!   idempotent boundary signals. Re-delivering a signal after its boundary
 //!   is a no-op, so a signal held across a rendered frame cannot duplicate a
@@ -44,6 +53,21 @@
 //! Every predicate and every transition match is exhaustive over the enum.
 //! A closed enum with no wildcard arm is the fail-loud guarantee: there is
 //! no unknown state and no fallback path to stack behavior onto.
+
+/// Whether one poll of a possibly-held input is a fresh press or a
+/// continuation of a hold.
+///
+/// Boundary-crossing actions are keyed to the fresh press: a hold carried
+/// across a phase boundary stays a hold there and never fires the action
+/// the boundary's phase would consume. Callers derive the edge from their
+/// own previous button state; the machine never guesses.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum InputEdge {
+    /// The input rose from released to pressed since the previous poll.
+    Rising,
+    /// The input was already held at the previous poll and stayed held.
+    Held,
+}
 
 /// What one transition attempt did to the machine.
 ///
@@ -105,10 +129,11 @@ pub enum WakePhase {
     /// Eyes not yet open in the seventh pod. Nothing is controllable.
     #[default]
     Waking,
-    /// Awake, lying in the pod. Look is allowed and exit-pod intent is
-    /// consumed.
+    /// Awake, lying in the pod. Look is allowed and a fresh exit-pod press
+    /// is consumed.
     AwakeInPod,
-    /// The authored get-up motion owns the body. All input is ignored.
+    /// The authored get-up motion owns the body: exit intent and locomotion
+    /// are ignored. Look stays allowed and composes with the authored pose.
     ExitingPod,
     /// On foot. `WASD` locomotion is unlocked.
     Standing,
@@ -130,17 +155,19 @@ impl WakePhase {
     }
 
     /// Feed one poll of the exit-pod input (restraint pop / swing-out
-    /// intent).
+    /// intent), tagged with the poll's [`InputEdge`].
     ///
-    /// Phase policy: in [`WakePhase::AwakeInPod`] the first poll advances to
-    /// [`WakePhase::ExitingPod`]; in [`WakePhase::Waking`],
-    /// [`WakePhase::ExitingPod`], and [`WakePhase::Standing`] the intent is
-    /// dropped and [`PhaseTransition::Ignored`] is returned. The method is
-    /// infallible by design: player input can never place the machine in an
-    /// illegal state, and the only drop-or-consume decision is the phase.
+    /// Phase and edge policy: a [`InputEdge::Rising`] poll in
+    /// [`WakePhase::AwakeInPod`] advances to [`WakePhase::ExitingPod`]. A
+    /// [`InputEdge::Held`] poll is dropped in every phase, so a hold carried
+    /// across the wake boundary never queues an exit. A rising poll in any
+    /// other phase is dropped too: [`PhaseTransition::Ignored`] with the
+    /// phase unchanged. The method is infallible by design: player input can
+    /// never place the machine in an illegal state, and the only
+    /// drop-or-consume decisions are the phase and the edge.
     #[must_use]
-    pub fn request_pod_exit(&mut self) -> PhaseTransition {
-        if *self == Self::AwakeInPod {
+    pub fn request_pod_exit(&mut self, edge: InputEdge) -> PhaseTransition {
+        if *self == Self::AwakeInPod && edge == InputEdge::Rising {
             return self.advance_to(Self::ExitingPod);
         }
         PhaseTransition::Ignored
@@ -200,7 +227,7 @@ impl WakePhase {
 /// predicates over all phases.
 #[cfg(test)]
 mod tests {
-    use super::{PhaseError, PhaseTransition, WakePhase};
+    use super::{InputEdge, PhaseError, PhaseTransition, WakePhase};
 
     /// All four phases in progression order.
     const ALL: [WakePhase; 4] = [
@@ -233,12 +260,12 @@ mod tests {
         assert!(phase.in_phase(WakePhase::AwakeInPod));
     }
 
-    /// The legal transition out of `AwakeInPod` is the exit-pod input.
+    /// The legal transition out of `AwakeInPod` is a fresh exit-pod press.
     #[test]
     fn exit_intent_advances_awake_in_pod_to_exiting_pod() {
         let mut phase = WakePhase::AwakeInPod;
         assert_eq!(
-            phase.request_pod_exit(),
+            phase.request_pod_exit(InputEdge::Rising),
             PhaseTransition::Advanced {
                 from: WakePhase::AwakeInPod,
                 to: WakePhase::ExitingPod,
@@ -275,7 +302,7 @@ mod tests {
         );
         assert!(phase.look_allowed() && !phase.locomotion_allowed());
         assert_eq!(
-            phase.request_pod_exit(),
+            phase.request_pod_exit(InputEdge::Rising),
             PhaseTransition::Advanced {
                 from: WakePhase::AwakeInPod,
                 to: WakePhase::ExitingPod,
@@ -294,12 +321,20 @@ mod tests {
     }
 
     /// Early exit intent during Waking is dropped, never buffered, and the
-    /// phase holds through any number of polls.
+    /// phase holds through any number of polls: the first poll of a fresh
+    /// press and every poll of the hold that follows it.
     #[test]
     fn early_exit_intent_during_waking_is_ignored() {
         let mut phase = WakePhase::Waking;
-        for _ in 0..5 {
-            assert_eq!(phase.request_pod_exit(), PhaseTransition::Ignored);
+        assert_eq!(
+            phase.request_pod_exit(InputEdge::Rising),
+            PhaseTransition::Ignored
+        );
+        for _ in 0..4 {
+            assert_eq!(
+                phase.request_pod_exit(InputEdge::Held),
+                PhaseTransition::Ignored
+            );
             assert!(phase.in_phase(WakePhase::Waking));
         }
         // The dropped intent must not queue: waking still stops at
@@ -342,12 +377,20 @@ mod tests {
     }
 
     /// Repeated exit intent during `ExitingPod` cannot re-trigger the
-    /// transition: the authored get-up owns the body.
+    /// transition: the authored get-up owns the body, fresh presses and
+    /// holds alike.
     #[test]
     fn exit_intent_during_exiting_pod_cannot_re_trigger() {
         let mut phase = WakePhase::ExitingPod;
-        for _ in 0..5 {
-            assert_eq!(phase.request_pod_exit(), PhaseTransition::Ignored);
+        assert_eq!(
+            phase.request_pod_exit(InputEdge::Rising),
+            PhaseTransition::Ignored
+        );
+        for _ in 0..4 {
+            assert_eq!(
+                phase.request_pod_exit(InputEdge::Held),
+                PhaseTransition::Ignored
+            );
             assert!(phase.in_phase(WakePhase::ExitingPod));
         }
     }
@@ -357,7 +400,10 @@ mod tests {
     fn exit_intent_during_standing_is_ignored() {
         let mut phase = WakePhase::Standing;
         for _ in 0..3 {
-            assert_eq!(phase.request_pod_exit(), PhaseTransition::Ignored);
+            assert_eq!(
+                phase.request_pod_exit(InputEdge::Rising),
+                PhaseTransition::Ignored
+            );
             assert!(phase.in_phase(WakePhase::Standing));
         }
     }
@@ -385,14 +431,26 @@ mod tests {
         assert!(phase.in_phase(WakePhase::Standing));
     }
 
-    /// An exit intent held across the wake boundary transitions exactly
-    /// once: dropped while Waking, consumed by the first poll after the
-    /// boundary, dropped by every later poll.
+    /// An exit input held from before the wake boundary must not cause an
+    /// exit: its polls are drops while Waking, the post-boundary polls are
+    /// still holds and are dropped too, and the machine waits in
+    /// `AwakeInPod` for a fresh press. Regression guard for the press-edge
+    /// policy: the level-signal API used to let the first post-boundary
+    /// poll consume the pre-boundary hold.
     #[test]
-    fn held_exit_intent_across_the_wake_boundary_transitions_exactly_once() {
+    fn held_exit_intent_crossing_the_wake_boundary_does_not_exit() {
         let mut phase = WakePhase::Waking;
+        // The input went down before the wake boundary: one rising poll,
+        // then the hold continues while waking runs.
+        assert_eq!(
+            phase.request_pod_exit(InputEdge::Rising),
+            PhaseTransition::Ignored
+        );
         for _ in 0..3 {
-            assert_eq!(phase.request_pod_exit(), PhaseTransition::Ignored);
+            assert_eq!(
+                phase.request_pod_exit(InputEdge::Held),
+                PhaseTransition::Ignored
+            );
         }
         assert_eq!(
             phase.wake_complete(),
@@ -401,19 +459,50 @@ mod tests {
                 to: WakePhase::AwakeInPod,
             }
         );
+        // The same held input persists past the boundary and never fires.
+        for _ in 0..5 {
+            assert_eq!(
+                phase.request_pod_exit(InputEdge::Held),
+                PhaseTransition::Ignored
+            );
+            assert!(phase.in_phase(WakePhase::AwakeInPod));
+        }
+        // A fresh press after the boundary is the only thing that exits,
+        // exactly once.
         assert_eq!(
-            phase.request_pod_exit(),
+            phase.request_pod_exit(InputEdge::Rising),
             PhaseTransition::Advanced {
                 from: WakePhase::AwakeInPod,
                 to: WakePhase::ExitingPod,
             }
         );
         for _ in 0..3 {
-            assert_eq!(phase.request_pod_exit(), PhaseTransition::Ignored);
+            assert_eq!(
+                phase.request_pod_exit(InputEdge::Rising),
+                PhaseTransition::Ignored
+            );
+            assert_eq!(
+                phase.request_pod_exit(InputEdge::Held),
+                PhaseTransition::Ignored
+            );
         }
         assert!(phase.in_phase(WakePhase::ExitingPod));
         // The held intent never skips the get-up either.
         assert!(!phase.locomotion_allowed());
+    }
+
+    /// A hold polled for the first time in `AwakeInPod` (a press that began
+    /// before the poller started tracking edges) is a hold, not a press,
+    /// and is dropped.
+    #[test]
+    fn held_intent_polled_in_awake_in_pod_is_dropped() {
+        let mut phase = WakePhase::AwakeInPod;
+        assert_eq!(phase.wake_complete(), PhaseTransition::AlreadyDelivered);
+        assert_eq!(
+            phase.request_pod_exit(InputEdge::Held),
+            PhaseTransition::Ignored
+        );
+        assert!(phase.in_phase(WakePhase::AwakeInPod));
     }
 
     /// Repeated exit intent from `AwakeInPod` cannot skip the get-up: the
@@ -422,14 +511,17 @@ mod tests {
     fn repeated_exit_intent_cannot_skip_the_get_up() {
         let mut phase = WakePhase::AwakeInPod;
         assert_eq!(
-            phase.request_pod_exit(),
+            phase.request_pod_exit(InputEdge::Rising),
             PhaseTransition::Advanced {
                 from: WakePhase::AwakeInPod,
                 to: WakePhase::ExitingPod,
             }
         );
         for _ in 0..10 {
-            assert_eq!(phase.request_pod_exit(), PhaseTransition::Ignored);
+            assert_eq!(
+                phase.request_pod_exit(InputEdge::Rising),
+                PhaseTransition::Ignored
+            );
         }
         assert!(phase.in_phase(WakePhase::ExitingPod));
         phase
@@ -443,7 +535,10 @@ mod tests {
     fn standing_phase_never_regresses() {
         let mut phase = WakePhase::Standing;
         assert_eq!(phase.wake_complete(), PhaseTransition::AlreadyDelivered);
-        assert_eq!(phase.request_pod_exit(), PhaseTransition::Ignored);
+        assert_eq!(
+            phase.request_pod_exit(InputEdge::Rising),
+            PhaseTransition::Ignored
+        );
         assert_eq!(
             phase.get_up_complete(),
             Ok(PhaseTransition::AlreadyDelivered)
