@@ -80,9 +80,11 @@ const LOOK_SENSITIVITY: f32 = 0.0022;
 /// spawn pitch (one stop short of the same vertical).
 pub(crate) const PITCH_LIMIT: f32 = 89.0_f32.to_radians();
 
-/// Marks the rig's yaw parent (horizontal look only).
+/// Marks the rig's yaw parent (horizontal look only). Crate-visible so the
+/// gameplay harness can sample the rig's actual transform for the beat yaw
+/// events.
 #[derive(Component)]
-struct PlayerYaw;
+pub(crate) struct PlayerYaw;
 
 /// Marks the rig's pitch camera (vertical look only). Crate-visible so the
 /// gameplay harness can find the rig camera (it is the one camera the
@@ -214,21 +216,13 @@ const EXIT_PRESS: ButtonEdge = ButtonEdge {
 
 /// The integrated look angles, in radians. The resource is the single source
 /// of truth: mouse deltas accumulate here, and the transforms are projections
-/// of it (yaw around Y on the parent, pitch around X on the camera).
-/// Crate-visible so the gameplay harness can sample the rig's yaw for the
-/// report's yaw events.
+/// of it (yaw around Y on the parent, pitch around X on the camera). Consumers
+/// that want the aimed angle read the rig's transform (the rendered pose), as
+/// the gameplay harness's beat samples do.
 #[derive(Resource, Default)]
 pub(crate) struct LookAngles {
     yaw: f32,
     pitch: f32,
-}
-
-impl LookAngles {
-    /// The integrated yaw, in radians, wrapped into (-π, π]. The gameplay
-    /// harness reads it for the report's yaw samples.
-    pub(crate) fn yaw_radians(&self) -> f32 {
-        self.yaw
-    }
 }
 
 /// Adds first-person mouse look and the player camera rig to the app. The

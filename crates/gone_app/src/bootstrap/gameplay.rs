@@ -52,10 +52,8 @@ use bevy::transform::components::Transform;
 use gone_sim::PhaseTransition;
 
 use super::state::{HarnessState, RunMode, fail_scenario};
-use super::{
-    CaptureTarget, ChipSprite, ChipTexture, Content, TimedEvent, capture_target_image,
-    spawn_chip_sprite,
-};
+use super::{CaptureTarget, ChipSprite, ChipTexture, capture_target_image, spawn_chip_sprite};
+use crate::harness::{Content, TimedEvent};
 use crate::player::{GameplayInput, LookAngles, PlayerLookPlugin, PlayerPitch, ScriptedInput};
 use crate::post::GamePostChainPlugin;
 use crate::readiness::GameAssets;
@@ -342,18 +340,20 @@ pub(super) fn advance_wake_at_readiness(
     *advanced = true;
 }
 
-/// The gameplay update registration: the same chain the calibration lane
-/// runs, plus the required-asset poll first (the barrier's asset leg must be
-/// resolved before the same update's proof request) and the wake override
-/// right after the readiness boundary (so the boundary update itself drives
-/// tick 0 with look armed), all inside the `ScriptedInput` set so the player
-/// look chain orders after the adapter step that feeds it. The rig-camera
-/// retarget runs outside the set: it only touches the camera once, before
-/// the first render.
+/// The gameplay update registration. The drive half — the required-asset poll
+/// first (the barrier's asset leg must be resolved before the same update's
+/// proof request), the proof request, the boundary, the wake override, the
+/// present probe, the room observation, and the adapter step — chains inside
+/// the `ScriptedInput` set, so the player look chain orders after it and a
+/// scripted look offered on tick N integrates on tick N. The post-drive half
+/// (the shared registration in `super`) runs after `ScriptedInput` and after
+/// [`LookApplied`], so the beat pin and the yaw sample read the pose this
+/// tick's input produced. The rig-camera retarget runs outside both sets: it
+/// only touches the camera once, before the first render.
 pub(super) fn register_update_systems(app: &mut App) {
-    use super::{
-        drive_ticks, finish_scan, perf_sample, readiness_boundary, request_beat_captures,
-        request_present_probe, request_readiness_proof,
+    use super::drive::{
+        drive_ticks, readiness_boundary, register_post_drive_systems, request_present_probe,
+        request_readiness_proof,
     };
     use bevy::ecs::schedule::IntoScheduleConfigs;
     app.add_systems(Update, retarget_gameplay_camera);
@@ -366,14 +366,12 @@ pub(super) fn register_update_systems(app: &mut App) {
             advance_wake_at_readiness,
             request_present_probe,
             observe_room,
-            request_beat_captures,
             drive_ticks,
-            perf_sample,
-            finish_scan,
         )
             .chain()
             .in_set(ScriptedInput),
     );
+    register_post_drive_systems(app);
 }
 
 #[cfg(test)]

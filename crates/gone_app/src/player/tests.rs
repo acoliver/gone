@@ -449,7 +449,7 @@ fn scripted_canary_look_arms_on_an_unfocused_released_window() {
     assert_eq!(pitch.rotation, Quat::from_rotation_x(expected_pitch));
     let angles = app.world().resource::<LookAngles>();
     assert!(
-        (angles.yaw_radians() - expected_yaw).abs() < f32::EPSILON,
+        (angles.yaw - expected_yaw).abs() < f32::EPSILON,
         "the turn landed in the look angles"
     );
 }
@@ -477,7 +477,7 @@ fn device_mode_still_disarms_scripted_look_on_an_unfocused_window() {
     let angles = app.world().resource::<LookAngles>();
     let pose = test_spawn().pose;
     assert!(
-        (angles.yaw_radians() - pose.yaw_radians).abs() < f32::EPSILON,
+        (angles.yaw - pose.yaw_radians).abs() < f32::EPSILON,
         "the angles still hold the seeded pose"
     );
     // The rig transforms project the angles: the yaw parent never moved.
