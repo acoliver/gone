@@ -10,6 +10,8 @@ use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output, Stdio};
 
+use crate::fd_limit::{FD_EXHAUSTION_HINT, is_too_many_open_files};
+
 /// A captured failure while running an xtask-driven child process.
 #[derive(Debug)]
 pub struct CommandFailed {
@@ -47,6 +49,24 @@ impl std::fmt::Display for CommandFailed {
 }
 
 impl std::error::Error for CommandFailed {}
+
+/// Build the `CommandFailed` for a spawn that never started, appending the
+/// fd-exhaustion hint when the OS refused for lack of file descriptors
+/// (issue #17: the startup raise is the real fix, this only makes the
+/// residual failure actionable).
+fn spawn_failure(program: &str, args: &[String], err: &std::io::Error) -> CommandFailed {
+    let mut stderr = format!("failed to spawn `{program}`: {err}");
+    if is_too_many_open_files(err) {
+        stderr.push_str(FD_EXHAUSTION_HINT);
+    }
+    CommandFailed {
+        program: program.to_string(),
+        args: args.to_vec(),
+        status: None,
+        stdout: Vec::new(),
+        stderr: stderr.into_bytes(),
+    }
+}
 
 /// A planned child process. Building a plan never spawns a process, so tests
 /// can assert command shapes deterministically.
@@ -108,13 +128,10 @@ impl CommandPlan {
     /// # Errors
     /// Returns `CommandFailed` if the child cannot be spawned or exits nonzero.
     pub fn run_inherit(&self) -> Result<(), CommandFailed> {
-        let status = self.to_command().status().map_err(|err| CommandFailed {
-            program: self.program.clone(),
-            args: self.args.clone(),
-            status: None,
-            stdout: Vec::new(),
-            stderr: format!("failed to spawn `{}`: {err}", self.program).into_bytes(),
-        })?;
+        let status = self
+            .to_command()
+            .status()
+            .map_err(|err| spawn_failure(&self.program, &self.args, &err))?;
         if status.success() {
             Ok(())
         } else {
@@ -140,13 +157,7 @@ impl CommandPlan {
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
             .output()
-            .map_err(|err| CommandFailed {
-                program: self.program.clone(),
-                args: self.args.clone(),
-                status: None,
-                stdout: Vec::new(),
-                stderr: format!("failed to spawn `{}`: {err}", self.program).into_bytes(),
-            })?;
+            .map_err(|err| spawn_failure(&self.program, &self.args, &err))?;
         if output.status.success() {
             Ok(output)
         } else {
@@ -218,8 +229,43 @@ fn shell_like(program: &str, args: &[String]) -> String {
 mod tests {
     use super::CommandPlan;
     use super::repo_root_from;
+    use super::spawn_failure;
     use crate::test_support::unique_temp_dir;
     use std::fs;
+
+    #[test]
+    fn fd_exhaustion_spawn_errors_carry_the_raise_hint() {
+        // errno 23 is the ENFILE report from issue #17; errno 24 is EMFILE,
+        // the same practical failure. Both must name the limit and the raise.
+        for errno in [23, 24] {
+            let err = std::io::Error::from_raw_os_error(errno);
+            let failed = spawn_failure("cargo", &["build".to_string()], &err);
+            assert!(failed.status.is_none());
+            let stderr = String::from_utf8_lossy(&failed.stderr);
+            assert!(stderr.starts_with("failed to spawn `cargo`"));
+            assert!(
+                stderr.contains("\nhint:"),
+                "errno {errno} must append a hint line, got: {stderr}"
+            );
+            assert!(
+                stderr.contains("RLIMIT_NOFILE"),
+                "hint must name the fd limit, got: {stderr}"
+            );
+            assert!(
+                stderr.contains("ulimit -n 10240"),
+                "hint must suggest the raise, got: {stderr}"
+            );
+        }
+    }
+
+    #[test]
+    fn ordinary_spawn_errors_carry_no_hint() {
+        let err = std::io::Error::from_raw_os_error(2);
+        let failed = spawn_failure("cargo", &[], &err);
+        let stderr = String::from_utf8_lossy(&failed.stderr);
+        assert!(stderr.starts_with("failed to spawn `cargo`"));
+        assert!(!stderr.contains("hint"), "got: {stderr}");
+    }
 
     #[test]
     fn render_joins_program_and_args() {

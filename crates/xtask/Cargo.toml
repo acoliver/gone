@@ -14,3 +14,11 @@ workspace = true
 # of dep kinds would be strictly worse). std-only everywhere else.
 [dependencies]
 serde_json = "1"
+
+# RLIMIT_NOFILE raise at startup (issue #17). Safe getrlimit/setrlimit
+# wrapper: libc's raw FFI is unusable here because the workspace forbids
+# unsafe code. Unix-only, matching the cfg gate on the raise itself; the
+# macOS `kern.maxfilesperproc` handling in `increase_nofile_limit` is why
+# the reported-hard-limit trap from the issue cannot be hand-rolled safely.
+[target.'cfg(unix)'.dependencies]
+rlimit = "0.11"

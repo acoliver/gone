@@ -11,6 +11,7 @@ use std::process::ExitCode;
 mod architecture;
 mod cli;
 mod clippy_policy;
+mod fd_limit;
 mod metadata_graph;
 mod process;
 mod protocol_surface;
@@ -20,6 +21,14 @@ mod source_size;
 mod test_support;
 
 fn main() -> ExitCode {
+    // Raise the file-descriptor soft limit before any child can spawn
+    // (issue #17): an unexpected failure here is fatal, while a permission
+    // shortfall keeps the inherited limit, so gates never depend on the
+    // caller remembering `ulimit -n 10240`.
+    if let Err(err) = fd_limit::raise_self() {
+        eprintln!("xtask: {err}");
+        return ExitCode::FAILURE;
+    }
     // Non-UTF-8 argv entries are lossily stringified rather than panicking;
     // every xtask command name and flag is ASCII, so nothing real is lost.
     let argv: Vec<String> = std::env::args_os()
