@@ -114,6 +114,22 @@ pub enum TimedEvent {
         /// The failing step and underlying error, naming the beat or artifact.
         what: String,
     },
+    /// The calibration lane's setup evidence, recorded exactly once before any
+    /// calibration dynamics run (at or before the first pinned sample tick):
+    /// which metering mask the GPU histogram samples (identified by the sha256
+    /// of the loaded asset's pixel bytes), the auto-exposure arm and settings,
+    /// the authored exposure, the patch plan, the light levels, and the
+    /// pinned sample ticks. The runner measures the capture sequence's
+    /// luminance behavior against this predeclared setup; the app never
+    /// measures or fudges the luminance itself.
+    Calibration {
+        /// Logical tick at which the evidence was recorded.
+        tick: u64,
+        /// Rendered frame at which the evidence was recorded.
+        frame: u64,
+        /// The recorded setup evidence.
+        evidence: crate::harness::calibration::CalibrationEvidence,
+    },
 }
 
 impl TimedEvent {
@@ -131,6 +147,7 @@ impl TimedEvent {
             Self::RoomCheck { frame, .. } => (1, 0, *frame),
             Self::Input { tick, frame, .. }
             | Self::Beat { tick, frame, .. }
+            | Self::Calibration { tick, frame, .. }
             | Self::PlayerYaw { tick, frame, .. }
             | Self::WakePhase { tick, frame, .. }
             | Self::PlayerPosition { tick, frame, .. } => (1, *tick, *frame),
@@ -444,6 +461,89 @@ mod tests {
     #[test]
     fn first_failure_is_none_on_a_clean_report() {
         assert_eq!(sample().first_failure(), None);
+    }
+
+    /// A calibration evidence event with plausible fixture values.
+    fn calibration_event(tick: u64, frame: u64) -> TimedEvent {
+        TimedEvent::Calibration {
+            tick,
+            frame,
+            evidence: crate::harness::calibration::CalibrationEvidence {
+                mask: crate::harness::MaskSelection::CenterWeighted,
+                mask_sha256: "42".repeat(32),
+                auto_exposure: crate::harness::calibration::AutoExposureEvidence {
+                    enabled: true,
+                    settings: Some(crate::harness::calibration::AutoExposureSettings {
+                        range_min: -8.0,
+                        range_max: 8.0,
+                        filter_min: 0.10,
+                        filter_max: 0.90,
+                        speed_brighten: 3.0,
+                        speed_darken: 1.0,
+                    }),
+                },
+                authored_exposure_ev100: 0.0,
+                patch_area_fraction: 0.02,
+                patch_placements: crate::harness::calibration::patch_placements(
+                    crate::harness::PatchPlan::CenterThenEdge { at_tick: 60 },
+                ),
+                initial_level: 0.18,
+                step_tick: 30,
+                step_level: 0.36,
+                sample_ticks: vec![5, 20, 45, 80],
+            },
+        }
+    }
+
+    #[test]
+    fn calibration_event_roundtrips_with_all_evidence_fields() {
+        let mut report = sample();
+        report.events.push(calibration_event(0, 1));
+        let json = super::report_to_json(&report).expect("serializes");
+        let parsed = super::parse_report(&json).expect("parses");
+        assert_eq!(parsed, report);
+        let Some(TimedEvent::Calibration { evidence, .. }) = parsed
+            .events
+            .iter()
+            .find(|event| matches!(event, TimedEvent::Calibration { .. }))
+        else {
+            panic!("the calibration event survives the roundtrip");
+        };
+        assert_eq!(evidence.mask, crate::harness::MaskSelection::CenterWeighted);
+        assert_eq!(evidence.mask_sha256.len(), 64);
+        let settings = evidence.auto_exposure.settings.as_ref().expect("ae on");
+        assert!((settings.speed_brighten - 3.0).abs() < 1e-6);
+        assert!((evidence.authored_exposure_ev100 - 0.0).abs() < 1e-6);
+        assert_eq!(evidence.patch_placements.len(), 2);
+        assert_eq!(evidence.sample_ticks, vec![5, 20, 45, 80]);
+    }
+
+    #[test]
+    fn calibration_event_sorts_with_the_run_events_before_the_terminal_ones() {
+        let mut events = vec![
+            TimedEvent::Complete { frame: 40 },
+            calibration_event(0, 1),
+            TimedEvent::Input {
+                tick: 0,
+                frame: 0,
+                what: "move-delta".to_owned(),
+            },
+            TimedEvent::Ready { frame: 0 },
+        ];
+        super::sort_events(&mut events);
+        assert!(matches!(events[0], TimedEvent::Ready { .. }));
+        // Same class (run events) sorts by tick, then frame; the calibration
+        // evidence recorded on tick 0 frame 1 lands after the tick-0 input.
+        assert!(matches!(
+            events[1],
+            TimedEvent::Input {
+                tick: 0,
+                frame: 0,
+                ..
+            }
+        ));
+        assert!(matches!(events[2], TimedEvent::Calibration { tick: 0, .. }));
+        assert!(matches!(events[3], TimedEvent::Complete { .. }));
     }
 
     /// A minimal report carrying exactly `events` (the sort is the thing under

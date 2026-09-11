@@ -56,6 +56,13 @@ pub enum ScenarioMode {
     /// judges the window lives runner-side; the scenario carries only the
     /// window shape.
     Perf,
+    /// The calibration-evidence lane (issue #6 slice B): the real post chain
+    /// rendered into the harness capture target, driven by the scenario's
+    /// `calibration` section (one luminance step, a bright-patch placement
+    /// plan, a metering-mask selection, and the auto-exposure arm). Captures
+    /// still flow through the beat lane; the scenario's beats are the pinned
+    /// capture sample ticks.
+    Calibration,
 }
 
 /// One scenario definition.
@@ -104,6 +111,11 @@ pub struct Scenario {
     /// at least 1 in perf mode; unused (zero) on the capture lane.
     #[serde(default)]
     pub sample_frames: u64,
+    /// Calibration mode only: the calibration scene's predeclared parameters.
+    /// Required exactly when `mode` is `calibration` (enforced by
+    /// [`parse_scenario`]); absent on the other lanes.
+    #[serde(default)]
+    pub calibration: Option<crate::harness::calibration::CalibrationParams>,
 }
 
 impl Default for Scenario {
@@ -120,17 +132,26 @@ impl Default for Scenario {
             mode: ScenarioMode::default(),
             warmup_frames: 0,
             sample_frames: 0,
+            calibration: None,
         }
     }
 }
 
-/// Parse a scenario from JSON text.
+/// Parse a scenario from JSON text, enforcing the calibration surface's
+/// cross-field invariants: the `calibration` section is required exactly when
+/// the mode is `calibration`, a calibration scenario predeclares at least one
+/// pinned capture sample tick (a beat), carries no scripted inputs (the
+/// calibration scene is a closed lane; nothing reads input), and the
+/// parameters themselves satisfy [`crate::harness::calibration::
+/// CalibrationParams::validate`]. Capture and perf scenarios are unchanged:
+/// no section and no new checks.
 ///
 /// # Errors
-/// Returns a message when the JSON is invalid, is not a scenario, or declares
-/// a `ticks_per_second` below 1: the fixed clock has no meaningful step at a
-/// zero rate, so a rateless scenario fails here on both sides (the app and
-/// the runner share this parser) instead of failing later mid-run.
+/// Returns a message when the JSON is invalid, is not a scenario, declares
+/// a `ticks_per_second` below 1 (the fixed clock has no meaningful step at a
+/// zero rate, so a rateless scenario fails here on both sides — the app and
+/// the runner share this parser — instead of failing later mid-run), or
+/// violates the calibration surface invariants.
 pub fn parse_scenario(text: &str) -> Result<Scenario, String> {
     let scenario: Scenario =
         serde_json::from_str(text).map_err(|e| format!("scenario parse error: {e}"))?;
@@ -155,7 +176,41 @@ pub fn parse_scenario(text: &str) -> Result<Scenario, String> {
             ));
         }
     }
+    validate_calibration_surface(&scenario)?;
     Ok(scenario)
+}
+
+/// The calibration surface's cross-field invariants over one parsed scenario.
+fn validate_calibration_surface(scenario: &Scenario) -> Result<(), String> {
+    match (scenario.mode, &scenario.calibration) {
+        (ScenarioMode::Calibration, Some(params)) => {
+            params.validate()?;
+            if scenario.beats.is_empty() {
+                return Err(format!(
+                    "calibration scenario `{}` needs at least one beat (the beats are the \
+                     pinned capture sample ticks)",
+                    scenario.name
+                ));
+            }
+            if !scenario.actions.is_empty() {
+                return Err(format!(
+                    "calibration scenario `{}` takes no scripted actions (the calibration \
+                     scene is closed; nothing reads input)",
+                    scenario.name
+                ));
+            }
+            Ok(())
+        }
+        (ScenarioMode::Calibration, None) => Err(format!(
+            "calibration scenario `{}` is missing its `calibration` section",
+            scenario.name
+        )),
+        (_, Some(_)) => Err(format!(
+            "scenario `{}` carries a `calibration` section but its mode is not `calibration`",
+            scenario.name
+        )),
+        _ => Ok(()),
+    }
 }
 
 /// Serialize a scenario to compact JSON.
@@ -225,6 +280,7 @@ mod tests {
         assert_eq!(s.mode, ScenarioMode::Capture);
         assert_eq!(s.warmup_frames, 0);
         assert_eq!(s.sample_frames, 0);
+        assert_eq!(s.calibration, None);
     }
 
     #[test]
@@ -331,5 +387,113 @@ mod tests {
         let a = parse_scenario(GOOD).expect("a");
         let b: Scenario = parse_scenario(&scenario_to_json(&a).expect("json")).expect("b");
         assert_eq!(a, b);
+    }
+
+    /// A calibration scenario with the given beats/actions JSON fragments.
+    fn calibration_json(beats: &str, actions: &str, params: &str) -> String {
+        format!(
+            r#"{{
+                "name": "cal-arm-1",
+                "seed": 9,
+                "actions": {actions},
+                "beats": {beats},
+                "mode": "calibration",
+                "calibration": {params}
+            }}"#
+        )
+    }
+
+    const VALID_PARAMS: &str = r#"{
+        "initial_level": 0.18,
+        "step": {"tick": 30, "level": 0.36},
+        "patch_area_fraction": 0.02,
+        "patch": {"center_then_edge": {"at_tick": 60}},
+        "mask": "center_weighted",
+        "auto_exposure": true
+    }"#;
+
+    #[test]
+    fn calibration_scenario_parses() {
+        let scenario = parse_scenario(&calibration_json(
+            r#"[{"name": "pre", "tick": 20}, {"name": "post", "tick": 45}]"#,
+            "[]",
+            VALID_PARAMS,
+        ))
+        .expect("parses");
+        assert_eq!(scenario.mode, ScenarioMode::Calibration);
+        let params = scenario.calibration.expect("params present");
+        assert!((params.initial_level - 0.18).abs() < 1e-6);
+        assert_eq!(params.step.tick, 30);
+        assert!((params.step.level - 0.36).abs() < 1e-6);
+        assert!((params.patch_area_fraction - 0.02).abs() < 1e-6);
+        assert_eq!(params.patch.move_tick(), Some(60));
+        assert_eq!(params.mask, crate::harness::MaskSelection::CenterWeighted);
+        assert!(params.auto_exposure);
+        // The beats stay the ordinary capture surface the runner already
+        // verifies: they are the pinned capture sample ticks.
+        assert_eq!(scenario.beats.len(), 2);
+    }
+
+    #[test]
+    fn calibration_scenario_roundtrips() {
+        let a = parse_scenario(&calibration_json(
+            r#"[{"name": "pre", "tick": 20}]"#,
+            "[]",
+            VALID_PARAMS,
+        ))
+        .expect("a");
+        let b: Scenario = parse_scenario(&scenario_to_json(&a).expect("json")).expect("b");
+        assert_eq!(a, b);
+    }
+
+    #[test]
+    fn calibration_mode_without_params_is_rejected() {
+        let bad = r#"{"name":"x","seed":0,"actions":[],"beats":[{"name":"b","tick":5}],"mode":"calibration"}"#;
+        let err = parse_scenario(bad).expect_err("must fail");
+        assert!(err.contains("calibration"), "{err}");
+    }
+
+    #[test]
+    fn params_without_calibration_mode_are_rejected() {
+        let bad = format!(
+            r#"{{"name":"x","seed":0,"actions":[],"beats":[],"calibration":{VALID_PARAMS}}}"#
+        );
+        let err = parse_scenario(&bad).expect_err("must fail");
+        assert!(err.contains("mode is not `calibration`"), "{err}");
+    }
+
+    #[test]
+    fn calibration_scenario_without_beats_is_rejected() {
+        let err =
+            parse_scenario(&calibration_json("[]", "[]", VALID_PARAMS)).expect_err("must fail");
+        assert!(err.contains("at least one beat"), "{err}");
+    }
+
+    #[test]
+    fn calibration_scenario_with_actions_is_rejected() {
+        let err = parse_scenario(&calibration_json(
+            r#"[{"name": "b", "tick": 5}]"#,
+            r#"[{"tick": 0, "action": {"Look": {"yaw_deg": 1.0, "pitch_deg": 0.0}}}]"#,
+            VALID_PARAMS,
+        ))
+        .expect_err("must fail");
+        assert!(err.contains("no scripted actions"), "{err}");
+    }
+
+    #[test]
+    fn calibration_params_invariants_are_enforced_at_parse() {
+        let bad = VALID_PARAMS.replace(r#""initial_level": 0.18"#, r#""initial_level": 0"#);
+        let err = parse_scenario(&calibration_json(r#"[{"name":"b","tick":5}]"#, "[]", &bad))
+            .expect_err("must fail");
+        assert!(err.contains("initial_level"), "{err}");
+    }
+
+    #[test]
+    fn capture_scenarios_still_reject_a_stray_calibration_section() {
+        // The existing lanes' JSON is unchanged and validated identically; a
+        // capture scenario carrying calibration params is an authoring error.
+        let bad =
+            r#"{"name":"x","seed":0,"actions":[],"beats":[],"calibration":{"initial_level":1}}"#;
+        assert!(parse_scenario(bad).is_err());
     }
 }

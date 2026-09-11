@@ -13,6 +13,7 @@
 //! can re-export it without pulling any render code into the runner.
 
 pub mod beat;
+pub mod calibration;
 pub mod frame;
 pub mod input;
 pub mod perf;
@@ -20,6 +21,7 @@ pub mod report;
 pub mod scenario;
 
 pub use beat::*;
+pub use calibration::*;
 pub use frame::*;
 pub use input::*;
 pub use perf::*;
@@ -38,4 +40,14 @@ pub use scenario::*;
 /// with warmup/sample window counts, reports gain the optional `perf` section
 /// (raw wall-clock samples plus statistics), and the scenario `pacing` field is
 /// consumed at window creation (Uncapped lifts vsync for the run).
-pub const PROTOCOL_VERSION: u32 = 3;
+///
+/// Version 4: the calibration-evidence lane — scenarios gain the `calibration`
+/// mode plus a required `calibration` section (one luminance step, an
+/// equal-area bright-patch placement plan, a metering-mask selection, and the
+/// auto-exposure arm), and reports gain the `Calibration` event, recorded once
+/// before any calibration dynamics with the setup evidence (mask selection plus
+/// the sha256 of the loaded mask asset's pixel bytes, the auto-exposure settings
+/// in force, the authored exposure, the patch area and placements, the light
+/// levels and step tick, and the pinned sample ticks). The capture and perf
+/// surfaces are unchanged.
+pub const PROTOCOL_VERSION: u32 = 4;

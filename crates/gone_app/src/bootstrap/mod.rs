@@ -66,8 +66,9 @@
 //!   opens the clock is the first fully provisioned game frame, and a
 //!   required asset whose load fails fails the run by name and exits
 //!   nonzero, never a placeholder render. Calibration content requests the
-//!   proof immediately, its dark loading scene being the whole proof. Either
-//!   way, only then does the app print `GONE_READY`, record
+//!   proof immediately: the calibration scene renders through the post chain
+//!   from startup, so the proof already shows the wall (the chip stays
+//!   hidden). Either way, only then does the app print `GONE_READY`, record
 //!   tick zero, and make the chip sprite visible (no authored content before
 //!   the boundary) — and on the canary the announcement itself waits for the
 //!   present gate: the window must have shown one capturable frame before
@@ -97,24 +98,20 @@
 //!   actual transform, and the screenshot request enters the render queue. A
 //!   look action on a capture tick is therefore inside the PNG and inside
 //!   the reported yaw sample, not one tick behind them.
+//! * **Calibration lane architecture (issue #6 slice B).** The post chain is
+//!   Core3d and the chip is Core2d, so the calibration scenario renders its
+//!   wall/patch scene through a dedicated `Camera3d` carrying the real chain
+//!   (`AgX` tonemapping, vignette, auto exposure through the selected mask)
+//!   into the SAME offscreen capture target, and the chip is drawn over the
+//!   scene by the lane's plain 2d camera (`ClearColorConfig::None`, higher
+//!   camera order) — captures stay the executed post-chain output and the
+//!   chip keeps its decode contract; the chip never enters the auto-exposure
+//!   histogram (it lives on a different view's LDR output). The setup
+//!   evidence records the mask identity (sha256 of the loaded asset bytes)
+//!   once the asset has loaded, and the beat requester refuses to pin
+//!   captures before that ([`state::beat_requests_allowed`]). `calibration`
+//!   owns the scene, the evidence recording, and the full reconciliation.
 //! * **Beat binding and accounting.** The scenario clock holds while a beat
-//!   readback is in flight (bevy captures at most one screenshot per render
-//!   target per frame, so exactly one capture is in flight): no tick, no
-//!   frame, no adapter step, no paint, and the renderer keeps presenting the
-//!   held frame. A beat's screenshot is therefore spawned on the update that
-//!   drives its scenario tick with the lane free, and the manifest entry
-//!   pins exactly that scripted tick's (tick, frame, request id) at the same
-//!   instant it is spawned; the pin can never land on a later tick because
-//!   the clock cannot pass the beat's tick while the lane is busy. The
-//!   capture therefore always shows the chip code the report claims: request,
-//!   entry, and rendered pixels are one atomic step (see
-//!   `state::HarnessState::pin_next_beat`), and identical scenarios pin
-//!   identical (tick, frame) pairs regardless of readback latency (the
-//!   observer honors `GONE_TEST_CAPTURE_DELAY_MS` so tests can prove that
-//!   invariant against an artificially slow readback; the chain-level
-//!   invariant test runs the real drive path with and without a landing
-//!   delay). Requests and captures are separate ledgers; the run completes
-//!   only when every scenario beat's PNG is on disk.
 //! * **Immediate capture failures.** A failed capture convert/save records a
 //!   `TimedEvent::Failure` naming the artifact and the underlying error, writes
 //!   the report, and exits nonzero. There is no retry loop.
@@ -132,12 +129,15 @@
 //! Module layout: this file owns the plugin and the scene setup; [`drive`]
 //! owns the update chain (the drive half in the `ScriptedInput` set, the
 //! post-drive half that captures post-tick state); [`capture`] owns the
-//! capture receiver and I/O; [`state`] owns the scenario run state (counters,
-//! beat ledgers, readiness, failure recording, the scenario clock); [`finish`]
-//! owns the close (completion scan, the `max_frames` deadline, the report);
-//! and the test modules pin the accounting, readiness, and gameplay-drive
-//! regressions without needing a renderer.
+//! capture receiver and I/O; [`calibration`] owns the calibration lane's
+//! scene, evidence recording, and camera reconciliation; [`state`] owns the
+//! scenario run state (counters, beat ledgers, readiness, failure recording,
+//! the scenario clock); [`finish`] owns the close (completion scan, the
+//! `max_frames` deadline, the report); and the test modules pin the
+//! accounting, readiness, and gameplay-drive regressions without needing a
+//! renderer.
 
+mod calibration;
 mod capture;
 mod drive;
 mod finish;
@@ -173,7 +173,11 @@ use bevy::transform::components::Transform;
 
 use crate::harness::{Content, InputAdapter, Scenario, ScenarioMode, frame};
 use crate::player::{LookInputMode, ScriptedInput};
+use crate::post::GamePostChainPlugin;
 
+use calibration::{
+    CalibrationScene, drive_calibration, record_calibration_evidence, setup_calibration_scene,
+};
 use capture::{CaptureDelay, on_screenshot_captured};
 use drive::{
     drive_ticks, readiness_boundary, register_post_drive_systems, request_present_probe,
@@ -269,6 +273,13 @@ impl Plugin for BootstrapPlugin {
         app.init_resource::<ChipTexture>();
         app.init_resource::<ChipSprite>();
         app.init_resource::<CaptureTarget>();
+        app.init_resource::<CalibrationScene>();
+        if self.scenario.mode == ScenarioMode::Calibration {
+            // The calibration lane's cameras bind the checked-in metering
+            // masks and need the auto-exposure render graph: the only
+            // harness lane that builds the game's post-chain plugins here.
+            app.add_plugins(GamePostChainPlugin);
+        }
         // Gameplay content boots the real game into the harness app (post
         // chain, stasis scene, player look) before anything else wires
         // against it; the calibration content is the app as it has always
@@ -303,13 +314,27 @@ impl Plugin for BootstrapPlugin {
             app.add_systems(Startup, gameplay::setup_gameplay_scene);
             gameplay::register_update_systems(app);
         } else {
-            app.add_systems(Startup, setup_harness_scene);
+            app.add_systems(
+                Startup,
+                // The calibration scene spawns after the capture target
+                // exists: its cameras render into that target.
+                (setup_harness_scene, setup_calibration_scene).chain(),
+            );
             app.add_systems(
                 Update,
                 (
                     request_readiness_proof,
                     readiness_boundary,
+                    // Evidence precedes the beat requester: the gate
+                    // (`state::beat_requests_allowed`) lifts the same update
+                    // the mask identity is recorded, so no capture can
+                    // precede it.
+                    record_calibration_evidence,
                     request_present_probe,
+                    // Calibration dynamics apply the tick about to be driven —
+                    // the same tick the post-drive half paints the chip for
+                    // and pins.
+                    drive_calibration,
                     drive_ticks,
                 )
                     .chain()

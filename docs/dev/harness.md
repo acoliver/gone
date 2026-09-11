@@ -8,7 +8,7 @@ JSON and the pixel encoding is `crates/gone_app/src/harness/`; `gone_harness`
 re-exports that surface and never defines a type of its own.
 
 The protocol version both sides embed and compare is
-`gone_app::harness::PROTOCOL_VERSION` (currently `3`). A report whose version
+`gone_app::harness::PROTOCOL_VERSION` (currently `4`). A report whose version
 does not equal the runner's is rejected. Version 2 is the real-capture protocol:
 beats are readbacks of an offscreen render target the harness camera draws into,
 the frame-code chip is a sprite rendered into the scene, input events carry
@@ -16,18 +16,28 @@ their press/release edge, and capture failures are recorded as `Failure` events.
 Version 3 adds the performance lane: scenarios gain a `mode` (capture or perf)
 with warmup/sample window counts, reports gain the optional `perf` section, and
 the scenario `pacing` field is consumed at window creation (canary runs; a
-headless run has no window, so pacing is inert there).
+headless run has no window, so pacing is inert there). Version 4 adds the
+calibration-evidence lane: scenarios gain the `calibration` mode plus a required
+`calibration` section (one luminance step, an equal-area bright-patch placement
+plan, a metering-mask selection, and the auto-exposure arm), and reports gain
+the `Calibration` event, recorded once before any sample is pinned with the
+run's setup evidence (mask selection plus the sha256 of the loaded mask asset's
+pixel bytes, the auto-exposure settings in force, the authored exposure, the
+patch plan, the light levels, and the pinned sample ticks). The capture and perf
+surfaces are unchanged.
 
 ## Two crates, one boundary
 
-- `gone_app` (Bevy 0.19) owns the protocol: `crates/gone_app/src/harness/{scenario,input,beat,frame,report,perf,mod}.rs`.
+- `gone_app` (Bevy 0.19) owns the protocol: `crates/gone_app/src/harness/{scenario,input,beat,frame,report,perf,calibration,mod}.rs`.
   It reads a scenario, runs the fixed timeline (headless by default; a real
   unfocused window in the render canary), captures screenshots, writes the
   report, and exits by itself. The app-side lane lives
   in `crates/gone_app/src/bootstrap/`: `mod.rs` is the plugin plus the ECS
-  systems and capture I/O, `state.rs` is the run-state ledger (counters, beat
-  ledgers, readiness gate, failure recording, perf sampler, run mode), and
-  `tests.rs`
+  systems, `captures.rs` is the capture I/O half of the screenshot observer,
+  `calibration.rs` owns the calibration lane's scene, evidence recording, and
+  camera/post-chain reconciliation, `state.rs` is the run-state ledger
+  (counters, beat ledgers, readiness gate, failure recording, perf sampler, run
+  mode), and `tests.rs`
   pins the accounting and readiness regressions.
 - `gone_harness` (no Bevy) is the runner: `crates/gone_harness/src/bin/gone_harness.rs`.
   It hashes the build and scenario, spawns the app, waits for it, decodes the
@@ -258,10 +268,10 @@ On that capture the app writes the proof PNG to the run dir
 (`readiness-proof.png`), prints the exact stdout line
 
 ```
-GONE_READY 3 <frame>
+GONE_READY 4 <frame>
 ```
 
-(`3` is `PROTOCOL_VERSION`, `<frame>` the rendered frame count at the boundary),
+(`4` is `PROTOCOL_VERSION`, `<frame>` the rendered frame count at the boundary),
 records `TimedEvent::Ready`, and makes the frame-code chip visible. Every later
 step (ticks, input edges, beat captures) is gated on the same readiness state by
 `drive_allowed`, so the scenario clock starts at zero and the input adapter is
@@ -410,6 +420,116 @@ missing (a `Failure` event naming each in the runner's
 `REPORT <path>`, and exits nonzero. A beat scripted past the deadline is a
 failed scenario, never a hang; there is no waiting past the deadline.
 
+## Calibration-evidence lane (protocol v4)
+
+The fourth lane (`"mode": "calibration"`) produces capture-based evidence
+about auto-exposure behavior. It reuses the capture lane's entire surface —
+readiness, ticks, the frame-code chip, beat requests, PNG decode, the report —
+and adds exactly two things: a required `calibration` scenario section, and
+one `Calibration` event recorded before any sample is pinned.
+
+(The name overlaps the perf lane's "calibration scene", which is the plain
+bootstrap scene — dark clear plus the chip. The perf lane does not build this
+lane's scene or post chain; only the calibration lane does.)
+
+### Scenario surface
+
+The `calibration` section predeclares everything the lane renders, so the
+report's evidence and the runner's measurements are judged against one
+declared setup:
+
+```json
+{
+  "initial_level": 0.18,
+  "step": {"tick": 30, "level": 0.36},
+  "patch_area_fraction": 0.02,
+  "patch": {"center_then_edge": {"at_tick": 60}},
+  "mask": "center_weighted",
+  "auto_exposure": true
+}
+```
+
+- `initial_level` / `step.level` — the wall's linear radiance before and from
+  the step tick; finite, positive, at most `LEVEL_MAX` (100.0). The step lands
+  at tick 1 or later (the initial level is sampled first).
+- `patch_area_fraction` — the bright patch's area as a fraction of the frame
+  area at the wall plane, identical in both placements; positive and below
+  `PATCH_AREA_FRACTION_MAX` (0.03, the largest equal-area patch that stays
+  fully on screen in the edge slot at the lane's pinned camera geometry).
+- `patch` — the placement plan: `fixed_center`, `fixed_edge`, or
+  `center_then_edge` with a move tick of 1 or later.
+- `mask` — which metering-mask asset the camera binds: `center_weighted` (the
+  game camera's radial mask) or `uniform` (the control that removes the
+  center/edge metering difference).
+- `auto_exposure` — whether the camera's `AutoExposure` component is bound at
+  all (the component's presence is bevy's only switch for computed exposure).
+
+Cross-field invariants enforced by `parse_scenario`: the section is required
+exactly when the mode is `calibration` and forbidden on the other lanes; a
+calibration scenario carries at least one beat (the beats are the pinned
+sample ticks) and no scripted actions (the scene is a closed lane; nothing
+reads input).
+
+### Scene and capture path (app side)
+
+The lane renders a 3D scene through the game's REAL post chain into the same
+offscreen capture target the capture lane reads back: a wall quad whose
+linear radiance is the current level (emissive-only `StandardMaterial`; the
+scene has no lights, so emissive is the whole signal), an equal-area bright
+patch that radiates a fixed multiple (10x) of the wall level, and a camera at
+the origin with a pinned 45-degree vertical FOV at distance 5, authored
+exposure `Exposure::ev100 = 0.0`, HDR on in both arms, and the post chain the
+game camera carries — AgX tonemapping, the authored vignette, and auto
+exposure metering through the selected mask exactly when the arm is on. The
+frame-code chip is Core2d (sprites never render in a 3d view), so a second,
+plain 2d camera (`ClearColorConfig::None`, higher camera order) draws the
+chip over the 3d output into the same target. The histogram pass reads the 3d
+view's HDR main texture, which the chip never enters: metering sees only the
+wall and the patch. Captures stay the executed post-chain output plus the
+chip — the same contract as every other lane. Dynamics apply per logical tick
+in the same update the chip is painted for that tick, so a capture pinned at
+tick T shows tick T's level, slot, and chip code together. Canary runs mirror
+the same camera pair onto the window, so the onscreen capture decodes.
+
+The metering masks are checked-in assets
+(`crates/gone_app/assets/post/metering_mask.png` and
+`metering_mask_uniform.png`), 64x64 single-channel (8-bit gray) PNGs whose
+pixel bytes are the construction `crates/gone_app/src/post.rs` documents and
+tests: a radial center-weighted falloff quantized to the shader's 16 levels,
+and the all-white uniform control. The generators that serialize the
+constructions are `cargo test -p gone_app --lib generate_ -- --ignored`.
+
+### The Calibration evidence event
+
+Once the readiness boundary has passed AND the selected mask asset has
+actually loaded (a failed load fails the run naming the mask path; a
+still-loading mask keeps waiting under the same `max_frames` deadline as any
+beat), the app records exactly one `TimedEvent::Calibration`:
+
+```json
+{"kind": "Calibration", "at": {"tick": 0, "frame": 5, "evidence": {"...": "..."}}}
+```
+
+`evidence` carries: the mask selection and `mask_sha256`, the sha2-256 of the
+loaded asset's pixel bytes (what the GPU histogram samples, not the file
+path); the auto-exposure arm (an `enabled` flag plus `settings` — the range,
+filter, and adaptation speeds as bound on the camera — present exactly when
+enabled); `authored_exposure_ev100`; `patch_area_fraction` and
+`patch_placements` (the plan in tick order); `initial_level`, `step_tick`,
+`step_level`; and `sample_ticks`, the scenario's beat ticks ascending — the
+pinned samples the capture lane is about to take.
+
+The beat requester refuses to pin a capture before that event is recorded
+(`bootstrap::state::beat_requests_allowed`), so every capture the runner
+measures postdates the setup event. On this lane the readiness-proof PNG
+shows the calibration scene's wall instead of the empty dark clear; the
+boundary's meaning is unchanged (first readback of a frame the render graph
+executed).
+
+The app never measures luminance. The runner measures the capture PNGs
+against this predeclared setup; the app's job is to make the captures
+possible and report the setup identity honestly.
+
 ## Artwork layout
 
 ```
@@ -435,8 +555,12 @@ Written by the app at finish (`harness/report.rs`), keyed to `PROTOCOL_VERSION`:
 - `events` — tick-stamped timeline: `Ready {frame}`, `Input {tick,frame,what}`,
   `Beat {name,tick,frame,request_id}`, `Complete {frame}`, and
   `Failure {frame, what}` (a capture or report error, terminal, no retry).
+  Calibration runs add `Calibration {tick, frame, evidence}` — the setup
+  evidence recorded once before any sample is pinned (see the
+  calibration-evidence lane section).
 - `checkpoints` — strings like `ready at frame N`, `beat <name> captured`,
-  `failed: beat `x` capture failed: <error>`.
+  `failed: beat `x` capture failed: <error>`, and on calibration runs
+  `calibration evidence recorded`.
 - `frame_stats` — `{frames, mean_us, p95_us, median_us}` (defaults at slice A).
 - `beats` — name -> `{file, tick, frame, request_id}`; the pinned rendered
   moment the PNG shows.
@@ -513,8 +637,9 @@ with their pinned numbers) compares exactly.
 
 ## Performance lane
 
-The perf lane measures wall-clock frame times of the calibration scene and
-judges them against a versioned, checked-in policy. It is the third runner mode
+The perf lane measures wall-clock frame times of the bootstrap scene (dark
+clear plus the frame-code chip; not the calibration lane's scene) and judges
+them against a versioned, checked-in policy. It is the third runner mode
 beside `smoke` and `compare`:
 
     gone_harness perf [scenario.json]

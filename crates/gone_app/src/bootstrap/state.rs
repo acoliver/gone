@@ -80,6 +80,15 @@ pub(super) fn onscreen_capture_due(mode: RunMode, first_beat_request: bool) -> b
     mode == RunMode::Canary && first_beat_request
 }
 
+/// The beat-request gate: the capture and perf lanes request beats exactly
+/// as before; the calibration lane refuses to pin a capture before its
+/// setup evidence is recorded (`calibration_evidence_recorded`), so every
+/// AE-behavior sample the runner measures postdates the mask-identity event
+/// it must be judged against.
+pub(super) fn beat_requests_allowed(state: &HarnessState) -> bool {
+    state.scenario.mode != ScenarioMode::Calibration || state.calibration_evidence_recorded
+}
+
 /// The canary onscreen capture's file for a beat: saved next to the beat PNG
 /// in the same run directory, distinguished by the `.onscreen` infix.
 pub(super) fn onscreen_file_name(beat: &str) -> String {
@@ -185,7 +194,7 @@ impl PresentGate {
     }
 }
 
-use crate::harness::{Beat, BeatEntry, InputAdapter, Scenario, TimedEvent};
+use crate::harness::{Beat, BeatEntry, InputAdapter, Scenario, ScenarioMode, TimedEvent};
 
 /// Frame-time sampler for the perf lane: skips `warmup_frames` rendered frames
 /// after the readiness boundary, then records `sample_frames` wall-clock
@@ -402,6 +411,12 @@ pub(super) struct HarnessState {
     /// The perf lane's warmup/sample ledger (derived from the scenario; the
     /// capture lane never records into it).
     pub(super) sampler: PerfSampler,
+    /// The calibration lane's setup evidence, recorded exactly once once the
+    /// selected metering-mask asset has actually loaded (see
+    /// `super::calibration`). The beat requester refuses to pin a capture
+    /// before this flag is set on a calibration run: AE-behavior samples
+    /// captured before the mask identity is established are not evidence.
+    pub(super) calibration_evidence_recorded: bool,
 }
 
 impl HarnessState {
@@ -434,6 +449,7 @@ impl HarnessState {
             done: false,
             failed: None,
             sampler,
+            calibration_evidence_recorded: false,
         }
     }
 

@@ -80,6 +80,7 @@ pub fn smoke_scenario() -> Scenario {
         warmup_frames: 0,
         sample_frames: 0,
         content: Content::Calibration,
+        calibration: None,
     }
 }
 

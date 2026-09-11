@@ -13,11 +13,11 @@ use bevy::render::render_resource::{Extent3d, TextureDimension, TextureFormat};
 use super::capture::{capture_proves_present, save_capture};
 use super::state::{
     CaptureRequest, HarnessState, PRESENT_BUDGET_FRAMES, PerfSampler, PresentGate, Readiness,
-    RunMode, drive_allowed, fail_at_deadline, fail_scenario, onscreen_capture_due,
-    onscreen_file_name, select_run_mode,
+    RunMode, beat_requests_allowed, drive_allowed, fail_at_deadline, fail_scenario,
+    onscreen_capture_due, onscreen_file_name, select_run_mode,
 };
 use crate::harness::{
-    Beat, InputAdapter, Key, Scenario, ScriptedAction, TICKS_PER_SECOND, TimedEvent,
+    Beat, InputAdapter, Key, Scenario, ScenarioMode, ScriptedAction, TICKS_PER_SECOND, TimedEvent,
 };
 
 /// A harness state over a scenario with the named beats, no actions, and a
@@ -602,6 +602,33 @@ fn canary_mode_captures_the_window_once_at_the_first_beat() {
     );
     // The normal game never builds the harness plugin; the gate stays total.
     assert!(!onscreen_capture_due(RunMode::Normal, true));
+}
+
+#[test]
+fn calibration_beat_requests_wait_for_the_evidence_flag() {
+    // The AE-behavior samples must postdate the setup-evidence event, so a
+    // calibration run pins no capture before its mask identity is recorded.
+    let mut state = state_with_beats(&[("sample-a", 5)]);
+    state.scenario.mode = ScenarioMode::Calibration;
+    assert!(
+        !beat_requests_allowed(&state),
+        "no capture pins before the evidence flag"
+    );
+    state.calibration_evidence_recorded = true;
+    assert!(beat_requests_allowed(&state));
+}
+
+#[test]
+fn other_lanes_need_no_evidence_flag() {
+    // Capture and perf scenarios pin beats exactly as before: the gate is
+    // calibration-specific and the flag never blocks them.
+    let mut state = state_with_beats(&[("beat-a", 2)]);
+    assert!(
+        beat_requests_allowed(&state),
+        "capture lane ignores the flag"
+    );
+    state.scenario.mode = ScenarioMode::Perf;
+    assert!(beat_requests_allowed(&state), "perf lane ignores the flag");
 }
 
 /// A small RGBA capture-shaped image; only its existence matters here (the

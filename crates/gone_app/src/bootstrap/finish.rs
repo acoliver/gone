@@ -20,15 +20,16 @@ use crate::harness::{
 const SETTLE_FRAMES: u64 = 2;
 
 /// Close the run: a recorded failure exits nonzero immediately (no settle
-/// window). On the capture lane, the `max_frames` deadline with beats still
-/// uncaptured records that failure and exits nonzero in the same pass, and
-/// otherwise every beat must be captured to disk plus a two-frame settle
-/// before the report is written. On the perf lane the report waits for the
-/// sample window to fill instead (the deadline scan does not apply: a perf
-/// scenario has no beats to miss). The close checkpoint carries the final
-/// scenario time, so the report artifact itself records the fixed-step
-/// contract the run drove. Then the report is written and `AppExit::Success`
-/// requested (nonzero on a recorded failure).
+/// window). On the lanes with beats (capture and calibration), the
+/// `max_frames` deadline with beats still uncaptured records that failure
+/// and exits nonzero in the same pass, and otherwise every beat must be
+/// captured to disk plus a two-frame settle before the report is written.
+/// On the perf lane the report waits for the sample window to fill instead
+/// (the deadline scan does not apply: a perf scenario has no beats to
+/// miss). The close checkpoint carries the final scenario time, so the
+/// report artifact itself records the fixed-step contract the run drove.
+/// Then the report is written and `AppExit::Success` requested (nonzero on
+/// a recorded failure).
 pub(super) fn finish_scan(
     mut state: ResMut<HarnessState>,
     scenario_time: Res<ScenarioTime>,
@@ -37,7 +38,7 @@ pub(super) fn finish_scan(
     if state.done {
         return;
     }
-    if state.scenario.mode == ScenarioMode::Capture {
+    if state.scenario.mode != ScenarioMode::Perf {
         fail_at_deadline(&mut state);
     }
     let failed = state.failed.clone();
@@ -63,13 +64,14 @@ pub(super) fn finish_scan(
     state.done = true;
 }
 
-/// The lane's completion test: the perf lane wants the sample window full; the
-/// capture lane wants every beat's PNG on disk and the settle window after the
-/// last capture to have passed.
+/// The lane's completion test: the perf lane wants the sample window full;
+/// the lanes with beats want every beat's PNG on disk and the settle window
+/// after the last capture to have passed (calibration behaves exactly like
+/// the capture lane: its beats are the pinned sample ticks).
 fn run_complete(state: &HarnessState) -> bool {
     match state.scenario.mode {
         ScenarioMode::Perf => state.sampler.is_complete(),
-        ScenarioMode::Capture => {
+        ScenarioMode::Capture | ScenarioMode::Calibration => {
             state.all_beats_captured() && state.frame >= state.last_beat_frame + SETTLE_FRAMES
         }
     }
