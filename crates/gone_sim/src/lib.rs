@@ -14,6 +14,7 @@
 
 pub mod colliders;
 pub mod controller;
+pub mod exit;
 pub mod phase;
 pub mod pods;
 pub mod resolve;
