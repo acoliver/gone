@@ -134,7 +134,10 @@ pub fn run() -> AppExit {
             // `Window::focused` to winit `with_active` at creation only) and
             // keeps focus for the whole run: winit has no de-focus API
             // (`focus_window` only focuses) and no order-in-without-activation
-            // path reachable through bevy.
+            // path reachable through bevy. The window being focused does not
+            // capture the cursor for gameplay content either: the bootstrap
+            // inserts `player::LookInputMode::Scripted` in canary mode, so
+            // scripted look integrates without a captured cursor.
             if scenario.pacing == Some(Pacing::Uncapped) {
                 // Uncapped pacing: lift vsync from the window so wall-clock
                 // frame times are not quantized to the refresh rate (the perf

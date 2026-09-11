@@ -422,10 +422,11 @@ mod tests {
         );
     }
 
-    /// A collected-but-unmeasurable path fails the gate. A broken symlink
-    /// is the portable way to make a walkable tree entry whose metadata
-    /// cannot be resolved: the walk must refuse to skip it, and
+    /// A collected-but-unmeasurable path fails the gate. On unix a broken
+    /// symlink is the direct way to make a walkable tree entry whose
+    /// metadata cannot be resolved: the walk must refuse to skip it, and
     /// `run_with_roots` must fail instead of passing over a partial tree.
+    #[cfg(unix)]
     #[test]
     fn unmeasurable_path_fails_the_gate_not_pass() {
         let dir = unique_temp_dir("size-broken");
@@ -439,6 +440,25 @@ mod tests {
         assert!(
             stderr.contains("cannot inspect"),
             "the error names the uninspectable path: {stderr}"
+        );
+    }
+
+    /// Non-unix counterpart: a collected `.rs` file whose bytes are not
+    /// valid UTF-8 cannot be measured, and the gate must fail closed over
+    /// the partial tree exactly as the unix broken-symlink case does.
+    #[cfg(not(unix))]
+    #[test]
+    fn unmeasurable_path_fails_the_gate_not_pass() {
+        let dir = unique_temp_dir("size-unmeasurable");
+        let src = dir.join("crates/gone_sim/src");
+        write_rust_lines(&src, "real.rs", 5);
+        fs::write(src.join("ghost.rs"), [0xFF, 0xFE, 0xFC]).expect("write non-utf8 bytes");
+        let result = run_with_roots(&[src], &Policy::default(), &dir);
+        let err = result.expect_err("an unmeasurable path must fail the gate");
+        let stderr = String::from_utf8_lossy(&err.stderr);
+        assert!(
+            stderr.contains("scan incomplete"),
+            "the error names the unmeasured file: {stderr}"
         );
     }
 

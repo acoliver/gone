@@ -5,8 +5,10 @@ it depends on, so the eyelid pass (#8) lands in the right slot without
 re-deriving the graph. The code home for the chain is
 `crates/gone_app/src/post.rs`; the camera rig is
 `crates/gone_app/src/player.rs`. The chain exists on the game camera only:
-the harness lanes (`GONE_HARNESS=1`, with or without `GONE_RENDER_CHECK=1`)
-never add these plugins or components.
+the calibration harness lane never adds these plugins or components, while a
+gameplay-content harness run (`"content": "gameplay"` in the scenario) boots
+the real game and adds the same chain the normal game adds, canary or
+headless alike.
 
 ## What the game camera carries
 
@@ -94,10 +96,14 @@ It must not run before tonemapping, and it does not reach metering:
 
 - Auto exposure's histogram compute reads `ViewTarget::main_texture_view()`
   at its ordered point, before tonemapping's `post_process_write()` flips the
-  pair. Because every later write goes to the other texture of the pair, the
-  texture the histogram read this frame is never the one the eyelid draws
-  into, so the eyelid cannot show up in the histogram, drive the exposure
-  compensation up, and un-darken the image over a few frames.
+  pair. The ping-pong pair itself does not keep the histogram's input apart
+  from the eyelid's destination: every write flips the pair, so two
+  successive writes can return to the same physical texture. What prevents
+  feedback is pass ordering: the histogram runs in the PostProcess set,
+  before tonemapping, and the eyelid writes only in its slot after
+  tonemapping, so each frame's histogram always samples before that frame's
+  eyelid write. The eyelid cannot show up in the histogram, drive the
+  exposure compensation up, and un-darken the image over a few frames.
 - The near-zero corner weight of the metering mask additionally decouples
   metering from the vignette, whose darkening is confined to corners; corner
   pixels carry almost no histogram weight either way.

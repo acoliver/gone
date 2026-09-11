@@ -132,13 +132,14 @@ fn beat_yaw_samples(report: &Report) -> Result<Vec<(u64, f32)>, String> {
     Ok(anchored)
 }
 
-/// The shortest-arc signed yaw delta, in degrees, wrapped into (-180, 180].
-/// The rig reports yaw wrapped into that same range (the player rig keeps
-/// its integrated angle there), so a scripted look across the +/-180
-/// boundary arrives as, for example, +175 then -155, and the raw
-/// subtraction reads -330 where the rig turned +30. Reducing the raw delta
-/// modulo 360 recovers the true signed movement for any look shorter than
-/// half a turn between two pinned beats, which every scripted scenario is.
+/// One angular difference, in degrees, wrapped to its shortest arc in
+/// (-180, 180]: the raw difference reduced modulo a full turn, taken from
+/// the side with the smaller magnitude (a half turn keeps the positive
+/// representative). The rig reports yaw wrapped into that same range (the
+/// player rig keeps its integrated angle there), so a scripted look across
+/// the +/-180 boundary arrives as, for example, +175 then -155, and the
+/// raw subtraction reads -330 where the rig turned +30. Reducing the raw
+/// difference modulo 360 recovers the turn.
 #[must_use]
 fn shortest_arc_degrees(raw_delta_degrees: f32) -> f32 {
     let wrapped = raw_delta_degrees.rem_euclid(360.0);
@@ -149,13 +150,18 @@ fn shortest_arc_degrees(raw_delta_degrees: f32) -> f32 {
     }
 }
 
-/// The scripted-yaw replay: between consecutive pinned beats, the rig's yaw
-/// movement must equal the look actions scripted strictly before the later
-/// tick minus those before the earlier one, within [`YAW_TOLERANCE_DEG`].
-/// (The app samples at the beat request, before its tick drives, so a look
-/// on the beat's own tick belongs to the interval after the sample.) The
-/// measured movement is the shortest-arc delta ([`shortest_arc_degrees`]),
-/// so a spawn yaw near the +/-180 boundary measures the turn, not the wrap.
+/// The scripted-yaw replay: between consecutive pinned beats, the rig's
+/// yaw movement must equal the look actions scripted strictly before the
+/// later tick minus those before the earlier one, compared modulo a full
+/// turn within [`YAW_TOLERANCE_DEG`]. (The app samples at the beat
+/// request, before its tick drives, so a look on the beat's own tick
+/// belongs to the interval after the sample.) Both sides are angular
+/// endpoints, so they compare modulo 360: the rig wraps its reported angle
+/// into (-180, 180], so a correct +270 degree script measures -90, and
+/// exactly +/-180 read as each other. The price of endpoint sampling is
+/// aliasing: a whole number of extra full turns between two beats is
+/// indistinguishable from no turn, and scenario authors pin beats so that
+/// cannot masquerade as a pass.
 fn verify_yaw_replay(scenario: &Scenario, anchored: &[(u64, f32)]) -> Result<(), String> {
     let scripted_before = |tick: u64| -> f32 {
         scenario
@@ -172,11 +178,12 @@ fn verify_yaw_replay(scenario: &Scenario, anchored: &[(u64, f32)]) -> Result<(),
         let (earlier_tick, earlier_yaw) = (pair[0].0, pair[0].1);
         let (later_tick, later_yaw) = (pair[1].0, pair[1].1);
         let expected = scripted_before(later_tick) - scripted_before(earlier_tick);
-        let actual = shortest_arc_degrees(later_yaw - earlier_yaw);
-        if (actual - expected).abs() > YAW_TOLERANCE_DEG {
+        let measured = shortest_arc_degrees(later_yaw - earlier_yaw);
+        let error = shortest_arc_degrees(measured - expected);
+        if error.abs() > YAW_TOLERANCE_DEG {
             return Err(format!(
-                "scripted look did not drive the rig: yaw moved {actual:.3} deg between ticks \
-                 {earlier_tick} and {later_tick}, scripted {expected:.3} deg \
+                "scripted look did not drive the rig: yaw moved {measured:.3} deg (mod a full \
+                 turn) between ticks {earlier_tick} and {later_tick}, scripted {expected:.3} deg \
                  (tolerance {YAW_TOLERANCE_DEG} deg)"
             ));
         }
@@ -189,7 +196,7 @@ mod tests {
     use std::collections::BTreeMap;
 
     use gone_app::harness::report::{BeatEntry, Identity, Report, TimedEvent};
-    use gone_app::harness::{Content, Scenario};
+    use gone_app::harness::{Beat, Content, Scenario};
 
     use super::{
         YAW_TOLERANCE_DEG, gameplay_smoke_scenario, shortest_arc_degrees, verify_gameplay,
@@ -321,6 +328,153 @@ mod tests {
         // positive representative for both signs.
         assert!((shortest_arc_degrees(180.0) - 180.0).abs() < f32::EPSILON);
         assert!((shortest_arc_degrees(-180.0) - 180.0).abs() < f32::EPSILON);
+    }
+
+    /// A two-beat scenario whose scripted look between the pinned beats is
+    /// `total` degrees: ten equal look steps on ticks 5..=14 land exactly
+    /// `total` before tick 20 and nothing before tick 2, so the reports
+    /// below isolate the endpoint arithmetic.
+    fn turn_scenario(total: f32) -> Scenario {
+        let mut actions = vec![gone_app::harness::ScriptedAction::move_delta(3, 1.0, 0.0)];
+        for tick in 5..=14 {
+            actions.push(gone_app::harness::ScriptedAction::look(
+                tick,
+                total / 10.0,
+                0.0,
+            ));
+        }
+        Scenario {
+            name: "turn".to_owned(),
+            seed: 1234,
+            ticks_per_second: gone_app::harness::TICKS_PER_SECOND,
+            actions,
+            beats: vec![Beat::new("wake", 2), Beat::new("turned", 20)],
+            pacing: None,
+            max_frames: 600,
+            mode: gone_app::harness::ScenarioMode::Capture,
+            warmup_frames: 0,
+            sample_frames: 0,
+            content: Content::Gameplay,
+        }
+    }
+
+    /// A synthetic gameplay report over `samples` (tick, yaw) pairs with
+    /// beats named a/b/c pinned at those ticks (frames matching their
+    /// ticks), for multi-beat verification past a full revolution.
+    fn three_beat_report(samples: &[(u64, f32)]) -> Report {
+        let mut report = Report::new(
+            3,
+            "turn",
+            1234,
+            Identity {
+                app_hash: "a".into(),
+                scenario_hash: "s".into(),
+                config_hash: "c".into(),
+            },
+        );
+        let names = ["a", "b", "c"];
+        let mut beats = BTreeMap::new();
+        for (index, (tick, _)) in samples.iter().enumerate() {
+            beats.insert(
+                names[index].to_owned(),
+                BeatEntry {
+                    file: format!("beats/{}.png", names[index]),
+                    tick: *tick,
+                    frame: *tick,
+                    request_id: index as u64 + 1,
+                },
+            );
+        }
+        report.beats = beats;
+        report.events.push(TimedEvent::Ready { frame: 0 });
+        report.events.push(TimedEvent::RoomCheck {
+            frame: 0,
+            pods_expected: 7,
+            pods_present: 7,
+        });
+        for (tick, yaw) in samples {
+            report.events.push(TimedEvent::PlayerYaw {
+                tick: *tick,
+                frame: *tick,
+                yaw_degrees: *yaw,
+            });
+        }
+        report.events.push(TimedEvent::Complete { frame: 50 });
+        report
+    }
+
+    #[test]
+    fn a_two_hundred_seventy_degree_turn_verifies_mod_a_full_turn() {
+        // Regression: the verifier compared the wrapped measurement against
+        // the unwrapped scripted sum, so a correct +270 degree turn failed
+        // because the rig reports the wrapped endpoint -90. Endpoints
+        // compare modulo a full turn, and both spellings of the endpoint
+        // verify.
+        let scenario = turn_scenario(270.0);
+        let report = report_with_yaws(&[(2, 0.0), (20, -90.0)]);
+        assert!(verify_gameplay(&scenario, &report).is_ok());
+        let unwrapped = report_with_yaws(&[(2, 0.0), (20, 270.0)]);
+        assert!(verify_gameplay(&scenario, &unwrapped).is_ok());
+    }
+
+    #[test]
+    fn a_minus_two_hundred_seventy_degree_turn_verifies_mod_a_full_turn() {
+        // The -270 script measures +90 once the rig wraps its endpoint; the
+        // modulo comparison accepts it and rejects a rig that never turned.
+        let scenario = turn_scenario(-270.0);
+        let report = report_with_yaws(&[(2, 0.0), (20, 90.0)]);
+        assert!(verify_gameplay(&scenario, &report).is_ok());
+        let stale = report_with_yaws(&[(2, 0.0), (20, 0.0)]);
+        let err = verify_gameplay(&scenario, &stale).expect_err("no turn must fail");
+        assert!(err.contains("scripted look did not drive the rig"), "{err}");
+    }
+
+    #[test]
+    fn an_exact_half_turn_verifies_from_either_reported_endpoint() {
+        // Exactly +/-180 is the boundary the shortest-arc reduction cannot
+        // sign: both the scripted +180 and -180 pass against either
+        // reported endpoint spelling, because the endpoints coincide mod a
+        // full turn.
+        for total in [180.0, -180.0] {
+            let scenario = turn_scenario(total);
+            for endpoint in [180.0, -180.0] {
+                let report = report_with_yaws(&[(2, 0.0), (20, endpoint)]);
+                assert!(
+                    verify_gameplay(&scenario, &report).is_ok(),
+                    "scripted {total} must verify against reported {endpoint}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn a_cumulative_turn_past_a_full_revolution_verifies() {
+        // Three beats spanning 500 scripted degrees (200 by tick 20, 300
+        // more by tick 40). The rig wraps each reported endpoint into
+        // (-180, 180]: 200 reports as -160 and 500 as 140. Both beat pairs
+        // verify modulo a full turn.
+        let mut actions = Vec::new();
+        for tick in 5..=14 {
+            actions.push(gone_app::harness::ScriptedAction::look(tick, 20.0, 0.0));
+        }
+        for tick in 25..=34 {
+            actions.push(gone_app::harness::ScriptedAction::look(tick, 30.0, 0.0));
+        }
+        let scenario = Scenario {
+            name: "revolution".to_owned(),
+            seed: 1234,
+            ticks_per_second: gone_app::harness::TICKS_PER_SECOND,
+            actions,
+            beats: vec![Beat::new("a", 2), Beat::new("b", 20), Beat::new("c", 40)],
+            pacing: None,
+            max_frames: 600,
+            mode: gone_app::harness::ScenarioMode::Capture,
+            warmup_frames: 0,
+            sample_frames: 0,
+            content: Content::Gameplay,
+        };
+        let report = three_beat_report(&[(2, 0.0), (20, -160.0), (40, 140.0)]);
+        assert!(verify_gameplay(&scenario, &report).is_ok());
     }
 
     #[test]

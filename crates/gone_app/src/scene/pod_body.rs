@@ -1,8 +1,8 @@
 //! Pure stasis pod construction (issue #7 stage A cavity rebuild).
 //!
 //! Every pod is an open-topped tray instead of a solid block: a base slab,
-//! four walls with a real cavity between them, and a dark floor plate
-//! inside. The state's top finishes the silhouette: sealed pods close with
+//! three walls with a real cavity between them, a fully open foot end whose
+//! exit aperture takes the frozen clearance, and a dark floor plate inside. The state's top finishes the silhouette: sealed pods close with
 //! a flat lid over the whole footprint, empty-open pods keep the angled
 //! open lid and the hanging blanket, and the player pod stands its lid up
 //! as a canopy over the head end so the lying view of the ceiling stays
@@ -21,7 +21,7 @@
 
 use bevy::math::Vec3;
 use gone_sim::PodState;
-use gone_sim::controller::POD_EXIT_CLEARANCE;
+use gone_sim::controller::{CAPSULE_RADIUS, POD_EXIT_CLEARANCE};
 use gone_sim::pods::{POD_HEIGHT, POD_LENGTH, POD_WIDTH};
 
 /// Cavity wall thickness, in meters. Thin shell walls leave a 0.78 m
@@ -38,6 +38,26 @@ pub(crate) const CAVITY_BASE: f32 = 0.1;
 /// the tray so the open interior reads as a cavity from across the aisle.
 /// `exit_path` reads it for the plate top the lying capsule rests on.
 pub(crate) const CAVITY_PLATE_THICKNESS: f32 = 0.012;
+
+/// How far the side walls stop short of the foot face, in meters. The
+/// strip between this line and the foot face is the exit aperture mouth:
+/// standing geometry stays out of it so the mouth holds
+/// [`EXIT_APERTURE_WIDTH`] clear. Pinned to the wall thickness, the strip
+/// the foot wall would otherwise occupy.
+const EXIT_MOUTH_DEPTH: f32 = CAVITY_WALL;
+
+/// The frozen exit aperture's clear width: the capsule diameter plus the
+/// frozen [`POD_EXIT_CLEARANCE`] on each side. At the frozen numbers that
+/// fills the pod's whole width, so the exit mouth spans the pod's full
+/// width and standing geometry must stay out of it (the tray walls stop
+/// short of the foot face by [`EXIT_MOUTH_DEPTH`]).
+const EXIT_APERTURE_WIDTH: f32 = 2.0 * (CAPSULE_RADIUS + POD_EXIT_CLEARANCE);
+
+// The frozen aperture fits the pod width. The decimals fill it exactly;
+// their f32 representations sit a fraction of an ulp apart, so the fit
+// compares within one ulp. (`const _: ()` compiles on stable; an inline
+// `const { .. }` block is still a nightly-only feature.)
+const _: () = assert!(EXIT_APERTURE_WIDTH <= POD_WIDTH * (1.0 + f32::EPSILON));
 
 /// Pod lid slab thickness, in meters (closed lid, open lid, and canopy
 /// alike).
@@ -135,15 +155,6 @@ pub(crate) fn cavity_interior() -> (Vec3, Vec3) {
     )
 }
 
-/// Half the exit aperture's clear width: the frozen [`POD_EXIT_CLEARANCE`]
-/// taken from each side of the pod's 0.9 m width, exactly as the
-/// controller spec freezes it (the 0.60 m capsule plus this margin on
-/// each jamb fills the opening exactly).
-#[must_use]
-pub(crate) fn exit_aperture_half_width() -> f32 {
-    POD_WIDTH / 2.0 - POD_EXIT_CLEARANCE
-}
-
 /// An axis-aligned solid at `center` (meshes are centered on their
 /// entity).
 fn solid(center: Vec3, size: Vec3, kind: SolidKind) -> PodSolid {
@@ -156,16 +167,16 @@ fn solid(center: Vec3, size: Vec3, kind: SolidKind) -> PodSolid {
 }
 
 /// The cavity tray every pod is built from: base slab, dark floor plate,
-/// two full-length side walls, the head wall between them, and the two
-/// foot jamb pieces that leave the exit aperture open between them.
+/// the head wall between the two side walls, and no foot wall at all. The
+/// side walls stop short of the foot face by [`EXIT_MOUTH_DEPTH`], so the
+/// exit aperture mouth is clear across the pod's full width.
 fn cavity_solids() -> Vec<PodSolid> {
     let (interior_min, interior_max) = cavity_interior();
-    let aperture = exit_aperture_half_width();
     let wall_height = POD_HEIGHT - CAVITY_BASE;
     let wall_mid = CAVITY_BASE + wall_height / 2.0;
-    let foot_z = (POD_LENGTH - CAVITY_WALL) / 2.0;
-    let jamb_width = interior_max.x - aperture;
-    let jamb_x = aperture + jamb_width / 2.0;
+    let head_z = -(POD_LENGTH - CAVITY_WALL) / 2.0;
+    let wall_length = POD_LENGTH - EXIT_MOUTH_DEPTH;
+    let wall_mid_z = -EXIT_MOUTH_DEPTH / 2.0;
 
     let mut solids = vec![
         // Base slab, full footprint.
@@ -186,20 +197,19 @@ fn cavity_solids() -> Vec<PodSolid> {
         ),
         // Head wall between the side walls.
         solid(
-            Vec3::new(0.0, wall_mid, -foot_z),
+            Vec3::new(0.0, wall_mid, head_z),
             Vec3::new(interior_max.x - interior_min.x, wall_height, CAVITY_WALL),
             SolidKind::Body,
         ),
     ];
     for sign in [-1.0, 1.0] {
         solids.push(solid(
-            Vec3::new(sign * (interior_max.x + CAVITY_WALL / 2.0), wall_mid, 0.0),
-            Vec3::new(CAVITY_WALL, wall_height, POD_LENGTH),
-            SolidKind::Body,
-        ));
-        solids.push(solid(
-            Vec3::new(sign * jamb_x, wall_mid, foot_z),
-            Vec3::new(jamb_width, wall_height, CAVITY_WALL),
+            Vec3::new(
+                sign * (interior_max.x + CAVITY_WALL / 2.0),
+                wall_mid,
+                wall_mid_z,
+            ),
+            Vec3::new(CAVITY_WALL, wall_height, wall_length),
             SolidKind::Body,
         ));
     }
@@ -270,8 +280,8 @@ fn hanging_blanket() -> PodSolid {
 #[cfg(test)]
 mod tests {
     use super::{
-        CANOPY_LENGTH, CAVITY_BASE, CAVITY_WALL, LID_OPEN_TILT, LID_THICKNESS, PodSolid, SolidKind,
-        cavity_interior, exit_aperture_half_width, pod_solids,
+        CANOPY_LENGTH, CAVITY_BASE, CAVITY_PLATE_THICKNESS, EXIT_APERTURE_WIDTH, EXIT_MOUTH_DEPTH,
+        LID_OPEN_TILT, LID_THICKNESS, PodSolid, SolidKind, cavity_interior, pod_solids,
     };
     use crate::scene::{EYE_FROM_CENTER_TO_HEAD, LYING_EYE_HEIGHT};
     use bevy::math::Vec3;
@@ -453,37 +463,76 @@ mod tests {
         );
     }
 
-    /// The exit aperture between the foot jambs takes the frozen
-    /// [`POD_EXIT_CLEARANCE`] from each side of the 0.9 m width and admits
-    /// the capsule. The two widths round to different ulps in f32, so both
-    /// comparisons carry an ulp-scale tolerance instead of exact
-    /// equality.
+    /// The widest clear lateral passage through the exit aperture mouth, in
+    /// meters, measured against the tray's actual solids: every solid whose
+    /// y-extent crosses the standing capsule's traversal band (from the
+    /// floor plate's top to standing head height) and whose z-extent
+    /// reaches into the mouth strip blocks its own x-extent, and the
+    /// passage is the largest gap between consecutive blocked intervals
+    /// across the pod's footprint. No frozen solid reaches the strip (the
+    /// walls' foot-end faces stop exactly at the mouth line), so the
+    /// frozen passage is the whole footprint; a later change that lets a
+    /// jamb eat into the mouth is measured here, never assumed away.
+    fn aperture_clear_width(solids: &[PodSolid], mouth_start: f32) -> f32 {
+        let band_bottom = CAVITY_BASE + CAVITY_PLATE_THICKNESS;
+        let band_top = band_bottom + CAPSULE_STANDING_HEIGHT;
+        let mut blocked: Vec<(f32, f32)> = solids
+            .iter()
+            .filter(|solid| {
+                let (min, max) = bounds(solid);
+                max.y > band_bottom
+                    && min.y < band_top
+                    && max.z > mouth_start
+                    && min.z < POD_LENGTH / 2.0
+            })
+            .map(|solid| {
+                let (min, max) = bounds(solid);
+                (min.x, max.x)
+            })
+            .collect();
+        blocked.sort_by(|a, b| a.0.total_cmp(&b.0));
+        let mut widest = 0.0_f32;
+        let mut cursor = -POD_WIDTH / 2.0;
+        for (min_x, max_x) in blocked {
+            widest = widest.max(min_x - cursor);
+            cursor = cursor.max(max_x);
+        }
+        widest.max(POD_WIDTH / 2.0 - cursor)
+    }
+
+    /// The exit aperture takes the capsule with the frozen clearance on
+    /// each side: the clear width equals the capsule diameter plus twice
+    /// the frozen [`POD_EXIT_CLEARANCE`] exactly (the pod's whole width at
+    /// the frozen numbers, pinned against [`POD_WIDTH`]), and the actual
+    /// tray geometry delivers it: the passage measured between the real
+    /// jamb faces standing in the aperture mouth — the strip between the
+    /// side walls' foot ends and the foot face — is never pinched below
+    /// the frozen width.
     #[test]
     fn exit_aperture_honors_the_frozen_clearance_against_the_pod_width() {
-        let aperture_half = exit_aperture_half_width();
-        let expected = POD_WIDTH / 2.0 - POD_EXIT_CLEARANCE;
+        let aperture = EXIT_APERTURE_WIDTH;
+        let required = 2.0 * CAPSULE_RADIUS + 2.0 * POD_EXIT_CLEARANCE;
         assert!(
-            (aperture_half - expected).abs() < f32::EPSILON,
-            "the aperture is the frozen clearance per jamb"
+            (aperture - required).abs() < f32::EPSILON,
+            "the aperture clears the capsule by the frozen margin per side"
         );
+        // The frozen decimals fill the pod width exactly; their f32
+        // representations sit a fraction of an ulp apart, so the fit
+        // compares within one ulp.
         assert!(
-            aperture_half + 1e-5 >= CAPSULE_RADIUS,
-            "the capsule fits the aperture"
+            aperture <= POD_WIDTH * (1.0 + f32::EPSILON),
+            "the frozen aperture fits the pod"
         );
-        let foot_z = (POD_LENGTH - CAVITY_WALL) / 2.0;
-        let jambs: Vec<PodSolid> = pod_solids(PodState::Player)
-            .into_iter()
-            .filter(|solid| solid.kind == SolidKind::Body && (solid.center.z - foot_z).abs() < 1e-6)
-            .collect();
-        assert_eq!(jambs.len(), 2, "two foot jamb pieces");
-        for jamb in &jambs {
-            let (min, max) = bounds(jamb);
-            let inner = if jamb.center.x > 0.0 { min.x } else { max.x };
-            assert!(
-                (inner.abs() - aperture_half).abs() < 1e-5,
-                "jamb inner face sits at the aperture edge"
-            );
-        }
+        let mouth_start = POD_LENGTH / 2.0 - EXIT_MOUTH_DEPTH;
+        let clear = aperture_clear_width(&pod_solids(PodState::Player), mouth_start);
+        // The measured clearance may trail the frozen aperture by at most
+        // an ulp: the two are the same 0.9 m computed through different
+        // f32 roundings (see the fit assert above).
+        assert!(
+            clear + f32::EPSILON >= aperture,
+            "the aperture mouth measures {clear} m clear between its actual \
+             jamb faces, below the frozen {aperture} m"
+        );
     }
 
     /// Every frozen pod keeps the cavity tray base, and the six

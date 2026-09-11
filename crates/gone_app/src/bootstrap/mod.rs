@@ -147,7 +147,7 @@ use crate::harness::{
     Content, FrameSampleStats, Identity, InputAdapter, Pacing, PerfResolution, PerfRun, Scenario,
     ScenarioMode, TimedEvent, frame, report,
 };
-use crate::player::{GameplayInput, LookAngles};
+use crate::player::{GameplayInput, LookAngles, LookInputMode};
 use crate::readiness::GameAssets;
 
 use gameplay::GameCameraBound;
@@ -274,9 +274,20 @@ impl Plugin for BootstrapPlugin {
         // against it; the calibration content is the app as it has always
         // been, touched by nothing here.
         if self.scenario.content == Content::Gameplay {
+            // A canary run's window never takes focus, so the device-cursor
+            // policy would never arm look on an unattended run: the canary
+            // arms the scripted pathway explicitly. Headless runs have no
+            // cursor to gate on and keep the device default; the look
+            // plugin's init_resource preserves the mode inserted here.
+            if self.mode == RunMode::Canary {
+                app.insert_resource(LookInputMode::Scripted);
+            }
             gameplay::wire(app);
         }
-        let adapter = InputAdapter::with_actions(self.scenario.actions.clone());
+        let adapter = InputAdapter::with_actions(
+            self.scenario.actions.clone(),
+            self.scenario.ticks_per_second,
+        );
         app.insert_resource(HarnessState::new(
             self.scenario.clone(),
             self.out_dir.clone(),

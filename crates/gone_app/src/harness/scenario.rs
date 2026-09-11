@@ -4,7 +4,7 @@
 //! scenario is the reproducible instruction: same file + same seed + same build should
 //! play the same ticks in sequence against the fixed logical clock.
 
-use crate::harness::input::ScriptedAction;
+use crate::harness::input::{Action, ScriptedAction};
 
 /// Default fixed logical tick rate the app simulates at after the readiness
 /// handshake: one tick per scenario frame, each worth `1/TICKS_PER_SECOND`
@@ -141,6 +141,20 @@ pub fn parse_scenario(text: &str) -> Result<Scenario, String> {
             scenario.name
         ));
     }
+    for action in &scenario.actions {
+        if let ScriptedAction {
+            action: Action::Wait { duration },
+            ..
+        } = action
+            && *duration < 0.0
+        {
+            return Err(format!(
+                "scenario `{}` has a wait action with negative duration {duration}: \
+                 a wait consumes scenario time, never rewinds it",
+                scenario.name
+            ));
+        }
+    }
     Ok(scenario)
 }
 
@@ -171,7 +185,9 @@ pub fn index(scenarios: &[Scenario]) -> std::collections::BTreeMap<&str, &Scenar
 
 #[cfg(test)]
 mod tests {
-    use super::{Content, Pacing, Scenario, ScenarioMode, parse_scenario, scenario_to_json};
+    use super::{
+        Action, Content, Pacing, Scenario, ScenarioMode, parse_scenario, scenario_to_json,
+    };
 
     const GOOD: &str = r#"{
         "name": "smoke",
@@ -258,6 +274,41 @@ mod tests {
         let bad =
             r#"{"name":"x","seed":0,"actions":[{"tick":0,"action":{"NoSuch":1}}],"beats":[]}"#;
         assert!(parse_scenario(bad).is_err());
+    }
+
+    #[test]
+    fn wait_actions_parse_and_negative_durations_are_errors() {
+        // Regression (wait restoration): Wait and WaitUntilTick are part of
+        // the version-3 protocol, so a pre-existing wait-containing
+        // scenario file keeps parsing unchanged.
+        let with_waits = r#"{
+            "name": "waits",
+            "seed": 9,
+            "actions": [
+                {"tick": 0, "action": {"Look": {"yaw_deg": 5.0, "pitch_deg": 0.0}}},
+                {"tick": 2, "action": {"Wait": {"duration": 1.5}}},
+                {"tick": 4, "action": {"WaitUntilTick": {"tick": 40}}},
+                {"tick": 6, "action": {"Press": {"button": {"Key": "Activate"}}}}
+            ],
+            "beats": []
+        }"#;
+        let scenario = parse_scenario(with_waits).expect("a wait-containing scenario parses");
+        assert_eq!(scenario.actions.len(), 4);
+        assert_eq!(scenario.actions[1].action, Action::Wait { duration: 1.5 });
+        assert_eq!(
+            scenario.actions[2].action,
+            Action::WaitUntilTick { tick: 40 }
+        );
+        // A wait consumes scenario time; rewinding it is a scenario error,
+        // never a silent no-op.
+        let negative = r#"{
+            "name": "negative",
+            "seed": 9,
+            "actions": [{"tick": 0, "action": {"Wait": {"duration": -1.0}}}],
+            "beats": []
+        }"#;
+        let err = parse_scenario(negative).expect_err("a negative duration must fail");
+        assert!(err.contains("negative duration"), "names it: {err}");
     }
 
     #[test]

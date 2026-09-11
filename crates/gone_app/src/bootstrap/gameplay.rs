@@ -391,7 +391,7 @@ mod tests {
         GAMEPLAY_SCENE_ORDER, GameCameraBound, StasisPod, TimedEvent, advance_wake_at_readiness,
         observe_room, record_room_check, retarget_gameplay_camera,
     };
-    use crate::harness::{Content, InputAdapter, Scenario};
+    use crate::harness::{Content, InputAdapter, Scenario, TICKS_PER_SECOND};
     use crate::player::PlayerPitch;
     use crate::scene::SimWakePhase;
 
@@ -405,7 +405,7 @@ mod tests {
             },
             std::env::temp_dir(),
             String::new(),
-            InputAdapter::new(),
+            InputAdapter::new(TICKS_PER_SECOND),
         )
     }
 

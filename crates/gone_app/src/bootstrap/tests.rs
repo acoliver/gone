@@ -32,7 +32,9 @@ use super::{
     CaptureTarget, ChipSprite, ChipTexture, drive_ticks, finish_scan, on_screenshot_captured,
     readiness_boundary, request_readiness_proof,
 };
-use crate::harness::{Beat, Content, InputAdapter, Key, Scenario, ScriptedAction, TimedEvent};
+use crate::harness::{
+    Beat, Content, InputAdapter, Key, Scenario, ScriptedAction, TICKS_PER_SECOND, TimedEvent,
+};
 use crate::player::{GameplayInput, PlayerPitch};
 use crate::readiness::{AssetLoad, GameAssets};
 use crate::scene::SimWakePhase;
@@ -56,7 +58,7 @@ fn state_with_beats(beats: &[(&str, u64)]) -> HarnessState {
         },
         std::env::temp_dir(),
         String::new(),
-        InputAdapter::new(),
+        InputAdapter::new(TICKS_PER_SECOND),
     )
 }
 
@@ -344,7 +346,10 @@ fn drive_never_consumes_input_before_readiness() {
     // must refuse to drive until the renderer has presented, and stop on
     // completion or failure.
     let mut state = state_with_beats(&[]);
-    state.adapter = InputAdapter::with_actions(vec![ScriptedAction::press(0, Key::Forward)]);
+    state.adapter = InputAdapter::with_actions(
+        vec![ScriptedAction::press(0, Key::Forward)],
+        TICKS_PER_SECOND,
+    );
     let gate = PresentGate::automatic();
     // While loading: no drive, so the adapter never steps and tick-0 input
     // stays queued for the post-boundary tick.
@@ -758,7 +763,7 @@ fn gameplay_barrier_app(assets: GameAssets, actions: Vec<ScriptedAction>, tag: &
         actions,
         ..Scenario::default()
     };
-    let adapter = InputAdapter::with_actions(scenario.actions.clone());
+    let adapter = InputAdapter::with_actions(scenario.actions.clone(), scenario.ticks_per_second);
     app.insert_resource(HarnessState::new(
         scenario,
         barrier_out_dir(tag),
