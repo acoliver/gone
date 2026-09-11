@@ -12,8 +12,9 @@
 //! stage-B).
 //!
 //! With `--render-check` the runner also selects the app's canary lane
-//! (`GONE_RENDER_CHECK=1`): the run opens the unfocused window and saves one
-//! onscreen capture at the first beat, which the runner machine-verifies after
+//! (`GONE_RENDER_CHECK=1`): the run opens the window (focused: it must be
+//! ordered in for its surface to present) and saves one onscreen capture at
+//! the first beat, which the runner machine-verifies after
 //! the run (exactly one `*.onscreen.png` under `beats/`, exactly 1920x1080, not
 //! entirely black, chip frame equal to the report's). Canary run dirs carry an
 //! `rc` run-id prefix so they are identifiable in `tmp/harness`.
@@ -111,7 +112,7 @@ fn dispatch(args: &[String]) -> i32 {
             eprintln!(
                 "usage: gone-harness [--render-check] <smoke | gameplay-smoke | gameplay-full | calibration | perf [scenario] | compare <scenario> | <scenario.json>>
   (no command runs the smoke scenario)
-  --render-check: canary lane (unfocused window, one onscreen capture machine-verified after the run)
+  --render-check: canary lane (focused window: it must be ordered in for its surface to present; one onscreen capture machine-verified after the run)
   calibration: the 4-cell calibration matrix (AE on/off, patch metering, uniform control)"
             );
             0

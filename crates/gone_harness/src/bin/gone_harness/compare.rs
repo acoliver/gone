@@ -24,8 +24,22 @@ fn compare_impl(args: &[String], render_check: bool) -> Result<i32, RunnerError>
     let scenario = load_scenario(&scenario_path)?;
     let root = repo_root()?;
     let out_root = root.join("tmp").join("harness");
-    let run_a = run_scenario(&root, &scenario_path, &scenario, &out_root, render_check, DEFAULT_TIMEOUT)?;
-    let run_b = run_scenario(&root, &scenario_path, &scenario, &out_root, render_check, DEFAULT_TIMEOUT)?;
+    let run_a = run_scenario(
+        &root,
+        &scenario_path,
+        &scenario,
+        &out_root,
+        render_check,
+        DEFAULT_TIMEOUT,
+    )?;
+    let run_b = run_scenario(
+        &root,
+        &scenario_path,
+        &scenario,
+        &out_root,
+        render_check,
+        DEFAULT_TIMEOUT,
+    )?;
     let (a, b) = (compare_stream(&run_a)?, compare_stream(&run_b)?);
     if a == b {
         println!("COMPARE PASS: two runs identical ({} events)", a.len());

@@ -97,9 +97,7 @@ use bevy::transform::components::Transform;
 use sha2::{Digest as _, Sha256};
 use std::fmt::Write as _;
 
-use super::state::{
-    HarnessState, PresentGate, Readiness, RunMode, drive_allowed, fail_scenario,
-};
+use super::state::{HarnessState, PresentGate, Readiness, RunMode, drive_allowed, fail_scenario};
 use super::{CAPTURE_H, CAPTURE_W};
 use crate::harness::calibration::{
     AutoExposureEvidence, AutoExposureSettings, CalibrationEvidence, CalibrationParams,
@@ -554,21 +552,37 @@ fn apply_tick_dynamics(
     patch.translation = patch_translation(patch_slot_at(params.patch, tick));
 }
 
+/// Everything [`record_calibration_evidence`] needs, gathered as one system
+/// parameter so the system call stays a single argument. Only meaningful on
+/// the calibration lane; the system gates on the scenario mode first.
+#[derive(SystemParam)]
+pub(super) struct EvidenceContext<'w, 's> {
+    readiness: Res<'w, Readiness>,
+    present: Res<'w, PresentGate>,
+    state: ResMut<'w, HarnessState>,
+    masks: Option<Res<'w, PostChainAssets>>,
+    server: Res<'w, AssetServer>,
+    images: Res<'w, Assets<Image>>,
+    cameras:
+        Query<'w, 's, (&'static Exposure, Option<&'static AutoExposure>), With<CalibrationCamera>>,
+}
+
 /// Record the calibration run's setup evidence exactly once: when the
 /// readiness boundary has passed and the selected metering-mask asset has
 /// actually loaded (a failed load fails the run; a still-loading mask keeps
 /// waiting, and the `max_frames` deadline bounds that wait as for any beat).
 /// Before this runs, the beat requester refuses to pin captures
 /// (`state::beat_requests_allowed`), so the evidence precedes every sample.
-pub(super) fn record_calibration_evidence(
-    readiness: Res<Readiness>,
-    present: Res<PresentGate>,
-    state: ResMut<HarnessState>,
-    masks: Option<Res<PostChainAssets>>,
-    server: Res<AssetServer>,
-    images: Res<Assets<Image>>,
-    cameras: Query<(&Exposure, Option<&AutoExposure>), With<CalibrationCamera>>,
-) {
+pub(super) fn record_calibration_evidence(ctx: EvidenceContext) {
+    let EvidenceContext {
+        readiness,
+        present,
+        state,
+        masks,
+        server,
+        images,
+        cameras,
+    } = ctx;
     let readiness = readiness.into_inner();
     let present = present.into_inner();
     let state = state.into_inner();
