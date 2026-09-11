@@ -183,22 +183,75 @@ The runner does not parse the line at slice A (it waits for the process to exit,
 then verifies the report), but the line is the contract a delayed-readiness run
 will assert against.
 
-## Fixed-timestep clock and exactly-once edges
+## The scenario clock (fixed timestep)
 
-After readiness the app drives *one logical tick per rendered frame*
-(`drive_ticks`): the adapter's `step()` returns the edges due on this tick and
-the accumulated look motion. Each delivered edge becomes a tick-stamped
-`TimedEvent::Input` whose `what` names the button *and the edge*:
-`Key(Forward) press`, `Key(Forward) release`, `Mouse(Primary) press`,
-`move-delta` for movement. Opposite edges of one button are therefore
-distinguishable in events, checkpoints, and compare streams.
+The scenario clock is the fixed timeline the app simulates against. One clock
+step is a tick. The scenario's `ticks_per_second` is the clock's rate: one
+tick is worth `1 / ticks_per_second` seconds of simulation time, and gameplay
+systems consume simulation time from the clock, never wall time. (The wake
+phase machine consumes no time today; the frozen controller constants are
+specified against this fixed tick.) The rate is validated at parse time: a
+`ticks_per_second` below 1 is a scenario error on both sides, because the app
+and the runner share one parser, so a rateless scenario cannot start a run.
 
-The adapter is a pure std state machine over the scenario's actions, so an edge
-whose tick has been reached is delivered to exactly one fixed update, never
-twice and never dropped. Slice A runs one tick per rendered frame, so the
-adapter's multi-fixed-update buffering has one ready case; the type is built for
-the broader guarantee and the beat/clock semantics below preserve exactly-once
-beats regardless.
+The advance rule is frame anchored, and both lanes use it. After the readiness
+boundary the drive advances exactly one tick per scenario frame, and the tick
+counter equals the scenario frame counter. No wall-clock accumulator decides
+tick boundaries: a wall-clock rule would land a given tick on a
+jitter-dependent frame, and two identical runs would then stamp different
+frames onto the same events. The frame anchored rule is what makes the compare
+lane and the latency invariant below hold.
+
+Wall pacing differs by lane, and the difference is presentational only:
+
+- Headless capture lane: the schedule runner waits one tick's duration
+  between updates, so the simulation runs at the scenario's declared rate
+  against the wall clock, modulo render cost and sleep granularity.
+- Perf lane: the runner wait is zero. The lane samples real frame times, so
+  it must not be paced. It has no beats, so no capture can hold its clock,
+  and its samples stay pure wall-clock.
+- Canary lane: winit owns the loop and the display paces presents. The clock
+  rule is the same one tick per scenario frame; the wall rate is the display's
+  present rate, so a scenario whose rate exceeds it runs slower in wall time
+  than scripted. Simulation time per tick is unaffected.
+
+`drive_ticks` steps the input adapter once per tick; the adapter's `step()`
+returns the edges due on this tick and the accumulated look motion. Each
+delivered edge becomes a tick-stamped `TimedEvent::Input` whose `what` names
+the button *and the edge*: `Key(Forward) press`, `Key(Forward) release`,
+`Mouse(Primary) press`, `move-delta` for movement. Opposite edges of one
+button are therefore distinguishable in events, checkpoints, and compare
+streams.
+
+The adapter is a pure std state machine over the scenario's actions, so an
+edge whose tick has been reached is delivered to exactly one fixed update,
+never twice and never dropped. The harness runs one tick per scenario frame,
+so the adapter's multi-fixed-update buffering has one ready case; the type is
+built for the broader guarantee and the capture binding below preserves
+exactly-once beats regardless.
+
+### Capture binding and the latency invariant
+
+While a beat readback is in flight, the scenario clock holds: no tick, no
+frame, no adapter step, and the renderer keeps presenting the held frame, so
+the in-flight capture reads back exactly the pinned (tick, frame) pair. The
+clock can never pass a beat's tick while the lane is busy, so every beat pins
+exactly its scripted tick on every run, regardless of readback latency, and
+identical scenarios pin identical (tick, frame) pairs. The hold is bounded by
+the existing failure paths: a readback that errors fails the run immediately,
+and a readback that never lands ends in the runner's process timeout (the
+known limit below, unchanged).
+
+The invariant has a proof knob: the app's capture observer honors
+`GONE_TEST_CAPTURE_DELAY_MS` (milliseconds). The runner passes its own
+environment through to the app, so a delayed run is a normal runner invocation
+with the variable set; unset or empty means no delay, and a value that does
+not parse fails the run naming the variable. The proof: run one scenario
+twice, once with the delay and once without, and the two `report.json` files
+must be byte identical, beat (tick, frame) pairs included. The freeze holds
+the clock for the whole artificial delay, so the delayed run differs only in
+wall time. The perf lane never reads the variable into its samples: its
+sampling system records the real frame delta and never waits on a capture.
 
 ## Frame-code spec (exact)
 
@@ -231,16 +284,16 @@ decoder and asserts the result equals the report's `(tick, frame)`.
 ## Beat capture binding (real GPU screenshots)
 
 A beat's capture is one bevy `Screenshot::image` of the offscreen render target.
-On the first update at or after the beat's tick where the capture lane is free,
+On the update that reaches the beat's scenario tick with the capture lane free,
 `request_beat_captures` does one atomic step: it pins the beat's manifest entry
 `{file, tick, frame, request_id}` to the frame that update is about to render,
 spawns the screenshot entity carrying that binding, and marks the lane busy.
-Pinning at spawn (not at tick arrival) is what makes the report trustworthy:
-one capture is in flight at a time (bevy captures at most one screenshot per
-render target per frame), so a beat whose tick passed while the lane was busy is
-pinned to the frame it actually renders, and the PNG's decoded code always
-equals the report's entry. Scenario beats spaced further apart than the readback
-latency (one to two frames) pin at exactly their scenario tick.
+While a readback is in flight the scenario clock holds (see the scenario clock
+section above): the renderer keeps presenting the held frame, so the capture
+always shows the pinned numbers, and the PNG's decoded code always equals the
+report's entry. Because the clock can never pass a beat's tick while the lane
+is busy, every beat pins exactly its scripted tick on every run, regardless of
+readback latency.
 
 When the capture lands, the observer matches it to the in-flight request by
 request id, converts the GPU image (the target's `Bgra8UnormSrgb` bytes) to PNG
@@ -259,7 +312,8 @@ the last capture; then the app writes `report.json`, prints `REPORT <path>`, and
 exits 0 via `AppExit::Success`.
 
 The scenario's `max_frames` is the deadline on that wait, not extra patience: it
-counts rendered frames after the readiness boundary, and when the count reaches
+counts scenario frames (drive steps after the readiness boundary; frames the
+clock spends held under a readback never consume it), and when the count reaches
 it with beats still uncaptured, the app records every uncaptured beat as
 missing (a `Failure` event naming each in the runner's
 ``missing beat `<name>` (expected tick <n>)`` shape), writes the report, prints
@@ -355,16 +409,15 @@ because capture completion is asynchronous: a beat's readback can land several
 ticks after the tick the capture shows, so wall-clock append order is not
 reproducible across runs.
 
-Beat capture events carry the pinned tick/frame; for scenarios whose beats are
-spaced further apart than the capture readback latency (one to two rendered
-frames), both runs pin identical values and the streams match.
+Beat capture events carry the pinned tick/frame. The scenario clock holds
+under an in-flight readback, so both runs pin exactly the scripted ticks and
+the streams match for any beat spacing.
 
-The one exception is the terminal `Complete` frame: completion is the first
-frame at or after the settle window where every readback has landed, and on
-the headless lane readback latency measured in frames is wall-clock dependent
-(no vsync paces the frames), so it is not reproducible run to run. The runner
-normalizes the `Complete` line to drop the frame before diffing; every
-tick-scoped event (inputs, beats with their pinned numbers) compares exactly.
+The terminal `Complete` frame is normalized away before diffing. Under the
+capture freeze the completion frame is itself deterministic (the clock does
+not advance under a readback), so the normalization is redundant today; it
+stays so the line shape is stable. Every tick-scoped event (inputs, beats
+with their pinned numbers) compares exactly.
 
 ## Performance lane
 
@@ -460,10 +513,10 @@ Not in slice A, per the plan:
    it, so the run ends in the runner's timeout naming the scenario. I/O failures
    inside the app's own convert/save path are the immediate-failure path above.
 2. Beats closer together than the readback latency serialize (one capture in
-   flight); a beat whose tick passed while the lane was busy is captured at the
-   first later frame and its manifest entry pins that later frame. The PNG and
-   the report always agree; only the beat's scenario tick and its captured frame
-   may differ in that case.
+   flight). The scenario clock holds meanwhile, so the second beat pins its
+   own scripted tick; same-tick beats capture in order and show the same
+   (tick, frame) code with distinct request ids. The PNG and the report
+   always agree.
 3. `FrameStats` is empty; the perf lane reports the `perf` section instead (the
    seeded struct is untouched on both lanes).
 4. The `pacing` scenario field is consumed at window creation (Uncapped sets
@@ -473,11 +526,12 @@ Not in slice A, per the plan:
    default presentation; `max_frames` is consumed as the clean-close deadline
    described under beat capture binding (inert on the perf lane,
    which has no beats to miss).
-5. Headless frames are paced by the render pipeline, not vsync, so capture
-   readback latency measured in frames is larger and slightly variable
-   (windowed it is one to two frames). Completion therefore lands a few frames
-   after the last pinned beat and varies by a frame between runs; the compare
-   lane normalizes the terminal `Complete` frame (see compare mode).
+5. The headless capture lane paces updates at the scenario tick rate, and the
+   scenario clock holds under an in-flight readback, so the drive's frame
+   counts carry no latency footprint and completion lands at a deterministic
+   frame. The compare lane still normalizes the terminal `Complete` frame
+   (see compare mode); the normalization is redundant today and kept for
+   line-shape stability.
 
 ## Cross-target verification
 

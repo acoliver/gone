@@ -256,7 +256,12 @@ pub(super) struct OnscreenCapture {
 #[derive(Component)]
 pub(super) struct PresentProbe;
 
-/// The scenario state resource.
+/// The scenario state resource. It is the run's scenario clock: `tick` and
+/// `frame` advance together, one step per drive update after the readiness
+/// boundary, and each step is worth `1 / scenario.ticks_per_second` seconds
+/// of simulation time. The clock never advances on wall-clock accumulation
+/// and never advances while a beat readback is in flight, so a given tick
+/// lands on the same scenario frame in every run of the same scenario.
 #[derive(Resource)]
 pub(super) struct HarnessState {
     pub(super) scenario: Scenario,
@@ -390,13 +395,36 @@ impl HarnessState {
 /// before the renderer has presented ([`Readiness::Ready`]) and, on the
 /// canary, before the window has presented its first capturable frame
 /// ([`PresentGate::presenting`]), and nothing runs after completion or
-/// failure.
+/// failure. The gate also holds the scenario clock under an in-flight beat
+/// readback (the capture freeze), with one deliberate exception: the pin
+/// update's own drive step still runs, because that step paints the pinned
+/// (tick, frame) into the chip the capture will show. Every drive step after
+/// it holds — no tick, no frame, no adapter step, no paint — so the renderer
+/// keeps presenting exactly the pinned numbers until the readback lands, and
+/// the next beat pins at its own scripted tick no matter how long the
+/// readback takes. The hold is bounded by the existing failure paths: a
+/// readback that errors fails the run immediately, and a readback that never
+/// lands ends in the runner's process timeout (a recorded known limit, not a
+/// new budget).
 pub(super) fn drive_allowed(
     readiness: Readiness,
     present: &PresentGate,
     state: &HarnessState,
 ) -> bool {
-    readiness == Readiness::Ready && present.presenting() && !state.done && state.failed.is_none()
+    if readiness != Readiness::Ready
+        || !present.presenting()
+        || state.done
+        || state.failed.is_some()
+    {
+        return false;
+    }
+    match &state.capture_in_flight {
+        // The counters still equal the pinned pair: this is the pin update,
+        // and its drive paints the pinned numbers. Afterwards the counters
+        // have moved past the pair, and the clock holds.
+        Some(request) => state.tick == request.tick && state.frame == request.frame,
+        None => true,
+    }
 }
 
 /// Record an unrecoverable failure exactly once: a `Failure` event naming the
@@ -417,11 +445,13 @@ pub(super) fn fail_scenario(state: &mut HarnessState, what: String) {
 }
 
 /// The `max_frames` deadline: a scripted beat that is still uncaptured when
-/// the rendered-frame count reaches the scenario's `max_frames` fails the run
-/// — the deadline is the deadline, there is no waiting past it. Names every
-/// uncaptured beat in the runner's `missing beat` shape so the report says
-/// exactly why. No-op once a failure is recorded or every beat is captured,
-/// so the captured happy path (finish after the settle window) is untouched.
+/// the scenario-frame count reaches the scenario's `max_frames` fails the run
+/// — the deadline is the deadline, there is no waiting past it. The count is
+/// drive steps, so frames the clock spends held under a readback never
+/// consume the deadline. Names every uncaptured beat in the runner's
+/// `missing beat` shape so the report says exactly why. No-op once a failure
+/// is recorded or every beat is captured, so the captured happy path
+/// (finish after the settle window) is untouched.
 pub(super) fn fail_at_deadline(state: &mut HarnessState) {
     if state.failed.is_some()
         || state.all_beats_captured()

@@ -6,8 +6,9 @@
 
 use crate::harness::input::ScriptedAction;
 
-/// Fixed logical tick rate the app simulates at after the readiness handshake,
-/// used when the scenario does not override it.
+/// Default fixed logical tick rate the app simulates at after the readiness
+/// handshake: one tick per scenario frame, each worth `1/TICKS_PER_SECOND`
+/// seconds of simulation time, when the scenario does not override the rate.
 pub const TICKS_PER_SECOND: u64 = 60;
 
 /// Pacing variation: the presentation mode a run uses. Parsed per scenario and
@@ -64,7 +65,13 @@ pub struct Scenario {
     pub name: String,
     /// Seed for the scenario's RNG stream, used to key run-id and reproducibility.
     pub seed: u64,
-    /// Logical ticks per second for the fixed timeline.
+    /// Logical tick rate of the scenario's fixed clock (at least 1). One tick
+    /// advances simulation time by `1 / ticks_per_second` seconds, and the
+    /// clock advances exactly one tick per scenario frame after the readiness
+    /// boundary; the headless capture lane also paces its update loop at this
+    /// rate, so the simulation's wall-clock rate is the declared rate wherever
+    /// the lane can pace it. Validated at parse time: a zero rate is a
+    /// scenario error, never a silent fallback to the default.
     #[serde(default = "default_tps")]
     pub ticks_per_second: u64,
     /// Scripted inputs, executed on their tick schedule.
@@ -74,10 +81,11 @@ pub struct Scenario {
     /// Optional pacing variation for the determinism compare mode.
     #[serde(default)]
     pub pacing: Option<Pacing>,
-    /// Hard clean-close deadline in *rendered frames* (one per logical tick
-    /// after the readiness boundary): the run ends at this count at the
-    /// latest. Beats still uncaptured when the count reaches it are recorded
-    /// as missing and fail the run with a nonzero exit.
+    /// Hard clean-close deadline in *scenario frames* (drive steps after the
+    /// readiness boundary; frames the clock spends held under a readback
+    /// never consume it): the run ends at this count at the latest. Beats
+    /// still uncaptured when the count reaches it are recorded as missing and
+    /// fail the run with a nonzero exit.
     #[serde(default = "default_max_frames")]
     pub max_frames: u64,
     /// Which world the app builds: the calibration scene by default, or the
@@ -119,9 +127,21 @@ impl Default for Scenario {
 /// Parse a scenario from JSON text.
 ///
 /// # Errors
-/// Returns a message when the JSON is invalid or is not a scenario.
+/// Returns a message when the JSON is invalid, is not a scenario, or declares
+/// a `ticks_per_second` below 1: the fixed clock has no meaningful step at a
+/// zero rate, so a rateless scenario fails here on both sides (the app and
+/// the runner share this parser) instead of failing later mid-run.
 pub fn parse_scenario(text: &str) -> Result<Scenario, String> {
-    serde_json::from_str(text).map_err(|e| format!("scenario parse error: {e}"))
+    let scenario: Scenario =
+        serde_json::from_str(text).map_err(|e| format!("scenario parse error: {e}"))?;
+    if scenario.ticks_per_second == 0 {
+        return Err(format!(
+            "scenario `{}` has ticks_per_second 0: the fixed clock needs a rate \
+             of at least 1 tick per second",
+            scenario.name
+        ));
+    }
+    Ok(scenario)
 }
 
 /// Serialize a scenario to compact JSON.
@@ -238,6 +258,21 @@ mod tests {
         let bad =
             r#"{"name":"x","seed":0,"actions":[{"tick":0,"action":{"NoSuch":1}}],"beats":[]}"#;
         assert!(parse_scenario(bad).is_err());
+    }
+
+    #[test]
+    fn a_zero_tick_rate_is_a_parse_error() {
+        // The fixed clock consumes ticks_per_second as its simulation-time
+        // step (1/tps seconds per tick); a zero rate has no meaningful step,
+        // so it fails at parse time on both sides instead of mid-run.
+        let bad = r#"{"name":"zero","seed":0,"ticks_per_second":0,"actions":[],"beats":[]}"#;
+        let err = parse_scenario(bad).expect_err("zero tps must fail");
+        assert!(err.contains("ticks_per_second"), "names the field: {err}");
+        assert!(err.contains("zero"), "names the scenario: {err}");
+        // A rate of 1 is the floor and parses fine.
+        let floor = r#"{"name":"one","seed":0,"ticks_per_second":1,"actions":[],"beats":[]}"#;
+        let parsed = parse_scenario(floor).expect("a rate of one is the floor");
+        assert_eq!(parsed.ticks_per_second, 1);
     }
 
     #[test]

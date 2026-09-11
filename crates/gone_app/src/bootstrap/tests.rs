@@ -83,13 +83,23 @@ fn land_capture(state: &mut HarnessState) {
     }
 }
 
-/// A full frame with the readback landing in the same pass (the real app's
-/// readback lands one to two frames later; the accounting is identical).
+/// The `drive_ticks` half of an update pass: one tick and one frame when
+/// [`drive_allowed`] opens the clock, nothing while it holds the clock (a
+/// readback in flight). The same gate the real drive system consults.
+fn drive_step(state: &mut HarnessState, gate: &PresentGate) {
+    if drive_allowed(Readiness::Ready, gate, state) {
+        state.tick += 1;
+        state.frame += 1;
+    }
+}
+
+/// A full frame with the readback landing in the same pass (a fast readback):
+/// pin, land, then drive one step under the real gate.
 fn update_pass(state: &mut HarnessState) {
+    let gate = PresentGate::automatic();
     spawn_due_capture(state);
     land_capture(state);
-    state.tick += 1;
-    state.frame += 1;
+    drive_step(state, &gate);
 }
 
 #[test]
@@ -176,31 +186,146 @@ fn pins_alone_never_complete_the_run() {
 }
 
 #[test]
-fn entry_pins_the_frame_the_capture_renders_even_when_spawn_lags_the_tick() {
-    // beat-b's tick arrives while beat-a's readback is still in flight; the
-    // pin waits and lands on the frame actually rendered, so the PNG always
-    // decodes to exactly the report's numbers.
+fn the_clock_holds_while_a_capture_is_in_flight() {
+    // The capture freeze: beat-b's scripted tick (3) arrives while beat-a's
+    // readback is still in flight, so the clock holds instead of passing the
+    // beat's tick. The pin update's own drive still runs (it paints the
+    // pinned numbers); every later step freezes. After the landing beat-b
+    // pins exactly its scripted tick, so identical scenarios pin identical
+    // (tick, frame) pairs no matter how long the readback takes.
     let mut state = state_with_beats(&[("beat-a", 2), ("beat-b", 3)]);
     state.tick = 2;
     state.frame = 2;
     spawn_due_capture(&mut state);
-    assert_eq!(state.beats["beat-a"].frame, 2);
-    state.tick = 3;
-    state.frame = 3;
-    spawn_due_capture(&mut state);
-    assert_eq!(state.requested_beats, 1, "the lane is still busy");
-    state.tick = 5;
-    state.frame = 5;
+    assert_eq!(state.requested_beats, 1, "beat-a pinned at tick 2");
+    // The pin update's own drive step: it paints the pinned pair and
+    // advances the clock to (3, 3).
+    let gate = PresentGate::automatic();
+    drive_step(&mut state, &gate);
+    assert_eq!((state.tick, state.frame), (3, 3), "the pin update drives");
+    // Passes with the readback still in flight: the clock freezes at
+    // (3, 3) and beat-b waits for the lane.
+    for _ in 0..5 {
+        spawn_due_capture(&mut state);
+        drive_step(&mut state, &gate);
+        assert_eq!(
+            (state.tick, state.frame),
+            (3, 3),
+            "the scenario clock is frozen under a readback"
+        );
+        assert_eq!(state.requested_beats, 1, "beat-b waits for the lane");
+    }
+    // The readback lands between updates; the lane frees and beat-b is due
+    // at tick 3, so the next pass pins its scripted tick.
     land_capture(&mut state);
     spawn_due_capture(&mut state);
     let b = &state.beats["beat-b"];
+    assert_eq!((b.tick, b.frame), (3, 3), "the pin is the scripted tick");
+}
+
+/// One simulated capture-lane run over a two-beat scenario, driven to
+/// completion: the pinning, readback, and drive halves run exactly as the
+/// real chain does, and each readback lands `landing_delay` passes after its
+/// request (the readback latency the observer sees). Returns the drive
+/// event stream and the beat pins, so the latency proof can compare a fast
+/// lane against a slow one at the accounting layer.
+fn simulated_run(landing_delay: u64) -> (Vec<TimedEvent>, Vec<(u64, u64)>) {
+    let mut state = state_with_beats(&[("beat-a", 2), ("beat-b", 8)]);
+    let gate = PresentGate::automatic();
+    let mut events = Vec::new();
+    let mut pins = Vec::new();
+    let mut flight_remaining: u64 = 0;
+    for _ in 0..200 {
+        if state.capture_in_flight.is_none()
+            && let Some(beat) = state.next_due_beat()
+        {
+            let (tick, frame) = (state.tick, state.frame);
+            let (_, entry) = state.pin_next_beat(tick, frame);
+            pins.push((entry.tick, entry.frame));
+            state.capture_in_flight = Some(CaptureRequest {
+                name: beat.name,
+                tick,
+                frame,
+                request_id: entry.request_id,
+            });
+            flight_remaining = landing_delay;
+        }
+        if flight_remaining > 0 {
+            flight_remaining -= 1;
+            if flight_remaining == 0 {
+                land_capture(&mut state);
+            }
+        }
+        if drive_allowed(Readiness::Ready, &gate, &state) {
+            events.push(TimedEvent::Input {
+                tick: state.tick,
+                frame: state.frame,
+                what: format!("tick {}", state.tick),
+            });
+            state.tick += 1;
+            state.frame += 1;
+        }
+        if state.all_beats_captured() && state.frame >= state.last_beat_frame + 2 {
+            break;
+        }
+    }
+    (events, pins)
+}
+
+#[test]
+fn identical_scenarios_report_identically_regardless_of_readback_latency() {
+    // The latency proof at the accounting layer: a lane whose readbacks land
+    // the pass after their request and a lane whose readbacks land five
+    // passes late run the same scenario, and both produce the same beat pins
+    // and the same drive event stream. The slow lane only spends more wall
+    // time; nothing in its report moves.
+    let (fast_events, fast_pins) = simulated_run(1);
+    let (slow_events, slow_pins) = simulated_run(5);
+    assert_eq!(fast_pins, slow_pins, "both lanes pin the scripted ticks");
     assert_eq!(
-        (b.tick, b.frame),
-        (5, 5),
-        "the pin names the rendered frame, not the scenario tick"
+        fast_pins,
+        vec![(2, 2), (8, 8)],
+        "the pins are the beats' own ticks"
     );
-    land_capture(&mut state);
-    assert!(state.all_beats_captured());
+    assert_eq!(
+        fast_events, slow_events,
+        "the drive event stream carries no latency footprint"
+    );
+    // Both lanes run to completion: beats at ticks 2 and 8, the settle window
+    // ending the run at frame 10, so the drive stream is ticks 0..=9.
+    assert_eq!(fast_events.len(), 10);
+}
+
+#[test]
+fn drive_allowed_holds_while_a_capture_is_in_flight() {
+    // The freeze is a drive_allowed conjunct like readiness and the present
+    // gate: one place, consulted by every driving system. Under an in-flight
+    // readback the only drive step it permits is the pin update's own (the
+    // counters still equal the pinned pair); once the counters have moved
+    // past it, the clock holds.
+    let mut state = state_with_beats(&[]);
+    let gate = PresentGate::automatic();
+    assert!(drive_allowed(Readiness::Ready, &gate, &state));
+    state.capture_in_flight = Some(CaptureRequest {
+        name: "beat-a".to_owned(),
+        tick: 5,
+        frame: 5,
+        request_id: 1,
+    });
+    state.tick = 5;
+    state.frame = 5;
+    assert!(
+        drive_allowed(Readiness::Ready, &gate, &state),
+        "the pin update's own drive paints the pinned numbers"
+    );
+    state.tick = 6;
+    state.frame = 6;
+    assert!(
+        !drive_allowed(Readiness::Ready, &gate, &state),
+        "the clock holds while a readback is in flight"
+    );
+    state.capture_in_flight = None;
+    assert!(drive_allowed(Readiness::Ready, &gate, &state));
 }
 
 #[test]

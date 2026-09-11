@@ -63,10 +63,9 @@ const PERF_POLICY_PATH: &str = "crates/gone_harness/perf-policy.json";
 
 /// The built-in smoke scenario constant: empty scene (Camera3d + clear), a couple
 /// of scripted actions, two beat captures, clean exit. The beats are spaced far
-/// beyond the capture readback latency: a beat whose tick passes while the lane
-/// is still busy pins a later frame, and headless latency is several frames
-/// (wall-clock dependent, no vsync pacing), so tight spacing would make the
-/// pinned frames vary between runs.
+/// apart so each readback lands well inside the gap between beats; the scenario
+/// clock holds under an in-flight readback, so spacing only spreads wall time,
+/// it never moves a pin off its scripted tick.
 #[must_use]
 pub fn smoke_scenario() -> Scenario {
     Scenario {
@@ -557,12 +556,10 @@ fn compare_stream(run: &Path) -> Result<Vec<String>, RunnerError> {
 }
 
 /// One event's compare line. The terminal `Complete` frame is normalized
-/// away: completion is the first frame at or after the settle window where
-/// every capture readback has landed, and readback latency measured in frames
-/// is wall-clock dependent on the headless lane (no vsync paces the frames),
-/// so the exact completion frame is not a reproducible simulation output.
-/// Every tick-scoped event (inputs, beats with their pinned tick/frame)
-/// compares exactly.
+/// away: under the scenario clock's capture freeze the completion frame is
+/// itself deterministic, so the normalization is redundant today, and it
+/// keeps the line shape stable. Every tick-scoped event (inputs, beats with
+/// their pinned tick/frame) compares exactly.
 fn compare_event_line(event: &report::TimedEvent) -> String {
     match event {
         report::TimedEvent::Complete { .. } => "Complete".to_owned(),
@@ -815,9 +812,9 @@ mod tests {
 
     #[test]
     fn compare_normalizes_only_the_terminal_complete_frame() {
-        // The completion frame is wall-clock dependent headless (readback
-        // latency in frames varies), so the compare line drops it; every
-        // tick-scoped event keeps its exact Debug form.
+        // The completion frame is deterministic under the capture freeze, so
+        // the normalization is redundant today and kept for line-shape
+        // stability; every tick-scoped event keeps its exact Debug form.
         use gone_harness::report::TimedEvent;
         let events = [
             TimedEvent::Ready { frame: 0 },

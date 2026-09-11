@@ -62,29 +62,37 @@
 //!   tick zero, and make the chip sprite visible (no authored content before
 //!   the boundary); [`state::drive_allowed`] gates every later step on the same
 //!   state, so no scenario tick or input edge is consumed before the boundary.
-//! * **Beat binding and accounting.** A beat's screenshot is spawned on the first
-//!   frame at or after its scenario tick where the capture lane is free (bevy
-//!   captures at most one screenshot per render target per frame, so exactly one
-//!   capture is in flight), and the manifest entry pins *that* frame's
-//!   (tick, frame, request id) at the same instant it is spawned. The capture
-//!   therefore always shows the chip code the report claims: request, entry, and
-//!   rendered pixels are one atomic step (see
-//!   `state::HarnessState::pin_next_beat`). Requests and captures are separate
-//!   ledgers; the run completes only when every scenario beat's PNG is on disk.
-//!   One ordering detail keeps the pin honest: the beat request runs *before*
-//!   `drive_ticks` pins the pre-drive counters, because a texture repaint
-//!   reaches the GPU one update after its paint — pinning anything later would
-//!   name numbers the render does not show yet.
+//! * **Beat binding and accounting.** The scenario clock holds while a beat
+//!   readback is in flight (bevy captures at most one screenshot per render
+//!   target per frame, so exactly one capture is in flight): no tick, no
+//!   frame, no adapter step, and the renderer keeps presenting the held
+//!   frame. A beat's screenshot is therefore spawned on the update that
+//!   reaches its scenario tick with the lane free, and the manifest entry
+//!   pins exactly that scripted tick's (tick, frame, request id) at the same
+//!   instant it is spawned; the pin can never land on a later tick because
+//!   the clock cannot pass the beat's tick while the lane is busy. The
+//!   capture therefore always shows the chip code the report claims: request,
+//!   entry, and rendered pixels are one atomic step (see
+//!   `state::HarnessState::pin_next_beat`), and identical scenarios pin
+//!   identical (tick, frame) pairs regardless of readback latency (the
+//!   observer honors `GONE_TEST_CAPTURE_DELAY_MS` so tests can prove that
+//!   invariant against an artificially slow readback). Requests and captures
+//!   are separate ledgers; the run completes only when every scenario beat's
+//!   PNG is on disk. One ordering detail keeps the pin honest: the beat
+//!   request runs *before* `drive_ticks` pins the pre-drive counters, because
+//!   a texture repaint reaches the GPU one update after its paint — pinning
+//!   anything later would name numbers the render does not show yet.
 //! * **Immediate capture failures.** A failed capture convert/save records a
 //!   `TimedEvent::Failure` naming the artifact and the underlying error, writes
 //!   the report, and exits nonzero. There is no retry loop.
-//! * **`max_frames` deadline.** The scenario's `max_frames` rendered frames is
-//!   the run's deadline, not extra patience: when the frame count reaches it
-//!   with beats still uncaptured, [`state::fail_at_deadline`] records every
-//!   uncaptured beat as missing, and `finish_scan` writes the report and exits
-//!   nonzero. A beat scripted past the deadline is a failed scenario, never a
-//!   hang. The all-beats-captured path is unchanged (immediate finish once the
-//!   settle window after the last capture passes).
+//! * **`max_frames` deadline.** The scenario's `max_frames` scenario frames
+//!   (drive steps; frames the clock spends held under a readback never
+//!   consume it) is the run's deadline, not extra patience: when the frame
+//!   count reaches it with beats still uncaptured, [`state::fail_at_deadline`]
+//!   records every uncaptured beat as missing, and `finish_scan` writes the
+//!   report and exits nonzero. A beat scripted past the deadline is a failed
+//!   scenario, never a hang. The all-beats-captured path is unchanged
+//!   (immediate finish once the settle window after the last capture passes).
 //! * **Exit.** After the last capture and a two-frame settle, the app writes
 //!   `report.json`, prints `REPORT <path>`, and raises `AppExit::Success`.
 //!
@@ -105,6 +113,7 @@ pub use state::{RunMode, select_run_mode};
 
 use std::num::NonZeroU8;
 use std::path::{Path, PathBuf};
+use std::time::Duration;
 
 use bevy::app::{App, AppExit, Plugin, Startup, Update};
 use bevy::asset::{Assets, Handle, RenderAssetUsages};
@@ -473,7 +482,12 @@ fn request_present_probe(
     commands.spawn((Screenshot::primary_window(), PresentProbe));
 }
 
-/// Drive one logical tick per rendered frame once ready. The adapter returns
+/// Drive one scenario-clock tick per update once ready. The clock is fixed
+/// timestep: this update advances the tick by one and simulation time by
+/// `1 / ticks_per_second` seconds, never by a wall-clock delta, and
+/// `drive_allowed` holds the whole clock (tick, frame, adapter, sim) while a
+/// beat readback is in flight, so a tick always lands on the same scenario
+/// frame in every run of the same scenario. The adapter returns
 /// exactly this tick's edges and motions; each edge is recorded once, with its
 /// press/release state in words, and look motion and movement are recorded as
 /// separate named events so the report (and compare mode) can tell the two
@@ -725,10 +739,36 @@ fn capture_proves_present(image: &Image) -> bool {
         .is_some_and(|bytes| bytes.iter().any(|&byte| byte != 0))
 }
 
+/// The latency-proof knob: the artificial readback delay the capture observer
+/// applies to a beat capture, parsed from the raw `GONE_TEST_CAPTURE_DELAY_MS`
+/// env value (`None` = unset). Unset or empty means no delay. A present value
+/// that does not parse as a millisecond count is an error naming the variable:
+/// a silently ignored knob would fake the latency proof it exists for. The
+/// runner passes its own environment to the app, so a delayed run is a normal
+/// runner invocation with the variable set.
+fn parse_capture_delay(raw: Option<&str>) -> Result<Duration, String> {
+    let Some(raw) = raw.filter(|value| !value.is_empty()) else {
+        return Ok(Duration::ZERO);
+    };
+    raw.parse::<u64>()
+        .map(Duration::from_millis)
+        .map_err(|e| format!("GONE_TEST_CAPTURE_DELAY_MS `{raw}` is not a millisecond count: {e}"))
+}
+
 /// Convert and write one beat's captured target frame to its manifest file,
 /// then record the capture. Failures name the beat and underlying error and are
-/// terminal.
+/// terminal. The latency-proof delay, when set, is spent before the in-flight
+/// request is released: the capture lane stays busy for the whole artificial
+/// delay, the scenario clock holds under `drive_allowed`, and the next beat
+/// still pins its own scripted tick.
 fn capture_beat(state: &mut HarnessState, request: &BeatCapture, image: &Image) {
+    match parse_capture_delay(std::env::var("GONE_TEST_CAPTURE_DELAY_MS").ok().as_deref()) {
+        Ok(delay) => std::thread::sleep(delay),
+        Err(what) => {
+            fail_scenario(state, what);
+            return;
+        }
+    }
     let Some(in_flight) = state.capture_in_flight.take() else {
         fail_scenario(
             state,

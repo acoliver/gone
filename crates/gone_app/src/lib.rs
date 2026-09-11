@@ -36,7 +36,7 @@ use bevy::app::{App, AppExit, PluginGroup, PluginGroupBuilder, ScheduleRunnerPlu
 use bevy::window::{ExitCondition, PresentMode, Window, WindowPlugin};
 use bevy::winit::{WinitPlugin, WinitSettings};
 
-use crate::harness::{Pacing, Scenario};
+use crate::harness::{Pacing, Scenario, ScenarioMode};
 use bootstrap::RunMode;
 
 /// The harness protocol (single home; `gone_harness` re-exports it).
@@ -88,8 +88,9 @@ pub fn run() -> AppExit {
             ));
         }
         RunMode::Headless => {
-            app.add_plugins(headless_plugins());
-            add_harness(&mut app, load_harness_scenario(), run_mode);
+            let scenario = load_harness_scenario();
+            app.add_plugins(headless_plugins(&scenario));
+            add_harness(&mut app, scenario, run_mode);
         }
         RunMode::Canary => {
             let scenario = load_harness_scenario();
@@ -139,8 +140,9 @@ fn game_window() -> Window {
 /// The headless harness plugin set: no winit event loop and no window at all.
 /// `ExitCondition::DontExit` is required — under the default condition a
 /// windowless app exits immediately ("No windows are open, exiting") — and
-/// the schedule runner spins updates as fast as the render pipeline drains.
-fn headless_plugins() -> PluginGroupBuilder {
+/// the schedule runner paces updates at the scenario clock's rate
+/// ([`drive_pace`]).
+fn headless_plugins(scenario: &Scenario) -> PluginGroupBuilder {
     bevy::DefaultPlugins
         .build()
         .disable::<WinitPlugin>()
@@ -149,7 +151,25 @@ fn headless_plugins() -> PluginGroupBuilder {
             exit_condition: ExitCondition::DontExit,
             ..Default::default()
         })
-        .add(ScheduleRunnerPlugin::run_loop(std::time::Duration::ZERO))
+        .add(ScheduleRunnerPlugin::run_loop(drive_pace(scenario)))
+}
+
+/// The headless update loop's wait between updates, from the scenario clock:
+/// one tick's duration (`1 / ticks_per_second`, in whole nanoseconds) on the
+/// capture lane, so the simulation's wall-clock rate is the scenario's
+/// declared rate modulo render cost and sleep granularity; zero on the perf
+/// lane, which samples real frame times and must not be paced. The canary
+/// lane has no runner wait to configure: winit owns its loop and the display
+/// paces its presents, so the clock rule there is unchanged and the wall rate
+/// is the display's present rate.
+#[must_use]
+fn drive_pace(scenario: &Scenario) -> std::time::Duration {
+    match scenario.mode {
+        ScenarioMode::Capture => {
+            std::time::Duration::from_nanos(1_000_000_000 / scenario.ticks_per_second)
+        }
+        ScenarioMode::Perf => std::time::Duration::ZERO,
+    }
 }
 
 /// Add the harness bootstrap plugin for either capture mode.
@@ -189,6 +209,40 @@ fn load_scenario(path: &Path) -> Scenario {
 
 #[cfg(test)]
 mod tests {
+    use crate::harness::{Scenario, ScenarioMode};
+
+    use super::drive_pace;
+
     #[test]
     fn app_crate_builds() {}
+
+    #[test]
+    fn the_capture_lane_paces_at_the_scenario_tick_rate() {
+        // One tick's duration per update, in whole nanoseconds: the 60 Hz
+        // default paces at 16_666_666 ns and a 125 Hz scenario at 8 ms.
+        let scenario = Scenario {
+            mode: ScenarioMode::Capture,
+            ticks_per_second: 60,
+            ..Scenario::default()
+        };
+        assert_eq!(drive_pace(&scenario).as_nanos(), 16_666_666);
+        let scenario = Scenario {
+            mode: ScenarioMode::Capture,
+            ticks_per_second: 125,
+            ..Scenario::default()
+        };
+        assert_eq!(drive_pace(&scenario).as_millis(), 8);
+    }
+
+    #[test]
+    fn the_perf_lane_is_never_paced() {
+        // Perf samples real frame times; a paced loop would measure the
+        // pacing instead of the render cost.
+        let scenario = Scenario {
+            mode: ScenarioMode::Perf,
+            ticks_per_second: 60,
+            ..Scenario::default()
+        };
+        assert_eq!(drive_pace(&scenario), std::time::Duration::ZERO);
+    }
 }
