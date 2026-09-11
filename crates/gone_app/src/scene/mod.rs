@@ -43,6 +43,7 @@ use crate::scene::geometry::{
 };
 
 mod geometry;
+mod pod_body;
 
 /// Marks a stasis pod's root entity. A pod's identity, state, and placement
 /// live in the sim registry; the marker only tags the scene-side group so
@@ -127,13 +128,14 @@ pub(crate) struct PlayerSpawnPose {
     pub(crate) pitch_radians: f32,
 }
 
-/// Eye height above the pod floor while lying face up: just under the lid
-/// line of the 0.8 m pod body.
-const LYING_EYE_HEIGHT: f32 = 0.62;
+/// Eye height above the pod floor while lying face up: just under the pod
+/// wall line of the 0.8 m body. `pod_body`'s ray tests read this, so the
+/// authored eye and the geometry guarantees cannot drift apart.
+pub(crate) const LYING_EYE_HEIGHT: f32 = 0.62;
 
 /// Distance from the pod center toward the head end (the wall side) where
 /// the eye rests: near the head, not centered.
-const EYE_FROM_CENTER_TO_HEAD: f32 = 0.55;
+pub(crate) const EYE_FROM_CENTER_TO_HEAD: f32 = 0.55;
 
 /// The authored player rig spawn, computed from the frozen registry at
 /// plugin build. `player` consumes this resource to place and aim the rig;
@@ -292,6 +294,7 @@ mod tests {
     use gone_sim::pods::{POD_HEIGHT, POD_LENGTH, POD_WIDTH};
     use gone_sim::{POD_COUNT, PodId, PodRegistry, PodState, WakePhase};
 
+    use super::pod_body::pod_solids;
     use super::{
         JammedHatch, PodIndicatorMaterials, PodMirrors, SimPodRegistry, SimWakePhase, StasisPod,
         StasisScenePlugin, apply_indicator_materials, mirror_pods, player_spawn_pose,
@@ -361,6 +364,41 @@ mod tests {
                 "pod {position} z offset"
             );
             assert_eq!(actual.3, expected.3, "pod {position} yaw");
+        }
+    }
+
+    /// Every pod group carries exactly one mesh child per pure
+    /// construction solid plus the indicator plate, matched by placement
+    /// to the registry's pod state: the scene spawns `pod_body`'s data
+    /// verbatim instead of drawing its own shapes. Regression: pod
+    /// construction used to drift between the pure description and the
+    /// spawned boxes, which let a cavity rebuild silently change nothing
+    /// on screen.
+    #[test]
+    fn pod_groups_spawn_one_child_per_construction_solid() {
+        let mut app = scene_app();
+        app.update();
+        let registry = PodRegistry::frozen();
+        let mut groups = app
+            .world_mut()
+            .query_filtered::<(&Transform, &bevy::ecs::hierarchy::Children), With<StasisPod>>();
+        for (transform, children) in groups.iter(app.world()) {
+            let pod = registry
+                .pods()
+                .iter()
+                .find(|pod| {
+                    let placement = pod.placement();
+                    (placement.center.0 - transform.translation.x).abs() < 1e-5
+                        && (placement.center.1 - transform.translation.z).abs() < 1e-5
+                })
+                .expect("every spawned pod group sits at a registry placement");
+            let expected = pod_solids(pod.state()).len() + 1;
+            assert_eq!(
+                children.len(),
+                expected,
+                "pod {} spawns its construction solids plus the plate",
+                pod.id().index()
+            );
         }
     }
 

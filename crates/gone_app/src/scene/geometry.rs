@@ -18,11 +18,10 @@ use bevy::math::{Quat, Vec3};
 use bevy::mesh::{Mesh, Mesh3d};
 use bevy::pbr::{MeshMaterial3d, StandardMaterial};
 use bevy::transform::components::Transform;
-use gone_sim::pods::{
-    POD_HEIGHT, POD_LENGTH, POD_WIDTH, ROOM_CEILING_HEIGHT, ROOM_LENGTH, ROOM_WIDTH,
-};
+use gone_sim::pods::{POD_HEIGHT, POD_LENGTH, ROOM_CEILING_HEIGHT, ROOM_LENGTH, ROOM_WIDTH};
 use gone_sim::{POD_COUNT, Pod, PodRegistry, PodState};
 
+use super::pod_body::{SolidKind, pod_solids};
 use super::{PodMirrors, StasisPod};
 
 /// Shell wall and floor slab thickness, in meters.
@@ -40,35 +39,6 @@ const TRAY_SHADE: f32 = 0.24;
 const WIRE_SHADE: f32 = 0.18;
 const HATCH_FRAME_SHADE: f32 = 0.33;
 const HATCH_DOOR_SHADE: f32 = 0.38;
-
-/// Pod lid slab thickness, in meters.
-const LID_THICKNESS: f32 = 0.06;
-
-/// How much shorter than the body the open lid slab is.
-const LID_SETBACK: f32 = 0.1;
-
-/// The open lid's tilt from horizontal, in radians: propped up over the
-/// head end so the opening reads as open from across the aisle.
-const LID_OPEN_TILT: f32 = 60.0_f32.to_radians();
-
-/// Inset from the pod walls to the dark cavity plate, in meters.
-const CAVITY_CLEARANCE: f32 = 0.08;
-
-/// Cavity plate thickness, in meters: a thin dark floor inside the pod.
-const CAVITY_PLATE_THICKNESS: f32 = 0.012;
-
-/// The occupancy blanket's silhouette, in meters: a thin slab draped over
-/// one rim of an empty-open pod.
-const BLANKET_THICKNESS: f32 = 0.05;
-const BLANKET_DROP: f32 = 0.56;
-const BLANKET_WIDTH: f32 = 0.7;
-
-/// How far above the pod top the blanket's upper edge sits (it drapes over
-/// the rim).
-const BLANKET_OVERHANG: f32 = 0.02;
-
-/// Distance from the pod's foot end to the hanging blanket, in meters.
-const BLANKET_FROM_FOOT: f32 = 0.15;
 
 /// The status indicator plate, in meters, and its standoff from the pod's
 /// foot face plus its mount height.
@@ -294,7 +264,6 @@ pub(super) fn spawn_pods(
     });
     for pod in registry.pods() {
         let placement = pod.placement();
-        let body = materials.add(flat_grey(POD_BODY_SHADE));
         commands
             .spawn((
                 StasisPod,
@@ -308,7 +277,6 @@ pub(super) fn spawn_pods(
                     meshes,
                     materials,
                     pod.state(),
-                    body,
                     handles[pod.id().index()].clone(),
                 );
             });
@@ -316,29 +284,25 @@ pub(super) fn spawn_pods(
     handles
 }
 
-/// Fill one pod group's children in the pod's local frame: the body box,
-/// the state-specific lid set, and the foot-mounted indicator plate.
+/// Fill one pod group's children in the pod's local frame: the pure
+/// construction solids for its state (`pod_body::pod_solids`, spawned
+/// verbatim) and the foot-mounted indicator plate.
 fn fill_pod(
     parent: &mut ChildSpawnerCommands<'_>,
     meshes: &mut Assets<Mesh>,
     materials: &mut Assets<StandardMaterial>,
     state: PodState,
-    body: Handle<StandardMaterial>,
     indicator: Handle<StandardMaterial>,
 ) {
-    box_child(
-        parent,
-        meshes.add(Cuboid::new(POD_WIDTH, POD_HEIGHT, POD_LENGTH)),
-        body,
-        Transform::from_translation(Vec3::new(0.0, POD_HEIGHT / 2.0, 0.0)),
-    );
-    match state {
-        PodState::Sealed => sealed_lid(parent, meshes, materials),
-        PodState::EmptyOpen => {
-            open_pod_interior(parent, meshes, materials);
-            hanging_blanket(parent, meshes, materials);
-        }
-        PodState::Player => open_pod_interior(parent, meshes, materials),
+    for solid in pod_solids(state) {
+        let transform = Transform::from_translation(solid.center)
+            .with_rotation(Quat::from_rotation_x(solid.roll_radians));
+        box_child(
+            parent,
+            meshes.add(Cuboid::new(solid.size.x, solid.size.y, solid.size.z)),
+            materials.add(flat_grey(solid_shade(solid.kind))),
+            transform,
+        );
     }
     box_child(
         parent,
@@ -352,84 +316,14 @@ fn fill_pod(
     );
 }
 
-/// The sealed pod: one closed lid slab lying flat over the body.
-fn sealed_lid(
-    parent: &mut ChildSpawnerCommands<'_>,
-    meshes: &mut Assets<Mesh>,
-    materials: &mut Assets<StandardMaterial>,
-) {
-    box_child(
-        parent,
-        meshes.add(Cuboid::new(POD_WIDTH, LID_THICKNESS, POD_LENGTH)),
-        materials.add(flat_grey(POD_LID_SHADE)),
-        Transform::from_translation(Vec3::new(0.0, POD_HEIGHT + LID_THICKNESS / 2.0, 0.0)),
-    );
-}
-
-/// The open pod: a dark cavity plate just above the body top, plus the lid
-/// slab propped open over the head end. Both read by silhouette from
-/// across the aisle.
-fn open_pod_interior(
-    parent: &mut ChildSpawnerCommands<'_>,
-    meshes: &mut Assets<Mesh>,
-    materials: &mut Assets<StandardMaterial>,
-) {
-    box_child(
-        parent,
-        meshes.add(Cuboid::new(
-            POD_WIDTH - 2.0 * CAVITY_CLEARANCE,
-            CAVITY_PLATE_THICKNESS,
-            POD_LENGTH - 2.0 * CAVITY_CLEARANCE,
-        )),
-        materials.add(flat_grey(POD_CAVITY_SHADE)),
-        Transform::from_translation(Vec3::new(
-            0.0,
-            POD_HEIGHT + CAVITY_PLATE_THICKNESS / 2.0,
-            0.0,
-        )),
-    );
-    box_child(
-        parent,
-        meshes.add(Cuboid::new(
-            POD_WIDTH,
-            LID_THICKNESS,
-            POD_LENGTH - LID_SETBACK,
-        )),
-        materials.add(flat_grey(POD_LID_SHADE)),
-        open_lid_transform(),
-    );
-}
-
-/// The open lid's transform: hinged at the head end (local -Z) top edge
-/// and swung up by [`LID_OPEN_TILT`], so the slab leans back over the pod
-/// head. The slab mesh is centered on its entity, hence the midpoint
-/// offset along the swung direction.
-fn open_lid_transform() -> Transform {
-    let swing = Vec3::new(
-        0.0,
-        f32::sin(LID_OPEN_TILT) * (POD_LENGTH - LID_SETBACK) / 2.0,
-        f32::cos(LID_OPEN_TILT) * (POD_LENGTH - LID_SETBACK) / 2.0,
-    );
-    let hinge = Vec3::new(0.0, POD_HEIGHT, -POD_LENGTH / 2.0);
-    Transform::from_translation(hinge + swing).with_rotation(Quat::from_rotation_x(-LID_OPEN_TILT))
-}
-
-/// The empty-open pod's occupancy blanket: a thin slab draped over one
-/// rim, hanging down the outside wall. Reads as "recently used, empty".
-fn hanging_blanket(
-    parent: &mut ChildSpawnerCommands<'_>,
-    meshes: &mut Assets<Mesh>,
-    materials: &mut Assets<StandardMaterial>,
-) {
-    let over_rim = POD_WIDTH / 2.0 + BLANKET_THICKNESS / 2.0;
-    let top = POD_HEIGHT - BLANKET_DROP / 2.0 + BLANKET_OVERHANG;
-    let along = -POD_LENGTH / 2.0 + BLANKET_FROM_FOOT + BLANKET_WIDTH / 2.0;
-    box_child(
-        parent,
-        meshes.add(Cuboid::new(BLANKET_THICKNESS, BLANKET_DROP, BLANKET_WIDTH)),
-        materials.add(flat_grey(BLANKET_SHADE)),
-        Transform::from_translation(Vec3::new(over_rim, top, along)),
-    );
+/// The grey shade for one construction solid kind.
+fn solid_shade(kind: SolidKind) -> f32 {
+    match kind {
+        SolidKind::Body => POD_BODY_SHADE,
+        SolidKind::Cavity => POD_CAVITY_SHADE,
+        SolidKind::Lid => POD_LID_SHADE,
+        SolidKind::Blanket => BLANKET_SHADE,
+    }
 }
 
 /// Spawn the torn ceiling: cable tray runs concentrated over the room
