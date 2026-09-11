@@ -160,7 +160,6 @@ impl PresentGate {
     }
 }
 
-/// Frame-time sampler for the perf lane: skips `warmup_frames` rendered frames
 use crate::harness::{Beat, BeatEntry, InputAdapter, Scenario, TimedEvent};
 
 /// Frame-time sampler for the perf lane: skips `warmup_frames` rendered frames
@@ -395,7 +394,12 @@ impl HarnessState {
 /// before the renderer has presented ([`Readiness::Ready`]) and, on the
 /// canary, before the window has presented its first capturable frame
 /// ([`PresentGate::presenting`]), and nothing runs after completion or
-/// failure. The gate also holds the scenario clock under an in-flight beat
+/// failure. On gameplay content `Readiness::Ready` itself sits behind the
+/// game barrier's asset and binding legs (`gameplay::proof_gate` holds the
+/// proof request until `readiness::GameAssets` reports every required asset
+/// loaded and the rig camera is bound), so a ready lane is a fully
+/// provisioned one and the gate needs no extra conjunct of its own. The gate
+/// also holds the scenario clock under an in-flight beat
 /// readback (the capture freeze), with one deliberate exception: the pin
 /// update's own drive step still runs, because that step paints the pinned
 /// (tick, frame) into the chip the capture will show. Every drive step after

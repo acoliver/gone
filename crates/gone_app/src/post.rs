@@ -60,8 +60,9 @@ use bevy::post_process::auto_exposure::{AutoExposure, AutoExposurePlugin};
 use bevy::post_process::effect_stack::Vignette;
 
 /// The checked-in metering-mask asset this module owns, relative to the app's
-/// asset root (`crates/gone_app/assets`).
-const MASK_ASSET_PATH: &str = "post/metering_mask.png";
+/// asset root (`crates/gone_app/assets`). The readiness barrier uses the same
+/// string as the asset's ledger name.
+pub(crate) const MASK_ASSET_PATH: &str = "post/metering_mask.png";
 
 /// Metering-mask side length in pixels. The histogram samples the mask
 /// stretched over the whole screen; 64x64 is far above its 16-level

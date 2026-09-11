@@ -54,11 +54,18 @@
 //!   frames count against a hard budget and exhausting it fails the run by
 //!   name; the probe is never a silent retry loop. Headless mode has no
 //!   onscreen path at all: no window, no present gate, no capture, no file.
-//! * **Readiness before the clock.** The scenario clock starts only after the
-//!   first capture of the offscreen target lands. That capture is the readback
-//!   of a frame the render graph actually executed into the target, so it is
-//!   direct evidence the renderer built its device resources and rendered at
-//!   least one full frame. Only then does the app print `GONE_READY`, record
+//! * **Readiness before the clock.** The scenario clock starts only after
+//!   the first capture of the offscreen target lands. That capture is the
+//!   readback of a frame the render graph actually executed into the target,
+//!   so it is direct evidence the renderer built its device resources and
+//!   rendered at least one full frame. On gameplay content the proof request
+//!   additionally waits on the game readiness barrier (the `readiness`
+//!   ledger plus the rig camera binding, see `gameplay`): the readback that
+//!   opens the clock is the first fully provisioned game frame, and a
+//!   required asset whose load fails fails the run by name and exits
+//!   nonzero, never a placeholder render. Calibration content requests the
+//!   proof immediately, its dark loading scene being the whole proof. Either
+//!   way, only then does the app print `GONE_READY`, record
 //!   tick zero, and make the chip sprite visible (no authored content before
 //!   the boundary); [`state::drive_allowed`] gates every later step on the same
 //!   state, so no scenario tick or input edge is consumed before the boundary.
@@ -141,7 +148,9 @@ use crate::harness::{
     ScenarioMode, TimedEvent, frame, report,
 };
 use crate::player::{GameplayInput, LookAngles};
+use crate::readiness::GameAssets;
 
+use gameplay::GameCameraBound;
 use state::{
     BeatCapture, CaptureRequest, HarnessState, OnscreenCapture, PRESENT_BUDGET_FRAMES, PresentGate,
     PresentProbe, Readiness, drive_allowed, fail_at_deadline, fail_scenario, onscreen_capture_due,
@@ -416,14 +425,25 @@ fn chip_texture_image() -> Image {
 /// While loading, request a screenshot of the offscreen capture target every
 /// update until one lands. The target image exists from startup, but the
 /// camera and render resources need a rendered frame before a readback can
-/// produce content; the first capture to arrive is the proof.
+/// produce content; the first capture to arrive is the proof. On gameplay
+/// content the request additionally waits on [`gameplay::proof_gate`]: the
+/// required game assets must have loaded and the rig camera must be bound to
+/// the target, so the readback that proves readiness is a rendered game
+/// frame. Calibration content requests immediately (its dark loading scene
+/// is the whole proof).
 fn request_readiness_proof(
     readiness: Res<Readiness>,
     capture: Res<CaptureTarget>,
     state: Res<HarnessState>,
+    assets: Option<Res<GameAssets>>,
+    bound: Option<Res<GameCameraBound>>,
     mut commands: Commands,
 ) {
-    if *readiness.into_inner() != Readiness::Loading || state.into_inner().done {
+    let state = state.into_inner();
+    if *readiness.into_inner() != Readiness::Loading || state.done {
+        return;
+    }
+    if !gameplay::proof_gate(state, assets, bound) {
         return;
     }
     let handle = capture

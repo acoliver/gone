@@ -23,28 +23,42 @@
 //!   records a `RoomCheck` event; a mismatch fails the scenario app-side
 //!   (a broken scene cannot produce a passing run).
 //!
-//! One deliberate sim override: the wake pass (issue #8) does not exist yet,
-//! so the scene boots in `Waking`, where look is disallowed. A gameplay run
-//! starts the phase machine at `AwakeInPod` instead, which is the first
-//! state whose policy allows look; when the wake pass lands, the lane wakes
-//! naturally and this override goes away.
+//! * **The readiness legs.** Gameplay content extends the harness readiness
+//!   barrier with two legs the calibration lane does not have: the required
+//!   game assets (the crate's `readiness` ledger, polled first in the
+//!   update chain) and the rig camera binding to the capture target. The
+//!   readiness proof is requested only once both hold, so the readback that
+//!   opens the scenario clock is a rendered game frame whose pipelines are
+//!   compiled, never the chip overlay alone. A required asset whose load
+//!   fails is a terminal failure naming the asset and the underlying error;
+//!   the run exits nonzero instead of rendering placeholders.
+//!
+//! The wake override lives behind that barrier: the lane boots the scene's
+//! authored `Waking` phase and drives the machine's wake-complete signal at
+//! the readiness boundary ([`advance_wake_at_readiness`]), which lands the
+//! machine in `AwakeInPod`, the first state whose policy allows look. When
+//! the wake pass (issue #8) lands, the lane wakes naturally and the
+//! override goes away; the pass's own driver must stay behind the same
+//! barrier, in this lane and in the normal game alike.
 
 use bevy::app::{App, Update};
-use bevy::asset::{Assets, Handle};
+use bevy::asset::{AssetServer, Assets, Handle};
 use bevy::camera::{Camera, Camera2d, Camera3d, ClearColorConfig, RenderTarget};
-use bevy::ecs::prelude::{Added, Commands, Entity, Local, Query, Res, ResMut, With};
+use bevy::ecs::prelude::{Added, Commands, Entity, Local, Query, Res, ResMut, Resource, With};
 use bevy::image::Image;
 use bevy::math::Vec3;
 use bevy::render::view::Msaa;
 use bevy::transform::components::Transform;
-use gone_sim::WakePhase;
+use gone_sim::PhaseTransition;
 
 use super::state::{HarnessState, RunMode, fail_scenario};
 use super::{
-    CaptureTarget, ChipSprite, ChipTexture, TimedEvent, capture_target_image, spawn_chip_sprite,
+    CaptureTarget, ChipSprite, ChipTexture, Content, TimedEvent, capture_target_image,
+    spawn_chip_sprite,
 };
 use crate::player::{GameplayInput, LookAngles, PlayerLookPlugin, PlayerPitch, ScriptedInput};
 use crate::post::GamePostChainPlugin;
+use crate::readiness::GameAssets;
 use crate::scene::{SimPodRegistry, SimWakePhase, StasisPod, StasisScenePlugin};
 
 /// The canary window's static 3D camera order: the room view draws first.
@@ -73,8 +87,11 @@ const SPECTATOR_FOCUS: Vec3 = Vec3::new(0.0, 0.8, 0.0);
 /// Build the real game into a harness app: post chain, stasis scene, and
 /// player look, in the same order the normal game adds them (each plugin's
 /// build provides the resource the next consumes). Fails loudly at boot if
-/// the wiring came out wrong, and starts the wake machine at `AwakeInPod`
-/// (see the module docs for why).
+/// the wiring came out wrong. Installs the readiness barrier's resources:
+/// the required-asset ledger over the handles the post chain just loaded,
+/// and the game-camera binding flag the retarget sets. The scene plugin's
+/// authored `Waking` spawn state stands; the wake override advances at the
+/// readiness boundary (`advance_wake_at_readiness`), never before it.
 pub(super) fn wire(app: &mut App) {
     app.add_plugins((GamePostChainPlugin, StasisScenePlugin, PlayerLookPlugin));
     assert!(
@@ -95,13 +112,18 @@ pub(super) fn wire(app: &mut App) {
         app.world().get_resource::<LookAngles>().is_some(),
         "gameplay content requires LookAngles (PlayerLookPlugin provides it)"
     );
-    app.insert_resource(SimWakePhase::new(WakePhase::AwakeInPod));
+    let ledger = {
+        let masks = app.world().resource::<crate::post::PostChainAssets>();
+        GameAssets::game_required_assets(masks)
+    };
+    app.insert_resource(ledger);
+    app.insert_resource(GameCameraBound::default());
 }
 
 /// The gameplay content scene: the offscreen capture target and the corner
 /// chip sprite (hidden until the readiness boundary, exactly as in
-/// calibration), the chip overlay camera onto the capture target, and — in
-/// canary mode — the static room view plus chip overlay into the window.
+/// calibration), the chip overlay camera onto the capture target, and, in
+/// canary mode, the static room view plus chip overlay into the window.
 /// The rig camera itself is retargeted into the capture target by
 /// [`retarget_gameplay_camera`] once the player plugin spawns it. No clear
 /// color is authored here: the game's own cameras clear.
@@ -126,7 +148,7 @@ pub(super) fn setup_gameplay_scene(
 }
 
 /// The offscreen chip overlay: a 2D camera onto the capture target, ordered
-/// after the gameplay view, that never clears — its only content is the chip
+/// after the gameplay view, that never clears; its only content is the chip
 /// sprite, drawn on top of the frame the gameplay view rendered into the
 /// target.
 fn spawn_overlay_camera(commands: &mut Commands, target: Handle<Image>) {
@@ -171,6 +193,15 @@ fn spawn_window_overlay_camera(commands: &mut Commands) {
     ));
 }
 
+/// Whether the rig camera is bound to the offscreen capture target yet. The
+/// readiness proof for gameplay content waits on it: the readback that opens
+/// the scenario clock must be a frame the game camera rendered into the
+/// target, not the chip overlay alone. Set once by
+/// [`retarget_gameplay_camera`], which runs on the first update after the
+/// player plugin spawns the rig.
+#[derive(Resource, Default)]
+pub(super) struct GameCameraBound(pub(super) bool);
+
 /// The player rig's camera lookup: the entity owning the just-added 3D camera
 /// tagged `PlayerPitch` (which marks the rig camera and nothing else), with
 /// mutable access to its camera settings.
@@ -179,13 +210,15 @@ type RigCameraQuery<'w, 's> =
 
 /// Retarget the player rig's camera into the offscreen capture target on the
 /// first update after the player plugin spawns it (`Added` fires exactly
-/// once per rig), before this update renders. Also drops MSAA on the capture
-/// view so the chip lattice stays pixel-crisp, matching the calibration
-/// camera. `PlayerPitch` marks the rig camera and nothing else: the canary
-/// spectator (also a 3D camera) never matches.
-fn retarget_gameplay_camera(
+/// once per rig), before this update renders, and set the game-camera
+/// binding flag the readiness proof gate consumes. Also drops MSAA on the
+/// capture view so the chip lattice stays pixel-crisp, matching the
+/// calibration camera. `PlayerPitch` marks the rig camera and nothing else:
+/// the canary spectator (also a 3D camera) never matches.
+pub(super) fn retarget_gameplay_camera(
     capture: Res<CaptureTarget>,
     mut commands: Commands,
+    mut bound: ResMut<GameCameraBound>,
     mut rig: RigCameraQuery,
 ) {
     let handle = capture
@@ -198,6 +231,7 @@ fn retarget_gameplay_camera(
         commands
             .entity(entity)
             .insert((RenderTarget::Image(handle.clone().into()), Msaa::Off));
+        bound.0 = true;
     }
 }
 
@@ -240,11 +274,82 @@ fn record_room_check(state: &mut HarnessState, pods_expected: usize, pods_presen
     }
 }
 
+/// The gameplay lane's required-asset poll: advance the readiness ledger and
+/// fail the run on a required asset's load error, naming the asset and the
+/// underlying error. A pending load keeps the lane loading: the proof request
+/// waits on the ledger, the scenario clock stays at frame zero, and no input
+/// or phase advances (the same hold the capture freeze uses). The poll runs
+/// first in the update chain so a load that completes this update is visible
+/// to this update's proof request.
+pub(super) fn poll_required_assets(
+    mut state: ResMut<HarnessState>,
+    mut assets: ResMut<GameAssets>,
+    server: Res<AssetServer>,
+) {
+    assets.poll(server.into_inner());
+    if let Some(failure) = assets.failure() {
+        fail_scenario(
+            &mut state,
+            format!(
+                "required asset `{}` failed to load: {}",
+                failure.asset, failure.error
+            ),
+        );
+    }
+}
+
+/// The gameplay legs of the readiness proof gate: calibration content has
+/// none (the readback of the dark loading scene is the whole proof), and
+/// gameplay content requires the required-asset ledger to be fully loaded
+/// and the rig camera bound to the capture target, so the proof readback is
+/// a rendered game frame. The resources are present exactly when the
+/// gameplay wire ran; their absence on gameplay content is a wiring error.
+pub(super) fn proof_gate(
+    state: &HarnessState,
+    assets: Option<Res<GameAssets>>,
+    bound: Option<Res<GameCameraBound>>,
+) -> bool {
+    if state.scenario.content != Content::Gameplay {
+        return true;
+    }
+    let assets =
+        assets.expect("gameplay content requires GameAssets (the gameplay wire inserts it)");
+    let bound =
+        bound.expect("gameplay content requires GameCameraBound (the gameplay wire inserts it)");
+    assets.ready() && bound.0
+}
+
+/// The gameplay lane's wake override, moved behind the readiness barrier:
+/// while the lane loads, the machine sits at the scene's authored `Waking`;
+/// once the boundary announces, the wake-complete signal advances it to
+/// `AwakeInPod` (the first state whose policy allows look), exactly once.
+/// This is the gate point for wake progression in gameplay runs: the issue
+/// #8 wake pass's own driver must sit behind the same barrier and consume
+/// the same signal.
+pub(super) fn advance_wake_at_readiness(
+    state: Res<HarnessState>,
+    mut phase: ResMut<SimWakePhase>,
+    mut advanced: Local<bool>,
+) {
+    if !state.into_inner().announced || *advanced {
+        return;
+    }
+    let transition = phase.wake_complete();
+    assert!(
+        matches!(transition, PhaseTransition::Advanced { .. }),
+        "the readiness wake override must advance the machine out of `Waking`, got {transition:?}"
+    );
+    *advanced = true;
+}
+
 /// The gameplay update registration: the same chain the calibration lane
-/// runs, plus the first-update room observation, all inside the
-/// `ScriptedInput` set so the player look chain orders after the adapter
-/// step that feeds it. The rig-camera retarget runs outside the set: it only
-/// touches the camera once, before the first render.
+/// runs, plus the required-asset poll first (the barrier's asset leg must be
+/// resolved before the same update's proof request) and the wake override
+/// right after the readiness boundary (so the boundary update itself drives
+/// tick 0 with look armed), all inside the `ScriptedInput` set so the player
+/// look chain orders after the adapter step that feeds it. The rig-camera
+/// retarget runs outside the set: it only touches the camera once, before
+/// the first render.
 pub(super) fn register_update_systems(app: &mut App) {
     use super::{
         drive_ticks, finish_scan, perf_sample, readiness_boundary, request_beat_captures,
@@ -255,8 +360,10 @@ pub(super) fn register_update_systems(app: &mut App) {
     app.add_systems(
         Update,
         (
+            poll_required_assets,
             request_readiness_proof,
             readiness_boundary,
+            advance_wake_at_readiness,
             request_present_probe,
             observe_room,
             request_beat_captures,
@@ -271,13 +378,22 @@ pub(super) fn register_update_systems(app: &mut App) {
 
 #[cfg(test)]
 mod tests {
-    use bevy::app::TaskPoolPlugin;
-    use bevy::asset::{AssetApp, AssetPlugin};
+    use bevy::app::{App, TaskPoolPlugin, Update};
+    use bevy::asset::{AssetApp, AssetPlugin, Assets};
+    use bevy::camera::{Camera, Camera3d, RenderTarget};
     use bevy::ecs::prelude::{Entity, With};
+    use bevy::image::Image;
+    use bevy::render::view::Msaa;
+    use gone_sim::WakePhase;
 
     use super::super::state::HarnessState;
-    use super::{StasisPod, TimedEvent, observe_room, record_room_check};
+    use super::{
+        GAMEPLAY_SCENE_ORDER, GameCameraBound, StasisPod, TimedEvent, advance_wake_at_readiness,
+        observe_room, record_room_check, retarget_gameplay_camera,
+    };
     use crate::harness::{Content, InputAdapter, Scenario};
+    use crate::player::PlayerPitch;
+    use crate::scene::SimWakePhase;
 
     /// A fresh run state over a default gameplay scenario, in a scratch
     /// output directory (the observation never touches disk).
@@ -367,8 +483,8 @@ mod tests {
     #[test]
     fn a_broken_scene_fails_the_scenario_through_the_observation() {
         // Negative proof (scene side): pods built and then removed before the
-        // observation's first run — the world shape a broken or omitted scene
-        // build produces — must fail the run app-side with a report failure.
+        // observation's first run, the world shape a broken or omitted scene
+        // build produces, must fail the run app-side with a report failure.
         let mut app = scene_app();
         app.update();
         let mut pods = app.world_mut().query_filtered::<Entity, With<StasisPod>>();
@@ -418,5 +534,76 @@ mod tests {
             })
             .collect();
         assert_eq!(kinds, ["ready", "room", "beat"]);
+    }
+
+    #[test]
+    fn the_retarget_binds_the_game_camera_and_opens_the_binding_leg() {
+        // The rig camera spawns (as the player plugin's Startup would), the
+        // retarget binds it into the capture target on the first update, and
+        // the binding flag flips: the readiness proof's "rendered game
+        // frame" leg. Without the flag the proof readback could land on a
+        // frame only the chip overlay rendered.
+        let mut app = App::new();
+        app.add_plugins((TaskPoolPlugin::default(), AssetPlugin::default()));
+        app.init_asset::<Image>();
+        let handle = {
+            let mut images = app.world_mut().resource_mut::<Assets<Image>>();
+            images.add(Image::default())
+        };
+        app.insert_resource(super::CaptureTarget(Some(handle)));
+        app.insert_resource(GameCameraBound::default());
+        app.add_systems(Update, retarget_gameplay_camera);
+        app.world_mut().spawn((Camera3d::default(), PlayerPitch));
+        assert!(
+            !app.world().resource::<GameCameraBound>().0,
+            "nothing is bound before the first update"
+        );
+        app.update();
+        assert!(
+            app.world().resource::<GameCameraBound>().0,
+            "the retarget sets the binding flag"
+        );
+        let mut cams = app
+            .world_mut()
+            .query_filtered::<(&Camera, &RenderTarget, &Msaa), With<PlayerPitch>>();
+        let (camera, target, msaa) = cams.single(app.world()).expect("the rig camera exists");
+        assert_eq!(camera.order, GAMEPLAY_SCENE_ORDER);
+        assert!(
+            matches!(target, RenderTarget::Image(_)),
+            "the rig camera renders into the capture target"
+        );
+        assert_eq!(*msaa, Msaa::Off, "the capture view keeps the lattice crisp");
+    }
+
+    #[test]
+    fn the_wake_override_advances_only_at_the_readiness_boundary() {
+        // The barrier's phase leg in isolation: loading holds the authored
+        // `Waking`; the announced boundary advances the machine exactly once
+        // (the machine's idempotent boundary plus the once-flag).
+        let mut app = App::new();
+        app.insert_resource(gameplay_state());
+        app.insert_resource(SimWakePhase::new(WakePhase::Waking));
+        app.add_systems(Update, advance_wake_at_readiness);
+        app.update();
+        assert_eq!(
+            app.world().resource::<SimWakePhase>().phase(),
+            WakePhase::Waking,
+            "loading holds the authored opening"
+        );
+        app.world_mut().resource_mut::<HarnessState>().announced = true;
+        app.update();
+        assert_eq!(
+            app.world().resource::<SimWakePhase>().phase(),
+            WakePhase::AwakeInPod,
+            "the boundary advances the machine"
+        );
+        for _ in 0..2 {
+            app.update();
+        }
+        assert_eq!(
+            app.world().resource::<SimWakePhase>().phase(),
+            WakePhase::AwakeInPod,
+            "the override fires exactly once"
+        );
     }
 }

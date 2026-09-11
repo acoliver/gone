@@ -1,29 +1,52 @@
 //! Unit tests for the harness run state and its gates: beat request/capture
 //! accounting, readiness gating, the canary present gate, capture-lane
 //! serialization, immediate failure recording, run-mode selection from the
-//! environment, and the canary onscreen-capture gate. The accounting methods
-//! under test are pure state transitions, so no renderer is involved; only
-//! the save-failure test touches disk (into the OS temp dir).
+//! environment, the canary onscreen-capture gate, and the gameplay readiness
+//! barrier (a delayed required asset holds the clock until one announcement,
+//! a failed one fails the run by name). The accounting methods under test
+//! are pure state transitions, so no renderer is involved; only the
+//! save-failure and barrier tests touch disk (into the OS temp dir).
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::path::PathBuf;
 
-use bevy::asset::RenderAssetUsages;
+use bevy::app::{App, AppExit, TaskPoolPlugin, Update};
+use bevy::asset::{AssetApp, AssetPlugin, Assets, RenderAssetUsages};
+use bevy::camera::Camera3d;
+use bevy::ecs::message::Messages;
+use bevy::ecs::schedule::IntoScheduleConfigs;
+use bevy::image::Image;
 use bevy::render::render_resource::{Extent3d, TextureDimension, TextureFormat};
+use bevy::render::view::screenshot::ScreenshotCaptured;
+use gone_sim::WakePhase;
 
+use super::gameplay::{
+    GameCameraBound, advance_wake_at_readiness, poll_required_assets, retarget_gameplay_camera,
+};
 use super::save_capture;
 use super::state::{
     CaptureRequest, HarnessState, PRESENT_BUDGET_FRAMES, PerfSampler, PresentGate, Readiness,
     RunMode, drive_allowed, fail_at_deadline, fail_scenario, onscreen_capture_due,
     onscreen_file_name, select_run_mode,
 };
-use crate::harness::{Beat, InputAdapter, Key, Scenario, ScriptedAction, TimedEvent};
+use super::{
+    CaptureTarget, ChipSprite, ChipTexture, drive_ticks, finish_scan, on_screenshot_captured,
+    readiness_boundary, request_readiness_proof,
+};
+use crate::harness::{Beat, Content, InputAdapter, Key, Scenario, ScriptedAction, TimedEvent};
+use crate::player::{GameplayInput, PlayerPitch};
+use crate::readiness::{AssetLoad, GameAssets};
+use crate::scene::SimWakePhase;
+
+/// The ledger name of today's only required game asset (the post chain's
+/// metering mask), as the failure report must carry it.
+const MASK: &str = crate::post::MASK_ASSET_PATH;
 
 /// A harness state over a scenario with the named beats, no actions, and a
 /// scratch output directory (the accounting methods under test never touch
 /// disk; only the save-failure test writes, into the OS temp dir).
 fn state_with_beats(beats: &[(&str, u64)]) -> HarnessState {
-    HarnessState {
-        scenario: Scenario {
+    HarnessState::new(
+        Scenario {
             name: "accounting-test".to_owned(),
             beats: beats
                 .iter()
@@ -31,24 +54,10 @@ fn state_with_beats(beats: &[(&str, u64)]) -> HarnessState {
                 .collect(),
             ..Scenario::default()
         },
-        out_dir: std::env::temp_dir(),
-        config_hash: String::new(),
-        tick: 0,
-        frame: 0,
-        announced: false,
-        adapter: InputAdapter::new(),
-        events: Vec::new(),
-        checkpoints: Vec::new(),
-        beats: BTreeMap::new(),
-        next_request_id: 1,
-        last_beat_frame: 0,
-        requested_beats: 0,
-        captured_beats: BTreeSet::new(),
-        capture_in_flight: None,
-        done: false,
-        failed: None,
-        sampler: PerfSampler::new(0, 0),
-    }
+        std::env::temp_dir(),
+        String::new(),
+        InputAdapter::new(),
+    )
 }
 
 /// The `request_beat_captures` half of an update pass: pin and queue the
@@ -711,4 +720,254 @@ fn perf_sampler_with_no_warmup_samples_from_the_first_frame() {
     sampler.record(16.7);
     assert!(sampler.is_complete());
     assert_eq!(sampler.samples_ms(), [16.6, 16.7]);
+}
+
+/// A scratch run directory unique per test invocation, so the readiness
+/// proof, the report, and any failure report never collide across tests or
+/// across runs of the suite.
+fn barrier_out_dir(tag: &str) -> PathBuf {
+    std::env::temp_dir().join(format!("gone-barrier-{}-{tag}", std::process::id()))
+}
+
+/// The headless gameplay-lane app the barrier tests run: the real protocol
+/// chain (rig-camera retarget, required-asset poll, proof request, boundary,
+/// wake override, drive, finish) over a gameplay scenario, with the injected
+/// required-asset ledger the test controls. No renderer: the test plays the
+/// render world by triggering the proof's `ScreenshotCaptured` by hand.
+fn gameplay_barrier_app(assets: GameAssets, actions: Vec<ScriptedAction>, tag: &str) -> App {
+    let mut app = App::new();
+    app.add_plugins((TaskPoolPlugin::default(), AssetPlugin::default()));
+    app.init_asset::<Image>();
+    let target = {
+        let mut images = app.world_mut().resource_mut::<Assets<Image>>();
+        images.add(test_image())
+    };
+    app.init_resource::<Readiness>();
+    app.insert_resource(PresentGate::automatic());
+    app.insert_resource(RunMode::Headless);
+    app.insert_resource(ChipTexture::default());
+    app.insert_resource(ChipSprite::default());
+    app.insert_resource(CaptureTarget(Some(target)));
+    app.insert_resource(GameCameraBound::default());
+    app.insert_resource(SimWakePhase::new(WakePhase::Waking));
+    app.insert_resource(assets);
+    app.insert_resource(GameplayInput::default());
+    let scenario = Scenario {
+        name: "gameplay-barrier".to_owned(),
+        content: Content::Gameplay,
+        actions,
+        ..Scenario::default()
+    };
+    let adapter = InputAdapter::with_actions(scenario.actions.clone());
+    app.insert_resource(HarnessState::new(
+        scenario,
+        barrier_out_dir(tag),
+        String::new(),
+        adapter,
+    ));
+    // The rig camera the retarget binds into the capture target on the first
+    // update: the barrier's rendered-game-frame leg.
+    app.world_mut().spawn((Camera3d::default(), PlayerPitch));
+    app.add_observer(on_screenshot_captured);
+    app.add_message::<AppExit>();
+    app.add_systems(
+        Update,
+        (
+            retarget_gameplay_camera,
+            poll_required_assets,
+            request_readiness_proof,
+            readiness_boundary,
+            advance_wake_at_readiness,
+            drive_ticks,
+            finish_scan,
+        )
+            .chain(),
+    );
+    app
+}
+
+/// How many readiness announcements the run has recorded.
+fn ready_announcements(state: &HarnessState) -> usize {
+    state
+        .events
+        .iter()
+        .filter(|event| matches!(event, TimedEvent::Ready { .. }))
+        .count()
+}
+
+/// Run `frames` updates on the test app.
+fn run_updates(app: &mut App, frames: usize) {
+    for _ in 0..frames {
+        app.update();
+    }
+}
+
+/// Assert the loading hold: nothing has announced, the clock and the adapter
+/// never moved, no input ran, and the wake machine sits at the authored
+/// opening.
+fn assert_loading_holds(app: &App) {
+    let state = app.world().resource::<HarnessState>();
+    assert!(!state.announced, "loading holds the boundary");
+    assert_eq!(ready_announcements(state), 0, "nothing announces early");
+    assert_eq!(state.tick, 0, "the scenario clock never started");
+    assert_eq!(state.adapter.tick(), 0, "the adapter never stepped");
+    assert!(
+        state
+            .events
+            .iter()
+            .all(|event| !matches!(event, TimedEvent::Input { .. })),
+        "no input was consumed while loading"
+    );
+    assert_eq!(
+        app.world().resource::<SimWakePhase>().phase(),
+        WakePhase::Waking,
+        "the authored opening holds while the asset loads"
+    );
+}
+
+/// Complete the delayed load and land the proof readback the way the render
+/// world would: the poll opens the asset leg, the gate requests the proof,
+/// and the test triggers its `ScreenshotCaptured`.
+fn complete_load_and_land_proof(app: &mut App) {
+    app.insert_resource(GameAssets::with_loads(&[(MASK, AssetLoad::Loaded)]));
+    app.update();
+    let proof_entity = app.world_mut().spawn_empty().id();
+    app.world_mut().trigger(ScreenshotCaptured {
+        entity: proof_entity,
+        image: test_image(),
+    });
+}
+
+/// Assert the boundary update: exactly one announcement, the held tick-0
+/// look ran onto the shared plane in radians, and the wake override advanced.
+fn assert_boundary_opened(app: &mut App) {
+    {
+        let state = app.world().resource::<HarnessState>();
+        assert_eq!(
+            ready_announcements(state),
+            1,
+            "exactly one readiness announcement"
+        );
+        assert_eq!(state.tick, 1, "tick 0 ran on the boundary update");
+        assert_eq!(state.adapter.tick(), 1, "the held input ran exactly once");
+        let inputs = state
+            .events
+            .iter()
+            .filter(|event| matches!(event, TimedEvent::Input { .. }))
+            .count();
+        assert_eq!(inputs, 1, "exactly one input event: the tick-0 look");
+    }
+    let offered = app.world_mut().resource_mut::<GameplayInput>().take_look();
+    let expected_yaw = 90.0_f32.to_radians();
+    assert!(
+        (offered.x - expected_yaw).abs() < f32::EPSILON,
+        "the scripted look reached the shared plane in radians: {offered:?}"
+    );
+    assert_eq!(
+        app.world().resource::<SimWakePhase>().phase(),
+        WakePhase::AwakeInPod,
+        "the wake override advanced at the boundary"
+    );
+}
+
+#[test]
+fn a_delayed_required_asset_holds_the_clock_until_one_ready_announcement() {
+    // The barrier end to end on the gameplay lane: while the required ledger
+    // reports pending, nothing runs (no tick, no adapter step, no input, no
+    // wake advance, no announcement). Once the ledger reports loaded and the
+    // proof readback lands, the boundary announces exactly once and the held
+    // tick-0 look runs on that same update, offered onto the shared input
+    // plane, with the wake override firing exactly once behind it.
+    let mut app = gameplay_barrier_app(
+        GameAssets::with_loads(&[(MASK, AssetLoad::Pending)]),
+        vec![ScriptedAction::look(0, 90.0, 0.0)],
+        "delayed-asset",
+    );
+    run_updates(&mut app, 3);
+    assert_loading_holds(&app);
+
+    complete_load_and_land_proof(&mut app);
+    app.update();
+    assert_boundary_opened(&mut app);
+
+    // The announcement never repeats, and the completed run then exits
+    // cleanly through the report path (no beats, the settle window passed).
+    app.update();
+    {
+        let state = app.world().resource::<HarnessState>();
+        assert_eq!(ready_announcements(state), 1, "still exactly one");
+        assert_eq!(state.tick, 2, "the clock runs normally after the boundary");
+    }
+    let exits = app.world().resource::<Messages<AppExit>>();
+    assert_eq!(
+        exits
+            .iter_current_update_messages()
+            .filter(|exit| matches!(exit, AppExit::Success))
+            .count(),
+        1,
+        "the completed gameplay run exits cleanly"
+    );
+    app.update();
+    let state = app.world().resource::<HarnessState>();
+    assert_eq!(ready_announcements(state), 1, "never a second announcement");
+}
+
+#[test]
+fn a_failed_required_asset_fails_the_gameplay_run_naming_the_asset() {
+    // Fail fast on the gameplay lane: the first poll records the failure
+    // naming the asset and the underlying error, the run never announces
+    // readiness, never drives a tick or consumes input, never advances the
+    // wake, and exits nonzero through the report path. The verdict is
+    // sticky: a later update neither recovers nor drives.
+    let mut app = gameplay_barrier_app(
+        GameAssets::with_loads(&[(MASK, AssetLoad::Failed("missing file".to_owned()))]),
+        vec![ScriptedAction::look(0, 90.0, 0.0)],
+        "failed-asset",
+    );
+
+    app.update();
+    {
+        let state = app.world().resource::<HarnessState>();
+        let what = state
+            .failed
+            .as_deref()
+            .expect("the failed asset fails the run");
+        assert!(what.contains(MASK), "the failure names the asset: {what}");
+        assert!(
+            what.contains("missing file"),
+            "the failure names the error: {what}"
+        );
+        assert!(!state.announced, "a failed run never announces readiness");
+        assert_eq!(ready_announcements(state), 0);
+        assert_eq!(state.adapter.tick(), 0, "no input was consumed");
+        assert_eq!(
+            state
+                .events
+                .iter()
+                .filter(|event| matches!(event, TimedEvent::Failure { .. }))
+                .count(),
+            1,
+            "the failure is recorded exactly once"
+        );
+    }
+    assert_eq!(
+        app.world().resource::<SimWakePhase>().phase(),
+        WakePhase::Waking,
+        "the wake never advances on a failed run"
+    );
+    let exits = app.world().resource::<Messages<AppExit>>();
+    assert_eq!(
+        exits
+            .iter_current_update_messages()
+            .filter(|exit| matches!(exit, AppExit::Error(_)))
+            .count(),
+        1,
+        "the failed gameplay run exits nonzero"
+    );
+
+    // The failure is sticky: a later update neither recovers nor drives.
+    app.update();
+    let state = app.world().resource::<HarnessState>();
+    assert_eq!(state.adapter.tick(), 0, "still no input");
+    assert_eq!(ready_announcements(state), 0, "still no announcement");
 }

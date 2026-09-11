@@ -46,6 +46,11 @@ const ENV_OUT_DIR: &str = "GONE_OUT_DIR";
 const ENV_APP_HASH: &str = "GONE_APP_HASH";
 /// The environment name for the scenario content hash the runner computed.
 const ENV_SCENARIO_HASH: &str = "GONE_SCENARIO_HASH";
+/// The environment name bevy's asset server reads its asset base path from
+/// (ahead of its `CARGO_MANIFEST_DIR` fallback). The runner sets it so the
+/// child's asset resolution is explicit and never inherited from the
+/// runner's own manifest context.
+const ENV_ASSET_ROOT: &str = "BEVY_ASSET_ROOT";
 /// Selects the app's canary lane: the run opens the window and saves
 /// exactly one onscreen capture at the first beat (verified by [`onscreen`]).
 const ENV_RENDER_CHECK: &str = "GONE_RENDER_CHECK";
@@ -213,9 +218,33 @@ struct RunIdentity<'a> {
     config: &'a str,
 }
 
+/// The app's asset base path: the `gone_app` crate directory, whose `assets/`
+/// subtree holds the game's assets (bevy joins its configured `assets` folder
+/// onto this base). Taken from `gone_app`'s compile-time manifest path, so it
+/// is absolute and independent of this runner's invocation cwd or inherited
+/// environment, and validated here so a layout mismatch fails the launch by
+/// name instead of surfacing later as the child's required-asset load failure.
+fn app_asset_root() -> Result<PathBuf, RunnerError> {
+    let base = PathBuf::from(gone_app::APP_CRATE_DIR);
+    if !base.is_absolute() {
+        bail!("gone_app crate dir is not absolute: {}", base.display());
+    }
+    let assets = base.join("assets");
+    if !assets.is_dir() {
+        bail!(
+            "gone_app assets dir not found: {} (BEVY_ASSET_ROOT must name the gone_app \
+             crate dir whose assets/ subtree holds the game's assets)",
+            assets.display()
+        );
+    }
+    Ok(base)
+}
+
 /// Spawn the app with harness env and the run-identity hashes. Under
 /// `render_check` the child also gets `GONE_RENDER_CHECK=1`, selecting the
-/// canary lane (real window plus the one onscreen capture).
+/// canary lane (real window plus the one onscreen capture). The child's
+/// `BEVY_ASSET_ROOT` is always set explicitly (see [`app_asset_root`]), so its
+/// asset resolution never depends on the environment this runner inherited.
 fn spawn_app(
     root: &Path,
     scenario_path: &Path,
@@ -230,9 +259,11 @@ fn spawn_app(
             app.display()
         );
     }
+    let asset_root = app_asset_root()?;
     let mut command = Command::new(&app);
     command
         .env(ENV_HARNESS, "1")
+        .env(ENV_ASSET_ROOT, asset_root)
         .env(ENV_SCENARIO, scenario_path)
         .env(ENV_OUT_DIR, out_dir)
         .env(ENV_APP_HASH, identity.app)
@@ -767,10 +798,32 @@ mod tests {
     };
 
     use super::{
-        PERF_POLICY_PATH, compare_stream, distribution_line, perf_calibration_scenario,
-        verdict_line,
+        PERF_POLICY_PATH, app_asset_root, compare_stream, distribution_line,
+        perf_calibration_scenario, verdict_line,
     };
     use std::path::PathBuf;
+
+    /// The spawn path's asset root: absolute, and pointing at the `gone_app`
+    /// assets subtree that holds the required metering mask, whatever this
+    /// process's invocation cwd or inherited environment. This is the value
+    /// the child's `BEVY_ASSET_ROOT` is built from; a wrong root made bevy
+    /// look under the runner crate's (empty) assets dir and failed the
+    /// gameplay lane's required-asset barrier.
+    #[test]
+    fn computed_asset_root_holds_the_required_asset() {
+        let base = app_asset_root().expect("gone_app assets dir exists in the repo layout");
+        assert!(
+            base.is_absolute(),
+            "BEVY_ASSET_ROOT must be absolute: {}",
+            base.display()
+        );
+        let required = base.join("assets").join("post/metering_mask.png");
+        assert!(
+            required.is_file(),
+            "the required asset must exist under the computed root: {}",
+            required.display()
+        );
+    }
 
     /// A scratch run directory unique to this test process (the runner's run
     /// dirs are `tmp/harness`, but a unit test needs no repo side effects).

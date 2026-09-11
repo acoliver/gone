@@ -49,9 +49,26 @@ The runner spawns `target/debug/gone_app` (the binary it was built with) with:
 - `GONE_RENDER_CHECK=1` (canary runs only, set by the runner's
   `--render-check` flag: the app opens the unfocused window and saves the one
   onscreen capture at the first beat).
+- `BEVY_ASSET_ROOT=<abs path>` (the `gone_app` crate directory whose `assets/`
+  subtree holds the game's assets; see the asset root paragraph below).
 
 All three hashes are real SHA-256 computed runner-side from the bytes it actually
 spawned and passed; the app echoes them back verbatim.
+
+The runner also passes `BEVY_ASSET_ROOT`, the absolute path of the `gone_app`
+crate directory whose `assets/` subtree holds the game's assets, and it fails
+the launch by name when that directory is missing. Bevy resolves its asset root
+from this variable first and falls back to the inherited `CARGO_MANIFEST_DIR`,
+so a child launched without it inherits the runner crate's manifest context and
+looks for assets under `crates/gone_harness/assets`, where nothing lives; the
+gameplay lane's readiness barrier then correctly reports the required asset as
+missing. Direct binary launches (running `target/debug/gone_app` outside `cargo
+run`) must set `BEVY_ASSET_ROOT` themselves: a stale `CARGO_MANIFEST_DIR`
+inherited from the parent shell points the asset server at the wrong tree just
+the same. The app asserts the variable and the required asset under it in both
+harness modes before anything loads, and the normal game keeps the readiness
+ledger as its enforcement. A regression test pins that the runner's computed
+root contains `post/metering_mask.png`.
 
 By default the app runs headless: `WinitPlugin` is disabled, no window is
 created, and the schedule runner spins updates. With `GONE_RENDER_CHECK=1` the
@@ -161,8 +178,30 @@ requesting until one lands.
 The readiness signal is the first `ScreenshotCaptured` for the offscreen target:
 the capture is the readback of a frame the render graph actually executed into
 the target, so it is direct evidence the renderer built its device resources and
-rendered at least one full frame — there is no authored-content or clock state
-that could precede it.
+rendered at least one full frame. No authored-content or clock state could
+precede it, and the calibration loading scene has none to precede.
+
+Gameplay content extends the proof with the game readiness barrier, and the
+proof request waits on two more legs before it asks for the readback. Every
+required game asset must have loaded (the `readiness` ledger, polled first in
+the gameplay update chain), and the player rig's camera must be bound to the
+offscreen target, so the capture that opens the scenario clock is a fully
+provisioned game frame with its pipelines compiled, never the chip overlay
+alone. While a required asset is still loading, nothing runs: no tick, no
+input, no phase advance, and the loading presentation stays up. The hold is
+bounded by the same known limits as any capture wait; there is no separate
+polling budget. A required asset whose load fails is a terminal failure that
+names the asset and the underlying error and exits nonzero, on the lane and in
+the normal game alike; a run never renders an engine placeholder in a required
+asset's place.
+
+The normal game runs the same ledger every update. A pending load keeps the
+scene in its authored `Waking` opening, and the wake progression (the issue #8
+wake pass, and today the gameplay lane's wake-complete override) may not drive
+the phase machine until the ledger reports ready. The gameplay lane moves its
+wake-complete signal behind the boundary, so the machine lands in
+`AwakeInPod` on the same update the clock opens and the once-only override
+never repeats.
 
 On that capture the app writes the proof PNG to the run dir
 (`readiness-proof.png`), prints the exact stdout line
@@ -324,7 +363,9 @@ failed scenario, never a hang; there is no waiting past the deadline.
 
 ```
 tmp/harness/<scenario>/<run-id>/
-  readiness-proof.png   the first capture of the offscreen target (dark, no chip)
+  readiness-proof.png   the first capture of the offscreen target (the dark
+                        loading scene on calibration content, the first
+                        provisioned game frame on gameplay content)
   beats/<name>.png      one PNG per beat: the rendered frame, chip at top-left
   beats/<name>.onscreen.png  canary runs only: the single onscreen capture, at the first beat
   report.json           the run report

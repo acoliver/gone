@@ -35,7 +35,7 @@ use bevy::light::GlobalAmbientLight;
 use bevy::math::{Quat, Vec3};
 use bevy::mesh::Mesh;
 use bevy::pbr::StandardMaterial;
-use gone_sim::{POD_COUNT, PodRegistry, WakePhase};
+use gone_sim::{POD_COUNT, PhaseTransition, PodRegistry, WakePhase};
 
 use crate::player::PITCH_LIMIT;
 use crate::scene::geometry::{
@@ -77,6 +77,16 @@ impl SimWakePhase {
     /// The phase the machine currently sits in.
     pub(crate) fn phase(&self) -> WakePhase {
         self.0
+    }
+
+    /// Drive one wake-complete boundary signal through the machine
+    /// (`Waking` advances to `AwakeInPod`; re-delivery is a no-op per the
+    /// machine's contract). The gameplay harness's readiness override
+    /// advances through this signal, and the wake pass's own driver (issue
+    /// #8) must advance through it too, behind the readiness barrier.
+    #[must_use]
+    pub(crate) fn wake_complete(&mut self) -> PhaseTransition {
+        self.0.wake_complete()
     }
 }
 
