@@ -78,9 +78,14 @@ pub(crate) fn run_scenario(
 
     verify_captures(scenario, &parsed, &run_dir)?;
     if scenario.content == Content::Gameplay {
-        // The gameplay lane's own machine checks: room presence and the
-        // scripted-look yaw replay (see `gone_harness::gameplay`).
-        gameplay::verify_gameplay(scenario, &parsed).map_err(RunnerError)?;
+        // The gameplay lane's own machine checks (see `gone_harness::gameplay`):
+        // room presence and the scripted-look yaw replay, and on the full lane
+        // the wake progression, the exit waypoint, and the door walk.
+        if scenario.name == gameplay::GAMEPLAY_FULL_SCENARIO_NAME {
+            gameplay::verify_gameplay_full(scenario, &parsed).map_err(RunnerError)?;
+        } else {
+            gameplay::verify_gameplay(scenario, &parsed).map_err(RunnerError)?;
+        }
     }
     if render_check {
         onscreen::verify_run(scenario, &parsed, &run_dir).map_err(RunnerError)?;

@@ -50,6 +50,7 @@ use bevy::math::Vec3;
 use bevy::render::view::Msaa;
 use bevy::transform::components::Transform;
 use gone_sim::PhaseTransition;
+use gone_sim::WakePhase;
 
 use super::state::{HarnessState, RunMode, fail_scenario};
 use super::{CaptureTarget, ChipSprite, ChipTexture, capture_target_image, spawn_chip_sprite};
@@ -290,6 +291,51 @@ fn record_room_check(state: &mut HarnessState, pods_expected: usize, pods_presen
     }
 }
 
+/// The gameplay lane's wake-phase observation: record the machine's phase
+/// into the report once per change (the authored opening included, so the
+/// run's first update records `Waking` while the lane loads), stamped with
+/// the run moment whose update observed it. The stamp follows the beat-pin
+/// convention (the tick and frame that just drove; zero before the first
+/// tick drove), so the recorded sequence reads in the report's canonical
+/// order exactly as the machine moved. The runner's gameplay-full lane
+/// asserts the recorded names are the wake progression, in order. Systems
+/// order after the player motion slice (which advances the machine inside
+/// its controllers) via the post-drive half's `.after(PlaneCleared)` chain
+/// ordering, so a transition is recorded on the update that drove it.
+pub(super) fn observe_wake_phase(
+    mut state: ResMut<HarnessState>,
+    phase: Option<Res<SimWakePhase>>,
+    mut last: Local<Option<WakePhase>>,
+) {
+    let Some(phase) = phase else {
+        return;
+    };
+    let current = phase.into_inner().phase();
+    if *last == Some(current) {
+        return;
+    }
+    *last = Some(current);
+    let (tick, frame) = (state.tick.saturating_sub(1), state.frame.saturating_sub(1));
+    state.events.push(TimedEvent::WakePhase {
+        tick,
+        frame,
+        phase: phase_name(current).to_owned(),
+    });
+}
+
+/// The report's spelling of a wake phase: `snake_case` protocol strings, kept
+/// out of the protocol module because the protocol module cannot name
+/// simulation types (`xtask check architecture`).
+#[must_use]
+fn phase_name(phase: WakePhase) -> &'static str {
+    match phase {
+        WakePhase::Waking => "waking",
+        WakePhase::AwakeInPod => "awake_in_pod",
+        WakePhase::ExitingPod => "exiting_pod",
+        WakePhase::Standing => "standing",
+    }
+}
+
 /// The gameplay lane's required-asset poll: advance the readiness ledger and
 /// fail the run on a required asset's load error, naming the asset and the
 /// underlying error. A pending load keeps the lane loading: the proof request
@@ -400,12 +446,12 @@ mod tests {
     use bevy::ecs::prelude::{Entity, With};
     use bevy::image::Image;
     use bevy::render::view::Msaa;
-    use gone_sim::WakePhase;
+    use gone_sim::{PhaseTransition, WakePhase};
 
     use super::super::state::HarnessState;
     use super::{
         GAMEPLAY_SCENE_ORDER, GameCameraBound, StasisPod, TimedEvent, advance_wake_at_readiness,
-        observe_room, record_room_check, retarget_gameplay_camera,
+        observe_room, observe_wake_phase, phase_name, record_room_check, retarget_gameplay_camera,
     };
     use crate::harness::{Content, InputAdapter, Scenario, TICKS_PER_SECOND};
     use crate::player::PlayerPitch;
@@ -621,5 +667,134 @@ mod tests {
             WakePhase::AwakeInPod,
             "the override fires exactly once"
         );
+    }
+
+    /// The phase names the observation records, in report order.
+    fn observed_phases(app: &App) -> Vec<&str> {
+        app.world()
+            .resource::<HarnessState>()
+            .events
+            .iter()
+            .filter_map(|event| match event {
+                TimedEvent::WakePhase { phase, .. } => Some(phase.as_str()),
+                _ => None,
+            })
+            .collect()
+    }
+
+    #[test]
+    fn the_phase_observation_records_the_progression_once_per_change() {
+        // The observation records the authored opening on the run's first
+        // update and each machine transition exactly once, on the update it
+        // happened; an update where nothing changed records nothing. The
+        // full sequence is the wake progression in order.
+        let mut app = App::new();
+        app.insert_resource(gameplay_state());
+        app.insert_resource(SimWakePhase::new(WakePhase::Waking));
+        app.add_systems(Update, observe_wake_phase);
+        app.update();
+        app.update();
+        assert_eq!(observed_phases(&app), ["waking"], "exactly the opening");
+
+        // The wake override's transition lands on its own update.
+        let transition = app
+            .world_mut()
+            .resource_mut::<SimWakePhase>()
+            .wake_complete();
+        assert!(
+            matches!(transition, PhaseTransition::Advanced { .. }),
+            "the override advanced the machine, got {transition:?}"
+        );
+        app.update();
+        app.update();
+        assert_eq!(observed_phases(&app), ["waking", "awake_in_pod"]);
+
+        // The get-up's two transitions drive through the machine the same
+        // way the exit controller drives them.
+        let transition = {
+            let mut machine = app.world_mut().resource_mut::<SimWakePhase>();
+            machine
+                .machine_mut()
+                .request_pod_exit(gone_sim::phase::InputEdge::Rising)
+        };
+        assert!(
+            matches!(transition, PhaseTransition::Advanced { .. }),
+            "the exit command advanced the machine, got {transition:?}"
+        );
+        app.update();
+        assert_eq!(
+            observed_phases(&app),
+            ["waking", "awake_in_pod", "exiting_pod"]
+        );
+        {
+            let mut machine = app.world_mut().resource_mut::<SimWakePhase>();
+            machine.machine_mut().get_up_complete().expect("legal here");
+        }
+        app.update();
+        assert_eq!(
+            observed_phases(&app),
+            ["waking", "awake_in_pod", "exiting_pod", "standing"]
+        );
+    }
+
+    #[test]
+    fn the_phase_observation_stamps_the_just_driven_tick() {
+        // The stamp follows the beat-pin convention: the tick and frame that
+        // just drove, so a transition observed mid-run names its tick. Before
+        // the first driven tick the run's moment is tick zero.
+        let mut app = App::new();
+        app.insert_resource(gameplay_state());
+        app.insert_resource(SimWakePhase::new(WakePhase::Waking));
+        app.add_systems(Update, observe_wake_phase);
+        app.update();
+        let stamps: Vec<(u64, u64)> = app
+            .world()
+            .resource::<HarnessState>()
+            .events
+            .iter()
+            .filter_map(|event| match event {
+                TimedEvent::WakePhase { tick, frame, .. } => Some((*tick, *frame)),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(stamps, [(0, 0)], "the opening stamps the run's start");
+
+        {
+            let mut state = app.world_mut().resource_mut::<HarnessState>();
+            state.tick = 31;
+            state.frame = 31;
+        }
+        let transition = app
+            .world_mut()
+            .resource_mut::<SimWakePhase>()
+            .wake_complete();
+        assert!(
+            matches!(transition, PhaseTransition::Advanced { .. }),
+            "the override advanced the machine, got {transition:?}"
+        );
+        app.update();
+        let stamps: Vec<(u64, u64)> = app
+            .world()
+            .resource::<HarnessState>()
+            .events
+            .iter()
+            .filter_map(|event| match event {
+                TimedEvent::WakePhase { tick, frame, .. } => Some((*tick, *frame)),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(
+            stamps,
+            [(0, 0), (30, 30)],
+            "a mid-run observation stamps the tick that just drove"
+        );
+    }
+
+    #[test]
+    fn every_wake_phase_has_a_protocol_name() {
+        assert_eq!(phase_name(WakePhase::Waking), "waking");
+        assert_eq!(phase_name(WakePhase::AwakeInPod), "awake_in_pod");
+        assert_eq!(phase_name(WakePhase::ExitingPod), "exiting_pod");
+        assert_eq!(phase_name(WakePhase::Standing), "standing");
     }
 }

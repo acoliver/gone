@@ -53,14 +53,10 @@ use gone_sim::{Capsule, WakePhase};
 
 use crate::bootstrap::ScenarioTime;
 use crate::harness::MoveMotion;
+use crate::placement_truth::STANDING_EYE_HEIGHT;
 use crate::scene::{PlayerExitPath, SimColliders, SimWakePhase};
 
 use super::{GameplayInput, LookAngles, LookApplied, PlaneCleared, PlayerYaw};
-
-/// Standing eye height above the capsule foot's ground contact, in meters:
-/// the controller spec's standing height "puts the eye point near 1.6 m",
-/// and this is that number for the rig.
-const STANDING_EYE_HEIGHT: f32 = 1.6;
 
 /// The player body's mirrored motion state: which sim controller, if any,
 /// currently owns the body. The sim phase machine is authoritative; the

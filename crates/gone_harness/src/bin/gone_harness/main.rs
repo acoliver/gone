@@ -23,6 +23,14 @@
 //! gameplay machine checks (`gone_harness::gameplay`): a stasis-room observation
 //! matching the registry's count, and yaw samples proving the scripted look
 //! turned the rig by the scripted amount.
+//!
+//! `gameplay-full` plays the whole opening beat: the activate press starts the
+//! authored get-up out of the player pod, a scripted turn aims down the room's
+//! long axis, and the steadying walk carries the player toward the jammed
+//! hatch. Its checks add the wake-phase progression in order, the standing
+//! beat's position at the exit waypoint, and the door beat's position inside
+//! the room near the hatch, all derived from the frozen placement and
+//! controller constants the app itself builds from.
 
 mod app;
 mod compare;
@@ -95,9 +103,10 @@ fn dispatch(args: &[String]) -> i32 {
         // harness`.
         None | Some("smoke") => run_smoke(render_check),
         Some("gameplay-smoke") => run_gameplay_smoke(render_check),
+        Some("gameplay-full") => run_gameplay_full(render_check),
         Some("--help" | "-h") => {
             eprintln!(
-                "usage: gone-harness [--render-check] <smoke | gameplay-smoke | perf [scenario] | compare <scenario> | <scenario.json>>
+                "usage: gone-harness [--render-check] <smoke | gameplay-smoke | gameplay-full | perf [scenario] | compare <scenario> | <scenario.json>>
   (no command runs the smoke scenario)
   --render-check: canary lane (unfocused window, one onscreen capture machine-verified after the run)"
             );
@@ -120,6 +129,18 @@ fn run_gameplay_smoke(render_check: bool) -> i32 {
     run_builtin(
         &gone_harness::gameplay::gameplay_smoke_scenario(),
         "gameplay-smoke-scenario.json",
+        render_check,
+    )
+}
+
+/// The gameplay-full lane: the built-in whole-opening-beat scenario through
+/// the same run/verify path, with the full lane's checks hooked into
+/// [`run_scenario`] (wake progression, exit waypoint, door walk) on top of
+/// the shared gameplay ones.
+fn run_gameplay_full(render_check: bool) -> i32 {
+    run_builtin(
+        &gone_harness::gameplay::gameplay_full_scenario(),
+        "gameplay-full-scenario.json",
         render_check,
     )
 }

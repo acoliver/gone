@@ -166,6 +166,57 @@ follow-up judgment step, outside CI: the runner's machine checks prove the
 frame rendered, and the visual pass judges what it looks like. The canary is
 the practical use of the corrected `primary_window()` knowledge above.
 
+## The gameplay lanes (gameplay-smoke, gameplay-full)
+
+    gone_harness gameplay-smoke
+    gone_harness gameplay-full
+    cargo xtask harness gameplay-smoke
+    cargo xtask harness gameplay-full
+
+Both lanes boot the real game in the child (the scenario's
+`content: "gameplay"` field): the post chain, the stasis-room scene, and the
+player rig build exactly as the normal game builds them, behind the extended
+readiness barrier described above (required assets loaded, rig camera bound
+to the capture target). The frame-code chip renders as a corner overlay on
+the gameplay camera's view, so beat captures keep the same decode contract
+and every capture still decodes to the report's tick and frame.
+
+`gameplay-smoke` scripts a 30 degree look between two pinned beats and proves
+two things machine-side: the room observation matches the registry's pod
+count, and the rig's beat-pinned yaw samples show exactly the scripted look
+delta (compared modulo a full turn, within a stated tolerance). A run whose
+player systems never integrated scripted look, or whose scene failed to
+build, fails here.
+
+`gameplay-full` scripts the whole opening beat and verifies it numerically.
+The scenario presses activate, so the authored get-up carries the capsule out
+of the player pod along the authored exit path; then it turns 90 degrees and
+walks forward toward the hatch wall with the steadying walk. The runner
+derives every expectation from the same frozen truth the app builds from
+(the exit path and standing eye height from `gone_app::placement_truth`, the
+controller constants, the room envelope, and the hatch placement through the
+app's `gone_sim` re-export), never from literals:
+
+- the report's wake-phase observations read exactly `waking`, `awake_in_pod`,
+  `exiting_pod`, `standing`, in order;
+- the `standing` beat's position sample equals the standing eye point the
+  authored exit path's waypoint projects to, within the sim's own pose
+  arrival tolerance;
+- the `door` beat's position sits inside the room envelope at the standing
+  eye height, its displacement from the standing beat matches the frozen
+  steadying ramp consumed exactly as the sim consumes it (the ramp clock
+  advances on every walked tick, movement or not), and its distance to the
+  frozen hatch placement is bounded by that same walk model, each within a
+  stated tolerance.
+
+The lane's negative proofs are unit-tested on the verifier itself: a report
+whose standing beat drifts off the waypoint, whose phase sequence drops or
+reorders a phase, or whose door beat shows a player that never walked (or
+left the room, or lost its eye sample) fails with a named error. What the
+lane proves: the phase machine, the get-up controller, the steadying walk,
+the collider set, and the placement data all agree with each other and with
+the report, end to end, in a real build of the game.
+
 ## Readiness handshake (the exact signal)
 
 The app starts in the loading presentation: a dark clear, the harness `Camera2d`

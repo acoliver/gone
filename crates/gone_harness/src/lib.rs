@@ -6,8 +6,9 @@
 //! The crate itself contains no protocol definitions; its binary drives
 //! `target/debug/gone_app` and verifies against the app's report and captures.
 //! The [`onscreen`] and [`gameplay`] modules are runner tooling: the machine
-//! verification of the render canary's single onscreen capture, and of the
-//! gameplay lane's room and yaw assertions.
+//! verification of the render canary's single onscreen capture, of the
+//! gameplay lane's room and yaw assertions, and of the gameplay-full lane's
+//! wake progression, exit waypoint, and door walk.
 
 pub mod gameplay;
 pub mod onscreen;

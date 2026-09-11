@@ -57,6 +57,38 @@ pub enum TimedEvent {
         /// The rig's integrated yaw at that moment, in degrees.
         yaw_degrees: f32,
     },
+    /// Gameplay content only: the wake phase machine's observed phase,
+    /// recorded once per phase change and once for the authored opening at
+    /// the run's start, stamped with the run moment whose update observed
+    /// it (the just-driven tick and frame; zero before the first tick
+    /// drove). The gameplay-full lane's runner asserts the recorded names
+    /// appear in the wake progression's exact order. Additive kind: only
+    /// gameplay-content runs emit it, and calibration reports are
+    /// unchanged.
+    WakePhase {
+        /// Rendered tick the observation belongs to.
+        tick: u64,
+        /// Rendered frame of that same moment.
+        frame: u64,
+        /// The phase's protocol name (`snake_case`, a plain string: the
+        /// protocol module does not name simulation types).
+        phase: String,
+    },
+    /// Gameplay content only: the player rig's eye point in world meters,
+    /// sampled for a beat at the beat's pinned (tick, frame), the same
+    /// rendered moment the beat's PNG and yaw sample show. Additive kind.
+    PlayerPosition {
+        /// Rendered tick the sample belongs to (the beat's pinned tick).
+        tick: u64,
+        /// Rendered frame the sample belongs to (the beat's pinned frame).
+        frame: u64,
+        /// Eye point x, meters, world frame.
+        x: f32,
+        /// Eye point y, meters, world frame.
+        y: f32,
+        /// Eye point z, meters, world frame.
+        z: f32,
+    },
     /// Gameplay content only: the stasis-room presence observation made on
     /// the first update: spawned stasis-pod groups versus the pod-registry
     /// count the scene builds from. A mismatch is a terminal scenario
@@ -99,7 +131,9 @@ impl TimedEvent {
             Self::RoomCheck { frame, .. } => (1, 0, *frame),
             Self::Input { tick, frame, .. }
             | Self::Beat { tick, frame, .. }
-            | Self::PlayerYaw { tick, frame, .. } => (1, *tick, *frame),
+            | Self::PlayerYaw { tick, frame, .. }
+            | Self::WakePhase { tick, frame, .. }
+            | Self::PlayerPosition { tick, frame, .. } => (1, *tick, *frame),
             Self::Complete { frame } | Self::Failure { frame, .. } => (2, u64::MAX, *frame),
         }
     }
@@ -350,9 +384,9 @@ mod tests {
     #[test]
     fn gameplay_event_kinds_roundtrip_and_sort_additively() {
         // The gameplay lane's kinds ride the same canonical order: the room
-        // observation lands right after ready (tick 0), yaw samples sort
-        // with their tick, and calibration events are untouched by their
-        // presence.
+        // observation lands right after ready (tick 0), yaw samples, phase
+        // observations, and position samples sort with their tick, and
+        // calibration events are untouched by their presence.
         let mut report = sample();
         report.events = vec![
             super::TimedEvent::Beat {
@@ -371,6 +405,18 @@ mod tests {
                 frame: 2,
                 yaw_degrees: 40.1,
             },
+            super::TimedEvent::WakePhase {
+                tick: 0,
+                frame: 0,
+                phase: "waking".into(),
+            },
+            super::TimedEvent::PlayerPosition {
+                tick: 2,
+                frame: 2,
+                x: 1.0,
+                y: 1.6,
+                z: -2.0,
+            },
             super::TimedEvent::Ready { frame: 0 },
         ];
         super::sort_events(&mut report.events);
@@ -384,10 +430,15 @@ mod tests {
                 super::TimedEvent::RoomCheck { .. } => "room".to_owned(),
                 super::TimedEvent::Beat { .. } => "beat".to_owned(),
                 super::TimedEvent::PlayerYaw { .. } => "yaw".to_owned(),
+                super::TimedEvent::WakePhase { phase, .. } => format!("phase:{phase}"),
+                super::TimedEvent::PlayerPosition { .. } => "position".to_owned(),
                 _ => "other".to_owned(),
             })
             .collect();
-        assert_eq!(kinds, ["ready", "room", "beat", "yaw"]);
+        assert_eq!(
+            kinds,
+            ["ready", "room", "phase:waking", "beat", "yaw", "position"]
+        );
     }
 
     #[test]

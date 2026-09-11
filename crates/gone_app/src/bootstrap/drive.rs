@@ -25,14 +25,14 @@ use bevy::time::{Time, Virtual};
 use bevy::transform::components::Transform;
 
 use super::RunMode;
-use super::gameplay::{GameCameraBound, proof_gate};
+use super::gameplay::{GameCameraBound, observe_wake_phase, proof_gate};
 use super::state::{
     BeatCapture, CaptureRequest, HarnessState, OnscreenCapture, PresentGate, PresentProbe,
     Readiness, ScenarioTime, drive_allowed, onscreen_capture_due,
 };
 use super::{CaptureTarget, ChipSprite, ChipTexture};
 use crate::harness::{Content, ScenarioMode, TimedEvent, frame};
-use crate::player::{GameplayInput, LookApplied, PlayerYaw, ScriptedInput};
+use crate::player::{GameplayInput, LookApplied, PlaneCleared, PlayerYaw, ScriptedInput};
 use crate::readiness::GameAssets;
 
 /// Frame-kernel state shared by the driving systems. A custom [`SystemParam`]
@@ -48,18 +48,21 @@ pub(super) struct Kernel<'w> {
 }
 
 /// The post-drive half of the harness update chain, identical on both lanes:
-/// repaint the chip with the just-driven numbers, pin and request due beat
-/// captures from the post-tick state, freeze bevy's virtual clock for the
-/// duration of a capture hold, sample the perf lane, and close the run. The
-/// half runs after the scripted-input set (the drive half) and, when the
-/// game's look chain is present, after look application ([`LookApplied`]), so
-/// a beat's observation samples the pose the tick's input actually produced —
-/// captures are post-tick state. On calibration content the look set is empty
-/// and that constraint is vacuous.
+/// record the gameplay lane's wake-phase observation, repaint the chip with
+/// the just-driven numbers, pin and request due beat captures from the
+/// post-tick state, freeze bevy's virtual clock for the duration of a capture
+/// hold, sample the perf lane, and close the run. The half runs after the
+/// scripted-input set (the drive half) and after the whole player chain
+/// ([`LookApplied`] and the input clear [`PlaneCleared`], which the motion
+/// slice orders itself between), so a beat's observation samples the pose
+/// the tick's input actually produced, rotation and translation alike —
+/// captures are post-tick state. On calibration content the look sets are
+/// empty and those constraints are vacuous.
 pub(super) fn register_post_drive_systems(app: &mut App) {
     app.add_systems(
         Update,
         (
+            observe_wake_phase,
             paint_driven_chip,
             request_beat_captures,
             freeze_engine_time,
@@ -68,7 +71,8 @@ pub(super) fn register_post_drive_systems(app: &mut App) {
         )
             .chain()
             .after(ScriptedInput)
-            .after(LookApplied),
+            .after(LookApplied)
+            .after(PlaneCleared),
     );
 }
 
@@ -297,10 +301,11 @@ fn paint_chip(kernel: &mut Kernel, tick: u64, frame_num: u64) {
 /// clock can never pass a beat's tick while the lane is busy and every beat
 /// pins exactly its scripted tick. In canary mode the first beat's request
 /// also spawns the run's single onscreen capture of the primary window. On
-/// gameplay content the pinned moment also samples the player rig's yaw into
-/// a `PlayerYaw` event stamped with the same (tick, frame) the PNG shows —
-/// read from the rig's actual transform, the rendered pose, so the sample is
-/// the post-turn angle when the beat's own tick carried a look action.
+/// gameplay content the pinned moment also samples the player rig's yaw and
+/// eye point into `PlayerYaw` and `PlayerPosition` events stamped with the
+/// same (tick, frame) the PNG shows — read from the rig's actual transform,
+/// the rendered pose, so the samples are the post-turn, post-motion state
+/// when the beat's own tick carried look or movement.
 pub(super) fn request_beat_captures(
     mut kernel: Kernel,
     capture: Res<CaptureTarget>,
@@ -329,11 +334,20 @@ pub(super) fn request_beat_captures(
         let rig = rig.expect(
             "gameplay content requires the player rig (PlayerLookPlugin provides PlayerYaw)",
         );
-        let yaw_degrees = rig_yaw_radians(rig.into_inner()).to_degrees();
+        let transform = rig.into_inner();
+        let yaw_degrees = rig_yaw_radians(transform).to_degrees();
         state.events.push(TimedEvent::PlayerYaw {
             tick,
             frame,
             yaw_degrees,
+        });
+        let eye = transform.translation;
+        state.events.push(TimedEvent::PlayerPosition {
+            tick,
+            frame,
+            x: eye.x,
+            y: eye.y,
+            z: eye.z,
         });
     }
     commands.spawn((

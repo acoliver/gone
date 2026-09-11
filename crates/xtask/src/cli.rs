@@ -98,6 +98,7 @@ commands:
   test                 locked workspace test
   harness smoke        build gone_app + gone_harness (locked) and run the smoke scenario
   harness gameplay-smoke  run the gameplay lane: real game content, room and scripted-look yaw assertions
+  harness gameplay-full  run the whole opening beat: wake, get-up, walk to the hatch, position assertions
   harness <scenario>   run one scenario file (builds both binaries first)
   harness compare <s>   run a scenario twice and diff the event timelines
   harness perf [s]     run the perf calibration lane against the checked-in policy
@@ -186,8 +187,10 @@ fn named_failure(label: &str, step: &str, err: &CommandFailed) -> CommandFailed 
 /// checked-in policy (default scenario derived from the policy);
 /// `harness render-check` runs the smoke scenario through the canary lane
 /// (the runner's `--render-check`: windowed, onscreen capture machine-verified,
-/// run dir prefixed `rc`). The runner owns the child app's lifecycle (spawn,
-/// kill-on-timeout, reap), so xtask just forwards the exit code.
+/// run dir prefixed `rc`). The built-in gameplay lanes forward
+/// `gameplay-smoke` and `gameplay-full` verbatim. The runner owns the child
+/// app's lifecycle (spawn, kill-on-timeout, reap), so xtask just forwards
+/// the exit code.
 fn run_harness_command(rest: &[String], root: &Path) -> Result<(), CommandFailed> {
     build_harness_binaries(root)?;
     let mut plan = CommandPlan::new("cargo")
@@ -220,6 +223,9 @@ fn run_harness_command(rest: &[String], root: &Path) -> Result<(), CommandFailed
         }
         [cmd] if cmd == "gameplay-smoke" => {
             plan = plan.args(["gameplay-smoke"]);
+        }
+        [cmd] if cmd == "gameplay-full" => {
+            plan = plan.args(["gameplay-full"]);
         }
         [cmd] if cmd == "perf" => {
             plan = plan.args(["perf"]);

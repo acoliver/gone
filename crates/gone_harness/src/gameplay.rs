@@ -9,10 +9,18 @@
 //! the negative proof the lane exists for: a report from a run whose player
 //! systems never integrated scripted look (stale or missing yaw samples)
 //! fails here, as does a run whose scene failed to build its pods.
+//!
+//! The `full` submodule is the gameplay-full lane: the built-in scenario that
+//! plays the whole opening beat (wake, get-up, turn, walk to the hatch) and
+//! the position and phase-sequence verification over its report.
 
 use gone_app::harness::report::{Report, TimedEvent};
 use gone_app::harness::scenario::TICKS_PER_SECOND;
 use gone_app::harness::{Action, Beat, Content, Scenario, ScenarioMode, ScriptedAction};
+
+mod full;
+
+pub use full::{GAMEPLAY_FULL_SCENARIO_NAME, gameplay_full_scenario, verify_gameplay_full};
 
 /// How far the sampled yaw may drift from the scripted replay, in degrees.
 /// The app integrates the same f32 constants the scenario serializes, so a
@@ -59,13 +67,14 @@ pub fn gameplay_smoke_scenario() -> Scenario {
 /// that does not match the script.
 pub fn verify_gameplay(scenario: &Scenario, report: &Report) -> Result<(), String> {
     verify_room(report)?;
-    let anchored = beat_yaw_samples(report)?;
-    verify_yaw_replay(scenario, &anchored)
+    let anchored = beat_anchored_samples(report)?;
+    let samples: Vec<(u64, f32)> = anchored.iter().map(|beat| (beat.tick, beat.yaw)).collect();
+    verify_yaw_replay(scenario, &samples)
 }
 
 /// The report's room observation: both numbers, present and equal, with a
 /// nonzero expectation (a registry that builds nothing proves nothing).
-fn verify_room(report: &Report) -> Result<(), String> {
+pub(crate) fn verify_room(report: &Report) -> Result<(), String> {
     let check = report.events.iter().find_map(|event| match event {
         TimedEvent::RoomCheck {
             pods_expected,
@@ -93,10 +102,27 @@ fn verify_room(report: &Report) -> Result<(), String> {
     Ok(())
 }
 
-/// One beat's yaw sample: the beat's pinned tick and the sampled yaw in
-/// degrees. Beats without a sample at their pinned (tick, frame) fail here.
-fn beat_yaw_samples(report: &Report) -> Result<Vec<(u64, f32)>, String> {
-    let samples: Vec<(u64, u64, f32)> = report
+/// One report beat anchored to its pinned moment: the yaw the rig reported
+/// at exactly the beat's pinned (tick, frame), plus the eye point when the
+/// report carries one there (gameplay content samples both at every pin;
+/// the smoke lane's assertions use only the yaw).
+pub(crate) struct AnchoredBeat {
+    /// The beat's name.
+    pub(crate) name: String,
+    /// The beat's pinned tick.
+    pub(crate) tick: u64,
+    /// The rig's yaw in degrees at the pinned moment.
+    pub(crate) yaw: f32,
+    /// The rig's eye point (x, y, z) at the pinned moment, when sampled.
+    pub(crate) eye: Option<[f32; 3]>,
+}
+
+/// Every report beat anchored to its samples: the yaw at exactly the beat's
+/// pinned (tick, frame) (a beat without one fails here, naming the beat),
+/// the eye point when present, tick-sorted for the replay. At least two
+/// anchors are required: one pinned moment proves nothing about motion.
+pub(crate) fn beat_anchored_samples(report: &Report) -> Result<Vec<AnchoredBeat>, String> {
+    let yaws: Vec<(u64, u64, f32)> = report
         .events
         .iter()
         .filter_map(|event| match event {
@@ -108,9 +134,23 @@ fn beat_yaw_samples(report: &Report) -> Result<Vec<(u64, f32)>, String> {
             _ => None,
         })
         .collect();
-    let mut anchored: Vec<(u64, f32)> = Vec::new();
+    let positions: Vec<(u64, u64, f32, f32, f32)> = report
+        .events
+        .iter()
+        .filter_map(|event| match event {
+            TimedEvent::PlayerPosition {
+                tick,
+                frame,
+                x,
+                y,
+                z,
+            } => Some((*tick, *frame, *x, *y, *z)),
+            _ => None,
+        })
+        .collect();
+    let mut anchored: Vec<AnchoredBeat> = Vec::new();
     for (name, entry) in &report.beats {
-        let found = samples
+        let found = yaws
             .iter()
             .find(|(tick, frame, _)| *tick == entry.tick && *frame == entry.frame);
         let Some((_, _, yaw)) = found else {
@@ -120,7 +160,16 @@ fn beat_yaw_samples(report: &Report) -> Result<Vec<(u64, f32)>, String> {
                 entry.tick, entry.frame
             ));
         };
-        anchored.push((entry.tick, *yaw));
+        let eye = positions
+            .iter()
+            .find(|(tick, frame, ..)| *tick == entry.tick && *frame == entry.frame)
+            .map(|(_, _, x, y, z)| [*x, *y, *z]);
+        anchored.push(AnchoredBeat {
+            name: name.clone(),
+            tick: entry.tick,
+            yaw: *yaw,
+            eye,
+        });
     }
     if anchored.len() < 2 {
         return Err(format!(
@@ -128,7 +177,7 @@ fn beat_yaw_samples(report: &Report) -> Result<Vec<(u64, f32)>, String> {
             anchored.len()
         ));
     }
-    anchored.sort_by_key(|(tick, _)| *tick);
+    anchored.sort_by_key(|beat| beat.tick);
     Ok(anchored)
 }
 
@@ -162,7 +211,10 @@ fn shortest_arc_degrees(raw_delta_degrees: f32) -> f32 {
 /// aliasing: a whole number of extra full turns between two beats is
 /// indistinguishable from no turn, and scenario authors pin beats so that
 /// cannot masquerade as a pass.
-fn verify_yaw_replay(scenario: &Scenario, anchored: &[(u64, f32)]) -> Result<(), String> {
+pub(crate) fn verify_yaw_replay(
+    scenario: &Scenario,
+    anchored: &[(u64, f32)],
+) -> Result<(), String> {
     let scripted_before = |tick: u64| -> f32 {
         scenario
             .actions

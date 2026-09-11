@@ -25,9 +25,12 @@
 //! failed required asset is a hard error and exits rather than rendering
 //! placeholders.
 //!
-//! Gameplay internals stay crate-private; the only public harness surface is the
-//! `harness` protocol module (which `gone_harness` re-exports). Harness-mode
-//! captures come from an offscreen render target, not the window swapchain:
+//! Gameplay internals stay crate-private; the public harness surface is the
+//! `harness` protocol module (which `gone_harness` re-exports) plus the
+//! `placement_truth` module and the `gone_sim` re-export, the frozen
+//! numbers the runner's machine checks derive their expectations from.
+//! Harness-mode captures come from an offscreen render target, not the window
+//! swapchain:
 //! they are exactly 1920x1080 regardless of window scale or DPI overrides, and
 //! their timing is decoupled from the swapchain and present. (`Screenshot::
 //! primary_window()` works here with the correct bevy feature set; an earlier
@@ -52,6 +55,18 @@ mod player;
 mod post;
 mod readiness;
 mod scene;
+
+/// The frozen simulation truth the scene builds from, re-exported for the
+/// runner: `gone_harness` derives its gameplay expectations (the exit
+/// waypoint, the jammed hatch's placement) from the same frozen registry the
+/// scene builds from, and the architecture gate forbids it naming `gone_sim`
+/// as a direct dependency, so the crate in the middle hands it through. See
+/// [`placement_truth`] for the shared gameplay constants.
+pub use gone_sim;
+
+/// Placement-derived gameplay truth shared by the game's own build and the
+/// runner's machine checks (see the `gone_sim` re-export above).
+pub mod placement_truth;
 
 /// The absolute path of the `gone_app` crate directory, captured at compile
 /// time. The crate's `assets/` subtree lives here, so this is the value

@@ -51,7 +51,10 @@ mod geometry;
 /// Pure world-space placements for every non-pod scene solid.
 mod placement;
 
-mod pod_body;
+/// Pure pod construction solids (pod-local). Crate-visible because
+/// `placement_truth` builds the shared exit path against the tray floor the
+/// cavity build constructs.
+pub(crate) mod pod_body;
 
 pub(crate) use colliders::SimColliders;
 

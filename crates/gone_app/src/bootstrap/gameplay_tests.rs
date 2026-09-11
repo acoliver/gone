@@ -533,6 +533,61 @@ fn the_beat_yaw_reports_the_post_turn_rig_transform() {
 }
 
 #[test]
+fn the_beat_pin_samples_the_rig_position_at_its_moment() {
+    // The gameplay-full lane's position assertions ride this sample: every
+    // gameplay beat pin carries the rig's eye point at the pinned (tick,
+    // frame), read from the rig's actual transform exactly like the yaw
+    // sample. Nothing translates the player in this scenario, so the sample
+    // is the authored lying spawn pose, and the run's end pose is the pose
+    // the beat sampled.
+    let scenario = drive_scenario(
+        "post-tick-position",
+        vec![ScriptedAction::look(0, 90.0, 0.0)],
+        vec![Beat::new("first", 0)],
+    );
+    let mut app = gameplay_drive_app(
+        scenario,
+        barrier_out_dir("post-tick-position"),
+        Duration::ZERO,
+    );
+    drive_to_completion(&mut app, 64);
+    let rig = rig_yaw_transform(&mut app);
+    let state = app.world().resource::<HarnessState>();
+    assert!(state.failed.is_none(), "the run completes cleanly");
+    let beat = &state.beats["first"];
+    let positions: Vec<(u64, u64, f32, f32, f32)> = state
+        .events
+        .iter()
+        .filter_map(|event| match event {
+            TimedEvent::PlayerPosition {
+                tick,
+                frame,
+                x,
+                y,
+                z,
+            } => Some((*tick, *frame, *x, *y, *z)),
+            _ => None,
+        })
+        .collect();
+    assert_eq!(
+        positions.len(),
+        1,
+        "exactly one beat pin carries one position sample"
+    );
+    let (tick, frame, x, y, z) = positions[0];
+    assert_eq!((tick, frame), (beat.tick, beat.frame));
+    let eye = rig.translation;
+    assert!((x - eye.x).abs() < 1e-6, "x: {x} vs {}", eye.x);
+    assert!((y - eye.y).abs() < 1e-6, "y: {y} vs {}", eye.y);
+    assert!((z - eye.z).abs() < 1e-6, "z: {z} vs {}", eye.z);
+    // The spawn pose lies in the player pod: the eye is inside the pod's
+    // footprint at the lying eye height, under the lid line.
+    let spawn = app.world().resource::<PlayerSpawn>().pose;
+    assert!((y - spawn.eye.y).abs() < 1e-6, "the lying eye height holds");
+    assert!((x - spawn.eye.x).abs() < 1e-6 && (z - spawn.eye.z).abs() < 1e-6);
+}
+
+#[test]
 fn the_latency_invariant_holds_with_and_without_capture_delay() {
     // The protocol's latency proof, on the app's real drive path: the same
     // gameplay scenario runs twice through the real adapters — a scripted
