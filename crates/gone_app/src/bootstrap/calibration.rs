@@ -171,7 +171,11 @@ pub(super) struct SceneSpawnContext<'w, 's> {
     mode: Res<'w, RunMode>,
     state: Res<'w, HarnessState>,
     capture: Res<'w, super::CaptureTarget>,
-    masks: Res<'w, PostChainAssets>,
+    /// Present exactly on the calibration lane (`GamePostChainPlugin` is
+    /// added there and nowhere else); `None` makes the spawn system a no-op
+    /// on the other lanes instead of failing param validation and panicking
+    /// the run.
+    masks: Option<Res<'w, PostChainAssets>>,
     meshes: ResMut<'w, Assets<Mesh>>,
     materials: ResMut<'w, Assets<StandardMaterial>>,
 }
@@ -181,6 +185,9 @@ pub(super) struct SceneSpawnContext<'w, 's> {
 /// no-op on every other lane, which never build the post-chain plugins this
 /// scene's cameras require.
 pub(super) fn setup_calibration_scene(mut ctx: SceneSpawnContext) {
+    let Some(masks) = ctx.masks.as_ref() else {
+        return;
+    };
     if ctx.state.scenario.mode != ScenarioMode::Calibration {
         return;
     }
@@ -189,7 +196,7 @@ pub(super) fn setup_calibration_scene(mut ctx: SceneSpawnContext) {
         .scenario
         .calibration
         .expect("calibration mode carries its params (parse_scenario enforces the section)");
-    let mask = selected_mask(&ctx.masks, params.mask);
+    let mask = selected_mask(masks, params.mask);
     let target = ctx
         .capture
         .0
@@ -529,7 +536,7 @@ pub(super) fn record_calibration_evidence(
     readiness: Res<Readiness>,
     present: Res<PresentGate>,
     state: ResMut<HarnessState>,
-    masks: Res<PostChainAssets>,
+    masks: Option<Res<PostChainAssets>>,
     server: Res<AssetServer>,
     images: Res<Assets<Image>>,
     cameras: Query<(&Exposure, Option<&AutoExposure>), With<CalibrationCamera>>,
@@ -537,6 +544,9 @@ pub(super) fn record_calibration_evidence(
     let readiness = readiness.into_inner();
     let present = present.into_inner();
     let state = state.into_inner();
+    let Some(masks) = masks else {
+        return;
+    };
     let masks = masks.into_inner();
     let server = server.into_inner();
     let images = images.into_inner();

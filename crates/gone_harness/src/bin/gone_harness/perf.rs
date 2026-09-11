@@ -13,7 +13,7 @@ use gone_harness::{
 use crate::error::{RunnerError, bail};
 use crate::hash::sha256_hex;
 use crate::paths::{load_scenario, read_or, repo_root, root_scenario, write_or};
-use crate::run::run_scenario;
+use crate::run::{DEFAULT_TIMEOUT, run_scenario};
 
 /// Workspace-relative home of the checked-in perf policy the perf lane gates
 /// with. The file ships with the repo; the runner hashes the exact bytes it
@@ -72,7 +72,14 @@ fn perf_impl(args: &[String], render_check: bool) -> Result<i32, RunnerError> {
 
     let (scenario_path, scenario) = resolve_perf_scenario(args, &root, &policy)?;
     let out_root = root.join("tmp").join("harness");
-    let run_dir = run_scenario(&root, &scenario_path, &scenario, &out_root, render_check)?;
+    let run_dir = run_scenario(
+        &root,
+        &scenario_path,
+        &scenario,
+        &out_root,
+        render_check,
+        DEFAULT_TIMEOUT,
+    )?;
 
     let report_bytes = read_or("report", &run_dir.join("report.json"))?;
     let parsed = report::parse_report(&String::from_utf8_lossy(&report_bytes))

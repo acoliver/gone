@@ -16,19 +16,29 @@ use crate::hash::sha256_hex;
 use crate::paths::{read_or, run_id, write_or};
 
 /// Scenario runtime timeout; the runner owns termination and reaping.
-const DEFAULT_TIMEOUT: Duration = Duration::from_secs(60);
+pub(crate) const DEFAULT_TIMEOUT: Duration = Duration::from_secs(60);
+
+/// The calibration matrix lane's child timeout. The matrix scenarios budget
+/// ~20k ticks of settling at the measured fast cadence (~17 s wall); a far
+/// slower per-frame cadence on the post-chain lane stretches the same tick
+/// counts proportionally, so this lane owns a much wider ceiling than the
+/// 60 s default the other lanes fit in.
+pub(crate) const CALIBRATION_TIMEOUT: Duration = Duration::from_secs(240);
 
 /// Run one scenario end to end: spawn the app, wait, verify the report and
 /// captures, and return the run dir. Under `render_check` the app runs the
 /// canary lane and the run's single onscreen capture is machine-verified too;
 /// a beatless scenario fails fast before spawning, since the canary captures
-/// at the first beat.
+/// at the first beat. `timeout` is the child's wall-clock ceiling: the lanes
+/// whose post-chain rendering stretches per-frame cost pass
+/// [`CALIBRATION_TIMEOUT`], the rest [`DEFAULT_TIMEOUT`].
 pub(crate) fn run_scenario(
     root: &Path,
     scenario_path: &Path,
     scenario: &Scenario,
     out_root: &Path,
     render_check: bool,
+    timeout: Duration,
 ) -> Result<PathBuf, RunnerError> {
     if render_check && scenario.beats.is_empty() {
         bail!(
@@ -64,7 +74,7 @@ pub(crate) fn run_scenario(
     write_or("scenario copy", &scenario_copy, &scenario_bytes)?;
 
     let mut child = spawn_app(root, scenario_path, &run_dir, &identity, render_check)?;
-    let status = wait_for_app(&mut child, DEFAULT_TIMEOUT, &scenario.name)?;
+    let status = wait_for_app(&mut child, timeout, &scenario.name)?;
     disband_scenario(&run_dir, &scenario_bytes);
 
     // The report is the app's own account of the run, including why it exited
