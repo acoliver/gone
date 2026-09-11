@@ -289,10 +289,18 @@ pub(super) struct PresentProbe;
 /// this resource, not bevy's clocks: bevy's own `Time` keeps running on
 /// wall/virtual time (the render engine's shaders consume it), and only the
 /// capture freeze pauses that clock (`freeze_engine_time`), never this one.
+/// Crate-visible because the player motion slice consumes it as the walk's
+/// dt source (the landed scenario clock; the normal game falls back to
+/// bevy's virtual clock).
 #[derive(Resource, Clone, Copy, Debug)]
-pub(super) struct ScenarioTime {
+pub(crate) struct ScenarioTime {
     ticks_per_second: u64,
     elapsed_secs: f32,
+    /// Set by [`ScenarioTime::advance_tick`] and cleared by
+    /// [`ScenarioTime::drain_driven_delta`]: the driven-tick signal the
+    /// player motion slice consumes, so the body advances exactly once per
+    /// driven update and never on a held one.
+    driven_since_last_drain: bool,
 }
 
 impl ScenarioTime {
@@ -302,7 +310,7 @@ impl ScenarioTime {
     /// Panics when `ticks_per_second` is zero: the fixed clock has no
     /// meaningful step at a zero rate, and the scenario parser rejects that
     /// before a run is ever built.
-    pub(super) fn new(ticks_per_second: u64) -> Self {
+    pub(crate) fn new(ticks_per_second: u64) -> Self {
         assert!(
             ticks_per_second > 0,
             "the scenario clock needs a tick rate of at least 1"
@@ -310,6 +318,7 @@ impl ScenarioTime {
         Self {
             ticks_per_second,
             elapsed_secs: 0.0,
+            driven_since_last_drain: false,
         }
     }
 
@@ -317,13 +326,31 @@ impl ScenarioTime {
     /// `u16::MAX` saturate there, the same bound the fixed clock applies
     /// elsewhere: a tick rate that high is beyond the clock's meaningful
     /// range.
-    pub(super) fn delta_secs(&self) -> f32 {
+    pub(crate) fn delta_secs(&self) -> f32 {
         1.0 / f32::from(u16::try_from(self.ticks_per_second).unwrap_or(u16::MAX))
     }
 
-    /// Advance by one driven tick's fixed step.
-    pub(super) fn advance_tick(&mut self) {
+    /// Advance by one driven tick's fixed step. Crate-visible because the
+    /// motion tests play the drive half against the same contract.
+    pub(crate) fn advance_tick(&mut self) {
         self.elapsed_secs += self.delta_secs();
+        self.driven_since_last_drain = true;
+    }
+
+    /// Take this update's driven fixed step, if the drive half advanced the
+    /// clock this update: exactly one `Some` per driven tick, `None` on
+    /// every held update (loading, the canary present gate, a beat readback
+    /// in flight). The player motion slice advances the body on the `Some`
+    /// and holds it on the `None`, so the body's sim time is this clock's
+    /// sim time, never a wall-clock accumulation. The flag clears on the
+    /// take.
+    pub(crate) fn drain_driven_delta(&mut self) -> Option<f32> {
+        if self.driven_since_last_drain {
+            self.driven_since_last_drain = false;
+            Some(self.delta_secs())
+        } else {
+            None
+        }
     }
 
     /// The elapsed simulation seconds.

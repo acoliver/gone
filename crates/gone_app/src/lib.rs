@@ -99,11 +99,13 @@ pub fn run() -> AppExit {
             // resource the rig camera consumes), then the stasis room scene
             // (it inserts the sim contract resources and the authored player
             // spawn the rig consumes), then first-person look (it spawns the
-            // rig).
+            // rig), then the sim-driven body motion (the get-up and the walk
+            // against the scene's colliders and exit path).
             app.add_plugins((
                 post::GamePostChainPlugin,
                 scene::StasisScenePlugin,
                 player::PlayerLookPlugin,
+                player::PlayerMotionPlugin,
             ));
             // The game-content readiness barrier: the required-asset ledger
             // over the handles the post chain just loaded, polled every

@@ -35,6 +35,7 @@ use bevy::light::GlobalAmbientLight;
 use bevy::math::{Quat, Vec3};
 use bevy::mesh::Mesh;
 use bevy::pbr::StandardMaterial;
+use gone_sim::exit::ExitPath;
 use gone_sim::{POD_COUNT, PhaseTransition, PodRegistry, WakePhase};
 
 use crate::player::PITCH_LIMIT;
@@ -43,12 +44,16 @@ use crate::scene::geometry::{
     spawn_hatch, spawn_pod_interior_light, spawn_pods, spawn_room_shell,
 };
 
+mod colliders;
+
 mod geometry;
 
 /// Pure world-space placements for every non-pod scene solid.
 mod placement;
 
 mod pod_body;
+
+pub(crate) use colliders::SimColliders;
 
 /// Marks a stasis pod's root entity. A pod's identity, state, and placement
 /// live in the sim registry; the marker only tags the scene-side group so
@@ -87,6 +92,14 @@ impl SimWakePhase {
     #[must_use]
     pub(crate) fn wake_complete(&mut self) -> PhaseTransition {
         self.0.wake_complete()
+    }
+
+    /// The machine itself, for systems that drive it through the sim's own
+    /// controllers (the get-up controller, the walk state). The app never
+    /// writes phases around the controllers; the machine's own typed
+    /// contract is the only writer.
+    pub(crate) fn machine_mut(&mut self) -> &mut WakePhase {
+        &mut self.0
     }
 }
 
@@ -163,6 +176,13 @@ pub(crate) struct PlayerSpawn {
     pub(crate) pose: PlayerSpawnPose,
 }
 
+/// The authored get-up path out of the player pod, built from the frozen
+/// registry at plugin build against the tray floor the cavity build
+/// actually constructs. `player::motion` consumes it when a get-up intent
+/// starts the sim exit controller.
+#[derive(Resource, Clone, Copy, Debug)]
+pub(crate) struct PlayerExitPath(pub(crate) ExitPath);
+
 /// Adds the stasis room scene to the app: the sim contract resources, the
 /// greybox build, and the registry-to-scene sync. Game mode only.
 pub struct StasisScenePlugin;
@@ -170,11 +190,18 @@ pub struct StasisScenePlugin;
 impl Plugin for StasisScenePlugin {
     fn build(&self, app: &mut App) {
         let registry = PodRegistry::frozen();
+        let exit_path =
+            ExitPath::try_new(registry.player_pod().placement(), pod_body::TRAY_FLOOR_Y)
+                .expect("the frozen player pod authors a valid exit path");
+        let colliders = colliders::scene_collider_set(&registry)
+            .expect("the frozen placement data derives a valid collider set");
         app.insert_resource(SimWakePhase::new(WakePhase::default()))
             .insert_resource(SimPodRegistry(registry))
             .insert_resource(PlayerSpawn {
                 pose: player_spawn_pose(&registry),
             })
+            .insert_resource(PlayerExitPath(exit_path))
+            .insert_resource(SimColliders::new(colliders))
             .init_resource::<PodMirrors>()
             .add_systems(Startup, build_stasis_room)
             .add_systems(Update, sync_pod_scene_state);
@@ -310,10 +337,11 @@ mod tests {
     use gone_sim::pods::{POD_HEIGHT, POD_LENGTH, POD_WIDTH};
     use gone_sim::{POD_COUNT, PodId, PodRegistry, PodState, WakePhase};
 
+    use super::placement::{hatch_solids, room_shell};
     use super::pod_body::pod_solids;
     use super::{
-        JammedHatch, PodIndicatorMaterials, PodMirrors, SimPodRegistry, SimWakePhase, StasisPod,
-        StasisScenePlugin, apply_indicator_materials, mirror_pods, player_spawn_pose,
+        JammedHatch, PodIndicatorMaterials, PodMirrors, SimColliders, SimPodRegistry, SimWakePhase,
+        StasisPod, StasisScenePlugin, apply_indicator_materials, mirror_pods, player_spawn_pose,
     };
     use crate::player::PITCH_LIMIT;
 
@@ -416,6 +444,23 @@ mod tests {
                 pod.id().index()
             );
         }
+        // One construction path pinned both ways: the collider set holds
+        // exactly one box per spawned construction solid (the shell, every
+        // pod's solids, and the hatch group), so the rendered scene and
+        // the swept-collision world are the same numbers.
+        let colliders = app.world().resource::<SimColliders>();
+        let expected_boxes = room_shell().len()
+            + registry
+                .pods()
+                .iter()
+                .map(|pod| pod_solids(pod.state()).len())
+                .sum::<usize>()
+            + hatch_solids().len();
+        assert_eq!(
+            colliders.set().len(),
+            expected_boxes,
+            "one collider box per spawned construction solid"
+        );
     }
 
     /// The spawned hatch group sits where the registry says: on the +X

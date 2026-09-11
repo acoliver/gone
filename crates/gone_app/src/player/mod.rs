@@ -71,6 +71,13 @@ use crate::harness::{Button, ButtonEdge, Edge, Key, MoveMotion};
 use crate::post::{PostChainAssets, camera_post_components};
 use crate::scene::{PlayerSpawn, SimWakePhase};
 
+mod motion;
+
+#[cfg(test)]
+mod motion_tests;
+
+pub(crate) use motion::PlayerMotionPlugin;
+
 /// Look rotation per mouse pixel, in radians (≈0.126°/px). Constant by
 /// design: the same pixel delta always produces the same rotation.
 const LOOK_SENSITIVITY: f32 = 0.0022;
@@ -104,6 +111,13 @@ pub(crate) struct ScriptedInput;
 /// order against this set.
 #[derive(SystemSet, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub(crate) struct LookApplied;
+
+/// The schedule set carrying the end-of-frame input clear. The motion
+/// slice's systems order between [`LookApplied`] and this set: they consume
+/// the get-up edge and the movement intent from the shared plane before the
+/// frame's leftovers drop.
+#[derive(SystemSet, Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub(crate) struct PlaneCleared;
 
 /// Which policy arms the shared gameplay input plane's look channel. One
 /// mode per run, decided where the run mode is known: the normal game and
@@ -185,6 +199,26 @@ impl GameplayInput {
         !exit.is_empty()
     }
 
+    /// Take the movement intent accumulated so far this frame, zeroing the
+    /// channel: exactly one consumer (the motion slice's walk) sees each
+    /// frame's movement.
+    pub(crate) fn take_movement(&mut self) -> MoveMotion {
+        std::mem::take(&mut self.movement)
+    }
+
+    /// Consume any get-up press edge offered this frame, draining it the way
+    /// a real key event is consumed once. Device (Space) and scripted
+    /// (harness Activate) presses converge on the same edge, so the motion
+    /// slice cannot tell a human from the runner.
+    pub(crate) fn take_activate_press(&mut self) -> bool {
+        let (activate, rest): (Vec<_>, Vec<_>) = self
+            .edges
+            .drain(..)
+            .partition(|edge| edge == &ACTIVATE_PRESS);
+        self.edges = rest;
+        !activate.is_empty()
+    }
+
     /// The movement intent accumulated so far this frame (diagnostic read
     /// for the end-of-frame drop log).
     pub(crate) fn movement(&self) -> MoveMotion {
@@ -197,10 +231,12 @@ impl GameplayInput {
         &self.edges
     }
 
-    /// Drop everything unconsumed. Look is taken by the integrator; movement
-    /// and edges wait for the locomotion and interaction slices, so until
-    /// then their per-frame intent is dropped here and surfaced in the drop
-    /// log.
+    /// Drop everything unconsumed. Look is taken by the integrator;
+    /// movement and edges are taken by the motion and cursor machines, so
+    /// whatever they did not consume is dropped here and surfaced in the
+    /// drop log, matching bevy's own per-frame reset of
+    /// [`AccumulatedMouseMotion`]: input not consumed in its frame is lost,
+    /// never buffered.
     fn end_frame(&mut self) {
         self.look = Vec2::ZERO;
         self.movement = MoveMotion::zero();
@@ -213,6 +249,24 @@ const EXIT_PRESS: ButtonEdge = ButtonEdge {
     button: Button::Key(Key::Escape),
     edge: Edge::Press,
 };
+
+/// The one get-up edge the motion slice consumes: the activate key's fresh
+/// press. Device and scripted presses converge on this same edge.
+const ACTIVATE_PRESS: ButtonEdge = ButtonEdge {
+    button: Button::Key(Key::Activate),
+    edge: Edge::Press,
+};
+
+/// The physical keys the device producer maps into the shared plane's
+/// movement and get-up channels. The scripted harness side feeds the same
+/// plane with the matching harness [`Key`] values (`Key::Forward` and
+/// friends, `MoveDelta` actions), so gameplay cannot tell a human's WASD
+/// from the runner.
+const KEY_FORWARD: KeyCode = KeyCode::KeyW;
+const KEY_LEFT: KeyCode = KeyCode::KeyA;
+const KEY_BACK: KeyCode = KeyCode::KeyS;
+const KEY_RIGHT: KeyCode = KeyCode::KeyD;
+const KEY_ACTIVATE: KeyCode = KeyCode::Space;
 
 /// The integrated look angles, in radians. The resource is the single source
 /// of truth: mouse deltas accumulate here, and the transforms are projections
@@ -239,18 +293,22 @@ impl Plugin for PlayerLookPlugin {
             .add_systems(Startup, (setup_player_rig, capture_cursor_on_startup))
             .add_systems(
                 Update,
-                // One chain: cursor transitions, then the device producer
-                // offers this frame's real motion, then the integrator takes
-                // the whole look channel (device plus scripted), then the
-                // frame's leftovers are dropped. The whole chain runs after
-                // the scripted input set, so a scripted look offered by the
-                // harness adapter on tick N integrates on tick N; the set is
-                // empty in the normal game and the ordering is vacuous there.
+                // One chain: cursor transitions, then the device producers
+                // offer this frame's real motion (look and movement), then
+                // the integrator takes the whole look channel (device plus
+                // scripted), then the frame's leftovers are dropped. The
+                // whole chain runs after the scripted input set, so a
+                // scripted input offered by the harness adapter on tick N
+                // integrates on tick N; the set is empty in the normal game
+                // and the ordering is vacuous there. The motion slice's
+                // systems order themselves between the integrator and the
+                // clear (see `motion::PlayerMotionPlugin`).
                 (
                     update_cursor_lock,
                     collect_device_look,
+                    collect_device_motion,
                     apply_mouse_look.in_set(LookApplied),
-                    clear_gameplay_input,
+                    clear_gameplay_input.in_set(PlaneCleared),
                 )
                     .chain()
                     .after(ScriptedInput),
@@ -271,9 +329,28 @@ fn collect_device_look(motion: Res<AccumulatedMouseMotion>, mut plane: ResMut<Ga
     }
 }
 
+/// The device-side producer for movement and the get-up key: held-state WASD
+/// becomes the plane's movement intent (forward positive, strafe right
+/// positive, summed across held keys), and a fresh Space press becomes the
+/// get-up press edge. Runs in the same position as the look producer —
+/// after the scripted-input set and before the consumers — so device and
+/// scripted intent reach the walk in one step. Intent not consumed in its
+/// frame is dropped by the end-of-frame clear.
+fn collect_device_motion(keys: Res<ButtonInput<KeyCode>>, mut plane: ResMut<GameplayInput>) {
+    let keys = keys.into_inner();
+    let forward = f32::from(keys.pressed(KEY_FORWARD)) - f32::from(keys.pressed(KEY_BACK));
+    let strafe = f32::from(keys.pressed(KEY_RIGHT)) - f32::from(keys.pressed(KEY_LEFT));
+    if forward != 0.0 || strafe != 0.0 {
+        plane.offer_movement(MoveMotion { forward, strafe });
+    }
+    if keys.just_pressed(KEY_ACTIVATE) {
+        plane.offer_edges([ACTIVATE_PRESS]);
+    }
+}
+
 /// Drop whatever no consumer took this frame. Look is taken by the
-/// integrator; movement and edges wait for the locomotion and interaction
-/// slices, so until those land their per-frame intent is dropped here and
+/// integrator; movement and edges are taken by the motion and cursor
+/// machines, so until those run their per-frame intent is dropped here and
 /// surfaced in the drop log, matching bevy's own per-frame reset of
 /// [`AccumulatedMouseMotion`]: input not consumed in its frame is lost,
 /// never buffered.

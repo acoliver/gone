@@ -26,8 +26,9 @@ use gone_sim::pods::{POD_HEIGHT, POD_LENGTH, POD_WIDTH};
 
 /// Cavity wall thickness, in meters. Thin shell walls leave a 0.78 m
 /// interior between them: the 0.60 m lying capsule with 0.09 m of side
-/// margin on each side.
-const CAVITY_WALL: f32 = 0.06;
+/// margin on each side. Crate-visible because the aperture-mouth collider
+/// regression measures the walls' foot-end line against it.
+pub(crate) const CAVITY_WALL: f32 = 0.06;
 
 /// Base slab thickness, in meters: the cavity floor the lying capsule
 /// rests on, under the dark floor plate. `exit_path` reads it to place the
@@ -38,6 +39,12 @@ pub(crate) const CAVITY_BASE: f32 = 0.1;
 /// the tray so the open interior reads as a cavity from across the aisle.
 /// `exit_path` reads it for the plate top the lying capsule rests on.
 pub(crate) const CAVITY_PLATE_THICKNESS: f32 = 0.012;
+
+/// The tray floor's top height in the pod's local frame: the cavity plate
+/// top the lying capsule rests on, the value the authored exit path is
+/// built against. The pod group sits on the room floor, so this is also
+/// the world-frame height.
+pub(crate) const TRAY_FLOOR_Y: f32 = CAVITY_BASE + CAVITY_PLATE_THICKNESS;
 
 /// How far the side walls stop short of the foot face, in meters. The
 /// strip between this line and the foot face is the exit aperture mouth:

@@ -54,10 +54,14 @@ use gone_sim::PhaseTransition;
 use super::state::{HarnessState, RunMode, fail_scenario};
 use super::{CaptureTarget, ChipSprite, ChipTexture, capture_target_image, spawn_chip_sprite};
 use crate::harness::{Content, TimedEvent};
-use crate::player::{GameplayInput, LookAngles, PlayerLookPlugin, PlayerPitch, ScriptedInput};
+use crate::player::{
+    GameplayInput, LookAngles, PlayerLookPlugin, PlayerMotionPlugin, PlayerPitch, ScriptedInput,
+};
 use crate::post::GamePostChainPlugin;
 use crate::readiness::GameAssets;
-use crate::scene::{SimPodRegistry, SimWakePhase, StasisPod, StasisScenePlugin};
+use crate::scene::{
+    PlayerExitPath, SimColliders, SimPodRegistry, SimWakePhase, StasisPod, StasisScenePlugin,
+};
 
 /// The canary window's static 3D camera order: the room view draws first.
 const WINDOW_SPECTATOR_ORDER: isize = 0;
@@ -83,15 +87,21 @@ const SPECTATOR_EYE: Vec3 = Vec3::new(0.0, 2.6, 7.5);
 const SPECTATOR_FOCUS: Vec3 = Vec3::new(0.0, 0.8, 0.0);
 
 /// Build the real game into a harness app: post chain, stasis scene, and
-/// player look, in the same order the normal game adds them (each plugin's
-/// build provides the resource the next consumes). Fails loudly at boot if
-/// the wiring came out wrong. Installs the readiness barrier's resources:
-/// the required-asset ledger over the handles the post chain just loaded,
-/// and the game-camera binding flag the retarget sets. The scene plugin's
-/// authored `Waking` spawn state stands; the wake override advances at the
-/// readiness boundary (`advance_wake_at_readiness`), never before it.
+/// player look and body motion, in the same order the normal game adds them
+/// (each plugin's build provides the resource the next consumes). Fails
+/// loudly at boot if the wiring came out wrong. Installs the readiness
+/// barrier's resources: the required-asset ledger over the handles the post
+/// chain just loaded, and the game-camera binding flag the retarget sets.
+/// The scene plugin's authored `Waking` spawn state stands; the wake
+/// override advances at the readiness boundary
+/// (`advance_wake_at_readiness`), never before it.
 pub(super) fn wire(app: &mut App) {
-    app.add_plugins((GamePostChainPlugin, StasisScenePlugin, PlayerLookPlugin));
+    app.add_plugins((
+        GamePostChainPlugin,
+        StasisScenePlugin,
+        PlayerLookPlugin,
+        PlayerMotionPlugin,
+    ));
     assert!(
         app.world()
             .get_resource::<crate::post::PostChainAssets>()
@@ -101,6 +111,14 @@ pub(super) fn wire(app: &mut App) {
     assert!(
         app.world().get_resource::<SimPodRegistry>().is_some(),
         "gameplay content requires SimPodRegistry (StasisScenePlugin provides it)"
+    );
+    assert!(
+        app.world().get_resource::<SimColliders>().is_some(),
+        "gameplay content requires SimColliders (StasisScenePlugin provides it)"
+    );
+    assert!(
+        app.world().get_resource::<PlayerExitPath>().is_some(),
+        "gameplay content requires PlayerExitPath (StasisScenePlugin provides it)"
     );
     assert!(
         app.world().get_resource::<GameplayInput>().is_some(),

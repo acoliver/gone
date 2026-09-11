@@ -179,7 +179,11 @@ use drive::{
     drive_ticks, readiness_boundary, register_post_drive_systems, request_present_probe,
     request_readiness_proof,
 };
-use state::{HarnessState, PresentGate, Readiness, ScenarioTime};
+use state::{HarnessState, PresentGate, Readiness};
+
+/// The landed scenario clock, consumed beyond the bootstrap by the player
+/// motion slice (the walk's fixed dt source).
+pub(crate) use state::ScenarioTime;
 
 /// The frame-code chip texture width: exactly the chip block's width.
 const LANE_W: u32 = frame::DIGITS * frame::CELL_W;
