@@ -8,9 +8,9 @@
 //! readiness proof). The app runs in one of two capture architectures
 //! ([`state::RunMode`]): headless by default — no window, the schedule runner
 //! drives updates, the offscreen Image is the only render target — or the
-//! `GONE_RENDER_CHECK=1` canary, which additionally opens the real (unfocused)
-//! window, presents the same scene through a second camera, and saves one
-//! `.onscreen.png` next to the first beat's PNG.
+//! `GONE_RENDER_CHECK=1` canary, which additionally opens the real
+//! (focused) window, presents the same scene through a second camera, and
+//! saves one `.onscreen.png` next to the first beat's PNG.
 //!
 //! Design notes:
 //!
@@ -36,8 +36,10 @@
 //!   chip block and asserts it equals the report entry, so the verified pixels
 //!   are ones the GPU rendered.
 //! * **Canary onscreen capture.** `GONE_RENDER_CHECK=1` (with harness mode)
-//!   opens the real window (`focused: false`, so the run never steals the
-//!   foreground) and presents the scene through a window camera. At the first
+//!   opens the real window (focused: the window must be ordered in for its
+//!   surface to present, and on macOS a background-launched app only gets its
+//!   window ordered in by activating) and presents the scene through a window
+//!   camera. At the first
 //!   beat's request the run also captures the primary window once — both
 //!   requests enter the same sync point, so the onscreen readback shows the
 //!   same rendered frame as the beat's PNG — and saves it as

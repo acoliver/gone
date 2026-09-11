@@ -9,9 +9,12 @@
 //! Two capture architectures (`bootstrap::RunMode`): harness mode is headless
 //! by default — no window and no winit event loop; the schedule runner drives
 //! updates and an offscreen render target is the only render target.
-//! `GONE_RENDER_CHECK=1` selects the canary: the real window opens (unfocused,
-//! so it never steals the foreground) and presents the scene through a second
-//! camera, and one onscreen capture is saved beside the first beat's PNG.
+//! `GONE_RENDER_CHECK=1` selects the canary: the real window opens (focused:
+//! the window must be ordered in for its surface to present, and on macOS a
+//! background-launched app only gets its window ordered in by activating;
+//! winit exposes no order-in-without-activation or de-focus API) and presents
+//! the scene through a second camera, and one onscreen capture is saved beside
+//! the first beat's PNG.
 //! Without `GONE_HARNESS` the app is the windowed game: the player rig with
 //! first-person mouse look (`player`) and the explicit post chain (`post`,
 //! `AgX` tonemapping, center-weighted auto exposure, vignette).
@@ -81,9 +84,14 @@ pub fn run() -> AppExit {
         RunMode::Canary => {
             let scenario = load_harness_scenario();
             let mut primary = game_window();
-            // The canary run is a background check on a developer machine: it
-            // must never steal the foreground.
-            primary.focused = false;
+            // The canary window must be ordered in for its surface to present
+            // and the primary_window screenshot to read real content. On macOS
+            // a background-launched app only gets its window ordered in by
+            // activating, so the window is created focused (bevy maps
+            // `Window::focused` to winit `with_active` at creation only) and
+            // keeps focus for the whole run: winit has no de-focus API
+            // (`focus_window` only focuses) and no order-in-without-activation
+            // path reachable through bevy.
             if scenario.pacing == Some(Pacing::Uncapped) {
                 // Uncapped pacing: lift vsync from the window so wall-clock
                 // frame times are not quantized to the refresh rate (the perf
@@ -95,9 +103,10 @@ pub fn run() -> AppExit {
                 primary_window: Some(primary),
                 ..Default::default()
             }));
-            // The event loop must spin regardless of window focus: the canary
-            // window never takes focus, and a throttled loop would stall beat
-            // ticks and quantize perf samples to the redraw cadence.
+            // The event loop must spin regardless of window focus: focus can
+            // move away mid-run (the canary runs on a developer machine), and
+            // a throttled loop would stall beat ticks and quantize perf
+            // samples to the redraw cadence.
             app.insert_resource(WinitSettings::continuous());
             add_harness(&mut app, scenario, run_mode);
         }

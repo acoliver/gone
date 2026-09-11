@@ -31,9 +31,9 @@ pub enum RunMode {
     /// drives updates and the offscreen capture target is the only render
     /// target; no onscreen capture happens and no onscreen file exists.
     Headless,
-    /// The harness canary (`GONE_RENDER_CHECK=1`): a real, unfocused window
-    /// presents the scene through a second camera, and one onscreen capture
-    /// is saved next to the first beat's PNG.
+    /// The harness canary (`GONE_RENDER_CHECK=1`): a real window (focused, so
+    /// its surface presents) shows the scene through a second camera, and one
+    /// onscreen capture is saved next to the first beat's PNG.
     Canary,
 }
 

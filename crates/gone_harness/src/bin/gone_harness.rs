@@ -11,7 +11,7 @@
 //! process id is sufficient for termination; Windows kill-tree is documented as stage-B).
 //!
 //! With `--render-check` the runner also selects the app's canary lane
-//! (`GONE_RENDER_CHECK=1`): the run opens the unfocused window and saves one
+//! (`GONE_RENDER_CHECK=1`): the run opens the window and saves one
 //! onscreen capture at the first beat, which the runner machine-verifies after
 //! the run (exactly one `*.onscreen.png` under `beats/`, exactly 1920x1080, not
 //! entirely black, chip frame equal to the report's). Canary run dirs carry an
@@ -38,7 +38,7 @@ const ENV_OUT_DIR: &str = "GONE_OUT_DIR";
 const ENV_APP_HASH: &str = "GONE_APP_HASH";
 /// The environment name for the scenario content hash the runner computed.
 const ENV_SCENARIO_HASH: &str = "GONE_SCENARIO_HASH";
-/// Selects the app's canary lane: the run opens the unfocused window and saves
+/// Selects the app's canary lane: the run opens the window and saves
 /// exactly one onscreen capture at the first beat (verified by [`onscreen`]).
 const ENV_RENDER_CHECK: &str = "GONE_RENDER_CHECK";
 /// The canary flag on the runner's own command line: every scenario run this
@@ -212,7 +212,7 @@ struct RunIdentity<'a> {
 
 /// Spawn the app with harness env and the run-identity hashes. Under
 /// `render_check` the child also gets `GONE_RENDER_CHECK=1`, selecting the
-/// canary lane (unfocused window plus the one onscreen capture).
+/// canary lane (real window plus the one onscreen capture).
 fn spawn_app(
     root: &Path,
     scenario_path: &Path,
@@ -455,7 +455,7 @@ fn dispatch(args: &[String]) -> i32 {
             eprintln!(
                 "usage: gone-harness [--render-check] <smoke | perf [scenario] | compare <scenario> | <scenario.json>>
   (no command runs the smoke scenario)
-  --render-check: canary lane (unfocused window, one onscreen capture machine-verified after the run)"
+  --render-check: canary lane (real window, one onscreen capture machine-verified after the run)"
             );
             0
         }
