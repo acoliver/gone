@@ -24,6 +24,25 @@ pub enum Pacing {
     Uncapped,
 }
 
+/// Which world the app builds for a run. Content selection is separate from
+/// the presentation mode ([`ScenarioMode`] decides what the run measures;
+/// `Content` decides what the run renders): the calibration scene is the
+/// default and is byte-for-byte the historical behavior, and gameplay boots
+/// the real game plugins alongside the harness protocol systems.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Content {
+    /// The calibration scene: dark clear plus the frame-code chip sprite,
+    /// rendered by the harness camera into the offscreen capture target.
+    #[default]
+    Calibration,
+    /// The real game content: stasis room, player rig with first-person
+    /// look, and the explicit post chain. The frame-code chip renders as a
+    /// small overlay in the corner of the gameplay camera's view, same
+    /// lattice encoding and decode contract as calibration.
+    Gameplay,
+}
+
 /// What the scenario asks the app to do.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -61,6 +80,11 @@ pub struct Scenario {
     /// as missing and fail the run with a nonzero exit.
     #[serde(default = "default_max_frames")]
     pub max_frames: u64,
+    /// Which world the app builds: the calibration scene by default, or the
+    /// real gameplay plugins. The runner and the app both parse this, so a
+    /// gameplay scenario always runs the gameplay lane.
+    #[serde(default)]
+    pub content: Content,
     /// What the scenario asks the app to do (capture lane by default).
     #[serde(default)]
     pub mode: ScenarioMode,
@@ -84,6 +108,7 @@ impl Default for Scenario {
             beats: Vec::new(),
             pacing: None,
             max_frames: default_max_frames(),
+            content: Content::default(),
             mode: ScenarioMode::default(),
             warmup_frames: 0,
             sample_frames: 0,
@@ -126,7 +151,7 @@ pub fn index(scenarios: &[Scenario]) -> std::collections::BTreeMap<&str, &Scenar
 
 #[cfg(test)]
 mod tests {
-    use super::{Pacing, Scenario, ScenarioMode, parse_scenario, scenario_to_json};
+    use super::{Content, Pacing, Scenario, ScenarioMode, parse_scenario, scenario_to_json};
 
     const GOOD: &str = r#"{
         "name": "smoke",
@@ -160,9 +185,21 @@ mod tests {
         assert_eq!(s.ticks_per_second, 60);
         assert_eq!(s.pacing, None);
         assert_eq!(s.max_frames, 720);
+        assert_eq!(s.content, Content::Calibration);
         assert_eq!(s.mode, ScenarioMode::Capture);
         assert_eq!(s.warmup_frames, 0);
         assert_eq!(s.sample_frames, 0);
+    }
+
+    #[test]
+    fn gameplay_content_parses_and_defaults_to_calibration() {
+        let gameplay = r#"{"name":"g","seed":0,"actions":[],"beats":[],"content":"gameplay"}"#;
+        let s: Scenario = parse_scenario(gameplay).expect("parses");
+        assert_eq!(s.content, Content::Gameplay);
+        // An unknown content value is a parse error, never a silent fallback
+        // to the calibration scene.
+        let bad = r#"{"name":"x","seed":0,"actions":[],"beats":[],"content":"frobnicate"}"#;
+        assert!(parse_scenario(bad).is_err());
     }
 
     #[test]

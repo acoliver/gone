@@ -47,6 +47,10 @@ pub enum Key {
     Activate,
     /// A sprint / secondary key.
     Secondary,
+    /// The key that releases the captured cursor. Scripted Escape presses
+    /// enter the shared gameplay input plane and release the cursor exactly
+    /// as the physical key does.
+    Escape,
     /// Any other key, named by its usage.
     Other(String),
 }

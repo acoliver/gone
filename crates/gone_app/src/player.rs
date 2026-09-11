@@ -1,8 +1,9 @@
 //! First-person mouse look for the normal game (issue #6 slice B).
 //!
-//! Game-mode only: the harness lanes never build this plugin, so scripted
-//! harness look never passes through here and the harness cameras stay free
-//! of player structure.
+//! Built by the normal game and by gameplay-content harness runs; the
+//! calibration harness lanes never build this plugin, so scripted harness look
+//! never passes through here and the calibration cameras stay free of player
+//! structure.
 //!
 //! # Structure
 //!
@@ -13,16 +14,20 @@
 //!
 //! # Look input
 //!
-//! Look is integrated from bevy's per-frame [`AccumulatedMouseMotion`] at a
-//! constant sensitivity (radians per pixel). The mapping is linear in the
-//! pixel delta and touches nothing else: no frame-time coupling, no field-of-
-//! view coupling, no translation. Pitch is clamped to ±89° as part of the
-//! integration, before the value can over-rotate past the vertical.
+//! Look integrates the one shared gameplay input plane ([`GameplayInput`]):
+//! the device producer converts bevy's per-frame [`AccumulatedMouseMotion`]
+//! into the plane's radians, and scripted harness input converges on the same
+//! plane, so the integrator cannot tell a human's mouse from the runner. The
+//! mapping is linear at a constant sensitivity (radians per pixel) and touches
+//! nothing else: no frame-time coupling, no field-of-view coupling, no
+//! translation. Pitch is clamped to ±89° as part of the integration, before
+//! the value can over-rotate past the vertical.
 //!
-//! Look is armed only while two gates hold: the cursor is captured, and the
-//! wake phase allows look ([`WakePhase::look_allowed`], true from
-//! `AwakeInPod` onward). During the authored wake sequence neither mouse
-//! motion nor a captured cursor can rotate the view.
+//! Look is armed only while two gates hold: the cursor is captured (always
+//! armed in a windowless run, where no cursor exists to gate it), and the wake
+//! phase allows look ([`WakePhase::look_allowed`], true from `AwakeInPod`
+//! onward). During the authored wake sequence neither mouse motion nor a
+//! captured cursor can rotate the view.
 //!
 //! # Cursor capture
 //!
@@ -45,7 +50,7 @@ use bevy::camera::visibility::Visibility;
 use bevy::color::Color;
 use bevy::ecs::message::MessageReader;
 use bevy::ecs::prelude::{Commands, Component, Res, ResMut, Resource, Single, With, Without};
-use bevy::ecs::schedule::IntoScheduleConfigs;
+use bevy::ecs::schedule::{IntoScheduleConfigs, SystemSet};
 use bevy::input::ButtonInput;
 use bevy::input::keyboard::KeyCode;
 use bevy::input::mouse::AccumulatedMouseMotion;
@@ -54,6 +59,7 @@ use bevy::prelude::Camera3d;
 use bevy::transform::components::Transform;
 use bevy::window::{CursorGrabMode, CursorOptions, Window, WindowFocused};
 
+use crate::harness::{Button, ButtonEdge, Edge, Key, MoveMotion};
 use crate::post::{PostChainAssets, camera_post_components};
 use crate::scene::{PlayerSpawn, SimWakePhase};
 
@@ -70,17 +76,129 @@ pub(crate) const PITCH_LIMIT: f32 = 89.0_f32.to_radians();
 #[derive(Component)]
 struct PlayerYaw;
 
-/// Marks the rig's pitch camera (vertical look only).
+/// Marks the rig's pitch camera (vertical look only). Crate-visible so the
+/// gameplay harness can find the rig camera (it is the one camera the
+/// harness retargets into the capture target).
 #[derive(Component)]
-struct PlayerPitch;
+pub(crate) struct PlayerPitch;
+
+/// The schedule set the scripted input producer drives. The harness gameplay
+/// lane steps its input adapter inside this set; the whole look chain orders
+/// after it, so a scripted look offered on tick N integrates on tick N. The
+/// set is empty in the normal game, where the ordering is vacuous.
+#[derive(SystemSet, Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub(crate) struct ScriptedInput;
+
+/// The schedule set carrying the look application. Consumers that must
+/// observe the freshly integrated rig (the gameplay lane's yaw recorder)
+/// order against this set.
+#[derive(SystemSet, Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub(crate) struct LookApplied;
+
+/// The one shared gameplay input plane. Device input (real mouse motion) and
+/// scripted input (the harness adapter's step) converge here, and gameplay
+/// systems consume from it, so gameplay cannot tell a human from the runner.
+///
+/// Producers accumulate into the plane during the update; the integrator
+/// takes the look delta exactly once. Whatever no consumer took by the end
+/// of the frame is dropped by [`clear_gameplay_input`], matching bevy's own
+/// per-frame reset of [`AccumulatedMouseMotion`]: input not consumed in its
+/// frame is lost, never buffered.
+#[derive(Resource, Default, Debug, Clone)]
+pub(crate) struct GameplayInput {
+    /// Look motion accumulated for this frame, in radians: `x` is the yaw
+    /// delta, `y` the pitch delta.
+    look: Vec2,
+    /// Movement intent accumulated for this frame.
+    movement: MoveMotion,
+    /// Button edges delivered this frame, consumed in delivery order.
+    edges: Vec<ButtonEdge>,
+}
+
+impl GameplayInput {
+    /// Offer one look delta, in radians. Positive yaw turns left (increasing
+    /// yaw), positive pitch looks up (increasing pitch), matching the rig's
+    /// rotation conventions.
+    pub(crate) fn offer_look(&mut self, yaw_delta_radians: f32, pitch_delta_radians: f32) {
+        self.look += Vec2::new(yaw_delta_radians, pitch_delta_radians);
+    }
+
+    /// Offer movement intent for this frame.
+    pub(crate) fn offer_movement(&mut self, motion: MoveMotion) {
+        self.movement.forward += motion.forward;
+        self.movement.strafe += motion.strafe;
+    }
+
+    /// Offer this frame's button edges, in delivery order.
+    pub(crate) fn offer_edges(&mut self, edges: impl IntoIterator<Item = ButtonEdge>) {
+        self.edges.extend(edges);
+    }
+
+    /// Take the accumulated look delta, zeroing the channel: exactly one
+    /// consumer sees each frame's motion.
+    pub(crate) fn take_look(&mut self) -> Vec2 {
+        let look = self.look;
+        self.look = Vec2::ZERO;
+        look
+    }
+
+    /// Consume any scripted Escape press edge offered this frame, draining it
+    /// the way a real key event is consumed once. The cursor state machine is
+    /// the game's only edge consumer today; the interaction slices consume
+    /// the rest.
+    pub(crate) fn take_exit_press(&mut self) -> bool {
+        let (exit, rest): (Vec<_>, Vec<_>) =
+            self.edges.drain(..).partition(|edge| edge == &EXIT_PRESS);
+        self.edges = rest;
+        !exit.is_empty()
+    }
+
+    /// The movement intent accumulated so far this frame (diagnostic read
+    /// for the end-of-frame drop log).
+    pub(crate) fn movement(&self) -> MoveMotion {
+        self.movement
+    }
+
+    /// The edges still undelivered this frame (diagnostic read for the
+    /// end-of-frame drop log).
+    pub(crate) fn edges(&self) -> &[ButtonEdge] {
+        &self.edges
+    }
+
+    /// Drop everything unconsumed. Look is taken by the integrator; movement
+    /// and edges wait for the locomotion and interaction slices, so until
+    /// then their per-frame intent is dropped here and surfaced in the drop
+    /// log.
+    fn end_frame(&mut self) {
+        self.look = Vec2::ZERO;
+        self.movement = MoveMotion::zero();
+        self.edges = Vec::new();
+    }
+}
+
+/// The one exit edge the cursor state machine consumes.
+const EXIT_PRESS: ButtonEdge = ButtonEdge {
+    button: Button::Key(Key::Escape),
+    edge: Edge::Press,
+};
 
 /// The integrated look angles, in radians. The resource is the single source
 /// of truth: mouse deltas accumulate here, and the transforms are projections
 /// of it (yaw around Y on the parent, pitch around X on the camera).
+/// Crate-visible so the gameplay harness can sample the rig's yaw for the
+/// report's yaw events.
 #[derive(Resource, Default)]
-struct LookAngles {
+pub(crate) struct LookAngles {
     yaw: f32,
     pitch: f32,
+}
+
+impl LookAngles {
+    /// The integrated yaw, in radians, wrapped into (-π, π]. The gameplay
+    /// harness reads it for the report's yaw samples.
+    pub(crate) fn yaw_radians(&self) -> f32 {
+        self.yaw
+    }
 }
 
 /// Adds first-person mouse look and the player camera rig to the app. The
@@ -92,9 +210,57 @@ pub struct PlayerLookPlugin;
 impl Plugin for PlayerLookPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<LookAngles>()
+            .init_resource::<GameplayInput>()
             .add_systems(Startup, (setup_player_rig, capture_cursor_on_startup))
-            .add_systems(Update, (update_cursor_lock, apply_mouse_look).chain());
+            .add_systems(
+                Update,
+                // One chain: cursor transitions, then the device producer
+                // offers this frame's real motion, then the integrator takes
+                // the whole look channel (device plus scripted), then the
+                // frame's leftovers are dropped. The whole chain runs after
+                // the scripted input set, so a scripted look offered by the
+                // harness adapter on tick N integrates on tick N; the set is
+                // empty in the normal game and the ordering is vacuous there.
+                (
+                    update_cursor_lock,
+                    collect_device_look,
+                    apply_mouse_look.in_set(LookApplied),
+                    clear_gameplay_input,
+                )
+                    .chain()
+                    .after(ScriptedInput),
+            );
     }
+}
+
+/// The device-side producer: convert this frame's accumulated mouse motion
+/// into the shared plane's radians and offer it. Runs after the cursor
+/// transitions and before the integrator, so a frame's real motion and any
+/// scripted motion offered upstream of this chain take in one step: the
+/// integrator consumes the whole plane and cannot tell them apart.
+fn collect_device_look(motion: Res<AccumulatedMouseMotion>, mut plane: ResMut<GameplayInput>) {
+    let delta_px = motion.into_inner().delta;
+    if delta_px != Vec2::ZERO {
+        let delta = look_delta_from_pixels(delta_px);
+        plane.offer_look(delta.x, delta.y);
+    }
+}
+
+/// Drop whatever no consumer took this frame. Look is taken by the
+/// integrator; movement and edges wait for the locomotion and interaction
+/// slices, so until those land their per-frame intent is dropped here and
+/// surfaced in the drop log, matching bevy's own per-frame reset of
+/// [`AccumulatedMouseMotion`]: input not consumed in its frame is lost,
+/// never buffered.
+fn clear_gameplay_input(mut plane: ResMut<GameplayInput>) {
+    let movement = plane.movement();
+    let edges = plane.edges().len();
+    if movement != MoveMotion::zero() || edges > 0 {
+        bevy::log::debug!(
+            "gameplay input dropped unused this frame: movement {movement:?}, {edges} edges"
+        );
+    }
+    plane.end_frame();
 }
 
 /// Spawn the player rig (yaw parent, pitch camera child) and the game's clear
@@ -147,20 +313,31 @@ fn setup_player_rig(
 
 /// Apply the initial cursor capture when the window opens already focused.
 /// A focus event usually repeats this; the startup pass covers launches where
-/// no event fires.
-fn capture_cursor_on_startup(window: Single<&Window>, mut cursor: Single<&mut CursorOptions>) {
-    if window.into_inner().focused {
+/// no event fires. A windowless run (headless harness) has no cursor to
+/// capture and does nothing.
+fn capture_cursor_on_startup(
+    window: Option<Single<&Window>>,
+    cursor: Option<Single<&mut CursorOptions>>,
+) {
+    if let (Some(window), Some(mut cursor)) = (window, cursor)
+        && window.into_inner().focused
+    {
         apply_cursor_target(CursorTarget::Capture, &mut cursor);
     }
 }
 
 /// The event-driven cursor transitions: focus gain captures, focus loss and
-/// Esc release. Runs before [`apply_mouse_look`] so a same-frame Esc stops
-/// look input in the same update it releases the cursor.
+/// Esc (physical or scripted) release. Runs before [`apply_mouse_look`] so a
+/// same-frame Esc stops look input in the same update it releases the cursor.
+/// A scripted Escape press edge offered on the shared input plane releases
+/// exactly like the physical key: the harness scripts the exit through the
+/// same plane a human's key press travels. Windowless runs have no cursor
+/// state to write and only drain the plane's exit edge.
 fn update_cursor_lock(
     mut focused: MessageReader<WindowFocused>,
     keys: Res<ButtonInput<KeyCode>>,
-    mut cursor: Single<&mut CursorOptions>,
+    mut plane: ResMut<GameplayInput>,
+    cursor: Option<Single<&mut CursorOptions>>,
 ) {
     let mut target = None;
     for event in focused.read() {
@@ -170,10 +347,10 @@ fn update_cursor_lock(
             CursorTarget::Release
         });
     }
-    if keys.into_inner().just_pressed(KeyCode::Escape) {
+    if keys.into_inner().just_pressed(KeyCode::Escape) || plane.take_exit_press() {
         target = Some(CursorTarget::Release);
     }
-    if let Some(target) = target {
+    if let (Some(target), Some(mut cursor)) = (target, cursor) {
         apply_cursor_target(target, &mut cursor);
     }
 }
@@ -217,44 +394,58 @@ fn apply_cursor_target(target: CursorTarget, cursor: &mut CursorOptions) {
     }
 }
 
-/// Integrate this frame's mouse motion into the look angles and project them
-/// onto the rig transforms. Look is armed only while the cursor is captured
-/// (a released cursor must not rotate the view) and only while the wake
-/// phase allows look (the authored wake sequence owns the camera until it
-/// completes). Writes rotation only; nothing in this system can translate
-/// the player.
+/// Integrate this frame's look delta from the shared gameplay input plane
+/// into the look angles and project them onto the rig transforms. The plane
+/// carries device motion (offered by [`collect_device_look`]) and scripted
+/// harness motion (offered upstream of this chain in the `ScriptedInput`
+/// set) in the same units, so the integrator is mode-free. Look is armed
+/// only while the cursor is captured (a released cursor must not rotate the
+/// view; a windowless run has no cursor and is always armed) and only while
+/// the wake phase allows look (the authored wake sequence owns the camera
+/// until it completes). Writes rotation only; nothing in this system can
+/// translate the player.
 fn apply_mouse_look(
-    motion: Res<AccumulatedMouseMotion>,
-    cursor: Single<&CursorOptions>,
+    mut plane: ResMut<GameplayInput>,
+    cursor: Option<Single<&CursorOptions>>,
     phase: Res<SimWakePhase>,
     mut angles: ResMut<LookAngles>,
     mut yaw: Single<&mut Transform, (With<PlayerYaw>, Without<PlayerPitch>)>,
     mut pitch: Single<&mut Transform, (With<PlayerPitch>, Without<PlayerYaw>)>,
 ) {
-    if cursor.into_inner().grab_mode != CursorGrabMode::Locked
-        || !phase.into_inner().phase().look_allowed()
-    {
+    let armed = cursor.is_none_or(|cursor| cursor.into_inner().grab_mode == CursorGrabMode::Locked)
+        && phase.into_inner().phase().look_allowed();
+    if !armed {
         return;
     }
-    let (yaw_angle, pitch_angle) =
-        integrate_look(angles.yaw, angles.pitch, motion.into_inner().delta);
+    let delta = plane.take_look();
+    let (yaw_angle, pitch_angle) = integrate_look_radians(angles.yaw, angles.pitch, delta);
     angles.yaw = yaw_angle;
     angles.pitch = pitch_angle;
-    // Mouse right (positive pixel x) turns right: yaw decreases. Mouse up
-    // (negative pixel y) looks up: pitch increases.
+    // The plane's positive yaw turns left (increasing yaw), positive pitch
+    // looks up (increasing pitch); the device producer already negated the
+    // pixel axes into that convention.
     yaw.rotation = Quat::from_rotation_y(yaw_angle);
     pitch.rotation = Quat::from_rotation_x(pitch_angle);
 }
 
-/// Pure look integration: one pixel delta in, new (yaw, pitch) radians out.
-/// Linear in the delta at a constant [`LOOK_SENSITIVITY`], independent of any
-/// frame delta, with pitch clamped to ±[`PITCH_LIMIT`] before the result can
-/// over-rotate and yaw wrapped into (-π, π] so long play cannot drift the
+/// Pure look integration over a plane delta in radians: new (yaw, pitch)
+/// radians out. Pitch is clamped to ±[`PITCH_LIMIT`] before the result can
+/// over-rotate and yaw is wrapped into (-π, π] so long play cannot drift the
 /// angle's precision.
-fn integrate_look(yaw: f32, pitch: f32, delta_px: Vec2) -> (f32, f32) {
-    let yaw = wrap_angle(yaw - delta_px.x * LOOK_SENSITIVITY);
-    let pitch = (pitch - delta_px.y * LOOK_SENSITIVITY).clamp(-PITCH_LIMIT, PITCH_LIMIT);
+fn integrate_look_radians(yaw: f32, pitch: f32, delta: Vec2) -> (f32, f32) {
+    let yaw = wrap_angle(yaw + delta.x);
+    let pitch = (pitch + delta.y).clamp(-PITCH_LIMIT, PITCH_LIMIT);
     (yaw, pitch)
+}
+
+/// Convert bevy's accumulated pixel delta into the plane's radians: mouse
+/// right (positive pixel x) turns right, so yaw decreases; mouse up
+/// (negative pixel y) looks up, so pitch increases.
+fn look_delta_from_pixels(delta_px: Vec2) -> Vec2 {
+    Vec2::new(
+        -delta_px.x * LOOK_SENSITIVITY,
+        -delta_px.y * LOOK_SENSITIVITY,
+    )
 }
 
 /// Wrap an angle into (-π, π]. Values already in range pass through
@@ -276,8 +467,9 @@ fn wrap_angle(angle: f32) -> f32 {
 #[cfg(test)]
 mod tests {
     use super::{
-        CursorTarget, LOOK_SENSITIVITY, LookAngles, PITCH_LIMIT, PlayerLookPlugin, PlayerPitch,
-        PlayerYaw, apply_cursor_target, integrate_look, wrap_angle,
+        Button, ButtonEdge, CursorTarget, Edge, Key, LOOK_SENSITIVITY, LookAngles, PITCH_LIMIT,
+        PlayerLookPlugin, PlayerPitch, PlayerYaw, apply_cursor_target, integrate_look_radians,
+        look_delta_from_pixels, wrap_angle,
     };
     use crate::scene::{PlayerSpawn, PlayerSpawnPose};
     use bevy::app::{App, TaskPoolPlugin};
@@ -300,6 +492,13 @@ mod tests {
 
     use crate::post::{GamePostChainPlugin, PostChainAssets};
     use crate::scene::SimWakePhase;
+
+    /// The device-channel pure function under test: one pixel delta in, new
+    /// (yaw, pitch) radians out. Exactly what the device producer offers the
+    /// shared plane and the integrator applies.
+    fn integrate_look(yaw: f32, pitch: f32, delta_px: Vec2) -> (f32, f32) {
+        integrate_look_radians(yaw, pitch, look_delta_from_pixels(delta_px))
+    }
 
     #[test]
     fn pitch_clamps_before_over_rotation() {
@@ -627,5 +826,98 @@ mod tests {
         // expressed as a distance because exact float equality is banned.
         assert!((angles.yaw - pose.yaw_radians).abs() < f32::EPSILON);
         assert!((angles.pitch - pose.pitch_radians).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn windowless_runs_arm_scripted_look_through_the_shared_plane() {
+        // The headless harness has no Window entity, so no cursor state
+        // exists: look must stay armed (no cursor to gate it) and a scripted
+        // plane delta in radians must integrate exactly as the pixel-level
+        // pure function projects it.
+        let mut app = game_app();
+        let mut plane = super::GameplayInput::default();
+        plane.offer_look(0.2, -0.1);
+        app.insert_resource(plane);
+        app.update();
+        let pose = test_spawn().pose;
+        let (expected_yaw, expected_pitch) =
+            integrate_look_radians(pose.yaw_radians, pose.pitch_radians, Vec2::new(0.2, -0.1));
+        let mut yaws = app
+            .world_mut()
+            .query_filtered::<&Transform, With<PlayerYaw>>();
+        let yaw = *yaws.single(app.world()).expect("yaw parent");
+        let mut pitches = app
+            .world_mut()
+            .query_filtered::<&Transform, With<PlayerPitch>>();
+        let pitch = *pitches.single(app.world()).expect("pitch camera");
+        assert_eq!(yaw.rotation, Quat::from_rotation_y(expected_yaw));
+        assert_eq!(pitch.rotation, Quat::from_rotation_x(expected_pitch));
+    }
+
+    #[test]
+    fn plane_look_is_consumed_exactly_once() {
+        // The integrator takes the whole plane channel; whatever it took is
+        // gone, so device and scripted motion can never be integrated twice.
+        let mut plane = super::GameplayInput::default();
+        plane.offer_look(0.5, 0.25);
+        plane.offer_look(0.25, -0.25);
+        assert_eq!(plane.take_look(), Vec2::new(0.75, 0.0));
+        assert_eq!(plane.take_look(), Vec2::ZERO);
+    }
+
+    #[test]
+    fn device_pixels_convert_to_the_plane_convention() {
+        // Mouse right (positive x) must decrease yaw (turn right); mouse up
+        // (negative y) must increase pitch (look up). The negation lives in
+        // the device producer so the plane's convention is one-way positive.
+        let right = look_delta_from_pixels(Vec2::new(50.0, 0.0));
+        let up = look_delta_from_pixels(Vec2::new(0.0, -30.0));
+        assert!(right.x < 0.0);
+        assert!(up.y > 0.0);
+        // The pixel-level pure function is exactly the radian integrator
+        // over the converted delta (same ops, same order, bit-identical).
+        let (yaw_px, pitch_px) = integrate_look(1.0, 1.0, Vec2::new(4.0, -2.0));
+        let (yaw_rad, pitch_rad) =
+            integrate_look_radians(1.0, 1.0, look_delta_from_pixels(Vec2::new(4.0, -2.0)));
+        assert_eq!((yaw_px, pitch_px), (yaw_rad, pitch_rad));
+    }
+
+    #[test]
+    fn scripted_exit_edge_releases_and_disarms_like_the_physical_key() {
+        // A scripted Escape press offered on the shared plane is consumed by
+        // the cursor state machine and releases the (windowed) cursor in the
+        // same update, so the same frame's look is disarmed.
+        let mut app = game_app();
+        app.world_mut().spawn((
+            Window::default(),
+            CursorOptions {
+                grab_mode: CursorGrabMode::Locked,
+                ..CursorOptions::default()
+            },
+        ));
+        app.update();
+        let mut plane = super::GameplayInput::default();
+        plane.offer_edges(core::iter::once(ButtonEdge {
+            button: Button::Key(Key::Escape),
+            edge: Edge::Press,
+        }));
+        app.insert_resource(plane);
+        app.insert_resource(AccumulatedMouseMotion {
+            delta: Vec2::new(500.0, 0.0),
+        });
+        app.update();
+        let mut options = app
+            .world_mut()
+            .query_filtered::<&CursorOptions, With<Window>>();
+        let cursor = options
+            .single(app.world())
+            .expect("window cursor options")
+            .clone();
+        assert_eq!(cursor.grab_mode, CursorGrabMode::None);
+        assert!(cursor.visible, "a scripted exit releases the cursor");
+        // Released this frame, so this frame's motion must not rotate.
+        let angles = app.world().resource::<LookAngles>();
+        let pose = test_spawn().pose;
+        assert!((angles.yaw - pose.yaw_radians).abs() < f32::EPSILON);
     }
 }

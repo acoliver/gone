@@ -97,6 +97,7 @@ commands:
   build                locked workspace build
   test                 locked workspace test
   harness smoke        build gone_app + gone_harness (locked) and run the smoke scenario
+  harness gameplay-smoke  run the gameplay lane: real game content, room and scripted-look yaw assertions
   harness <scenario>   run one scenario file (builds both binaries first)
   harness compare <s>   run a scenario twice and diff the event timelines
   harness perf [s]     run the perf calibration lane against the checked-in policy
@@ -216,6 +217,9 @@ fn run_harness_command(rest: &[String], root: &Path) -> Result<(), CommandFailed
         }
         [cmd] if cmd == "smoke" => {
             plan = plan.args(["smoke"]);
+        }
+        [cmd] if cmd == "gameplay-smoke" => {
+            plan = plan.args(["gameplay-smoke"]);
         }
         [cmd] if cmd == "perf" => {
             plan = plan.args(["perf"]);

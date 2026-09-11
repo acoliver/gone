@@ -86,6 +86,80 @@ pub(super) fn onscreen_file_name(beat: &str) -> String {
     format!("beats/{beat}.onscreen.png")
 }
 
+/// How many compositor-declined frames the canary present probe tolerates
+/// before the run fails. Observed startup races are single frames; the
+/// budget sits orders of magnitude above them and far below the runner's
+/// process timeout, so exhausting it always means the window never became
+/// capturable, never that the machine was slow.
+pub(super) const PRESENT_BUDGET_FRAMES: u64 = 300;
+
+/// The canary window's present gate: whether the OS compositor has accepted
+/// a presented frame from the run's unfocused window yet and, if not, how
+/// many frames it has declined.
+///
+/// Why the gate exists: macOS declines a freshly created unfocused window's
+/// swapchain drawable until its first composite, and on such a frame bevy
+/// skips the window screenshot's composite and readback copy but still
+/// fires the capture event with the zero-initialized transfer buffer, so a
+/// capture requested too early lands as an entirely black PNG. The gate
+/// holds the scenario clock until a probe capture proves the window
+/// presents capturable frames; the same-sync-point onscreen request then
+/// renders into a drawable the compositor accepts.
+#[derive(Resource)]
+pub(super) struct PresentGate {
+    presenting: bool,
+    declined_frames: u64,
+}
+
+impl PresentGate {
+    /// The gate for a lane with no window presents to wait for (headless
+    /// runs have no window, so the drive needs no present proof).
+    pub(super) fn automatic() -> Self {
+        Self {
+            presenting: true,
+            declined_frames: 0,
+        }
+    }
+
+    /// The canary gate: the window presents nothing until a probe proves
+    /// otherwise.
+    pub(super) fn canary() -> Self {
+        Self {
+            presenting: false,
+            declined_frames: 0,
+        }
+    }
+
+    /// True while the lane is still waiting on the window's first
+    /// capturable frame and the present budget is not exhausted: the probe
+    /// keeps requesting and the drive stays held.
+    pub(super) fn awaiting_first_present(&self) -> bool {
+        !self.presenting && self.declined_frames < PRESENT_BUDGET_FRAMES
+    }
+
+    /// True once a probe capture showed a rendered frame.
+    pub(super) fn presenting(&self) -> bool {
+        self.presenting
+    }
+
+    /// Record one frame the compositor declined (the probe came back as the
+    /// zeroed skip signature).
+    pub(super) fn record_declined(&mut self) {
+        self.declined_frames += 1;
+    }
+
+    /// Record the window's first capturable frame. Sticky: probes still in
+    /// flight change nothing.
+    pub(super) fn record_presented(&mut self) {
+        self.presenting = true;
+    }
+
+    /// How many frames the compositor has declined so far.
+    pub(super) fn declined_frames(&self) -> u64 {
+        self.declined_frames
+    }
+}
+
 /// Frame-time sampler for the perf lane: skips `warmup_frames` rendered frames
 use crate::harness::{Beat, BeatEntry, InputAdapter, Scenario, TimedEvent};
 
@@ -172,6 +246,15 @@ pub(super) struct OnscreenCapture {
     /// any failure.
     pub(super) beat: String,
 }
+
+/// Marks a spawned screenshot entity as the canary's present probe: a
+/// primary-window capture whose only purpose is to answer whether the OS
+/// compositor accepts the window's presents yet. Probes are never saved as
+/// artifacts: a rendered capture flips the present gate open, and an
+/// entirely zeroed capture counts one declined frame against the present
+/// budget.
+#[derive(Component)]
+pub(super) struct PresentProbe;
 
 /// The scenario state resource.
 #[derive(Resource)]
@@ -304,10 +387,16 @@ impl HarnessState {
 }
 
 /// The drive gate: no scenario tick, input edge, or capture request may run
-/// before the renderer has presented ([`Readiness::Ready`]), and nothing runs
-/// after completion or failure.
-pub(super) fn drive_allowed(readiness: Readiness, state: &HarnessState) -> bool {
-    readiness == Readiness::Ready && !state.done && state.failed.is_none()
+/// before the renderer has presented ([`Readiness::Ready`]) and, on the
+/// canary, before the window has presented its first capturable frame
+/// ([`PresentGate::presenting`]), and nothing runs after completion or
+/// failure.
+pub(super) fn drive_allowed(
+    readiness: Readiness,
+    present: &PresentGate,
+    state: &HarnessState,
+) -> bool {
+    readiness == Readiness::Ready && present.presenting() && !state.done && state.failed.is_none()
 }
 
 /// Record an unrecoverable failure exactly once: a `Failure` event naming the

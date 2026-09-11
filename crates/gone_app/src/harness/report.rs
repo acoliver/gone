@@ -44,6 +44,31 @@ pub enum TimedEvent {
         /// Unique request id bound to this capture.
         request_id: u64,
     },
+    /// Gameplay content only: the player rig's yaw in degrees, sampled for a
+    /// beat at the beat's pinned (tick, frame), the same rendered moment the
+    /// beat's PNG shows. The runner replays the scenario's scripted look
+    /// deltas against these samples within a tolerance. Additive kind: only
+    /// gameplay-content runs emit it, and calibration reports are unchanged.
+    PlayerYaw {
+        /// Rendered tick the sample belongs to (the beat's pinned tick).
+        tick: u64,
+        /// Rendered frame the sample belongs to (the beat's pinned frame).
+        frame: u64,
+        /// The rig's integrated yaw at that moment, in degrees.
+        yaw_degrees: f32,
+    },
+    /// Gameplay content only: the stasis-room presence observation made on
+    /// the first update: spawned stasis-pod groups versus the pod-registry
+    /// count the scene builds from. A mismatch is a terminal scenario
+    /// failure app-side; the runner re-asserts the numbers. Additive kind.
+    RoomCheck {
+        /// Rendered frame at which the room was observed.
+        frame: u64,
+        /// Pod-group count the registry says the scene builds.
+        pods_expected: usize,
+        /// Stasis-pod groups actually found in the world.
+        pods_present: usize,
+    },
     /// The app finished writing the report and will exit cleanly.
     Complete {
         /// Rendered frame at completion.
@@ -68,7 +93,13 @@ impl TimedEvent {
     fn order_key(&self) -> (u8, u64, u64) {
         match self {
             Self::Ready { frame } => (0, 0, *frame),
-            Self::Input { tick, frame, .. } | Self::Beat { tick, frame, .. } => (1, *tick, *frame),
+            // The room observation happens at the run's first frame, before
+            // any tick runs: sorting it at tick 0 lands it right after the
+            // ready boundary and before every beat or input event.
+            Self::RoomCheck { frame, .. } => (1, 0, *frame),
+            Self::Input { tick, frame, .. }
+            | Self::Beat { tick, frame, .. }
+            | Self::PlayerYaw { tick, frame, .. } => (1, *tick, *frame),
             Self::Complete { frame } | Self::Failure { frame, .. } => (2, u64::MAX, *frame),
         }
     }
@@ -314,6 +345,49 @@ mod tests {
             parsed.first_failure(),
             Some("beat `beat-a` capture save failed: disk full")
         );
+    }
+
+    #[test]
+    fn gameplay_event_kinds_roundtrip_and_sort_additively() {
+        // The gameplay lane's kinds ride the same canonical order: the room
+        // observation lands right after ready (tick 0), yaw samples sort
+        // with their tick, and calibration events are untouched by their
+        // presence.
+        let mut report = sample();
+        report.events = vec![
+            super::TimedEvent::Beat {
+                name: "beat-a".into(),
+                tick: 2,
+                frame: 2,
+                request_id: 1,
+            },
+            super::TimedEvent::RoomCheck {
+                frame: 0,
+                pods_expected: 7,
+                pods_present: 7,
+            },
+            super::TimedEvent::PlayerYaw {
+                tick: 2,
+                frame: 2,
+                yaw_degrees: 40.1,
+            },
+            super::TimedEvent::Ready { frame: 0 },
+        ];
+        super::sort_events(&mut report.events);
+        let json = super::report_to_json(&report).expect("serializes");
+        let parsed = super::parse_report(&json).expect("parses");
+        let kinds: Vec<String> = parsed
+            .events
+            .iter()
+            .map(|event| match event {
+                super::TimedEvent::Ready { .. } => "ready".to_owned(),
+                super::TimedEvent::RoomCheck { .. } => "room".to_owned(),
+                super::TimedEvent::Beat { .. } => "beat".to_owned(),
+                super::TimedEvent::PlayerYaw { .. } => "yaw".to_owned(),
+                _ => "other".to_owned(),
+            })
+            .collect();
+        assert_eq!(kinds, ["ready", "room", "beat", "yaw"]);
     }
 
     #[test]

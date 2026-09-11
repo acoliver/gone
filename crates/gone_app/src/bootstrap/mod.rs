@@ -45,8 +45,15 @@
 //!   same rendered frame as the beat's PNG — and saves it as
 //!   `beats/<beat>.onscreen.png` beside the beat PNG. Same save policy as
 //!   beat captures: a failure is terminal, naming the beat and the error.
-//!   Headless mode has no onscreen path at all: no window, no capture, no
-//!   file.
+//!   The canary's scenario clock waits for the window's first capturable
+//!   frame before it starts: a present probe (one primary-window screenshot
+//!   per update until one comes back rendered) proves the OS compositor is
+//!   accepting the window's presents, because macOS declines a fresh
+//!   unfocused window's swapchain drawable until its first composite and a
+//!   capture on such a frame arrives as the zeroed readback buffer. Declined
+//!   frames count against a hard budget and exhausting it fails the run by
+//!   name; the probe is never a silent retry loop. Headless mode has no
+//!   onscreen path at all: no window, no present gate, no capture, no file.
 //! * **Readiness before the clock.** The scenario clock starts only after the
 //!   first capture of the offscreen target lands. That capture is the readback
 //!   of a frame the render graph actually executed into the target, so it is
@@ -86,6 +93,7 @@
 //! readiness, failure recording), and `tests` pins the accounting and readiness
 //! regressions without needing a renderer.
 
+mod gameplay;
 mod state;
 
 #[cfg(test)]
@@ -104,7 +112,7 @@ use bevy::camera::visibility::Visibility;
 use bevy::camera::{Camera, Camera2d, ClearColor, RenderTarget};
 use bevy::color::Color;
 use bevy::ecs::message::MessageWriter;
-use bevy::ecs::prelude::{Commands, Entity, On, Query, Res, ResMut, Resource};
+use bevy::ecs::prelude::{Commands, Entity, On, Query, Res, ResMut, Resource, With};
 use bevy::ecs::schedule::IntoScheduleConfigs;
 use bevy::ecs::system::SystemParam;
 use bevy::image::Image;
@@ -120,13 +128,15 @@ use bevy::transform::components::Transform;
 
 use crate::capture::capture_to_png;
 use crate::harness::{
-    FrameSampleStats, Identity, InputAdapter, Pacing, PerfResolution, PerfRun, Scenario,
+    Content, FrameSampleStats, Identity, InputAdapter, Pacing, PerfResolution, PerfRun, Scenario,
     ScenarioMode, TimedEvent, frame, report,
 };
+use crate::player::{GameplayInput, LookAngles};
 
 use state::{
-    BeatCapture, CaptureRequest, HarnessState, OnscreenCapture, Readiness, drive_allowed,
-    fail_at_deadline, fail_scenario, onscreen_capture_due, onscreen_file_name,
+    BeatCapture, CaptureRequest, HarnessState, OnscreenCapture, PRESENT_BUDGET_FRAMES, PresentGate,
+    PresentProbe, Readiness, drive_allowed, fail_at_deadline, fail_scenario, onscreen_capture_due,
+    onscreen_file_name,
 };
 
 /// The frame-code chip texture width: exactly the chip block's width.
@@ -175,8 +185,19 @@ struct CaptureTarget(Option<Handle<Image>>);
 struct Kernel<'w> {
     state: ResMut<'w, HarnessState>,
     readiness: Res<'w, Readiness>,
+    present: Res<'w, PresentGate>,
     chip: Res<'w, ChipTexture>,
     images: ResMut<'w, Assets<Image>>,
+}
+
+/// The observer's run-ledger access: the readiness handshake, the scenario
+/// state, and the present gate in one [`SystemParam`], keeping the observer's
+/// parameter count small and the access exact.
+#[derive(SystemParam)]
+struct RunLedger<'w> {
+    readiness: ResMut<'w, Readiness>,
+    state: ResMut<'w, HarnessState>,
+    present: ResMut<'w, PresentGate>,
 }
 
 /// Construct the harness plugin from the harness-mode environment.
@@ -221,9 +242,22 @@ impl Plugin for BootstrapPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(self.mode);
         app.init_resource::<Readiness>();
+        // The canary holds its scenario clock until the window presents its
+        // first capturable frame; a windowless lane has nothing to wait for.
+        app.insert_resource(match self.mode {
+            RunMode::Canary => PresentGate::canary(),
+            RunMode::Headless | RunMode::Normal => PresentGate::automatic(),
+        });
         app.init_resource::<ChipTexture>();
         app.init_resource::<ChipSprite>();
         app.init_resource::<CaptureTarget>();
+        // Gameplay content boots the real game into the harness app (post
+        // chain, stasis scene, player look) before anything else wires
+        // against it; the calibration content is the app as it has always
+        // been, touched by nothing here.
+        if self.scenario.content == Content::Gameplay {
+            gameplay::wire(app);
+        }
         let adapter = InputAdapter::with_actions(self.scenario.actions.clone());
         app.insert_resource(HarnessState::new(
             self.scenario.clone(),
@@ -232,19 +266,25 @@ impl Plugin for BootstrapPlugin {
             adapter,
         ));
         app.add_observer(on_screenshot_captured);
-        app.add_systems(Startup, setup_harness_scene);
-        app.add_systems(
-            Update,
-            (
-                request_readiness_proof,
-                readiness_boundary,
-                request_beat_captures,
-                drive_ticks,
-                perf_sample,
-                finish_scan,
-            )
-                .chain(),
-        );
+        if self.scenario.content == Content::Gameplay {
+            app.add_systems(Startup, gameplay::setup_gameplay_scene);
+            gameplay::register_update_systems(app);
+        } else {
+            app.add_systems(Startup, setup_harness_scene);
+            app.add_systems(
+                Update,
+                (
+                    request_readiness_proof,
+                    readiness_boundary,
+                    request_present_probe,
+                    request_beat_captures,
+                    drive_ticks,
+                    perf_sample,
+                    finish_scan,
+                )
+                    .chain(),
+            );
+        }
     }
 }
 
@@ -268,9 +308,23 @@ fn setup_harness_scene(
         spawn_window_camera(&mut commands);
     }
     capture.0 = Some(handle);
+    let (handle, entity) = spawn_chip_sprite(&mut commands, &mut images);
+    chip.0 = Some(handle);
+    sprite.0 = Some(entity);
+}
+
+/// The frame-code chip sprite, spawned hidden at the capture target's
+/// top-left corner; it becomes visible only at the readiness boundary. The
+/// camera centers the target, so its top-left pixel sits at minus half the
+/// extent; pinning the chip there puts it at the capture's corner. Shared by
+/// both content lanes: calibration renders it full-frame scale (the only
+/// scene content) and gameplay overlays it on the game view at the same
+/// corner with the same lattice.
+pub(super) fn spawn_chip_sprite(
+    commands: &mut Commands,
+    images: &mut Assets<Image>,
+) -> (Handle<Image>, Entity) {
     let handle = images.add(chip_texture_image());
-    // The camera centers the target, so its top-left pixel sits at minus half
-    // the extent; pinning the chip there puts it at the capture's corner.
     let chip_origin = UVec2::new(CAPTURE_W, CAPTURE_H).as_vec2() * Vec2::new(-0.5, 0.5);
     let entity = commands
         .spawn((
@@ -280,14 +334,13 @@ fn setup_harness_scene(
             Transform::from_translation(chip_origin.extend(0.0)),
         ))
         .id();
-    chip.0 = Some(handle);
-    sprite.0 = Some(entity);
+    (handle, entity)
 }
 
 /// The offscreen capture target: `RENDER_ATTACHMENT` (the camera renders into
 /// it) plus `TEXTURE_BINDING` (the screenshot pass samples/blits it), at the
 /// full capture resolution.
-fn capture_target_image(images: &mut Assets<Image>) -> Handle<Image> {
+pub(super) fn capture_target_image(images: &mut Assets<Image>) -> Handle<Image> {
     let mut image = Image::new_uninit(
         Extent3d {
             width: CAPTURE_W,
@@ -395,14 +448,45 @@ fn readiness_boundary(
     }
 }
 
+/// The canary present probe: while the run waits for the window's first
+/// capturable frame, request a primary-window screenshot every update. The
+/// observer reads the verdict ([`capture_present_probe`]); the drive stays
+/// held until one comes back rendered, so the first beat pin and its
+/// same-sync-point onscreen request happen only once presents have
+/// demonstrably started. Headless runs have no window and never probe (the
+/// gate starts satisfied).
+fn request_present_probe(
+    readiness: Res<Readiness>,
+    gate: Res<PresentGate>,
+    state: Res<HarnessState>,
+    mut commands: Commands,
+) {
+    let gate = gate.into_inner();
+    let state = state.into_inner();
+    if *readiness.into_inner() != Readiness::Ready
+        || !gate.awaiting_first_present()
+        || state.done
+        || state.failed.is_some()
+    {
+        return;
+    }
+    commands.spawn((Screenshot::primary_window(), PresentProbe));
+}
+
 /// Drive one logical tick per rendered frame once ready. The adapter returns
 /// exactly this tick's edges and motions; each edge is recorded once, with its
 /// press/release state in words, and look motion and movement are recorded as
 /// separate named events so the report (and compare mode) can tell the two
-/// channels apart. Runs after [`request_beat_captures`], so the beat pins name
-/// the pre-drive counters this update renders.
-fn drive_ticks(mut kernel: Kernel) {
-    if !drive_allowed(*kernel.readiness, &kernel.state) {
+/// channels apart. On gameplay content the same step is offered onto the
+/// shared gameplay input plane — look converted from the scenario's degrees
+/// to the plane's radians, movement and edges as their typed payloads — so
+/// the player systems integrate it this same update; the chain sits in the
+/// `ScriptedInput` set, which the look chain orders after. Calibration
+/// content has no plane: nothing is offered. Runs after
+/// [`request_beat_captures`], so the beat pins name the pre-drive counters
+/// this update renders.
+fn drive_ticks(mut kernel: Kernel, mut plane: Option<ResMut<GameplayInput>>) {
+    if !drive_allowed(*kernel.readiness, &kernel.present, &kernel.state) {
         return;
     }
     let tick = kernel.state.tick;
@@ -429,6 +513,14 @@ fn drive_ticks(mut kernel: Kernel) {
             what: format!("move {} {}", step.movement.forward, step.movement.strafe),
         });
     }
+    if kernel.state.scenario.content == Content::Gameplay {
+        let plane = plane
+            .as_mut()
+            .expect("gameplay content requires GameplayInput (PlayerLookPlugin provides it)");
+        plane.offer_look(step.motion.x.to_radians(), step.motion.y.to_radians());
+        plane.offer_movement(step.movement);
+        plane.offer_edges(step.edges);
+    }
     paint_chip(&mut kernel, tick, frame);
     kernel.state.tick += 1;
     kernel.state.frame += 1;
@@ -438,12 +530,14 @@ fn drive_ticks(mut kernel: Kernel) {
 /// Runs after `drive_ticks` so every sampled update is one full rendered frame
 /// of the calibration scene, chip animation included. The delta is Bevy's real
 /// `Time` delta for this frame: wall-clock, not the fixed logical tick.
-fn perf_sample(readiness: Res<Readiness>, mut state: ResMut<HarnessState>, time: Res<Time>) {
-    if !drive_allowed(*readiness.into_inner(), &state) || state.scenario.mode != ScenarioMode::Perf
+fn perf_sample(mut kernel: Kernel, time: Res<Time>) {
+    if !drive_allowed(*kernel.readiness, &kernel.present, &kernel.state)
+        || kernel.state.scenario.mode != ScenarioMode::Perf
     {
         return;
     }
-    state
+    kernel
+        .state
         .sampler
         .record(time.into_inner().delta_secs_f64() * 1000.0);
 }
@@ -467,15 +561,22 @@ fn paint_chip(kernel: &mut Kernel, tick: u64, frame_num: u64) {
 /// captures at most one screenshot per render target per frame, and the
 /// capture's observer binds it back to the entry by request id. In canary
 /// mode the first beat's request also spawns the run's single onscreen
-/// capture of the primary window.
+/// capture of the primary window. On gameplay content the pinned moment
+/// also samples the player rig's yaw into a `PlayerYaw` event stamped with
+/// the same (tick, frame) the PNG shows; the beat schedule pins captures on
+/// look-quiet ticks, so the sampled yaw is the integrated angle at the
+/// rendered moment.
 fn request_beat_captures(
-    readiness: Res<Readiness>,
+    mut kernel: Kernel,
     capture: Res<CaptureTarget>,
     mode: Res<RunMode>,
-    mut state: ResMut<HarnessState>,
+    angles: Option<Res<LookAngles>>,
     mut commands: Commands,
 ) {
-    if !drive_allowed(*readiness.into_inner(), &state) || state.capture_in_flight.is_some() {
+    let state = &mut *kernel.state;
+    if !drive_allowed(*kernel.readiness, &kernel.present, state)
+        || state.capture_in_flight.is_some()
+    {
         return;
     }
     if state.next_due_beat().is_none() {
@@ -489,6 +590,18 @@ fn request_beat_captures(
     let (tick, frame) = (state.tick, state.frame);
     let first_request = state.requested_beats == 0;
     let (name, entry) = state.pin_next_beat(tick, frame);
+    if state.scenario.content == Content::Gameplay {
+        let yaw_degrees = angles
+            .expect("gameplay content requires LookAngles (PlayerLookPlugin provides it)")
+            .into_inner()
+            .yaw_radians()
+            .to_degrees();
+        state.events.push(TimedEvent::PlayerYaw {
+            tick,
+            frame,
+            yaw_degrees,
+        });
+    }
     commands.spawn((
         Screenshot::image(handle),
         BeatCapture {
@@ -513,42 +626,103 @@ fn request_beat_captures(
 }
 
 /// The receiver for every bevy screenshot of this run. A capture carrying a
-/// [`BeatCapture`] is that beat's rendered frame: convert and write it now, no
-/// retry. One carrying an [`OnscreenCapture`] is the canary run's single
-/// primary-window capture. Any other capture is a readiness proof.
+/// [`PresentProbe`] is the canary's present verdict: rendered content opens
+/// the present gate, the zeroed skip signature counts a declined frame. A
+/// capture carrying a [`BeatCapture`] is that beat's rendered frame: convert
+/// and write it now, no retry. One carrying an [`OnscreenCapture`] is the
+/// canary run's single primary-window capture. Any other capture is a
+/// readiness proof.
 fn on_screenshot_captured(
     mut captured: On<ScreenshotCaptured>,
-    mut readiness: ResMut<Readiness>,
-    mut state: ResMut<HarnessState>,
+    mut run: RunLedger,
     beats: Query<&BeatCapture>,
     onscreens: Query<&OnscreenCapture>,
+    probes: Query<(), With<PresentProbe>>,
 ) {
     let captured = captured.event_mut();
+    if probes.get(captured.entity).is_ok() {
+        capture_present_probe(&mut run.present, &mut run.state, &captured.image);
+        return;
+    }
     if let Ok(beat) = beats.get(captured.entity) {
-        capture_beat(&mut state, beat, &captured.image);
+        capture_beat(&mut run.state, beat, &captured.image);
         return;
     }
     if let Ok(onscreen) = onscreens.get(captured.entity) {
-        capture_onscreen(&mut state, onscreen, &captured.image);
+        capture_onscreen(&mut run.state, onscreen, &captured.image);
         return;
     }
-    if *readiness == Readiness::Ready {
+    if *run.readiness == Readiness::Ready {
         return; // a duplicate proof landing after the boundary
     }
-    match save_capture(&state.out_dir, READINESS_PROOF_FILE, &captured.image) {
+    match save_capture(&run.state.out_dir, READINESS_PROOF_FILE, &captured.image) {
         Ok(()) => {
             bevy::log::info!(
                 "harness: readiness proof captured ({}x{} screenshot of the offscreen target)",
                 captured.image.width(),
                 captured.image.height()
             );
-            state
+            run.state
                 .checkpoints
                 .push("readiness proof captured".to_owned());
-            *readiness = Readiness::Ready;
+            *run.readiness = Readiness::Ready;
         }
-        Err(err) => fail_scenario(&mut state, format!("readiness proof capture failed: {err}")),
+        Err(err) => fail_scenario(
+            &mut run.state,
+            format!("readiness proof capture failed: {err}"),
+        ),
     }
+}
+
+/// Handle one present-probe verdict. A capture with a rendered byte is the
+/// window's first capturable frame: open the present gate and release the
+/// drive. An entirely zeroed capture is bevy's skipped window composite on a
+/// frame whose drawable the compositor declined: count it against the
+/// present budget and fail the run by name when the budget is gone. There is
+/// no silent retry: every declined frame is counted and logged, and the
+/// budget failure names the mechanism.
+fn capture_present_probe(present: &mut PresentGate, state: &mut HarnessState, image: &Image) {
+    if present.presenting() {
+        return; // a probe still in flight from before the first present
+    }
+    if capture_proves_present(image) {
+        present.record_presented();
+        bevy::log::info!(
+            "harness: canary window presented its first capturable frame after {} declined frames",
+            present.declined_frames()
+        );
+        return;
+    }
+    present.record_declined();
+    bevy::log::info!(
+        "harness: canary present probe declined ({}/{} budget frames)",
+        present.declined_frames(),
+        PRESENT_BUDGET_FRAMES
+    );
+    if !present.awaiting_first_present() {
+        fail_scenario(
+            state,
+            format!(
+                "canary window never presented a capturable frame: the compositor declined \
+                 {} frames within the {PRESENT_BUDGET_FRAMES}-frame present budget, so the \
+                 onscreen capture cannot start",
+                present.declined_frames()
+            ),
+        );
+    }
+}
+
+/// True when a captured window image carries at least one rendered byte. The
+/// zeroed capture is bevy's skip signature: the compositor declined the
+/// frame's drawable, so the screenshot's composite and readback copy are
+/// skipped and the zero-initialized transfer buffer is what fires the capture
+/// event. A presented frame always renders something: the canary camera chain
+/// clears to a nonzero color before any scene content.
+fn capture_proves_present(image: &Image) -> bool {
+    image
+        .data
+        .as_deref()
+        .is_some_and(|bytes| bytes.iter().any(|&byte| byte != 0))
 }
 
 /// Convert and write one beat's captured target frame to its manifest file,

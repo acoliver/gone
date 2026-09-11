@@ -8,7 +8,8 @@
 //! line. Two-stage verdict: exit 0 = "machine checks passed, visual verification
 //! pending". The binary is OS-portable: `std::process::Command`, forward-slash
 //! relative artifact paths, no OS-specific code (on macOS a SIGKILL to the child
-//! process id is sufficient for termination; Windows kill-tree is documented as stage-B).
+//! process id is sufficient for termination; Windows kill-tree is documented as
+//! stage-B).
 //!
 //! With `--render-check` the runner also selects the app's canary lane
 //! (`GONE_RENDER_CHECK=1`): the run opens the window and saves one
@@ -16,6 +17,12 @@
 //! the run (exactly one `*.onscreen.png` under `beats/`, exactly 1920x1080, not
 //! entirely black, chip frame equal to the report's). Canary run dirs carry an
 //! `rc` run-id prefix so they are identifiable in `tmp/harness`.
+//!
+//! `gameplay-smoke` runs the gameplay lane: the scenario's `content` field boots
+//! the real game in the child, and the run's report additionally passes the
+//! gameplay machine checks (`gone_harness::gameplay`): a stasis-room observation
+//! matching the registry's count, and yaw samples proving the scripted look
+//! turned the rig by the scripted amount.
 
 use std::fmt;
 use std::fmt::Write as _;
@@ -25,10 +32,11 @@ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use sha2::{Digest as _, Sha256};
 
+use gone_harness::gameplay;
 use gone_harness::scenario::{Scenario, parse_scenario, scenario_to_json};
 use gone_harness::{
-    FrameSampleStats, PROTOCOL_VERSION, PerfPolicy, PerfPolicyIdentity, PerfVerdict, ScenarioMode,
-    onscreen, parse_perf_policy, perf_verdict_to_json, report,
+    Content, FrameSampleStats, PROTOCOL_VERSION, PerfPolicy, PerfPolicyIdentity, PerfVerdict,
+    ScenarioMode, onscreen, parse_perf_policy, perf_verdict_to_json, report,
 };
 
 const ENV_HARNESS: &str = "GONE_HARNESS";
@@ -80,6 +88,7 @@ pub fn smoke_scenario() -> Scenario {
         mode: ScenarioMode::Capture,
         warmup_frames: 0,
         sample_frames: 0,
+        content: Content::Calibration,
     }
 }
 
@@ -101,6 +110,7 @@ fn perf_calibration_scenario(policy: &PerfPolicy) -> Scenario {
         mode: ScenarioMode::Perf,
         warmup_frames: policy.warmup_frames,
         sample_frames: policy.sample_frames,
+        content: Content::Calibration,
     }
 }
 
@@ -350,6 +360,11 @@ fn run_scenario(
     let parsed = verify_report(&report_text, identity.app, identity.config)?;
 
     verify_captures(scenario, &parsed, &run_dir)?;
+    if scenario.content == Content::Gameplay {
+        // The gameplay lane's own machine checks: room presence and the
+        // scripted-look yaw replay (see `gone_harness::gameplay`).
+        gameplay::verify_gameplay(scenario, &parsed).map_err(RunnerError)?;
+    }
     if render_check {
         onscreen::verify_run(scenario, &parsed, &run_dir).map_err(RunnerError)?;
     }
@@ -445,9 +460,10 @@ fn dispatch(args: &[String]) -> i32 {
         // Bare invocation is the default smoke run, matching `cargo xtask
         // harness`.
         None | Some("smoke") => run_smoke(render_check),
+        Some("gameplay-smoke") => run_gameplay_smoke(render_check),
         Some("--help" | "-h") => {
             eprintln!(
-                "usage: gone-harness [--render-check] <smoke | perf [scenario] | compare <scenario> | <scenario.json>>
+                "usage: gone-harness [--render-check] <smoke | gameplay-smoke | perf [scenario] | compare <scenario> | <scenario.json>>
   (no command runs the smoke scenario)
   --render-check: canary lane (real window, one onscreen capture machine-verified after the run)"
             );
@@ -460,13 +476,30 @@ fn dispatch(args: &[String]) -> i32 {
 }
 
 fn run_smoke(render_check: bool) -> i32 {
-    let scenario = smoke_scenario();
+    run_builtin(&smoke_scenario(), "smoke-scenario.json", render_check)
+}
+
+/// The gameplay smoke lane: the built-in gameplay scenario through the same
+/// run/verify path as smoke, plus the gameplay-specific machine checks
+/// hooked into [`run_scenario`] (room presence, scripted-look yaw replay).
+fn run_gameplay_smoke(render_check: bool) -> i32 {
+    run_builtin(
+        &gameplay::gameplay_smoke_scenario(),
+        "gameplay-smoke-scenario.json",
+        render_check,
+    )
+}
+
+/// Run one built-in scenario end to end: write its JSON beside the artifacts
+/// tree, run it, and print the two-line verdict. The shared body of every
+/// built-in lane (smoke, gameplay smoke).
+fn run_builtin(scenario: &Scenario, scenario_file: &str, render_check: bool) -> i32 {
     let root = repo_root().expect("root");
     let out_root = root.join("tmp").join("harness");
-    let scenario_path = root.join("tmp").join("smoke-scenario.json");
-    let json = scenario_to_json(&scenario).expect("scenario json");
-    write_or("smoke scenario", &scenario_path, json.as_bytes()).expect("write");
-    match run_scenario(&root, &scenario_path, &scenario, &out_root, render_check) {
+    let scenario_path = root.join("tmp").join(scenario_file);
+    let json = scenario_to_json(scenario).expect("scenario json");
+    write_or("built-in scenario", &scenario_path, json.as_bytes()).expect("write");
+    match run_scenario(&root, &scenario_path, scenario, &out_root, render_check) {
         Ok(run_dir) => {
             println!(
                 "MACHINE PASS: scenario `{}`; machine checks passed, visual verification pending",

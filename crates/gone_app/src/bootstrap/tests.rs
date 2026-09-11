@@ -1,9 +1,9 @@
 //! Unit tests for the harness run state and its gates: beat request/capture
-//! accounting, readiness gating, capture-lane serialization, immediate
-//! failure recording, run-mode selection from the environment, and the canary
-//! onscreen-capture gate. The accounting methods under test are pure state
-//! transitions, so no renderer is involved; only the save-failure test touches
-//! disk (into the OS temp dir).
+//! accounting, readiness gating, the canary present gate, capture-lane
+//! serialization, immediate failure recording, run-mode selection from the
+//! environment, and the canary onscreen-capture gate. The accounting methods
+//! under test are pure state transitions, so no renderer is involved; only
+//! the save-failure test touches disk (into the OS temp dir).
 
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -12,8 +12,9 @@ use bevy::render::render_resource::{Extent3d, TextureDimension, TextureFormat};
 
 use super::save_capture;
 use super::state::{
-    CaptureRequest, HarnessState, PerfSampler, Readiness, RunMode, drive_allowed, fail_at_deadline,
-    fail_scenario, onscreen_capture_due, onscreen_file_name, select_run_mode,
+    CaptureRequest, HarnessState, PRESENT_BUDGET_FRAMES, PerfSampler, PresentGate, Readiness,
+    RunMode, drive_allowed, fail_at_deadline, fail_scenario, onscreen_capture_due,
+    onscreen_file_name, select_run_mode,
 };
 use crate::harness::{Beat, InputAdapter, Key, Scenario, ScriptedAction, TimedEvent};
 
@@ -210,16 +211,17 @@ fn drive_never_consumes_input_before_readiness() {
     // completion or failure.
     let mut state = state_with_beats(&[]);
     state.adapter = InputAdapter::with_actions(vec![ScriptedAction::press(0, Key::Forward)]);
+    let gate = PresentGate::automatic();
     // While loading: no drive, so the adapter never steps and tick-0 input
     // stays queued for the post-boundary tick.
-    assert!(!drive_allowed(Readiness::Loading, &state));
-    if drive_allowed(Readiness::Loading, &state) {
+    assert!(!drive_allowed(Readiness::Loading, &gate, &state));
+    if drive_allowed(Readiness::Loading, &gate, &state) {
         let _ = state.adapter.step();
     }
     assert_eq!(state.adapter.tick(), 0, "the adapter clock never moved");
     assert_eq!(state.events.len(), 0, "no input recorded before ready");
     // Ready: exactly one drive consumes exactly the tick-0 edge.
-    assert!(drive_allowed(Readiness::Ready, &state));
+    assert!(drive_allowed(Readiness::Ready, &gate, &state));
     let step = state.adapter.step();
     assert_eq!(step.edges.len(), 1, "the queued tick-0 press survives");
     state.tick += 1;
@@ -227,10 +229,71 @@ fn drive_never_consumes_input_before_readiness() {
     assert_eq!(state.tick, 1, "one tick advanced after ready");
     // Failure or completion closes the lane.
     state.failed = Some("beat `x` capture failed: boom".to_owned());
-    assert!(!drive_allowed(Readiness::Ready, &state));
+    assert!(!drive_allowed(Readiness::Ready, &gate, &state));
     state.failed = None;
     state.done = true;
-    assert!(!drive_allowed(Readiness::Ready, &state));
+    assert!(!drive_allowed(Readiness::Ready, &gate, &state));
+}
+
+#[test]
+fn the_canary_gate_holds_the_drive_until_the_first_present() {
+    // The canary's scenario clock may not start until the window's first
+    // capturable frame: with presents unproven the gate refuses, declined
+    // frames only count, and the first rendered probe capture releases it.
+    let state = state_with_beats(&[]);
+    let mut gate = PresentGate::canary();
+    assert!(!gate.presenting());
+    assert!(!drive_allowed(Readiness::Ready, &gate, &state));
+    gate.record_declined();
+    assert_eq!(gate.declined_frames(), 1);
+    assert!(
+        gate.awaiting_first_present(),
+        "one decline is not the budget"
+    );
+    assert!(!drive_allowed(Readiness::Ready, &gate, &state));
+    gate.record_presented();
+    assert!(gate.presenting(), "the first present is sticky");
+    assert!(!gate.awaiting_first_present());
+    assert!(drive_allowed(Readiness::Ready, &gate, &state));
+}
+
+#[test]
+fn headless_gate_never_holds_the_drive() {
+    // No window, no presents to wait for: the gate starts satisfied and
+    // only the readiness conjunct can refuse the drive.
+    let state = state_with_beats(&[]);
+    let gate = PresentGate::automatic();
+    assert!(gate.presenting());
+    assert!(drive_allowed(Readiness::Ready, &gate, &state));
+    assert!(!drive_allowed(Readiness::Loading, &gate, &state));
+}
+
+#[test]
+fn exhausting_the_present_budget_closes_the_probe_window() {
+    // Declined frames count one by one; at the budget the probe window
+    // closes so the run fails by name instead of waiting on the compositor
+    // forever. Exhaustion is a failure state, never a present.
+    let mut gate = PresentGate::canary();
+    for _ in 0..PRESENT_BUDGET_FRAMES - 1 {
+        gate.record_declined();
+        assert!(gate.awaiting_first_present(), "still within the budget");
+    }
+    gate.record_declined();
+    assert!(!gate.awaiting_first_present(), "the budget is exhausted");
+    assert!(!gate.presenting());
+    assert_eq!(gate.declined_frames(), PRESENT_BUDGET_FRAMES);
+}
+
+#[test]
+fn a_zeroed_capture_never_proves_a_present_and_a_rendered_one_does() {
+    // The zeroed capture is bevy's skip signature on a frame whose drawable
+    // the compositor declined; a presented frame always renders a nonzero
+    // byte (the canary cameras clear to a nonzero color before any content).
+    let zeroed = test_image();
+    assert!(!super::capture_proves_present(&zeroed));
+    let mut rendered = test_image();
+    rendered.data = Some(vec![0, 0, 0, 255]);
+    assert!(super::capture_proves_present(&rendered));
 }
 
 #[test]

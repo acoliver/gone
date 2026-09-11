@@ -127,6 +127,23 @@ the window renders the same world, chip included). Canary run dirs carry an
 `rc` run-id prefix (`rc<unix-nanos>-s<seed>`) under the usual `tmp/harness`
 layout.
 
+The canary's scenario clock waits for the window's first capturable frame
+before it starts. The window is unfocused by design, and macOS does not hand a
+freshly created unfocused window its swapchain drawable until the compositor
+has composited it once. On such a frame bevy skips the window screenshot's
+composite into the swapchain and its readback copy but still fires the capture
+event, so the app receives the zero-initialized transfer buffer and would
+write an entirely black PNG; the offscreen beats of the same run are immune
+because they read back their own render target and never touch the swapchain.
+The app therefore holds the drive until a present probe proves the window
+presents: while the gate is unresolved it requests one primary-window probe
+capture per rendered frame, a capture with a rendered byte proves presents and
+releases the clock, and a zeroed capture counts one declined frame against a
+300-frame present budget that fails the run by name when exhausted. Probes are
+frame keyed, every declined frame is counted and logged, and the budget is
+hard, so the barrier is never a silent retry loop; the same-sync-point pairing
+of the onscreen capture with the first beat's PNG is unchanged.
+
 Visual inspection of the onscreen PNG by the visual model agent is the
 follow-up judgment step, outside CI: the runner's machine checks prove the
 frame rendered, and the visual pass judges what it looks like. The canary is

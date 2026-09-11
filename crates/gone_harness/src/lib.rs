@@ -5,9 +5,11 @@
 //! so the runner binary and the app always speak the same JSON and pixel encoding.
 //! The crate itself contains no protocol definitions; its binary drives
 //! `target/debug/gone_app` and verifies against the app's report and captures.
-//! The [`onscreen`] module is runner tooling: the machine verification of the
-//! render canary's single onscreen capture.
+//! The [`onscreen`] and [`gameplay`] modules are runner tooling: the machine
+//! verification of the render canary's single onscreen capture, and of the
+//! gameplay lane's room and yaw assertions.
 
+pub mod gameplay;
 pub mod onscreen;
 
 pub use gone_app::harness::*;

@@ -1,8 +1,9 @@
 //! Stasis room greybox scene for the windowed game (issue #7 stage A).
 //!
 //! Contract: this module builds the opening-beat blockout from primitives in
-//! `RunMode::Normal` only. The harness lanes never build this plugin, so the
-//! calibration scene and every capture stay exactly as they were.
+//! `RunMode::Normal` and in gameplay-content harness runs. The calibration
+//! harness lanes never build this plugin, so the calibration scene and every
+//! calibration capture stay exactly as they were.
 //!
 //! The simulation side is authoritative. [`SimWakePhase`] and
 //! [`SimPodRegistry`] wrap the `gone_sim` phase machine and the frozen pod
@@ -51,9 +52,10 @@ mod pod_body;
 
 /// Marks a stasis pod's root entity. A pod's identity, state, and placement
 /// live in the sim registry; the marker only tags the scene-side group so
-/// tests can find pod groups and later systems can recognize them.
+/// tests and the gameplay harness's room observation can find pod groups,
+/// and later systems can recognize them.
 #[derive(Component)]
-struct StasisPod;
+pub(crate) struct StasisPod;
 
 /// Marks the jammed hatch group: static dressing this stage; the beat that
 /// tries to open it is issue #11's.
