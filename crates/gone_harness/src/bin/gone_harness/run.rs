@@ -18,20 +18,14 @@ use crate::paths::{read_or, run_id, write_or};
 /// Scenario runtime timeout; the runner owns termination and reaping.
 pub(crate) const DEFAULT_TIMEOUT: Duration = Duration::from_secs(60);
 
-/// The calibration matrix lane's child timeout. The matrix scenarios budget
-/// ~20k ticks of settling at the measured fast cadence (~17 s wall); a far
-/// slower per-frame cadence on the post-chain lane stretches the same tick
-/// counts proportionally, so this lane owns a much wider ceiling than the
-/// 60 s default the other lanes fit in.
-pub(crate) const CALIBRATION_TIMEOUT: Duration = Duration::from_secs(240);
-
 /// Run one scenario end to end: spawn the app, wait, verify the report and
 /// captures, and return the run dir. Under `render_check` the app runs the
 /// canary lane and the run's single onscreen capture is machine-verified too;
 /// a beatless scenario fails fast before spawning, since the canary captures
-/// at the first beat. `timeout` is the child's wall-clock ceiling: the lanes
-/// whose post-chain rendering stretches per-frame cost pass
-/// [`CALIBRATION_TIMEOUT`], the rest [`DEFAULT_TIMEOUT`].
+/// at the first beat. `timeout` is the child's wall-clock ceiling: the
+/// calibration matrix lane derives a per-cell budget from its tick plan
+/// ([`gone_harness::calibration_lane::MatrixCell::wall_clock_budget`]), the
+/// rest of the lanes fit in [`DEFAULT_TIMEOUT`].
 pub(crate) fn run_scenario(
     root: &Path,
     scenario_path: &Path,

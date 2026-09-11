@@ -11,7 +11,8 @@
 //! same tick counts cover MORE wall time (the app's adaptation runs on
 //! wall-clock deltas, so extra wall time per tick means more settling, never
 //! less). Every window below is sized at the fast measured cadence, and the
-//! lane's child timeout is far above the slowest plausible cadence.
+//! lane's child timeout is derived from each cell's own tick plan
+//! (see [`MatrixCell::wall_clock_budget`]).
 //!
 //! # Adaptation model the bounds rely on
 //!
@@ -26,6 +27,8 @@
 //! f-stops on the darken side (1.5 s time constant). The sample windows give
 //! each perturbation several multiples of its time constant at the fast
 //! cadence before the assertions read the sequence.
+
+use std::time::Duration;
 
 use crate::calibration::{CalibrationParams, LuminanceStep, MaskSelection, PatchPlan};
 use crate::{Beat, Content, Scenario, ScenarioMode};
@@ -72,6 +75,17 @@ const NOOP_STEP_TICK: u64 = 24_600;
 /// The scenario deadline in rendered frames: past the last sample plus the
 /// capture settle window.
 const MAX_FRAMES: u64 = 24_000;
+
+/// The floor frame rate the lane's wall-clock budget assumes for a child
+/// run: headless frames are paced by the render pipeline with one logical
+/// tick per frame, and live runs under load have measured ~50-65 fps, so
+/// the budget conservatively assumes no better than half of that.
+const BUDGET_FLOOR_FPS: u64 = 30;
+
+/// Wall-clock added to every cell's budget beyond its tick-plan span: the
+/// readiness handshake before tick 0, capture readback at every beat, and
+/// the final report write are not tick-paced.
+const BUDGET_SETTLE_ALLOWANCE: Duration = Duration::from_secs(60);
 
 /// Cells A/B: the first post-step sample, one tick after the step, while
 /// exposure has adapted for at most a frame or two (well under 0.05 f-stops
@@ -171,6 +185,43 @@ impl MatrixCell {
             content: Content::Calibration,
             calibration: Some(self.params),
         }
+    }
+
+    /// The last tick this cell's plan can legitimately reach: the farthest
+    /// of the declared scene dynamics (the luminance step — the move cells'
+    /// no-op step at [`NOOP_STEP_TICK`] — and the patch move), the last
+    /// pinned sample, and the scenario's `max_frames` deadline, which a run
+    /// with an uncaptured beat legitimately reaches so the app can record
+    /// its named `max_frames` failure instead of dying mid-flight.
+    #[must_use]
+    pub fn plan_end_tick(&self) -> u64 {
+        let last_beat = self.beats.last().map_or(0, |&(_, tick)| tick);
+        let patch_move = self.params.patch.move_tick().unwrap_or(0);
+        self.params
+            .step
+            .tick
+            .max(patch_move)
+            .max(last_beat)
+            .max(MAX_FRAMES)
+    }
+
+    /// The wall-clock budget the runner grants this cell's child app, in
+    /// seconds `ceil(plan_end_tick / BUDGET_FLOOR_FPS) + settle` with the
+    /// derivation documented on [`BUDGET_FLOOR_FPS`] and
+    /// [`BUDGET_SETTLE_ALLOWANCE`]: the plan's ticks convert to wall time
+    /// through the frame cadence (one tick per frame), the budget assumes
+    /// the conservative 30 fps floor for it, and the settle allowance covers
+    /// the untick-paced readiness handshake, capture readbacks, and report
+    /// write. This replaces the fixed 240 s ceiling the lane used before,
+    /// which killed correct cells: live runs under load pace at ~50-65 fps,
+    /// so cells reached only ~`14_400` and ~`11_400` of their ~24_000-frame
+    /// plans in 240 s and died `timed out after 240s` before their last
+    /// pinned sample. A run exceeding this budget is still killed and FAILs
+    /// by name.
+    #[must_use]
+    pub fn wall_clock_budget(&self) -> Duration {
+        let floor_seconds = self.plan_end_tick().div_ceil(BUDGET_FLOOR_FPS);
+        BUDGET_SETTLE_ALLOWANCE + Duration::from_secs(floor_seconds)
     }
 }
 
@@ -280,4 +331,47 @@ pub fn matrix() -> [MatrixCell; 4] {
             beats: move_beats(),
         },
     ]
+}
+
+#[cfg(test)]
+mod tests {
+    use std::time::Duration;
+
+    use super::{BUDGET_FLOOR_FPS, BUDGET_SETTLE_ALLOWANCE, MatrixCell, matrix};
+
+    #[test]
+    fn every_cell_budget_exceeds_its_plan_at_the_sixty_fps_cadence() {
+        for cell in matrix() {
+            let budget = cell.wall_clock_budget();
+            let plan_end = cell.plan_end_tick();
+            assert!(
+                budget.as_secs() > plan_end / 60,
+                "cell {}: budget {}s must exceed the plan end {plan_end} at 60 fps",
+                cell.id.label(),
+                budget.as_secs()
+            );
+        }
+    }
+
+    #[test]
+    fn the_longest_cell_budget_holds_the_old_240s_ceiling_at_the_floor_cadence() {
+        let longest = matrix()
+            .into_iter()
+            .max_by_key(MatrixCell::plan_end_tick)
+            .expect("the matrix is nonempty");
+        // Pin the exact derivation: the plan end at the floor cadence plus
+        // the settle allowance.
+        assert_eq!(
+            longest.wall_clock_budget(),
+            BUDGET_SETTLE_ALLOWANCE
+                + Duration::from_secs(longest.plan_end_tick().div_ceil(BUDGET_FLOOR_FPS))
+        );
+        let old_ceiling = Duration::from_secs(240);
+        assert!(
+            longest.wall_clock_budget() >= old_ceiling,
+            "cell {}: derived budget {:?} must not regress below the old 240s ceiling",
+            longest.id.label(),
+            longest.wall_clock_budget()
+        );
+    }
 }

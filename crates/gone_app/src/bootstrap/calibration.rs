@@ -23,16 +23,21 @@
 //!
 //! The frame-code chip stays Core2d (a sprite; sprites never render in a 3d
 //! view, and the runner decodes it from every beat PNG). A second camera —
-//! the capture lane's plain 2d camera, kept for exactly this duty — draws the
-//! chip OVER the 3d output into the same target (`ClearColorConfig::None`,
-//! higher camera order). This composite is honest to the protocol: the
-//! scene pixels in a capture are the executed post chain's output, and the
-//! chip is the capture lane's frame-code machinery drawn after the chain. It
-//! also protects both measurements: the chip lives on the tonemapped LDR
-//! output of a different view, so its fixed palette survives every exposure
-//! the auto-exposure arm adapts to, and the histogram pass reads the 3d view's
-//! HDR main texture, which the chip never enters — metering sees only the
-//! wall and the patch.
+//! the chip overlay — draws the chip OVER the 3d output into the same target
+//! by alpha-blending its final write (`chip_overlay_camera` documents why
+//! blending is the only correct overlay mechanism: bevy's per-camera output
+//! blit replaces the target unless the camera's `output_mode` blends, so a
+//! plain `ClearColorConfig::None` camera would paint its whole intermediate
+//! over the scene every frame). The calibration lane's cameras are exactly
+//! this pair per target; the capture lane's plain 2d camera does not exist
+//! here, because its opaque write would replace the scene camera's output.
+//! This composite is honest to the protocol: the scene pixels in a capture
+//! are the executed post chain's output, and the chip is the capture lane's
+//! frame-code machinery drawn after the chain. It also protects both
+//! measurements: the chip lives on the tonemapped LDR output of a different
+//! view, so its fixed palette survives every exposure the auto-exposure arm
+//! adapts to, and the histogram pass reads the 3d view's HDR main texture,
+//! which the chip never enters — metering sees only the wall and the patch.
 //!
 //! Canary runs (`GONE_RENDER_CHECK=1`) mirror the same pair onto the window:
 //! a window `Camera3d` with the same post chain presents the scene, and a
@@ -72,7 +77,8 @@
 use bevy::asset::{AssetServer, Assets, Handle, LoadState, RenderAssetUsages};
 use bevy::camera::PerspectiveProjection;
 use bevy::camera::{
-    Camera, Camera2d, Camera3d, ClearColorConfig, Exposure, Hdr, Projection, RenderTarget,
+    Camera, Camera2d, Camera3d, CameraOutputMode, ClearColorConfig, Exposure, Hdr, Projection,
+    RenderTarget,
 };
 use bevy::color::{Color, LinearRgba};
 use bevy::core_pipeline::tonemapping::Tonemapping;
@@ -84,6 +90,7 @@ use bevy::mesh::{Indices, Mesh, Mesh3d};
 use bevy::pbr::{MeshMaterial3d, StandardMaterial};
 use bevy::post_process::auto_exposure::AutoExposure;
 use bevy::post_process::effect_stack::Vignette;
+use bevy::render::render_resource::BlendState;
 use bevy::render::render_resource::PrimitiveTopology;
 use bevy::render::view::Msaa;
 use bevy::transform::components::Transform;
@@ -305,19 +312,40 @@ fn scene_camera(
 }
 
 /// One chip overlay camera: plain 2d, drawing over whatever the target
-/// already holds (`ClearColorConfig::None`), after its target's scene camera
-/// by order. The caller appends the target component: the offscreen overlay
-/// binds the capture target, the canary window overlay the primary window.
+/// already holds, after its target's scene camera by order. The caller
+/// appends the target component: the offscreen overlay binds the capture
+/// target, the canary window overlay the primary window.
+///
+/// The overlay is carried by `output_mode`, not by `clear_color`. Bevy
+/// finishes every camera with a full-frame blit of that camera's own
+/// intermediate texture onto the render target, and the default write
+/// (`blend_state: None`) replaces the target's content outright — a camera
+/// with only `ClearColorConfig::None` still paints its whole intermediate
+/// (chip plus whatever the intermediate held) over the scene camera's
+/// output. Alpha blending makes that final blit composite the chip's opaque
+/// pixels over the scene while the untouched (alpha-zero) rest of the
+/// overlay leaves the scene exactly as the scene camera wrote it. Both
+/// clear configs stay `None` so neither the overlay's intermediate nor the
+/// target is ever cleared by this camera; the scene camera owns the
+/// target's clear.
 fn chip_overlay_camera(order: isize) -> impl bevy::ecs::bundle::Bundle {
-    (
-        Camera {
-            order,
+    (chip_overlay_camera_config(order), Camera2d, Msaa::Off)
+}
+
+/// The overlay camera's [`Camera`] component: the order, no clears anywhere
+/// in the view, and an alpha-blended final write. Split from
+/// [`chip_overlay_camera`] so the render-critical configuration is directly
+/// unit-testable.
+fn chip_overlay_camera_config(order: isize) -> Camera {
+    Camera {
+        order,
+        clear_color: ClearColorConfig::None,
+        output_mode: CameraOutputMode::Write {
+            blend_state: Some(BlendState::ALPHA_BLENDING),
             clear_color: ClearColorConfig::None,
-            ..Camera::default()
         },
-        Camera2d,
-        Msaa::Off,
-    )
+        ..Camera::default()
+    }
 }
 
 /// Spawn the wall and the bright patch (both emissive-only quads at the wall
@@ -916,5 +944,41 @@ mod tests {
     #[test]
     fn authored_exposure_constant_is_the_documented_value() {
         assert!(AUTHORED_EV100.abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn the_chip_overlay_camera_blends_instead_of_replacing_the_target() {
+        // The overlay composite lives in the camera's output mode: bevy
+        // finishes every camera with a full-frame blit of its own
+        // intermediate onto the target, and the default write (blend None)
+        // replaces the target outright — which is the defect this lane
+        // shipped (the overlay erased the scene every frame, leaving clear
+        // color plus chip). The pinned configuration: no clear anywhere in
+        // the view (the scene camera owns the target's clear), and a final
+        // write that alpha-blends over the target's existing content.
+        for order in [super::TARGET_CHIP_ORDER, super::WINDOW_CHIP_ORDER] {
+            let camera = super::chip_overlay_camera_config(order);
+            assert_eq!(camera.order, order);
+            assert!(
+                matches!(camera.clear_color, bevy::camera::ClearColorConfig::None),
+                "expected ClearColorConfig::None, got {:?}",
+                camera.clear_color
+            );
+            let bevy::camera::CameraOutputMode::Write {
+                blend_state,
+                clear_color,
+            } = camera.output_mode
+            else {
+                panic!("the overlay must write (blend) its output, not skip it");
+            };
+            assert_eq!(
+                blend_state,
+                Some(bevy::render::render_resource::BlendState::ALPHA_BLENDING)
+            );
+            assert!(
+                matches!(clear_color, bevy::camera::ClearColorConfig::None),
+                "expected ClearColorConfig::None, got {clear_color:?}"
+            );
+        }
     }
 }

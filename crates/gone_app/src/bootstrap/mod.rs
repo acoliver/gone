@@ -103,15 +103,34 @@
 //!   wall/patch scene through a dedicated `Camera3d` carrying the real chain
 //!   (`AgX` tonemapping, vignette, auto exposure through the selected mask)
 //!   into the SAME offscreen capture target, and the chip is drawn over the
-//!   scene by the lane's plain 2d camera (`ClearColorConfig::None`, higher
-//!   camera order) — captures stay the executed post-chain output and the
-//!   chip keeps its decode contract; the chip never enters the auto-exposure
+//!   scene by a plain 2d overlay camera whose final write alpha-blends
+//!   (bevy's per-camera output blit replaces the target unless the camera's
+//!   `output_mode` blends — see `calibration::chip_overlay_camera`) —
+//!   captures stay the executed post-chain output and the chip keeps its
+//!   decode contract; the chip never enters the auto-exposure
 //!   histogram (it lives on a different view's LDR output). The setup
 //!   evidence records the mask identity (sha256 of the loaded asset bytes)
 //!   once the asset has loaded, and the beat requester refuses to pin
 //!   captures before that ([`state::beat_requests_allowed`]). `calibration`
 //!   owns the scene, the evidence recording, and the full reconciliation.
 //! * **Beat binding and accounting.** The scenario clock holds while a beat
+//!   readback is in flight (bevy captures at most one screenshot per render
+//!   target per frame, so exactly one capture is in flight): no tick, no
+//!   frame, no adapter step, no paint, and the renderer keeps presenting the
+//!   held frame. A beat's screenshot is therefore spawned on the update that
+//!   drives its scenario tick with the lane free, and the manifest entry
+//!   pins exactly that scripted tick's (tick, frame, request id) at the same
+//!   instant it is spawned; the pin can never land on a later tick because
+//!   the clock cannot pass the beat's tick while the lane is busy. The
+//!   capture therefore always shows the chip code the report claims: request,
+//!   entry, and rendered pixels are one atomic step (see
+//!   `state::HarnessState::pin_next_beat`), and identical scenarios pin
+//!   identical (tick, frame) pairs regardless of readback latency (the
+//!   observer honors `GONE_TEST_CAPTURE_DELAY_MS` so tests can prove that
+//!   invariant against an artificially slow readback; the chain-level
+//!   invariant test runs the real drive path with and without a landing
+//!   delay). Requests and captures are separate ledgers; the run completes
+//!   only when every scenario beat's PNG is on disk.
 //! * **Immediate capture failures.** A failed capture convert/save records a
 //!   `TimedEvent::Failure` naming the artifact and the underlying error, writes
 //!   the report, and exits nonzero. There is no retry loop.
@@ -162,6 +181,7 @@ use bevy::camera::{Camera, Camera2d, ClearColor, RenderTarget};
 use bevy::color::Color;
 use bevy::ecs::prelude::{Commands, Entity, Res, ResMut, Resource};
 use bevy::ecs::schedule::IntoScheduleConfigs;
+use bevy::ecs::system::SystemParam;
 use bevy::image::Image;
 use bevy::math::{UVec2, Vec2};
 use bevy::render::render_resource::{Extent3d, TextureDimension, TextureFormat, TextureUsages};
@@ -345,29 +365,46 @@ impl Plugin for BootstrapPlugin {
     }
 }
 
+/// Everything [`setup_harness_scene`] needs, gathered as one system
+/// parameter so the startup system stays a single argument (the same
+/// pattern as the driving systems' [`Kernel`]).
+#[derive(SystemParam)]
+struct HarnessSceneContext<'w, 's> {
+    commands: Commands<'w, 's>,
+    mode: Res<'w, RunMode>,
+    state: Res<'w, HarnessState>,
+    chip: ResMut<'w, ChipTexture>,
+    sprite: ResMut<'w, ChipSprite>,
+    capture: ResMut<'w, CaptureTarget>,
+    images: ResMut<'w, Assets<Image>>,
+}
+
 /// The loading scene: dark clear, one Camera2d rendering into the offscreen
 /// capture target (MSAA off so the chip lattice stays pixel-crisp in captures),
 /// a canary window camera presenting the same world when this run opens a
 /// window, and the chip sprite spawned hidden at the target's top-left — it
 /// becomes visible only at the readiness boundary.
-fn setup_harness_scene(
-    mut commands: Commands,
-    mode: Res<RunMode>,
-    mut chip: ResMut<ChipTexture>,
-    mut sprite: ResMut<ChipSprite>,
-    mut capture: ResMut<CaptureTarget>,
-    mut images: ResMut<Assets<Image>>,
-) {
-    commands.insert_resource(ClearColor(Color::srgb(0.011, 0.011, 0.011)));
-    let handle = capture_target_image(&mut images);
-    spawn_capture_camera(&mut commands, handle.clone());
-    if *mode.into_inner() == RunMode::Canary {
-        spawn_window_camera(&mut commands);
+///
+/// The calibration lane spawns none of those cameras: its scene camera must
+/// carry the Core3d post chain and its chip overlay must alpha-blend (see
+/// `calibration::chip_overlay_camera`), and a second opaque camera writing
+/// the same target would replace the other camera's output every frame. The
+/// capture target itself is still created here — both lanes' cameras render
+/// into it, and every screenshot of the run reads it back.
+fn setup_harness_scene(mut ctx: HarnessSceneContext) {
+    ctx.commands
+        .insert_resource(ClearColor(Color::srgb(0.011, 0.011, 0.011)));
+    let handle = capture_target_image(&mut ctx.images);
+    if ctx.state.scenario.mode != ScenarioMode::Calibration {
+        spawn_capture_camera(&mut ctx.commands, handle.clone());
+        if *ctx.mode == RunMode::Canary {
+            spawn_window_camera(&mut ctx.commands);
+        }
     }
-    capture.0 = Some(handle);
-    let (handle, entity) = spawn_chip_sprite(&mut commands, &mut images);
-    chip.0 = Some(handle);
-    sprite.0 = Some(entity);
+    ctx.capture.0 = Some(handle);
+    let (handle, entity) = spawn_chip_sprite(&mut ctx.commands, &mut ctx.images);
+    ctx.chip.0 = Some(handle);
+    ctx.sprite.0 = Some(entity);
 }
 
 /// The frame-code chip sprite, spawned hidden at the capture target's

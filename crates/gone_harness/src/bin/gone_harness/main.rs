@@ -47,7 +47,7 @@ use gone_harness::{Content, ScenarioMode};
 use crate::compare::run_compare;
 use crate::paths::{load_scenario, repo_root, root_scenario, write_or};
 use crate::perf::run_perf;
-use crate::run::{CALIBRATION_TIMEOUT, DEFAULT_TIMEOUT, run_scenario};
+use crate::run::{DEFAULT_TIMEOUT, run_scenario};
 
 /// The canary flag on the runner's own command line: every scenario run this
 /// invocation performs goes through the canary lane and its onscreen
@@ -235,7 +235,11 @@ fn run_calibration() -> i32 {
             &scenario,
             &out_root,
             false,
-            CALIBRATION_TIMEOUT,
+            // The per-app timeout derives from the cell's own tick plan
+            // (`MatrixCell::wall_clock_budget`), so a plan that legitimately
+            // spans ~24_600 ticks at a loaded host's cadence is never
+            // killed before it reaches its pinned samples.
+            cell.wall_clock_budget(),
         )
         .map_err(|e| e.to_string())
         .and_then(|run_dir| {

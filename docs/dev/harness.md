@@ -481,15 +481,25 @@ the origin with a pinned 45-degree vertical FOV at distance 5, authored
 exposure `Exposure::ev100 = 0.0`, HDR on in both arms, and the post chain the
 game camera carries — AgX tonemapping, the authored vignette, and auto
 exposure metering through the selected mask exactly when the arm is on. The
-frame-code chip is Core2d (sprites never render in a 3d view), so a second,
-plain 2d camera (`ClearColorConfig::None`, higher camera order) draws the
-chip over the 3d output into the same target. The histogram pass reads the 3d
-view's HDR main texture, which the chip never enters: metering sees only the
-wall and the patch. Captures stay the executed post-chain output plus the
-chip — the same contract as every other lane. Dynamics apply per logical tick
-in the same update the chip is painted for that tick, so a capture pinned at
-tick T shows tick T's level, slot, and chip code together. Canary runs mirror
-the same camera pair onto the window, so the onscreen capture decodes.
+frame-code chip is Core2d (sprites never render in a 3d view), so each target
+carries a second camera: a chip overlay 2d camera ordered after the target's
+scene camera, whose final write alpha-blends into the shared target via its
+`output_mode`. The blending carries the overlay: bevy finishes every camera
+with a full-frame blit of that camera's intermediate texture onto its render
+target, and the default write replaces the target content outright, so
+`ClearColorConfig` on the overlay is irrelevant to the replace-vs-blend
+semantics; without blending the overlay's final write paints its whole
+intermediate over the 3d scene every frame. With alpha blending the chip's
+opaque pixels composite over the scene and the alpha-zero rest leaves the
+scene exactly as the scene camera wrote it; both clear configs stay `None`,
+so the scene camera owns the target's clear. The histogram pass reads the
+3d view's HDR main texture, which the chip never enters: metering sees
+only the wall and the patch. Captures stay the executed post-chain output
+plus the chip — the same contract as every other lane. Dynamics apply per
+logical tick in the same update the chip is painted for that tick, so a
+capture pinned at tick T shows tick T's level, slot, and chip code
+together. Canary runs mirror the same pair (scene camera plus blending
+chip overlay) onto the window, so the onscreen capture decodes.
 
 The metering masks are checked-in assets
 (`crates/gone_app/assets/post/metering_mask.png` and
