@@ -1,0 +1,77 @@
+[package]
+name = "gone_app"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+# The real Bevy app (issue #6 slice A). Minimal shipping feature set, justified in
+# docs/dev/harness.md:
+#   std, async_executor, multi_threaded, bevy_log
+#   bevy_asset, bevy_state, reflect_auto_register  (default_app cluster)
+#   bevy_winit (window + real-device input), bevy_window, x11, wayland
+#   (linux window backend features, matching bevy's own linux platform
+#   defaults; no-ops on macOS, required for the linux-gnu cross-check from
+#   macOS because bevy_winit builds winit with default-features=false)
+#   bevy_render (render resources), bevy_camera, bevy_color,
+#   bevy_core_pipeline (render graph the app needs), bevy_sprite,
+#   bevy_sprite_render (in 0.19 the sprite render pass is a separate feature;
+#   without it sprites never draw anywhere and the frame-code chip would never
+#   appear in a capture), png (capture write)
+#   mouse, keyboard (real-device mouse motion and the Esc key for the
+#   game-mode first-person look; the harness lane never reads bevy input)
+#   bevy_post_process (issue #6 slice B: the explicit post chain needs
+#   AutoExposurePlugin and Vignette; not added by DefaultPlugins' own default
+#   feature set this app selects), tonemapping_luts (AgX tonemapping requires
+#   the LUT textures; specializing an AgX pipeline without them panics),
+#   zstd_rust (pure-Rust zstd decoder for the LUT ktx2 files, bevy's own
+#   choice in its 3d feature; avoids the C zstd toolchain)
+# Everything else (audio, bevy_gilrs/gamepad, bevy_ui, pbr/gltf, picking,
+# bevy_material/bevy_mesh) stays off: the slice-A scene is one unlit sprite, so
+# no PBR material pipeline is compiled.
+#
+# The protocol types (scenario, report, input adapter, frame-code) live in THIS crate's
+# public `harness` module; `gone_harness` re-exports them. The app reads the
+# scenario JSON (serde), writes the JSON report (serde_json), and never depends on
+# `gone_harness`. sha2 is not needed inside the app: the runner computes the content
+# hashes and passes them in as environment, so this crate stays render-side.
+[dependencies]
+gone_sim = { path = "../gone_sim" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# PNG encoding of captured GPU frames (capture.rs): bevy hands the observer the
+# raw surface image; `image` encodes it to PNG bytes the runner decodes back.
+image = { version = "0.25", default-features = false, features = ["png"] }
+
+[dependencies.bevy]
+version = "0.19"
+default-features = false
+features = [
+    "std",
+    "async_executor",
+    "multi_threaded",
+    "bevy_log",
+    "bevy_asset",
+    "bevy_state",
+    "reflect_auto_register",
+    "bevy_winit",
+    "bevy_window",
+    "x11",
+    "wayland",
+    "bevy_render",
+    "bevy_camera",
+    "bevy_color",
+    "bevy_core_pipeline",
+    "bevy_sprite",
+    "bevy_sprite_render",
+    "mouse",
+    "keyboard",
+    "bevy_post_process",
+    "tonemapping_luts",
+    "zstd_rust",
+    "png",
+]
+
+[lints]
+workspace = true

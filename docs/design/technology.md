@@ -21,18 +21,39 @@ assumptions.
 
 Multi-platform is a requirement, not a port: macOS (primary development,
 M4 Max, 40-core GPU, Metal) and Windows are first-class targets, Linux is
-supported, and all three run the same wgpu stack (Metal, DirectX 12,
-Vulkan). Platform discipline: no OS-specific code outside the wgpu/winit
-layer; paths through `std::path` with forward-slash relative paths in
-artifacts and JSON; filenames stay case-sensitivity-safe; the harness
-protocol (child process, input adapter, exit codes, artifact layout) is
+supported, and all three run the same wgpu stack (Metal on macOS,
+DirectX 12 on Windows with Vulkan as the alternate, Vulkan on Linux).
+Platform discipline: no OS-specific code outside the wgpu/winit layer;
+paths through `std::path` with forward-slash relative paths in artifacts
+and JSON; filenames stay case-sensitivity-safe; the harness protocol
+(child process, input adapter, exit codes, artifact layout) is
 OS-portable and designed against the strictest platform, since macOS
-imposes winit main-thread rules that Windows and Linux do not; per-backend
-capability recording (adapter info, clustered light limits) so rendering
-budgets are measured per platform, not assumed portable. The workspace
-cargo-checks against Windows and Linux targets from the start. Milestone
-1's performance gate is defined on M4 Max; Windows and Linux measurements
-land when representative hardware joins the loop.
+imposes winit main-thread rules that Windows and Linux do not;
+per-backend capability recording (adapter vendor and device, backend,
+clustered light limits) so rendering budgets are measured per platform
+and per GPU, not assumed portable. The workspace cargo-checks against
+Windows and Linux targets from the start.
+
+GPU vendor coverage on Windows/Linux spans the three major vendors
+(NVIDIA, AMD, Intel) once representative hardware joins the loop; until
+then the verifiable platform claims are cross-target compilation and
+per-backend capability recording, not runtime performance on those
+GPUs.
+
+The hardware floor is 2023 and newer machines, which simplifies the
+matrix: Apple M3 family onward, NVIDIA RTX 40 (Ada) onward, AMD RDNA 3
+onward (RX 7000 discrete and Radeon 700M-class integrated), and Intel
+Arc onward (A/B-series discrete and Core Ultra integrated). Everything
+in that floor is DX12 Ultimate / Vulkan 1.3 class and hardware-RT
+capable, so the game carries no pre-2023 fallback paths: Metal, DX12,
+and Vulkan only. Quality tiers scale within the floor: baseline targets
+2023+ integrated GPUs (Core Ultra iGPU, Radeon 780M-class, base M3/M4),
+recommended targets midrange discrete, enhanced targets high-end
+discrete, and the optional ray-traced tier applies to the same floor
+once the software stack matures.
+
+Milestone 1's performance gate is defined on M4 Max; Windows and Linux
+measurements land when representative hardware joins the loop.
 
 ## Rendering approach: raster first
 
@@ -114,10 +135,12 @@ it just not ported to Metal?
 
 **Decision:** the game renders with the raster pipeline described above.
 The hardware would allow ray tracing later if wgpu's Metal backend
-matures; Solari stays behind a feature flag as a possible tier for
-RT-capable targets (Windows/Linux with RT GPUs). Nothing in the art
-direction depends on ray tracing: baked multi-state GI plus clustered
-dynamics gives the look with far less risk.
+matures; every GPU in the 2023+ hardware floor on Windows/Linux is
+RT-capable (RTX 40+, RDNA 3+, Arc), so there the blocker is software
+maturity, not silicon. Solari stays behind a feature flag as a possible
+future tier. Nothing in the art direction depends on ray tracing:
+baked multi-state GI plus clustered dynamics gives the look with far
+less risk.
 
 ## Workspace architecture
 
@@ -297,8 +320,10 @@ physical 3840x2160 with render scale 1.0, in a release build, on M4 Max,
 measured wall-clock by the harness over a defined sample window with
 warmup, under simultaneous sparks and fog, separately from
 capture/readback overhead. The measured frame-time distribution and the
-configuration (adapter/backend, present mode, active effects, sample
-window) are posted on the epic. Windows and Linux equivalents are
-recorded when representative hardware joins the loop. Quality tiers
-(baseline/recommended/enhanced, as stranded does) come when there is
-something to scale.
+configuration (adapter vendor/device, backend, present mode, active
+effects, sample window) are posted on the epic. Windows and Linux
+equivalents are recorded per GPU vendor (one representative 2023+
+NVIDIA, AMD, and Intel card) when hardware joins the loop. Quality
+tiers (baseline/recommended/enhanced, as stranded does) come when there
+is something to scale, defined against the vendor matrix and the 2023+
+hardware floor in the platform section.

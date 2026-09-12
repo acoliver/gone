@@ -1,0 +1,24 @@
+[package]
+name = "gone_harness"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+# The play-test harness for `gone` (issue #5 / slice A): a runner-only binary
+# that drives `target/debug/gone_app` as a child, verifies beats and captures,
+# and emits the two-stage verdict.
+#
+# The protocol types live in `gone_app::harness` (the single home). This crate
+# keeps just the runner tooling: `gone_app` for the re-exported protocol
+# surface, `image` to decode captured PNGs for frame-code verification, and `sha2`
+# for the real SHA-256 run identities (runner-side only, so it never pulls a
+# render dependency into the harness crate).
+[dependencies]
+gone_app = { path = "../gone_app" }
+image = { version = "0.25", default-features = false, features = ["png"] }
+sha2 = "0.10"
+
+[lints]
+workspace = true
