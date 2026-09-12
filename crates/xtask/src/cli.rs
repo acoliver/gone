@@ -5,13 +5,18 @@
 //! argument vector, never a shell string; policy checks call their modules
 //! directly. Aggregate commands fail fast: the first failing step aborts the
 //! run and names itself.
+//!
+//! Every windowed harness lane holds a display-awake assertion for the lane
+//! duration (`caffeinate -d -u`, issue #23): macOS declines Metal
+//! presentations to a sleeping display, which fails the canary present gate
+//! regardless of which lane is running.
 
 use std::path::Path;
 use std::process::ExitCode;
 
 use crate::architecture;
 use crate::clippy_policy;
-use crate::process::{CommandFailed, CommandPlan, repo_root};
+use crate::process::{CommandFailed, CommandPlan, DisplayAssertion, repo_root};
 use crate::source_size;
 
 /// Cross-target that must keep compiling for Windows players.
@@ -104,6 +109,8 @@ commands:
   harness calibration  run the 4-cell calibration matrix (luminance step AE on/off, patch metering, uniform control) against predeclared assertions
   harness perf [s]     run the perf calibration lane against the checked-in policy
   harness render-check  run the render canary: smoke scenario windowed, the one onscreen capture machine-verified
+  every harness lane holds a display-awake assertion (caffeinate -d -u) for the lane
+  duration (issue #23): macOS declines Metal presents to a sleeping display
   check clippy-allows  zero clippy allow/expect suppressions + clippy.toml sync
   check source-size    per-file line gate (warn 750, fail 1000)
   check architecture   gone_sim/gone_harness dependency + protocol-module boundary gate"
@@ -191,10 +198,16 @@ fn named_failure(label: &str, step: &str, err: &CommandFailed) -> CommandFailed 
 /// `harness render-check` runs the smoke scenario through the canary lane
 /// (the runner's `--render-check`: windowed, onscreen capture machine-verified,
 /// run dir prefixed `rc`). The built-in gameplay lanes forward
-/// `gameplay-smoke` and `gameplay-full` verbatim. The runner owns the child
-/// app's lifecycle (spawn, kill-on-timeout, reap), so xtask just forwards
-/// the exit code.
+/// `gameplay-smoke` and `gameplay-full` verbatim. Every lane holds a
+/// display-awake assertion from before the binaries are built until the lane
+/// ends (issue #23). The runner owns the child app's lifecycle (spawn,
+/// kill-on-timeout, reap), so xtask just forwards the exit code.
 fn run_harness_command(rest: &[String], root: &Path) -> Result<(), CommandFailed> {
+    // Issue #23: macOS declines Metal presentations to a sleeping display
+    // while the desktop keeps compositing in memory, so every lane that
+    // opens the canary window needs the display held awake for its whole
+    // duration. Acquired once here: all lanes route through this function.
+    let _display_awake = DisplayAssertion::acquire();
     build_harness_binaries(root)?;
     let mut plan = CommandPlan::new("cargo")
         .args(["run", "-p", "gone_harness", "--bin", "gone_harness", "--"])
