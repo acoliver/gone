@@ -8,7 +8,7 @@ use std::borrow::Cow;
 use std::env;
 use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
-use std::process::{Command, Output, Stdio};
+use std::process::{Child, Command, Output, Stdio};
 
 use crate::fd_limit::{FD_EXHAUSTION_HINT, is_too_many_open_files};
 
@@ -224,10 +224,93 @@ fn shell_like(program: &str, args: &[String]) -> String {
     parts.join(" ")
 }
 
-/// Tests for plan construction and repo-root resolution.
+/// RAII guard holding a display-awake assertion for one harness lane
+/// (issue #23).
+///
+/// macOS declines Metal presentations to a sleeping display even while the
+/// desktop keeps compositing in memory, so a lane that opens the canary
+/// window fails every present while the display is asleep, regardless of
+/// which lane is running. The guard spawns `caffeinate -d -u` (hold a
+/// display-awake assertion and declare user activity, which also wakes an
+/// already-sleeping display) with null stdio and holds it for the lane's
+/// whole duration; [`Drop`] kills and reaps it.
+///
+/// Spawn failure (no `caffeinate` on PATH) degrades to an inert guard with a
+/// one-line warning instead of failing the lane: the canary present gate
+/// remains the real windowed-lane guard. On non-macOS targets the guard is
+/// an unconditional no-op, so every call site compiles unchanged.
+///
+/// Bind the guard to a named variable (`let _display = ...`), never
+/// `let _ =`: the latter drops it at the end of the statement.
+pub struct DisplayAssertion {
+    /// The held assertion process, or `None` when the guard is inert
+    /// (non-macOS target or spawn failure).
+    child: Option<Child>,
+}
+
+impl DisplayAssertion {
+    /// Acquire the lane's display-awake assertion.
+    ///
+    /// Infallible by design: on non-macOS targets, or when the assertion
+    /// program cannot be spawned, the guard degrades to an inert no-op (see
+    /// the type docs) rather than failing the lane.
+    #[must_use]
+    pub fn acquire() -> Self {
+        if cfg!(target_os = "macos") {
+            Self::spawn("caffeinate", &["-d", "-u"])
+        } else {
+            Self { child: None }
+        }
+    }
+
+    /// Spawn `program` with `args` as the assertion holder. Split out from
+    /// [`acquire`](Self::acquire) so tests can hold a plain `sleep` instead
+    /// of `caffeinate` and observe the kill-on-drop teardown.
+    fn spawn(program: &str, args: &[&str]) -> Self {
+        match Command::new(program)
+            .args(args)
+            .stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .spawn()
+        {
+            Ok(child) => Self { child: Some(child) },
+            Err(err) => {
+                eprintln!(
+                    "xtask: warning: display-awake assertion unavailable \
+                     (`{program}` failed to spawn: {err}); the canary present \
+                     gate remains the windowed-lane guard"
+                );
+                Self { child: None }
+            }
+        }
+    }
+
+    /// Test-only pid of the held child; `None` when the guard is inert.
+    #[cfg(all(test, unix))]
+    fn test_pid(&self) -> Option<u32> {
+        self.child.as_ref().map(Child::id)
+    }
+}
+
+impl Drop for DisplayAssertion {
+    fn drop(&mut self) {
+        // Best-effort teardown: killing an already-exited child fails
+        // harmlessly, and `wait` reaps in every case so no zombie outlives
+        // the guard.
+        if let Some(child) = &mut self.child {
+            let _ = child.kill();
+            let _ = child.wait();
+        }
+    }
+}
+
+/// Tests for plan construction, repo-root resolution, and the
+/// display-assertion guard.
 #[cfg(test)]
 mod tests {
     use super::CommandPlan;
+    use super::DisplayAssertion;
     use super::repo_root_from;
     use super::spawn_failure;
     use crate::test_support::unique_temp_dir;
@@ -330,5 +413,72 @@ mod tests {
         let dir = unique_temp_dir("root-none");
         let err = repo_root_from(&dir).expect_err("no workspace manifest must fail");
         assert!(err.contains("no workspace root"));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn guard_kills_its_child_on_drop() {
+        use std::process::{Command, Stdio};
+        use std::time::{Duration, Instant};
+
+        let guard = DisplayAssertion::spawn("sleep", &["30"]);
+        let pid = guard.test_pid().expect("sleep child must spawn");
+
+        // Watcher exits as soon as `kill -0` can no longer signal the pid,
+        // i.e. the process is gone — killed and reaped, since a zombie would
+        // still be signalable.
+        let mut watcher = Command::new("sh")
+            .arg("-c")
+            .arg(format!(
+                "while kill -0 {pid} 2>/dev/null; do sleep 0.05; done"
+            ))
+            .stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .spawn()
+            .expect("spawn the liveness watcher");
+        std::thread::sleep(Duration::from_millis(150));
+        assert!(
+            watcher.try_wait().expect("watcher poll").is_none(),
+            "sleep must stay alive while the guard is held"
+        );
+
+        drop(guard);
+
+        let deadline = Instant::now() + Duration::from_secs(10);
+        loop {
+            if let Some(status) = watcher.try_wait().expect("watcher poll after drop") {
+                assert!(
+                    status.success(),
+                    "watcher must exit cleanly once the pid is gone"
+                );
+                break;
+            }
+            assert!(
+                Instant::now() < deadline,
+                "sleep {pid} outlived the guard's drop"
+            );
+            std::thread::sleep(Duration::from_millis(50));
+        }
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn spawn_failure_degrades_to_an_inert_guard() {
+        let guard = DisplayAssertion::spawn("gone-issue23-definitely-not-a-binary", &[]);
+        assert_eq!(
+            guard.test_pid(),
+            None,
+            "a failed spawn must degrade to the inert guard"
+        );
+        drop(guard);
+    }
+
+    #[test]
+    fn acquire_constructs_and_drops_without_error_on_every_platform() {
+        // macOS: briefly holds and releases the real caffeinate assertion;
+        // elsewhere: exercises the no-op path. Either way the production
+        // entry point must construct and drop without panicking.
+        drop(DisplayAssertion::acquire());
     }
 }
