@@ -19,9 +19,23 @@ repository.workspace = true
 #   bevy_sprite_render (in 0.19 the sprite render pass is a separate feature;
 #   without it sprites never draw anywhere and the frame-code chip would never
 #   appear in a capture), png (capture write)
-# Everything else (audio, bevy_gilrs/gamepad, bevy_ui, pbr/gltf, picking,
-# bevy_material/bevy_mesh) stays off: the slice-A scene is one unlit sprite, so
-# no PBR material pipeline is compiled.
+#   mouse, keyboard (real-device mouse motion and the Esc key for the
+#   game-mode first-person look; the harness lane never reads bevy input)
+#   bevy_post_process (issue #6 slice B: the explicit post chain needs
+#   AutoExposurePlugin and Vignette; not added by DefaultPlugins' own default
+#   feature set this app selects), tonemapping_luts (AgX tonemapping requires
+#   the LUT textures; specializing an AgX pipeline without them panics),
+#   zstd_rust (pure-Rust zstd decoder for the LUT ktx2 files, bevy's own
+#   choice in its 3d feature; avoids the C zstd toolchain)
+#   bevy_mesh, bevy_pbr, bevy_light (issue #7 stage A: the stasis room
+#   greybox is meshes from primitives with StandardMaterial and point
+#   lights; bevy_mesh registers Mesh and the primitive builders, bevy_pbr
+#   StandardMaterial and the PBR render pass, bevy_light the light types and
+#   LightPlugin; bevy_pbr already turns bevy_light on, listed explicitly
+#   because the scene names bevy::light directly)
+# Everything else (audio, bevy_gilrs/gamepad, bevy_ui, gltf, picking,
+# bevy_material) stays off: the scenes are unlit sprites and greybox
+# primitives, so no asset pipeline or picking backend is compiled.
 #
 # The protocol types (scenario, report, input adapter, frame-code) live in THIS crate's
 # public `harness` module; `gone_harness` re-exports them. The app reads the
@@ -57,7 +71,15 @@ features = [
     "bevy_core_pipeline",
     "bevy_sprite",
     "bevy_sprite_render",
+    "mouse",
+    "keyboard",
+    "bevy_post_process",
+    "tonemapping_luts",
+    "zstd_rust",
     "png",
+    "bevy_mesh",
+    "bevy_pbr",
+    "bevy_light",
 ]
 
 [lints]

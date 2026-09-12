@@ -4,6 +4,30 @@
 //! with no display server, no GPU, and no render code involved. It must never
 //! depend on Bevy or any render crate; the architecture gate added in
 //! issue #4 enforces that boundary mechanically.
+//!
+//! The wake phase contract for the opening beat lives in [`phase`]; the
+//! frozen first-person controller specification lives in [`controller`]; the
+//! stasis pod registry (the layout and state truth the scene is built from)
+//! lives in [`pods`]. The static world's axis-aligned collider set lives in
+//! [`colliders`], the swept-capsule per-tick movement resolver built on it
+//! lives in [`resolve`], and the steadying walk out of
+//! [`WakePhase::Standing`] lives in [`walk`].
+
+pub mod colliders;
+pub mod controller;
+pub mod exit;
+pub mod phase;
+pub mod pods;
+pub mod resolve;
+pub mod walk;
+
+pub use colliders::{Aabb, ColliderError, ColliderSet};
+pub use phase::{PhaseError, PhaseTransition, WakePhase};
+pub use pods::{
+    HatchPlacement, POD_COUNT, Pod, PodId, PodPlacement, PodRegistry, PodRegistryError, PodState,
+};
+pub use resolve::{Capsule, NonFiniteInput, ResolveError, ResolvedMotion, resolve_motion};
+pub use walk::{IntentAxis, MoveIntent, WalkContact, WalkError, WalkOutcome, WalkState};
 
 /// Minimal stand-in for a full ship entity: enough state to prove the crate
 /// builds and its logic runs standalone until real ship systems arrive.

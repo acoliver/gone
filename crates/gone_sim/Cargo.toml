@@ -6,5 +6,12 @@ rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
 
+[dependencies]
+# Math vectors for the collider set and the swept resolver. glam is not
+# Bevy: `gone_app` reaches the same vectors through bevy_math's re-export,
+# so the sim and the scene share one vector type with no render dependency
+# edge (the architecture gate still passes).
+glam = { version = "0.32", default-features = false, features = ["std"] }
+
 [lints]
 workspace = true

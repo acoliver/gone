@@ -31,9 +31,9 @@ pub enum RunMode {
     /// drives updates and the offscreen capture target is the only render
     /// target; no onscreen capture happens and no onscreen file exists.
     Headless,
-    /// The harness canary (`GONE_RENDER_CHECK=1`): a real, unfocused window
-    /// presents the scene through a second camera, and one onscreen capture
-    /// is saved next to the first beat's PNG.
+    /// The harness canary (`GONE_RENDER_CHECK=1`): a real window (focused, so
+    /// its surface presents) shows the scene through a second camera, and one
+    /// onscreen capture is saved next to the first beat's PNG.
     Canary,
 }
 
@@ -86,7 +86,105 @@ pub(super) fn onscreen_file_name(beat: &str) -> String {
     format!("beats/{beat}.onscreen.png")
 }
 
-/// Frame-time sampler for the perf lane: skips `warmup_frames` rendered frames
+/// How many compositor-declined frames the canary present probe tolerates
+/// before the run fails. Observed startup races are single frames; the
+/// budget sits orders of magnitude above them and far below the runner's
+/// process timeout, so exhausting it always means the window never became
+/// capturable, never that the machine was slow.
+pub(super) const PRESENT_BUDGET_FRAMES: u64 = 300;
+
+/// The canary window's present gate: whether the OS compositor has accepted
+/// a presented frame from the run's unfocused window yet and, if not, how
+/// many frames it has declined.
+///
+/// Why the gate exists: macOS declines a freshly created unfocused window's
+/// swapchain drawable until its first composite, and on such a frame bevy
+/// skips the window screenshot's composite and readback copy but still
+/// fires the capture event with the zero-initialized transfer buffer, so a
+/// capture requested too early lands as an entirely black PNG. The gate
+/// holds the scenario clock until a probe capture proves the window
+/// presents capturable frames; the same-sync-point onscreen request then
+/// renders into a drawable the compositor accepts.
+///
+/// The probe lane is single-slot: the requester issues one primary-window
+/// probe and the next issues only after the previous verdict lands, the
+/// same one-in-flight discipline the beat lane enforces with its capture
+/// ledger (bevy captures at most one screenshot per target per frame).
+#[derive(Resource)]
+pub(super) struct PresentGate {
+    presenting: bool,
+    declined_frames: u64,
+    probe_in_flight: bool,
+}
+
+impl PresentGate {
+    /// The gate for a lane with no window presents to wait for (headless
+    /// runs have no window, so the drive needs no present proof).
+    pub(super) fn automatic() -> Self {
+        Self {
+            presenting: true,
+            declined_frames: 0,
+            probe_in_flight: false,
+        }
+    }
+
+    /// The canary gate: the window presents nothing until a probe proves
+    /// otherwise.
+    pub(super) fn canary() -> Self {
+        Self {
+            presenting: false,
+            declined_frames: 0,
+            probe_in_flight: false,
+        }
+    }
+
+    /// True while the lane is still waiting on the window's first
+    /// capturable frame and the present budget is not exhausted: the probe
+    /// lane keeps issuing, one probe at a time, and the drive stays held.
+    pub(super) fn awaiting_first_present(&self) -> bool {
+        !self.presenting && self.declined_frames < PRESENT_BUDGET_FRAMES
+    }
+
+    /// True once a probe capture showed a rendered frame.
+    pub(super) fn presenting(&self) -> bool {
+        self.presenting
+    }
+
+    /// True while an issued probe's verdict has not landed yet: the
+    /// requester holds the lane until the gate is free again.
+    pub(super) fn probe_in_flight(&self) -> bool {
+        self.probe_in_flight
+    }
+
+    /// Issue one present probe: the request takes the lane's single slot.
+    /// Called only when [`PresentGate::probe_in_flight`] is false — the
+    /// requester checks before issuing, exactly as the beat requester
+    /// checks the capture ledger before pinning.
+    pub(super) fn request_probe(&mut self) {
+        self.probe_in_flight = true;
+    }
+
+    /// Record one frame the compositor declined (the probe came back as the
+    /// zeroed skip signature). The verdict lands the probe, freeing the
+    /// slot for the next request.
+    pub(super) fn record_declined(&mut self) {
+        self.declined_frames += 1;
+        self.probe_in_flight = false;
+    }
+
+    /// Record the window's first capturable frame. Sticky: once presenting,
+    /// the requester issues no further probes. The verdict lands the probe.
+    pub(super) fn record_presented(&mut self) {
+        self.presenting = true;
+        self.probe_in_flight = false;
+    }
+
+    /// How many frames the compositor has declined so far.
+    pub(super) fn declined_frames(&self) -> u64 {
+        self.declined_frames
+    }
+}
+
 use crate::harness::{Beat, BeatEntry, InputAdapter, Scenario, TimedEvent};
 
 /// Frame-time sampler for the perf lane: skips `warmup_frames` rendered frames
@@ -173,7 +271,100 @@ pub(super) struct OnscreenCapture {
     pub(super) beat: String,
 }
 
-/// The scenario state resource.
+/// Marks a spawned screenshot entity as the canary's present probe: a
+/// primary-window capture whose only purpose is to answer whether the OS
+/// compositor accepts the window's presents yet. Probes are never saved as
+/// artifacts: a rendered capture flips the present gate open, and an
+/// entirely zeroed capture counts one declined frame against the present
+/// budget.
+#[derive(Component)]
+pub(super) struct PresentProbe;
+
+/// The scenario clock's simulation time. The harness drive advances it by
+/// exactly one fixed step per driven tick — never by a wall-clock delta — and
+/// every hold of the scenario clock holds it too: loading, the canary present
+/// gate, and the capture freeze all leave `elapsed_secs` standing, so equal
+/// tick counts are equal simulation time across runs regardless of readback
+/// latency, render cost, or present rate. Gameplay temporal consumers read
+/// this resource, not bevy's clocks: bevy's own `Time` keeps running on
+/// wall/virtual time (the render engine's shaders consume it), and only the
+/// capture freeze pauses that clock (`freeze_engine_time`), never this one.
+/// Crate-visible because the player motion slice consumes it as the walk's
+/// dt source (the landed scenario clock; the normal game falls back to
+/// bevy's virtual clock).
+#[derive(Resource, Clone, Copy, Debug)]
+pub(crate) struct ScenarioTime {
+    ticks_per_second: u64,
+    elapsed_secs: f32,
+    /// Set by [`ScenarioTime::advance_tick`] and cleared by
+    /// [`ScenarioTime::drain_driven_delta`]: the driven-tick signal the
+    /// player motion slice consumes, so the body advances exactly once per
+    /// driven update and never on a held one.
+    driven_since_last_drain: bool,
+}
+
+impl ScenarioTime {
+    /// A scenario clock at zero over the scenario's tick rate.
+    ///
+    /// # Panics
+    /// Panics when `ticks_per_second` is zero: the fixed clock has no
+    /// meaningful step at a zero rate, and the scenario parser rejects that
+    /// before a run is ever built.
+    pub(crate) fn new(ticks_per_second: u64) -> Self {
+        assert!(
+            ticks_per_second > 0,
+            "the scenario clock needs a tick rate of at least 1"
+        );
+        Self {
+            ticks_per_second,
+            elapsed_secs: 0.0,
+            driven_since_last_drain: false,
+        }
+    }
+
+    /// The fixed per-tick step: `1 / ticks_per_second` seconds. Rates above
+    /// `u16::MAX` saturate there, the same bound the fixed clock applies
+    /// elsewhere: a tick rate that high is beyond the clock's meaningful
+    /// range.
+    pub(crate) fn delta_secs(&self) -> f32 {
+        1.0 / f32::from(u16::try_from(self.ticks_per_second).unwrap_or(u16::MAX))
+    }
+
+    /// Advance by one driven tick's fixed step. Crate-visible because the
+    /// motion tests play the drive half against the same contract.
+    pub(crate) fn advance_tick(&mut self) {
+        self.elapsed_secs += self.delta_secs();
+        self.driven_since_last_drain = true;
+    }
+
+    /// Take this update's driven fixed step, if the drive half advanced the
+    /// clock this update: exactly one `Some` per driven tick, `None` on
+    /// every held update (loading, the canary present gate, a beat readback
+    /// in flight). The player motion slice advances the body on the `Some`
+    /// and holds it on the `None`, so the body's sim time is this clock's
+    /// sim time, never a wall-clock accumulation. The flag clears on the
+    /// take.
+    pub(crate) fn drain_driven_delta(&mut self) -> Option<f32> {
+        if self.driven_since_last_drain {
+            self.driven_since_last_drain = false;
+            Some(self.delta_secs())
+        } else {
+            None
+        }
+    }
+
+    /// The elapsed simulation seconds.
+    pub(super) fn elapsed_secs(&self) -> f32 {
+        self.elapsed_secs
+    }
+}
+
+/// The scenario state resource. It is the run's scenario clock: `tick` and
+/// `frame` advance together, one step per drive update after the readiness
+/// boundary, and each step is worth `1 / scenario.ticks_per_second` seconds
+/// of simulation time. The clock never advances on wall-clock accumulation
+/// and never advances while a beat readback is in flight, so a given tick
+/// lands on the same scenario frame in every run of the same scenario.
 #[derive(Resource)]
 pub(super) struct HarnessState {
     pub(super) scenario: Scenario,
@@ -247,13 +438,15 @@ impl HarnessState {
     }
 
     /// The next scenario beat whose capture has not been requested yet, if its
-    /// tick has been reached. Beats are requested strictly in scenario order:
-    /// the request cursor (`requested_beats`) advances only in
+    /// tick has already been driven. Captures are post-tick state: the beat
+    /// pins on the update that drove its tick, at the numbers that update
+    /// rendered. Beats are requested strictly in scenario order: the request
+    /// cursor (`requested_beats`) advances only in
     /// [`HarnessState::pin_next_beat`], so a capture can never reorder or skip
     /// the request schedule.
     pub(super) fn next_due_beat(&self) -> Option<Beat> {
         let beat = self.scenario.beats.get(self.requested_beats)?;
-        (beat.tick <= self.tick).then(|| beat.clone())
+        (beat.tick < self.tick).then(|| beat.clone())
     }
 
     /// Pin the manifest entry for the next due beat at `(tick, frame)`, assign
@@ -304,10 +497,35 @@ impl HarnessState {
 }
 
 /// The drive gate: no scenario tick, input edge, or capture request may run
-/// before the renderer has presented ([`Readiness::Ready`]), and nothing runs
-/// after completion or failure.
-pub(super) fn drive_allowed(readiness: Readiness, state: &HarnessState) -> bool {
-    readiness == Readiness::Ready && !state.done && state.failed.is_none()
+/// before the renderer has presented ([`Readiness::Ready`]) and, on the
+/// canary, before the window has presented its first capturable frame
+/// ([`PresentGate::presenting`]), and nothing runs after completion or
+/// failure. On gameplay content `Readiness::Ready` itself sits behind the
+/// game barrier's asset and binding legs (`gameplay::proof_gate` holds the
+/// proof request until `readiness::GameAssets` reports every required asset
+/// loaded and the rig camera is bound), so a ready lane is a fully
+/// provisioned one and the gate needs no extra conjunct of its own. The gate
+/// also holds the scenario clock under an in-flight beat readback (the
+/// capture freeze): the beat request is the post-drive half of the chain, so
+/// by the time a readback is in flight the pin update's own tick has already
+/// driven and nothing may drive again until the readback lands — no tick, no
+/// frame, no adapter step, no paint — so the renderer keeps presenting
+/// exactly the pinned numbers, the next beat pins at its own scripted tick no
+/// matter how long the readback takes, and bevy's virtual clock is frozen
+/// alongside (`freeze_engine_time`). The hold is bounded by the existing
+/// failure paths: a readback that errors fails the run immediately, and a
+/// readback that never lands ends in the runner's process timeout (a recorded
+/// known limit, not a new budget).
+pub(super) fn drive_allowed(
+    readiness: Readiness,
+    present: &PresentGate,
+    state: &HarnessState,
+) -> bool {
+    readiness == Readiness::Ready
+        && present.presenting()
+        && !state.done
+        && state.failed.is_none()
+        && state.capture_in_flight.is_none()
 }
 
 /// Record an unrecoverable failure exactly once: a `Failure` event naming the
@@ -328,11 +546,13 @@ pub(super) fn fail_scenario(state: &mut HarnessState, what: String) {
 }
 
 /// The `max_frames` deadline: a scripted beat that is still uncaptured when
-/// the rendered-frame count reaches the scenario's `max_frames` fails the run
-/// — the deadline is the deadline, there is no waiting past it. Names every
-/// uncaptured beat in the runner's `missing beat` shape so the report says
-/// exactly why. No-op once a failure is recorded or every beat is captured,
-/// so the captured happy path (finish after the settle window) is untouched.
+/// the scenario-frame count reaches the scenario's `max_frames` fails the run
+/// — the deadline is the deadline, there is no waiting past it. The count is
+/// drive steps, so frames the clock spends held under a readback never
+/// consume the deadline. Names every uncaptured beat in the runner's
+/// `missing beat` shape so the report says exactly why. No-op once a failure
+/// is recorded or every beat is captured, so the captured happy path
+/// (finish after the settle window) is untouched.
 pub(super) fn fail_at_deadline(state: &mut HarnessState) {
     if state.failed.is_some()
         || state.all_beats_captured()
@@ -355,4 +575,49 @@ pub(super) fn fail_at_deadline(state: &mut HarnessState) {
             missing.join("; ")
         ),
     );
+}
+
+#[cfg(test)]
+mod tests {
+    use super::ScenarioTime;
+
+    #[test]
+    fn a_zero_tick_rate_is_a_panic() {
+        let result = std::panic::catch_unwind(|| ScenarioTime::new(0));
+        assert!(result.is_err(), "a zero rate has no meaningful step");
+    }
+
+    #[test]
+    fn each_driven_tick_advances_exactly_one_fixed_step() {
+        // The delta is the scenario's declared rate: 60 ticks per second is
+        // 1/60 s per tick, and N driven ticks are N steps of elapsed time,
+        // never a wall-clock accumulation.
+        let mut time = ScenarioTime::new(60);
+        assert!(
+            time.elapsed_secs().abs() < f32::EPSILON,
+            "the clock starts at zero"
+        );
+        let delta = time.delta_secs();
+        assert!((delta - 1.0 / 60.0).abs() < f32::EPSILON);
+        for ticks in 1..=5 {
+            time.advance_tick();
+            let expected = f32::from(u16::try_from(ticks).unwrap_or(u16::MAX)) * delta;
+            assert!(
+                (time.elapsed_secs() - expected).abs() < f32::EPSILON,
+                "tick {ticks}: elapsed {} != {expected}",
+                time.elapsed_secs()
+            );
+        }
+    }
+
+    #[test]
+    fn the_step_tracks_the_scenario_rate() {
+        // A 125 Hz scenario's tick is worth a smaller slice of simulation
+        // time; the delta is derived from the rate, not hardcoded.
+        let mut time = ScenarioTime::new(125);
+        time.advance_tick();
+        assert!((time.elapsed_secs() - 1.0 / 125.0).abs() < f32::EPSILON);
+        let floor = ScenarioTime::new(1);
+        assert!((floor.delta_secs() - 1.0).abs() < f32::EPSILON);
+    }
 }

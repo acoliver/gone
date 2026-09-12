@@ -1,28 +1,31 @@
 //! Unit tests for the harness run state and its gates: beat request/capture
-//! accounting, readiness gating, capture-lane serialization, immediate
-//! failure recording, run-mode selection from the environment, and the canary
-//! onscreen-capture gate. The accounting methods under test are pure state
-//! transitions, so no renderer is involved; only the save-failure test touches
-//! disk (into the OS temp dir).
-
-use std::collections::{BTreeMap, BTreeSet};
+//! accounting, readiness gating, the canary present gate, capture-lane
+//! serialization, immediate failure recording, run-mode selection from the
+//! environment, and the canary onscreen-capture gate. The gameplay-lane
+//! protocol tests (the readiness barrier, the post-tick capture contract, the
+//! latency invariant) live in `gameplay_tests`. The accounting methods under
+//! test are pure state transitions, so no renderer is involved; only the
+//! save-failure test touches disk (into the OS temp dir).
 
 use bevy::asset::RenderAssetUsages;
 use bevy::render::render_resource::{Extent3d, TextureDimension, TextureFormat};
 
-use super::save_capture;
+use super::capture::{capture_proves_present, save_capture};
 use super::state::{
-    CaptureRequest, HarnessState, PerfSampler, Readiness, RunMode, drive_allowed, fail_at_deadline,
-    fail_scenario, onscreen_capture_due, onscreen_file_name, select_run_mode,
+    CaptureRequest, HarnessState, PRESENT_BUDGET_FRAMES, PerfSampler, PresentGate, Readiness,
+    RunMode, drive_allowed, fail_at_deadline, fail_scenario, onscreen_capture_due,
+    onscreen_file_name, select_run_mode,
 };
-use crate::harness::{Beat, InputAdapter, Key, Scenario, ScriptedAction, TimedEvent};
+use crate::harness::{
+    Beat, InputAdapter, Key, Scenario, ScriptedAction, TICKS_PER_SECOND, TimedEvent,
+};
 
 /// A harness state over a scenario with the named beats, no actions, and a
 /// scratch output directory (the accounting methods under test never touch
 /// disk; only the save-failure test writes, into the OS temp dir).
 fn state_with_beats(beats: &[(&str, u64)]) -> HarnessState {
-    HarnessState {
-        scenario: Scenario {
+    HarnessState::new(
+        Scenario {
             name: "accounting-test".to_owned(),
             beats: beats
                 .iter()
@@ -30,39 +33,27 @@ fn state_with_beats(beats: &[(&str, u64)]) -> HarnessState {
                 .collect(),
             ..Scenario::default()
         },
-        out_dir: std::env::temp_dir(),
-        config_hash: String::new(),
-        tick: 0,
-        frame: 0,
-        announced: false,
-        adapter: InputAdapter::new(),
-        events: Vec::new(),
-        checkpoints: Vec::new(),
-        beats: BTreeMap::new(),
-        next_request_id: 1,
-        last_beat_frame: 0,
-        requested_beats: 0,
-        captured_beats: BTreeSet::new(),
-        capture_in_flight: None,
-        done: false,
-        failed: None,
-        sampler: PerfSampler::new(0, 0),
-    }
+        std::env::temp_dir(),
+        String::new(),
+        InputAdapter::new(TICKS_PER_SECOND),
+    )
 }
 
 /// The `request_beat_captures` half of an update pass: pin and queue the
-/// next due beat's capture, unless one is already in flight.
+/// next due beat's capture from the post-tick state, unless one is already
+/// in flight. The pin names the tick this pass just drove, exactly as the
+/// real system pins `state.tick - 1` after the drive half ran.
 fn spawn_due_capture(state: &mut HarnessState) {
     if state.capture_in_flight.is_some() {
         return;
     }
-    if state.next_due_beat().is_none() {
+    let Some(beat) = state.next_due_beat() else {
         return;
-    }
-    let (tick, frame) = (state.tick, state.frame);
-    let (name, entry) = state.pin_next_beat(tick, frame);
+    };
+    let (tick, frame) = (state.tick - 1, state.frame - 1);
+    let (_, entry) = state.pin_next_beat(tick, frame);
     state.capture_in_flight = Some(CaptureRequest {
-        name,
+        name: beat.name,
         tick,
         frame,
         request_id: entry.request_id,
@@ -82,13 +73,24 @@ fn land_capture(state: &mut HarnessState) {
     }
 }
 
-/// A full frame with the readback landing in the same pass (the real app's
-/// readback lands one to two frames later; the accounting is identical).
+/// The `drive_ticks` half of an update pass: one tick and one frame when
+/// [`drive_allowed`] opens the clock, nothing while it holds the clock (a
+/// readback in flight). The same gate the real drive system consults.
+fn drive_step(state: &mut HarnessState, gate: &PresentGate) {
+    if drive_allowed(Readiness::Ready, gate, state) {
+        state.tick += 1;
+        state.frame += 1;
+    }
+}
+
+/// A full frame with the readback landing in the same pass (a fast readback):
+/// land, drive one step under the real gate, then pin from the post-tick
+/// state — the update order of the real chain halves.
 fn update_pass(state: &mut HarnessState) {
-    spawn_due_capture(state);
+    let gate = PresentGate::automatic();
     land_capture(state);
-    state.tick += 1;
-    state.frame += 1;
+    drive_step(state, &gate);
+    spawn_due_capture(state);
 }
 
 #[test]
@@ -96,9 +98,11 @@ fn captured_early_beat_does_not_skip_a_later_beat() {
     // Regression: the old code advanced the shared `beat_progress` counter
     // on both request and save, so after beat-a's capture the completion
     // scan saw "all beats done" and the app exited before beat-b's tick was
-    // ever reached (smoke run failed with `missing beat beat-b`).
+    // ever reached (smoke run failed with `missing beat beat-b`). The pass
+    // count: ticks 0..=8 drive across the first nine passes, beat-b pins on
+    // the ninth (its tick just drove), and its readback lands on the tenth.
     let mut state = state_with_beats(&[("beat-a", 2), ("beat-b", 8)]);
-    for _ in 0..=8 {
+    for _ in 0..=9 {
         update_pass(&mut state);
     }
     assert!(
@@ -138,32 +142,35 @@ fn capturing_the_first_beat_keeps_the_run_incomplete() {
     // The exact old-bug condition: beat-a requested and captured at tick 2
     // while beat-b (tick 8) is still pending must not satisfy completion.
     let mut state = state_with_beats(&[("beat-a", 2), ("beat-b", 8)]);
-    state.tick = 2;
-    state.frame = 2;
+    state.tick = 3;
+    state.frame = 3;
     spawn_due_capture(&mut state);
     assert_eq!(
         state.requested_beats, 1,
-        "beat-b must stay unrequested at tick 2"
+        "beat-a pins from the post-tick state of tick 2"
     );
+    let a = &state.beats["beat-a"];
+    assert_eq!((a.tick, a.frame), (2, 2), "the pin is the scripted tick");
     assert!(
         state.next_due_beat().is_none(),
-        "beat-b is not due at tick 2"
+        "beat-b is not due while only ticks 0..=2 have driven"
     );
     land_capture(&mut state);
     assert!(
         !state.all_beats_captured(),
         "capturing beat-a must not complete the run while beat-b is pending"
     );
-    assert!(state.next_due_beat().is_none(), "nothing else is due yet");
 }
 
 #[test]
 fn pins_alone_never_complete_the_run() {
     let mut state = state_with_beats(&[("beat-a", 2), ("beat-b", 8)]);
-    state.tick = 8;
-    state.frame = 8;
+    state.tick = 3;
+    state.frame = 3;
     spawn_due_capture(&mut state);
     land_capture(&mut state);
+    state.tick = 9;
+    state.frame = 9;
     spawn_due_capture(&mut state);
     assert_eq!(state.requested_beats, 2, "both beats were pinned");
     assert!(
@@ -175,31 +182,74 @@ fn pins_alone_never_complete_the_run() {
 }
 
 #[test]
-fn entry_pins_the_frame_the_capture_renders_even_when_spawn_lags_the_tick() {
-    // beat-b's tick arrives while beat-a's readback is still in flight; the
-    // pin waits and lands on the frame actually rendered, so the PNG always
-    // decodes to exactly the report's numbers.
+fn the_clock_holds_while_a_capture_is_in_flight() {
+    // The capture freeze: beat-a's scripted tick (2) drives, the pass pins
+    // beat-a from the post-tick state, and every later pass freezes — no
+    // tick, no frame, no further pin — until the readback lands. Beat-b
+    // (tick 3) cannot even drive its tick while the lane is busy, so when
+    // the lane frees it pins exactly its scripted tick, and identical
+    // scenarios pin identical (tick, frame) pairs no matter how long the
+    // readback takes.
     let mut state = state_with_beats(&[("beat-a", 2), ("beat-b", 3)]);
-    state.tick = 2;
-    state.frame = 2;
-    spawn_due_capture(&mut state);
-    assert_eq!(state.beats["beat-a"].frame, 2);
-    state.tick = 3;
-    state.frame = 3;
-    spawn_due_capture(&mut state);
-    assert_eq!(state.requested_beats, 1, "the lane is still busy");
+    let gate = PresentGate::automatic();
+    for _ in 0..2 {
+        update_pass(&mut state);
+    }
+    assert_eq!((state.tick, state.frame), (2, 2), "ticks 0 and 1 drove");
+    assert_eq!(
+        state.requested_beats, 0,
+        "beat-a is not due until its tick has driven"
+    );
+    // The pass that drives tick 2 pins beat-a at the post-tick numbers.
+    update_pass(&mut state);
+    assert_eq!((state.tick, state.frame), (3, 3), "the pin update drives");
+    assert_eq!(state.requested_beats, 1, "beat-a pinned after its tick");
+    let a = &state.beats["beat-a"];
+    assert_eq!((a.tick, a.frame), (2, 2), "the pin is the scripted tick");
+    // Passes with the readback still in flight: the clock freezes at (3, 3)
+    // and beat-b waits — its tick cannot drive while the lane is busy.
+    for _ in 0..5 {
+        spawn_due_capture(&mut state);
+        drive_step(&mut state, &gate);
+        assert_eq!(
+            (state.tick, state.frame),
+            (3, 3),
+            "the scenario clock is frozen under a readback"
+        );
+        assert_eq!(state.requested_beats, 1, "beat-b waits for the lane");
+    }
+    // The readback lands between updates; tick 3 drives and beat-b pins at
+    // its own scripted tick.
+    land_capture(&mut state);
+    update_pass(&mut state);
+    let b = &state.beats["beat-b"];
+    assert_eq!((b.tick, b.frame), (3, 3), "the pin is the scripted tick");
+}
+
+#[test]
+fn drive_allowed_holds_while_a_capture_is_in_flight() {
+    // The freeze is a drive_allowed conjunct like readiness and the present
+    // gate: one place, consulted by every driving system. Under an in-flight
+    // readback nothing drives — the beat request is the post-drive half of
+    // the chain, so there is no pin-update exception: the pinned tick has
+    // already driven, and the clock holds until the readback lands.
+    let mut state = state_with_beats(&[]);
+    let gate = PresentGate::automatic();
+    assert!(drive_allowed(Readiness::Ready, &gate, &state));
+    state.capture_in_flight = Some(CaptureRequest {
+        name: "beat-a".to_owned(),
+        tick: 5,
+        frame: 5,
+        request_id: 1,
+    });
     state.tick = 5;
     state.frame = 5;
-    land_capture(&mut state);
-    spawn_due_capture(&mut state);
-    let b = &state.beats["beat-b"];
-    assert_eq!(
-        (b.tick, b.frame),
-        (5, 5),
-        "the pin names the rendered frame, not the scenario tick"
+    assert!(
+        !drive_allowed(Readiness::Ready, &gate, &state),
+        "the clock holds while a readback is in flight"
     );
-    land_capture(&mut state);
-    assert!(state.all_beats_captured());
+    state.capture_in_flight = None;
+    assert!(drive_allowed(Readiness::Ready, &gate, &state));
 }
 
 #[test]
@@ -209,17 +259,21 @@ fn drive_never_consumes_input_before_readiness() {
     // must refuse to drive until the renderer has presented, and stop on
     // completion or failure.
     let mut state = state_with_beats(&[]);
-    state.adapter = InputAdapter::with_actions(vec![ScriptedAction::press(0, Key::Forward)]);
+    state.adapter = InputAdapter::with_actions(
+        vec![ScriptedAction::press(0, Key::Forward)],
+        TICKS_PER_SECOND,
+    );
+    let gate = PresentGate::automatic();
     // While loading: no drive, so the adapter never steps and tick-0 input
     // stays queued for the post-boundary tick.
-    assert!(!drive_allowed(Readiness::Loading, &state));
-    if drive_allowed(Readiness::Loading, &state) {
+    assert!(!drive_allowed(Readiness::Loading, &gate, &state));
+    if drive_allowed(Readiness::Loading, &gate, &state) {
         let _ = state.adapter.step();
     }
     assert_eq!(state.adapter.tick(), 0, "the adapter clock never moved");
     assert_eq!(state.events.len(), 0, "no input recorded before ready");
     // Ready: exactly one drive consumes exactly the tick-0 edge.
-    assert!(drive_allowed(Readiness::Ready, &state));
+    assert!(drive_allowed(Readiness::Ready, &gate, &state));
     let step = state.adapter.step();
     assert_eq!(step.edges.len(), 1, "the queued tick-0 press survives");
     state.tick += 1;
@@ -227,10 +281,96 @@ fn drive_never_consumes_input_before_readiness() {
     assert_eq!(state.tick, 1, "one tick advanced after ready");
     // Failure or completion closes the lane.
     state.failed = Some("beat `x` capture failed: boom".to_owned());
-    assert!(!drive_allowed(Readiness::Ready, &state));
+    assert!(!drive_allowed(Readiness::Ready, &gate, &state));
     state.failed = None;
     state.done = true;
-    assert!(!drive_allowed(Readiness::Ready, &state));
+    assert!(!drive_allowed(Readiness::Ready, &gate, &state));
+}
+
+#[test]
+fn the_canary_gate_holds_the_drive_until_the_first_present() {
+    // The canary's scenario clock may not start until the window's first
+    // capturable frame: with presents unproven the gate refuses, declined
+    // frames only count, and the first rendered probe capture releases it.
+    let state = state_with_beats(&[]);
+    let mut gate = PresentGate::canary();
+    assert!(!gate.presenting());
+    assert!(!drive_allowed(Readiness::Ready, &gate, &state));
+    gate.record_declined();
+    assert_eq!(gate.declined_frames(), 1);
+    assert!(
+        gate.awaiting_first_present(),
+        "one decline is not the budget"
+    );
+    assert!(!drive_allowed(Readiness::Ready, &gate, &state));
+    gate.record_presented();
+    assert!(gate.presenting(), "the first present is sticky");
+    assert!(!gate.awaiting_first_present());
+    assert!(drive_allowed(Readiness::Ready, &gate, &state));
+}
+
+#[test]
+fn the_probe_lane_issues_one_probe_at_a_time() {
+    // The probe lane's single slot, the beat lane's one-in-flight
+    // discipline: a request takes the gate's slot, a further request waits
+    // while it is out, and only the verdict — declined or rendered — frees
+    // it. Two probes in flight would double-count declined frames against
+    // the present budget.
+    let mut gate = PresentGate::canary();
+    assert!(!gate.probe_in_flight(), "a fresh gate has no probe out");
+    gate.request_probe();
+    assert!(gate.probe_in_flight(), "the request takes the slot");
+    gate.record_declined();
+    assert!(
+        !gate.probe_in_flight(),
+        "the declined verdict frees the slot"
+    );
+    gate.request_probe();
+    gate.record_presented();
+    assert!(
+        !gate.probe_in_flight(),
+        "the rendered verdict frees the slot too"
+    );
+    assert!(gate.presenting(), "the first present is sticky");
+}
+
+#[test]
+fn headless_gate_never_holds_the_drive() {
+    // No window, no presents to wait for: the gate starts satisfied and
+    // only the readiness conjunct can refuse the drive.
+    let state = state_with_beats(&[]);
+    let gate = PresentGate::automatic();
+    assert!(gate.presenting());
+    assert!(drive_allowed(Readiness::Ready, &gate, &state));
+    assert!(!drive_allowed(Readiness::Loading, &gate, &state));
+}
+
+#[test]
+fn exhausting_the_present_budget_closes_the_probe_window() {
+    // Declined frames count one by one; at the budget the probe window
+    // closes so the run fails by name instead of waiting on the compositor
+    // forever. Exhaustion is a failure state, never a present.
+    let mut gate = PresentGate::canary();
+    for _ in 0..PRESENT_BUDGET_FRAMES - 1 {
+        gate.record_declined();
+        assert!(gate.awaiting_first_present(), "still within the budget");
+    }
+    gate.record_declined();
+    assert!(!gate.awaiting_first_present(), "the budget is exhausted");
+    assert!(!gate.presenting());
+    assert_eq!(gate.declined_frames(), PRESENT_BUDGET_FRAMES);
+}
+
+#[test]
+fn a_zeroed_capture_never_proves_a_present_and_a_rendered_one_does() {
+    // The zeroed capture is bevy's skip signature on a frame whose drawable
+    // the compositor declined; a presented frame always renders a nonzero
+    // byte (the canary cameras clear to a nonzero color before any content).
+    let zeroed = test_image();
+    assert!(!capture_proves_present(&zeroed));
+    let mut rendered = test_image();
+    rendered.data = Some(vec![0, 0, 0, 255]);
+    assert!(capture_proves_present(&rendered));
 }
 
 #[test]
@@ -238,8 +378,8 @@ fn captures_are_serialized_one_in_flight() {
     // bevy captures at most one screenshot per render target per frame, so
     // the runner-side queue must hand out one request at a time.
     let mut state = state_with_beats(&[("beat-a", 2), ("beat-b", 8)]);
-    state.tick = 2;
-    state.frame = 2;
+    state.tick = 3;
+    state.frame = 3;
     spawn_due_capture(&mut state);
     let first = state.capture_in_flight.clone().expect("beat-a is due");
     assert_eq!(first.name, "beat-a");
@@ -251,8 +391,8 @@ fn captures_are_serialized_one_in_flight() {
     );
     land_capture(&mut state);
     assert!(state.capture_in_flight.is_none());
-    state.tick = 8;
-    state.frame = 8;
+    state.tick = 9;
+    state.frame = 9;
     spawn_due_capture(&mut state);
     let b = &state.beats["beat-b"];
     assert_eq!((b.tick, b.frame, b.request_id), (8, 8, 2));
@@ -269,7 +409,6 @@ fn capture_save_failure_fails_the_scenario_immediately() {
     let blocker = std::env::temp_dir().join(format!("gone-beat-block-{}", std::process::id()));
     std::fs::write(&blocker, b"not a directory").expect("write blocker file");
     state.out_dir = blocker.clone();
-    spawn_due_capture(&mut state);
     let image = test_image();
     let err = save_capture(&state.out_dir, "beats/beat-a.png", &image)
         .expect_err("the blocked save must fail");

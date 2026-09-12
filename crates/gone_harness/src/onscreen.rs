@@ -1,6 +1,6 @@
 //! Machine verification of the render canary's single onscreen capture.
 //!
-//! A `--render-check` run opens the app's canary lane: a real (unfocused)
+//! A `--render-check` run opens the app's canary lane: a real (focused)
 //! window presents the scene, and the app saves exactly one onscreen capture
 //! via `Screenshot::primary_window()`, at the first beat's request, named
 //! `beats/<first-beat>.onscreen.png` in the run directory. After the run this

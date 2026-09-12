@@ -49,9 +49,26 @@ The runner spawns `target/debug/gone_app` (the binary it was built with) with:
 - `GONE_RENDER_CHECK=1` (canary runs only, set by the runner's
   `--render-check` flag: the app opens the unfocused window and saves the one
   onscreen capture at the first beat).
+- `BEVY_ASSET_ROOT=<abs path>` (the `gone_app` crate directory whose `assets/`
+  subtree holds the game's assets; see the asset root paragraph below).
 
 All three hashes are real SHA-256 computed runner-side from the bytes it actually
 spawned and passed; the app echoes them back verbatim.
+
+The runner also passes `BEVY_ASSET_ROOT`, the absolute path of the `gone_app`
+crate directory whose `assets/` subtree holds the game's assets, and it fails
+the launch by name when that directory is missing. Bevy resolves its asset root
+from this variable first and falls back to the inherited `CARGO_MANIFEST_DIR`,
+so a child launched without it inherits the runner crate's manifest context and
+looks for assets under `crates/gone_harness/assets`, where nothing lives; the
+gameplay lane's readiness barrier then correctly reports the required asset as
+missing. Direct binary launches (running `target/debug/gone_app` outside `cargo
+run`) must set `BEVY_ASSET_ROOT` themselves: a stale `CARGO_MANIFEST_DIR`
+inherited from the parent shell points the asset server at the wrong tree just
+the same. The app asserts the variable and the required asset under it in both
+harness modes before anything loads, and the normal game keeps the readiness
+ledger as its enforcement. A regression test pins that the runner's computed
+root contains `post/metering_mask.png`.
 
 By default the app runs headless: `WinitPlugin` is disabled, no window is
 created, and the schedule runner spins updates. With `GONE_RENDER_CHECK=1` the
@@ -127,10 +144,78 @@ the window renders the same world, chip included). Canary run dirs carry an
 `rc` run-id prefix (`rc<unix-nanos>-s<seed>`) under the usual `tmp/harness`
 layout.
 
+The canary's scenario clock waits for the window's first capturable frame
+before it starts. The window is unfocused by design, and macOS does not hand a
+freshly created unfocused window its swapchain drawable until the compositor
+has composited it once. On such a frame bevy skips the window screenshot's
+composite into the swapchain and its readback copy but still fires the capture
+event, so the app receives the zero-initialized transfer buffer and would
+write an entirely black PNG; the offscreen beats of the same run are immune
+because they read back their own render target and never touch the swapchain.
+The app therefore holds the drive until a present probe proves the window
+presents: while the gate is unresolved it requests one primary-window probe
+capture per rendered frame, a capture with a rendered byte proves presents and
+releases the clock, and a zeroed capture counts one declined frame against a
+300-frame present budget that fails the run by name when exhausted. Probes are
+frame keyed, every declined frame is counted and logged, and the budget is
+hard, so the barrier is never a silent retry loop; the same-sync-point pairing
+of the onscreen capture with the first beat's PNG is unchanged.
+
 Visual inspection of the onscreen PNG by the visual model agent is the
 follow-up judgment step, outside CI: the runner's machine checks prove the
 frame rendered, and the visual pass judges what it looks like. The canary is
 the practical use of the corrected `primary_window()` knowledge above.
+
+## The gameplay lanes (gameplay-smoke, gameplay-full)
+
+    gone_harness gameplay-smoke
+    gone_harness gameplay-full
+    cargo xtask harness gameplay-smoke
+    cargo xtask harness gameplay-full
+
+Both lanes boot the real game in the child (the scenario's
+`content: "gameplay"` field): the post chain, the stasis-room scene, and the
+player rig build exactly as the normal game builds them, behind the extended
+readiness barrier described above (required assets loaded, rig camera bound
+to the capture target). The frame-code chip renders as a corner overlay on
+the gameplay camera's view, so beat captures keep the same decode contract
+and every capture still decodes to the report's tick and frame.
+
+`gameplay-smoke` scripts a 30 degree look between two pinned beats and proves
+two things machine-side: the room observation matches the registry's pod
+count, and the rig's beat-pinned yaw samples show exactly the scripted look
+delta (compared modulo a full turn, within a stated tolerance). A run whose
+player systems never integrated scripted look, or whose scene failed to
+build, fails here.
+
+`gameplay-full` scripts the whole opening beat and verifies it numerically.
+The scenario presses activate, so the authored get-up carries the capsule out
+of the player pod along the authored exit path; then it turns 90 degrees and
+walks forward toward the hatch wall with the steadying walk. The runner
+derives every expectation from the same frozen truth the app builds from
+(the exit path and standing eye height from `gone_app::placement_truth`, the
+controller constants, the room envelope, and the hatch placement through the
+app's `gone_sim` re-export), never from literals:
+
+- the report's wake-phase observations read exactly `waking`, `awake_in_pod`,
+  `exiting_pod`, `standing`, in order;
+- the `standing` beat's position sample equals the standing eye point the
+  authored exit path's waypoint projects to, within the sim's own pose
+  arrival tolerance;
+- the `door` beat's position sits inside the room envelope at the standing
+  eye height, its displacement from the standing beat matches the frozen
+  steadying ramp consumed exactly as the sim consumes it (the ramp clock
+  advances on every walked tick, movement or not), and its distance to the
+  frozen hatch placement is bounded by that same walk model, each within a
+  stated tolerance.
+
+The lane's negative proofs are unit-tested on the verifier itself: a report
+whose standing beat drifts off the waypoint, whose phase sequence drops or
+reorders a phase, or whose door beat shows a player that never walked (or
+left the room, or lost its eye sample) fails with a named error. What the
+lane proves: the phase machine, the get-up controller, the steadying walk,
+the collider set, and the placement data all agree with each other and with
+the report, end to end, in a real build of the game.
 
 ## Readiness handshake (the exact signal)
 
@@ -144,8 +229,30 @@ requesting until one lands.
 The readiness signal is the first `ScreenshotCaptured` for the offscreen target:
 the capture is the readback of a frame the render graph actually executed into
 the target, so it is direct evidence the renderer built its device resources and
-rendered at least one full frame — there is no authored-content or clock state
-that could precede it.
+rendered at least one full frame. No authored-content or clock state could
+precede it, and the calibration loading scene has none to precede.
+
+Gameplay content extends the proof with the game readiness barrier, and the
+proof request waits on two more legs before it asks for the readback. Every
+required game asset must have loaded (the `readiness` ledger, polled first in
+the gameplay update chain), and the player rig's camera must be bound to the
+offscreen target, so the capture that opens the scenario clock is a fully
+provisioned game frame with its pipelines compiled, never the chip overlay
+alone. While a required asset is still loading, nothing runs: no tick, no
+input, no phase advance, and the loading presentation stays up. The hold is
+bounded by the same known limits as any capture wait; there is no separate
+polling budget. A required asset whose load fails is a terminal failure that
+names the asset and the underlying error and exits nonzero, on the lane and in
+the normal game alike; a run never renders an engine placeholder in a required
+asset's place.
+
+The normal game runs the same ledger every update. A pending load keeps the
+scene in its authored `Waking` opening, and the wake progression (the issue #8
+wake pass, and today the gameplay lane's wake-complete override) may not drive
+the phase machine until the ledger reports ready. The gameplay lane moves its
+wake-complete signal behind the boundary, so the machine lands in
+`AwakeInPod` on the same update the clock opens and the once-only override
+never repeats.
 
 On that capture the app writes the proof PNG to the run dir
 (`readiness-proof.png`), prints the exact stdout line
@@ -166,22 +273,75 @@ The runner does not parse the line at slice A (it waits for the process to exit,
 then verifies the report), but the line is the contract a delayed-readiness run
 will assert against.
 
-## Fixed-timestep clock and exactly-once edges
+## The scenario clock (fixed timestep)
 
-After readiness the app drives *one logical tick per rendered frame*
-(`drive_ticks`): the adapter's `step()` returns the edges due on this tick and
-the accumulated look motion. Each delivered edge becomes a tick-stamped
-`TimedEvent::Input` whose `what` names the button *and the edge*:
-`Key(Forward) press`, `Key(Forward) release`, `Mouse(Primary) press`,
-`move-delta` for movement. Opposite edges of one button are therefore
-distinguishable in events, checkpoints, and compare streams.
+The scenario clock is the fixed timeline the app simulates against. One clock
+step is a tick. The scenario's `ticks_per_second` is the clock's rate: one
+tick is worth `1 / ticks_per_second` seconds of simulation time, and gameplay
+systems consume simulation time from the clock, never wall time. (The wake
+phase machine consumes no time today; the frozen controller constants are
+specified against this fixed tick.) The rate is validated at parse time: a
+`ticks_per_second` below 1 is a scenario error on both sides, because the app
+and the runner share one parser, so a rateless scenario cannot start a run.
 
-The adapter is a pure std state machine over the scenario's actions, so an edge
-whose tick has been reached is delivered to exactly one fixed update, never
-twice and never dropped. Slice A runs one tick per rendered frame, so the
-adapter's multi-fixed-update buffering has one ready case; the type is built for
-the broader guarantee and the beat/clock semantics below preserve exactly-once
-beats regardless.
+The advance rule is frame anchored, and both lanes use it. After the readiness
+boundary the drive advances exactly one tick per scenario frame, and the tick
+counter equals the scenario frame counter. No wall-clock accumulator decides
+tick boundaries: a wall-clock rule would land a given tick on a
+jitter-dependent frame, and two identical runs would then stamp different
+frames onto the same events. The frame anchored rule is what makes the compare
+lane and the latency invariant below hold.
+
+Wall pacing differs by lane, and the difference is presentational only:
+
+- Headless capture lane: the schedule runner waits one tick's duration
+  between updates, so the simulation runs at the scenario's declared rate
+  against the wall clock, modulo render cost and sleep granularity.
+- Perf lane: the runner wait is zero. The lane samples real frame times, so
+  it must not be paced. It has no beats, so no capture can hold its clock,
+  and its samples stay pure wall-clock.
+- Canary lane: winit owns the loop and the display paces presents. The clock
+  rule is the same one tick per scenario frame; the wall rate is the display's
+  present rate, so a scenario whose rate exceeds it runs slower in wall time
+  than scripted. Simulation time per tick is unaffected.
+
+`drive_ticks` steps the input adapter once per tick; the adapter's `step()`
+returns the edges due on this tick and the accumulated look motion. Each
+delivered edge becomes a tick-stamped `TimedEvent::Input` whose `what` names
+the button *and the edge*: `Key(Forward) press`, `Key(Forward) release`,
+`Mouse(Primary) press`, `move-delta` for movement. Opposite edges of one
+button are therefore distinguishable in events, checkpoints, and compare
+streams.
+
+The adapter is a pure std state machine over the scenario's actions, so an
+edge whose tick has been reached is delivered to exactly one fixed update,
+never twice and never dropped. The harness runs one tick per scenario frame,
+so the adapter's multi-fixed-update buffering has one ready case; the type is
+built for the broader guarantee and the capture binding below preserves
+exactly-once beats regardless.
+
+### Capture binding and the latency invariant
+
+While a beat readback is in flight, the scenario clock holds: no tick, no
+frame, no adapter step, and the renderer keeps presenting the held frame, so
+the in-flight capture reads back exactly the pinned (tick, frame) pair. The
+clock can never pass a beat's tick while the lane is busy, so every beat pins
+exactly its scripted tick on every run, regardless of readback latency, and
+identical scenarios pin identical (tick, frame) pairs. The hold is bounded by
+the existing failure paths: a readback that errors fails the run immediately,
+and a readback that never lands ends in the runner's process timeout (the
+known limit below, unchanged).
+
+The invariant has a proof knob: the app's capture observer honors
+`GONE_TEST_CAPTURE_DELAY_MS` (milliseconds). The runner passes its own
+environment through to the app, so a delayed run is a normal runner invocation
+with the variable set; unset or empty means no delay, and a value that does
+not parse fails the run naming the variable. The proof: run one scenario
+twice, once with the delay and once without, and the two `report.json` files
+must be byte identical, beat (tick, frame) pairs included. The freeze holds
+the clock for the whole artificial delay, so the delayed run differs only in
+wall time. The perf lane never reads the variable into its samples: its
+sampling system records the real frame delta and never waits on a capture.
 
 ## Frame-code spec (exact)
 
@@ -214,16 +374,16 @@ decoder and asserts the result equals the report's `(tick, frame)`.
 ## Beat capture binding (real GPU screenshots)
 
 A beat's capture is one bevy `Screenshot::image` of the offscreen render target.
-On the first update at or after the beat's tick where the capture lane is free,
+On the update that reaches the beat's scenario tick with the capture lane free,
 `request_beat_captures` does one atomic step: it pins the beat's manifest entry
 `{file, tick, frame, request_id}` to the frame that update is about to render,
 spawns the screenshot entity carrying that binding, and marks the lane busy.
-Pinning at spawn (not at tick arrival) is what makes the report trustworthy:
-one capture is in flight at a time (bevy captures at most one screenshot per
-render target per frame), so a beat whose tick passed while the lane was busy is
-pinned to the frame it actually renders, and the PNG's decoded code always
-equals the report's entry. Scenario beats spaced further apart than the readback
-latency (one to two frames) pin at exactly their scenario tick.
+While a readback is in flight the scenario clock holds (see the scenario clock
+section above): the renderer keeps presenting the held frame, so the capture
+always shows the pinned numbers, and the PNG's decoded code always equals the
+report's entry. Because the clock can never pass a beat's tick while the lane
+is busy, every beat pins exactly its scripted tick on every run, regardless of
+readback latency.
 
 When the capture lands, the observer matches it to the in-flight request by
 request id, converts the GPU image (the target's `Bgra8UnormSrgb` bytes) to PNG
@@ -242,7 +402,8 @@ the last capture; then the app writes `report.json`, prints `REPORT <path>`, and
 exits 0 via `AppExit::Success`.
 
 The scenario's `max_frames` is the deadline on that wait, not extra patience: it
-counts rendered frames after the readiness boundary, and when the count reaches
+counts scenario frames (drive steps after the readiness boundary; frames the
+clock spends held under a readback never consume it), and when the count reaches
 it with beats still uncaptured, the app records every uncaptured beat as
 missing (a `Failure` event naming each in the runner's
 ``missing beat `<name>` (expected tick <n>)`` shape), writes the report, prints
@@ -253,7 +414,9 @@ failed scenario, never a hang; there is no waiting past the deadline.
 
 ```
 tmp/harness/<scenario>/<run-id>/
-  readiness-proof.png   the first capture of the offscreen target (dark, no chip)
+  readiness-proof.png   the first capture of the offscreen target (the dark
+                        loading scene on calibration content, the first
+                        provisioned game frame on gameplay content)
   beats/<name>.png      one PNG per beat: the rendered frame, chip at top-left
   beats/<name>.onscreen.png  canary runs only: the single onscreen capture, at the first beat
   report.json           the run report
@@ -338,16 +501,15 @@ because capture completion is asynchronous: a beat's readback can land several
 ticks after the tick the capture shows, so wall-clock append order is not
 reproducible across runs.
 
-Beat capture events carry the pinned tick/frame; for scenarios whose beats are
-spaced further apart than the capture readback latency (one to two rendered
-frames), both runs pin identical values and the streams match.
+Beat capture events carry the pinned tick/frame. The scenario clock holds
+under an in-flight readback, so both runs pin exactly the scripted ticks and
+the streams match for any beat spacing.
 
-The one exception is the terminal `Complete` frame: completion is the first
-frame at or after the settle window where every readback has landed, and on
-the headless lane readback latency measured in frames is wall-clock dependent
-(no vsync paces the frames), so it is not reproducible run to run. The runner
-normalizes the `Complete` line to drop the frame before diffing; every
-tick-scoped event (inputs, beats with their pinned numbers) compares exactly.
+The terminal `Complete` frame is normalized away before diffing. Under the
+capture freeze the completion frame is itself deterministic (the clock does
+not advance under a readback), so the normalization is redundant today; it
+stays so the line shape is stable. Every tick-scoped event (inputs, beats
+with their pinned numbers) compares exactly.
 
 ## Performance lane
 
@@ -443,10 +605,10 @@ Not in slice A, per the plan:
    it, so the run ends in the runner's timeout naming the scenario. I/O failures
    inside the app's own convert/save path are the immediate-failure path above.
 2. Beats closer together than the readback latency serialize (one capture in
-   flight); a beat whose tick passed while the lane was busy is captured at the
-   first later frame and its manifest entry pins that later frame. The PNG and
-   the report always agree; only the beat's scenario tick and its captured frame
-   may differ in that case.
+   flight). The scenario clock holds meanwhile, so the second beat pins its
+   own scripted tick; same-tick beats capture in order and show the same
+   (tick, frame) code with distinct request ids. The PNG and the report
+   always agree.
 3. `FrameStats` is empty; the perf lane reports the `perf` section instead (the
    seeded struct is untouched on both lanes).
 4. The `pacing` scenario field is consumed at window creation (Uncapped sets
@@ -456,11 +618,12 @@ Not in slice A, per the plan:
    default presentation; `max_frames` is consumed as the clean-close deadline
    described under beat capture binding (inert on the perf lane,
    which has no beats to miss).
-5. Headless frames are paced by the render pipeline, not vsync, so capture
-   readback latency measured in frames is larger and slightly variable
-   (windowed it is one to two frames). Completion therefore lands a few frames
-   after the last pinned beat and varies by a frame between runs; the compare
-   lane normalizes the terminal `Complete` frame (see compare mode).
+5. The headless capture lane paces updates at the scenario tick rate, and the
+   scenario clock holds under an in-flight readback, so the drive's frame
+   counts carry no latency footprint and completion lands at a deterministic
+   frame. The compare lane still normalizes the terminal `Complete` frame
+   (see compare mode); the normalization is redundant today and kept for
+   line-shape stability.
 
 ## Cross-target verification
 
