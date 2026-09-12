@@ -5,11 +5,13 @@
 //! so the runner binary and the app always speak the same JSON and pixel encoding.
 //! The crate itself contains no protocol definitions; its binary drives
 //! `target/debug/gone_app` and verifies against the app's report and captures.
-//! The [`onscreen`] and [`gameplay`] modules are runner tooling: the machine
-//! verification of the render canary's single onscreen capture, of the
-//! gameplay lane's room and yaw assertions, and of the gameplay-full lane's
-//! wake progression, exit waypoint, and door walk.
+//! The crate also carries runner-side verification lanes: [`onscreen`]
+//! machine-verifies the render canary's onscreen capture, [`gameplay`] the
+//! gameplay lane's room and yaw assertions and the gameplay-full lane's wake
+//! progression, exit waypoint, and door walk, and [`calibration_lane`] runs
+//! the four-cell calibration matrix over the app's calibration-evidence lane.
 
+pub mod calibration_lane;
 pub mod gameplay;
 pub mod onscreen;
 

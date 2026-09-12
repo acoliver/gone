@@ -32,20 +32,25 @@ repository.workspace = true
 #   lights; bevy_mesh registers Mesh and the primitive builders, bevy_pbr
 #   StandardMaterial and the PBR render pass, bevy_light the light types and
 #   LightPlugin; bevy_pbr already turns bevy_light on, listed explicitly
-#   because the scene names bevy::light directly)
+#   because the scene names bevy::light directly. Issue #6 slice B rides on
+#   the same pair: the calibration-evidence lane renders its wall and bright
+#   patch as meshes lit by emissive-only StandardMaterials, and the Core3d
+#   graph the post chain runs on is the only graph that executes them)
 # Everything else (audio, bevy_gilrs/gamepad, bevy_ui, gltf, picking,
-# bevy_material) stays off: the scenes are unlit sprites and greybox
-# primitives, so no asset pipeline or picking backend is compiled.
+# bevy_material) stays off: the scenes are unlit sprites, greybox
+# primitives, and the calibration wall, so no asset pipeline or picking
+# backend is compiled.
 #
 # The protocol types (scenario, report, input adapter, frame-code) live in THIS crate's
 # public `harness` module; `gone_harness` re-exports them. The app reads the
 # scenario JSON (serde), writes the JSON report (serde_json), and never depends on
-# `gone_harness`. sha2 is not needed inside the app: the runner computes the content
-# hashes and passes them in as environment, so this crate stays render-side.
+# `gone_harness`. sha2 exists for exactly one app-side job: the calibration lane
+# hashes the loaded metering-mask asset's pixel bytes into its report evidence.
 [dependencies]
 gone_sim = { path = "../gone_sim" }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+sha2 = "0.10"
 # PNG encoding of captured GPU frames (capture.rs): bevy hands the observer the
 # raw surface image; `image` encodes it to PNG bytes the runner decodes back.
 image = { version = "0.25", default-features = false, features = ["png"] }

@@ -2170,6 +2170,7 @@ dependencies = [
  "image",
  "serde",
  "serde_json",
+ "sha2",
 ]
 
 [[package]]
@@ -2178,6 +2179,8 @@ version = "0.1.0"
 dependencies = [
  "gone_app",
  "image",
+ "serde",
+ "serde_json",
  "sha2",
 ]
 

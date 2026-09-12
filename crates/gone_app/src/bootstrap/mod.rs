@@ -66,8 +66,9 @@
 //!   opens the clock is the first fully provisioned game frame, and a
 //!   required asset whose load fails fails the run by name and exits
 //!   nonzero, never a placeholder render. Calibration content requests the
-//!   proof immediately, its dark loading scene being the whole proof. Either
-//!   way, only then does the app print `GONE_READY`, record
+//!   proof immediately: the calibration scene renders through the post chain
+//!   from startup, so the proof already shows the wall (the chip stays
+//!   hidden). Either way, only then does the app print `GONE_READY`, record
 //!   tick zero, and make the chip sprite visible (no authored content before
 //!   the boundary) — and on the canary the announcement itself waits for the
 //!   present gate: the window must have shown one capturable frame before
@@ -97,6 +98,21 @@
 //!   actual transform, and the screenshot request enters the render queue. A
 //!   look action on a capture tick is therefore inside the PNG and inside
 //!   the reported yaw sample, not one tick behind them.
+//! * **Calibration lane architecture (issue #6 slice B).** The post chain is
+//!   Core3d and the chip is Core2d, so the calibration scenario renders its
+//!   wall/patch scene through a dedicated `Camera3d` carrying the real chain
+//!   (`AgX` tonemapping, vignette, auto exposure through the selected mask)
+//!   into the SAME offscreen capture target, and the chip is drawn over the
+//!   scene by a plain 2d overlay camera whose final write alpha-blends
+//!   (bevy's per-camera output blit replaces the target unless the camera's
+//!   `output_mode` blends — see `calibration::chip_overlay_camera`) —
+//!   captures stay the executed post-chain output and the chip keeps its
+//!   decode contract; the chip never enters the auto-exposure
+//!   histogram (it lives on a different view's LDR output). The setup
+//!   evidence records the mask identity (sha256 of the loaded asset bytes)
+//!   once the asset has loaded, and the beat requester refuses to pin
+//!   captures before that ([`state::beat_requests_allowed`]). `calibration`
+//!   owns the scene, the evidence recording, and the full reconciliation.
 //! * **Beat binding and accounting.** The scenario clock holds while a beat
 //!   readback is in flight (bevy captures at most one screenshot per render
 //!   target per frame, so exactly one capture is in flight): no tick, no
@@ -132,12 +148,15 @@
 //! Module layout: this file owns the plugin and the scene setup; [`drive`]
 //! owns the update chain (the drive half in the `ScriptedInput` set, the
 //! post-drive half that captures post-tick state); [`capture`] owns the
-//! capture receiver and I/O; [`state`] owns the scenario run state (counters,
-//! beat ledgers, readiness, failure recording, the scenario clock); [`finish`]
-//! owns the close (completion scan, the `max_frames` deadline, the report);
-//! and the test modules pin the accounting, readiness, and gameplay-drive
-//! regressions without needing a renderer.
+//! capture receiver and I/O; [`calibration`] owns the calibration lane's
+//! scene, evidence recording, and camera reconciliation; [`state`] owns the
+//! scenario run state (counters, beat ledgers, readiness, failure recording,
+//! the scenario clock); [`finish`] owns the close (completion scan, the
+//! `max_frames` deadline, the report); and the test modules pin the
+//! accounting, readiness, and gameplay-drive regressions without needing a
+//! renderer.
 
+mod calibration;
 mod capture;
 mod drive;
 mod finish;
@@ -162,6 +181,7 @@ use bevy::camera::{Camera, Camera2d, ClearColor, RenderTarget};
 use bevy::color::Color;
 use bevy::ecs::prelude::{Commands, Entity, Res, ResMut, Resource};
 use bevy::ecs::schedule::IntoScheduleConfigs;
+use bevy::ecs::system::SystemParam;
 use bevy::image::Image;
 use bevy::math::{UVec2, Vec2};
 use bevy::render::render_resource::{Extent3d, TextureDimension, TextureFormat, TextureUsages};
@@ -173,7 +193,11 @@ use bevy::transform::components::Transform;
 
 use crate::harness::{Content, InputAdapter, Scenario, ScenarioMode, frame};
 use crate::player::{LookInputMode, ScriptedInput};
+use crate::post::GamePostChainPlugin;
 
+use calibration::{
+    CalibrationScene, drive_calibration, record_calibration_evidence, setup_calibration_scene,
+};
 use capture::{CaptureDelay, on_screenshot_captured};
 use drive::{
     drive_ticks, readiness_boundary, register_post_drive_systems, request_present_probe,
@@ -269,6 +293,13 @@ impl Plugin for BootstrapPlugin {
         app.init_resource::<ChipTexture>();
         app.init_resource::<ChipSprite>();
         app.init_resource::<CaptureTarget>();
+        app.init_resource::<CalibrationScene>();
+        if self.scenario.mode == ScenarioMode::Calibration {
+            // The calibration lane's cameras bind the checked-in metering
+            // masks and need the auto-exposure render graph: the only
+            // harness lane that builds the game's post-chain plugins here.
+            app.add_plugins(GamePostChainPlugin);
+        }
         // Gameplay content boots the real game into the harness app (post
         // chain, stasis scene, player look) before anything else wires
         // against it; the calibration content is the app as it has always
@@ -303,13 +334,27 @@ impl Plugin for BootstrapPlugin {
             app.add_systems(Startup, gameplay::setup_gameplay_scene);
             gameplay::register_update_systems(app);
         } else {
-            app.add_systems(Startup, setup_harness_scene);
+            app.add_systems(
+                Startup,
+                // The calibration scene spawns after the capture target
+                // exists: its cameras render into that target.
+                (setup_harness_scene, setup_calibration_scene).chain(),
+            );
             app.add_systems(
                 Update,
                 (
                     request_readiness_proof,
                     readiness_boundary,
+                    // Evidence precedes the beat requester: the gate
+                    // (`state::beat_requests_allowed`) lifts the same update
+                    // the mask identity is recorded, so no capture can
+                    // precede it.
+                    record_calibration_evidence,
                     request_present_probe,
+                    // Calibration dynamics apply the tick about to be driven —
+                    // the same tick the post-drive half paints the chip for
+                    // and pins.
+                    drive_calibration,
                     drive_ticks,
                 )
                     .chain()
@@ -320,29 +365,46 @@ impl Plugin for BootstrapPlugin {
     }
 }
 
+/// Everything [`setup_harness_scene`] needs, gathered as one system
+/// parameter so the startup system stays a single argument (the same
+/// pattern as the driving systems' [`Kernel`]).
+#[derive(SystemParam)]
+struct HarnessSceneContext<'w, 's> {
+    commands: Commands<'w, 's>,
+    mode: Res<'w, RunMode>,
+    state: Res<'w, HarnessState>,
+    chip: ResMut<'w, ChipTexture>,
+    sprite: ResMut<'w, ChipSprite>,
+    capture: ResMut<'w, CaptureTarget>,
+    images: ResMut<'w, Assets<Image>>,
+}
+
 /// The loading scene: dark clear, one Camera2d rendering into the offscreen
 /// capture target (MSAA off so the chip lattice stays pixel-crisp in captures),
 /// a canary window camera presenting the same world when this run opens a
 /// window, and the chip sprite spawned hidden at the target's top-left — it
 /// becomes visible only at the readiness boundary.
-fn setup_harness_scene(
-    mut commands: Commands,
-    mode: Res<RunMode>,
-    mut chip: ResMut<ChipTexture>,
-    mut sprite: ResMut<ChipSprite>,
-    mut capture: ResMut<CaptureTarget>,
-    mut images: ResMut<Assets<Image>>,
-) {
-    commands.insert_resource(ClearColor(Color::srgb(0.011, 0.011, 0.011)));
-    let handle = capture_target_image(&mut images);
-    spawn_capture_camera(&mut commands, handle.clone());
-    if *mode.into_inner() == RunMode::Canary {
-        spawn_window_camera(&mut commands);
+///
+/// The calibration lane spawns none of those cameras: its scene camera must
+/// carry the Core3d post chain and its chip overlay must alpha-blend (see
+/// `calibration::chip_overlay_camera`), and a second opaque camera writing
+/// the same target would replace the other camera's output every frame. The
+/// capture target itself is still created here — both lanes' cameras render
+/// into it, and every screenshot of the run reads it back.
+fn setup_harness_scene(mut ctx: HarnessSceneContext) {
+    ctx.commands
+        .insert_resource(ClearColor(Color::srgb(0.011, 0.011, 0.011)));
+    let handle = capture_target_image(&mut ctx.images);
+    if ctx.state.scenario.mode != ScenarioMode::Calibration {
+        spawn_capture_camera(&mut ctx.commands, handle.clone());
+        if *ctx.mode == RunMode::Canary {
+            spawn_window_camera(&mut ctx.commands);
+        }
     }
-    capture.0 = Some(handle);
-    let (handle, entity) = spawn_chip_sprite(&mut commands, &mut images);
-    chip.0 = Some(handle);
-    sprite.0 = Some(entity);
+    ctx.capture.0 = Some(handle);
+    let (handle, entity) = spawn_chip_sprite(&mut ctx.commands, &mut ctx.images);
+    ctx.chip.0 = Some(handle);
+    ctx.sprite.0 = Some(entity);
 }
 
 /// The frame-code chip sprite, spawned hidden at the capture target's

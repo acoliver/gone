@@ -19,6 +19,10 @@ repository.workspace = true
 gone_app = { path = "../gone_app" }
 image = { version = "0.25", default-features = false, features = ["png"] }
 sha2 = "0.10"
+# The calibration matrix lane serializes its evidence artifact
+# (`calibration-evidence.json`) from runner-side measurement records.
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
 
 [lints]
 workspace = true

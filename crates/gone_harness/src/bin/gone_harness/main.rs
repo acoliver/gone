@@ -12,8 +12,9 @@
 //! stage-B).
 //!
 //! With `--render-check` the runner also selects the app's canary lane
-//! (`GONE_RENDER_CHECK=1`): the run opens the unfocused window and saves one
-//! onscreen capture at the first beat, which the runner machine-verifies after
+//! (`GONE_RENDER_CHECK=1`): the run opens the window (focused: it must be
+//! ordered in for its surface to present) and saves one onscreen capture at
+//! the first beat, which the runner machine-verifies after
 //! the run (exactly one `*.onscreen.png` under `beats/`, exactly 1920x1080, not
 //! entirely black, chip frame equal to the report's). Canary run dirs carry an
 //! `rc` run-id prefix so they are identifiable in `tmp/harness`.
@@ -40,13 +41,14 @@ mod paths;
 mod perf;
 mod run;
 
+use gone_harness::calibration_lane;
 use gone_harness::scenario::{Scenario, scenario_to_json};
 use gone_harness::{Content, ScenarioMode};
 
 use crate::compare::run_compare;
 use crate::paths::{load_scenario, repo_root, root_scenario, write_or};
 use crate::perf::run_perf;
-use crate::run::run_scenario;
+use crate::run::{DEFAULT_TIMEOUT, run_scenario};
 
 /// The canary flag on the runner's own command line: every scenario run this
 /// invocation performs goes through the canary lane and its onscreen
@@ -80,6 +82,7 @@ pub fn smoke_scenario() -> Scenario {
         warmup_frames: 0,
         sample_frames: 0,
         content: Content::Calibration,
+        calibration: None,
     }
 }
 
@@ -104,11 +107,13 @@ fn dispatch(args: &[String]) -> i32 {
         None | Some("smoke") => run_smoke(render_check),
         Some("gameplay-smoke") => run_gameplay_smoke(render_check),
         Some("gameplay-full") => run_gameplay_full(render_check),
+        Some("calibration") => run_calibration(),
         Some("--help" | "-h") => {
             eprintln!(
-                "usage: gone-harness [--render-check] <smoke | gameplay-smoke | gameplay-full | perf [scenario] | compare <scenario> | <scenario.json>>
+                "usage: gone-harness [--render-check] <smoke | gameplay-smoke | gameplay-full | calibration | perf [scenario] | compare <scenario> | <scenario.json>>
   (no command runs the smoke scenario)
-  --render-check: canary lane (unfocused window, one onscreen capture machine-verified after the run)"
+  --render-check: canary lane (focused window: it must be ordered in for its surface to present; one onscreen capture machine-verified after the run)
+  calibration: the 4-cell calibration matrix (AE on/off, patch metering, uniform control)"
             );
             0
         }
@@ -154,7 +159,14 @@ fn run_builtin(scenario: &Scenario, scenario_file: &str, render_check: bool) -> 
     let scenario_path = root.join("tmp").join(scenario_file);
     let json = scenario_to_json(scenario).expect("scenario json");
     write_or("built-in scenario", &scenario_path, json.as_bytes()).expect("write");
-    match run_scenario(&root, &scenario_path, scenario, &out_root, render_check) {
+    match run_scenario(
+        &root,
+        &scenario_path,
+        scenario,
+        &out_root,
+        render_check,
+        DEFAULT_TIMEOUT,
+    ) {
         Ok(run_dir) => {
             println!(
                 "MACHINE PASS: scenario `{}`; machine checks passed, visual verification pending",
@@ -176,7 +188,14 @@ fn run_one(path: &str, render_check: bool) -> i32 {
     let scenario = load_scenario(&scenario_path).expect("scenario");
     let root = repo_root().expect("root");
     let out_root = root.join("tmp").join("harness");
-    match run_scenario(&root, &scenario_path, &scenario, &out_root, render_check) {
+    match run_scenario(
+        &root,
+        &scenario_path,
+        &scenario,
+        &out_root,
+        render_check,
+        DEFAULT_TIMEOUT,
+    ) {
         Ok(run_dir) => {
             println!(
                 "MACHINE PASS: scenario `{}`; machine checks passed, visual verification pending",
@@ -188,6 +207,98 @@ fn run_one(path: &str, render_check: bool) -> i32 {
         Err(e) => {
             eprintln!("{e}");
             1
+        }
+    }
+}
+
+/// The calibration matrix lane: four fixed child-app runs (A luminance step
+/// AE on, B AE-off control, C patch metering center-to-edge, D uniform-mask
+/// control), each judged against predeclared assertions by
+/// `calibration_lane::judge_cell`, with a `calibration-evidence.json`
+/// artifact in every run dir. Exit 0 only when every cell holds; a
+/// contradicted assertion is a finding — the failure output names the run,
+/// the assertion, and the expected-vs-measured numbers, and the assertions
+/// stay as declared.
+fn run_calibration() -> i32 {
+    let root = repo_root().expect("root");
+    let out_root = root.join("tmp").join("harness");
+    let mut all_passed = true;
+    for cell in calibration_lane::matrix() {
+        let scenario = cell.scenario();
+        let scenario_path = root
+            .join("tmp")
+            .join(format!("calibration-cell-{}.json", cell.id.label()));
+        let json = scenario_to_json(&scenario).expect("scenario json");
+        write_or("calibration scenario", &scenario_path, json.as_bytes()).expect("write");
+        let outcome = run_scenario(
+            &root,
+            &scenario_path,
+            &scenario,
+            &out_root,
+            false,
+            // The per-app timeout derives from the cell's own tick plan
+            // (`MatrixCell::wall_clock_budget`), so a plan that legitimately
+            // spans ~24_600 ticks at a loaded host's cadence is never
+            // killed before it reaches its pinned samples.
+            cell.wall_clock_budget(),
+        )
+        .map_err(|e| e.to_string())
+        .and_then(|run_dir| {
+            let run_id = run_dir
+                .file_name()
+                .map_or_else(String::new, |name| name.to_string_lossy().into_owned());
+            calibration_lane::judge_cell(&cell, &run_dir, &run_id)
+        });
+        all_passed &= print_cell_outcome(&cell, outcome);
+    }
+    i32::from(!all_passed)
+}
+
+/// Print one matrix cell's verdict and evidence summary; true when the cell
+/// passed. A contradicted predeclared assertion prints expected vs measured
+/// and fails the lane — the constants are never edited to match a run.
+fn print_cell_outcome(
+    cell: &calibration_lane::MatrixCell,
+    outcome: Result<calibration_lane::CellJudgment, String>,
+) -> bool {
+    match outcome {
+        Ok(judgment) => {
+            let head = if judgment.passed { "PASS" } else { "FAIL" };
+            println!(
+                "CALIBRATION CELL {} ({}): {head} ({}/{} assertions held)",
+                cell.id.label(),
+                cell.id.description(),
+                judgment.assertions.iter().filter(|a| a.passed).count(),
+                judgment.assertions.len()
+            );
+            for sample in &judgment.samples {
+                println!(
+                    "  sample {:8} tick {:5} frame {:5} mean {:.6} (raw r{:.4} g{:.4} b{:.4})",
+                    sample.name,
+                    sample.tick,
+                    sample.frame,
+                    sample.mean_linear,
+                    sample.mean_raw_r,
+                    sample.mean_raw_g,
+                    sample.mean_raw_b
+                );
+            }
+            for assertion in &judgment.assertions {
+                if assertion.passed {
+                    println!("  ok   {}: {}", assertion.name, assertion.measured);
+                } else {
+                    println!(
+                        "  FAIL {}: expected {} | measured {}",
+                        assertion.name, assertion.expected, assertion.measured
+                    );
+                }
+            }
+            println!("ARTIFACTS: {}", judgment.artifact_path.display());
+            judgment.passed
+        }
+        Err(e) => {
+            eprintln!("CALIBRATION CELL {}: FAILED: {e}", cell.id.label());
+            false
         }
     }
 }

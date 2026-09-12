@@ -2,9 +2,13 @@
 //!
 //! Nothing here is assumed from plugin defaults: the plugin set is added by
 //! name, the camera components are authored by [`camera_post_components`], and
-//! the auto-exposure metering mask is a checked-in asset this module owns the
-//! construction of. The harness lanes never build this module's plugins; the
-//! post chain exists on the game camera only.
+//! the auto-exposure metering masks (the center-weighted game mask and the
+//! calibration lane's uniform control) are checked-in assets this module owns
+//! the construction of. Exactly two call sites build this module's plugins:
+//! the normal game, and the calibration harness lane, which renders the real
+//! chain into its capture target (see `bootstrap::calibration` for the full
+//! camera/capture reconciliation). The smoke and perf harness lanes never
+//! build them.
 //!
 //! # Render-pass order (recorded for the eyelid pass, issue #8)
 //!
@@ -59,10 +63,35 @@ use bevy::image::{Image, ImageLoaderSettings};
 use bevy::post_process::auto_exposure::{AutoExposure, AutoExposurePlugin};
 use bevy::post_process::effect_stack::Vignette;
 
-/// The checked-in metering-mask asset this module owns, relative to the app's
-/// asset root (`crates/gone_app/assets`). The readiness barrier uses the same
-/// string as the asset's ledger name.
+use crate::harness::MaskSelection;
+
+/// The checked-in metering-mask assets this module owns, relative to the
+/// app's asset root (`crates/gone_app/assets`): the center-weighted radial
+/// mask the game camera meters through, and the uniform mask the calibration
+/// lane's uniform-mask control binds instead (identical dimensions, format,
+/// and quantization; every pixel at full weight). The readiness barrier uses
+/// the center-weighted path as the asset's ledger name.
 pub(crate) const MASK_ASSET_PATH: &str = "post/metering_mask.png";
+
+/// The uniform metering mask asset the calibration lane's uniform-mask
+/// control names. Same 64x64 single-channel construction rules as the
+/// center-weighted mask; every pixel carries the top 16-level quantization
+/// step (`15 * 17 = 255`), so every pixel contributes to the histogram
+/// equally — the control that must remove the center/edge metering
+/// difference.
+pub(crate) const MASK_UNIFORM_ASSET_PATH: &str = "post/metering_mask_uniform.png";
+
+/// The asset path a calibration scenario's mask selection binds: the
+/// center-weighted mask for [`MaskSelection::CenterWeighted`], the uniform
+/// control for [`MaskSelection::Uniform`]. The calibration lane names this
+/// path when a mask asset fails to load; the loaded handles themselves flow
+/// through [`PostChainAssets`].
+pub(crate) fn mask_asset_path(selection: MaskSelection) -> &'static str {
+    match selection {
+        MaskSelection::CenterWeighted => MASK_ASSET_PATH,
+        MaskSelection::Uniform => MASK_UNIFORM_ASSET_PATH,
+    }
+}
 
 /// Metering-mask side length in pixels. The histogram samples the mask
 /// stretched over the whole screen; 64x64 is far above its 16-level
@@ -76,16 +105,19 @@ pub(crate) const MASK_ASSET_PATH: &str = "post/metering_mask.png";
 #[cfg(test)]
 const MASK_SIZE: u16 = 64;
 
-/// The auto-exposure metering mask resource for the game camera. Built by
-/// [`GamePostChainPlugin`] from the checked-in asset, loaded with explicit
-/// linear settings (`is_srgb: false`: the mask is a weight table, not a
-/// color, so its bytes must survive to the shader un-decoded); consumed by
-/// the player rig spawner, which copies the handle into the camera's
-/// [`AutoExposure`].
+/// The auto-exposure metering-mask resource for the game camera. Built by
+/// [`GamePostChainPlugin`] from the checked-in assets, loaded with explicit
+/// linear settings (`is_srgb: false`: the masks are weight tables, not
+/// colors, so their bytes must survive to the shader un-decoded); consumed
+/// by the player rig spawner, which copies the center-weighted handle into
+/// the game camera's [`AutoExposure`], and by the calibration lane, which
+/// binds whichever mask its scenario selected.
 #[derive(Resource)]
 pub struct PostChainAssets {
     /// The center-weighted metering mask (`AutoExposure::metering_mask`).
     pub(crate) metering_mask: Handle<Image>,
+    /// The uniform metering mask (the calibration lane's control arm).
+    pub(crate) uniform_mask: Handle<Image>,
 }
 
 /// Installs the game's explicit post chain: bevy's [`AutoExposurePlugin`]
@@ -107,17 +139,24 @@ impl Plugin for GamePostChainPlugin {
             .world()
             .get_resource::<bevy::asset::AssetServer>()
             .expect("GamePostChainPlugin requires the asset server (DefaultPlugins provides it)");
-        // Linear load, explicit: the checked-in mask is a grayscale PNG, and
+        // Linear load, explicit: the checked-in masks are grayscale PNGs, and
         // bevy's default image settings mark non-color data sRGB, so the GPU
         // would gamma-decode every weight at sample time (a mid-gray 136
-        // byte would histogram as weight 3 instead of 8). The mask is a
+        // byte would histogram as weight 3 instead of 8). A mask is a
         // weight table, not a color: its bytes are the values the shader
         // must see.
         let metering_mask = server
             .load_builder()
             .with_settings(|settings: &mut ImageLoaderSettings| settings.is_srgb = false)
             .load(MASK_ASSET_PATH);
-        app.insert_resource(PostChainAssets { metering_mask });
+        let uniform_mask = server
+            .load_builder()
+            .with_settings(|settings: &mut ImageLoaderSettings| settings.is_srgb = false)
+            .load(MASK_UNIFORM_ASSET_PATH);
+        app.insert_resource(PostChainAssets {
+            metering_mask,
+            uniform_mask,
+        });
     }
 }
 
@@ -209,12 +248,46 @@ fn mask_weight_byte(x: u16, y: u16) -> u8 {
     level * 17
 }
 
+/// Construct the uniform metering-mask image: the same shape, format, and
+/// 16-level quantization as [`metering_mask_image`], with every pixel at the
+/// top quantization step (`15 * 17 = 255`), so every pixel contributes to
+/// the histogram at full weight and the mask imposes no spatial preference.
+/// The checked-in asset (`crates/gone_app/assets/post/
+/// metering_mask_uniform.png`, 8-bit grayscale PNG) is this exact array
+/// serialized row-major.
+#[cfg(test)]
+fn uniform_metering_mask_image() -> Image {
+    use bevy::asset::RenderAssetUsages;
+    use bevy::render::render_resource::{Extent3d, TextureDimension, TextureFormat};
+
+    let data = vec![255u8; usize::from(MASK_SIZE) * usize::from(MASK_SIZE)];
+    Image::new(
+        Extent3d {
+            width: u32::from(MASK_SIZE),
+            height: u32::from(MASK_SIZE),
+            depth_or_array_layers: 1,
+        },
+        TextureDimension::D2,
+        data,
+        TextureFormat::R8Unorm,
+        // Both worlds, for the same reason as the center-weighted mask: the
+        // bytes stay inspectable and the histogram pass can sample them.
+        RenderAssetUsages::default(),
+    )
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{MASK_SIZE, camera_post_components, mask_weight_byte, metering_mask_image};
-    use bevy::asset::Handle;
+    use super::{
+        GamePostChainPlugin, MASK_SIZE, PostChainAssets, camera_post_components, mask_asset_path,
+        mask_weight_byte, metering_mask_image, uniform_metering_mask_image,
+    };
+    use crate::harness::MaskSelection;
+    use bevy::app::{App, TaskPoolPlugin};
+    use bevy::asset::{AssetPlugin, Handle};
     use bevy::core_pipeline::tonemapping::Tonemapping;
     use bevy::image::Image;
+    use bevy::image::ImagePlugin;
 
     /// The constructed mask's pixel bytes (the `Image` carries them behind an
     /// `Option`; construction always populates them).
@@ -300,6 +373,79 @@ mod tests {
         assert_eq!(
             image.data.expect("bytes exist").len(),
             usize::from(MASK_SIZE) * usize::from(MASK_SIZE)
+        );
+    }
+
+    #[test]
+    fn uniform_mask_is_every_pixel_at_full_weight() {
+        // Uniform means no spatial preference at all: one weight everywhere,
+        // the top 16-level quantization step (15 * 17 = 255), identical to
+        // the default all-white bevy mask the calibration control replaces.
+        let bytes = uniform_metering_mask_image()
+            .data
+            .expect("construction always populates the pixel bytes");
+        assert_eq!(bytes.len(), usize::from(MASK_SIZE) * usize::from(MASK_SIZE));
+        assert!(
+            bytes.iter().all(|&byte| byte == 255),
+            "every pixel must carry the full 255 weight"
+        );
+    }
+
+    #[test]
+    fn uniform_mask_image_shape_matches_the_center_weighted_mask() {
+        // The mask-selection parameter swaps one asset for the other, so both
+        // must satisfy the same dimensions/format constraints the histogram
+        // pass samples under.
+        let center = metering_mask_image();
+        let uniform = uniform_metering_mask_image();
+        assert_eq!(center.width(), uniform.width());
+        assert_eq!(center.height(), uniform.height());
+        assert_eq!(
+            center.texture_descriptor.format,
+            uniform.texture_descriptor.format
+        );
+    }
+
+    #[test]
+    fn plugin_loads_both_mask_assets_under_their_paths() {
+        let mut app = App::new();
+        app.add_plugins((
+            TaskPoolPlugin::default(),
+            AssetPlugin::default(),
+            ImagePlugin::default(),
+        ));
+        app.add_plugins(GamePostChainPlugin);
+        let masks = app
+            .world()
+            .get_resource::<PostChainAssets>()
+            .expect("the post-chain plugin inserted its asset resource");
+        // Distinct handles, both loadable at their documented paths.
+        assert_ne!(masks.metering_mask, masks.uniform_mask);
+        let server = app.world().resource::<bevy::asset::AssetServer>();
+        let center_path = server.get_path(&masks.metering_mask).expect("center path");
+        let uniform_path = server.get_path(&masks.uniform_mask).expect("uniform path");
+        assert_eq!(
+            center_path,
+            std::path::Path::new(super::MASK_ASSET_PATH).into()
+        );
+        assert_eq!(
+            uniform_path,
+            std::path::Path::new(super::MASK_UNIFORM_ASSET_PATH).into()
+        );
+    }
+
+    #[test]
+    fn mask_selection_paths_are_the_assets_the_plugin_loads() {
+        // The calibration scenario names a mask by selection; the path that
+        // selection maps to must be exactly the asset path the post-chain
+        // plugin loads (and that the checked-in assets sit at).
+        assert_eq!(
+            mask_asset_path(MaskSelection::CenterWeighted),
+            super::MASK_ASSET_PATH
+        );
+        assert_eq!(
+            mask_asset_path(MaskSelection::Uniform),
+            super::MASK_UNIFORM_ASSET_PATH
         );
     }
 
@@ -507,6 +653,36 @@ mod tests {
             .position(|&byte| byte == 136)
             .expect("the 16-level construction ships a level-8 (byte 136) weight");
         assert_eq!(rgba[mid_level * 4], 136);
+    }
+
+    /// The checked-in uniform asset's generator: serializes
+    /// [`uniform_metering_mask_image`] to the 8-bit grayscale PNG the game
+    /// loads at `assets/post/metering_mask_uniform.png`, reads it back, and
+    /// fails if the file ever drifts from the construction. Ignored so the
+    /// normal test run has no write side effects; run explicitly with
+    /// `cargo test -p gone_app generate_uniform_metering_mask_asset --
+    /// --ignored` whenever the construction changes.
+    #[test]
+    #[ignore = "asset generator: writes assets/post/metering_mask_uniform.png"]
+    fn generate_uniform_metering_mask_asset() {
+        let image = uniform_metering_mask_image();
+        let (width, height) = (image.width(), image.height());
+        let bytes = image.data.expect("construction always populates the bytes");
+        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("assets")
+            .join(super::MASK_UNIFORM_ASSET_PATH);
+        std::fs::create_dir_all(path.parent().expect("asset dir parent"))
+            .expect("create asset dir");
+        image::save_buffer(&path, &bytes, width, height, image::ExtendedColorType::L8)
+            .expect("write uniform metering mask PNG");
+        // The written file must decode back to the constructed bytes exactly:
+        // the asset on disk is the construction, nothing more.
+        let decoded = image::open(&path)
+            .expect("re-read uniform metering mask PNG")
+            .to_luma8();
+        assert_eq!(decoded.width(), width);
+        assert_eq!(decoded.height(), height);
+        assert_eq!(decoded.as_raw().as_slice(), bytes.as_slice());
     }
 
     /// Flat index of the byte nearest the mask center (size is even, so the

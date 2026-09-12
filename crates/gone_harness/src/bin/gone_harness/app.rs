@@ -21,9 +21,10 @@ const ENV_SCENARIO_HASH: &str = "GONE_SCENARIO_HASH";
 /// child's asset resolution is explicit and never inherited from the
 /// runner's own manifest context.
 const ENV_ASSET_ROOT: &str = "BEVY_ASSET_ROOT";
-/// Selects the app's canary lane: the run opens the unfocused window and saves
-/// exactly one onscreen capture at the first beat (verified by the `onscreen`
-/// protocol module in `gone_harness`).
+/// Selects the app's canary lane: the run opens the window (focused: it must
+/// be ordered in for its surface to present) and saves exactly one onscreen
+/// capture at the first beat (verified by the `onscreen` protocol module in
+/// `gone_harness`).
 const ENV_RENDER_CHECK: &str = "GONE_RENDER_CHECK";
 
 /// Spawn the app with harness env. The child is kept alive and reaped by this runner.
@@ -76,9 +77,10 @@ pub(crate) fn app_asset_root() -> Result<PathBuf, RunnerError> {
 
 /// Spawn the app with harness env and the run-identity hashes. Under
 /// `render_check` the child also gets `GONE_RENDER_CHECK=1`, selecting the
-/// canary lane (unfocused window plus the one onscreen capture). The child's
-/// `BEVY_ASSET_ROOT` is always set explicitly (see [`app_asset_root`]), so its
-/// asset resolution never depends on the environment this runner inherited.
+/// canary lane (focused window: it must be ordered in for its surface to
+/// present, plus the one onscreen capture). The child's `BEVY_ASSET_ROOT` is
+/// always set explicitly (see [`app_asset_root`]), so its asset resolution
+/// never depends on the environment this runner inherited.
 pub(crate) fn spawn_app(
     root: &Path,
     scenario_path: &Path,

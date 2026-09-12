@@ -101,6 +101,7 @@ commands:
   harness gameplay-full  run the whole opening beat: wake, get-up, walk to the hatch, position assertions
   harness <scenario>   run one scenario file (builds both binaries first)
   harness compare <s>   run a scenario twice and diff the event timelines
+  harness calibration  run the 4-cell calibration matrix (luminance step AE on/off, patch metering, uniform control) against predeclared assertions
   harness perf [s]     run the perf calibration lane against the checked-in policy
   harness render-check  run the render canary: smoke scenario windowed, the one onscreen capture machine-verified
   check clippy-allows  zero clippy allow/expect suppressions + clippy.toml sync
@@ -183,8 +184,10 @@ fn named_failure(label: &str, step: &str, err: &CommandFailed) -> CommandFailed 
 /// `harness smoke` builds the two binaries (locked) and runs the smoke scenario;
 /// `harness <scenario-path>` runs one scenario; `harness compare <scenario>`
 /// builds once then runs the scenario twice and diffs the timelines;
-/// `harness perf [scenario]` runs the perf calibration lane against the
-/// checked-in policy (default scenario derived from the policy);
+/// `harness calibration` runs the 4-cell calibration matrix (each cell one
+/// calibration-mode child run, judged runner-side against predeclared
+/// assertions); `harness perf [scenario]` runs the perf calibration lane
+/// against the checked-in policy (default scenario derived from the policy);
 /// `harness render-check` runs the smoke scenario through the canary lane
 /// (the runner's `--render-check`: windowed, onscreen capture machine-verified,
 /// run dir prefixed `rc`). The built-in gameplay lanes forward
@@ -226,6 +229,9 @@ fn run_harness_command(rest: &[String], root: &Path) -> Result<(), CommandFailed
         }
         [cmd] if cmd == "gameplay-full" => {
             plan = plan.args(["gameplay-full"]);
+        }
+        [cmd] if cmd == "calibration" => {
+            plan = plan.args(["calibration"]);
         }
         [cmd] if cmd == "perf" => {
             plan = plan.args(["perf"]);

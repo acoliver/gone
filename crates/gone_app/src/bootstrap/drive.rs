@@ -28,7 +28,7 @@ use super::RunMode;
 use super::gameplay::{GameCameraBound, observe_wake_phase, proof_gate};
 use super::state::{
     BeatCapture, CaptureRequest, HarnessState, OnscreenCapture, PresentGate, PresentProbe,
-    Readiness, ScenarioTime, drive_allowed, onscreen_capture_due,
+    Readiness, ScenarioTime, beat_requests_allowed, drive_allowed, onscreen_capture_due,
 };
 use super::{CaptureTarget, ChipSprite, ChipTexture};
 use crate::harness::{Content, ScenarioMode, TimedEvent, frame};
@@ -305,7 +305,11 @@ fn paint_chip(kernel: &mut Kernel, tick: u64, frame_num: u64) {
 /// eye point into `PlayerYaw` and `PlayerPosition` events stamped with the
 /// same (tick, frame) the PNG shows — read from the rig's actual transform,
 /// the rendered pose, so the samples are the post-turn, post-motion state
-/// when the beat's own tick carried look or movement.
+/// when the beat's own tick carried look or movement. On the calibration
+/// lane the requester additionally refuses to pin before the setup evidence
+/// is recorded ([`beat_requests_allowed`]), so every AE-behavior sample the
+/// runner measures postdates the mask-identity event it must be judged
+/// against.
 pub(super) fn request_beat_captures(
     mut kernel: Kernel,
     capture: Res<CaptureTarget>,
@@ -315,6 +319,7 @@ pub(super) fn request_beat_captures(
 ) {
     let state = &mut *kernel.state;
     if !drive_allowed(*kernel.readiness, &kernel.present, state)
+        || !beat_requests_allowed(state)
         || state.capture_in_flight.is_some()
     {
         return;

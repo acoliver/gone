@@ -235,16 +235,16 @@ fn headless_plugins(scenario: &Scenario) -> PluginGroupBuilder {
 
 /// The headless update loop's wait between updates, from the scenario clock:
 /// one tick's duration (`1 / ticks_per_second`, in whole nanoseconds) on the
-/// capture lane, so the simulation's wall-clock rate is the scenario's
-/// declared rate modulo render cost and sleep granularity; zero on the perf
-/// lane, which samples real frame times and must not be paced. The canary
-/// lane has no runner wait to configure: winit owns its loop and the display
-/// paces its presents, so the clock rule there is unchanged and the wall rate
-/// is the display's present rate.
+/// capture and calibration lanes, so the simulation's wall-clock rate is the
+/// scenario's declared rate modulo render cost and sleep granularity; zero
+/// on the perf lane, which samples real frame times and must not be paced.
+/// The canary lane has no runner wait to configure: winit owns its loop and
+/// the display paces its presents, so the clock rule there is unchanged and
+/// the wall rate is the display's present rate.
 #[must_use]
 fn drive_pace(scenario: &Scenario) -> std::time::Duration {
     match scenario.mode {
-        ScenarioMode::Capture => {
+        ScenarioMode::Capture | ScenarioMode::Calibration => {
             std::time::Duration::from_nanos(1_000_000_000 / scenario.ticks_per_second)
         }
         ScenarioMode::Perf => std::time::Duration::ZERO,
