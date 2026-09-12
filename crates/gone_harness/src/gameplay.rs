@@ -53,6 +53,7 @@ pub fn gameplay_smoke_scenario() -> Scenario {
         sample_frames: 0,
         content: Content::Gameplay,
         calibration: None,
+        lifecycle: None,
     }
 }
 
@@ -409,6 +410,7 @@ mod tests {
             sample_frames: 0,
             content: Content::Gameplay,
             calibration: None,
+            lifecycle: None,
         }
     }
 
@@ -527,6 +529,7 @@ mod tests {
             sample_frames: 0,
             content: Content::Gameplay,
             calibration: None,
+            lifecycle: None,
         };
         let report = three_beat_report(&[(2, 0.0), (20, -160.0), (40, 140.0)]);
         assert!(verify_gameplay(&scenario, &report).is_ok());

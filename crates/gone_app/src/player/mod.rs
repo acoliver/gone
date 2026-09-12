@@ -242,6 +242,15 @@ impl GameplayInput {
         self.movement = MoveMotion::zero();
         self.edges = Vec::new();
     }
+
+    /// Clear the plane's pending and held input at once (the lifecycle
+    /// lane's focus-loss boundary): undelivered look, movement, and button
+    /// edges all drop, so nothing accumulated before the loss can play
+    /// against a window that no longer has focus. The device analog is
+    /// bevy's own synthetic key releases on unfocus.
+    pub(crate) fn clear_held(&mut self) {
+        self.end_frame();
+    }
 }
 
 /// The one exit edge the cursor state machine consumes.

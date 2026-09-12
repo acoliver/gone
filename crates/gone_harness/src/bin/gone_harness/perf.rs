@@ -40,6 +40,7 @@ fn perf_calibration_scenario(policy: &PerfPolicy) -> Scenario {
         sample_frames: policy.sample_frames,
         content: Content::Calibration,
         calibration: None,
+        lifecycle: None,
     }
 }
 

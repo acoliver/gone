@@ -184,6 +184,7 @@ impl MatrixCell {
             sample_frames: 0,
             content: Content::Calibration,
             calibration: Some(self.params),
+            lifecycle: None,
         }
     }
 

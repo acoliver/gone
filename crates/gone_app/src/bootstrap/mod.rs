@@ -149,10 +149,11 @@
 //! owns the update chain (the drive half in the `ScriptedInput` set, the
 //! post-drive half that captures post-tick state); [`capture`] owns the
 //! capture receiver and I/O; [`calibration`] owns the calibration lane's
-//! scene, evidence recording, and camera reconciliation; [`state`] owns the
-//! scenario run state (counters, beat ledgers, readiness, failure recording,
-//! the scenario clock); [`finish`] owns the close (completion scan, the
-//! `max_frames` deadline, the report); and the test modules pin the
+//! scene, evidence recording, and camera reconciliation; [`lifecycle`] owns
+//! the stage-B lane's window drives and their native observations; [`state`]
+//! owns the scenario run state (counters, beat ledgers, readiness, failure
+//! recording, the scenario clock); [`finish`] owns the close (completion
+//! scan, the `max_frames` deadline, the report); and the test modules pin the
 //! accounting, readiness, and gameplay-drive regressions without needing a
 //! renderer.
 
@@ -161,6 +162,7 @@ mod capture;
 mod drive;
 mod finish;
 mod gameplay;
+mod lifecycle;
 mod state;
 
 #[cfg(test)]
@@ -242,6 +244,16 @@ struct ChipSprite(Option<Entity>);
 #[derive(Resource, Default)]
 struct CaptureTarget(Option<Handle<Image>>);
 
+/// The capture target's extent in pixels, recorded when the target image is
+/// created (`setup_harness_scene` reads it back off the created image). The
+/// lifecycle lane's resize observer records it beside the window's new
+/// extent; a Copy resource keeps that observer free of the asset store.
+#[derive(Resource, Clone, Copy, Debug, Default)]
+struct CaptureExtent {
+    width: u32,
+    height: u32,
+}
+
 /// Construct the harness plugin from the harness-mode environment.
 pub struct BootstrapPlugin {
     scenario: Scenario,
@@ -282,6 +294,10 @@ impl BootstrapPlugin {
 
 impl Plugin for BootstrapPlugin {
     fn build(&self, app: &mut App) {
+        // The lifecycle lane drives and observes the real window surface, so
+        // a headless lifecycle run is a launch misconfiguration and fails
+        // here, at plugin build, before any scenario time can run.
+        lifecycle::enforce_windowed(self.scenario.mode, self.mode, &self.scenario.name);
         app.insert_resource(self.mode);
         app.init_resource::<Readiness>();
         // The canary holds its scenario clock until the window presents its
@@ -361,6 +377,12 @@ impl Plugin for BootstrapPlugin {
                     .in_set(ScriptedInput),
             );
             register_post_drive_systems(app);
+            // The lifecycle lane's window drives and observers join the
+            // shared chain: the drive before `drive_ticks` (inside the
+            // scripted-input set), the observers in the post-drive half.
+            if self.scenario.mode == ScenarioMode::Lifecycle {
+                lifecycle::register(app);
+            }
         }
     }
 }
@@ -401,6 +423,16 @@ fn setup_harness_scene(mut ctx: HarnessSceneContext) {
             spawn_window_camera(&mut ctx.commands);
         }
     }
+    // Record the extent the target was actually created at: the resize
+    // observer reads this resource, not the asset store.
+    let extent = ctx
+        .images
+        .get(&handle)
+        .map_or(CaptureExtent::default(), |image| CaptureExtent {
+            width: image.width(),
+            height: image.height(),
+        });
+    ctx.commands.insert_resource(extent);
     ctx.capture.0 = Some(handle);
     let (handle, entity) = spawn_chip_sprite(&mut ctx.commands, &mut ctx.images);
     ctx.chip.0 = Some(handle);

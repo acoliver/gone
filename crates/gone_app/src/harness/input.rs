@@ -224,11 +224,17 @@ impl MoveMotion {
 pub struct InputAdapter {
     actions: VecDeque<ScriptedAction>,
     /// Pending button edges, drained one tick at a time.
-    edge_queue: VecDeque<ButtonEdge>,
+    pub(super) edge_queue: VecDeque<ButtonEdge>,
+    /// Synthetic release edges queued by a focus clear. They deliver ahead
+    /// of `edge_queue` (they are older than anything dispatched later) and
+    /// a later clear never drops them: a release that joined the
+    /// exactly-once stream always delivers exactly once, whatever else the
+    /// input layer drops at a later boundary.
+    pub(super) synthetic_releases: VecDeque<ButtonEdge>,
     /// Look motion to deliver on the next fixed update.
-    pending_motion: Delta,
+    pub(super) pending_motion: Delta,
     /// Movement to deliver on the next fixed update.
-    pending_movement: MoveMotion,
+    pub(super) pending_movement: MoveMotion,
     tick_floor: u64,
     /// The scenario clock's rate, in ticks per second: a wait duration
     /// converts to whole ticks against it.
@@ -239,6 +245,11 @@ pub struct InputAdapter {
     /// Ticks still held by the duration wait that dispatched most recently,
     /// spent one exact tick per step. Zero when none is in force.
     hold_remaining_ticks: f32,
+    /// Buttons currently held: presses whose release has not been
+    /// dispatched yet. The lifecycle lane's focus clear releases every
+    /// held button (see `lifecycle::InputAdapter::clear_held`), the
+    /// scripted analog of a real device's stuck key.
+    pub(super) held: Vec<Button>,
 }
 
 impl InputAdapter {
@@ -272,12 +283,14 @@ impl InputAdapter {
         Self {
             actions,
             edge_queue: VecDeque::new(),
+            synthetic_releases: VecDeque::new(),
             pending_motion: Delta::zero(),
             pending_movement: MoveMotion::zero(),
             tick_floor: 0,
             ticks_per_second,
             hold_until_tick: 0,
             hold_remaining_ticks: 0.0,
+            held: Vec::new(),
         }
     }
 
@@ -287,17 +300,19 @@ impl InputAdapter {
         self.tick_floor
     }
 
-    /// The still-buffered button edges (depth = how many fixed updates they would
+    /// The still-buffered button edges, a focus clear's queued synthetic
+    /// releases included (depth = how many fixed updates they would
     /// cover). Mainly diagnostic.
     #[must_use]
     pub fn pending_edges(&self) -> usize {
-        self.edge_queue.len()
+        self.edge_queue.len() + self.synthetic_releases.len()
     }
 
-    /// True if no scripted actions remain undispatched.
+    /// True if no scripted actions remain undispatched and no buffered
+    /// output (edge queue or synthetic release) is still owed a step.
     #[must_use]
     pub fn is_complete(&self) -> bool {
-        self.actions.is_empty() && self.edge_queue.is_empty()
+        self.actions.is_empty() && self.edge_queue.is_empty() && self.synthetic_releases.is_empty()
     }
 
     /// Inject one action immediately (called from a scripted update).
@@ -318,7 +333,13 @@ impl InputAdapter {
 
     /// Advance one fixed update. Returns the edges to deliver this tick (exactly the
     /// edges whose turn it is) plus this tick's look motion and movement, each in
-    /// its own payload. Actions whose tick is not yet reached stay queued,
+    /// its own payload. Queued output is the adapter's oldest delivery tier
+    /// (a focus clear's synthetic releases, then the buffered edge queue):
+    /// a step with any queued edge delivers exactly those edges and holds
+    /// the rest — no same-tick action, motion, or movement beside them, and
+    /// the action clock does not advance — so the action that would have
+    /// dispatched this tick dispatches on a later step, and each queued
+    /// edge delivers exactly once. Actions whose tick is not yet reached stay queued,
     /// and actions queued after a wait stay queued until the wait's hold
     /// lifts, whatever their own ticks say. A duration hold burns one of
     /// its ticks per step (the step that dispatches the wait excluded, the
@@ -335,6 +356,11 @@ impl InputAdapter {
             motion: Delta::zero(),
             movement: MoveMotion::zero(),
         };
+        if !self.synthetic_releases.is_empty() || !self.edge_queue.is_empty() {
+            out.edges.extend(self.synthetic_releases.drain(..));
+            out.edges.extend(self.edge_queue.drain(..));
+            return out;
+        }
         if self.hold_remaining_ticks > 0.0 {
             self.hold_remaining_ticks -= 1.0;
         }
@@ -358,14 +384,22 @@ impl InputAdapter {
 
     fn apply(&mut self, action: ScriptedAction, out: &mut Step) {
         match action.action {
-            Action::Press { button } => out.edges.push(ButtonEdge {
-                button,
-                edge: Edge::Press,
-            }),
-            Action::Release { button } => out.edges.push(ButtonEdge {
-                button,
-                edge: Edge::Release,
-            }),
+            Action::Press { button } => {
+                if !self.held.contains(&button) {
+                    self.held.push(button.clone());
+                }
+                out.edges.push(ButtonEdge {
+                    button,
+                    edge: Edge::Press,
+                });
+            }
+            Action::Release { button } => {
+                self.held.retain(|held| held != &button);
+                out.edges.push(ButtonEdge {
+                    button,
+                    edge: Edge::Release,
+                });
+            }
             Action::Look { yaw_deg, pitch_deg } => {
                 self.pending_motion.x += yaw_deg;
                 self.pending_motion.y += pitch_deg;
@@ -785,6 +819,25 @@ mod tests {
             1,
             "a zero wait consumes no scenario time"
         );
+    }
+
+    #[test]
+    fn queued_edges_deliver_before_the_same_ticks_actions() {
+        // The lifecycle focus clear queues synthetic releases; the queue is
+        // the adapter's oldest-output lane, so a queued edge delivers on the
+        // next step, ahead of any action dispatching that same tick, and
+        // exactly once.
+        let mut adapter = adapter(vec![key(0, Key::Forward), key(2, Key::Left)]);
+        let _ = adapter.step();
+        adapter.edge_queue.push_back(super::ButtonEdge {
+            button: Button::Key(Key::Forward),
+            edge: Edge::Release,
+        });
+        let next = adapter.step();
+        assert_eq!(next.edges.len(), 1, "the queued release delivered alone");
+        assert_eq!(next.edges[0].edge, Edge::Release);
+        // A later step cannot deliver it again.
+        assert_eq!(adapter.step().edges.len(), 0);
     }
 
     #[test]

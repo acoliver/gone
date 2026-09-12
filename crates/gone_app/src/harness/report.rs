@@ -130,6 +130,55 @@ pub enum TimedEvent {
         /// The recorded setup evidence.
         evidence: crate::harness::calibration::CalibrationEvidence,
     },
+    /// The lifecycle lane's native focus observation: the window's focus
+    /// state as the OS delivered it (a real resign-key or become-key event,
+    /// never a synthetic write). Recorded once per observed transition after
+    /// the readiness boundary; the focus-loss observation is the trigger for
+    /// the input layer's held-input clear (the `InputCleared` event beside
+    /// it).
+    WindowFocus {
+        /// Rendered tick the observation belongs to (the just-driven tick).
+        tick: u64,
+        /// Rendered frame of that same moment.
+        frame: u64,
+        /// The window's focus state after the transition.
+        focused: bool,
+    },
+    /// The lifecycle lane's input-layer clear, recorded when a native focus
+    /// loss lands: the adapter's pending and held input were dropped, and
+    /// every held button's synthetic release joined the exactly-once
+    /// delivery stream (it appears as an ordinary `Input` event on the next
+    /// step).
+    InputCleared {
+        /// Rendered tick of the focus loss that triggered the clear.
+        tick: u64,
+        /// Rendered frame of that same moment.
+        frame: u64,
+        /// Buffered-but-undelivered edges the clear discarded.
+        dropped_edges: usize,
+        /// Held buttons the clear released, in the report's button spelling.
+        released: Vec<String>,
+    },
+    /// The lifecycle lane's native resize observation: the OS resized the
+    /// window through its real surface, and the capture target kept its
+    /// fixed extent. The report's width/height are the window's new logical
+    /// size, equal to physical at the lane's forced scale factor of 1.0;
+    /// the timeline's ticks keep counting past the resize (the phase
+    /// timeline never restarts).
+    WindowResized {
+        /// Rendered tick the observation belongs to (the just-driven tick).
+        tick: u64,
+        /// Rendered frame of that same moment.
+        frame: u64,
+        /// The window's new width (logical; physical matches at scale 1.0).
+        width: f32,
+        /// The window's new height (logical; physical matches at scale 1.0).
+        height: f32,
+        /// The capture target's width for the same moment.
+        capture_width: u32,
+        /// The capture target's height for the same moment.
+        capture_height: u32,
+    },
 }
 
 impl TimedEvent {
@@ -150,7 +199,10 @@ impl TimedEvent {
             | Self::Calibration { tick, frame, .. }
             | Self::PlayerYaw { tick, frame, .. }
             | Self::WakePhase { tick, frame, .. }
-            | Self::PlayerPosition { tick, frame, .. } => (1, *tick, *frame),
+            | Self::PlayerPosition { tick, frame, .. }
+            | Self::WindowFocus { tick, frame, .. }
+            | Self::InputCleared { tick, frame, .. }
+            | Self::WindowResized { tick, frame, .. } => (1, *tick, *frame),
             Self::Complete { frame } | Self::Failure { frame, .. } => (2, u64::MAX, *frame),
         }
     }
@@ -461,6 +513,68 @@ mod tests {
     #[test]
     fn first_failure_is_none_on_a_clean_report() {
         assert_eq!(sample().first_failure(), None);
+    }
+
+    #[test]
+    fn lifecycle_event_kinds_roundtrip_and_sort_with_their_tick() {
+        // The lifecycle lane's kinds ride the canonical order alongside the
+        // other run events: focus observations, the input clear, and the
+        // resize observation all sort by (tick, frame), terminal events
+        // last.
+        let mut report = sample();
+        report.events = vec![
+            TimedEvent::Complete { frame: 40 },
+            TimedEvent::WindowResized {
+                tick: 30,
+                frame: 30,
+                width: 1280.0,
+                height: 720.0,
+                capture_width: 1920,
+                capture_height: 1080,
+            },
+            TimedEvent::InputCleared {
+                tick: 20,
+                frame: 20,
+                dropped_edges: 0,
+                released: vec!["Key(Activate)".to_owned()],
+            },
+            TimedEvent::WindowFocus {
+                tick: 10,
+                frame: 10,
+                focused: true,
+            },
+            TimedEvent::Ready { frame: 0 },
+        ];
+        super::sort_events(&mut report.events);
+        let json = super::report_to_json(&report).expect("serializes");
+        let parsed = super::parse_report(&json).expect("parses");
+        let kinds: Vec<String> = parsed
+            .events
+            .iter()
+            .map(|event| match event {
+                TimedEvent::Ready { .. } => "ready".to_owned(),
+                TimedEvent::WindowFocus { focused, .. } => {
+                    format!("focus:{focused}")
+                }
+                TimedEvent::InputCleared { released, .. } => {
+                    format!("cleared:{}", released.join(","))
+                }
+                TimedEvent::WindowResized { width, height, .. } => {
+                    format!("resized:{width}x{height}")
+                }
+                _ => "other".to_owned(),
+            })
+            .collect();
+        assert_eq!(
+            kinds,
+            [
+                "ready",
+                "focus:true",
+                "cleared:Key(Activate)",
+                "resized:1280x720",
+                "other"
+            ]
+        );
     }
 
     /// A calibration evidence event with plausible fixture values.

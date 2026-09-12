@@ -107,6 +107,7 @@ commands:
   harness <scenario>   run one scenario file (builds both binaries first)
   harness compare <s>   run a scenario twice and diff the event timelines
   harness calibration  run the 4-cell calibration matrix (luminance step AE on/off, patch metering, uniform control) against predeclared assertions
+  harness lifecycle    run the stage-B lifecycle lane: windowed drives (focus loss clears held input, reacquisition, resize with capture dims, clean close), then the runner timeout (kill + reap, named failure)
   harness perf [s]     run the perf calibration lane against the checked-in policy
   harness render-check  run the render canary: smoke scenario windowed, the one onscreen capture machine-verified
   every harness lane holds a display-awake assertion (caffeinate -d -u) for the lane
@@ -193,7 +194,10 @@ fn named_failure(label: &str, step: &str, err: &CommandFailed) -> CommandFailed 
 /// builds once then runs the scenario twice and diffs the timelines;
 /// `harness calibration` runs the 4-cell calibration matrix (each cell one
 /// calibration-mode child run, judged runner-side against predeclared
-/// assertions); `harness perf [scenario]` runs the perf calibration lane
+/// assertions); `harness lifecycle` runs the stage-B lifecycle lane (the
+/// windowed lifecycle scenario judged against the lane's native-observation
+/// assertions, then the timeout case under the lane's own budget);
+/// `harness perf [scenario]` runs the perf calibration lane
 /// against the checked-in policy (default scenario derived from the policy);
 /// `harness render-check` runs the smoke scenario through the canary lane
 /// (the runner's `--render-check`: windowed, onscreen capture machine-verified,
@@ -245,6 +249,9 @@ fn run_harness_command(rest: &[String], root: &Path) -> Result<(), CommandFailed
         }
         [cmd] if cmd == "calibration" => {
             plan = plan.args(["calibration"]);
+        }
+        [cmd] if cmd == "lifecycle" => {
+            plan = plan.args(["lifecycle"]);
         }
         [cmd] if cmd == "perf" => {
             plan = plan.args(["perf"]);

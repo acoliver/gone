@@ -244,7 +244,7 @@ fn headless_plugins(scenario: &Scenario) -> PluginGroupBuilder {
 #[must_use]
 fn drive_pace(scenario: &Scenario) -> std::time::Duration {
     match scenario.mode {
-        ScenarioMode::Capture | ScenarioMode::Calibration => {
+        ScenarioMode::Capture | ScenarioMode::Calibration | ScenarioMode::Lifecycle => {
             std::time::Duration::from_nanos(1_000_000_000 / scenario.ticks_per_second)
         }
         ScenarioMode::Perf => std::time::Duration::ZERO,

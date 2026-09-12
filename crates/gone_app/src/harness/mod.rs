@@ -16,6 +16,7 @@ pub mod beat;
 pub mod calibration;
 pub mod frame;
 pub mod input;
+pub mod lifecycle;
 pub mod perf;
 pub mod report;
 pub mod scenario;
@@ -24,6 +25,7 @@ pub use beat::*;
 pub use calibration::*;
 pub use frame::*;
 pub use input::*;
+pub use lifecycle::*;
 pub use perf::*;
 pub use report::*;
 pub use scenario::*;
@@ -50,4 +52,11 @@ pub use scenario::*;
 /// in force, the authored exposure, the patch area and placements, the light
 /// levels and step tick, and the pinned sample ticks). The capture and perf
 /// surfaces are unchanged.
-pub const PROTOCOL_VERSION: u32 = 4;
+///
+/// Version 5: the lifecycle lane — scenarios gain the `lifecycle` mode plus a
+/// required `lifecycle` section (three window drives pinned to ticks: focus
+/// loss, reacquisition, resize), and reports gain the `WindowFocus`,
+/// `InputCleared`, and `WindowResized` events: the native focus and resize
+/// observations and the input layer's held-input clear at the focus-loss
+/// boundary. The capture, perf, and calibration surfaces are unchanged.
+pub const PROTOCOL_VERSION: u32 = 5;
