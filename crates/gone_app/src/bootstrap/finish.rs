@@ -66,12 +66,12 @@ pub(super) fn finish_scan(
 
 /// The lane's completion test: the perf lane wants the sample window full;
 /// the lanes with beats want every beat's PNG on disk and the settle window
-/// after the last capture to have passed (calibration behaves exactly like
-/// the capture lane: its beats are the pinned sample ticks).
+/// after the last capture to have passed (calibration and lifecycle behave
+/// exactly like the capture lane: their beats are the pinned moments).
 fn run_complete(state: &HarnessState) -> bool {
     match state.scenario.mode {
         ScenarioMode::Perf => state.sampler.is_complete(),
-        ScenarioMode::Capture | ScenarioMode::Calibration => {
+        ScenarioMode::Capture | ScenarioMode::Calibration | ScenarioMode::Lifecycle => {
             state.all_beats_captured() && state.frame >= state.last_beat_frame + SETTLE_FRAMES
         }
     }

@@ -122,6 +122,7 @@ pub fn gameplay_full_scenario() -> Scenario {
         sample_frames: 0,
         content: Content::Gameplay,
         calibration: None,
+        lifecycle: None,
     }
 }
 

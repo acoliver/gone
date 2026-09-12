@@ -719,6 +719,70 @@ run dir holds `scenario.json`, `readiness-proof.png`, `report.json`, and
 verdict measures wall-clock on the real GPU, so it is a local gate, not a
 deterministic CI step.
 
+## Lifecycle lane (protocol v5)
+
+The lifecycle lane closes the stage-B lifecycle bullet: the app's window
+lifecycle is verified as native observations, not synthetic injections. The
+scenario carries a `lifecycle` section pinning three window drives to ticks
+(focus loss, reacquisition, resize); the app performs them through its real
+window surface — the drive writes `Window::visible`/`Window::focused`/
+`Window::resolution`, bevy forwards them through winit, and the OS delivers
+the real `Focused(false)`, `Focused(true)`, and `WindowResized` events back —
+and records the observations as the report's `WindowFocus`, `InputCleared`,
+and `WindowResized` events (protocol v5; the report surface is otherwise
+unchanged). A headless lifecycle run is a launch misconfiguration and fails
+at the app's plugin build: every drive writes the window, so there is no
+degraded headless mode.
+
+    gone_harness lifecycle
+    cargo xtask harness lifecycle
+
+The lane runs two child processes. The first is the clean-close run: the
+built-in scenario (`gone_harness::lifecycle_lane::lifecycle_scenario`) holds a
+key from the first driven tick (never scripted a release — the run's analog
+of a stuck key), delivers one look before the loss so the input stream has
+spoken, pins the drives at ticks 40/90/140 with the resize to 1280x720, and
+pins beats around the drives (20/60/110/160). The runner drives it through
+the canary path (windowed) and judges the report against the lane's
+predeclared assertions:
+
+- `focus-loss-observed` — a native focused=false observation lands after the
+  readiness boundary.
+- `held-input-cleared-at-the-loss` — exactly one `InputCleared` at the loss's
+  tick, releasing the held key, dropping nothing (nothing is buffered).
+- `held-key-releases-exactly-once` — the synthetic release delivers exactly
+  once through the ordinary input stream after the clear, and nothing presses
+  the key again.
+- `reacquisition-observed` — a native focused=true observation after the loss
+  (the reacquire drive waits for the observed loss, because bevy applies a
+  focused write only against a cache that already saw it).
+- `no-input-after-reacquisition` — no input event of any kind past the
+  reacquisition's tick: no stuck motion, no mouse jump, no re-delivered edge.
+- `resize-recorded` — a native resize observation at the scenario's extent
+  with the capture target unchanged at 1920x1080: physical surface and
+  capture dimensions recorded together.
+- `timeline-keeps-running` — the observation ticks strictly increase
+  (loss < reacquire < resize) and the beat manifest still pins past the
+  resize: the phase timeline never restarted.
+- `clean-close` — the report records exactly one `Complete` and no
+  `Failure`; the child's exit code 0 is the runner's own status check.
+
+The second child is the timeout case: the same drives with beats pinned
+millions of ticks out, so the child is healthy and honestly mid-plan when
+the lane's 8-second budget fires. The case under test is the runner's
+ownership of termination — kill, reap, and a named timeout failure without
+hanging — and it passes only on that named failure
+(`gone_harness::lifecycle_lane::is_timeout_failure`); a run that completes
+inside the budget or fails any other way fails the case.
+
+The lane exits 0 only when every assertion held on the clean-close run and
+the timeout case failed the way it must. Each clean-close run dir holds the
+usual artifacts (`scenario.json`, `report.json`, `beats/`, the readiness
+proof, the first beat's onscreen capture) plus `lifecycle-evidence.json`:
+the lane identity, the run id, and every assertion's expected-vs-measured
+outcome. Run dirs live under `tmp/harness/lifecycle/<run-id>/` and
+`tmp/harness/lifecycle-timeout/<run-id>/`.
+
 ## Deferred (stage B)
 
 Not in slice A, per the plan:
@@ -726,12 +790,15 @@ Not in slice A, per the plan:
 - Vision checklist plus vision verification (the two-stage model's second
   verdict; machine decode only in this slice).
 - Negative verification cases (a scenario that must fail naming why).
-- Lifecycle scenarios (delayed readiness, the no-content-before-ready assertion
-  on the GONE_READY line).
+- Delayed-readiness lifecycle variants (the no-content-before-ready assertion
+  on the GONE_READY line); the window-observation lifecycle lane itself has
+  landed (see above).
 - The milestone performance gate: the populated room at 4K, 60 FPS (issues
   #2/#10). The calibration lane's policy and reporting are its substrate; the
   calibration thresholds are placeholders for that milestone's policy.
-- Windows kill-tree for the child process.
+- Windows kill-tree for the child process (the macOS runner kills the child
+  process id and reaps it, which the lifecycle lane's timeout case
+  exercises).
 
 ## Known limits (honest notes)
 

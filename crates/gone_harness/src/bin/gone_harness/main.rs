@@ -41,7 +41,10 @@ mod paths;
 mod perf;
 mod run;
 
+use std::path::Path;
+
 use gone_harness::calibration_lane;
+use gone_harness::lifecycle_lane;
 use gone_harness::scenario::{Scenario, scenario_to_json};
 use gone_harness::{Content, ScenarioMode};
 
@@ -83,6 +86,7 @@ pub fn smoke_scenario() -> Scenario {
         sample_frames: 0,
         content: Content::Calibration,
         calibration: None,
+        lifecycle: None,
     }
 }
 
@@ -108,12 +112,14 @@ fn dispatch(args: &[String]) -> i32 {
         Some("gameplay-smoke") => run_gameplay_smoke(render_check),
         Some("gameplay-full") => run_gameplay_full(render_check),
         Some("calibration") => run_calibration(),
+        Some("lifecycle") => run_lifecycle(),
         Some("--help" | "-h") => {
             eprintln!(
-                "usage: gone-harness [--render-check] <smoke | gameplay-smoke | gameplay-full | calibration | perf [scenario] | compare <scenario> | <scenario.json>>
+                "usage: gone-harness [--render-check] <smoke | gameplay-smoke | gameplay-full | calibration | lifecycle | perf [scenario] | compare <scenario> | <scenario.json>>
   (no command runs the smoke scenario)
   --render-check: canary lane (focused window: it must be ordered in for its surface to present; one onscreen capture machine-verified after the run)
-  calibration: the 4-cell calibration matrix (AE on/off, patch metering, uniform control)"
+  calibration: the 4-cell calibration matrix (AE on/off, patch metering, uniform control)
+  lifecycle: the stage-B lifecycle lane (windowed drives: focus loss clears held input, reacquisition, resize; clean close; runner timeout)"
             );
             0
         }
@@ -298,6 +304,125 @@ fn print_cell_outcome(
         }
         Err(e) => {
             eprintln!("CALIBRATION CELL {}: FAILED: {e}", cell.id.label());
+            false
+        }
+    }
+}
+
+/// The lifecycle lane (issue #5 stage B): the built-in lifecycle scenario
+/// through the canary path (windowed: every drive writes the real window
+/// surface, every observation arrives through the OS event loop), judged
+/// runner-side against the predeclared assertions, then the timeout case: a
+/// long-planned child killed and reaped at the lane's budget, failing with
+/// the timeout named. Exit 0 only when the clean-close run's assertions all
+/// hold and the timeout case fails the way it must.
+fn run_lifecycle() -> i32 {
+    let root = repo_root().expect("root");
+    let out_root = root.join("tmp").join("harness");
+    let clean_close_held = run_lifecycle_clean_close(&root, &out_root);
+    let timeout_held = run_lifecycle_timeout(&root, &out_root);
+    i32::from(!(clean_close_held && timeout_held))
+}
+
+/// The clean-close case: run the lifecycle scenario windowed (the canary
+/// path is what makes the run windowed; the child refuses a headless
+/// lifecycle run at plugin build), judge the report against the predeclared
+/// assertions, and write the evidence artifact. The run returning `Ok`
+/// already asserts the child's exit code 0 (`run_scenario` checks the
+/// status beside the report and captures).
+fn run_lifecycle_clean_close(root: &Path, out_root: &Path) -> bool {
+    let scenario = lifecycle_lane::lifecycle_scenario();
+    let scenario_path = root.join("tmp").join("lifecycle-scenario.json");
+    let json = scenario_to_json(&scenario).expect("scenario json");
+    write_or("lifecycle scenario", &scenario_path, json.as_bytes()).expect("write");
+    let outcome = run_scenario(
+        root,
+        &scenario_path,
+        &scenario,
+        out_root,
+        true,
+        DEFAULT_TIMEOUT,
+    )
+    .map_err(|e| e.to_string())
+    .and_then(|run_dir| {
+        let run_id = run_dir
+            .file_name()
+            .map_or_else(String::new, |name| name.to_string_lossy().into_owned());
+        lifecycle_lane::judge_run(&scenario, &run_dir, &run_id)
+    });
+    match outcome {
+        Ok(judgment) => {
+            let head = if judgment.passed { "PASS" } else { "FAIL" };
+            println!(
+                "LIFECYCLE clean-close: {head} ({}/{} assertions held)",
+                judgment.assertions.iter().filter(|a| a.passed).count(),
+                judgment.assertions.len()
+            );
+            for assertion in &judgment.assertions {
+                if assertion.passed {
+                    println!("  ok   {}: {}", assertion.name, assertion.measured);
+                } else {
+                    println!(
+                        "  FAIL {}: expected {} | measured {}",
+                        assertion.name, assertion.expected, assertion.measured
+                    );
+                }
+            }
+            println!("ARTIFACTS: {}", judgment.artifact_path.display());
+            judgment.passed
+        }
+        Err(e) => {
+            eprintln!("LIFECYCLE clean-close: FAILED: {e}");
+            false
+        }
+    }
+}
+
+/// The timeout case: run the long-planned lifecycle scenario under the
+/// lane's short budget. The child is healthy and mid-plan when the budget
+/// fires, so the case under test is the runner's ownership of termination:
+/// kill, reap, and return the named timeout failure without hanging. The
+/// case passes only on that named timeout; a run that completed inside the
+/// budget or failed some other way fails it.
+fn run_lifecycle_timeout(root: &Path, out_root: &Path) -> bool {
+    let scenario = lifecycle_lane::timeout_scenario();
+    let scenario_path = root.join("tmp").join("lifecycle-timeout-scenario.json");
+    let json = scenario_to_json(&scenario).expect("scenario json");
+    write_or(
+        "lifecycle timeout scenario",
+        &scenario_path,
+        json.as_bytes(),
+    )
+    .expect("write");
+    let start = std::time::Instant::now();
+    let outcome = run_scenario(
+        root,
+        &scenario_path,
+        &scenario,
+        out_root,
+        true,
+        lifecycle_lane::TIMEOUT_BUDGET,
+    );
+    let elapsed = start.elapsed();
+    match outcome {
+        Err(e) if lifecycle_lane::is_timeout_failure(&e.to_string()) => {
+            println!(
+                "LIFECYCLE timeout: PASS (child killed and reaped at the budget; named \
+                 failure after {:.1}s: {e})",
+                elapsed.as_secs_f32()
+            );
+            true
+        }
+        Err(e) => {
+            eprintln!("LIFECYCLE timeout: FAILED: the run failed without the timeout named: {e}");
+            false
+        }
+        Ok(run_dir) => {
+            eprintln!(
+                "LIFECYCLE timeout: FAILED: the run completed cleanly at {} (the budget \
+                 must terminate a healthy mid-plan child)",
+                run_dir.display()
+            );
             false
         }
     }

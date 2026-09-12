@@ -63,6 +63,12 @@ pub enum ScenarioMode {
     /// still flow through the beat lane; the scenario's beats are the pinned
     /// capture sample ticks.
     Calibration,
+    /// The lifecycle lane (issue #5 stage B): real window drives pinned by
+    /// the scenario's `lifecycle` section (focus loss, reacquisition,
+    /// resize), observed natively through the OS surface. Requires the
+    /// windowed run mode (the runner always selects it); the app rejects a
+    /// headless lifecycle run at plugin build.
+    Lifecycle,
 }
 
 /// One scenario definition.
@@ -116,6 +122,11 @@ pub struct Scenario {
     /// [`parse_scenario`]); absent on the other lanes.
     #[serde(default)]
     pub calibration: Option<crate::harness::calibration::CalibrationParams>,
+    /// Lifecycle mode only: the window drives (focus loss, reacquisition,
+    /// resize) pinned to ticks. Required exactly when `mode` is `lifecycle`
+    /// (enforced by [`parse_scenario`]); absent on the other lanes.
+    #[serde(default)]
+    pub lifecycle: Option<crate::harness::lifecycle::LifecycleParams>,
 }
 
 impl Default for Scenario {
@@ -133,6 +144,7 @@ impl Default for Scenario {
             warmup_frames: 0,
             sample_frames: 0,
             calibration: None,
+            lifecycle: None,
         }
     }
 }
@@ -177,6 +189,7 @@ pub fn parse_scenario(text: &str) -> Result<Scenario, String> {
         }
     }
     validate_calibration_surface(&scenario)?;
+    validate_lifecycle_surface(&scenario)?;
     Ok(scenario)
 }
 
@@ -207,6 +220,36 @@ fn validate_calibration_surface(scenario: &Scenario) -> Result<(), String> {
         )),
         (_, Some(_)) => Err(format!(
             "scenario `{}` carries a `calibration` section but its mode is not `calibration`",
+            scenario.name
+        )),
+        _ => Ok(()),
+    }
+}
+
+/// The lifecycle surface's cross-field invariants over one parsed scenario:
+/// the `lifecycle` section is required exactly when the mode is `lifecycle`,
+/// a lifecycle scenario predeclares at least one pinned beat (the beats are
+/// the timeline anchors the runner asserts around the drives), and the
+/// section's own drive ordering validates.
+fn validate_lifecycle_surface(scenario: &Scenario) -> Result<(), String> {
+    match (scenario.mode, &scenario.lifecycle) {
+        (ScenarioMode::Lifecycle, Some(params)) => {
+            params.validate()?;
+            if scenario.beats.is_empty() {
+                return Err(format!(
+                    "lifecycle scenario `{}` needs at least one beat (the beats are the \
+                     pinned moments the runner asserts around the window drives)",
+                    scenario.name
+                ));
+            }
+            Ok(())
+        }
+        (ScenarioMode::Lifecycle, None) => Err(format!(
+            "lifecycle scenario `{}` is missing its `lifecycle` section",
+            scenario.name
+        )),
+        (_, Some(_)) => Err(format!(
+            "scenario `{}` carries a `lifecycle` section but its mode is not `lifecycle`",
             scenario.name
         )),
         _ => Ok(()),
@@ -495,5 +538,87 @@ mod tests {
         let bad =
             r#"{"name":"x","seed":0,"actions":[],"beats":[],"calibration":{"initial_level":1}}"#;
         assert!(parse_scenario(bad).is_err());
+    }
+
+    /// A lifecycle scenario with the given beats and lifecycle section.
+    fn lifecycle_json(beats: &str, section: &str) -> String {
+        format!(
+            r#"{{
+                "name": "lifecycle",
+                "seed": 5,
+                "actions": [],
+                "beats": {beats},
+                "mode": "lifecycle",
+                "lifecycle": {section}
+            }}"#
+        )
+    }
+
+    const VALID_LIFECYCLE: &str = r#"{
+        "focus_loss": {"at_tick": 40},
+        "reacquire": {"at_tick": 90},
+        "resize": {"at_tick": 140, "width": 1280, "height": 720}
+    }"#;
+
+    #[test]
+    fn lifecycle_scenario_parses_with_its_drives() {
+        let scenario = parse_scenario(&lifecycle_json(
+            r#"[{"name": "b", "tick": 8}]"#,
+            VALID_LIFECYCLE,
+        ))
+        .expect("parses");
+        assert_eq!(scenario.mode, ScenarioMode::Lifecycle);
+        let params = scenario.lifecycle.expect("section present");
+        assert_eq!(params.focus_loss.at_tick, 40);
+        assert_eq!(params.reacquire.at_tick, 90);
+        assert_eq!(params.resize.at_tick, 140);
+        assert_eq!((params.resize.width, params.resize.height), (1280, 720));
+    }
+
+    #[test]
+    fn lifecycle_scenario_roundtrips() {
+        let a = parse_scenario(&lifecycle_json(
+            r#"[{"name": "b", "tick": 8}]"#,
+            VALID_LIFECYCLE,
+        ))
+        .expect("a");
+        let b: Scenario = parse_scenario(&scenario_to_json(&a).expect("json")).expect("b");
+        assert_eq!(a, b);
+    }
+
+    #[test]
+    fn lifecycle_mode_without_params_is_rejected() {
+        let bad = r#"{"name":"x","seed":0,"actions":[],"beats":[{"name":"b","tick":5}],"mode":"lifecycle"}"#;
+        let err = parse_scenario(bad).expect_err("must fail");
+        assert!(err.contains("`lifecycle` section"), "{err}");
+    }
+
+    #[test]
+    fn lifecycle_params_without_lifecycle_mode_are_rejected() {
+        let bad = format!(
+            r#"{{"name":"x","seed":0,"actions":[],"beats":[],"lifecycle":{VALID_LIFECYCLE}}}"#
+        );
+        let err = parse_scenario(&bad).expect_err("must fail");
+        assert!(
+            err.contains("mode is not `lifecycle`"),
+            "names the surface: {err}"
+        );
+    }
+
+    #[test]
+    fn lifecycle_scenario_without_beats_is_rejected() {
+        let err = parse_scenario(&lifecycle_json("[]", VALID_LIFECYCLE)).expect_err("must fail");
+        assert!(err.contains("at least one beat"), "{err}");
+    }
+
+    #[test]
+    fn lifecycle_drive_ordering_is_enforced_at_parse() {
+        let swapped = VALID_LIFECYCLE.replace(
+            r#""reacquire": {"at_tick": 90}"#,
+            r#""reacquire": {"at_tick": 30}"#,
+        );
+        let err = parse_scenario(&lifecycle_json(r#"[{"name":"b","tick":8}]"#, &swapped))
+            .expect_err("must fail");
+        assert!(err.contains("reacquire tick"), "{err}");
     }
 }

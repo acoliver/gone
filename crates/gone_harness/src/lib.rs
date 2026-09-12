@@ -8,11 +8,15 @@
 //! The crate also carries runner-side verification lanes: [`onscreen`]
 //! machine-verifies the render canary's onscreen capture, [`gameplay`] the
 //! gameplay lane's room and yaw assertions and the gameplay-full lane's wake
-//! progression, exit waypoint, and door walk, and [`calibration_lane`] runs
-//! the four-cell calibration matrix over the app's calibration-evidence lane.
+//! progression, exit waypoint, and door walk, [`calibration_lane`] runs
+//! the four-cell calibration matrix over the app's calibration-evidence lane,
+//! and [`lifecycle_lane`] runs the stage-B lifecycle lane over the app's
+//! native window observations (focus loss, reacquisition, resize, clean
+//! close, runner timeout).
 
 pub mod calibration_lane;
 pub mod gameplay;
+pub mod lifecycle_lane;
 pub mod onscreen;
 
 pub use gone_app::harness::*;
