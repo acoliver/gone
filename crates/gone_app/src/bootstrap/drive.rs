@@ -12,6 +12,8 @@
 //! post-tick by construction, and the look action on a capture tick is
 //! inside both the PNG and the reported yaw sample.
 
+use std::time::Duration;
+
 use bevy::app::{App, Update};
 use bevy::asset::Assets;
 use bevy::camera::visibility::Visibility;
@@ -25,7 +27,7 @@ use bevy::time::{Time, Virtual};
 use bevy::transform::components::Transform;
 
 use super::RunMode;
-use super::gameplay::{GameCameraBound, observe_wake_phase, proof_gate};
+use super::gameplay::{ProofLegs, observe_wake_phase, proof_gate};
 use super::state::{
     BeatCapture, CaptureRequest, HarnessState, OnscreenCapture, PresentGate, PresentProbe,
     Readiness, ScenarioTime, beat_requests_allowed, drive_allowed, onscreen_capture_due,
@@ -33,7 +35,6 @@ use super::state::{
 use super::{CaptureTarget, ChipSprite, ChipTexture};
 use crate::harness::{Content, ScenarioMode, TimedEvent, frame};
 use crate::player::{GameplayInput, LookApplied, PlaneCleared, PlayerYaw, ScriptedInput};
-use crate::readiness::GameAssets;
 
 /// Frame-kernel state shared by the driving systems. A custom [`SystemParam`]
 /// keeps the parameter count per system small and the access exact.
@@ -81,23 +82,23 @@ pub(super) fn register_post_drive_systems(app: &mut App) {
 /// camera and render resources need a rendered frame before a readback can
 /// produce content; the first capture to arrive is the proof. On gameplay
 /// content the request additionally waits on [`proof_gate`]: the required
-/// game assets must have loaded and the rig camera must be bound to the
-/// target, so the readback that proves readiness is a rendered game frame.
-/// Calibration content requests immediately (its dark loading scene is the
-/// whole proof).
+/// game assets must have loaded, the rig camera must be bound to the target,
+/// and the wake eyelid pipeline must have compiled, so the readback that
+/// proves readiness is a rendered game frame the wake pass can already
+/// composite. Calibration content requests immediately (its dark loading
+/// scene is the whole proof).
 pub(super) fn request_readiness_proof(
     readiness: Res<Readiness>,
     capture: Res<CaptureTarget>,
     state: Res<HarnessState>,
-    assets: Option<Res<GameAssets>>,
-    bound: Option<Res<GameCameraBound>>,
+    legs: ProofLegs,
     mut commands: Commands,
 ) {
     let state = state.into_inner();
     if *readiness.into_inner() != Readiness::Loading || state.done {
         return;
     }
-    if !proof_gate(state, assets, bound) {
+    if !proof_gate(state, legs.assets, legs.bound, legs.wake_pipeline) {
         return;
     }
     let handle = capture
@@ -116,8 +117,10 @@ pub(super) fn request_readiness_proof(
 /// present budget, exhausting it failing the run by name as today) instead of
 /// announcing ready with zero presented frames. Headless runs have no gate to
 /// wait for. The adapter was never stepped before this point, so the clock
-/// starts at zero with no input consumed; the wake override keys on
-/// `state.announced`, so the phase advance waits behind the same gate.
+/// starts at zero with no input consumed; the wake driver's gate legs are the
+/// proof's own legs (the gameplay `proof_gate` waits on the eyelid pipeline
+/// too), so the machine's first logical tick is consumed on this same update's
+/// driven tick zero.
 pub(super) fn readiness_boundary(
     readiness: Res<Readiness>,
     present: Res<PresentGate>,
@@ -183,10 +186,27 @@ pub(super) fn request_present_probe(
 /// scenario's degrees to the plane's radians, movement and edges as their
 /// typed payloads — so the player systems integrate it this same update; the
 /// chain sits in the `ScriptedInput` set, which the look chain orders after.
-/// Calibration content has no plane: nothing is offered. The post-drive half
-/// ([`paint_driven_chip`], [`request_beat_captures`]) runs after the player
-/// systems, so what they capture is the integrated post-tick state.
-pub(super) fn drive_ticks(mut kernel: Kernel, mut plane: Option<ResMut<GameplayInput>>) {
+/// The lane also paces bevy's virtual clock by exactly this step (the clock
+/// is kept paused, so nothing else ever advances it): the production wake
+/// driver ([`crate::wake::GameWakePlugin`]) consumes whole logical ticks
+/// from that clock's delta, and this is what makes those ticks land on the
+/// driven scenario ticks — one authored step per driven tick, zero on every
+/// held update — instead of a wall-clock accumulation a readback hold or a
+/// slow frame could skew. The same step is published into the generic `Time`
+/// immediately, because `TimePlugin`'s own publish (`update_virtual_time`)
+/// ran this frame's `First` — before this advance — and copied the paused
+/// clock's zero in: without the mirror the renderer's `Globals` reads a zero
+/// delta on every driven frame and engine temporal effects (auto-exposure)
+/// never adapt. Calibration content has no plane and keeps bevy's clocks
+/// untouched: nothing is offered and nothing is paced. The post-drive half
+/// ([`paint_driven_chip`], [`request_beat_captures`]) runs after the
+/// player systems, so what they capture is the integrated post-tick state.
+pub(super) fn drive_ticks(
+    mut kernel: Kernel,
+    mut plane: Option<ResMut<GameplayInput>>,
+    mut virtual_time: ResMut<Time<Virtual>>,
+    mut generic_time: ResMut<Time>,
+) {
     if !drive_allowed(*kernel.readiness, &kernel.present, &kernel.state) {
         return;
     }
@@ -221,6 +241,16 @@ pub(super) fn drive_ticks(mut kernel: Kernel, mut plane: Option<ResMut<GameplayI
         plane.offer_look(step.motion.x.to_radians(), step.motion.y.to_radians());
         plane.offer_movement(step.movement);
         plane.offer_edges(step.edges);
+        // The driven step, fed to the wake driver's clock: the same seconds
+        // the scenario clock just advanced, never an independent amount.
+        virtual_time.advance_by(Duration::from_secs_f32(kernel.scenario_time.delta_secs()));
+        // The same step, published into the generic clock exactly the way
+        // bevy's own `update_virtual_time` publishes virtual state
+        // (`*current = virt.as_generic()`): TimePlugin's copy ran this
+        // frame's First, before this advance, so the renderer's `Time`
+        // would otherwise hold the paused zero while the wake advances on
+        // virtual. Both clocks must describe the same driven step.
+        *generic_time = virtual_time.as_generic();
     }
     kernel.state.tick += 1;
     kernel.state.frame += 1;
@@ -242,21 +272,22 @@ fn paint_driven_chip(mut kernel: Kernel) {
     paint_chip(&mut kernel, tick, frame_num);
 }
 
-/// Pause bevy's virtual clock for the duration of a capture hold, unpause on
-/// landing. The engine's temporal render effects run on bevy's clocks, not on
-/// the scenario clock: the generic `Time` resource mirrors `Time<Virtual>`
-/// (bevy 0.19 `update_virtual_time`), and `bevy_render`'s
-/// `prepare_globals_buffer` feeds `globals.delta_time` — the auto-exposure
-/// adaptation rate — from that same clock. Pausing virtual time while a beat
-/// readback is in flight makes every held frame render with a zero delta, so
-/// the pinned frame stays pixel-stable for the whole readback instead of
-/// drifting while bevy's wall time runs on; the landing update unpauses and
-/// wall deltas resume. Outside the freeze window (loading, the canary present
-/// probe wait) bevy's clocks run untouched — documented as a residual limit,
-/// not defended against.
+/// Hold bevy's virtual clock at zero delta on every update the drive did not
+/// advance. Gameplay content keeps the clock paused outright — `wire` pinned
+/// it at boot and `drive_ticks` advances it by exactly the driven step — so
+/// this system only re-asserts the pause; `TimePlugin`'s own per-frame
+/// advance observes a paused clock and zeroes the delta, and its `First`
+/// publish (`*current = virt.as_generic()`) carries that zero into the
+/// generic clock with it: a held update leaves both clocks at zero delta
+/// with both elapsed counters standing, which is the held frame's
+/// contribution to the wake driver's tick accumulator and to the renderer's
+/// temporal effects alike. Calibration content keeps the historical freeze
+/// window: paused while a beat readback is in flight (the pinned frame
+/// renders with a zero delta so engine temporal effects freeze instead of
+/// drifting), unpaused otherwise.
 fn freeze_engine_time(state: Res<HarnessState>, mut virtual_time: ResMut<Time<Virtual>>) {
     let state = state.into_inner();
-    if state.capture_in_flight.is_some() {
+    if state.scenario.content == Content::Gameplay || state.capture_in_flight.is_some() {
         virtual_time.pause();
     } else {
         virtual_time.unpause();

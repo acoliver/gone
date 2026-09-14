@@ -6,10 +6,15 @@
 //! directly. Aggregate commands fail fast: the first failing step aborts the
 //! run and names itself.
 //!
-//! Every windowed harness lane holds a display-awake assertion for the lane
-//! duration (`caffeinate -d -u`, issue #23): macOS declines Metal
-//! presentations to a sleeping display, which fails the canary present gate
-//! regardless of which lane is running.
+//! Harness lanes are parsed into a [`HarnessLane`] before anything runs, so an
+//! invalid lane fails the invocation by name and the display-awake assertion
+//! is scoped by lane semantics, not by substring matching: only a lane that
+//! opens a real window and presents to it (the render canary, issue #23)
+//! holds `caffeinate -d -u`, because macOS declines Metal presentations to a
+//! sleeping display. Offscreen lanes render into the harness `Image` target,
+//! never touch the `WindowServer`, and acquire no assertion and no synthesized
+//! activity, so they run unattended while the desktop stays in the user's
+//! control (issue #8).
 
 use std::path::Path;
 use std::process::ExitCode;
@@ -75,6 +80,7 @@ pub fn run(argv: &[String]) -> ExitCode {
         "build" => with_root(|root| run_announced(&build_plan(root))),
         "test" => with_root(|root| run_announced(&test_plan(root))),
         "harness" => with_root(|root| run_harness_command(rest, root)),
+        "capture-opening" => with_root(run_capture_opening),
         "check" => with_root(|root| run_check(rest, root)),
         "help" | "--help" | "-h" => {
             usage();
@@ -109,8 +115,11 @@ commands:
   harness calibration  run the 4-cell calibration matrix (luminance step AE on/off, patch metering, uniform control) against predeclared assertions
   harness perf [s]     run the perf calibration lane against the checked-in policy
   harness render-check  run the render canary: smoke scenario windowed, the one onscreen capture machine-verified
-  every harness lane holds a display-awake assertion (caffeinate -d -u) for the lane
-  duration (issue #23): macOS declines Metal presents to a sleeping display
+  capture-opening      windowless GPU capture of the authored opening: gameplay-smoke then gameplay-full,
+                       each lane's exact run dir printed on its ARTIFACTS line; fails if either lane fails
+  display-awake assertion (caffeinate -d -u): held only by lanes that open a real window and present
+  to it (render-check; issue #23). Offscreen lanes open no window, need no drawable, and acquire no
+  assertion and no synthesized activity, so they run unattended while the desktop stays usable (issue #8)
   check clippy-allows  zero clippy allow/expect suppressions + clippy.toml sync
   check source-size    per-file line gate (warn 750, fail 1000)
   check architecture   gone_sim/gone_harness dependency + protocol-module boundary gate"
@@ -188,75 +197,184 @@ fn named_failure(label: &str, step: &str, err: &CommandFailed) -> CommandFailed 
     }
 }
 
-/// `harness smoke` builds the two binaries (locked) and runs the smoke scenario;
-/// `harness <scenario-path>` runs one scenario; `harness compare <scenario>`
-/// builds once then runs the scenario twice and diffs the timelines;
-/// `harness calibration` runs the 4-cell calibration matrix (each cell one
-/// calibration-mode child run, judged runner-side against predeclared
-/// assertions); `harness perf [scenario]` runs the perf calibration lane
-/// against the checked-in policy (default scenario derived from the policy);
-/// `harness render-check` runs the smoke scenario through the canary lane
-/// (the runner's `--render-check`: windowed, onscreen capture machine-verified,
-/// run dir prefixed `rc`). The built-in gameplay lanes forward
-/// `gameplay-smoke` and `gameplay-full` verbatim. Every lane holds a
-/// display-awake assertion from before the binaries are built until the lane
-/// ends (issue #23). The runner owns the child app's lifecycle (spawn,
-/// kill-on-timeout, reap), so xtask just forwards the exit code.
-fn run_harness_command(rest: &[String], root: &Path) -> Result<(), CommandFailed> {
-    // Issue #23: macOS declines Metal presentations to a sleeping display
-    // while the desktop keeps compositing in memory, so every lane that
-    // opens the canary window needs the display held awake for its whole
-    // duration. Acquired once here: all lanes route through this function.
-    let _display_awake = DisplayAssertion::acquire();
-    build_harness_binaries(root)?;
-    let mut plan = CommandPlan::new("cargo")
-        .args(["run", "-p", "gone_harness", "--bin", "gone_harness", "--"])
-        .current_dir(root);
-    match rest {
-        [] => {
-            plan = plan.args(["smoke"]);
-        }
-        [cmd] if cmd == "render-check" => {
-            plan = plan.args(["--render-check", "smoke"]);
-        }
-        [cmd, ..] if cmd == "render-check" => {
-            return Err(usage_error(
-                "harness",
-                "render-check takes no scenario (it runs the smoke scenario in the canary lane)",
-            ));
-        }
-        [cmd, scenario] if cmd == "compare" => {
-            plan = plan.args(["compare", scenario]);
-        }
-        [cmd, ..] if cmd == "compare" => {
-            return Err(usage_error(
-                "harness",
-                "too many arguments for `compare <scenario>`",
-            ));
-        }
-        [cmd] if cmd == "smoke" => {
-            plan = plan.args(["smoke"]);
-        }
-        [cmd] if cmd == "gameplay-smoke" => {
-            plan = plan.args(["gameplay-smoke"]);
-        }
-        [cmd] if cmd == "gameplay-full" => {
-            plan = plan.args(["gameplay-full"]);
-        }
-        [cmd] if cmd == "calibration" => {
-            plan = plan.args(["calibration"]);
-        }
-        [cmd] if cmd == "perf" => {
-            plan = plan.args(["perf"]);
-        }
-        [cmd, scenario] if cmd == "perf" => {
-            plan = plan.args(["perf", scenario]);
-        }
-        [path, ..] => {
-            plan = plan.args([path]);
+/// One harness invocation, parsed before anything runs (issue #8). The
+/// variants are exactly the lanes the runner knows; the parse rejects
+/// builtin misuse with a named error instead of forwarding it as a scenario
+/// path. [`needs_display`](Self::needs_display) is the display-assertion
+/// gate: the runner opens a window only on the render canary.
+#[derive(Debug, PartialEq, Eq)]
+enum HarnessLane {
+    /// The bootstrap smoke scenario (the default).
+    Smoke,
+    /// The built-in gameplay smoke lane: room + scripted-look yaw assertions,
+    /// and the wake beats (closed hold, both blink triplets, post-wake look).
+    GameplaySmoke,
+    /// The built-in whole-opening-beat lane: wake progression, standing at
+    /// the exit waypoint, the door walk.
+    GameplayFull,
+    /// The 4-cell calibration-evidence matrix.
+    Calibration,
+    /// The perf lane, optionally against a caller-named perf scenario.
+    Perf {
+        /// Optional scenario file; omitted selects the policy-derived one.
+        scenario: Option<String>,
+    },
+    /// The determinism compare lane over one scenario.
+    Compare {
+        /// The scenario file compared.
+        scenario: String,
+    },
+    /// One caller-named scenario file.
+    Scenario {
+        /// The scenario path forwarded verbatim.
+        path: String,
+    },
+    /// The render canary: the one lane that opens a real window.
+    RenderCheck,
+}
+
+impl HarnessLane {
+    /// True only for lanes that present to a real window. A windowed lane
+    /// needs the display awake for its whole duration (issue #23); offscreen
+    /// lanes render into the harness `Image` target, need no drawable, and
+    /// acquire no assertion (issue #8). A future windowed lifecycle lane
+    /// would join `RenderCheck` here.
+    #[must_use]
+    fn needs_display(&self) -> bool {
+        matches!(self, HarnessLane::RenderCheck)
+    }
+
+    /// The runner arguments this lane forwards, verbatim.
+    #[must_use]
+    fn runner_args(&self) -> Vec<&str> {
+        match self {
+            HarnessLane::Smoke => vec!["smoke"],
+            HarnessLane::GameplaySmoke => vec!["gameplay-smoke"],
+            HarnessLane::GameplayFull => vec!["gameplay-full"],
+            HarnessLane::Calibration => vec!["calibration"],
+            HarnessLane::Perf { scenario: None } => vec!["perf"],
+            HarnessLane::Perf { scenario: Some(s) } => vec!["perf", s],
+            HarnessLane::Compare { scenario } => vec!["compare", scenario],
+            HarnessLane::Scenario { path } => vec![path],
+            HarnessLane::RenderCheck => vec!["--render-check", "smoke"],
         }
     }
-    run_announced(&plan)
+
+    /// The lane's name for step labels and failure messages.
+    #[must_use]
+    fn label(&self) -> &'static str {
+        match self {
+            HarnessLane::Smoke => "smoke",
+            HarnessLane::GameplaySmoke => "gameplay-smoke",
+            HarnessLane::GameplayFull => "gameplay-full",
+            HarnessLane::Calibration => "calibration",
+            HarnessLane::Perf { .. } => "perf",
+            HarnessLane::Compare { .. } => "compare",
+            HarnessLane::Scenario { .. } => "scenario",
+            HarnessLane::RenderCheck => "render-check",
+        }
+    }
+}
+
+/// Parse a `cargo xtask harness` argument tail into a lane. Builtin misuse
+/// (missing or extra arguments, unknown flags) is a parse error naming the
+/// problem — never a silent forward to the runner as a scenario path.
+///
+/// # Errors
+/// A message naming the malformed lane invocation.
+fn parse_harness_lane(rest: &[String]) -> Result<HarnessLane, String> {
+    match rest {
+        [] => Ok(HarnessLane::Smoke),
+        [one] => match one.as_str() {
+            "smoke" => Ok(HarnessLane::Smoke),
+            "gameplay-smoke" => Ok(HarnessLane::GameplaySmoke),
+            "gameplay-full" => Ok(HarnessLane::GameplayFull),
+            "calibration" => Ok(HarnessLane::Calibration),
+            "perf" => Ok(HarnessLane::Perf { scenario: None }),
+            "render-check" => Ok(HarnessLane::RenderCheck),
+            "compare" => Err("compare requires a scenario: `harness compare <scenario>`".into()),
+            arg if arg.starts_with('-') => Err(format!(
+                "unknown harness flag `{arg}` (flags belong to the runner binary, not xtask lanes)"
+            )),
+            arg => Ok(HarnessLane::Scenario {
+                path: arg.to_owned(),
+            }),
+        },
+        [first, rest @ ..] => match first.as_str() {
+            "render-check" => Err(
+                "render-check takes no scenario (it runs the smoke scenario in the canary lane)"
+                    .into(),
+            ),
+            "perf" if rest.len() == 1 => Ok(HarnessLane::Perf {
+                scenario: Some(rest[0].clone()),
+            }),
+            "compare" if rest.len() == 1 => Ok(HarnessLane::Compare {
+                scenario: rest[0].clone(),
+            }),
+            "perf" | "compare" => Err(format!("too many arguments for `{first} <scenario>`")),
+            other => Err(format!("unexpected arguments after harness lane `{other}`")),
+        },
+    }
+}
+
+/// The runner command plan for one parsed lane: the same binary, working
+/// dir, and argument forwarding the per-command match arms used to build
+/// inline, now derived from the lane itself so the aggregate lanes cannot
+/// drift from the single-lane ones.
+fn harness_lane_plan(lane: &HarnessLane, root: &Path) -> CommandPlan {
+    CommandPlan::new("cargo")
+        .args(["run", "-p", "gone_harness", "--bin", "gone_harness", "--"])
+        .args(lane.runner_args())
+        .current_dir(root)
+}
+
+/// `harness <lane>` parses the invocation first (invalid lanes fail fast by
+/// name), then builds the binaries, then runs the runner. The display-awake
+/// assertion is scoped to the parsed lane: acquired only when the lane
+/// actually opens a window (the render canary), before the build, exactly as
+/// the unconditional pre-issue-#8 path held it for the whole lane (issue
+/// #23). The runner owns the child app's lifecycle (spawn, kill-on-timeout,
+/// reap), so xtask just forwards the exit code.
+fn run_harness_command(rest: &[String], root: &Path) -> Result<(), CommandFailed> {
+    let lane = parse_harness_lane(rest).map_err(|reason| usage_error("harness", &reason))?;
+    let _display_awake = lane.needs_display().then(DisplayAssertion::acquire);
+    build_harness_binaries(root)?;
+    run_announced(&harness_lane_plan(&lane, root))
+}
+
+/// The opening-capture sequence, in run order: `gameplay-smoke` pins the
+/// closed-eye hold, both blink triplets, and the post-wake look;
+/// `gameplay-full` pins standing at the exit waypoint and the door walk.
+/// Both are offscreen lanes (issue #8).
+fn capture_opening_lanes() -> [HarnessLane; 2] {
+    [HarnessLane::GameplaySmoke, HarnessLane::GameplayFull]
+}
+
+/// `capture-opening`: one documented command for the whole authored-opening
+/// capture (issue #8). It builds the two binaries once, then runs the two
+/// built-in gameplay lanes sequentially through the runner they always go
+/// through — no new renderer, no window, no input injection, no display
+/// assertion. Fail-fast: the first failing lane aborts the run and names
+/// itself, so a nonzero exit means at least one lane's machine checks did
+/// not hold. Each lane prints its exact run dir on its `ARTIFACTS:` line.
+fn run_capture_opening(root: &Path) -> Result<(), CommandFailed> {
+    eprintln!(
+        "xtask capture-opening: windowless GPU capture of the authored opening \
+         (no window, no display assertion; the desktop stays usable)"
+    );
+    build_harness_binaries(root)?;
+    for lane in capture_opening_lanes() {
+        eprintln!("xtask capture-opening: lane `{}`", lane.label());
+        run_announced(&harness_lane_plan(&lane, root))
+            .map_err(|err| named_failure("capture-opening", lane.label(), &err))?;
+    }
+    eprintln!(
+        "xtask capture-opening: both lanes passed; exact run dirs are the \
+         ARTIFACTS lines above, under\ngameplay-smoke: {}\ngameplay-full:  {}",
+        root.join("tmp/harness/gameplay-smoke").display(),
+        root.join("tmp/harness/gameplay-full").display(),
+    );
+    Ok(())
 }
 
 /// Locked build of the two binaries the runner drives.
@@ -386,14 +504,115 @@ fn cross_check_plan(root: &Path, target: &str) -> CommandPlan {
 #[cfg(test)]
 mod tests {
     use super::{
-        CI_STEPS, EXIT_USAGE, QUICK_STEPS, build_plan, complexity_plan, cross_check_plan, fmt_plan,
-        lint_plan, run, test_plan,
+        CI_STEPS, EXIT_USAGE, HarnessLane, QUICK_STEPS, build_plan, capture_opening_lanes,
+        complexity_plan, cross_check_plan, fmt_plan, harness_lane_plan, lint_plan,
+        parse_harness_lane, run, test_plan,
     };
     use std::path::PathBuf;
     use std::process::ExitCode;
 
     fn root() -> PathBuf {
         PathBuf::from("/cfg-root")
+    }
+
+    /// Parse a harness tail written as string slices.
+    fn lane(rest: &[&str]) -> Result<HarnessLane, String> {
+        let owned: Vec<String> = rest.iter().map(|s| (*s).to_owned()).collect();
+        parse_harness_lane(&owned)
+    }
+
+    #[test]
+    fn offscreen_lanes_hold_no_display_assertion() {
+        // Every lane xtask can run except the canary is the headless capture
+        // lane: no window, no drawable, no assertion (issue #8).
+        for parsed in [
+            lane(&[]),
+            lane(&["smoke"]),
+            lane(&["gameplay-smoke"]),
+            lane(&["gameplay-full"]),
+            lane(&["calibration"]),
+            lane(&["perf"]),
+            lane(&["perf", "s.json"]),
+            lane(&["compare", "s.json"]),
+            lane(&["scenarios/one.json"]),
+        ] {
+            let parsed = parsed.expect("valid lane");
+            assert!(
+                !parsed.needs_display(),
+                "lane `{parsed:?}` must not hold a display-awake assertion"
+            );
+        }
+    }
+
+    #[test]
+    fn render_check_is_the_one_native_lane() {
+        let parsed = lane(&["render-check"]).expect("valid lane");
+        assert_eq!(parsed, HarnessLane::RenderCheck);
+        assert!(parsed.needs_display(), "the canary presents to a window");
+        assert_eq!(parsed.runner_args(), vec!["--render-check", "smoke"]);
+    }
+
+    #[test]
+    fn invalid_harness_invocations_fail_the_parse() {
+        for rest in [
+            &["render-check", "smoke"][..],
+            &["render-check", "anything"][..],
+            &["compare"][..],
+            &["compare", "a", "b"][..],
+            &["perf", "a", "b"][..],
+            &["smoke", "extra"][..],
+            &["gameplay-smoke", "extra"][..],
+            &["--render-check"][..],
+            &["scenario.json", "extra"][..],
+        ] {
+            let err = lane(rest).expect_err("invalid lane must fail fast");
+            assert!(
+                err.contains("render-check takes no scenario")
+                    || err.contains("requires a scenario")
+                    || err.contains("too many arguments")
+                    || err.contains("unexpected arguments")
+                    || err.contains("unknown harness flag"),
+                "parse error must name the problem for {rest:?}: {err}"
+            );
+        }
+    }
+
+    #[test]
+    fn gameplay_lanes_forward_verbatim_and_stay_offscreen() {
+        for (args, expected) in [
+            (&["gameplay-smoke"][..], "gameplay-smoke"),
+            (&["gameplay-full"][..], "gameplay-full"),
+        ] {
+            let parsed = lane(args).expect("valid lane");
+            assert_eq!(parsed.runner_args(), vec![expected]);
+            assert!(!parsed.needs_display());
+        }
+    }
+
+    #[test]
+    fn capture_opening_is_the_two_gameplay_lanes_windowless() {
+        let lanes = capture_opening_lanes();
+        assert!(matches!(lanes[0], HarnessLane::GameplaySmoke));
+        assert!(matches!(lanes[1], HarnessLane::GameplayFull));
+        assert!(
+            lanes.iter().all(|lane| !lane.needs_display()),
+            "the opening capture must never acquire a display assertion"
+        );
+    }
+
+    #[test]
+    fn lane_plans_target_the_runner_binary_at_the_root() {
+        let plan = harness_lane_plan(&HarnessLane::GameplayFull, &root());
+        assert_eq!(
+            plan.render(),
+            "cargo run -p gone_harness --bin gone_harness -- gameplay-full"
+        );
+        assert_eq!(plan.current_dir, Some(root()));
+        let canary = harness_lane_plan(&HarnessLane::RenderCheck, &root());
+        assert_eq!(
+            canary.render(),
+            "cargo run -p gone_harness --bin gone_harness -- --render-check smoke"
+        );
     }
 
     #[test]

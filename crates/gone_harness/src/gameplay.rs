@@ -5,15 +5,23 @@
 //! first-person look, post chain) instead of the calibration scene, so its
 //! verification goes beyond the capture-lane checks: the report must carry a
 //! room observation matching the registry's count, and the rig's yaw samples
-//! must show exactly the scripted look delta between pinned beats. This is
+//! must show exactly the scripted look delta between the pinned beats that
+//! sit at or after the wake handoff. This is
 //! the negative proof the lane exists for: a report from a run whose player
 //! systems never integrated scripted look (stale or missing yaw samples)
 //! fails here, as does a run whose scene failed to build its pods.
 //!
-//! The `full` submodule is the gameplay-full lane: the built-in scenario that
-//! plays the whole opening beat (wake, get-up, turn, walk to the hatch) and
-//! the position and phase-sequence verification over its report.
+//! The lane's scenario schedule is derived, never measured: the production
+//! wake driver plays the authored timeline 1:1 on the scenario clock (the
+//! app's gameplay proof gate waits on the driver's own readiness legs), so
+//! the `Waking -> AwakeInPod` handoff lands on the update that drives
+//! scenario tick [`wake_handoff_tick`], and every authored input is scheduled
+//! after it. The `full` submodule is the gameplay-full lane: the built-in
+//! scenario that plays the whole opening beat (wake, get-up, turn, walk to
+//! the hatch) and the position and phase-sequence verification over its
+//! report.
 
+use gone_app::gone_sim::WakeTimeline;
 use gone_app::harness::report::{Report, TimedEvent};
 use gone_app::harness::scenario::TICKS_PER_SECOND;
 use gone_app::harness::{Action, Beat, Content, Scenario, ScenarioMode, ScriptedAction};
@@ -22,6 +30,30 @@ mod full;
 
 pub use full::{GAMEPLAY_FULL_SCENARIO_NAME, gameplay_full_scenario, verify_gameplay_full};
 
+/// The driven scenario tick on whose update the production wake driver hands
+/// `Waking -> AwakeInPod`. The gameplay lane paces the driver's logical clock
+/// 1:1 with the scenario clock — the machine consumes its first logical tick
+/// on driven tick zero and sits at logical tick `k + 1` once scenario tick
+/// `k` has driven — so the timeline's completion tick
+/// ([`WakeTimeline::complete_tick`]) is consumed on the update that drives
+/// this scenario tick, and every later tick's update runs wholly inside
+/// `AwakeInPod`, input included. Derived from the authored timeline itself
+/// (its beat table is heap data, so this is a call, not a const), never from
+/// a measured run.
+#[must_use]
+pub fn wake_handoff_tick() -> u64 {
+    WakeTimeline::authored().complete_tick() - 1
+}
+
+/// One temporal wake beat: pins the authored wake timeline's `wake_tick`
+/// sample. The pin is post-tick state — the update that drove scenario tick
+/// `wake_tick - 1` left the machine at logical tick `wake_tick`, and the
+/// frame it renders shows exactly that tick's authored sample — so the
+/// scenario tick is one below the named wake tick.
+fn wake_beat(name: &str, wake_tick: u64) -> Beat {
+    Beat::new(name, wake_tick - 1)
+}
+
 /// How far the sampled yaw may drift from the scripted replay, in degrees.
 /// The app integrates the same f32 constants the scenario serializes, so a
 /// correct run differs by a few ulp of the accumulated sum; the tolerance is
@@ -29,15 +61,44 @@ pub use full::{GAMEPLAY_FULL_SCENARIO_NAME, gameplay_full_scenario, verify_gamep
 /// look.
 pub const YAW_TOLERANCE_DEG: f32 = 0.5;
 
-/// The built-in gameplay smoke scenario: the real stasis-room content, a
-/// scripted look of 3 degrees per tick on ticks 5 through 14 (30 degrees in
-/// total), a movement action the report records, and two beats pinned on
-/// look-quiet ticks around the turn (2 and 20), so each beat's yaw sample is
-/// the integrated angle at the rendered moment.
+/// The built-in gameplay smoke scenario: the real stasis-room content, named
+/// temporal wake beats across the authored opening (the closed hold, and
+/// before, during, and after both blinks, each tick derived from the
+/// timeline's own named boundaries), then the post-wake shape — a scripted
+/// look of 3 degrees per tick on ten ticks after the handoff (30 degrees in
+/// total), a movement action the report records, and beats pinned on
+/// look-quiet ticks around the turn, so each beat's yaw sample is the
+/// integrated angle at the rendered moment.
 #[must_use]
 pub fn gameplay_smoke_scenario() -> Scenario {
-    let mut actions = vec![ScriptedAction::move_delta(3, 1.0, 0.0)];
-    for tick in 5..=14 {
+    let handoff = wake_handoff_tick();
+    let b = WakeTimeline::authored_boundaries();
+    let mut beats = vec![
+        wake_beat("eyes-closed", 2),
+        wake_beat("first-blink-before", b.first_blink_start),
+        wake_beat(
+            "first-blink-during",
+            b.first_blink_start + (b.second_opening_start - b.first_blink_start) / 2,
+        ),
+        wake_beat(
+            "first-blink-after",
+            b.second_opening_start + (b.second_blink_start - b.second_opening_start) / 2,
+        ),
+        wake_beat("second-blink-before", b.second_blink_start),
+        wake_beat(
+            "second-blink-during",
+            b.second_blink_start + (b.final_opening_start - b.second_blink_start) / 2,
+        ),
+        wake_beat(
+            "second-blink-after",
+            b.final_opening_start + (b.complete_tick - b.final_opening_start) / 2,
+        ),
+    ];
+    beats.push(Beat::new("wake", handoff + 2));
+    beats.push(Beat::new("turned", handoff + 20));
+    let look_first = handoff + 5;
+    let mut actions = vec![ScriptedAction::move_delta(handoff + 3, 1.0, 0.0)];
+    for tick in look_first..look_first + 10 {
         actions.push(ScriptedAction::look(tick, 3.0, 0.0));
     }
     Scenario {
@@ -45,7 +106,7 @@ pub fn gameplay_smoke_scenario() -> Scenario {
         seed: 1234,
         ticks_per_second: TICKS_PER_SECOND,
         actions,
-        beats: vec![Beat::new("wake", 2), Beat::new("turned", 20)],
+        beats,
         pacing: None,
         max_frames: 600,
         mode: ScenarioMode::Capture,
@@ -59,18 +120,47 @@ pub fn gameplay_smoke_scenario() -> Scenario {
 /// Verify a gameplay run's report: the room observation must be present and
 /// matching, every pinned beat must carry a yaw sample at exactly the
 /// (tick, frame) its PNG decodes to, and the yaw movement between
-/// consecutive pinned beats must equal the scripted look delta between
-/// their ticks.
+/// consecutive pinned beats at or after the wake handoff must equal the
+/// scripted look delta between their ticks. The temporal wake beats stay
+/// pinned capture evidence; they never anchor the replay.
 ///
 /// # Errors
 /// A message naming the first failed check: the missing or mismatched room
-/// observation, the beat whose yaw sample is absent, or the yaw movement
+/// observation, the beat whose yaw sample is absent, the replay's missing
+/// post-wake anchor pair, or the yaw movement
 /// that does not match the script.
 pub fn verify_gameplay(scenario: &Scenario, report: &Report) -> Result<(), String> {
     verify_room(report)?;
     let anchored = beat_anchored_samples(report)?;
-    let samples: Vec<(u64, f32)> = anchored.iter().map(|beat| (beat.tick, beat.yaw)).collect();
-    verify_yaw_replay(scenario, &samples)
+    verify_yaw_replay(scenario, &replay_anchor_samples(&anchored)?)
+}
+
+/// The scripted-look replay's anchors: the anchored beats pinned at or after
+/// the derived wake handoff, tick-sorted. Before the handoff the rig's yaw is
+/// the wake driver's authored sway projection — look is disarmed behind the
+/// phase gate, and the sway is authored rotation the script never asked for —
+/// so a "movement equals the scripted sum" check there would measure the wake,
+/// not the player systems. From the handoff on the effect is stripped and the
+/// rig yaw is look again. At least two post-handoff anchors are required: a
+/// replay without a pair proves nothing and fails loudly instead.
+///
+/// # Errors
+/// Fewer than two anchored beats sit at or after the wake handoff.
+pub(crate) fn replay_anchor_samples(anchored: &[AnchoredBeat]) -> Result<Vec<(u64, f32)>, String> {
+    let handoff = wake_handoff_tick();
+    let samples: Vec<(u64, f32)> = anchored
+        .iter()
+        .filter(|beat| beat.tick >= handoff)
+        .map(|beat| (beat.tick, beat.yaw))
+        .collect();
+    if samples.len() < 2 {
+        return Err(format!(
+            "the scripted-look replay needs at least two beats pinned at or after the wake \
+             handoff (tick {handoff}), found {}",
+            samples.len()
+        ));
+    }
+    Ok(samples)
 }
 
 /// The report's room observation: both numbers, present and equal, with a
@@ -200,7 +290,8 @@ fn shortest_arc_degrees(raw_delta_degrees: f32) -> f32 {
     }
 }
 
-/// The scripted-yaw replay: between consecutive pinned beats, the rig's
+/// The scripted-yaw replay: between consecutive pinned beats (the post-wake
+/// anchors [`replay_anchor_samples`] selects), the rig's
 /// yaw movement must equal the look actions scripted strictly before the
 /// later tick minus those before the earlier one, compared modulo a full
 /// turn within [`YAW_TOLERANCE_DEG`]. (The app samples at the beat
@@ -247,13 +338,20 @@ pub(crate) fn verify_yaw_replay(
 #[cfg(test)]
 mod tests {
     use std::collections::BTreeMap;
+    use std::sync::LazyLock;
 
     use gone_app::harness::report::{BeatEntry, Identity, Report, TimedEvent};
     use gone_app::harness::{Beat, Content, Scenario};
 
     use super::{
         YAW_TOLERANCE_DEG, gameplay_smoke_scenario, shortest_arc_degrees, verify_gameplay,
+        wake_handoff_tick,
     };
+    use gone_app::gone_sim::WakeTimeline;
+
+    /// The built-in scenario's post-wake beat pins (derived once per process).
+    static WAKE_BEAT_TICK: LazyLock<u64> = LazyLock::new(|| wake_handoff_tick() + 2);
+    static TURNED_BEAT_TICK: LazyLock<u64> = LazyLock::new(|| wake_handoff_tick() + 20);
 
     /// A synthetic gameplay report over `samples` (tick, yaw) pairs: the two
     /// beats of the built-in scenario pinned at frames matching their ticks,
@@ -275,8 +373,8 @@ mod tests {
             "wake".to_owned(),
             BeatEntry {
                 file: "beats/wake.png".into(),
-                tick: 2,
-                frame: 2,
+                tick: *WAKE_BEAT_TICK,
+                frame: *WAKE_BEAT_TICK,
                 request_id: 1,
             },
         );
@@ -284,8 +382,8 @@ mod tests {
             "turned".to_owned(),
             BeatEntry {
                 file: "beats/turned.png".into(),
-                tick: 20,
-                frame: 20,
+                tick: *TURNED_BEAT_TICK,
+                frame: *TURNED_BEAT_TICK,
                 request_id: 2,
             },
         );
@@ -307,14 +405,23 @@ mod tests {
         report
     }
 
+    /// The scenario beat named `name`'s pinned tick.
+    fn tick_of_name(scenario: &Scenario, name: &str) -> u64 {
+        scenario
+            .beats
+            .iter()
+            .find(|beat| beat.name == name)
+            .unwrap_or_else(|| panic!("beat `{name}` is authored"))
+            .tick
+    }
+
     #[test]
     fn the_built_in_scenario_scripts_thirty_degrees_between_its_beats() {
         let scenario = gameplay_smoke_scenario();
         assert_eq!(scenario.content, Content::Gameplay);
-        assert_eq!(scenario.beats.len(), 2);
         // The replay must be satisfiable by construction: 3 degrees per tick
-        // on ticks 5..=14 is 30 degrees strictly before tick 20 and nothing
-        // before tick 2.
+        // on the ten ticks after the wake handoff is 30 degrees strictly
+        // before the `turned` beat and nothing before the `wake` beat.
         let before = |tick: u64| -> f32 {
             scenario
                 .actions
@@ -326,14 +433,80 @@ mod tests {
                 })
                 .sum()
         };
-        assert!((before(2) - 0.0).abs() < f32::EPSILON);
-        assert!((before(20) - 30.0).abs() < f32::EPSILON);
+        assert!((before(*WAKE_BEAT_TICK) - 0.0).abs() < f32::EPSILON);
+        assert!((before(*TURNED_BEAT_TICK) - 30.0).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn the_smoke_wake_beats_pin_the_authored_wake_regions() {
+        // Each temporal wake beat pins exactly the authored moment its name
+        // claims: the beat's scenario tick plus one (the post-tick pin) is
+        // the wake tick the sample comes from, and the regions come from the
+        // timeline's own named boundaries, never literals.
+        let b = WakeTimeline::authored_boundaries();
+        let scenario = gameplay_smoke_scenario();
+        let wake_tick_of = |name: &str| -> u64 {
+            scenario
+                .beats
+                .iter()
+                .find(|beat| beat.name == name)
+                .unwrap_or_else(|| panic!("beat `{name}` is authored"))
+                .tick
+                + 1
+        };
+        assert!(
+            wake_tick_of("eyes-closed") < b.first_opening_start,
+            "the first beat samples the closed hold"
+        );
+        assert_eq!(
+            wake_tick_of("first-blink-before"),
+            b.first_blink_start,
+            "the first opening's widest sample sits exactly at the blink boundary"
+        );
+        let during_first = wake_tick_of("first-blink-during");
+        assert!(
+            b.first_blink_start < during_first && during_first < b.second_opening_start,
+            "mid first blink's closing stroke: {during_first}"
+        );
+        let after_first = wake_tick_of("first-blink-after");
+        assert!(
+            b.second_opening_start < after_first && after_first < b.second_blink_start,
+            "inside the reopen after the first blink: {after_first}"
+        );
+        assert_eq!(
+            wake_tick_of("second-blink-before"),
+            b.second_blink_start,
+            "the second opening's widest sample sits exactly at the blink boundary"
+        );
+        let during_second = wake_tick_of("second-blink-during");
+        assert!(
+            b.second_blink_start < during_second && during_second < b.final_opening_start,
+            "mid second blink's closing stroke: {during_second}"
+        );
+        let after_second = wake_tick_of("second-blink-after");
+        assert!(
+            b.final_opening_start < after_second && after_second < b.complete_tick,
+            "inside the final opening after the second blink: {after_second}"
+        );
+        // The post-wake beats sit inside AwakeInPod, on look-quiet ticks
+        // around the turn.
+        let wake = tick_of_name(&scenario, "wake");
+        let turned = tick_of_name(&scenario, "turned");
+        assert_eq!(wake, *WAKE_BEAT_TICK);
+        assert_eq!(turned, *TURNED_BEAT_TICK);
+        assert!(wake_handoff_tick() < wake && turned < scenario.max_frames);
+        // The beats are pinned in tick order, as the app's request cursor
+        // requires.
+        let ticks: Vec<u64> = scenario.beats.iter().map(|beat| beat.tick).collect();
+        let mut sorted = ticks.clone();
+        sorted.sort_unstable();
+        assert_eq!(ticks, sorted);
     }
 
     #[test]
     fn a_correct_thirty_degree_run_verifies() {
         let scenario = gameplay_smoke_scenario();
-        let report = report_with_yaws(&[(2, 0.0), (20, 30.0)]);
+        let report = report_with_yaws(&[(*WAKE_BEAT_TICK, 0.0), (*TURNED_BEAT_TICK, 30.0)]);
         assert!(verify_gameplay(&scenario, &report).is_ok());
     }
 
@@ -343,7 +516,7 @@ mod tests {
         // shape a run produces when the player systems are off or the
         // scripted look never integrates. The lane must reject it.
         let scenario = gameplay_smoke_scenario();
-        let report = report_with_yaws(&[(2, 0.0), (20, 0.0)]);
+        let report = report_with_yaws(&[(*WAKE_BEAT_TICK, 0.0), (*TURNED_BEAT_TICK, 0.0)]);
         let err = verify_gameplay(&scenario, &report).expect_err("stale yaw must fail");
         assert!(
             err.contains("scripted look did not drive the rig"),
@@ -358,7 +531,7 @@ mod tests {
         // wraps (170 -> -160): the raw subtraction reads -330, but the rig
         // turned +30, and the replay must measure the shortest arc.
         let scenario = gameplay_smoke_scenario();
-        let report = report_with_yaws(&[(2, 170.0), (20, -160.0)]);
+        let report = report_with_yaws(&[(*WAKE_BEAT_TICK, 170.0), (*TURNED_BEAT_TICK, -160.0)]);
         assert!(verify_gameplay(&scenario, &report).is_ok());
     }
 
@@ -384,12 +557,18 @@ mod tests {
     }
 
     /// A two-beat scenario whose scripted look between the pinned beats is
-    /// `total` degrees: ten equal look steps on ticks 5..=14 land exactly
-    /// `total` before tick 20 and nothing before tick 2, so the reports
-    /// below isolate the endpoint arithmetic.
+    /// `total` degrees: ten equal look steps on the ten ticks after the wake
+    /// handoff land exactly `total` before the `turned` beat and nothing
+    /// before the `wake` beat (the built-in scenario's own post-wake shape),
+    /// so the reports below isolate the endpoint arithmetic.
     fn turn_scenario(total: f32) -> Scenario {
-        let mut actions = vec![gone_app::harness::ScriptedAction::move_delta(3, 1.0, 0.0)];
-        for tick in 5..=14 {
+        let look_first = wake_handoff_tick() + 5;
+        let mut actions = vec![gone_app::harness::ScriptedAction::move_delta(
+            wake_handoff_tick() + 3,
+            1.0,
+            0.0,
+        )];
+        for tick in look_first..look_first + 10 {
             actions.push(gone_app::harness::ScriptedAction::look(
                 tick,
                 total / 10.0,
@@ -401,7 +580,10 @@ mod tests {
             seed: 1234,
             ticks_per_second: gone_app::harness::TICKS_PER_SECOND,
             actions,
-            beats: vec![Beat::new("wake", 2), Beat::new("turned", 20)],
+            beats: vec![
+                Beat::new("wake", *WAKE_BEAT_TICK),
+                Beat::new("turned", *TURNED_BEAT_TICK),
+            ],
             pacing: None,
             max_frames: 600,
             mode: gone_app::harness::ScenarioMode::Capture,
@@ -465,9 +647,9 @@ mod tests {
         // compare modulo a full turn, and both spellings of the endpoint
         // verify.
         let scenario = turn_scenario(270.0);
-        let report = report_with_yaws(&[(2, 0.0), (20, -90.0)]);
+        let report = report_with_yaws(&[(*WAKE_BEAT_TICK, 0.0), (*TURNED_BEAT_TICK, -90.0)]);
         assert!(verify_gameplay(&scenario, &report).is_ok());
-        let unwrapped = report_with_yaws(&[(2, 0.0), (20, 270.0)]);
+        let unwrapped = report_with_yaws(&[(*WAKE_BEAT_TICK, 0.0), (*TURNED_BEAT_TICK, 270.0)]);
         assert!(verify_gameplay(&scenario, &unwrapped).is_ok());
     }
 
@@ -476,9 +658,9 @@ mod tests {
         // The -270 script measures +90 once the rig wraps its endpoint; the
         // modulo comparison accepts it and rejects a rig that never turned.
         let scenario = turn_scenario(-270.0);
-        let report = report_with_yaws(&[(2, 0.0), (20, 90.0)]);
+        let report = report_with_yaws(&[(*WAKE_BEAT_TICK, 0.0), (*TURNED_BEAT_TICK, 90.0)]);
         assert!(verify_gameplay(&scenario, &report).is_ok());
-        let stale = report_with_yaws(&[(2, 0.0), (20, 0.0)]);
+        let stale = report_with_yaws(&[(*WAKE_BEAT_TICK, 0.0), (*TURNED_BEAT_TICK, 0.0)]);
         let err = verify_gameplay(&scenario, &stale).expect_err("no turn must fail");
         assert!(err.contains("scripted look did not drive the rig"), "{err}");
     }
@@ -492,7 +674,8 @@ mod tests {
         for total in [180.0, -180.0] {
             let scenario = turn_scenario(total);
             for endpoint in [180.0, -180.0] {
-                let report = report_with_yaws(&[(2, 0.0), (20, endpoint)]);
+                let report =
+                    report_with_yaws(&[(*WAKE_BEAT_TICK, 0.0), (*TURNED_BEAT_TICK, endpoint)]);
                 assert!(
                     verify_gameplay(&scenario, &report).is_ok(),
                     "scripted {total} must verify against reported {endpoint}"
@@ -503,15 +686,16 @@ mod tests {
 
     #[test]
     fn a_cumulative_turn_past_a_full_revolution_verifies() {
-        // Three beats spanning 500 scripted degrees (200 by tick 20, 300
-        // more by tick 40). The rig wraps each reported endpoint into
-        // (-180, 180]: 200 reports as -160 and 500 as 140. Both beat pairs
-        // verify modulo a full turn.
+        // Three post-wake beats spanning 500 scripted degrees (200 by the
+        // middle beat, 300 more by the last). The rig wraps each reported
+        // endpoint into (-180, 180]: 200 reports as -160 and 500 as 140.
+        // Both beat pairs verify modulo a full turn.
+        let handoff = wake_handoff_tick();
         let mut actions = Vec::new();
-        for tick in 5..=14 {
+        for tick in handoff + 5..handoff + 15 {
             actions.push(gone_app::harness::ScriptedAction::look(tick, 20.0, 0.0));
         }
-        for tick in 25..=34 {
+        for tick in handoff + 25..handoff + 35 {
             actions.push(gone_app::harness::ScriptedAction::look(tick, 30.0, 0.0));
         }
         let scenario = Scenario {
@@ -519,7 +703,11 @@ mod tests {
             seed: 1234,
             ticks_per_second: gone_app::harness::TICKS_PER_SECOND,
             actions,
-            beats: vec![Beat::new("a", 2), Beat::new("b", 20), Beat::new("c", 40)],
+            beats: vec![
+                Beat::new("a", handoff + 2),
+                Beat::new("b", handoff + 20),
+                Beat::new("c", handoff + 40),
+            ],
             pacing: None,
             max_frames: 600,
             mode: gone_app::harness::ScenarioMode::Capture,
@@ -528,8 +716,41 @@ mod tests {
             content: Content::Gameplay,
             calibration: None,
         };
-        let report = three_beat_report(&[(2, 0.0), (20, -160.0), (40, 140.0)]);
+        let report = three_beat_report(&[
+            (handoff + 2, 0.0),
+            (handoff + 20, -160.0),
+            (handoff + 40, 140.0),
+        ]);
         assert!(verify_gameplay(&scenario, &report).is_ok());
+    }
+
+    #[test]
+    fn a_replay_without_post_wake_anchors_fails() {
+        // Every beat pinned before the wake handoff: the rig's yaw there is
+        // the wake's authored sway, not scripted look, so there is no replay
+        // to run and the verifier must say so instead of vacuously passing.
+        let handoff = wake_handoff_tick();
+        let scenario = Scenario {
+            name: "all-pre-wake".to_owned(),
+            seed: 1234,
+            ticks_per_second: gone_app::harness::TICKS_PER_SECOND,
+            actions: vec![gone_app::harness::ScriptedAction::look(
+                handoff + 5,
+                30.0,
+                0.0,
+            )],
+            beats: vec![Beat::new("a", handoff - 40), Beat::new("b", handoff - 20)],
+            pacing: None,
+            max_frames: 600,
+            mode: gone_app::harness::ScenarioMode::Capture,
+            warmup_frames: 0,
+            sample_frames: 0,
+            content: Content::Gameplay,
+            calibration: None,
+        };
+        let report = three_beat_report(&[(handoff - 40, 0.0), (handoff - 20, 0.0)]);
+        let err = verify_gameplay(&scenario, &report).expect_err("no anchor pair must fail");
+        assert!(err.contains("at or after the wake handoff"), "{err}");
     }
 
     #[test]
@@ -537,26 +758,32 @@ mod tests {
         // A rig that turned but not by the scripted amount is equally dead:
         // the assertion is on the number, not on motion existing.
         let scenario = gameplay_smoke_scenario();
-        let report = report_with_yaws(&[(2, 0.0), (20, 5.0)]);
+        let report = report_with_yaws(&[(*WAKE_BEAT_TICK, 0.0), (*TURNED_BEAT_TICK, 5.0)]);
         assert!(verify_gameplay(&scenario, &report).is_err());
     }
 
     #[test]
     fn just_inside_the_tolerance_passes_and_just_outside_fails() {
         let scenario = gameplay_smoke_scenario();
-        let inside = report_with_yaws(&[(2, 0.0), (20, 30.0 + YAW_TOLERANCE_DEG - 0.01)]);
+        let inside = report_with_yaws(&[
+            (*WAKE_BEAT_TICK, 0.0),
+            (*TURNED_BEAT_TICK, 30.0 + YAW_TOLERANCE_DEG - 0.01),
+        ]);
         assert!(verify_gameplay(&scenario, &inside).is_ok());
-        let outside = report_with_yaws(&[(2, 0.0), (20, 30.0 + YAW_TOLERANCE_DEG + 0.01)]);
+        let outside = report_with_yaws(&[
+            (*WAKE_BEAT_TICK, 0.0),
+            (*TURNED_BEAT_TICK, 30.0 + YAW_TOLERANCE_DEG + 0.01),
+        ]);
         assert!(verify_gameplay(&scenario, &outside).is_err());
     }
 
     #[test]
     fn a_missing_yaw_sample_fails_naming_the_beat() {
         let scenario = gameplay_smoke_scenario();
-        let mut report = report_with_yaws(&[(2, 0.0), (20, 30.0)]);
+        let mut report = report_with_yaws(&[(*WAKE_BEAT_TICK, 0.0), (*TURNED_BEAT_TICK, 30.0)]);
         report
             .events
-            .retain(|event| !matches!(event, TimedEvent::PlayerYaw { tick, .. } if *tick == 20));
+            .retain(|event| !matches!(event, TimedEvent::PlayerYaw { tick, .. } if *tick == *TURNED_BEAT_TICK));
         let err = verify_gameplay(&scenario, &report).expect_err("missing sample must fail");
         assert!(err.contains("turned"), "names the beat: {err}");
     }
@@ -567,7 +794,7 @@ mod tests {
         // anchors. The report carries one beat with its sample and nothing
         // missing, so the count check is what rejects it.
         let scenario = gameplay_smoke_scenario();
-        let mut report = report_with_yaws(&[(2, 0.0)]);
+        let mut report = report_with_yaws(&[(*WAKE_BEAT_TICK, 0.0)]);
         report.beats.remove("turned");
         let err = verify_gameplay(&scenario, &report).expect_err("one sample cannot verify");
         assert!(err.contains("at least two"), "{err}");
@@ -576,7 +803,7 @@ mod tests {
     #[test]
     fn a_room_mismatch_fails_and_a_missing_room_check_fails() {
         let scenario = gameplay_smoke_scenario();
-        let mut report = report_with_yaws(&[(2, 0.0), (20, 30.0)]);
+        let mut report = report_with_yaws(&[(*WAKE_BEAT_TICK, 0.0), (*TURNED_BEAT_TICK, 30.0)]);
         for event in &mut report.events {
             if let TimedEvent::RoomCheck { pods_present, .. } = event {
                 *pods_present = 0;
@@ -584,7 +811,7 @@ mod tests {
         }
         let err = verify_gameplay(&scenario, &report).expect_err("mismatch must fail");
         assert!(err.contains("stasis room mismatch"), "{err}");
-        let mut report = report_with_yaws(&[(2, 0.0), (20, 30.0)]);
+        let mut report = report_with_yaws(&[(*WAKE_BEAT_TICK, 0.0), (*TURNED_BEAT_TICK, 30.0)]);
         report
             .events
             .retain(|event| !matches!(event, TimedEvent::RoomCheck { .. }));

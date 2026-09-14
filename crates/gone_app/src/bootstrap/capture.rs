@@ -301,7 +301,6 @@ mod tests {
 
     use super::super::ChipSprite;
     use super::super::drive::{readiness_boundary, request_present_probe};
-    use super::super::gameplay::advance_wake_at_readiness;
     use super::super::state::{HarnessState, PresentGate, PresentProbe, Readiness, RunMode};
     use super::{CaptureDelay, on_screenshot_captured, parse_capture_delay};
     use crate::harness::{Content, InputAdapter, Scenario, TICKS_PER_SECOND, TimedEvent};
@@ -356,15 +355,7 @@ mod tests {
         app.insert_resource(CaptureDelay(Duration::ZERO));
         app.add_observer(on_screenshot_captured);
         app.add_message::<AppExit>();
-        app.add_systems(
-            Update,
-            (
-                readiness_boundary,
-                advance_wake_at_readiness,
-                request_present_probe,
-            )
-                .chain(),
-        );
+        app.add_systems(Update, (readiness_boundary, request_present_probe).chain());
         app
     }
 
@@ -402,12 +393,13 @@ mod tests {
     #[test]
     fn the_canary_boundary_waits_for_the_present_gate() {
         // The gap this closes: a locked-screen canary used to announce ready
-        // (GONE_READY, the Ready event, the wake advance) the moment the
-        // proof landed, with zero presented frames. The announcement and the
-        // wake must wait for the present gate: the drive stays held, probes
-        // run against the closed gate, and only a rendered probe verdict
-        // opens the boundary. The bounded budget still applies: declined
-        // probes count, and a rendered one releases.
+        // (GONE_READY, the Ready event) the moment the proof landed, with
+        // zero presented frames. The announcement must wait for the present
+        // gate: the drive stays held, probes run against the closed gate,
+        // and only a rendered probe verdict opens the boundary. The bounded
+        // budget still applies: declined probes count, and a rendered one
+        // releases. The wake phase is untouched by the boundary either way —
+        // the production wake driver owns it, behind its own gate.
         let mut app = canary_app("waits");
         // The proof lands (a plain capture with no marker components): the
         // readiness ledger opens, but the gate is still closed.
@@ -423,11 +415,6 @@ mod tests {
                     .any(|event| matches!(event, TimedEvent::Ready { .. })),
                 "no ready event before the first present"
             );
-            assert_eq!(
-                app.world().resource::<SimWakePhase>().phase(),
-                WakePhase::Waking,
-                "the wake waits behind the announcement"
-            );
         }
         // One declined frame: the probe window stays open, the run holds.
         land_probe(&mut app, false);
@@ -437,7 +424,7 @@ mod tests {
             "a declined probe must not open the boundary"
         );
         // The rendered probe verdict opens the gate; the next update
-        // announces exactly once and the wake override fires behind it.
+        // announces exactly once.
         land_probe(&mut app, true);
         app.update();
         {
@@ -449,12 +436,12 @@ mod tests {
                 .filter(|event| matches!(event, TimedEvent::Ready { .. }))
                 .count();
             assert_eq!(ready, 1, "exactly one announcement");
-            assert_eq!(
-                app.world().resource::<SimWakePhase>().phase(),
-                WakePhase::AwakeInPod,
-                "the wake advance waits for the gate too"
-            );
         }
+        assert_eq!(
+            app.world().resource::<SimWakePhase>().phase(),
+            WakePhase::Waking,
+            "the boundary never advances the wake; the driver owns the phase"
+        );
         app.update();
         assert_eq!(
             app.world()

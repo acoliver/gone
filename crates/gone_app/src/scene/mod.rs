@@ -89,9 +89,9 @@ impl SimWakePhase {
 
     /// Drive one wake-complete boundary signal through the machine
     /// (`Waking` advances to `AwakeInPod`; re-delivery is a no-op per the
-    /// machine's contract). The gameplay harness's readiness override
-    /// advances through this signal, and the wake pass's own driver (issue
-    /// #8) must advance through it too, behind the readiness barrier.
+    /// machine's contract). The production wake driver advances through
+    /// this signal behind its readiness barrier, and the app's systems
+    /// treat its phase changes as the shared boundary too.
     #[must_use]
     pub(crate) fn wake_complete(&mut self) -> PhaseTransition {
         self.0.wake_complete()

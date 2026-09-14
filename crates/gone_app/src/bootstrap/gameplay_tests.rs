@@ -12,6 +12,7 @@ use std::time::Duration;
 use bevy::app::{App, AppExit, Startup, TaskPoolPlugin, Update};
 use bevy::asset::{AssetApp, AssetPlugin, Assets};
 use bevy::camera::Camera3d;
+use bevy::ecs::hierarchy::ChildOf;
 use bevy::ecs::message::Messages;
 use bevy::ecs::prelude::{Entity, With, Without};
 use bevy::ecs::schedule::IntoScheduleConfigs;
@@ -19,26 +20,27 @@ use bevy::image::{Image, ImagePlugin};
 use bevy::input::ButtonInput;
 use bevy::input::keyboard::KeyCode;
 use bevy::input::mouse::AccumulatedMouseMotion;
+use bevy::mesh::Mesh;
+use bevy::pbr::StandardMaterial;
 use bevy::render::render_resource::{Extent3d, TextureDimension, TextureFormat};
 use bevy::render::view::screenshot::{Screenshot, ScreenshotCaptured};
-use bevy::time::TimePlugin;
+use bevy::time::{Time, TimePlugin, Virtual};
 use bevy::transform::components::Transform;
 use bevy::window::WindowFocused;
-use gone_sim::WakePhase;
+use gone_sim::{WakePhase, WakeTimeline};
 
 use super::capture::{CaptureDelay, on_screenshot_captured};
 use super::drive::{drive_ticks, readiness_boundary, request_readiness_proof, rig_yaw_radians};
 use super::finish::finish_scan;
 use super::gameplay::{
-    GameCameraBound, advance_wake_at_readiness, poll_required_assets, register_update_systems,
-    retarget_gameplay_camera,
+    GameCameraBound, poll_required_assets, register_update_systems, retarget_gameplay_camera, wire,
 };
 use super::state::{BeatCapture, HarnessState, PresentGate, Readiness, RunMode, ScenarioTime};
 use super::{CaptureTarget, ChipSprite, ChipTexture};
 use crate::harness::{
     Beat, Content, InputAdapter, Key, Scenario, ScriptedAction, TimedEvent, parse_report,
 };
-use crate::player::{GameplayInput, PlayerPitch, PlayerYaw};
+use crate::player::{GameplayInput, PlayerPitch, PlayerYaw, ScriptedInput};
 use crate::readiness::{AssetLoad, GameAssets};
 use crate::scene::{PlayerSpawn, SimWakePhase};
 
@@ -55,15 +57,28 @@ fn barrier_out_dir(tag: &str) -> PathBuf {
 
 /// The headless gameplay-lane app the barrier tests run: the real protocol
 /// chain (rig-camera retarget, required-asset poll, proof request, boundary,
-/// wake override, drive, finish) over a gameplay scenario, with the injected
-/// required-asset ledger the test controls. The rig camera is spawned by hand
-/// instead of through the look plugin, so the shared input plane stays
-/// unconsumed and the tests can assert exactly what the adapter offered. No
-/// renderer: the test plays the render world by triggering the proof's
-/// `ScreenshotCaptured` by hand.
-fn gameplay_barrier_app(assets: GameAssets, actions: Vec<ScriptedAction>, tag: &str) -> App {
+/// drive, finish) over a gameplay scenario, with the injected required-asset
+/// ledger and wake-pipeline bridge the test controls, and the real production
+/// wake driver (`crate::wake::GameWakePlugin`, the wiring `wire` adds) over a
+/// hand-spawned rig. The rig camera is spawned by hand instead of through the
+/// look plugin, so the shared input plane stays unconsumed and the tests can
+/// assert exactly what the adapter offered. No renderer: the test plays the
+/// render world by triggering the proof's `ScreenshotCaptured` by hand, and
+/// the `bridge` parameter holds the driver's render leg at the loading state
+/// the test names (a real lane starts at `Compiling` while the pipeline
+/// builds).
+fn gameplay_barrier_app(
+    assets: GameAssets,
+    bridge: crate::wake_pass::WakeEyelidPipelineReadiness,
+    actions: Vec<ScriptedAction>,
+    tag: &str,
+) -> App {
     let mut app = App::new();
-    app.add_plugins((TaskPoolPlugin::default(), AssetPlugin::default()));
+    app.add_plugins((
+        TaskPoolPlugin::default(),
+        AssetPlugin::default(),
+        bevy::render::sync_world::SyncWorldPlugin,
+    ));
     app.init_asset::<Image>();
     let target = {
         let mut images = app.world_mut().resource_mut::<Assets<Image>>();
@@ -78,7 +93,16 @@ fn gameplay_barrier_app(assets: GameAssets, actions: Vec<ScriptedAction>, tag: &
     app.insert_resource(GameCameraBound::default());
     app.insert_resource(SimWakePhase::new(WakePhase::Waking));
     app.insert_resource(assets);
+    app.insert_resource(bridge);
     app.insert_resource(GameplayInput::default());
+    // The wake driver reads bevy's virtual clock as its tick source; the lane
+    // keeps it paused and paced by driven ticks (see `drive_ticks`). The
+    // drive publishes the driven step into the generic clock too (`Time` is
+    // the renderer's), so the fixture carries both, standing at zero. No
+    // tick is driven while the barrier holds, so default clocks are exact
+    // here.
+    app.insert_resource(Time::<Virtual>::default());
+    app.insert_resource(Time::<()>::default());
     let scenario = Scenario {
         name: "gameplay-barrier".to_owned(),
         content: Content::Gameplay,
@@ -95,11 +119,15 @@ fn gameplay_barrier_app(assets: GameAssets, actions: Vec<ScriptedAction>, tag: &
     ));
     app.insert_resource(ScenarioTime::new(tick_rate));
     app.insert_resource(CaptureDelay(Duration::ZERO));
-    // The rig camera the retarget binds into the capture target on the first
-    // update: the barrier's rendered-game-frame leg.
-    app.world_mut().spawn((Camera3d::default(), PlayerPitch));
+    spawn_rig(&mut app);
+    app.init_resource::<crate::player::LookAngles>();
     app.add_observer(on_screenshot_captured);
     app.add_message::<AppExit>();
+    app.add_plugins(crate::wake::GameWakePlugin);
+    // The drive half joins the same `ScriptedInput` set the real lane chains
+    // it in, so the wake plugin's `.after(ScriptedInput)` anchors here too:
+    // the driver consumes the driven tick's advance on that tick's own
+    // update, exactly as production orders it.
     app.add_systems(
         Update,
         (
@@ -107,13 +135,30 @@ fn gameplay_barrier_app(assets: GameAssets, actions: Vec<ScriptedAction>, tag: &
             poll_required_assets,
             request_readiness_proof,
             readiness_boundary,
-            advance_wake_at_readiness,
             drive_ticks,
             finish_scan,
         )
-            .chain(),
+            .chain()
+            .in_set(ScriptedInput),
     );
     app
+}
+
+/// The two-entity rig the wake driver attaches to and composes sway onto:
+/// the look plugin's shape (yaw parent carrying the pitch camera child), at
+/// the identity pose. Spawned by hand here so the look plugin's input
+/// systems stay out of the fixture.
+fn spawn_rig(app: &mut App) {
+    let yaw = app
+        .world_mut()
+        .spawn((PlayerYaw, Transform::default()))
+        .id();
+    app.world_mut().spawn((
+        PlayerPitch,
+        Camera3d::default(),
+        Transform::default(),
+        ChildOf(yaw),
+    ));
 }
 
 /// How many readiness announcements the run has recorded.
@@ -155,11 +200,11 @@ fn assert_loading_holds(app: &App) {
     );
 }
 
-/// Complete the delayed load and land the proof readback the way the render
-/// world would: the poll opens the asset leg, the gate requests the proof,
-/// and the test triggers its `ScreenshotCaptured`.
-fn complete_load_and_land_proof(app: &mut App) {
-    app.insert_resource(GameAssets::with_loads(&[(MASK, AssetLoad::Loaded)]));
+/// Complete the barrier legs the test has opened and land the proof readback
+/// the way the render world would: the gate requests the proof on this update
+/// (every leg it waits on must already hold), and the test triggers its
+/// `ScreenshotCaptured`.
+fn land_proof(app: &mut App) {
     app.update();
     let proof_entity = app.world_mut().spawn_empty().id();
     app.world_mut().trigger(ScreenshotCaptured {
@@ -169,7 +214,11 @@ fn complete_load_and_land_proof(app: &mut App) {
 }
 
 /// Assert the boundary update: exactly one announcement, the held tick-0
-/// look ran onto the shared plane in radians, and the wake override advanced.
+/// look ran onto the shared plane in radians, and the wake machine started —
+/// the driver's gate legs are the proof's own legs, so by the boundary they
+/// hold and the machine's logical zero is the boundary's own driven tick.
+/// The boundary itself does not advance the machine past its start: the phase
+/// stays the authored opening until the driver's own ticks complete it.
 fn assert_boundary_opened(app: &mut App) {
     {
         let state = app.world().resource::<HarnessState>();
@@ -195,38 +244,57 @@ fn assert_boundary_opened(app: &mut App) {
     );
     assert_eq!(
         app.world().resource::<SimWakePhase>().phase(),
-        WakePhase::AwakeInPod,
-        "the wake override advanced at the boundary"
+        WakePhase::Waking,
+        "the boundary itself does not advance the machine: the driver owns the phase"
+    );
+    let wake = app.world().resource::<crate::wake::SimWakeState>();
+    assert!(
+        wake.is_started(),
+        "the machine starts behind the now-open gate: its legs are the proof's legs, so \
+         logical tick zero is the boundary's driven tick zero"
     );
 }
 
 #[test]
 fn a_delayed_required_asset_holds_the_clock_until_one_ready_announcement() {
-    // The barrier end to end on the gameplay lane: while the required ledger
-    // reports pending, nothing runs (no tick, no adapter step, no input, no
-    // wake advance, no announcement). Once the ledger reports loaded and the
-    // proof readback lands, the boundary announces exactly once and the held
-    // tick-0 look runs on that same update, offered onto the shared input
-    // plane, with the wake override firing exactly once behind it.
+    // The barrier's asset leg end to end on the gameplay lane: while the
+    // required ledger reports pending, nothing runs (no tick, no adapter
+    // step, no input, no announcement) even with the wake pipeline leg
+    // already open. Once the ledger reports loaded and the proof readback
+    // lands, the boundary announces exactly once and the held tick-0 look
+    // runs on that same update, offered onto the shared input plane. The
+    // machine starts behind the same now-open gate: its logical zero is the
+    // boundary's driven tick zero, never a lagging start a scenario schedule
+    // would have to guess around.
     let mut app = gameplay_barrier_app(
         GameAssets::with_loads(&[(MASK, AssetLoad::Pending)]),
+        crate::wake_pass::WakeEyelidPipelineReadiness::Ready,
         vec![ScriptedAction::look(0, 90.0, 0.0)],
         "delayed-asset",
     );
     run_updates(&mut app, 3);
     assert_loading_holds(&app);
 
-    complete_load_and_land_proof(&mut app);
+    app.insert_resource(GameAssets::with_loads(&[(MASK, AssetLoad::Loaded)]));
+    land_proof(&mut app);
     app.update();
     assert_boundary_opened(&mut app);
 
-    // The announcement never repeats, and the completed run then exits
-    // cleanly through the report path (no beats, the settle window passed).
+    // The announcement never repeats, the machine consumes exactly one
+    // logical tick per driven update from the boundary on, and the completed
+    // run then exits cleanly through the report path (no beats, the settle
+    // window passed).
     app.update();
     {
         let state = app.world().resource::<HarnessState>();
         assert_eq!(ready_announcements(state), 1, "still exactly one");
         assert_eq!(state.tick, 2, "the clock runs normally after the boundary");
+        let wake = app.world().resource::<crate::wake::SimWakeState>();
+        assert_eq!(
+            wake.current_tick(),
+            2,
+            "one logical tick per driven update from the boundary on"
+        );
     }
     let exits = app.world().resource::<Messages<AppExit>>();
     assert_eq!(
@@ -243,6 +311,31 @@ fn a_delayed_required_asset_holds_the_clock_until_one_ready_announcement() {
 }
 
 #[test]
+fn a_compiling_wake_pipeline_holds_the_gameplay_clock_too() {
+    // The barrier's render leg: the wake eyelid pipeline is one of the legs
+    // the gameplay proof waits on, so with the assets loaded but the pipeline
+    // still compiling, nothing runs — no announcement, no driven tick, and
+    // the wake machine holds closed behind its own gate. Opening the leg
+    // opens the barrier exactly like the asset leg does, and the machine's
+    // logical zero lands on the boundary's driven tick zero: the authored
+    // timeline plays entirely on the scenario clock, its blinks included, on
+    // the ticks a scenario pins.
+    let mut app = gameplay_barrier_app(
+        GameAssets::with_loads(&[(MASK, AssetLoad::Loaded)]),
+        crate::wake_pass::WakeEyelidPipelineReadiness::Compiling,
+        vec![ScriptedAction::look(0, 90.0, 0.0)],
+        "delayed-pipeline",
+    );
+    run_updates(&mut app, 3);
+    assert_loading_holds(&app);
+
+    app.insert_resource(crate::wake_pass::WakeEyelidPipelineReadiness::Ready);
+    land_proof(&mut app);
+    app.update();
+    assert_boundary_opened(&mut app);
+}
+
+#[test]
 fn a_failed_required_asset_fails_the_gameplay_run_naming_the_asset() {
     // Fail fast on the gameplay lane: the first poll records the failure
     // naming the asset and the underlying error, the run never announces
@@ -251,6 +344,7 @@ fn a_failed_required_asset_fails_the_gameplay_run_naming_the_asset() {
     // sticky: a later update neither recovers nor drives.
     let mut app = gameplay_barrier_app(
         GameAssets::with_loads(&[(MASK, AssetLoad::Failed("missing file".to_owned()))]),
+        crate::wake_pass::WakeEyelidPipelineReadiness::Ready,
         vec![ScriptedAction::look(0, 90.0, 0.0)],
         "failed-asset",
     );
@@ -333,6 +427,11 @@ fn gameplay_drive_app(scenario: Scenario, out_dir: PathBuf, delay: Duration) -> 
         // chain under test; TimePlugin provides the clocks DefaultPlugins
         // would in the real app.
         TimePlugin,
+        // The wake completion handoff removes the render-synced eyelid
+        // material from the rig camera, whose component hooks run the
+        // entity-sync bookkeeping the real app's render stack provides;
+        // this is exactly that piece, headless.
+        bevy::render::sync_world::SyncWorldPlugin,
     ));
     app.init_asset::<bevy::mesh::Mesh>()
         .init_asset::<bevy::pbr::StandardMaterial>();
@@ -344,6 +443,14 @@ fn gameplay_drive_app(scenario: Scenario, out_dir: PathBuf, delay: Duration) -> 
         .init_resource::<AccumulatedMouseMotion>();
     super::gameplay::wire(&mut app);
     app.insert_resource(GameAssets::with_loads(&[(MASK, AssetLoad::Loaded)]));
+    // The eyelid pipeline bridge's fixture state: with no render sub-app the
+    // real bridge can never report a compiled pipeline, so the test holds it
+    // at `Ready` (the state a real renderer reaches a few frames in) to drive
+    // the production wake timeline headlessly. Fixture behavior, not native
+    // presentation evidence — the same honesty rule `crate::wake`'s tests
+    // pin.
+    app.insert_resource(crate::wake_pass::WakeEyelidPipelineReadiness::Ready);
+    app.insert_resource(crate::wake_pass::WakeEyelidPipelineFailure(None));
     app.init_resource::<Readiness>();
     app.insert_resource(PresentGate::automatic());
     app.insert_resource(RunMode::Headless);
@@ -461,20 +568,24 @@ fn wrap_radians(angle: f32) -> f32 {
 
 #[test]
 fn the_beat_yaw_reports_the_post_turn_rig_transform() {
-    // Captures are post-tick state: the look action scripted on the beat's
-    // own tick must be inside the reported yaw. The sample is read from the
-    // rig's actual transform (the rendered pose), so the event proves the
-    // rig itself turned, not just that the look bookkeeping moved. The
-    // sample's (tick, frame) is exactly the beat's pinned moment.
+    // Captures are post-tick state: the look action scripted on a driven
+    // tick must be inside the reported yaw once that tick's update renders.
+    // The sample is read from the rig's actual transform (the rendered
+    // pose), so the event proves the rig itself turned, not just that the
+    // look bookkeeping moved. The look is scripted past the authored wake
+    // completion (the machine's look gate holds while `Waking`), and the
+    // beat pins a few quiet ticks later, so the pinned moment is the
+    // settled post-turn pose.
+    let look_tick = WakeTimeline::authored().complete_tick() + 30;
     let scenario = drive_scenario(
         "post-tick-yaw",
-        vec![ScriptedAction::look(0, 90.0, 0.0)],
-        vec![Beat::new("first", 0)],
+        vec![ScriptedAction::look(look_tick, 90.0, 0.0)],
+        vec![Beat::new("first", look_tick + 5)],
     );
     let mut app = gameplay_drive_app(scenario, barrier_out_dir("post-tick-yaw"), Duration::ZERO);
-    drive_to_completion(&mut app, 64);
+    drive_to_completion(&mut app, 512);
     // The rig's transform at run's end is the pose the capture sampled: the
-    // scenario's only look is the beat tick's own 90-degree turn, and nothing
+    // scenario's only look is the scripted 90-degree turn, and nothing
     // turns the rig afterward.
     let rig = rig_yaw_transform(&mut app);
     {
@@ -483,7 +594,7 @@ fn the_beat_yaw_reports_the_post_turn_rig_transform() {
         let beat = &state.beats["first"];
         assert_eq!(
             (beat.tick, beat.frame),
-            (0, 0),
+            (look_tick + 5, look_tick + 5),
             "the beat pins its scripted tick"
         );
         let (tick, frame, reported) = state
@@ -692,5 +803,47 @@ fn assert_report_shape(report_text: &str) {
         yaw_ticks,
         vec![0, 5],
         "every beat pins a yaw sample at its own tick"
+    );
+}
+
+/// The gameplay wire runs the same production wake driver the windowed game
+/// runs: the shared machine resource, the eyelid pass with its readiness
+/// bridge, and the loading cover are all registered by `wire`, so the lane's
+/// wake handoff is the driver's authored-completion handoff — never a
+/// harness-only phase transition, and never a second completion claimant.
+#[test]
+fn the_gameplay_wire_runs_the_shared_wake_driver() {
+    let mut app = App::new();
+    app.add_plugins((
+        TaskPoolPlugin::default(),
+        AssetPlugin::default(),
+        ImagePlugin::default(),
+    ));
+    app.init_asset::<Mesh>().init_asset::<StandardMaterial>();
+    wire(&mut app);
+    assert!(
+        app.world()
+            .get_resource::<crate::wake::SimWakeState>()
+            .is_some(),
+        "the shared wake machine resource is registered on the harness lane"
+    );
+    assert!(
+        app.world()
+            .get_resource::<crate::wake_pass::WakeEyelidPipelineReadiness>()
+            .is_some(),
+        "the wake pass (and its readiness bridge) is registered on the harness lane"
+    );
+    assert!(
+        app.world()
+            .get_resource::<crate::wake::LoadingCover>()
+            .is_some(),
+        "the wake driver's loading cover is registered on the harness lane"
+    );
+    // The engine clock the driver consumes arrives pinned: paused, so
+    // TimePlugin never injects wall deltas; `drive_ticks` paces it by the
+    // driven scenario step.
+    assert!(
+        app.world().resource::<Time<Virtual>>().is_paused(),
+        "the gameplay lane pins bevy's virtual clock for the driver"
     );
 }
