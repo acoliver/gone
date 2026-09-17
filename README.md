@@ -53,7 +53,7 @@ expect it to take longer than later runs.
 
 Arrow-key movement and keyboard look are open work, tracked in issues
 [#31](https://github.com/acoliver/gone/issues/31) and
-[#32](https://github.com/acoliver/gone/issues/32). The controls today are
+[#30](https://github.com/acoliver/gone/issues/30). The controls today are
 WASD and mouse.
 
 ## Running the tests

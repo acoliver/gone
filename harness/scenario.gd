@@ -14,6 +14,8 @@ extends RefCounted
 ##                 "button": "activate"|"interact"|"exit"}
 ##                | {"tick": int, "type": "look",
 ##                 "yaw_deg": float, "pitch_deg": float}
+##                | {"tick": int, "type": "key_turn",
+##                 "dir": "left"|"right"}
 ##                | {"tick": int, "type": "move",
 ##                 "forward": float, "strafe": float}
 ##                | {"tick": int, "type": "wait", "duration": float}
@@ -24,9 +26,10 @@ extends RefCounted
 ## the clock reaches their tick; a wait holds later actions for whole
 ## ticks (ceil(duration * tps)); a wait_until_tick pins the dispatch
 ## floor. Each step() returns exactly one tick's edges, look delta
-## (degrees), and movement, each consumed exactly once.
+## (degrees), turn-key axis, and movement, each consumed exactly once.
 
 const VALID_BUTTONS: Array[String] = ["activate", "interact", "exit"]
+const VALID_TURN_DIRS: Array[String] = ["left", "right"]
 const VALID_MODES: Array[String] = ["capture", "perf", "calibration"]
 const VALID_CONTENTS: Array[String] = ["calibration", "gameplay"]
 const DEFAULT_TICKS_PER_SECOND: int = 60
@@ -107,6 +110,11 @@ static func _parse_action(scenario_name: String, entry: Dictionary) -> Dictionar
 		"look":
 			action.yaw_deg = float(entry.get("yaw_deg", 0.0))
 			action.pitch_deg = float(entry.get("pitch_deg", 0.0))
+		"key_turn":
+			var dir := String(entry.get("dir", ""))
+			if not VALID_TURN_DIRS.has(dir):
+				return {}
+			action.dir = dir
 		"move":
 			action.forward = float(entry.get("forward", 0.0))
 			action.strafe = float(entry.get("strafe", 0.0))
@@ -126,6 +134,7 @@ class InputAdapter:
 	var _actions: Array = []
 	var _edges: Array = []
 	var _pending_look: Vector2 = Vector2.ZERO
+	var _pending_key_turn: float = 0.0
 	var _pending_movement: Vector2 = Vector2.ZERO
 	var _tick_floor: int = 0
 	var _ticks_per_second: int = 60
@@ -146,10 +155,11 @@ class InputAdapter:
 		return _actions.is_empty() and _edges.is_empty()
 
 	## Advance one fixed update: exactly this tick's button edges, look
-	## delta (degrees), and movement intent. Held actions stay queued
+	## delta (degrees), turn-key axis (+1 right, -1 left; same-tick key
+	## turns sum), and movement intent. Held actions stay queued
 	## until their wait lifts, whatever their own ticks say.
 	func step() -> Dictionary:
-		var out := {"edges": [], "look_deg": Vector2.ZERO, "movement": Vector2.ZERO}
+		var out := {"edges": [], "look_deg": Vector2.ZERO, "key_turn": 0.0, "movement": Vector2.ZERO}
 		if _hold_remaining_ticks > 0.0:
 			_hold_remaining_ticks -= 1.0
 		while not _actions.is_empty():
@@ -160,6 +170,8 @@ class InputAdapter:
 			_apply(front, out)
 		out.look_deg = _pending_look
 		_pending_look = Vector2.ZERO
+		out.key_turn = _pending_key_turn
+		_pending_key_turn = 0.0
 		out.movement = _pending_movement
 		_pending_movement = Vector2.ZERO
 		_tick_floor += 1
@@ -173,6 +185,8 @@ class InputAdapter:
 				out.edges.append({"button": action.button, "edge": "release"})
 			"look":
 				_pending_look += Vector2(action.yaw_deg, action.pitch_deg)
+			"key_turn":
+				_pending_key_turn += 1.0 if action.dir == "right" else -1.0
 			"move":
 				_pending_movement += Vector2(action.forward, action.strafe)
 			"wait":

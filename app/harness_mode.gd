@@ -261,6 +261,15 @@ func drive_tick() -> void:
 		report.add_event({"kind": "input", "tick": tick, "frame": frame,
 			"what": "look %.4f %.4f" % [look.x, look.y]})
 		any_input = true
+	var key_turn: float = step.key_turn
+	if key_turn != 0.0:
+		# The device producer's expression for a held look key, so
+		# scripted turning matches the keyboard exactly.
+		var yaw_delta := -key_turn * InputPlane.TURN_SPEED / float(scenario.ticks_per_second)
+		adapter.look(yaw_delta, 0.0)
+		report.add_event({"kind": "input", "tick": tick, "frame": frame,
+			"what": "key_turn %.4f" % rad_to_deg(yaw_delta)})
+		any_input = true
 	var movement: Vector2 = step.movement
 	if movement != Vector2.ZERO:
 		adapter.hold(movement.x, movement.y)
