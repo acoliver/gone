@@ -3,10 +3,10 @@ extends Node3D
 ## Greybox ceiling hazards near the torn cable runs: occasional
 ## short-lived electrical spark bursts (a strobed OmniLight3D flash plus
 ## a one-shot particle spray) and slow smoke hanging densest at the
-## ceiling. GPUParticles3D is the chosen smoke path: a FogVolume height
-## ramp needs a custom density shader, while a stock particle emitter
-## with a ceiling emission box and slow fall drift is reliable in 4.7.2
-## Forward+. Dressing only: no colliders, no sim role.
+## ceiling, carried by a GPUParticles3D field: a ceiling emission
+## box, slow fall drift, and a structured billboard puff shader whose
+## two seed-placed lobes fade to zero inside the quad edge
+## (smoke_puff.gdshader). Dressing only: no colliders, no sim role.
 
 const SPARK_LIGHT_COLOR: Color = Color(1.5, 0.35, 0.1)
 const SPARK_MIN_ENERGY: float = 2.5
@@ -17,6 +17,14 @@ const SPARK_MIN_INTERVAL: float = 0.8
 const SPARK_MAX_INTERVAL: float = 3.0
 const SPARK_COUNT: int = 3
 const SMOKE_FALL_SPEED: float = 0.12
+const SMOKE_SHADER_PATH: String = "res://app/smoke_puff.gdshader"
+## Square so rotation can never trade a rectangular silhouette back in;
+## sized to keep the old 1.4x1.0 quad's coverage now that the soft
+## falloff eats the outer rim.
+const SMOKE_PUFF_SIZE: float = 1.7
+const SMOKE_TINT: Color = Color(0.26, 0.25, 0.25)
+const SMOKE_EMISSION: Color = Color(0.3, 0.0, 0.0)
+const SMOKE_OPACITY: float = 0.48
 
 var auto_bursts: bool = true
 var _spark_lights: Array[OmniLight3D] = []
@@ -64,33 +72,37 @@ func _spark_spot(spot: Vector3, spark_material: StandardMaterial3D) -> Node3D:
 	_spark_particles.append(particles)
 	return group
 
-## The smoke emitter: particles spawn in a thin ceiling-high box, drift
-## slowly downward, and preprocess so the haze exists from the first
-## captured frame. Density falls off away from the ceiling because the
-## spawn volume itself hugs the ceiling.
+## The puff field: particles spawn in a ceiling-hugging box whose top
+## edge sits at the ceiling plane, drift slowly downward, and preprocess
+## so the haze exists from the first captured frame. The count stays
+## far below veil territory — individual two-lobed billows must stay
+## discernible — with a wide size spread for per-particle variety.
+## Each particle draws as a two-lobed billboard puff (depth-sorted so
+## the translucent layers stack) rather than a shaded quad.
 func _smoke() -> GPUParticles3D:
 	var smoke := GPUParticles3D.new()
 	smoke.name = "CeilingSmoke"
-	smoke.position = Vector3(0.0, 3.0, 0.0)
-	smoke.amount = 48
-	smoke.lifetime = 7.0
-	smoke.preprocess = 6.0
-	smoke.visibility_aabb = AABB(Vector3(-6.5, -3.5, -4.5), Vector3(13.0, 5.0, 9.0))
+	smoke.position = Vector3(0.0, 2.8, 0.0)
+	smoke.amount = 144
+	smoke.lifetime = 8.0
+	smoke.preprocess = 7.0
+	smoke.visibility_aabb = AABB(Vector3(-7.1, -4.4, -5.1), Vector3(14.2, 6.9, 10.2))
+	smoke.draw_order = GPUParticles3D.DRAW_ORDER_VIEW_DEPTH
 	var process := ParticleProcessMaterial.new()
 	process.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
-	process.emission_box_extents = Vector3(5.0, 0.2, 2.5)
+	process.emission_box_extents = Vector3(5.0, 0.4, 3.0)
 	process.direction = Vector3(0.0, -1.0, 0.0)
 	process.spread = 25.0
 	process.initial_velocity_min = SMOKE_FALL_SPEED * 0.5
 	process.initial_velocity_max = SMOKE_FALL_SPEED
 	process.gravity = Vector3(0.0, -0.05, 0.0)
-	process.angular_velocity_min = -0.4
-	process.angular_velocity_max = 0.4
-	process.scale_min = 1.0
-	process.scale_max = 1.8
+	process.angular_velocity_min = -1.2
+	process.angular_velocity_max = 1.2
+	process.scale_min = 1.25
+	process.scale_max = 2.4
 	smoke.process_material = process
 	var quad := QuadMesh.new()
-	quad.size = Vector2(1.4, 1.0)
+	quad.size = Vector2(SMOKE_PUFF_SIZE, SMOKE_PUFF_SIZE)
 	quad.material = _smoke_material()
 	smoke.draw_pass_1 = quad
 	return smoke
@@ -154,14 +166,14 @@ static func _spark_material() -> StandardMaterial3D:
 	material.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
 	return material
 
-## Smoke is a lit translucent grey with a whisper of red emission so it
-## reads under the emergency fixtures without becoming a light source.
-static func _smoke_material() -> StandardMaterial3D:
-	var material := StandardMaterial3D.new()
-	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	material.albedo_color = Color(0.22, 0.21, 0.21, 0.16)
-	material.emission_enabled = true
-	material.emission = Color(0.05, 0.0, 0.0)
-	material.roughness = 1.0
-	material.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+## Smoke stays a lit translucent grey with a red emission glint so it
+## reads under the emergency fixtures without becoming a light
+## source; the shader does the structuring (two seed-placed lobes,
+## per-particle churn), these are the authored color and density knobs.
+static func _smoke_material() -> ShaderMaterial:
+	var material := ShaderMaterial.new()
+	material.shader = load(SMOKE_SHADER_PATH) as Shader
+	material.set_shader_parameter("tint", SMOKE_TINT)
+	material.set_shader_parameter("emission_tint", SMOKE_EMISSION)
+	material.set_shader_parameter("opacity", SMOKE_OPACITY)
 	return material
