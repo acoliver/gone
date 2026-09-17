@@ -23,6 +23,12 @@ func _init() -> void:
 	wake_state = Wake.WakeState.new(Wake.WakeTimeline.authored())
 	exit_path = PlacementTruth.player_exit_path()
 
+## The emergency circuit's target fixture level: 1.0 while the grid
+## carries the emergency cells, 0.0 once they are dead. Render-side
+## consumers read this; they never write the grid.
+func emergency_circuit_target() -> float:
+	return 1.0 if Power.emergency_fixtures_lit(power.state()) else 0.0
+
 ## One fixed logical tick, called from _physics_process at the project's
 ## 60 Hz physics rate. The wake machine consumes nothing before its
 ## readiness barrier opens, so the opening-beat state holds exactly as

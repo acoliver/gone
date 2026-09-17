@@ -1,8 +1,8 @@
 extends Node3D
 ## The stasis-room root: builds the greybox scene procedurally at runtime
 ## and owns the Game container, ticking the sim at the fixed 60 Hz
-## physics rate. No lights belong to this build stage: the room renders
-## dark until the emergency-lighting chunk lands.
+## physics rate. The emergency lighting node reads the sim's power grid
+## through its own bridge; ceiling hazards are inert dressing.
 
 var game: Game
 
@@ -11,6 +11,8 @@ func _ready() -> void:
 	add_child(RoomGeometry.build())
 	add_child(StasisPods.build(game.registry))
 	add_child(Hatch.build())
+	add_child(Lighting.build(game))
+	add_child(Hazards.build())
 	_add_observer_camera()
 
 func _physics_process(_delta: float) -> void:
