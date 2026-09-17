@@ -1,0 +1,23 @@
+{
+	"name": "perf-smoke",
+	"seed": 11,
+	"ticks_per_second": 60,
+	"mode": "perf",
+	"content": "gameplay",
+	"max_frames": 1200,
+	"actions": [
+		{"tick": 0, "type": "look", "yaw_deg": 4.0, "pitch_deg": 0.0},
+		{"tick": 30, "type": "look", "yaw_deg": 4.0, "pitch_deg": 0.0},
+		{"tick": 60, "type": "look", "yaw_deg": 4.0, "pitch_deg": 0.0},
+		{"tick": 90, "type": "look", "yaw_deg": 4.0, "pitch_deg": 0.0},
+		{"tick": 120, "type": "look", "yaw_deg": -4.0, "pitch_deg": 0.0},
+		{"tick": 150, "type": "look", "yaw_deg": -4.0, "pitch_deg": 0.0},
+		{"tick": 180, "type": "look", "yaw_deg": -4.0, "pitch_deg": 0.0},
+		{"tick": 210, "type": "look", "yaw_deg": 4.0, "pitch_deg": 0.0},
+		{"tick": 240, "type": "look", "yaw_deg": 4.0, "pitch_deg": 0.0},
+		{"tick": 270, "type": "look", "yaw_deg": 4.0, "pitch_deg": 0.0},
+		{"tick": 300, "type": "look", "yaw_deg": 4.0, "pitch_deg": 0.0},
+		{"tick": 330, "type": "look", "yaw_deg": 4.0, "pitch_deg": 0.0}
+	],
+	"beats": []
+}

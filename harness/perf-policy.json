@@ -1,0 +1,11 @@
+{
+	"policy_version": "godot-smoke-1152x648-v1",
+	"warmup_frames": 60,
+	"sample_frames": 300,
+	"presentation": "Uncapped",
+	"camera_route": "fixed orbit around the stasis room center at constant radius and height, one route step per rendered frame, no scripted input",
+	"concurrent_effects": "populated room: stasis pods, ceiling smoke (preprocessed), automatic spark bursts active",
+	"resolution": { "width": 1152, "height": 648 },
+	"statistics": ["Count", "MeanMs", "MinMs", "MaxMs", "P50Ms", "P95Ms", "P99Ms"],
+	"thresholds": { "mean_ms_max": 25.0, "p95_ms_max": 50.0 }
+}

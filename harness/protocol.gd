@@ -42,6 +42,7 @@ const ENV_OUT_DIR: String = "GONE_OUT_DIR"
 const ENV_APP_HASH: String = "GONE_APP_HASH"
 const ENV_SCENARIO_HASH: String = "GONE_SCENARIO_HASH"
 const ENV_CONFIG_HASH: String = "GONE_CONFIG_HASH"
+const ENV_PERF_POLICY: String = "GONE_PERF_POLICY"
 
 ## Chip geometry, ported from Rust frame.rs: 6 digit cells per band, a
 ## cell is a 3x3 digit lattice in a 4x5 pixel cell, two bands (tick over
@@ -207,7 +208,7 @@ static func event_order_key(event: Dictionary) -> Array:
 			return [0, 0, event.frame]
 		"room_check":
 			return [1, 0, event.frame]
-		"input", "beat", "wake_phase", "player_yaw", "player_position", "refusal":
+		"input", "beat", "wake_phase", "player_yaw", "player_position", "refusal", "calibration":
 			return [1, event.tick, event.frame]
 		_:
 			return [2, 9223372036854775807, event.frame]

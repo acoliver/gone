@@ -27,7 +27,7 @@ extends RefCounted
 ## (degrees), and movement, each consumed exactly once.
 
 const VALID_BUTTONS: Array[String] = ["activate", "interact", "exit"]
-const VALID_MODES: Array[String] = ["capture", "perf"]
+const VALID_MODES: Array[String] = ["capture", "perf", "calibration"]
 const VALID_CONTENTS: Array[String] = ["calibration", "gameplay"]
 const DEFAULT_TICKS_PER_SECOND: int = 60
 const DEFAULT_MAX_FRAMES: int = 2000
@@ -40,6 +40,9 @@ var content: String = "gameplay"
 var max_frames: int = DEFAULT_MAX_FRAMES
 var actions: Array = []
 var beats: Array = []
+var calibration: Dictionary = {}
+
+const CalibrationModule := preload("res://harness/calibration.gd")
 
 static func parse(text: String) -> Dictionary:
 	var parsed = JSON.parse_string(text)
@@ -81,6 +84,14 @@ static func parse(text: String) -> Dictionary:
 		if action.type == "wait" and action.duration < 0.0:
 			return {"scenario": null,
 				"error": "scenario `%s` has a wait action with negative duration %f: a wait consumes scenario time, never rewinds it" % [scenario.scenario_name, action.duration]}
+	if scenario.mode == "calibration":
+		if not (data.has("calibration") and data.calibration is Dictionary):
+			return {"scenario": null,
+				"error": "scenario `%s` in calibration mode needs a `calibration` section" % scenario.scenario_name}
+		var parsed_calibration: Dictionary = CalibrationModule.parse_params(data.calibration)
+		if parsed_calibration.error != "":
+			return {"scenario": null, "error": "scenario `%s`: %s" % [scenario.scenario_name, parsed_calibration.error]}
+		scenario.calibration = parsed_calibration.params
 	return {"scenario": scenario, "error": ""}
 
 static func _parse_action(scenario_name: String, entry: Dictionary) -> Dictionary:

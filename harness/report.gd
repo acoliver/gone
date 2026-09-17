@@ -13,6 +13,7 @@ var seed: int
 var events: Array = []
 var checkpoints: Array[String] = []
 var frame_stats: Dictionary = {"frames": 0, "mean_us": 0.0, "p95_us": 0.0, "median_us": 0.0}
+var perf: Dictionary = {}
 var beats: Dictionary = {}
 var identity: Dictionary = {"app_hash": "", "scenario_hash": "", "config_hash": ""}
 
@@ -43,6 +44,8 @@ static func parse(text: String) -> Dictionary:
 		report.checkpoints.append(checkpoint)
 	if data.has("frame_stats") and data.frame_stats is Dictionary:
 		report.frame_stats = data.frame_stats
+	if data.has("perf") and data.perf is Dictionary:
+		report.perf = data.perf
 	for name: String in data.beats:
 		var entry: Dictionary = data.beats[name]
 		for key: String in ["file", "tick", "frame", "request_id"]:
@@ -94,4 +97,6 @@ func to_json() -> String:
 		"beats": beats,
 		"identity": identity,
 	}
+	if not perf.is_empty():
+		data.perf = perf
 	return JSON.stringify(data, "\t")

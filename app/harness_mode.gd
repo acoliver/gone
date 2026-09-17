@@ -12,6 +12,7 @@ extends SceneTree
 const Protocol := preload("res://harness/protocol.gd")
 const ScenarioModule := preload("res://harness/scenario.gd")
 const ReportModule := preload("res://harness/report.gd")
+const PerfPolicyModule := preload("res://harness/perf_policy.gd")
 
 const WARMUP_FRAMES: int = 4
 const SETTLE_TICKS: int = 5
@@ -23,7 +24,7 @@ var game: Game
 var player: Player
 var adapter: InputPlane.ScriptedAdapter
 var input
-var chip: ChipControl
+var chip: LaneChip
 var pods_node: Node
 
 var ready: bool = false
@@ -34,6 +35,8 @@ var next_beat_index: int = 0
 var pending_captures: Array = []
 var busy_capturing: bool = false
 var last_phase: String = ""
+var perf_policy
+var perf_samples_ms: Array[float] = []
 
 func _initialize() -> void:
 	if OS.get_environment(Protocol.ENV_HARNESS) != "1":
@@ -57,6 +60,20 @@ func _initialize() -> void:
 		quit(2)
 		return
 	scenario = parsed.scenario
+	if scenario.mode == "perf":
+		var policy_path := OS.get_environment(Protocol.ENV_PERF_POLICY)
+		var policy_text := FileAccess.get_file_as_string(policy_path)
+		if policy_text.is_empty():
+			push_error("harness_mode: cannot read perf policy %s" % policy_path)
+			quit(2)
+			return
+		var parsed_policy: Dictionary = PerfPolicyModule.parse_policy(policy_text)
+		if parsed_policy.error != "":
+			push_error("harness_mode: %s" % parsed_policy.error)
+			quit(2)
+			return
+		perf_policy = parsed_policy.policy
+		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 	DirAccess.make_dir_recursive_absolute(out_dir)
 	DirAccess.make_dir_recursive_absolute(out_dir.path_join("beats"))
 	report = ReportModule.new(Protocol.PROTOCOL_VERSION,
@@ -95,7 +112,7 @@ func _build_scene() -> void:
 	root.add_child(scene)
 	var layer := CanvasLayer.new()
 	layer.layer = 128
-	chip = ChipControl.new()
+	chip = LaneChip.new()
 	layer.add_child(chip)
 	root.add_child(layer)
 
@@ -124,6 +141,33 @@ func _boot() -> void:
 		"phase": last_phase})
 	print("GONE_READY %d %d" % [Protocol.PROTOCOL_VERSION, frame])
 	ready = true
+	if scenario.mode == "perf":
+		await _run_perf_window()
+		_finish(true)
+
+## The perf lane's measurement window: after readiness the populated room
+## runs the scripted camera route while WARMUP rendered frames pass
+## unmeasured, then SAMPLE rendered frames are wall-clock timed (vsync
+## disabled, presentation Uncapped). No captures, no beats: the report's
+## perf section carries the samples and their statistics.
+func _run_perf_window() -> void:
+	for _warmup: int in range(int(perf_policy.warmup_frames)):
+		await process_frame
+	for _sample: int in range(int(perf_policy.sample_frames)):
+		var started := Time.get_ticks_usec()
+		await process_frame
+		perf_samples_ms.append(float(Time.get_ticks_usec() - started) / 1000.0)
+	var stats: Dictionary = PerfPolicyModule.stats_from_samples(perf_samples_ms)
+	report.perf = {
+		"warmup_frames": int(perf_policy.warmup_frames),
+		"sample_frames": int(perf_policy.sample_frames),
+		"presentation": String(perf_policy.presentation),
+		"resolution": {"width": int(perf_policy.resolution.width),
+			"height": int(perf_policy.resolution.height)},
+		"samples_ms": perf_samples_ms.duplicate(),
+		"stats": stats,
+	}
+	print("GONE_PERF %s" % PerfPolicyModule.distribution_line(stats))
 
 func observe_room() -> void:
 	var pods_expected: int = game.registry.pods().size()
@@ -236,6 +280,8 @@ func drive_tick() -> void:
 		next_beat_index += 1
 	if pending_captures.is_empty() and next_beat_index >= scenario.beats.size() \
 			and input.is_complete() and not failed:
+		if scenario.mode == "perf":
+			return
 		if tick >= last_beat_tick() + SETTLE_TICKS:
 			_finish(true)
 		return
@@ -300,36 +346,3 @@ func _button(name: String) -> int:
 			return InputPlane.Buttons.INTERACT
 		_:
 			return InputPlane.Buttons.EXIT
-
-## The frame-code chip: a protocol-instrumentation Control painting the
-## (tick, frame) lattice into the top-left of the captured view. Not
-## scene lighting — it renders above the game layer only so captures are
-## provably correlated to the timeline.
-class ChipControl:
-	extends Control
-
-	const ChipProtocol := preload("res://harness/protocol.gd")
-
-	var code_tick: int = 0
-	var code_frame: int = 0
-
-	func _init() -> void:
-		mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var size_px: Vector2i = ChipProtocol.chip_size()
-		size = Vector2(size_px)
-
-	func set_code(p_tick: int, p_frame: int) -> void:
-		if p_tick == code_tick and p_frame == code_frame:
-			return
-		code_tick = p_tick
-		code_frame = p_frame
-		queue_redraw()
-
-	func _draw() -> void:
-		draw_rect(Rect2(Vector2.ZERO, size), ChipProtocol.OFF_COLOR)
-		for py: int in range(2 * ChipProtocol.CELL_H):
-			for px: int in range(ChipProtocol.DIGITS * ChipProtocol.CELL_W):
-				var color := ChipProtocol.chip_pixel(code_tick, code_frame, px, py)
-				if color == ChipProtocol.ON_COLOR:
-					var origin := Vector2(px, py) * ChipProtocol.PIXEL_SCALE
-					draw_rect(Rect2(origin, Vector2(ChipProtocol.PIXEL_SCALE, ChipProtocol.PIXEL_SCALE)), color)
