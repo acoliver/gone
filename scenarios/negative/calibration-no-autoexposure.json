@@ -1,0 +1,26 @@
+{
+	"name": "negative-calibration-no-autoexposure",
+	"seed": 14,
+	"ticks_per_second": 60,
+	"mode": "calibration",
+	"content": "calibration",
+	"max_frames": 600,
+	"actions": [],
+	"beats": [
+		{"name": "pre-a", "tick": 90},
+		{"name": "pre-b", "tick": 120},
+		{"name": "post-step", "tick": 181},
+		{"name": "settle-1", "tick": 270},
+		{"name": "settle-2", "tick": 360},
+		{"name": "settle-3", "tick": 450}
+	],
+	"calibration": {
+		"initial_level": 0.3,
+		"step": {"tick": 180, "level": 0.6},
+		"patch_area_fraction": 0.005,
+		"patch": {"type": "fixed_center"},
+		"mask": "center_weighted",
+		"auto_exposure": false,
+		"cell": "A"
+	}
+}

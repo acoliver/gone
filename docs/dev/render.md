@@ -1,3 +1,6 @@
+> Superseded: the Rust/Bevy implementation described below is archived unchanged at `archive/rust/`.
+> The live code is the Godot 4.7 tree at the repository root; see `docs/design/technology.md` and `docs/dev/godot-port.md`.
+
 # gone render notes: game post chain and pass order (issue #6 slice B)
 
 This records the game camera's post-processing chain and the render-pass order

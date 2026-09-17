@@ -1,0 +1,24 @@
+{
+	"name": "calibration-move",
+	"seed": 8,
+	"ticks_per_second": 60,
+	"mode": "calibration",
+	"content": "calibration",
+	"max_frames": 700,
+	"actions": [],
+	"beats": [
+		{"name": "center-a", "tick": 90},
+		{"name": "center-b", "tick": 120},
+		{"name": "edge-a", "tick": 420},
+		{"name": "edge-b", "tick": 540}
+	],
+	"calibration": {
+		"initial_level": 0.3,
+		"step": {"tick": 600, "level": 0.3},
+		"patch_area_fraction": 0.005,
+		"patch": {"type": "center_then_edge", "at_tick": 180},
+		"mask": "uniform",
+		"auto_exposure": true,
+		"cell": "D"
+	}
+}

@@ -1,0 +1,12 @@
+{
+	"name": "negative-never-beat",
+	"seed": 13,
+	"ticks_per_second": 60,
+	"mode": "capture",
+	"content": "gameplay",
+	"max_frames": 300,
+	"actions": [],
+	"beats": [
+		{"name": "never-happens", "tick": 600}
+	]
+}
