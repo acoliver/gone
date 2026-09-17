@@ -21,9 +21,13 @@
 //! post chain (`post`, `AgX` tonemapping, center-weighted auto exposure,
 //! vignette). The windowed game runs the game-content readiness barrier
 //! (`readiness`): while the required game assets load, the scene stays in its
-//! authored `Waking` opening and the wake progression may not be driven; a
+//! authored `Waking` opening and the wake driver (`wake`) may not start the
+//! authored timeline; a
 //! failed required asset is a hard error and exits rather than rendering
-//! placeholders.
+//! placeholders. Once the assets, the eyelid pipeline, and — in the windowed
+//! game — the primary window's first closed frame are ready, the driver
+//! plays the authored wake opening on the rig camera and hands the
+//! machine from `Waking` to `AwakeInPod` at the authored completion tick.
 //!
 //! Gameplay internals stay crate-private; the public harness surface is the
 //! `harness` protocol module (which `gone_harness` re-exports) plus the
@@ -55,6 +59,21 @@ mod player;
 mod post;
 mod readiness;
 mod scene;
+
+/// The wake eyelid fullscreen pass (issue #8 render primitive): the plugin,
+/// material/uniform mapping from `gone_sim::WakeSample`, and pipeline
+/// readiness evidence the production driver gates on.
+pub mod wake_pass;
+
+/// The production wake driver (issue #8, normal-mode wiring): attaches the
+/// closed eyelid to the player camera from the rig's first frame, holds the
+/// authored timeline behind the readiness barrier under an opaque loading
+/// cover, ticks it on the logical clock, composes the authored sway as a
+/// drift-free rig projection, and hands `Waking -> AwakeInPod` through the
+/// shared `wake_complete` boundary exactly once. The gameplay harness lane
+/// runs this same driver behind the lane's own readiness barrier; see the
+/// module docs for exactly what is and is not wired.
+pub(crate) mod wake;
 
 /// The frozen simulation truth the scene builds from, re-exported for the
 /// runner: `gone_harness` derives its gameplay expectations (the exit
@@ -125,9 +144,8 @@ pub fn run() -> AppExit {
             // The game-content readiness barrier: the required-asset ledger
             // over the handles the post chain just loaded, polled every
             // update. A pending load holds the game in its authored `Waking`
-            // opening (the wake progression must not be driven before the
-            // barrier; the issue #8 wake pass gates on `GameAssets::ready`);
-            // a failed required asset is a hard error and exits the game,
+            // opening (the wake driver gates on `GameAssets::ready`); a
+            // failed required asset is a hard error and exits the game,
             // never a placeholder render.
             let ledger = {
                 let masks = app.world().resource::<post::PostChainAssets>();
@@ -135,6 +153,18 @@ pub fn run() -> AppExit {
             };
             app.insert_resource(ledger);
             app.add_systems(Update, readiness::poll_required_assets_or_exit);
+            // The authored wake opening (issue #8): the eyelid effect from
+            // the rig camera's first frame, the timeline behind the readiness
+            // barrier, and the `Waking -> AwakeInPod` handoff at the authored
+            // completion tick. The windowed game also paces its wake on the
+            // window's presentation (`PresentationPacedWake`): the timeline
+            // starts only once the render world has closed a frame over the
+            // primary window's drawable — that start spends no wake delta —
+            // and updates following frames without a drawable bank no time.
+            // The harness lanes never insert it and keep their
+            // screenshot-paced clock contracts untouched.
+            app.insert_resource(wake::PresentationPacedWake);
+            app.add_plugins(wake::GameWakePlugin);
         }
         RunMode::Headless => {
             let scenario = load_harness_scenario();

@@ -87,5 +87,13 @@ features = [
     "bevy_light",
 ]
 
+[dev-dependencies]
+# The wake-pass schedule-order test reads bevy's system names to assert the
+# built Core3d graph's topological order; without this feature DebugName
+# formats as a placeholder ("Enable the debug feature to see the name") and
+# systems cannot be identified. Dev-scope on purpose: cargo unifies features
+# only for test builds, so production binaries never carry the name strings.
+bevy = { version = "0.19", default-features = false, features = ["debug"] }
+
 [lints]
 workspace = true

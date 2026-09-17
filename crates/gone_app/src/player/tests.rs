@@ -162,6 +162,42 @@ fn game_app() -> App {
 }
 
 #[test]
+fn rig_camera_explicitly_disables_ambient_environment_and_fog() {
+    use bevy::color::Color;
+    use bevy::light::{AmbientLight, EnvironmentMapLight};
+    use bevy::pbr::{DistanceFog, FogFalloff};
+
+    let mut app = game_app();
+    app.update();
+    let mut query = app.world_mut()
+        .query_filtered::<(&AmbientLight, &DistanceFog, Option<&EnvironmentMapLight>), With<PlayerPitch>>();
+    let (ambient, fog, environment) = query.single(app.world()).expect("rig environment");
+    assert_eq!(ambient.color, Color::BLACK);
+    assert_eq!(ambient.brightness.to_bits(), 0.0_f32.to_bits());
+    assert!(!ambient.affects_lightmapped_meshes);
+    assert!(
+        environment.is_none(),
+        "no image-based environmental lighting"
+    );
+    assert_eq!(fog.color, Color::BLACK);
+    assert_eq!(fog.directional_light_color, Color::BLACK);
+    assert!(matches!(fog.falloff, FogFalloff::Exponential { density } if density == 0.0));
+}
+
+#[test]
+fn emergency_camera_authors_physical_exposure_without_changing_auto_exposure() {
+    let mut app = game_app();
+    app.update();
+    let mut cameras = app
+        .world_mut()
+        .query_filtered::<(&bevy::camera::Exposure, &AutoExposure), With<PlayerPitch>>();
+    let (physical, auto) = cameras.single(app.world()).expect("rig exposure");
+    assert_eq!(physical.ev100.to_bits(), 0.0_f32.to_bits());
+    assert_eq!(auto.range, AutoExposure::default().range);
+    assert_eq!(auto.filter, AutoExposure::default().filter);
+}
+
+#[test]
 fn game_plugin_build_wires_camera_to_the_full_post_chain() {
     let mut app = game_app();
     app.update();

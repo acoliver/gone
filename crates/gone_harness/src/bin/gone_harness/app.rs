@@ -75,12 +75,55 @@ pub(crate) fn app_asset_root() -> Result<PathBuf, RunnerError> {
     Ok(base)
 }
 
-/// Spawn the app with harness env and the run-identity hashes. Under
-/// `render_check` the child also gets `GONE_RENDER_CHECK=1`, selecting the
+/// Build (without spawning) the child app command with the harness env and
+/// the run-identity hashes. Split from [`spawn_app`] so the environment
+/// contract is unit-testable: `get_envs` exposes exactly what the child will
+/// receive, including explicit removals.
+///
+/// The mode variable is scrubbed, not just omitted (issue #8): the runner
+/// itself never reads `GONE_RENDER_CHECK` (its canary selection is a CLI
+/// flag), so a stale `GONE_RENDER_CHECK=1` inherited from the caller's shell
+/// would otherwise pass straight through to the app, silently select the
+/// canary lane, and open a window on a run that must be headless. The
+/// offscreen spawn removes it explicitly so the child sees it as unset
+/// regardless of what this runner inherited. `GONE_TEST_CAPTURE_DELAY_MS` is
+/// intentionally still inherited: it is a documented pass-through knob, not
+/// a mode.
+///
+/// Under `render_check` the child gets `GONE_RENDER_CHECK=1`, selecting the
 /// canary lane (focused window: it must be ordered in for its surface to
-/// present, plus the one onscreen capture). The child's `BEVY_ASSET_ROOT` is
-/// always set explicitly (see [`app_asset_root`]), so its asset resolution
-/// never depends on the environment this runner inherited.
+/// present, plus the one onscreen capture).
+///
+/// `BEVY_ASSET_ROOT` is always set explicitly (see [`app_asset_root`]), so
+/// asset resolution never depends on the environment this runner inherited.
+fn harness_command(
+    app: &Path,
+    asset_root: &Path,
+    scenario_path: &Path,
+    out_dir: &Path,
+    identity: &RunIdentity<'_>,
+    render_check: bool,
+) -> Command {
+    let mut command = Command::new(app);
+    command
+        .env(ENV_HARNESS, "1")
+        .env(ENV_ASSET_ROOT, asset_root)
+        .env(ENV_SCENARIO, scenario_path)
+        .env(ENV_OUT_DIR, out_dir)
+        .env(ENV_APP_HASH, identity.app)
+        .env(ENV_SCENARIO_HASH, identity.scenario)
+        .env("GONE_CONFIG_HASH", identity.config);
+    if render_check {
+        command.env(ENV_RENDER_CHECK, "1");
+    } else {
+        command.env_remove(ENV_RENDER_CHECK);
+    }
+    command.stdout(Stdio::inherit()).stderr(Stdio::inherit());
+    command
+}
+
+/// Spawn the app with harness env and the run-identity hashes. The child is
+/// kept alive and reaped by this runner.
 pub(crate) fn spawn_app(
     root: &Path,
     scenario_path: &Path,
@@ -96,22 +139,16 @@ pub(crate) fn spawn_app(
         );
     }
     let asset_root = app_asset_root()?;
-    let mut command = Command::new(&app);
-    command
-        .env(ENV_HARNESS, "1")
-        .env(ENV_ASSET_ROOT, asset_root)
-        .env(ENV_SCENARIO, scenario_path)
-        .env(ENV_OUT_DIR, out_dir)
-        .env(ENV_APP_HASH, identity.app)
-        .env(ENV_SCENARIO_HASH, identity.scenario)
-        .env("GONE_CONFIG_HASH", identity.config);
-    if render_check {
-        command.env(ENV_RENDER_CHECK, "1");
-    }
+    let mut command = harness_command(
+        &app,
+        &asset_root,
+        scenario_path,
+        out_dir,
+        identity,
+        render_check,
+    );
+    command.current_dir(root);
     let child = command
-        .stdout(Stdio::inherit())
-        .stderr(Stdio::inherit())
-        .current_dir(root)
         .spawn()
         .map_err(|e| RunnerError(format!("failed to spawn {}: {e}", app.display())))?;
     Ok(AppChild { child })
@@ -147,6 +184,10 @@ pub(crate) fn wait_for_app(
 #[cfg(test)]
 mod tests {
     use super::app_asset_root;
+    use super::{ENV_RENDER_CHECK, RunIdentity, harness_command};
+    use std::collections::BTreeMap;
+    use std::ffi::{OsStr, OsString};
+    use std::path::Path;
 
     /// The spawn path's asset root: absolute, and pointing at the `gone_app`
     /// assets subtree that holds the required metering mask, whatever this
@@ -167,6 +208,85 @@ mod tests {
             required.is_file(),
             "the required asset must exist under the computed root: {}",
             required.display()
+        );
+    }
+
+    /// The exact env map a built command hands the child, including explicit
+    /// removals (absent means removed: the child sees it as unset).
+    fn command_envs(command: &std::process::Command) -> BTreeMap<OsString, Option<OsString>> {
+        command
+            .get_envs()
+            .map(|(k, v)| (k.to_os_string(), v.map(OsString::from)))
+            .collect()
+    }
+
+    fn identity(app: &'static str) -> RunIdentity<'static> {
+        RunIdentity {
+            app,
+            scenario: "scenario-hash",
+            config: "config-hash",
+        }
+    }
+
+    fn test_command(render_check: bool) -> std::process::Command {
+        harness_command(
+            Path::new("/bin/echo"),
+            Path::new("/asset-root"),
+            Path::new("/scenario.json"),
+            Path::new("/run-dir"),
+            &identity("app-hash"),
+            render_check,
+        )
+    }
+
+    /// The child's view of one env var: the value it will receive, with an
+    /// explicit removal flattened to absent (the child sees it as unset).
+    fn effective_env<'a>(
+        envs: &'a BTreeMap<OsString, Option<OsString>>,
+        key: &str,
+    ) -> Option<&'a OsStr> {
+        envs.get(OsStr::new(key)).and_then(|value| value.as_deref())
+    }
+
+    /// Issue #8: an offscreen spawn must hand the child `GONE_RENDER_CHECK`
+    /// as explicitly unset, so a stale value inherited by this runner can
+    /// never select the canary lane and open a window on a headless run.
+    /// `get_envs` reports the command's own env operations (sets and explicit
+    /// removals), so the scrub is observable without spawning and without
+    /// mutating this process's environment.
+    #[test]
+    fn offscreen_spawn_scrubs_an_inherited_render_check() {
+        let envs = command_envs(&test_command(false));
+        assert_eq!(
+            effective_env(&envs, ENV_RENDER_CHECK),
+            None,
+            "the offscreen child must see GONE_RENDER_CHECK as unset"
+        );
+        assert!(
+            envs.contains_key(OsStr::new(ENV_RENDER_CHECK)),
+            "the scrub must be an explicit removal, not an omission: \
+             only an explicit env_remove overrides an inherited value"
+        );
+        assert_eq!(
+            effective_env(&envs, "GONE_HARNESS"),
+            Some(OsStr::new("1")),
+            "the harness mode itself is pinned, not inherited"
+        );
+        assert_eq!(
+            effective_env(&envs, "BEVY_ASSET_ROOT"),
+            Some(OsStr::new("/asset-root")),
+            "the asset root is always explicit"
+        );
+    }
+
+    /// The canary spawn still selects the windowed lane explicitly.
+    #[test]
+    fn canary_spawn_sets_render_check_one() {
+        let envs = command_envs(&test_command(true));
+        assert_eq!(
+            effective_env(&envs, ENV_RENDER_CHECK),
+            Some(OsStr::new("1")),
+            "the canary lane must be selected by the runner, not inherited"
         );
     }
 }

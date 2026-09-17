@@ -14,17 +14,15 @@ use bevy::camera::visibility::Visibility;
 use bevy::color::{Color, LinearRgba};
 use bevy::ecs::hierarchy::ChildSpawnerCommands;
 use bevy::ecs::prelude::Commands;
-use bevy::light::PointLight;
+use bevy::math::Quat;
 use bevy::math::primitives::{Cuboid, Torus};
-use bevy::math::{Quat, Vec3};
 use bevy::mesh::{Mesh, Mesh3d};
 use bevy::pbr::{MeshMaterial3d, StandardMaterial};
 use bevy::transform::components::Transform;
-use gone_sim::pods::{POD_HEIGHT, POD_LENGTH};
-use gone_sim::{POD_COUNT, Pod, PodRegistry, PodState};
+use gone_sim::{PodRegistry, PodState};
 
+use super::StasisPod;
 use super::pod_body::{SolidKind, pod_solids};
-use super::{PodMirrors, StasisPod};
 use crate::scene::placement::{
     SolidPlacement, WIRE_INNER_RADIUS, WIRE_OUTER_RADIUS, WireLoop, cable_trays, hatch_solids,
     indicator_plate, pod_world_transform, room_shell, wire_loops,
@@ -43,27 +41,6 @@ const WIRE_SHADE: f32 = 0.18;
 const HATCH_FRAME_SHADE: f32 = 0.33;
 const HATCH_DOOR_SHADE: f32 = 0.38;
 
-/// Emissive color of a lit status indicator: a warm white that reads as
-/// powered at greybox fidelity.
-pub(super) const INDICATOR_LIT_EMISSIVE: LinearRgba = LinearRgba::rgb(2.6, 2.3, 1.9);
-
-/// Ambient light level for the greybox: dim, so the pod interior light and
-/// the fill light read against it.
-pub(super) const AMBIENT_BRIGHTNESS: f32 = 20.0;
-
-/// The player pod's interior light: a small, low, close-range source just
-/// outside the open face, so the open interior reads as slightly lit.
-const POD_LIGHT_LUMENS: f32 = 12.0;
-const POD_LIGHT_RANGE: f32 = 2.6;
-const POD_LIGHT_STANDOFF: f32 = 0.35;
-const POD_LIGHT_RISE: f32 = 0.2;
-
-/// The room-center fill light: enough for the greybox to read while the
-/// wrecked ceiling stays dim overhead.
-const FILL_LIGHT_LUMENS: f32 = 40.0;
-const FILL_LIGHT_RANGE: f32 = 9.0;
-const FILL_LIGHT_HEIGHT: f32 = 2.8;
-
 /// A flat grey `StandardMaterial` at `shade`, fully rough so the greybox
 /// reads as untextured mass under any light.
 fn flat_grey(shade: f32) -> StandardMaterial {
@@ -74,17 +51,11 @@ fn flat_grey(shade: f32) -> StandardMaterial {
     }
 }
 
-/// The status indicator material: lit pods glow warm white, dead pods are
-/// dark grey with no emissive at all.
-fn indicator_material(lit: bool) -> StandardMaterial {
-    let shade = if lit { 0.36 } else { 0.08 };
+/// Pod systems are unpowered throughout milestone 1, including the player pod.
+fn indicator_material() -> StandardMaterial {
     StandardMaterial {
-        base_color: Color::srgb(shade, shade, shade),
-        emissive: if lit {
-            INDICATOR_LIT_EMISSIVE
-        } else {
-            LinearRgba::BLACK
-        },
+        base_color: Color::srgb(0.08, 0.08, 0.08),
+        emissive: LinearRgba::BLACK,
         perceptual_roughness: 0.6,
         ..StandardMaterial::default()
     }
@@ -141,19 +112,14 @@ pub(super) fn spawn_room_shell(
     }
 }
 
-/// Spawn one pod group per registry pod at its registry placement. Returns
-/// each pod's dedicated indicator material handle, indexed by pod id, so
-/// the sync system can keep the lit states honest.
+/// Spawn one group per registry pod, sharing a permanently unpowered plate material.
 pub(super) fn spawn_pods(
     commands: &mut Commands,
     meshes: &mut Assets<Mesh>,
     materials: &mut Assets<StandardMaterial>,
     registry: &PodRegistry,
-    mirrors: &PodMirrors,
-) -> [Handle<StandardMaterial>; POD_COUNT] {
-    let handles: [Handle<StandardMaterial>; POD_COUNT] = std::array::from_fn(|index| {
-        materials.add(indicator_material(mirrors.pods[index].indicator_lit))
-    });
+) {
+    let indicator = materials.add(indicator_material());
     for pod in registry.pods() {
         let placement = pod.placement();
         let (rotation, translation) = pod_world_transform(placement);
@@ -164,16 +130,9 @@ pub(super) fn spawn_pods(
                 Visibility::default(),
             ))
             .with_children(|parent| {
-                fill_pod(
-                    parent,
-                    meshes,
-                    materials,
-                    pod.state(),
-                    handles[pod.id().index()].clone(),
-                );
+                fill_pod(parent, meshes, materials, pod.state(), indicator.clone());
             });
     }
-    handles
 }
 
 /// Fill one pod group's children in the pod's local frame: the pure
@@ -291,41 +250,6 @@ pub(super) fn spawn_hatch(
                 door_placement,
             );
         });
-}
-
-/// Spawn the player pod's interior light just outside the pod's open face:
-/// the open interior reads as slightly lit, the rest of the bay stays dim.
-pub(super) fn spawn_pod_interior_light(commands: &mut Commands, pod: &Pod) {
-    let placement = pod.placement();
-    let facing = Vec3::new(
-        placement.yaw_radians.sin(),
-        0.0,
-        placement.yaw_radians.cos(),
-    );
-    let position = Vec3::new(placement.center.0, 0.0, placement.center.1)
-        + facing * (POD_LENGTH / 2.0 + POD_LIGHT_STANDOFF)
-        + Vec3::Y * (POD_HEIGHT + POD_LIGHT_RISE);
-    commands.spawn((
-        PointLight {
-            intensity: POD_LIGHT_LUMENS,
-            range: POD_LIGHT_RANGE,
-            ..PointLight::default()
-        },
-        Transform::from_translation(position),
-    ));
-}
-
-/// Spawn the room-center fill light under the torn ceiling: dim, wide, and
-/// only there so the greybox reads at all.
-pub(super) fn spawn_fill_light(commands: &mut Commands) {
-    commands.spawn((
-        PointLight {
-            intensity: FILL_LIGHT_LUMENS,
-            range: FILL_LIGHT_RANGE,
-            ..PointLight::default()
-        },
-        Transform::from_translation(Vec3::new(0.0, FILL_LIGHT_HEIGHT, 0.0)),
-    ));
 }
 
 /// App-side coverage of the geometry derivation: pod body boxes stay

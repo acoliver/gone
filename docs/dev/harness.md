@@ -191,21 +191,36 @@ to the capture target). The frame-code chip renders as a corner overlay on
 the gameplay camera's view, so beat captures keep the same decode contract
 and every capture still decodes to the report's tick and frame.
 
-`gameplay-smoke` scripts a 30 degree look between two pinned beats and proves
-two things machine-side: the room observation matches the registry's pod
-count, and the rig's beat-pinned yaw samples show exactly the scripted look
-delta (compared modulo a full turn, within a stated tolerance). A run whose
-player systems never integrated scripted look, or whose scene failed to
-build, fails here.
+`gameplay-smoke` scripts the authored opening's temporal evidence plus a
+post-wake look, and proves the lane machine-side: the room observation
+matches the registry's pod count, and the rig's beat-pinned yaw samples show
+exactly the scripted look delta (compared modulo a full turn, within a stated
+tolerance). The wake beats are named for the authored moments they pin, each
+tick derived from the wake timeline's own named boundaries: `eyes-closed`
+samples the closed hold, and `first-blink-before`/`-during`/`-after` and
+`second-blink-before`/`-during`/`-after` pin the widest samples just before
+each blink, the middle of each blink's closing stroke, and the reopen after
+it — before/during/after evidence for both blinks, captured on the driven
+ticks the 1:1 wake pacing guarantees. The `wake` and `turned` beats then pin
+look-quiet ticks around a scripted 30-degree look scheduled after the wake
+handoff, when the look gate has unlocked. A run whose player systems never
+integrated scripted look, or whose scene failed to build, fails here.
 
 `gameplay-full` scripts the whole opening beat and verifies it numerically.
-The scenario presses activate, so the authored get-up carries the capsule out
-of the player pod along the authored exit path; then it turns 90 degrees and
-walks forward toward the hatch wall with the steadying walk. The runner
-derives every expectation from the same frozen truth the app builds from
-(the exit path and standing eye height from `gone_app::placement_truth`, the
-controller constants, the room envelope, and the hatch placement through the
-app's `gone_sim` re-export), never from literals:
+The scenario schedule is derived, never measured: the lane paces the
+production wake driver 1:1 on the scenario clock, so the runner computes the
+handoff tick from the authored timeline's completion tick
+(`WAKE_HANDOFF_TICK` = `complete_tick - 1`, the driven tick whose update
+lands `AwakeInPod`) and schedules the activate press two quiet ticks after
+it — the get-up, turn, and walk all rebase onto that handoff with their
+original relative spacing, and the report's wake-phase stamps are asserted
+against the same derived ticks. The authored get-up carries the capsule out
+of the player pod along the authored exit path; then the scenario turns 90
+degrees and walks forward toward the hatch wall with the steadying walk. The
+runner derives every expectation from the same frozen truth the app builds
+from (the exit path and standing eye height from `gone_app::placement_truth`,
+the controller constants, the room envelope, and the hatch placement through
+the app's `gone_sim` re-export), never from literals:
 
 - the report's wake-phase observations read exactly `waking`, `awake_in_pod`,
   `exiting_pod`, `standing`, in order;
@@ -227,6 +242,56 @@ lane proves: the phase machine, the get-up controller, the steadying walk,
 the collider set, and the placement data all agree with each other and with
 the report, end to end, in a real build of the game.
 
+## Unattended opening capture (windowless, issue #8)
+
+    cargo xtask capture-opening
+
+One command for the whole authored-opening capture. It builds the two
+binaries (locked), then runs the two built-in gameplay lanes sequentially
+through the same runner, report, and verification path every lane uses — no
+new renderer, no window, no input or focus injection. The command fails
+(nonzero, naming the failed lane) if either lane fails. Each lane prints its
+exact run directory on its `ARTIFACTS:` line:
+
+- `gameplay-smoke` run dir `tmp/harness/gameplay-smoke/<run-id>/` — the
+  closed-eye hold (`eyes-closed`), both blink triplets
+  (`first-blink-before/-during/-after`, `second-blink-before/-during/-after`),
+  and the post-wake look (`wake`, `turned`).
+- `gameplay-full` run dir `tmp/harness/gameplay-full/<run-id>/` — the wake
+  progression plus the `standing` beat at the exit waypoint and the `door`
+  beat's walk.
+
+`<run-id>` is `<unix-nanos>-s<seed>` as everywhere else in `tmp/harness`.
+
+Why this needs no screen: both lanes are the headless capture lane. The app
+renders the production scene, player camera, post chain, and wake pass into
+the 1920x1080 offscreen `Image` render target and reads every capture back
+from that texture. No window and no WindowServer drawable exist at any
+point, so the run does not require the screen to be unlocked and does not
+take exclusive use of the desktop; the mouse and keyboard stay with the
+user for the whole run.
+
+What it does not promise: the run is a normal job. Whole-system sleep or
+process suspension pauses it like any other compute, and the runner's
+per-lane wall-clock timeout keeps ticking across a suspension, so a long
+enough sleep can fail a lane on timeout; rerun it. No display-awake
+assertion is acquired and no user activity is synthesized on this path.
+
+The runner scrubs `GONE_RENDER_CHECK` from the child app's environment on
+every offscreen spawn (explicit `env_remove`, unit-pinned in the runner's
+tests), so a stale variable inherited from the calling shell cannot
+silently select the canary lane and open a window on a run that must be
+headless.
+
+Display-awake assertions, scoped by lane (issues #23 and #8): only lanes
+that open a real window and present to it hold the `caffeinate -d -u`
+assertion, because macOS declines Metal presents to a sleeping display.
+Today that is the render canary (`cargo xtask harness render-check`) alone;
+xtask parses the harness lane before anything runs and acquires the
+assertion only for that lane. Offscreen lanes — smoke, gameplay-smoke,
+gameplay-full, calibration, perf, compare, scenario files — acquire no
+assertion and touch no OS power or display setting.
+
 ## Readiness handshake (the exact signal)
 
 The app starts in the loading presentation: a dark clear, the harness `Camera2d`
@@ -243,26 +308,29 @@ rendered at least one full frame. No authored-content or clock state could
 precede it, and the calibration loading scene has none to precede.
 
 Gameplay content extends the proof with the game readiness barrier, and the
-proof request waits on two more legs before it asks for the readback. Every
+proof request waits on three more legs before it asks for the readback. Every
 required game asset must have loaded (the `readiness` ledger, polled first in
-the gameplay update chain), and the player rig's camera must be bound to the
-offscreen target, so the capture that opens the scenario clock is a fully
-provisioned game frame with its pipelines compiled, never the chip overlay
-alone. While a required asset is still loading, nothing runs: no tick, no
-input, no phase advance, and the loading presentation stays up. The hold is
-bounded by the same known limits as any capture wait; there is no separate
-polling budget. A required asset whose load fails is a terminal failure that
-names the asset and the underlying error and exits nonzero, on the lane and in
-the normal game alike; a run never renders an engine placeholder in a required
-asset's place.
+the gameplay update chain), the player rig's camera must be bound to the
+offscreen target, and the wake eyelid pipeline must have compiled (`Ready` on
+the production driver's extraction bridge), so the capture that opens the
+scenario clock is a fully provisioned game frame the wake pass can already
+composite, never the chip overlay alone. While any leg is pending, nothing
+runs: no tick, no input, no phase advance, and the loading presentation stays
+up. The hold is bounded by the same known limits as any capture wait; there is
+no separate polling budget. A required asset whose load fails is a terminal
+failure that names the asset and the underlying error and exits nonzero, on
+the lane and in the normal game alike; a run never renders an engine
+placeholder in a required asset's place.
 
 The normal game runs the same ledger every update. A pending load keeps the
-scene in its authored `Waking` opening, and the wake progression (the issue #8
-wake pass, and today the gameplay lane's wake-complete override) may not drive
-the phase machine until the ledger reports ready. The gameplay lane moves its
-wake-complete signal behind the boundary, so the machine lands in
-`AwakeInPod` on the same update the clock opens and the once-only override
-never repeats.
+scene in its authored `Waking` opening, and the production wake driver (the
+issue #8 wake pass's driver, the same wiring the windowed game runs) may not
+start the authored timeline until every leg reports ready. Because the
+driver's gate legs are the proof gate's own legs, the machine's logical tick
+zero is the scenario clock's driven tick zero: the authored timeline plays
+1:1 on the scenario clock, and the `Waking -> AwakeInPod` handoff lands on
+the update that drives the completion tick's predecessor — the derived
+schedule the gameplay scenarios author against.
 
 On that capture the app writes the proof PNG to the run dir
 (`readiness-proof.png`), prints the exact stdout line

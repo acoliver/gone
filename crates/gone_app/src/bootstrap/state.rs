@@ -517,10 +517,11 @@ impl HarnessState {
 /// canary, before the window has presented its first capturable frame
 /// ([`PresentGate::presenting`]), and nothing runs after completion or
 /// failure. On gameplay content `Readiness::Ready` itself sits behind the
-/// game barrier's asset and binding legs (`gameplay::proof_gate` holds the
-/// proof request until `readiness::GameAssets` reports every required asset
-/// loaded and the rig camera is bound), so a ready lane is a fully
-/// provisioned one and the gate needs no extra conjunct of its own. The gate
+/// game barrier's three legs (`gameplay::proof_gate` holds the proof request
+/// until `readiness::GameAssets` reports every required asset loaded, the rig
+/// camera is bound, and the wake eyelid pipeline has compiled), so a ready
+/// lane is a fully provisioned one and the gate needs no extra conjunct of
+/// its own. The gate
 /// also holds the scenario clock under an in-flight beat readback (the
 /// capture freeze): the beat request is the post-drive half of the chain, so
 /// by the time a readback is in flight the pin update's own tick has already

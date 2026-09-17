@@ -12,14 +12,15 @@
 //! issue #8), and this stage only inserts the contract in its spawn state
 //! (`Waking`). A thin sync system ([`sync_pod_scene_state`]) derives the
 //! app-side [`PodMirrors`] from the registry and the phase each update and
-//! keeps the pod indicator materials honest against that mirror.
+//! keeps occupancy observations equal to sim output. Emergency lighting
+//! follows the separate sim power machine through `lighting`.
 //!
 //! Geometry is derived from the registry, never hand-placed: pod groups
 //! spawn at their registry placements, the jammed hatch sits where the
 //! registry says, and the player rig (via `player`) spawns lying in the
 //! player pod at the pose [`player_spawn_pose`] returns. Greybox fidelity:
-//! flat-shaded greys, one point light at the player pod's open interior,
-//! one dim fill light over the torn ceiling, and no asset loading beyond
+//! flat-shaded greys under red wall and over-hatch emergency fixtures,
+//! dead pod indicator plates, and no asset loading beyond
 //! what the post chain already loads.
 //!
 //! New bevy features were required for this slice and are listed in the
@@ -28,10 +29,8 @@
 
 use bevy::app::{App, Plugin, Startup, Update};
 use bevy::asset::Assets;
-use bevy::color::LinearRgba;
 use bevy::ecs::change_detection::DetectChangesMut;
 use bevy::ecs::prelude::{Commands, Component, Res, ResMut, Resource};
-use bevy::light::GlobalAmbientLight;
 use bevy::math::{Quat, Vec3};
 use bevy::mesh::Mesh;
 use bevy::pbr::StandardMaterial;
@@ -39,14 +38,19 @@ use gone_sim::exit::ExitPath;
 use gone_sim::{POD_COUNT, PhaseTransition, PodRegistry, WakePhase};
 
 use crate::player::PITCH_LIMIT;
-use crate::scene::geometry::{
-    AMBIENT_BRIGHTNESS, INDICATOR_LIT_EMISSIVE, spawn_ceiling_damage, spawn_fill_light,
-    spawn_hatch, spawn_pod_interior_light, spawn_pods, spawn_room_shell,
-};
+use crate::scene::geometry::{spawn_ceiling_damage, spawn_hatch, spawn_pods, spawn_room_shell};
 
 mod colliders;
 
 mod geometry;
+mod lighting;
+
+pub(crate) use lighting::camera_environment;
+
+#[cfg(test)]
+pub(crate) use lighting::SimPowerGrid;
+#[cfg(test)]
+mod lighting_tests;
 
 /// Pure world-space placements for every non-pod scene solid.
 mod placement;
@@ -89,9 +93,9 @@ impl SimWakePhase {
 
     /// Drive one wake-complete boundary signal through the machine
     /// (`Waking` advances to `AwakeInPod`; re-delivery is a no-op per the
-    /// machine's contract). The gameplay harness's readiness override
-    /// advances through this signal, and the wake pass's own driver (issue
-    /// #8) must advance through it too, behind the readiness barrier.
+    /// machine's contract). The production wake driver advances through
+    /// this signal behind its readiness barrier, and the app's systems
+    /// treat its phase changes as the shared boundary too.
     #[must_use]
     pub(crate) fn wake_complete(&mut self) -> PhaseTransition {
         self.0.wake_complete()
@@ -121,8 +125,6 @@ impl SimPodRegistry {
 /// The app-side mirror of one pod's observable sim state.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 struct PodMirror {
-    /// Whether the pod's status indicator plate renders lit.
-    indicator_lit: bool,
     /// Whether the pod counts as occupied in the current phase.
     occupied: bool,
 }
@@ -134,15 +136,6 @@ struct PodMirror {
 struct PodMirrors {
     /// Per-pod mirror, indexed by [`PodId::index`].
     pods: [PodMirror; POD_COUNT],
-}
-
-/// The indicator material handles for each pod, indexed by
-/// [`PodId::index`]. Created by the scene build; consumed by the sync
-/// system when a pod's lit state flips.
-#[derive(Resource)]
-struct PodIndicatorMaterials {
-    /// One dedicated material per pod indicator plate.
-    handles: [bevy::asset::Handle<StandardMaterial>; POD_COUNT],
 }
 
 /// The authored lying spawn: where the player rig starts and how it is
@@ -206,6 +199,7 @@ impl Plugin for StasisScenePlugin {
             .insert_resource(PlayerExitPath(exit_path))
             .insert_resource(SimColliders::new(colliders))
             .init_resource::<PodMirrors>()
+            .add_plugins(lighting::EmergencyLightingPlugin)
             .add_systems(Startup, build_stasis_room)
             .add_systems(Update, sync_pod_scene_state);
     }
@@ -213,8 +207,8 @@ impl Plugin for StasisScenePlugin {
 
 /// Build the whole greybox once at startup: room shell, the seven pods at
 /// their registry placements, the torn ceiling over the room center, the
-/// jammed hatch, and the lights. Also seeds the app-side mirror and the
-/// indicator material handles the sync system maintains.
+/// jammed hatch, and dead indicator plates. Also seeds the occupancy mirror.
+/// The lighting plugin builds and drives the emergency circuit separately.
 fn build_stasis_room(
     mut commands: Commands,
     pods: Res<SimPodRegistry>,
@@ -222,91 +216,38 @@ fn build_stasis_room(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    commands.insert_resource(GlobalAmbientLight {
-        brightness: AMBIENT_BRIGHTNESS,
-        ..GlobalAmbientLight::default()
-    });
     spawn_room_shell(&mut commands, &mut meshes, &mut materials);
     let registry = pods.into_inner().registry();
     let current_phase = phase.into_inner().phase();
     let mirrors = mirror_pods(registry, current_phase);
-    let handles = spawn_pods(
-        &mut commands,
-        &mut meshes,
-        &mut materials,
-        registry,
-        &mirrors,
-    );
-    commands.insert_resource(PodIndicatorMaterials { handles });
+    spawn_pods(&mut commands, &mut meshes, &mut materials, registry);
     commands.insert_resource(mirrors);
     spawn_ceiling_damage(&mut commands, &mut meshes, &mut materials);
     spawn_hatch(&mut commands, &mut meshes, &mut materials);
-    spawn_pod_interior_light(&mut commands, registry.player_pod());
-    spawn_fill_light(&mut commands);
 }
 
-/// Derive the app-side mirror for the whole registry in `phase`: indicators
-/// lit only for the player pod, occupancy per the registry's contract.
+/// Derive occupancy for the whole registry from its current sim phase.
 #[must_use]
 fn mirror_pods(registry: &PodRegistry, phase: WakePhase) -> PodMirrors {
-    let mut pods = [const {
-        PodMirror {
-            indicator_lit: false,
-            occupied: false,
-        }
-    }; POD_COUNT];
+    let mut pods = [PodMirror { occupied: false }; POD_COUNT];
     for pod in registry.pods() {
         pods[pod.id().index()] = PodMirror {
-            indicator_lit: pod.state().is_player(),
             occupied: pod.occupied(phase),
         };
     }
     PodMirrors { pods }
 }
 
-/// Keep the app-side mirror and the indicator materials equal to what the
-/// sim registry and phase say, right now. The sim resources are read-only
-/// here: this system can only converge the scene toward them.
+/// Follow sim occupancy without writing through either authoritative resource.
 fn sync_pod_scene_state(
     pods: Res<SimPodRegistry>,
     phase: Res<SimWakePhase>,
     mut mirrors: ResMut<PodMirrors>,
-    indicators: Res<PodIndicatorMaterials>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    let next = mirror_pods(pods.into_inner().registry(), phase.into_inner().phase());
-    apply_indicator_materials(
-        &mut materials,
-        &indicators.into_inner().handles,
-        &mirrors,
-        &next,
-    );
-    mirrors.set_if_neq(next);
-}
-
-/// Push every indicator whose lit state flipped between `previous` and
-/// `next` into its pod's material: emissive when lit, dead black otherwise.
-/// Only flipping pods are written, so the assets are not touched on no-op
-/// frames.
-fn apply_indicator_materials(
-    materials: &mut Assets<StandardMaterial>,
-    handles: &[bevy::asset::Handle<StandardMaterial>; POD_COUNT],
-    previous: &PodMirrors,
-    next: &PodMirrors,
-) {
-    for (index, handle) in handles.iter().enumerate() {
-        if previous.pods[index].indicator_lit == next.pods[index].indicator_lit {
-            continue;
-        }
-        let mut material = materials
-            .get_mut(handle)
-            .expect("indicator materials are created by the scene build before any sync");
-        material.emissive = if next.pods[index].indicator_lit {
-            INDICATOR_LIT_EMISSIVE
-        } else {
-            LinearRgba::BLACK
-        };
-    }
+    mirrors.set_if_neq(mirror_pods(
+        pods.into_inner().registry(),
+        phase.into_inner().phase(),
+    ));
 }
 
 /// The player's spawn pose: lying in the player pod at the registry's
@@ -330,8 +271,7 @@ pub(crate) fn player_spawn_pose(registry: &PodRegistry) -> PlayerSpawnPose {
 #[cfg(test)]
 mod tests {
     use bevy::app::TaskPoolPlugin;
-    use bevy::asset::{AssetApp, AssetPlugin, Handle};
-    use bevy::color::LinearRgba;
+    use bevy::asset::{AssetApp, AssetPlugin};
     use bevy::ecs::prelude::With;
     use bevy::math::Quat;
     use bevy::mesh::Mesh;
@@ -343,8 +283,8 @@ mod tests {
     use super::placement::{hatch_solids, room_shell};
     use super::pod_body::pod_solids;
     use super::{
-        JammedHatch, PodIndicatorMaterials, PodMirrors, SimColliders, SimPodRegistry, SimWakePhase,
-        StasisPod, StasisScenePlugin, apply_indicator_materials, mirror_pods, player_spawn_pose,
+        JammedHatch, PodMirrors, SimColliders, SimPodRegistry, SimWakePhase, StasisPod,
+        StasisScenePlugin, mirror_pods, player_spawn_pose,
     };
     use crate::player::PITCH_LIMIT;
 
@@ -566,7 +506,7 @@ mod tests {
     }
 
     /// The mirror follows the registry and the phase: the player pod is
-    /// the only lit and only occupied pod from Waking through `ExitingPod`,
+    /// the only occupied pod from Waking through `ExitingPod`,
     /// and everything vacates at Standing. Non-player occupancy is zero at
     /// the startup phase.
     #[test]
@@ -575,7 +515,6 @@ mod tests {
         let waking = mirror_pods(&registry, WakePhase::Waking);
         for (index, mirror) in waking.pods.iter().enumerate() {
             let is_player = registry.pod(PodId::ALL[index]).state().is_player();
-            assert_eq!(mirror.indicator_lit, is_player, "indicator for pod {index}");
             assert_eq!(mirror.occupied, is_player, "occupancy for pod {index}");
         }
         assert_eq!(
@@ -601,10 +540,6 @@ mod tests {
             !standing.pods[6].occupied,
             "the player pod vacates at Standing"
         );
-        assert!(
-            standing.pods[6].indicator_lit,
-            "the player indicator stays lit"
-        );
         assert_eq!(
             standing
                 .pods
@@ -616,8 +551,7 @@ mod tests {
     }
 
     /// The sync system converges the mirror to the phase without touching
-    /// the authoritative sim resources, and the indicator materials carry
-    /// the lit state at startup.
+    /// the authoritative sim resources.
     #[test]
     fn sync_converges_the_mirror_and_leaves_the_sim_authoritative() {
         let mut app = scene_app();
@@ -632,18 +566,6 @@ mod tests {
                 mirrors.pods[6].occupied,
                 "the player pod is occupied at spawn"
             );
-            let handles = &app.world().resource::<PodIndicatorMaterials>().handles;
-            let materials = app
-                .world()
-                .resource::<bevy::asset::Assets<StandardMaterial>>();
-            let player = materials
-                .get(&handles[6])
-                .expect("the scene build created the player indicator material");
-            assert_eq!(player.emissive, super::geometry::INDICATOR_LIT_EMISSIVE);
-            let dead = materials
-                .get(&handles[0])
-                .expect("the scene build created the pod 0 indicator material");
-            assert_eq!(dead.emissive, LinearRgba::BLACK);
         }
         // Advance the sim phase the way the wake pass will, then let the
         // sync system observe it.
@@ -659,58 +581,7 @@ mod tests {
             );
             let mirrors = app.world().resource::<PodMirrors>();
             assert!(!mirrors.pods[6].occupied, "the mirror follows the phase");
-            assert!(
-                mirrors.pods[6].indicator_lit,
-                "indicators follow the registry"
-            );
         }
-    }
-
-    /// The indicator material writer flips emissive exactly for pods whose
-    /// lit state changed between the two mirrors, in both directions.
-    #[test]
-    fn indicator_materials_flip_exactly_for_changed_pods() {
-        let mut materials = bevy::asset::Assets::<StandardMaterial>::default();
-        let mut handles: [Handle<StandardMaterial>; POD_COUNT] =
-            std::array::from_fn(|_| materials.add(StandardMaterial::default()));
-        let previous = PodMirrors::default();
-        let mut next = previous;
-        next.pods[2].indicator_lit = true;
-        next.pods[6].indicator_lit = true;
-        apply_indicator_materials(&mut materials, &handles, &previous, &next);
-        for index in [0usize, 1, 3, 4, 5] {
-            let material = materials.get(&handles[index]).expect("material exists");
-            assert_eq!(
-                material.emissive,
-                LinearRgba::BLACK,
-                "pod {index} stays dead"
-            );
-        }
-        for index in [2usize, 6] {
-            let material = materials.get(&handles[index]).expect("material exists");
-            assert_eq!(
-                material.emissive,
-                super::geometry::INDICATOR_LIT_EMISSIVE,
-                "pod {index} lights up"
-            );
-        }
-        // Flipping only pod 2 back rewrites its material dead again; a pod
-        // whose lit state did not change is never written.
-        handles[2] = materials.add(StandardMaterial {
-            emissive: super::geometry::INDICATOR_LIT_EMISSIVE,
-            ..StandardMaterial::default()
-        });
-        let mut revert = next;
-        revert.pods[2].indicator_lit = false;
-        apply_indicator_materials(&mut materials, &handles, &next, &revert);
-        let material = materials.get(&handles[2]).expect("material exists");
-        assert_eq!(material.emissive, LinearRgba::BLACK);
-        let material = materials.get(&handles[6]).expect("material exists");
-        assert_eq!(
-            material.emissive,
-            super::geometry::INDICATOR_LIT_EMISSIVE,
-            "pod 6 unchanged between these mirrors"
-        );
     }
 
     /// Every pod state's registry shape is exercised somewhere in the

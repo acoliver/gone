@@ -27,33 +27,50 @@
 //!   (a broken scene cannot produce a passing run).
 //!
 //! * **The readiness legs.** Gameplay content extends the harness readiness
-//!   barrier with two legs the calibration lane does not have: the required
-//!   game assets (the crate's `readiness` ledger, polled first in the
-//!   update chain) and the rig camera binding to the capture target. The
-//!   readiness proof is requested only once both hold, so the readback that
-//!   opens the scenario clock is a rendered game frame whose pipelines are
-//!   compiled, never the chip overlay alone. A required asset whose load
+//!   barrier with three legs the calibration lane does not have: the required
+//!   game assets (the crate's `readiness` ledger, polled first in the update
+//!   chain), the rig camera binding to the capture target, and the wake
+//!   eyelid pipeline's compiled readiness (the production driver's own render
+//!   leg). The readiness proof is requested only once all three hold, so the
+//!   readback that opens the scenario clock is a rendered game frame whose
+//!   pipelines are compiled — the wake pass included — and the wake driver's
+//!   gate can never lag the clock it is paced by. A required asset whose load
 //!   fails is a terminal failure naming the asset and the underlying error;
 //!   the run exits nonzero instead of rendering placeholders.
 //!
-//! The wake override lives behind that barrier: the lane boots the scene's
-//! authored `Waking` phase and drives the machine's wake-complete signal at
-//! the readiness boundary ([`advance_wake_at_readiness`]), which lands the
-//! machine in `AwakeInPod`, the first state whose policy allows look. When
-//! the wake pass (issue #8) lands, the lane wakes naturally and the
-//! override goes away; the pass's own driver must stay behind the same
-//! barrier, in this lane and in the normal game alike.
+//! * **The wake is the game's own.** The lane boots the scene's authored
+//!   `Waking` phase and then the production wake driver
+//!   ([`crate::wake::GameWakePlugin`], the same wiring the windowed game
+//!   runs) plays the authored eyelid timeline behind the readiness barrier:
+//!   closed from the rig camera's first frame, started once at logical tick
+//!   zero when the asset ledger, the rig binding, and the eyelid pipeline
+//!   bridge agree, and handed from `Waking` to `AwakeInPod` at the authored
+//!   completion tick. There is no harness wake override: the lane runs the
+//!   same driver, and the driver's gate is the same barrier the windowed
+//!   game obeys — the windowed game adds the primary window's closed-frame
+//!   acknowledgement to its own gate, a leg the harness lanes (no window
+//!   headless; a screenshot-proven present gate on the canary) never take,
+//!   so the lane's 1:1 scenario-clock pacing is untouched. The harness's
+//!   deterministic scenario clock paces the
+//!   driver's bevy virtual clock (`drive_ticks` advances the two clocks by
+//!   the same fixed step), so the pacing is exactly 1:1 — the machine
+//!   consumes its first logical tick on driven tick zero and sits at logical
+//!   tick `k + 1` once scenario tick `k` has driven, holds included — which
+//!   puts the completion handoff on the update that drives tick
+//!   `complete_tick - 1` and lets the runner derive every post-wake schedule
+//!   tick from that handoff instead of a measured number.
 
 use bevy::app::{App, Update};
 use bevy::asset::{AssetServer, Assets, Handle};
 use bevy::camera::{Camera, Camera2d, Camera3d, CameraOutputMode, ClearColorConfig, RenderTarget};
 use bevy::ecs::prelude::{Added, Commands, Entity, Local, Query, Res, ResMut, Resource, With};
+use bevy::ecs::system::SystemParam;
 use bevy::image::Image;
 use bevy::math::Vec3;
 use bevy::render::render_resource::BlendState;
 use bevy::render::view::Msaa;
+use bevy::time::{Time, Virtual};
 use bevy::transform::components::Transform;
-use gone_sim::PhaseTransition;
 use gone_sim::WakePhase;
 
 use super::state::{HarnessState, RunMode, fail_scenario};
@@ -67,6 +84,8 @@ use crate::readiness::GameAssets;
 use crate::scene::{
     PlayerExitPath, SimColliders, SimPodRegistry, SimWakePhase, StasisPod, StasisScenePlugin,
 };
+use crate::wake::GameWakePlugin;
+use crate::wake_pass::{WakeEyelidMaterial, WakeEyelidPipelineReadiness};
 
 /// The canary window's static 3D camera order: the room view draws first.
 const WINDOW_SPECTATOR_ORDER: isize = 0;
@@ -80,8 +99,10 @@ const WINDOW_OVERLAY_ORDER: isize = 1;
 /// chains stay unambiguous when both exist.
 const GAMEPLAY_SCENE_ORDER: isize = 2;
 
-/// The offscreen chip overlay onto the gameplay capture view.
-const GAMEPLAY_OVERLAY_ORDER: isize = 3;
+/// The offscreen chip overlay onto the gameplay capture view. `pub(super)`
+/// so the harness tests can pin the overlay camera's independence from the
+/// wake effect by its order.
+pub(super) const GAMEPLAY_OVERLAY_ORDER: isize = 3;
 
 /// Where the canary spectator camera sits: above and behind the room's
 /// center, looking down into it (the onscreen check needs a lit, non-black
@@ -97,9 +118,10 @@ const SPECTATOR_FOCUS: Vec3 = Vec3::new(0.0, 0.8, 0.0);
 /// loudly at boot if the wiring came out wrong. Installs the readiness
 /// barrier's resources: the required-asset ledger over the handles the post
 /// chain just loaded, and the game-camera binding flag the retarget sets.
-/// The scene plugin's authored `Waking` spawn state stands; the wake
-/// override advances at the readiness boundary
-/// (`advance_wake_at_readiness`), never before it.
+/// The scene plugin's authored `Waking` spawn state stands; the production
+/// wake driver ([`GameWakePlugin`], the windowed game's own wiring) owns the
+/// wake from there, gated on the same assets-plus-pipeline barrier and fed
+/// ticks by the lane's scenario clock (`drive_ticks`).
 pub(super) fn wire(app: &mut App) {
     app.add_plugins((
         GamePostChainPlugin,
@@ -139,6 +161,22 @@ pub(super) fn wire(app: &mut App) {
     };
     app.insert_resource(ledger);
     app.insert_resource(GameCameraBound::default());
+    // The wake driver runs on bevy's virtual clock; the lane keeps that clock
+    // paused and paces it by hand (`drive_ticks` advances it by exactly the
+    // driven scenario step), so the driver consumes whole logical ticks at
+    // the scenario's cadence — never a wall-clock accumulation a readback
+    // hold or a slow frame could skew. TimePlugin's own advance observes the
+    // pause and zeroes the delta every frame, which is exactly the held
+    // update's contribution.
+    let mut virtual_time = Time::<Virtual>::default();
+    virtual_time.pause();
+    app.insert_resource(virtual_time);
+    // The authored wake opening, behind the readiness barrier: the same
+    // production driver the windowed game adds (closed eyelid from the rig
+    // camera's first frame, the timeline behind the assets-plus-pipeline
+    // gate, the `Waking -> AwakeInPod` handoff at the authored completion
+    // tick).
+    app.add_plugins(GameWakePlugin);
 }
 
 /// The gameplay content scene: the offscreen capture target and the corner
@@ -211,7 +249,12 @@ fn overlay_camera_config(order: isize) -> Camera {
 
 /// The canary window's static room view: a 3D camera into the primary
 /// window, so the window presents the actual scene the rig camera renders
-/// for capture.
+/// for capture. It carries the wake eyelid effect too ([`WakeEyelidMaterial`]
+/// closed at spawn), so the window shows the same authored wake samples the
+/// capture camera renders: the shared driver updates every carrier camera
+/// from the one machine and strips the effect from all of them at
+/// completion. The spectator stays static (no sway projection): it is a
+/// canary, not the player's eyes.
 fn spawn_window_spectator_camera(commands: &mut Commands) {
     commands.spawn((
         Camera3d::default(),
@@ -219,6 +262,8 @@ fn spawn_window_spectator_camera(commands: &mut Commands) {
             order: WINDOW_SPECTATOR_ORDER,
             ..Camera::default()
         },
+        WakeEyelidMaterial::CLOSED,
+        crate::scene::camera_environment(),
         Transform::from_translation(SPECTATOR_EYE).looking_at(SPECTATOR_FOCUS, Vec3::Y),
     ));
 }
@@ -387,16 +432,37 @@ pub(super) fn poll_required_assets(
     }
 }
 
+/// The gameplay readiness legs as one system parameter: the required-asset
+/// ledger, the rig binding, and the wake eyelid pipeline bridge. A custom
+/// [`SystemParam`] keeps the proof-request system's parameter count small and
+/// the access exact (the drive half's `Kernel` convention); the system hands
+/// the three legs to [`proof_gate`] itself.
+#[derive(SystemParam)]
+pub(super) struct ProofLegs<'w> {
+    pub(super) assets: Option<Res<'w, GameAssets>>,
+    pub(super) bound: Option<Res<'w, GameCameraBound>>,
+    pub(super) wake_pipeline: Option<Res<'w, WakeEyelidPipelineReadiness>>,
+}
+
 /// The gameplay legs of the readiness proof gate: calibration content has
 /// none (the readback of the dark loading scene is the whole proof), and
-/// gameplay content requires the required-asset ledger to be fully loaded
-/// and the rig camera bound to the capture target, so the proof readback is
-/// a rendered game frame. The resources are present exactly when the
-/// gameplay wire ran; their absence on gameplay content is a wiring error.
+/// gameplay content requires all three of the game's readiness legs before
+/// it asks for the readback — the required-asset ledger fully loaded, the rig
+/// camera bound to the capture target, and the wake eyelid pipeline compiled
+/// ([`WakeEyelidPipelineReadiness::Ready`], the production driver's own
+/// render leg). The readback that opens the scenario clock is therefore a
+/// fully provisioned game frame the wake pass can already composite, and the
+/// wake driver's gate never lags the scenario clock: the machine consumes its
+/// first logical tick on driven tick zero, the authored ticks map 1:1 onto
+/// the driven ticks, and the completion handoff lands on the update that
+/// drives tick `complete_tick - 1` (the tick the runner's schedule derives
+/// from). The resources are present exactly when the gameplay wire ran; their
+/// absence on gameplay content is a wiring error.
 pub(super) fn proof_gate(
     state: &HarnessState,
     assets: Option<Res<GameAssets>>,
     bound: Option<Res<GameCameraBound>>,
+    wake_pipeline: Option<Res<WakeEyelidPipelineReadiness>>,
 ) -> bool {
     if state.scenario.content != Content::Gameplay {
         return true;
@@ -405,42 +471,27 @@ pub(super) fn proof_gate(
         assets.expect("gameplay content requires GameAssets (the gameplay wire inserts it)");
     let bound =
         bound.expect("gameplay content requires GameCameraBound (the gameplay wire inserts it)");
-    assets.ready() && bound.0
-}
-
-/// The gameplay lane's wake override, moved behind the readiness barrier:
-/// while the lane loads, the machine sits at the scene's authored `Waking`;
-/// once the boundary announces, the wake-complete signal advances it to
-/// `AwakeInPod` (the first state whose policy allows look), exactly once.
-/// This is the gate point for wake progression in gameplay runs: the issue
-/// #8 wake pass's own driver must sit behind the same barrier and consume
-/// the same signal.
-pub(super) fn advance_wake_at_readiness(
-    state: Res<HarnessState>,
-    mut phase: ResMut<SimWakePhase>,
-    mut advanced: Local<bool>,
-) {
-    if !state.into_inner().announced || *advanced {
-        return;
-    }
-    let transition = phase.wake_complete();
-    assert!(
-        matches!(transition, PhaseTransition::Advanced { .. }),
-        "the readiness wake override must advance the machine out of `Waking`, got {transition:?}"
+    let wake_pipeline = wake_pipeline.expect(
+        "gameplay content requires WakeEyelidPipelineReadiness (the gameplay wire's GameWakePlugin \
+         provides it)",
     );
-    *advanced = true;
+    assets.ready() && bound.0 && *wake_pipeline == WakeEyelidPipelineReadiness::Ready
 }
 
 /// The gameplay update registration. The drive half — the required-asset poll
 /// first (the barrier's asset leg must be resolved before the same update's
-/// proof request), the proof request, the boundary, the wake override, the
-/// present probe, the room observation, and the adapter step — chains inside
-/// the `ScriptedInput` set, so the player look chain orders after it and a
-/// scripted look offered on tick N integrates on tick N. The post-drive half
-/// (the shared registration in `super`) runs after `ScriptedInput` and after
-/// [`LookApplied`], so the beat pin and the yaw sample read the pose this
-/// tick's input produced. The rig-camera retarget runs outside both sets: it
-/// only touches the camera once, before the first render.
+/// proof request), the proof request, the boundary, the present probe, the
+/// room observation, and the adapter step (which also paces the wake
+/// driver's virtual clock) — chains inside the `ScriptedInput` set, so the
+/// player look chain orders after it and a scripted look offered on tick N
+/// integrates on tick N. The wake driver itself (registered by
+/// [`GameWakePlugin`]) runs after this set and before the look application:
+/// the completion handoff flips the phase before look can arm on the same
+/// update. The post-drive half (the shared registration in `super`) runs
+/// after `ScriptedInput` and after [`LookApplied`], so the beat pin and the
+/// yaw sample read the pose this tick's input produced. The rig-camera
+/// retarget runs outside both sets: it only touches the camera once, before
+/// the first render.
 pub(super) fn register_update_systems(app: &mut App) {
     use super::drive::{
         drive_ticks, readiness_boundary, register_post_drive_systems, request_present_probe,
@@ -454,7 +505,6 @@ pub(super) fn register_update_systems(app: &mut App) {
             poll_required_assets,
             request_readiness_proof,
             readiness_boundary,
-            advance_wake_at_readiness,
             request_present_probe,
             observe_room,
             drive_ticks,
@@ -477,8 +527,8 @@ mod tests {
 
     use super::super::state::HarnessState;
     use super::{
-        GAMEPLAY_SCENE_ORDER, GameCameraBound, StasisPod, TimedEvent, advance_wake_at_readiness,
-        observe_room, observe_wake_phase, phase_name, record_room_check, retarget_gameplay_camera,
+        GAMEPLAY_SCENE_ORDER, GameCameraBound, StasisPod, TimedEvent, observe_room,
+        observe_wake_phase, phase_name, record_room_check, retarget_gameplay_camera,
     };
     use crate::harness::{Content, InputAdapter, Scenario, TICKS_PER_SECOND};
     use crate::player::PlayerPitch;
@@ -664,38 +714,6 @@ mod tests {
         assert_eq!(*msaa, Msaa::Off, "the capture view keeps the lattice crisp");
     }
 
-    #[test]
-    fn the_wake_override_advances_only_at_the_readiness_boundary() {
-        // The barrier's phase leg in isolation: loading holds the authored
-        // `Waking`; the announced boundary advances the machine exactly once
-        // (the machine's idempotent boundary plus the once-flag).
-        let mut app = App::new();
-        app.insert_resource(gameplay_state());
-        app.insert_resource(SimWakePhase::new(WakePhase::Waking));
-        app.add_systems(Update, advance_wake_at_readiness);
-        app.update();
-        assert_eq!(
-            app.world().resource::<SimWakePhase>().phase(),
-            WakePhase::Waking,
-            "loading holds the authored opening"
-        );
-        app.world_mut().resource_mut::<HarnessState>().announced = true;
-        app.update();
-        assert_eq!(
-            app.world().resource::<SimWakePhase>().phase(),
-            WakePhase::AwakeInPod,
-            "the boundary advances the machine"
-        );
-        for _ in 0..2 {
-            app.update();
-        }
-        assert_eq!(
-            app.world().resource::<SimWakePhase>().phase(),
-            WakePhase::AwakeInPod,
-            "the override fires exactly once"
-        );
-    }
-
     /// The phase names the observation records, in report order.
     fn observed_phases(app: &App) -> Vec<&str> {
         app.world()
@@ -723,14 +741,16 @@ mod tests {
         app.update();
         assert_eq!(observed_phases(&app), ["waking"], "exactly the opening");
 
-        // The wake override's transition lands on its own update.
+        // The wake driver's completion transition lands on its own update
+        // (driven by hand here; the driver itself is covered end to end in
+        // `super::wake_harness_tests`).
         let transition = app
             .world_mut()
             .resource_mut::<SimWakePhase>()
             .wake_complete();
         assert!(
             matches!(transition, PhaseTransition::Advanced { .. }),
-            "the override advanced the machine, got {transition:?}"
+            "the completion advanced the machine, got {transition:?}"
         );
         app.update();
         app.update();
@@ -797,7 +817,7 @@ mod tests {
             .wake_complete();
         assert!(
             matches!(transition, PhaseTransition::Advanced { .. }),
-            "the override advanced the machine, got {transition:?}"
+            "the completion advanced the machine, got {transition:?}"
         );
         app.update();
         let stamps: Vec<(u64, u64)> = app

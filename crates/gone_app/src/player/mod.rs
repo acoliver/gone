@@ -83,9 +83,14 @@ pub(crate) use motion::PlayerMotionPlugin;
 const LOOK_SENSITIVITY: f32 = 0.0022;
 
 /// Pitch hard stop in each direction, just short of the vertical so the view
-/// can never flip through the pole. The scene reads it for the authored
-/// spawn pitch (one stop short of the same vertical).
+/// can never flip through the pole. The scene reads it for the authored spawn
+/// pitch (one stop short of the same vertical).
 pub(crate) const PITCH_LIMIT: f32 = 89.0_f32.to_radians();
+
+/// The game's authored clear color: near-black. The rig spawner installs it
+/// for the game camera, and the wake loading cover clears the same value so
+/// its lift at wake start (eyelids fully closed) changes nothing visible.
+pub(crate) const GAME_CLEAR_COLOR: Color = Color::srgb(0.02, 0.02, 0.02);
 
 /// Marks the rig's yaw parent (horizontal look only). Crate-visible so the
 /// gameplay harness can sample the rig's actual transform for the beat yaw
@@ -279,6 +284,16 @@ pub(crate) struct LookAngles {
     pitch: f32,
 }
 
+impl LookAngles {
+    /// The integrated angles as `(yaw, pitch)` radians. The reader the wake
+    /// sway projection composes against: look owns these angles, and the
+    /// wake's authored sway is never folded back into them (see
+    /// `crate::wake`).
+    pub(crate) fn yaw_pitch(&self) -> (f32, f32) {
+        (self.yaw, self.pitch)
+    }
+}
+
 /// Adds first-person mouse look and the player camera rig to the app. The
 /// rig's camera carries the post-chain components from the
 /// [`crate::post::GamePostChainPlugin`] resource, so both plugins must be
@@ -368,13 +383,15 @@ fn clear_gameplay_input(mut plane: ResMut<GameplayInput>) {
 /// Spawn the player rig (yaw parent, pitch camera child) and the game's clear
 /// color, at the authored spawn pose (`scene::PlayerSpawn`, derived from the
 /// pod registry): lying in the player pod, aimed up at the ceiling.
+/// Crate-visible because the wake driver orders its own Startup attachment
+/// of the closed eyelid effect after this rig exists.
 ///
 /// # Panics
 /// Panics without the [`PostChainAssets`] resource: the rig's camera needs
 /// the post-chain components, so a missing resource is a wiring error, not a
 /// degraded mode. Panics symmetrically without the [`PlayerSpawn`] resource:
 /// the rig needs its authored spawn, and game mode always provides both.
-fn setup_player_rig(
+pub(crate) fn setup_player_rig(
     mut commands: Commands,
     masks: Option<Res<PostChainAssets>>,
     spawn: Option<Res<PlayerSpawn>>,
@@ -396,6 +413,7 @@ fn setup_player_rig(
         Camera3d::default(),
         Transform::from_rotation(Quat::from_rotation_x(pose.pitch_radians)),
         camera_post_components(masks.metering_mask.clone()),
+        crate::scene::camera_environment(),
     );
     commands
         .spawn((
@@ -410,7 +428,7 @@ fn setup_player_rig(
         .with_children(|parent| {
             parent.spawn((PlayerPitch, camera_bundle));
         });
-    commands.insert_resource(ClearColor(Color::srgb(0.02, 0.02, 0.02)));
+    commands.insert_resource(ClearColor(GAME_CLEAR_COLOR));
 }
 
 /// Apply the initial cursor capture when the window opens already focused.
@@ -499,13 +517,16 @@ fn apply_cursor_target(target: CursorTarget, cursor: &mut CursorOptions) {
 /// The rig's two transform projections, bundled as one system parameter so
 /// the look integrator stays inside the workspace's argument limit: the yaw
 /// parent (horizontal rotation) and the pitch camera child (vertical), the
-/// same disjoint pair the integrator always writes together.
+/// same disjoint pair the integrator always writes together. Crate-visible
+/// fields because the wake sway projection writes this exact pair too
+/// (`crate::wake`), never its own copy of the layering.
 #[derive(SystemParam)]
 pub(crate) struct RigTransforms<'w, 's> {
     /// The yaw parent's transform (horizontal look only).
-    yaw: Single<'w, 's, &'static mut Transform, (With<PlayerYaw>, Without<PlayerPitch>)>,
+    pub(crate) yaw: Single<'w, 's, &'static mut Transform, (With<PlayerYaw>, Without<PlayerPitch>)>,
     /// The pitch camera child's transform (vertical look only).
-    pitch: Single<'w, 's, &'static mut Transform, (With<PlayerPitch>, Without<PlayerYaw>)>,
+    pub(crate) pitch:
+        Single<'w, 's, &'static mut Transform, (With<PlayerPitch>, Without<PlayerYaw>)>,
 }
 
 /// Integrate this frame's look delta from the shared gameplay input plane

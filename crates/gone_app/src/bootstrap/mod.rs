@@ -84,11 +84,16 @@
 //!   mirrors `Time<Virtual>` (bevy 0.19 `update_virtual_time`), and engine
 //!   temporal render effects — the auto-exposure adaptation rate is
 //!   `globals.delta_time`, fed from that same clock by `bevy_render`'s
-//!   `prepare_globals_buffer` — keep running on it. The one exception is
-//!   the capture freeze: `freeze_engine_time` pauses `Time<Virtual>` while
-//!   a beat readback is in flight and unpauses on landing, so the held
-//!   frame renders with a zero delta and engine temporal effects freeze
-//!   instead of drifting while the readback is late.
+//!   `prepare_globals_buffer` — keep running on it. Because that publish
+//!   runs in `First`, before the update chain, the drive mirrors the driven
+//!   step into the generic clock itself (`drive_ticks` writes
+//!   `*generic = virt.as_generic()` right after advancing virtual), so both
+//!   clocks always describe the same driven step: driven frames render with
+//!   the driven delta, held frames with the paused zero, elapsed preserved.
+//!   The one exception is the capture freeze: `freeze_engine_time` pauses
+//!   `Time<Virtual>` while a beat readback is in flight and unpauses on
+//!   landing, so the held frame renders with a zero delta and engine
+//!   temporal effects freeze instead of drifting while the readback is late.
 //! * **Beats are post-tick state.** The update that captures a beat delivers
 //!   the tick's input first (the drive half of the chain, inside the
 //!   `ScriptedInput` set), then the game's look systems integrate it, and
@@ -166,7 +171,11 @@ mod state;
 #[cfg(test)]
 mod gameplay_tests;
 #[cfg(test)]
+mod lighting_tests;
+#[cfg(test)]
 mod tests;
+#[cfg(test)]
+mod wake_harness_tests;
 
 // The run mode is lib-facing: `run` selects it from the environment and the
 // harness plugin inserts it as a resource for the window-only systems.

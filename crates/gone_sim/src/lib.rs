@@ -10,23 +10,37 @@
 //! stasis pod registry (the layout and state truth the scene is built from)
 //! lives in [`pods`]. The static world's axis-aligned collider set lives in
 //! [`colliders`], the swept-capsule per-tick movement resolver built on it
-//! lives in [`resolve`], and the steadying walk out of
-//! [`WakePhase::Standing`] lives in [`walk`].
+//! lives in [`resolve`], the steadying walk out of
+//! [`WakePhase::Standing`] lives in [`walk`], and the authored eyelid
+//! timeline that fills the [`WakePhase::Waking`] beat (issue #8) lives in
+//! [`wake`]. The bay's authoritative power state for the emergency-lit
+//! opening room (issue #10) lives in [`power`], and the deterministic
+//! fixture-intensity fade the render bridge will drive from it lives in
+//! [`intensity`].
 
 pub mod colliders;
 pub mod controller;
 pub mod exit;
+pub mod intensity;
 pub mod phase;
 pub mod pods;
+pub mod power;
 pub mod resolve;
+pub mod wake;
 pub mod walk;
 
 pub use colliders::{Aabb, ColliderError, ColliderSet};
+pub use intensity::{FixtureFade, FixtureFadeError};
 pub use phase::{PhaseError, PhaseTransition, WakePhase};
 pub use pods::{
     HatchPlacement, POD_COUNT, Pod, PodId, PodPlacement, PodRegistry, PodRegistryError, PodState,
 };
+pub use power::{PowerGrid, PowerState, PowerTransition};
 pub use resolve::{Capsule, NonFiniteInput, ResolveError, ResolvedMotion, resolve_motion};
+pub use wake::{
+    AuthoredBoundaries, LOGICAL_TICK_SECS, LOGICAL_TICKS_PER_SECOND, WakeSample, WakeStart,
+    WakeState, WakeTimeline, WakeTimelineError,
+};
 pub use walk::{IntentAxis, MoveIntent, WalkContact, WalkError, WalkOutcome, WalkState};
 
 /// Minimal stand-in for a full ship entity: enough state to prove the crate

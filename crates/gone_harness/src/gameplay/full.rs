@@ -7,15 +7,18 @@
 //! expectation is derived from the frozen simulation truth the app itself
 //! builds from (the authored exit path and standing eye height via
 //! `gone_app::placement_truth`, the controller constants and hatch placement
-//! via the app's `gone_sim` re-export), never from literals and never from
-//! the report under test.
+//! via the app's `gone_sim` re-export, and the authored wake timeline's
+//! completion tick), never from literals and never from the report under
+//! test.
 //!
 //! Three assertions sit beyond the smoke lane's checks:
 //!
 //! * **The phase sequence.** The report's wake-phase observations must read
-//!   exactly the wake progression, in order: the authored `Waking` opening,
-//!   the readiness override into `AwakeInPod`, the get-up's `ExitingPod`,
-//!   and `Standing` at the exit waypoint.
+//!   exactly the wake progression, in order, on the ticks the derived
+//!   schedule owns: the authored `Waking` opening at tick zero, the
+//!   production driver's completion handoff into `AwakeInPod` at
+//!   [`WAKE_HANDOFF_TICK`], the get-up's `ExitingPod` at the press tick, and
+//!   `Standing` at the last get-up segment.
 //! * **The standing beat at the exit waypoint.** The beat's eye-point sample
 //!   must equal the standing eye the authored exit path's waypoint pose
 //!   projects to, within the sim's own pose arrival tolerance plus
@@ -42,7 +45,7 @@ use gone_app::harness::{
 };
 use gone_app::placement_truth::{STANDING_EYE_HEIGHT, player_exit_path};
 
-use super::{AnchoredBeat, verify_room, verify_yaw_replay};
+use super::{AnchoredBeat, verify_room, verify_yaw_replay, wake_handoff_tick};
 
 /// The built-in scenario's name: the artifact directory name and the
 /// runner's dispatch key.
@@ -54,56 +57,96 @@ const STANDING_BEAT: &str = "standing";
 /// The beat the lane pins after the walk, near the hatch.
 const DOOR_BEAT: &str = "door";
 
-/// The tick the activate press lands on: the readiness override has landed
-/// the machine in `AwakeInPod` on tick 0, the first phase whose policy
-/// accepts the exit intent, and two quiet ticks leave the boundary's own
-/// events room.
-const GET_UP_PRESS_TICK: u64 = 2;
-
-/// The standing beat: the get-up drives one authored segment per tick from
-/// the press (the controller is built on the press tick), so the waypoint
-/// lands on press + 4 segments, and the beat pins two quiet ticks later on
-/// the settled standing pose.
-const STANDING_BEAT_TICK: u64 = GET_UP_PRESS_TICK + EXIT_POSE_COUNT as u64 + 1;
-
-/// The scripted turn: the spawn yaw continues the pod's opening (facing the
-/// central aisle), so a -90 degree look aims the walk straight down +X, the
-/// hatch wall's direction, along an obstacle-free line the whole way.
-const TURN_TICK: u64 = 12;
+/// The scripted turn's yaw, in degrees: the spawn yaw continues the pod's
+/// opening (facing the central aisle), so a -90 degree look aims the walk
+/// straight down +X, the hatch wall's direction, along an obstacle-free line
+/// the whole way.
 const TURN_DEG: f32 = -90.0;
 
-/// The walk: forward intent on `WALK_TICKS` consecutive ticks. The frozen
-/// ramp covers about 9.3 m over that many ticks at 60 ticks per second,
-/// which stops the player more than a meter short of the +X wall (the
-/// full-speed bound over the same ticks stays short of it too), so the sweep
-/// is never clamped and the expected displacement is the ramp's exact sum.
-const WALK_FIRST_TICK: u64 = 20;
+/// The derived gameplay-full schedule: every tick the scenario authors and
+/// the verifier pins, rebased onto the derived wake handoff with the lane's
+/// original relative spacing. Computed from the authored wake timeline and
+/// the frozen get-up constants, never from literals and never from measured
+/// runs.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+struct Schedule {
+    /// The activate press tick (the get-up's start intent): two quiet ticks
+    /// after the handoff, well inside `AwakeInPod` — the first phase whose
+    /// policy accepts the exit intent — never on or before the handoff
+    /// itself.
+    press: u64,
+    /// The `standing` beat: two quiet ticks after the waypoint, on the
+    /// settled standing pose.
+    standing_beat: u64,
+    /// The scripted -90 degree look, once standing.
+    turn: u64,
+    /// The first walked tick.
+    walk_first: u64,
+    /// The `door` beat: a few quiet ticks after the last movement, the
+    /// settled post-walk pose.
+    door_beat: u64,
+    /// The clean-close deadline: the last beat plus the same headroom the
+    /// lane has always carried, never binding on the happy path.
+    max_frames: u64,
+    /// The (phase, tick) pairs the report must show, in order: the authored
+    /// opening at tick zero, the driver's completion handoff at the handoff
+    /// tick, the get-up's start at the press tick, and standing at the last
+    /// get-up segment. The stamps are the temporal pin: a run whose get-up
+    /// started on any other tick (a dropped press, an input the wake still
+    /// owned) fails with the numbers in hand.
+    progression: [(&'static str, u64); 4],
+}
+
+/// The walk's authored length: eleven scripted seconds of forward intent,
+/// whose frozen ramp covers about 9.3 m at 60 ticks per second — more than a
+/// meter short of the +X wall, so the sweep is never clamped and the
+/// expected displacement is the ramp's exact sum.
 const WALK_TICKS: u64 = 660;
 
-/// The door beat: the last movement tick plus a few quiet ones, so the
-/// pinned sample is the settled post-walk pose.
-const DOOR_BEAT_TICK: u64 = WALK_FIRST_TICK + WALK_TICKS + 5;
+/// The clean-close headroom over the last beat.
+const DEADLINE_HEADROOM: u64 = 215;
 
-/// The clean-close deadline: the last beat lands inside 690 driven frames;
-/// the deadline adds headroom and never binds on the happy path.
-const MAX_FRAMES: u64 = 900;
-
-/// The door beat lands inside the deadline: a scenario whose beat outruns
-/// its own clean-close budget is an authoring bug, failed at compile time.
-const _: () = assert!(DOOR_BEAT_TICK < MAX_FRAMES);
+impl Schedule {
+    /// Derive the schedule from the wake handoff and the frozen constants.
+    fn derived() -> Self {
+        let handoff = wake_handoff_tick();
+        let press = handoff + 2;
+        let turn = press + 10;
+        let walk_first = press + 18;
+        let door_beat = walk_first + WALK_TICKS + 5;
+        Self {
+            press,
+            standing_beat: press + EXIT_POSE_COUNT as u64 + 1,
+            turn,
+            walk_first,
+            door_beat,
+            max_frames: door_beat + DEADLINE_HEADROOM,
+            progression: [
+                ("waking", 0),
+                ("awake_in_pod", handoff),
+                ("exiting_pod", press),
+                // The get-up drives one authored segment per tick from the
+                // press (the controller is built on the press tick), so the
+                // machine lands in `Standing` on the last segment's tick.
+                ("standing", press + EXIT_POSE_COUNT as u64 - 1),
+            ],
+        }
+    }
+}
 
 /// The built-in gameplay-full scenario: activate press to start the authored
-/// get-up, a 90 degree turn once standing, then eleven scripted seconds of
-/// forward walking toward the hatch wall, with beats pinned at the exit
-/// waypoint and near the hatch.
+/// get-up once the production wake has completed, a 90 degree turn once
+/// standing, then eleven scripted seconds of forward walking toward the
+/// hatch wall, with beats pinned at the exit waypoint and near the hatch.
 #[must_use]
 pub fn gameplay_full_scenario() -> Scenario {
+    let schedule = Schedule::derived();
     let mut actions = vec![
-        ScriptedAction::press(GET_UP_PRESS_TICK, Key::Activate),
-        ScriptedAction::release(GET_UP_PRESS_TICK, Key::Activate),
-        ScriptedAction::look(TURN_TICK, TURN_DEG, 0.0),
+        ScriptedAction::press(schedule.press, Key::Activate),
+        ScriptedAction::release(schedule.press, Key::Activate),
+        ScriptedAction::look(schedule.turn, TURN_DEG, 0.0),
     ];
-    for tick in WALK_FIRST_TICK..WALK_FIRST_TICK + WALK_TICKS {
+    for tick in schedule.walk_first..schedule.walk_first + WALK_TICKS {
         actions.push(ScriptedAction::move_delta(tick, 1.0, 0.0));
     }
     Scenario {
@@ -112,11 +155,11 @@ pub fn gameplay_full_scenario() -> Scenario {
         ticks_per_second: TICKS_PER_SECOND,
         actions,
         beats: vec![
-            Beat::new(STANDING_BEAT, STANDING_BEAT_TICK),
-            Beat::new(DOOR_BEAT, DOOR_BEAT_TICK),
+            Beat::new(STANDING_BEAT, schedule.standing_beat),
+            Beat::new(DOOR_BEAT, schedule.door_beat),
         ],
         pacing: None,
-        max_frames: MAX_FRAMES,
+        max_frames: schedule.max_frames,
         mode: ScenarioMode::Capture,
         warmup_frames: 0,
         sample_frames: 0,
@@ -137,11 +180,6 @@ const EYE_TOLERANCE_METERS: f32 = POSE_TOLERANCE + 1e-3;
 /// difference.
 const WALK_TOLERANCE_METERS: f32 = 0.05;
 
-/// The protocol names of the wake phases in progression order (the app
-/// records `snake_case` strings; the app-side `phase_name` is their single
-/// home, and a drift fails this assertion loudly).
-const WAKE_PROGRESSION: [&str; 4] = ["waking", "awake_in_pod", "exiting_pod", "standing"];
-
 /// Verify a gameplay-full run's report: the shared gameplay checks (room
 /// presence, the scripted-look replay over the beat-pinned samples), then
 /// the lane's own wake progression, waypoint, and door assertions.
@@ -154,7 +192,7 @@ pub fn verify_gameplay_full(scenario: &Scenario, report: &Report) -> Result<(), 
     verify_room(report)?;
     verify_wake_phase_sequence(report)?;
     let anchored = super::beat_anchored_samples(report)?;
-    let yaw_samples: Vec<(u64, f32)> = anchored.iter().map(|beat| (beat.tick, beat.yaw)).collect();
+    let yaw_samples = super::replay_anchor_samples(&anchored)?;
     verify_yaw_replay(scenario, &yaw_samples)?;
     let standing = anchored_beat(&anchored, STANDING_BEAT)?;
     let door = anchored_beat(&anchored, DOOR_BEAT)?;
@@ -163,22 +201,24 @@ pub fn verify_gameplay_full(scenario: &Scenario, report: &Report) -> Result<(), 
 }
 
 /// The wake progression assertion: the report's wake-phase observations, in
-/// report order, must be exactly the progression, each phase once.
+/// report order, must be exactly the progression — each phase once, on its
+/// derived tick.
 fn verify_wake_phase_sequence(report: &Report) -> Result<(), String> {
-    let observed: Vec<&str> = report
+    let expected = Schedule::derived().progression;
+    let observed: Vec<(&str, u64)> = report
         .events
         .iter()
         .filter_map(|event| match event {
-            TimedEvent::WakePhase { phase, .. } => Some(phase.as_str()),
+            TimedEvent::WakePhase { tick, phase, .. } => Some((phase.as_str(), *tick)),
             _ => None,
         })
         .collect();
-    if observed == WAKE_PROGRESSION {
+    if observed == expected {
         return Ok(());
     }
     Err(format!(
         "the run's wake phases were {observed:?}, expected the progression \
-         {WAKE_PROGRESSION:?} in order"
+         {expected:?} in order on the derived ticks"
     ))
 }
 
@@ -440,9 +480,9 @@ mod tests {
     use gone_app::placement_truth::{STANDING_EYE_HEIGHT, player_exit_path};
 
     use super::{
-        DOOR_BEAT, DOOR_BEAT_TICK, STANDING_BEAT, STANDING_BEAT_TICK, WAKE_PROGRESSION,
-        WALK_TOLERANCE_METERS, expected_walk_displacement, gameplay_full_scenario, tick_seconds,
-        verify_gameplay_full, walk_displacement,
+        DOOR_BEAT, STANDING_BEAT, Schedule, WALK_TOLERANCE_METERS, expected_walk_displacement,
+        gameplay_full_scenario, tick_seconds, verify_gameplay_full, wake_handoff_tick,
+        walk_displacement,
     };
 
     /// The standing eye point the waypoint pose projects to: what a correct
@@ -458,11 +498,11 @@ mod tests {
 
     /// The beat manifest of the built-in scenario, pinned at frames matching
     /// their ticks.
-    fn beat_manifest() -> BTreeMap<String, BeatEntry> {
+    fn beat_manifest(schedule: &Schedule) -> BTreeMap<String, BeatEntry> {
         let mut beats = BTreeMap::new();
         for (index, (name, tick)) in [
-            (STANDING_BEAT, STANDING_BEAT_TICK),
-            (DOOR_BEAT, DOOR_BEAT_TICK),
+            (STANDING_BEAT, schedule.standing_beat),
+            (DOOR_BEAT, schedule.door_beat),
         ]
         .iter()
         .enumerate()
@@ -489,6 +529,7 @@ mod tests {
     /// pinned separately by the ramp tests below; the live gameplay-full run
     /// is the end-to-end oracle that the model matches the real sim.
     fn full_report(standing_eye: [f32; 3], door_eye: [f32; 3]) -> Report {
+        let schedule = Schedule::derived();
         let mut report = Report::new(
             3,
             "gameplay-full",
@@ -499,17 +540,17 @@ mod tests {
                 config_hash: "c".into(),
             },
         );
-        report.beats = beat_manifest();
+        report.beats = beat_manifest(&schedule);
         report.events.push(TimedEvent::Ready { frame: 0 });
         report.events.push(TimedEvent::RoomCheck {
             frame: 0,
             pods_expected: 7,
             pods_present: 7,
         });
-        for (index, phase) in WAKE_PROGRESSION.iter().enumerate() {
+        for (phase, tick) in schedule.progression {
             report.events.push(TimedEvent::WakePhase {
-                tick: index as u64 * 2,
-                frame: index as u64 * 2,
+                tick,
+                frame: tick,
                 phase: (*phase).to_owned(),
             });
         }
@@ -518,8 +559,13 @@ mod tests {
         // is the wrapped result of the scripted -90 look, and the raw
         // difference across the wrap measures as the scripted -90.
         for (_name, tick, yaw, eye) in [
-            (STANDING_BEAT, STANDING_BEAT_TICK, -180.0_f32, standing_eye),
-            (DOOR_BEAT, DOOR_BEAT_TICK, 90.0_f32, door_eye),
+            (
+                STANDING_BEAT,
+                schedule.standing_beat,
+                -180.0_f32,
+                standing_eye,
+            ),
+            (DOOR_BEAT, schedule.door_beat, 90.0_f32, door_eye),
         ] {
             report.events.push(TimedEvent::PlayerYaw {
                 tick,
@@ -535,7 +581,7 @@ mod tests {
             });
         }
         report.events.push(TimedEvent::Complete {
-            frame: DOOR_BEAT_TICK + 2,
+            frame: schedule.door_beat + 2,
         });
         report
     }
@@ -632,9 +678,10 @@ mod tests {
         let standing = waypoint_eye();
         let door = [standing[0] + expected, standing[1], standing[2]];
         let mut report = full_report(standing, door);
-        report
-            .events
-            .retain(|event| !matches!(event, TimedEvent::PlayerPosition { tick, .. } if *tick == super::DOOR_BEAT_TICK));
+        let door_tick = Schedule::derived().door_beat;
+        report.events.retain(
+            |event| !matches!(event, TimedEvent::PlayerPosition { tick, .. } if *tick == door_tick),
+        );
         let err = verify_gameplay_full(&scenario, &report).expect_err("a missing sample must fail");
         assert!(err.contains(DOOR_BEAT), "names the beat: {err}");
     }
@@ -702,6 +749,11 @@ mod tests {
             "the walk stops short of the wall: {} + {expected} vs {wall_face}",
             foot.x
         );
+        // The schedule's ownership order: the first input lands strictly
+        // after the derived wake handoff, never on or before it, so the
+        // press is consumed well inside `AwakeInPod`.
+        let schedule = Schedule::derived();
+        assert!(schedule.press > wake_handoff_tick());
         // The beats are pinned in tick order, as the app's request cursor
         // requires.
         let ticks: Vec<u64> = scenario.beats.iter().map(|beat| beat.tick).collect();
@@ -729,7 +781,8 @@ mod tests {
                 })
                 .sum()
         };
-        assert!((before(STANDING_BEAT_TICK) - 0.0).abs() < f32::EPSILON);
-        assert!((before(DOOR_BEAT_TICK) + 90.0).abs() < f32::EPSILON);
+        let schedule = Schedule::derived();
+        assert!((before(schedule.standing_beat) - 0.0).abs() < f32::EPSILON);
+        assert!((before(schedule.door_beat) + 90.0).abs() < f32::EPSILON);
     }
 }
