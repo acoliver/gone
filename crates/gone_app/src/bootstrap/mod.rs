@@ -171,6 +171,8 @@ mod state;
 #[cfg(test)]
 mod gameplay_tests;
 #[cfg(test)]
+mod lighting_tests;
+#[cfg(test)]
 mod tests;
 #[cfg(test)]
 mod wake_harness_tests;

@@ -413,6 +413,7 @@ pub(crate) fn setup_player_rig(
         Camera3d::default(),
         Transform::from_rotation(Quat::from_rotation_x(pose.pitch_radians)),
         camera_post_components(masks.metering_mask.clone()),
+        crate::scene::camera_environment(),
     );
     commands
         .spawn((

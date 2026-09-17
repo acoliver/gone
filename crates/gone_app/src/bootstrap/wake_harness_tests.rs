@@ -74,7 +74,11 @@ fn wake_scenario(name: &str, actions: Vec<ScriptedAction>, beats: Vec<Beat>) -> 
 /// function `BootstrapPlugin` calls. The bridge starts at `bridge` (a real
 /// loading lane's state before its pipeline compiles); assets are injected
 /// loaded. The test plays the render world (see [`play_render_world`]).
-fn wake_harness_app(bridge: WakeEyelidPipelineReadiness, scenario: Scenario, tag: &str) -> App {
+pub(super) fn wake_harness_app(
+    bridge: WakeEyelidPipelineReadiness,
+    scenario: Scenario,
+    tag: &str,
+) -> App {
     let mut app = App::new();
     app.add_plugins((
         TaskPoolPlugin::default(),
@@ -125,7 +129,7 @@ fn open_bridge(app: &mut App) {
 /// Play the render world one frame: deliver the readbacks the real pipeline
 /// would. An in-flight beat capture lands first (it is what blocks the
 /// drive); otherwise a pending readiness proof lands.
-fn play_render_world(app: &mut App) {
+pub(super) fn play_render_world(app: &mut App) {
     if let Some(request) = app
         .world()
         .resource::<HarnessState>()

@@ -263,6 +263,7 @@ fn spawn_window_spectator_camera(commands: &mut Commands) {
             ..Camera::default()
         },
         WakeEyelidMaterial::CLOSED,
+        crate::scene::camera_environment(),
         Transform::from_translation(SPECTATOR_EYE).looking_at(SPECTATOR_FOCUS, Vec3::Y),
     ));
 }
