@@ -2,328 +2,194 @@
 
 ## Engine decision
 
-**Bevy 0.19** (released 2026-06-19). Rust-native, ECS architecture that
-suits our sim/render split, and the first-party renderer already contains
-the features this game is built on: clustered forward lighting, baked
-lightmaps, volumetric fog volumes, auto exposure, and the post-processing
-hooks we need for the wake-up sequence. MSRV is 1.96; our toolchain is
-rustc 1.98.0.
+**Godot 4.7.2 (stable), GDScript, Forward+ renderer.** The project began
+on Rust with Bevy 0.19. That tree is archived unchanged at `archive/rust/`
+(commit 7617ca7, the merge of the issue-10 emergency lighting work), and
+the Godot tree at the repository root is the live implementation. The
+Bevy selection rationale in the archived history was written for that
+stack and stays there; `archive/rust/README.md` is the record.
 
-Bevy ships breaking releases on a roughly quarterly cadence, so we pin the
-version and upgrade deliberately, one release at a time, with the harness
-as the regression gate. Alternatives were considered and rejected: Fyrox
-1.0 has a built-in editor but a lower rendering ceiling for what we want
-(this game leans on lighting and volumetrics), and Godot keeps Rust
-second-class and would put core rendering decisions behind GDScript-era
-assumptions.
+The pivot kept the contract and replaced the code: fixed 60 Hz simulation
+ticks, seeded RNG, a protocol-shaped harness with beat captures and a
+two-stage verdict, and the opening beat from the design docs.
+
+What Godot supplies for this build:
+
+- Forward+ clustered omni lighting carries the red emergency fixtures.
+- GPUParticles3D carries sparks and ceiling smoke.
+- A canvas shader pass over the finished 3D frame carries the wake eyelid.
+- `godot --headless` runs the whole test suite and the harness runner
+  without a window, so the sim and the protocol logic are tested with no
+  GPU interaction.
+- The project's 60 Hz physics tick (`physics_ticks_per_second` in
+  `project.godot`) hosts the sim tick through `_physics_process`.
+
+The language is GDScript everywhere. One language keeps the sim pure and
+testable in the same runtime the game ships on, with no binding layer
+between the sim and the app.
+
+Engine version discipline carries over from the Rust plan: pin the exact
+version (4.7.2), upgrade deliberately one step at a time, and treat the
+harness lanes as the regression gate for any engine bump.
 
 ## Platform
 
-Multi-platform is a requirement, not a port: macOS (primary development,
-M4 Max, 40-core GPU, Metal) and Windows are first-class targets, Linux is
-supported, and all three run the same wgpu stack (Metal on macOS,
-DirectX 12 on Windows with Vulkan as the alternate, Vulkan on Linux).
-Platform discipline: no OS-specific code outside the wgpu/winit layer;
-paths through `std::path` with forward-slash relative paths in artifacts
-and JSON; filenames stay case-sensitivity-safe; the harness protocol
-(child process, input adapter, exit codes, artifact layout) is
-OS-portable and designed against the strictest platform, since macOS
-imposes winit main-thread rules that Windows and Linux do not;
-per-backend capability recording (adapter vendor and device, backend,
-clustered light limits) so rendering budgets are measured per platform
-and per GPU, not assumed portable. The workspace cargo-checks against
-Windows and Linux targets from the start.
+Multi-platform remains a requirement. macOS is the primary development
+platform (M4 Max), Windows and Linux remain targets, and the hardware
+floor stays 2023-and-newer machines: Apple M3 family onward, NVIDIA RTX 40
+(Ada) onward, AMD RDNA 3 onward (RX 7000 discrete and Radeon 700M-class
+integrated), and Intel Arc onward. Nothing below that floor is supported.
+Quality tiers (baseline, recommended, enhanced) scale within the floor
+once there is something to scale.
 
-GPU vendor coverage on Windows/Linux spans the three major vendors
-(NVIDIA, AMD, Intel) once representative hardware joins the loop; until
-then the verifiable platform claims are cross-target compilation and
-per-backend capability recording, not runtime performance on those
-GPUs.
+What is verified today is narrower than the intent. Every measured run so
+far (the 204-test suite and the gameplay, perf, and calibration lanes)
+executed on the M4 Max machine under Forward+. Windows and Linux
+measurements land when representative hardware joins the loop, one card
+per major vendor, as in the Rust plan. Until then only the macOS claims
+have measurements behind them.
 
-The hardware floor is 2023 and newer machines, which simplifies the
-matrix: Apple M3 family onward, NVIDIA RTX 40 (Ada) onward, AMD RDNA 3
-onward (RX 7000 discrete and Radeon 700M-class integrated), and Intel
-Arc onward (A/B-series discrete and Core Ultra integrated). Everything
-in that floor is DX12 Ultimate / Vulkan 1.3 class and hardware-RT
-capable, so the game carries no pre-2023 fallback paths: Metal, DX12,
-and Vulkan only. Quality tiers scale within the floor: baseline targets
-2023+ integrated GPUs (Core Ultra iGPU, Radeon 780M-class, base M3/M4),
-recommended targets midrange discrete, enhanced targets high-end
-discrete, and the optional ray-traced tier applies to the same floor
-once the software stack matures.
+## Rendering approach
 
-Milestone 1's performance gate is defined on M4 Max; Windows and Linux
-measurements land when representative hardware joins the loop.
+The milestone 1 look is a dark greybox stasis room under red emergency
+light. How the rendering plan maps onto Godot:
 
-## Rendering approach: raster first
-
-The core look is multi-state baked global illumination with realtime
-clustered dynamic lighting on top.
-
-- **Multi-state baked lightmaps.** The ship is lit by baked lightmaps in
-  four power states: dead, emergency, partial, restored. As the player
-  repairs systems, states crossfade. Bevy ships the `Lightmap` component,
-  irradiance volumes, and reflection probes, plus a `mixed_lighting`
-  example with Baked/MixedDirect/MixedIndirect/RealTime modes.   Bevy has
-  no first-party baker; bakes happen offline in Blender with The
-  Lightmapper addon and land as compressed ktx2 assets. No baked
-  lightmaps ship in milestone 1: emergency lighting there is realtime red
-  fixtures. The first baked state arrives with the first repair milestone.
-- **Realtime clustered dynamic lights.** Flashlight, work lamps, sparks,
-  and console glows are realtime lights over Forward+ clustered shading,
-  which Bevy 0.19 does on the GPU.
-- **Volumetric atmosphere.** FogVolume entities per compartment, driven
-  by the atmosphere simulation. Smoke concentrates at the ceiling in the
-  opening room because that is where the torn wiring is. FogVolume's
-  scalar density factor is uniform within a volume, so the ceiling
-  gradient uses the volume's 3D density texture with an authored vertical
-  ramp.
-- **Post chain.** Auto exposure with a center-weighted metering mask,
-  AgX tonemapping, vignette, subtle chromatic aberration, film grain.
-  Bevy has lens distortion and vignette as first-party post effects since
-  0.19, auto exposure since 0.15. Milestone 1 enables AgX, auto exposure
-  (with the metering-mask asset), and vignette; chromatic aberration and
-  film grain arrive with the art-pass milestone.
-- **Contact shadows** on the flashlight for close-range detail.
-- **Eyelid wake-up.** A fullscreen post pass using `FullscreenMaterial`
-  (first-party since 0.18): blur, a lid mask, an exposure ramp, and a
-  slow camera sway that together stage the blink sequence when the player
-  wakes.
-
-Solari (Bevy's ray-traced GI path) stays an optional future tier behind a
-feature flag; see the next section for why.
-
-## Ray tracing on Apple hardware: the answer
-
-The question: is ray tracing on this machine a hardware limitation, or is
-it just not ported to Metal?
-
-**It is not the hardware. It is the software stack.**
-
-- Apple GPUs from the M3 family (and A17 Pro) onward include
-  hardware-accelerated ray tracing; Apple lists it among the M3 GPU
-  features (https://www.apple.com/newsroom/2023/10/apple-unveils-m3-m3-pro-and-m3-max-the-most-advanced-chips-for-a-personal-computer/),
-  and the M4 Max in the dev machine inherits it. Metal has exposed ray
-  tracing through the MetalRT APIs (`MTLAccelerationStructure`, ray
-  queries, intersection functions) since Metal 3 in 2022
-  (https://developer.apple.com/metal/ray-tracing/).
-- wgpu's Metal backend did not implement ray tracing until recently.
-  The tracking issue is
-  https://github.com/gfx-rs/wgpu/issues/7402 (opened March 2025); the
-  implementation landed through https://github.com/gfx-rs/wgpu/pull/8071
-  (a continuation of #7660), and it remains experimental.
-- That port is still shaking out driver-level problems on macOS: example
-  test failures tied to the Metal debug layer and headless windows
-  (https://github.com/gfx-rs/wgpu/issues/9100), and missing
-  synchronisation between acceleration structure builds that was fixed
-  with fences in https://github.com/gfx-rs/wgpu/pull/9645 (June 2026),
-  with follow-on work in https://github.com/gfx-rs/wgpu/issues/9215.
-  Ray-tracing *pipelines* (as opposed to inline ray queries) on Metal are
-  still an open design question: https://github.com/gfx-rs/wgpu/issues/8560.
-  MoltenVK, the Vulkan-on-Metal translation layer, has no ray tracing
-  either (https://github.com/KhronosGroup/MoltenVK/issues/427,
-  https://github.com/gfx-rs/wgpu/issues/7660 references it in discussion;
-  see also https://github.com/KhronosGroup/MoltenVK/issues/1956).
-- Bevy's Solari renderer builds on the Vulkan ray-tracing path and
-  NVIDIA-class features (hardware RT requirement:
-  https://github.com/bevyengine/bevy/pull/10000 and
-  https://github.com/bevyengine/bevy/pull/19058; the unified DI/GI update:
-  https://github.com/bevyengine/bevy/pull/24767; DLSS Ray Reconstruction
-  work: https://github.com/bevyengine/bevy/pull/25423). Solari is not a
-  usable path on macOS today regardless of what wgpu's Metal backend can
-  technically do.
-
-**Decision:** the game renders with the raster pipeline described above.
-The hardware would allow ray tracing later if wgpu's Metal backend
-matures; every GPU in the 2023+ hardware floor on Windows/Linux is
-RT-capable (RTX 40+, RDNA 3+, Arc), so there the blocker is software
-maturity, not silicon. Solari stays behind a feature flag as a possible
-future tier. Nothing in the art direction depends on ray tracing:
-baked multi-state GI plus clustered dynamics gives the look with far
-less risk.
+- **Emergency fixtures.** Eight red OmniLight3D fixtures: one wall-mounted
+  above each of the seven registry pods plus one over the hatch lintel
+  (`app/lighting.gd`). Each fixture carries a lens cuboid, and all lenses
+  share one emissive material. The sim's PowerGrid owns power; a
+  FixtureFade bridge reads it, retargets only on a sim-side change, and
+  settles over 30 logical ticks. Shadows are off, ambient is disabled, fog
+  is off, and the room authors no other light source.
+- **Sparks and smoke.** Spark bursts are a strobed OmniLight3D flash plus
+  a one-shot GPUParticles3D spray at the authored cable-tray spots
+  (`app/hazards.gd`). Smoke is a GPUParticles3D emitter whose spawn box
+  hugs the ceiling, with slow downward drift and preprocessing so the haze
+  exists from the first captured frame. The Rust-era plan used Bevy
+  FogVolume entities with a vertical density ramp; Godot's FogVolume would
+  need a custom density shader for that gradient, so particles carry the
+  ceiling-hugging look instead (a recorded deviation, see
+  `docs/dev/godot-port.md`).
+- **Exposure.** The room is dim red emitters on black. A CameraAttributes
+  exposure multiplier (2.0, `app/lighting.gd`) stands in for the Rust
+  slice's EV100 0 and is sized so the red emitters read without washing
+  out the black around them.
+- **Wake eyelid pass.** `app/wake_eyelid.gdshader` runs on a full-screen
+  ColorRect inside a top CanvasLayer (`app/wake_pass.gd`), compositing lid
+  openness, blur, and an exposure ramp over the finished 3D frame. This is
+  Godot's stock path for a post effect over the 3D view, with no nested
+  viewports. The presentation driver (`app/wake_present.gd`) projects the
+  sim's wake sample onto the pass every render frame; the sample's sway
+  offset moves the camera.
+- **Baked lightmaps, later.** The multi-state baked GI plan (dead,
+  emergency, partial, restored, crossfaded as systems are repaired) is
+  unchanged as intent. Godot ships LightmapGI for it. No baked lightmaps
+  ship in milestone 1; milestone 1 lighting is the realtime red fixtures
+  above.
 
 ## Workspace architecture
 
-Discipline borrowed from the sibling `stranded` reconstruction project:
+Three directories at the repository root, mirroring the archived crate
+split:
 
-- Crates: `gone_sim` (headless ship systems simulation: power, atmosphere,
-  hull, comms, game state), `gone_app` (Bevy glue: rendering, input,
-  audio, UI), `gone_harness` (the play-testing runner, see below), and
-  `xtask` (build and quality gates).
-- `gone_sim` never depends on Bevy or any render crate. This is enforced,
-  not aspirational: a CI check rejects the dependency edge, the same way
-  stranded enforces its sim/render separation.
-- Data-driven definitions (ship layout, compartments, systems) live in
-  data files the sim consumes, so level logic is testable without a GPU.
-- WGSL-only shader sources, shipped with the build. Bevy/wgpu creates
-  specialized GPU pipelines at runtime by design; a readiness handshake
-  guarantees all milestone-1 pipelines and assets are prepared before the
-  wake timeline starts, and performance measurement lanes contain no
-  pipeline compilation.
-- `#![forbid(unsafe_code)]` workspace-wide; clippy pedantic plus the
-  thresholds below.
+- `sim/` is the pure GDScript port of `gone_sim`: `colliders`, `resolve`,
+  `controller`, `phase`, `pods`, `power`, `intensity`, `walk`, `exit`,
+  `wake`, with `sim.gd` as the facade (the shape of `lib.rs`). Every
+  module extends RefCounted, and each module header declares the rule: no
+  Node, scene, rendering, or input types. The suite runs all of it
+  headless, which is the architecture gate in practice: sim state and
+  logic must run with no display server and no GPU, and an engine
+  reference there breaks that property loudly.
+- `app/` is the Godot game. `main.gd` is the root scene script; `game.gd`
+  is the 60 Hz sim container (registry, colliders, phase machine, power
+  grid, wake state, exit path, ticked from `_physics_process`); the
+  greybox room, pods, hatch, and hazards build procedurally at runtime
+  from the authored placement data; the player rig, motion mirror, and
+  shared input plane live in `player.gd`, `motion.gd`, `input_plane.gd`;
+  the harness-driven lanes are `harness_mode.gd` (gameplay and perf) and
+  `calibration_mode.gd`.
+- `harness/` is the runner and protocol: `protocol.gd` (the shared wire
+  surface, `PROTOCOL_VERSION = 4`), `scenario.gd` and `report.gd` (the
+  types), `run.gd` (the runner), `perf_policy.gd` with
+  `perf-policy.json`, and `calibration.gd` with
+  `calibration_assertions.gd`.
 
-## Build and quality gates: xtask
+Two rules carry over from the Rust workspace. First, the sim is
+authoritative: app nodes read sim state through bridges and never write
+ahead of the controllers that own it. Second, the scene is procedural
+from authored placement: room envelope, pods, hatch, cable trays, and
+colliders derive from the frozen pod registry and placement data, and the
+gameplay lane verifies runs against placement-derived truth
+(`app/placement_truth.gd`) rather than literals, so the game and its
+verifier cannot drift apart silently.
 
-The build tooling is ported from **jefe** (`/Volumes/XS1000/acoliver/projects/jefe/branch-6`),
-which has the most developed version of this among the surveyed projects.
-Survey outcome:
-
-- **jefe**: modular Rust xtask (`xtask/src/{cli,clippy_policy,source_size,architecture,toolchain,process,windows_coverage}.rs`)
-  with `ci`/`quick`/`fmt`/`lint`/`complexity`/`coverage`/`build`/`test`
-  commands, a five-threshold complexity policy in `clippy.toml`, a
-  zero-tolerance scanner for clippy `allow`/`expect` suppressions, and a
-  source-file-length gate. The line-size gate (`source_size.rs`) is itself
-  a documented port of a shell script, `scripts/check-source-file-size.sh`
-  (the shell version of the same policy), and the architecture check
-  pairs an xtask command with grep-based shell assertions
-  (`scripts/check-architecture.sh`). Best fit; we port this.
-- **personal-agent**: xtask is a single 628-line `main.rs` focused on
-  parsing LLVM coverage data. Not a complexity/line-size tool.
-- **uqm (rust part)**: a heavyweight CI orchestration xtask (build
-  evidence, reproducibility proofs, mutation testing). Sophisticated but
-  aimed at deterministic native archive builds; not the tool we need. Its
-  acceptance and capture harness scripts are useful precedent for our
-  runner, noted below.
-- **llxprt-agent**: no such directory exists at `../../llxprt-agent` (or
-  in `~/projects`); excluded from the survey.
-
-What we port from jefe:
-
-1. **Complexity thresholds** in `clippy.toml`, kept in sync in two copies
-   (repo root and the CI config dir) so neither can silently drift:
-   `cognitive-complexity-threshold = 15`,
-   `too-many-lines-threshold = 60` (lines per function),
-   `too-many-arguments-threshold = 6`, `max-struct-bools = 3`,
-   `type-complexity-threshold = 250`.
-2. **Source file length gate** (`cargo xtask check source-size`): warn at
-   750 lines, hard-fail at 1000 lines per first-party Rust file, scanning
-   `src` and `tests`.
-3. **Clippy suppression gate** (`cargo xtask check clippy-allows`):
-   zero `#[allow(clippy::..)]`/`expect` in first-party code; suppressions
-   must come from threshold changes, not annotations.
-4. **Architecture gate** (`cargo xtask check architecture`): at minimum,
-   the rule that `gone_sim` never imports render/Bevy crates.
-5. **Command surface**: `cargo xtask ci` runs fmt, the policy checks,
-   clippy (pedantic + thresholds), locked build, locked tests, and the
-   harness smoke scenario, failing fast in that order.
-
-## Incremental compilation: off
-
-Incremental compilation is disabled everywhere:
-
-- `[profile.dev] incremental = false` in the root `Cargo.toml`, and
-- `CARGO_INCREMENTAL = "0"` in `.cargo/config.toml` so every invocation
-  path (cargo, xtask, IDEs honoring the config) sees it.
-
-Rationale: incremental artifacts grow the target directory continuously
-and do not repay that in build speed for this workload (full check/build
-times stay comparable while the disk cost keeps mounting). Clean
-`target/` semantics also make harness runs and profiling reproducible.
-
-## Harness-based development
+## Harness protocol summary
 
 The development loop assumes the implementer is an LLM that cannot see
-the screen. Therefore the game ships with a runner that lets an agent
-play it and produces evidence that vision-capable subagents then verify.
+the screen. The runner (`harness/run.gd`) drives the real game and
+produces evidence that a vision-capable subagent then verifies. The full
+contract lives in `docs/dev/harness.md`; the shape:
 
-`gone_harness` (driven by `cargo xtask harness <scenario>`) provides:
+- **Env contract.** The runner spawns the app with `GONE_HARNESS=1`,
+  `GONE_SCENARIO`, `GONE_OUT_DIR`, `GONE_APP_HASH`,
+  `GONE_SCENARIO_HASH`, `GONE_CONFIG_HASH`, and `GONE_PERF_POLICY` on the
+  perf lane. The app echoes the hashes verbatim and hashes nothing
+  itself, so a stale pairing fails.
+- **Hashes.** The scenario and config hashes are sha256 over the scenario
+  file's exact bytes. The app hash is sha256 over every `*.gd` file under
+  `app/`, `sim/`, and `harness/`, sorted by relative path, each entry
+  hashed as its UTF-8 relative path, one NUL byte, and its exact file
+  bytes. An edited script cannot masquerade as the tested build.
+- **Beats.** Scenarios pin named captures (`beats/<name>.png`) carrying a
+  rendered frame-code chip that encodes the logical tick and the rendered
+  frame. The runner decodes each PNG and checks it against the report, so
+  a beat that happened between rendered frames cannot be fabricated.
+- **Two-stage verdict.** Stage one is machine: report version, hash echo,
+  beat decode and tick correlation, luminance and red-dominance stats,
+  wake progression, refusal evidence, perf thresholds, calibration
+  assertions. Stage two is visual: a vision subagent receives the beat
+  PNGs and an expectations checklist; missing or inconclusive visual
+  results count as failures.
 
-- **Scripted play.** Scenarios are declared as input scripts (look
-  targets, movement, interactions, timing) executed against a fixed
-  timestep with a seeded virtual clock, so runs are reproducible. The
-  logical timeline defines tick zero, the fixed frequency, the input
-  consumption order, and separately seeded RNG streams; button edges are
-  buffered so each edge is consumed exactly once regardless of how many
-  fixed updates run per rendered frame. Reproducibility scope is the
-  same build, configuration, and seed on the target machine;
-  pixel-identical GPU output is not promised.
-- **Input injection.** The harness feeds synthetic input events the same
-  way real devices do, through the app's input layer, never by calling
-  gameplay functions directly.
-- **Capture.** Screenshots at named beats (eyes-closed, first-blink,
-  sparks-visible, standing, mid-room, at-door, door-refused). Temporal
-  beats (blinks, spark bursts, the door shake) are short timestamped
-  frame sequences covering before/during/after, not single frames. Each
-  capture is correlated to the simulation tick and rendered frame
-  (request IDs bound to render extraction; one request per target per
-  rendered frame; completion means the file was written, with save
-  failures propagated as failures), so a beat that happened entirely
-  between rendered frames cannot be fabricated. The runner starts
-  scenarios only after a pipeline/asset readiness handshake and waits
-  for capture completion before reporting success or exiting. Before
-  readiness, the window shows an intentional opaque loading/closed
-  presentation: no clear room may appear before the authored first
-  opening, the first ready fully-closed frame is captured separately,
-  and a delayed-readiness run proves the timeline starts exactly once.
-  A structured JSON report (player transform, ship state, event log,
-  frame timings) accompanies the captures. Artifacts land under
-  `tmp/harness/<scenario>/<run-id>/`, which is gitignored. Paths are
-  unique per run so concurrent sessions cannot clobber each other, and
-  each run records build, scenario, and checklist identities (content
-  hashes, not just the git SHA, so dirty binaries or edited assets
-  cannot masquerade as the tested build) so stale or cherry-picked
-  artifacts cannot satisfy a newer run.
-- **Visual verification protocol.** The driver agent cannot read images.
-  After a run, a vision-capable subagent receives the beat screenshots
-  and an expectations checklist (red light, smoke denser at the ceiling,
-  sparks strobing) and returns pass/fail per expectation with quotes of
-  what it sees. The driver aggregates that with the JSON report into the
-  run verdict. Verdicts are two-stage: machine checks passed (JSON) and
-  visual verification passed; missing, malformed, or inconclusive visual
-  results count as failures, not passes. No verdict is final on pixel
-  checks alone; the JSON evidence gates gameplay logic. The suite keeps
-  negative verification cases (spark particles with their light
-  disabled, a refusal event with no hatch animation, collision disabled
-  during a crossing) that must fail the relevant expectations, so the
-  instrument cannot silently drift into reporting success without proof.
-- **Performance lane.** Separate from capture runs: a capture-free,
-  wall-clock lane in the populated room. Its acceptance policy (warmup,
-  sample window, camera route, concurrent effects, presentation mode,
-  frame-time statistics and thresholds, physical resolution) is
-  versioned and frozen before measurement, and a failing or missing
-  performance verdict blocks milestone acceptance rather than merely
-  being reported.
+## Quality gates
 
-Precedents in the sibling projects: jefe's `scripts/validate-newissue-wrap.sh`
-drives the built TUI app in tmux, types input, captures the pane, and
-asserts on the capture; uqm's `rust/harness/` scripts drive the game
-binary and capture state with screenshot tooling. Our runner is the same
-idea upgraded to a 3D game: drive, capture, hand the capture to a
-vision-capable verifier.
+- **Unit suite.** `godot --headless --path . -s tests/run_tests.gd` runs
+  204 auto-discovered tests from `tests/*_test.gd` and exits 1 on any
+  failure.
+- **Gameplay lane.** The runner on `scenarios/gameplay-full.json` drives
+  the whole opening beat with seven captures (eyes-closed, first-blink,
+  shapes-resolving, standing, mid-room, at-door, door-refused), a
+  readiness proof, hash echo, and tick/frame correlation.
+- **Perf lane.** The same runner on `scenarios/perf-smoke.json` judges
+  frame times against the smoke-grade policy.
+- **Calibration lanes.** The runner on `scenarios/calibration-step.json`
+  and `scenarios/calibration-move.json` verifies the auto-exposure
+  evidence cells.
+- **Negatives.** `scenarios/negative/never-beat.json` and
+  `scenarios/negative/calibration-no-autoexposure.json` must FAIL (runner
+  exit nonzero). A negative case that passes means the instrument is
+  broken.
 
-## Ecosystem pins (verify at integration time)
-
-- **Physics**: Avian 0.7 (active, supports Bevy 0.19) for props, debris,
-  and door dynamics. Milestone 1 movement is a kinematic capsule with a
-  custom swept-collision resolver against authored static colliders (no
-  rigid-body dynamics solver, but real collision work, owned by the
-  blockout issue); Avian arrives with interactive objects.
-- **Level authoring**: Blender greybox first. bevy_trenchbroom 0.14
-  supports Bevy 0.19 but its maintainer states the crate is on life
-  support; treat it as optional tooling, not infrastructure.
-- **Video playback** (later milestones): no first-party Bevy support
-  (https://github.com/bevyengine/bevy/issues/19172); community options
-  are bevy_movie_player (ffmpeg-backed) and bevy-ffmpeg. Decide at the
-  security-monitor milestone; an image-sequence fallback is always
-  available.
-- **Particles**: bevy_hanabi 0.19 declares Bevy 0.19 compatibility in its
-  published metadata; execution on this machine's Metal backend is still
-  verified at milestone 1, with hand-rolled particle systems as the
-  fallback for sparks and smoke wisps.
+The lanes spawn a windowed app even though the runner itself is headless.
+Long windowed runs on this machine may need `nohup` plus polling; an OS
+watchdog kills long foreground commands.
 
 ## Performance
 
-Milestone 1 closes only on a measured gate, not a recorded hope: the
-populated room (pods, wires, smoke, sparks active) sustains 60 FPS at
-physical 3840x2160 with render scale 1.0, in a release build, on M4 Max,
-measured wall-clock by the harness over a defined sample window with
-warmup, under simultaneous sparks and fog, separately from
-capture/readback overhead. The measured frame-time distribution and the
-configuration (adapter vendor/device, backend, present mode, active
-effects, sample window) are posted on the epic. Windows and Linux
-equivalents are recorded per GPU vendor (one representative 2023+
-NVIDIA, AMD, and Intel card) when hardware joins the loop. Quality
-tiers (baseline/recommended/enhanced, as stranded does) come when there
-is something to scale, defined against the vendor matrix and the 2023+
-hardware floor in the platform section.
+The smoke-grade gate is met. The policy (`harness/perf-policy.json`,
+version `godot-smoke-1152x648-v1`) fixes 60 warmup frames, 300 samples,
+uncapped presentation, 1152x648 resolution, and thresholds of 25 ms mean
+and 50 ms p95, measured in the populated room (pods, preprocessed ceiling
+smoke, automatic spark bursts active). Measured on M4 Max: mean 8.33 ms,
+p95 9.4 ms, 300 samples at a 120 fps cadence. Machine PASS, with the
+distribution recorded in the run's `perf-verdict.json`.
+
+The milestone 1 gate is unchanged from the Rust plan and has not been
+measured on the Godot tree: the populated room sustains 60 FPS at physical
+3840x2160 with render scale 1.0, in a release build, on M4 Max, measured
+wall-clock by the harness over a defined sample window with warmup, under
+simultaneous sparks and smoke, separately from capture overhead. The smoke
+policy exists to catch regressions cheaply; closing milestone 1 requires
+the 4K gate. Windows and Linux equivalents are recorded per GPU vendor
+(one representative 2023+ NVIDIA, AMD, and Intel card) when hardware joins
+the loop.
