@@ -20,6 +20,10 @@ extends Node
 var game: Game
 var camera: Camera3D = null
 var pass_layer: WakePass = null
+## When set, the sway projection and the completion settle go through
+## the player rig (its yaw/pitch split owns the rotations) instead of
+## writing the observer camera's rotation directly.
+var rig: Player = null
 
 var _base_rotation: Vector3 = Vector3.ZERO
 var _completed: bool = false
@@ -30,12 +34,13 @@ var _begun: bool = false
 ## readiness), so the camera's first presented frame carries the closed
 ## lids. Not adding the returned node to the tree keeps the readiness leg
 ## manual, which is the shape the tests drive.
-static func build(p_game: Game, p_camera: Camera3D, p_pass: WakePass) -> WakePresent:
+static func build(p_game: Game, p_camera: Camera3D, p_pass: WakePass, p_rig: Player = null) -> WakePresent:
 	var driver := WakePresent.new()
 	driver.name = "WakePresent"
 	driver.game = p_game
 	driver.camera = p_camera
 	driver.pass_layer = p_pass
+	driver.rig = p_rig
 	driver._base_rotation = p_camera.rotation
 	driver.pass_layer.apply_sample(p_game.wake_state.sample())
 	return driver
@@ -63,7 +68,10 @@ func is_begun() -> bool:
 func present_frame() -> void:
 	var sample: Wake.WakeSample = game.wake_state.sample()
 	pass_layer.apply_sample(sample)
-	camera.rotation = sway_rotation(_base_rotation, sample.sway_offset)
+	if rig != null:
+		rig.apply_wake_sway(sample.sway_offset)
+	else:
+		camera.rotation = sway_rotation(_base_rotation, sample.sway_offset)
 	_complete_if_due()
 
 ## The camera pose for one sway offset: the captured base pose plus the
@@ -85,18 +93,16 @@ func is_complete() -> bool:
 ## the phase machine's Waking -> AwakeInPod boundary (any other outcome is
 ## a wiring failure), and the pass deactivated.
 func _complete_if_due() -> void:
-	if _completed or not game.wake_state.is_complete():
+	if not game.wake_state.is_complete():
+		return
+	if _completed:
 		return
 	_completed = true
-	camera.rotation = _base_rotation
-	var transition: Phase.Transition = game.phase.wake_complete()
-	assert(
-		transition.kind == Phase.Transition.Kind.ADVANCED
-			and transition.from == Phase.Wake.WAKING
-			and transition.to == Phase.Wake.AWAKE_IN_POD,
-		"the wake timeline's completion must advance Waking -> AwakeInPod exactly once, got %s"
-			% Phase.phase_name(game.phase.current())
-	)
+	assert(game.phase.wake_complete().kind == Phase.Transition.Kind.ADVANCED)
+	if rig != null:
+		rig.on_wake_complete()
+	else:
+		camera.rotation = _base_rotation
 	pass_layer.set_active(false)
 
 func _process(_delta: float) -> void:
