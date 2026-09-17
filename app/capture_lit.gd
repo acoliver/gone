@@ -23,6 +23,17 @@ func _initialize() -> void:
 
 func _run_smoke() -> void:
 	await create_timer(SETTLE_HOLD_SECS).timeout
+	var wake := _find_node(root, "WakePresent") as WakePresent
+	if wake == null:
+		_fail("the WakePresent node is missing from the scene")
+		return
+	var woken := 0.0
+	while not wake.is_complete() and woken < 20.0:
+		await create_timer(0.2).timeout
+		woken += 0.2
+	if not wake.is_complete():
+		_fail("the wake opening did not complete")
+		return
 	var lighting := _find_node(root, "Lighting") as Lighting
 	if lighting == null:
 		_fail("the Lighting node is missing from the scene")
