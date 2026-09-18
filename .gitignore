@@ -4,3 +4,4 @@
 .llxprt/
 .godot/
 *.translation
+__pycache__/
