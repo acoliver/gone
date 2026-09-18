@@ -1,15 +1,17 @@
 class_name PodBody
 extends RefCounted
 ## Pure stasis pod construction solids, ported from gone_app pod_body.rs.
-## Every pod is an open-topped tray instead of a solid block: a base
-## slab, a dark floor plate, a head wall between two side walls with a
-## real cavity, and a fully open foot end (the exit aperture mouth). The
-## state's top finishes the silhouette: sealed pods close with a flat
-## lid, empty-open pods keep the angled open lid plus a hanging blanket,
-## and the player pod stands its lid up as a canopy over the head end.
-## The scene builders spawn these boxes verbatim and the collider set
-## lifts the same data, so rendered geometry and guarantees cannot drift.
-## All numbers are pod-local, in meters: local +Z is the pod's opening
+## Every pod's collision body is an open-topped tray instead of a solid
+## block: a base slab, a dark floor plate, a head wall between two side
+## walls with a real cavity, and a fully open foot end (the exit
+## aperture mouth). The state's top finishes the silhouette: sealed pods
+## close with a flat lid, empty-open pods keep the angled open lid plus
+## a hanging blanket, and the player pod stands its lid up as a canopy
+## over the head end. The collider set lifts these boxes verbatim, so
+## the swept-collision guarantees cannot drift; the rendered shell is
+## the authored pod-v2 mesh (PodMesh), and the scene builder dresses it
+## with the authored lid and blanket solids from this same data. All
+## numbers are pod-local, in meters: local +Z is the pod's opening
 ## (its foot), local -Z the head, up is +Y. Pure data: no Node types.
 
 ## Cavity wall thickness, in meters.
@@ -61,7 +63,8 @@ enum SolidKind { BODY, CAVITY, LID, BLANKET }
 
 class PodSolid:
 	extends RefCounted
-	## One solid cuboid of a pod's greybox, in the pod's local frame.
+	## One solid cuboid of a pod's construction solids, in the pod's
+	## local frame.
 
 	var center: Vector3 = Vector3.ZERO
 	var size: Vector3 = Vector3.ZERO
