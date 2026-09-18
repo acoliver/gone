@@ -89,8 +89,13 @@ func _physics_process(delta: float) -> void:
 func _collect_device_input(delta: float) -> void:
 	if scripted or not _device_actions:
 		return
+	# The rig's camera looks along Godot's -Z at the yaw while the sim's
+	# walk frame steps along +Z, so the forward key offers the negative
+	# sim axis (strafe already shares signs between the frames): forward
+	# walks where the player looks, bridged like the look channel's
+	# -turn below. The scripted lane keeps the sim frame's signs.
 	plane.offer_movement(
-		Input.get_axis("move_back", "move_forward"),
+		-Input.get_axis("move_back", "move_forward"),
 		Input.get_axis("move_left", "move_right")
 	)
 	if Input.is_action_just_pressed("activate"):
