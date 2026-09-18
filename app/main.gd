@@ -19,6 +19,7 @@ func _ready() -> void:
 	add_child(hatch)
 	add_child(Lighting.build(game))
 	add_child(Hazards.build())
+	add_child(Wires.build())
 	_add_player()
 	_add_wake_presentation()
 
