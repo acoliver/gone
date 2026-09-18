@@ -1,10 +1,11 @@
 extends SimTestCase
-## Input fix tests for issues #31/#32/#33: arrow keys ride the movement
+## Input fix tests for issues #31/#32/#33/#47: arrow keys ride the movement
 ## actions through the same synthetic input plane the harness uses, the
-## comma/period look keys ride the same look channel and clamps as the
-## mouse with per-tick delta summation, and a left click aliases the
-## interact and activate actions with exactly-once edge consumption
-## alongside E.
+## forward key bridges the camera's -Z view onto the sim's +Z walk frame
+## (issue #47's inverted axis), the comma/period look keys ride the same
+## look channel and clamps as the mouse with per-tick delta summation,
+## and a left click aliases the interact and activate actions with
+## exactly-once edge consumption alongside E.
 
 const DT: float = 1.0 / 60.0
 const NEAR: float = 1e-4
@@ -66,19 +67,49 @@ func test_wasd_still_maps_onto_the_movement_actions() -> void:
 func test_arrows_drive_movement_through_the_input_plane() -> void:
 	# The device producer reads the action axes; an arrow press moves them
 	# exactly like W does, and the plane carries the intent to the walk.
+	# The rig's camera looks along Godot's -Z at the yaw while the sim's
+	# walk frame steps along +Z, so the forward key offers the negative
+	# sim axis and forward walks where the player looks.
 	Input.action_press("move_forward")
 	Input.action_press("move_right")
 	var plane := InputPlane.new()
 	plane.offer_movement(
-		Input.get_axis("move_back", "move_forward"),
+		-Input.get_axis("move_back", "move_forward"),
 		Input.get_axis("move_left", "move_right")
 	)
 	Input.action_release("move_forward")
 	Input.action_release("move_right")
 	var movement := plane.take_movement()
-	_near_float(movement.x, 1.0, "the forward axis reached the plane")
+	_near_float(movement.x, -1.0, "the forward axis reached the plane as the negative sim axis")
 	_near_float(movement.y, 1.0, "the strafe axis reached the plane")
 	_near_float(plane.take_movement().x, 0.0, "the intent is taken once per tick")
+
+func test_held_forward_walks_where_the_camera_looks() -> void:
+	# Issue #47: the camera looks along the rig's -Z while the sim's walk
+	# frame steps along +Z, so a forward key that reached the walk
+	# unbridged stepped the capsule behind the view (up read as back).
+	# With the yaw the rig carries while facing the hatch, a held forward
+	# must step the capsule toward the hatch, not away from it.
+	var game := _awake_game()
+	var motion := PlayerMotion.new()
+	var plane := InputPlane.new()
+	_stand(motion, game, plane)
+	var hatch := game.registry.hatch().center
+	var foot: Vector3 = motion.capsule().foot
+	var to_hatch := Vector2(hatch.x - foot.x, hatch.y - foot.z).normalized()
+	var yaw := atan2(to_hatch.x, to_hatch.y) + PI
+	var camera_forward := Vector3(-sin(yaw), 0.0, -cos(yaw))
+	Input.action_press("move_forward")
+	plane.offer_movement(
+		-Input.get_axis("move_back", "move_forward"),
+		Input.get_axis("move_left", "move_right")
+	)
+	Input.action_release("move_forward")
+	motion.advance(plane, game, yaw, DT)
+	plane.end_frame()
+	var stepped: Vector3 = motion.capsule().foot - foot
+	assert_true(stepped.dot(camera_forward) > 0.002, "a held forward steps toward the camera's forward, not behind it: dot %s" % str(stepped.dot(camera_forward)))
+	assert_true(motion.failure().is_empty(), motion.failure())
 
 func test_look_keys_map_onto_yaw_actions_without_collisions() -> void:
 	assert_true(InputMap.has_action("look_left"), "look_left exists")

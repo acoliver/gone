@@ -272,6 +272,8 @@ func drive_tick() -> void:
 		any_input = true
 	var movement: Vector2 = step.movement
 	if movement != Vector2.ZERO:
+		# Scripted movement stays in the sim's yaw frame (+Z forward);
+		# only the device producer bridges Godot's -Z view (player.gd).
 		adapter.hold(movement.x, movement.y)
 		report.add_event({"kind": "input", "tick": tick, "frame": frame,
 			"what": "move %.4f %.4f" % [movement.x, movement.y]})
