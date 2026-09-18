@@ -4,8 +4,11 @@ Direction (Andrew, 2026-09-17): the ship reads as an old, broken-down
 colonial warship in the Battlestar Galactica / Stargate Universe
 tradition. Walls are paneled, ribbed, piped structure, not flat cubes.
 The stasis pods read as rounded, smooth, and newer than the ship around
-them: the pods are recent hardware installed in a worn hull. These
-images are the visual target for the wall and pod work.
+them: the pods are recent hardware installed in a worn hull. The pods
+are OPEN: the crew came out of stasis and left, so most canopies stand
+raised with empty couches and hanging occupancy blankets; a few pods
+remain sealed. These images are the visual target for the wall and pod
+work.
 
 ## Pieces
 
@@ -13,16 +16,19 @@ images are the visual target for the wall and pod work.
 | --- | --- | --- |
 | `room-walls.png` | Worn compartment interior: riveted seamed bulkheads, pipe runs, cable conduits, hazard plates, battle damage, red emergency mood. | #35 wall/floor/ceiling textures, anti-cube wall geometry |
 | `pod-design-sheet.png` | Stasis pod design sheet: rounded horizontal capsule, off-white composite shell, dark glass canopy over a single padded couch with pillow and straps, red spine light. Three views. | #37 pod meshes: rounded and newer than the ship |
-| `stasis-bay-context.png` | The bay in context: pale capsule pods on cradles in the grimy riveted compartment, nearest pod open with canopy raised and couch visible. | Composite mood target for #35/#37/#40 review |
+| `stasis-bay-context.png` | The bay in context: one consistent capsule-pod design (matching the sheet) on cradles in the grimy riveted compartment; five pods open clamshell-style with raised canopy lids, empty couches, hanging blankets; one sealed. | Composite mood target for #35/#37/#40, the crew-left story beat |
 
 ## Verification
 
 Each piece passed an independent Eyes review (vision subagent, strict
-pass/fail with quoted observations): the wall piece passed structure and
-mood; the pod sheet and bay pieces were regenerated once to remove an
-automotive-cockpit read and add an open canopy, then passed. Artifacts of
-the review (quotes, verdicts) live in the session log; generation
-prompts are recorded below.
+pass/fail with quoted observations). The wall piece passed first pass.
+The pod sheet and bay piece were each regenerated once (the sheet had
+an automotive cockpit inside the pod; the bay had all pods sealed), then
+passed. The bay piece was revised a second time after review feedback
+that the pods must visibly match the sheet design and read as open with
+raised lids (crew already left stasis); that revision passed with the
+pod family, open-canopy story beat, worn-ship contrast, and coherence
+all confirmed. Generation prompts are recorded below.
 
 ## Provenance
 
@@ -42,9 +48,9 @@ HF_HOME=/Volumes/XS1000/hf-cache \
 | --- | --- | --- |
 | room-walls | 11 | 1536x864 |
 | pod-design-sheet | 44 | 1216x896 |
-| stasis-bay-context | 55 | 1536x864 |
+| stasis-bay-context | 66 | 1536x864 |
 
-Prompts (verbatim):
+Prompts (verbatim, final revisions):
 
 - room-walls: "Concept art, interior of an old broken-down colonial
   military starship compartment, Battlestar Galactica and Stargate
@@ -66,15 +72,17 @@ Prompts (verbatim):
   red rim lighting, precise product concept art rendering. No steering
   wheel, no cockpit, no car seats, no vehicle, no text, no people."
 - stasis-bay-context: "Wide cinematic concept art of a derelict
-  starship stasis bay: seven horizontal rounded capsule pods like
-  smooth white medical cryosleep berths resting on low deck cradles in
-  two rows, pale composite shells that look newer than the worn riveted
-  steel compartment around them. The nearest pod is open: its curved
-  glass canopy hinged fully up like an open clamshell, an empty padded
-  couch visible inside. Torn ceiling cable tray with hanging wires,
-  deep red emergency lighting, thin drifting smoke, Battlestar Galactica
-  meets Stargate Universe, dark filmic mood. No people, no text, no
-  vehicles."
+  starship stasis bay: seven identical horizontal rounded capsule
+  stasis pods in two rows on low deck cradles, one consistent product
+  design: smooth off-white composite shells with dark glass canopy lids
+  on top hinges. Five pods have their dark glass canopy lids hinged
+  fully open, raised up above each shell like open clamshells, empty
+  padded couches and hanging occupancy blankets visible inside; two
+  pods are sealed shut. The pale pods look newer than the worn riveted
+  steel compartment around them. Torn ceiling cable tray with hanging
+  wires, deep red emergency lighting, thin drifting smoke, Battlestar
+  Galactica meets Stargate Universe, dark filmic mood. No people, no
+  text, no vehicles."
 
 Operational note: mflux does not clobber an existing output file; it
 writes `<name>_1.png`. Delete or move the target before regenerating.
