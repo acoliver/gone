@@ -1,0 +1,5685 @@
+{
+	"name": "gameplay-keyboard-turn",
+	"seed": 1234,
+	"ticks_per_second": 60,
+	"mode": "capture",
+	"content": "gameplay",
+	"max_frames": 1600,
+	"actions": [
+		{
+			"tick": 284,
+			"type": "press",
+			"button": "activate"
+		},
+		{
+			"tick": 285,
+			"type": "release",
+			"button": "activate"
+		},
+		{
+			"tick": 294,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 295,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 296,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 297,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 298,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 299,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 300,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 301,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 302,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 303,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 304,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 305,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 306,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 307,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 308,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 309,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 310,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 311,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 312,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 313,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 314,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 315,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 316,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 317,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 318,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 319,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 320,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 321,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 322,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 323,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 324,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 325,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 326,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 327,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 328,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 329,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 330,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 331,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 332,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 333,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 334,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 335,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 336,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 337,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 338,
+			"type": "key_turn",
+			"dir": "right"
+		},
+		{
+			"tick": 340,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 341,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 342,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 343,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 344,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 345,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 346,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 347,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 348,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 349,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 350,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 351,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 352,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 353,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 354,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 355,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 356,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 357,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 358,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 359,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 360,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 361,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 362,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 363,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 364,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 365,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 366,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 367,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 368,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 369,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 370,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 371,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 372,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 373,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 374,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 375,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 376,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 377,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 378,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 379,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 380,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 381,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 382,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 383,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 384,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 385,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 386,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 387,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 388,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 389,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 390,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 391,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 392,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 393,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 394,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 395,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 396,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 397,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 398,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 399,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 400,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 401,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 402,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 403,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 404,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 405,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 406,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 407,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 408,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 409,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 410,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 411,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 412,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 413,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 414,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 415,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 416,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 417,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 418,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 419,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 420,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 421,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 422,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 423,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 424,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 425,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 426,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 427,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 428,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 429,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 430,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 431,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 432,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 433,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 434,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 435,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 436,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 437,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 438,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 439,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 440,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 441,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 442,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 443,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 444,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 445,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 446,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 447,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 448,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 449,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 450,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 451,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 452,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 453,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 454,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 455,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 456,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 457,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 458,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 459,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 460,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 461,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 462,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 463,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 464,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 465,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 466,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 467,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 468,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 469,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 470,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 471,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 472,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 473,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 474,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 475,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 476,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 477,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 478,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 479,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 480,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 481,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 482,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 483,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 484,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 485,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 486,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 487,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 488,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 489,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 490,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 491,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 492,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 493,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 494,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 495,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 496,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 497,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 498,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 499,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 500,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 501,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 502,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 503,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 504,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 505,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 506,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 507,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 508,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 509,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 510,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 511,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 512,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 513,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 514,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 515,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 516,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 517,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 518,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 519,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 520,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 521,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 522,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 523,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 524,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 525,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 526,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 527,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 528,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 529,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 530,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 531,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 532,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 533,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 534,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 535,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 536,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 537,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 538,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 539,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 540,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 541,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 542,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 543,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 544,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 545,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 546,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 547,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 548,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 549,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 550,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 551,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 552,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 553,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 554,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 555,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 556,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 557,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 558,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 559,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 560,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 561,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 562,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 563,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 564,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 565,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 566,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 567,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 568,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 569,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 570,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 571,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 572,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 573,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 574,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 575,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 576,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 577,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 578,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 579,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 580,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 581,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 582,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 583,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 584,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 585,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 586,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 587,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 588,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 589,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 590,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 591,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 592,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 593,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 594,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 595,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 596,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 597,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 598,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 599,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 600,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 601,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 602,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 603,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 604,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 605,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 606,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 607,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 608,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 609,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 610,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 611,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 612,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 613,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 614,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 615,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 616,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 617,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 618,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 619,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 620,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 621,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 622,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 623,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 624,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 625,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 626,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 627,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 628,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 629,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 630,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 631,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 632,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 633,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 634,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 635,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 636,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 637,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 638,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 639,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 640,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 641,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 642,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 643,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 644,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 645,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 646,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 647,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 648,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 649,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 650,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 651,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 652,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 653,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 654,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 655,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 656,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 657,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 658,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 659,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 660,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 661,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 662,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 663,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 664,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 665,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 666,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 667,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 668,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 669,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 670,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 671,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 672,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 673,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 674,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 675,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 676,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 677,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 678,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 679,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 680,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 681,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 682,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 683,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 684,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 685,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 686,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 687,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 688,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 689,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 690,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 691,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 692,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 693,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 694,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 695,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 696,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 697,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 698,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 699,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 700,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 701,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 702,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 703,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 704,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 705,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 706,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 707,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 708,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 709,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 710,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 711,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 712,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 713,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 714,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 715,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 716,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 717,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 718,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 719,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 720,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 721,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 722,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 723,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 724,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 725,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 726,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 727,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 728,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 729,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 730,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 731,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 732,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 733,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 734,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 735,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 736,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 737,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 738,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 739,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 740,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 741,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 742,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 743,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 744,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 745,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 746,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 747,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 748,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 749,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 750,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 751,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 752,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 753,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 754,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 755,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 756,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 757,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 758,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 759,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 760,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 761,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 762,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 763,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 764,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 765,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 766,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 767,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 768,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 769,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 770,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 771,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 772,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 773,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 774,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 775,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 776,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 777,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 778,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 779,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 780,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 781,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 782,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 783,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 784,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 785,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 786,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 787,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 788,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 789,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 790,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 791,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 792,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 793,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 794,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 795,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 796,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 797,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 798,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 799,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 800,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 801,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 802,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 803,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 804,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 805,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 806,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 807,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 808,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 809,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 810,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 811,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 812,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 813,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 814,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 815,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 816,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 817,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 818,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 819,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 820,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 821,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 822,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 823,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 824,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 825,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 826,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 827,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 828,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 829,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 830,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 831,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 832,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 833,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 834,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 835,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 836,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 837,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 838,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 839,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 840,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 841,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 842,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 843,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 844,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 845,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 846,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 847,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 848,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 849,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 850,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 851,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 852,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 853,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 854,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 855,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 856,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 857,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 858,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 859,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 860,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 861,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 862,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 863,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 864,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 865,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 866,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 867,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 868,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 869,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 870,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 871,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 872,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 873,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 874,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 875,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 876,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 877,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 878,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 879,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 880,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 881,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 882,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 883,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 884,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 885,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 886,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 887,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 888,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 889,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 890,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 891,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 892,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 893,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 894,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 895,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 896,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 897,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 898,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 899,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 900,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 901,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 902,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 903,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 904,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 905,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 906,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 907,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 908,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 909,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 910,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 911,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 912,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 913,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 914,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 915,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 916,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 917,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 918,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 919,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 920,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 921,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 922,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 923,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 924,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 925,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 926,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 927,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 928,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 929,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 930,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 931,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 932,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 933,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 934,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 935,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 936,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 937,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 938,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 939,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 940,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 941,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 942,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 943,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 944,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 945,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 946,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 947,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 948,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 949,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 950,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 951,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 952,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 953,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 954,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 955,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 956,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 957,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 958,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 959,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 960,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 961,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 962,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 963,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 964,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 965,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 966,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 967,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 968,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 969,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 970,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 971,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 972,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 973,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 974,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 975,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 976,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 977,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 978,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 979,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 980,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 981,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 982,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 983,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 984,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 985,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 986,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 987,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 988,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 989,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 990,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 991,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 992,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 993,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 994,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 995,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 996,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 997,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 998,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 999,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1000,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1001,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1002,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1003,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1004,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1005,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1006,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1007,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1008,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1009,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1010,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1011,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1012,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1013,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1014,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1015,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1016,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1017,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1018,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1019,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1020,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1021,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1022,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1023,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1024,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1025,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1026,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1027,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1028,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1029,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1030,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1031,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1032,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1033,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1034,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1035,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1036,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1037,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1038,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1039,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1040,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1041,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1042,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1043,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1044,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1045,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1046,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1047,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1048,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1049,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1050,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1051,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1052,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1053,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1054,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1055,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1056,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1057,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1058,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1059,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1060,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1061,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1062,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1063,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1064,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1065,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1066,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1067,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1068,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1069,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1070,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1071,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1072,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1073,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1074,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1075,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1076,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1077,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1078,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1079,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1080,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1081,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1082,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1083,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1084,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1085,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1086,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1087,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1088,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1089,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1090,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1091,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1092,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1093,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1094,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1095,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1096,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1097,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1098,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1099,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1100,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1101,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1102,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1103,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1104,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1105,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1106,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1107,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1108,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1109,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1110,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1111,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1112,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1113,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1114,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1115,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1116,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1117,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1118,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1119,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1120,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1121,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1122,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1123,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1124,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1125,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1126,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1127,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1128,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1129,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1130,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1131,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1132,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1133,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1134,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1135,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1136,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1137,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1138,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1139,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1140,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1141,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1142,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1143,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1144,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1145,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1146,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1147,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1148,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1149,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1150,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1151,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1152,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1153,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1154,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1155,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1156,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1157,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1158,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1159,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1160,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1161,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1162,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1163,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1164,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1165,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1166,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1167,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1168,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1169,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1170,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1171,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1172,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1173,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1174,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1175,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1176,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1177,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1178,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1179,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1180,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1181,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1182,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1183,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1184,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1185,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1186,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1187,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1188,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1189,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1190,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1191,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1192,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1193,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1194,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1195,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1196,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1197,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1198,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1199,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1200,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1201,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1202,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1203,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1204,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1205,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1206,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1207,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1208,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1209,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1210,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1211,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1212,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1213,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1214,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1215,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1216,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1217,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1218,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1219,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1220,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1221,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1222,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1223,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1224,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1225,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1226,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1227,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1228,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1229,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1230,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1231,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1232,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1233,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1234,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1235,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1236,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1237,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1238,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1239,
+			"type": "move",
+			"forward": 1.0,
+			"strafe": 0.0
+		},
+		{
+			"tick": 1253,
+			"type": "press",
+			"button": "interact"
+		},
+		{
+			"tick": 1254,
+			"type": "release",
+			"button": "interact"
+		}
+	],
+	"beats": [
+		{
+			"name": "eyes-closed",
+			"tick": 30
+		},
+		{
+			"name": "first-blink",
+			"tick": 130
+		},
+		{
+			"name": "shapes-resolving",
+			"tick": 170
+		},
+		{
+			"name": "standing",
+			"tick": 290
+		},
+		{
+			"name": "mid-room",
+			"tick": 670
+		},
+		{
+			"name": "at-door",
+			"tick": 1245
+		},
+		{
+			"name": "door-refused",
+			"tick": 1263
+		}
+	]
+}

@@ -10,6 +10,11 @@ extends RefCounted
 ## Look rotation per mouse pixel, in radians.
 const LOOK_SENSITIVITY: float = 0.0022
 
+## Keyboard yaw rate for the look keys, radians per second (TAU / 3 is
+## 120 degrees): the held keys' alternative to mouse pixels, offered onto
+## the same look channel so a tick's mouse and keyboard deltas sum.
+const TURN_SPEED: float = TAU / 3.0
+
 ## Pitch hard stop just short of the vertical.
 const PITCH_LIMIT: float = deg_to_rad(89.0)
 
