@@ -1,14 +1,17 @@
 class_name PodMesh
 extends RefCounted
 ## The rendered pod shell: the authored pod-v2.glb asset, loaded once
-## per process, its single textured mesh instanced by all seven pods
-## under one frozen mesh-to-pod transform (probe-verified against the
-## authored pod numbers: envelope parity 0.00% on all three axes, the
-## authored sit-up corridor clear with its worst clearance at the lying
-## eye). The authored solids in PodBody stay the single source for
-## colliders and placement parity; the shell is dressing. All numbers
-## are pod-local meters: local +Z is the foot (the opening), local -Z
-## the head, up is +Y.
+## per process, its single mesh instanced by all seven pods under one
+## frozen mesh-to-pod transform (probe-verified against the authored
+## pod numbers: envelope parity 0.00% on all three axes, the authored
+## sit-up corridor clear with its worst clearance at the lying eye),
+## its imported grunge material replaced at extraction by the one
+## authored high-gloss lacquer, so the shell reads bone-warm under the
+## red key instead of worn. The red emissive flank strips are separate
+## geometry in pod_strips.gd. The authored solids in PodBody stay the
+## single source for colliders and placement parity; the shell is
+## dressing. All numbers are pod-local meters: local +Z is the foot
+## (the opening), local -Z the head, up is +Y.
 
 const POD_PATH: String = "res://assets/props/pod/pod-v2.glb"
 
@@ -17,15 +20,49 @@ const POD_PATH: String = "res://assets/props/pod/pod-v2.glb"
 ## its centering offset derives from this edge.
 const SKIRT_Z: float = 0.25
 
+## The shell's authored lacquer: warm bone-white dielectric over a mid
+## semi-gloss under-coat, full clearcoat with a tight highlight, no
+## emission and no texture maps (the imported grunge albedo, normal,
+## and roughness sets are dropped entirely; the generated mesh's UVs
+## are unreliable anyway). Under the red key the shell returns ~2.4x
+## the wall mean, so the pods are the brightest large surfaces in the
+## room; under a neutral key the warm bias keeps them bone-warm beside
+## the neutral-gray walls.
+const SHELL_ALBEDO: Color = Color(0.88, 0.84, 0.78)
+const SHELL_ROUGHNESS: float = 0.18
+const SHELL_METALLIC: float = 0.0
+const SHELL_CLEARCOAT: float = 1.0
+const SHELL_CLEARCOAT_ROUGHNESS: float = 0.1
+
 static var _shell: Mesh = null
+static var _shell_material: StandardMaterial3D = null
 
 ## The shared shell mesh: the GLB's one MeshInstance3D surface,
-## extracted with its own imported material (the painted pod texture),
-## so every pod draws from exactly one mesh and one material.
+## extracted with the authored lacquer as its single material, so
+## every pod draws from exactly one mesh and one material.
 static func shell_mesh() -> Mesh:
 	if _shell == null:
 		_shell = _extract_shell()
 	return _shell
+
+## The one authored shell material, built once per process and baked
+## onto the cached mesh at extraction (same once-per-process shape as
+## StasisPods._lid_steel). Exactly one material in play for the shell
+## anywhere in the process: the texture drops out of the render path
+## at the source, and no caller can render grunge by forgetting an
+## override.
+static func shell_material() -> StandardMaterial3D:
+	if _shell_material == null:
+		var material := StandardMaterial3D.new()
+		material.albedo_color = SHELL_ALBEDO
+		material.roughness = SHELL_ROUGHNESS
+		material.metallic = SHELL_METALLIC
+		material.clearcoat_enabled = true
+		material.clearcoat = SHELL_CLEARCOAT
+		material.clearcoat_roughness = SHELL_CLEARCOAT_ROUGHNESS
+		material.emission_enabled = false
+		_shell_material = material
+	return _shell_material
 
 ## One shell instance configured with the frozen mesh-to-pod transform:
 ## the mesh's long X onto the pod's long Z with both open ends kept
@@ -71,6 +108,7 @@ static func _extract_shell() -> Mesh:
 	var carrier := _find_mesh_instance(root_node)
 	assert(carrier != null and carrier.mesh != null, "the pod shell asset carries a mesh")
 	var mesh: Mesh = carrier.mesh
+	mesh.surface_set_material(0, shell_material())
 	root_node.free()
 	return mesh
 

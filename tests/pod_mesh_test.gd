@@ -1,6 +1,7 @@
 extends SimTestCase
 ## Pins for the pod-v2 shell wiring: the GLB loads and yields exactly
-## one cheap textured mesh, every pod instances that one shared mesh
+## one cheap mesh carrying the authored lacquer material, every pod
+## instances that one shared mesh
 ## under the frozen transform, the transformed envelope matches the
 ## authored (0.9, 0.8, 2.2) footprint within 1% per axis, the authored
 ## sit-up corridor stays clear with its worst clearance at the lying
@@ -93,7 +94,16 @@ func test_shell_resource_loads_and_stays_cheap() -> void:
 		return
 	assert_int_equal(mesh.get_surface_count(), 1, "the shell carries exactly one surface")
 	var material: Material = mesh.surface_get_material(0)
-	assert_true(material is StandardMaterial3D, "the shell's one material is the imported StandardMaterial3D")
+	assert_true(material == PodMesh.shell_material(), "the shell's one material is the authored lacquer, nothing per-instance")
+	var lacquer: StandardMaterial3D = PodMesh.shell_material()
+	assert_true(lacquer.albedo_color == Color(0.88, 0.84, 0.78), "the shell albedo is the warm bone white")
+	assert_true(absf(lacquer.roughness - 0.18) < 1e-4, "the shell under-coat sits mid semi-gloss")
+	assert_float_equal(lacquer.metallic, 0.0, "the shell is a dielectric lacquer")
+	assert_true(lacquer.clearcoat_enabled, "the shell carries the lacquer clearcoat")
+	assert_true(absf(lacquer.clearcoat - 1.0) < 1e-4, "the clearcoat is full")
+	assert_true(absf(lacquer.clearcoat_roughness - 0.1) < 1e-4, "the clearcoat highlight stays tight")
+	assert_false(lacquer.emission_enabled, "the shell does not emit; it only returns the room's red light")
+	assert_true(lacquer.albedo_texture == null and lacquer.normal_texture == null and lacquer.roughness_texture == null, "the shell carries no texture maps")
 	var arrays: Array = mesh.surface_get_arrays(0)
 	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
 	var triangles: int = indices.size() / 3

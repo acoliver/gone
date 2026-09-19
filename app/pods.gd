@@ -46,6 +46,7 @@ static func _pod_group(
 	group.position = frame[1]
 	group.quaternion = frame[0]
 	group.add_child(PodMesh.make_shell())
+	group.add_child(PodStrips.make())
 	for solid: PodBody.PodSolid in _dressing_solids(pod.state()):
 		group.add_child(_dressing_instance(solid))
 	var plate: Placement.SolidPlacement = Placement.indicator_plate()
