@@ -2,8 +2,8 @@ extends SimTestCase
 ## Port of the engine-independent assertions from gone_app
 ## lighting_tests.rs: fixture placement from the registry, the fade
 ## settle counts with repeated-target stability, held/fractional frame
-## timing, the bridge's no-write-to-grid boundary, unpowered pod plates,
-## and the authored no-light environment.
+## timing, the bridge's no-write-to-grid boundary, the retired pod
+## plates' absence, and the authored no-light environment.
 
 func test_fixture_inventory_places_eight_red_lights_from_registry() -> void:
 	var game := Game.new()
@@ -147,23 +147,20 @@ func test_bridge_running_alone_never_changes_power() -> void:
 	assert_true(game.power.state() == Power.State.DEAD, "the grid holds the test-delivered cut")
 	_assert_output(lighting, 0.0)
 
-func test_all_seven_pod_plates_stay_unpowered_across_power_changes() -> void:
+func test_no_pod_indicator_plates_render_across_power_changes() -> void:
 	var game := Game.new()
 	var pods := StasisPods.build(game.registry)
 	var plate_center: Vector3 = Placement.indicator_plate().center
-	var plates: Array[MeshInstance3D] = []
-	for group: Node in pods.get_children():
-		for child: Node in group.get_children():
-			if child is MeshInstance3D and (child as MeshInstance3D).position == plate_center:
-				plates.append(child)
-	assert_int_equal(plates.size(), Pods.POD_COUNT, "each pod carries one indicator plate")
 	game.power.cut_emergency_power()
 	var lighting := Lighting.build(game)
 	for _tick: int in range(Lighting.FIXTURE_SETTLE_TICKS + 1):
 		lighting.process_frame(Sim.LOGICAL_TICK_SECS)
-		for plate: MeshInstance3D in plates:
-			var material: StandardMaterial3D = plate.material_override
-			assert_false(material.emission_enabled, "the plate material stays non-emissive")
+		var plates := 0
+		for group: Node in pods.get_children():
+			for child: Node in group.get_children():
+				if child is MeshInstance3D and (child as MeshInstance3D).position == plate_center:
+					plates += 1
+		assert_int_equal(plates, 0, "the retired indicator plates stay gone through the power cut")
 
 func test_authored_environment_contributes_no_light() -> void:
 	var lighting := Lighting.build(Game.new())

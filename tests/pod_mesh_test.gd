@@ -5,10 +5,10 @@ extends SimTestCase
 ## under the frozen transform, the transformed envelope matches the
 ## authored (0.9, 0.8, 2.2) footprint within 1% per axis, the authored
 ## sit-up corridor stays clear with its worst clearance at the lying
-## eye, the transform derivation is deterministic, and the state
-## dressing (sealed lids, tilted open lids, hanging blankets, indicator
-## plates) survives at its authored placements while the player pod
-## renders nothing beyond the shell's own raised canopy and its plate.
+## eye, the transform derivation is deterministic, and the greybox box
+## dressing is retired from every pod — no sealed lids, no tilted open
+## lids, no indicator plates, no hanging blankets: per pod only the
+## round shell and the flank tubes render.
 
 ## The lying eye, pod-local, from the authored pose table (sim/exit.gd):
 ## the tray floor plus the capsule radius and penetration tolerance, at
@@ -70,18 +70,11 @@ func test_player_pod_renders_only_the_shell_canopy() -> void:
 	if _shell_of(group) == null:
 		assert_true(false, "the player pod carries its shell")
 		return
-	assert_int_equal(_dressing_boxes(group).size(), 0, "the player pod drops the greybox canopy and tray dressing")
-	var boxes := _box_children(group)
-	if boxes.size() != 1:
-		assert_true(false, "the player pod's only box child is the indicator plate, got %d" % boxes.size())
-		return
-	var plate: MeshInstance3D = boxes[0]
-	var expected: Placement.SolidPlacement = Placement.indicator_plate()
-	if not (plate.position == expected.center and plate.mesh is BoxMesh):
-		assert_true(false, "the player pod's one box child is the authored plate")
-		return
-	var plate_box: BoxMesh = plate.mesh
-	assert_vec3_equal(plate_box.size, expected.size, "the player pod's plate keeps its authored size")
+	assert_int_equal(
+		_box_children(group).size(),
+		0,
+		"the player pod renders no greybox boxes: no canopy, no plate"
+	)
 
 func test_shell_resource_loads_and_stays_cheap() -> void:
 	var scene: PackedScene = load(PodMesh.POD_PATH)
@@ -145,7 +138,7 @@ func test_sit_up_corridor_stays_clear() -> void:
 		worst = minf(worst, distance)
 	assert_true(worst >= 0.03, "the sit-up corridor's worst clearance is >= 0.03 m, got %.4f" % worst)
 
-func test_state_dressing_is_retained() -> void:
+func test_greybox_dressing_is_fully_retired() -> void:
 	var registry := Pods.PodRegistry.frozen()
 	var pods := StasisPods.build(registry)
 	var plate: Placement.SolidPlacement = Placement.indicator_plate()
@@ -155,28 +148,25 @@ func test_state_dressing_is_retained() -> void:
 	var plates := 0
 	for pod: Pods.Pod in registry.pods():
 		var group: Node = pods.get_child(pod.id().index())
-		var dressing_count := 0
 		for instance: MeshInstance3D in _box_children(group):
 			if instance.position == plate.center and (instance.mesh as BoxMesh).size == plate.size:
 				plates += 1
 				continue
-			dressing_count += 1
 			if _matches_solid(instance, PodBody.sealed_lid()):
 				sealed_lids += 1
 			if _matches_solid(instance, PodBody.open_lid()):
 				open_lids += 1
 			if _matches_solid(instance, PodBody.hanging_blanket()):
 				blankets += 1
-		var expected := 1
-		if pod.state() == Pods.PodState.EMPTY_OPEN:
-			expected = 2
-		elif pod.state() == Pods.PodState.PLAYER:
-			expected = 0
-		assert_int_equal(dressing_count, expected, "pod %d keeps its state's dressing count" % pod.id().index())
-	assert_int_equal(sealed_lids, 3, "all three sealed pods keep their flat lid")
-	assert_int_equal(open_lids, 3, "all three empty-open pods keep their tilted lid")
-	assert_int_equal(blankets, 3, "all three empty-open pods keep their hanging blanket")
-	assert_int_equal(plates, Pods.POD_COUNT, "every pod keeps its authored indicator plate")
+		assert_int_equal(
+			_box_children(group).size(),
+			0,
+			"pod %d renders zero box children in any state, empty-open included" % pod.id().index()
+		)
+	assert_int_equal(sealed_lids, 0, "no sealed pod keeps its flat lid")
+	assert_int_equal(open_lids, 0, "no empty-open pod keeps its tilted lid")
+	assert_int_equal(blankets, 0, "no empty-open pod keeps its hanging blanket")
+	assert_int_equal(plates, 0, "no pod keeps its indicator plate")
 
 ## The pod group's shell instance, or null when the group lacks one.
 func _shell_of(group: Node) -> MeshInstance3D:
@@ -186,7 +176,8 @@ func _shell_of(group: Node) -> MeshInstance3D:
 			return instance
 	return null
 
-## The group's BoxMesh instances, dressing and plate alike.
+## The group's BoxMesh instances: with the greybox kit and the hanging
+## blankets retired, no box renders in a pod group at all.
 func _box_children(group: Node) -> Array[MeshInstance3D]:
 	var boxes: Array[MeshInstance3D] = []
 	for child: Node in group.get_children():
@@ -194,16 +185,6 @@ func _box_children(group: Node) -> Array[MeshInstance3D]:
 		if instance != null and instance.mesh is BoxMesh:
 			boxes.append(instance)
 	return boxes
-
-## The group's dressing boxes: every BoxMesh child except the plate.
-func _dressing_boxes(group: Node) -> Array[MeshInstance3D]:
-	var plate: Placement.SolidPlacement = Placement.indicator_plate()
-	var dressing: Array[MeshInstance3D] = []
-	for instance: MeshInstance3D in _box_children(group):
-		if instance.position == plate.center and (instance.mesh as BoxMesh).size == plate.size:
-			continue
-		dressing.append(instance)
-	return dressing
 
 ## Whether one dressing instance sits at an authored solid's placement:
 ## same box size, same center, same roll about the pod's X axis. The
