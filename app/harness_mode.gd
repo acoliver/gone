@@ -270,6 +270,15 @@ func drive_tick() -> void:
 		report.add_event({"kind": "input", "tick": tick, "frame": frame,
 			"what": "key_turn %.4f" % rad_to_deg(yaw_delta)})
 		any_input = true
+	var key_pitch: float = step.key_pitch
+	if key_pitch != 0.0:
+		# The device producer's expression for a held pitch key, so
+		# scripted pitching matches the keyboard exactly.
+		var pitch_delta := key_pitch * InputPlane.PITCH_SPEED / float(scenario.ticks_per_second)
+		adapter.look(0.0, pitch_delta)
+		report.add_event({"kind": "input", "tick": tick, "frame": frame,
+			"what": "key_pitch %.4f" % rad_to_deg(pitch_delta)})
+		any_input = true
 	var movement: Vector2 = step.movement
 	if movement != Vector2.ZERO:
 		# Scripted movement stays in the sim's yaw frame (+Z forward);

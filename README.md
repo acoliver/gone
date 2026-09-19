@@ -45,16 +45,16 @@ expect it to take longer than later runs.
 
 ## Controls
 
-- **WASD** moves.
+- **Arrow keys** move.
 - **Mouse** looks.
-- **E** interacts: it starts the get-up out of the pod and tries the door.
-- **Space** activates.
+- **A/D** swivel the head left/right and **W/S** up/down; comma and
+  period also turn. The letters and the mouse feed the same look
+  channel, so the player can choose or alternate between them.
+- **Space** or a left click acts: it starts the get-up out of the pod
+  and tries the door.
 - Quit by closing the window.
 
-Arrow-key movement and keyboard look are open work, tracked in issues
-[#31](https://github.com/acoliver/gone/issues/31) and
-[#30](https://github.com/acoliver/gone/issues/30). The controls today are
-WASD and mouse.
+Q, E, and R are unused.
 
 ## Running the tests
 

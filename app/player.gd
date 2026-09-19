@@ -83,8 +83,9 @@ func _physics_process(delta: float) -> void:
 
 ## The device producer: held InputMap actions become the plane's
 ## movement intent, fresh presses become its edges, mouse pixels and the
-## held look keys become its radians (both land on the same look channel,
-## so a tick's mouse and keyboard deltas sum). Scripted runs skip it: the
+## held look keys (comma/period for yaw, the letters A/D for yaw and W/S
+## for pitch) become its radians (all land on the same look channel, so
+## a tick's mouse and keyboard deltas sum). Scripted runs skip it: the
 ## adapter offers the same channels.
 func _collect_device_input(delta: float) -> void:
 	if scripted or not _device_actions:
@@ -106,8 +107,10 @@ func _collect_device_input(delta: float) -> void:
 		plane.offer_look_pixels(_mouse_pixels)
 		_mouse_pixels = Vector2.ZERO
 	var turn := Input.get_axis("look_left", "look_right")
-	if turn != 0.0:
-		plane.offer_look(-turn * InputPlane.TURN_SPEED * delta, 0.0)
+	var pitch := Input.get_axis("look_down", "look_up")
+	if turn != 0.0 or pitch != 0.0:
+		plane.offer_look(-turn * InputPlane.TURN_SPEED * delta,
+			pitch * InputPlane.PITCH_SPEED * delta)
 
 ## Look is armed by the phase gate (from AwakeInPod on) and the cursor
 ## gate (a captured cursor in device mode; always in scripted mode).
