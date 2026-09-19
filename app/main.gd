@@ -1,8 +1,10 @@
 extends Node3D
-## The stasis-room root: builds the greybox scene procedurally at runtime
-## and owns the Game container, ticking the sim at the fixed 60 Hz
-## physics rate. The emergency lighting node reads the sim's power grid
-## through its own bridge; ceiling hazards are inert dressing.
+## The stasis-room root: builds the scene procedurally at runtime (the
+## greybox room shell and fixtures around the authored pod-v2 pod
+## shells) and owns the Game container, ticking the sim at the fixed
+## 60 Hz physics rate. The emergency lighting node reads the sim's
+## power grid through its own bridge; ceiling hazards are inert
+## dressing.
 
 var game: Game
 var camera: Camera3D
