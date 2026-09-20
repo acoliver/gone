@@ -82,7 +82,7 @@ watchdog kills long foreground commands.
 
 The machine stage passed everywhere: 204 of 204 unit tests; the gameplay
 lane machine PASS (seven beats plus the readiness proof, hash echo,
-tick/frame correlation, wake progression, refusal evidence); the perf lane
+tick/frame correlation, wake progression, door-open evidence); the perf lane
 machine PASS at the smoke-grade policy (mean 8.33 ms against the 25 ms
 budget, p95 9.4 ms against 50 ms, 300 samples, 120 fps cadence); both
 calibration cells PASS; both negative cases fail as they must.

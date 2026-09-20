@@ -21,7 +21,8 @@ extends RefCounted
 ##     ready{frame} room_check{frame,pods_expected,pods_present}
 ##     input{tick,frame,what} beat{name,tick,frame,request_id}
 ##     wake_phase{tick,frame,phase} player_yaw{tick,frame,yaw_degrees}
-##     player_position{tick,frame,x,y,z} refusal{tick,frame,count}
+##     player_position{tick,frame,x,y,z} door_open{tick,frame,openings,open}
+##     hallway{tick,frame,lit,level} rod_pickup{tick,frame,carried,rod_visible}
 ##     complete{frame} failure{frame,what}
 ##
 ## Env contract (the runner sets, the app echoes):
@@ -208,7 +209,7 @@ static func event_order_key(event: Dictionary) -> Array:
 			return [0, 0, event.frame]
 		"room_check":
 			return [1, 0, event.frame]
-		"input", "beat", "wake_phase", "player_yaw", "player_position", "refusal", "calibration":
+		"input", "beat", "wake_phase", "player_yaw", "player_position", "door_open", "hallway", "rod_pickup", "calibration":
 			return [1, event.tick, event.frame]
 		_:
 			return [2, 9223372036854775807, event.frame]

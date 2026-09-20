@@ -2,10 +2,11 @@ extends SceneTree
 ## Windowed self-terminating gameplay capture lane, mirroring gone_app's
 ## bootstrap gameplay harness: a scripted input adapter drives the real
 ## player rig through the whole beat — wake, get-up out of the pod,
-## steadying walk across the room, arrival at the jammed hatch, refused
-## interact — while PNGs are captured at four beats and machine-checked
-## (decodable, exact size, non-black, red-dominant, refusal frame differs
-## from at-door). Prints stats and exits 0 only when every check passes.
+## steadying walk across the room, arrival at the door, the interact
+## that opens it into the hallway — while PNGs are captured at four
+## beats and machine-checked (decodable, exact size, non-black,
+## red-dominant, the open-door frame differs from at-door). Prints
+## stats and exits 0 only when every check passes.
 ## Run: godot --path . --resolution 480x270 -s app/capture_gameplay.gd
 
 const WAKE_BATCH: int = 16
@@ -33,13 +34,15 @@ func _initialize() -> void:
 	var scene := Node3D.new()
 	scene.name = "CaptureRoot"
 	var hatch := Hatch.build()
-	scene.add_child(RoomGeometry.build())
+	scene.add_child(RoomGeometry.build(true))
 	scene.add_child(StasisPods.build(game.registry))
 	scene.add_child(hatch)
 	scene.add_child(Lighting.build(game))
 	scene.add_child(Hazards.build())
 	var rod := Rod.build()
 	scene.add_child(rod)
+	var hallway := Hallway.build(game)
+	scene.add_child(hallway)
 	player = Player.build(game, hatch)
 	player.scripted = true
 	player.rod = rod
@@ -83,7 +86,7 @@ func _drive() -> void:
 		6:
 			_walk_room()
 		7:
-			_arrive_and_refuse()
+			_arrive_and_open()
 		8:
 			_verify_and_exit()
 
@@ -138,23 +141,18 @@ func _walk_room() -> void:
 		settle = SETTLE_FRAMES
 		stage = 7
 
-func _arrive_and_refuse() -> void:
+func _arrive_and_open() -> void:
 	if settle > 0:
 		settle -= 1
 		return
-	if player.motion.refusals == 0:
+	if player.motion.door_state == PlayerMotion.DoorState.CLOSED:
 		_capture("at-door")
 		adapter.press(InputPlane.Buttons.INTERACT)
-		settle = 12
+		# The door's opening animation runs its whole authored duration
+		# (retract, then slide) before the open frame is worth capturing.
+		settle = PlayerMotion.DOOR_RETRACT_TICKS + PlayerMotion.DOOR_SLIDE_TICKS + 12
 		return
-	# Capture the shudder at a high-deflection frame of its oscillation,
-	# so the refused frame measurably differs from the settled at-door
-	# one; the cap keeps the run terminating regardless.
-	if settle > 0:
-		settle -= 1
-		if player.camera.position.length() <= 0.03 and settle > 0:
-			return
-	_capture("door-refused")
+	_capture("door-opened")
 	stage = 8
 
 func _verify_and_exit() -> void:
@@ -178,10 +176,11 @@ func _capture(beat: String) -> void:
 
 ## Machine-check every beat PNG; "" when all checks pass. Each must be
 ## decodable, exactly the window size, non-black, and red-dominant under
-## the emergency lighting; the refused frame must differ from the at-door
-## frame (the shudder moved the camera).
+## the emergency lighting; the open-door frame must differ from the
+## at-door frame (the door slab moved out of the doorway, trading the
+## wall for the dark hallway).
 func _verify_beats() -> String:
-	var required: Array[String] = ["standing", "mid-room", "at-door", "door-refused"]
+	var required: Array[String] = ["standing", "mid-room", "at-door", "door-opened"]
 	var expected_size := Vector2i(root.get_size())
 	var images: Dictionary = {}
 	for beat: String in required:
@@ -200,10 +199,10 @@ func _verify_beats() -> String:
 			return "beat %s is not red-dominant: mean rgb %s" % [beat, str(mean)]
 		print("STAT %s mean_r=%.1f mean_g=%.1f mean_b=%.1f lum=%.1f" % [beat, mean.x, mean.y, mean.z, luminance])
 		images[beat] = image
-	var diff := _mean_abs_diff(images["at-door"], images["door-refused"])
+	var diff := _mean_abs_diff(images["at-door"], images["door-opened"])
 	if diff <= 1.5:
-		return "door-refused frame is identical to at-door: mean abs diff %.2f" % diff
-	print("STAT refused-vs-atdoor mean_abs_diff=%.2f" % diff)
+		return "door-opened frame is identical to at-door: mean abs diff %.2f" % diff
+	print("STAT opened-vs-atdoor mean_abs_diff=%.2f" % diff)
 	return ""
 
 ## Mean red/green/blue of the whole image, 0..255.

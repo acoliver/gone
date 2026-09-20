@@ -14,14 +14,37 @@ var phase: Phase.Machine
 var power: Power.Grid
 var wake_state: Wake.WakeState
 var exit_path: Exit.ExitPath
+## The doorway into the hallway opens on act with the rod carried and
+## the hallway's fixtures light on the switch beside the doorway; both
+## are authored with the hallway (issue #59's prerequisite milestone)
+## and owned here, on the container.
+var door_open: bool = false
+var hallway_lit: bool = false
 
 func _init() -> void:
 	registry = Pods.PodRegistry.frozen()
-	colliders = Placement.scene_collider_set(registry)
+	colliders = Hallway.scene_collider_set(registry, false)
 	phase = Phase.Machine.new()
 	power = Power.Grid.new()
 	wake_state = Wake.WakeState.new(Wake.WakeTimeline.authored())
 	exit_path = PlacementTruth.player_exit_path()
+
+## Open the stasis doorway into the hallway: idempotent (called by the
+## body motion the tick the door's opening animation completes), and
+## the only writer of the doorway's collider state — the rebuilt set
+## drops the closed doorway block and the slid-aside door slab so the
+## walk sim can cross.
+func open_doorway() -> void:
+	if door_open:
+		return
+	door_open = true
+	colliders = Hallway.scene_collider_set(registry, true)
+
+## Light the hallway's emergency circuit: the switch flip's single
+## authority. Render-side consumers (the hallway's fixture bridge) read
+## this and never write it.
+func light_hallway() -> void:
+	hallway_lit = true
 
 ## The emergency circuit's target fixture level: 1.0 while the grid
 ## carries the emergency cells, 0.0 once they are dead. Render-side

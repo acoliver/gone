@@ -2,8 +2,11 @@
 
 gone (working title) is a first-person game set on a derelict military
 starship. You wake in a stasis pod in a red-lit room, climb out, cross the
-floor on unsteady legs, and find the only door jammed. This repository
-currently implements that opening beat, which is milestone 1 of the design;
+floor on unsteady legs, pick up a dropped metal rod, and pry the only door
+open into a pitch-dark hallway whose red emergency lights wait behind a
+switch beside the doorway. This
+repository currently implements that opening beat plus the hallway
+crossing, which is milestone 1 of the design;
 the long-form plan is survival through repair, with the ship's systems as
 both the puzzle and the story. Read
 [docs/design/concept.md](docs/design/concept.md) for the design pillars and
@@ -50,8 +53,9 @@ expect it to take longer than later runs.
 - **A/D** swivel the head left/right and **W/S** up/down; comma and
   period also turn. The letters and the mouse feed the same look
   channel, so the player can choose or alternate between them.
-- **Space** or a left click acts: it starts the get-up out of the pod
-  and tries the door.
+- **Space** or a left click acts: it starts the get-up out of the pod,
+  picks up the metal rod, pries the door open with it, and flips the
+  hallway's light switch beside the doorway.
 - Quit by closing the window.
 
 Q, E, and R are unused.
@@ -77,8 +81,16 @@ captures. Run one by naming its scenario file:
 
 The shipped lanes are listed below with what each covers.
 
-- `scenarios/gameplay-full.json`: the full opening beat, seven pinned
-  beats from eyes-closed to the refused door.
+- `scenarios/gameplay-full.json`: the full opening beat, eight pinned
+  beats from eyes-closed through the rod pickup to the opened door.
+- `scenarios/rod-pickup.json`: the dropped-rod pickup plus the opened
+  door.
+- `scenarios/gameplay-keyboard-turn.json`: the opening beat driven by
+  the turn keys instead of the mouse, ending at the opened door.
+- `scenarios/hallway.json`: the deliberate rod pickup, the pried-open
+  door, the dark crossing, the beside-door switch flip, the lit settle,
+  and a short corridor walk, pinning rod-picked-up, door-opened,
+  hall-dark, hall-lit, and hall-corridor.
 - `scenarios/perf-smoke.json`: frame-time sampling in the populated room
   against the frozen smoke policy.
 - `scenarios/calibration-step.json`: the luminance-step calibration cell.

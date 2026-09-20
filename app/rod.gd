@@ -1,25 +1,32 @@
 class_name Rod
 extends Node3D
-## A plain metal rod dropped on the stasis-room floor in front of pod 5,
-## the empty-open pod beside the player's: obvious set dressing the
-## player can act on, deliberately quiet — no glow, no outline, no
-## prompt. One interact press near it picks it up (the carried flag
-## lives on the motion state; the rod node leaves the floor). The
-## placement is authored here rather than in Placement because the
-## placement table stays frozen with the collider derivation, and the
-## rod is dressing outside the collider set like the status plates,
-## cable trays, and wire loops.
+## A plain metal rod dropped on the stasis-room floor in front of the
+## empty row-A pod at the room's mid-station — the door's pry bar, and
+## deliberate set dressing the player can act on: it sits a full step
+## off the aisle, past the pickup reach of every walking line (the
+## z = 1.49 lane out of the pod and the z = 0 centerline), so it is
+## found only by walking to it. Deliberately quiet — no glow, no
+## outline, no prompt. One interact press near it picks it up (the
+## carried flag lives on the motion state; the rod node leaves the
+## floor). The placement is authored here rather than in Placement
+## because the placement table stays frozen with the collider
+## derivation, and the rod is dressing outside the collider set like
+## the status plates, cable trays, and wire loops.
 
 ## Rod length and radius, in meters: a metre of plain round bar.
 const ROD_LENGTH: float = 1.0
 const ROD_RADIUS: float = 0.022
 
 ## The authored floor-plan center (x, z), in meters: on the open floor
-## in front of pod 5's mouth, one step off the aisle's walking line.
-## The scripted walk runs at z = 1.495 with a 0.3 m capsule (swept
-## z = 1.195..1.795) and the pod's own solids start at z = 1.8, so the
-## whole body at z <= 1.19 can never be walked through nor touch a pod.
-const FLOOR_CENTER: Vector2 = Vector2(-3.35, 1.10)
+## in front of the empty row-A pod's mouth at the room's mid-station,
+## past the aisle's far edge. The aisle runs |z| <= 1.5 with the
+## scripted lane out of the pod at z = 1.49 and the row's solids start
+## at z = -1.8; at z = -1.55 the bar sits outside the pickup reach of
+## every walking line (the lane center sits 3.04 m away, the aisle
+## centerline 1.55 m, both beyond the 1.3 m reach) while a deliberate
+## stand at the row's mouth brings it in reach with the capsule sweep
+## still clear of the pod solids.
+const FLOOR_CENTER: Vector2 = Vector2(-0.6, -1.55)
 
 ## The rod's yaw about +Z: near-along the pod row, skewed like it was
 ## dropped, not squared up with the room.

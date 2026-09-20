@@ -25,10 +25,21 @@ const CEILING_UV1_SCALE := Vector3(0.8, 0.8, 0.8)
 static var _box_cache: Dictionary = {}
 static var _surface_material_cache: Dictionary = {}
 
-static func build() -> RoomGeometry:
+## The shell's +X wall index: the one wall the hallway's doorway
+## pierces when p_open_east_wall is set — the hallway module authors
+## and renders the pierced replacement pieces.
+const EAST_WALL_INDEX: int = 5
+
+static func build(p_open_east_wall := false) -> RoomGeometry:
 	var room := RoomGeometry.new()
 	var shell := Placement.room_shell()
+	assert(
+		shell[EAST_WALL_INDEX].center.x > 0.0,
+		"the east wall's authored shell index holds"
+	)
 	for index: int in range(shell.size()):
+		if p_open_east_wall and index == EAST_WALL_INDEX:
+			continue
 		var material := wall_material()
 		if index == 0:
 			material = floor_material()

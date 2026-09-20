@@ -23,6 +23,7 @@ var report
 var game: Game
 var player: Player
 var rod: Rod
+var hallway: Hallway
 var adapter: InputPlane.ScriptedAdapter
 var input
 var chip: LaneChip
@@ -97,7 +98,7 @@ func _build_scene() -> void:
 	var scene := Node3D.new()
 	scene.name = "CaptureRoot"
 	var hatch := Hatch.build()
-	scene.add_child(RoomGeometry.build())
+	scene.add_child(RoomGeometry.build(true))
 	pods_node = StasisPods.build(game.registry)
 	scene.add_child(pods_node)
 	scene.add_child(hatch)
@@ -105,6 +106,8 @@ func _build_scene() -> void:
 	scene.add_child(Hazards.build())
 	rod = Rod.build()
 	scene.add_child(rod)
+	hallway = Hallway.build(game)
+	scene.add_child(hallway)
 	player = Player.build(game, hatch)
 	player.scripted = true
 	player.rod = rod
@@ -242,7 +245,11 @@ class Driver:
 			return
 		harness.frame += 1
 		harness.chip.set_code(harness.tick, harness.frame)
-		if harness.frame > harness.scenario.max_frames + 900:
+		# The lane renders roughly two frames per fixed tick, so the
+		# runaway guard must scale with the scenario's own tick budget
+		# or it fires before late beats (the hallway lane's switch flip
+		# lands past tick 3000).
+		if harness.frame > harness.scenario.max_frames * 2 + 900:
 			harness._fail("hard frame budget exhausted")
 			return
 		if not harness.ready or harness.busy_capturing or harness.pending_captures.is_empty():
@@ -357,13 +364,18 @@ func capture_next_beat() -> void:
 	var eye := player.motion.eye(game)
 	report.add_event({"kind": "player_position", "tick": pinned_tick,
 		"frame": pinned_frame, "x": eye.x, "y": eye.y, "z": eye.z})
-	if beat.name == "door-refused":
-		report.add_event({"kind": "refusal", "tick": pinned_tick,
-			"frame": pinned_frame, "count": player.motion.refusals})
+	if beat.name == "door-opened":
+		report.add_event({"kind": "door_open", "tick": pinned_tick,
+			"frame": pinned_frame, "openings": player.motion.door_openings,
+			"open": game.door_open})
 	elif beat.name == "rod-picked-up":
 		report.add_event({"kind": "rod_pickup", "tick": pinned_tick,
 			"frame": pinned_frame, "carried": player.motion.rod_carried,
 			"rod_visible": rod.visible})
+	elif beat.name == "hall-dark" or beat.name == "hall-lit":
+		report.add_event({"kind": "hallway", "tick": pinned_tick,
+			"frame": pinned_frame, "lit": game.hallway_lit,
+			"level": hallway.level()})
 	busy_capturing = false
 
 func _button(name: String) -> int:
