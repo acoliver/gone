@@ -47,7 +47,7 @@ static func shell_mesh() -> Mesh:
 
 ## The one authored shell material, built once per process and baked
 ## onto the cached mesh at extraction (same once-per-process shape as
-## StasisPods._lid_steel). Exactly one material in play for the shell
+## the cached shell mesh). Exactly one material in play for the shell
 ## anywhere in the process: the texture drops out of the render path
 ## at the source, and no caller can render grunge by forgetting an
 ## override.
