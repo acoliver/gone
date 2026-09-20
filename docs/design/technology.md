@@ -61,6 +61,9 @@ light. How the rendering plan maps onto Godot:
   FixtureFade bridge reads it, retargets only on a sim-side change, and
   settles over 30 logical ticks. Shadows are off, ambient is disabled, fog
   is off, and the room authors no other light source.
+  Doctrine: emergency red lit by a switch holds steady; blinking is
+  reserved for the automatic fire circuit, which no space in the game
+  runs yet.
 - **Sparks and smoke.** Spark bursts are a strobed OmniLight3D flash plus
   a one-shot GPUParticles3D spray at the authored cable-tray spots
   (`app/hazards.gd`). Smoke is a GPUParticles3D emitter whose spawn box

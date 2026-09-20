@@ -5,9 +5,10 @@ extends Node3D
 ## running out from the doorway — double the stasis room's length, the
 ## pod bay's aisle width, the room's ceiling height. Closed side doors
 ## read crew passage (the last door on the right is the future
-## emergency-power room entrance), a red domed pushbutton on the far
-## wall lights the hall's red emergency fixtures — dark until the flip,
-## with no blackout trick: the fixtures simply hold level zero. Surfaces
+## emergency-power room entrance), and a red domed pushbutton beside
+## the doorway, on the pierced wall's hall face, lights the hall's red
+## emergency fixtures — dark until the flip, steady red after it, with
+## no blackout trick: the fixtures simply hold level zero. Surfaces
 ## wear the stasis room's shared surface materials and the ceiling
 ## carries the same damage dressing language; no smoke anywhere in this
 ## subtree. The hallway's colliders extend the walk sim's set from
@@ -52,21 +53,25 @@ const SIDE_DOOR_STATIONS_X: Array[float] = [9.0, 15.0, 21.0]
 ## (-Z) wall. Closed and non-interactive this milestone.
 const POWER_DOOR_X: float = 27.0
 
-## The switch plate on the far wall, centered on the corridor axis at
-## working height: a small dark plate with a domed red pushbutton, the
+## The switch plate beside the door: proud of the pierced wall's hall
+## face, at working height on the latch side of the aperture — the
+## button sits next to the door it lights, one arm's reach from the
+## threshold. A small dark plate with a domed red pushbutton, the
 ## fuel-stop pattern. No emission — before the flip it is invisible in
 ## the dark by nature of the darkness.
 const SWITCH_PLATE_SIZE: Vector3 = Vector3(0.04, 0.24, 0.16)
 const SWITCH_PLATE_CENTER: Vector3 = Vector3(
-	HALL_END_X - SWITCH_PLATE_SIZE.x / 2.0, 1.25, 0.0)
+	HALL_START_X + WALL + SWITCH_PLATE_SIZE.x / 2.0, 1.25, 0.85)
 const SWITCH_DOME_RADIUS: float = 0.055
 const SWITCH_DOME_COLOR: Color = Color(0.55, 0.04, 0.03)
 const SWITCH_PLATE_SHADE: float = 0.16
 
 ## The hallway's fixtures hold the stasis bay's exact style and levels:
-## pairs over each side-door station plus one over the far wall above
-## the switch, mirroring the stasis bay's lintel-over-door fixture.
-const FIXTURE_STATIONS_X: Array[float] = SIDE_DOOR_STATIONS_X
+## a pair over every berth station, the power door's station included,
+## so the whole corridor reads one rhythm from the doorway to the far
+## end. The lit fixtures hold their red steady — blinking belongs to
+## the automatic fire circuit, and the hall has no fire.
+const FIXTURE_STATIONS_X: Array[float] = [9.0, 15.0, 21.0, POWER_DOOR_X]
 
 const SIDE_DOOR_SHADE: float = Hatch.HATCH_DOOR_SHADE
 
@@ -117,9 +122,9 @@ static func doorway_block() -> Placement.SolidPlacement:
 	)
 
 ## The corridor's shell in fixed order: floor, ceiling, the north and
-## south side walls, and the far wall carrying the switch. The floor
-## and ceiling slabs tuck under the room's wall band so the doorway
-## tunnel shows no seam.
+## south side walls, and the far endcap wall. The floor and ceiling
+## slabs tuck under the room's wall band so the doorway tunnel shows no
+## seam.
 static func hallway_solids() -> Array[Placement.SolidPlacement]:
 	var slab_x_size := (HALL_END_X + WALL) - HALL_START_X
 	var slab_x_center := (HALL_START_X + HALL_END_X + WALL) / 2.0
@@ -285,9 +290,9 @@ static func build(game: Game) -> Hallway:
 		hallway.add_child(hallway._fixture(fixture_transform, level))
 	return hallway
 
-## The fixture group mirrors the stasis bay's: pairs at each side-door
-## station standoff from both side walls, one above the far wall's
-## switch like the bay's hatch-lintel fixture.
+## The fixture group mirrors the stasis bay's: a pair at every station
+## standoff from both side walls, so the whole corridor reads one
+## rhythm from the doorway to the power door.
 static func fixture_transforms() -> Array[Transform3D]:
 	var transforms: Array[Transform3D] = []
 	for station_x: float in FIXTURE_STATIONS_X:
@@ -300,14 +305,6 @@ static func fixture_transforms() -> Array[Transform3D]:
 					side * (HALL_WIDTH / 2.0 - Lighting.WALL_STANDOFF)
 				)
 			))
-	transforms.append(Transform3D(
-		Basis(Vector3.UP, PI / 2.0),
-		Vector3(
-			HALL_END_X - Lighting.WALL_STANDOFF,
-			Lighting.WALL_MOUNT_HEIGHT,
-			0.0
-		)
-	))
 	return transforms
 
 ## The fixture group holds the light and the lens as siblings, exactly
@@ -331,8 +328,9 @@ func _fixture(fixture_transform: Transform3D, level: float) -> Node3D:
 	_lenses.append(lens)
 	return fixture
 
-## The fuel-stop switch: small dark plate, domed red pushbutton. Plain
-## albedo only — the dark hall hides it until the fixtures light.
+## The fuel-stop switch beside the door: small dark plate, domed red
+## pushbutton facing the hall. Plain albedo only — the dark hall hides
+## it until the fixtures light.
 static func _build_switch() -> Node3D:
 	var group := Node3D.new()
 	group.name = "HallSwitch"
@@ -351,7 +349,7 @@ static func _build_switch() -> Node3D:
 	dome_mesh.height = SWITCH_DOME_RADIUS * 2.0
 	dome.mesh = dome_mesh
 	dome.position = Vector3(
-		-SWITCH_PLATE_SIZE.x / 2.0 - SWITCH_DOME_RADIUS * 0.55, 0.0, 0.0)
+		SWITCH_PLATE_SIZE.x / 2.0 + SWITCH_DOME_RADIUS * 0.55, 0.0, 0.0)
 	var dome_material := StandardMaterial3D.new()
 	dome_material.albedo_color = SWITCH_DOME_COLOR
 	dome_material.roughness = 0.35

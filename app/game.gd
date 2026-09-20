@@ -14,9 +14,10 @@ var phase: Phase.Machine
 var power: Power.Grid
 var wake_state: Wake.WakeState
 var exit_path: Exit.ExitPath
-## The doorway into the hallway opens on act and the hallway's fixtures
-## light on the far-wall switch; both are authored with the hallway
-## (issue #59's prerequisite milestone) and owned here, on the container.
+## The doorway into the hallway opens on act with the rod carried and
+## the hallway's fixtures light on the switch beside the doorway; both
+## are authored with the hallway (issue #59's prerequisite milestone)
+## and owned here, on the container.
 var door_open: bool = false
 var hallway_lit: bool = false
 

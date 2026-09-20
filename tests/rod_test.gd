@@ -1,11 +1,13 @@
 extends SimTestCase
 ## The dropped rod (issue #58): the prop sits at its authored placement
-## beside a non-player pod where the walking capsule can never pass
-## through it, reads as plain metal with no emission, an interact press
-## in reach while standing picks it up exactly once (the press is only
-## consumed when the pickup lands, so the door's channel keeps every
-## other press), the carried flag latches, the node leaves the floor,
-## and the door opens exactly once with the rod carried.
+## beside a non-player pod, a deliberate step off the aisle beyond the
+## pickup reach of every walking line, where the walking capsule can
+## never pass through it, reads as plain metal with no emission, an
+## interact press in reach while standing picks it up exactly once (the
+## press is only consumed when the pickup lands, so the shared channel
+## keeps every other press), the carried flag latches, the node leaves
+## the floor, and the door refuses to open without the rod and opens
+## exactly once with it carried.
 
 const DT: float = 1.0 / 60.0
 const NEAR: float = 1e-4
@@ -55,8 +57,13 @@ func test_rod_sits_beside_a_pod_clear_of_the_walk_and_pods() -> void:
 	var half := Rod.ROD_LENGTH / 2.0
 	var end_a := center + Vector2(axis.x, axis.z) * half
 	var end_b := center - Vector2(axis.x, axis.z) * half
-	assert_float_in_range(maxf(end_a.y, end_b.y), 0.0, 1.195, "the whole body stays clear of the aisle's swept walking band (z >= 1.195)")
-	assert_float_in_range(maxf(end_a.y, end_b.y), 0.0, 1.8, "the whole body stays clear of the pod row's solids (z >= 1.8)")
+	assert_float_in_range(minf(end_a.y, end_b.y), -1.8, 1.195, "the whole body stays clear of the pod row's solids (z >= -1.8)")
+	assert_float_in_range(maxf(end_a.y, end_b.y), -1.8, 1.195, "the whole body stays clear of the aisle's swept walking band (z <= 1.195)")
+	assert_true(absf(center.y - 1.49) > PlayerMotion.ROD_PICKUP_REACH, "the pod-exit walking line (z = 1.49) never wanders into the pickup reach")
+	assert_true(absf(center.y) > PlayerMotion.ROD_PICKUP_REACH, "the aisle centerline (z = 0) never wanders into the pickup reach")
+	var mouth_stand := Vector2(center.x, center.y + 1.0)
+	assert_float_in_range(mouth_stand.distance_to(center), 0.0, PlayerMotion.ROD_PICKUP_REACH * 0.9, "a deliberate stand at the row's mouth brings the bar in reach")
+	assert_float_in_range(mouth_stand.y - Controller.CAPSULE_RADIUS, -1.8 + 1e-4, 4.0, "the deliberate stand's swept capsule stays clear of the row's solids")
 	var player_center := game.registry.player_pod().placement().center
 	var nearest := Vector2(INF, INF)
 	for pod: Pods.Pod in game.registry.pods():
@@ -84,16 +91,21 @@ func test_pickup_lands_once_only_in_reach_while_standing() -> void:
 	var foot := motion.capsule().foot
 	var center := Rod.floor_center()
 	assert_float_in_range(Vector2(foot.x - center.x, foot.z - center.y).length(),
-		PlayerMotion.ROD_PICKUP_REACH + 0.1, 2.0, "the standing waypoint starts out of the rod's reach")
+		PlayerMotion.ROD_PICKUP_REACH + 0.1, 8.0, "the standing waypoint starts out of the rod's reach, across the aisle")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
 	assert_false(motion.pickup_rod(plane), "an interact out of reach does not pick up")
 	assert_false(motion.rod_carried, "no carried flag out of reach")
 	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the out-of-reach press is left for the hatch")
 	plane.end_frame()
-	# Walk the aisle's +X line toward the rod's end of the room.
-	for _tick: int in range(60):
+	# Step off the aisle across the room to the row's mouth, where the
+	# bar waits beside the pod; the walk must deliberately detour to it.
+	for _tick: int in range(600):
+		foot = motion.capsule().foot
+		var to_rod := Vector2(center.x - foot.x, center.y + 1.0 - foot.z)
+		if to_rod.length() <= 0.2:
+			break
 		plane.offer_movement(1.0, 0.0)
-		motion.advance(plane, game, PI / 2.0, DT)
+		motion.advance(plane, game, atan2(to_rod.x, to_rod.y), DT)
 		plane.end_frame()
 	foot = motion.capsule().foot
 	assert_float_in_range(Vector2(foot.x - center.x, foot.z - center.y).length(),
@@ -134,7 +146,7 @@ func test_pickup_reachable_through_the_scripted_adapter() -> void:
 	assert_true(motion.rod_carried, "the scripted path sets the carried flag")
 	plane.end_frame()
 
-func test_door_opens_with_the_rod_carried() -> void:
+func test_door_refuses_without_the_rod_and_opens_with_it() -> void:
 	var game := _awake_game()
 	var motion := PlayerMotion.new()
 	var plane := InputPlane.new()
@@ -142,29 +154,43 @@ func test_door_opens_with_the_rod_carried() -> void:
 	var adapter := InputPlane.ScriptedAdapter.new()
 	var colliders_closed := game.colliders.size()
 	var hatch := game.registry.hatch().center
-	# Open the door before any pickup; the walking ticks that follow the
-	# press carry the opening animation to its end.
+	# The rod is the door's pry bar: without it, the press at the shut
+	# door starts nothing and stays on the channel.
 	assert_true(_walk_to(motion, game, plane, adapter, hatch,
 		PlayerMotion.HATCH_INTERACT_REACH * 0.9), "the walk arrived at the door")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_door(plane, game), "the door opens before the pickup")
-	assert_int_equal(motion.door_openings, 1, "one opening before the pickup")
-	# Walk back to the rod, pick it up, then return to the open doorway.
+	assert_false(motion.interact_with_door(plane, game), "a press without the rod never starts the open")
+	assert_int_equal(motion.door_openings, 0, "no opening was recorded")
+	assert_int_equal(motion.door_state, PlayerMotion.DoorState.CLOSED, "the door stays shut")
+	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the refused press is left on the channel")
+	plane.end_frame()
+	# Fetch the pry bar from its deliberate spot beside the row-A pod.
 	assert_true(_walk_to(motion, game, plane, adapter, Rod.floor_center(),
-		PlayerMotion.ROD_PICKUP_REACH * 0.9), "the walk arrived back at the rod")
-	assert_int_equal(motion.door_state, PlayerMotion.DoorState.OPEN, "the opening completed during the walk")
-	assert_true(game.door_open, "the doorway's colliders opened during the walk")
+		PlayerMotion.ROD_PICKUP_REACH * 0.9), "the walk stepped off the aisle to the rod")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.pickup_rod(plane), "the pickup lands after the long walk")
+	assert_true(motion.pickup_rod(plane), "the pickup lands at the deliberate spot")
 	assert_true(motion.rod_carried, "the rod is carried")
-	assert_int_equal(motion.door_openings, 1, "the pickup added no opening")
+	# With the bar in hand, the door's press opens it exactly as before.
 	assert_true(_walk_to(motion, game, plane, adapter, hatch,
-		PlayerMotion.HATCH_INTERACT_REACH * 0.9), "the walk arrived at the door with the rod carried")
+		PlayerMotion.HATCH_INTERACT_REACH * 0.9), "the walk returned to the door with the rod carried")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_door(plane, game), "the press at the open door is still eaten")
-	assert_int_equal(motion.door_openings, 1, "the open door never re-opens")
-	assert_true(motion.rod_carried, "the door never un-carries the rod")
+	assert_true(motion.interact_with_door(plane, game), "the rod-carried press starts the open")
+	assert_int_equal(motion.door_openings, 1, "one press, one opening")
+	# Every press after the act is not the door's to eat.
+	plane.offer_press(InputPlane.Buttons.INTERACT)
+	assert_false(motion.interact_with_door(plane, game), "the press at the opening door is not eaten")
+	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the uneaten press stays on the channel")
+	assert_int_equal(motion.door_openings, 1, "no second opening")
+	for _tick: int in range(PlayerMotion.DOOR_RETRACT_TICKS + PlayerMotion.DOOR_SLIDE_TICKS + 2):
+		motion.advance(plane, game, 0.0, DT)
+		plane.end_frame()
+	assert_int_equal(motion.door_state, PlayerMotion.DoorState.OPEN, "the opening completed")
+	assert_true(game.door_open, "the doorway's colliders opened")
 	assert_int_equal(game.colliders.size(), Hallway.scene_collider_set(game.registry, true).size(), "the open doorway carries the open collider set")
 	assert_true(game.colliders.size() != colliders_closed, "the collider set changed when the doorway opened")
+	plane.offer_press(InputPlane.Buttons.INTERACT)
+	assert_false(motion.interact_with_door(plane, game), "the press at the open door is not eaten either")
+	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the open door leaves the press for the beside-door switch")
+	assert_true(motion.rod_carried, "the door never un-carries the rod")
 	assert_int_equal(motion.state(), PlayerMotion.BodyState.WALK, "the body still owns a standing capsule")
 	assert_true(motion.failure().is_empty(), motion.failure())

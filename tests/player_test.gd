@@ -23,6 +23,26 @@ func _stand(motion: PlayerMotion, game: Game, plane: InputPlane) -> void:
 	for _segment: int in range(Exit.EXIT_POSE_COUNT - 1):
 		motion.advance(plane, game, 0.0, DT)
 
+## Walk the standing capsule toward a floor-plan target, re-aiming each
+## tick as the ramp settles, until the foot lands inside the stop
+## distance. Returns false when the tick budget runs out first.
+func _walk_to(
+	motion: PlayerMotion,
+	game: Game,
+	plane: InputPlane,
+	target: Vector2,
+	stop_distance: float
+) -> bool:
+	for _tick: int in range(1400):
+		var foot := motion.capsule().foot
+		var to_target := Vector2(target.x - foot.x, target.y - foot.z)
+		if to_target.length() <= stop_distance:
+			return true
+		plane.offer_movement(1.0, 0.0)
+		motion.advance(plane, game, atan2(to_target.x, to_target.y), DT)
+		plane.end_frame()
+	return false
+
 func _near_vec3(actual: Vector3, expected: Vector3, message: String) -> void:
 	var drift := (actual - expected).abs()
 	if not (drift.x < NEAR and drift.y < NEAR and drift.z < NEAR):
@@ -171,28 +191,22 @@ func test_door_opens_only_in_reach_and_standing() -> void:
 	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the out-of-reach press stays on the channel: the hallway switch may still take it")
 	# Walk the aisle to the hatch, re-aiming at the door as the sway of the
 	# ramp settles; the swept resolver carries the capsule the whole way.
-	var adapter := InputPlane.ScriptedAdapter.new()
-	for tick: int in range(1400):
-		foot = motion.capsule().foot
-		var to_hatch := Vector2(hatch.x - foot.x, hatch.y - foot.z)
-		if to_hatch.length() <= PlayerMotion.HATCH_INTERACT_REACH * 0.9:
-			adapter.release()
-			adapter.offer_tick(plane)
-			motion.advance(plane, game, 0.0, DT)
-			plane.end_frame()
-			break
-		adapter.hold(1.0, 0.0)
-		adapter.offer_tick(plane)
-		motion.advance(plane, game, atan2(to_hatch.x, to_hatch.y), DT)
-		plane.end_frame()
+	assert_true(_walk_to(motion, game, plane, hatch,
+		PlayerMotion.HATCH_INTERACT_REACH * 0.9), "the walk arrived at the door")
 	assert_true(motion.failure().is_empty(), motion.failure())
-	assert_float_in_range(Vector2(motion.capsule().foot.x - hatch.x, motion.capsule().foot.z - hatch.y).length(), 0.0, PlayerMotion.HATCH_INTERACT_REACH, "the walk arrived at the door")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_door(plane, game), "interact at the door starts the opening")
-	assert_int_equal(motion.door_state, PlayerMotion.DoorState.OPENING, "the first press starts the door's opening")
+	assert_false(motion.interact_with_door(plane, game), "interact at the door without the rod starts nothing")
+	assert_int_equal(motion.door_state, PlayerMotion.DoorState.CLOSED, "the rod-less press leaves the door shut")
+	assert_int_equal(motion.door_openings, 0, "the rod-less press records no opening")
+	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the refused press stays on the channel: the beside-door switch may still take it")
+	motion.rod_carried = true
+	plane.offer_press(InputPlane.Buttons.INTERACT)
+	assert_true(motion.interact_with_door(plane, game), "the rod-carried interact at the door starts the opening")
+	assert_int_equal(motion.door_state, PlayerMotion.DoorState.OPENING, "the pry-bar press starts the door's opening")
 	assert_int_equal(motion.door_openings, 1, "the door opens exactly once")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_door(plane, game), "a second in-reach interact is still eaten by the door")
+	assert_false(motion.interact_with_door(plane, game), "a second in-reach interact is not the door's to eat anymore")
+	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the uneaten press stays on the channel")
 	assert_int_equal(motion.door_openings, 1, "a second press never re-opens the door")
 	# The deterministic opening: the retract phase is half done at half
 	# its ticks, and the doorway lands open after its authored budget.

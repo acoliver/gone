@@ -67,10 +67,10 @@ func _physics_process(delta: float) -> void:
 	_integrate_look()
 	motion.advance(plane, game, _look_yaw, delta)
 	# The rod, the door, and the hallway switch share the interact
-	# channel: the rod consumes a press only when the pickup lands, the
-	# door eats every press in reach (it owns the whole channel at the
-	# door), and the switch — out at the hallway's far wall, where the
-	# door is out of reach — takes one press only when the flip lands.
+	# channel: each consumes a press only when it acts — the rod when
+	# the pickup lands, the door when its rod-carried press starts the
+	# open — and the switch beside the doorway takes one press only
+	# when the flip lands, fed by every press the door cannot use.
 	if motion.pickup_rod(plane):
 		rod.pick_up()
 	motion.interact_with_door(plane, game)

@@ -71,12 +71,13 @@ for the lanes that declare the hall beats.
 
 `scenarios/gameplay-full.json` scripts the whole opening: the wake, the
 get-up out of the pod, a 90-degree turn, the steadying walk across the
-room, and the interact that opens the door into the hallway, pinning
-seven beats (eyes-closed, first-blink, shapes-resolving, standing,
-mid-room, at-door, door-opened). `scenarios/hallway.json` continues past
-the doorway: the dark crossing of the unlit hall to the far wall, the
-switch flip, and the lit settle, pinning door-opened, hall-dark, and
-hall-lit.
+room, the deliberate detour to pick up the dropped rod, and the interact
+that pries the door open into the hallway, pinning eight beats
+(eyes-closed, first-blink, shapes-resolving, standing, mid-room,
+rod-picked-up, at-door, door-opened). `scenarios/hallway.json` continues
+past the doorway: the dark crossing of the unlit hall, the switch flip at
+the plate beside the doorway, the lit settle, and a short corridor walk,
+pinning door-opened, hall-dark, hall-lit, and hall-corridor.
 
 ### Perf (mode "perf")
 

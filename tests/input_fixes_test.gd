@@ -286,8 +286,10 @@ func test_click_edge_opens_the_door() -> void:
 	var plane := InputPlane.new()
 	_stand(motion, game, plane)
 	_walk_to_hatch(motion, game, plane)
+	# The rod is the door's pry bar; carrying it is the door's only ask.
+	motion.rod_carried = true
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_door(plane, game), "the click's interact edge opens the door")
+	assert_true(motion.interact_with_door(plane, game), "the click's interact edge opens the rod-carried door")
 	assert_int_equal(motion.door_state, PlayerMotion.DoorState.OPENING, "one click starts the opening")
 	assert_int_equal(motion.door_openings, 1, "one click, one opening")
 
@@ -311,13 +313,16 @@ func test_click_edges_consume_exactly_once_interleaved() -> void:
 	var hatch_plane := InputPlane.new()
 	_stand(motion, game, hatch_plane)
 	_walk_to_hatch(motion, game, hatch_plane)
+	motion.rod_carried = true
 	hatch_plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_door(hatch_plane, game), "a click is eaten at the door")
+	assert_true(motion.interact_with_door(hatch_plane, game), "the acting press is eaten at the door")
 	hatch_plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_door(hatch_plane, game), "the click on the next tick is eaten too")
+	assert_false(motion.interact_with_door(hatch_plane, game), "the click on the next tick is not the door's to eat")
+	assert_true(hatch_plane.take_press(InputPlane.Buttons.INTERACT), "the uneaten edge stays on the channel")
+	hatch_plane.end_frame()
 	hatch_plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_door(hatch_plane, game), "the same-tick Space and click pair is eaten once")
-	assert_false(motion.interact_with_door(hatch_plane, game), "nothing is left to consume")
+	assert_false(motion.interact_with_door(hatch_plane, game), "the same-tick Space and click pair's edge is also left")
+	assert_true(hatch_plane.take_press(InputPlane.Buttons.INTERACT), "that edge also stays on the channel")
 	assert_int_equal(motion.door_openings, 1, "three edges across the ticks, still one opening")
 
 func test_scenario_accepts_key_turn_actions() -> void:

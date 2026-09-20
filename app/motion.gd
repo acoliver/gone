@@ -137,14 +137,14 @@ func _advance_walk(plane: InputPlane, game: Game, yaw: float, dt: float) -> void
 	if not step.is_ok():
 		record_failure("walk rejected: " + step.error._to_string())
 
-## Consume an interact press at the stasis room door: while standing in
-## reach, the first press starts the door's deterministic opening and
-## every further in-reach press is eaten the same way — the door owns
-## every press at the door, open or not, exactly as the old refusal
-## did. A press out of the door's reach is left on the channel: the
-## hallway switch, out at the far wall, shares the interact channel and
-## needs the press the door cannot use. Returns true when the press was
-## consumed at the door.
+## Consume an interact press at the stasis room door: the rod is the
+## door's pry bar, so while standing in reach a press with the rod
+## carried starts the door's deterministic opening and is consumed by
+## the act itself. Without the rod the press does nothing here — the
+## door never starts, no refusal machinery — and the press stays on the
+## channel; once the door has opened it owns no press either. The
+## switch beside the doorway receives every press the door cannot use.
+## Returns true when the press was consumed at the door.
 func interact_with_door(plane: InputPlane, game: Game) -> bool:
 	if state() != BodyState.WALK:
 		return false
@@ -153,11 +153,12 @@ func interact_with_door(plane: InputPlane, game: Game) -> bool:
 	var reach := Vector2(foot.x - hatch.x, foot.z - hatch.y)
 	if reach.length() > HATCH_INTERACT_REACH:
 		return false
+	if door_state != DoorState.CLOSED or not rod_carried:
+		return false
 	if not plane.take_press(InputPlane.Buttons.INTERACT):
 		return false
-	if door_state == DoorState.CLOSED:
-		door_state = DoorState.OPENING
-		door_openings += 1
+	door_state = DoorState.OPENING
+	door_openings += 1
 	return true
 
 ## The door's opening tick, driven at the head of every advance so the
@@ -183,11 +184,13 @@ func door_slab_offset() -> Vector3:
 		0.0, 1.0)
 	return Vector3(DOOR_RETRACT_DISTANCE * retract, 0.0, -DOOR_SLIDE_DISTANCE * slide)
 
-## Flip the hallway switch: while standing in reach of the far-wall
-## plate, one interact press lights the hallway fixtures, exactly once.
-## The press is consumed only when the flip lands, like the rod pickup:
-## a press out of reach or before standing stays on the channel for the
-## door to own.
+## Flip the hallway switch: while standing in reach of the plate beside
+## the doorway, one interact press lights the hallway fixtures, exactly
+## once. The press is consumed only when the flip lands, like the rod
+## pickup: a press out of reach or before standing stays on the
+## channel, and the door ahead of it consumes a press only when its
+## rod-carried press starts the open, so the beside-door overlap always
+## delivers the press here once the rod work is done.
 func flip_hallway_switch(plane: InputPlane, game: Game) -> bool:
 	if hallway_switch_flips >= 1:
 		return false
@@ -206,10 +209,11 @@ func flip_hallway_switch(plane: InputPlane, game: Game) -> bool:
 
 ## Pick up the dropped rod: while standing in reach, one interact press
 ## sets the carried flag, exactly once. The press is consumed only when
-## the pickup lands, unlike the door, which eats every press: the rod
-## and the door share the interact channel, and the door must still own
-## every press at the door, so the rod takes only what it can use and
-## leaves the edge to the door otherwise. A press after the pickup is a
+## the pickup lands: the rod, the door, and the hallway switch share
+## the interact channel, and each consumer takes only the press it can
+## act on — the rod when in reach, the door when the rod is carried and
+## the door still shut, the switch when the plate is in reach — so no
+## consumer starves another of the press. A press after the pickup is a
 ## no-op.
 func pickup_rod(plane: InputPlane) -> bool:
 	if rod_carried:

@@ -6,8 +6,9 @@ extends SimTestCase
 ## aperture, the collider sets extend the walk sim's with the door shut
 ## and the doorway cleared when open, the hall's surfaces wear the
 ## stasis room's shared material instances, the red fixtures hold zero
-## until the switch's exactly-once flip and settle to the stasis bay's
-## levels, the closed side doors collide, and the subtree carries no
+## until the beside-door switch's exactly-once flip, settle to the
+## stasis bay's levels, and hold their lit level steady without
+## blinking, the closed side doors collide, and the subtree carries no
 ## smoke.
 
 const DT: float = 1.0 / 60.0
@@ -113,22 +114,40 @@ func test_surfaces_wear_the_stasis_rooms_material_instances() -> void:
 	assert_true(wall_piece.material_override == RoomGeometry.wall_material(), "the hall walls wear the stasis wall material instance")
 	assert_true(doorway_wall.material_override == RoomGeometry.wall_material(), "the pierced east wall wears the stasis wall material instance")
 
-func test_switch_plate_sits_at_its_authored_spot() -> void:
+func test_switch_plate_sits_beside_the_doorway() -> void:
 	var game := _awake_game()
 	var hallway := Hallway.build(game)
 	var switch_group: Node3D = hallway.get_node("HallSwitch")
 	assert_vec3_equal(switch_group.position, Hallway.SWITCH_PLATE_CENTER, "the switch plate sits at its authored center")
-	assert_float_in_range(Hallway.SWITCH_PLATE_CENTER.x, Hallway.HALL_END_X - 0.02 - 1e-4, Hallway.HALL_END_X - 0.02 + 1e-4, "the plate mounts flush on the far wall")
-	assert_float_in_range(Hallway.SWITCH_PLATE_CENTER.z, -1e-4, 1e-4, "the plate centers on the corridor axis, across from the door")
+	var pierce_face_x: float = Hallway.HALL_START_X + Hallway.WALL
+	assert_float_in_range(Hallway.SWITCH_PLATE_CENTER.x,
+		pierce_face_x + Hallway.SWITCH_PLATE_SIZE.x / 2.0 - 1e-4,
+		pierce_face_x + Hallway.SWITCH_PLATE_SIZE.x / 2.0 + 1e-4,
+		"the plate mounts proud of the pierced wall's hall face")
+	assert_float_in_range(Hallway.SWITCH_PLATE_CENTER.y, 1.25 - 1e-4, 1.25 + 1e-4, "the plate centers at working height")
+	assert_float_in_range(Hallway.SWITCH_PLATE_CENTER.z, 0.85 - 1e-4, 0.85 + 1e-4, "the plate sits on the latch side of the aperture, next to the door")
+	var latch_side: float = absf(Hallway.SWITCH_PLATE_CENTER.z)
+	assert_float_in_range(latch_side,
+		Hallway.DOORWAY_WIDTH / 2.0 + Hallway.SWITCH_PLATE_SIZE.z / 2.0,
+		Pods.ROOM_WIDTH / 2.0 - Hallway.SWITCH_PLATE_SIZE.z / 2.0,
+		"the plate sits clear of the aperture, inside the wall piece")
 	var plate: MeshInstance3D = switch_group.get_node("Plate")
 	var dome: MeshInstance3D = switch_group.get_node("Dome")
 	assert_true(plate != null and dome != null, "the switch carries a plate and a domed button")
+	assert_float_in_range(dome.position.x,
+		Hallway.SWITCH_PLATE_SIZE.x / 2.0 + Hallway.SWITCH_DOME_RADIUS * 0.55 - 1e-4,
+		Hallway.SWITCH_PLATE_SIZE.x / 2.0 + Hallway.SWITCH_DOME_RADIUS * 0.55 + 1e-4,
+		"the dome stands proud of the plate into the hall")
 	var dome_material := dome.material_override as StandardMaterial3D
 	assert_true(dome_material != null, "the dome carries a standard material")
 	assert_true(dome_material.albedo_color == Hallway.SWITCH_DOME_COLOR, "the dome reads the fuel-stop red")
 	assert_false(dome_material.emission_enabled, "the dome does not glow before the flip: the dark hides it")
 	assert_float_in_range(Hallway.switch_act_center().x, Hallway.SWITCH_PLATE_CENTER.x - 1e-4, Hallway.SWITCH_PLATE_CENTER.x + 1e-4, "the act volume centers under the plate")
-	assert_float_in_range(Hallway.switch_act_center().x, Hallway.HALL_END_X - Hallway.SWITCH_PLATE_SIZE.x - 1e-4, Hallway.HALL_END_X + 1e-4, "the act volume sits within a plate depth of the far wall")
+	assert_float_in_range(Hallway.switch_act_center().z, Hallway.SWITCH_PLATE_CENTER.z - 1e-4, Hallway.SWITCH_PLATE_CENTER.z + 1e-4, "the act volume centers under the plate")
+	var hatch := Vector2(game.registry.hatch().center.x, game.registry.hatch().center.y)
+	var act := Vector2(Hallway.switch_act_center().x, Hallway.switch_act_center().z)
+	assert_float_in_range(hatch.distance_to(act), 0.0, PlayerMotion.HATCH_INTERACT_REACH,
+		"the beside-door plate sits inside the doorway's press overlap")
 
 func test_hallway_holds_no_smoke() -> void:
 	var game := _awake_game()
@@ -145,8 +164,11 @@ func test_fixtures_hold_zero_until_the_switch_flips() -> void:
 	var game := _awake_game()
 	var hallway := Hallway.build(game)
 	var lights := hallway.lights()
-	assert_int_equal(lights.size(), 7, "three station pairs plus the far-wall fixture")
-	assert_int_equal(hallway.lenses().size(), 7, "every light carries its lens")
+	assert_int_equal(Hallway.FIXTURE_STATIONS_X.size(), 4, "a fixture pair stands at every berth station, the power door's included")
+	assert_float_in_range(Hallway.FIXTURE_STATIONS_X[3], Hallway.POWER_DOOR_X - 1e-4, Hallway.POWER_DOOR_X + 1e-4, "the power-door station carries its pair")
+	assert_int_equal(Hallway.fixture_transforms().size(), 8, "the fixture group holds four station pairs")
+	assert_int_equal(lights.size(), 8, "every station pair's fixtures light the corridor")
+	assert_int_equal(hallway.lenses().size(), 8, "every light carries its lens")
 	for light: OmniLight3D in lights:
 		assert_float_in_range(light.light_energy, -1e-4, 1e-4, "every hall fixture starts dark")
 		assert_true(light.light_color == Lighting.EMERGENCY_RED, "the hall fixtures hold the stasis bay's emergency red")
@@ -163,13 +185,66 @@ func test_fixtures_hold_zero_until_the_switch_flips() -> void:
 		assert_float_in_range(light.light_energy, Lighting.FIXTURE_ENERGY - 1e-3, Lighting.FIXTURE_ENERGY + 1e-3, "the fixtures hold the stasis bay's lit energy")
 	assert_float_in_range(hallway.lens_material().emission.r, Lighting.FIXTURE_EMISSIVE - 1e-3, Lighting.FIXTURE_EMISSIVE + 1e-3, "the lenses hold the stasis bay's lit emission")
 
+## Andrew's steadiness doctrine: the button lights the hall's red
+## fixtures at their steady level — blinking belongs to the automatic
+## fire circuit, and this hall has no fire. After the settle, many
+## frames hold the energies and the lens emission exactly constant.
+func test_lit_fixtures_hold_their_level_steady() -> void:
+	var game := _awake_game()
+	var hallway := Hallway.build(game)
+	game.light_hallway()
+	for _tick: int in range(Lighting.FIXTURE_SETTLE_TICKS):
+		hallway.process_frame(Sim.LOGICAL_TICK_SECS)
+	assert_true(hallway.is_settled(), "the flip settles on the fixture clock")
+	var steady_emission := Color(Lighting.FIXTURE_EMISSIVE, 0.0, 0.0)
+	for _frame: int in range(300):
+		hallway.process_frame(Sim.LOGICAL_TICK_SECS)
+		for light: OmniLight3D in hallway.lights():
+			assert_float_in_range(light.light_energy, Lighting.FIXTURE_ENERGY - 1e-6, Lighting.FIXTURE_ENERGY + 1e-6, "a settled fixture never blinks: the energy holds steady")
+		assert_true(hallway.lens_material().emission == steady_emission, "a settled lens never blinks: the emission holds steady")
+	assert_true(hallway.is_settled(), "the steady hall stays settled")
+
+## The press channel at the beside-door overlap: the closed door without
+## the rod consumes nothing, so the switch standing beside it receives
+## the press the door could not use — and once flipped, later fully
+## refused presses stay on the channel.
+func test_presses_fall_through_to_the_beside_door_switch() -> void:
+	var game := _awake_game()
+	var motion := PlayerMotion.new()
+	var plane := InputPlane.new()
+	_stand(motion, game, plane)
+	var adapter := InputPlane.ScriptedAdapter.new()
+	assert_true(_walk_to(motion, game, plane, adapter, Vector2(5.4, 0.5), 0.2), "the walk arrived at the beside-door overlap")
+	var hatch := Vector2(game.registry.hatch().center.x, game.registry.hatch().center.y)
+	var act := Vector2(Hallway.switch_act_center().x, Hallway.switch_act_center().z)
+	var foot := motion.capsule().foot
+	assert_float_in_range(hatch.distance_to(Vector2(foot.x, foot.z)), 0.0, PlayerMotion.HATCH_INTERACT_REACH, "the overlap stand holds the door in reach")
+	assert_float_in_range(act.distance_to(Vector2(foot.x, foot.z)), 0.0, PlayerMotion.SWITCH_ACT_REACH, "the overlap stand holds the switch in reach")
+	plane.offer_press(InputPlane.Buttons.INTERACT)
+	assert_false(motion.pickup_rod(plane), "the rod is nowhere near the stand")
+	assert_false(motion.interact_with_door(plane, game), "the closed door without the rod consumes no press")
+	assert_int_equal(motion.door_openings, 0, "the door never started")
+	assert_int_equal(motion.door_state, PlayerMotion.DoorState.CLOSED, "the door stays shut")
+	assert_true(motion.flip_hallway_switch(plane, game), "the refused press reaches the beside-door switch")
+	assert_true(game.hallway_lit, "the fall-through press lit the hall")
+	assert_int_equal(motion.hallway_switch_flips, 1, "the fall-through flipped exactly once")
+	plane.offer_press(InputPlane.Buttons.INTERACT)
+	assert_false(motion.pickup_rod(plane), "still no rod in reach")
+	assert_false(motion.interact_with_door(plane, game), "the door still refuses without the rod")
+	assert_false(motion.flip_hallway_switch(plane, game), "the once-only switch never flips twice")
+	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the fully refused press stays on the channel")
+	assert_true(motion.failure().is_empty(), motion.failure())
+
 func test_switch_flips_exactly_once_from_a_full_crossing() -> void:
 	var game := _awake_game()
 	var motion := PlayerMotion.new()
 	var plane := InputPlane.new()
 	_stand(motion, game, plane)
+	# The rod's pickup is its own lane; carrying it here walks the door's
+	# open and the beside-door flip end to end.
+	motion.rod_carried = true
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_false(motion.flip_hallway_switch(plane, game), "a press while standing at the pod cannot flip the far-wall switch")
+	assert_false(motion.flip_hallway_switch(plane, game), "a press while standing at the pod cannot flip the beside-door switch")
 	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the out-of-reach press is left on the channel")
 	plane.end_frame()
 	var adapter := InputPlane.ScriptedAdapter.new()
@@ -177,19 +252,26 @@ func test_switch_flips_exactly_once_from_a_full_crossing() -> void:
 	assert_true(_walk_to(motion, game, plane, adapter, hatch,
 		PlayerMotion.HATCH_INTERACT_REACH * 0.9), "the walk arrived at the door")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_door(plane, game), "the door opens at the act")
+	assert_true(motion.interact_with_door(plane, game), "the rod-carried press at the door starts the open")
 	assert_int_equal(motion.door_openings, 1, "one press, one opening")
 	assert_true(_walk_to(motion, game, plane, adapter,
-		Vector2(Hallway.switch_act_center().x, Hallway.switch_act_center().z), 0.5),
-		"the walk crossed the hall to the switch wall")
+		Vector2(Hallway.HALL_START_X + 1.2, 0.2), 0.3),
+		"the walk crossed the threshold into the hall")
 	var foot := motion.capsule().foot
-	assert_float_in_range(foot.x, Hallway.HALL_START_X + 1.0, Hallway.HALL_END_X + 1e-3, "the capsule crossed into the hallway through the open doorway")
+	assert_float_in_range(foot.x, Hallway.HALL_START_X + Hallway.WALL, Hallway.HALL_END_X, "the capsule crossed into the hallway through the open doorway")
 	assert_int_equal(motion.door_state, PlayerMotion.DoorState.OPEN, "the crossing found the door open")
+	var act := Vector2(Hallway.switch_act_center().x, Hallway.switch_act_center().z)
+	assert_float_in_range(act.distance_to(Vector2(foot.x, foot.z)), 0.0, PlayerMotion.SWITCH_ACT_REACH, "the crossing stand holds the beside-door switch in reach")
+	# The open door owns no press: the dispatch order delivers this press
+	# to the switch beside it.
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.flip_hallway_switch(plane, game), "the press at the switch lights the hall")
+	assert_false(motion.pickup_rod(plane), "the carried rod consumes no press")
+	assert_false(motion.interact_with_door(plane, game), "the open door leaves the press on the channel")
+	assert_true(motion.flip_hallway_switch(plane, game), "the press beside the open door lights the hall")
 	assert_true(game.hallway_lit, "the flip lit the hallway")
 	assert_int_equal(motion.hallway_switch_flips, 1, "the switch flips exactly once")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
 	assert_false(motion.flip_hallway_switch(plane, game), "a second press never flips again")
 	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the once-only switch leaves the second press on the channel")
+	assert_int_equal(motion.door_openings, 1, "the open door never re-opens")
 	assert_true(motion.failure().is_empty(), motion.failure())
