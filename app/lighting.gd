@@ -15,6 +15,20 @@ const FIXTURE_SETTLE_TICKS: int = 30
 const EMERGENCY_RED: Color = Color(1.0, 0.0, 0.0)
 const LENS_SIZE: Vector3 = Vector3(0.42, 0.16, 0.12)
 const LENS_BASE_COLOR: Color = Color(0.18, 0.01, 0.01)
+## The regular-service white the activated secondary power restores
+## (issue #59): warm-neutral strips in the hallway and the power room,
+## dim by design — the emergency red hands off to ordinary light, not
+## to a bright one. The stasis bay's red circuit never reads these.
+const REGULAR_WHITE: Color = Color(1.0, 0.97, 0.90)
+const REGULAR_EMISSIVE: float = 1.1
+const REGULAR_RANGE: float = 7.0
+## What share of an emergency fixture's throw a regular strip holds
+## once lit: the "dim but regular" brief.
+const REGULAR_DIM_SHARE: float = 0.55
+
+## A lit regular strip's omni energy, one definition for every module.
+static func regular_energy() -> float:
+	return FIXTURE_ENERGY * REGULAR_DIM_SHARE
 const WALL_MOUNT_HEIGHT: float = 2.65
 const WALL_STANDOFF: float = 0.10
 ## Lumen->energy: 45 lm / (4*pi) ~= 3.58 candela, read directly as

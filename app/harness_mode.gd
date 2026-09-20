@@ -24,6 +24,8 @@ var game: Game
 var player: Player
 var rod: Rod
 var hallway: Hallway
+var power_room: PowerRoom
+var stasis_lighting: Lighting
 var adapter: InputPlane.ScriptedAdapter
 var input
 var chip: LaneChip
@@ -102,15 +104,19 @@ func _build_scene() -> void:
 	pods_node = StasisPods.build(game.registry)
 	scene.add_child(pods_node)
 	scene.add_child(hatch)
-	scene.add_child(Lighting.build(game))
+	stasis_lighting = Lighting.build(game)
+	scene.add_child(stasis_lighting)
 	scene.add_child(Hazards.build())
 	rod = Rod.build()
 	scene.add_child(rod)
 	hallway = Hallway.build(game)
 	scene.add_child(hallway)
+	power_room = PowerRoom.build(game)
+	scene.add_child(power_room)
 	player = Player.build(game, hatch)
 	player.scripted = true
 	player.rod = rod
+	player.power_room = power_room
 	player.adapter = adapter
 	scene.add_child(player)
 	var driver := Driver.new()
@@ -372,10 +378,40 @@ func capture_next_beat() -> void:
 		report.add_event({"kind": "rod_pickup", "tick": pinned_tick,
 			"frame": pinned_frame, "carried": player.motion.rod_carried,
 			"rod_visible": rod.visible})
-	elif beat.name == "hall-dark" or beat.name == "hall-lit":
+	elif beat.name == "power-door-opened":
+		report.add_event({"kind": "power_door", "tick": pinned_tick,
+			"frame": pinned_frame, "openings": player.motion.power_door_openings,
+			"open": game.power_door_open})
+	elif beat.name == "console-inactive" or beat.name == "power-active":
+		report.add_event({"kind": "console", "tick": pinned_tick,
+			"frame": pinned_frame, "presses": player.motion.console_presses,
+			"state": PowerRoom.console_state_name(game.console_state),
+			"label": PowerRoom.console_label_flat(game.console_state)})
+		report.add_event({"kind": "power", "tick": pinned_tick,
+			"frame": pinned_frame, "active": game.power_active,
+			"generator_lit": power_room.generator_lit(),
+			"hallway_lit": game.hallway_lit,
+			"hall_red_level": hallway.level(),
+			"hall_white_level": hallway.white_level(),
+			"power_red_level": power_room.level(),
+			"power_white_level": power_room.white_level(),
+			"stasis_red_level": stasis_lighting.level()})
+	elif beat.name == "hall-dark" or beat.name == "hall-lit" or beat.name == "hall-white":
 		report.add_event({"kind": "hallway", "tick": pinned_tick,
 			"frame": pinned_frame, "lit": game.hallway_lit,
-			"level": hallway.level()})
+			"level": hallway.level(),
+			"white": game.power_active,
+			"white_level": hallway.white_level()})
+		if beat.name == "hall-white":
+			report.add_event({"kind": "power", "tick": pinned_tick,
+				"frame": pinned_frame, "active": game.power_active,
+				"generator_lit": power_room.generator_lit(),
+				"hallway_lit": game.hallway_lit,
+				"hall_red_level": hallway.level(),
+				"hall_white_level": hallway.white_level(),
+				"power_red_level": power_room.level(),
+				"power_white_level": power_room.white_level(),
+				"stasis_red_level": stasis_lighting.level()})
 	busy_capturing = false
 
 func _button(name: String) -> int:

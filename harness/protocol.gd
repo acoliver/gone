@@ -209,7 +209,7 @@ static func event_order_key(event: Dictionary) -> Array:
 			return [0, 0, event.frame]
 		"room_check":
 			return [1, 0, event.frame]
-		"input", "beat", "wake_phase", "player_yaw", "player_position", "door_open", "hallway", "rod_pickup", "calibration":
+		"input", "beat", "wake_phase", "player_yaw", "player_position", "door_open", "power_door", "hallway", "rod_pickup", "console", "power", "calibration":
 			return [1, event.tick, event.frame]
 		_:
 			return [2, 9223372036854775807, event.frame]

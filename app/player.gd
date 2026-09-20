@@ -12,6 +12,7 @@ extends Node3D
 var game: Game
 var camera: Camera3D
 var hatch: Node3D = null
+var power_room: PowerRoom = null
 var rod: Rod = null
 var plane: InputPlane
 var motion: PlayerMotion
@@ -66,17 +67,23 @@ func _physics_process(delta: float) -> void:
 		adapter.offer_tick(plane)
 	_integrate_look()
 	motion.advance(plane, game, _look_yaw, delta)
-	# The rod, the door, and the hallway switch share the interact
-	# channel: each consumes a press only when it acts — the rod when
-	# the pickup lands, the door when its rod-carried press starts the
-	# open — and the switch beside the doorway takes one press only
-	# when the flip lands, fed by every press the door cannot use.
+	# The rod, the door, the hallway switch, the power door, and the
+	# working console share the interact channel: each consumes a press
+	# only when it acts — the rod when the pickup lands, the door when
+	# its rod-carried press starts the open — and the switch beside the
+	# doorway takes one press only when the flip lands, fed by every
+	# press the door cannot use; the power door and the console sit down
+	# the corridor, each taking only the press its own act lands.
 	if motion.pickup_rod(plane):
 		rod.pick_up()
 	motion.interact_with_door(plane, game)
 	motion.flip_hallway_switch(plane, game)
+	motion.interact_with_power_door(plane, game)
+	motion.interact_with_console(plane, game)
 	if hatch != null and hatch is Hatch:
 		hatch.set_door_offset(motion.door_slab_offset())
+	if power_room != null:
+		power_room.set_door_offset(motion.power_door_slab_offset())
 	if not motion.failure().is_empty():
 		push_error("halting on player motion failure: " + motion.failure())
 		get_tree().quit(1)
