@@ -1935,25 +1935,13 @@
 			"pitch_deg": 0.00000199845437124251,
 			"tick": 610,
 			"type": "look",
-			"yaw_deg": 86.964875399058
+			"yaw_deg": 179.999997495522
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 610,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 611,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 612,
-			"type": "move"
+			"pitch_deg": 0.000000290907078739319,
+			"tick": 613,
+			"type": "look",
+			"yaw_deg": -93.0351127617965
 		},
 		{
 			"forward": 1.0,
@@ -2760,21 +2748,16 @@
 			"type": "move"
 		},
 		{
-			"forward": 0.0,
+			"forward": 1.0,
 			"strafe": 0.0,
 			"tick": 747,
 			"type": "move"
 		},
 		{
-			"button": "interact",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 748,
-			"type": "press"
-		},
-		{
-			"pitch_deg": 0.000000290907078739319,
-			"tick": 749,
-			"type": "look",
-			"yaw_deg": -97.6794089316037
+			"type": "move"
 		},
 		{
 			"forward": 1.0,
@@ -2783,34 +2766,27 @@
 			"type": "move"
 		},
 		{
-			"forward": 1.0,
+			"forward": 0.0,
 			"strafe": 0.0,
 			"tick": 750,
 			"type": "move"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"button": "interact",
 			"tick": 751,
-			"type": "move"
+			"type": "press"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"pitch_deg": -34.9999997090929,
 			"tick": 752,
-			"type": "move"
+			"type": "look",
+			"yaw_deg": -177.253691080428
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 753,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 754,
-			"type": "move"
+			"pitch_deg": 35.000000126506,
+			"tick": 755,
+			"type": "look",
+			"yaw_deg": 79.5716884080566
 		},
 		{
 			"forward": 1.0,
@@ -5147,21 +5123,63 @@
 			"type": "move"
 		},
 		{
-			"forward": 0.0,
+			"forward": 1.0,
 			"strafe": 0.0,
 			"tick": 1144,
 			"type": "move"
 		},
 		{
-			"button": "interact",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 1145,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1146,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1147,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1148,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1149,
+			"type": "move"
+		},
+		{
+			"forward": 0.0,
+			"strafe": 0.0,
+			"tick": 1150,
+			"type": "move"
+		},
+		{
+			"button": "interact",
+			"tick": 1151,
 			"type": "press"
 		},
 		{
 			"pitch_deg": 0.000000290907078739319,
-			"tick": 1205,
+			"tick": 1211,
 			"type": "look",
-			"yaw_deg": 45.560903752463
+			"yaw_deg": 45.5645820797376
+		},
+		{
+			"pitch_deg": -11.9999997090929,
+			"tick": 1212,
+			"type": "look",
+			"yaw_deg": 145.152556765224
 		}
 	],
 	"beats": [
@@ -5183,19 +5201,19 @@
 		},
 		{
 			"name": "mid-room",
-			"tick": 610
+			"tick": 612
 		},
 		{
 			"name": "rod-picked-up",
-			"tick": 749
+			"tick": 754
 		},
 		{
 			"name": "at-door",
-			"tick": 1206
+			"tick": 1214
 		},
 		{
 			"name": "door-opened",
-			"tick": 1206
+			"tick": 1215
 		}
 	],
 	"content": "gameplay",

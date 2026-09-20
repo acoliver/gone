@@ -2201,794 +2201,684 @@
 			"type": "move"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 672,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 673,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 674,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 675,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 676,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 677,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 678,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 679,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 680,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 681,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 682,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 683,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 684,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 685,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 686,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 687,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 688,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 689,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 690,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 691,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 692,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 693,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 694,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 695,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 696,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 697,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 698,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 699,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 700,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 701,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 702,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 703,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 704,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 705,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 706,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 707,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 708,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 709,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 710,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 711,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 712,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 713,
 			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 714,
 			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 715,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 716,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 717,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 718,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 719,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 720,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 721,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 722,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 723,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 724,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 725,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 726,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 727,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 728,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 729,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 730,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 731,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 732,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 733,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 734,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 735,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 736,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 737,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 738,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 739,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 740,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 741,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 742,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 743,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 744,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 745,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 746,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 747,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 748,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 749,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 750,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 751,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 752,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 753,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 754,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 755,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 756,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 757,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 758,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 759,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 760,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 761,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 762,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 763,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 764,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 765,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 766,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 767,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 768,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 769,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 770,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 771,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 772,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 773,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 774,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 775,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 776,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 777,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 778,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"dir": "left",
+			"dir": "right",
 			"tick": 779,
 			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 780,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 781,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 782,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 783,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 784,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 785,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 786,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 787,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 788,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 789,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 790,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 791,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 792,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 793,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 794,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 795,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 796,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 797,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 798,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 799,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 800,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 801,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 802,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 803,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 804,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 805,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 806,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 807,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 808,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 809,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 810,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
 			"forward": 1.0,
@@ -3237,200 +3127,238 @@
 			"type": "move"
 		},
 		{
-			"forward": 0.0,
+			"forward": 1.0,
 			"strafe": 0.0,
 			"tick": 852,
 			"type": "move"
 		},
 		{
-			"button": "interact",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 853,
-			"type": "press"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 854,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 855,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 856,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 857,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 858,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 859,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 860,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 861,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 862,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 863,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 864,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 865,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 866,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 867,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 868,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 869,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 870,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 871,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 872,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 873,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 874,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 875,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 876,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 877,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 878,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 879,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 880,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 881,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 882,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 883,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 884,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 885,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 886,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 887,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 888,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 889,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 890,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
 			"dir": "right",
@@ -3438,59 +3366,70 @@
 			"type": "key_turn"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 892,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 893,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 894,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 895,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 896,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 897,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 898,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 899,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 900,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 901,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 902,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
 			"forward": 1.0,
@@ -3763,1078 +3702,885 @@
 			"type": "move"
 		},
 		{
-			"forward": 1.0,
+			"forward": 0.0,
 			"strafe": 0.0,
 			"tick": 948,
 			"type": "move"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"button": "interact",
 			"tick": 949,
-			"type": "move"
+			"type": "press"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 950,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 951,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 952,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 953,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 954,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 955,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 956,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 957,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 958,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 959,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 960,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 961,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 962,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 963,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 964,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 965,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 966,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 967,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 968,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 969,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 970,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 971,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 972,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 973,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 974,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 975,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 976,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 977,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 978,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 979,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 980,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 981,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 982,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 983,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 984,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 985,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 986,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 987,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 988,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 989,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 990,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 991,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 992,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 993,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 994,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 995,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 996,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 997,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 998,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 999,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1000,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1001,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1002,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1003,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1004,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1005,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1006,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1007,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1008,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1009,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1010,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1011,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1012,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1013,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1014,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1015,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1016,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1017,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1018,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1019,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1020,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1021,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1022,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1023,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1024,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1025,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1026,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1027,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1028,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1029,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1030,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1031,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1032,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1033,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1034,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1035,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1036,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "right",
 			"tick": 1037,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "down",
 			"tick": 1038,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "down",
 			"tick": 1039,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "down",
 			"tick": 1040,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "down",
 			"tick": 1041,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "down",
 			"tick": 1042,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "down",
 			"tick": 1043,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "down",
 			"tick": 1044,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "down",
 			"tick": 1045,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "down",
 			"tick": 1046,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "down",
 			"tick": 1047,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "down",
 			"tick": 1048,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "down",
 			"tick": 1049,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "down",
 			"tick": 1050,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "down",
 			"tick": 1051,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "down",
 			"tick": 1052,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "down",
 			"tick": 1053,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "down",
 			"tick": 1054,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "down",
 			"tick": 1055,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "down",
 			"tick": 1056,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "down",
 			"tick": 1057,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "down",
 			"tick": 1058,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "down",
 			"tick": 1059,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "down",
 			"tick": 1060,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "down",
 			"tick": 1061,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 1062,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 1063,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 1064,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1065,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1066,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1067,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1068,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1069,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1070,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1071,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1072,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1073,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1074,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1075,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1076,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1077,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1078,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1079,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1080,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1081,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1082,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1083,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1084,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1085,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1086,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1087,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1088,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1089,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1090,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1091,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1092,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1093,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1094,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1095,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1096,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1097,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1098,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1099,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1100,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1101,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1102,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1103,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "up",
 			"tick": 1104,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "up",
 			"tick": 1105,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "up",
 			"tick": 1106,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "up",
 			"tick": 1107,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "up",
 			"tick": 1108,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "up",
 			"tick": 1109,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "up",
 			"tick": 1110,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "up",
 			"tick": 1111,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "up",
 			"tick": 1112,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "up",
 			"tick": 1113,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "up",
 			"tick": 1114,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "up",
 			"tick": 1115,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "up",
 			"tick": 1116,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "up",
 			"tick": 1117,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "up",
 			"tick": 1118,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "up",
 			"tick": 1119,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "up",
 			"tick": 1120,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "up",
 			"tick": 1121,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "up",
 			"tick": 1122,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "up",
 			"tick": 1123,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "up",
 			"tick": 1124,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "up",
 			"tick": 1125,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "up",
 			"tick": 1126,
-			"type": "move"
+			"type": "key_pitch"
 		},
 		{
 			"forward": 1.0,
@@ -5023,9 +4769,10 @@
 			"type": "move"
 		},
 		{
-			"dir": "right",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 1158,
-			"type": "key_turn"
+			"type": "move"
 		},
 		{
 			"forward": 1.0,
@@ -5802,10 +5549,9 @@
 			"type": "move"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"dir": "left",
 			"tick": 1288,
-			"type": "move"
+			"type": "key_turn"
 		},
 		{
 			"forward": 1.0,
@@ -5862,130 +5608,1869 @@
 			"type": "move"
 		},
 		{
-			"forward": 0.0,
+			"forward": 1.0,
 			"strafe": 0.0,
 			"tick": 1298,
 			"type": "move"
 		},
 		{
-			"button": "interact",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 1299,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1300,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1301,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1302,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1303,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1304,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1305,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1306,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1307,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1308,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1309,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1310,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1311,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1312,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1313,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1314,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1315,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1316,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1317,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1318,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1319,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1320,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1321,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1322,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1323,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1324,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1325,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1326,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1327,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1328,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1329,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1330,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1331,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1332,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1333,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1334,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1335,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1336,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1337,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1338,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1339,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1340,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1341,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1342,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1343,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1344,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1345,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1346,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1347,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1348,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1349,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1350,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1351,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1352,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1353,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1354,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1355,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1356,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1357,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1358,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1359,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1360,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1361,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1362,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1363,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1364,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1365,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1366,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1367,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1368,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1369,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1370,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1371,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1372,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1373,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1374,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1375,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1376,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1377,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1378,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1379,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1380,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1381,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1382,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1383,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1384,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1385,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1386,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1387,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1388,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1389,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1390,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1391,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1392,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1393,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1394,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1395,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1396,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1397,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1398,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1399,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1400,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1401,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1402,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1403,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1404,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1405,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1406,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1407,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1408,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1409,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1410,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1411,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1412,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1413,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1414,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1415,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1416,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1417,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1418,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1419,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1420,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1421,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1422,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1423,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1424,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1425,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1426,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1427,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1428,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1429,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1430,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1431,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1432,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1433,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1434,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1435,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1436,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1437,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1438,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1439,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1440,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1441,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1442,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1443,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1444,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1445,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1446,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1447,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1448,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1449,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1450,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1451,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1452,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1453,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1454,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1455,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1456,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1457,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1458,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1459,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1460,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1461,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1462,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1463,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1464,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1465,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1466,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1467,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1468,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1469,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1470,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1471,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1472,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1473,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1474,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1475,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1476,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1477,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1478,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1479,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1480,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1481,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1482,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1483,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1484,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1485,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1486,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1487,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1488,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1489,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1490,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1491,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1492,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1493,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1494,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1495,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1496,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1497,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1498,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1499,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1500,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1501,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1502,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1503,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1504,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1505,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1506,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1507,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1508,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1509,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1510,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1511,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1512,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1513,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1514,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1515,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1516,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1517,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1518,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1519,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1520,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1521,
+			"type": "move"
+		},
+		{
+			"forward": 0.0,
+			"strafe": 0.0,
+			"tick": 1522,
+			"type": "move"
+		},
+		{
+			"button": "interact",
+			"tick": 1523,
 			"type": "press"
 		},
 		{
 			"dir": "left",
-			"tick": 1359,
+			"tick": 1583,
 			"type": "key_turn"
 		},
 		{
 			"dir": "left",
-			"tick": 1360,
+			"tick": 1584,
 			"type": "key_turn"
 		},
 		{
 			"dir": "left",
-			"tick": 1361,
+			"tick": 1585,
 			"type": "key_turn"
 		},
 		{
 			"dir": "left",
-			"tick": 1362,
+			"tick": 1586,
 			"type": "key_turn"
 		},
 		{
 			"dir": "left",
-			"tick": 1363,
+			"tick": 1587,
 			"type": "key_turn"
 		},
 		{
 			"dir": "left",
-			"tick": 1364,
+			"tick": 1588,
 			"type": "key_turn"
 		},
 		{
 			"dir": "left",
-			"tick": 1365,
+			"tick": 1589,
 			"type": "key_turn"
 		},
 		{
 			"dir": "left",
-			"tick": 1366,
+			"tick": 1590,
 			"type": "key_turn"
 		},
 		{
 			"dir": "left",
-			"tick": 1367,
+			"tick": 1591,
 			"type": "key_turn"
 		},
 		{
 			"dir": "left",
-			"tick": 1368,
+			"tick": 1592,
 			"type": "key_turn"
 		},
 		{
 			"dir": "left",
-			"tick": 1369,
+			"tick": 1593,
 			"type": "key_turn"
 		},
 		{
 			"dir": "left",
-			"tick": 1370,
+			"tick": 1594,
 			"type": "key_turn"
 		},
 		{
 			"dir": "left",
-			"tick": 1371,
+			"tick": 1595,
 			"type": "key_turn"
 		},
 		{
 			"dir": "left",
-			"tick": 1372,
+			"tick": 1596,
 			"type": "key_turn"
 		},
 		{
 			"dir": "left",
-			"tick": 1373,
+			"tick": 1597,
 			"type": "key_turn"
 		},
 		{
 			"dir": "left",
-			"tick": 1374,
+			"tick": 1598,
 			"type": "key_turn"
 		},
 		{
 			"dir": "left",
-			"tick": 1375,
+			"tick": 1599,
 			"type": "key_turn"
 		},
 		{
 			"dir": "left",
-			"tick": 1376,
+			"tick": 1600,
 			"type": "key_turn"
 		},
 		{
 			"dir": "left",
-			"tick": 1377,
+			"tick": 1601,
 			"type": "key_turn"
 		},
 		{
 			"dir": "left",
-			"tick": 1378,
+			"tick": 1602,
 			"type": "key_turn"
 		},
 		{
 			"dir": "left",
-			"tick": 1379,
+			"tick": 1603,
 			"type": "key_turn"
 		},
 		{
 			"dir": "left",
-			"tick": 1380,
+			"tick": 1604,
 			"type": "key_turn"
 		},
 		{
 			"dir": "left",
-			"tick": 1381,
+			"tick": 1606,
 			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1607,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1608,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1609,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1610,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1611,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1612,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1613,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1614,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1615,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1616,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1617,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1618,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1619,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1620,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1621,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1622,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1623,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1624,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1625,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1626,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1627,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1628,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1629,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1630,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1631,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1632,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1633,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1634,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1635,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1636,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1637,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1638,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1639,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1640,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1641,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1642,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1643,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1644,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1645,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1646,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1647,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1648,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1649,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1650,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1651,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1652,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1653,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1654,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1655,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1656,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1657,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1658,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1659,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1660,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1661,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1662,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1663,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1664,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1665,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1666,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1667,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1668,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1669,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1670,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1671,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1672,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1673,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1674,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1675,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1676,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1677,
+			"type": "key_turn"
+		},
+		{
+			"dir": "left",
+			"tick": 1678,
+			"type": "key_turn"
+		},
+		{
+			"dir": "down",
+			"tick": 1679,
+			"type": "key_pitch"
+		},
+		{
+			"dir": "down",
+			"tick": 1680,
+			"type": "key_pitch"
+		},
+		{
+			"dir": "down",
+			"tick": 1681,
+			"type": "key_pitch"
+		},
+		{
+			"dir": "down",
+			"tick": 1682,
+			"type": "key_pitch"
+		},
+		{
+			"dir": "down",
+			"tick": 1683,
+			"type": "key_pitch"
+		},
+		{
+			"dir": "down",
+			"tick": 1684,
+			"type": "key_pitch"
+		},
+		{
+			"dir": "down",
+			"tick": 1685,
+			"type": "key_pitch"
 		}
 	],
 	"beats": [
@@ -6007,19 +7492,19 @@
 		},
 		{
 			"name": "mid-room",
-			"tick": 672
+			"tick": 763
 		},
 		{
 			"name": "rod-picked-up",
-			"tick": 854
+			"tick": 1064
 		},
 		{
 			"name": "at-door",
-			"tick": 1383
+			"tick": 1688
 		},
 		{
 			"name": "door-opened",
-			"tick": 1383
+			"tick": 1689
 		}
 	],
 	"content": "gameplay",

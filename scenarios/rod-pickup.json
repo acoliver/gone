@@ -2148,51 +2148,27 @@
 			"type": "move"
 		},
 		{
-			"pitch_deg": 25.0000019984544,
+			"pitch_deg": -44.9999980015456,
 			"tick": 645,
 			"type": "look",
-			"yaw_deg": 58.1002555784784
+			"yaw_deg": -121.899744421522
 		},
 		{
 			"button": "interact",
-			"tick": 646,
+			"tick": 648,
 			"type": "press"
 		},
 		{
-			"pitch_deg": -24.9999998355989,
-			"tick": 647,
-			"type": "look",
-			"yaw_deg": -96.1670629577933
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 647,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 648,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"pitch_deg": 9.99999983559887,
 			"tick": 649,
-			"type": "move"
+			"type": "look",
+			"yaw_deg": -0.00000592684841979657
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 650,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 651,
-			"type": "move"
+			"pitch_deg": 35.000000126506,
+			"tick": 652,
+			"type": "look",
+			"yaw_deg": 83.8329343672002
 		},
 		{
 			"forward": 1.0,
@@ -4571,29 +4547,65 @@
 			"type": "move"
 		},
 		{
-			"forward": 0.0,
+			"forward": 1.0,
 			"strafe": 0.0,
 			"tick": 1048,
 			"type": "move"
 		},
 		{
-			"button": "interact",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 1049,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1050,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1051,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 1052,
+			"type": "move"
+		},
+		{
+			"forward": 0.0,
+			"strafe": 0.0,
+			"tick": 1053,
+			"type": "move"
+		},
+		{
+			"button": "interact",
+			"tick": 1054,
 			"type": "press"
+		},
+		{
+			"pitch_deg": -11.9999997090929,
+			"tick": 1114,
+			"type": "look",
+			"yaw_deg": -168.933115294198
 		}
 	],
 	"beats": [
 		{
 			"name": "rod-in-reach",
-			"tick": 646
-		},
-		{
-			"name": "rod-picked-up",
 			"tick": 647
 		},
 		{
+			"name": "rod-picked-up",
+			"tick": 651
+		},
+		{
 			"name": "door-opened",
-			"tick": 1109
+			"tick": 1116
 		}
 	],
 	"content": "gameplay",
