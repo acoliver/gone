@@ -12,6 +12,7 @@ var player: Player
 var hatch: Hatch
 var rod: Rod
 var hallway: Hallway
+var power_room: PowerRoom
 var wake_pass: WakePass
 var wake_present: WakePresent
 
@@ -28,6 +29,8 @@ func _ready() -> void:
 	add_child(rod)
 	hallway = Hallway.build(game)
 	add_child(hallway)
+	power_room = PowerRoom.build(game)
+	add_child(power_room)
 	_add_player()
 	_add_wake_presentation()
 
@@ -49,5 +52,6 @@ func _add_wake_presentation() -> void:
 func _add_player() -> void:
 	player = Player.build(game, hatch)
 	player.rod = rod
+	player.power_room = power_room
 	add_child(player)
 	camera = player.camera
