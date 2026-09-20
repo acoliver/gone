@@ -38,8 +38,11 @@ func _initialize() -> void:
 	scene.add_child(hatch)
 	scene.add_child(Lighting.build(game))
 	scene.add_child(Hazards.build())
+	var rod := Rod.build()
+	scene.add_child(rod)
 	player = Player.build(game, hatch)
 	player.scripted = true
+	player.rod = rod
 	adapter = InputPlane.ScriptedAdapter.new()
 	player.adapter = adapter
 	scene.add_child(player)

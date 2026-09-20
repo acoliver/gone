@@ -15,11 +15,16 @@ enum BodyState { LYING, GET_UP, WALK }
 ## interact press must land to be a refusal.
 const HATCH_INTERACT_REACH: float = 2.2
 
+## How close to the rod's floor-plan center, in meters, an interact
+## press must land to pick it up.
+const ROD_PICKUP_REACH: float = 1.3
+
 var _controller: Exit.GetUpController = null
 var _walk: Walk.WalkState = null
 var _failure: String = ""
 var refusals: int = 0
 var refusal_events: Array[String] = []
+var rod_carried: bool = false
 
 func state() -> int:
 	if _controller != null:
@@ -126,6 +131,28 @@ func interact_with_hatch(plane: InputPlane, game: Game) -> bool:
 		return false
 	refusals += 1
 	refusal_events.append("refused")
+	return true
+
+## Pick up the dropped rod: while standing in reach, one interact press
+## sets the carried flag, exactly once. The press is consumed only when
+## the pickup lands, unlike the hatch, which eats every press: the rod
+## and the door share the interact channel, and the door's refusal must
+## still own every press at the door, so the rod takes only what it can
+## use and leaves the edge to the hatch otherwise. A press after the
+## pickup is a no-op.
+func pickup_rod(plane: InputPlane) -> bool:
+	if rod_carried:
+		return false
+	if state() != BodyState.WALK:
+		return false
+	var foot: Vector3 = capsule().foot
+	var center := Rod.floor_center()
+	var reach := Vector2(foot.x - center.x, foot.z - center.y)
+	if reach.length() > ROD_PICKUP_REACH:
+		return false
+	if not plane.take_press(InputPlane.Buttons.INTERACT):
+		return false
+	rod_carried = true
 	return true
 
 ## The walk's current steadying speed, in meters per second.
