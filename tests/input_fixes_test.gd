@@ -1,11 +1,12 @@
 extends SimTestCase
-## Input fix tests for issues #31/#32/#33/#47: arrow keys ride the movement
-## actions through the same synthetic input plane the harness uses, the
-## forward key bridges the camera's -Z view onto the sim's +Z walk frame
-## (issue #47's inverted axis), the comma/period look keys ride the same
-## look channel and clamps as the mouse with per-tick delta summation,
-## and a left click aliases the interact and activate actions with
-## exactly-once edge consumption alongside E.
+## Input fix tests for issues #31/#32/#33/#47/#55: the arrow keys alone
+## ride the movement actions through the same synthetic input plane the
+## harness uses, the forward key bridges the camera's -Z view onto the
+## sim's +Z walk frame (issue #47's inverted axis), the look keys
+## (comma/period, and the letters A/D for yaw and W/S for pitch) ride
+## the same look channel and clamps as the mouse with per-tick delta
+## summation, and Space and a left click are the act keys (E, Q, and R
+## unused).
 
 const DT: float = 1.0 / 60.0
 const NEAR: float = 1e-4
@@ -26,6 +27,11 @@ func _stand(motion: PlayerMotion, game: Game, plane: InputPlane) -> void:
 func _key(physical: Key) -> InputEventKey:
 	var event := InputEventKey.new()
 	event.physical_keycode = physical
+	return event
+
+func _held_key(physical: Key, pressed: bool) -> InputEventKey:
+	var event := _key(physical)
+	event.pressed = pressed
 	return event
 
 func _click() -> InputEventMouseButton:
@@ -58,18 +64,30 @@ func test_arrow_keys_map_onto_the_movement_actions() -> void:
 	assert_true(InputMap.event_is_action(_key(KEY_LEFT), "move_left"), "left arrow is move_left")
 	assert_true(InputMap.event_is_action(_key(KEY_RIGHT), "move_right"), "right arrow is move_right")
 
-func test_wasd_still_maps_onto_the_movement_actions() -> void:
-	assert_true(InputMap.event_is_action(_key(KEY_W), "move_forward"), "W stays move_forward")
-	assert_true(InputMap.event_is_action(_key(KEY_S), "move_back"), "S stays move_back")
-	assert_true(InputMap.event_is_action(_key(KEY_A), "move_left"), "A stays move_left")
-	assert_true(InputMap.event_is_action(_key(KEY_D), "move_right"), "D stays move_right")
+func test_wasd_no_longer_maps_onto_the_movement_actions() -> void:
+	# Issue #55: the letters swivel the head, the arrows move; W/S/A/D
+	# must not fire any movement action.
+	for key: Key in [KEY_W, KEY_A, KEY_S, KEY_D]:
+		for action: String in ["move_forward", "move_back", "move_left", "move_right"]:
+			assert_false(InputMap.event_is_action(_key(key), action), "%s does not fire %s" % [OS.get_keycode_string(key), action])
+
+func test_wasd_produces_no_movement_axis() -> void:
+	# Each letter pressed and held leaves both movement axes at zero, so
+	# the device producer offers no movement intent whatever the letter.
+	for key: Key in [KEY_W, KEY_A, KEY_S, KEY_D]:
+		Input.parse_input_event(_held_key(key, true))
+		var forward: float = -Input.get_axis("move_back", "move_forward")
+		var strafe: float = Input.get_axis("move_left", "move_right")
+		Input.parse_input_event(_held_key(key, false))
+		_near_float(forward, 0.0, "%s produces no forward axis" % OS.get_keycode_string(key))
+		_near_float(strafe, 0.0, "%s produces no strafe axis" % OS.get_keycode_string(key))
 
 func test_arrows_drive_movement_through_the_input_plane() -> void:
-	# The device producer reads the action axes; an arrow press moves them
-	# exactly like W does, and the plane carries the intent to the walk.
-	# The rig's camera looks along Godot's -Z at the yaw while the sim's
-	# walk frame steps along +Z, so the forward key offers the negative
-	# sim axis and forward walks where the player looks.
+	# The device producer reads the action axes; an arrow press moves
+	# them, and the plane carries the intent to the walk. The rig's
+	# camera looks along Godot's -Z at the yaw while the sim's walk frame
+	# steps along +Z, so the forward key offers the negative sim axis
+	# and forward walks where the player looks.
 	Input.action_press("move_forward")
 	Input.action_press("move_right")
 	var plane := InputPlane.new()
@@ -116,12 +134,38 @@ func test_look_keys_map_onto_yaw_actions_without_collisions() -> void:
 	assert_true(InputMap.has_action("look_right"), "look_right exists")
 	assert_true(InputMap.event_is_action(_key(KEY_COMMA), "look_left"), "comma turns left")
 	assert_true(InputMap.event_is_action(_key(KEY_PERIOD), "look_right"), "period turns right")
-	for action: String in ["move_forward", "move_back", "move_left", "move_right", "interact", "activate"]:
+	assert_true(InputMap.event_is_action(_key(KEY_A), "look_left"), "A turns left")
+	assert_true(InputMap.event_is_action(_key(KEY_D), "look_right"), "D turns right")
+	for action: String in ["move_forward", "move_back", "move_left", "move_right", "interact", "activate", "look_up", "look_down"]:
 		assert_false(InputMap.event_is_action(_key(KEY_COMMA), action), "comma does not fire %s" % action)
 		assert_false(InputMap.event_is_action(_key(KEY_PERIOD), action), "period does not fire %s" % action)
-	for key: Key in [KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_W, KEY_A, KEY_S, KEY_D, KEY_E, KEY_SPACE]:
+		assert_false(InputMap.event_is_action(_key(KEY_A), action), "A does not fire %s" % action)
+		assert_false(InputMap.event_is_action(_key(KEY_D), action), "D does not fire %s" % action)
+	for key: Key in [KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_W, KEY_S, KEY_E, KEY_SPACE, KEY_Q, KEY_R]:
 		assert_false(InputMap.event_is_action(_key(key), "look_left"), "%s does not turn left" % OS.get_keycode_string(key))
 		assert_false(InputMap.event_is_action(_key(key), "look_right"), "%s does not turn right" % OS.get_keycode_string(key))
+
+func test_letter_pitch_keys_map_onto_the_pitch_actions() -> void:
+	# Issue #55: W/S are the letters' pitch swivel, riding their own
+	# actions without touching yaw, movement, or the act keys.
+	assert_true(InputMap.has_action("look_up"), "look_up exists")
+	assert_true(InputMap.has_action("look_down"), "look_down exists")
+	assert_true(InputMap.event_is_action(_key(KEY_W), "look_up"), "W looks up")
+	assert_true(InputMap.event_is_action(_key(KEY_S), "look_down"), "S looks down")
+	for action: String in ["move_forward", "move_back", "move_left", "move_right", "interact", "activate", "look_left", "look_right"]:
+		assert_false(InputMap.event_is_action(_key(KEY_W), action), "W does not fire %s" % action)
+		assert_false(InputMap.event_is_action(_key(KEY_S), action), "S does not fire %s" % action)
+	for key: Key in [KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_A, KEY_D, KEY_COMMA, KEY_PERIOD, KEY_E, KEY_SPACE, KEY_Q, KEY_R]:
+		assert_false(InputMap.event_is_action(_key(key), "look_up"), "%s does not look up" % OS.get_keycode_string(key))
+		assert_false(InputMap.event_is_action(_key(key), "look_down"), "%s does not look down" % OS.get_keycode_string(key))
+
+func test_unused_letters_fire_no_game_actions() -> void:
+	# Issue #55: Q, E, and R are deliberately unused.
+	var game_actions: Array[String] = ["move_forward", "move_back", "move_left", "move_right",
+		"look_left", "look_right", "look_up", "look_down", "activate", "interact"]
+	for key: Key in [KEY_Q, KEY_E, KEY_R]:
+		for action: String in game_actions:
+			assert_false(InputMap.event_is_action(_key(key), action), "%s does not fire %s" % [OS.get_keycode_string(key), action])
 
 func test_keyboard_look_yaw_rides_the_same_clamps_as_the_mouse() -> void:
 	# Two seconds of held period: 240 degrees of right turn in per-tick
@@ -139,6 +183,25 @@ func test_keyboard_look_yaw_rides_the_same_clamps_as_the_mouse() -> void:
 	_near_float(pitch, InputPlane.PITCH_LIMIT, "keyboard look never touches pitch")
 	_near_float(mouse.y, InputPlane.PITCH_LIMIT, "the mouse delta clamps pitch at the same stop")
 
+func test_keyboard_pitch_rides_the_same_clamps_as_the_mouse() -> void:
+	# Two seconds of held W: 180 degrees of up pitch in per-tick
+	# keyboard deltas, clamping at the vertical stop exactly like one
+	# equal mouse delta through the same integrate path; held S clamps
+	# at the lower stop.
+	var pitch := 0.0
+	for _tick: int in range(120):
+		var angles := InputPlane.integrate_look(0.0, pitch, Vector2(0.0, InputPlane.PITCH_SPEED * DT))
+		pitch = angles.y
+	_near_float(pitch, InputPlane.PITCH_LIMIT, "180 degrees of up pitch clamps at the vertical stop")
+	var mouse := InputPlane.integrate_look(0.0, 0.0, Vector2(0.0, deg_to_rad(180.0)))
+	_near_float(pitch, mouse.y, "per-tick keyboard pitch equals one equal mouse delta")
+	_near_float(mouse.x, 0.0, "the mouse delta never touches yaw")
+	var down := 0.0
+	for _tick: int in range(120):
+		var angles := InputPlane.integrate_look(0.0, down, Vector2(0.0, -InputPlane.PITCH_SPEED * DT))
+		down = angles.y
+	_near_float(down, -InputPlane.PITCH_LIMIT, "held S clamps at the lower stop")
+
 func test_opposing_look_keys_cancel_like_opposing_movement_keys() -> void:
 	Input.action_press("look_left")
 	Input.action_press("look_right")
@@ -146,6 +209,12 @@ func test_opposing_look_keys_cancel_like_opposing_movement_keys() -> void:
 	Input.action_release("look_left")
 	Input.action_release("look_right")
 	_near_float(axis, 0.0, "comma and period held together cancel")
+	Input.action_press("look_down")
+	Input.action_press("look_up")
+	var pitch_axis := Input.get_axis("look_down", "look_up")
+	Input.action_release("look_down")
+	Input.action_release("look_up")
+	_near_float(pitch_axis, 0.0, "W and S held together cancel")
 
 func test_mouse_and_keyboard_deltas_sum_in_one_tick() -> void:
 	var plane := InputPlane.new()
@@ -158,15 +227,40 @@ func test_mouse_and_keyboard_deltas_sum_in_one_tick() -> void:
 	_near_float(taken.y, 0.0, "neither channel moves pitch")
 	_near_float(plane.take_look().x, 0.0, "the merged delta is taken once")
 
-func test_left_click_aliases_the_interact_and_activate_actions() -> void:
+func test_letters_and_mouse_deltas_sum_in_one_tick() -> void:
+	# One tick of the device producer with the mouse moving and the
+	# letters held: every producer lands on the one look channel and the
+	# single take_look drains all of it.
+	Input.action_press("look_right")
+	Input.action_press("look_up")
+	var turn := Input.get_axis("look_left", "look_right")
+	var pitch := Input.get_axis("look_down", "look_up")
+	Input.action_release("look_right")
+	Input.action_release("look_up")
+	var plane := InputPlane.new()
+	plane.offer_look_pixels(Vector2(10.0, -4.0))
+	plane.offer_look(-turn * InputPlane.TURN_SPEED * DT, pitch * InputPlane.PITCH_SPEED * DT)
+	var taken := plane.take_look()
+	_near_float(taken.x, -(10.0 * InputPlane.LOOK_SENSITIVITY + InputPlane.TURN_SPEED * DT), "the tick's mouse and D yaw sum")
+	_near_float(taken.y, 4.0 * InputPlane.LOOK_SENSITIVITY + InputPlane.PITCH_SPEED * DT, "the tick's mouse and W pitch sum")
+	_near_float(plane.take_look().x, 0.0, "the merged yaw is taken once")
+	_near_float(plane.take_look().y, 0.0, "both axes drain together")
+
+func test_left_click_and_space_are_the_act_keys() -> void:
+	# Issue #55: Space and a left click are the act keys; E is not.
 	assert_true(InputMap.event_is_action(_click(), "interact"), "a left click is an interact")
 	assert_true(InputMap.event_is_action(_click(), "activate"), "a left click is an activate")
-	assert_true(InputMap.event_is_action(_key(KEY_E), "interact"), "E stays interact")
-	assert_false(InputMap.event_is_action(_key(KEY_E), "activate"), "E does not start the get-up")
-	assert_true(InputMap.event_is_action(_key(KEY_SPACE), "activate"), "Space stays activate")
-	assert_false(InputMap.event_is_action(_key(KEY_SPACE), "interact"), "Space does not interact")
-	assert_false(InputMap.event_is_action(_key(KEY_COMMA), "interact"), "comma does not interact")
-	assert_false(InputMap.event_is_action(_key(KEY_PERIOD), "interact"), "period does not interact")
+	assert_true(InputMap.event_is_action(_key(KEY_SPACE), "activate"), "Space activates")
+	assert_true(InputMap.event_is_action(_key(KEY_SPACE), "interact"), "Space interacts")
+	for action: String in ["interact", "activate"]:
+		assert_false(InputMap.event_is_action(_key(KEY_E), action), "E does not %s" % action)
+		assert_false(InputMap.event_is_action(_key(KEY_COMMA), action), "comma does not %s" % action)
+		assert_false(InputMap.event_is_action(_key(KEY_PERIOD), action), "period does not %s" % action)
+		assert_false(InputMap.event_is_action(_key(KEY_W), action), "W does not %s" % action)
+		assert_false(InputMap.event_is_action(_key(KEY_A), action), "A does not %s" % action)
+		assert_false(InputMap.event_is_action(_key(KEY_S), action), "S does not %s" % action)
+		assert_false(InputMap.event_is_action(_key(KEY_D), action), "D does not %s" % action)
+		assert_false(InputMap.event_is_action(_key(KEY_UP), action), "up arrow does not %s" % action)
 
 func test_click_edges_start_the_authored_get_up_after_wake() -> void:
 	var game := _awake_game()
@@ -196,20 +290,20 @@ func test_click_edge_refuses_at_the_hatch() -> void:
 	assert_true(motion.interact_with_hatch(plane, game), "the click's interact edge refuses at the door")
 	assert_int_equal(motion.refusals, 1, "one click, one refusal")
 
-func test_e_and_click_edges_consume_exactly_once_interleaved() -> void:
+func test_click_edges_consume_exactly_once_interleaved() -> void:
 	var plane := InputPlane.new()
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the E edge is consumed")
-	assert_false(plane.take_press(InputPlane.Buttons.INTERACT), "the E edge is consumed exactly once")
+	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the first click edge is consumed")
+	assert_false(plane.take_press(InputPlane.Buttons.INTERACT), "the first click edge is consumed exactly once")
 	plane.end_frame()
 	plane.offer_press(InputPlane.Buttons.INTERACT)
 	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the click edge on a later tick is consumed")
-	assert_false(plane.take_press(InputPlane.Buttons.INTERACT), "the click edge is consumed exactly once")
+	assert_false(plane.take_press(InputPlane.Buttons.INTERACT), "the later click edge is consumed exactly once")
 	plane.end_frame()
-	# E and click in the same tick transition the action state once, so
-	# the producer offers one edge whatever the press order.
+	# Space and click in the same tick transition each action state once,
+	# so the producer offers one edge per button whatever the press order.
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "E and click in one tick deliver one edge")
+	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "Space and click in one tick deliver one edge")
 	assert_false(plane.take_press(InputPlane.Buttons.INTERACT), "no second edge whatever the order")
 	var game := _awake_game()
 	var motion := PlayerMotion.new()
@@ -217,11 +311,11 @@ func test_e_and_click_edges_consume_exactly_once_interleaved() -> void:
 	_stand(motion, game, hatch_plane)
 	_walk_to_hatch(motion, game, hatch_plane)
 	hatch_plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_hatch(hatch_plane, game), "E refuses")
+	assert_true(motion.interact_with_hatch(hatch_plane, game), "a click refuses")
 	hatch_plane.offer_press(InputPlane.Buttons.INTERACT)
 	assert_true(motion.interact_with_hatch(hatch_plane, game), "the click on the next tick refuses again")
 	hatch_plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_hatch(hatch_plane, game), "the same-tick E and click pair refuses once")
+	assert_true(motion.interact_with_hatch(hatch_plane, game), "the same-tick Space and click pair refuses once")
 	assert_false(motion.interact_with_hatch(hatch_plane, game), "nothing is left to consume")
 	assert_int_equal(motion.refusals, 3, "three edges across the ticks, three refusals")
 
@@ -263,3 +357,47 @@ func test_scripted_key_turn_matches_the_device_look_offer() -> void:
 	device_plane.offer_look(-1.0 * InputPlane.TURN_SPEED * DT, 0.0)
 	_near_float(scripted_plane.take_look().x, device_plane.take_look().x, "one scripted key-turn tick equals the device offer")
 	_near_float(scripted_plane.take_look().x, 0.0, "the scripted turn is offered for exactly one tick")
+
+func test_scenario_accepts_key_pitch_actions() -> void:
+	var parsed: Dictionary = ScenarioModule.parse(JSON.stringify({
+		"name": "key-pitch-probe", "seed": 1,
+		"actions": [
+			{"tick": 0, "type": "key_pitch", "dir": "up"},
+			{"tick": 1, "type": "key_pitch", "dir": "down"},
+			{"tick": 2, "type": "key_pitch", "dir": "up"},
+			{"tick": 2, "type": "key_pitch", "dir": "up"},
+		],
+		"beats": [],
+	}))
+	assert_true(parsed.error.is_empty(), parsed.error)
+	if parsed.error.is_empty():
+		var adapter := ScenarioModule.InputAdapter.new(parsed.scenario.actions, 60)
+		assert_float_equal(adapter.step().key_pitch, 1.0, "up is the positive pitch axis")
+		assert_float_equal(adapter.step().key_pitch, -1.0, "down is the negative pitch axis")
+		assert_float_equal(adapter.step().key_pitch, 2.0, "same-tick key pitches sum")
+
+func test_scenario_rejects_a_malformed_key_pitch_dir() -> void:
+	var parsed: Dictionary = ScenarioModule.parse(JSON.stringify({
+		"name": "bad", "actions": [{"tick": 0, "type": "key_pitch", "dir": "left"}], "beats": []}))
+	assert_false(parsed.error.is_empty(), "an unknown pitch direction fails")
+
+func test_scenario_rejects_a_key_pitch_without_a_dir() -> void:
+	var parsed: Dictionary = ScenarioModule.parse(JSON.stringify({
+		"name": "bad", "actions": [{"tick": 0, "type": "key_pitch"}], "beats": []}))
+	assert_false(parsed.error.is_empty(), "a key_pitch with no direction fails")
+
+func test_scripted_key_pitch_matches_the_device_look_offer() -> void:
+	# The app lane converts the tick's key_pitch axis with the device
+	# producer's exact expression, so scripted and held-key pitch agree.
+	var input := ScenarioModule.InputAdapter.new([
+		{"tick": 0, "type": "key_pitch", "dir": "up"},
+	], 60)
+	var axis: float = input.step().key_pitch
+	var scripted := InputPlane.ScriptedAdapter.new()
+	scripted.look(0.0, axis * InputPlane.PITCH_SPEED / 60.0)
+	var scripted_plane := InputPlane.new()
+	scripted.offer_tick(scripted_plane)
+	var device_plane := InputPlane.new()
+	device_plane.offer_look(0.0, 1.0 * InputPlane.PITCH_SPEED * DT)
+	_near_float(scripted_plane.take_look().y, device_plane.take_look().y, "one scripted key-pitch tick equals the device offer")
+	_near_float(scripted_plane.take_look().y, 0.0, "the scripted pitch is offered for exactly one tick")

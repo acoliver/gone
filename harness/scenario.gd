@@ -16,6 +16,8 @@ extends RefCounted
 ##                 "yaw_deg": float, "pitch_deg": float}
 ##                | {"tick": int, "type": "key_turn",
 ##                 "dir": "left"|"right"}
+##                | {"tick": int, "type": "key_pitch",
+##                 "dir": "up"|"down"}
 ##                | {"tick": int, "type": "move",
 ##                 "forward": float, "strafe": float}
 ##                | {"tick": int, "type": "wait", "duration": float}
@@ -30,6 +32,7 @@ extends RefCounted
 
 const VALID_BUTTONS: Array[String] = ["activate", "interact", "exit"]
 const VALID_TURN_DIRS: Array[String] = ["left", "right"]
+const VALID_PITCH_DIRS: Array[String] = ["up", "down"]
 const VALID_MODES: Array[String] = ["capture", "perf", "calibration"]
 const VALID_CONTENTS: Array[String] = ["calibration", "gameplay"]
 const DEFAULT_TICKS_PER_SECOND: int = 60
@@ -115,6 +118,11 @@ static func _parse_action(scenario_name: String, entry: Dictionary) -> Dictionar
 			if not VALID_TURN_DIRS.has(dir):
 				return {}
 			action.dir = dir
+		"key_pitch":
+			var dir := String(entry.get("dir", ""))
+			if not VALID_PITCH_DIRS.has(dir):
+				return {}
+			action.dir = dir
 		"move":
 			action.forward = float(entry.get("forward", 0.0))
 			action.strafe = float(entry.get("strafe", 0.0))
@@ -135,6 +143,7 @@ class InputAdapter:
 	var _edges: Array = []
 	var _pending_look: Vector2 = Vector2.ZERO
 	var _pending_key_turn: float = 0.0
+	var _pending_key_pitch: float = 0.0
 	var _pending_movement: Vector2 = Vector2.ZERO
 	var _tick_floor: int = 0
 	var _ticks_per_second: int = 60
@@ -156,10 +165,11 @@ class InputAdapter:
 
 	## Advance one fixed update: exactly this tick's button edges, look
 	## delta (degrees), turn-key axis (+1 right, -1 left; same-tick key
-	## turns sum), and movement intent. Held actions stay queued
+	## turns sum), pitch-key axis (+1 up, -1 down; same-tick key pitches
+	## sum), and movement intent. Held actions stay queued
 	## until their wait lifts, whatever their own ticks say.
 	func step() -> Dictionary:
-		var out := {"edges": [], "look_deg": Vector2.ZERO, "key_turn": 0.0, "movement": Vector2.ZERO}
+		var out := {"edges": [], "look_deg": Vector2.ZERO, "key_turn": 0.0, "key_pitch": 0.0, "movement": Vector2.ZERO}
 		if _hold_remaining_ticks > 0.0:
 			_hold_remaining_ticks -= 1.0
 		while not _actions.is_empty():
@@ -172,6 +182,8 @@ class InputAdapter:
 		_pending_look = Vector2.ZERO
 		out.key_turn = _pending_key_turn
 		_pending_key_turn = 0.0
+		out.key_pitch = _pending_key_pitch
+		_pending_key_pitch = 0.0
 		out.movement = _pending_movement
 		_pending_movement = Vector2.ZERO
 		_tick_floor += 1
@@ -187,6 +199,8 @@ class InputAdapter:
 				_pending_look += Vector2(action.yaw_deg, action.pitch_deg)
 			"key_turn":
 				_pending_key_turn += 1.0 if action.dir == "right" else -1.0
+			"key_pitch":
+				_pending_key_pitch += 1.0 if action.dir == "up" else -1.0
 			"move":
 				_pending_movement += Vector2(action.forward, action.strafe)
 			"wait":
