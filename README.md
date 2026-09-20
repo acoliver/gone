@@ -10,7 +10,9 @@ crossing, which is milestone 1 of the design;
 the long-form plan is survival through repair, with the ship's systems as
 both the puzzle and the story. Read
 [docs/design/concept.md](docs/design/concept.md) for the design pillars and
-[docs/design/story.md](docs/design/story.md) for the fiction.
+[docs/design/biblia.md](docs/design/biblia.md) for the narrative and design
+bible (Spanish draft); [docs/design/story.md](docs/design/story.md) keeps the
+opening wake staging notes.
 
 ## Requirements
 
