@@ -186,7 +186,7 @@ func test_door_refuses_without_the_rod_and_opens_with_it() -> void:
 		plane.end_frame()
 	assert_int_equal(motion.door_state, PlayerMotion.DoorState.OPEN, "the opening completed")
 	assert_true(game.door_open, "the doorway's colliders opened")
-	assert_int_equal(game.colliders.size(), Hallway.scene_collider_set(game.registry, true).size(), "the open doorway carries the open collider set")
+	assert_int_equal(game.colliders.size(), PowerRoom.scene_collider_set(game.registry, true, game.power_door_open).size(), "the open doorway carries the open collider set")
 	assert_true(game.colliders.size() != colliders_closed, "the collider set changed when the doorway opened")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
 	assert_false(motion.interact_with_door(plane, game), "the press at the open door is not eaten either")

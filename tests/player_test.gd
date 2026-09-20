@@ -219,7 +219,7 @@ func test_door_opens_only_in_reach_and_standing() -> void:
 		plane.end_frame()
 	assert_int_equal(motion.door_state, PlayerMotion.DoorState.OPEN, "the opening completed on the tick clock")
 	assert_true(game.door_open, "the doorway opened with the collider rebuild")
-	assert_int_equal(game.colliders.size(), Hallway.scene_collider_set(game.registry, true).size(), "the open doorway carries the open collider set")
+	assert_int_equal(game.colliders.size(), PowerRoom.scene_collider_set(game.registry, true, game.power_door_open).size(), "the open doorway carries the open collider set")
 	assert_true(game.colliders.size() != colliders_closed, "the collider set changed when the doorway opened")
 	assert_vec3_equal(motion.door_slab_offset(), Vector3(PlayerMotion.DOOR_RETRACT_DISTANCE, 0.0, -PlayerMotion.DOOR_SLIDE_DISTANCE), "the slid-aside slab pose is pinned")
 	assert_int_equal(motion.state(), PlayerMotion.BodyState.WALK, "the body still owns a standing capsule")

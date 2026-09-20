@@ -36,7 +36,26 @@ const DOOR_SLIDE_TICKS: int = 36
 const DOOR_RETRACT_DISTANCE: float = 0.17
 const DOOR_SLIDE_DISTANCE: float = 1.2
 
+## How close to the power door's leaf, in meters on the floor plane,
+## an interact press must land to open it. The power door is a crew
+## door: no rod gate, no pry bar.
+const POWER_DOOR_REACH: float = 2.2
+
+## The power door's deterministic opening, in fixed ticks: one slide
+## along the wall band, the same animation language as the stasis
+## door's slide phase.
+const POWER_DOOR_SLIDE_TICKS: int = 48
+
+## How far, in meters, the power door's leaf slides along -X into the
+## wall band: clear of the aperture's walkable width.
+const POWER_DOOR_SLIDE_DISTANCE: float = 1.15
+
+## How close to the working console's screen, in meters on the floor
+## plane, an interact press must land to act at the console.
+const CONSOLE_ACT_REACH: float = 1.8
+
 enum DoorState { CLOSED, OPENING, OPEN }
+enum PowerDoorState { CLOSED, OPENING, OPEN }
 
 var _controller: Exit.GetUpController = null
 var _walk: Walk.WalkState = null
@@ -45,6 +64,10 @@ var door_state: int = DoorState.CLOSED
 var door_elapsed: int = 0
 var door_openings: int = 0
 var hallway_switch_flips: int = 0
+var power_door_state: int = PowerDoorState.CLOSED
+var power_door_elapsed: int = 0
+var power_door_openings: int = 0
+var console_presses: int = 0
 var rod_carried: bool = false
 
 func state() -> int:
@@ -84,6 +107,7 @@ func record_failure(message: String) -> void:
 ## the mirror currently holds. dt is the fixed tick's sim seconds.
 func advance(plane: InputPlane, game: Game, yaw: float, dt: float) -> void:
 	_tick_door(game)
+	_tick_power_door(game)
 	match state():
 		BodyState.LYING:
 			_begin_get_up_if_pressed(plane, game)
@@ -183,6 +207,72 @@ func door_slab_offset() -> Vector3:
 		float(door_elapsed - DOOR_RETRACT_TICKS) / float(DOOR_SLIDE_TICKS),
 		0.0, 1.0)
 	return Vector3(DOOR_RETRACT_DISTANCE * retract, 0.0, -DOOR_SLIDE_DISTANCE * slide)
+
+## Open the power room's door: while standing in reach of the leaf on
+## the corridor side, one interact press starts the door's deterministic
+## slide and is consumed by the act itself. No rod gate — the power
+## door is a crew door — and once the door has opened it owns no press.
+## Returns true when the press was consumed at the door.
+func interact_with_power_door(plane: InputPlane, game: Game) -> bool:
+	if state() != BodyState.WALK:
+		return false
+	var foot: Vector3 = capsule().foot
+	var center: Vector3 = PowerRoom.door_act_center()
+	var reach := Vector2(foot.x - center.x, foot.z - center.z)
+	if reach.length() > POWER_DOOR_REACH:
+		return false
+	if power_door_state != PowerDoorState.CLOSED:
+		return false
+	if not plane.take_press(InputPlane.Buttons.INTERACT):
+		return false
+	power_door_state = PowerDoorState.OPENING
+	power_door_openings += 1
+	return true
+
+## The power door's opening tick, driven at the head of every advance
+## beside the stasis door's, same contract: the doorway's colliders
+## open only when the animation lands.
+func _tick_power_door(game: Game) -> void:
+	if power_door_state != PowerDoorState.OPENING:
+		return
+	power_door_elapsed += 1
+	if power_door_elapsed >= POWER_DOOR_SLIDE_TICKS:
+		power_door_state = PowerDoorState.OPEN
+		game.open_power_doorway()
+
+## The power door leaf's animated offset from its authored closed pose,
+## in world space: the deterministic projection the power room module's
+## leaf renders.
+func power_door_slab_offset() -> Vector3:
+	if power_door_state == PowerDoorState.CLOSED:
+		return Vector3.ZERO
+	var slide: float = clampf(
+		float(power_door_elapsed) / float(POWER_DOOR_SLIDE_TICKS), 0.0, 1.0)
+	return Vector3(-POWER_DOOR_SLIDE_DISTANCE * slide, 0.0, 0.0)
+
+## Act at the power room's working console: while standing in reach of
+## the screen, one interact press advances the secondary power's state
+## machine one step — standby shows the Inactivo label, inactive
+## activates the generator — and is consumed only when a step lands.
+## A press at the dead consoles or at an already-active console owns
+## nothing and stays on the channel, exactly like the other interact
+## consumers. Returns true when the press was consumed at the console.
+func interact_with_console(plane: InputPlane, game: Game) -> bool:
+	if state() != BodyState.WALK:
+		return false
+	if game.console_state == Game.ConsoleState.ACTIVE:
+		return false
+	var foot: Vector3 = capsule().foot
+	var center: Vector3 = PowerRoom.console_act_center()
+	var reach := Vector2(foot.x - center.x, foot.z - center.z)
+	if reach.length() > CONSOLE_ACT_REACH:
+		return false
+	if not plane.take_press(InputPlane.Buttons.INTERACT):
+		return false
+	var advanced: bool = game.press_console()
+	assert(advanced, "the console's pre-checked state machine must advance")
+	console_presses += 1
+	return true
 
 ## Flip the hallway switch: while standing in reach of the plate beside
 ## the doorway, one interact press lights the hallway fixtures, exactly

@@ -20,6 +20,12 @@ const PERF_POLICY_PATH: String = "res://harness/perf-policy.json"
 const DARK_MAX_LUMA: float = 0.06
 const LIT_MIN_LUMA: float = 0.008
 const LIT_MIN_RED: float = 0.02
+## Beats framed under the activated secondary power's regular white
+## light: nonblack like every lit beat, but NOT red-dominant — red
+## exceeding both other channels by this margin reads as still
+## emergency-lit.
+const WHITE_LIGHT_BEATS: Array[String] = ["power-active", "hall-white"]
+const WHITE_MAX_RED_ADVANCE: float = 0.02
 const BEAT_TICK_HEADROOM: int = 40
 const WAKE_PROGRESSION: Array[String] = ["waking", "awake_in_pod", "exiting_pod", "standing"]
 
@@ -158,6 +164,7 @@ func verify_run(app_hash: String, scenario_hash: String, config_hash: String) ->
 		verify_door_open(report)
 		verify_hallway(report)
 		verify_rod_pickup(report)
+		verify_power(report)
 	elif scenario.mode == "perf":
 		verify_perf(report)
 	else:
@@ -305,8 +312,10 @@ func measure_mean_linear(image: Image) -> float:
 ## Per-beat machine checks on the view outside the chip: the eyes-closed
 ## beat is dark (the eyelid pass closes over an unlit room) and the
 ## hall-dark beat is dark (the hallway is unlit until its switch flips),
-## while every other lit beat is nonblack and red-dominant (the rooms'
-## emergency lighting).
+## every other lit beat is nonblack and red-dominant (the rooms'
+## emergency lighting), and the power-active/hall-white beats are
+## nonblack but NOT red-dominant (the activated secondary power's
+## regular white light).
 func verify_beat_stats(name: String, image: Image, entry: Dictionary) -> void:
 	var chip: Vector2i = Protocol.chip_size()
 	var samples: int = 0
@@ -337,6 +346,11 @@ func verify_beat_stats(name: String, image: Image, entry: Dictionary) -> void:
 		return
 	if luma <= LIT_MIN_LUMA:
 		failures.append("beat `%s` is black: luma %.4f" % [name, luma])
+	if WHITE_LIGHT_BEATS.has(name):
+		if red >= green + WHITE_MAX_RED_ADVANCE and red >= blue + WHITE_MAX_RED_ADVANCE:
+			failures.append("beat `%s` still red-dominant: r/g/b %.4f/%.4f/%.4f" % [
+				name, red, green, blue])
+		return
 	if red < LIT_MIN_RED or red < green or red < blue:
 		failures.append("beat `%s` not red-dominant: r/g/b %.4f/%.4f/%.4f" % [name, red, green, blue])
 
@@ -403,6 +417,68 @@ func verify_rod_pickup(report) -> void:
 		if event.kind == "rod_pickup" and bool(event.carried) and int(event.tick) <= beat_tick + BEAT_TICK_HEADROOM:
 			return
 	failures.append("rod-picked-up beat has no carried evidence at or before tick %d" % beat_tick)
+
+## The power room beats' machine checks (issue #59): the power door
+## opened on its ungated press, the console's Inactivo label, the
+## Activo activation with the generator lit, the hallway's white
+## hand-off with the power room white too, and the stasis bay keeping
+## its red through it all. Scenarios without the beats skip them.
+func verify_power(report) -> void:
+	if report.beats.has("power-door-opened"):
+		var door_tick: int = report.beats["power-door-opened"].tick
+		var door_ok := false
+		for event: Dictionary in report.events:
+			if event.kind == "power_door" and int(event.openings) >= 1 and bool(event.open) \
+					and int(event.tick) <= door_tick + BEAT_TICK_HEADROOM:
+				door_ok = true
+				break
+		if not door_ok:
+			failures.append("power-door-opened beat has no open-door evidence at or before tick %d" % door_tick)
+	if report.beats.has("console-inactive"):
+		var inactive_tick: int = report.beats["console-inactive"].tick
+		var inactive_ok := false
+		for event: Dictionary in report.events:
+			if event.kind == "console" and String(event.state) == "inactive" \
+					and String(event.label).find("Inactivo") >= 0 \
+					and int(event.tick) <= inactive_tick + BEAT_TICK_HEADROOM:
+				inactive_ok = true
+				break
+		if not inactive_ok:
+			failures.append("console-inactive beat has no Inactivo-label evidence at or before tick %d" % inactive_tick)
+	if report.beats.has("power-active"):
+		var active_tick: int = report.beats["power-active"].tick
+		var console_ok := false
+		var generator_ok := false
+		for event: Dictionary in report.events:
+			if not event.has("tick") or int(event.tick) > active_tick + BEAT_TICK_HEADROOM:
+				continue
+			if event.kind == "console" and String(event.state) == "active" \
+					and String(event.label).find("Activo") >= 0:
+				console_ok = true
+			if event.kind == "power" and bool(event.active) \
+					and float(event.generator_lit) >= 0.95:
+				generator_ok = true
+		if not console_ok:
+			failures.append("power-active beat has no Activo-label evidence at or before tick %d" % active_tick)
+		if not generator_ok:
+			failures.append("power-active beat has no generator-lit evidence at or before tick %d" % active_tick)
+	if report.beats.has("hall-white"):
+		var white_tick: int = report.beats["hall-white"].tick
+		var hall_ok := false
+		var rooms_ok := false
+		for event: Dictionary in report.events:
+			if not event.has("tick") or int(event.tick) > white_tick + BEAT_TICK_HEADROOM:
+				continue
+			if event.kind == "hallway" and bool(event.white) \
+					and float(event.white_level) >= 0.95:
+				hall_ok = true
+			if event.kind == "power" and float(event.stasis_red_level) >= 0.99 \
+					and float(event.power_white_level) >= 0.95:
+				rooms_ok = true
+		if not hall_ok:
+			failures.append("hall-white beat has no white-hallway evidence at or before tick %d" % white_tick)
+		if not rooms_ok:
+			failures.append("hall-white beat has no stasis-stays-red + power-room-white evidence at or before tick %d" % white_tick)
 
 func _verdict() -> void:
 	var passed := failures.is_empty()
