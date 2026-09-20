@@ -146,7 +146,7 @@ contract lives in `docs/dev/harness.md`; the shape:
   a beat that happened between rendered frames cannot be fabricated.
 - **Two-stage verdict.** Stage one is machine: report version, hash echo,
   beat decode and tick correlation, luminance and red-dominance stats,
-  wake progression, refusal evidence, perf thresholds, calibration
+  wake progression, door-open evidence, perf thresholds, calibration
   assertions. Stage two is visual: a vision subagent receives the beat
   PNGs and an expectations checklist; missing or inconclusive visual
   results count as failures.
@@ -158,7 +158,7 @@ contract lives in `docs/dev/harness.md`; the shape:
   failure.
 - **Gameplay lane.** The runner on `scenarios/gameplay-full.json` drives
   the whole opening beat with seven captures (eyes-closed, first-blink,
-  shapes-resolving, standing, mid-room, at-door, door-refused), a
+  shapes-resolving, standing, mid-room, at-door, door-opened), a
   readiness proof, hash echo, and tick/frame correlation.
 - **Perf lane.** The same runner on `scenarios/perf-smoke.json` judges
   frame times against the smoke-grade policy.

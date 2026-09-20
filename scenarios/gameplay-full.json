@@ -5459,8 +5459,8 @@
 			"tick": 1207
 		},
 		{
-			"name": "door-refused",
-			"tick": 1225
+			"name": "door-opened",
+			"tick": 1268
 		}
 	]
 }

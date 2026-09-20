@@ -6,12 +6,8 @@ extends Node3D
 ## node integrates look from the shared input plane, projects the sim's
 ## capsule onto the rig (head sphere through the get-up, standing eye
 ## height on the floor), translates the device's InputMap actions and
-## mouse onto the plane, and plays the hatch refusal's shudder feedback
-## (brief camera shake plus hatch jitter); the door never opens.
-
-const REFUSAL_SHAKE_SECONDS: float = 0.35
-const REFUSAL_SHAKE_AMPLITUDE: float = 0.05
-const REFUSAL_HATCH_JITTER: float = 0.012
+## mouse onto the plane, and projects the sim's deterministic door
+## opening onto the hatch's door slab every tick.
 
 var game: Game
 var camera: Camera3D
@@ -28,8 +24,6 @@ var _look_yaw: float = 0.0
 var _look_pitch: float = 0.0
 var _mouse_pixels: Vector2 = Vector2.ZERO
 var _device_actions: bool = false
-var _shake_elapsed: float = -1.0
-var _hatch_base: Vector3 = Vector3.ZERO
 
 static func build(p_game: Game, p_hatch: Node3D) -> Player:
 	var player := Player.new()
@@ -41,7 +35,6 @@ static func build(p_game: Game, p_hatch: Node3D) -> Player:
 func _ready() -> void:
 	plane = InputPlane.new()
 	motion = PlayerMotion.new()
-	_hatch_base = hatch.position if hatch != null else Vector3.ZERO
 	# Authored spawn: lying at the exit path's first pose head, facing
 	# the pod's opening, aimed one stop short of the vertical.
 	var spawn: Exit.ExitPose = game.exit_path.poses()[0]
@@ -73,13 +66,17 @@ func _physics_process(delta: float) -> void:
 		adapter.offer_tick(plane)
 	_integrate_look()
 	motion.advance(plane, game, _look_yaw, delta)
-	# The rod and the hatch share the interact channel; the rod consumes
-	# a press only when the pickup lands, so dispatching it first never
-	# starves the hatch's refusal.
+	# The rod, the door, and the hallway switch share the interact
+	# channel: the rod consumes a press only when the pickup lands, the
+	# door eats every press in reach (it owns the whole channel at the
+	# door), and the switch — out at the hallway's far wall, where the
+	# door is out of reach — takes one press only when the flip lands.
 	if motion.pickup_rod(plane):
 		rod.pick_up()
-	if motion.interact_with_hatch(plane, game):
-		_begin_refusal()
+	motion.interact_with_door(plane, game)
+	motion.flip_hallway_switch(plane, game)
+	if hatch != null and hatch is Hatch:
+		hatch.set_door_offset(motion.door_slab_offset())
 	if not motion.failure().is_empty():
 		push_error("halting on player motion failure: " + motion.failure())
 		get_tree().quit(1)
@@ -143,28 +140,3 @@ func apply_wake_sway(sway: Vector2) -> void:
 
 func on_wake_complete() -> void:
 	_project_rotation(Vector2.ZERO)
-
-func _process(delta: float) -> void:
-	if _shake_elapsed < 0.0:
-		return
-	_shake_elapsed += delta
-	if _shake_elapsed >= REFUSAL_SHAKE_SECONDS:
-		_end_refusal()
-		return
-	var decay: float = 1.0 - _shake_elapsed / REFUSAL_SHAKE_SECONDS
-	var t := _shake_elapsed
-	camera.position = Vector3(sin(t * 70.0), cos(t * 63.0) * 0.6, 0.0) * (REFUSAL_SHAKE_AMPLITUDE * decay)
-	if hatch != null:
-		hatch.position = _hatch_base + Vector3(sin(t * 90.0) * REFUSAL_HATCH_JITTER * decay, 0.0, 0.0)
-
-func _begin_refusal() -> void:
-	_shake_elapsed = 0.0
-
-func _end_refusal() -> void:
-	_shake_elapsed = -1.0
-	camera.position = Vector3.ZERO
-	if hatch != null:
-		hatch.position = _hatch_base
-
-func is_refusing() -> bool:
-	return _shake_elapsed >= 0.0

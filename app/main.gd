@@ -11,12 +11,13 @@ var camera: Camera3D
 var player: Player
 var hatch: Hatch
 var rod: Rod
+var hallway: Hallway
 var wake_pass: WakePass
 var wake_present: WakePresent
 
 func _ready() -> void:
 	game = Game.new()
-	add_child(RoomGeometry.build())
+	add_child(RoomGeometry.build(true))
 	add_child(StasisPods.build(game.registry))
 	hatch = Hatch.build()
 	add_child(hatch)
@@ -25,6 +26,8 @@ func _ready() -> void:
 	add_child(Wires.build())
 	rod = Rod.build()
 	add_child(rod)
+	hallway = Hallway.build(game)
+	add_child(hallway)
 	_add_player()
 	_add_wake_presentation()
 

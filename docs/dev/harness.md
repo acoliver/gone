@@ -62,16 +62,21 @@ view.
 Machine checks after the run: report version and hash echoes; every
 declared beat present and decodable, its chip equal to the report's
 (tick, frame) and correlated to the scripted tick; per-beat luminance and
-channel stats (the eyes-closed beat must be dark, every other beat
+channel stats (the eyes-closed beat must be dark, the hall-dark beat
+must be dark while the hallway's fixtures hold zero, every other beat
 nonblack and red-dominant); the wake progression waking, awake_in_pod,
-exiting_pod, standing in order with non-regressing ticks; and refusal
-evidence at or before the door-refused beat.
+exiting_pod, standing in order with non-regressing ticks; door-open
+evidence at or before the door-opened beat; and hallway light evidence
+for the lanes that declare the hall beats.
 
 `scenarios/gameplay-full.json` scripts the whole opening: the wake, the
 get-up out of the pod, a 90-degree turn, the steadying walk across the
-room, and the refused interact at the jammed hatch, pinning seven beats
-(eyes-closed, first-blink, shapes-resolving, standing, mid-room, at-door,
-door-refused).
+room, and the interact that opens the door into the hallway, pinning
+seven beats (eyes-closed, first-blink, shapes-resolving, standing,
+mid-room, at-door, door-opened). `scenarios/hallway.json` continues past
+the doorway: the dark crossing of the unlit hall to the far wall, the
+switch flip, and the lit settle, pinning door-opened, hall-dark, and
+hall-lit.
 
 ### Perf (mode "perf")
 

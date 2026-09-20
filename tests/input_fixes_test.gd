@@ -272,7 +272,7 @@ func test_click_edges_start_the_authored_get_up_after_wake() -> void:
 	plane.offer_press(InputPlane.Buttons.INTERACT)
 	motion.advance(plane, game, 0.0, DT)
 	assert_int_equal(motion.state(), PlayerMotion.BodyState.GET_UP, "the click's activate edge starts the get-up")
-	assert_false(motion.interact_with_hatch(plane, game), "the same click's interact edge does not refuse mid-get-up")
+	assert_false(motion.interact_with_door(plane, game), "the same click's interact edge does not open the door mid-get-up")
 	var early_game := Game.new()
 	var early_motion := PlayerMotion.new()
 	var early_plane := InputPlane.new()
@@ -280,15 +280,16 @@ func test_click_edges_start_the_authored_get_up_after_wake() -> void:
 	early_motion.advance(early_plane, early_game, 0.0, DT)
 	assert_int_equal(early_motion.state(), PlayerMotion.BodyState.LYING, "a click before wake completes starts nothing")
 
-func test_click_edge_refuses_at_the_hatch() -> void:
+func test_click_edge_opens_the_door() -> void:
 	var game := _awake_game()
 	var motion := PlayerMotion.new()
 	var plane := InputPlane.new()
 	_stand(motion, game, plane)
 	_walk_to_hatch(motion, game, plane)
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_hatch(plane, game), "the click's interact edge refuses at the door")
-	assert_int_equal(motion.refusals, 1, "one click, one refusal")
+	assert_true(motion.interact_with_door(plane, game), "the click's interact edge opens the door")
+	assert_int_equal(motion.door_state, PlayerMotion.DoorState.OPENING, "one click starts the opening")
+	assert_int_equal(motion.door_openings, 1, "one click, one opening")
 
 func test_click_edges_consume_exactly_once_interleaved() -> void:
 	var plane := InputPlane.new()
@@ -311,13 +312,13 @@ func test_click_edges_consume_exactly_once_interleaved() -> void:
 	_stand(motion, game, hatch_plane)
 	_walk_to_hatch(motion, game, hatch_plane)
 	hatch_plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_hatch(hatch_plane, game), "a click refuses")
+	assert_true(motion.interact_with_door(hatch_plane, game), "a click is eaten at the door")
 	hatch_plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_hatch(hatch_plane, game), "the click on the next tick refuses again")
+	assert_true(motion.interact_with_door(hatch_plane, game), "the click on the next tick is eaten too")
 	hatch_plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_hatch(hatch_plane, game), "the same-tick Space and click pair refuses once")
-	assert_false(motion.interact_with_hatch(hatch_plane, game), "nothing is left to consume")
-	assert_int_equal(motion.refusals, 3, "three edges across the ticks, three refusals")
+	assert_true(motion.interact_with_door(hatch_plane, game), "the same-tick Space and click pair is eaten once")
+	assert_false(motion.interact_with_door(hatch_plane, game), "nothing is left to consume")
+	assert_int_equal(motion.door_openings, 1, "three edges across the ticks, still one opening")
 
 func test_scenario_accepts_key_turn_actions() -> void:
 	var parsed: Dictionary = ScenarioModule.parse(JSON.stringify({

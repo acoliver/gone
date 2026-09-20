@@ -12,18 +12,39 @@ extends RefCounted
 enum BodyState { LYING, GET_UP, WALK }
 
 ## How close to the hatch center, in meters on the floor plane, an
-## interact press must land to be a refusal.
+## interact press must land to act at the door.
 const HATCH_INTERACT_REACH: float = 2.2
 
 ## How close to the rod's floor-plan center, in meters, an interact
 ## press must land to pick it up.
 const ROD_PICKUP_REACH: float = 1.3
 
+## How close to the hallway switch's plate, in meters on the floor
+## plane, an interact press must land to flip it.
+const SWITCH_ACT_REACH: float = 2.2
+
+## The door's deterministic opening, in fixed ticks: the slab retracts
+## flat into the doorway's wall band, then slides aside along -Z. The
+## tick counts are the whole animation contract — no runtime
+## randomness, no wall-clock term.
+const DOOR_RETRACT_TICKS: int = 12
+const DOOR_SLIDE_TICKS: int = 36
+
+## How far, in meters, the slab travels in each phase: the retract
+## tucks the slab inside the east wall's band, the slide clears the
+## doorway's walkable width past its frame edge.
+const DOOR_RETRACT_DISTANCE: float = 0.17
+const DOOR_SLIDE_DISTANCE: float = 1.2
+
+enum DoorState { CLOSED, OPENING, OPEN }
+
 var _controller: Exit.GetUpController = null
 var _walk: Walk.WalkState = null
 var _failure: String = ""
-var refusals: int = 0
-var refusal_events: Array[String] = []
+var door_state: int = DoorState.CLOSED
+var door_elapsed: int = 0
+var door_openings: int = 0
+var hallway_switch_flips: int = 0
 var rod_carried: bool = false
 
 func state() -> int:
@@ -62,6 +83,7 @@ func record_failure(message: String) -> void:
 ## movement intent from the shared plane and drive the sim controller
 ## the mirror currently holds. dt is the fixed tick's sim seconds.
 func advance(plane: InputPlane, game: Game, yaw: float, dt: float) -> void:
+	_tick_door(game)
 	match state():
 		BodyState.LYING:
 			_begin_get_up_if_pressed(plane, game)
@@ -115,13 +137,15 @@ func _advance_walk(plane: InputPlane, game: Game, yaw: float, dt: float) -> void
 	if not step.is_ok():
 		record_failure("walk rejected: " + step.error._to_string())
 
-## Consume an interact press at the jammed hatch: while standing in
-## reach, the door refuses (there is no opening transition; the hatch
-## solids stay exactly as authored) and the refusal is recorded. Returns
-## true when the interaction was refused.
-func interact_with_hatch(plane: InputPlane, game: Game) -> bool:
-	if not plane.take_press(InputPlane.Buttons.INTERACT):
-		return false
+## Consume an interact press at the stasis room door: while standing in
+## reach, the first press starts the door's deterministic opening and
+## every further in-reach press is eaten the same way — the door owns
+## every press at the door, open or not, exactly as the old refusal
+## did. A press out of the door's reach is left on the channel: the
+## hallway switch, out at the far wall, shares the interact channel and
+## needs the press the door cannot use. Returns true when the press was
+## consumed at the door.
+func interact_with_door(plane: InputPlane, game: Game) -> bool:
 	if state() != BodyState.WALK:
 		return false
 	var foot: Vector3 = capsule().foot
@@ -129,17 +153,64 @@ func interact_with_hatch(plane: InputPlane, game: Game) -> bool:
 	var reach := Vector2(foot.x - hatch.x, foot.z - hatch.y)
 	if reach.length() > HATCH_INTERACT_REACH:
 		return false
-	refusals += 1
-	refusal_events.append("refused")
+	if not plane.take_press(InputPlane.Buttons.INTERACT):
+		return false
+	if door_state == DoorState.CLOSED:
+		door_state = DoorState.OPENING
+		door_openings += 1
+	return true
+
+## The door's opening tick, driven at the head of every advance so the
+## animation runs whatever the body is doing. The doorway's colliders
+## open only when the animation lands, so the capsule can never cut
+## through the moving door.
+func _tick_door(game: Game) -> void:
+	if door_state != DoorState.OPENING:
+		return
+	door_elapsed += 1
+	if door_elapsed >= DOOR_RETRACT_TICKS + DOOR_SLIDE_TICKS:
+		door_state = DoorState.OPEN
+		game.open_doorway()
+
+## The door slab's animated offset from its authored ajar pose, in world
+## space: the deterministic projection the hatch's door piece renders.
+func door_slab_offset() -> Vector3:
+	if door_state == DoorState.CLOSED:
+		return Vector3.ZERO
+	var retract: float = clampf(float(door_elapsed) / float(DOOR_RETRACT_TICKS), 0.0, 1.0)
+	var slide: float = clampf(
+		float(door_elapsed - DOOR_RETRACT_TICKS) / float(DOOR_SLIDE_TICKS),
+		0.0, 1.0)
+	return Vector3(DOOR_RETRACT_DISTANCE * retract, 0.0, -DOOR_SLIDE_DISTANCE * slide)
+
+## Flip the hallway switch: while standing in reach of the far-wall
+## plate, one interact press lights the hallway fixtures, exactly once.
+## The press is consumed only when the flip lands, like the rod pickup:
+## a press out of reach or before standing stays on the channel for the
+## door to own.
+func flip_hallway_switch(plane: InputPlane, game: Game) -> bool:
+	if hallway_switch_flips >= 1:
+		return false
+	if state() != BodyState.WALK:
+		return false
+	var foot: Vector3 = capsule().foot
+	var center: Vector3 = Hallway.switch_act_center()
+	var reach := Vector2(foot.x - center.x, foot.z - center.z)
+	if reach.length() > SWITCH_ACT_REACH:
+		return false
+	if not plane.take_press(InputPlane.Buttons.INTERACT):
+		return false
+	hallway_switch_flips += 1
+	game.light_hallway()
 	return true
 
 ## Pick up the dropped rod: while standing in reach, one interact press
 ## sets the carried flag, exactly once. The press is consumed only when
-## the pickup lands, unlike the hatch, which eats every press: the rod
-## and the door share the interact channel, and the door's refusal must
-## still own every press at the door, so the rod takes only what it can
-## use and leaves the edge to the hatch otherwise. A press after the
-## pickup is a no-op.
+## the pickup lands, unlike the door, which eats every press: the rod
+## and the door share the interact channel, and the door must still own
+## every press at the door, so the rod takes only what it can use and
+## leaves the edge to the door otherwise. A press after the pickup is a
+## no-op.
 func pickup_rod(plane: InputPlane) -> bool:
 	if rod_carried:
 		return false

@@ -4,8 +4,8 @@ extends SceneTree
 ## with the env contract, waits, then machine-verifies the run — report
 ## version, hash echo, every declared beat's PNG decodes with a chip
 ## matching its (tick, frame), per-beat luminance/red-dominance stats,
-## wake-phase progression, refusal evidence — and prints the two-stage
-## verdict. Exit 0 only on machine PASS.
+## wake-phase progression, door-open and hallway-light evidence — and
+## prints the two-stage verdict. Exit 0 only on machine PASS.
 ## Run: godot --headless --path . -s harness/run.gd -- <scenario.json> [--out <dir>]
 
 const Protocol := preload("res://harness/protocol.gd")
@@ -155,7 +155,8 @@ func verify_run(app_hash: String, scenario_hash: String, config_hash: String) ->
 		verify_beat(report, beat, scenario.mode == "capture")
 	if scenario.mode == "capture":
 		verify_wake_progression(report)
-		verify_refusal(report)
+		verify_door_open(report)
+		verify_hallway(report)
 		verify_rod_pickup(report)
 	elif scenario.mode == "perf":
 		verify_perf(report)
@@ -302,8 +303,10 @@ func measure_mean_linear(image: Image) -> float:
 	return total / float(count) if count > 0 else 0.0
 
 ## Per-beat machine checks on the view outside the chip: the eyes-closed
-## beat is dark (the eyelid pass closes over an unlit room), every lit
-## beat is nonblack and red-dominant (the room's emergency lighting).
+## beat is dark (the eyelid pass closes over an unlit room) and the
+## hall-dark beat is dark (the hallway is unlit until its switch flips),
+## while every other lit beat is nonblack and red-dominant (the rooms'
+## emergency lighting).
 func verify_beat_stats(name: String, image: Image, entry: Dictionary) -> void:
 	var chip: Vector2i = Protocol.chip_size()
 	var samples: int = 0
@@ -328,9 +331,9 @@ func verify_beat_stats(name: String, image: Image, entry: Dictionary) -> void:
 	var blue := blue_sum / samples
 	beat_lines.append("beat `%s` tick %d frame %d: luma %.4f r/g/b %.4f/%.4f/%.4f" % [
 		name, entry.tick, entry.frame, luma, red, green, blue])
-	if name == "eyes-closed":
+	if name == "eyes-closed" or name == "hall-dark":
 		if luma >= DARK_MAX_LUMA:
-			failures.append("beat `eyes-closed` not dark: luma %.4f >= %.2f" % [luma, DARK_MAX_LUMA])
+			failures.append("beat `%s` not dark: luma %.4f >= %.2f" % [name, luma, DARK_MAX_LUMA])
 		return
 	if luma <= LIT_MIN_LUMA:
 		failures.append("beat `%s` is black: luma %.4f" % [name, luma])
@@ -350,14 +353,44 @@ func verify_wake_progression(report) -> void:
 	if names != WAKE_PROGRESSION:
 		failures.append("wake progression %s != %s" % [str(names), str(WAKE_PROGRESSION)])
 
-func verify_refusal(report) -> void:
-	if not report.beats.has("door-refused"):
+## The door-opened beat's machine check: the beat needs a door_open
+## event with the opening counted and the doorway open, captured with
+## the beat. Scenarios without the beat skip it.
+func verify_door_open(report) -> void:
+	if not report.beats.has("door-opened"):
 		return
-	var door_tick: int = report.beats["door-refused"].tick
+	var door_tick: int = report.beats["door-opened"].tick
 	for event: Dictionary in report.events:
-		if event.kind == "refusal" and int(event.count) >= 1 and int(event.tick) <= door_tick + BEAT_TICK_HEADROOM:
+		if event.kind == "door_open" and int(event.openings) >= 1 and bool(event.open) \
+				and int(event.tick) <= door_tick + BEAT_TICK_HEADROOM:
 			return
-	failures.append("door-refused beat has no refusal evidence at or before tick %d" % door_tick)
+	failures.append("door-opened beat has no open-door evidence at or before tick %d" % door_tick)
+
+## The hallway beats' machine checks, in the same shape: hall-dark needs
+## hallway evidence with the circuit still unlit at or before the beat,
+## hall-lit needs evidence with the circuit on. Scenarios without the
+## beats skip them.
+func verify_hallway(report) -> void:
+	if report.beats.has("hall-dark"):
+		var dark_tick: int = report.beats["hall-dark"].tick
+		var dark_ok := false
+		for event: Dictionary in report.events:
+			if event.kind == "hallway" and not bool(event.lit) \
+					and int(event.tick) <= dark_tick + BEAT_TICK_HEADROOM:
+				dark_ok = true
+				break
+		if not dark_ok:
+			failures.append("hall-dark beat has no unlit-hallway evidence at or before tick %d" % dark_tick)
+	if report.beats.has("hall-lit"):
+		var lit_tick: int = report.beats["hall-lit"].tick
+		var lit_ok := false
+		for event: Dictionary in report.events:
+			if event.kind == "hallway" and bool(event.lit) \
+					and int(event.tick) <= lit_tick + BEAT_TICK_HEADROOM:
+				lit_ok = true
+				break
+		if not lit_ok:
+			failures.append("hall-lit beat has no lit-hallway evidence at or before tick %d" % lit_tick)
 
 ## The rod-pickup beat's machine check, mirroring the refusal evidence:
 ## the beat needs a rod_pickup event with the carried flag set, captured
