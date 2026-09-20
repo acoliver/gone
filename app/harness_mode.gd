@@ -22,6 +22,7 @@ var scenario
 var report
 var game: Game
 var player: Player
+var rod: Rod
 var adapter: InputPlane.ScriptedAdapter
 var input
 var chip: LaneChip
@@ -102,8 +103,11 @@ func _build_scene() -> void:
 	scene.add_child(hatch)
 	scene.add_child(Lighting.build(game))
 	scene.add_child(Hazards.build())
+	rod = Rod.build()
+	scene.add_child(rod)
 	player = Player.build(game, hatch)
 	player.scripted = true
+	player.rod = rod
 	player.adapter = adapter
 	scene.add_child(player)
 	var driver := Driver.new()
@@ -356,6 +360,10 @@ func capture_next_beat() -> void:
 	if beat.name == "door-refused":
 		report.add_event({"kind": "refusal", "tick": pinned_tick,
 			"frame": pinned_frame, "count": player.motion.refusals})
+	elif beat.name == "rod-picked-up":
+		report.add_event({"kind": "rod_pickup", "tick": pinned_tick,
+			"frame": pinned_frame, "carried": player.motion.rod_carried,
+			"rod_visible": rod.visible})
 	busy_capturing = false
 
 func _button(name: String) -> int:

@@ -10,6 +10,7 @@ var game: Game
 var camera: Camera3D
 var player: Player
 var hatch: Hatch
+var rod: Rod
 var wake_pass: WakePass
 var wake_present: WakePresent
 
@@ -22,6 +23,8 @@ func _ready() -> void:
 	add_child(Lighting.build(game))
 	add_child(Hazards.build())
 	add_child(Wires.build())
+	rod = Rod.build()
+	add_child(rod)
 	_add_player()
 	_add_wake_presentation()
 
@@ -42,5 +45,6 @@ func _add_wake_presentation() -> void:
 ## projects its pose, and the wake presentation sways the same camera.
 func _add_player() -> void:
 	player = Player.build(game, hatch)
+	player.rod = rod
 	add_child(player)
 	camera = player.camera

@@ -156,6 +156,7 @@ func verify_run(app_hash: String, scenario_hash: String, config_hash: String) ->
 	if scenario.mode == "capture":
 		verify_wake_progression(report)
 		verify_refusal(report)
+		verify_rod_pickup(report)
 	elif scenario.mode == "perf":
 		verify_perf(report)
 	else:
@@ -357,6 +358,18 @@ func verify_refusal(report) -> void:
 		if event.kind == "refusal" and int(event.count) >= 1 and int(event.tick) <= door_tick + BEAT_TICK_HEADROOM:
 			return
 	failures.append("door-refused beat has no refusal evidence at or before tick %d" % door_tick)
+
+## The rod-pickup beat's machine check, mirroring the refusal evidence:
+## the beat needs a rod_pickup event with the carried flag set, captured
+## with the beat. Scenarios without the beat (gameplay-full) skip it.
+func verify_rod_pickup(report) -> void:
+	if not report.beats.has("rod-picked-up"):
+		return
+	var beat_tick: int = report.beats["rod-picked-up"].tick
+	for event: Dictionary in report.events:
+		if event.kind == "rod_pickup" and bool(event.carried) and int(event.tick) <= beat_tick + BEAT_TICK_HEADROOM:
+			return
+	failures.append("rod-picked-up beat has no carried evidence at or before tick %d" % beat_tick)
 
 func _verdict() -> void:
 	var passed := failures.is_empty()

@@ -16,6 +16,7 @@ const REFUSAL_HATCH_JITTER: float = 0.012
 var game: Game
 var camera: Camera3D
 var hatch: Node3D = null
+var rod: Rod = null
 var plane: InputPlane
 var motion: PlayerMotion
 var adapter: InputPlane.ScriptedAdapter = null
@@ -72,6 +73,11 @@ func _physics_process(delta: float) -> void:
 		adapter.offer_tick(plane)
 	_integrate_look()
 	motion.advance(plane, game, _look_yaw, delta)
+	# The rod and the hatch share the interact channel; the rod consumes
+	# a press only when the pickup lands, so dispatching it first never
+	# starves the hatch's refusal.
+	if motion.pickup_rod(plane):
+		rod.pick_up()
 	if motion.interact_with_hatch(plane, game):
 		_begin_refusal()
 	if not motion.failure().is_empty():
