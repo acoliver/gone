@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
+  <title id="title">SHIP ATLAS / concept v1</title>
+  <desc id="desc">Concept overview of a proposed 900 metre ship above a measured local opening-plan inset. Orange indicates proposed forward hull damage, cyan indicates built opening geometry, and yellow marks the start at pod six.</desc>
+  <defs>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #eff5f7; }
+      .small { font-size: 16px; }
+      .label { font-size: 19px; font-weight: 600; }
+      .minor { font-size: 14px; fill: #b8c9ce; }
+      .section { font-size: 22px; font-weight: 700; letter-spacing: 2px; }
+      .outline { fill: none; stroke: #aabac0; stroke-width: 3; stroke-linejoin: round; }
+      .proposed { fill: none; stroke: #8fa4ad; stroke-width: 2; }
+      .future { fill: none; stroke: #a9bbc0; stroke-width: 2; stroke-dasharray: 8 8; }
+      .built { fill: none; stroke: #60dce8; stroke-width: 3; stroke-linejoin: round; }
+      .damage { fill: none; stroke: #ff985a; stroke-width: 4; stroke-linecap: round; }
+      .leader { fill: none; stroke: #9cb0b8; stroke-width: 1.5; }
+    </style>
+  </defs>
+  <rect width="1600" height="1000" fill="#101c25"/>
+  <text x="40" y="54" font-size="33" font-weight="700" letter-spacing="2">SHIP ATLAS / concept v1</text>
+  <text x="1545" y="51" text-anchor="end" class="small" fill="#b8c9ce">SPATIAL REFERENCE / NOT AN EARLY IN-GAME SENSOR VIEW</text>
+
+  <rect x="28" y="80" width="1544" height="453" rx="12" fill="#152631" stroke="#36505b" stroke-width="2"/>
+  <text x="48" y="117" class="section">01 / SHIP EMBEDDING</text>
+  <text x="1540" y="115" text-anchor="end" class="minor">ALL SHIP-SCALE SHAPES AND POSITIONS ARE PROPOSED</text>
+  <text x="110" y="174" class="small">BOW</text>
+  <text x="1410" y="174" class="small">STERN</text>
+  <!-- Proposed hull omits the forward upper flank; orange traces its projected edge. -->
+  <path class="outline" d="M 125,291 Q 165,248 218,222 M 555,210 L 1346,223 Q 1420,230 1480,304 L 1480,356 Q 1420,424 1346,432 L 264,432 Q 158,417 125,353 Z"/>
+  <path class="damage" stroke-dasharray="12 9" d="M 218,222 Q 346,191 555,210"/>
+  <path class="damage" d="M 196,250 Q 335,267 536,260"/>
+  <text x="302" y="193" class="small" fill="#ffad77">MISSING FORWARD UPPER OUTER FLANK</text>
+  <path class="damage" d="M 540,214 L 540,294"/>
+  <text x="558" y="249" class="small" fill="#ffad77">SEALED BOUNDARY</text>
+  <path d="M 260,330 L 1345,330 L 1345,353 L 260,353 Z" fill="#29444b" stroke="#b8d2d5" stroke-width="2"/>
+  <text x="615" y="348" class="minor">INTACT PRESSURE SPINE / PROPOSED ROUTE</text>
+  <path class="proposed" d="M 215,283 L 415,283 L 415,315 L 215,315 Z M 260,360 L 427,360 L 427,407 L 260,407 Z M 569,271 L 737,271 L 737,316 L 569,316 Z M 787,271 L 908,271 L 908,315 L 787,315 Z M 965,270 L 1166,270 L 1166,315 L 965,315 Z M 1212,267 L 1398,267 L 1398,313 L 1212,313 Z M 986,370 L 1133,370 L 1133,410 L 986,410 Z"/>
+  <text x="228" y="305" class="small">NAV / ASTROMETRY</text>
+  <text x="279" y="390" class="small">ISOLATED ARMORY</text>
+  <text x="588" y="299" class="small">QUARTERS / LIFE</text>
+  <text x="611" y="316" class="minor">SUPPORT</text>
+  <rect x="785" y="268" width="125" height="51" rx="4" fill="#124450" stroke="#60dce8" stroke-width="2"/>
+  <text x="797" y="295" class="small">STASIS</text>
+  <text x="797" y="313" class="minor">CLUSTER</text>
+  <text x="981" y="295" class="small">AFT DISTRIBUTION /</text>
+  <text x="992" y="313" class="minor">PRIMARY GENERATION</text>
+  <text x="1269" y="295" class="small">DRIVE</text>
+  <text x="1008" y="396" class="small">ESCAPE BAY</text>
+  <path class="future" d="M 419,298 L 494,298 L 494,340 L 541,340 M 652,317 L 652,330 M 847,319 L 847,330 M 1061,315 L 1061,330 M 1264,313 L 1264,330 M 1058,353 L 1058,370"/>
+  <text x="49" y="468" class="small">PROPOSED</text>
+  <path class="future" d="M 160,463 L 222,463"/>
+  <text x="236" y="468" class="minor">dashed = future path, not a built connection</text>
+  <path class="damage" d="M 605,463 L 647,463"/>
+  <text x="662" y="468" class="minor">projected damage</text>
+  <path class="built" d="M 847,463 L 890,463"/>
+  <text x="904" y="468" class="minor">built opening area (location within ship proposed)</text>
+  <path class="proposed" d="M 113,492 L 1480,492 M 113,486 L 113,498 M 1480,486 L 1480,498"/>
+  <text x="797" y="516" text-anchor="middle" class="minor">PROPOSED SHIP LENGTH ≈ 900 m / BOW LEFT → STERN RIGHT / NOT TO INSET SCALE</text>
+
+  <rect x="28" y="548" width="1544" height="424" rx="12" fill="#152631" stroke="#36505b" stroke-width="2"/>
+  <text x="48" y="588" class="section">02 / OPENING PLAN / BUILT</text>
+  <text x="1540" y="586" text-anchor="end" class="minor">LOCAL X,Z METRES / 15 PX PER METRE / −Z UP</text>
+  <text x="48" y="635" class="small">CYAN = established walls and boundaries</text>
+  <text x="48" y="661" class="small">Side leaves are nonpassable.</text>
+  <text x="48" y="684" class="small">No rooms mapped behind them.</text>
+  <!-- Local coordinates: screen (800 + 15x, 720 - 15z). All inset walls use local metres. -->
+  <g transform="translate(800 720) scale(15 -15)" fill="none" stroke="#60dce8" stroke-width="0.2" stroke-linejoin="round">
+    <!-- Stasis bay: x -6..6, z -4..4; hatch is the opening at x=6, z=0. -->
+    <path d="M -6,-4 H 6 V -0.55 M 6,0.55 V 4 H -6 Z"/>
+    <!-- Hall: x 6..30, z -1.5..1.5. Its end at x=30 is a wall. -->
+    <path d="M 6,-1.5 H 26.2 M 27.8,-1.5 H 30 V 1.5 H 6 V 0.55 M 6,-0.55 V -1.5"/>
+    <!-- Power room: x 21..33, z -9.7..-1.7; only x=27 has a doorway. -->
+    <path d="M 21,-1.7 H 26.2 M 27.8,-1.7 H 33 V -9.7 H 21 Z"/>
+    <path d="M 26.2,-1.5 V -1.7 M 27.8,-1.5 V -1.7" stroke-width="0.12"/>
+    <!-- Closed, nonpassable side leaves at x 9,15,21 on both hall sides. -->
+    <path d="M 8.5,1.5 H 9.5 M 14.5,1.5 H 15.5 M 20.5,1.5 H 21.5 M 8.5,-1.5 H 9.5 M 14.5,-1.5 H 15.5 M 20.5,-1.5 H 21.5" stroke-width="0.42"/>
+    <circle cx="-4.8" cy="2.9" r="0.35" fill="#ffdb5e" stroke="#ffdb5e" stroke-width="0.08"/>
+    <circle cx="-0.6" cy="-1.55" r="0.16" fill="#60dce8" stroke="none"/>
+    <circle cx="6.22" cy="0.85" r="0.15" fill="#60dce8" stroke="none"/>
+  </g>
+  <text x="728" y="643" text-anchor="middle" class="label" fill="#ffdb5e">START</text>
+  <text x="728" y="665" text-anchor="middle" class="minor">POD #6</text>
+  <text x="756" y="818" class="small">STASIS BAY</text>
+  <path class="leader" d="M 791,744 L 777,761"/>
+  <text x="745" y="779" class="minor">ROD</text>
+  <text x="923" y="689" class="small">HALLWAY</text>
+  <path class="leader" d="M 890,720 L 855,701"/>
+  <text x="803" y="696" class="minor">HATCH</text>
+  <path class="leader" d="M 893,707 L 912,675"/>
+  <text x="915" y="672" class="minor">SWITCH</text>
+  <text x="941" y="728" class="minor">9</text>
+  <text x="1031" y="728" class="minor">15</text>
+  <text x="1120" y="728" class="minor">21</text>
+  <text x="945" y="811" class="minor">CLOSED SIDE LEAVES × 6 / NO CONNECTING ROOMS</text>
+  <path class="leader" d="M 1205,742 L 1237,762"/>
+  <text x="1242" y="769" class="minor">REAL DOORWAY</text>
+  <text x="1176" y="843" class="small">POWER ROOM</text>
+  <text x="109" y="925" class="minor">BUILT coordinates are local only. Their placement inside the proposed ship above is conceptual.</text>
+  <path class="built" d="M 59,941 L 106,941"/>
+  <text x="119" y="947" class="minor">BUILT</text>
+  <path class="future" d="M 233,941 L 281,941"/>
+  <text x="295" y="947" class="minor">PROPOSED</text>
+  <circle cx="468" cy="941" r="6" fill="#ffdb5e"/>
+  <text x="482" y="947" class="minor">START</text>
+  <path d="M 1370,927 H 1520 M 1370,921 V 933 M 1520,921 V 933" stroke="#60dce8" stroke-width="2"/>
+  <text x="1445" y="950" text-anchor="middle" class="minor">10 m / INSET ONLY</text>
+</svg>
