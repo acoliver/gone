@@ -1,0 +1,217 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3000" height="2190" viewBox="0 0 3000 2190" role="img" aria-labelledby="title desc">
+  <title id="title">GONE | Ship interior atlas, proposed thirty-deck network</title>
+  <desc id="desc">Proposed out-of-world interior schematic with seven four-to-five-deck groups, five districts in each, four continuous vertical shafts, two local outboard bay scars with sealed neighbors, and a coordinate-accurate inset of the built stasis bay, corridor and same-deck secondary power room. Bow is left; exterior form is not depicted.</desc>
+  <defs>
+    <pattern id="grain" width="34" height="34" patternUnits="userSpaceOnUse"><path d="M0 33H34M33 0V34" fill="none" stroke="#263949" stroke-width=".6" opacity=".36"/></pattern>
+    <pattern id="hatch" width="11" height="11" patternUnits="userSpaceOnUse" patternTransform="rotate(35)"><path d="M0 0V11" stroke="#f3786e" stroke-width="3" opacity=".34"/></pattern>
+    <pattern id="micro" width="22" height="18" patternUnits="userSpaceOnUse"><path d="M0 0V18M0 0H22" fill="none" stroke="#708493" stroke-width="1" opacity=".65"/></pattern>
+    <symbol id="district" viewBox="0 0 420 166">
+      <rect x="1" y="1" width="418" height="164" rx="6" fill="#142937" stroke="#527083" stroke-width="2"/>
+      <path d="M8 34H412M8 75H412M8 94H412M8 133H412" stroke="#304859" stroke-width="1.5"/>
+      <rect x="9" y="36" width="183" height="37" fill="#1d3643" stroke="#607c8a"/>
+      <rect x="228" y="36" width="183" height="37" fill="#1d3643" stroke="#607c8a"/>
+      <rect x="9" y="96" width="183" height="35" fill="#1b3442" stroke="#607c8a"/>
+      <rect x="228" y="96" width="183" height="35" fill="#1b3442" stroke="#607c8a"/>
+      <path d="M0 84H420M210 33V158" stroke="#4bb8bd" stroke-width="13" opacity=".20"/>
+      <path d="M0 84H420M210 33V158" fill="none" stroke="#74c6c7" stroke-width="1.7" stroke-dasharray="20 5" opacity=".8"/>
+      <rect x="9" y="137" width="183" height="21" fill="url(#micro)" stroke="#465f6c"/>
+      <rect x="228" y="137" width="183" height="21" fill="url(#micro)" stroke="#465f6c"/>
+      <path d="M100 133V158M319 133V158" stroke="#465f6c"/>
+    </symbol>
+    <symbol id="wreck" viewBox="0 0 420 166">
+      <use href="#district" width="420" height="166"/>
+      <rect x="9" y="36" width="112" height="37" fill="url(#hatch)" stroke="#e9847c" stroke-width="2"/>
+      <rect x="129" y="36" width="63" height="37" fill="#4a3d3f" stroke="#df8178" stroke-width="2"/>
+      <text x="160" y="59" text-anchor="middle" font-size="11" fill="#ffd8ba">SEALED</text>
+      <path d="M124 37V72M129 37V72" stroke="#f3a199" stroke-width="2"/>
+    </symbol>
+  </defs>
+  <style>
+    text { font-family: Inter, 'Helvetica Neue', Arial, sans-serif; fill: #dce7e8; }
+    .kicker { font-size: 18px; letter-spacing: 5px; font-weight: 700; fill: #78c7c4; }
+    .heading { font-size: 64px; font-weight: 780; letter-spacing: -1.5px; fill: #f2e9d7; }
+    .sub { font-size: 22px; fill: #a8bbc0; }
+    .deck { font-size: 35px; font-weight: 800; fill: #ecdcbd; letter-spacing: 1px; }
+    .decksub { font-size: 18px; fill: #96abb4; }
+    .zone { font-size: 18px; letter-spacing: 2px; font-weight: 760; fill: #e7d9b8; }
+    .room { font-size: 19px; font-weight: 590; text-anchor: middle; }
+    .quiet { fill: #b2c7cc; }
+    .alert { fill: #ffd8ba; }
+    .tiny { font-size: 16px; fill: #adbec4; }
+    .note { font-size: 20px; fill: #b7c7ca; }
+    .tag { font-size: 17px; font-weight: 800; letter-spacing: 1px; }
+    .line { fill: none; stroke: #5d7d88; stroke-width: 2; }
+  </style>
+  <rect width="3000" height="2190" fill="#0a1722"/>
+  <rect width="3000" height="2190" fill="url(#grain)"/>
+  <path d="M52 45H2948M52 180H2948" class="line"/>
+  <text class="kicker" x="60" y="82">GONE / ENVIRONMENT SYSTEMS / DESIGN STUDY 02</text>
+  <text class="heading" x="57" y="152">A ship made of neighborhoods</text>
+  <text class="sub" x="1880" y="111">INTERIOR ATLAS  ·  SCHEMATIC CUTAWAY</text>
+  <text class="sub" x="1880" y="145">Proposed D01–D30 network  /  NOT A HULL PLAN</text>
+  <path d="M295 212H90L113 200M90 212L113 224" fill="none" stroke="#8bc9c7" stroke-width="3"/>
+  <text class="kicker" x="306" y="219">BOW ←</text>
+  <text class="tiny" x="487" y="219">longitudinal circulation → stern  ·  four transverse lift / stair / service trunks</text>
+  <text class="tiny" x="2290" y="219">each band groups several physical decks</text>
+
+  <!-- The four vertical trunks and the continuous pressure spine connect the bands. -->
+  <g fill="#21424c" stroke="#79babb" stroke-width="2">
+    <rect x="829" y="236" width="25" height="1439" rx="10"/>
+    <rect x="1294" y="236" width="25" height="1439" rx="10"/>
+    <rect x="1759" y="236" width="25" height="1439" rx="10"/>
+    <rect x="2224" y="236" width="25" height="1439" rx="10"/>
+  </g>
+  <g stroke="#a5d2cb" stroke-width="2" stroke-dasharray="6 11" opacity=".85">
+    <path d="M841 243V1668M1306 243V1668M1771 243V1668M2236 243V1668"/>
+  </g>
+  <g transform="translate(0 240)">
+    <!-- D01-04 -->
+    <g>
+      <rect x="350" y="0" width="2350" height="180" rx="11" fill="#132631" stroke="#3e6070" stroke-width="2"/>
+      <path d="M375 96H2680" stroke="#65adad" stroke-width="13" opacity=".19"/><path d="M375 96H2680" stroke="#90c6bf" stroke-width="2" stroke-dasharray="18 7"/>
+      <text class="deck" x="60" y="69">D01–04</text><text class="decksub" x="62" y="99">command / navigation</text><text class="decksub" x="62" y="125">upper command decks</text>
+      <g transform="translate(400 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">01  FORWARD COMMAND</text><text class="room" x="100" y="61">Bridge</text><text class="room" x="319" y="61">Flag command</text><text class="room" x="100" y="120">Captain records</text><text class="room" x="319" y="120">Watch office</text><rect x="5" y="32" width="191" height="102" fill="none" stroke="#e5c78e" stroke-width="3" rx="5"/></g>
+      <g transform="translate(865 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">02  FLIGHT / PLOTTING</text><text class="room" x="100" y="61">Astrometry</text><text class="room" x="319" y="61">Nav charts</text><text class="room" x="100" y="120">Sensor arrays</text><text class="room" x="319" y="120">Track analysis</text><rect x="5" y="32" width="191" height="44" fill="none" stroke="#e5c78e" stroke-width="3" rx="5"/></g>
+      <g transform="translate(1330 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">03  SIGNALS</text><text class="room" x="100" y="61">Comms relay</text><text class="room" x="319" y="61">Message vault</text><text class="room" x="100" y="120">Cipher room</text><text class="room" x="319" y="120">Antenna service</text></g>
+      <g transform="translate(1795 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">04  OPERATIONS</text><text class="room" x="100" y="61">Tactical gallery</text><text class="room" x="319" y="61">Situation room</text><text class="room" x="100" y="120">Duty offices</text><text class="room" x="319" y="120">Dispatch</text></g>
+      <g transform="translate(2260 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">05  COMMAND SERVICES</text><text class="room" x="100" y="61">Data archive</text><text class="room" x="319" y="61">Briefing</text><text class="room" x="100" y="120">Officer berths</text><text class="room" x="319" y="120">Liaison</text></g>
+    </g>
+    <!-- D05-08 -->
+    <g transform="translate(0 205)">
+      <rect x="350" width="2350" height="180" rx="11" fill="#132631" stroke="#3e6070" stroke-width="2"/>
+      <path d="M375 96H2680" stroke="#65adad" stroke-width="13" opacity=".19"/><path d="M375 96H2680" stroke="#90c6bf" stroke-width="2" stroke-dasharray="18 7"/>
+      <text class="deck" x="60" y="69">D05–08</text><text class="decksub" x="62" y="99">habitation / care</text><text class="decksub" x="62" y="125">local berth scar sealed</text>
+      <g transform="translate(400 12)"><use href="#wreck" width="420" height="166"/><text class="zone alert" x="17" y="24">01  SCARRED OUTER BAY</text><text class="room" x="301" y="61">Berth access</text><text class="room" x="100" y="120">Inner berths</text><text class="room" x="301" y="120">Air-leak repairs</text></g>
+      <g transform="translate(865 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">02  FAMILY BERTHS</text><text class="room" x="100" y="61">Berth block A</text><text class="room" x="319" y="61">Berth block B</text><text class="room" x="100" y="120">Family commons</text><text class="room" x="319" y="120">Wash rooms</text><rect x="5" y="32" width="191" height="44" fill="none" stroke="#e5c78e" stroke-width="3" rx="5"/></g>
+      <g transform="translate(1330 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">03  MEDICAL QUARTER</text><text class="room" x="100" y="61">Clinic</text><text class="room" x="319" y="61">Treatment</text><text class="room" x="100" y="120">Recovery</text><text class="room" x="319" y="120">Pharmacy</text></g>
+      <g transform="translate(1795 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">04  CIVIC ROOMS</text><text class="room" x="100" y="61">School rooms</text><text class="room" x="319" y="61">Play commons</text><text class="room" x="100" y="120">Reading room</text><text class="room" x="319" y="120">Family stores</text></g>
+      <g transform="translate(2260 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">05  NIGHT WATCH</text><text class="room" x="100" y="61">Crew berths C</text><text class="room" x="319" y="61">Crew berths D</text><text class="room" x="100" y="120">Shift lockers</text><text class="room" x="319" y="120">Quiet lounge</text></g>
+    </g>
+    <!-- D09-12 -->
+    <g transform="translate(0 410)">
+      <rect x="350" width="2350" height="180" rx="11" fill="#132631" stroke="#3e6070" stroke-width="2"/>
+      <path d="M375 96H2680" stroke="#65adad" stroke-width="13" opacity=".19"/><path d="M375 96H2680" stroke="#90c6bf" stroke-width="2" stroke-dasharray="18 7"/>
+      <text class="deck" x="60" y="69">D09–12</text><text class="decksub" x="62" y="99">civil life / escape</text><text class="decksub" x="62" y="125">local launch scar sealed</text>
+      <g transform="translate(400 12)"><use href="#wreck" width="420" height="166"/><text class="zone alert" x="17" y="24">01  SEALED LAUNCH BAY</text><text class="room" x="301" y="61">Launch access</text><text class="room" x="100" y="120">Suit stores</text><text class="room" x="301" y="120">Launch controls</text></g>
+      <g transform="translate(865 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">02  EVACUATION</text><text class="room" x="100" y="61">Escape craft</text><text class="room" x="319" y="61">Launch control</text><text class="room" x="100" y="120">Suit lockers</text><text class="room" x="319" y="120">Transit hall</text><rect x="5" y="32" width="191" height="44" fill="none" stroke="#e5c78e" stroke-width="3" rx="5"/></g>
+      <g transform="translate(1330 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">03  GALLEY / MESS</text><text class="room" x="100" y="61">Galley</text><text class="room" x="319" y="61">Mess hall</text><text class="room" x="100" y="120">Cold stores</text><text class="room" x="319" y="120">Food prep</text></g>
+      <g transform="translate(1795 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">04  GREEN COMMONS</text><text class="room" x="100" y="61">Gardens</text><text class="room" x="319" y="61">Commons</text><text class="room" x="100" y="120">Seed room</text><text class="room" x="319" y="120">Watering</text></g>
+      <g transform="translate(2260 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">05  RESIDENTIAL AFT</text><text class="room" x="100" y="61">Crew berths E</text><text class="room" x="319" y="61">Family berths F</text><text class="room" x="100" y="120">Day room</text><text class="room" x="319" y="120">Laundry</text></g>
+    </g>
+    <!-- D13-16: the built bay, hall and secondary plant are all on ONE opening deck. -->
+    <g transform="translate(0 615)">
+      <rect x="350" width="2350" height="180" rx="11" fill="#17323d" stroke="#68acae" stroke-width="2"/>
+      <path d="M375 96H2680" stroke="#65adad" stroke-width="13" opacity=".19"/><path d="M375 96H2680" stroke="#90c6bf" stroke-width="2" stroke-dasharray="18 7"/>
+      <text class="deck" x="60" y="69">D13–16</text><text class="decksub" x="62" y="99">opening / stasis spine</text><text class="decksub" x="62" y="125">one built deck within group</text>
+      <g transform="translate(400 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">01  QUARANTINE WING</text><text class="room" x="100" y="61">Intake</text><text class="room" x="319" y="61">Observation</text><text class="room" x="100" y="120">Airlock stores</text><text class="room" x="319" y="120">Decontam</text></g>
+      <g transform="translate(865 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">02  LONG SLEEP</text><text class="room" x="100" y="61">Stasis bank A</text><text class="room" x="319" y="61">Stasis bank B</text><text class="room" x="100" y="120">Med support</text><text class="room" x="319" y="120">Stasis stores</text></g>
+      <g transform="translate(1330 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">03  WAKE / TRANSIT</text><text class="room" x="100" y="61">Stasis bank C</text><text class="room" x="319" y="61">Med support</text><rect x="9" y="96" width="183" height="35" rx="3" fill="#17616c" stroke="#8de9e5" stroke-width="3"/><circle cx="27" cy="113" r="7" fill="#fce2a4"/><text x="113" y="119" text-anchor="middle" font-size="17" font-weight="900" fill="#fff5d9">YOU WAKE HERE</text><text class="room" x="319" y="120">Transit / hall</text><path d="M181 94H194" stroke="#95ece7" stroke-width="5"/></g>
+      <g transform="translate(1795 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">04  DISTRIBUTION</text><text class="room" x="100" y="61">Breaker gallery</text><text class="room" x="319" y="61">Bus controllers</text><rect x="9" y="96" width="183" height="35" rx="3" fill="#17616c" stroke="#8de9e5" stroke-width="3"/><text class="room" x="100" y="120" fill="#f0ffff">Secondary power</text><text class="room" x="319" y="120">Switchgear</text></g>
+      <g transform="translate(2260 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">05  SERVICE BYPASS</text><text class="room" x="100" y="61">Spare cells</text><text class="room" x="319" y="61">Repair desk</text><text class="room" x="100" y="120">Cable vault</text><text class="room" x="319" y="120">Utility transit</text></g>
+    </g>
+    <!-- D17-20 -->
+    <g transform="translate(0 820)">
+      <rect x="350" width="2350" height="180" rx="11" fill="#132631" stroke="#3e6070" stroke-width="2"/>
+      <path d="M375 96H2680" stroke="#65adad" stroke-width="13" opacity=".19"/><path d="M375 96H2680" stroke="#90c6bf" stroke-width="2" stroke-dasharray="18 7"/>
+      <text class="deck" x="60" y="69">D17–20</text><text class="decksub" x="62" y="99">life support / works</text><text class="decksub" x="62" y="125">ring bypasses</text>
+      <g transform="translate(400 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">01  AIR PLANTS</text><text class="room" x="100" y="61">O2 separation</text><text class="room" x="319" y="61">CO2 scrubbers</text><text class="room" x="100" y="120">Air handling</text><text class="room" x="319" y="120">Filter stores</text></g>
+      <g transform="translate(865 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">02  WATER LOOP</text><text class="room" x="100" y="61">Water plant</text><text class="room" x="319" y="61">Reclamation</text><text class="room" x="100" y="120">Pump control</text><text class="room" x="319" y="120">Reserve tanks</text></g>
+      <g transform="translate(1330 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">03  REPAIR WORKS</text><text class="room" x="100" y="61">Workshops</text><text class="room" x="319" y="61">Tool cages</text><text class="room" x="100" y="120">Machine shop</text><text class="room" x="319" y="120">Spare parts</text></g>
+      <g transform="translate(1795 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">04  ELECTRICAL GRID</text><text class="room" x="100" y="61">Bus risers</text><text class="room" x="319" y="61">Transformer bays</text><text class="room" x="100" y="120">Load control</text><text class="room" x="319" y="120">Battery room</text></g>
+      <g transform="translate(2260 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">05  SERVICE CIRCULATION</text><text class="room" x="100" y="61">Freight staging</text><text class="room" x="319" y="61">Crawler access</text><text class="room" x="100" y="120">Cargo lock</text><text class="room" x="319" y="120">Hull service</text></g>
+    </g>
+    <!-- D21-25 -->
+    <g transform="translate(0 1025)">
+      <rect x="350" width="2350" height="180" rx="11" fill="#132631" stroke="#3e6070" stroke-width="2"/>
+      <path d="M375 96H2680" stroke="#65adad" stroke-width="13" opacity=".19"/><path d="M375 96H2680" stroke="#90c6bf" stroke-width="2" stroke-dasharray="18 7"/>
+      <text class="deck" x="60" y="69">D21–25</text><text class="decksub" x="62" y="99">security / industry</text><text class="decksub" x="62" y="125">closed pressure door</text><text class="decksub" x="62" y="151">forward spur / no through route</text>
+      <g transform="translate(400 12)"><use href="#district" width="420" height="166"/><rect x="2" y="2" width="416" height="162" rx="5" fill="#813f43" opacity=".18" stroke="#ee9289" stroke-width="5"/><text class="zone alert" x="17" y="24">01  IRRADIATED SPUR</text><text class="room alert" x="100" y="61">Armory</text><text class="room alert" x="319" y="61">Ordnance vault</text><text class="room alert" x="100" y="120">Shielding</text><text class="room alert" x="319" y="120">Dose monitor</text><rect x="1" y="33" width="199" height="101" fill="none" stroke="#e5c78e" stroke-width="3" rx="5"/></g>
+      <path d="M818 80V108M826 80V108M834 80V108" stroke="#fcaa99" stroke-width="4"/>
+      <g transform="translate(865 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">02  CONTAINMENT</text><text class="room" x="100" y="61">Dosimetry</text><text class="room" x="319" y="61">Shielded lock</text><text class="room" x="100" y="120">Service bypass</text><text class="room" x="319" y="120">Hazard stores</text></g>
+      <g transform="translate(1330 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">03  FABRICATION</text><text class="room" x="100" y="61">Fabrication</text><text class="room" x="319" y="61">Materials</text><text class="room" x="100" y="120">Casting bays</text><text class="room" x="319" y="120">Print shop</text></g>
+      <g transform="translate(1795 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">04  DAMAGE CONTROL</text><text class="room" x="100" y="61">Fire teams</text><text class="room" x="319" y="61">Foam stores</text><text class="room" x="100" y="120">Hull access</text><text class="room" x="319" y="120">Patch shop</text></g>
+      <g transform="translate(2260 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">05  PROPULSION ACCESS</text><text class="room" x="100" y="61">Engine lockers</text><text class="room" x="319" y="61">Coolant pumps</text><text class="room" x="100" y="120">Maintenance</text><text class="room" x="319" y="120">Drive service</text></g>
+    </g>
+    <!-- D26-30 -->
+    <g transform="translate(0 1230)">
+      <rect x="350" width="2350" height="180" rx="11" fill="#132631" stroke="#3e6070" stroke-width="2"/>
+      <path d="M375 96H2680" stroke="#65adad" stroke-width="13" opacity=".19"/><path d="M375 96H2680" stroke="#90c6bf" stroke-width="2" stroke-dasharray="18 7"/>
+      <text class="deck" x="60" y="69">D26–30</text><text class="decksub" x="62" y="99">deep engineering</text><text class="decksub" x="62" y="125">generation at aft end</text>
+      <g transform="translate(400 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">01  BILGES / RESERVE</text><text class="room" x="100" y="61">Reserve water</text><text class="room" x="319" y="61">Waste processing</text><text class="room" x="100" y="120">Bilge pumps</text><text class="room" x="319" y="120">Drain control</text></g>
+      <g transform="translate(865 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">02  HULL STRUCTURE</text><text class="room" x="100" y="61">Pressure frames</text><text class="room" x="319" y="61">Plate stores</text><text class="room" x="100" y="120">Inspection</text><text class="room" x="319" y="120">Hull access</text></g>
+      <g transform="translate(1330 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">03  DEEP MAINTENANCE</text><text class="room" x="100" y="61">Drive repair</text><text class="room" x="319" y="61">Cooling loops</text><text class="room" x="100" y="120">Heavy tools</text><text class="room" x="319" y="120">Parts transfer</text></g>
+      <g transform="translate(1795 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">04  GENERATOR GALLERIES</text><text class="room" x="100" y="61">Primary generation</text><text class="room" x="319" y="61">Generator gallery</text><text class="room" x="100" y="120">Fuel service</text><text class="room" x="319" y="120">Cooling manifold</text><rect x="5" y="32" width="408" height="102" fill="none" stroke="#e5c78e" stroke-width="3" rx="5"/></g>
+      <g transform="translate(2260 12)"><use href="#district" width="420" height="166"/><text class="zone" x="17" y="24">05  PROPULSION CORE</text><text class="room" x="100" y="61">Drive machinery</text><text class="room" x="319" y="61">Thrust control</text><text class="room" x="100" y="120">Engine access</text><text class="room" x="319" y="120">Service locks</text></g>
+    </g>
+  </g>
+  <!-- Vertical shaft names remain outside the district titles. -->
+  <g class="tag" text-anchor="middle"><text x="841" y="1688" fill="#8ecfcb">A / LIFT</text><text x="1306" y="1688" fill="#8ecfcb">B / STAIR</text><text x="1771" y="1688" fill="#8ecfcb">C / LIFT</text><text x="2236" y="1688" fill="#8ecfcb">D / SERVICE</text></g>
+  <path d="M52 1715H2948" class="line"/>
+  <text class="kicker" x="60" y="1756">READING THE SHIP</text>
+  <text class="heading" x="55" y="1828" font-size="35">Thirty proposed decks. One built opening.</text>
+  <text class="note" x="60" y="1873">Each band compresses 4–5 decks into a district diagram. Repeated small cells stand for</text>
+  <text class="note" x="60" y="1905">additional rooms, not a fixed room count. Cross-aisles, ring paths and four trunks give</text>
+  <text class="note" x="60" y="1937">alternative routes; local scarred bays are sealed off, while the spine and trunks remain continuous.</text>
+  <g transform="translate(60 1970)">
+    <rect x="0" y="0" width="30" height="25" fill="none" stroke="#e5c78e" stroke-width="3"/><text class="note" x="45" y="20">established story destinations</text>
+    <rect x="665" y="0" width="30" height="25" fill="#17616c" stroke="#8de9e5" stroke-width="3"/><text class="note" x="710" y="20">built opening</text>
+    <rect x="0" y="51" width="30" height="25" fill="#1d3643" stroke="#607c8a" stroke-width="2"/><text class="note" x="45" y="71">proposed layout</text>
+    <rect x="665" y="51" width="30" height="25" fill="url(#hatch)" stroke="#f3786e" stroke-width="2"/><text class="note" x="710" y="71">local outboard scar / sealed neighbor (proposed)</text>
+  </g>
+  <path d="M60 2095H1890" class="line"/>
+  <text class="tiny" x="60" y="2127">OUT-OF-WORLD DESIGN REFERENCE · The player cannot infer the hull or damage from the opening.</text>
+  <text class="tiny" x="60" y="2155">The fictional terminal gains only a basic deck plan later; damaged areas and all routes beyond the opening remain proposals.</text>
+
+  <!-- The inset is a local x,z floor plan. +Z points upward; 15 drawing units = 1 meter. -->
+  <g>
+    <rect x="1964" y="1715" width="984" height="451" rx="12" fill="#122531" stroke="#63999f" stroke-width="2"/>
+    <text class="kicker" x="1989" y="1751">BUILT OPENING / SAME DECK</text>
+    <text class="tiny" x="1989" y="1775">Local floor-plan meters (x, z). +x → stern; +z ↑. Rooms not to scale with atlas bands.</text>
+    <path d="M2193 1797H2793M2193 2033H2793" stroke="#38525e" stroke-width="1"/>
+    <!-- Bay: x=-6..6, z=-4..4. Screen x=2200+15(x+6); screen y=1810+15(4-z). -->
+    <rect x="2200" y="1810" width="180" height="120" fill="#17616c" stroke="#b1e9e5" stroke-width="3"/>
+    <text x="2267" y="1869" font-size="17" font-weight="800" fill="#e8ffff">STASIS BAY</text>
+    <g fill="#c8e4dc" stroke="#08303b" stroke-width="1.5">
+      <ellipse cx="2218" cy="1913.5" rx="5.5" ry="8"/><ellipse cx="2239" cy="1913.5" rx="5.5" ry="8"/><ellipse cx="2260" cy="1913.5" rx="5.5" ry="8"/><ellipse cx="2281" cy="1913.5" rx="5.5" ry="8"/>
+      <ellipse cx="2239" cy="1826.5" rx="5.5" ry="8"/><ellipse cx="2260" cy="1826.5" rx="5.5" ry="8"/>
+    </g>
+    <ellipse cx="2218" cy="1826.5" rx="8" ry="10" fill="#f5d88b" stroke="#fff4c9" stroke-width="2"/>
+    <path d="M2218 1826L2142 1810" stroke="#f5d88b" stroke-width="2"/><text class="tag" x="1991" y="1810" fill="#f5d88b">POD #6</text><text class="tiny" x="1991" y="1831">(-4.8, +2.9)</text>
+    <circle cx="2281" cy="1893.25" r="5" fill="#f5d88b"/><path d="M2281 1893L2155 1952" stroke="#f5d88b" stroke-width="1.5"/><text class="tag" x="1991" y="1958" fill="#f5d88b">ROD</text><text class="tiny" x="1991" y="1979">(-0.6, -1.55)</text>
+    <!-- Corridor x=6..30, z=-1.5..1.5; wall at x=30. -->
+    <rect x="2380" y="1847.5" width="360" height="45" fill="#1a404a"/>
+    <path d="M2380 1892.5V1847.5H2740V1892.5H2709M2681 1892.5H2380" fill="none" stroke="#b1e9e5" stroke-width="3"/>
+    <text x="2415" y="1877" font-size="16" fill="#d7f2ef">CORRIDOR · 6..30</text>
+    <text x="2630" y="1867" font-size="13" fill="#d7f2ef">POWER DOOR</text>
+    <text x="2645" y="1883" font-size="13" fill="#d7f2ef">(27, -1.5)</text>
+    <path d="M2695 1885V1892" stroke="#f5d88b" stroke-width="1.5"/>
+    <path d="M2740 1844V1896" stroke="#f5d88b" stroke-width="6"/>
+    <text class="tiny" x="2755" y="1865">SOLID</text><text class="tiny" x="2755" y="1886">END WALL</text>
+    <!-- Side leaves at x=9,15,21, both sides. Unpierced. -->
+    <g fill="#25353d" stroke="#ef9384" stroke-width="2.5">
+      <rect x="2414" y="1843" width="22" height="7"/><rect x="2504" y="1843" width="22" height="7"/><rect x="2594" y="1843" width="22" height="7"/>
+      <rect x="2414" y="1890" width="22" height="7"/><rect x="2504" y="1890" width="22" height="7"/><rect x="2594" y="1890" width="22" height="7"/>
+    </g>
+    <text class="tiny" x="2390" y="1826">9 / 15 / 21: blocked leaves, both sides</text>
+    <!-- Hatch x=6,z=0; switch x=6.22,z=+0.85. -->
+    <path d="M2380 1853V1887" stroke="#edce86" stroke-width="5"/>
+    <circle cx="2383.3" cy="1857.25" r="4.5" fill="#80e8d7"/>
+    <text class="tiny" x="2320" y="1960">hatch (6, 0)</text><text class="tiny" x="2320" y="1984">switch (6.22, +0.85)</text>
+    <path d="M2390 1944L2380 1885M2390 1970L2383 1857" class="line"/>
+    <!-- Power room x=21..33,z=-9.7..-1.7, accessed via x=27,z=-1.5. -->
+    <rect x="2605" y="1895.5" width="180" height="120" fill="#17616c"/>
+    <rect x="2681" y="1892.5" width="28" height="3" fill="#17616c"/>
+    <path d="M2681 1895.5H2605V2015.5H2785V1895.5H2709" fill="none" stroke="#b1e9e5" stroke-width="3"/>
+    <path d="M2681 1895.5L2691 1917M2709 1895.5A28 28 0 0 1 2691 1917" fill="none" stroke="#f5d88b" stroke-width="2"/>
+    <text x="2616" y="1932" font-size="17" font-weight="800" fill="#e8ffff">POWER ROOM</text>
+    <text x="2619" y="1949" font-size="13" fill="#adbec4">secondary</text>
+    <circle cx="2695" cy="1955.5" r="8" fill="none" stroke="#d9eddf" stroke-width="2"/>
+    <text x="2619" y="1977" font-size="13" fill="#adbec4">generator (27, -5.7)</text>
+    <circle cx="2620.75" cy="1982.5" r="4" fill="#f5d88b"/>
+    <text x="2631" y="2004" font-size="13" fill="#adbec4">console (22.05, -7.5)</text>
+    <text class="tiny" x="1990" y="2060">Bay x -6..6 / z -4..4   ·   Hall x 6..30 / z -1.5..1.5</text>
+    <text class="tiny" x="1990" y="2087">Power x 21..33 / z -9.7..-1.7   ·   no door past corridor endcap</text>
+    <path d="M1990 2102H2919" class="line"/>
+    <text class="tiny" x="1990" y="2132">Bright cyan marks the built opening only. All other districts are proposed, not walkable.</text>
+  </g>
+</svg>

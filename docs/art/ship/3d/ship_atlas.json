@@ -1,0 +1,4056 @@
+{
+  "schema_version": 1,
+  "purpose": "out-of-world design proposal; only built labels describe walkable game geometry",
+  "sources": {
+    "built": [
+      "sim/pods.gd",
+      "app/rod.gd",
+      "app/hallway.gd",
+      "app/power_room.gd"
+    ],
+    "story": [
+      "docs/design/biblia.md",
+      "docs/design/concept.md"
+    ],
+    "proposed": "phase-1 ship atlas; dimensions, deck assignment, functions, routes, hazards and radiation origins outside built opening are proposals"
+  },
+  "coordinate_system": {
+    "unit": "meter",
+    "axes": {
+      "x": "bow negative; aft positive (proposed)",
+      "y": "up positive",
+      "z": "port negative; starboard positive (proposed)"
+    },
+    "envelope_max": {
+      "x": [
+        -1200,
+        1200
+      ],
+      "y": [
+        -96,
+        96
+      ],
+      "z": [
+        -360,
+        360
+      ]
+    },
+    "hull_profile": [
+      {"x": -1200, "halfwidth": 18, "halfheight": 32},
+      {"x": -1100, "halfwidth": 60, "halfheight": 50},
+      {"x": -900, "halfwidth": 120, "halfheight": 78},
+      {"x": -720, "halfwidth": 185, "halfheight": 86},
+      {"x": -600, "halfwidth": 245, "halfheight": 90},
+      {"x": -480, "halfwidth": 290, "halfheight": 94},
+      {"x": -240, "halfwidth": 335, "halfheight": 96},
+      {"x": 240, "halfwidth": 350, "halfheight": 96},
+      {"x": 720, "halfwidth": 350, "halfheight": 96},
+      {"x": 1150, "halfwidth": 330, "halfheight": 96},
+      {"x": 1200, "halfwidth": 260, "halfheight": 90}
+    ],
+    "hull_occupancy": "proposed exterior-compatible guide, not a measured tracing; district rectangles are diagrammatic indexing bins, not occupied geometry",
+    "deck_floor_formula": "y = (14 - deck_number) * 5.5",
+    "deck_pitch": 5.5,
+    "opening_deck": "D14",
+    "opening_floor_y": 0,
+    "opening_clear_height": 3.2
+  },
+  "grid": {
+    "groups": [
+      {
+        "id": "D01-04",
+        "decks": [
+          1,
+          4
+        ]
+      },
+      {
+        "id": "D05-08",
+        "decks": [
+          5,
+          8
+        ]
+      },
+      {
+        "id": "D09-12",
+        "decks": [
+          9,
+          12
+        ]
+      },
+      {
+        "id": "D13-16",
+        "decks": [
+          13,
+          16
+        ]
+      },
+      {
+        "id": "D17-20",
+        "decks": [
+          17,
+          20
+        ]
+      },
+      {
+        "id": "D21-25",
+        "decks": [
+          21,
+          25
+        ]
+      },
+      {
+        "id": "D26-30",
+        "decks": [
+          26,
+          30
+        ]
+      }
+    ],
+    "sectors": [
+      {
+        "id": 0,
+        "x": [
+          -1200,
+          -720
+        ]
+      },
+      {
+        "id": 1,
+        "x": [
+          -720,
+          -240
+        ]
+      },
+      {
+        "id": 2,
+        "x": [
+          -240,
+          240
+        ]
+      },
+      {
+        "id": 3,
+        "x": [
+          240,
+          720
+        ]
+      },
+      {
+        "id": 4,
+        "x": [
+          720,
+          1200
+        ]
+      }
+    ],
+    "sides": [
+      {
+        "id": "port",
+        "z": [
+          -310,
+          -120
+        ]
+      },
+      {
+        "id": "core",
+        "z": [
+          -100,
+          100
+        ]
+      },
+      {
+        "id": "starboard",
+        "z": [
+          120,
+          310
+        ]
+      }
+    ],
+    "districts": [
+      {
+        "id": "D01-04-0-port",
+        "group": "D01-04",
+        "sector": 0,
+        "side": "port",
+        "deck_range": [
+          1,
+          4
+        ],
+        "diagrammatic_x": [
+          -1200,
+          -720
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "signals",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D01-04-1-port",
+        "group": "D01-04",
+        "sector": 1,
+        "side": "port",
+        "deck_range": [
+          1,
+          4
+        ],
+        "diagrammatic_x": [
+          -720,
+          -240
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "navigation",
+          "officer staterooms"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D01-04-2-port",
+        "group": "D01-04",
+        "sector": 2,
+        "side": "port",
+        "deck_range": [
+          1,
+          4
+        ],
+        "diagrammatic_x": [
+          -240,
+          240
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "command",
+          "mission planning"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D01-04-3-port",
+        "group": "D01-04",
+        "sector": 3,
+        "side": "port",
+        "deck_range": [
+          1,
+          4
+        ],
+        "diagrammatic_x": [
+          240,
+          720
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "captain cabin",
+          "officer staterooms"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D01-04-4-port",
+        "group": "D01-04",
+        "sector": 4,
+        "side": "port",
+        "deck_range": [
+          1,
+          4
+        ],
+        "diagrammatic_x": [
+          720,
+          1200
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "comms relays"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D01-04-0-core",
+        "group": "D01-04",
+        "sector": 0,
+        "side": "core",
+        "deck_range": [
+          1,
+          4
+        ],
+        "diagrammatic_x": [
+          -1200,
+          -720
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "flight plotting",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D01-04-1-core",
+        "group": "D01-04",
+        "sector": 1,
+        "side": "core",
+        "deck_range": [
+          1,
+          4
+        ],
+        "diagrammatic_x": [
+          -720,
+          -240
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "nav stores",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D01-04-2-core",
+        "group": "D01-04",
+        "sector": 2,
+        "side": "core",
+        "deck_range": [
+          1,
+          4
+        ],
+        "diagrammatic_x": [
+          -240,
+          240
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "operations watch",
+          "command support"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D01-04-3-core",
+        "group": "D01-04",
+        "sector": 3,
+        "side": "core",
+        "deck_range": [
+          1,
+          4
+        ],
+        "diagrammatic_x": [
+          240,
+          720
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "bridge",
+          "command"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": [
+          "bridge"
+        ]
+      },
+      {
+        "id": "D01-04-4-core",
+        "group": "D01-04",
+        "sector": 4,
+        "side": "core",
+        "deck_range": [
+          1,
+          4
+        ],
+        "diagrammatic_x": [
+          720,
+          1200
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "signals",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D01-04-0-starboard",
+        "group": "D01-04",
+        "sector": 0,
+        "side": "starboard",
+        "deck_range": [
+          1,
+          4
+        ],
+        "diagrammatic_x": [
+          -1200,
+          -720
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "astrometry support"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D01-04-1-starboard",
+        "group": "D01-04",
+        "sector": 1,
+        "side": "starboard",
+        "deck_range": [
+          1,
+          4
+        ],
+        "diagrammatic_x": [
+          -720,
+          -240
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "navigation",
+          "officer staterooms"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D01-04-2-starboard",
+        "group": "D01-04",
+        "sector": 2,
+        "side": "starboard",
+        "deck_range": [
+          1,
+          4
+        ],
+        "diagrammatic_x": [
+          -240,
+          240
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "astrometry",
+          "command archives"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D01-04-3-starboard",
+        "group": "D01-04",
+        "sector": 3,
+        "side": "starboard",
+        "deck_range": [
+          1,
+          4
+        ],
+        "diagrammatic_x": [
+          240,
+          720
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "watch rooms"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D01-04-4-starboard",
+        "group": "D01-04",
+        "sector": 4,
+        "side": "starboard",
+        "deck_range": [
+          1,
+          4
+        ],
+        "diagrammatic_x": [
+          720,
+          1200
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "comms"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D05-08-0-port",
+        "group": "D05-08",
+        "sector": 0,
+        "side": "port",
+        "deck_range": [
+          5,
+          8
+        ],
+        "diagrammatic_x": [
+          -1200,
+          -720
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "clinic"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D05-08-1-port",
+        "group": "D05-08",
+        "sector": 1,
+        "side": "port",
+        "deck_range": [
+          5,
+          8
+        ],
+        "diagrammatic_x": [
+          -720,
+          -240
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "commons"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D05-08-2-port",
+        "group": "D05-08",
+        "sector": 2,
+        "side": "port",
+        "deck_range": [
+          5,
+          8
+        ],
+        "diagrammatic_x": [
+          -240,
+          240
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "medical",
+          "officer staterooms"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D05-08-3-port",
+        "group": "D05-08",
+        "sector": 3,
+        "side": "port",
+        "deck_range": [
+          5,
+          8
+        ],
+        "diagrammatic_x": [
+          240,
+          720
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "civic rooms"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D05-08-4-port",
+        "group": "D05-08",
+        "sector": 4,
+        "side": "port",
+        "deck_range": [
+          5,
+          8
+        ],
+        "diagrammatic_x": [
+          720,
+          1200
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "care"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D05-08-0-core",
+        "group": "D05-08",
+        "sector": 0,
+        "side": "core",
+        "deck_range": [
+          5,
+          8
+        ],
+        "diagrammatic_x": [
+          -1200,
+          -720
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "school",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D05-08-1-core",
+        "group": "D05-08",
+        "sector": 1,
+        "side": "core",
+        "deck_range": [
+          5,
+          8
+        ],
+        "diagrammatic_x": [
+          -720,
+          -240
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "medical logistics",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D05-08-2-core",
+        "group": "D05-08",
+        "sector": 2,
+        "side": "core",
+        "deck_range": [
+          5,
+          8
+        ],
+        "diagrammatic_x": [
+          -240,
+          240
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "hospital",
+          "triage"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D05-08-3-core",
+        "group": "D05-08",
+        "sector": 3,
+        "side": "core",
+        "deck_range": [
+          5,
+          8
+        ],
+        "diagrammatic_x": [
+          240,
+          720
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "commons"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D05-08-4-core",
+        "group": "D05-08",
+        "sector": 4,
+        "side": "core",
+        "deck_range": [
+          5,
+          8
+        ],
+        "diagrammatic_x": [
+          720,
+          1200
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "care"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D05-08-0-starboard",
+        "group": "D05-08",
+        "sector": 0,
+        "side": "starboard",
+        "deck_range": [
+          5,
+          8
+        ],
+        "diagrammatic_x": [
+          -1200,
+          -720
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "commons"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D05-08-1-starboard",
+        "group": "D05-08",
+        "sector": 1,
+        "side": "starboard",
+        "deck_range": [
+          5,
+          8
+        ],
+        "diagrammatic_x": [
+          -720,
+          -240
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "medical annex"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D05-08-2-starboard",
+        "group": "D05-08",
+        "sector": 2,
+        "side": "starboard",
+        "deck_range": [
+          5,
+          8
+        ],
+        "diagrammatic_x": [
+          -240,
+          240
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "civic rooms",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D05-08-3-starboard",
+        "group": "D05-08",
+        "sector": 3,
+        "side": "starboard",
+        "deck_range": [
+          5,
+          8
+        ],
+        "diagrammatic_x": [
+          240,
+          720
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "school"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D05-08-4-starboard",
+        "group": "D05-08",
+        "sector": 4,
+        "side": "starboard",
+        "deck_range": [
+          5,
+          8
+        ],
+        "diagrammatic_x": [
+          720,
+          1200
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "clinic"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D09-12-0-port",
+        "group": "D09-12",
+        "sector": 0,
+        "side": "port",
+        "deck_range": [
+          9,
+          12
+        ],
+        "diagrammatic_x": [
+          -1200,
+          -720
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "escape muster"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D09-12-1-port",
+        "group": "D09-12",
+        "sector": 1,
+        "side": "port",
+        "deck_range": [
+          9,
+          12
+        ],
+        "diagrammatic_x": [
+          -720,
+          -240
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "mess"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D09-12-2-port",
+        "group": "D09-12",
+        "sector": 2,
+        "side": "port",
+        "deck_range": [
+          9,
+          12
+        ],
+        "diagrammatic_x": [
+          -240,
+          240
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "gardens",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D09-12-3-port",
+        "group": "D09-12",
+        "sector": 3,
+        "side": "port",
+        "deck_range": [
+          9,
+          12
+        ],
+        "diagrammatic_x": [
+          240,
+          720
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "escape muster"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D09-12-4-port",
+        "group": "D09-12",
+        "sector": 4,
+        "side": "port",
+        "deck_range": [
+          9,
+          12
+        ],
+        "diagrammatic_x": [
+          720,
+          1200
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "galley"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D09-12-0-core",
+        "group": "D09-12",
+        "sector": 0,
+        "side": "core",
+        "deck_range": [
+          9,
+          12
+        ],
+        "diagrammatic_x": [
+          -1200,
+          -720
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "escape craft",
+          "muster"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D09-12-1-core",
+        "group": "D09-12",
+        "sector": 1,
+        "side": "core",
+        "deck_range": [
+          9,
+          12
+        ],
+        "diagrammatic_x": [
+          -720,
+          -240
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "commons"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D09-12-2-core",
+        "group": "D09-12",
+        "sector": 2,
+        "side": "core",
+        "deck_range": [
+          9,
+          12
+        ],
+        "diagrammatic_x": [
+          -240,
+          240
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "mess",
+          "water stores"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D09-12-3-core",
+        "group": "D09-12",
+        "sector": 3,
+        "side": "core",
+        "deck_range": [
+          9,
+          12
+        ],
+        "diagrammatic_x": [
+          240,
+          720
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "commons"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D09-12-4-core",
+        "group": "D09-12",
+        "sector": 4,
+        "side": "core",
+        "deck_range": [
+          9,
+          12
+        ],
+        "diagrammatic_x": [
+          720,
+          1200
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "escape craft",
+          "muster"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D09-12-0-starboard",
+        "group": "D09-12",
+        "sector": 0,
+        "side": "starboard",
+        "deck_range": [
+          9,
+          12
+        ],
+        "diagrammatic_x": [
+          -1200,
+          -720
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "mess"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D09-12-1-starboard",
+        "group": "D09-12",
+        "sector": 1,
+        "side": "starboard",
+        "deck_range": [
+          9,
+          12
+        ],
+        "diagrammatic_x": [
+          -720,
+          -240
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "escape craft"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D09-12-2-starboard",
+        "group": "D09-12",
+        "sector": 2,
+        "side": "starboard",
+        "deck_range": [
+          9,
+          12
+        ],
+        "diagrammatic_x": [
+          -240,
+          240
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "gardens",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D09-12-3-starboard",
+        "group": "D09-12",
+        "sector": 3,
+        "side": "starboard",
+        "deck_range": [
+          9,
+          12
+        ],
+        "diagrammatic_x": [
+          240,
+          720
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "galley"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D09-12-4-starboard",
+        "group": "D09-12",
+        "sector": 4,
+        "side": "starboard",
+        "deck_range": [
+          9,
+          12
+        ],
+        "diagrammatic_x": [
+          720,
+          1200
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "escape craft"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D13-16-0-port",
+        "group": "D13-16",
+        "sector": 0,
+        "side": "port",
+        "deck_range": [
+          13,
+          16
+        ],
+        "diagrammatic_x": [
+          -1200,
+          -720
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "medical annex"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D13-16-1-port",
+        "group": "D13-16",
+        "sector": 1,
+        "side": "port",
+        "deck_range": [
+          13,
+          16
+        ],
+        "diagrammatic_x": [
+          -720,
+          -240
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "distribution"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D13-16-2-port",
+        "group": "D13-16",
+        "sector": 2,
+        "side": "port",
+        "deck_range": [
+          13,
+          16
+        ],
+        "diagrammatic_x": [
+          -240,
+          240
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "transit"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D13-16-3-port",
+        "group": "D13-16",
+        "sector": 3,
+        "side": "port",
+        "deck_range": [
+          13,
+          16
+        ],
+        "diagrammatic_x": [
+          240,
+          720
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "officer staterooms"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D13-16-4-port",
+        "group": "D13-16",
+        "sector": 4,
+        "side": "port",
+        "deck_range": [
+          13,
+          16
+        ],
+        "diagrammatic_x": [
+          720,
+          1200
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "service"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D13-16-0-core",
+        "group": "D13-16",
+        "sector": 0,
+        "side": "core",
+        "deck_range": [
+          13,
+          16
+        ],
+        "diagrammatic_x": [
+          -1200,
+          -720
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "service bypass",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D13-16-1-core",
+        "group": "D13-16",
+        "sector": 1,
+        "side": "core",
+        "deck_range": [
+          13,
+          16
+        ],
+        "diagrammatic_x": [
+          -720,
+          -240
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "distribution"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D13-16-2-core",
+        "group": "D13-16",
+        "sector": 2,
+        "side": "core",
+        "deck_range": [
+          13,
+          16
+        ],
+        "diagrammatic_x": [
+          -240,
+          240
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "opening",
+        "functions": [
+          "seven-pod bay",
+          "hallway",
+          "secondary power room",
+          "medical annex"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "mixed: built opening anchors, proposed surrounding program",
+        "facility_refs": [
+          "bay",
+          "hall",
+          "power_room",
+          "backup"
+        ]
+      },
+      {
+        "id": "D13-16-3-core",
+        "group": "D13-16",
+        "sector": 3,
+        "side": "core",
+        "deck_range": [
+          13,
+          16
+        ],
+        "diagrammatic_x": [
+          240,
+          720
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "distribution",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D13-16-4-core",
+        "group": "D13-16",
+        "sector": 4,
+        "side": "core",
+        "deck_range": [
+          13,
+          16
+        ],
+        "diagrammatic_x": [
+          720,
+          1200
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "service bypass",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D13-16-0-starboard",
+        "group": "D13-16",
+        "sector": 0,
+        "side": "starboard",
+        "deck_range": [
+          13,
+          16
+        ],
+        "diagrammatic_x": [
+          -1200,
+          -720
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "medical annex"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D13-16-1-starboard",
+        "group": "D13-16",
+        "sector": 1,
+        "side": "starboard",
+        "deck_range": [
+          13,
+          16
+        ],
+        "diagrammatic_x": [
+          -720,
+          -240
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "transit"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D13-16-2-starboard",
+        "group": "D13-16",
+        "sector": 2,
+        "side": "starboard",
+        "deck_range": [
+          13,
+          16
+        ],
+        "diagrammatic_x": [
+          -240,
+          240
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "distribution"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D13-16-3-starboard",
+        "group": "D13-16",
+        "sector": 3,
+        "side": "starboard",
+        "deck_range": [
+          13,
+          16
+        ],
+        "diagrammatic_x": [
+          240,
+          720
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "officer staterooms"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D13-16-4-starboard",
+        "group": "D13-16",
+        "sector": 4,
+        "side": "starboard",
+        "deck_range": [
+          13,
+          16
+        ],
+        "diagrammatic_x": [
+          720,
+          1200
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "service"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D17-20-0-port",
+        "group": "D17-20",
+        "sector": 0,
+        "side": "port",
+        "deck_range": [
+          17,
+          20
+        ],
+        "diagrammatic_x": [
+          -1200,
+          -720
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "air handling",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D17-20-1-port",
+        "group": "D17-20",
+        "sector": 1,
+        "side": "port",
+        "deck_range": [
+          17,
+          20
+        ],
+        "diagrammatic_x": [
+          -720,
+          -240
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "workshops",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D17-20-2-port",
+        "group": "D17-20",
+        "sector": 2,
+        "side": "port",
+        "deck_range": [
+          17,
+          20
+        ],
+        "diagrammatic_x": [
+          -240,
+          240
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "water treatment",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D17-20-3-port",
+        "group": "D17-20",
+        "sector": 3,
+        "side": "port",
+        "deck_range": [
+          17,
+          20
+        ],
+        "diagrammatic_x": [
+          240,
+          720
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "workshops",
+          "officer staterooms"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D17-20-4-port",
+        "group": "D17-20",
+        "sector": 4,
+        "side": "port",
+        "deck_range": [
+          17,
+          20
+        ],
+        "diagrammatic_x": [
+          720,
+          1200
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "air handling",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D17-20-0-core",
+        "group": "D17-20",
+        "sector": 0,
+        "side": "core",
+        "deck_range": [
+          17,
+          20
+        ],
+        "diagrammatic_x": [
+          -1200,
+          -720
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "water reclaim",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D17-20-1-core",
+        "group": "D17-20",
+        "sector": 1,
+        "side": "core",
+        "deck_range": [
+          17,
+          20
+        ],
+        "diagrammatic_x": [
+          -720,
+          -240
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "distribution buses",
+          "sectional breakers"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D17-20-2-core",
+        "group": "D17-20",
+        "sector": 2,
+        "side": "core",
+        "deck_range": [
+          17,
+          20
+        ],
+        "diagrammatic_x": [
+          -240,
+          240
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "fabrication",
+          "workshops"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D17-20-3-core",
+        "group": "D17-20",
+        "sector": 3,
+        "side": "core",
+        "deck_range": [
+          17,
+          20
+        ],
+        "diagrammatic_x": [
+          240,
+          720
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "distribution buses",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D17-20-4-core",
+        "group": "D17-20",
+        "sector": 4,
+        "side": "core",
+        "deck_range": [
+          17,
+          20
+        ],
+        "diagrammatic_x": [
+          720,
+          1200
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "air handling",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D17-20-0-starboard",
+        "group": "D17-20",
+        "sector": 0,
+        "side": "starboard",
+        "deck_range": [
+          17,
+          20
+        ],
+        "diagrammatic_x": [
+          -1200,
+          -720
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "air handling",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D17-20-1-starboard",
+        "group": "D17-20",
+        "sector": 1,
+        "side": "starboard",
+        "deck_range": [
+          17,
+          20
+        ],
+        "diagrammatic_x": [
+          -720,
+          -240
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "workshops",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D17-20-2-starboard",
+        "group": "D17-20",
+        "sector": 2,
+        "side": "starboard",
+        "deck_range": [
+          17,
+          20
+        ],
+        "diagrammatic_x": [
+          -240,
+          240
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "water treatment",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D17-20-3-starboard",
+        "group": "D17-20",
+        "sector": 3,
+        "side": "starboard",
+        "deck_range": [
+          17,
+          20
+        ],
+        "diagrammatic_x": [
+          240,
+          720
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "workshops",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D17-20-4-starboard",
+        "group": "D17-20",
+        "sector": 4,
+        "side": "starboard",
+        "deck_range": [
+          17,
+          20
+        ],
+        "diagrammatic_x": [
+          720,
+          1200
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "air handling",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D21-25-0-port",
+        "group": "D21-25",
+        "sector": 0,
+        "side": "port",
+        "deck_range": [
+          21,
+          25
+        ],
+        "diagrammatic_x": [
+          -1200,
+          -720
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "hull inspection",
+          "repair staging"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D21-25-1-port",
+        "group": "D21-25",
+        "sector": 1,
+        "side": "port",
+        "deck_range": [
+          21,
+          25
+        ],
+        "diagrammatic_x": [
+          -720,
+          -240
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "hazard",
+        "functions": [
+          "isolated remote two-pod room",
+          "shielded irradiated armory"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": [
+          "r2",
+          "remote_room",
+          "armory",
+          "remote_pod_1",
+          "remote_pod_2"
+        ]
+      },
+      {
+        "id": "D21-25-2-port",
+        "group": "D21-25",
+        "sector": 2,
+        "side": "port",
+        "deck_range": [
+          21,
+          25
+        ],
+        "diagrammatic_x": [
+          -240,
+          240
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "fabrication",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D21-25-3-port",
+        "group": "D21-25",
+        "sector": 3,
+        "side": "port",
+        "deck_range": [
+          21,
+          25
+        ],
+        "diagrammatic_x": [
+          240,
+          720
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "engineering",
+          "officer staterooms"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D21-25-4-port",
+        "group": "D21-25",
+        "sector": 4,
+        "side": "port",
+        "deck_range": [
+          21,
+          25
+        ],
+        "diagrammatic_x": [
+          720,
+          1200
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "maintenance"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D21-25-0-core",
+        "group": "D21-25",
+        "sector": 0,
+        "side": "core",
+        "deck_range": [
+          21,
+          25
+        ],
+        "diagrammatic_x": [
+          -1200,
+          -720
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "isolation vestibule",
+          "freight"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D21-25-1-core",
+        "group": "D21-25",
+        "sector": 1,
+        "side": "core",
+        "deck_range": [
+          21,
+          25
+        ],
+        "diagrammatic_x": [
+          -720,
+          -240
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "fabrication",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D21-25-2-core",
+        "group": "D21-25",
+        "sector": 2,
+        "side": "core",
+        "deck_range": [
+          21,
+          25
+        ],
+        "diagrammatic_x": [
+          -240,
+          240
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "damage control",
+          "distribution"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D21-25-3-core",
+        "group": "D21-25",
+        "sector": 3,
+        "side": "core",
+        "deck_range": [
+          21,
+          25
+        ],
+        "diagrammatic_x": [
+          240,
+          720
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "engineering",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D21-25-4-core",
+        "group": "D21-25",
+        "sector": 4,
+        "side": "core",
+        "deck_range": [
+          21,
+          25
+        ],
+        "diagrammatic_x": [
+          720,
+          1200
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "propulsion access",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D21-25-0-starboard",
+        "group": "D21-25",
+        "sector": 0,
+        "side": "starboard",
+        "deck_range": [
+          21,
+          25
+        ],
+        "diagrammatic_x": [
+          -1200,
+          -720
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "freight"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D21-25-1-starboard",
+        "group": "D21-25",
+        "sector": 1,
+        "side": "starboard",
+        "deck_range": [
+          21,
+          25
+        ],
+        "diagrammatic_x": [
+          -720,
+          -240
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "workshops"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D21-25-2-starboard",
+        "group": "D21-25",
+        "sector": 2,
+        "side": "starboard",
+        "deck_range": [
+          21,
+          25
+        ],
+        "diagrammatic_x": [
+          -240,
+          240
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "fabrication",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D21-25-3-starboard",
+        "group": "D21-25",
+        "sector": 3,
+        "side": "starboard",
+        "deck_range": [
+          21,
+          25
+        ],
+        "diagrammatic_x": [
+          240,
+          720
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "engineering",
+          "officer staterooms"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D21-25-4-starboard",
+        "group": "D21-25",
+        "sector": 4,
+        "side": "starboard",
+        "deck_range": [
+          21,
+          25
+        ],
+        "diagrammatic_x": [
+          720,
+          1200
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "crew cabins",
+          "propulsion support"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D26-30-0-port",
+        "group": "D26-30",
+        "sector": 0,
+        "side": "port",
+        "deck_range": [
+          26,
+          30
+        ],
+        "diagrammatic_x": [
+          -1200,
+          -720
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "structure",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D26-30-1-port",
+        "group": "D26-30",
+        "sector": 1,
+        "side": "port",
+        "deck_range": [
+          26,
+          30
+        ],
+        "diagrammatic_x": [
+          -720,
+          -240
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "reserves",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D26-30-2-port",
+        "group": "D26-30",
+        "sector": 2,
+        "side": "port",
+        "deck_range": [
+          26,
+          30
+        ],
+        "diagrammatic_x": [
+          -240,
+          240
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "maintenance",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D26-30-3-port",
+        "group": "D26-30",
+        "sector": 3,
+        "side": "port",
+        "deck_range": [
+          26,
+          30
+        ],
+        "diagrammatic_x": [
+          240,
+          720
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "engineering",
+          "officer staterooms"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D26-30-4-port",
+        "group": "D26-30",
+        "sector": 4,
+        "side": "port",
+        "deck_range": [
+          26,
+          30
+        ],
+        "diagrammatic_x": [
+          720,
+          1200
+        ],
+        "diagrammatic_z": [
+          -310,
+          -120
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "drive service",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D26-30-0-core",
+        "group": "D26-30",
+        "sector": 0,
+        "side": "core",
+        "deck_range": [
+          26,
+          30
+        ],
+        "diagrammatic_x": [
+          -1200,
+          -720
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "structure",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D26-30-1-core",
+        "group": "D26-30",
+        "sector": 1,
+        "side": "core",
+        "deck_range": [
+          26,
+          30
+        ],
+        "diagrammatic_x": [
+          -720,
+          -240
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "reserves",
+          "maintenance"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D26-30-2-core",
+        "group": "D26-30",
+        "sector": 2,
+        "side": "core",
+        "deck_range": [
+          26,
+          30
+        ],
+        "diagrammatic_x": [
+          -240,
+          240
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "distribution",
+          "sectional breakers"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D26-30-3-core",
+        "group": "D26-30",
+        "sector": 3,
+        "side": "core",
+        "deck_range": [
+          26,
+          30
+        ],
+        "diagrammatic_x": [
+          240,
+          720
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "generation",
+        "functions": [
+          "primary generation plant",
+          "isolation"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": [
+          "primary"
+        ]
+      },
+      {
+        "id": "D26-30-4-core",
+        "group": "D26-30",
+        "sector": 4,
+        "side": "core",
+        "deck_range": [
+          26,
+          30
+        ],
+        "diagrammatic_x": [
+          720,
+          1200
+        ],
+        "diagrammatic_z": [
+          -100,
+          100
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "M-drive",
+          "engine access"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": [
+          "m_drive"
+        ]
+      },
+      {
+        "id": "D26-30-0-starboard",
+        "group": "D26-30",
+        "sector": 0,
+        "side": "starboard",
+        "deck_range": [
+          26,
+          30
+        ],
+        "diagrammatic_x": [
+          -1200,
+          -720
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "structure",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D26-30-1-starboard",
+        "group": "D26-30",
+        "sector": 1,
+        "side": "starboard",
+        "deck_range": [
+          26,
+          30
+        ],
+        "diagrammatic_x": [
+          -720,
+          -240
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "reserves",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D26-30-2-starboard",
+        "group": "D26-30",
+        "sector": 2,
+        "side": "starboard",
+        "deck_range": [
+          26,
+          30
+        ],
+        "diagrammatic_x": [
+          -240,
+          240
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "habitation",
+        "functions": [
+          "maintenance",
+          "crew cabins"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D26-30-3-starboard",
+        "group": "D26-30",
+        "sector": 3,
+        "side": "starboard",
+        "deck_range": [
+          26,
+          30
+        ],
+        "diagrammatic_x": [
+          240,
+          720
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "ship systems",
+        "functions": [
+          "engineering",
+          "officer staterooms"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": []
+      },
+      {
+        "id": "D26-30-4-starboard",
+        "group": "D26-30",
+        "sector": 4,
+        "side": "starboard",
+        "deck_range": [
+          26,
+          30
+        ],
+        "diagrammatic_x": [
+          720,
+          1200
+        ],
+        "diagrammatic_z": [
+          120,
+          310
+        ],
+        "geometry": "diagrammatic; no rectangular hull occupancy implied",
+        "category": "hazard",
+        "functions": [
+          "isolated M-drive radiation zone"
+        ],
+        "source": "proposed: phase-1 ship atlas",
+        "status": "proposed",
+        "facility_refs": [
+          "r1"
+        ]
+      }
+    ]
+  },
+  "facilities": [
+    {
+      "id": "bridge",
+      "kind": "proposed command bridge anchor",
+      "deck": "D03",
+      "xyz": [
+        480,
+        60.5,
+        0
+      ],
+      "source": "proposed: exterior-compatible aft-mid upper placement",
+      "status": "proposed",
+      "district": "D01-04-3-core"
+    },
+    {
+      "id": "bay",
+      "kind": "stasis bay",
+      "deck": "D14",
+      "xyz": [
+        0,
+        0,
+        0
+      ],
+      "source": "sim/pods.gd",
+      "status": "built",
+      "district": "D13-16-2-core",
+      "bounds": {
+        "x": [
+          -6,
+          6
+        ],
+        "z": [
+          -4,
+          4
+        ]
+      },
+      "clear_height": 3.2
+    },
+    {
+      "id": "rod",
+      "kind": "pry rod",
+      "deck": "D14",
+      "xyz": [
+        -0.6,
+        0,
+        -1.55
+      ],
+      "source": "app/rod.gd",
+      "status": "built",
+      "district": "D13-16-2-core"
+    },
+    {
+      "id": "hatch",
+      "kind": "jammed hatch",
+      "deck": "D14",
+      "xyz": [
+        6,
+        0,
+        0
+      ],
+      "source": "sim/pods.gd",
+      "status": "built",
+      "district": "D13-16-2-core"
+    },
+    {
+      "id": "hall",
+      "kind": "corridor",
+      "deck": "D14",
+      "xyz": [
+        18,
+        0,
+        0
+      ],
+      "source": "app/hallway.gd",
+      "status": "built",
+      "district": "D13-16-2-core",
+      "bounds": {
+        "x": [
+          6,
+          30
+        ],
+        "z": [
+          -1.5,
+          1.5
+        ]
+      },
+      "endcap_x": 30
+    },
+    {
+      "id": "switch",
+      "kind": "hall light switch",
+      "deck": "D14",
+      "xyz": [
+        6.22,
+        1.25,
+        0.85
+      ],
+      "source": "app/hallway.gd",
+      "status": "built",
+      "district": "D13-16-2-core"
+    },
+    {
+      "id": "power_door",
+      "kind": "pierced power door",
+      "deck": "D14",
+      "xyz": [
+        27,
+        0,
+        -1.5
+      ],
+      "source": "app/hallway.gd; app/power_room.gd",
+      "status": "built",
+      "district": "D13-16-2-core"
+    },
+    {
+      "id": "power_room",
+      "kind": "secondary power room",
+      "deck": "D14",
+      "xyz": [
+        27,
+        0,
+        -5.7
+      ],
+      "source": "app/power_room.gd",
+      "status": "built",
+      "district": "D13-16-2-core",
+      "bounds": {
+        "x": [
+          21,
+          33
+        ],
+        "z": [
+          -9.7,
+          -1.7
+        ]
+      }
+    },
+    {
+      "id": "backup",
+      "kind": "secondary generator (local backup)",
+      "deck": "D14",
+      "xyz": [
+        27,
+        0,
+        -5.7
+      ],
+      "source": "app/power_room.gd",
+      "status": "built",
+      "district": "D13-16-2-core"
+    },
+    {
+      "id": "medical_annex",
+      "kind": "medical annex",
+      "deck": "D14",
+      "xyz": [
+        68,
+        0,
+        14
+      ],
+      "source": "proposed: phase-1 ship atlas",
+      "status": "proposed",
+      "district": "D13-16-2-core"
+    },
+    {
+      "id": "primary",
+      "kind": "primary generation plant",
+      "deck": "D27",
+      "xyz": [
+        700,
+        -71.5,
+        0
+      ],
+      "source": "proposed: phase-1 ship atlas",
+      "status": "proposed",
+      "district": "D26-30-3-core"
+    },
+    {
+      "id": "m_drive",
+      "kind": "M-drive engine",
+      "deck": "D28",
+      "xyz": [
+        1030,
+        -77,
+        0
+      ],
+      "source": "proposed: phase-1 ship atlas",
+      "status": "proposed",
+      "district": "D26-30-4-core"
+    },
+    {
+      "id": "r1",
+      "kind": "M-drive-adjacent isolated radiation region",
+      "deck": "D28",
+      "xyz": [
+        1045,
+        -77,
+        235
+      ],
+      "source": "proposed: phase-1 ship atlas; radiation source unknown",
+      "status": "proposed",
+      "district": "D26-30-4-starboard",
+      "bounds": {
+        "x": [
+          970,
+          1120
+        ],
+        "z": [
+          170,
+          300
+        ]
+      },
+      "deck_range": [
+        26,
+        30
+      ],
+      "radiation_source": "unknown"
+    },
+    {
+      "id": "r2",
+      "kind": "forward-mid isolated radiation region",
+      "deck": "D22",
+      "xyz": [
+        -525,
+        -44,
+        -180
+      ],
+      "source": "proposed: phase-1 ship atlas; radiation source unknown",
+      "status": "proposed",
+      "district": "D21-25-1-port",
+      "bounds": {
+        "x": [
+          -600,
+          -450
+        ],
+        "z": [
+          -230,
+          -130
+        ]
+      },
+      "deck_range": [
+        21,
+        23
+      ],
+      "radiation_source": "unknown"
+    },
+    {
+      "id": "remote_room",
+      "kind": "isolated two-pod room",
+      "deck": "D22",
+      "xyz": [
+        -490,
+        -44,
+        -170
+      ],
+      "source": "proposed: phase-1 ship atlas",
+      "status": "proposed",
+      "district": "D21-25-1-port",
+      "bounds": {
+        "x": [
+          -507,
+          -473
+        ],
+        "z": [
+          -184,
+          -156
+        ]
+      },
+      "radiation_region": "r2"
+    },
+    {
+      "id": "armory",
+      "kind": "separately shielded irradiated armory",
+      "deck": "D22",
+      "xyz": [
+        -560,
+        -44,
+        -190
+      ],
+      "source": "docs/design/biblia.md (armory irradiated); proposed placement and shielding",
+      "status": "proposed",
+      "district": "D21-25-1-port",
+      "bounds": {
+        "x": [
+          -577,
+          -543
+        ],
+        "z": [
+          -208,
+          -172
+        ]
+      },
+      "radiation_region": "r2",
+      "shielding": "separate room enclosure"
+    },
+    {
+      "id": "pod_0",
+      "kind": "stasis pod",
+      "deck": "D14",
+      "xyz": [
+        -4.8,
+        0,
+        -2.9
+      ],
+      "source": "sim/pods.gd",
+      "status": "built",
+      "district": "D13-16-2-core",
+      "room": "bay",
+      "state": "sealed"
+    },
+    {
+      "id": "pod_1",
+      "kind": "stasis pod",
+      "deck": "D14",
+      "xyz": [
+        -3.4,
+        0,
+        -2.9
+      ],
+      "source": "sim/pods.gd",
+      "status": "built",
+      "district": "D13-16-2-core",
+      "room": "bay",
+      "state": "open"
+    },
+    {
+      "id": "pod_2",
+      "kind": "stasis pod",
+      "deck": "D14",
+      "xyz": [
+        -2,
+        0,
+        -2.9
+      ],
+      "source": "sim/pods.gd",
+      "status": "built",
+      "district": "D13-16-2-core",
+      "room": "bay",
+      "state": "sealed"
+    },
+    {
+      "id": "pod_3",
+      "kind": "stasis pod",
+      "deck": "D14",
+      "xyz": [
+        -0.6,
+        0,
+        -2.9
+      ],
+      "source": "sim/pods.gd",
+      "status": "built",
+      "district": "D13-16-2-core",
+      "room": "bay",
+      "state": "open"
+    },
+    {
+      "id": "pod_4",
+      "kind": "stasis pod",
+      "deck": "D14",
+      "xyz": [
+        -2,
+        0,
+        2.9
+      ],
+      "source": "sim/pods.gd",
+      "status": "built",
+      "district": "D13-16-2-core",
+      "room": "bay",
+      "state": "sealed"
+    },
+    {
+      "id": "pod_5",
+      "kind": "stasis pod",
+      "deck": "D14",
+      "xyz": [
+        -3.4,
+        0,
+        2.9
+      ],
+      "source": "sim/pods.gd",
+      "status": "built",
+      "district": "D13-16-2-core",
+      "room": "bay",
+      "state": "open"
+    },
+    {
+      "id": "pod_6",
+      "kind": "stasis pod",
+      "deck": "D14",
+      "xyz": [
+        -4.8,
+        0,
+        2.9
+      ],
+      "source": "sim/pods.gd",
+      "status": "built",
+      "district": "D13-16-2-core",
+      "room": "bay",
+      "state": "player"
+    },
+    {
+      "id": "remote_pod_1",
+      "kind": "stasis pod",
+      "deck": "D22",
+      "xyz": [
+        -490.7,
+        -44,
+        -170
+      ],
+      "source": "proposed: phase-1 ship atlas",
+      "status": "proposed",
+      "district": "D21-25-1-port",
+      "room": "remote_room",
+      "state": "unknown"
+    },
+    {
+      "id": "remote_pod_2",
+      "kind": "stasis pod",
+      "deck": "D22",
+      "xyz": [
+        -489.3,
+        -44,
+        -170
+      ],
+      "source": "proposed: phase-1 ship atlas",
+      "status": "proposed",
+      "district": "D21-25-1-port",
+      "room": "remote_room",
+      "state": "unknown"
+    },
+    {
+      "id": "leaf_9_north",
+      "kind": "decorative solid side leaf",
+      "deck": "D14",
+      "xyz": [
+        9,
+        0,
+        -1.5
+      ],
+      "source": "app/hallway.gd",
+      "status": "built",
+      "district": "D13-16-2-core",
+      "pierced": false
+    },
+    {
+      "id": "leaf_9_south",
+      "kind": "decorative solid side leaf",
+      "deck": "D14",
+      "xyz": [
+        9,
+        0,
+        1.5
+      ],
+      "source": "app/hallway.gd",
+      "status": "built",
+      "district": "D13-16-2-core",
+      "pierced": false
+    },
+    {
+      "id": "leaf_15_north",
+      "kind": "decorative solid side leaf",
+      "deck": "D14",
+      "xyz": [
+        15,
+        0,
+        -1.5
+      ],
+      "source": "app/hallway.gd",
+      "status": "built",
+      "district": "D13-16-2-core",
+      "pierced": false
+    },
+    {
+      "id": "leaf_15_south",
+      "kind": "decorative solid side leaf",
+      "deck": "D14",
+      "xyz": [
+        15,
+        0,
+        1.5
+      ],
+      "source": "app/hallway.gd",
+      "status": "built",
+      "district": "D13-16-2-core",
+      "pierced": false
+    },
+    {
+      "id": "leaf_21_north",
+      "kind": "decorative solid side leaf",
+      "deck": "D14",
+      "xyz": [
+        21,
+        0,
+        -1.5
+      ],
+      "source": "app/hallway.gd",
+      "status": "built",
+      "district": "D13-16-2-core",
+      "pierced": false
+    },
+    {
+      "id": "leaf_21_south",
+      "kind": "decorative solid side leaf",
+      "deck": "D14",
+      "xyz": [
+        21,
+        0,
+        1.5
+      ],
+      "source": "app/hallway.gd",
+      "status": "built",
+      "district": "D13-16-2-core",
+      "pierced": false
+    },
+    {
+      "id": "trunk_1",
+      "kind": "through-deck trunk",
+      "deck": "D14",
+      "xyz": [
+        -550,
+        0,
+        -90
+      ],
+      "source": "proposed: phase-1 ship atlas",
+      "status": "proposed",
+      "district": "D13-16-1-core",
+      "deck_range": [
+        1,
+        30
+      ]
+    },
+    {
+      "id": "trunk_2",
+      "kind": "through-deck trunk",
+      "deck": "D14",
+      "xyz": [
+        -300,
+        0,
+        90
+      ],
+      "source": "proposed: phase-1 ship atlas",
+      "status": "proposed",
+      "district": "D13-16-1-core",
+      "deck_range": [
+        1,
+        30
+      ]
+    },
+    {
+      "id": "trunk_3",
+      "kind": "through-deck trunk",
+      "deck": "D14",
+      "xyz": [
+        300,
+        0,
+        -90
+      ],
+      "source": "proposed: phase-1 ship atlas",
+      "status": "proposed",
+      "district": "D13-16-3-core",
+      "deck_range": [
+        1,
+        30
+      ]
+    },
+    {
+      "id": "trunk_4",
+      "kind": "through-deck trunk",
+      "deck": "D14",
+      "xyz": [
+        850,
+        0,
+        90
+      ],
+      "source": "proposed: phase-1 ship atlas",
+      "status": "proposed",
+      "district": "D13-16-4-core",
+      "deck_range": [
+        1,
+        30
+      ]
+    }
+  ],
+  "routes": {
+    "statuses": {
+      "built": "authored today; an edge can still end at an impassable decorative solid",
+      "future": "requires construction; never traversable in current build",
+      "sealed": "isolated and not traversable"
+    },
+    "nodes": [
+      {
+        "id": "bay",
+        "facility_ref": "bay",
+        "status": "built"
+      },
+      {
+        "id": "hatch",
+        "facility_ref": "hatch",
+        "status": "built"
+      },
+      {
+        "id": "hall",
+        "facility_ref": "hall",
+        "status": "built"
+      },
+      {
+        "id": "power_door",
+        "facility_ref": "power_door",
+        "status": "built"
+      },
+      {
+        "id": "power_room",
+        "facility_ref": "power_room",
+        "status": "built"
+      },
+      {
+        "id": "m_drive",
+        "facility_ref": "m_drive",
+        "status": "proposed"
+      },
+      {
+        "id": "r1",
+        "facility_ref": "r1",
+        "status": "proposed"
+      },
+      {
+        "id": "r2",
+        "facility_ref": "r2",
+        "status": "proposed"
+      },
+      {
+        "id": "remote_room",
+        "facility_ref": "remote_room",
+        "status": "proposed"
+      },
+      {
+        "id": "armory",
+        "facility_ref": "armory",
+        "status": "proposed"
+      },
+      {
+        "id": "leaf_15_south",
+        "facility_ref": "leaf_15_south",
+        "status": "built"
+      },
+      {
+        "id": "trunk_1",
+        "facility_ref": "trunk_1",
+        "status": "proposed"
+      },
+      {
+        "id": "trunk_2",
+        "facility_ref": "trunk_2",
+        "status": "proposed"
+      },
+      {
+        "id": "trunk_3",
+        "facility_ref": "trunk_3",
+        "status": "proposed"
+      },
+      {
+        "id": "trunk_4",
+        "facility_ref": "trunk_4",
+        "status": "proposed"
+      },
+      {
+        "id": "route_port_0",
+        "xyz": [
+          -850,
+          0,
+          -90
+        ],
+        "deck": "D14",
+        "status": "proposed"
+      },
+      {
+        "id": "route_port_1",
+        "xyz": [
+          -300,
+          0,
+          -90
+        ],
+        "deck": "D14",
+        "status": "proposed"
+      },
+      {
+        "id": "route_port_2",
+        "xyz": [
+          300,
+          0,
+          -90
+        ],
+        "deck": "D14",
+        "status": "proposed"
+      },
+      {
+        "id": "route_port_3",
+        "xyz": [
+          850,
+          0,
+          -90
+        ],
+        "deck": "D14",
+        "status": "proposed"
+      },
+      {
+        "id": "route_starboard_0",
+        "xyz": [
+          -850,
+          0,
+          90
+        ],
+        "deck": "D14",
+        "status": "proposed"
+      },
+      {
+        "id": "route_starboard_1",
+        "xyz": [
+          -300,
+          0,
+          90
+        ],
+        "deck": "D14",
+        "status": "proposed"
+      },
+      {
+        "id": "route_starboard_2",
+        "xyz": [
+          300,
+          0,
+          90
+        ],
+        "deck": "D14",
+        "status": "proposed"
+      },
+      {
+        "id": "route_starboard_3",
+        "xyz": [
+          850,
+          0,
+          90
+        ],
+        "deck": "D14",
+        "status": "proposed"
+      },
+      {
+        "id": "future_neighbor",
+        "xyz": [
+          15,
+          0,
+          12
+        ],
+        "deck": "D14",
+        "status": "proposed"
+      }
+    ],
+    "edges": [
+      {
+        "from": "bay",
+        "to": "hatch",
+        "status": "built",
+        "kind": "hatch"
+      },
+      {
+        "from": "hatch",
+        "to": "hall",
+        "status": "built",
+        "kind": "threshold"
+      },
+      {
+        "from": "hall",
+        "to": "power_door",
+        "status": "built",
+        "kind": "corridor"
+      },
+      {
+        "from": "power_door",
+        "to": "power_room",
+        "status": "built",
+        "kind": "pierced door"
+      },
+      {
+        "from": "hall",
+        "to": "leaf_15_south",
+        "status": "built",
+        "kind": "decorative solid; impassable"
+      },
+      {
+        "from": "leaf_15_south",
+        "to": "future_neighbor",
+        "status": "future",
+        "kind": "pierce solid wall before opening"
+      },
+      {
+        "from": "future_neighbor",
+        "to": "route_starboard_2",
+        "status": "future",
+        "kind": "proposed extension"
+      },
+      {
+        "from": "route_port_0",
+        "to": "r2",
+        "status": "sealed",
+        "kind": "isolated dead-end spur"
+      },
+      {
+        "from": "r2",
+        "to": "remote_room",
+        "status": "sealed",
+        "kind": "isolated room"
+      },
+      {
+        "from": "r2",
+        "to": "armory",
+        "status": "sealed",
+        "kind": "separate shielded room"
+      },
+      {
+        "from": "route_starboard_3",
+        "to": "r1",
+        "status": "sealed",
+        "kind": "isolated dead-end spur"
+      },
+      {
+        "from": "route_port_0",
+        "to": "route_port_1",
+        "status": "future",
+        "kind": "longitudinal passage"
+      },
+      {
+        "from": "route_port_1",
+        "to": "route_port_2",
+        "status": "future",
+        "kind": "longitudinal passage"
+      },
+      {
+        "from": "route_port_2",
+        "to": "route_port_3",
+        "status": "future",
+        "kind": "longitudinal passage"
+      },
+      {
+        "from": "route_port_0",
+        "to": "trunk_1",
+        "status": "future",
+        "kind": "lateral cross link"
+      },
+      {
+        "from": "route_port_1",
+        "to": "trunk_2",
+        "status": "future",
+        "kind": "lateral cross link"
+      },
+      {
+        "from": "route_port_2",
+        "to": "trunk_3",
+        "status": "future",
+        "kind": "lateral cross link"
+      },
+      {
+        "from": "route_port_3",
+        "to": "trunk_4",
+        "status": "future",
+        "kind": "lateral cross link"
+      },
+      {
+        "from": "route_starboard_0",
+        "to": "route_starboard_1",
+        "status": "future",
+        "kind": "longitudinal passage"
+      },
+      {
+        "from": "route_starboard_1",
+        "to": "route_starboard_2",
+        "status": "future",
+        "kind": "longitudinal passage"
+      },
+      {
+        "from": "route_starboard_2",
+        "to": "route_starboard_3",
+        "status": "future",
+        "kind": "longitudinal passage"
+      },
+      {
+        "from": "route_starboard_0",
+        "to": "trunk_1",
+        "status": "future",
+        "kind": "lateral cross link"
+      },
+      {
+        "from": "route_starboard_1",
+        "to": "trunk_2",
+        "status": "future",
+        "kind": "lateral cross link"
+      },
+      {
+        "from": "route_starboard_2",
+        "to": "trunk_3",
+        "status": "future",
+        "kind": "lateral cross link"
+      },
+      {
+        "from": "route_starboard_3",
+        "to": "trunk_4",
+        "status": "future",
+        "kind": "lateral cross link"
+      },
+      {
+        "from": "route_port_0",
+        "to": "route_starboard_0",
+        "status": "future",
+        "kind": "cross-deck lateral link"
+      },
+      {
+        "from": "route_port_1",
+        "to": "route_starboard_1",
+        "status": "future",
+        "kind": "cross-deck lateral link"
+      },
+      {
+        "from": "route_port_2",
+        "to": "route_starboard_2",
+        "status": "future",
+        "kind": "cross-deck lateral link"
+      },
+      {
+        "from": "route_port_3",
+        "to": "route_starboard_3",
+        "status": "future",
+        "kind": "cross-deck lateral link"
+      }
+    ],
+    "through_trunks": [
+      "trunk_1",
+      "trunk_2",
+      "trunk_3",
+      "trunk_4"
+    ],
+    "longitudinal_passages_z": [
+      -90,
+      90
+    ],
+    "opening_future_portal": "leaf_15_south; requires piercing solid wall at x=15,z=+1.5"
+  },
+  "power": {
+    "nodes": [
+      {
+        "id": "plant",
+        "role": "primary generation",
+        "facility_ref": "primary",
+        "status": "proposed"
+      },
+      {
+        "id": "isolation",
+        "role": "primary isolation",
+        "facility_ref": "primary",
+        "status": "proposed"
+      },
+      {
+        "id": "distribution",
+        "role": "distribution bus",
+        "facility_ref": "primary",
+        "status": "proposed"
+      },
+      {
+        "id": "breakers",
+        "role": "sectional breakers",
+        "facility_ref": "primary",
+        "status": "proposed"
+      },
+      {
+        "id": "secondary",
+        "role": "backup generation",
+        "facility_ref": "backup",
+        "status": "built"
+      },
+      {
+        "id": "local_emergency",
+        "role": "D14 local emergency bus",
+        "facility_ref": "backup",
+        "status": "built"
+      },
+      {
+        "id": "transfer",
+        "role": "isolated transfer interface",
+        "facility_ref": "backup",
+        "status": "proposed"
+      }
+    ],
+    "edges": [
+      {
+        "from": "plant",
+        "to": "isolation",
+        "status": "future"
+      },
+      {
+        "from": "isolation",
+        "to": "distribution",
+        "status": "future"
+      },
+      {
+        "from": "distribution",
+        "to": "breakers",
+        "status": "future"
+      },
+      {
+        "from": "secondary",
+        "to": "local_emergency",
+        "status": "built"
+      },
+      {
+        "from": "local_emergency",
+        "to": "transfer",
+        "status": "future"
+      },
+      {
+        "from": "transfer",
+        "to": "breakers",
+        "status": "sealed"
+      }
+    ],
+    "transfer_rule": "normally isolated; secondary does not energize the ship-wide distribution"
+  },
+  "caveats": [
+    "Radiation physics, radiation origins, and the expansion of M-drive are undefined.",
+    "Neither region is inferred from hull damage.",
+    "No ship-wide connection exists in the built opening.",
+    "Crew population, cabin counts and hull taper are not fixed."
+  ]
+}

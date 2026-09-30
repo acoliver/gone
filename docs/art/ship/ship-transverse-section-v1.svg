@@ -1,0 +1,778 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3000" height="2140" viewBox="0 0 3000 2140" role="img" aria-labelledby="title desc">
+<title id="title">GONE | Transverse ship section, proposed beam and thirty decks</title>
+<desc id="desc">Broad faceted hull cut looking along X. Horizontal is lateral Z, vertical is deck height Y. Thirty individual deck rows span ten parallel neighborhoods with five vertical shafts and cross aisles. A local seven-pod start bay and secondary power marker share one opening deck; their built X separation is shown in a top-down inset. One isolated outboard scar is proposed. Dimensions and deck placements are proposals, not measured exterior geometry.</desc>
+<defs><pattern id="scar" width="13" height="13" patternUnits="userSpaceOnUse" patternTransform="rotate(36)"><path d="M0 0V13" stroke="#ffb1a1" stroke-width="4" opacity=".48"/></pattern><pattern id="sealed" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M0 0L10 10M10 0L0 10" stroke="#e8a595" stroke-width="1.4" opacity=".6"/></pattern></defs>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#dce7e7}.k{fill:#81d5d2;font-size:20px;font-weight:700;letter-spacing:4px}.title{fill:#f0e6d2;font-size:61px;font-weight:700}.sub{fill:#b8c8cb;font-size:23px}.note{fill:#c3d2d2;font-size:20px}.small{fill:#b4c6c8;font-size:17px}.cell{fill:#c4d4d5;font-size:14px;font-weight:600;text-anchor:middle}.deck{fill:#d8e4e0;font-size:17px;font-weight:700;text-anchor:end}.band{fill:#f0ddb2;font-size:26px;font-weight:700}.bandnote{fill:#b7c9cc;font-size:13px}.tag{fill:#f7e2a9;font-size:18px;font-weight:700}.mint{fill:#c6ffef}.hair{fill:none;stroke:#66848c;stroke-width:2}</style>
+<rect width="3000" height="2140" fill="#0a1822"/><path d="M58 173H2942M58 1622H2942" class="hair"/>
+<text x="64" y="60" class="k">GONE / ENVIRONMENT SYSTEMS / DESIGN STUDY 03</text>
+<text x="58" y="130" class="title">Across the beam</text>
+<text x="1870" y="85" class="sub">TRANSVERSE SECTION / LOOKING ALONG +X</text>
+<text x="1870" y="124" class="sub">+X into page / proposed hull, not measured exterior</text>
+<path d="M144 227H2856M144 216V238M2856 216V238" class="hair"/>
+<text x="1500" y="216" text-anchor="middle" class="note">ILLUSTRATIVE BEAM ~450 m (proposal; bible sets no width)</text>
+<text x="192" y="267" class="k">-Z / PORT</text><text x="2620" y="267" class="k">+Z / STARBOARD</text>
+<!-- Outer plated envelope and intact pressure shell; the bottom is structural keel, not an engine room at this X. -->
+<path d="M301 279L2699 279L2824 337L2898 530L2898 1060L2790 1312L2630 1515L2440 1575L560 1575L370 1515L210 1312L102 1060L102 530L176 337Z" fill="#192c38" stroke="#8998a0" stroke-width="9" stroke-linejoin="bevel"/>
+<path d="M349 303L2651 303L2763 361L2825 546L2825 1050L2730 1287L2575 1470L2430 1500L570 1500L425 1470L270 1287L175 1050L175 546L237 361Z" fill="#112835" stroke="#72a9a7" stroke-width="4" stroke-linejoin="bevel"/>
+<path d="M270 300L329 336M2730 300L2671 336M320 1420L465 1485M2680 1420L2535 1485" class="hair"/>
+<path d="M465 1514L1100 1514L1210 1550H1790L1900 1514H2535" fill="none" stroke="#e1c891" stroke-width="8"/>
+<text x="1500" y="1543" text-anchor="middle" class="tag">MAIN KEEL / CONTINUOUS STRUCTURE (PROPOSED)</text>
+<path d="M94 315H72V1495H94M2820 1495H2940V315H2918" class="hair"/>
+<path d="M44 1490V330M36 344L44 327L52 344" fill="none" stroke="#81d5d2" stroke-width="3"/>
+<text x="24" y="1030" transform="rotate(-90 24 1030)" class="small">+Y / DECK HEIGHT</text>
+<text x="2970" y="1090" transform="rotate(-90 2970 1090)" class="small">~140 m overall depth, illustrative proposal</text>
+<text x="285" y="1350" class="small" transform="rotate(-90 285 1350)">pressure shell</text>
+<rect x="372" y="330" width="2250" height="136" fill="#17313d" stroke="#58727d" stroke-width="2"/>
+<text x="202" y="393.0" class="band" >D01–04</text>
+<text x="202" y="417.0" class="bandnote" >UPPER / LOCAL SERVICES</text>
+<text x="416" y="353" class="deck" >D01</text>
+<rect x="433" y="332" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="351" class="cell" >Comms</text>
+<rect x="649" y="332" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="351" class="cell" >Watch</text>
+<rect x="865" y="332" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="351" class="cell" >Berths</text>
+<rect x="1081" y="332" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="351" class="cell" >Stores</text>
+<rect x="1297" y="332" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="351" class="cell" >Ops</text>
+<rect x="1513" y="332" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="351" class="cell" >Data</text>
+<rect x="1729" y="332" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="351" class="cell" >Clinic</text>
+<rect x="1945" y="332" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="351" class="cell" >Air</text>
+<rect x="2161" y="332" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="351" class="cell" >Watch</text>
+<rect x="2377" y="332" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="351" class="cell" >Stores</text>
+<text x="416" y="387" class="deck" >D02</text>
+<rect x="433" y="366" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="385" class="cell" >Comms</text>
+<rect x="649" y="366" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="385" class="cell" >Watch</text>
+<rect x="865" y="366" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="385" class="cell" >Berths</text>
+<rect x="1081" y="366" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="385" class="cell" >Stores</text>
+<rect x="1297" y="366" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="385" class="cell" >Ops</text>
+<rect x="1513" y="366" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="385" class="cell" >Data</text>
+<rect x="1729" y="366" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="385" class="cell" >Clinic</text>
+<rect x="1945" y="366" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="385" class="cell" >Air</text>
+<rect x="2161" y="366" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="385" class="cell" >Watch</text>
+<rect x="2377" y="366" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="385" class="cell" >Stores</text>
+<text x="416" y="421" class="deck" >D03</text>
+<rect x="433" y="400" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="419" class="cell" >Comms</text>
+<rect x="649" y="400" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="419" class="cell" >Watch</text>
+<rect x="865" y="400" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="419" class="cell" >Berths</text>
+<rect x="1081" y="400" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="419" class="cell" >Stores</text>
+<rect x="1297" y="400" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="419" class="cell" >Ops</text>
+<rect x="1513" y="400" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="419" class="cell" >Data</text>
+<rect x="1729" y="400" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="419" class="cell" >Clinic</text>
+<rect x="1945" y="400" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="419" class="cell" >Air</text>
+<rect x="2161" y="400" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="419" class="cell" >Watch</text>
+<rect x="2377" y="400" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="419" class="cell" >Stores</text>
+<text x="416" y="455" class="deck" >D04</text>
+<rect x="433" y="434" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="453" class="cell" >Comms</text>
+<rect x="649" y="434" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="453" class="cell" >Watch</text>
+<rect x="865" y="434" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="453" class="cell" >Berths</text>
+<rect x="1081" y="434" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="453" class="cell" >Stores</text>
+<rect x="1297" y="434" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="453" class="cell" >Ops</text>
+<rect x="1513" y="434" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="453" class="cell" >Data</text>
+<rect x="1729" y="434" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="453" class="cell" >Clinic</text>
+<rect x="1945" y="434" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="453" class="cell" >Air</text>
+<rect x="2161" y="434" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="453" class="cell" >Watch</text>
+<rect x="2377" y="434" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="453" class="cell" >Stores</text>
+<path d="M444 368.1H2588" fill="none" stroke="#8cc7bd" stroke-width="2" stroke-dasharray="17 8" opacity=".8"/>
+<path d="M444 436.1H2588" fill="none" stroke="#8cc7bd" stroke-width="2" stroke-dasharray="17 8" opacity=".8"/>
+<path d="M444 368.1V436.1H2588V368.1" fill="none" stroke="#96bbb3" stroke-width="2" opacity=".85"/>
+<rect x="372" y="466" width="2250" height="136" fill="#1a3039" stroke="#58727d" stroke-width="2"/>
+<text x="202" y="529.0" class="band" >D05–08</text>
+<text x="202" y="553.0" class="bandnote" >BERTH / CARE</text>
+<text x="416" y="489" class="deck" >D05</text>
+<rect x="433" y="468" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="487" class="cell" >Berths</text>
+<rect x="649" y="468" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="487" class="cell" >Berths</text>
+<rect x="865" y="468" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="487" class="cell" >Wash</text>
+<rect x="1081" y="468" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="487" class="cell" >Commons</text>
+<rect x="1297" y="468" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="487" class="cell" >Clinic</text>
+<rect x="1513" y="468" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="487" class="cell" >Care</text>
+<rect x="1729" y="468" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="487" class="cell" >Berths</text>
+<rect x="1945" y="468" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="487" class="cell" >Berths</text>
+<rect x="2161" y="468" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="487" class="cell" >Stores</text>
+<rect x="2377" y="468" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="487" class="cell" >Service</text>
+<text x="416" y="523" class="deck" >D06</text>
+<rect x="433" y="502" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="521" class="cell" >Berths</text>
+<rect x="649" y="502" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="521" class="cell" >Berths</text>
+<rect x="865" y="502" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="521" class="cell" >Wash</text>
+<rect x="1081" y="502" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="521" class="cell" >Commons</text>
+<rect x="1297" y="502" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="521" class="cell" >Clinic</text>
+<rect x="1513" y="502" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="521" class="cell" >Care</text>
+<rect x="1729" y="502" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="521" class="cell" >Berths</text>
+<rect x="1945" y="502" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="521" class="cell" >Berths</text>
+<rect x="2161" y="502" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="521" class="cell" >Stores</text>
+<rect x="2377" y="502" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="521" class="cell" >Service</text>
+<text x="416" y="557" class="deck" >D07</text>
+<rect x="433" y="536" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="555" class="cell" >Berths</text>
+<rect x="649" y="536" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="555" class="cell" >Berths</text>
+<rect x="865" y="536" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="555" class="cell" >Wash</text>
+<rect x="1081" y="536" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="555" class="cell" >Commons</text>
+<rect x="1297" y="536" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="555" class="cell" >Clinic</text>
+<rect x="1513" y="536" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="555" class="cell" >Care</text>
+<rect x="1729" y="536" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="555" class="cell" >Berths</text>
+<rect x="1945" y="536" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="555" class="cell" >Berths</text>
+<rect x="2161" y="536" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="555" class="cell" >Stores</text>
+<rect x="2377" y="536" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="555" class="cell" >Service</text>
+<text x="416" y="591" class="deck" >D08</text>
+<rect x="433" y="570" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="589" class="cell" >Berths</text>
+<rect x="649" y="570" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="589" class="cell" >Berths</text>
+<rect x="865" y="570" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="589" class="cell" >Wash</text>
+<rect x="1081" y="570" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="589" class="cell" >Commons</text>
+<rect x="1297" y="570" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="589" class="cell" >Clinic</text>
+<rect x="1513" y="570" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="589" class="cell" >Care</text>
+<rect x="1729" y="570" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="589" class="cell" >Berths</text>
+<rect x="1945" y="570" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="589" class="cell" >Berths</text>
+<rect x="2161" y="570" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="589" class="cell" >Stores</text>
+<rect x="2377" y="570" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="589" class="cell" >Service</text>
+<path d="M444 504.1H2588" fill="none" stroke="#8cc7bd" stroke-width="2" stroke-dasharray="17 8" opacity=".8"/>
+<path d="M444 572.1H2588" fill="none" stroke="#8cc7bd" stroke-width="2" stroke-dasharray="17 8" opacity=".8"/>
+<path d="M444 504.1V572.1H2588V504.1" fill="none" stroke="#96bbb3" stroke-width="2" opacity=".85"/>
+<rect x="372" y="602" width="2250" height="136" fill="#17313d" stroke="#58727d" stroke-width="2"/>
+<text x="202" y="665.0" class="band" >D09–12</text>
+<text x="202" y="689.0" class="bandnote" >CIVIC / TRANSIT</text>
+<text x="416" y="625" class="deck" >D09</text>
+<rect x="433" y="604" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="623" class="cell" >Service</text>
+<rect x="649" y="604" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="623" class="cell" >Berths</text>
+<rect x="865" y="604" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="623" class="cell" >Galley</text>
+<rect x="1081" y="604" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="623" class="cell" >Commons</text>
+<rect x="1297" y="604" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="623" class="cell" >Gardens</text>
+<rect x="1513" y="604" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="623" class="cell" >Stores</text>
+<rect x="1729" y="604" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="623" class="cell" >Mess</text>
+<rect x="1945" y="604" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="623" class="cell" >Berths</text>
+<rect x="2161" y="604" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="623" class="cell" >Transit</text>
+<rect x="2377" y="604" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="623" class="cell" >Service</text>
+<text x="416" y="659" class="deck" >D10</text>
+<rect x="433" y="638" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="657" class="cell" >Service</text>
+<rect x="649" y="638" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="657" class="cell" >Berths</text>
+<rect x="865" y="638" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="657" class="cell" >Galley</text>
+<rect x="1081" y="638" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="657" class="cell" >Commons</text>
+<rect x="1297" y="638" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="657" class="cell" >Gardens</text>
+<rect x="1513" y="638" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="657" class="cell" >Stores</text>
+<rect x="1729" y="638" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="657" class="cell" >Mess</text>
+<rect x="1945" y="638" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="657" class="cell" >Berths</text>
+<rect x="2161" y="638" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="657" class="cell" >Transit</text>
+<rect x="2377" y="638" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="657" class="cell" >Service</text>
+<text x="416" y="693" class="deck" >D11</text>
+<rect x="433" y="672" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="691" class="cell" >Service</text>
+<rect x="649" y="672" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="691" class="cell" >Berths</text>
+<rect x="865" y="672" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="691" class="cell" >Galley</text>
+<rect x="1081" y="672" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="691" class="cell" >Commons</text>
+<rect x="1297" y="672" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="691" class="cell" >Gardens</text>
+<rect x="1513" y="672" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="691" class="cell" >Stores</text>
+<rect x="1729" y="672" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="691" class="cell" >Mess</text>
+<rect x="1945" y="672" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="691" class="cell" >Berths</text>
+<rect x="2161" y="672" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="691" class="cell" >Transit</text>
+<rect x="2377" y="672" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="691" class="cell" >Service</text>
+<text x="416" y="727" class="deck" >D12</text>
+<rect x="433" y="706" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="725" class="cell" >Service</text>
+<rect x="649" y="706" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="725" class="cell" >Berths</text>
+<rect x="865" y="706" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="725" class="cell" >Galley</text>
+<rect x="1081" y="706" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="725" class="cell" >Commons</text>
+<rect x="1297" y="706" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="725" class="cell" >Gardens</text>
+<rect x="1513" y="706" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="725" class="cell" >Stores</text>
+<rect x="1729" y="706" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="725" class="cell" >Mess</text>
+<rect x="1945" y="706" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="725" class="cell" >Berths</text>
+<rect x="2161" y="706" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="725" class="cell" >Transit</text>
+<rect x="2377" y="706" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="725" class="cell" >Service</text>
+<path d="M444 640.1H2588" fill="none" stroke="#8cc7bd" stroke-width="2" stroke-dasharray="17 8" opacity=".8"/>
+<path d="M444 708.1H2588" fill="none" stroke="#8cc7bd" stroke-width="2" stroke-dasharray="17 8" opacity=".8"/>
+<path d="M444 640.1V708.1H2588V640.1" fill="none" stroke="#96bbb3" stroke-width="2" opacity=".85"/>
+<rect x="372" y="738" width="2250" height="136" fill="#1a3039" stroke="#58727d" stroke-width="2"/>
+<text x="202" y="801.0" class="band" >D13–16</text>
+<text x="202" y="825.0" class="bandnote" >STASIS / DISTRIBUTION</text>
+<text x="416" y="761" class="deck" >D13</text>
+<rect x="433" y="740" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="759" class="cell" >Service</text>
+<rect x="649" y="740" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="759" class="cell" >Stasis</text>
+<rect x="865" y="740" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="759" class="cell" >Med</text>
+<rect x="1081" y="740" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="759" class="cell" >Utility</text>
+<rect x="1297" y="740" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="759" class="cell" >Transit</text>
+<rect x="1513" y="740" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="759" class="cell" >Stasis</text>
+<rect x="1729" y="740" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="759" class="cell" >Med</text>
+<rect x="1945" y="740" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="759" class="cell" >Stores</text>
+<rect x="2161" y="740" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="759" class="cell" >Repair</text>
+<rect x="2377" y="740" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="759" class="cell" >Service</text>
+<text x="416" y="795" class="deck" >D14</text>
+<rect x="433" y="774" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="793" class="cell" >Service</text>
+<rect x="649" y="774" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="793" class="cell" >Stasis</text>
+<rect x="865" y="774" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="793" class="cell" >Med</text>
+<rect x="1081" y="774" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="793" class="cell" >Utility</text>
+<rect x="1297" y="774" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="793" class="cell" >Transit</text>
+<rect x="1513" y="774" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="793" class="cell" >Stasis</text>
+<rect x="1729" y="774" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="793" class="cell" >Med</text>
+<rect x="1945" y="774" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="793" class="cell" >Stores</text>
+<rect x="2161" y="774" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="793" class="cell" >Repair</text>
+<rect x="2377" y="774" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="793" class="cell" >Service</text>
+<text x="416" y="829" class="deck" >D15</text>
+<rect x="433" y="808" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="827" class="cell" >Service</text>
+<rect x="649" y="808" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="827" class="cell" >Stasis</text>
+<rect x="865" y="808" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="827" class="cell" >Med</text>
+<rect x="1081" y="808" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="827" class="cell" >Utility</text>
+<rect x="1297" y="808" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="827" class="cell" >Transit</text>
+<rect x="1513" y="808" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="827" class="cell" >Stasis</text>
+<rect x="1729" y="808" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="827" class="cell" >Med</text>
+<rect x="1945" y="808" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="827" class="cell" >Stores</text>
+<rect x="2161" y="808" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="827" class="cell" >Repair</text>
+<rect x="2377" y="808" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="827" class="cell" >Service</text>
+<text x="416" y="863" class="deck" >D16</text>
+<rect x="433" y="842" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="861" class="cell" >Service</text>
+<rect x="649" y="842" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="861" class="cell" >Stasis</text>
+<rect x="865" y="842" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="861" class="cell" >Med</text>
+<rect x="1081" y="842" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="861" class="cell" >Utility</text>
+<rect x="1297" y="842" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="861" class="cell" >Transit</text>
+<rect x="1513" y="842" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="861" class="cell" >Stasis</text>
+<rect x="1729" y="842" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="861" class="cell" >Med</text>
+<rect x="1945" y="842" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="861" class="cell" >Stores</text>
+<rect x="2161" y="842" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="861" class="cell" >Repair</text>
+<rect x="2377" y="842" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="861" class="cell" >Service</text>
+<path d="M444 776.1H2588" fill="none" stroke="#8cc7bd" stroke-width="2" stroke-dasharray="17 8" opacity=".8"/>
+<path d="M444 844.1H2588" fill="none" stroke="#8cc7bd" stroke-width="2" stroke-dasharray="17 8" opacity=".8"/>
+<path d="M444 776.1V844.1H2588V776.1" fill="none" stroke="#96bbb3" stroke-width="2" opacity=".85"/>
+<rect x="372" y="874" width="2250" height="136" fill="#17313d" stroke="#58727d" stroke-width="2"/>
+<text x="202" y="937.0" class="band" >D17–20</text>
+<text x="202" y="961.0" class="bandnote" >AIR / WATER / WORKS</text>
+<text x="416" y="897" class="deck" >D17</text>
+<rect x="433" y="876" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="895" class="cell" >Air</text>
+<rect x="649" y="876" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="895" class="cell" >Filters</text>
+<rect x="865" y="876" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="895" class="cell" >Water</text>
+<rect x="1081" y="876" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="895" class="cell" >Pumps</text>
+<rect x="1297" y="876" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="895" class="cell" >Works</text>
+<rect x="1513" y="876" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="895" class="cell" >Stores</text>
+<rect x="1729" y="876" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="895" class="cell" >Repair</text>
+<rect x="1945" y="876" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="895" class="cell" >Water</text>
+<rect x="2161" y="876" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="895" class="cell" >Freight</text>
+<rect x="2377" y="876" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="895" class="cell" >Air</text>
+<text x="416" y="931" class="deck" >D18</text>
+<rect x="433" y="910" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="929" class="cell" >Air</text>
+<rect x="649" y="910" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="929" class="cell" >Filters</text>
+<rect x="865" y="910" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="929" class="cell" >Water</text>
+<rect x="1081" y="910" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="929" class="cell" >Pumps</text>
+<rect x="1297" y="910" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="929" class="cell" >Works</text>
+<rect x="1513" y="910" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="929" class="cell" >Stores</text>
+<rect x="1729" y="910" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="929" class="cell" >Repair</text>
+<rect x="1945" y="910" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="929" class="cell" >Water</text>
+<rect x="2161" y="910" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="929" class="cell" >Freight</text>
+<rect x="2377" y="910" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="929" class="cell" >Air</text>
+<text x="416" y="965" class="deck" >D19</text>
+<rect x="433" y="944" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="963" class="cell" >Air</text>
+<rect x="649" y="944" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="963" class="cell" >Filters</text>
+<rect x="865" y="944" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="963" class="cell" >Water</text>
+<rect x="1081" y="944" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="963" class="cell" >Pumps</text>
+<rect x="1297" y="944" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="963" class="cell" >Works</text>
+<rect x="1513" y="944" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="963" class="cell" >Stores</text>
+<rect x="1729" y="944" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="963" class="cell" >Repair</text>
+<rect x="1945" y="944" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="963" class="cell" >Water</text>
+<rect x="2161" y="944" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="963" class="cell" >Freight</text>
+<rect x="2377" y="944" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="963" class="cell" >Air</text>
+<text x="416" y="999" class="deck" >D20</text>
+<rect x="433" y="978" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="997" class="cell" >Air</text>
+<rect x="649" y="978" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="997" class="cell" >Filters</text>
+<rect x="865" y="978" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="997" class="cell" >Water</text>
+<rect x="1081" y="978" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="997" class="cell" >Pumps</text>
+<rect x="1297" y="978" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="997" class="cell" >Works</text>
+<rect x="1513" y="978" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="997" class="cell" >Stores</text>
+<rect x="1729" y="978" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="997" class="cell" >Repair</text>
+<rect x="1945" y="978" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="997" class="cell" >Water</text>
+<rect x="2161" y="978" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="997" class="cell" >Freight</text>
+<rect x="2377" y="978" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="997" class="cell" >Air</text>
+<path d="M444 912.1H2588" fill="none" stroke="#8cc7bd" stroke-width="2" stroke-dasharray="17 8" opacity=".8"/>
+<path d="M444 980.1H2588" fill="none" stroke="#8cc7bd" stroke-width="2" stroke-dasharray="17 8" opacity=".8"/>
+<path d="M444 912.1V980.1H2588V912.1" fill="none" stroke="#96bbb3" stroke-width="2" opacity=".85"/>
+<rect x="372" y="1010" width="2250" height="170" fill="#1a3039" stroke="#58727d" stroke-width="2"/>
+<text x="202" y="1090.0" class="band" >D21–25</text>
+<text x="202" y="1114.0" class="bandnote" >INDUSTRY / SERVICE</text>
+<text x="416" y="1033" class="deck" >D21</text>
+<rect x="433" y="1012" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="1031" class="cell" >Stores</text>
+<rect x="649" y="1012" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="1031" class="cell" >Repair</text>
+<rect x="865" y="1012" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="1031" class="cell" >Fabrication</text>
+<rect x="1081" y="1012" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="1031" class="cell" >Freight</text>
+<rect x="1297" y="1012" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="1031" class="cell" >Service</text>
+<rect x="1513" y="1012" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="1031" class="cell" >Works</text>
+<rect x="1729" y="1012" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="1031" class="cell" >Shielding</text>
+<rect x="1945" y="1012" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="1031" class="cell" >Stores</text>
+<rect x="2161" y="1012" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="1031" class="cell" >Maintenance</text>
+<rect x="2377" y="1012" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="1031" class="cell" >Service</text>
+<text x="416" y="1067" class="deck" >D22</text>
+<rect x="433" y="1046" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="1065" class="cell" >Stores</text>
+<rect x="649" y="1046" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="1065" class="cell" >Repair</text>
+<rect x="865" y="1046" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="1065" class="cell" >Fabrication</text>
+<rect x="1081" y="1046" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="1065" class="cell" >Freight</text>
+<rect x="1297" y="1046" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="1065" class="cell" >Service</text>
+<rect x="1513" y="1046" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="1065" class="cell" >Works</text>
+<rect x="1729" y="1046" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="1065" class="cell" >Shielding</text>
+<rect x="1945" y="1046" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="1065" class="cell" >Stores</text>
+<rect x="2161" y="1046" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="1065" class="cell" >Maintenance</text>
+<rect x="2377" y="1046" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="1065" class="cell" >Service</text>
+<text x="416" y="1101" class="deck" >D23</text>
+<rect x="433" y="1080" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="1099" class="cell" >Stores</text>
+<rect x="649" y="1080" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="1099" class="cell" >Repair</text>
+<rect x="865" y="1080" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="1099" class="cell" >Fabrication</text>
+<rect x="1081" y="1080" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="1099" class="cell" >Freight</text>
+<rect x="1297" y="1080" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="1099" class="cell" >Service</text>
+<rect x="1513" y="1080" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="1099" class="cell" >Works</text>
+<rect x="1729" y="1080" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="1099" class="cell" >Shielding</text>
+<rect x="1945" y="1080" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="1099" class="cell" >Stores</text>
+<rect x="2161" y="1080" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="1099" class="cell" >Maintenance</text>
+<rect x="2377" y="1080" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="1099" class="cell" >Service</text>
+<text x="416" y="1135" class="deck" >D24</text>
+<rect x="433" y="1114" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="1133" class="cell" >Stores</text>
+<rect x="649" y="1114" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="1133" class="cell" >Repair</text>
+<rect x="865" y="1114" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="1133" class="cell" >Fabrication</text>
+<rect x="1081" y="1114" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="1133" class="cell" >Freight</text>
+<rect x="1297" y="1114" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="1133" class="cell" >Service</text>
+<rect x="1513" y="1114" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="1133" class="cell" >Works</text>
+<rect x="1729" y="1114" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="1133" class="cell" >Shielding</text>
+<rect x="1945" y="1114" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="1133" class="cell" >Stores</text>
+<rect x="2161" y="1114" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="1133" class="cell" >Maintenance</text>
+<rect x="2377" y="1114" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="1133" class="cell" >Service</text>
+<text x="416" y="1169" class="deck" >D25</text>
+<rect x="433" y="1148" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="1167" class="cell" >Stores</text>
+<rect x="649" y="1148" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="1167" class="cell" >Repair</text>
+<rect x="865" y="1148" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="1167" class="cell" >Fabrication</text>
+<rect x="1081" y="1148" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="1167" class="cell" >Freight</text>
+<rect x="1297" y="1148" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="1167" class="cell" >Service</text>
+<rect x="1513" y="1148" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="1167" class="cell" >Works</text>
+<rect x="1729" y="1148" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="1167" class="cell" >Shielding</text>
+<rect x="1945" y="1148" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="1167" class="cell" >Stores</text>
+<rect x="2161" y="1148" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="1167" class="cell" >Maintenance</text>
+<rect x="2377" y="1148" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="1167" class="cell" >Service</text>
+<path d="M444 1057.6H2588" fill="none" stroke="#8cc7bd" stroke-width="2" stroke-dasharray="17 8" opacity=".8"/>
+<path d="M444 1142.6H2588" fill="none" stroke="#8cc7bd" stroke-width="2" stroke-dasharray="17 8" opacity=".8"/>
+<path d="M444 1057.6V1142.6H2588V1057.6" fill="none" stroke="#96bbb3" stroke-width="2" opacity=".85"/>
+<rect x="372" y="1180" width="2250" height="170" fill="#17313d" stroke="#58727d" stroke-width="2"/>
+<text x="202" y="1260.0" class="band" >D26–30</text>
+<text x="202" y="1284.0" class="bandnote" >DEEP ENGINEERING</text>
+<text x="416" y="1203" class="deck" >D26</text>
+<rect x="433" y="1182" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="1201" class="cell" >Structure</text>
+<rect x="649" y="1182" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="1201" class="cell" >Cooling</text>
+<rect x="865" y="1182" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="1201" class="cell" >Stores</text>
+<rect x="1081" y="1182" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="1201" class="cell" >Pumps</text>
+<rect x="1297" y="1182" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="1201" class="cell" >Service</text>
+<rect x="1513" y="1182" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="1201" class="cell" >Bus</text>
+<rect x="1729" y="1182" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="1201" class="cell" >Repair</text>
+<rect x="1945" y="1182" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="1201" class="cell" >Coolant</text>
+<rect x="2161" y="1182" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="1201" class="cell" >Maintenance</text>
+<rect x="2377" y="1182" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="1201" class="cell" >Structure</text>
+<text x="416" y="1237" class="deck" >D27</text>
+<rect x="433" y="1216" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="1235" class="cell" >Structure</text>
+<rect x="649" y="1216" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="1235" class="cell" >Cooling</text>
+<rect x="865" y="1216" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="1235" class="cell" >Stores</text>
+<rect x="1081" y="1216" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="1235" class="cell" >Pumps</text>
+<rect x="1297" y="1216" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="1235" class="cell" >Service</text>
+<rect x="1513" y="1216" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="1235" class="cell" >Bus</text>
+<rect x="1729" y="1216" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="1235" class="cell" >Repair</text>
+<rect x="1945" y="1216" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="1235" class="cell" >Coolant</text>
+<rect x="2161" y="1216" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="1235" class="cell" >Maintenance</text>
+<rect x="2377" y="1216" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="1235" class="cell" >Structure</text>
+<text x="416" y="1271" class="deck" >D28</text>
+<rect x="433" y="1250" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="1269" class="cell" >Structure</text>
+<rect x="649" y="1250" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="1269" class="cell" >Cooling</text>
+<rect x="865" y="1250" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="1269" class="cell" >Stores</text>
+<rect x="1081" y="1250" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="1269" class="cell" >Pumps</text>
+<rect x="1297" y="1250" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="1269" class="cell" >Service</text>
+<rect x="1513" y="1250" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="1269" class="cell" >Bus</text>
+<rect x="1729" y="1250" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="1269" class="cell" >Repair</text>
+<rect x="1945" y="1250" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="1269" class="cell" >Coolant</text>
+<rect x="2161" y="1250" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="1269" class="cell" >Maintenance</text>
+<rect x="2377" y="1250" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="1269" class="cell" >Structure</text>
+<text x="416" y="1305" class="deck" >D29</text>
+<rect x="433" y="1284" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="1303" class="cell" >Structure</text>
+<rect x="649" y="1284" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="1303" class="cell" >Cooling</text>
+<rect x="865" y="1284" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="1303" class="cell" >Stores</text>
+<rect x="1081" y="1284" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="1303" class="cell" >Pumps</text>
+<rect x="1297" y="1284" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="1303" class="cell" >Service</text>
+<rect x="1513" y="1284" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="1303" class="cell" >Bus</text>
+<rect x="1729" y="1284" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="1303" class="cell" >Repair</text>
+<rect x="1945" y="1284" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="1303" class="cell" >Coolant</text>
+<rect x="2161" y="1284" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="1303" class="cell" >Maintenance</text>
+<rect x="2377" y="1284" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="1303" class="cell" >Structure</text>
+<text x="416" y="1339" class="deck" >D30</text>
+<rect x="433" y="1318" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="530" y="1337" class="cell" >Structure</text>
+<rect x="649" y="1318" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="746" y="1337" class="cell" >Cooling</text>
+<rect x="865" y="1318" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="962" y="1337" class="cell" >Stores</text>
+<rect x="1081" y="1318" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1178" y="1337" class="cell" >Pumps</text>
+<rect x="1297" y="1318" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1394" y="1337" class="cell" >Service</text>
+<rect x="1513" y="1318" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="1610" y="1337" class="cell" >Bus</text>
+<rect x="1729" y="1318" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="1826" y="1337" class="cell" >Repair</text>
+<rect x="1945" y="1318" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2042" y="1337" class="cell" >Coolant</text>
+<rect x="2161" y="1318" width="194" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="1"/>
+<text x="2258" y="1337" class="cell" >Maintenance</text>
+<rect x="2377" y="1318" width="194" height="29" fill="#1c3944" stroke="#506f7a" stroke-width="1"/>
+<text x="2474" y="1337" class="cell" >Structure</text>
+<path d="M444 1227.6H2588" fill="none" stroke="#8cc7bd" stroke-width="2" stroke-dasharray="17 8" opacity=".8"/>
+<path d="M444 1312.6H2588" fill="none" stroke="#8cc7bd" stroke-width="2" stroke-dasharray="17 8" opacity=".8"/>
+<path d="M444 1227.6V1312.6H2588V1227.6" fill="none" stroke="#96bbb3" stroke-width="2" opacity=".85"/>
+<rect x="632" y="326" width="20" height="1028" fill="#1d515c" stroke="#9bd9d0" stroke-width="2"/>
+<path d="M642 338V1342" stroke="#c1f4e5" stroke-width="2" stroke-dasharray="7 12"/>
+<text x="642" y="1392" class="small" text-anchor="middle">A / LIFT</text>
+<rect x="1064" y="326" width="20" height="1028" fill="#1d515c" stroke="#9bd9d0" stroke-width="2"/>
+<path d="M1074 338V1342" stroke="#c1f4e5" stroke-width="2" stroke-dasharray="7 12"/>
+<text x="1074" y="1392" class="small" text-anchor="middle">B / STAIR</text>
+<rect x="1496" y="326" width="20" height="1028" fill="#1d515c" stroke="#9bd9d0" stroke-width="2"/>
+<path d="M1506 338V1342" stroke="#c1f4e5" stroke-width="2" stroke-dasharray="7 12"/>
+<text x="1506" y="1392" class="small" text-anchor="middle">C / SERVICE</text>
+<rect x="1928" y="326" width="20" height="1028" fill="#1d515c" stroke="#9bd9d0" stroke-width="2"/>
+<path d="M1938 338V1342" stroke="#c1f4e5" stroke-width="2" stroke-dasharray="7 12"/>
+<text x="1938" y="1392" class="small" text-anchor="middle">D / LIFT</text>
+<rect x="2360" y="326" width="20" height="1028" fill="#1d515c" stroke="#9bd9d0" stroke-width="2"/>
+<path d="M2370 338V1342" stroke="#c1f4e5" stroke-width="2" stroke-dasharray="7 12"/>
+<text x="2370" y="1392" class="small" text-anchor="middle">E / STAIR</text>
+<path d="M176 467L213 451L246 463L254 538L214 553L176 536Z" fill="url(#scar)" stroke="#ffa397" stroke-width="4"/>
+<rect x="266" y="473" width="78" height="60" fill="url(#sealed)" stroke="#ecad98" stroke-width="3"/>
+<path d="M347 469V537M355 469V537" stroke="#f0a89a" stroke-width="5"/>
+<path d="M250 453L355 443" stroke="#e4a194" stroke-width="2"/>
+<text x="370" y="444" class="small">LOCAL OUTBOARD SCAR / SEALED NEIGHBOR</text>
+<!-- Story categories are named but their placement at this X remains proposed. -->
+<rect x="434" y="469" width="192" height="27" fill="none" stroke="#e5c98f" stroke-width="2"/>
+<rect x="650" y="741" width="192" height="27" fill="none" stroke="#e5c98f" stroke-width="2"/>
+<!-- Starboard airlock and pressure doors are a proposed outer-bay isolation example. -->
+<rect x="2632" y="951" width="66" height="53" fill="#193a44" stroke="#a8cbc7" stroke-width="2"/>
+<rect x="2708" y="951" width="91" height="53" fill="#1d3944" stroke="#a8cbc7" stroke-width="2"/>
+<path d="M2618 949V1006M2625 949V1006M2701 949V1006M2706 949V1006" stroke="#f1d29b" stroke-width="3"/>
+<text x="2665" y="982" text-anchor="middle" class="cell">LOCK</text>
+<text x="2753" y="982" text-anchor="middle" class="cell">OUTER BAY</text>
+<rect x="1082" y="774" width="192" height="29" fill="#12606a" stroke="#dbf9e6" stroke-width="3"/>
+<text x="1178" y="794" class="cell mint" >SECONDARY POWER</text>
+<rect x="1514" y="774" width="192" height="29" fill="#12606a" stroke="#dbf9e6" stroke-width="3"/>
+<text x="1610" y="794" class="cell mint" >7-POD START BAY</text>
+<text x="1500" y="1450" class="small" text-anchor="middle">Same built deck (D14 row shown only as placement proposal). X positions differ; see inset.</text>
+<text x="1040" y="1598" class="small" text-anchor="middle">Five proposed shafts stay inside the pressure shell. Cross-aisles and paired return links are schematic, not playable routes.</text>
+<text x="1800" y="1598" class="small">Drives are aft along X; this section does not place them here.</text>
+<!-- Lower left: five-way reading key. -->
+<rect x="57" y="1654" width="1180" height="423" rx="12" fill="#112732" stroke="#628a90" stroke-width="2"/>
+<text x="82" y="1695" class="k">READING THE SECTION</text>
+<rect x="85" y="1721" width="39" height="29" fill="#12606a" stroke="#dbf9e6" stroke-width="3"/><text x="149" y="1744" class="note">Built opening anchor: bay and secondary power, same deck</text>
+<rect x="85" y="1775" width="39" height="29" fill="none" stroke="#e5c98f" stroke-width="3"/><text x="149" y="1798" class="note">Named story functions: berths, stasis, services, engineering</text>
+<rect x="85" y="1829" width="39" height="29" fill="#1b3c48" stroke="#506f7a" stroke-width="2"/><text x="149" y="1852" class="note">Proposed neighborhood cells, corridors and shafts</text>
+<rect x="85" y="1883" width="39" height="29" fill="url(#scar)" stroke="#ffa397" stroke-width="2"/><text x="149" y="1906" class="note">One proposed local scar; X location unspecified</text>
+<rect x="85" y="1937" width="39" height="29" fill="url(#sealed)" stroke="#ecad98" stroke-width="2"/><text x="149" y="1960" class="note">Sealed neighbor and pressure-door boundary</text>
+<text x="83" y="2012" class="small">This cut may miss a second scar at another X. Remaining pressure hull,</text>
+<text x="83" y="2042" class="small">keel and access around the isolated bay remain intact in this proposal.</text>
+<!-- Inset is a plan looking down on X / Z; +Z is up on the page. At 22 px per meter. -->
+<rect x="1270" y="1654" width="1673" height="423" rx="12" fill="#112732" stroke="#628a90" stroke-width="2"/>
+<text x="1294" y="1695" class="k">BUILT OPENING / TOP-DOWN X-Z INSET</text>
+<text x="1296" y="1720" class="small">+X right toward corridor endcap   /   +Z up   /   +Y up out of page   /   22 px = 1 local meter</text>
+<path d="M1530 1752H2430M1530 2050H2430" class="hair"/>
+<!-- x=-6 maps to 1560; z=+4 maps to 1750. -->
+<rect x="1560" y="1750" width="264" height="176" fill="#12606a" stroke="#d2efe6" stroke-width="3"/>
+<text x="1572" y="1849" class="small mint">7-POD BAY / START</text>
+<g fill="#d1e8dd" stroke="#0e333b" stroke-width="2">
+<ellipse cx="1586.4" cy="1901.8" rx="8" ry="11"/><ellipse cx="1617.2" cy="1901.8" rx="8" ry="11"/><ellipse cx="1648" cy="1901.8" rx="8" ry="11"/><ellipse cx="1678.8" cy="1901.8" rx="8" ry="11"/>
+<ellipse cx="1617.2" cy="1774.2" rx="8" ry="11"/><ellipse cx="1648" cy="1774.2" rx="8" ry="11"/>
+</g><ellipse cx="1586.4" cy="1774.2" rx="10" ry="13" fill="#f2dc9d" stroke="#fff3c7" stroke-width="2"/>
+<text x="1310" y="1775" class="small">player pod #6 (-4.8, +2.9)</text><path d="M1522 1770L1575 1774" class="hair"/>
+<!-- Hatch at (6,0), hall x=6..30 z=-1.5..1.5, solid x=30 endcap. -->
+<rect x="1824" y="1805" width="528" height="66" fill="#19454f"/>
+<path d="M1824 1805H2352V1871H2297M2275 1871H1824" fill="none" stroke="#c5e7e2" stroke-width="3"/>
+<path d="M1824 1810V1868" stroke="#f1d58c" stroke-width="6"/>
+<text x="1842" y="1846" class="small">CORRIDOR +X 24 m</text>
+<path d="M2352 1801V1876" stroke="#f1d58c" stroke-width="7"/>
+<text x="2374" y="1820" class="small">X=30 solid endcap</text>
+<!-- Side doors x=9,15,21, unpierced on both walls. -->
+<g fill="#343d40" stroke="#efad99" stroke-width="2"><rect x="1880" y="1799" width="20" height="9"/><rect x="2012" y="1799" width="20" height="9"/><rect x="2144" y="1799" width="20" height="9"/><rect x="1880" y="1867" width="20" height="9"/><rect x="2012" y="1867" width="20" height="9"/><rect x="2144" y="1867" width="20" height="9"/></g>
+<text x="1828" y="1781" class="small">9 / 15 / 21: decorative leaves, walls unpierced</text>
+<!-- Room x=21..33, z=-1.7..-9.7. Only aperture is the north/-Z door at x=27. -->
+<rect x="2154" y="1875.4" width="264" height="176" fill="#12606a" stroke="#d2efe6" stroke-width="3"/>
+<text x="2165" y="1961" class="small mint">SECONDARY POWER</text>
+<text x="2165" y="1986" class="small">room X=21..33</text>
+<text x="2165" y="2011" class="small">Z=-9.7..-1.7</text>
+<path d="M2286 1871V1876" stroke="#f1d58c" stroke-width="6"/>
+<text x="2440" y="1881" class="small">-Z hatch at (27,-1.5)</text>
+<path d="M2435 1874L2295 1873" class="hair"/>
+<text x="2460" y="1940" class="small">No transverse shortcut from bay.</text>
+<text x="2460" y="1967" class="small">Reach power via +X corridor.</text>
+<text x="1298" y="2057" class="small">Built floor-plan meters. Inset is not to scale with the ship-wide section above.</text>
+<text x="60" y="2112" class="small">Design reference only. D01–D30, exact opening deck, beam, depth, structures and local damage placement are proposals, not bible measurements.</text>
+</svg>
