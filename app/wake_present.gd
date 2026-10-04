@@ -1,5 +1,6 @@
 class_name WakePresent
 extends Node
+signal wake_started
 ## The wake presentation driver, ported from gone_app wake/mod.rs: the
 ## sim's WakeState owns every timing decision, this node only projects.
 ## The readiness leg waits for the window's first presented frame before
@@ -56,6 +57,8 @@ func _ready() -> void:
 func begin() -> int:
 	var start: int = game.wake_state.mark_ready()
 	_begun = true
+	if start == Wake.WakeStart.STARTED:
+		wake_started.emit()
 	present_frame()
 	return start
 
@@ -68,11 +71,21 @@ func is_begun() -> bool:
 func present_frame() -> void:
 	var sample: Wake.WakeSample = game.wake_state.sample()
 	pass_layer.apply_sample(sample)
+	var sway := sample.sway_offset + respiratory_tremor(game.wake_state.current_tick())
 	if rig != null:
-		rig.apply_wake_sway(sample.sway_offset)
+		rig.apply_wake_sway(sway)
 	else:
-		camera.rotation = sway_rotation(_base_rotation, sample.sway_offset)
+		camera.rotation = sway_rotation(_base_rotation, sway)
 	_complete_if_due()
+
+## A small, bounded camera cue during the active cough window (ticks
+## 240..262). The offset is derived from the current tick, never integrated.
+static func respiratory_tremor(tick: int) -> Vector2:
+	if tick < 240 or tick >= 262:
+		return Vector2.ZERO
+	var progress := float(tick - 240) / 22.0
+	var envelope := sin(progress * PI)
+	return Vector2(sin(float(tick - 240) * 2.4) * 0.0025 * envelope, sin(float(tick - 240) * 3.1) * 0.0018 * envelope)
 
 ## The camera pose for one sway offset: the captured base pose plus the
 ## sample's sway (x is yaw, y is pitch). A pure projection, so the same

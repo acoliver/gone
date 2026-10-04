@@ -1,4 +1,7 @@
 extends SimTestCase
+
+const WAKE_AUDIO: AudioStreamWAV = preload("res://assets/audio/wake/opening-respiratory-trial.wav")
+
 ## Port of the engine-independent assertions from gone_app wake tests
 ## (wake_pass.rs mapping tests and wake/tests.rs driver tests): the
 ## sample-to-shader-param mapping, the pass's closed-from-the-first-frame
@@ -30,6 +33,13 @@ func _assert_params(pass_layer: WakePass, sample: Wake.WakeSample, label: String
 		sample.exposure_ramp,
 		"%s exposure ramp" % label
 	)
+
+func test_opening_audio_import_is_loaded_pcm_with_the_authored_duration() -> void:
+	assert_true(WAKE_AUDIO != null, "the opening audio resource loads")
+	assert_float_equal(WAKE_AUDIO.get_length(), 7.0, "the imported stream retains its seven-second duration")
+	assert_int_equal(WAKE_AUDIO.mix_rate, 48000, "the imported stream retains its sample rate")
+	assert_true(not WAKE_AUDIO.data.is_empty(), "the imported stream contains audio data")
+	assert_int_equal(WAKE_AUDIO.format, AudioStreamWAV.FORMAT_16_BITS, "uncompressed WAV import uses PCM format")
 
 func test_sample_maps_to_shader_params_field_for_field() -> void:
 	var partial := Wake.WakeSample.new(0.35, 0.85, 0.35, Vector2(0.012, 0.008))
@@ -111,6 +121,23 @@ func test_the_sim_advances_only_through_game_ticks() -> void:
 		game.tick()
 	assert_int_equal(game.wake_state.current_tick(), 3, "only the game's ticks advance the sim")
 
+func test_respiratory_cue_is_tick_bounded_and_readiness_signal_is_one_shot() -> void:
+	var fixture := _fixture()
+	var driver: WakePresent = fixture[3]
+	var emitted: Array[int] = []
+	driver.wake_started.connect(func() -> void: emitted.append(1))
+	assert_true(WakePresent.respiratory_tremor(241).length() > 0.0, "active cough has a visible camera cue")
+	assert_true(WakePresent.respiratory_tremor(241).length() < 0.0031, "camera cue stays small")
+	assert_true(WakePresent.respiratory_tremor(239) == Vector2.ZERO, "cue is absent before cough")
+	assert_true(WakePresent.respiratory_tremor(262) == Vector2.ZERO, "cue is neutral at cough end")
+	assert_int_equal(driver.begin(), Wake.WakeStart.STARTED, "readiness begins the wake")
+	assert_int_equal(emitted.size(), 1, "first readiness emits once")
+	for _repeat: int in range(4):
+		driver.begin()
+		driver.present_frame()
+	assert_int_equal(emitted.size(), 1, "duplicate begins and render frames do not retrigger")
+	assert_true((fixture[0] as Game).phase.in_phase(Phase.Wake.WAKING), "respiratory cue does not change phase")
+
 func test_the_readiness_barrier_starts_once() -> void:
 	var fixture := _fixture()
 	var game: Game = fixture[0]
@@ -191,6 +218,38 @@ func test_sway_projection_is_drift_free_across_tick_batchings() -> void:
 		expected,
 		"the pose is the pure projection of base plus the authored sway"
 	)
+
+func test_cough_tremor_is_composed_with_sample_sway_and_resets_at_tick_262() -> void:
+	var fixture := _fixture()
+	var game: Game = fixture[0]
+	var camera: Camera3D = fixture[1]
+	var driver: WakePresent = fixture[3]
+	var base := Vector3(0.03, -0.12, 0.0)
+	assert_vec3_equal(camera.rotation, base, "fixture camera starts at its base pose")
+	driver.begin()
+	for _tick: int in range(241):
+		game.tick()
+	driver.present_frame()
+	var sample: Wake.WakeSample = game.wake_state.sample()
+	var expected := WakePresent.sway_rotation(
+		base,
+		sample.sway_offset + WakePresent.respiratory_tremor(241)
+	)
+	assert_vec3_equal(camera.rotation, expected, "active cough tremor composes with sample sway")
+	for _tick: int in range(262 - 241):
+		game.tick()
+	driver.present_frame()
+	var reset_sample: Wake.WakeSample = game.wake_state.sample()
+	assert_vec3_equal(
+		camera.rotation,
+		WakePresent.sway_rotation(base, reset_sample.sway_offset),
+		"camera returns to base plus sample sway at tick 262"
+	)
+	var complete: int = Wake.WakeTimeline.authored().complete_tick()
+	for _tick: int in range(complete - 262):
+		game.tick()
+	driver.present_frame()
+	assert_vec3_equal(camera.rotation, base, "completion resets the camera to its neutral base")
 
 func test_completion_hands_off_exactly_once_at_the_authored_tick() -> void:
 	var fixture := _fixture()
