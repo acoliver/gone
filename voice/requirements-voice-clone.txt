@@ -1,0 +1,8 @@
+# Tested API target: Chatterbox Multilingual V2. Install PyTorch for your platform first.
+torch==2.6.0
+torchaudio==2.6.0
+chatterbox-tts==0.1.7
+numpy==1.26.4
+scipy==1.17.1
+soundfile==0.14.0
+librosa==0.11.0

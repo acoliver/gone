@@ -5,3 +5,4 @@
 .godot/
 *.translation
 __pycache__/
+/voice/source/C-reference-20s.wav
