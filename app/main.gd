@@ -22,6 +22,7 @@ var wake_pass: WakePass
 var wake_present: WakePresent
 var smoke_symptoms: SmokeSymptoms
 var smoke_audio: AudioStreamPlayer
+var voice_presentation: VoicePresentation
 var _smoke_audio_queue: Array[SmokeSymptoms.Event] = []
 var _smoke_audio_in_flight := false
 var _smoke_silence_until_usec := 0
@@ -45,6 +46,8 @@ func _ready() -> void:
 	_add_wake_presentation()
 	_add_wake_audio()
 	_add_smoke_symptoms()
+	voice_presentation = VoicePresentation.build(game, player)
+	add_child(voice_presentation)
 
 func _physics_process(_delta: float) -> void:
 	game.tick()

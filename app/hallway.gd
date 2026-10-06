@@ -51,7 +51,7 @@ const SIDE_DOOR_HEIGHT: float = 2.2
 const SIDE_DOOR_THICKNESS: float = 0.06
 const SIDE_DOOR_STATIONS_X: Array[float] = [9.0, 15.0, 21.0]
 ## The emergency-power room entrance (issue #59 proper): the last door
-## on the right walking out of the stasis room — the north (-Z) wall,
+## on the left walking out of the stasis room — the north (-Z) wall,
 ## pierced here. The PowerRoom module authors the door's leaf, its
 ## deterministic slide, and the room behind the wall.
 const POWER_DOOR_X: float = 27.0
