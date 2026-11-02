@@ -1,0 +1,4 @@
+# Author inputs archived byte-for-byte. Their markdown uses trailing-space
+# line breaks, and the PDFs are binary; whitespace checks do not apply here.
+*.pdf binary
+*.md -whitespace

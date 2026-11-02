@@ -1,6 +1,6 @@
 # GONE
 
-## Biblia narrativa y de diseño — borrador base
+## Biblia narrativa y de diseño: borrador base
 
 ---
 
@@ -16,7 +16,7 @@ Conserva conocimientos técnicos y memoria procedural: sabe operar la nave, repa
 
 La prioridad inmediata es sobrevivir y reparar la nave.
 
-La historia emerge durante ese proceso.
+La historia emerge durante ese proceso. El orden de revelación organiza la información emocional, no impone bloqueos de movimiento. Los objetos narrativos no son requisitos para atravesar espacios; la progresión física depende de accesos y sistemas de la nave. La propuesta de rutas está en [docs/design/puzzle-progression.md](puzzle-progression.md).
 
 Con el tiempo, el jugador descubre que:
 
@@ -26,14 +26,15 @@ Con el tiempo, el jugador descubre que:
 * alguien había saboteado la nave;
 * los sistemas de seguridad parecen identificar específicamente al protagonista como una amenaza;
 * el protagonista era, efectivamente, el traidor;
-* traicionó a sus amigos porque la misión de la nave consistía en destruir su planeta natal;
-* mató personalmente a varios miembros de la tripulación, incluida la persona a la que amaba;
-* su sabotaje no consiguió detener la misión;
-* parte de la tripulación escapó y el planeta del protagonista terminó completamente devastado;
-* han pasado más de cien años;
-* el único mundo habitable que todavía puede alcanzar pertenece a la civilización enemiga.
+* nació en Tewa, la Tierra, habla español y se infiltró en la tripulación para proteger a su pueblo;
+* llegó a querer de verdad al capitán y formó un vínculo duradero con su hija;
+* saboteó primero el H-drive para retrasar la misión y, tras conocer las órdenes selladas, retiró un componente crítico del S-drive y lo llevó a astrometría;
+* durante el intento de contenerla, causó accidentalmente la muerte de su pareja, y conserva la responsabilidad por sus actos;
+* su sabotaje no detuvo la misión; los registros muestran la devastación de la Tierra, pero no prueban que murieran todas las personas;
+* han pasado más de cien años terrestres;
+* el único destino alcanzable es el mundo que la tripulación llama Nuestro Planeta (Ko Lu Ki Wena).
 
-La nave tardaría unos diez años en llegar en condiciones normales. En su estado actual, el viaje probablemente demande unos treinta años y existe una posibilidad significativa de que nunca llegue.
+Con S-drive y H-drive, el viaje dura unos cinco años. Con S-drive y propulsión convencional, dura unos treinta años terrestres. Sin S-drive el trayecto no es sobrevivible.
 
 El protagonista tendrá que regresar a estasis.
 
@@ -45,9 +46,7 @@ El juego termina sin confirmar si sobrevive.
 
 ## 2. Núcleo dramático
 
-La historia no trata fundamentalmente de descubrir que el protagonista era el traidor.
-
-Trata de descubrir **por qué lo hizo, a quién destruyó al hacerlo y que finalmente no consiguió salvar nada**.
+La historia reconstruye por qué el protagonista traicionó a la tripulación, a quién perjudicó y por qué su intento de proteger a su pueblo fracasó.
 
 No hay una revelación de que la tripulación fuera secretamente malvada.
 
@@ -65,7 +64,7 @@ Querían al protagonista.
 
 El capitán confiaba profundamente en él.
 
-Su pareja lo amaba.
+La hija del capitán lo amaba.
 
 Y aun así su misión implicaba la destrucción del mundo natal del protagonista.
 
@@ -140,7 +139,7 @@ Un sistema de seguridad aparentemente roto puede estar funcionando exactamente c
 
 ## 4. El protagonista
 
-Nombre: **POR DEFINIR**
+Nombre: **POR DEFINIR**. Procede de Tewa (la Tierra), habla español y se infiltró en la tripulación para proteger a su pueblo. El nombre personal, la identidad de cobertura y el puesto formal siguen abiertos.
 
 El jugador descubre su nombre relativamente temprano al encontrar su identificación.
 
@@ -155,31 +154,15 @@ No recuerda su historia personal, pero conserva:
 
 Esto permite que el personaje sepa cómo hacer cosas sin saber por qué las sabe.
 
-Su conflicto no es:
-
-**«¿Cómo funciona una nave espacial?»**
-
-Es:
-
-**«¿Por qué sé exactamente cómo funciona esta nave?»**
-
-Posteriormente:
-
-**«¿Por qué esta nave intenta matarme?»**
-
-Y finalmente:
-
-**«¿Qué hice aquí?»**
+Sus preguntas cambian con la historia. Primero necesita entender la nave; después averigua por qué conoce sus sistemas y finalmente reconstruye sus actos y sus consecuencias.
 
 ---
 
 ## 5. La pareja romántica
 
-Nombre, género y función a bordo: **POR DEFINIR**
+Nombre y puesto a bordo: **POR DEFINIR**. Es hija del capitán y mujer. No se ha establecido su rango ni su función de servicio.
 
-Es un miembro de la tripulación.
-
-Su relación con el protagonista era real, íntima y conocida por los demás.
+Es un miembro de la tripulación. Era la pareja de vida del protagonista y estaba embarazada de su hijo; él aún no lo sabía. Ella no conocía las órdenes selladas. Su relación con él era real, íntima y conocida por los demás.
 
 No era una tapadera.
 
@@ -191,13 +174,31 @@ Ella realmente lo amaba.
 
 Durante aproximadamente la primera mitad del juego, los recuerdos relacionados con ella constituyen algunas de las pocas experiencias cálidas del protagonista.
 
-El jugador empieza reconociéndola emocionalmente antes de recordar quién es.
+Ella es leal a su familia, se siente cómoda con la cultura militar, ama a los animales y suele acoger a los animales abandonados. Tiene un lado indómito, es terca y defiende una postura humanitaria. Considera injusta la negativa a ayudar, aunque entiende el costo. No conoce las órdenes selladas.
+
+El jugador empieza reconociéndola emocionalmente antes de recordar quién es. Para el marco social de su vínculo, véase [docs/design/society-history-and-command.md](society-history-and-command.md): son compañeros de vida comprometidos; su sociedad no tiene una institución matrimonial exacta.
 
 ---
 
 ## 6. El capitán y la tripulación
 
-El capitán era amigo íntimo del protagonista y confiaba profundamente en él.
+El protagonista se acercó inicialmente al capitán por la infiltración. La relación se volvió una amistad genuina y el capitán confió profundamente en él; después presentó a su hija al protagonista. El capitán juzgó injusta la orden sellada y decidió negarse antes de la muerte de su hija. Después, el duelo lo llevó a creer que el Mando tenía razón. La revelación tardía establece que llevó a cabo la orden. No pudo matar a la pareja de su hija: lo dejó inconsciente y dispuso que lo pusieran en estasis. Se desconoce si formalizó su negativa ante el Mando.
+
+La tripulación creía en la misión pública de ayuda y paz, incluso el capitán. Las órdenes reales se desbloquearon cerca del objetivo. La hija nunca las conoció. Los registros de línea dura expresan opiniones y no prueban conocimiento previo del plan.
+
+Las biosferas de Tewa colapsan de forma irreversible. Su gente necesita ayuda externa, grandes reservas ecológicas vivas y una infraestructura biológica que sostenga el planeta. La civilización de Nuestro Planeta podía aportar esa ayuda, con décadas de menor consumo, desvío industrial, racionamiento y una caída del nivel de vida. Su sociedad se negó por el costo. Tewa atacó y perdió; el colapso alimentó un liderazgo autoritario que centralizó el poder y preparó nuevas guerras. El protagonista rechazaba ese liderazgo y actuaba para proteger a su gente.
+
+La infiltración de Tewa era real, y el protagonista era uno de sus agentes. La respuesta de la sociedad de la tripulación también se volvió indiscriminada: trató a refugiados como posibles agentes, rechazó a quienes buscaban refugio, amplió la seguridad y presentó la disidencia como deslealtad. El capitán observó ese giro. El contexto no demuestra que la destrucción de Tewa fuera necesaria. Véase [docs/design/story-reference.md](story-reference.md) para el detalle político.
+
+### 6.2 Historia y organización social
+
+La tripulación procede de Ko Lu Ki Wena, Nuestro Planeta. Su historia política incluye un imperio sin reyes, formado mediante acuerdos entre tribus y familias. El vapor y la telegrafía surgieron al comienzo del imperio. Un inmigrante del este inventó el telégrafo y la membrana de voz porque quería comunicarse con sus familiares en su tierra natal.
+
+Tras la consolidación imperial y un periodo de estancamiento, un reformador encabezó un movimiento que culminó en la Gran Recuperación, nombre provisional que más tarde se entendió como una masacre. La industrialización intensiva comenzaba entonces. La Gran Pax y la rápida industrialización vinieron después. La democratización amplió la representación individual y separó a las familias del poder estatal, aunque conservaron sus vínculos sociales y obligaciones.
+
+Las familias mantienen obligaciones sociales, económicas y afectivas duraderas. Las tribus comenzaron como alianzas geográficas de familias. No son castas. No existe una institución matrimonial exacta: los acuerdos domésticos y de propiedad pueden cumplir funciones relacionadas. Los hogares poliamorosos tienen igual reconocimiento legal. Una forma común de hogar reúne a dos parejas, una de mujeres y otra de hombres, en una familia de cuatro personas. La convivencia y las reglas de parentesco concretas siguen abiertas. El relevo social completo está en [docs/design/society-history-and-command.md](society-history-and-command.md).
+
+El mando dual favorece la redundancia y a menudo empareja a familiares que cooperan. No establece que la hija del capitán ocupe un cargo. Los rangos, cargos y su puesto siguen sin definirse. La historia, las costumbres familiares y los límites de lo establecido se desarrollan en [docs/design/society-history-and-command.md](society-history-and-command.md).
 
 La tripulación no debe aparecer como una colección de sospechosos.
 
@@ -224,6 +225,10 @@ El protagonista no traicionó una organización abstracta.
 
 Traicionó a personas que conocía.
 
+### 6.1 Lengua y escritura
+
+La escritura de la nave está en Nalesha. El protagonista la percibe como español, pero los signos físicos no cambian. La causa de esa percepción queda sin explicación. La lengua usa números de base ocho; no debe sustituirse la notación visible por cifras terrestres. Véase [docs/design/language/nalesha-reference.md](language/nalesha-reference.md). Nalesha es el nombre de trabajo; Naleya aparece como nombre del proyecto en algunos materiales y el nombre definitivo sigue abierto.
+
 ---
 
 ## 7. Cronología real oculta
@@ -238,27 +243,13 @@ El protagonista forma parte de la tripulación y mantiene relaciones cercanas co
 
 Mantiene una relación romántica con uno de sus compañeros.
 
-En algún momento descubre la verdadera naturaleza o destino final de la misión:
+La misión pública promete ayuda y paz. La tripulación, incluido el capitán, cree esa versión. Cerca del objetivo se desbloquean órdenes selladas: la misión real exige exterminar la Tierra. La hija del capitán nunca conoce esas órdenes. La crisis ecológica y la guerra explican el contexto, pero no prueban que la destrucción fuera necesaria. Véase [docs/design/story-reference.md](story-reference.md).
 
-**la destrucción de su mundo natal.**
-
-Los motivos políticos, militares o estratégicos concretos de la misión quedan **POR DEFINIR**.
-
-La tripulación no interpreta necesariamente la misión como una atrocidad absurda. Desde su propia perspectiva existe una razón que consideran suficiente para cumplirla.
+El plan prevé una reacción atmosférica, un agente biológico mortal como respaldo y, como última contingencia, iniciar un gran pliegue S dentro de la atmósfera de Tewa. El agente amenazaría a ambos pueblos: por su similitud biológica, también mataría a la tripulación si fallara la contención. La nave sería el arma final. El S-drive crea el pliegue; el H-drive lo recorre con eficiencia. La propulsión convencional puede mover la nave dentro del pliegue, con un viaje mucho más lento. Los mecanismos concretos y la contingencia que se ejecutó siguen abiertos. Véase [docs/design/story-reference.md](story-reference.md).
 
 ### La traición
 
-El protagonista decide sabotear la misión.
-
-Conoce suficientes bien la nave como para causar daños importantes.
-
-Compromete sistemas.
-
-Manipula partes de seguridad.
-
-Interfiere con infraestructura crítica.
-
-El sabotaje inicialmente pretende impedir la misión, no necesariamente asesinar a toda la tripulación.
+El sabotaje ocurre en dos etapas. Antes de conocer las órdenes selladas, altera el H-drive para retrasar la misión como parte de su objetivo de proteger a su pueblo. El sabotaje llegó demasiado tarde para impedir que la nave alcanzara una proximidad peligrosa con Tewa. Cerca del objetivo, al desbloquearse las órdenes, comprende que el S-drive también puede devastar Tewa mediante una iniciación atmosférica. Retira un componente portátil del S-drive y lo esconde en astrometría. Recuperarlo será parte de las reparaciones finales. El motivo técnico exacto de ese lugar, la identidad del componente y la posibilidad de sustituirlo a un costo siguen abiertos. La secuencia y sus propuestas de acceso se detallan en [docs/design/puzzle-progression.md](puzzle-progression.md); las decisiones de misión están en [docs/design/story-reference.md](story-reference.md).
 
 La situación escala.
 
@@ -272,13 +263,7 @@ El capitán empieza a investigar.
 
 Un detalle aparentemente insignificante provoca el descubrimiento.
 
-Ella planeaba sorprender al protagonista.
-
-Va a buscarlo cuando él no está donde esperaba.
-
-Eso la lleva hacia algo que no debería haber visto.
-
-Descubre la traición.
+Ella iba a astrometría para contarle que estaba embarazada. Allí reconoce el componente crítico que él retiró y comprende que traicionó a la tripulación. Su visita buscaba compartir la noticia de su hijo.
 
 Este hecho se introduce mucho antes en el juego sin que el jugador comprenda su importancia.
 
@@ -290,13 +275,8 @@ Puede incluso comprender sus razones.
 
 Pero intenta detenerlo.
 
-El protagonista termina tomando deliberadamente una acción que sabe que probablemente la matará.
+Mientras intenta contenerla, el protagonista causa accidentalmente su muerte. No pretendía matarla, pero sus acciones y el sabotaje lo hacen responsable. La coreografía exacta del disparo sigue abierta.
 
-Su muerte no debe ser un accidente completamente impersonal.
-
-Debe existir responsabilidad moral directa.
-
-Detalles concretos: **POR DEFINIR**.
 
 ### Evacuación
 
@@ -310,23 +290,15 @@ Esto no es cierto.
 
 ### La misión continúa
 
-Los supervivientes o sistemas externos consiguen finalmente completar la misión.
+La misión continúa después de la muerte de su hija. El mecanismo y la logística, incluida su relación temporal con la evacuación, siguen abiertos.
 
-El mundo natal del protagonista es devastado.
-
-Toda vida es eliminada.
-
-El planeta queda inhabitable.
+Los registros muestran que la Tierra fue devastada y que dejó de ser un hogar al que el protagonista pueda regresar. No prueban que todas las personas murieran; tampoco confirman supervivientes.
 
 El sabotaje fracasa en su objetivo fundamental.
 
 ### El protagonista entra en estasis
 
-El protagonista acaba dentro de una cápsula de estasis.
-
-Las circunstancias exactas quedan **POR DEFINIR**.
-
-La nave queda a la deriva.
+Después de la muerte de su hija, el capitán deja inconsciente al protagonista y ordena que lo pongan en estasis. La nave queda a la deriva.
 
 ### Más de un siglo
 
@@ -385,7 +357,9 @@ Por primera vez escuchamos el pensamiento del protagonista:
 
 El jugador activa el panel.
 
-Las luces de emergencia empiezan a parpadear.
+Al principio, el protagonista percibe la escritura de la nave como español. La causa de esa percepción no se explica en esta escena; el idioma y el origen del protagonista no se identifican aquí.
+
+El interruptor está junto a la escotilla de estasis, a su derecha al salir de la sala. Enciende una luz roja de emergencia estable; el parpadeo pertenece al circuito automático del incendio.
 
 Entonces:
 
@@ -397,7 +371,7 @@ Una pausa.
 
 El personaje vuelve inmediatamente al problema práctico.
 
-> *Energía. El generador secundario está al final del corredor.*
+> *Energía. La sala del generador secundario está en la última puerta de la izquierda.*
 
 El jugador avanza.
 
@@ -405,7 +379,7 @@ El jugador avanza.
 
 ## 10. CAPÍTULO II — RESPIRAR
 
-En la sala del generador secundario hay un terminal todavía operativo.
+La sala del generador secundario está en la última puerta de la izquierda, junto al muro del fondo. Allí hay un terminal todavía operativo.
 
 Muestra el plano básico de la nave, pero los sistemas de sensores no funcionan.
 
@@ -458,7 +432,7 @@ Pero suficiente infraestructura se activa como para despertar muchos sistemas au
 
 Entre ellos:
 
-**el robot de mantenimiento.**
+**SAINT-5, el robot de mantenimiento.** Su designación no se presenta como un chiste.
 
 La primera acción visible o deducible del robot es útil.
 
@@ -574,7 +548,7 @@ El sistema falla.
 
 **FALLO DEL SISTEMA PRINCIPAL**
 
-**DIRECCIÓN 14F4:9000**
+**DIRECCIÓN 14F4:9000** [marcador provisional para el autor; queda pendiente decidir su representación en la notación nativa de base ocho o en la capa percibida como español].
 
 **SISTEMA NO DISPONIBLE**
 
@@ -608,6 +582,8 @@ Mucho después, ese detalle se vuelve decisivo.
 
 Mientras el jugador restaura distribución eléctrica, computadoras y acceso a nuevas áreas, descubre registros de la tripulación.
 
+Unas memorias familiares del capitán muestran que antes consideraba improbable una guerra interestelar: la vida parecía rara y la extracción de recursos, demasiado costosa. Un archivo histórico conservado intacto contiene imágenes de la primera detección de otra civilización, aproximadamente un siglo antes de la misión. Más adelante, el jugador descubre que esa civilización era la de su propio pueblo. El archivo histórico puede estar intacto mientras los registros personales se degradan. Véase [docs/design/story-reference.md](story-reference.md).
+
 El objetivo de esta parte es humanizarlos.
 
 No deben hablar constantemente sobre la misión.
@@ -630,7 +606,7 @@ Pero la narrativa no explica por qué.
 
 ## 15. CAPÍTULO VII — LA IDENTIFICACIÓN
 
-El protagonista encuentra su identificación.
+En su habitación, el protagonista encuentra su propia identificación y la consola portátil de muñeca. La escritura de la nave se le presenta como español, pero la causa de esa percepción no se explica al comienzo.
 
 Contiene:
 
@@ -641,7 +617,7 @@ Contiene:
 
 El badge facilita considerablemente la exploración.
 
-Al acercarse a un lector y pulsar la acción contextual, el personaje utiliza automáticamente la identificación.
+El jugador selecciona qué identificación lleva activa como parte de su equipo. Al acercarse a un lector y usar la acción contextual, el personaje la presenta automáticamente.
 
 No existe una opción de menú:
 
@@ -756,42 +732,27 @@ Había causado muertes.
 
 Algunos miembros de la tripulación murieron directamente como consecuencia de sus acciones.
 
-El capitán tenía razón.
-
-Los sistemas que lo identificaban como amenaza tenían una razón válida para hacerlo.
+El capitán tenía razón sobre el sabotaje y la amenaza que representaba el protagonista para la nave. Esto no valida la orden de destruir la Tierra.
 
 El jugador descubre por qué:
 
 **la misión de la nave era destruir su mundo.**
 
+Los registros muestran que el capitán había decidido rechazar la orden antes de la muerte de su hija. El protagonista no conocía esa decisión. La forma de ejecución y la transmisión formal de la negativa siguen abiertas. El vínculo causal posible entre el sabotaje y la destrucción de Tewa no se demuestra como contrafactual.
+
 ---
 
 ## 20. CAPÍTULO XII — ELLA
 
-El recuerdo que empezó mucho antes continúa.
+Entrar en astrometría no activa el recuerdo. Al recoger la identificación de ella, aparece una imagen breve de la sala intacta, su cuerpo en el suelo y la reacción del protagonista: *«¡No!»*. El jugador sabe que murió allí y que él estaba presente; todavía desconoce por qué. Su identificación da acceso a mando y a los aposentos del capitán.
 
-Ella había ido a sorprender al protagonista.
+En la consola personal del capitán aparecen tres imágenes: él, su hija y el protagonista juntos; ella adolescente junto a una versión más joven de su padre; y ella de bebé en brazos del capitán junto a una mujer que se parece a ella. El jugador infiere el parentesco y que el protagonista formaba parte del círculo familiar. No hay una explicación en texto. Véase [docs/design/story-reference.md](story-reference.md).
 
-Por eso terminó donde no debía estar.
+La imagen del badge solo deja claro que ella murió allí y que el protagonista vio su cuerpo ensangrentado. No explica el enfrentamiento ni quién causó su muerte.
 
-Descubrió lo que estaba haciendo.
+La memoria completa del encuentro, la razón de su visita y la responsabilidad del protagonista se revelan más tarde, después de descubrirse la suerte de la tripulación superviviente. La coreografía del disparo sigue abierta.
 
-Lo enfrentó.
-
-Ella podía amarlo y aun así intentar detenerlo.
-
-Él podía amarla y aun así continuar.
-
-El protagonista termina siendo responsable directo de su muerte.
-
-El detalle exacto debe definirse de forma que la acción sea:
-
-* deliberada;
-* comprensible dentro de la situación;
-* irreversible;
-* imposible de reducir a mero accidente.
-
-Después:
+Entonces:
 
 > *Lo recuerdo.*
 
@@ -819,17 +780,11 @@ No murieron todos.
 
 Entonces aparece la información siguiente.
 
-Los supervivientes consiguieron continuar o completar la misión.
+Los supervivientes consiguieron continuar o completar la misión. El jugador descubre que el capitán ejecutó la orden después de esta revelación; el mecanismo concreto sigue abierto.
 
-El planeta natal del protagonista fue destruido.
+La memoria completa revela que ella fue a astrometría para anunciar su embarazo, encontró el componente retirado del S-drive y comprendió que él había traicionado a la tripulación. Lo enfrentó; mientras él intentaba impedir que se marchara, sus acciones causaron su muerte accidental. El protagonista conserva la responsabilidad. La coreografía del disparo sigue abierta.
 
-No parcialmente.
-
-No conquistado.
-
-No simplemente bombardeado.
-
-Fue devastado hasta eliminar toda vida y quedar inhabitable.
+Los registros muestran que la Tierra fue devastada. No permiten concluir que toda persona muriera ni confirman que alguien sobreviviera. La Tierra ya no es un hogar al que él pueda volver.
 
 Su traición no consiguió lo que pretendía.
 
@@ -859,17 +814,9 @@ Ha sobrevivido por una combinación improbable de tecnología y casualidad.
 
 ## 24. CAPÍTULO XVI — NO HAY CASA
 
-El protagonista restaura suficiente navegación y sensores para buscar destinos.
+El protagonista restaura suficiente navegación y sensores para buscar destinos. La consola revela que el S-drive fue saboteado y que falta un componente. El componente retirado sigue oculto en astrometría; recuperarlo forma parte de las reparaciones tardías para preparar el viaje. Si puede sustituirse por otra pieza a un costo elevado sigue siendo una opción abierta, no una solución establecida. Véase [docs/design/story-reference.md](story-reference.md) y [docs/design/ship-systems-and-security.md](ship-systems-and-security.md).
 
-Su mundo ya no existe como lugar habitable.
-
-No existe una alternativa amiga dentro de alcance.
-
-Sólo existe un mundo viable.
-
-Pertenece a la civilización que estaba del otro lado de la guerra.
-
-El mundo de la tripulación.
+La Tierra ya no es un lugar al que pueda regresar. No hay otro destino alcanzable para él. Nuestro Planeta (Ko Lu Ki Wena), el mundo de la tripulación, es el único mundo habitable a su alcance. Quedan abiertas su supervivencia durante el viaje, su llegada y la protección que pueda ofrecerle su gente.
 
 El mundo de la persona que amó y mató.
 
@@ -877,11 +824,7 @@ El mundo de la persona que amó y mató.
 
 ## 25. FINAL — TREINTA AÑOS
 
-En condiciones nominales, la nave habría necesitado aproximadamente diez años para alcanzar ese sistema.
-
-Ahora está demasiado dañada.
-
-La estimación ronda los treinta años.
+Con S-drive y H-drive, el trayecto habría durado unos cinco años. La nave ya no puede usar el H-drive. Con S-drive y propulsión convencional, el viaje exige unos treinta años terrestres.
 
 No hay suficiente oxígeno, alimento ni soporte vital para permanecer despierto.
 
@@ -973,9 +916,13 @@ El jugador debe atravesar aproximadamente estas interpretaciones:
 
 **Traicioné a personas que me querían.**
 
+Los recuerdos, la identificación de ella y las imágenes familiares del capitán aportan pruebas de su muerte, su parentesco y la intimidad del protagonista con ambos. La identificación activa una imagen breve al recogerse, no al entrar en astrometría. Muestra su cuerpo ensangrentado en el suelo y la reacción del protagonista, *«¡No!»*, sin explicar el contexto; la confrontación completa queda para el descubrimiento tardío.
+
 ### Fase 9
 
 **Lo hice para salvar mi mundo.**
+
+El archivo histórico sobre el descubrimiento de otra civilización, junto con la identidad del protagonista, revela que él pertenece a ese pueblo. Los registros muestran que el capitán estuvo dispuesto a rechazar la orden antes de la muerte de su hija. El protagonista ignoraba la negativa previa; no se confirma que su sabotaje causara necesariamente la destrucción de Tewa.
 
 ### Fase 10
 
@@ -1029,7 +976,7 @@ El juego utiliza interacción contextual.
 
 Ejemplos:
 
-Si el jugador lleva una identificación y utiliza un lector, el personaje la presenta automáticamente.
+El jugador elige qué identificación lleva activa como equipo. Si usa un lector, el personaje la presenta automáticamente; el robot reconoce cuerpos, no tarjetas. No hay menú de verbos para cada lector.
 
 Si lleva una herramienta adecuada y utiliza un panel compatible, utiliza esa herramienta.
 
@@ -1178,9 +1125,9 @@ Debe:
 * aprender rutas;
 * crear distracciones.
 
-Cuando los sensores internos finalmente se restauran, cambia significativamente la relación táctica.
+El jugador obtiene una consola portátil de muñeca que muestra el esquema y datos de sistemas conectados. Al principio no ofrece un mapa de daños en vivo ni una ubicación fiable de SAINT-5. Incluso con sensores restaurados, los datos sólo llegan de zonas vigiladas; el marcador del robot puede desaparecer y algunos daños seguir ocultos. Véase [docs/design/ship-systems-and-security.md](ship-systems-and-security.md).
 
-Ahora el jugador puede localizar al robot.
+Cuando los sensores internos finalmente se restauran, el jugador puede localizar al robot en las zonas vigiladas.
 
 Eso no lo vuelve menos peligroso.
 
@@ -1524,24 +1471,7 @@ queda **POR DEFINIR**.
 
 ## 51. Viaje final
 
-Tiempo normal estimado:
-
-**aproximadamente 10 años.**
-
-Tiempo estimado con la nave degradada:
-
-**aproximadamente 30 años.**
-
-La diferencia puede provenir de:
-
-* menor aceleración;
-* motores dañados;
-* limitaciones térmicas;
-* combustible;
-* estructura debilitada;
-* necesidad de operar motores muy por debajo de capacidad nominal.
-
-La física concreta del sistema de propulsión queda **POR DEFINIR**.
+Con S-drive y H-drive, la estimación es de **unos cinco años**. Con S-drive y propulsión convencional, el trayecto toma **unos treinta años terrestres**. Sin S-drive no hay un viaje sobrevivible. La reparación final exige recuperar en astrometría el componente que el protagonista escondió. Si una pieza sustituta puede cumplir esa función con un costo elevado sigue como opción abierta. Las distancias exactas, fechas y funcionamiento físico de ambos motores siguen abiertos. Véase [docs/design/ship-systems-and-security.md](ship-systems-and-security.md) y [docs/design/story-reference.md](story-reference.md) para los límites conocidos de los sistemas y el detalle narrativo.
 
 ---
 
@@ -1630,19 +1560,21 @@ De ahí:
 
 # PARTE VII — ELEMENTOS TODAVÍA POR DEFINIR
 
-Los puntos principales que todavía necesitan diseño específico son:
+Estado de los catorce asuntos. «Resuelto» indica que el punto principal está establecido; «parcial» indica que hay datos firmes y aspectos abiertos; «abierto» indica que falta una decisión. El registro de decisiones y las fuentes están en [docs/design/decisions.md](decisions.md).
 
-1. nombre, sexo y trasfondo preciso del protagonista;
-2. nombre, función y personalidad de su pareja;
-3. naturaleza política de las dos civilizaciones;
-4. motivo concreto por el que la tripulación considera necesaria la destrucción del planeta;
-5. cómo llegó originalmente el protagonista a formar parte de esta tripulación;
-6. método utilizado para destruir el planeta;
-7. mecanismo mediante el cual los supervivientes consiguen completar la misión;
-8. forma exacta en que el protagonista mata a su pareja;
-9. circunstancias mediante las cuales acaba dentro de estasis;
-10. naturaleza de la propulsión de la nave;
-11. causa exacta de la zona irradiada;
-12. límites técnicos de la estasis;
-13. distribución temporal de los despertares durante los más de cien años;
-14. identidad y características del mundo enemigo al que se dirige al final.
+1. **Parcial.** Es hombre, procede de Tewa (la Tierra), habla español y se infiltró para proteger a su pueblo. Nombre, identidad de cobertura, puesto y trasfondo detallado abiertos.
+2. **Parcial.** Es hija del capitán y pareja de vida del protagonista; estaba embarazada de su hijo, aunque él aún no lo sabía. Nombre, puesto y detalles de personalidad abiertos.
+3. **Parcial.** Su historia incluye un imperio formado mediante acuerdos entre tribus y familias; nunca tuvo reyes. Después de la Gran Recuperación y la Gran Pax, avanzó hacia la democracia individual. Los nombres oficiales y la secuencia detallada de las reformas siguen abiertos.
+4. **Parcial.** Las órdenes selladas ordenan destruir la Tierra; la tripulación creía en la misión pública de ayuda y paz hasta cerca del objetivo. La sociedad de Nuestro Planeta rechazó a refugiados y amplió medidas autoritarias. Siguen abiertas la razón alegada por el Mando y su justificación.
+5. **Parcial.** La infiltración buscaba proteger a su pueblo y fue el origen instrumental de su vínculo con el capitán. El proceso concreto de incorporación sigue abierto.
+6. **Parcial.** El plan incluía una cadena atmosférica, un arma biológica de respaldo y una contingencia con S-drive. El mecanismo usado, su ingeniería y el momento de ejecución siguen abiertos.
+7. **Abierto.** El capitán es responsable de ejecutar la orden después de cambiar de postura; el mecanismo y la logística de supervivientes no están definidos.
+8. **Parcial.** Murió accidentalmente cuando él intentaba contenerla, y él conserva la responsabilidad. Quién llevaba el arma y cómo se produjo el disparo siguen abiertos.
+9. **Resuelto.** El capitán lo dejó inconsciente y dispuso que lo pusieran en estasis. La intención posterior de castigo, recuperación o rescate no está fijada.
+10. **Parcial.** S-drive más H-drive: unos cinco años; S-drive más propulsión convencional: unos treinta años terrestres. Distancias, fechas y mecánica exacta abiertas.
+11. **Abierto.** Se desconoce la causa y los límites de la zona irradiada.
+12. **Abierto.** Siguen pendientes los límites médicos, neurológicos y energéticos de la estasis.
+13. **Parcial.** Han pasado más de cien años terrestres y los despertares de rescate son posibles. Su número y distribución temporal siguen abiertos.
+14. **Parcial.** El destino es el único mundo habitable a su alcance, Nuestro Planeta (Ko Lu Ki Wena), hogar de la tripulación. Su nombre político y condiciones detalladas siguen abiertos; también quedan sin resolver la supervivencia del protagonista, su llegada y la protección que pueda ofrecerle su gente.
+
+El detalle social está en [docs/design/society-history-and-command.md](society-history-and-command.md); la secuencia de historia en [docs/design/story-reference.md](story-reference.md).

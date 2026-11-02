@@ -1,15 +1,24 @@
 # gone: story
 
-The narrative and design bible is the source of truth for the story, the
-revelation structure, and the gameplay rules:
-[docs/design/biblia.md](biblia.md) (Spanish draft, `borrador base`).
-Where this file and the bible differ, the bible wins.
+La biblia narrativa en español es la fuente de verdad para los hechos de
+historia, el orden de revelación y las reglas estables de diseño:
+[docs/design/biblia.md](biblia.md). Este archivo funciona como índice y
+conserva únicamente las notas de puesta en escena del despertar que siguen.
 
-This file previously carried an early English story draft from the
-pre-bible era. That draft is retired: it predates the bible, still spoke of
-a colonial escort frigate, a dog as the first threat, and Bevy-era
-production notes, and the bible replaces all of it. One piece survives
-below because the shipped game already follows it.
+## Documentos de referencia
+
+- [docs/design/decisions.md](decisions.md): decisiones aceptadas y asuntos abiertos.
+- [docs/design/story-reference.md](story-reference.md): historia, personajes y evidencias.
+- [docs/design/society-history-and-command.md](society-history-and-command.md): historia social y mando de la tripulación.
+- [docs/design/ship-systems-and-security.md](ship-systems-and-security.md): SAINT-5, seguridad y sistemas de la nave.
+- [docs/design/puzzle-progression.md](puzzle-progression.md): propuesta de progresión y estado del prototipo.
+- [docs/design/language/nalesha-reference.md](language/nalesha-reference.md): referencia de Nalesha.
+- [docs/design/language/nalesha-examples.md](language/nalesha-examples.md): ejemplos y lecturas de muestra.
+- [docs/design/sources/README.md](sources/README.md): archivo de materiales fuente.
+
+## Notas de producción
+
+La sección de apertura conserva el staging del despertar implementado.
 
 ## Opening wake staging (production notes)
 
