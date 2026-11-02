@@ -428,6 +428,21 @@ static func d14_extension_solids(layout: ShipLayout) -> Array[SolidSpec]:
 			solids.append_array(hatch_frame_solids(door))
 	return solids
 
+## Full-height shaft shell; deck floors and ceilings remain landing-only.
+static func well_solids(well: ShipLayout.LadderWellSpec) -> Array[SolidSpec]:
+	var bounds := well.bounds()
+	var shaft_end := well.landing_bounds(well.top_deck()).position.z
+	var depth := shaft_end - bounds.position.z
+	var solids: Array[SolidSpec] = []
+	for side: int in [-1, 1]:
+		var x := bounds.position.x - WALL / 2 if side < 0 else bounds.end.x + WALL / 2
+		solids.append(SolidSpec.new(Vector3(x, bounds.get_center().y, bounds.position.z + depth / 2), Vector3(WALL, bounds.size.y, depth), Quaternion.IDENTITY, StringName("%s/%s" % [well.id(), "LEFT" if side < 0 else "RIGHT"])))
+	solids.append(SolidSpec.new(Vector3(bounds.get_center().x, bounds.get_center().y, bounds.position.z - WALL / 2), Vector3(bounds.size.x + 2 * WALL, bounds.size.y, WALL), Quaternion.IDENTITY, StringName("%s/BACK" % well.id())))
+	for top: bool in [false, true]:
+		var y := bounds.end.y + WALL / 2 if top else bounds.position.y - WALL / 2
+		solids.append(SolidSpec.new(Vector3(bounds.get_center().x, y, bounds.position.z + depth / 2), Vector3(bounds.size.x, WALL, depth), Quaternion.IDENTITY, StringName("%s/%s" % [well.id(), "TOP" if top else "BOTTOM"]), &"ceiling" if top else &"floor"))
+	return solids
+
 static func deck_static_solids(layout: ShipLayout, deck: int) -> Array[SolidSpec]:
 	if deck == 14:
 		return opening_scene_solids(layout.bay().template(), true, true, layout, {}, false)

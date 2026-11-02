@@ -3,12 +3,18 @@ extends RefCounted
 ## Pure collider assembly. Opening sets preserve the current insertion order;
 ## deck sets cache static recipes and rebuild only after an opening completes.
 
+class Slice:
+	extends RefCounted
+	var colliders := ColliderSet.new()
+	var ids: Array[StringName] = []
+
 var _layout: ShipLayout
 var _static: Dictionary = {}
 var _assembled: Dictionary = {}
 var _ids: Dictionary = {}
 var _open_doors: Dictionary = {}
 var _revisions: Dictionary = {}
+var _well_boxes: Dictionary = {}
 
 func _init(layout: ShipLayout) -> void:
 	_layout = layout
@@ -123,12 +129,43 @@ static func _insert_pods(set: ColliderSet, registry: Pods.PodRegistry, parent: T
 			set.insert(ShipGeometry.box_aabb(ShipGeometry.SolidSpec.new(center, piece.size, rotation), parent))
 
 func supported_walk(capsule: Resolve.Capsule, displacement: Vector3) -> Vector3:
+	return supported_walk_on_deck(14, capsule, displacement)
+
+func supported_walk_on_deck(deck: int, capsule: Resolve.Capsule, displacement: Vector3) -> Vector3:
 	var result := displacement
-	for id: StringName in _layout.deck(14).connector_ids():
+	for id: StringName in _layout.deck(deck).connector_ids():
 		var connector := _layout.connector(id)
-		var landing := _layout.well(connector.well_id()).landing_bounds(14)
+		var landing := _layout.well(connector.well_id()).landing_bounds(deck)
 		var inset := Controller.CAPSULE_RADIUS + Controller.PENETRATION_TOLERANCE
 		var end := capsule.foot + result
 		if end.x >= landing.position.x - inset and end.x <= landing.end.x + inset and end.z < landing.end.z:
 			result.z = maxf(end.z, landing.position.z + inset) - capsule.foot.z
 	return result
+
+
+## Select with the entire swept capsule, including the head and both radii.
+func well_slice(well_id: StringName, capsule: Resolve.Capsule, displacement: Vector3) -> Slice:
+	var radius := Controller.CAPSULE_RADIUS
+	var low := minf(capsule.foot.y, capsule.head.y) + minf(0, displacement.y) - radius
+	var high := maxf(capsule.foot.y, capsule.head.y) + maxf(0, displacement.y) + radius
+	var boxes: Dictionary = {}
+	for deck: int in range(1, 31):
+		var floor_y := _layout.floor_y(deck)
+		if high < floor_y - ShipLayout.WALL or low > floor_y + ShipLayout.CLEAR_HEIGHT + ShipLayout.WALL:
+			continue
+		var set := deck_set(deck)
+		var ids := solid_ids(deck)
+		for index: int in range(ids.size()):
+			boxes[ids[index]] = set.boxes()[index]
+	if not _well_boxes.has(well_id):
+		var shell: Dictionary = {}
+		for solid: ShipGeometry.SolidSpec in ShipGeometry.well_solids(_layout.well(well_id)):
+			shell[solid.id] = ShipGeometry.box_aabb(solid)
+		_well_boxes[well_id] = shell
+	boxes.merge(_well_boxes[well_id], true)
+	var slice := Slice.new()
+	slice.ids.assign(boxes.keys())
+	slice.ids.sort()
+	for id: StringName in slice.ids:
+		slice.colliders.insert(boxes[id])
+	return slice

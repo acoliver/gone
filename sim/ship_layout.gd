@@ -560,6 +560,9 @@ func lift(id: StringName) -> LiftSpec:
 func well(id: StringName) -> LadderWellSpec:
 	return _lookup(id, LadderWellSpec)
 
+func well_ids() -> Array[StringName]:
+	return _ids_of(LadderWellSpec)
+
 func bay() -> BaySpec:
 	return _lookup(BAY_ID, BaySpec)
 

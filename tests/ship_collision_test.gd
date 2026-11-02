@@ -1,5 +1,115 @@
 extends SimTestCase
 
+func test_well_slice_includes_adjacent_floor_for_head_and_foot_with_stable_ids() -> void:
+	var layout := ShipLayout.authored().layout
+	var collision := ShipCollision.new(layout)
+	var capsule := Resolve.Capsule.new()
+	capsule.foot = Vector3(3, 4.0, -4.3)
+	capsule.head = capsule.foot + Vector3.UP * 1.15
+	var slice := collision.well_slice(&"C-000-LADDER", capsule, Vector3.UP * 0.1)
+	assert_true(&"D13-C-000/LANDING/FLOOR/000" in slice.ids, "head selects adjacent floor before foot crosses it")
+	assert_true(&"D14-C-000/LANDING/CEILING/000" not in slice.ids, "nonintersecting vertical slice stays absent")
+	capsule.foot.y = 5.81
+	capsule.head.y = 6.96
+	slice = collision.well_slice(&"C-000-LADDER", capsule, Vector3.DOWN * 0.02)
+	assert_true(&"D13-C-000/LANDING/FLOOR/000" in slice.ids, "descending foot includes floor")
+	var seen: Dictionary = {}
+	for id: StringName in slice.ids:
+		assert_false(seen.has(id), "shared solid ids deduplicated")
+		seen[id] = true
+	var sorted := slice.ids.duplicate()
+	sorted.sort()
+	assert_true(sorted == slice.ids, "stable collider tie order")
+	assert_int_equal(slice.ids.size(), slice.colliders.size(), "slice ids identify resolver contacts")
+	assert_int_equal(collision.cached_deck_count(), 1, "only intersected deck lazily constructed")
+
+func test_real_landing_slabs_hit_head_and_foot_but_leave_climb_lane_open() -> void:
+	var layout := ShipLayout.authored().layout
+	var collision := ShipCollision.new(layout)
+	for id: StringName in [&"C-000-LADDER", &"C-001-LADDER"]:
+		for deck: int in [1, 14, 30]:
+			var floor_y: float = (14 - deck) * 5.5
+			var x := layout.well(id).landing(deck).origin.x
+			var capsule := Resolve.Capsule.new()
+			capsule.foot = Vector3(x, floor_y + 1.5, -2.9)
+			capsule.head = capsule.foot + Vector3.UP * 1.15
+			var slice := collision.well_slice(id, capsule, Vector3.UP)
+			var result := Resolve.resolve_motion(capsule, Vector3.UP, slice.colliders)
+			assert_true(result.is_ok(), "head sweep valid")
+			assert_true(result.motion.displacement.y < 1.0, "landing ceiling catches head")
+			capsule.foot.y = floor_y + 0.5
+			capsule.head.y = floor_y + 1.65
+			slice = collision.well_slice(id, capsule, Vector3.DOWN)
+			result = Resolve.resolve_motion(capsule, Vector3.DOWN, slice.colliders)
+			assert_true(result.is_ok(), "foot sweep valid")
+			assert_true(result.motion.displacement.y > -1.0, "landing floor catches foot")
+			capsule.foot = Vector3(x, floor_y + 0.305, -4.3)
+			capsule.head = capsule.foot + Vector3.UP * 1.15
+			slice = collision.well_slice(id, capsule, Vector3.UP * 0.025)
+			result = Resolve.resolve_motion(capsule, Vector3.UP * 0.025, slice.colliders)
+			assert_true(result.is_ok(), "shaft cut clears capsule")
+			assert_float_in_range(result.motion.displacement.y, 0.025 - 1e-5, 0.025 + 1e-5, "no floor spans climb lane")
+
+func test_continuous_well_walls_and_endpoint_closures_have_no_pitch_gaps() -> void:
+	var layout := ShipLayout.authored().layout
+	var collision := ShipCollision.new(layout)
+	for id: StringName in [&"C-000-LADDER", &"C-001-LADDER"]:
+		for deck: int in range(2, 31):
+			var capsule := Resolve.Capsule.new()
+			capsule.foot = Vector3(layout.well(id).climb_line().origin.x, (14 - deck) * 5.5 + 4.0, -4.3)
+			capsule.head = capsule.foot + Vector3.UP * 1.15
+			for delta: Vector3 in [Vector3(2, 0, 0), Vector3(-2, 0, 0), Vector3(0, 0, -2)]:
+				var slice := collision.well_slice(id, capsule, delta)
+				var result := Resolve.resolve_motion(capsule, delta, slice.colliders)
+				assert_true(result.is_ok(), "gap-height wall sweep")
+				assert_true(result.motion.displacement.length() < 2.0, "full pitch walls prevent sideways escape")
+		var solids := ShipGeometry.well_solids(layout.well(id))
+		assert_int_equal(solids.size(), 5, "two sides, back, top and bottom closures")
+		var ids: Array[StringName] = []
+		for solid: ShipGeometry.SolidSpec in solids:
+			ids.append(solid.id)
+		assert_true(StringName("%s/TOP" % id) in ids and StringName("%s/BOTTOM" % id) in ids, "endpoint closures authored")
+
+func test_well_slices_are_identical_with_cold_or_warm_deck_caches() -> void:
+	var layout := ShipLayout.authored().layout
+	var cold := ShipCollision.new(layout)
+	var warm := ShipCollision.new(layout)
+	for deck: int in range(1, 31):
+		warm.deck_set(deck)
+	for id: StringName in [&"C-000-LADDER", &"C-001-LADDER"]:
+		for deck: int in range(1, 31):
+			var capsule := Resolve.Capsule.new()
+			capsule.foot = layout.well(id).climb_line().origin + Vector3.UP * ((14 - deck) * 5.5 + 0.305)
+			capsule.head = capsule.foot + Vector3.UP * 1.15
+			var a := cold.well_slice(id, capsule, Vector3.UP * 0.025)
+			var b := warm.well_slice(id, capsule, Vector3.UP * 0.025)
+			assert_true(a.ids == b.ids, "presentation-independent lazy partition membership")
+			for index: int in range(a.ids.size()):
+				assert_true(a.colliders.boxes()[index].equals(b.colliders.boxes()[index]), "cache order cannot alter collision geometry")
+	cold.open_door(&"D14-C-000-H-AFT")
+	var capsule := Resolve.Capsule.new()
+	capsule.foot = Vector3(3, 0.305, -4.3)
+	capsule.head = capsule.foot + Vector3.UP * 1.15
+	var slice := cold.well_slice(&"C-000-LADDER", capsule, Vector3.UP * 0.025)
+	assert_false(&"D14-C-000-H-AFT/BLOCKER" in slice.ids, "well query observes latest deck blocker revision")
+	assert_true(&"D14-C-000-H-AFT/PARKED" in slice.ids, "well query retains parked leaf")
+
+func test_every_other_deck_hatch_and_lift_contains_walkers() -> void:
+	var layout := ShipLayout.authored().layout
+	var collision := ShipCollision.new(layout)
+	for deck: int in range(1, 31):
+		if deck == 14:
+			continue
+		var y: float = (14 - deck) * 5.5
+		for fixture: Vector2 in [Vector2(0, 1), Vector2(6, -1), Vector2(30, 1), Vector2(36, -1), Vector2(3, 0), Vector2(33, 0)]:
+			var capsule := Resolve.Capsule.new()
+			capsule.foot = Vector3(fixture.x + fixture.y * 2, y + 0.305, 0)
+			capsule.head = capsule.foot + Vector3.UP * 1.15
+			var delta := Vector3(-fixture.y * 4, 0, 0) if fixture.y != 0 else Vector3(0, 0, 3)
+			var result := Resolve.resolve_motion(capsule, delta, collision.deck_set(deck))
+			assert_true(result.is_ok(), "remote closed-door sweep")
+			assert_true(result.motion.displacement.length() < delta.length(), "locked hatch/lift contains on every remote deck")
+
 func test_opening_manifest_has_exact_owners_order_and_door_differentials() -> void:
 	var layout := ShipLayout.authored().layout
 	for flags: Vector2i in [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1)]:
