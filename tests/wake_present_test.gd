@@ -13,7 +13,7 @@ const WAKE_AUDIO: AudioStreamWAV = preload("res://assets/audio/wake/opening-resp
 ## the wake, and the read-only bridge boundary.
 
 func _fixture() -> Array:
-	var game := Game.new()
+	var game := Game.new(0)
 	var camera := Camera3D.new()
 	camera.rotation = Vector3(0.03, -0.12, 0.0)
 	var pass_layer := WakePass.build()
@@ -107,7 +107,7 @@ func test_the_sim_advances_only_through_game_ticks() -> void:
 	var driver: WakePresent = fixture[3]
 	assert_false(game.wake_state.is_started(), "nothing starts before readiness")
 	for _frame: int in range(5):
-		game.tick()
+		GameStep.new(game).advance()
 		driver.present_frame()
 	assert_int_equal(game.wake_state.current_tick(), 0, "un-ready ticks consume nothing")
 	_assert_params(pass_layer, Wake.WakeSample.closed(), "the un-ready presentation")
@@ -118,7 +118,7 @@ func test_the_sim_advances_only_through_game_ticks() -> void:
 		driver.present_frame()
 	assert_int_equal(game.wake_state.current_tick(), 0, "presentation frames never tick the sim")
 	for _tick: int in range(3):
-		game.tick()
+		GameStep.new(game).advance()
 	assert_int_equal(game.wake_state.current_tick(), 3, "only the game's ticks advance the sim")
 
 func test_respiratory_cue_is_tick_bounded_and_readiness_signal_is_one_shot() -> void:
@@ -149,7 +149,7 @@ func test_the_readiness_barrier_starts_once() -> void:
 			Wake.WakeStart.ALREADY_STARTED,
 			"duplicate begins are the machine's own no-op"
 		)
-	game.tick()
+	GameStep.new(game).advance()
 	assert_int_equal(game.wake_state.current_tick(), 1, "no restart, no phantom ticks")
 
 func test_driven_params_match_the_authored_samples_at_boundaries() -> void:
@@ -169,7 +169,7 @@ func test_driven_params_match_the_authored_samples_at_boundaries() -> void:
 		boundaries.final_opening_start,
 	]:
 		for _tick: int in range(boundary - fed):
-			game.tick()
+			GameStep.new(game).advance()
 		fed = boundary
 		driver.present_frame()
 		_assert_params(
@@ -191,15 +191,15 @@ func test_sway_projection_is_drift_free_across_tick_batchings() -> void:
 	(stepped[3] as WakePresent).begin()
 	(chunked[3] as WakePresent).begin()
 	for _tick: int in range(at):
-		(stepped[0] as Game).tick()
+		GameStep.new(stepped[0] as Game).advance()
 	(stepped[3] as WakePresent).present_frame()
 	var driven := 0
 	while driven + 3 <= at:
 		for _tick: int in range(3):
-			(chunked[0] as Game).tick()
+			GameStep.new(chunked[0] as Game).advance()
 		driven += 3
 	for _tick: int in range(at - driven):
-		(chunked[0] as Game).tick()
+		GameStep.new(chunked[0] as Game).advance()
 	(chunked[3] as WakePresent).present_frame()
 	assert_int_equal(
 		(chunked[0] as Game).wake_state.current_tick(),
@@ -228,7 +228,7 @@ func test_cough_tremor_is_composed_with_sample_sway_and_resets_at_tick_262() -> 
 	assert_vec3_equal(camera.rotation, base, "fixture camera starts at its base pose")
 	driver.begin()
 	for _tick: int in range(241):
-		game.tick()
+		GameStep.new(game).advance()
 	driver.present_frame()
 	var sample: Wake.WakeSample = game.wake_state.sample()
 	var expected := WakePresent.sway_rotation(
@@ -237,7 +237,7 @@ func test_cough_tremor_is_composed_with_sample_sway_and_resets_at_tick_262() -> 
 	)
 	assert_vec3_equal(camera.rotation, expected, "active cough tremor composes with sample sway")
 	for _tick: int in range(262 - 241):
-		game.tick()
+		GameStep.new(game).advance()
 	driver.present_frame()
 	var reset_sample: Wake.WakeSample = game.wake_state.sample()
 	assert_vec3_equal(
@@ -247,7 +247,7 @@ func test_cough_tremor_is_composed_with_sample_sway_and_resets_at_tick_262() -> 
 	)
 	var complete: int = Wake.WakeTimeline.authored().complete_tick()
 	for _tick: int in range(complete - 262):
-		game.tick()
+		GameStep.new(game).advance()
 	driver.present_frame()
 	assert_vec3_equal(camera.rotation, base, "completion resets the camera to its neutral base")
 
@@ -260,12 +260,12 @@ func test_completion_hands_off_exactly_once_at_the_authored_tick() -> void:
 	driver.begin()
 	var complete: int = Wake.WakeTimeline.authored().complete_tick()
 	for _tick: int in range(complete - 1):
-		game.tick()
+		GameStep.new(game).advance()
 	driver.present_frame()
 	assert_true(game.phase.in_phase(Phase.Wake.WAKING), "one tick before completion the wake owns the camera")
 	assert_true(pass_layer.is_active(), "the pass draws through the whole wake")
 	assert_false(driver.input_allowed(), "input stays gated before completion")
-	game.tick()
+	GameStep.new(game).advance()
 	driver.present_frame()
 	assert_true(game.phase.in_phase(Phase.Wake.AWAKE_IN_POD), "completion hands off to AwakeInPod")
 	assert_true(driver.is_complete(), "the driver rests at the neutral hold")
@@ -273,7 +273,7 @@ func test_completion_hands_off_exactly_once_at_the_authored_tick() -> void:
 	assert_vec3_equal(camera.rotation, Vector3(0.03, -0.12, 0.0), "the completion pose is the neutral base")
 	assert_true(driver.input_allowed(), "input unlocks with the phase")
 	for _tick: int in range(3):
-		game.tick()
+		GameStep.new(game).advance()
 		driver.present_frame()
 	assert_true(
 		game.phase.in_phase(Phase.Wake.AWAKE_IN_POD),
@@ -300,7 +300,7 @@ func test_no_gameplay_input_through_the_wake_stages() -> void:
 	var tick := 0
 	for stage: int in stages:
 		while tick < stage:
-			game.tick()
+			GameStep.new(game).advance()
 			tick += 1
 		driver.present_frame()
 		assert_false(

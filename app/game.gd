@@ -6,8 +6,11 @@ extends RefCounted
 ## player exit path, and the static collider set are inserted at their
 ## spawn state and ticked at the fixed 60 Hz physics rate. The sim is
 ## authoritative: this container reads it and never writes phases ahead
-## of the controllers that own them (the wake driver is a later chunk).
+## of the controllers that own them. GameStep owns logical advancement.
 
+var run_seed: int
+var doors: Doors.Store
+var collision: ShipCollision
 var layout: ShipLayout
 var bay_exited: bool = false
 var registry: Pods.PodRegistry
@@ -26,9 +29,11 @@ var exit_path: Exit.ExitPath
 ## press reads the label, a second activates the generator, and the
 ## hallway plus the power room hand their red emergency light over to
 ## dim regular white while the stasis bay keeps its red.
-var door_open: bool = false
+var door_open: bool:
+	get: return doors.snapshot(ShipLayout.BAY_DOOR_ID).state == Doors.State.OPEN
 var hallway_lit: bool = false
-var power_door_open: bool = false
+var power_door_open: bool:
+	get: return doors.snapshot(ShipLayout.POWER_DOOR_ID).state == Doors.State.OPEN
 var console_state: int = ConsoleState.STANDBY
 var power_active: bool = false
 var writing_memory := DisplayPerception.Memory.new()
@@ -37,8 +42,11 @@ var writing_memory := DisplayPerception.Memory.new()
 ## (no text), first press shows palo / INACTIVO, second press activates.
 enum ConsoleState { STANDBY, INACTIVE, ACTIVE }
 
-func _init() -> void:
+func _init(seed: int) -> void:
+	run_seed = seed
 	layout = ShipLayout.authored().layout
+	doors = Doors.Store.new(layout, seed)
+	collision = ShipCollision.new(layout)
 	registry = layout.bay().template()
 	colliders = ShipCollision.opening_set(registry, false, false, layout)
 	phase = Phase.Machine.new()
@@ -46,25 +54,12 @@ func _init() -> void:
 	wake_state = Wake.WakeState.new(Wake.WakeTimeline.authored())
 	exit_path = PlacementTruth.player_exit_path(layout)
 
-## Open the stasis doorway into the hallway: idempotent (called by the
-## body motion the tick the door's opening animation completes), and
-## the only writer of the doorway's collider state — the rebuilt set
-## drops the closed doorway block and the slid-aside door slab so the
-## walk sim can cross.
-func open_doorway() -> void:
-	if door_open:
-		return
-	door_open = true
-	colliders = ShipCollision.opening_set(registry, true, power_door_open, layout)
-
-## Open the power room's doorway: idempotent, same contract as the
-## stasis doorway — the rebuilt set drops the power door's slid-aside
-## leaf.
-func open_power_doorway() -> void:
-	if power_door_open:
-		return
-	power_door_open = true
-	colliders = ShipCollision.opening_set(registry, door_open, true, layout)
+func advance_doors() -> void:
+	var events := doors.tick()
+	collision.commit(events)
+	for event: Doors.Event in events:
+		if event.kind() == Doors.EventKind.OPENED and event.door_id() in [ShipLayout.BAY_DOOR_ID, ShipLayout.POWER_DOOR_ID]:
+			colliders = ShipCollision.opening_set(registry, door_open, power_door_open, layout)
 
 func observe_bay_crossing(previous: Vector3, current: Vector3, walking: bool) -> void:
 	if not bay_exited and PortalCrossing.exits(previous, current, layout.door(ShipLayout.BAY_DOOR_ID), 14, walking, door_open):
@@ -95,10 +90,3 @@ func press_console() -> bool:
 ## consumers read this; they never write the grid.
 func emergency_circuit_target() -> float:
 	return 1.0 if Power.emergency_fixtures_lit(power.state()) else 0.0
-
-## One fixed logical tick, called from _physics_process at the project's
-## 60 Hz physics rate. The wake machine consumes nothing before its
-## readiness barrier opens, so the opening-beat state holds exactly as
-## authored while proving the fixed-rate wiring.
-func tick() -> void:
-	wake_state.tick()

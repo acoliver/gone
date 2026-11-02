@@ -11,7 +11,7 @@ func _initialize() -> void:
 func _run() -> void:
 	out_dir = "res://tmp/b3b-gameplay/%d-%d" % [int(Time.get_unix_time_from_system()), OS.get_process_id()]
 	DirAccess.make_dir_recursive_absolute(out_dir)
-	var game := Game.new()
+	var game := Game.new(0)
 	var scene := Node3D.new()
 	var ship := ShipScene.build_into(scene, game)
 	var player := Player.build(game, ship.hatch)
@@ -20,9 +20,10 @@ func _run() -> void:
 	player.adapter = InputPlane.ScriptedAdapter.new()
 	scene.add_child(player)
 	root.add_child(scene)
-	player.set_physics_process(false)
 	game.wake_state.mark_ready()
 	var route := Route.new(player, 1800)
+	route.stepper.door_views = ship.door_views
+	route.stepper.fixtures.assign([ship.lighting, ship.hallway, ship.power_room])
 	var scenario: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://scenarios/gameplay-full.json"))
 	var observer := Camera3D.new()
 	scene.add_child(observer)

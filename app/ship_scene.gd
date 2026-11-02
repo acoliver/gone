@@ -1,8 +1,9 @@
 class_name ShipScene
 extends RefCounted
-## Shared structural construction. Tick, wake, audio and readiness ownership
-## remain with the existing entrypoints until their respective slices.
+## Shared structural construction and snapshot adapters. Roots pass these
+## presenters to GameStep; scene nodes never advance door state.
 
+var door_views: Array[DoorView] = []
 var bay_root: Node3D
 var room: RoomGeometry
 var pods_node: StasisPods
@@ -40,4 +41,11 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 	parent.add_child(scene.hallway)
 	scene.power_room = PowerRoom.build(game)
 	parent.add_child(scene.power_room)
+	scene.door_views.append(DoorView.adapter(game.layout.door(ShipLayout.BAY_DOOR_ID), scene.hatch.set_door_offset))
+	scene.door_views.append(DoorView.adapter(game.layout.door(ShipLayout.POWER_DOOR_ID), scene.power_room.set_door_offset))
+	for id: StringName in scene.hallway.side_leaves:
+		scene.door_views.append(DoorView.bind_leaf(game.layout.door(id), scene.hallway.side_leaves[id]))
+	for view: DoorView in scene.door_views:
+		parent.add_child(view)
+		view.present(game.doors.snapshot(view.door_id()))
 	return scene

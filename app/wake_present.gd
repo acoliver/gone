@@ -11,9 +11,8 @@ signal wake_started
 ## onto the pass, and the sample's sway offset onto the camera as
 ## (base pose + sway), recomputed from the base each frame so no
 ## batching of ticks can accumulate drift into the pose. At the sim's
-## completion the driver hands off to the phase machine exactly once
-## (Waking -> AwakeInPod, any other outcome is a loud wiring failure),
-## settles the camera on the neutral pose, and deactivates the pass.
+## completion GameStep advances the phase; this driver settles the camera
+## on the neutral pose and deactivates the pass.
 ## Gameplay input stays gated off through the sim's phase machine for
 ## the whole wake. This node never ticks the sim and never writes a
 ## phase ahead of the completion signal.
@@ -103,15 +102,13 @@ func is_complete() -> bool:
 	return _completed
 
 ## The authored completion handoff, exactly once: the neutral camera pose,
-## the phase machine's Waking -> AwakeInPod boundary (any other outcome is
-## a wiring failure), and the pass deactivated.
+## and the pass deactivated. GameStep owns the phase boundary.
 func _complete_if_due() -> void:
 	if not game.wake_state.is_complete():
 		return
 	if _completed:
 		return
 	_completed = true
-	assert(game.phase.wake_complete().kind == Phase.Transition.Kind.ADVANCED)
 	if rig != null:
 		rig.on_wake_complete()
 	else:

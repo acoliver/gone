@@ -11,6 +11,7 @@ const SMOKE_COUGH: AudioStreamWAV = preload("res://assets/audio/smoke/cough-mid-
 ## power grid through its own bridge; ceiling hazards are inert
 ## dressing.
 
+var step: GameStep
 var game: Game
 var camera: Camera3D
 var player: Player
@@ -28,7 +29,9 @@ var _smoke_audio_in_flight := false
 var _smoke_silence_until_usec := 0
 
 func _ready() -> void:
-	game = Game.new()
+	var seed := int(Time.get_unix_time_from_system())
+	print("GONE_RUN_SEED %d" % seed)
+	game = Game.new(seed)
 	var ship := ShipScene.build_into(self, game)
 	hatch = ship.hatch
 	rod = ship.rod
@@ -38,13 +41,15 @@ func _ready() -> void:
 	_add_wake_presentation()
 	_add_wake_audio()
 	_add_smoke_symptoms()
+	step = GameStep.new(game, player)
+	step.door_views = ship.door_views
+	step.smoke = smoke_symptoms
+	step.fixtures.assign([ship.lighting, hallway, power_room])
 	voice_presentation = VoicePresentation.build(game, player)
 	add_child(voice_presentation)
 
 func _physics_process(_delta: float) -> void:
-	game.tick()
-	var accepted_position := player.motion.eye(game)
-	smoke_symptoms.tick(game.phase.look_allowed(), accepted_position)
+	step.advance()
 	if smoke_symptoms.dose() <= 0.0:
 		_smoke_audio_queue.clear()
 		_smoke_audio_in_flight = false

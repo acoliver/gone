@@ -57,8 +57,8 @@ func test_pod_geometry_preserves_cavity_tray_and_top_recipes() -> void:
 func test_shared_scene_seam_preserves_structure_and_identity_frame() -> void:
 	var production := Node3D.new()
 	var harness := Node3D.new()
-	var main_scene := ShipScene.build_into(production, Game.new(), true)
-	var harness_scene := ShipScene.build_into(harness, Game.new(), false)
+	var main_scene := ShipScene.build_into(production, Game.new(0), true)
+	var harness_scene := ShipScene.build_into(harness, Game.new(0), false)
 	for node_name: String in ["RoomGeometry", "StasisPods", "Hatch", "Lighting", "Hazards", "Rod", "Hallway", "PowerRoom"]:
 		assert_true(production.has_node(NodePath(node_name if node_name in ["Hallway", "PowerRoom"] else "BayRoot/" + node_name)), "production structural node: " + node_name)
 		assert_true(harness.has_node(NodePath(node_name if node_name in ["Hallway", "PowerRoom"] else "BayRoot/" + node_name)), "harness structural node: " + node_name)

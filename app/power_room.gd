@@ -460,9 +460,6 @@ func _white_fixture(station_x: float, station_z: float, level: float) -> Node3D:
 	_white_lenses.append(lens)
 	return fixture
 
-func _physics_process(_delta: float) -> void:
-	process_frame(Sim.LOGICAL_TICK_SECS)
-
 ## One render-bridge frame, the hallway's exact pattern: retarget only
 ## on the sim-side target change, consume whole logical ticks, project
 ## the fades onto the render state. The console's screen state reads

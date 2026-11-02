@@ -88,6 +88,7 @@ const SIDE_DOOR_SHADE: float = Hatch.HATCH_DOOR_SHADE
 
 static var _box_cache: Dictionary = {}
 
+var side_leaves: Dictionary = {}
 var _game: Game = null
 var _fade: Intensity.FixtureFade = null
 var _lights: Array[OmniLight3D] = []
@@ -196,8 +197,13 @@ static func build(game: Game) -> Hallway:
 	var doors := Node3D.new()
 	doors.name = "HallSideDoors"
 	var door_material := _flat_grey(SIDE_DOOR_SHADE)
-	for placement: Placement.SolidPlacement in side_door_solids():
-		doors.add_child(_box_instance(placement, door_material))
+	var placements := side_door_solids()
+	var ids := game.layout.section(&"D14-S-041").side_door_ids()
+	assert(placements.size() == ids.size(), "each existing side leaf has a layout id")
+	for index: int in range(placements.size()):
+		var leaf := _box_instance(placements[index], door_material)
+		hallway.side_leaves[ids[index]] = leaf
+		doors.add_child(leaf)
 	hallway.add_child(doors)
 
 	hallway.add_child(_build_switch())
@@ -362,9 +368,6 @@ static func _ceiling_loops() -> Array[Placement.WireLoop]:
 			Quaternion(Vector3.RIGHT, PI / 2.0) * Quaternion(Vector3.UP, 2.1)
 		),
 	]
-
-func _physics_process(_delta: float) -> void:
-	process_frame(Sim.LOGICAL_TICK_SECS)
 
 ## One render-bridge frame, mirroring the stasis bay's Lighting bridge:
 ## retarget only on the sim-side target change (the switch flip, the

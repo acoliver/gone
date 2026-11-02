@@ -447,7 +447,25 @@ static func _add_slabs(solids: Array[SolidSpec], owner: StringName, bounds: AABB
 static func door_blockers(door: ShipLayout.DoorSpec) -> Array[SolidSpec]:
 	var bounds := door.closed_blocker()
 	var solid := SolidSpec.new(bounds.get_center(), bounds.size, Quaternion.IDENTITY, StringName("%s/BLOCKER" % door.id()), &"door", &"door_blocker")
-	return [transformed(solid, door.frame())]
+	var solids: Array[SolidSpec] = [transformed(solid, door.frame())]
+	if door.animation() == ShipLayout.AnimationRecipe.HINGE:
+		var width := door.aperture().x
+		var half_thickness := ShipLayout.WALL / 2.0
+		var radius := sqrt(width * width + half_thickness * half_thickness)
+		var into := 1.0 if door.swing_radians() < 0 else -1.0
+		var minimum := Vector3(-width / 2.0 - half_thickness, 0, ShipLayout.WALL / 2.0 - (half_thickness if into > 0 else radius))
+		var size := Vector3(width + half_thickness * 2.0, door.aperture().y, radius + half_thickness)
+		var envelope := SolidSpec.new(minimum + size / 2.0, size, Quaternion.IDENTITY, StringName("%s/SWING" % door.id()), &"door", &"door_sweep")
+		solids.append(transformed(envelope, door.frame()))
+	return solids
+
+static func open_door_solids(door: ShipLayout.DoorSpec) -> Array[SolidSpec]:
+	if door.animation() != ShipLayout.AnimationRecipe.HINGE:
+		return []
+	var hinge := door.hinge_frame()
+	hinge.basis = Basis(Vector3.UP, door.swing_radians())
+	var leaf := SolidSpec.new(Vector3(door.aperture().x / 2.0, door.aperture().y / 2.0, 0), Vector3(door.aperture().x, door.aperture().y, ShipLayout.WALL), Quaternion.IDENTITY, StringName("%s/PARKED" % door.id()), &"door", &"parked_leaf")
+	return [transformed(leaf, door.frame() * hinge)]
 
 static func _shell_roles(solids: Array[SolidSpec]) -> Array[SolidSpec]:
 	solids[0].material_role = &"floor"

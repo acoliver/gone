@@ -10,7 +10,7 @@ func _build() -> void:
 	for name: String in ["gameplay-full", "gameplay-keyboard-turn", "rod-pickup", "hallway", "power-room"]:
 		var path := "res://scenarios/%s.json" % name
 		var scenario: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(path))
-		var game := Game.new()
+		var game := Game.new(0)
 		var player := Player.build(game, null)
 		player.scripted = true
 		player.rod = Rod.build()

@@ -1,7 +1,7 @@
 extends SimTestCase
 
 func test_runtime_exit_is_the_rigidly_transformed_local_path() -> void:
-	var game := Game.new()
+	var game := Game.new(0)
 	var frame := ShipLayout.authored().layout.bay_to_world()
 	assert_true(frame.basis == Basis(Vector3(0, 0, -1), Vector3.UP, Vector3.RIGHT), "exact cardinal basis")
 	var local := Exit.ExitPath.try_new(game.registry.player_pod().placement(), PodGeometry.TRAY_FLOOR_Y).path
@@ -28,7 +28,7 @@ func test_switch_world_pin() -> void:
 	assert_vec3_equal(Hallway.SWITCH_PLATE_CENTER, Vector3(16.2, 1.25, 1.45), "hall switch beside bay")
 
 func test_all_pod_and_light_frames_rotate_without_changing_local_fixtures() -> void:
-	var game := Game.new()
+	var game := Game.new(0)
 	var frame := game.layout.bay_to_world()
 	var pins: Array[Vector3] = [Vector3(12.1, 0, 12.5), Vector3(12.1, 0, 11.1), Vector3(12.1, 0, 9.7), Vector3(12.1, 0, 8.3), Vector3(17.9, 0, 9.7), Vector3(17.9, 0, 11.1), Vector3(17.9, 0, 12.5)]
 	for pod: Pods.Pod in game.registry.pods():
@@ -46,7 +46,7 @@ func test_all_pod_and_light_frames_rotate_without_changing_local_fixtures() -> v
 	rig.free()
 
 func test_resolver_sweep_is_covariant_in_the_moved_bay_and_ends_remain_sealed() -> void:
-	var game := Game.new()
+	var game := Game.new(0)
 	var frame := game.layout.bay_to_world()
 	var local := Resolve.Capsule.new()
 	local.foot = Vector3(0, 0.385, 0)

@@ -33,6 +33,11 @@ func open_door(id: StringName) -> void:
 	_assembled.erase(door.deck_number())
 	_ids.erase(door.deck_number())
 
+func commit(events: Array[Doors.Event]) -> void:
+	for event: Doors.Event in events:
+		if event.kind() == Doors.EventKind.OPENED:
+			open_door(event.door_id())
+
 func deck_set(deck: int) -> ColliderSet:
 	_layout.deck(deck)
 	if not _static.has(deck):
@@ -41,8 +46,8 @@ func deck_set(deck: int) -> ColliderSet:
 		var solids: Array[ShipGeometry.SolidSpec] = _static[deck].duplicate()
 		for id: StringName in _layout.door_ids():
 			var door := _layout.door(id)
-			if door.deck_number() == deck and not _open_doors.has(id):
-				solids.append_array(ShipGeometry.door_blockers(door))
+			if door.deck_number() == deck:
+				solids.append_array(ShipGeometry.open_door_solids(door) if _open_doors.has(id) else ShipGeometry.door_blockers(door))
 		solids.sort_custom(func(a: ShipGeometry.SolidSpec, b: ShipGeometry.SolidSpec) -> bool: return String(a.id) < String(b.id))
 		var ids: Array[StringName] = []
 		var set := ColliderSet.new()
@@ -113,6 +118,15 @@ static func opening_solids(registry: Pods.PodRegistry, door_open: bool, power_do
 		leaf.id = &"D14-POWER-DOOR/LEAF"
 		solids.append(leaf)
 	return solids
+
+static func opening_sight_solids(registry: Pods.PodRegistry, layout: ShipLayout) -> Array[AABB]:
+	var boxes: Array[AABB] = []
+	for solid: ShipGeometry.SolidSpec in opening_solids(registry, true, true, layout):
+		if String(solid.id).begins_with("D14-S-041/SIDE-LEAF/"):
+			continue
+		var box := ShipGeometry.box_aabb(solid)
+		boxes.append(AABB(box.min_corner(), box.max_corner() - box.min_corner()))
+	return boxes
 
 static func opening_set(registry: Pods.PodRegistry, door_open: bool, power_door_open: bool, layout: ShipLayout = ShipLayout.authored().layout) -> ColliderSet:
 	var set := ColliderSet.new()

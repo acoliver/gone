@@ -199,6 +199,12 @@ class DoorSpec:
 		result["animation"] = _animation
 		result["has_wheel"] = _has_wheel
 		return result
+	func hinge_frame() -> Transform3D:
+		assert(_animation == ShipLayout.AnimationRecipe.HINGE, "hinge recipe required")
+		return Transform3D(Basis(), Vector3(-_aperture.x / 2.0, 0, ShipLayout.WALL / 2.0))
+	func swing_radians() -> float:
+		assert(_animation == ShipLayout.AnimationRecipe.HINGE, "hinge recipe required")
+		return -PI / 2.0 if String(_id).ends_with("-FORE") else PI / 2.0
 	func closed_blocker() -> AABB:
 		return AABB(Vector3(-_aperture.x / 2.0, 0, 0), Vector3(_aperture.x, _aperture.y, ShipLayout.WALL))
 
@@ -609,9 +615,9 @@ static func _add_door(specs: Array[Spec], id: StringName, deck: int, kind: int, 
 		animation = AnimationRecipe.SLIDE
 	specs.append(DoorSpec.new(id, deck, kind, policy, frame, aperture, spaces, faces, owner, animation, kind in [DoorKind.HATCH, DoorKind.BAY]))
 	for index: int in range(2):
-		var local := Transform3D.IDENTITY
+		var local := Transform3D(Basis(Vector3(-1, 0, 0), Vector3.UP, Vector3(0, 0, -1)), Vector3.ZERO)
 		if index == 1:
-			local = Transform3D(Basis(Vector3(-1, 0, 0), Vector3.UP, Vector3(0, 0, -1)), Vector3(0, 0, WALL))
+			local = Transform3D(Basis(), Vector3(0, 0, WALL))
 		var interaction := local
 		interaction.origin += Vector3(0, 1.2, 0)
 		specs.append(FaceSpec.new(faces[index], deck, id, spaces[index], destinations[index], local, interaction))

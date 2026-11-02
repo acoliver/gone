@@ -67,6 +67,9 @@ func take_press(button: int) -> bool:
 		return true
 	return false
 
+func has_press(button: int) -> bool:
+	return _edges.has(button)
+
 func pending_edges() -> int:
 	return _edges.size()
 

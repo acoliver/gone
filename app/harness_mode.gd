@@ -20,6 +20,7 @@ const SETTLE_TICKS: int = 5
 var out_dir: String = ""
 var scenario
 var report
+var game_step: GameStep
 var game: Game
 var player: Player
 var rod: Rod
@@ -96,7 +97,7 @@ func _initialize() -> void:
 ## the full stasis room, the player rig in scripted mode, the wake pass,
 ## plus the protocol chip overlay.
 func _build_scene() -> void:
-	game = Game.new()
+	game = Game.new(scenario.seed)
 	var scene := Node3D.new()
 	scene.name = "CaptureRoot"
 	var ship := ShipScene.build_into(scene, game, false)
@@ -115,6 +116,9 @@ func _build_scene() -> void:
 	driver.mode = self
 	root.add_child(driver)
 	root.add_child(scene)
+	game_step = GameStep.new(game, player)
+	game_step.door_views = ship.door_views
+	game_step.fixtures.assign([stasis_lighting, hallway, power_room])
 	var layer := CanvasLayer.new()
 	layer.layer = 128
 	chip = LaneChip.new()
@@ -301,7 +305,7 @@ func drive_tick() -> void:
 	if not player.motion.failure().is_empty():
 		_fail("motion failure: %s" % player.motion.failure())
 		return
-	game.wake_state.tick()
+	game_step.advance()
 	observe_phase()
 	tick += 1
 	while next_beat_index < scenario.beats.size() and scenario.beats[next_beat_index].tick < tick:
@@ -338,7 +342,6 @@ func last_beat_tick() -> int:
 ## stamped with exactly those numbers.
 func capture_next_beat() -> void:
 	busy_capturing = true
-	player.set_physics_process(false)
 	var beat: Dictionary = pending_captures.pop_front()
 	var pinned_tick: int = tick
 	var pinned_frame: int = frame
@@ -365,7 +368,7 @@ func capture_next_beat() -> void:
 		"frame": pinned_frame, "x": eye.x, "y": eye.y, "z": eye.z})
 	if beat.name == "door-opened":
 		report.add_event({"kind": "door_open", "tick": pinned_tick,
-			"frame": pinned_frame, "openings": player.motion.door_openings,
+			"frame": pinned_frame, "openings": game.doors.snapshot(ShipLayout.BAY_DOOR_ID).releases,
 			"open": game.door_open})
 	elif beat.name == "rod-picked-up":
 		report.add_event({"kind": "rod_pickup", "tick": pinned_tick,
@@ -373,7 +376,7 @@ func capture_next_beat() -> void:
 			"rod_visible": rod.visible})
 	elif beat.name == "power-door-opened":
 		report.add_event({"kind": "power_door", "tick": pinned_tick,
-			"frame": pinned_frame, "openings": player.motion.power_door_openings,
+			"frame": pinned_frame, "openings": game.doors.snapshot(ShipLayout.POWER_DOOR_ID).releases,
 			"open": game.power_door_open})
 	elif beat.name == "console-inactive" or beat.name == "power-active":
 		report.add_event({"kind": "console", "tick": pinned_tick,
@@ -406,7 +409,6 @@ func capture_next_beat() -> void:
 				"power_red_level": power_room.level(),
 				"power_white_level": power_room.white_level(),
 				"stasis_red_level": stasis_lighting.level()})
-	player.set_physics_process(true)
 	busy_capturing = false
 
 func _button(name: String) -> int:

@@ -10,13 +10,17 @@ The 21 decisions in `tmp/connectors/build-brief.md` govern this feature. In part
 
 References are `docs/art/corridors/README.md`, `d14-local-plan.png`, `connector-section.png`, their metric source `build-connector-maps.py`, and `docs/art/ship/3d/ship_atlas.json`. The map builder establishes the quarter-turn and aft ladder clearance used below. This design uses the source geometry and accompanying text; it does not claim an independent visual inspection of the PNGs. The atlas supplies axes and deck datums, not a runtime level or confirmed exterior sensor data.
 
-## Implementation status: S01 through S03
+## Implementation status: S01 through S05
 
-`ShipLayout` now defines validated records, stable ids, explicit unbuilt endpoints and the approved coordinate frames. `ShipGeometry` and `PodGeometry` own the shared pure solid recipes; `ShipCollision` preserves the opening's original collider insertion order and provides lazy, deck-local layout fixtures. `ShipScene` supplies structural construction to both entrypoints. The harness retains its existing omission of production wires, smoke symptoms and voice, and neither entrypoint changes its clock or readiness ownership in these slices.
+`ShipLayout` defines validated records, stable ids, explicit unbuilt endpoints and the approved coordinate frames. `ShipGeometry` and `PodGeometry` own the shared pure solid recipes; `ShipCollision` preserves the opening's original collider insertion order and provides lazy, deck-local layout fixtures. `ShipScene` supplies structural construction to both entrypoints. The harness retains its existing omission of production wires, smoke symptoms and voice.
 
 Production and the harness now place all bay furnishings under one `BayRoot` and use world-space capsules from the transformed exit path. Smoke samples in the inverse bay frame; a finite accepted-motion portal crossing latches the voice event. The hall switch uses the layout anchor, the power room remains fixed, and the section ends at X=6 and X=30 remain sealed until S06. The shared power-room wall has one owner through X=33.2.
 
-`HarnessRoute` replays the five opening schedules through Player. The three bay-only schedules retain their relative input deltas; hallway and power-room tails are regenerated through layout anchors. Capture pauses freeze Player and the frame chip without introducing S04's step coordinator. Built documentation coordinates are exported by `tools/export_ship_layout.gd`. Shared door snapshots, repeated connector presentation, navigation labels and ladders remain in later slices.
+`HarnessRoute` replays the five opening schedules through Player. The three bay-only schedules retain their relative input deltas; hallway and power-room tails are regenerated through layout anchors. Built documentation coordinates are exported by `tools/export_ship_layout.gd`.
+
+`GameStep` now owns logical advancement in production, the harness and route replay. Capture pauses stop movement, doors, attention and fixture fades together. Wake completion belongs to the logical tick at 282; WakePresent retains the presented-frame readiness barrier and camera/pass projection. `Interactions` registers the opening's five proximity targets and layout door faces, selects once after accepted movement, and dispatches at most one actionable edge.
+
+`Doors.Store` owns all door progress and exposes copied snapshots and independent read-only event batches. Both existing doors use its original 48-tick recipes. Crank fixtures use versioned UTF-8 FNV-1a, xorshift32 with zero seed replacement `0x6d2b79f5`, integer-weight schedules, six-tick wheel interpolation and a 48-tick smoothstep swing. The optional second stalled slot uses one modulo draw over N-2 slots, skipping the first stalled index. Refusals retain zero work; plain existing hallway leaves shudder through DoorView adapters. Door face normals point into their source spaces. Swing and parked-leaf collision are tested without adding connector geometry to production. Repeated connector presentation, navigation labels, ladders and hatch audio remain in later slices.
 
 ## 1. Existing contracts to preserve
 

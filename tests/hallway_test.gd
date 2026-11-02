@@ -16,14 +16,16 @@ var _bay_frame := ShipLayout.authored().layout.bay_to_world()
 const DT: float = 1.0 / 60.0
 
 func _awake_game() -> Game:
-	var game := Game.new()
+	var game := Game.new(0)
 	game.phase.wake_complete()
 	return game
 
 func _stand(motion: PlayerMotion, game: Game, plane: InputPlane) -> void:
 	plane.offer_press(InputPlane.Buttons.ACTIVATE)
+	game.advance_doors()
 	motion.advance(plane, game, 0.0, DT)
 	for _segment: int in range(Exit.EXIT_POSE_COUNT - 1):
+		game.advance_doors()
 		motion.advance(plane, game, 0.0, DT)
 
 func _walk_to(motion: PlayerMotion, game: Game, plane: InputPlane,
@@ -34,11 +36,13 @@ func _walk_to(motion: PlayerMotion, game: Game, plane: InputPlane,
 		if to_target.length() <= stop_distance:
 			adapter.release()
 			adapter.offer_tick(plane)
+			game.advance_doors()
 			motion.advance(plane, game, 0.0, DT)
 			plane.end_frame()
 			return true
 		adapter.hold(1.0, 0.0)
 		adapter.offer_tick(plane)
+		game.advance_doors()
 		motion.advance(plane, game, atan2(to_target.x, to_target.y), DT)
 		plane.end_frame()
 	return false
@@ -151,7 +155,7 @@ func test_switch_plate_sits_beside_the_doorway() -> void:
 	assert_float_in_range(Hallway.switch_act_center().z, Hallway.SWITCH_PLATE_CENTER.z - 1e-4, Hallway.SWITCH_PLATE_CENTER.z + 1e-4, "the act volume centers under the plate")
 	var hatch := Vector2(PlacementTruth.bay_door_center(game.layout).x, PlacementTruth.bay_door_center(game.layout).y)
 	var act := Vector2(Hallway.switch_act_center().x, Hallway.switch_act_center().z)
-	assert_float_in_range(hatch.distance_to(act), 0.0, PlayerMotion.HATCH_INTERACT_REACH,
+	assert_float_in_range(hatch.distance_to(act), 0.0, Interactions.HATCH_INTERACT_REACH,
 		"the beside-door plate sits inside the doorway's press overlap")
 
 func test_hallway_holds_no_smoke() -> void:
@@ -232,20 +236,20 @@ func test_presses_fall_through_to_the_beside_door_switch() -> void:
 	var hatch := Vector2(PlacementTruth.bay_door_center(game.layout).x, PlacementTruth.bay_door_center(game.layout).y)
 	var act := Vector2(Hallway.switch_act_center().x, Hallway.switch_act_center().z)
 	var foot := motion.capsule().foot
-	assert_float_in_range(hatch.distance_to(Vector2(foot.x, foot.z)), 0.0, PlayerMotion.HATCH_INTERACT_REACH, "the overlap stand holds the door in reach")
-	assert_float_in_range(act.distance_to(Vector2(foot.x, foot.z)), 0.0, PlayerMotion.SWITCH_ACT_REACH, "the overlap stand holds the switch in reach")
+	assert_float_in_range(hatch.distance_to(Vector2(foot.x, foot.z)), 0.0, Interactions.HATCH_INTERACT_REACH, "the overlap stand holds the door in reach")
+	assert_float_in_range(act.distance_to(Vector2(foot.x, foot.z)), 0.0, Interactions.SWITCH_ACT_REACH, "the overlap stand holds the switch in reach")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_false(motion.pickup_rod(plane, game), "the rod is nowhere near the stand")
-	assert_false(motion.interact_with_door(plane, game), "the closed door without the rod consumes no press")
-	assert_int_equal(motion.door_openings, 0, "the door never started")
-	assert_int_equal(motion.door_state, PlayerMotion.DoorState.CLOSED, "the door stays shut")
-	assert_true(motion.flip_hallway_switch(plane, game), "the refused press reaches the beside-door switch")
+	assert_false(Interactions.new(game.layout).process_id(&"D14-BAY-ROD", plane, game, motion), "the rod is nowhere near the stand")
+	assert_false(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, plane, game, motion), "the closed door without the rod consumes no press")
+	assert_int_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).releases, 0, "the door never started")
+	assert_int_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).state, Doors.State.CLOSED, "the door stays shut")
+	assert_true(Interactions.new(game.layout).process_id(&"D14-HALL-SWITCH", plane, game, motion), "the refused press reaches the beside-door switch")
 	assert_true(game.hallway_lit, "the fall-through press lit the hall")
 	assert_int_equal(motion.hallway_switch_flips, 1, "the fall-through flipped exactly once")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_false(motion.pickup_rod(plane, game), "still no rod in reach")
-	assert_false(motion.interact_with_door(plane, game), "the door still refuses without the rod")
-	assert_false(motion.flip_hallway_switch(plane, game), "the once-only switch never flips twice")
+	assert_false(Interactions.new(game.layout).process_id(&"D14-BAY-ROD", plane, game, motion), "still no rod in reach")
+	assert_false(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, plane, game, motion), "the door still refuses without the rod")
+	assert_false(Interactions.new(game.layout).process_id(&"D14-HALL-SWITCH", plane, game, motion), "the once-only switch never flips twice")
 	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the fully refused press stays on the channel")
 	assert_true(motion.failure().is_empty(), motion.failure())
 
@@ -258,40 +262,40 @@ func test_switch_flips_exactly_once_from_a_full_crossing() -> void:
 	# open and the beside-door flip end to end.
 	motion.rod_carried = true
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_false(motion.flip_hallway_switch(plane, game), "a press while standing at the pod cannot flip the beside-door switch")
+	assert_false(Interactions.new(game.layout).process_id(&"D14-HALL-SWITCH", plane, game, motion), "a press while standing at the pod cannot flip the beside-door switch")
 	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the out-of-reach press is left on the channel")
 	plane.end_frame()
 	var adapter := InputPlane.ScriptedAdapter.new()
 	var hatch := PlacementTruth.bay_door_center(game.layout)
 	assert_true(_walk_to(motion, game, plane, adapter, hatch,
-		PlayerMotion.HATCH_INTERACT_REACH * 0.9), "the walk arrived at the door")
+		Interactions.HATCH_INTERACT_REACH * 0.9), "the walk arrived at the door")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_door(plane, game), "the rod-carried press at the door starts the open")
-	assert_int_equal(motion.door_openings, 1, "one press, one opening")
+	assert_true(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, plane, game, motion), "the rod-carried press at the door starts the open")
+	assert_int_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).releases, 1, "one press, one opening")
 	assert_true(_walk_to(motion, game, plane, adapter,
 		Vector2(15.15, 0.5), 0.3),
 		"the walk crossed the threshold into the hall")
 	var foot := motion.capsule().foot
 	assert_float_in_range(foot.z, -Hallway.HALL_WIDTH / 2, Hallway.HALL_WIDTH / 2, "the capsule crossed into the hallway through the open doorway")
-	assert_int_equal(motion.door_state, PlayerMotion.DoorState.OPEN, "the crossing found the door open")
+	assert_int_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).state, Doors.State.OPEN, "the crossing found the door open")
 	var act := Vector2(Hallway.switch_act_center().x, Hallway.switch_act_center().z)
-	assert_float_in_range(act.distance_to(Vector2(foot.x, foot.z)), 0.0, PlayerMotion.SWITCH_ACT_REACH, "the crossing stand holds the beside-door switch in reach")
+	assert_float_in_range(act.distance_to(Vector2(foot.x, foot.z)), 0.0, Interactions.SWITCH_ACT_REACH, "the crossing stand holds the beside-door switch in reach")
 	# The open door owns no press: the dispatch order delivers this press
 	# to the switch beside it.
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_false(motion.pickup_rod(plane, game), "the carried rod consumes no press")
-	assert_false(motion.interact_with_door(plane, game), "the open door leaves the press on the channel")
-	assert_true(motion.flip_hallway_switch(plane, game), "the press beside the open door lights the hall")
+	assert_false(Interactions.new(game.layout).process_id(&"D14-BAY-ROD", plane, game, motion), "the carried rod consumes no press")
+	assert_false(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, plane, game, motion), "the open door leaves the press on the channel")
+	assert_true(Interactions.new(game.layout).process_id(&"D14-HALL-SWITCH", plane, game, motion), "the press beside the open door lights the hall")
 	assert_true(game.hallway_lit, "the flip lit the hallway")
 	assert_int_equal(motion.hallway_switch_flips, 1, "the switch flips exactly once")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_false(motion.flip_hallway_switch(plane, game), "a second press never flips again")
+	assert_false(Interactions.new(game.layout).process_id(&"D14-HALL-SWITCH", plane, game, motion), "a second press never flips again")
 	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the once-only switch leaves the second press on the channel")
-	assert_int_equal(motion.door_openings, 1, "the open door never re-opens")
+	assert_int_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).releases, 1, "the open door never re-opens")
 	assert_true(motion.failure().is_empty(), motion.failure())
 
 func test_rendered_shell_uses_pure_collision_recipe() -> void:
-	var hallway := Hallway.build(Game.new())
+	var hallway := Hallway.build(Game.new(0))
 	var names := ["HallFloor", "HallCeiling", "HallWallNorthWest", "HallWallNorthEast", "HallWallNorthLintel", "HallWallSouthWest", "HallWallSouthEast", "HallWallSouthLintel", "HallWallFore", "HallWallFar"]
 	var solids := ShipGeometry.hallway_solids()
 	for index: int in range(solids.size()):

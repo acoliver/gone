@@ -134,9 +134,6 @@ static func _world_environment() -> WorldEnvironment:
 	world.camera_attributes = attributes
 	return world
 
-func _physics_process(_delta: float) -> void:
-	process_frame(Sim.LOGICAL_TICK_SECS)
-
 ## One render-bridge frame: retarget only on a sim-side target change,
 ## consume whole logical ticks from the elapsed seconds, then project
 ## the fade level onto the light energies and the shared lens emission.

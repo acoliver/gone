@@ -4,6 +4,7 @@ extends RefCounted
 ## retain their relative look deltas; only post-portal routes need new headings.
 
 const Scenario := preload("res://harness/scenario.gd")
+var stepper: GameStep
 var player: Player
 var tick: int = 0
 var actions: Array = []
@@ -12,6 +13,7 @@ var budget: int
 
 func _init(rig: Player, max_ticks: int) -> void:
 	player = rig
+	stepper = GameStep.new(rig.game, rig)
 	budget = max_ticks
 
 func step(offered: Array = []) -> void:
@@ -29,10 +31,7 @@ func step(offered: Array = []) -> void:
 		player.adapter.press(InputPlane.Buttons.ACTIVATE if edge.button == "activate" else InputPlane.Buttons.INTERACT)
 	player.adapter.look(deg_to_rad(input.look_deg.x) - input.key_turn * InputPlane.TURN_SPEED / 60.0, deg_to_rad(input.look_deg.y) + input.key_pitch * InputPlane.PITCH_SPEED / 60.0)
 	player.adapter.hold(input.movement.x, input.movement.y)
-	player.game.tick()
-	if player.game.wake_state.is_complete() and player.game.phase.current() == Phase.Wake.WAKING:
-		player.game.phase.wake_complete()
-	player._physics_process(Sim.LOGICAL_TICK_SECS)
+	stepper.advance()
 	assert(player.motion.failure().is_empty(), player.motion.failure())
 	tick += 1
 

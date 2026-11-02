@@ -4,7 +4,7 @@ const Route := preload("res://harness/route.gd")
 func test_all_opening_schedules_replay_through_actual_player() -> void:
 	for name: String in ["gameplay-full", "gameplay-keyboard-turn", "rod-pickup", "hallway", "power-room"]:
 		var scenario: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://scenarios/%s.json" % name))
-		var game := Game.new()
+		var game := Game.new(0)
 		var player := Player.build(game, null)
 		player.scripted = true
 		player.rod = Rod.build()
@@ -15,7 +15,7 @@ func test_all_opening_schedules_replay_through_actual_player() -> void:
 		route.replay_prefix(scenario.actions, int(scenario.beats.back().tick) + 2)
 		assert_true(player.motion.failure().is_empty(), name + " motion accepted")
 		assert_true(player.motion.rod_carried and game.door_open, name + " deliberate pickup and pry")
-		assert_int_equal(player.motion.door_openings, 1, name + " exactly one bay opening")
+		assert_int_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).releases, 1, name + " exactly one bay opening")
 		if name in ["hallway", "power-room"]:
 			assert_true(game.bay_exited and game.hallway_lit, name + " physical crossing and switch")
 			assert_int_equal(player.motion.hallway_switch_flips, 1, "one switch flip")
