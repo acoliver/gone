@@ -44,7 +44,7 @@ func _near_float(actual: float, expected: float, message: String) -> void:
 		_fail("%s: expected %s, got %s" % [message, str(expected), str(actual)])
 
 func _walk_to_hatch(motion: PlayerMotion, game: Game, plane: InputPlane) -> void:
-	var hatch := game.registry.hatch().center
+	var hatch := PlacementTruth.bay_door_center(game.layout)
 	var adapter := InputPlane.ScriptedAdapter.new()
 	for _tick: int in range(1400):
 		var foot: Vector3 = motion.capsule().foot
@@ -112,7 +112,7 @@ func test_held_forward_walks_where_the_camera_looks() -> void:
 	var motion := PlayerMotion.new()
 	var plane := InputPlane.new()
 	_stand(motion, game, plane)
-	var hatch := game.registry.hatch().center
+	var hatch := PlacementTruth.bay_door_center(game.layout)
 	var foot: Vector3 = motion.capsule().foot
 	var to_hatch := Vector2(hatch.x - foot.x, hatch.y - foot.z).normalized()
 	var yaw := atan2(to_hatch.x, to_hatch.y) + PI

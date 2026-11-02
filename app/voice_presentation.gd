@@ -7,7 +7,6 @@ signal line_finished(number: int)
 const WAKE_LINE: AudioStreamWAV = preload("res://assets/audio/voice/hesitant-tail-c-line-1.wav")
 const HALLWAY_LINE: AudioStreamWAV = preload("res://assets/audio/voice/hesitant-tail-c-line-2.wav")
 const SWITCH_LINE: AudioStreamWAV = preload("res://assets/audio/voice/hesitant-tail-c-line-3.wav")
-const HALLWAY_ENTRY_X: float = 6.0
 const SWITCH_DELAY_USEC: int = 1000000
 
 var game: Game
@@ -15,8 +14,6 @@ var player: Player
 var audio: AudioStreamPlayer
 var clock_usec: Callable = Callable()
 var _wake_seen := false
-var _previous_x: float = 0.0
-var _has_previous_position := false
 var _hallway_seen := false
 var _switch_seen := false
 var _switch_at_usec: int = 0
@@ -46,14 +43,9 @@ func poll_events() -> void:
 	if not _wake_seen and game.phase.look_allowed() and game.wake_state.current_tick() >= 282:
 		_wake_seen = true
 		_play(1, WAKE_LINE)
-	var capsule: Resolve.Capsule = player.motion.capsule()
-	if capsule != null:
-		var x: float = capsule.foot.x
-		if _has_previous_position and not _hallway_seen and game.door_open and game.phase.locomotion_allowed() and _previous_x < HALLWAY_ENTRY_X and x >= HALLWAY_ENTRY_X:
-			_hallway_seen = true
-			_line2_pending = true
-		_previous_x = x
-		_has_previous_position = true
+	if not _hallway_seen and game.bay_exited:
+		_hallway_seen = true
+		_line2_pending = true
 	if _line2_pending and not _line2_seen and _line_playing == 0 and not audio.playing:
 		_line2_pending = false
 		_line2_seen = true

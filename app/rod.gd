@@ -26,7 +26,7 @@ const ROD_RADIUS: float = 0.022
 ## centerline 1.55 m, both beyond the 1.3 m reach) while a deliberate
 ## stand at the row's mouth brings it in reach with the capsule sweep
 ## still clear of the pod solids.
-const FLOOR_CENTER: Vector2 = Vector2(-0.6, -1.55)
+
 
 ## The rod's yaw about +Z: near-along the pod row, skewed like it was
 ## dropped, not squared up with the room.
@@ -44,7 +44,7 @@ static func build() -> Rod:
 	mesh.radial_segments = 16
 	bar.mesh = mesh
 	bar.material_override = _plain_metal()
-	bar.position = Vector3(FLOOR_CENTER.x, ROD_RADIUS, FLOOR_CENTER.y)
+	bar.position = ShipLayout.authored().layout.bay().rod_local().origin + Vector3(0, ROD_RADIUS, 0)
 	# Lay the cylinder's axis into the floor plane first, then skew the
 	# yaw; the compose order applies the lay-down first.
 	bar.quaternion = Quaternion(Vector3.UP, YAW_RADIANS) * Quaternion(Vector3.RIGHT, PI / 2.0)
@@ -52,8 +52,13 @@ static func build() -> Rod:
 	return rod
 
 ## The floor-plan center the pickup reach is measured against.
+static func local_floor_center() -> Vector2:
+	var center := ShipLayout.authored().layout.bay().rod_local().origin
+	return Vector2(center.x, center.z)
+
 static func floor_center() -> Vector2:
-	return FLOOR_CENTER
+	var center := ShipLayout.authored().layout.anchor(&"D14-BAY-ROD").origin
+	return Vector2(center.x, center.z)
 
 ## Leave the floor: hidden rather than freed, so headless tests and the
 ## harness can pin the gone-from-the-scene state deterministically.

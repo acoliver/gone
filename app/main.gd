@@ -62,7 +62,7 @@ func _add_wake_audio() -> void:
 	wake_present.wake_started.connect(player_2d.play)
 
 func _add_smoke_symptoms() -> void:
-	smoke_symptoms = SmokeSymptoms.new()
+	smoke_symptoms = SmokeSymptoms.new(game.layout)
 	var layer := SmokeVision.build(smoke_symptoms, wake_pass)
 	add_child(layer)
 	smoke_audio = AudioStreamPlayer.new()

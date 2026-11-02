@@ -182,7 +182,7 @@ func test_door_opens_only_in_reach_and_standing() -> void:
 	assert_int_equal(motion.door_state, PlayerMotion.DoorState.CLOSED, "no opening started while lying")
 	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the lying press stays on the channel: only standing presses belong to the door")
 	_stand(motion, game, plane)
-	var hatch := game.registry.hatch().center
+	var hatch := PlacementTruth.bay_door_center(game.layout)
 	var foot := motion.capsule().foot
 	assert_float_in_range(Vector2(foot.x - hatch.x, foot.z - hatch.y).length(), PlayerMotion.HATCH_INTERACT_REACH + 1.0, 30.0, "the waypoint starts out of reach")
 	plane.offer_press(InputPlane.Buttons.INTERACT)

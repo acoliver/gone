@@ -63,8 +63,7 @@ const POWER_DOOR_X = ShipGeometry.POWER_DOOR_X
 ## fuel-stop pattern. No emission — before the flip it is invisible in
 ## the dark by nature of the darkness.
 const SWITCH_PLATE_SIZE: Vector3 = Vector3(0.04, 0.24, 0.16)
-const SWITCH_PLATE_CENTER: Vector3 = Vector3(
-	HALL_START_X + WALL + SWITCH_PLATE_SIZE.x / 2.0, 1.25, 0.85)
+static var SWITCH_PLATE_CENTER: Vector3 = ShipLayout.authored().layout.anchor(&"D14-HALL-SWITCH").origin
 const SWITCH_DOME_RADIUS: float = 0.055
 const SWITCH_DOME_COLOR: Color = Color(0.55, 0.04, 0.03)
 const SWITCH_PLATE_SHADE: float = 0.16
@@ -169,31 +168,20 @@ static func build(game: Game) -> Hallway:
 	assert(held.is_ok(), "the hallway's level maps to a finite nonnegative fade")
 	hallway._fade = held.fade
 
-	var doorway := Node3D.new()
-	doorway.name = "DoorwayWall"
-	for placement: Placement.SolidPlacement in doorway_wall_solids():
-		doorway.add_child(_surface_instance("wall", placement))
-	hallway.add_child(doorway)
-
 	var surface_names := [
 		"HallFloor",
 		"HallCeiling",
 		"HallWallNorthWest",
 		"HallWallNorthEast",
 		"HallWallNorthLintel",
-		"HallWallSouth",
+		"HallWallSouthWest",
+		"HallWallSouthEast",
+		"HallWallSouthLintel",
+		"HallWallFore",
 		"HallWallFar",
 	]
-	var surface_roles := [
-		"floor",
-		"ceiling",
-		"wall",
-		"wall",
-		"wall",
-		"wall",
-		"wall",
-	]
-	var hall_solids := hallway_solids()
+	var surface_roles := ["floor", "ceiling", "wall", "wall", "wall", "wall", "wall", "wall", "wall", "wall"]
+	var hall_solids := ShipGeometry.hallway_solids(game.layout)
 	assert(
 		hall_solids.size() == surface_names.size(),
 		"every hallway surface carries its name"
@@ -299,6 +287,7 @@ static func _build_switch() -> Node3D:
 	var group := Node3D.new()
 	group.name = "HallSwitch"
 	group.position = SWITCH_PLATE_CENTER
+	group.basis = Basis(Vector3(0, 0, -1), Vector3.UP, Vector3.RIGHT)
 	var plate := MeshInstance3D.new()
 	plate.name = "Plate"
 	var plate_mesh := BoxMesh.new()

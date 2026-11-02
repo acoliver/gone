@@ -1,6 +1,6 @@
 class_name PowerRoom
 extends Node3D
-## The emergency power room behind the hallway's last right-hand door
+## The emergency power room behind the hallway's last port (-Z) door walking aft (+X)
 ## (issue #59): the same footprint as the stasis room, pierced off the
 ## corridor's north wall at the power door. The room's consoles read
 ## futuristic-but-broken — flatscreens, blank colored-button keyboards,
@@ -235,9 +235,8 @@ static func build(game: Game) -> PowerRoom:
 		"PowerWallWest",
 		"PowerWallEast",
 		"PowerWallNorth",
-		"PowerWallSouthGap",
 	]
-	var surface_roles := ["floor", "ceiling", "wall", "wall", "wall", "wall"]
+	var surface_roles := ["floor", "ceiling", "wall", "wall", "wall"]
 	var solids := room_solids()
 	assert(
 		solids.size() == surface_names.size(),

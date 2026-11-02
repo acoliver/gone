@@ -49,7 +49,7 @@ func test_rod_sits_beside_a_pod_clear_of_the_walk_and_pods() -> void:
 	var rod := Rod.build()
 	var bar: MeshInstance3D = rod.get_child(0)
 	assert_true(rod.visible, "the rod starts on the floor, visible")
-	var center := Rod.floor_center()
+	var center := Rod.local_floor_center()
 	assert_vec3_equal(bar.position, Vector3(center.x, Rod.ROD_RADIUS, center.y), "the bar rests its round surface on the floor at the authored center")
 	var axis: Vector3 = bar.quaternion * Vector3.UP
 	assert_float_in_range(absf(axis.y), 0.0, 1e-4, "the bar's long axis lies in the floor plane")
@@ -84,7 +84,7 @@ func test_pickup_lands_once_only_in_reach_while_standing() -> void:
 	var lying_game := _awake_game()
 	var lying_plane := InputPlane.new()
 	lying_plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_false(lying.pickup_rod(lying_plane), "an interact while lying does not pick up")
+	assert_false(lying.pickup_rod(lying_plane, lying_game), "an interact while lying does not pick up")
 	assert_false(lying.rod_carried, "no carried flag while lying")
 	assert_true(lying_plane.take_press(InputPlane.Buttons.INTERACT), "the lying press is left on the channel")
 	_stand(motion, game, plane)
@@ -93,7 +93,7 @@ func test_pickup_lands_once_only_in_reach_while_standing() -> void:
 	assert_float_in_range(Vector2(foot.x - center.x, foot.z - center.y).length(),
 		PlayerMotion.ROD_PICKUP_REACH + 0.1, 8.0, "the standing waypoint starts out of the rod's reach, across the aisle")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_false(motion.pickup_rod(plane), "an interact out of reach does not pick up")
+	assert_false(motion.pickup_rod(plane, game), "an interact out of reach does not pick up")
 	assert_false(motion.rod_carried, "no carried flag out of reach")
 	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the out-of-reach press is left for the hatch")
 	plane.end_frame()
@@ -101,7 +101,7 @@ func test_pickup_lands_once_only_in_reach_while_standing() -> void:
 	# bar waits beside the pod; the walk must deliberately detour to it.
 	for _tick: int in range(600):
 		foot = motion.capsule().foot
-		var to_rod := Vector2(center.x - foot.x, center.y + 1.0 - foot.z)
+		var to_rod := Vector2(center.x + 1.0 - foot.x, center.y - foot.z)
 		if to_rod.length() <= 0.2:
 			break
 		plane.offer_movement(1.0, 0.0)
@@ -111,11 +111,11 @@ func test_pickup_lands_once_only_in_reach_while_standing() -> void:
 	assert_float_in_range(Vector2(foot.x - center.x, foot.z - center.y).length(),
 		0.0, PlayerMotion.ROD_PICKUP_REACH * 0.9, "the walk arrived in the rod's reach")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.pickup_rod(plane), "one interact in reach picks up the rod")
+	assert_true(motion.pickup_rod(plane, game), "one interact in reach picks up the rod")
 	assert_true(motion.rod_carried, "the carried flag is set")
 	assert_false(plane.take_press(InputPlane.Buttons.INTERACT), "the pickup consumed the press exactly once")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_false(motion.pickup_rod(plane), "a second interact after the pickup is a no-op")
+	assert_false(motion.pickup_rod(plane, game), "a second interact after the pickup is a no-op")
 	assert_true(motion.rod_carried, "the carried flag latches")
 	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the no-op left the press on the channel")
 	assert_int_equal(motion.door_openings, 0, "no press at the rod was recorded as a door opening")
@@ -141,8 +141,8 @@ func test_pickup_reachable_through_the_scripted_adapter() -> void:
 	assert_true(motion.failure().is_empty(), motion.failure())
 	adapter.press(InputPlane.Buttons.INTERACT)
 	adapter.offer_tick(plane)
-	assert_true(motion.pickup_rod(plane), "a scripted interact press picks up the rod")
-	assert_false(motion.pickup_rod(plane), "the scripted pickup is exactly-once too")
+	assert_true(motion.pickup_rod(plane, game), "a scripted interact press picks up the rod")
+	assert_false(motion.pickup_rod(plane, game), "the scripted pickup is exactly-once too")
 	assert_true(motion.rod_carried, "the scripted path sets the carried flag")
 	plane.end_frame()
 
@@ -153,7 +153,7 @@ func test_door_refuses_without_the_rod_and_opens_with_it() -> void:
 	_stand(motion, game, plane)
 	var adapter := InputPlane.ScriptedAdapter.new()
 	var colliders_closed := game.colliders.size()
-	var hatch := game.registry.hatch().center
+	var hatch := PlacementTruth.bay_door_center(game.layout)
 	# The rod is the door's pry bar: without it, the press at the shut
 	# door starts nothing and stays on the channel.
 	assert_true(_walk_to(motion, game, plane, adapter, hatch,
@@ -168,7 +168,7 @@ func test_door_refuses_without_the_rod_and_opens_with_it() -> void:
 	assert_true(_walk_to(motion, game, plane, adapter, Rod.floor_center(),
 		PlayerMotion.ROD_PICKUP_REACH * 0.9), "the walk stepped off the aisle to the rod")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.pickup_rod(plane), "the pickup lands at the deliberate spot")
+	assert_true(motion.pickup_rod(plane, game), "the pickup lands at the deliberate spot")
 	assert_true(motion.rod_carried, "the rod is carried")
 	# With the bar in hand, the door's press opens it exactly as before.
 	assert_true(_walk_to(motion, game, plane, adapter, hatch,

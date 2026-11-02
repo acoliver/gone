@@ -7,6 +7,7 @@ All geometry uses meters in the X/Z floor plane. Annotation leaders and door
 symbols are diagrammatic; room footprints and pod bodies retain their scale.
 """
 
+import json
 from functools import lru_cache
 from math import cos, hypot, isclose, radians, sin
 from pathlib import Path
@@ -28,9 +29,17 @@ PLAYER = "#f4cf61"
 FONT = "/System/Library/Fonts/Supplemental/Arial.ttf"
 SCALE = 36
 ORIGIN = (350, 735)
-PODS = [(-4.8, -2.9), (-3.4, -2.9), (-2.0, -2.9), (-0.6, -2.9),
-        (-2.0, 2.9), (-3.4, 2.9), (-4.8, 2.9)]
-ROD = (-0.6, -1.55)
+LAYOUT = json.loads((HERE.parent / "ship/3d/built-layout.json").read_text())["facilities"]
+PODS = [(LAYOUT[f"pod_{i}"]["xyz"][0], LAYOUT[f"pod_{i}"]["xyz"][2]) for i in range(7)]
+ROD = (LAYOUT["rod"]["xyz"][0], LAYOUT["rod"]["xyz"][2])
+HATCH = (LAYOUT["hatch"]["xyz"][0], LAYOUT["hatch"]["xyz"][2])
+SWITCH = (LAYOUT["switch"]["xyz"][0], LAYOUT["switch"]["xyz"][2])
+
+
+def bounds(name):
+    item = LAYOUT[name]["bounds"]
+    return (*item["x"], *item["z"])
+
 
 
 @lru_cache(maxsize=None)
@@ -182,13 +191,13 @@ class Sheet:
 
 
 def common_rooms(s):
-    s.rect((6, 30, -1.5, 1.5), GREEN_BG)
-    s.rect((21, 33, -9.7, -1.7), GREEN_BG)
+    s.rect(bounds("hall"), GREEN_BG)
+    s.rect(bounds("power_room"), GREEN_BG)
     for z in (-1.5, 1.5):
         if z < 0:
             intervals = [(6, 26.5), (27.5, 30)]
         else:
-            intervals = [(6, 30)]
+            intervals = [(6, HATCH[0] - 0.6), (HATCH[0] + 0.6, 30)]
         for a, b in intervals:
             s.wall((a, z), (b, z))
     s.wall((21, -1.7), (26.5, -1.7))
@@ -199,7 +208,8 @@ def common_rooms(s):
         s.wall(a, b)
     for x in (9, 15, 21):
         for z in (-1.47, 1.47):
-            s.leaf(x, z, BUILT)
+            if (x, z) != (15, 1.47):
+                s.leaf(x, z, BUILT)
     s.leaf(27, -1.47)
     s.rect((21, 21.56, -8.125, -6.875), BUILT)
     u, v = plan(22.05, -7.5)
@@ -216,44 +226,43 @@ def current():
     s = Sheet("Current build: stasis bay, corridor and power room (D14)",
               "Built geometry in green. +X right; +Z up. Route numbers show the opening sequence.")
     common_rooms(s)
-    s.rect((-6, 6, -4, 4), GREEN_BG)
-    for a, b in [((-6, -4), (6, -4)), ((-6, 4), (6, 4)),
-                 ((-6, -4), (-6, 4)), ((6, -4), (6, -0.6)),
-                 ((6, 0.6), (6, 4)), ((30, -1.5), (30, 1.5))]:
+    x0, x1, z0, z1 = bounds("bay")
+    s.rect(bounds("bay"), GREEN_BG)
+    for a, b in [((x0, z0), (x0, z1)), ((x1, z0), (x1, z1)),
+                 ((x0, z1), (x1, z1)), ((6, -1.5), (6, 1.5)),
+                 ((30, -1.5), (30, 1.5))]:
         s.wall(a, b)
-    s.leaf(6, 0, vertical=True, width=1.2)
+    s.leaf(*HATCH, width=1.2)
     for i, point in enumerate(PODS):
-        s.pod(point, player=i == 6)
-    s.rod(ROD)
-    s.switch((6.22, 0.85))
-    trail = [(-4.8, 1.5), (-3.0, 0), ROD, (1, 0), (6, 0),
-             (8, 0), (25, 0), (27, 0), (27, -3), (24, -5.7), (22.05, -7.5)]
+        s.pod(point, player=i == 6, rotated=True)
+    s.rod(ROD, rotated=True)
+    s.switch(SWITCH)
+    trail = [(16.5, 12.5), (15, 10), ROD, (15, 7), HATCH,
+             (15, 0), (25, 0), (27, 0), (27, -3), (24, -5.7), (22.05, -7.5)]
     s.arrow([plan(*p) for p in trail], BUILT, width=3)
     s.text((134, 426), "STASIS BAY / seven pods", 36, BUILT)
-    s.text((134, 475), "X=-6..6; Z=-4..4", 32, MUTED)
+    s.text((134, 475), f"X={x0:g}..{x1:g}; Z={z0:g}..{z1:g}", 32, MUTED)
     s.text((134, 540), "Player pod 6", 32, BUILT)
-    s.leader([(260, 577), (177, 577), plan(-4.8, 4)], BUILT)
-    s.lines((735, 243), ["Jammed hatch at (6, 0)", "Switch at (6.22, +0.85)"], 32)
-    s.leader([(760, 337), (600, 337), (600, 650), plan(6.22, 0.85)])
-    s.lines((735, 464), ["Six closed side-door leaves", "X=9, 15, 21 on both walls"], 32)
-    for x in (9, 15, 21):
-        s.leader([(plan(x, 0)[0], 569), plan(x, 1.5)])
+    s.leader([(260, 577), (700, 577), plan(*PODS[6])], BUILT)
+    s.lines((134, 650), [f"Jammed hatch at {HATCH}", f"Switch at {SWITCH}"], 30)
+    s.leader([(600, 685), plan(*SWITCH)])
+    s.lines((134, 760), ["Five closed side-door leaves", "Bay replaces X=15 starboard"], 30)
     s.text((670, 840), "CORRIDOR / 24 x 3 m", 34, BUILT)
     s.text((1480, 660), "Solid wall", 32)
     s.leader([(1480, 705), (1460, 705), plan(30, 0)])
-    s.lines((135, 932), ["Rod (-0.6, -1.55)", "One-meter pry bar"], 32)
+    s.lines((135, 932), [f"Rod {ROD}", "One-meter pry bar"], 32)
     s.leader([(465, 947), (500, 910), plan(*ROD)])
     s.lines((670, 1025), ["Working console", "(21, -7.5); act (22.05, -7.5)"], 30)
     s.leader([(1025, 1037), plan(21, -7.5)], BUILT)
     s.text((1180, 570), "Power-room door", 30)
     s.leader([(1322, 610), (1385, 650), (1385, 820), plan(27, -1.47)], BUILT)
-    markers = [((-5.7, 1.4), PODS[6]), ((-0.6, -0.5), ROD),
-               ((5.0, -1), (6, 0)), ((7.6, 0.95), (6.22, 0.85)),
+    markers = [((18.8, 11.7), PODS[6]), ((12.8, 7.4), ROD),
+               ((14, 2.8), HATCH), ((17.4, 0.5), SWITCH),
                ((28.3, -2.8), (27, -1.47)), ((23.2, -7.5), (22.05, -7.5))]
     for n, (at, target) in enumerate(markers, 1):
         s.number(n, plan(*at), target)
     s.compass()
-    s.lines((1765, 697), ["BUILT NOW", "Green: rooms and fixtures.", "Gold: your starting pod.", "Six side leaves are closed;", "no rooms exist behind them.", "X=30 is a solid endcap."], 30, spacing=43)
+    s.lines((1765, 697), ["BUILT NOW", "Green: rooms and fixtures.", "Gold: your starting pod.", "Five side leaves are closed;", "no rooms exist behind them.", "X=6 and X=30 are sealed."], 30, spacing=43)
     s.lines((1765, 1000), ["Leaf centers: Z=+/-1.47 m.", "Wall stations: Z=+/-1.5 m.", "Door symbols enlarged."], 29, MUTED, 37)
     s.key()
     s.save("corridor-current.png")

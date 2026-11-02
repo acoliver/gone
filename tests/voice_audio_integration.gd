@@ -62,11 +62,11 @@ func _run() -> void:
 	capsule.foot.x = rod_center.x
 	capsule.foot.z = rod_center.y
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	if not game_motion.pickup_rod(plane):
+	if not game_motion.pickup_rod(plane, game):
 		_fail("production motion picks up the rod through its interact channel")
 		return
-	capsule.foot.x = 4.9
-	capsule.foot.z = 0.0
+	capsule.foot.x = 15.0
+	capsule.foot.z = 2.8
 	plane.offer_press(InputPlane.Buttons.INTERACT)
 	if not game_motion.interact_with_door(plane, game):
 		_fail("rod-carried interact starts the hatch opening")
@@ -80,12 +80,15 @@ func _run() -> void:
 	if observed.starts != [1]:
 		_fail("hatch opening without a hallway crossing does not trigger line 2")
 		return
-	capsule.foot.x = 5.9
-	voice.poll_events()
-	capsule.foot.x = 6.01
+	capsule.foot.x = 15.0
+	capsule.foot.y = 0.385
+	capsule.foot.z = 1.505
+	capsule.head = capsule.foot + Vector3.UP * 1.15
+	plane.offer_movement(1.0, 0.0)
+	game_motion.advance(plane, game, PI, Sim.LOGICAL_TICK_SECS)
 	voice.poll_events()
 	if observed.starts != [1, 2]:
-		_fail("physical capsule crossing x=6 starts line 2 once; starts=%s" % observed.starts)
+		_fail("physical capsule crossing z=1.5 starts line 2 once; starts=%s" % observed.starts)
 		return
 	plane.offer_press(InputPlane.Buttons.INTERACT)
 	if not game_motion.flip_hallway_switch(plane, game) or not game.hallway_lit:

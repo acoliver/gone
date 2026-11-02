@@ -165,40 +165,19 @@ static func pod_world_transform(placement: Pods.PodPlacement) -> Array:
 		Vector3(placement.center.x, 0.0, placement.center.y),
 	]
 
-static func doorway_wall_solids() -> Array[ShipGeometry.SolidSpec]:
-	var east_wall_center_x := HALL_START_X + WALL / 2.0
-	var mid_height := HALL_CEILING_HEIGHT / 2.0
-	var side_length: float = (Pods.ROOM_WIDTH - DOORWAY_WIDTH) / 2.0
-	var side_offset: float = DOORWAY_WIDTH / 2.0 + side_length / 2.0
-	return [
-		ShipGeometry.SolidSpec.new(
-			Vector3(east_wall_center_x, mid_height, -side_offset),
-			Vector3(WALL, HALL_CEILING_HEIGHT, side_length)
-		),
-		ShipGeometry.SolidSpec.new(
-			Vector3(east_wall_center_x, mid_height, side_offset),
-			Vector3(WALL, HALL_CEILING_HEIGHT, side_length)
-		),
-		ShipGeometry.SolidSpec.new(
-			Vector3(
-				east_wall_center_x,
-				(DOORWAY_HEIGHT + HALL_CEILING_HEIGHT) / 2.0,
-				0.0
-			),
-			Vector3(WALL, HALL_CEILING_HEIGHT - DOORWAY_HEIGHT, DOORWAY_WIDTH)
-		),
-	]
+static func doorway_wall_solids(layout: ShipLayout = ShipLayout.authored().layout) -> Array[ShipGeometry.SolidSpec]:
+	var portal := layout.door(ShipLayout.BAY_DOOR_ID)
+	var bounds := layout.section(&"D14-S-041").bounds()
+	var interval := Vector2(bounds.position.x - portal.frame().origin.x, bounds.end.x + WALL - portal.frame().origin.x)
+	return portal_wall(&"D14-S-041/STARBOARD", portal.frame(), interval, HALL_CEILING_HEIGHT, portal.aperture())
 
-static func doorway_block() -> ShipGeometry.SolidSpec:
-	return ShipGeometry.SolidSpec.new(
-		Vector3(HALL_START_X + WALL / 2.0, DOORWAY_HEIGHT / 2.0, 0.0),
-		Vector3(WALL, DOORWAY_HEIGHT, DOORWAY_WIDTH)
-	)
+static func doorway_block(layout: ShipLayout = ShipLayout.authored().layout) -> ShipGeometry.SolidSpec:
+	return door_blockers(layout.door(ShipLayout.BAY_DOOR_ID))[0]
 
 static func power_doorway_wall_solids() -> Array[ShipGeometry.SolidSpec]:
 	var band_z := -(HALL_WIDTH / 2.0 + WALL / 2.0)
 	var mid_height := HALL_CEILING_HEIGHT / 2.0
-	var band_end_x: float = HALL_END_X + WALL
+	var band_end_x: float = ROOM_END_X + WALL
 	var west_size_x: float = (POWER_DOOR_X - SIDE_DOOR_WIDTH / 2.0) - HALL_START_X
 	var east_size_x: float = band_end_x - (POWER_DOOR_X + SIDE_DOOR_WIDTH / 2.0)
 	return [
@@ -220,7 +199,7 @@ static func power_doorway_wall_solids() -> Array[ShipGeometry.SolidSpec]:
 		),
 	]
 
-static func hallway_solids() -> Array[ShipGeometry.SolidSpec]:
+static func hallway_solids(layout: ShipLayout = ShipLayout.authored().layout) -> Array[ShipGeometry.SolidSpec]:
 	var slab_x_size := (HALL_END_X + WALL) - HALL_START_X
 	var slab_x_center := (HALL_START_X + HALL_END_X + WALL) / 2.0
 	var side_z := HALL_WIDTH / 2.0 + WALL / 2.0
@@ -237,21 +216,17 @@ static func hallway_solids() -> Array[ShipGeometry.SolidSpec]:
 		),
 	]
 	solids.append_array(power_doorway_wall_solids())
-	solids.append(ShipGeometry.SolidSpec.new(
-		Vector3(slab_x_center, mid_height, side_z),
-		Vector3(slab_x_size, HALL_CEILING_HEIGHT, WALL)
-	))
-	solids.append(ShipGeometry.SolidSpec.new(
-		Vector3(HALL_END_X + WALL / 2.0, mid_height, 0.0),
-		Vector3(WALL, HALL_CEILING_HEIGHT, slab_z)
-	))
+	solids.append_array(doorway_wall_solids(layout))
+	for end_x: float in [HALL_START_X - WALL / 2, HALL_END_X + WALL / 2]:
+		solids.append(ShipGeometry.SolidSpec.new(Vector3(end_x, mid_height, 0), Vector3(WALL, HALL_CEILING_HEIGHT, slab_z)))
 	return _shell_roles(solids)
 
 static func side_door_solids() -> Array[ShipGeometry.SolidSpec]:
 	var doors: Array[ShipGeometry.SolidSpec] = []
 	for station_x: float in SIDE_DOOR_STATIONS_X:
 		for side: float in [-1.0, 1.0]:
-			doors.append(_side_door(station_x, side))
+			if station_x != 15.0 or side != 1.0:
+				doors.append(_side_door(station_x, side))
 	return doors
 
 static func _side_door(station_x: float, side: float) -> ShipGeometry.SolidSpec:
@@ -290,18 +265,6 @@ static func power_room_solids() -> Array[ShipGeometry.SolidSpec]:
 		ShipGeometry.SolidSpec.new(
 			Vector3(slab_x_center, mid_height, ROOM_END_Z - WALL / 2.0),
 			Vector3(slab_x_size, ROOM_CEILING, WALL)
-		),
-		ShipGeometry.SolidSpec.new(
-			Vector3(
-				ShipGeometry.HALL_END_X + WALL + (ROOM_END_X + WALL - ShipGeometry.HALL_END_X - WALL) / 2.0,
-				mid_height,
-				-(ShipGeometry.HALL_WIDTH / 2.0 + WALL / 2.0)
-			),
-			Vector3(
-				(ROOM_END_X + WALL) - (ShipGeometry.HALL_END_X + WALL),
-				ROOM_CEILING,
-				WALL
-			)
 		),
 	])
 

@@ -14,10 +14,17 @@ const STANDING_EYE_HEIGHT: float = 1.6
 ## The authored get-up path out of the player pod, built exactly as the
 ## scene wiring builds it: the frozen player pod's placement against the
 ## tray floor the cavity build actually constructs.
-static func player_exit_path() -> Exit.ExitPath:
+static func player_exit_path(layout: ShipLayout = ShipLayout.authored().layout) -> Exit.ExitPath:
 	var result := Exit.ExitPath.try_new(
 		Pods.PodRegistry.frozen().player_pod().placement(),
 		PodGeometry.TRAY_FLOOR_Y
 	)
 	assert(result.is_ok(), "the frozen player pod authors a valid exit path")
-	return result.path
+	return result.path.transformed(layout.bay_to_world())
+
+static func anchor(layout: ShipLayout, id: StringName) -> Transform3D:
+	return layout.anchor(id)
+
+static func bay_door_center(layout: ShipLayout) -> Vector2:
+	var center := layout.door(ShipLayout.BAY_DOOR_ID).frame().origin
+	return Vector2(center.x, center.z)

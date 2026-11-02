@@ -239,7 +239,7 @@ class Driver:
 
 	func _process(_delta: float) -> void:
 		var harness = mode
-		if harness.failed:
+		if harness.failed or harness.busy_capturing:
 			return
 		harness.frame += 1
 		harness.chip.set_code(harness.tick, harness.frame)
@@ -338,6 +338,7 @@ func last_beat_tick() -> int:
 ## stamped with exactly those numbers.
 func capture_next_beat() -> void:
 	busy_capturing = true
+	player.set_physics_process(false)
 	var beat: Dictionary = pending_captures.pop_front()
 	var pinned_tick: int = tick
 	var pinned_frame: int = frame
@@ -405,6 +406,7 @@ func capture_next_beat() -> void:
 				"power_red_level": power_room.level(),
 				"power_white_level": power_room.white_level(),
 				"stasis_red_level": stasis_lighting.level()})
+	player.set_physics_process(true)
 	busy_capturing = false
 
 func _button(name: String) -> int:

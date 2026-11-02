@@ -8,6 +8,8 @@ extends RefCounted
 ## authoritative: this container reads it and never writes phases ahead
 ## of the controllers that own them (the wake driver is a later chunk).
 
+var layout: ShipLayout
+var bay_exited: bool = false
 var registry: Pods.PodRegistry
 var colliders: ColliderSet
 var phase: Phase.Machine
@@ -18,7 +20,7 @@ var exit_path: Exit.ExitPath
 ## the hallway's fixtures light on the switch beside the doorway; both
 ## are authored with the hallway (issue #59's prerequisite milestone)
 ## and owned here, on the container. Issue #59 adds the emergency power
-## room behind the corridor's last right-hand door: its doorway opens
+## room behind the corridor's last port (-Z) door walking aft (+X): its doorway opens
 ## on act (no rod gate — it is a crew door, not a pry-bar hatch), and
 ## its working console walks the secondary power's state machine — one
 ## press reads the label, a second activates the generator, and the
@@ -36,12 +38,13 @@ var writing_memory := DisplayPerception.Memory.new()
 enum ConsoleState { STANDBY, INACTIVE, ACTIVE }
 
 func _init() -> void:
-	registry = Pods.PodRegistry.frozen()
-	colliders = ShipCollision.opening_set(registry, false, false)
+	layout = ShipLayout.authored().layout
+	registry = layout.bay().template()
+	colliders = ShipCollision.opening_set(registry, false, false, layout)
 	phase = Phase.Machine.new()
 	power = Power.Grid.new()
 	wake_state = Wake.WakeState.new(Wake.WakeTimeline.authored())
-	exit_path = PlacementTruth.player_exit_path()
+	exit_path = PlacementTruth.player_exit_path(layout)
 
 ## Open the stasis doorway into the hallway: idempotent (called by the
 ## body motion the tick the door's opening animation completes), and
@@ -52,7 +55,7 @@ func open_doorway() -> void:
 	if door_open:
 		return
 	door_open = true
-	colliders = ShipCollision.opening_set(registry, true, power_door_open)
+	colliders = ShipCollision.opening_set(registry, true, power_door_open, layout)
 
 ## Open the power room's doorway: idempotent, same contract as the
 ## stasis doorway — the rebuilt set drops the power door's slid-aside
@@ -61,11 +64,13 @@ func open_power_doorway() -> void:
 	if power_door_open:
 		return
 	power_door_open = true
-	colliders = ShipCollision.opening_set(registry, door_open, true)
+	colliders = ShipCollision.opening_set(registry, door_open, true, layout)
 
-## Light the hallway's emergency circuit: the switch flip's single
-## authority. Render-side consumers (the hallway's fixture bridge) read
-## this and never write it.
+func observe_bay_crossing(previous: Vector3, current: Vector3, walking: bool) -> void:
+	if not bay_exited and PortalCrossing.exits(previous, current, layout.door(ShipLayout.BAY_DOOR_ID), 14, walking, door_open):
+		bay_exited = true
+
+## Light the hallway circuit once its switch receives an accepted press.
 func light_hallway() -> void:
 	hallway_lit = true
 

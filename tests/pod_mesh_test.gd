@@ -286,4 +286,4 @@ func test_presentation_and_exit_path_share_pure_tray_geometry() -> void:
 	assert_float_equal(PodBody.TRAY_FLOOR_Y, PodGeometry.TRAY_FLOOR_Y, "tray floor has one owner")
 	var expected := Exit.ExitPath.try_new(Pods.PodRegistry.frozen().player_pod().placement(), PodGeometry.TRAY_FLOOR_Y)
 	assert_true(expected.is_ok(), "pure tray floor supports the existing exit path")
-	assert_vec3_equal(PlacementTruth.player_exit_path().poses()[0].foot(), expected.path.poses()[0].foot(), "path starts at the shared tray floor")
+	assert_vec3_equal(PlacementTruth.player_exit_path().poses()[0].foot(), ShipLayout.authored().layout.bay_to_world() * expected.path.poses()[0].foot(), "path starts at the shared tray floor")

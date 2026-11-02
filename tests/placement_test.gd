@@ -49,7 +49,7 @@ func test_room_shell_bounds_are_the_envelope() -> void:
 
 func test_hatch_door_placement_sits_ajar_in_the_opening() -> void:
 	var registry := Pods.PodRegistry.frozen()
-	var hatch: Pods.HatchPlacement = registry.hatch()
+	var hatch: Pods.HatchPlacement = registry.local_hatch()
 	var door: Placement.SolidPlacement = Placement.hatch_solids()[4]
 	assert_true(door.center.x > Pods.ROOM_LENGTH / 2.0 - 0.5, "the door sits at the short wall")
 	assert_true(absf(door.center.y - 1.1) < 1e-5, "the door sits at mid height")
@@ -82,7 +82,7 @@ func test_pod_boxes_stay_in_the_room_and_clear_the_aisle() -> void:
 func test_hatch_constants_sit_on_the_plus_x_wall() -> void:
 	assert_true(Placement.HATCH_DOOR_X < Pods.ROOM_LENGTH / 2.0, "the door is recessed inside the wall")
 	var registry := Pods.PodRegistry.frozen()
-	var hatch: Pods.HatchPlacement = registry.hatch()
+	var hatch: Pods.HatchPlacement = registry.local_hatch()
 	assert_true(
 		absf(hatch.center.x - Pods.ROOM_LENGTH / 2.0) < 1e-6,
 		"the registry puts the hatch on the +X wall"
@@ -179,8 +179,8 @@ func test_shared_exit_path_is_the_scene_construction() -> void:
 	assert_true(built.is_ok(), "the frozen player pod authors a valid exit path")
 	assert_int_equal(shared.poses().size(), Exit.EXIT_POSE_COUNT, "the path holds its key poses")
 	for index: int in range(shared.poses().size()):
-		assert_vec3_equal(shared.poses()[index].foot(), built.path.poses()[index].foot(), "pose foot parity")
-		assert_vec3_equal(shared.poses()[index].head(), built.path.poses()[index].head(), "pose head parity")
+		assert_vec3_equal(shared.poses()[index].foot(), ShipLayout.authored().layout.bay_to_world() * built.path.poses()[index].foot(), "pose foot parity")
+		assert_vec3_equal(shared.poses()[index].head(), ShipLayout.authored().layout.bay_to_world() * built.path.poses()[index].head(), "pose head parity")
 		assert_float_equal(
 			shared.poses()[index].tolerance(),
 			built.path.poses()[index].tolerance(),

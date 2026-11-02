@@ -248,7 +248,7 @@ class PodRegistry:
 	func player_pod() -> Pods.Pod:
 		return _pods[_player_index]
 
-	func hatch() -> Pods.HatchPlacement:
+	func local_hatch() -> Pods.HatchPlacement:
 		return Pods._hatch_placement()
 
 	func occupancy_count(phase: int) -> int:

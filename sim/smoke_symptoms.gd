@@ -55,8 +55,18 @@ var _cough_age := -1
 var _cough_cue_delay := -1
 var _breath_age := -1
 
-static func exposure_at(position: Vector3) -> float:
-	if position.y < 0.0 or position.y > 3.2 or absf(position.z) > 4.0 or position.x >= HALL_START:
+var _world_to_bay: Transform3D
+var _volume: AABB
+
+func _init(layout: ShipLayout = ShipLayout.authored().layout) -> void:
+	_world_to_bay = layout.world_to_bay()
+	_volume = layout.bay().local_bounds()
+
+func exposure_at(world_position: Vector3) -> float:
+	var position := _world_to_bay * world_position
+	if position.x < _volume.position.x:
+		return 0.0
+	if position.y < _volume.position.y or position.y > _volume.end.y or position.z < _volume.position.z or position.z > _volume.end.z or position.x >= HALL_START:
 		return 0.0
 	if position.x <= BAY_END:
 		return 1.0

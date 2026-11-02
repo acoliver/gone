@@ -322,6 +322,10 @@ class BaySpec:
 		result["section_id"] = _section_id
 		result["frame"] = _frame
 		return result
+	func local_bounds() -> AABB:
+		return AABB(Vector3(-Pods.ROOM_LENGTH / 2, 0, -Pods.ROOM_WIDTH / 2), Vector3(Pods.ROOM_LENGTH, Pods.ROOM_CEILING_HEIGHT, Pods.ROOM_WIDTH))
+	func rod_local() -> Transform3D:
+		return Transform3D(Basis(), Vector3(-0.6, 0, -1.55))
 	func template() -> Pods.PodRegistry:
 		return Pods.PodRegistry.frozen()
 
@@ -447,6 +451,7 @@ static func try_new(specs: Array[Spec]) -> Result:
 		if not id in door_ids:
 			return _failure(LayoutError.Kind.OPENABILITY, id)
 	layout._anchors[&"D14-HALL-SWITCH"] = Transform3D(Basis(Vector3.UP, PI), Vector3(16.2, 1.25, 1.45))
+	layout._anchors[&"D14-BAY-ROD"] = layout.bay_to_world() * layout.bay().rod_local()
 	layout._anchors[&"D14-POWER-CONSOLE"] = Transform3D(Basis(), Vector3(22.05, 0, -7.5))
 	var result := Result.new()
 	result.layout = layout

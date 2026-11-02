@@ -80,7 +80,7 @@ func test_frozen_layout_respects_room_aisle_and_hatch() -> void:
 		assert_true(absf(z) + Pods.POD_LENGTH / 2.0 <= room_half_width + layout_epsilon, "pod inside Z")
 		var aisle_face := absf(z) - Pods.POD_LENGTH / 2.0
 		assert_true(aisle_face >= Pods.AISLE_HALF_WIDTH + Controller.POD_EXIT_CLEARANCE, "pod clears the aisle: face %s" % str(aisle_face))
-	var hatch := registry.hatch()
+	var hatch := registry.local_hatch()
 	assert_true(absf(hatch.center.x - Pods.ROOM_LENGTH / 2.0) < 1e-6, "hatch on the +X wall")
 	assert_true(absf(hatch.center.y) < 1e-6, "hatch centered on the wall")
 	assert_true(sin(hatch.yaw_radians) < 0.0, "hatch faces -X")

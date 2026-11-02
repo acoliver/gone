@@ -106,6 +106,7 @@ func record_failure(message: String) -> void:
 ## movement intent from the shared plane and drive the sim controller
 ## the mirror currently holds. dt is the fixed tick's sim seconds.
 func advance(plane: InputPlane, game: Game, yaw: float, dt: float) -> void:
+	var previous := capsule()
 	_tick_door(game)
 	_tick_power_door(game)
 	match state():
@@ -115,6 +116,8 @@ func advance(plane: InputPlane, game: Game, yaw: float, dt: float) -> void:
 			_advance_get_up(game)
 		BodyState.WALK:
 			_advance_walk(plane, game, yaw, dt)
+	if previous != null and capsule() != null:
+		game.observe_bay_crossing(previous.foot, capsule().foot, state() == BodyState.WALK)
 
 ## The Lying tick: a fresh activate press starts the get-up, but only in
 ## AwakeInPod; every other phase drops the edge, never buffers it.
@@ -173,7 +176,7 @@ func interact_with_door(plane: InputPlane, game: Game) -> bool:
 	if state() != BodyState.WALK:
 		return false
 	var foot: Vector3 = capsule().foot
-	var hatch: Vector2 = game.registry.hatch().center
+	var hatch: Vector2 = PlacementTruth.bay_door_center(game.layout)
 	var reach := Vector2(foot.x - hatch.x, foot.z - hatch.y)
 	if reach.length() > HATCH_INTERACT_REACH:
 		return false
@@ -197,7 +200,7 @@ func _tick_door(game: Game) -> void:
 		door_state = DoorState.OPEN
 		game.open_doorway()
 
-## The door slab's animated offset from its authored ajar pose, in world
+## The door slab's animated offset from its authored ajar pose, in bay-local
 ## space: the deterministic projection the hatch's door piece renders.
 func door_slab_offset() -> Vector3:
 	if door_state == DoorState.CLOSED:
@@ -305,13 +308,14 @@ func flip_hallway_switch(plane: InputPlane, game: Game) -> bool:
 ## the door still shut, the switch when the plate is in reach — so no
 ## consumer starves another of the press. A press after the pickup is a
 ## no-op.
-func pickup_rod(plane: InputPlane) -> bool:
+func pickup_rod(plane: InputPlane, game: Game) -> bool:
 	if rod_carried:
 		return false
 	if state() != BodyState.WALK:
 		return false
 	var foot: Vector3 = capsule().foot
-	var center := Rod.floor_center()
+	var anchor := game.layout.anchor(&"D14-BAY-ROD").origin
+	var center := Vector2(anchor.x, anchor.z)
 	var reach := Vector2(foot.x - center.x, foot.z - center.y)
 	if reach.length() > ROD_PICKUP_REACH:
 		return false

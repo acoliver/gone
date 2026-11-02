@@ -39,7 +39,7 @@ func _ready() -> void:
 	# Authored spawn: lying at the exit path's first pose head, facing
 	# the pod's opening, aimed one stop short of the vertical.
 	var spawn: Exit.ExitPose = game.exit_path.poses()[0]
-	_look_yaw = game.registry.player_pod().placement().yaw_radians
+	_look_yaw = game.registry.player_pod().placement().yaw_radians + game.layout.bay_to_world().basis.get_euler().y
 	_look_pitch = InputPlane.PITCH_LIMIT
 	camera = Camera3D.new()
 	camera.name = "PlayerPitch"
@@ -74,7 +74,7 @@ func _physics_process(delta: float) -> void:
 	# doorway takes one press only when the flip lands, fed by every
 	# press the door cannot use; the power door and the console sit down
 	# the corridor, each taking only the press its own act lands.
-	if motion.pickup_rod(plane):
+	if motion.pickup_rod(plane, game):
 		rod.pick_up()
 	motion.interact_with_door(plane, game)
 	motion.flip_hallway_switch(plane, game)

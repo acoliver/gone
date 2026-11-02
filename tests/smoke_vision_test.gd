@@ -1,5 +1,7 @@
 extends SimTestCase
 
+var _bay_frame := ShipLayout.authored().layout.bay_to_world()
+
 const SHADER: Shader = preload("res://app/smoke_vision.gdshader")
 
 func test_smoke_vision_is_peripheral_and_hidden_during_wake() -> void:
@@ -97,16 +99,16 @@ func test_black_source_veil_recovers_monotonically_with_dose() -> void:
 func test_black_source_veil_tracks_simulated_hall_recovery() -> void:
 	var state := SmokeSymptoms.new()
 	for _tick in range(20 * 60):
-		state.tick(true, Vector3(0.0, 1.6, 0.0))
+		state.tick(true, _world(Vector3(0.0, 1.6, 0.0)))
 	var previous := _channel_response(Vector3.ZERO, 1.0, state.dose(), 0.0, 0.0)
 	assert_close(previous, Vector3.ONE * 0.035, "full exposure sets faint maximum veil")
 	for _stage in range(4):
 		for _tick in range(2 * 60):
-			state.tick(true, Vector3(7.0, 1.6, 0.0))
+			state.tick(true, _world(Vector3(7.0, 1.6, 0.0)))
 		var response := _channel_response(Vector3.ZERO, 1.0, state.sample().dose, 0.0, 0.0)
 		assert_true(response.x < previous.x, "actual hallway dose recovery reduces persistent veil")
 		previous = response
-	state.tick(true, Vector3(7.0, 1.6, 0.0))
+	state.tick(true, _world(Vector3(7.0, 1.6, 0.0)))
 	assert_vec3_equal(_channel_response(Vector3.ZERO, 1.0, state.dose(), 0.0, 0.0), Vector3.ZERO, "eight clean seconds plus rounding tick remove persistent veil")
 
 func test_shader_screen_framing_and_displacement_invariants() -> void:
@@ -128,7 +130,7 @@ func test_shader_screen_framing_and_displacement_invariants() -> void:
 
 func test_actual_scheduler_pulses_have_smooth_attack_and_decay() -> void:
 	var state := SmokeSymptoms.new()
-	var bay := Vector3(0.0, 1.6, 0.0)
+	var bay := _world(Vector3(0.0, 1.6, 0.0))
 	var cough_start := -1
 	var breath_start := -1
 	var cough_onset := -1
@@ -179,3 +181,6 @@ func test_actual_scheduler_pulses_have_smooth_attack_and_decay() -> void:
 	assert_float_equal(cough_peak, 1.0, "scheduler cough reaches its peak")
 	assert_float_equal(breath_peak, 0.45, "scheduler breath reaches its weaker peak")
 	assert_int_equal(cough_start - cough_onset, roundi(SmokeSymptoms.COUGH_ACTIVE_OFFSET * 60.0), "visual attack starts at the existing active cough offset")
+
+func _world(local: Vector3) -> Vector3:
+	return _bay_frame * local

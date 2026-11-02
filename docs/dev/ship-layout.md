@@ -10,11 +10,13 @@ The 21 decisions in `tmp/connectors/build-brief.md` govern this feature. In part
 
 References are `docs/art/corridors/README.md`, `d14-local-plan.png`, `connector-section.png`, their metric source `build-connector-maps.py`, and `docs/art/ship/3d/ship_atlas.json`. The map builder establishes the quarter-turn and aft ladder clearance used below. This design uses the source geometry and accompanying text; it does not claim an independent visual inspection of the PNGs. The atlas supplies axes and deck datums, not a runtime level or confirmed exterior sensor data.
 
-## Implementation status: S01 and S02
+## Implementation status: S01 through S03
 
 `ShipLayout` now defines validated records, stable ids, explicit unbuilt endpoints and the approved coordinate frames. `ShipGeometry` and `PodGeometry` own the shared pure solid recipes; `ShipCollision` preserves the opening's original collider insertion order and provides lazy, deck-local layout fixtures. `ShipScene` supplies structural construction to both entrypoints. The harness retains its existing omission of production wires, smoke symptoms and voice, and neither entrypoint changes its clock or readiness ownership in these slices.
 
-Production still uses the original bay frame and corridor geometry. The approved layout builder is tested without adopting its transformed placements. Rod anchor ownership and the bay move remain in S03; shared door snapshots and their animation blockers remain in S05; repeated presentation and ladder locomotion remain in their later slices. Collection accessors return copies, record fields stay private, and validation errors carry the offending id. String-name collections use explicit lexical ordering rather than engine handle order.
+Production and the harness now place all bay furnishings under one `BayRoot` and use world-space capsules from the transformed exit path. Smoke samples in the inverse bay frame; a finite accepted-motion portal crossing latches the voice event. The hall switch uses the layout anchor, the power room remains fixed, and the section ends at X=6 and X=30 remain sealed until S06. The shared power-room wall has one owner through X=33.2.
+
+`HarnessRoute` replays the five opening schedules through Player. The three bay-only schedules retain their relative input deltas; hallway and power-room tails are regenerated through layout anchors. Capture pauses freeze Player and the frame chip without introducing S04's step coordinator. Built documentation coordinates are exported by `tools/export_ship_layout.gd`. Shared door snapshots, repeated connector presentation, navigation labels and ladders remain in later slices.
 
 ## 1. Existing contracts to preserve
 
