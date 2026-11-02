@@ -350,3 +350,13 @@ func test_full_route_lights_the_power() -> void:
 	assert_true(game.door_open and game.power_door_open, "both doorways stand open")
 	assert_int_equal(game.colliders.size(), PowerRoom.scene_collider_set(game.registry, true, true).size(), "the rebuilt set carries both open doorways")
 	assert_true(motion.failure().is_empty(), motion.failure())
+
+func test_rendered_power_shell_uses_pure_collision_recipe() -> void:
+	var room := PowerRoom.build(Game.new())
+	var names := ["PowerFloor", "PowerCeiling", "PowerWallWest", "PowerWallEast", "PowerWallNorth", "PowerWallSouthGap"]
+	var solids := ShipGeometry.power_room_solids()
+	for index: int in range(solids.size()):
+		var mesh: MeshInstance3D = room.get_node(NodePath(names[index]))
+		assert_vec3_equal(mesh.position, solids[index].center, "rendered power center is collider input")
+		assert_vec3_equal((mesh.mesh as BoxMesh).size, solids[index].size, "rendered power size is collider input")
+	room.free()

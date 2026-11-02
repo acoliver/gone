@@ -20,41 +20,41 @@ extends Node3D
 
 ## The corridor's interior length along +X: double the stasis room's
 ## length, per the milestone's envelope brief.
-const HALL_LENGTH: float = Pods.ROOM_LENGTH * 2.0
+const HALL_LENGTH = ShipGeometry.HALL_LENGTH
 
 ## The corridor's interior width: the pod bay's authored aisle width
 ## carried through the doorway, so the walk sim's comfortable band
 ## continues without a pinch.
-const HALL_WIDTH: float = Pods.AISLE_HALF_WIDTH * 2.0
+const HALL_WIDTH = ShipGeometry.HALL_WIDTH
 
 ## The corridor starts at the room's +X wall inner face and runs to
 ## HALL_END_X; the ceiling matches the room's height language exactly.
-const HALL_START_X: float = Pods.ROOM_LENGTH / 2.0
-const HALL_END_X: float = HALL_START_X + HALL_LENGTH
-const HALL_CEILING_HEIGHT: float = Pods.ROOM_CEILING_HEIGHT
-const WALL: float = Placement.WALL_THICKNESS
+const HALL_START_X = ShipGeometry.HALL_START_X
+const HALL_END_X = ShipGeometry.HALL_END_X
+const HALL_CEILING_HEIGHT = ShipGeometry.HALL_CEILING_HEIGHT
+const WALL = ShipGeometry.WALL
 
 ## The doorway pierces the room's +X wall with the hatch opening's
 ## exact width and height, so the frame's opening and the wall's hole
 ## are one aperture.
-const DOORWAY_WIDTH: float = Placement.HATCH_WIDTH
-const DOORWAY_HEIGHT: float = Placement.HATCH_HEIGHT
+const DOORWAY_WIDTH = ShipGeometry.DOORWAY_WIDTH
+const DOORWAY_HEIGHT = ShipGeometry.DOORWAY_HEIGHT
 
 ## The room shell's +X wall index, the one wall this module's doorway
 ## replaces in both the render and the collider set.
-const ROOM_SHELL_EAST_WALL_INDEX: int = 5
+const ROOM_SHELL_EAST_WALL_INDEX = ShipGeometry.ROOM_SHELL_EAST_WALL_INDEX
 
 ## Closed side doors: one-meter leaves at six-meter pitch — a berth
 ## block every six meters reads crew passage, not arcade corridor.
-const SIDE_DOOR_WIDTH: float = 1.0
-const SIDE_DOOR_HEIGHT: float = 2.2
-const SIDE_DOOR_THICKNESS: float = 0.06
-const SIDE_DOOR_STATIONS_X: Array[float] = [9.0, 15.0, 21.0]
+const SIDE_DOOR_WIDTH = ShipGeometry.SIDE_DOOR_WIDTH
+const SIDE_DOOR_HEIGHT = ShipGeometry.SIDE_DOOR_HEIGHT
+const SIDE_DOOR_THICKNESS = ShipGeometry.SIDE_DOOR_THICKNESS
+const SIDE_DOOR_STATIONS_X = ShipGeometry.SIDE_DOOR_STATIONS_X
 ## The emergency-power room entrance (issue #59 proper): the last door
 ## on the left walking out of the stasis room — the north (-Z) wall,
 ## pierced here. The PowerRoom module authors the door's leaf, its
 ## deterministic slide, and the room behind the wall.
-const POWER_DOOR_X: float = 27.0
+const POWER_DOOR_X = ShipGeometry.POWER_DOOR_X
 
 ## The switch plate beside the door: proud of the pierced wall's hall
 ## face, at working height on the latch side of the aperture — the
@@ -106,37 +106,13 @@ var _remainder: float = 0.0
 ## doorway aperture removed — two side pieces and a lintel, all
 ## axis-aligned in the wall's band.
 static func doorway_wall_solids() -> Array[Placement.SolidPlacement]:
-	var east_wall_center_x := HALL_START_X + WALL / 2.0
-	var mid_height := HALL_CEILING_HEIGHT / 2.0
-	var side_length: float = (Pods.ROOM_WIDTH - DOORWAY_WIDTH) / 2.0
-	var side_offset: float = DOORWAY_WIDTH / 2.0 + side_length / 2.0
-	return [
-		Placement.SolidPlacement.new(
-			Vector3(east_wall_center_x, mid_height, -side_offset),
-			Vector3(WALL, HALL_CEILING_HEIGHT, side_length)
-		),
-		Placement.SolidPlacement.new(
-			Vector3(east_wall_center_x, mid_height, side_offset),
-			Vector3(WALL, HALL_CEILING_HEIGHT, side_length)
-		),
-		Placement.SolidPlacement.new(
-			Vector3(
-				east_wall_center_x,
-				(DOORWAY_HEIGHT + HALL_CEILING_HEIGHT) / 2.0,
-				0.0
-			),
-			Vector3(WALL, HALL_CEILING_HEIGHT - DOORWAY_HEIGHT, DOORWAY_WIDTH)
-		),
-	]
+	return ShipGeometry.doorway_wall_solids()
 
 ## The doorway's closed blocker: fills the aperture exactly while the
 ## door is shut, dropped from the collider set the tick the opening
 ## animation completes.
 static func doorway_block() -> Placement.SolidPlacement:
-	return Placement.SolidPlacement.new(
-		Vector3(HALL_START_X + WALL / 2.0, DOORWAY_HEIGHT / 2.0, 0.0),
-		Vector3(WALL, DOORWAY_HEIGHT, DOORWAY_WIDTH)
-	)
+	return ShipGeometry.doorway_block()
 
 ## The north wall pierced by the power doorway (issue #59): the side
 ## wall's exact envelope with the power door's aperture removed — two
@@ -145,80 +121,23 @@ static func doorway_block() -> Placement.SolidPlacement:
 ## aperture matches the side doors' leaf dimensions, and the PowerRoom
 ## module's leaf fills it while shut.
 static func power_doorway_wall_solids() -> Array[Placement.SolidPlacement]:
-	var band_z := -(HALL_WIDTH / 2.0 + WALL / 2.0)
-	var mid_height := HALL_CEILING_HEIGHT / 2.0
-	var band_end_x: float = HALL_END_X + WALL
-	var west_size_x: float = (POWER_DOOR_X - SIDE_DOOR_WIDTH / 2.0) - HALL_START_X
-	var east_size_x: float = band_end_x - (POWER_DOOR_X + SIDE_DOOR_WIDTH / 2.0)
-	return [
-		Placement.SolidPlacement.new(
-			Vector3(HALL_START_X + west_size_x / 2.0, mid_height, band_z),
-			Vector3(west_size_x, HALL_CEILING_HEIGHT, WALL)
-		),
-		Placement.SolidPlacement.new(
-			Vector3(band_end_x - east_size_x / 2.0, mid_height, band_z),
-			Vector3(east_size_x, HALL_CEILING_HEIGHT, WALL)
-		),
-		Placement.SolidPlacement.new(
-			Vector3(
-				POWER_DOOR_X,
-				(SIDE_DOOR_HEIGHT + HALL_CEILING_HEIGHT) / 2.0,
-				band_z
-			),
-			Vector3(SIDE_DOOR_WIDTH, HALL_CEILING_HEIGHT - SIDE_DOOR_HEIGHT, WALL)
-		),
-	]
+	return ShipGeometry.power_doorway_wall_solids()
 
 ## The corridor's shell in fixed order: floor, ceiling, the north
 ## wall's pierce pieces at the power doorway, the south side wall, and
 ## the far endcap wall. The floor and ceiling slabs tuck under the
 ## room's wall band so the doorway tunnel shows no seam.
 static func hallway_solids() -> Array[Placement.SolidPlacement]:
-	var slab_x_size := (HALL_END_X + WALL) - HALL_START_X
-	var slab_x_center := (HALL_START_X + HALL_END_X + WALL) / 2.0
-	var side_z := HALL_WIDTH / 2.0 + WALL / 2.0
-	var slab_z := HALL_WIDTH + 2.0 * WALL
-	var mid_height := HALL_CEILING_HEIGHT / 2.0
-	var solids: Array[Placement.SolidPlacement] = [
-		Placement.SolidPlacement.new(
-			Vector3(slab_x_center, -WALL / 2.0, 0.0),
-			Vector3(slab_x_size, WALL, slab_z)
-		),
-		Placement.SolidPlacement.new(
-			Vector3(slab_x_center, HALL_CEILING_HEIGHT + WALL / 2.0, 0.0),
-			Vector3(slab_x_size, WALL, slab_z)
-		),
-	]
-	solids.append_array(power_doorway_wall_solids())
-	solids.append(Placement.SolidPlacement.new(
-		Vector3(slab_x_center, mid_height, side_z),
-		Vector3(slab_x_size, HALL_CEILING_HEIGHT, WALL)
-	))
-	solids.append(Placement.SolidPlacement.new(
-		Vector3(HALL_END_X + WALL / 2.0, mid_height, 0.0),
-		Vector3(WALL, HALL_CEILING_HEIGHT, slab_z)
-	))
-	return solids
+	return ShipGeometry.hallway_solids()
 
 ## The closed side doors, flush-mounted leaves proud of the side walls.
 ## The power door is not one of these: the PowerRoom module authors its
 ## leaf, its slide, and its colliders.
 static func side_door_solids() -> Array[Placement.SolidPlacement]:
-	var doors: Array[Placement.SolidPlacement] = []
-	for station_x: float in SIDE_DOOR_STATIONS_X:
-		for side: float in [-1.0, 1.0]:
-			doors.append(_side_door(station_x, side))
-	return doors
+	return ShipGeometry.side_door_solids()
 
 static func _side_door(station_x: float, side: float) -> Placement.SolidPlacement:
-	return Placement.SolidPlacement.new(
-		Vector3(
-			station_x,
-			SIDE_DOOR_HEIGHT / 2.0,
-			side * (HALL_WIDTH / 2.0 - SIDE_DOOR_THICKNESS / 2.0)
-		),
-		Vector3(SIDE_DOOR_WIDTH, SIDE_DOOR_HEIGHT, SIDE_DOOR_THICKNESS)
-	)
+	return ShipGeometry._side_door(station_x, side)
 
 ## The switch's floor-plan act center: where the reach test measures.
 static func switch_act_center() -> Vector3:
@@ -232,65 +151,7 @@ static func switch_act_center() -> Vector3:
 ## hallway shell plus side doors. Mirrors Placement.scene_collider_set's
 ## insertion order so the boxes derive from the same construction path.
 static func scene_collider_set(registry: Pods.PodRegistry, door_open: bool) -> ColliderSet:
-	var set := ColliderSet.new()
-	var shell := Placement.room_shell()
-	assert(
-		shell[ROOM_SHELL_EAST_WALL_INDEX].center.x > 0.0,
-		"the east wall's authored shell index holds"
-	)
-	for index: int in range(shell.size()):
-		if index == ROOM_SHELL_EAST_WALL_INDEX:
-			continue
-		_insert_placement(set, shell[index])
-	for placement: Placement.SolidPlacement in doorway_wall_solids():
-		_insert_placement(set, placement)
-	if not door_open:
-		_insert_placement(set, doorway_block())
-	for pod: Pods.Pod in registry.pods():
-		var frame := Placement.pod_world_transform(pod.placement())
-		for solid: PodBody.PodSolid in PodBody.pod_solids(pod.state()):
-			_insert_pod_solid(set, solid, frame[0], frame[1])
-	var hatch := Placement.hatch_solids()
-	for index: int in range(Hatch.HATCH_FRAME_PIECES):
-		_insert_placement(set, hatch[index])
-	if not door_open:
-		_insert_placement(set, hatch[Hatch.HATCH_FRAME_PIECES])
-	for placement: Placement.SolidPlacement in hallway_solids():
-		_insert_placement(set, placement)
-	for placement: Placement.SolidPlacement in side_door_solids():
-		_insert_placement(set, placement)
-	return set
-
-## Insert one world-frame placement as a collider box: the conservative
-## corner-hull AABB, mirroring Placement's derivation.
-static func _insert_placement(set: ColliderSet, placement: Placement.SolidPlacement) -> void:
-	_insert_box(set, placement.center, placement.size, placement.rotation)
-
-## Insert one pod-local construction solid through the pod group's world
-## transform, mirroring Placement's derivation.
-static func _insert_pod_solid(
-	set: ColliderSet,
-	solid: PodBody.PodSolid,
-	group_rotation: Quaternion,
-	group_translation: Vector3
-) -> void:
-	var rotation: Quaternion = group_rotation * Quaternion(Vector3.RIGHT, solid.roll_radians)
-	var center: Vector3 = group_rotation * solid.center + group_translation
-	_insert_box(set, center, solid.size, rotation)
-
-static func _insert_box(set: ColliderSet, center: Vector3, size: Vector3, rotation: Quaternion) -> void:
-	var half := size * 0.5
-	var lo := Vector3(INF, INF, INF)
-	var hi := Vector3(-INF, -INF, -INF)
-	for x: float in [-1.0, 1.0]:
-		for y: float in [-1.0, 1.0]:
-			for z: float in [-1.0, 1.0]:
-				var corner: Vector3 = center + rotation * (Vector3(x, y, z) * half)
-				lo = lo.min(corner)
-				hi = hi.max(corner)
-	var result: ColliderSet.Result = ColliderSet.Aabb.from_min_max(lo, hi)
-	assert(result.is_ok(), "the frozen hallway placement data derives a valid collider box")
-	set.insert(result.box)
+	return ShipCollision.hallway_set(registry, door_open)
 
 static func build(game: Game) -> Hallway:
 	var hallway := Hallway.new()

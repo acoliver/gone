@@ -196,3 +196,13 @@ func test_shared_exit_path_is_the_scene_construction() -> void:
 		absf(expected_eye_y - (Controller.PENETRATION_TOLERANCE + PlacementTruth.STANDING_EYE_HEIGHT)) < 1e-6,
 		"the standing eye height derives from the waypoint foot"
 	)
+
+func test_furnishing_recipe_uses_the_shared_pure_solid_type() -> void:
+	assert_true(Placement.indicator_plate() is ShipGeometry.SolidSpec, "furnishing solid is the pure shared type")
+	for tray: ShipGeometry.SolidSpec in Placement.cable_trays():
+		assert_true(tray.transform.origin == tray.center, "render transform uses the collider input center")
+	var pure := ShipCollision.bay_set(Pods.PodRegistry.frozen())
+	var adapter := Placement.scene_collider_set(Pods.PodRegistry.frozen())
+	assert_int_equal(pure.size(), 56, "old bay fixture stays at 56 colliders")
+	for index: int in range(pure.size()):
+		assert_true(pure.boxes()[index].equals(adapter.boxes()[index]), "old bay order retained")

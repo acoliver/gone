@@ -10,13 +10,19 @@ The 21 decisions in `tmp/connectors/build-brief.md` govern this feature. In part
 
 References are `docs/art/corridors/README.md`, `d14-local-plan.png`, `connector-section.png`, their metric source `build-connector-maps.py`, and `docs/art/ship/3d/ship_atlas.json`. The map builder establishes the quarter-turn and aft ladder clearance used below. This design uses the source geometry and accompanying text; it does not claim an independent visual inspection of the PNGs. The atlas supplies axes and deck datums, not a runtime level or confirmed exterior sensor data.
 
+## Implementation status: S01 and S02
+
+`ShipLayout` now defines validated records, stable ids, explicit unbuilt endpoints and the approved coordinate frames. `ShipGeometry` and `PodGeometry` own the shared pure solid recipes; `ShipCollision` preserves the opening's original collider insertion order and provides lazy, deck-local layout fixtures. `ShipScene` supplies structural construction to both entrypoints. The harness retains its existing omission of production wires, smoke symptoms and voice, and neither entrypoint changes its clock or readiness ownership in these slices.
+
+Production still uses the original bay frame and corridor geometry. The approved layout builder is tested without adopting its transformed placements. Rod anchor ownership and the bay move remain in S03; shared door snapshots and their animation blockers remain in S05; repeated presentation and ladder locomotion remain in their later slices. Collection accessors return copies, record fields stay private, and validation errors carry the offending id. String-name collections use explicit lexical ordering rather than engine handle order.
+
 ## 1. Existing contracts to preserve
 
 `Game` is a RefCounted composition object. `PlayerMotion` wires `Exit.GetUpController` and `Walk.WalkState`; `Resolve` sweeps conservative capsule bounds through `ColliderSet`. `Player` projects the result onto a camera rig. The project runs physics at 60 Hz. Preserve typed simulation Results, rejection without mutation, the first-error latch, and deterministic collider insertion order. A malformed authored layout or an obstructed authored ladder transfer is an error, not an invitation to teleport or ignore collisions.
 
 The current coupling matters:
 
-- `Game._init()` constructs the frozen pod registry, the collider set through `PowerRoom.scene_collider_set`, and an exit path through `PlacementTruth`. `Hallway` replaces the bay's +X wall; `PowerRoom` extends that collider recipe.
+- `Game._init()` constructs the frozen pod registry, the collider set through `ShipCollision.opening_set`, and an exit path through `PlacementTruth`. The pure opening recipe replaces the bay's +X wall with the hallway pierce and extends the set with the power room. `Hallway` and `PowerRoom` retain presentation-facing recipe adapters.
 - `PlayerMotion` owns two independent door enums, clocks and offsets, and five separate interaction methods. `Player._physics_process()` calls rod, bay door, switch, power door and console in that order. These methods use planar distance, not facing, and consume an edge only when they act.
 - The bay door retracts for 12 ticks and slides for 36; the power door slides for 48. Passage opens at animation completion. Keep these timings and the opening route's action semantics.
 - `SmokeSymptoms.exposure_at` assumes the old bay's world axes. `VoicePresentation` detects the old X=6 crossing in render polling. `Lighting.fixture_transforms` infers wall sides from pod-local Z. Merely transforming pod centers would break these consumers.

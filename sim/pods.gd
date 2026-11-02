@@ -1,9 +1,9 @@
 class_name Pods
 extends RefCounted
 ## Stasis pod registry, ported from gone_sim pods.rs.
-## The single source of truth for the stasis bay layout: seven pods in two
-## rows flanking the central aisle, the player's pod in one row, the jammed
-## hatch centered on the +X short wall. Units: meters, up is positive Y,
+## The bay-local template: seven pods in two rows flanking the central
+## aisle, the player's pod in one row, the jammed hatch centered on the
+## local +X short wall. Units: meters, up is positive Y,
 ## the floor plane is X/Z with the room's long axis on X, the room centered
 ## on the origin. Pure data: no Node, scene, or rendering types.
 

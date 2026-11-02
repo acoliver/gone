@@ -37,7 +37,7 @@ enum ConsoleState { STANDBY, INACTIVE, ACTIVE }
 
 func _init() -> void:
 	registry = Pods.PodRegistry.frozen()
-	colliders = PowerRoom.scene_collider_set(registry, false, false)
+	colliders = ShipCollision.opening_set(registry, false, false)
 	phase = Phase.Machine.new()
 	power = Power.Grid.new()
 	wake_state = Wake.WakeState.new(Wake.WakeTimeline.authored())
@@ -52,7 +52,7 @@ func open_doorway() -> void:
 	if door_open:
 		return
 	door_open = true
-	colliders = PowerRoom.scene_collider_set(registry, true, power_door_open)
+	colliders = ShipCollision.opening_set(registry, true, power_door_open)
 
 ## Open the power room's doorway: idempotent, same contract as the
 ## stasis doorway — the rebuilt set drops the power door's slid-aside
@@ -61,7 +61,7 @@ func open_power_doorway() -> void:
 	if power_door_open:
 		return
 	power_door_open = true
-	colliders = PowerRoom.scene_collider_set(registry, door_open, true)
+	colliders = ShipCollision.opening_set(registry, door_open, true)
 
 ## Light the hallway's emergency circuit: the switch flip's single
 ## authority. Render-side consumers (the hallway's fixture bridge) read

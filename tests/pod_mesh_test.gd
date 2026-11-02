@@ -280,3 +280,10 @@ func _point_tri_distance_sq(point: Vector3, index: int) -> float:
 	var v2: float = vb * denom
 	var w3: float = vc * denom
 	return (ap - ab * v2 - ac * w3).length_squared()
+
+func test_presentation_and_exit_path_share_pure_tray_geometry() -> void:
+	assert_true(PodBody.pod_solids(Pods.PodState.PLAYER)[0] is PodGeometry.PodSolid, "presentation consumes pure pod solids")
+	assert_float_equal(PodBody.TRAY_FLOOR_Y, PodGeometry.TRAY_FLOOR_Y, "tray floor has one owner")
+	var expected := Exit.ExitPath.try_new(Pods.PodRegistry.frozen().player_pod().placement(), PodGeometry.TRAY_FLOOR_Y)
+	assert_true(expected.is_ok(), "pure tray floor supports the existing exit path")
+	assert_vec3_equal(PlacementTruth.player_exit_path().poses()[0].foot(), expected.path.poses()[0].foot(), "path starts at the shared tray floor")

@@ -99,21 +99,13 @@ func _build_scene() -> void:
 	game = Game.new()
 	var scene := Node3D.new()
 	scene.name = "CaptureRoot"
-	var hatch := Hatch.build()
-	scene.add_child(RoomGeometry.build(true))
-	pods_node = StasisPods.build(game.registry)
-	scene.add_child(pods_node)
-	scene.add_child(hatch)
-	stasis_lighting = Lighting.build(game)
-	scene.add_child(stasis_lighting)
-	scene.add_child(Hazards.build())
-	rod = Rod.build()
-	scene.add_child(rod)
-	hallway = Hallway.build(game)
-	scene.add_child(hallway)
-	power_room = PowerRoom.build(game)
-	scene.add_child(power_room)
-	player = Player.build(game, hatch)
+	var ship := ShipScene.build_into(scene, game, false)
+	pods_node = ship.pods_node
+	stasis_lighting = ship.lighting
+	rod = ship.rod
+	hallway = ship.hallway
+	power_room = ship.power_room
+	player = Player.build(game, ship.hatch)
 	player.scripted = true
 	player.rod = rod
 	player.power_room = power_room

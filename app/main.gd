@@ -29,19 +29,11 @@ var _smoke_silence_until_usec := 0
 
 func _ready() -> void:
 	game = Game.new()
-	add_child(RoomGeometry.build(true))
-	add_child(StasisPods.build(game.registry))
-	hatch = Hatch.build()
-	add_child(hatch)
-	add_child(Lighting.build(game))
-	add_child(Hazards.build())
-	add_child(Wires.build())
-	rod = Rod.build()
-	add_child(rod)
-	hallway = Hallway.build(game)
-	add_child(hallway)
-	power_room = PowerRoom.build(game)
-	add_child(power_room)
+	var ship := ShipScene.build_into(self, game)
+	hatch = ship.hatch
+	rod = ship.rod
+	hallway = ship.hallway
+	power_room = ship.power_room
 	_add_player()
 	_add_wake_presentation()
 	_add_wake_audio()

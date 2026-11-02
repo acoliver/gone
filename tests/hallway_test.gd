@@ -287,3 +287,13 @@ func test_switch_flips_exactly_once_from_a_full_crossing() -> void:
 	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the once-only switch leaves the second press on the channel")
 	assert_int_equal(motion.door_openings, 1, "the open door never re-opens")
 	assert_true(motion.failure().is_empty(), motion.failure())
+
+func test_rendered_shell_uses_pure_collision_recipe() -> void:
+	var hallway := Hallway.build(Game.new())
+	var names := ["HallFloor", "HallCeiling", "HallWallNorthWest", "HallWallNorthEast", "HallWallNorthLintel", "HallWallSouth", "HallWallFar"]
+	var solids := ShipGeometry.hallway_solids()
+	for index: int in range(solids.size()):
+		var mesh: MeshInstance3D = hallway.get_node(NodePath(names[index]))
+		assert_vec3_equal(mesh.position, solids[index].center, "rendered hall center is collider input")
+		assert_vec3_equal((mesh.mesh as BoxMesh).size, solids[index].size, "rendered hall size is collider input")
+	hallway.free()

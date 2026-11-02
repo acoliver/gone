@@ -17,7 +17,7 @@ const STANDING_EYE_HEIGHT: float = 1.6
 static func player_exit_path() -> Exit.ExitPath:
 	var result := Exit.ExitPath.try_new(
 		Pods.PodRegistry.frozen().player_pod().placement(),
-		PodBody.TRAY_FLOOR_Y
+		PodGeometry.TRAY_FLOOR_Y
 	)
 	assert(result.is_ok(), "the frozen player pod authors a valid exit path")
 	return result.path
