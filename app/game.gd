@@ -37,6 +37,7 @@ var power_door_open: bool:
 var console_state: int = ConsoleState.STANDBY
 var power_active: bool = false
 var writing_memory := DisplayPerception.Memory.new()
+var label_attention := LabelAttention.new(writing_memory)
 
 ## The working console's label state machine: standby glow
 ## (no text), first press shows palo / INACTIVO, second press activates.

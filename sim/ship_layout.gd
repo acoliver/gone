@@ -234,6 +234,12 @@ class FaceSpec:
 		return _surface_frame
 	func interaction_frame() -> Transform3D:
 		return _interaction_frame
+	func label_frame() -> Transform3D:
+		var frame := _surface_frame
+		frame.origin += Vector3.UP * 2.85 + frame.basis.z * 0.01
+		return frame
+	func label_size() -> Vector2:
+		return Vector2(0.92, 0.46)
 	func data() -> Dictionary:
 		var result := super.data()
 		result["door_id"] = _door_id
@@ -264,6 +270,8 @@ class LiftSpec:
 		return _bounds
 	func label_anchor() -> Transform3D:
 		return _label_anchor
+	func label_size() -> Vector2:
+		return Vector2(0.92, 0.23)
 	func data() -> Dictionary:
 		var result := super.data()
 		result["connector_id"] = _connector_id
@@ -675,7 +683,7 @@ static func _authored_records() -> Array[Spec]:
 			_add_door(specs, hatches[0], d, DoorKind.HATCH, policy, _frame_x(Vector3(start, y, 0)), Vector2(HATCH_WIDTH, HATCH_HEIGHT), [section_id(d, n + 40), id], id, Vector2i(n + 41, n + 40), [&"FORE", &"AFT"])
 			_add_door(specs, hatches[1], d, DoorKind.HATCH, policy, _frame_x(Vector3(start + 6, y, 0)), Vector2(HATCH_WIDTH, HATCH_HEIGHT), [id, section_id(d, n + 41)], id, Vector2i(n + 41, n + 40), [&"FORE", &"AFT"])
 			var lift_frame := Transform3D(Basis(), Vector3(start + 3, y, 1.5))
-			specs.append(LiftSpec.new(lift_id, d, id, lift_door, AABB(Vector3(start + 2.1, y, 1.5), Vector3(1.8, CLEAR_HEIGHT, 3)), Transform3D(Basis(), Vector3(start + 3, y + 2.55, 1.49))))
+			specs.append(LiftSpec.new(lift_id, d, id, lift_door, AABB(Vector3(start + 2.1, y, 1.5), Vector3(1.8, CLEAR_HEIGHT, 3)), Transform3D(Basis(Vector3.LEFT, Vector3.UP, Vector3.FORWARD), Vector3(start + 3, y + 2.55, 1.49))))
 			_add_door(specs, lift_door, d, DoorKind.LIFT, Policy.NEVER_OPENS, lift_frame, Vector2(1.8, 2.4), [id, lift_id], id, Vector2i(n + 41, n + 41), [&"HALL", &"LIFT"])
 		specs.append(DeckSpec.new(d, connector_ids, built_sections))
 	for n: int in [-1, 2]:

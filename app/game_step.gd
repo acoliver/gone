@@ -31,8 +31,10 @@ func advance(paused: bool = false) -> void:
 		if smoke != null:
 			smoke.tick(game.phase.look_allowed(), sampled_eye)
 		player.step()
-	if ship_scene != null and player != null and player.motion.capsule() != null:
+	if ship_scene != null and player != null and player.motion.state() == PlayerMotion.BodyState.WALK:
 		ship_scene.prepare_near(player.motion.capsule().foot)
+	if ship_scene != null and player != null:
+		ship_scene.tick_attention(player.motion.eye(game), -player.camera.global_basis.z)
 	for fixture: Node in fixtures:
 		fixture.process_frame(Sim.LOGICAL_TICK_SECS)
 	door_events = game.doors.events()

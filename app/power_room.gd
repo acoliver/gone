@@ -135,6 +135,7 @@ var _door_leaf_base: Vector3 = Vector3.ZERO
 var _console_state: int = -1
 var _screen_material: StandardMaterial3D = null
 var console_display: ShipDisplay = null
+var _text_cache: ShipTextCache
 var _remainder: float = 0.0
 static var _box_cache: Dictionary = {}
 var _palette_cache: Dictionary = {}
@@ -221,10 +222,11 @@ static func scene_collider_set(
 ) -> ColliderSet:
 	return ShipCollision.opening_set(registry, door_open, power_door_open)
 
-static func build(game: Game) -> PowerRoom:
+static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 	var room := PowerRoom.new()
 	room.name = "PowerRoom"
 	room._game = game
+	room._text_cache = text_cache
 	var level := 1.0 if (game.hallway_lit and not game.power_active) else 0.0
 	var white_level := 1.0 if game.power_active else 0.0
 	var glow_level := 1.0 if game.power_active else 0.0
@@ -330,7 +332,7 @@ func _build_console(station: ConsoleStation) -> Node3D:
 		screen.position = Vector3(0.0, SCREEN_CENTER_Y, 0.13)
 	group.add_child(screen)
 	if station.health == CONSOLE_HEALTHS["active"]:
-		console_display = ShipDisplay.build(_game.writing_memory)
+		console_display = ShipDisplay.build(_game.writing_memory, _text_cache)
 		console_display.position = Vector3(0.0, SCREEN_CENTER_Y, 0.166)
 		group.add_child(console_display)
 	var shelf := MeshInstance3D.new()
@@ -586,6 +588,8 @@ func perceived_state_text() -> String:
 
 ## Called after the player's eye and look have advanced on the fixed tick.
 func tick_console_attention(eye: Vector3, camera_forward: Vector3) -> void:
+	if eye.distance_to(_game.layout.door(ShipLayout.POWER_DOOR_ID).frame().origin + Vector3.UP * 1.6) <= DisplayPerception.ATTENTION_RANGE:
+		console_display.prefetch(HEADING_ID, ["secondary_power.inactive", "secondary_power.active"])
 	_apply_console_state(_game.console_state)
 	console_display.tick_attention(eye, camera_forward)
 

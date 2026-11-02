@@ -20,13 +20,15 @@
 14. **Synopsis vocabulary.** The eleven roots in the synopsis are an addendum to v0.13, not content already present in the language reference. Sources: story synopsis, vocabulary addendum. Affected: bible and language references.
 15. **Negation erratum.** In language reference line 539, “nu no kuta” should be “nu cha kuta,” following the defined prohibition pattern. Sources: language reference, grammar and example. Affected: language references.
 16. **Retro references.** `0xDEADBEEF`, `C:\\>`, `9000`, `418` and `14F4:9000` remain author-facing placeholders until each rendering is decided for native base-eight notation or perceived Spanish. Sources: story summary §36; language reference, number rules. Affected: bible and language references.
-17. **Power-room geography.** Leaving the stasis room along +X, the hall light switch is beside the stasis hatch at about x=6.2, z=+0.85, to the right of that doorway. The power-room door is the last door on the left, at x=27 on the -Z wall, before the x=30 end wall. Sources: puzzle handoff §1 and baseline; `app/hallway.gd` lines 53–67. Affected: puzzle progression and ship systems/security.
+17. **Power-room geography.** The stasis hatch opens toward -Z into D14 section 41 at (15, 0, 1.5). The hall switch is beside it at (16.2, 1.25, 1.45), right of the opening when looking back from the hall. Walking aft (+X), the power-room door remains the last port (-Z) door at X=27, before the connector hatch at X=30. Sources: [ship layout](../dev/ship-layout.md) §§2–3. Affected: puzzle progression and ship systems/security.
 18. **Society ranks and daughter's post.** H §11 proposals and pending decisions are not established. The seven suggested English rank names remain rejected. The daughter has no assigned service post. Sources: [society handoff](sources/Gone_Society_History_and_Ranks_Agent_Handoff.md) §11. Affected: bible, society history/command and language reference.
 19. **Character names.** Names in language examples are examples, not cast assignments. Sources: language reference, names section; society handoff §11. Affected: bible, story reference and language references.
 20. **Ship description.** The ship is the crew civilization's interstellar ship on a sealed extermination mission under a public aid/peace cover. The old “colonial warship” label and dog threat are retired. Sources: story summary §§22, 36–37; concept history; puzzle handoff. Affected: bible, story reference and ship systems/security.
 21. **Destination.** The crew's homeworld, Our Planet, is habitable and is the only habitable world he can reach. His survival, arrival and whether its people protect him remain unconfirmed. Sources: [story synopsis](sources/Gone_Naleya_Story_Synopsis.pdf), passage 20; story summary §§31–32. Affected: bible and story reference.
 22. **Resolved decisions.** The accidental-death account and the approximate five-year S+H and thirty-Earth-year S+conventional transit estimates are accepted. Open questions are limited to the gun choreography, exact distances and dates, and whether the S-drive component is mandatory or can be substituted at a cost. Sources: story summary §§23, 26; story synopsis passages 14 and 20. Affected: bible and story reference.
 23. **Style scope.** Style restrictions apply to prose added or rewritten in this documentation change; untouched passages are outside this pass. Sources: story summary §37 and the maintained writing rules for this change.
+
+24. **Navigation labels.** Deck is **lometa** (104), lift **kotewa** (119), and hatch **pana** (105). **Shelani paki**, “corridor part,” is a project compound for section, combining corridor (106) and part (235), modifier before head. It adds no root to the v0.13 lexicon. Hatch faces name the destination section in their travel direction; lift signs show only the deck. Identifiers are boxed native octal digits, read digit by digit, while perceived Spanish preserves the quantity in decimal. The renderer uses a 0.72-unit rectangular stroke and one unit of padding beyond digit ink, an implementation choice rather than a language rule. Source: [ship layout](../dev/ship-layout.md) §6.
 
 ## 2. Open decisions
 
@@ -82,11 +84,6 @@
 - **SAINT-5's last act:** the final image shows the bot approach the closed pod and unfold a tool. Its intent and action remain unresolved. Source: story summary §33.
 - **Counterfactual:** whether Earth would have been spared if the protagonist had not sabotaged the ship is unknowable. Sources: story summary §§28, 38.
 
-## 4. Known code follow-ups outside the docs
+## 4. Geography follow-up status
 
-The two comments below describe the power-room door as being on the right, but geometry and tests place it on the left when walking out of stasis along +X. The door is on the -Z wall at x=27; the hall switch is on the right at z=+0.85. The puzzle handoff baseline and `app/hallway.gd` lines 53–67 support the coordinates and geometry. This is a separate code follow-up, not part of the documentation change.
-
-- `app/game.gd`, lines 20–21: comments describe the power room as behind the corridor's last right-hand door.
-- `app/power_room.gd`, line 3: comment likewise calls it the last right-hand door.
-
-Sources: puzzle handoff §1 and baseline. No code files are changed here.
+The comments in `app/game.gd` and `app/power_room.gd` now identify the power door as port (-Z) when walking aft (+X). The relocated bay and switch follow decision 17 and the shared layout records.

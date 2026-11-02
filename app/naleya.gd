@@ -129,7 +129,7 @@ static func clock(hour: Variant, interval: Variant, beat: Variant = null) -> Str
 ## One unbreakable chunk. Numeric text is already octal; no radix conversion.
 static func chunk_units(chunk: String) -> Array[Naleya.Unit]:
 	var pattern := RegEx.new()
-	pattern.compile('[A-Za-z]+|[0-7]+|[.,:;!?()"]')
+	pattern.compile(r'\[[0-7]+\]|[A-Za-z]+|[0-7]+|[.,:;!?()"]')
 	var units: Array[Naleya.Unit] = []
 	var cursor := 0
 	for token: RegExMatch in pattern.search_all(chunk):
@@ -138,7 +138,9 @@ static func chunk_units(chunk: String) -> Array[Naleya.Unit]:
 			return []
 		var text := token.get_string()
 		var first := text.unicode_at(0)
-		if (first >= 65 and first <= 90) or (first >= 97 and first <= 122):
+		if text.begins_with("["):
+			units.append(Unit.new("identifier", text.substr(1, text.length() - 2)))
+		elif (first >= 65 and first <= 90) or (first >= 97 and first <= 122):
 			var syllables := syllabify(text)
 			if syllables.is_empty():
 				return []
@@ -183,7 +185,7 @@ static func layout(native_text: String, width: float) -> Naleya.Layout:
 			return null
 		var token_width := 0.0
 		for unit: Naleya.Unit in units:
-			token_width += ADVANCE if unit.kind == "glyph" else PUNCTUATION_ADVANCE
+			token_width += unit_advance(unit)
 		if token_width > width:
 			push_error("Naleya: word or number exceeds line width: %s" % token)
 			return null
@@ -204,11 +206,37 @@ static func layout(native_text: String, width: float) -> Naleya.Layout:
 						positioned.append(point + unit.origin)
 					result.strokes.append(positioned)
 				cursor += ADVANCE
+			elif unit.kind == "identifier":
+				# Padding is measured from ink edges, including half-stroke extents.
+				var shift := Vector2(STROKE_WIDTH, 0)
+				for digit: String in unit.value:
+					for path: PackedVector2Array in glyph_paths(DIGITS[digit.to_int()]):
+						var positioned := PackedVector2Array()
+						for point: Vector2 in path:
+							positioned.append(point + unit.origin + shift)
+						result.strokes.append(positioned)
+					shift.x += ADVANCE
+				var left := STROKE_WIDTH / 2
+				var right := unit_advance(unit) - left
+				var bottom := -1.0 - STROKE_WIDTH / 2
+				var top := 10.0 + STROKE_WIDTH / 2
+				var box := PackedVector2Array()
+				for point: Vector2 in [Vector2(left, bottom), Vector2(right, bottom), Vector2(right, top), Vector2(left, top), Vector2(left, bottom)]:
+					box.append(point + unit.origin)
+				result.strokes.append(box)
+				cursor += unit_advance(unit)
 			else:
 				cursor += PUNCTUATION_ADVANCE
 	result.rows = row + 1
 	result.end = Vector2(cursor, -row * LINE_HEIGHT)
 	return result
+static func unit_advance(unit: Naleya.Unit) -> float:
+	if unit.kind == "identifier":
+		return (unit.value.length() - 1) * ADVANCE + 8.0 + 2 * STROKE_WIDTH
+	if unit.kind == "glyph":
+		return ADVANCE
+	return PUNCTUATION_ADVANCE
+
 
 ## One filled quad per orthogonal segment. Only neighbors in the same
 ## polyline join; a repeated endpoint also joins the first and last segments.

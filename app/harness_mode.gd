@@ -238,7 +238,7 @@ class Driver:
 
 	func _physics_process(_delta: float) -> void:
 		var harness = mode
-		if not harness.ready or harness.failed or harness.busy_capturing:
+		if not harness.ready or harness.failed or harness.busy_capturing or not harness.pending_captures.is_empty():
 			return
 		harness.drive_tick()
 

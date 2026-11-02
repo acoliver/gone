@@ -8,6 +8,12 @@ var _parent: Node3D
 var _game: Game
 var _prepared: Dictionary = {}
 var _hatches: Dictionary = {}
+var text_cache: ShipTextCache
+var labels: Dictionary = {}
+var _spaces: Dictionary = {ShipLayout.BAY_ID: true, &"D14-S-041": true, ShipLayout.POWER_ID: true}
+var _initial_labels: bool = false
+var _sight_set: ColliderSet
+var _sight_solids: Array[AABB] = []
 var bay_root: Node3D
 var room: RoomGeometry
 var pods_node: StasisPods
@@ -45,7 +51,11 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 	parent.add_child(environment)
 	scene.hallway = Hallway.build(game)
 	parent.add_child(scene.hallway)
-	scene.power_room = PowerRoom.build(game)
+	scene.text_cache = ShipTextCache.new()
+	scene.text_cache.name = "ShipTextCache"
+	scene.text_cache.pair_ready.connect(scene._labels_ready)
+	parent.add_child(scene.text_cache)
+	scene.power_room = PowerRoom.build(game, scene.text_cache)
 	parent.add_child(scene.power_room)
 	scene.door_views.append(DoorView.adapter(game.layout.door(ShipLayout.BAY_DOOR_ID), scene.hatch.set_door_offset))
 	scene.door_views.append(DoorView.adapter(game.layout.door(ShipLayout.POWER_DOOR_ID), scene.power_room.set_door_offset))
@@ -62,6 +72,9 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 	return scene
 
 func prepare_near(foot: Vector3) -> void:
+	if not _initial_labels:
+		_initial_labels = true
+		_sync_labels()
 	for id: StringName in _game.layout.deck(14).connector_ids():
 		var spec := _game.layout.connector(id)
 		var hall := _game.layout.section(&"D14-S-041").bounds()
@@ -92,6 +105,47 @@ func _prepare_connector(spec: ShipLayout.ConnectorSpec) -> void:
 			_add_hatch(id)
 	for id: StringName in spec.hatch_ids():
 		_add_hatch(id)
+	_spaces[spec.id()] = true
+	_spaces[section_spec.id()] = true
+	_sync_labels()
+	var lift_spec := _game.layout.lift(spec.lift_id())
+	_add_label(lift_spec.id(), spec.deck_number(), spec.id(), lift_spec.label_anchor(), lift_spec.label_size(), ShipText.deck_label(spec.deck_number()))
+
+func _sync_labels() -> void:
+	for id: StringName in _game.layout.door_ids():
+		var door := _game.layout.door(id)
+		if door.deck_number() != 14 or door.kind() not in [ShipLayout.DoorKind.HATCH, ShipLayout.DoorKind.BAY]:
+			continue
+		for face_id: StringName in door.face_ids():
+			var face := _game.layout.face(face_id)
+			if _spaces.has(face.source_space()):
+				_add_label(face_id, door.deck_number(), face.source_space(), door.frame() * face.label_frame(), face.label_size(), ShipText.hatch_label(door.deck_number(), face.destination_section()))
+
+func _add_label(id: StringName, deck: int, space: StringName, frame: Transform3D, size: Vector2, text: ShipText.LabelText) -> void:
+	if labels.has(id):
+		return
+	var state := _game.label_attention.register_face(id, deck, space, frame, size)
+	var label := ShipLabel.build(text_cache, text, id, frame, size, state)
+	label.tree_exiting.connect(_game.label_attention.unload.bind(id))
+	_parent.add_child(label)
+	labels[id] = label
+	if not label.pair.ready():
+		_game.label_attention.unload(id)
+
+func _labels_ready(key: String) -> void:
+	for label: ShipLabel in labels.values():
+		if label.pair.key == key:
+			_game.label_attention.load_face(label.face_id)
+
+func tick_attention(eye: Vector3, forward: Vector3) -> void:
+	if _sight_set != _game.colliders:
+		_sight_set = _game.colliders
+		_sight_solids.clear()
+		for box: ColliderSet.Aabb in _sight_set.boxes():
+			_sight_solids.append(AABB(box.min_corner(), box.max_corner() - box.min_corner()))
+	_game.label_attention.tick(14, eye, forward, _sight_solids)
+	for label: ShipLabel in labels.values():
+		label.present()
 
 func _add_hatch(id: StringName) -> void:
 	if _hatches.has(id):
