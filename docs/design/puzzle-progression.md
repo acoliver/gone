@@ -215,7 +215,7 @@ The power-room doorway is at x=27 on the north, -Z wall. The hall switch's z coo
 
 ### Secondary power and lighting
 
-`app/game.gd` stores `door_open`, `hallway_lit`, `power_door_open`, `console_state` and `power_active`. The power room door opens without a rod gate. Its single working console uses a two-step state transition: the first interaction displays “Inactivo,” the second activates secondary power. `tests/power_room_test.gd` checks those behaviors and the two-room route. (Sources: `app/game.gd`; `app/power_room.gd`; `tests/power_room_test.gd`; reconciliation §5.)
+`app/game.gd` stores `door_open`, `hallway_lit`, `power_door_open`, `console_state` and `power_active`. The power room door opens without a rod gate. Its single working console uses a two-step state transition: the first interaction displays native `palo`, perceived as INACTIVO; the second activates secondary power and displays native `shenu`, perceived as EN FUNCIONAMIENTO. `tests/power_room_test.gd` checks those behaviors and the two-room route. (Sources: `app/game.gd`; `app/power_room.gd`; `tests/power_room_test.gd`; reconciliation §5.)
 
 `app/lighting.gd` implements the stasis bay's red emergency fixtures. The hallway and generator room have red emergency lighting plus dim regular white lighting. Secondary-power activation hands the hallway and power room to white while the stasis bay remains red. The stasis bay is excluded from the current secondary-power lighting transition. This does not demonstrate ventilation or a general life-support effect. (Sources: `app/lighting.gd`; `app/hallway.gd`; `app/power_room.gd`; `tests/power_room_test.gd`; reconciliation §5.)
 

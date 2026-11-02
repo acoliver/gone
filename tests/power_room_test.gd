@@ -3,7 +3,7 @@ extends SimTestCase
 ## the stasis room's footprint behind the corridor's pierced north
 ## wall, the power door opens on its ungated press and slides its leaf
 ## aside, the console census reads exactly one working screen among the
-## dead ones, the Spanish label state machine consumes presses only
+## dead ones, the native and perceived labels change on presses only
 ## when they act, and the activation hands the hallway and the power
 ## room from emergency red to dim regular white while the stasis bay
 ## keeps its red.
@@ -89,12 +89,15 @@ func test_console_census_reads_exactly_one_working_screen() -> void:
 	assert_int_equal(stations[1].health, PowerRoom.CONSOLE_HEALTHS["active"], "the working console is the west wall's deep station")
 	# Every station's panel faces into the room, off its own wall.
 	assert_vec3_equal(PowerRoom.console_act_center(), Vector3(22.05, 0.0, -7.5), "the working console's act volume is pinned in front of its screen")
-	# The Spanish label state machine owns the screen's wording.
-	assert_true(PowerRoom.console_label(Game.ConsoleState.STANDBY) == "", "the standby screen carries no text")
-	assert_true(PowerRoom.console_label(Game.ConsoleState.INACTIVE) == "Control de energía secundaria:\nInactivo", "the first press shows the Inactivo label")
-	assert_true(PowerRoom.console_label(Game.ConsoleState.ACTIVE) == "Control de energía secundaria:\nActivo", "the activation shows the Activo label")
-	assert_true(PowerRoom.console_label_flat(Game.ConsoleState.INACTIVE) == "Control de energía secundaria: Inactivo", "the machine-check form of the inactive label is pinned")
-	assert_true(PowerRoom.console_label_flat(Game.ConsoleState.ACTIVE) == "Control de energía secundaria: Activo", "the machine-check form of the active label is pinned")
+	assert_true(PowerRoom.console_labels(Game.ConsoleState.STANDBY) == {"native": "", "perceived_es": ""}, "the standby screen carries no text in either layer")
+	assert_true(PowerRoom.console_labels(Game.ConsoleState.INACTIVE) == {
+		"native": "te mu nawa lina palo",
+		"perceived_es": "SISTEMA DE ENERGÍA SECUNDARIO INACTIVO",
+	}, "the machine-check form of both inactive labels is pinned")
+	assert_true(PowerRoom.console_labels(Game.ConsoleState.ACTIVE) == {
+		"native": "te mu nawa lina shenu",
+		"perceived_es": "SISTEMA DE ENERGÍA SECUNDARIO EN FUNCIONAMIENTO",
+	}, "the machine-check form of both active labels is pinned")
 	assert_true(PowerRoom.console_state_name(Game.ConsoleState.INACTIVE) == "inactive", "the inactive state's name is pinned")
 	assert_true(PowerRoom.console_state_name(Game.ConsoleState.ACTIVE) == "active", "the active state's name is pinned")
 
@@ -134,10 +137,10 @@ func test_game_console_state_machine_activates_the_power() -> void:
 	assert_false(game.power_active, "the secondary power starts down")
 	assert_false(game.power_door_open, "the power doorway starts shut")
 	assert_true(game.press_console(), "the first press lands: standby to inactive")
-	assert_int_equal(game.console_state, Game.ConsoleState.INACTIVE, "the console shows Inactivo")
+	assert_int_equal(game.console_state, Game.ConsoleState.INACTIVE, "the console shows palo / INACTIVO")
 	assert_false(game.power_active, "the first press does not activate")
 	assert_true(game.press_console(), "the second press lands: inactive to active")
-	assert_int_equal(game.console_state, Game.ConsoleState.ACTIVE, "the console shows Activo")
+	assert_int_equal(game.console_state, Game.ConsoleState.ACTIVE, "the console shows shenu / EN FUNCIONAMIENTO")
 	assert_true(game.power_active, "the activation lights the secondary power")
 	assert_false(game.press_console(), "a third press never lands")
 	assert_int_equal(game.console_state, Game.ConsoleState.ACTIVE, "the active console holds its state")
@@ -232,11 +235,11 @@ func test_console_presses_consume_only_when_they_act() -> void:
 	# A stand at a dead console owns no press: the far wall's busted one.
 	plane.offer_press(InputPlane.Buttons.INTERACT)
 	assert_true(motion.interact_with_console(plane, game), "the first press at the working console shows the label")
-	assert_int_equal(game.console_state, Game.ConsoleState.INACTIVE, "the console reads Inactivo")
+	assert_int_equal(game.console_state, Game.ConsoleState.INACTIVE, "the console reads palo / INACTIVO")
 	assert_int_equal(motion.console_presses, 1, "one press consumed")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
 	assert_true(motion.interact_with_console(plane, game), "the second press activates")
-	assert_int_equal(game.console_state, Game.ConsoleState.ACTIVE, "the console reads Activo")
+	assert_int_equal(game.console_state, Game.ConsoleState.ACTIVE, "the console reads shenu / EN FUNCIONAMIENTO")
 	assert_true(game.power_active, "the secondary power lit")
 	assert_int_equal(motion.console_presses, 2, "two presses consumed, exactly")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
@@ -271,16 +274,18 @@ func test_activation_hands_both_rooms_to_regular_white() -> void:
 	assert_float_in_range(room.white_level(), 0.999, 1.001, "the power room's regular strips settle white")
 	assert_float_in_range(room.generator_lit(), 0.999, 1.001, "the generator's glow settles lit")
 	assert_float_in_range(stasis.level(), 0.999, 1.001, "the stasis bay keeps its red through the activation")
-	assert_true(room.label_text() == "Activo", "the screen renders the Activo label")
+	assert_true(room.native_state_text() == "shenu", "the screen renders the native active label")
+	assert_true(room.perceived_state_text() == "EN FUNCIONAMIENTO", "the perception layer carries the active label")
 	assert_true(room.rendered_console_state() == "active", "the room renders the active state")
 
 func test_label_appears_after_the_first_press() -> void:
 	var game := _awake_game()
 	var room := PowerRoom.build(game)
-	assert_true(room.label_text() == "", "the standby screen renders no text")
+	assert_true(room.native_state_text() == "" and room.perceived_state_text() == "", "the standby screen renders no text in either layer")
 	game.press_console()
 	room.process_frame(Sim.LOGICAL_TICK_SECS)
-	assert_true(room.label_text() == "Inactivo", "the screen renders Inactivo on the label press")
+	assert_true(room.native_state_text() == "palo", "the screen renders palo on the label press")
+	assert_true(room.perceived_state_text() == "INACTIVO", "the perception layer carries INACTIVO on the label press")
 	assert_true(room.rendered_console_state() == "inactive", "the room renders the inactive state")
 
 func test_surfaces_wear_the_stasis_rooms_material_instances() -> void:
@@ -338,7 +343,7 @@ func test_full_route_lights_the_power() -> void:
 	assert_true(_walk_to(motion, game, plane, adapter, Vector2(22.4, -7.5), 0.2), "the walk reached the working console")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
 	assert_true(motion.interact_with_console(plane, game), "the label press landed")
-	assert_int_equal(game.console_state, Game.ConsoleState.INACTIVE, "the console shows Inactivo")
+	assert_int_equal(game.console_state, Game.ConsoleState.INACTIVE, "the console shows palo / INACTIVO")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
 	assert_true(motion.interact_with_console(plane, game), "the activation press landed")
 	assert_true(game.power_active, "the secondary power is on")

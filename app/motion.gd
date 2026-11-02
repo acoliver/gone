@@ -252,7 +252,7 @@ func power_door_slab_offset() -> Vector3:
 
 ## Act at the power room's working console: while standing in reach of
 ## the screen, one interact press advances the secondary power's state
-## machine one step — standby shows the Inactivo label, inactive
+## machine one step: standby shows palo / INACTIVO, inactive
 ## activates the generator — and is consumed only when a step lands.
 ## A press at the dead consoles or at an already-active console owns
 ## nothing and stays on the channel, exactly like the other interact
