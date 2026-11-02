@@ -1,4 +1,10 @@
+
+> Estado: pitch temprano. La biblia y [story.md](story.md) lo sustituyen
+> para los hechos y el diseño vigente. El marco de nave de guerra colonial y
+> la amenaza del perro están retirados.
+
 # gone (working title): game concept
+
 
 ## Pitch
 
