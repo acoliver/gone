@@ -143,7 +143,7 @@ static func eligible(targets: Array[Target], context: Context, solids: Array[AAB
 			result.append(target)
 	result.sort_custom(func(a: Target, b: Target) -> bool:
 		if a.policy != b.policy:
-			return a.policy < b.policy
+			return a.policy == Selection.FACE_RAY
 		if a.policy == Selection.LEGACY_PROXIMITY and a.priority != b.priority:
 			return a.priority < b.priority
 		if hits[a.id] != hits[b.id]:

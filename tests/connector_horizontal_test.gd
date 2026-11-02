@@ -1,6 +1,33 @@
 extends SimTestCase
 const Route := preload("res://harness/route.gd")
 
+func test_first_space_at_x30_cranks_facing_hatch_not_closed_power_door() -> void:
+	var game := Game.new(0)
+	var player := Player.build(game, null)
+	player.scripted = true
+	player.adapter = InputPlane.ScriptedAdapter.new()
+	player._ready()
+	game.wake_state.mark_ready()
+	var route := Route.new(player, 10000)
+	var opening: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://scenarios/hallway.json"))
+	route.replay_prefix(opening.actions, int(opening.beats.back().tick) + 2)
+	assert_true(game.bay_exited and game.hallway_lit, "real input reaches lit section 41")
+	var hatch := game.layout.door(&"D14-C-001-H-FORE")
+	route.walk_to(Vector3(28.05, 0, 0), 0.02)
+	assert_float_in_range(player.motion.capsule().foot.x, 28.03, 28.07, "real player at overlapping interaction reaches")
+	route.look_at(hatch.frame().origin)
+	assert_int_equal(game.doors.snapshot(ShipLayout.POWER_DOOR_ID).state, Doors.State.CLOSED, "power door starts closed")
+	route.press()
+	assert_int_equal(game.doors.snapshot(hatch.id()).attempt, 1, "first Space cranks the hatch in view")
+	assert_int_equal(game.doors.snapshot(ShipLayout.POWER_DOOR_ID).state, Doors.State.CLOSED, "unfaced power door stays closed")
+	route.hold(6)
+	route.look_at(game.layout.door(ShipLayout.POWER_DOOR_ID).frame().origin)
+	route.press()
+	route.hold(48)
+	assert_true(game.power_door_open, "Space facing the power door still opens it")
+	assert_int_equal(game.doors.snapshot(hatch.id()).attempt, 1, "power-door press does not crank the hatch again")
+	player.free()
+
 func test_real_player_cranks_both_directions_and_locked_doors_refuse() -> void:
 	var game := Game.new(0)
 	var player := Player.build(game, null)

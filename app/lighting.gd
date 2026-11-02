@@ -202,7 +202,7 @@ static func isolate_lights(node: Node, mask: int) -> void:
 	for child: Node in node.get_children():
 		isolate_lights(child, mask)
 
-static func steady_fixture(origin: Vector3, mask: int, radius: float) -> Node3D:
+static func steady_fixture(origin: Vector3, mask: int, radius: float, attenuation: float = 1.0) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "EmergencyFixture"
 	fixture.position = origin
@@ -210,6 +210,7 @@ static func steady_fixture(origin: Vector3, mask: int, radius: float) -> Node3D:
 	light.light_color = EMERGENCY_RED
 	light.light_energy = FIXTURE_ENERGY
 	light.omni_range = radius
+	light.omni_attenuation = attenuation
 	light.light_cull_mask = mask
 	light.shadow_enabled = false
 	fixture.add_child(light)

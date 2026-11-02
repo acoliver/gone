@@ -93,12 +93,13 @@ static func build(spec: ShipLayout.DoorSpec, fore_mask: int = 1, aft_mask: int =
 static func split_surface(solid: ShipGeometry.SolidSpec, frame: Transform3D, fore_mask: int, aft_mask: int) -> Node3D:
 	var group := Node3D.new()
 	var pose := frame.affine_inverse() * solid.transform
+	var material := RoomGeometry.wall_material() if solid.material_role == &"wall" else _material(Hatch.HATCH_DOOR_SHADE)
 	for side: int in [-1, 1]:
 		var half_size := solid.size
 		half_size.z /= 2
 		var half_pose := pose
 		half_pose.origin += pose.basis.z * side * half_size.z / 2
-		group.add_child(mesh_piece(Hallway._box_mesh(half_size), half_pose, fore_mask if side < 0 else aft_mask))
+		group.add_child(mesh_piece(Hallway._box_mesh(half_size), half_pose, fore_mask if side < 0 else aft_mask, material))
 	return group
 
 static func mesh_piece(mesh: Mesh, pose: Transform3D, mask: int, material: Material = null) -> MeshInstance3D:

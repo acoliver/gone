@@ -1,6 +1,10 @@
 class_name ShipConnector
 extends Node3D
 
+const WALL_MOUNT_HEIGHT: float = 1.75
+const WALL_STANDOFF: float = 0.30
+const FIXTURE_ATTENUATION: float = 0.15
+
 var lift_leaf: Node3D
 
 static func build(layout: ShipLayout, spec: ShipLayout.ConnectorSpec) -> ShipConnector:
@@ -22,8 +26,10 @@ static func build(layout: ShipLayout, spec: ShipLayout.ConnectorSpec) -> ShipCon
 	Lighting.mesh_layers(panel, mask)
 	connector.add_child(panel)
 	var bounds := spec.bounds()
+	# Stagger the wall lamps toward each hatch; a midpoint pair leaves both ends outside its throw.
 	for side: int in [-1, 1]:
-		connector.add_child(Lighting.steady_fixture(Vector3(bounds.get_center().x, bounds.position.y + Lighting.WALL_MOUNT_HEIGHT, side * (bounds.size.z / 2 - Lighting.WALL_STANDOFF)), mask, minf(Lighting.FIXTURE_RANGE, bounds.size.x / 2)))
+		var origin := Vector3(bounds.get_center().x + side * bounds.size.x / 4, bounds.position.y + WALL_MOUNT_HEIGHT, side * (bounds.size.z / 2 - WALL_STANDOFF))
+		connector.add_child(Lighting.steady_fixture(origin, mask, minf(Lighting.FIXTURE_RANGE, bounds.size.x / 2), FIXTURE_ATTENUATION))
 	var landing := layout.well(spec.well_id()).landing_bounds(spec.deck_number())
-	connector.add_child(Lighting.steady_fixture(Vector3(landing.get_center().x, landing.position.y + Lighting.WALL_MOUNT_HEIGHT, landing.get_center().z), mask, landing.size.z))
+	connector.add_child(Lighting.steady_fixture(Vector3(landing.get_center().x, landing.position.y + WALL_MOUNT_HEIGHT, landing.get_center().z), mask, minf(Lighting.FIXTURE_RANGE, bounds.size.x / 2), FIXTURE_ATTENUATION))
 	return connector

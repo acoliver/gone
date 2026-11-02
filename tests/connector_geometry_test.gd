@@ -1,5 +1,53 @@
 extends SimTestCase
 
+func test_all_hatch_bulkheads_share_plated_wall_material_and_mapping() -> void:
+	var root := Node3D.new()
+	var game := Game.new(0)
+	var scene := ShipScene.build_into(root, game, false)
+	scene.prepare_near(Vector3(26, 0, 0))
+	scene.prepare_near(Vector3(10, 0, 0))
+	var count := 0
+	for node: Node in root.get_children():
+		if not node.has_meta(&"solid_id") or "/WALL/" not in String(node.get_meta(&"solid_id")):
+			continue
+		count += 1
+		assert_int_equal(node.get_child_count(), 2, "bulkhead retains independently masked halves")
+		for piece: MeshInstance3D in node.get_children():
+			assert_true(piece.material_override == RoomGeometry.wall_material(), "hatch bulkhead shares exact plated wall material resource")
+			assert_true(piece.material_override.uv1_triplanar, "hatch bulkhead uses shared triplanar mapping")
+			assert_true(piece.material_override.uv1_scale == RoomGeometry.WALL_UV1_SCALE, "same wall texture density")
+	assert_int_equal(count, 18, "three bulkhead pieces around each of six hatches")
+	root.free()
+
+func test_connector_lights_reach_hatches_floor_ladder_and_lift_inside_falloff() -> void:
+	var layout := ShipLayout.authored().layout
+	for id: StringName in layout.deck(14).connector_ids():
+		var spec := layout.connector(id)
+		var connector := ShipConnector.build(layout, spec)
+		var lights: Array[OmniLight3D] = []
+		_collect_lights(connector, lights)
+		var bounds := spec.bounds()
+		var probes: Array[Vector3] = []
+		for offset: float in [0.5, 3.0, 5.5]:
+			probes.append(Vector3(bounds.position.x + offset, bounds.position.y + 0.02, 0))
+		for hatch_id: StringName in spec.hatch_ids():
+			var hatch := layout.door(hatch_id)
+			var toward_room := 1.0 if hatch.frame().origin.x < bounds.get_center().x else -1.0
+			probes.append(hatch.frame().origin + Vector3(toward_room * 0.2, 1.2, 0))
+			var panel := hatch.frame() * Vector3(hatch.aperture().x / 2 + 0.38, 1.25, ShipLayout.WALL + 0.08 if toward_room > 0 else -0.08)
+			probes.append(panel)
+		var landing := layout.well(spec.well_id()).landing(spec.deck_number()).origin
+		probes.append(landing + Vector3(0, 1.2, 0))
+		probes.append(landing + Vector3(0, 0.02, 0))
+		probes.append(layout.door(layout.lift(spec.lift_id()).door_id()).frame().origin + Vector3(0, 1.2, -0.1))
+		for probe: Vector3 in probes:
+			var best := INF
+			for light: OmniLight3D in lights:
+				var origin: Vector3 = light.position + light.get_parent().position
+				best = minf(best, origin.distance_to(probe) / light.omni_range)
+			assert_true(best <= 0.9, "room detail lies inside useful light range, not its black cutoff: %s ratio=%f" % [probe, best])
+		connector.free()
+
 func test_d14_topology_and_exact_openability() -> void:
 	var layout := ShipLayout.authored().layout
 	assert_true(layout.deck(14).section_ids() == [&"D14-S-040", &"D14-S-041", &"D14-S-042"], "three ordered sections")
