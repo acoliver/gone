@@ -9,7 +9,7 @@ extends Node3D
 ## looks inexplicably new next to the damaged walls (the stasis pods
 ## share that too-new quality; the reason is a later reveal). Under the
 ## emergency circuit the room reads red like the hall; actioning the
-## working console twice (Inactivo → Activo) lights the generator and
+## working console twice (palo / INACTIVO to shenu / EN FUNCIONAMIENTO) lights the generator and
 ## hands the hallway and this room over to dim regular white while the
 ## stasis bay keeps its red. Colliders extend the hallway's set from
 ## solids authored here (Placement stays untouched): one construction
@@ -40,8 +40,8 @@ const DOOR_SHADE: float = Hallway.SIDE_DOOR_SHADE
 ## origin at the wall's inner face, the panel facing +Z into the room):
 ## a wall spine, a flatscreen at working height, a keyboard shelf, and
 ## blank colored buttons — a 4x3 grid plus three wider function buttons
-## off to the side. Nothing mechanical, no letters; the alien alphabet
-## is a later milestone.
+## off to the side. Nothing mechanical; buttons carry no letters.
+## Only the working screen carries native writing.
 const CONSOLE_HEALTHS := {
 	"dead_black": 0,
 	"dead_busted": 1,
@@ -78,13 +78,7 @@ const BUTTON_PALETTE: Array[Color] = [
 const BUSTED_MISSING_BUTTONS: Array[int] = [4, 7]
 const BUSTED_SCREEN_TILT: float = 0.55
 
-## The screen's label text (Spanish this milestone, alien language
-## later): the console's state machine owns the wording, pinned by the
-## tests and the lane's machine checks. The screen renders the heading
-## small and the state word large — the readable control-display look.
-const LABEL_HEAD: String = "Control de energía secundaria:"
-const LABEL_TAIL_INACTIVE: String = "Inactivo"
-const LABEL_TAIL_ACTIVE: String = "Activo"
+const HEADING_ID: String = "secondary_power.heading"
 
 ## The secondary generator at the room's center: a sleek black column,
 ## unaged next to the damaged consoles and walls, reading as a black
@@ -156,8 +150,7 @@ var _door_leaf: MeshInstance3D = null
 var _door_leaf_base: Vector3 = Vector3.ZERO
 var _console_state: int = -1
 var _screen_material: StandardMaterial3D = null
-var _label_head: Label3D = null
-var _label: Label3D = null
+var console_display: ShipDisplay = null
 var _remainder: float = 0.0
 static var _box_cache: Dictionary = {}
 var _palette_cache: Dictionary = {}
@@ -288,28 +281,24 @@ static func generator_solid() -> Placement.SolidPlacement:
 		)
 	)
 
-## The console label's two-line text for a state, or the empty string
-## while the screen sits at its standby glow.
-static func console_label(state: int) -> String:
-	var tail := _label_tail(state)
-	if tail.is_empty():
-		return ""
-	return LABEL_HEAD + "\n" + tail
+## Both authored layers, flattened for the harness. STANDBY is blank.
+static func console_labels(state: int) -> Dictionary:
+	var id := _state_message_id(state)
+	if id.is_empty():
+		return {"native": "", "perceived_es": ""}
+	var head := ShipText.message(HEADING_ID)
+	var tail := ShipText.message(id)
+	return {
+		"native": head.native + " " + tail.native,
+		"perceived_es": head.perceived_es + " " + tail.perceived_es,
+	}
 
-## The label flattened to one line, the form the lane's machine checks
-## pin.
-static func console_label_flat(state: int) -> String:
-	var tail := _label_tail(state)
-	if tail.is_empty():
-		return ""
-	return LABEL_HEAD + " " + tail
-
-static func _label_tail(state: int) -> String:
+static func _state_message_id(state: int) -> String:
 	match state:
 		Game.ConsoleState.INACTIVE:
-			return LABEL_TAIL_INACTIVE
+			return "secondary_power.inactive"
 		Game.ConsoleState.ACTIVE:
-			return LABEL_TAIL_ACTIVE
+			return "secondary_power.active"
 		_:
 			return ""
 
@@ -472,22 +461,9 @@ func _build_console(station: ConsoleStation) -> Node3D:
 		screen.position = Vector3(0.0, SCREEN_CENTER_Y, 0.13)
 	group.add_child(screen)
 	if station.health == CONSOLE_HEALTHS["active"]:
-		_label_head = Label3D.new()
-		_label_head.name = "ScreenHead"
-		_label_head.font_size = 13
-		_label_head.pixel_size = 0.004
-		_label_head.modulate = Color(0.75, 0.85, 0.95)
-		_label_head.position = Vector3(0.0, SCREEN_CENTER_Y + 0.12, 0.165)
-		group.add_child(_label_head)
-		_label = Label3D.new()
-		_label.name = "ScreenLabel"
-		_label.font_size = 26
-		_label.pixel_size = 0.004
-		_label.modulate = Color(0.85, 0.95, 1.0)
-		_label.outline_size = 4
-		_label.outline_modulate = Color(0.0, 0.0, 0.0)
-		_label.position = Vector3(0.0, SCREEN_CENTER_Y - 0.10, 0.165)
-		group.add_child(_label)
+		console_display = ShipDisplay.build(_game.writing_memory)
+		console_display.position = Vector3(0.0, SCREEN_CENTER_Y, 0.166)
+		group.add_child(console_display)
 	var shelf := MeshInstance3D.new()
 	shelf.name = "Shelf"
 	shelf.mesh = _box_mesh(SHELF_SIZE)
@@ -674,18 +650,11 @@ func _apply_generator_glow(level: float) -> void:
 	if _generator_ring_material.emission != emissive:
 		_generator_ring_material.emission = emissive
 
-## The working console's screen: the standby glow carries no text; the
-## Inactivo and Activo labels carry the Spanish state wording pinned by
-## the tests and the lane's machine checks.
 func _apply_console_state(state: int) -> void:
-	_console_state = state
-	if _screen_material == null or _label == null:
+	if _console_state == state:
 		return
-	var tail := _label_tail(state)
-	if _label.text != tail:
-		_label.text = tail
-	if _label_head.text != LABEL_HEAD:
-		_label_head.text = LABEL_HEAD
+	_console_state = state
+	console_display.set_messages(HEADING_ID, _state_message_id(state))
 	var emission: float = 0.0
 	match state:
 		Game.ConsoleState.STANDBY:
@@ -743,9 +712,16 @@ func white_lens_material() -> StandardMaterial3D:
 func rendered_console_state() -> String:
 	return console_state_name(_console_state)
 
-## The state word the working console's screen last rendered.
-func label_text() -> String:
-	return _label.text if _label != null else ""
+func native_state_text() -> String:
+	return console_display.native_canvas.state_word
+
+func perceived_state_text() -> String:
+	return console_display.perceived_canvas.state_word
+
+## Called after the player's eye and look have advanced on the fixed tick.
+func tick_console_attention(eye: Vector3, camera_forward: Vector3) -> void:
+	_apply_console_state(_game.console_state)
+	console_display.tick_attention(eye, camera_forward)
 
 ## One textured surface piece wearing the stasis room's shared material
 ## for its role — the same resource instance, never a copy.

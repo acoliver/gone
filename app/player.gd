@@ -89,6 +89,8 @@ func _physics_process(delta: float) -> void:
 		get_tree().quit(1)
 		return
 	position = motion.eye(game)
+	if power_room != null:
+		power_room.tick_console_attention(camera.global_position, -camera.global_basis.z)
 	plane.end_frame()
 
 ## The device producer: held InputMap actions become the plane's

@@ -272,7 +272,7 @@ Follow the visual language in `docs/art/README.md`.
 5. Walk to the door at (27, -1.5) on the corridor's -Z side and
    act it open (`app/hallway.gd`, `app/power_room.gd`).
 6. Inside the power room, act the working console at (22.05, -7.5):
-   Inactivo to Activo lights the secondary generator and hands the
+   palo / INACTIVO to shenu / EN FUNCIONAMIENTO lights the secondary generator and hands the
    corridor and room to regular white (`app/power_room.gd`).
 
 Further routes are proposals only. The six decorative doors at X=9, 15,

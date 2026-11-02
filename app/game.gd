@@ -29,9 +29,10 @@ var hallway_lit: bool = false
 var power_door_open: bool = false
 var console_state: int = ConsoleState.STANDBY
 var power_active: bool = false
+var writing_memory := DisplayPerception.Memory.new()
 
-## The working console's Spanish label state machine: standby glow
-## (no text), first press shows Inactivo, second press activates.
+## The working console's label state machine: standby glow
+## (no text), first press shows palo / INACTIVO, second press activates.
 enum ConsoleState { STANDBY, INACTIVE, ACTIVE }
 
 func _init() -> void:

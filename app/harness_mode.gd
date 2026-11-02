@@ -386,7 +386,8 @@ func capture_next_beat() -> void:
 		report.add_event({"kind": "console", "tick": pinned_tick,
 			"frame": pinned_frame, "presses": player.motion.console_presses,
 			"state": PowerRoom.console_state_name(game.console_state),
-			"label": PowerRoom.console_label_flat(game.console_state)})
+			"native_label": PowerRoom.console_labels(game.console_state).native,
+			"perceived_label": PowerRoom.console_labels(game.console_state).perceived_es})
 		report.add_event({"kind": "power", "tick": pinned_tick,
 			"frame": pinned_frame, "active": game.power_active,
 			"generator_lit": power_room.generator_lit(),
