@@ -34,10 +34,16 @@ on text resets and physical-only toggles.
 ## Attention and timing
 
 `Player` supplies its current camera eye and forward vector after each physics
-tick. Attention requires a screen center within 4.0 m, a front face toward the
-eye, and a center within 14 degrees of camera forward. `DisplayPerception`
-has no scene dependencies. At 60 Hz, the first reading holds for 72 ticks
-(1.2 s) and ramps for 96 ticks (1.6 s). Completed first-reading memory belongs
+tick. Attention requires a screen center within 4.0 m and a front face toward
+the eye. The camera's forward ray must intersect the screen plane in front of
+the eye, inside the screen rectangle expanded by 0.20 m on every side.
+`ShipDisplay` supplies its world-space right and up half extents from its quad
+size and basis, plus its front normal. The pure `DisplayPerception.attends`
+function has no scene dependencies. This permits a level gaze at the console's
+interaction stand: the standing eye is above the screen center, but its ray
+still meets the expanded rectangle. The former 14-degree center cone rejected
+that view. At 60 Hz, the first reading holds for 72 ticks (1.2 s) and ramps for
+96 ticks (1.6 s). Completed first-reading memory belongs
 to `Game.writing_memory` and is shared by all displays. Later readings hold
 for 21 ticks (0.35 s) and ramp for 36 ticks (0.6 s).
 
@@ -67,6 +73,11 @@ per physics tick. Call `set_messages` only when its semantic message changes.
 
 The guarded unit suite covers the catalog, both render layers, blank standby,
 attention geometry, shared memory, exact tick timings, resets and determinism.
+A real `Player` rig wired to `PowerRoom` stands at the interaction point with
+level look state and advances its own physics ticks to resolve the inactive
+console, then turns its yaw 90 degrees to verify decay. The capture script at
+`tmp/naleya/capture_console.gd` uses the same player-driven attention path
+without aiming the camera down at the screen.
 The `scenarios/power-room.json` harness lane checks both full label strings at
 console-inactive and power-active while retaining its gameplay and lighting
 checks. Run it as described in [harness.md](harness.md). Harness console events

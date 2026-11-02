@@ -8,7 +8,7 @@ const LATER_HOLD: int = 21
 const LATER_RAMP: int = 36
 const DECAY: int = 21
 const ATTENTION_RANGE: float = 4.0
-const ATTENTION_COS: float = cos(deg_to_rad(14.0))
+const ATTENTION_MARGIN: float = 0.20
 
 class Memory:
 	extends RefCounted
@@ -54,11 +54,20 @@ func tick(attend: bool) -> void:
 			_memory.has_resolved = true
 			_elapsed = _hold + _ramp
 
-static func attends(eye: Vector3, camera_forward: Vector3,
-		center: Vector3, screen_front: Vector3) -> bool:
+static func attends(eye: Vector3, camera_forward: Vector3, center: Vector3,
+		right_half_extent: Vector3, up_half_extent: Vector3, screen_front: Vector3) -> bool:
 	var to_screen := center - eye
 	if to_screen.length_squared() > ATTENTION_RANGE * ATTENTION_RANGE:
 		return false
-	if screen_front.dot(-to_screen) <= 0.0:
+	var front_distance := screen_front.dot(-to_screen)
+	if front_distance <= 0.0:
 		return false
-	return camera_forward.normalized().dot(to_screen.normalized()) >= ATTENTION_COS
+	var approach := camera_forward.dot(screen_front)
+	if approach >= 0.0:
+		return false
+	var hit_offset := eye + camera_forward * (-front_distance / approach) - center
+	var half_size := Vector2(right_half_extent.length(), up_half_extent.length()) \
+		+ Vector2(ATTENTION_MARGIN, ATTENTION_MARGIN)
+	var hit_position := Vector2(hit_offset.dot(right_half_extent.normalized()),
+		hit_offset.dot(up_half_extent.normalized()))
+	return absf(hit_position.x) <= half_size.x and absf(hit_position.y) <= half_size.y

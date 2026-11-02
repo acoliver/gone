@@ -65,8 +65,11 @@ func set_messages(heading_id: String, state_id: String) -> void:
 	_apply_perception()
 
 func tick_attention(eye: Vector3, camera_forward: Vector3) -> void:
+	var screen_size := (_quad.mesh as QuadMesh).size
 	var attend := not native_canvas.state_word.is_empty() \
-		and DisplayPerception.attends(eye, camera_forward, global_position, global_basis.z)
+		and DisplayPerception.attends(eye, camera_forward, global_position,
+			global_basis.x * screen_size.x * 0.5, global_basis.y * screen_size.y * 0.5,
+			global_basis.z)
 	perception.tick(attend)
 	_apply_perception()
 

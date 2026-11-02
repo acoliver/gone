@@ -104,16 +104,51 @@ func test_tick_trace_is_deterministic_and_bounded() -> void:
 		assert_true(a.perceive == b.perceive, "identical tick trace")
 		assert_float_in_range(a.perceive, 0.0, 1.0, "bounded perception")
 
-func test_attention_requires_range_front_face_and_camera_cone() -> void:
-	var center := Vector3.ZERO
-	var front := Vector3.FORWARD
+func _attends(eye: Vector3, forward: Vector3) -> bool:
+	return Perception.attends(eye, forward, Vector3.ZERO,
+		Vector3.RIGHT * 0.46, Vector3.UP * 0.29, Vector3.FORWARD)
+
+func test_attention_accepts_ray_hits_inside_screen() -> void:
+	assert_true(_attends(Vector3(0, 0, -2), Vector3.BACK), "center hit")
+	assert_true(_attends(Vector3(0.45, 0.28, -2), Vector3.BACK), "hit near screen corner")
+	var eye := Vector3(1, 1, -2)
+	assert_true(_attends(eye, (Vector3(0.3, 0.2, 0) - eye).normalized()), "oblique ray hits screen")
+
+func test_attention_accepts_ray_hits_inside_twenty_centimetre_margin() -> void:
+	for sign_x: float in [-1.0, 1.0]:
+		for sign_y: float in [-1.0, 1.0]:
+			assert_true(_attends(Vector3(sign_x * 0.65, sign_y * 0.48, -2), Vector3.BACK), "margin includes corners outside physical screen")
+	assert_true(_attends(Vector3(0.46 + Perception.ATTENTION_MARGIN, 0, -2), Vector3.BACK), "horizontal margin boundary included")
+	assert_true(_attends(Vector3(0, 0.29 + Perception.ATTENTION_MARGIN, -2), Vector3.BACK), "vertical margin boundary included")
+
+func test_attention_rejects_ray_hits_beyond_margin() -> void:
+	for sign_axis: float in [-1.0, 1.0]:
+		assert_false(_attends(Vector3(sign_axis * 0.661, 0, -2), Vector3.BACK), "beyond horizontal margin")
+		assert_false(_attends(Vector3(0, sign_axis * 0.491, -2), Vector3.BACK), "beyond vertical margin")
+
+func test_attention_rejects_away_and_parallel_rays() -> void:
 	var eye := Vector3(0, 0, -2)
-	assert_true(Perception.attends(eye, Vector3.BACK, center, front), "in range and facing")
-	assert_true(Perception.attends(Vector3(0, 0, -4), Vector3.BACK, center, front), "four metre boundary included")
-	assert_false(Perception.attends(Vector3(0, 0, -4.01), Vector3.BACK, center, front), "too far")
-	assert_false(Perception.attends(Vector3(0, 0, 2), Vector3.FORWARD, center, front), "behind screen")
-	assert_false(Perception.attends(Vector3(2, 0, 0), Vector3.LEFT, center, front), "edge-on screen")
-	assert_true(Perception.attends(eye, Vector3.BACK.rotated(Vector3.UP, deg_to_rad(13.99)), center, front), "inside cone")
-	assert_false(Perception.attends(eye, Vector3.BACK.rotated(Vector3.UP, deg_to_rad(14.01)), center, front), "outside 14 degree cone")
-	assert_false(Perception.attends(eye, Vector3.FORWARD, center, front), "looking away")
-	assert_false(Perception.attends(center, Vector3.BACK, center, front), "eye on screen has no front view")
+	assert_false(_attends(eye, Vector3.FORWARD), "intersection behind eye is not attention")
+	assert_false(_attends(eye, Vector3.RIGHT), "parallel ray never reaches plane")
+
+func test_attention_requires_screen_center_within_four_metres() -> void:
+	assert_true(_attends(Vector3(0, 0, -4), Vector3.BACK), "four metre boundary included")
+	assert_false(_attends(Vector3(0, 0, -4.01), Vector3.BACK), "too far")
+	var eye := Vector3(0.65, 0.48, -4)
+	assert_false(_attends(eye, Vector3.BACK), "range is measured to center, not plane")
+
+func test_attention_requires_screen_front_toward_eye() -> void:
+	assert_false(_attends(Vector3(0, 0, 2), Vector3.FORWARD), "behind screen even when ray hits")
+	assert_false(_attends(Vector3(2, 0, 0), Vector3.LEFT), "edge-on screen")
+	assert_false(_attends(Vector3.ZERO, Vector3.BACK), "eye on screen has no front view")
+
+func test_attention_uses_world_space_screen_axes_and_extents() -> void:
+	var basis := Basis.from_euler(Vector3(0.3, PI / 2.0, 0.2))
+	var center := Vector3(21.166, 1.3, -7.5)
+	var right := basis.x * 0.8
+	var up := basis.y * 0.15
+	var forward := -basis.z
+	var eye := center + basis.z * 2.0 + basis.x * 0.99 + basis.y * 0.34
+	assert_true(Perception.attends(eye, forward, center, right, up, basis.z), "rotated screen uses its own size and axes plus world-space margin")
+	eye += basis.y * 0.02
+	assert_false(Perception.attends(eye, forward, center, right, up, basis.z), "rotated hit beyond top margin misses")

@@ -109,6 +109,54 @@ func _check_steady_attention_shader_amount() -> void:
 	assert_true(material.get_shader_parameter("perceive") == 0.0, "text reset uploads without a tick")
 	display.free()
 
+func test_level_gaze_at_console_stand_resolves_through_player_ticks_and_turning_away_decays() -> void:
+	_run_scene_check("_check_level_gaze_at_console_stand")
+
+func _check_level_gaze_at_console_stand() -> void:
+	var game := Game.new()
+	game.phase.wake_complete()
+	var room := PowerRoom.build(game)
+	var player := Player.build(game, null)
+	player.scripted = true
+	player.adapter = InputPlane.ScriptedAdapter.new()
+	player.power_room = room
+	var scene := Node3D.new()
+	scene.add_child(room)
+	scene.add_child(player)
+	var tree := Engine.get_main_loop() as SceneTree
+	tree.root.add_child(scene)
+	scene.process_mode = Node.PROCESS_MODE_DISABLED
+	player.adapter.press(InputPlane.Buttons.ACTIVATE)
+	for _tick: int in range(Exit.EXIT_POSE_COUNT):
+		player._physics_process(Sim.LOGICAL_TICK_SECS)
+	assert_int_equal(player.motion.state(), PlayerMotion.BodyState.WALK, "real rig reaches standing")
+	var capsule := player.motion.capsule()
+	var stand := PowerRoom.console_act_center()
+	var offset := Vector3(stand.x - capsule.foot.x, 0.0, stand.z - capsule.foot.z)
+	capsule.foot += offset
+	capsule.head += offset
+	player.motion._walk = Walk.WalkState.start(game.phase, capsule).state
+	var to_screen := room.console_display.global_position - PlayerMotion.standing_eye(capsule)
+	var yaw := atan2(-to_screen.x, -to_screen.z)
+	player.adapter.look(yaw - player.look_angles().x, -player.look_angles().y)
+	game.press_console()
+	for _tick: int in range(DisplayPerception.FIRST_HOLD):
+		player._physics_process(Sim.LOGICAL_TICK_SECS)
+	assert_int_equal(game.console_state, Game.ConsoleState.INACTIVE, "console remains inactive")
+	assert_float_equal(player.look_angles().y, 0.0, "player look state is level")
+	assert_float_equal(player.camera.global_position.y, PlayerMotion.standing_eye(capsule).y, "camera keeps standing eye height")
+	assert_float_equal((-player.camera.global_basis.z).y, 0.0, "camera forward stays level")
+	assert_true(room.console_display.perception_amount() == 0.0, "first reading holds native writing")
+	for _tick: int in range(DisplayPerception.FIRST_RAMP + 3):
+		player._physics_process(Sim.LOGICAL_TICK_SECS)
+	assert_true(player.motion.failure().is_empty(), player.motion.failure())
+	assert_true(room.console_display.perception_amount() == 1.0, "level gaze at interaction stand resolves through Player")
+	player.adapter.look(PI / 2.0, 0.0)
+	for _tick: int in range(DisplayPerception.DECAY):
+		player._physics_process(Sim.LOGICAL_TICK_SECS)
+	assert_true(room.console_display.perception_amount() == 0.0, "turning player yaw 90 degrees restores native writing")
+	scene.free()
+
 func _run_scene_check(method: String) -> void:
 	var output: Array = []
 	var exit_code := OS.execute(OS.get_executable_path(), [
