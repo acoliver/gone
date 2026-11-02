@@ -59,11 +59,11 @@ func test_envelope_derives_from_the_room_constants() -> void:
 	assert_float_in_range(Hallway.HALL_START_X, Pods.ROOM_LENGTH / 2.0 - 1e-4, Pods.ROOM_LENGTH / 2.0 + 1e-4, "the corridor starts at the room's east wall face")
 	assert_float_in_range(Hallway.HALL_END_X, Hallway.HALL_START_X + 24.0 - 1e-4, Hallway.HALL_START_X + 24.0 + 1e-4, "the corridor's far wall sits at its authored end")
 	var solids := Hallway.hallway_solids()
-	assert_int_equal(solids.size(), 10, "the hall shell holds floor, ceiling, the pierced north wall's three pieces, the south wall, and the far wall")
+	assert_int_equal(solids.size(), 8, "floor, ceiling and two pierced side walls; hatch owners supply transverse walls")
 	assert_vec3_equal(solids[0].center, Vector3(18.1, -0.1, 0.0), "the hall floor slab's center is pinned")
 	assert_vec3_equal(solids[0].size, Vector3(24.2, 0.2, 3.4), "the hall floor slab tucks under the room's wall band")
 	assert_vec3_equal(solids[1].center, Vector3(18.1, 3.3, 0.0), "the hall ceiling slab's center is pinned")
-	assert_vec3_equal(solids[9].center, Vector3(30.1, 1.6, 0.0), "the far wall's center is pinned")
+	assert_vec3_equal(ShipGeometry.hatch_wall_solids(ShipLayout.authored().layout.door(&"D14-C-001-H-FORE"))[2].center, Vector3(30.1, 2.8, 0.0), "the aft portal lintel replaces the solid endcap")
 	assert_vec3_equal(solids[2].center, Vector3(16.25, 1.6, -1.6), "the north wall's west pierce piece centers on its band")
 	assert_vec3_equal(solids[3].center, Vector3(30.35, 1.6, -1.6), "the north wall's east pierce piece centers on its band")
 	assert_vec3_equal(solids[4].center, Vector3(27.0, 2.7, -1.6), "the north wall's lintel sits over the power aperture")
@@ -89,10 +89,10 @@ func test_collider_sets_extend_the_walk_sim_open_and_shut() -> void:
 	var registry := Pods.PodRegistry.frozen()
 	var closed := Hallway.scene_collider_set(registry, false)
 	var open := Hallway.scene_collider_set(registry, true)
-	assert_int_equal(closed.size(), 71, "the closed set's box count is pinned")
-	assert_int_equal(open.size(), 69, "the open set drops the doorway block and the slid-aside slab")
+	assert_int_equal(closed.size(), 87, "the closed set's box count is pinned")
+	assert_int_equal(open.size(), 85, "the open set drops the doorway block and the slid-aside slab")
 	var game := _awake_game()
-	assert_int_equal(game.colliders.size(), PowerRoom.scene_collider_set(registry, false, false).size(), "the game boots on the closed set — the power room extends it from boot")
+	assert_int_equal(game.colliders.size(), PowerRoom.scene_collider_set(registry, false, false).size(), "the game boots on the full D14 set")
 	# The aperture is solid while shut and clear when open: the walk
 	# sim's doorway crossing rides exactly on this difference.
 	var aperture_hits_shut := _probe(closed, Vector3(14.7, 0.4, 1.5), Vector3(15.3, 2.0, 1.7))
@@ -296,7 +296,7 @@ func test_switch_flips_exactly_once_from_a_full_crossing() -> void:
 
 func test_rendered_shell_uses_pure_collision_recipe() -> void:
 	var hallway := Hallway.build(Game.new(0))
-	var names := ["HallFloor", "HallCeiling", "HallWallNorthWest", "HallWallNorthEast", "HallWallNorthLintel", "HallWallSouthWest", "HallWallSouthEast", "HallWallSouthLintel", "HallWallFore", "HallWallFar"]
+	var names := ["HallFloor", "HallCeiling", "HallWallNorthWest", "HallWallNorthEast", "HallWallNorthLintel", "HallWallSouthWest", "HallWallSouthEast", "HallWallSouthLintel"]
 	var solids := ShipGeometry.hallway_solids()
 	for index: int in range(solids.size()):
 		var mesh: MeshInstance3D = hallway.get_node(NodePath(names[index]))

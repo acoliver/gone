@@ -45,7 +45,7 @@ func test_all_pod_and_light_frames_rotate_without_changing_local_fixtures() -> v
 	assert_float_in_range(InputPlane.wrap_angle(rig.look_angles().x), -PI / 2 - 1e-4, -PI / 2 + 1e-4, "spawn yaw rotated once")
 	rig.free()
 
-func test_resolver_sweep_is_covariant_in_the_moved_bay_and_ends_remain_sealed() -> void:
+func test_resolver_sweep_is_covariant_in_the_moved_bay_and_ends_have_closed_hatches() -> void:
 	var game := Game.new(0)
 	var frame := game.layout.bay_to_world()
 	var local := Resolve.Capsule.new()
@@ -60,4 +60,4 @@ func test_resolver_sweep_is_covariant_in_the_moved_bay_and_ends_remain_sealed() 
 	assert_close(actual.motion.displacement, frame.basis * expected.motion.displacement, "rotated collision sweep")
 	for x: float in [5.9, 30.1]:
 		var probe := ColliderSet.Aabb.try_new(Vector3(x, 1.2, 0), Vector3(0.05, 0.5, 0.3)).box
-		assert_int_equal(game.colliders.overlapping(probe).size(), 1, "one sealed end wall before S06")
+		assert_int_equal(game.colliders.overlapping(probe).size(), 1 if x < 6 else 2, "reserved swing at X=5.9; aperture plus swing at X=30.1")

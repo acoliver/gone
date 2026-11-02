@@ -1,7 +1,7 @@
 class_name ShipCollision
 extends RefCounted
 ## Pure collider assembly. Opening sets preserve the current insertion order;
-## layout sets are lazy, stable-id ordered fixtures pending S03 adoption.
+## deck sets cache static recipes and rebuild only after an opening completes.
 
 var _layout: ShipLayout
 var _static: Dictionary = {}
@@ -46,7 +46,19 @@ func deck_set(deck: int) -> ColliderSet:
 		var solids: Array[ShipGeometry.SolidSpec] = _static[deck].duplicate()
 		for id: StringName in _layout.door_ids():
 			var door := _layout.door(id)
-			if door.deck_number() == deck:
+			if door.deck_number() != deck or door.kind() == ShipLayout.DoorKind.SIDE:
+				continue
+			if id == ShipLayout.BAY_DOOR_ID:
+				if not _open_doors.has(id):
+					solids.append(ShipGeometry.doorway_block(_layout))
+					solids[-1].id = &"D14-BAY-DOOR/BLOCKER"
+					solids.append(ShipGeometry.transformed(ShipGeometry.hatch_solids()[4], _layout.bay_to_world(), &"D14-BAY-DOOR/LEAF"))
+			elif id == ShipLayout.POWER_DOOR_ID:
+				if not _open_doors.has(id):
+					var leaf := ShipGeometry.power_door_leaf()
+					leaf.id = &"D14-POWER-DOOR/LEAF"
+					solids.append(leaf)
+			else:
 				solids.append_array(ShipGeometry.open_door_solids(door) if _open_doors.has(id) else ShipGeometry.door_blockers(door))
 		solids.sort_custom(func(a: ShipGeometry.SolidSpec, b: ShipGeometry.SolidSpec) -> bool: return String(a.id) < String(b.id))
 		var ids: Array[StringName] = []
@@ -72,57 +84,22 @@ static func bay_set(registry: Pods.PodRegistry) -> ColliderSet:
 static func hallway_set(registry: Pods.PodRegistry, door_open: bool, layout: ShipLayout = ShipLayout.authored().layout) -> ColliderSet:
 	var set := ColliderSet.new()
 	_insert_solids(set, hallway_solids(registry, door_open, layout))
+	for id: StringName in [&"D14-C-000-H-AFT", &"D14-C-001-H-FORE"]:
+		_insert_solids(set, ShipGeometry.hatch_wall_solids(layout.door(id)))
+		_insert_solids(set, ShipGeometry.hatch_frame_solids(layout.door(id)))
+		_insert_solids(set, ShipGeometry.door_blockers(layout.door(id)))
 	return set
 
 static func hallway_solids(registry: Pods.PodRegistry, door_open: bool, layout: ShipLayout) -> Array[ShipGeometry.SolidSpec]:
-	var solids: Array[ShipGeometry.SolidSpec] = []
-	var frame := layout.bay_to_world()
-	var shell := ShipGeometry.room_shell()
-	for index: int in range(shell.size()):
-		if index != ShipGeometry.ROOM_SHELL_EAST_WALL_INDEX:
-			solids.append(ShipGeometry.transformed(shell[index], frame, StringName("D14-BAY/SHELL/%03d" % index)))
-	if not door_open:
-		var block := ShipGeometry.doorway_block(layout)
-		block.id = &"D14-BAY-DOOR/BLOCKER"
-		solids.append(block)
-	for pod: Pods.Pod in registry.pods():
-		var pod_frame := ShipGeometry.pod_world_transform(pod.placement())
-		var pieces := PodGeometry.pod_solids(pod.state())
-		for index: int in range(pieces.size()):
-			var piece: PodGeometry.PodSolid = pieces[index]
-			var rotation: Quaternion = pod_frame[0] * Quaternion(Vector3.RIGHT, piece.roll_radians)
-			var center: Vector3 = pod_frame[0] * piece.center + pod_frame[1]
-			solids.append(ShipGeometry.transformed(ShipGeometry.SolidSpec.new(center, piece.size, rotation), frame, StringName("D14-BAY/POD-%03d/%03d" % [pod.id().index(), index])))
-	var hatch := ShipGeometry.hatch_solids()
-	for index: int in range(4):
-		solids.append(ShipGeometry.transformed(hatch[index], frame, StringName("D14-BAY/FRAME/%03d" % index)))
-	if not door_open:
-		solids.append(ShipGeometry.transformed(hatch[4], frame, &"D14-BAY-DOOR/LEAF"))
-	_named_solids(solids, ShipGeometry.hallway_solids(layout), "D14-S-041/SHELL")
-	_named_solids(solids, ShipGeometry.side_door_solids(), "D14-S-041/SIDE-LEAF")
-	return solids
+	return ShipGeometry.opening_hall_solids(registry, door_open, layout)
 
-static func opening_solids(registry: Pods.PodRegistry, door_open: bool, power_door_open: bool, layout: ShipLayout) -> Array[ShipGeometry.SolidSpec]:
-	var solids := hallway_solids(registry, door_open, layout)
-	_named_solids(solids, ShipGeometry.power_room_solids(), "D14-POWER/SHELL")
-	var stations := ShipGeometry.console_stations()
-	for index: int in range(stations.size()):
-		var solid := ShipGeometry.console_solid(stations[index])
-		solid.id = StringName("D14-POWER/CONSOLE/%03d" % index)
-		solids.append(solid)
-	var generator := ShipGeometry.generator_solid()
-	generator.id = &"D14-POWER/GENERATOR"
-	solids.append(generator)
-	if not power_door_open:
-		var leaf := ShipGeometry.power_door_leaf()
-		leaf.id = &"D14-POWER-DOOR/LEAF"
-		solids.append(leaf)
-	return solids
+static func opening_solids(registry: Pods.PodRegistry, door_open: bool, power_door_open: bool, layout: ShipLayout, open_ids: Dictionary = {}, include_blockers: bool = true) -> Array[ShipGeometry.SolidSpec]:
+	return ShipGeometry.opening_scene_solids(registry, door_open, power_door_open, layout, open_ids, include_blockers)
 
 static func opening_sight_solids(registry: Pods.PodRegistry, layout: ShipLayout) -> Array[AABB]:
 	var boxes: Array[AABB] = []
 	for solid: ShipGeometry.SolidSpec in opening_solids(registry, true, true, layout):
-		if String(solid.id).begins_with("D14-S-041/SIDE-LEAF/"):
+		if solid.material_role == &"door" or String(solid.id).begins_with("D14-S-041/SIDE-LEAF/"):
 			continue
 		var box := ShipGeometry.box_aabb(solid)
 		boxes.append(AABB(box.min_corner(), box.max_corner() - box.min_corner()))
@@ -132,11 +109,6 @@ static func opening_set(registry: Pods.PodRegistry, door_open: bool, power_door_
 	var set := ColliderSet.new()
 	_insert_solids(set, opening_solids(registry, door_open, power_door_open, layout))
 	return set
-
-static func _named_solids(target: Array[ShipGeometry.SolidSpec], pieces: Array[ShipGeometry.SolidSpec], owner: String) -> void:
-	for index: int in range(pieces.size()):
-		pieces[index].id = StringName("%s/%03d" % [owner, index])
-		target.append(pieces[index])
 
 static func _insert_solids(set: ColliderSet, solids: Array[ShipGeometry.SolidSpec]) -> void:
 	for solid: ShipGeometry.SolidSpec in solids:
@@ -149,3 +121,14 @@ static func _insert_pods(set: ColliderSet, registry: Pods.PodRegistry, parent: T
 			var rotation: Quaternion = frame[0] * Quaternion(Vector3.RIGHT, piece.roll_radians)
 			var center: Vector3 = frame[0] * piece.center + frame[1]
 			set.insert(ShipGeometry.box_aabb(ShipGeometry.SolidSpec.new(center, piece.size, rotation), parent))
+
+func supported_walk(capsule: Resolve.Capsule, displacement: Vector3) -> Vector3:
+	var result := displacement
+	for id: StringName in _layout.deck(14).connector_ids():
+		var connector := _layout.connector(id)
+		var landing := _layout.well(connector.well_id()).landing_bounds(14)
+		var inset := Controller.CAPSULE_RADIUS + Controller.PENETRATION_TOLERANCE
+		var end := capsule.foot + result
+		if end.x >= landing.position.x - inset and end.x <= landing.end.x + inset and end.z < landing.end.z:
+			result.z = maxf(end.z, landing.position.z + inset) - capsule.foot.z
+	return result

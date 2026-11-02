@@ -180,3 +180,44 @@ func lenses() -> Array[MeshInstance3D]:
 
 func lens_material() -> StandardMaterial3D:
 	return _lens_material
+
+static func space_mask(layout: ShipLayout, id: StringName) -> int:
+	if id == &"D14-S-040":
+		return 2
+	if id == &"D14-S-042":
+		return 4
+	if id in layout.deck(14).connector_ids():
+		return 8 << layout.connector(id).pitch_index()
+	return 1
+
+static func mesh_layers(node: Node, mask: int) -> void:
+	if node is GeometryInstance3D:
+		node.layers = mask
+	for child: Node in node.get_children():
+		mesh_layers(child, mask)
+
+static func isolate_lights(node: Node, mask: int) -> void:
+	if node is Light3D:
+		node.light_cull_mask = mask
+	for child: Node in node.get_children():
+		isolate_lights(child, mask)
+
+static func steady_fixture(origin: Vector3, mask: int, radius: float) -> Node3D:
+	var fixture := Node3D.new()
+	fixture.name = "EmergencyFixture"
+	fixture.position = origin
+	var light := OmniLight3D.new()
+	light.light_color = EMERGENCY_RED
+	light.light_energy = FIXTURE_ENERGY
+	light.omni_range = radius
+	light.light_cull_mask = mask
+	light.shadow_enabled = false
+	fixture.add_child(light)
+	var material := StandardMaterial3D.new()
+	material.albedo_color = LENS_BASE_COLOR
+	material.emission = Color(FIXTURE_EMISSIVE, 0, 0)
+	material.roughness = 0.8
+	var lens := DoorView.mesh_piece(Hallway._box_mesh(LENS_SIZE), Transform3D.IDENTITY, mask, material)
+	lens.name = "Lens"
+	fixture.add_child(lens)
+	return fixture

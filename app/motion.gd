@@ -105,7 +105,7 @@ func _advance_walk(plane: InputPlane, game: Game, yaw: float, dt: float) -> void
 	if not intent.is_ok():
 		record_failure("walk rejected: " + intent.error._to_string())
 		return
-	var step := _walk.step(intent.intent, dt, game.colliders)
+	var step := _walk.step(intent.intent, dt, game.colliders, game.collision.supported_walk)
 	_walk.end_tick()
 	if not step.is_ok():
 		record_failure("walk rejected: " + step.error._to_string())

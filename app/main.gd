@@ -43,6 +43,7 @@ func _ready() -> void:
 	_add_smoke_symptoms()
 	step = GameStep.new(game, player)
 	step.door_views = ship.door_views
+	step.ship_scene = ship
 	step.smoke = smoke_symptoms
 	step.fixtures.assign([ship.lighting, hallway, power_room])
 	voice_presentation = VoicePresentation.build(game, player)

@@ -118,6 +118,7 @@ func _build_scene() -> void:
 	root.add_child(scene)
 	game_step = GameStep.new(game, player)
 	game_step.door_views = ship.door_views
+	game_step.ship_scene = ship
 	game_step.fixtures.assign([stasis_lighting, hallway, power_room])
 	var layer := CanvasLayer.new()
 	layer.layer = 128

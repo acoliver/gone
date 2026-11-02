@@ -48,7 +48,7 @@ func _init(seed: int) -> void:
 	doors = Doors.Store.new(layout, seed)
 	collision = ShipCollision.new(layout)
 	registry = layout.bay().template()
-	colliders = ShipCollision.opening_set(registry, false, false, layout)
+	colliders = collision.deck_set(14)
 	phase = Phase.Machine.new()
 	power = Power.Grid.new()
 	wake_state = Wake.WakeState.new(Wake.WakeTimeline.authored())
@@ -58,8 +58,8 @@ func advance_doors() -> void:
 	var events := doors.tick()
 	collision.commit(events)
 	for event: Doors.Event in events:
-		if event.kind() == Doors.EventKind.OPENED and event.door_id() in [ShipLayout.BAY_DOOR_ID, ShipLayout.POWER_DOOR_ID]:
-			colliders = ShipCollision.opening_set(registry, door_open, power_door_open, layout)
+		if event.kind() == Doors.EventKind.OPENED:
+			colliders = collision.deck_set(14)
 
 func observe_bay_crossing(previous: Vector3, current: Vector3, walking: bool) -> void:
 	if not bay_exited and PortalCrossing.exits(previous, current, layout.door(ShipLayout.BAY_DOOR_ID), 14, walking, door_open):

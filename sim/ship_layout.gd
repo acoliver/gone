@@ -9,6 +9,7 @@ const STARBOARD := Vector3(0, 0, 1)
 const DECK_PITCH: float = 5.5
 const CLEAR_HEIGHT: float = 3.2
 const WALL: float = 0.2
+const CORRIDOR_WIDTH: float = 3.0
 const HATCH_WIDTH: float = 1.2
 const HATCH_HEIGHT: float = 2.4
 const BAY_ID: StringName = &"D14-BAY"
@@ -305,6 +306,11 @@ class LadderWellSpec:
 	func transfer_path(deck: int) -> PackedVector3Array:
 		assert(deck >= 1 and deck <= 30, "transfer deck exists")
 		return _transfer_paths[deck - 1].duplicate()
+	func doorway_size() -> Vector2:
+		return Vector2(1.3, 2.4)
+	func landing_bounds(deck: int) -> AABB:
+		var origin := landing(deck).origin
+		return AABB(Vector3(_bounds.position.x, origin.y, -3.3), Vector3(_bounds.size.x, ShipLayout.CLEAR_HEIGHT, 1.8))
 	func top_deck() -> int:
 		return 1
 	func bottom_deck() -> int:

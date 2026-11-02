@@ -202,9 +202,7 @@ static func power_doorway_wall_solids() -> Array[ShipGeometry.SolidSpec]:
 static func hallway_solids(layout: ShipLayout = ShipLayout.authored().layout) -> Array[ShipGeometry.SolidSpec]:
 	var slab_x_size := (HALL_END_X + WALL) - HALL_START_X
 	var slab_x_center := (HALL_START_X + HALL_END_X + WALL) / 2.0
-	var side_z := HALL_WIDTH / 2.0 + WALL / 2.0
 	var slab_z := HALL_WIDTH + 2.0 * WALL
-	var mid_height := HALL_CEILING_HEIGHT / 2.0
 	var solids: Array[ShipGeometry.SolidSpec] = [
 		ShipGeometry.SolidSpec.new(
 			Vector3(slab_x_center, -WALL / 2.0, 0.0),
@@ -217,8 +215,7 @@ static func hallway_solids(layout: ShipLayout = ShipLayout.authored().layout) ->
 	]
 	solids.append_array(power_doorway_wall_solids())
 	solids.append_array(doorway_wall_solids(layout))
-	for end_x: float in [HALL_START_X - WALL / 2, HALL_END_X + WALL / 2]:
-		solids.append(ShipGeometry.SolidSpec.new(Vector3(end_x, mid_height, 0), Vector3(WALL, HALL_CEILING_HEIGHT, slab_z)))
+
 	return _shell_roles(solids)
 
 static func side_door_solids() -> Array[ShipGeometry.SolidSpec]:
@@ -364,78 +361,84 @@ static func portal_wall(owner: StringName, frame: Transform3D, interval: Vector2
 	return placed
 
 ## Approved-layout recipes remain disconnected from production until S03.
-static func deck_static_solids(layout: ShipLayout, deck: int) -> Array[SolidSpec]:
+static func section_solids(layout: ShipLayout, section: ShipLayout.SectionSpec) -> Array[SolidSpec]:
 	var solids: Array[SolidSpec] = []
-	for id: StringName in layout.deck(deck).section_ids():
-		var section := layout.section(id)
-		_add_slabs(solids, id, section.bounds())
-		for side: int in [-1, 1]:
-			var bounds := section.bounds()
-			var owner := StringName("%s/%s" % [id, "PORT" if side < 0 else "STARBOARD"])
-			var frame := Transform3D(Basis(), Vector3(bounds.get_center().x, bounds.position.y, side * bounds.size.z / 2))
-			if side < 0:
-				frame.basis = Basis(Vector3(-1, 0, 0), Vector3.UP, Vector3(0, 0, -1))
-			if section.number() == 41:
-				var door := layout.door(ShipLayout.BAY_DOOR_ID if side > 0 else ShipLayout.POWER_DOOR_ID)
-				var start := bounds.position.x
-				var end := bounds.end.x if side > 0 else layout.power_room().bounds().end.x + WALL
-				var local_start := door.frame().affine_inverse() * Vector3(start, bounds.position.y, frame.origin.z)
-				var local_end := door.frame().affine_inverse() * Vector3(end, bounds.position.y, frame.origin.z)
-				solids.append_array(portal_wall(owner, door.frame(), Vector2(minf(local_start.x, local_end.x), maxf(local_start.x, local_end.x)), bounds.size.y, door.aperture()))
-			else:
-				solids.append(transformed(SolidSpec.new(Vector3(0, bounds.size.y / 2, WALL / 2), Vector3(bounds.size.x, bounds.size.y, WALL)), frame, StringName("%s/000" % owner)))
-		for door_id: StringName in section.side_door_ids():
-			var door := layout.door(door_id)
-			solids.append(transformed(SolidSpec.new(Vector3(0, door.aperture().y / 2, -SIDE_DOOR_THICKNESS / 2), Vector3(door.aperture().x, door.aperture().y, SIDE_DOOR_THICKNESS)), door.frame(), StringName("%s/LEAF" % door_id)))
+	var bounds := section.bounds()
+	_add_slabs(solids, section.id(), bounds)
+	for side: int in [-1, 1]:
+		var owner := StringName("%s/%s/000" % [section.id(), "PORT" if side < 0 else "STARBOARD"])
+		solids.append(SolidSpec.new(Vector3(bounds.get_center().x, bounds.get_center().y, side * (bounds.size.z + WALL) / 2), Vector3(bounds.size.x, bounds.size.y, WALL), Quaternion.IDENTITY, owner))
+	for id: StringName in section.side_door_ids():
+		var door := layout.door(id)
+		solids.append(transformed(SolidSpec.new(Vector3(0, door.aperture().y / 2, -SIDE_DOOR_THICKNESS / 2), Vector3(door.aperture().x, door.aperture().y, SIDE_DOOR_THICKNESS), Quaternion.IDENTITY, StringName("%s/LEAF" % id), &"door"), door.frame()))
+	return solids
+
+static func connector_solids(layout: ShipLayout, connector: ShipLayout.ConnectorSpec) -> Array[SolidSpec]:
+	var solids: Array[SolidSpec] = []
+	var bounds := connector.bounds()
+	var id := connector.id()
+	_add_slabs(solids, id, bounds)
+	var port := connector.port_opening()
+	port.basis = Basis(Vector3(-1, 0, 0), Vector3.UP, Vector3(0, 0, -1))
+	var start := bounds.position.x
+	if connector.deck_number() == 14 and connector.pitch_index() == 1:
+		start = layout.power_room().bounds().end.x + WALL
+	solids.append_array(portal_wall(StringName("%s/PORT" % id), port, Vector2(port.origin.x - bounds.end.x, port.origin.x - start), bounds.size.y, layout.well(connector.well_id()).doorway_size()))
+	var lift := layout.lift(connector.lift_id())
+	var door := layout.door(lift.door_id())
+	solids.append_array(portal_wall(StringName("%s/STARBOARD" % id), door.frame(), Vector2(bounds.position.x - door.frame().origin.x, bounds.end.x - door.frame().origin.x), bounds.size.y, door.aperture()))
+	var well := layout.well(connector.well_id())
+	var landing := well.landing_bounds(connector.deck_number())
+	_add_slabs(solids, StringName("%s/LANDING" % id), landing)
+	var shaft := well.bounds()
+	for side: int in [-1, 1]:
+		var x := shaft.position.x - WALL / 2 if side < 0 else shaft.end.x + WALL / 2
+		solids.append(SolidSpec.new(Vector3(x, bounds.get_center().y, (shaft.position.z + bounds.position.z - WALL) / 2), Vector3(WALL, bounds.size.y, bounds.position.z - WALL - shaft.position.z), Quaternion.IDENTITY, StringName("%s/LANDING/%s/000" % [id, "PORT" if side < 0 else "STARBOARD"])))
+	solids.append(SolidSpec.new(Vector3(shaft.get_center().x, bounds.get_center().y, shaft.position.z - WALL / 2), Vector3(shaft.size.x + 2 * WALL, bounds.size.y, WALL), Quaternion.IDENTITY, StringName("%s/LANDING/BACK/000" % id)))
+	var shell := lift.bounds()
+	for side: int in [-1, 1]:
+		solids.append(SolidSpec.new(Vector3(shell.get_center().x + side * (shell.size.x + WALL) / 2, shell.get_center().y, shell.get_center().z), Vector3(WALL, shell.size.y, shell.size.z), Quaternion.IDENTITY, StringName("%s/SIDE-%d/000" % [lift.id(), side])))
+	solids.append(SolidSpec.new(Vector3(shell.get_center().x, shell.get_center().y, shell.end.z + WALL / 2), Vector3(shell.size.x, shell.size.y, WALL), Quaternion.IDENTITY, StringName("%s/BACK/000" % lift.id())))
+	_add_slabs(solids, lift.id(), shell)
+	return solids
+
+static func hatch_frame_solids(door: ShipLayout.DoorSpec) -> Array[SolidSpec]:
+	var aperture := door.aperture()
+	var solids: Array[SolidSpec] = []
+	for side: int in [-1, 1]:
+		solids.append(transformed(SolidSpec.new(Vector3(side * (aperture.x / 2 + FRAME_POST_WIDTH / 2), aperture.y / 2, WALL / 2), Vector3(FRAME_POST_WIDTH, aperture.y, WALL + 0.12), Quaternion.IDENTITY, StringName("%s/FRAME/%s" % [door.id(), "LEFT" if side < 0 else "RIGHT"]), &"frame"), door.frame()))
+	solids.append(transformed(SolidSpec.new(Vector3(0, aperture.y + FRAME_POST_WIDTH / 2, WALL / 2), Vector3(aperture.x + 2 * FRAME_POST_WIDTH, FRAME_POST_WIDTH, WALL + 0.12), Quaternion.IDENTITY, StringName("%s/FRAME/TOP" % door.id()), &"frame"), door.frame()))
+	solids.append(transformed(SolidSpec.new(Vector3(0, SILL_HEIGHT / 2, WALL / 2), Vector3(aperture.x + 2 * FRAME_POST_WIDTH, SILL_HEIGHT, WALL + 0.12), Quaternion.IDENTITY, StringName("%s/COAMING" % door.id()), &"frame"), door.frame()))
+	return solids
+
+static func hatch_wall_solids(door: ShipLayout.DoorSpec) -> Array[SolidSpec]:
+	return portal_wall(StringName("%s/WALL" % door.id()), door.frame(), Vector2(-ShipLayout.CORRIDOR_WIDTH / 2, ShipLayout.CORRIDOR_WIDTH / 2), ShipLayout.CLEAR_HEIGHT, door.aperture())
+
+static func d14_extension_solids(layout: ShipLayout) -> Array[SolidSpec]:
+	var solids: Array[SolidSpec] = []
+	for id: StringName in layout.deck(14).section_ids():
+		if layout.section(id).number() != 41:
+			solids.append_array(section_solids(layout, layout.section(id)))
+	for id: StringName in layout.deck(14).connector_ids():
+		solids.append_array(connector_solids(layout, layout.connector(id)))
+	for id: StringName in layout.door_ids():
+		var door := layout.door(id)
+		if door.deck_number() == 14 and door.kind() == ShipLayout.DoorKind.HATCH:
+			solids.append_array(hatch_wall_solids(door))
+			solids.append_array(hatch_frame_solids(door))
+	return solids
+
+static func deck_static_solids(layout: ShipLayout, deck: int) -> Array[SolidSpec]:
+	if deck == 14:
+		return opening_scene_solids(layout.bay().template(), true, true, layout, {}, false)
+	var solids: Array[SolidSpec] = []
 	for id: StringName in layout.deck(deck).connector_ids():
-		var connector := layout.connector(id)
-		var bounds := connector.bounds()
-		_add_slabs(solids, id, bounds)
-		var port := connector.port_opening()
-		port.basis = Basis(Vector3(-1, 0, 0), Vector3.UP, Vector3(0, 0, -1))
-		var start := bounds.position.x
-		if deck == 14 and connector.pitch_index() == 1:
-			start = layout.power_room().bounds().end.x + WALL
-		solids.append_array(portal_wall(StringName("%s/PORT" % id), port, Vector2(port.origin.x - bounds.end.x, port.origin.x - start), bounds.size.y, Vector2(1.3, 2.4)))
-		var lift := layout.lift(connector.lift_id())
-		var door := layout.door(lift.door_id())
-		solids.append_array(portal_wall(StringName("%s/STARBOARD" % id), door.frame(), Vector2(-3, 3), bounds.size.y, door.aperture()))
-		var well_bounds := layout.well(connector.well_id()).bounds()
-		_add_slabs(solids, StringName("%s/LANDING" % id), AABB(Vector3(well_bounds.position.x, bounds.position.y, -3.3), Vector3(well_bounds.size.x, bounds.size.y, 1.8)))
-		var shell := lift.bounds()
-		for side: int in [-1, 1]:
-			solids.append(SolidSpec.new(Vector3(shell.get_center().x + side * (shell.size.x + WALL) / 2, shell.get_center().y, shell.get_center().z), Vector3(WALL, shell.size.y, shell.size.z), Quaternion.IDENTITY, StringName("%s/SIDE-%d/000" % [lift.id(), side])))
-		solids.append(SolidSpec.new(Vector3(shell.get_center().x, shell.get_center().y, shell.end.z + WALL / 2), Vector3(shell.size.x, shell.size.y, WALL), Quaternion.IDENTITY, StringName("%s/BACK/000" % lift.id())))
+		solids.append_array(connector_solids(layout, layout.connector(id)))
 	for id: StringName in layout.door_ids():
 		var door := layout.door(id)
 		if door.deck_number() == deck and door.kind() == ShipLayout.DoorKind.HATCH:
-			solids.append_array(portal_wall(StringName("%s/WALL" % id), door.frame(), Vector2(-1.5, 1.5), ShipLayout.CLEAR_HEIGHT, door.aperture()))
-	if deck == 14:
-		var shell := room_shell()
-		for index: int in range(shell.size()):
-			if index != ROOM_SHELL_EAST_WALL_INDEX:
-				solids.append(transformed(shell[index], layout.bay_to_world(), StringName("D14-BAY/SHELL/%03d" % index)))
-		for pod: Pods.Pod in layout.bay().template().pods():
-			var frame_parts := pod_world_transform(pod.placement())
-			var frame := layout.bay_to_world() * Transform3D(Basis(frame_parts[0]), frame_parts[1])
-			var pieces := PodGeometry.pod_solids(pod.state())
-			for index: int in range(pieces.size()):
-				var piece: PodGeometry.PodSolid = pieces[index]
-				solids.append(transformed(SolidSpec.new(piece.center, piece.size, Quaternion(Vector3.RIGHT, piece.roll_radians)), frame, StringName("D14-BAY/POD-%03d/%03d" % [pod.id().index(), index])))
-		var hatch := hatch_solids()
-		for index: int in range(4):
-			solids.append(transformed(hatch[index], layout.bay_to_world(), StringName("D14-BAY/FRAME/%03d" % index)))
-		var power := power_room_solids()
-		for index: int in range(5):
-			power[index].id = StringName("D14-POWER/SHELL/%03d" % index)
-			solids.append(power[index])
-		for index: int in range(console_stations().size()):
-			var console := console_solid(console_stations()[index])
-			console.id = StringName("D14-POWER/CONSOLE/%03d" % index)
-			solids.append(console)
-		var generator := generator_solid()
-		generator.id = &"D14-POWER/GENERATOR/000"
-		solids.append(generator)
+			solids.append_array(hatch_wall_solids(door))
+			solids.append_array(hatch_frame_solids(door))
 	solids.sort_custom(func(a: SolidSpec, b: SolidSpec) -> bool: return String(a.id) < String(b.id))
 	return solids
 
@@ -471,3 +474,59 @@ static func _shell_roles(solids: Array[SolidSpec]) -> Array[SolidSpec]:
 	solids[0].material_role = &"floor"
 	solids[1].material_role = &"ceiling"
 	return solids
+
+static func opening_hall_solids(registry: Pods.PodRegistry, door_open: bool, layout: ShipLayout) -> Array[ShipGeometry.SolidSpec]:
+	var solids: Array[ShipGeometry.SolidSpec] = []
+	var frame := layout.bay_to_world()
+	var shell := ShipGeometry.room_shell()
+	for index: int in range(shell.size()):
+		if index != ShipGeometry.ROOM_SHELL_EAST_WALL_INDEX:
+			solids.append(ShipGeometry.transformed(shell[index], frame, StringName("D14-BAY/SHELL/%03d" % index)))
+	if not door_open:
+		var block := ShipGeometry.doorway_block(layout)
+		block.id = &"D14-BAY-DOOR/BLOCKER"
+		solids.append(block)
+	for pod: Pods.Pod in registry.pods():
+		var pod_frame := ShipGeometry.pod_world_transform(pod.placement())
+		var pieces := PodGeometry.pod_solids(pod.state())
+		for index: int in range(pieces.size()):
+			var piece: PodGeometry.PodSolid = pieces[index]
+			var rotation: Quaternion = pod_frame[0] * Quaternion(Vector3.RIGHT, piece.roll_radians)
+			var center: Vector3 = pod_frame[0] * piece.center + pod_frame[1]
+			solids.append(ShipGeometry.transformed(ShipGeometry.SolidSpec.new(center, piece.size, rotation), frame, StringName("D14-BAY/POD-%03d/%03d" % [pod.id().index(), index])))
+	var hatch := ShipGeometry.hatch_solids()
+	for index: int in range(4):
+		solids.append(ShipGeometry.transformed(hatch[index], frame, StringName("D14-BAY/FRAME/%03d" % index)))
+	if not door_open:
+		solids.append(ShipGeometry.transformed(hatch[4], frame, &"D14-BAY-DOOR/LEAF"))
+	_named_solids(solids, ShipGeometry.hallway_solids(layout), "D14-S-041/SHELL")
+	_named_solids(solids, ShipGeometry.side_door_solids(), "D14-S-041/SIDE-LEAF")
+	return solids
+
+static func opening_scene_solids(registry: Pods.PodRegistry, door_open: bool, power_door_open: bool, layout: ShipLayout, open_ids: Dictionary = {}, include_blockers: bool = true) -> Array[ShipGeometry.SolidSpec]:
+	var solids := opening_hall_solids(registry, door_open, layout)
+	_named_solids(solids, ShipGeometry.power_room_solids(), "D14-POWER/SHELL")
+	var stations := ShipGeometry.console_stations()
+	for index: int in range(stations.size()):
+		var solid := ShipGeometry.console_solid(stations[index])
+		solid.id = StringName("D14-POWER/CONSOLE/%03d" % index)
+		solids.append(solid)
+	var generator := ShipGeometry.generator_solid()
+	generator.id = &"D14-POWER/GENERATOR"
+	solids.append(generator)
+	if not power_door_open:
+		var leaf := ShipGeometry.power_door_leaf()
+		leaf.id = &"D14-POWER-DOOR/LEAF"
+		solids.append(leaf)
+	solids.append_array(ShipGeometry.d14_extension_solids(layout))
+	if include_blockers:
+		for id: StringName in layout.door_ids():
+			var door := layout.door(id)
+			if door.deck_number() == 14 and door.kind() in [ShipLayout.DoorKind.HATCH, ShipLayout.DoorKind.LIFT]:
+				solids.append_array(ShipGeometry.open_door_solids(door) if open_ids.has(id) else ShipGeometry.door_blockers(door))
+	return solids
+
+static func _named_solids(target: Array[ShipGeometry.SolidSpec], pieces: Array[ShipGeometry.SolidSpec], owner: String) -> void:
+	for index: int in range(pieces.size()):
+		pieces[index].id = StringName("%s/%03d" % [owner, index])
+		target.append(pieces[index])

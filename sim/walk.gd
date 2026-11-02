@@ -254,13 +254,15 @@ class WalkState:
 	## resolved position, and advance the steadying clock by dt. The tick
 	## moves at the speed the ramp held when the call arrived; the clock
 	## advances after the sweep. Errors never mutate.
-	func step(intent: Walk.MoveIntent, dt: float, colliders: ColliderSet) -> Walk.StepResult:
+	func step(intent: Walk.MoveIntent, dt: float, colliders: ColliderSet, support: Callable = Callable()) -> Walk.StepResult:
 		if _tick_stepped:
 			return Walk.StepResult.with_error(Walk.WalkError.step_already_taken())
 		if not is_finite(dt) or dt <= 0.0:
 			return Walk.StepResult.with_error(Walk.WalkError.invalid_tick_seconds(dt))
 		var direction: Vector3 = intent.world_direction()
 		var intended: Vector3 = direction * (speed() * dt)
+		if support.is_valid():
+			intended = support.call(_capsule, intended)
 		var resolved: Resolve.Result = Resolve.resolve_motion(_capsule, intended, colliders)
 		if not resolved.is_ok():
 			return Walk.StepResult.with_error(Walk.WalkError.resolver_error(resolved.error))
