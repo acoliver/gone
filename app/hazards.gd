@@ -6,7 +6,8 @@ extends Node3D
 ## ceiling, carried by a GPUParticles3D field: a ceiling emission
 ## box, slow fall drift, and a structured billboard puff shader whose
 ## two seed-placed lobes fade to zero inside the quad edge
-## (smoke_puff.gdshader). Dressing only: no colliders, no sim role.
+## (smoke_puff.gdshader). Reads bay ventilation for particle opacity,
+## emission and ceiling hiss; never advances the sim or changes sparks.
 
 const SPARK_LIGHT_COLOR: Color = Color(1.5, 0.35, 0.1)
 const SPARK_MIN_ENERGY: float = 2.5
@@ -35,9 +36,18 @@ var _active_index: int = -1
 var _next_spot: int = 0
 var _rng := RandomNumberGenerator.new()
 
-static func build() -> Hazards:
+const VENT_HISS: AudioStreamWAV = preload("res://assets/audio/ventilation/ceiling-clear.wav")
+
+var _ventilation: BayVentilation
+var _smoke_field: GPUParticles3D
+var _smoke_shader: ShaderMaterial
+var _vents: Array[AudioStreamPlayer3D] = []
+var _vent_started: bool = false
+
+static func build(ventilation: BayVentilation = BayVentilation.new()) -> Hazards:
 	var hazards := Hazards.new()
 	hazards.name = "Hazards"
+	hazards._ventilation = ventilation
 	hazards._rng.randomize()
 	var trays := Placement.cable_trays()
 	assert(trays.size() >= SPARK_COUNT, "the authored ceiling damage carries spark spots")
@@ -45,8 +55,34 @@ static func build() -> Hazards:
 	for index: int in range(SPARK_COUNT):
 		var spot: Vector3 = trays[index].center + Vector3(0.0, -0.2, 0.0)
 		hazards.add_child(hazards._spark_spot(spot, spark_material))
-	hazards.add_child(hazards._smoke())
+	hazards._smoke_field = hazards._smoke()
+	hazards._smoke_shader = hazards._smoke_field.draw_pass_1.material as ShaderMaterial
+	hazards.add_child(hazards._smoke_field)
+	for x: float in [-3.0, 3.0]:
+		var vent := AudioStreamPlayer3D.new()
+		vent.name = "CeilingVent"
+		vent.position = Vector3(x, 3.05, 0.0)
+		vent.stream = VENT_HISS
+		vent.volume_db = -6.0
+		vent.max_distance = 18.0
+		hazards.add_child(vent)
+		hazards._vents.append(vent)
+	hazards.process_frame(0.0)
 	return hazards
+
+## Presentation only: the logical clock owns the density, never this node.
+func process_frame(_delta_secs: float) -> void:
+	var density := _ventilation.density()
+	_smoke_field.emitting = not _ventilation.started()
+	_smoke_field.visible = density > 0.0
+	_smoke_shader.set_shader_parameter("opacity", SMOKE_OPACITY * density)
+	if _ventilation.clearing() and not _vent_started and is_inside_tree():
+		_vent_started = true
+		for vent: AudioStreamPlayer3D in _vents:
+			vent.play(_ventilation.elapsed_secs())
+	elif not _ventilation.clearing():
+		for vent: AudioStreamPlayer3D in _vents:
+			vent.stop()
 
 func _spark_spot(spot: Vector3, spark_material: StandardMaterial3D) -> Node3D:
 	var group := Node3D.new()

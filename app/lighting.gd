@@ -4,9 +4,9 @@ extends Node3D
 ## gone_app lighting.rs (issue #10): eight red OmniLight3D fixtures —
 ## seven wall-mounted above each registry pod plus one over the hatch
 ## lintel — with shared lens cuboids whose single emissive material the
-## FixtureFade bridge interpolates. The bridge reads the Game's PowerGrid
-## and never writes it. Ambient stays black, fog stays off, and the room
-## authors no other light source. The sim is authoritative.
+## FixtureFade bridge interpolates. Secondary power hands these fixtures
+## over to six regular white ceiling strips. The bridge only reads Game;
+## ambient stays black and fog stays off.
 
 const FIXTURE_LUMENS: float = 45.0
 const FIXTURE_RANGE: float = 6.0
@@ -17,8 +17,7 @@ const LENS_SIZE: Vector3 = Vector3(0.42, 0.16, 0.12)
 const LENS_BASE_COLOR: Color = Color(0.18, 0.01, 0.01)
 ## The regular-service white the activated secondary power restores
 ## (issue #59): warm-neutral strips in the hallway and the power room,
-## dim by design — the emergency red hands off to ordinary light, not
-## to a bright one. The stasis bay's red circuit never reads these.
+## dim by design, shared by the bay, hallway and power room.
 const REGULAR_WHITE: Color = Color(1.0, 0.97, 0.90)
 const REGULAR_EMISSIVE: float = 1.1
 const REGULAR_RANGE: float = 7.0
@@ -37,7 +36,13 @@ const FIXTURE_ENERGY: float = FIXTURE_LUMENS / (2.0 * TAU)
 ## Plain exposure multiplier standing in for the Rust slice's EV100 0.
 const EXPOSURE_MULTIPLIER: float = 2.0
 
-var _grid: Power.Grid = null
+const REGULAR_STATIONS_X: Array[float] = [-4.0, 0.0, 4.0]
+const REGULAR_STATIONS_Z: Array[float] = [-1.6, 1.6]
+
+var _game: Game
+var _white_fade: Intensity.FixtureFade
+var _white_lights: Array[OmniLight3D] = []
+var _white_lens_material: StandardMaterial3D
 var _fade: Intensity.FixtureFade = null
 var _fixtures: Array[Node3D] = []
 var _lights: Array[OmniLight3D] = []
@@ -49,8 +54,8 @@ var _remainder: float = 0.0
 static func build(game: Game) -> Lighting:
 	var lighting := Lighting.new()
 	lighting.name = "Lighting"
-	lighting._grid = game.power
-	var level: float = game.emergency_circuit_target()
+	lighting._game = game
+	var level: float = lighting._circuit_target()
 	lighting._lens_mesh = BoxMesh.new()
 	lighting._lens_mesh.size = LENS_SIZE
 	lighting._lens_material = StandardMaterial3D.new()
@@ -63,6 +68,19 @@ static func build(game: Game) -> Lighting:
 	lighting._fade = held.fade
 	for fixture_transform: Transform3D in fixture_transforms(game.registry):
 		lighting.add_child(lighting._fixture(fixture_transform, level))
+	var white_level := 1.0 if game.power_active else 0.0
+	lighting._white_fade = Intensity.FixtureFade.holding(white_level).fade
+	lighting._white_lens_material = StandardMaterial3D.new()
+	lighting._white_lens_material.albedo_color = Hallway.REGULAR_LENS_BASE_COLOR
+	lighting._white_lens_material.emission_enabled = true
+	lighting._white_lens_material.roughness = 0.8
+	var white_mesh := BoxMesh.new()
+	white_mesh.size = Hallway.REGULAR_LENS_SIZE
+	white_mesh.material = lighting._white_lens_material
+	for x: float in REGULAR_STATIONS_X:
+		for z: float in REGULAR_STATIONS_Z:
+			lighting.add_child(lighting._white_fixture(Vector3(x, Pods.ROOM_CEILING_HEIGHT - 0.08, z), white_mesh))
+	lighting._apply_white_level(white_level)
 	lighting.add_child(_world_environment())
 	return lighting
 
@@ -143,14 +161,50 @@ func process_frame(delta_secs: float) -> void:
 	var target: float = _circuit_target()
 	if _fade.target() != target:
 		_fade.retarget(target, FIXTURE_SETTLE_TICKS)
+	var white_target := 1.0 if _game.power_active else 0.0
+	if _white_fade.target() != white_target:
+		_white_fade.retarget(white_target, FIXTURE_SETTLE_TICKS)
 	_remainder += delta_secs
 	while _remainder >= Sim.LOGICAL_TICK_SECS:
 		_remainder -= Sim.LOGICAL_TICK_SECS
 		_fade.tick()
+		_white_fade.tick()
 	_apply_level(_fade.intensity())
+	_apply_white_level(_white_fade.intensity())
 
 func _circuit_target() -> float:
-	return 1.0 if Power.emergency_fixtures_lit(_grid.state()) else 0.0
+	return 0.0 if _game.power_active else _game.emergency_circuit_target()
+
+func _white_fixture(origin: Vector3, mesh: BoxMesh) -> Node3D:
+	var fixture := Node3D.new()
+	fixture.name = "BayRegularStrip"
+	fixture.position = origin
+	var light := OmniLight3D.new()
+	light.light_color = REGULAR_WHITE
+	light.omni_range = REGULAR_RANGE
+	light.shadow_enabled = false
+	light.position.y = -0.12
+	fixture.add_child(light)
+	var lens := MeshInstance3D.new()
+	lens.name = "Lens"
+	lens.mesh = mesh
+	fixture.add_child(lens)
+	_white_lights.append(light)
+	return fixture
+
+func _apply_white_level(level: float) -> void:
+	for light: OmniLight3D in _white_lights:
+		light.light_energy = regular_energy() * level
+	_white_lens_material.emission = REGULAR_WHITE * REGULAR_EMISSIVE * level
+
+func white_level() -> float:
+	return _white_fade.intensity()
+
+func white_lights() -> Array[OmniLight3D]:
+	return _white_lights
+
+func white_lens_material() -> StandardMaterial3D:
+	return _white_lens_material
 
 ## Writes render state only, and only when a value actually changed: no
 ## per-tick material allocation.
@@ -167,7 +221,7 @@ func level() -> float:
 	return _fade.intensity()
 
 func is_settled() -> bool:
-	return _fade.is_settled()
+	return _fade.is_settled() and _white_fade.is_settled()
 
 func fixtures() -> Array[Node3D]:
 	return _fixtures

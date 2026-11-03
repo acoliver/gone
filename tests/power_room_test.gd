@@ -7,8 +7,7 @@ var _bay_frame := ShipLayout.authored().layout.bay_to_world()
 ## aside, the console census reads exactly one working screen among the
 ## dead ones, the native and perceived labels change on presses only
 ## when they act, and the activation hands the hallway and the power
-## room from emergency red to dim regular white while the stasis bay
-## keeps its red.
+## room and bay from emergency red to dim regular white.
 
 const DT: float = 1.0 / 60.0
 
@@ -277,12 +276,14 @@ func test_activation_hands_both_rooms_to_regular_white() -> void:
 	for _tick: int in range(Lighting.FIXTURE_SETTLE_TICKS):
 		hallway.process_frame(Sim.LOGICAL_TICK_SECS)
 		room.process_frame(Sim.LOGICAL_TICK_SECS)
+		stasis.process_frame(Sim.LOGICAL_TICK_SECS)
 	assert_float_in_range(hallway.level(), -1e-4, 1e-4, "the corridor's red hands off after activation")
 	assert_float_in_range(hallway.white_level(), 0.999, 1.001, "the corridor's regular strips settle white")
 	assert_float_in_range(room.level(), -1e-4, 1e-4, "the power room's red hands off after activation")
 	assert_float_in_range(room.white_level(), 0.999, 1.001, "the power room's regular strips settle white")
 	assert_float_in_range(room.generator_lit(), 0.999, 1.001, "the generator's glow settles lit")
-	assert_float_in_range(stasis.level(), 0.999, 1.001, "the stasis bay keeps its red through the activation")
+	assert_float_in_range(stasis.level(), -1e-4, 1e-4, "the stasis bay's red hands off after activation")
+	assert_float_in_range(stasis.white_level(), 0.999, 1.001, "the stasis bay settles to regular white")
 	assert_true(room.native_state_text() == "shenu", "the screen renders the native active label")
 	assert_true(room.perceived_state_text() == "EN FUNCIONAMIENTO", "the perception layer carries the active label")
 	assert_true(room.rendered_console_state() == "active", "the room renders the active state")

@@ -17,6 +17,7 @@ var registry: Pods.PodRegistry
 var colliders: ColliderSet
 var phase: Phase.Machine
 var power: Power.Grid
+var ventilation := BayVentilation.new()
 var wake_state: Wake.WakeState
 var exit_path: Exit.ExitPath
 ## The doorway into the hallway opens on act with the rod carried and
@@ -27,8 +28,8 @@ var exit_path: Exit.ExitPath
 ## on act (no rod gate — it is a crew door, not a pry-bar hatch), and
 ## its working console walks the secondary power's state machine — one
 ## press reads the label, a second activates the generator, and the
-## hallway plus the power room hand their red emergency light over to
-## dim regular white while the stasis bay keeps its red.
+## hallway, power room and bay hand their emergency red over to regular
+## white, and secondary-powered ventilation clears the bay.
 var door_open: bool:
 	get: return doors.snapshot(ShipLayout.BAY_DOOR_ID).state == Doors.State.OPEN
 var hallway_lit: bool = false

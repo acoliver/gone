@@ -414,7 +414,9 @@ func capture_next_beat() -> void:
 			"hall_white_level": hallway.white_level(),
 			"power_red_level": power_room.level(),
 			"power_white_level": power_room.white_level(),
-			"stasis_red_level": stasis_lighting.level()})
+				"stasis_red_level": stasis_lighting.level(),
+				"stasis_white_level": stasis_lighting.white_level(),
+				"bay_smoke_density": game.ventilation.density()})
 	elif beat.name == "hall-dark" or beat.name == "hall-lit" or beat.name == "hall-white":
 		report.add_event({"kind": "hallway", "tick": pinned_tick,
 			"frame": pinned_frame, "lit": game.hallway_lit,
@@ -430,7 +432,9 @@ func capture_next_beat() -> void:
 				"hall_white_level": hallway.white_level(),
 				"power_red_level": power_room.level(),
 				"power_white_level": power_room.white_level(),
-				"stasis_red_level": stasis_lighting.level()})
+			"stasis_red_level": stasis_lighting.level(),
+			"stasis_white_level": stasis_lighting.white_level(),
+			"bay_smoke_density": game.ventilation.density()})
 	if connector_evidence != null:
 		var ship := game_step.ship_scene
 		var residency := ConnectorEvidence.pose(player)

@@ -1,0 +1,12 @@
+{
+  "version": "ventilation-procedural-v1",
+  "prng": "xorshift32",
+  "seed": 1906422978,
+  "frames": 384000,
+  "sample_rate": 48000,
+  "channels": 1,
+  "format": "PCM16LE",
+  "peak_dbfs": -24,
+  "file": "ceiling-clear.wav",
+  "sha256": "3f4bbe5959e2efde9a86eae1407cf0a1db6bdfb9183b9ad7aba41e09c85d6efa"
+}

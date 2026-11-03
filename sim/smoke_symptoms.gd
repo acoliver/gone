@@ -57,10 +57,12 @@ var _breath_age := -1
 
 var _world_to_bay: Transform3D
 var _volume: AABB
+var _ventilation: BayVentilation
 
-func _init(layout: ShipLayout = ShipLayout.authored().layout) -> void:
+func _init(layout: ShipLayout = ShipLayout.authored().layout, ventilation: BayVentilation = BayVentilation.new()) -> void:
 	_world_to_bay = layout.world_to_bay()
 	_volume = layout.bay().local_bounds()
+	_ventilation = ventilation
 
 func exposure_at(world_position: Vector3) -> float:
 	var position := _world_to_bay * world_position
@@ -69,8 +71,8 @@ func exposure_at(world_position: Vector3) -> float:
 	if position.y < _volume.position.y or position.y > _volume.end.y or position.z < _volume.position.z or position.z > _volume.end.z or position.x >= HALL_START:
 		return 0.0
 	if position.x <= BAY_END:
-		return 1.0
-	return 1.0 - (position.x - BAY_END) / (HALL_START - BAY_END)
+		return _ventilation.density()
+	return (1.0 - (position.x - BAY_END) / (HALL_START - BAY_END)) * _ventilation.density()
 
 func tick(phase_ready: bool, position: Vector3) -> void:
 	_tick += 1

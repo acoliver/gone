@@ -10,8 +10,8 @@ extends Node3D
 ## share that too-new quality; the reason is a later reveal). Under the
 ## emergency circuit the room reads red like the hall; actioning the
 ## working console twice (palo / INACTIVO to shenu / EN FUNCIONAMIENTO) lights the generator and
-## hands the hallway and this room over to dim regular white while the
-## stasis bay keeps its red. Colliders extend the hallway's set from
+## hands the hallway, bay and this room over to dim regular white.
+## Colliders extend the hallway's set from
 ## solids authored here (Placement stays untouched): one construction
 ## path — the scene spawns these placements verbatim and the collider
 ## set derives from the same data.
@@ -94,7 +94,7 @@ const GENERATOR_LIGHT_ENERGY: float = 1.2
 ## emergency domes on the walls (dark until the beside-door switch
 ## lights the corridor's circuit) and regular white ceiling strips down
 ## the room's centerline (dead until the secondary power activates).
-## The stasis bay's red circuit is separate and keeps its red.
+## The bay uses the same secondary-powered handoff.
 const FIXTURE_WALL_MOUNT_Y: float = Lighting.WALL_MOUNT_HEIGHT
 const FIXTURE_STANDOFF: float = Lighting.WALL_STANDOFF
 const RED_FIXTURE_POSITIONS: Array[Vector3] = [

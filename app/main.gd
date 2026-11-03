@@ -8,8 +8,8 @@ const SMOKE_COUGH: AudioStreamWAV = preload("res://assets/audio/smoke/cough-mid-
 ## greybox room shell and fixtures around the authored pod-v2 pod
 ## shells) and owns the Game container, ticking the sim at the fixed
 ## 60 Hz physics rate. The emergency lighting node reads the sim's
-## power grid through its own bridge; ceiling hazards are inert
-## dressing.
+## power state through its own bridge; ceiling smoke reads the same
+## fixed-tick ventilation state as smoke exposure.
 
 var step: GameStep
 var game: Game
@@ -72,7 +72,7 @@ func _add_wake_audio() -> void:
 	wake_present.wake_started.connect(player_2d.play)
 
 func _add_smoke_symptoms() -> void:
-	smoke_symptoms = SmokeSymptoms.new(game.layout)
+	smoke_symptoms = SmokeSymptoms.new(game.layout, game.ventilation)
 	var layer := SmokeVision.build(smoke_symptoms, wake_pass)
 	add_child(layer)
 	smoke_audio = AudioStreamPlayer.new()

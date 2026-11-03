@@ -5,6 +5,33 @@ extends SimTestCase
 ## ceiling-dense distribution and the spark strobes stay exactly as
 ## they were.
 
+func test_ventilation_fades_particles_stops_emission_and_preserves_sparks() -> void:
+	var game := Game.new(71)
+	var hazards := Hazards.build(game.ventilation)
+	var smoke: GPUParticles3D = hazards.get_node("CeilingSmoke")
+	var material := smoke.draw_pass_1.material as ShaderMaterial
+	var control := Hazards.build()
+	hazards._rng.seed = 71
+	control._rng.seed = 71
+	game.press_console()
+	game.press_console()
+	var step := GameStep.new(game)
+	for tick in range(1, 1081):
+		step.advance()
+		hazards.process_frame(0.0)
+		hazards._physics_process(Sim.LOGICAL_TICK_SECS)
+		control._physics_process(Sim.LOGICAL_TICK_SECS)
+		assert_false(smoke.emitting, "ventilation stops new smoke immediately")
+		assert_float_equal(material.get_shader_parameter("opacity"), Hazards.SMOKE_OPACITY * game.ventilation.density(), "particles fade with sim density")
+		assert_true(hazards.is_spark_active() == control.is_spark_active(), "spark schedule is unaffected")
+		assert_float_equal(hazards._next_burst_in, control._next_burst_in, "burst intervals unchanged")
+		assert_int_equal(hazards._next_spot, control._next_spot, "spark spots still cycle")
+		if tick >= 480:
+			assert_false(smoke.visible, "settled smoke stays invisible")
+	assert_int_equal(hazards.find_children("*", "AudioStreamPlayer3D", true, false).size(), 2, "ceiling vents carry positional hiss")
+	hazards.free()
+	control.free()
+
 func test_smoke_draw_pass_is_a_structured_billboard_shader_puff() -> void:
 	var hazards := Hazards.build()
 	var smoke: GPUParticles3D = hazards.get_node("CeilingSmoke")
