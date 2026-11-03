@@ -84,11 +84,20 @@ unit beyond the digit ink edges; layout includes its half-stroke extents.
 These box dimensions are renderer choices, not language rules.
 
 Navigation uses 1024 by 512 textures with equally sized lines. Hatch quads
-are 0.92 by 0.46 m, centered 2.85 m above the deck on fixed faces, offset
-0.01 m outward. Lift quads are 0.92 by 0.23 m at 2.55 m and show only the deck.
-Anchors come from layout face/lift records. The destination section belongs to
-the face's travel direction, including both section-41 bay faces. Inaccessible
-boundary reverse faces retain data but have no visible surface.
+are 0.92 by 0.46 m, centered 1.82 m above the deck on the leaf's raised stencil
+area above the wheel. Lift quads are 0.92 by 0.23 m at 1.82 m, on the door pair,
+and show only the deck. There are no duplicate signs above the doors.
+Anchors and sizes come from layout face/lift records. The destination section
+belongs to the face's travel direction, including both section-41 bay faces.
+The bay's existing ajar leaf carries its own two labels in slab-local frames.
+Inaccessible boundary reverse faces retain data but have no visible surface.
+
+Labels are children of the moving leaves. GameStep projects door snapshots
+before attention, then ShipScene supplies each label's current world frame to
+LabelAttention. Moving faces change spatial cells when needed; unload/reload
+retains their reading state. A standing player looking level at either the
+hatch center or the lift doors intersects the existing attention rectangle and
+margin without camera pitch changes.
 
 `ShipScene` requests initial navigation pairs after standing, before approaching
 the hatch, and connector pairs at the existing four-meter prefetch threshold.

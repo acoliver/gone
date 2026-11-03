@@ -1,0 +1,194 @@
+class_name HatchModel
+extends RefCounted
+## Shared presentation meshes in the portal frame. No collision geometry lives here.
+
+static var _meshes: Dictionary = {}
+static var _rivets: Dictionary = {}
+static var _steel: StandardMaterial3D
+static var _hardware: StandardMaterial3D
+static func leaf(aperture: Vector2, masks: Array[int]) -> Node3D:
+	var root := Node3D.new()
+	root.name = "Leaf"
+	add_faces(root, &"leaf", aperture, masks, true)
+	for kind: StringName in [&"straps", &"lugs"]:
+		var group := Node3D.new()
+		group.name = "StrapHinges" if kind == &"straps" else "Lugs"
+		root.add_child(group)
+		add_faces(group, kind, aperture, masks, true)
+	for side: int in range(2):
+		var wheel := Node3D.new()
+		wheel.name = "Wheel" if side == 0 else "ReverseWheel"
+		wheel.position = Vector3(aperture.x / 2, aperture.y / 2, -0.19 if side == 0 else 0.19)
+		if side == 1: wheel.rotation.y = PI
+		wheel.add_child(DoorView.mesh_piece(mesh(&"wheel", aperture), Transform3D.IDENTITY, masks[side], hardware()))
+		root.add_child(wheel)
+	return root
+
+
+static func steel() -> StandardMaterial3D:
+	if _steel == null:
+		_steel = Hatch._flat_grey(0.34)
+		_steel.albedo_color = Color(0.33, 0.36, 0.35)
+		_steel.metallic = 0.55
+		_steel.roughness = 0.78
+	return _steel
+
+static func hardware() -> StandardMaterial3D:
+	if _hardware == null:
+		_hardware = Hatch._flat_grey(0.20)
+		_hardware.metallic = 0.75
+		_hardware.roughness = 0.67
+	return _hardware
+
+static func outline(size: Vector2, radius: float) -> PackedVector2Array:
+	var points := PackedVector2Array()
+	for corner: int in range(4):
+		var center := Vector2((size.x / 2 - radius) * (1 if corner in [0, 3] else -1), (size.y / 2 - radius) * (1 if corner < 2 else -1))
+		for segment: int in range(9):
+			var angle := (corner + segment / 8.0) * PI / 2
+			points.append(center + Vector2(cos(angle), sin(angle)) * radius)
+	return points
+
+static func _triangle(tool: SurfaceTool, a: Vector3, b: Vector3, c: Vector3) -> void:
+	for point: Vector3 in [a, c, b]: tool.add_vertex(point)
+
+static func _quad(tool: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, d: Vector3) -> void:
+	_triangle(tool, a, b, c)
+	_triangle(tool, a, c, d)
+
+static func _rounded(tool: SurfaceTool, size: Vector2, radius: float, depth: float, center: Vector3) -> void:
+	# Two inset contours bevel the perimeter rather than leaving a sharp slab edge.
+	var outer := outline(size, radius)
+	var inset := outline(size - Vector2.ONE * 0.025, radius - 0.0125)
+	for i: int in range(outer.size()):
+		var j := (i + 1) % outer.size()
+		for side: float in [-1, 1]:
+			var a := center + Vector3(inset[i].x, inset[i].y, side * depth / 2)
+			var b := center + Vector3(inset[j].x, inset[j].y, side * depth / 2)
+			var c := center + Vector3(outer[i].x, outer[i].y, side * (depth / 2 - 0.0125))
+			var d := center + Vector3(outer[j].x, outer[j].y, side * (depth / 2 - 0.0125))
+			if side < 0:
+				_triangle(tool, center + Vector3(0, 0, -depth / 2), b, a)
+				_quad(tool, a, b, d, c)
+			else:
+				_triangle(tool, center + Vector3(0, 0, depth / 2), a, b)
+				_quad(tool, b, a, c, d)
+		_quad(tool, center + Vector3(outer[i].x, outer[i].y, -depth / 2 + 0.0125), center + Vector3(outer[j].x, outer[j].y, -depth / 2 + 0.0125), center + Vector3(outer[j].x, outer[j].y, depth / 2 - 0.0125), center + Vector3(outer[i].x, outer[i].y, depth / 2 - 0.0125))
+
+static func _ring(tool: SurfaceTool, aperture: Vector2) -> void:
+	var inner := outline(aperture - Vector2(0, ShipGeometry.SILL_HEIGHT), 0.21)
+	var outer := outline(aperture + Vector2(0.34, 0.22), 0.38)
+	var center := Vector3(0, (aperture.y + ShipGeometry.SILL_HEIGHT) / 2, 0)
+	for i: int in range(inner.size()):
+		var j := (i + 1) % inner.size()
+		var a := center + Vector3(inner[i].x, inner[i].y, 0.06)
+		var b := center + Vector3(inner[j].x, inner[j].y, 0.06)
+		var c := center + Vector3(outer[i].x, outer[i].y, -0.045)
+		var d := center + Vector3(outer[j].x, outer[j].y, -0.045)
+		_quad(tool, a, b, d, c)
+		_quad(tool, a + Vector3(0, 0, 0.14), b + Vector3(0, 0, 0.14), b, a)
+		_quad(tool, c, d, d + Vector3(0, 0, 0.145), c + Vector3(0, 0, 0.145))
+
+static func _append(tool: SurfaceTool, source: Mesh, pose: Transform3D) -> void:
+	# Keep one nonindexed triangle stream: mixing add_vertex with append_from's
+	# indexed primitive surfaces would silently discard the hand-built leaf.
+	var arrays := source.surface_get_arrays(0)
+	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+	assert(not indices.is_empty(), "shared primitive mesh must supply indexed triangles")
+	for index: int in indices:
+		tool.add_vertex(pose * vertices[index])
+
+static func _bar(tool: SurfaceTool, a: Vector3, b: Vector3, width: float, depth: float) -> void:
+	var delta := b - a
+	var pose := Transform3D(Basis(Vector3.BACK, -atan2(delta.x, delta.y)), (a + b) / 2)
+	_append(tool, Hallway._box_mesh(Vector3(width, delta.length(), depth)), pose)
+
+static func mesh(kind: StringName, aperture: Vector2) -> ArrayMesh:
+	var key := [kind, aperture]
+	if _meshes.has(key): return _meshes[key]
+	var tool := SurfaceTool.new()
+	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	if kind == &"frame":
+		_ring(tool, aperture)
+	elif kind == &"leaf":
+		_rounded(tool, Vector2(aperture.x - 0.025, aperture.y - ShipGeometry.SILL_HEIGHT - 0.025), 0.205, 0.10, Vector3(aperture.x / 2, (aperture.y + ShipGeometry.SILL_HEIGHT) / 2, 0))
+		for diagonal: float in [-1, 1]:
+			_bar(tool, Vector3(aperture.x / 2 - diagonal * (aperture.x / 2 - 0.14), 0.28, -0.06), Vector3(aperture.x / 2 + diagonal * (aperture.x / 2 - 0.14), aperture.y - 0.15, -0.06), 0.075, 0.035)
+		_rounded(tool, ShipLayout.HATCH_LABEL_SIZE + Vector2(0.04, 0.04), 0.025, 0.04, Vector3(aperture.x / 2, ShipLayout.DOOR_LABEL_HEIGHT, -0.068))
+	elif kind in [&"hinges", &"straps"]:
+		for height: float in [0.48, aperture.y - 0.40]:
+			if kind == &"straps":
+				_rounded(tool, Vector2(0.43, 0.15), 0.04, 0.08, Vector3(0.10, height, -0.075))
+			else:
+				_append(tool, DoorView._cylinder(0.085, 0.28), Transform3D(Basis(), Vector3(0, height, 0)))
+	elif kind == &"lugs":
+		for height: float in [0.40, 1.17, aperture.y - 0.33]:
+			_rounded(tool, Vector2(0.19, 0.13), 0.025, 0.075, Vector3(aperture.x - 0.025, height, -0.08))
+		for height: float in [0.19, aperture.y - 0.06]:
+			_rounded(tool, Vector2(0.14, 0.17), 0.025, 0.075, Vector3(aperture.x / 2, height, -0.08))
+	elif kind == &"wheel":
+		var ring := TorusMesh.new()
+		ring.inner_radius = 0.265
+		ring.outer_radius = 0.305
+		ring.rings = 32
+		ring.ring_segments = 8
+		_append(tool, ring, Transform3D(Basis(Vector3.RIGHT, PI / 2), Vector3.ZERO))
+		_append(tool, DoorView._cylinder(0.082, 0.16), Transform3D(Basis(Vector3.RIGHT, PI / 2), Vector3(0, 0, 0.045)))
+		for i: int in range(6):
+			var angle := i * TAU / 6
+			_bar(tool, Vector3.ZERO, Vector3(cos(angle), sin(angle), 0) * 0.28, 0.035, 0.045)
+	tool.generate_normals()
+	tool.index()
+	var result := tool.commit()
+	_meshes[key] = result
+	return result
+
+static func rivets(kind: StringName, aperture: Vector2) -> MultiMesh:
+	var key := [kind, aperture]
+	if _rivets.has(key): return _rivets[key]
+	var positions: Array[Vector3] = []
+	if kind == &"frame":
+		var contour := outline(aperture + Vector2(0.17, 0.05), 0.29)
+		for i: int in range(contour.size()):
+			var a := contour[i]
+			var b := contour[(i + 1) % contour.size()]
+			var count := maxi(1, int(ceil(a.distance_to(b) / 0.11)))
+			for n: int in range(count):
+				var point := a.lerp(b, float(n) / count)
+				positions.append(Vector3(point.x, point.y + (aperture.y + ShipGeometry.SILL_HEIGHT) / 2, -0.005))
+	else:
+		for diagonal: float in [-1, 1]:
+			for i: int in range(23):
+				var t := float(i) / 22
+				positions.append(Vector3(lerpf(aperture.x / 2 - diagonal * (aperture.x / 2 - 0.14), aperture.x / 2 + diagonal * (aperture.x / 2 - 0.14), t), lerpf(0.28, aperture.y - 0.15, t), -0.087))
+	var batch := MultiMesh.new()
+	batch.transform_format = MultiMesh.TRANSFORM_3D
+	batch.mesh = DoorView._cylinder(0.018, 0.012)
+	batch.instance_count = positions.size()
+	for i: int in range(positions.size()): batch.set_instance_transform(i, Transform3D(Basis(Vector3.RIGHT, PI / 2), positions[i]))
+	_rivets[key] = batch
+	return batch
+
+static func add_faces(parent: Node3D, kind: StringName, aperture: Vector2, masks: Array[int], leaf_space: bool) -> void:
+	for side: int in range(2):
+		var pose := Transform3D.IDENTITY
+		if leaf_space:
+			pose.origin.z = -0.05 if side == 0 else 0.05
+		else:
+			pose.origin.z = 0 if side == 0 else ShipLayout.WALL
+		if side == 1:
+			# Reflect depth only; rotating the face would put its hinges on the latch jamb.
+			pose.basis = Basis(Vector3.RIGHT, Vector3.UP, Vector3.FORWARD)
+		var prefix := "Fore" if side == 0 else "Aft"
+		var piece := DoorView.mesh_piece(mesh(kind, aperture), pose, masks[side], steel() if kind in [&"frame", &"leaf"] else hardware())
+		piece.name = prefix + "Steel"
+		parent.add_child(piece)
+		if kind in [&"frame", &"leaf"]:
+			var bolts := MultiMeshInstance3D.new()
+			bolts.name = prefix + "Rivets"
+			bolts.multimesh = rivets(kind, aperture)
+			bolts.material_override = hardware()
+			bolts.layers = masks[side]
+			bolts.transform = pose
+			parent.add_child(bolts)

@@ -24,10 +24,8 @@ static func bind_leaf(spec: ShipLayout.DoorSpec, leaf: Node3D) -> DoorView:
 	view._leaf_base = leaf.position
 	return view
 
-static var _leaf_meshes: Dictionary = {}
 static var _materials: Dictionary = {}
 static var _cylinders: Dictionary = {}
-static var _wheel_ring: TorusMesh
 
 static func build(spec: ShipLayout.DoorSpec, fore_mask: int = 1, aft_mask: int = 1) -> DoorView:
 	assert(spec.animation() == ShipLayout.AnimationRecipe.HINGE and spec.has_wheel(), "hinged wheel fixture required")
@@ -38,47 +36,26 @@ static func build(spec: ShipLayout.DoorSpec, fore_mask: int = 1, aft_mask: int =
 	var frame := Node3D.new()
 	frame.name = "Frame"
 	view.add_child(frame)
+	var masks: Array[int] = [fore_mask, aft_mask]
+	HatchModel.add_faces(frame, &"frame", spec.aperture(), masks, false)
 	for solid: ShipGeometry.SolidSpec in ShipGeometry.hatch_frame_solids(spec):
-		var piece := split_surface(solid, spec.frame(), fore_mask, aft_mask)
 		if solid.id == StringName("%s/COAMING" % spec.id()):
+			var piece := split_surface(solid, spec.frame(), fore_mask, aft_mask)
 			piece.name = "Coaming"
 			view.add_child(piece)
-		else:
-			frame.add_child(piece)
 	view._hinge = Node3D.new()
 	view._hinge.name = "Hinge"
 	view._hinge.transform = spec.hinge_frame()
 	view.add_child(view._hinge)
-	var leaf := Node3D.new()
-	leaf.name = "Leaf"
+	var leaf := HatchModel.leaf(spec.aperture(), masks)
 	view._hinge.add_child(leaf)
-	var size := Vector3(spec.aperture().x, spec.aperture().y - ShipGeometry.SILL_HEIGHT, ShipLayout.WALL / 2)
-	for side: int in [-1, 1]:
-		leaf.add_child(mesh_piece(_rounded_leaf(size), Transform3D(Basis(), Vector3(spec.aperture().x / 2, ShipGeometry.SILL_HEIGHT + size.y / 2, side * ShipLayout.WALL / 4)), fore_mask if side < 0 else aft_mask))
-	view._wheel = _wheel_mesh()
-	view._wheel.name = "Wheel"
-	view._wheel.position = Vector3(spec.aperture().x / 2, spec.aperture().y / 2, -0.19)
-	view._hinge.add_child(view._wheel)
-	view._reverse_wheel = _wheel_mesh()
-	view._reverse_wheel.name = "ReverseWheel"
-	view._reverse_wheel.position = Vector3(spec.aperture().x / 2, spec.aperture().y / 2, 0.19)
-	view._reverse_wheel.rotation.y = PI
-	view._hinge.add_child(view._reverse_wheel)
-	Lighting.mesh_layers(view._wheel, fore_mask)
-	Lighting.mesh_layers(view._reverse_wheel, aft_mask)
+	view._wheel = leaf.get_node("Wheel")
+	view._reverse_wheel = leaf.get_node("ReverseWheel")
 	var hinges := Node3D.new()
 	hinges.name = "Hinges"
 	view.add_child(hinges)
-	for height: float in [0.4, spec.aperture().y - 0.4]:
-		var cylinder := _cylinder(0.075, 0.24)
-		hinges.add_child(mesh_piece(cylinder, Transform3D(Basis(), Vector3(-spec.aperture().x / 2, height, ShipLayout.WALL / 2)), fore_mask | aft_mask))
-	var lugs := Node3D.new()
-	lugs.name = "Lugs"
-	view._hinge.add_child(lugs)
-	for side: int in [-1, 1]:
-		for height: float in [0.35, spec.aperture().y / 2, spec.aperture().y - 0.35]:
-			for face: int in [-1, 1]:
-				lugs.add_child(mesh_piece(Hallway._box_mesh(Vector3(0.16, 0.10, 0.065)), Transform3D(Basis(), Vector3(0.09 if side < 0 else spec.aperture().x - 0.09, height, face * 0.125)), fore_mask if face < 0 else aft_mask))
+	hinges.transform = spec.hinge_frame()
+	HatchModel.add_faces(hinges, &"hinges", spec.aperture(), masks, true)
 	# Both faces have an unpowered button and reader, without emissive material.
 	for side: int in [-1, 1]:
 		var panel := control_panel()
@@ -137,44 +114,8 @@ static func _cylinder(radius: float, height: float) -> CylinderMesh:
 		_cylinders[key] = mesh
 	return _cylinders[key]
 
-static func _wheel_mesh() -> Node3D:
-	var wheel := Node3D.new()
-	if _wheel_ring == null:
-		_wheel_ring = TorusMesh.new()
-		_wheel_ring.inner_radius = 0.18
-		_wheel_ring.outer_radius = 0.22
-	wheel.add_child(mesh_piece(_wheel_ring, Transform3D(Basis(Vector3.RIGHT, PI / 2), Vector3.ZERO), 1))
-	var axle := _cylinder(0.055, 0.20)
-	wheel.add_child(mesh_piece(axle, Transform3D(Basis(Vector3.RIGHT, PI / 2), Vector3(0, 0, -0.035)), 1))
-	for angle: float in [0, TAU / 3, 2 * TAU / 3]:
-		wheel.add_child(mesh_piece(Hallway._box_mesh(Vector3(0.38, 0.027, 0.035)), Transform3D(Basis(Vector3.BACK, angle), Vector3.ZERO), 1))
-	return wheel
-
-static func _rounded_leaf(size: Vector3) -> ArrayMesh:
-	if _leaf_meshes.has(size):
-		return _leaf_meshes[size]
-	var outline := PackedVector2Array()
-	var radius := 0.13
-	for corner: int in range(4):
-		var angle := PI / 2 * corner
-		var center := Vector2((size.x / 2 - radius) * (1 if corner in [0, 3] else -1), (size.y / 2 - radius) * (1 if corner < 2 else -1))
-		for segment: int in range(7):
-			var theta := angle + segment * PI / 12
-			outline.append(center + Vector2(cos(theta), sin(theta)) * radius)
-	var tool := SurfaceTool.new()
-	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
-	for index: int in range(outline.size()):
-		var next := (index + 1) % outline.size()
-		var a := Vector3(outline[index].x, outline[index].y, -size.z / 2)
-		var b := Vector3(outline[next].x, outline[next].y, -size.z / 2)
-		var c := a + Vector3(0, 0, size.z)
-		var d := b + Vector3(0, 0, size.z)
-		for point: Vector3 in [Vector3(0, 0, -size.z / 2), b, a, Vector3(0, 0, size.z / 2), c, d, a, b, c, b, d, c]:
-			tool.add_vertex(point)
-	tool.generate_normals()
-	var mesh := tool.commit()
-	_leaf_meshes[size] = mesh
-	return mesh
+func label_leaf() -> Node3D:
+	return _hinge.get_node("Leaf") if _hinge != null else _leaf
 
 func present(snapshot: Doors.Snapshot) -> void:
 	assert(snapshot.id == _spec.id(), "view snapshot belongs to its door")
