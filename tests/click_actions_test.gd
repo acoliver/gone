@@ -260,3 +260,95 @@ func test_ladder_picker_only_accepts_the_level_landing_doorway() -> void:
 	origin = player.motion.eye(player.game)
 	assert_true(ClickPicker.pick(origin, Vector3.BACK, player.game, player.motion, player.interactions) == null, "midshaft doorway click ignored")
 	player.free()
+
+func test_scripted_near_switch_click_cannot_act_through_bay_wall() -> void:
+	var player := _player(Vector3(16.2, 0.305, 2.2))
+	_act(player, &"D14-HALL-SWITCH", 1)
+	assert_false(player.game.hallway_lit, "bay wall blocks nearby scripted switch click")
+	assert_int_equal(player.motion.hallway_switch_flips, 0, "blocked click performs no action")
+	assert_true(player.motion.objectives.current == null, "zero-distance approach is refused at admission")
+	player.free()
+
+func test_scripted_near_switch_click_succeeds_without_wall() -> void:
+	var player := _player(Vector3(16.2, 0.305, 0.7))
+	_act(player, &"D14-HALL-SWITCH", 1)
+	assert_true(player.game.hallway_lit, "unobstructed nearby scripted switch click succeeds")
+	assert_int_equal(player.motion.hallway_switch_flips, 1, "one nearby switch action")
+	assert_true(player.motion.objectives.current == null, "nearby action completes without walking")
+	player.free()
+
+func test_active_click_rechecks_visibility_before_attempt() -> void:
+	var player := _player(Vector3(16.2, 0.305, 2.2))
+	# An admitted objective must still be checked against the accepted current pose.
+	player.motion.objectives.set_objective(ClickObjective.act(&"D14-HALL-SWITCH", 14))
+	_ticks(player, 1)
+	assert_false(player.game.hallway_lit, "active objective cannot attempt through a wall")
+	assert_int_equal(player.motion.hallway_switch_flips, 0, "no action after visibility is lost")
+	player.free()
+
+func test_space_legacy_switch_proximity_still_falls_through_rodless_bay_door() -> void:
+	var player := _player(Vector3(16.2, 0.305, 2.2))
+	player.adapter.press(InputPlane.Buttons.INTERACT)
+	_ticks(player, 1)
+	assert_true(player.game.hallway_lit, "Space retains legacy proximity through switch fallthrough")
+	assert_int_equal(player.motion.hallway_switch_flips, 1, "rodless bay door does not consume Space")
+	assert_false(player.game.door_open, "bay door still requires rod")
+	player.free()
+
+func test_space_and_click_ladder_selection_parity_for_both_wells() -> void:
+	var layout := ShipLayout.authored().layout
+	for id: StringName in layout.well_ids():
+		for deck: int in [1, 13, 14, 15, 30]:
+			for offset: float in [-0.3, 0.0, 0.3]:
+				var well := layout.well(id)
+				var player := _player(well.landing(deck).origin + Vector3(offset, 0.305, 0), deck)
+				var eye := player.motion.eye(player.game)
+				var direction := (well.climb_line().origin + Vector3(0, layout.floor_y(deck) + 1.2, 0) - eye).normalized()
+				var space := player.motion.mount_target(layout, direction)
+				var click := ClickPicker.pick(eye, direction, player.game, player.motion, player.interactions)
+				assert_true(space == id, "Space selects well %s D%d offset %s" % [id, deck, offset])
+				assert_true(click != null and click.target_id == space and click.deck == deck, "click and Space select the same ladder")
+				player.free()
+
+func test_ladder_dismount_picker_follows_layout_doorway_frame() -> void:
+	var layout := ShipLayout.authored().layout
+	for id: StringName in layout.well_ids():
+		var well := layout.well(id)
+		var player := _player(well.landing(14).origin + Vector3.UP * 0.305)
+		_act(player, id, Ladder.TRANSFER_TICKS + 1)
+		var connector_id := ShipLayout.connector_id(14, 0 if id == &"C-000-LADDER" else 1)
+		var connector := player.game.layout.connector(connector_id)
+		var frame := player.game.layout.ladder_doorway_frame(id, 14)
+		assert_true(frame == connector.port_opening(), "doorway frame is the connector's layout opening")
+		# Moving the authored doorway must move the pick rectangle, not leave a world-Z copy.
+		connector._port_opening.origin += Vector3(2, 0, -0.5)
+		frame = player.game.layout.ladder_doorway_frame(id, 14)
+		assert_true(frame == connector.port_opening(), "doorway frame follows layout placement")
+		var eye := player.motion.eye(player.game)
+		var direction := (frame * Vector3(0, 1.2, 0) - eye).normalized()
+		var click := ClickPicker.pick(eye, direction, player.game, player.motion, player.interactions)
+		assert_true(click != null and click.target_id == id, "dismount picks layout-derived doorway")
+		player.free()
+
+func test_ladder_targets_share_one_factory() -> void:
+	var player := _player(Vector3(3, 0.305, -2.9))
+	for id: StringName in player.game.layout.well_ids():
+		for deck: int in [1, 14, 30]:
+			var shared := Interactions.ladder_target(player.game.layout, id, deck)
+			var click := player.interactions.target_for(id, deck, Vector3.ZERO)
+			var doorway := player.game.layout.ladder_doorway_frame(id, deck)
+			assert_true(shared.id == id and shared.kind == Interactions.Kind.LADDER and shared.deck == deck, "shared ladder identity")
+			assert_true(shared.frame.basis == doorway.basis and shared.center.y == doorway.origin.y, "ladder interaction follows layout frame")
+			assert_true(click.frame == shared.frame and click.center == shared.center and click.size == shared.size, "click consumes shared ladder geometry")
+			var exit := Interactions.ladder_target(player.game.layout, id, deck, true)
+			assert_true(exit.frame.origin == doorway.origin and exit.frame.basis.z == -doorway.basis.z, "dismount targets opposite side of layout doorway")
+	player.free()
+
+func test_requested_dispatch_rechecks_visibility_at_accepted_pose() -> void:
+	var player := _player(Vector3(16.2, 0.305, 2.2))
+	player.plane.offer_press(InputPlane.Buttons.INTERACT)
+	var selected := player.interactions.process(player.plane, Interactions.context_for(player.game, player.motion), &"D14-HALL-SWITCH")
+	assert_true(selected == &"", "requested click dispatch is refused behind bay wall")
+	assert_false(player.game.hallway_lit, "queued action cannot bypass final visibility check")
+	assert_int_equal(player.motion.hallway_switch_flips, 0, "no through-wall action at dispatch")
+	player.free()

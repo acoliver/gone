@@ -140,19 +140,15 @@ func deck() -> int:
 	return locomotion.deck() if locomotion != null else 14
 
 func mount_target(layout: ShipLayout, facing: Vector3) -> StringName:
-	if locomotion == null or mounted() or capsule().foot.z > -1.5:
+	if locomotion == null or mounted():
 		return &""
 	for id: StringName in layout.well_ids():
+		var doorway := layout.ladder_doorway_frame(id, deck())
+		if (doorway.affine_inverse() * capsule().foot).z > 0:
+			continue
 		if not Ladder.try_mount(layout, id, deck(), capsule(), facing).is_ok():
 			continue
-		var well := layout.well(id)
-		var target := Interactions.Target.new()
-		target.policy = Interactions.Selection.FACE_RAY
-		target.deck = deck()
-		target.center = well.climb_line().origin
-		target.center.y = layout.floor_y(deck())
-		target.frame = Transform3D(Basis(), target.center)
-		target.size = well.doorway_size()
+		var target := Interactions.ladder_target(layout, id, deck())
 		var context := Interactions.Context.new()
 		context.walking = true
 		context.deck = deck()

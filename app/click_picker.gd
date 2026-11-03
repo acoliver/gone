@@ -51,8 +51,7 @@ static func _target_distance(origin: Vector3, direction: Vector3, target: Intera
 	if target.policy == Interactions.Selection.FACE_RAY:
 		var distance := _face_distance(origin, direction, target.frame, target.size)
 		if distance >= 0 and target.kind == Interactions.Kind.DOOR and layout.door(target.door_id).kind() == ShipLayout.DoorKind.SIDE:
-			var box := ShipGeometry.box_aabb(ShipGeometry.side_door_leaf(layout.door(target.door_id)))
-			var fraction := Interactions.segment_hit(origin, origin + direction * RAY_LENGTH, AABB(box.min_corner(), box.max_corner() - box.min_corner()))
+			var fraction := Interactions.segment_hit(origin, origin + direction * RAY_LENGTH, target.bounds)
 			if fraction >= 0:
 				distance = minf(distance, fraction * RAY_LENGTH)
 		return distance
@@ -71,8 +70,7 @@ static func _target_distance(origin: Vector3, direction: Vector3, target: Intera
 			center.y += 0.05
 			size = Vector3(0.22, 0.10, 1.15)
 		Interactions.Kind.CONSOLE:
-			var box := ShipGeometry.box_aabb(ShipGeometry.console_solid(ShipGeometry.console_stations()[1]))
-			var fraction := Interactions.segment_hit(origin, origin + direction * RAY_LENGTH, AABB(box.min_corner(), box.max_corner() - box.min_corner()))
+			var fraction := Interactions.segment_hit(origin, origin + direction * RAY_LENGTH, target.bounds)
 			return fraction * RAY_LENGTH if fraction >= 0 else -1.0
 	var fraction := Interactions.segment_hit(origin, origin + direction * RAY_LENGTH, AABB(center - size * 0.5, size))
 	return fraction * RAY_LENGTH if fraction >= 0 else -1.0
@@ -93,8 +91,7 @@ static func _landing(origin: Vector3, direction: Vector3, game: Game, motion: Pl
 	var deck := ladder.dismount_deck()
 	if deck == 0:
 		return null
-	var well := game.layout.well(ladder.well_id())
-	var frame := Transform3D(Basis(Vector3.UP, PI), Vector3(well.landing(deck).origin.x, game.layout.floor_y(deck), -1.5))
-	if _face_distance(origin, direction, frame, well.doorway_size()) < 0:
+	var target := Interactions.ladder_target(game.layout, ladder.well_id(), deck, true)
+	if _face_distance(origin, direction, target.frame, target.size) < 0:
 		return null
-	return ClickObjective.act(well.id(), deck)
+	return ClickObjective.act(target.id, deck)

@@ -76,8 +76,18 @@ func run() -> void:
 	stepper = GameStep.new(game, player)
 	_fixture(Vector3(18, 0.305, 0))
 	_aim(Vector3(20, 0, 0.5))
-	player._set_mouse_capture(true)
-	await process_frame
+	root.grab_focus()
+	var capture_deadline := Time.get_ticks_msec() + 10_000
+	while true:
+		if Time.get_ticks_msec() >= capture_deadline:
+			print("DEVICE CLICK FAIL startup timed out after 10 s waiting for window focus and captured mouse mode (focused=%s, mouse_mode=%d)" % [root.has_focus(), Input.mouse_mode])
+			quit(1)
+			return
+		if root.has_focus():
+			player._set_mouse_capture(true)
+		await process_frame
+		if root.has_focus() and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+			break
 	await _capture("crosshair-captured")
 	# A corner-position event while captured must still aim at screen center.
 	_click(Vector2(2, 2))

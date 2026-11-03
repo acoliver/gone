@@ -25,6 +25,9 @@ func prepare(plane: InputPlane, game: Game, motion: PlayerMotion, interactions: 
 	if objective.kind != ClickObjective.Kind.ACT:
 		return look
 	var target := interactions.target_for(objective.target_id, objective.deck, motion.capsule().foot)
+	if not interactions.target_visible(target, motion.eye(game), game.collision):
+		follower.cancel()
+		return look
 	var delta := target.center - motion.capsule().foot
 	if Vector2(delta.x, delta.z).length() <= target.reach + 1.0:
 		look.x = atan2(-delta.x, -delta.z)
@@ -55,6 +58,8 @@ func _admit(offered: ClickObjective, plane: InputPlane, game: Game, motion: Play
 		var foot := motion.capsule().foot
 		var target := interactions.target_for(objective.target_id, objective.deck, foot)
 		if target == null or target.deck != objective.deck:
+			return
+		if not interactions.target_visible(target, motion.eye(game), game.collision):
 			return
 		objective.target_id = target.id
 		var toward := Vector3(target.center.x - foot.x, 0, target.center.z - foot.z)
