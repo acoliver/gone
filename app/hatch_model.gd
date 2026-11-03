@@ -2,10 +2,64 @@ class_name HatchModel
 extends RefCounted
 ## Shared presentation meshes in the portal frame. No collision geometry lives here.
 
+const DOOR_SHADE: float = 0.38
+
 static var _meshes: Dictionary = {}
 static var _rivets: Dictionary = {}
 static var _steel: StandardMaterial3D
 static var _hardware: StandardMaterial3D
+static var _boxes: Dictionary = {}
+static var _cylinders: Dictionary = {}
+static var _materials: Dictionary = {}
+
+static func box_mesh(size: Vector3) -> BoxMesh:
+	if not _boxes.has(size):
+		var box := BoxMesh.new()
+		box.size = size
+		_boxes[size] = box
+	return _boxes[size]
+
+static func cylinder(radius: float, height: float) -> CylinderMesh:
+	var key := Vector2(radius, height)
+	if not _cylinders.has(key):
+		var mesh := CylinderMesh.new()
+		mesh.top_radius = radius
+		mesh.bottom_radius = radius
+		mesh.height = height
+		_cylinders[key] = mesh
+	return _cylinders[key]
+
+static func flat_grey(shade: float) -> StandardMaterial3D:
+	var material := StandardMaterial3D.new()
+	material.albedo_color = Color(shade, shade, shade)
+	material.roughness = 0.95
+	return material
+
+static func material(shade: float) -> StandardMaterial3D:
+	if not _materials.has(shade):
+		_materials[shade] = flat_grey(shade)
+	return _materials[shade]
+
+static func mesh_piece(mesh: Mesh, pose: Transform3D, mask: int, surface: Material = null) -> MeshInstance3D:
+	var piece := MeshInstance3D.new()
+	piece.mesh = mesh
+	piece.transform = pose
+	piece.layers = mask
+	piece.material_override = material(DOOR_SHADE) if surface == null else surface
+	return piece
+
+static func control_panel() -> Node3D:
+	var panel := Node3D.new()
+	panel.add_child(mesh_piece(box_mesh(Vector3(0.19, 0.34, 0.07)), Transform3D.IDENTITY, 1, material(0.12)))
+	var button := cylinder(0.036, 0.025)
+	var piece := mesh_piece(button, Transform3D(Basis(Vector3.RIGHT, PI / 2), Vector3(0, 0.07, 0.045)), 1, material(0.055))
+	piece.name = "Button"
+	panel.add_child(piece)
+	var reader := mesh_piece(box_mesh(Vector3(0.12, 0.018, 0.01)), Transform3D(Basis(), Vector3(0, -0.075, 0.04)), 1, material(0.015))
+	reader.name = "CardReader"
+	panel.add_child(reader)
+	return panel
+
 static func leaf(aperture: Vector2, masks: Array[int]) -> Node3D:
 	var root := Node3D.new()
 	root.name = "Leaf"
@@ -20,14 +74,14 @@ static func leaf(aperture: Vector2, masks: Array[int]) -> Node3D:
 		wheel.name = "Wheel" if side == 0 else "ReverseWheel"
 		wheel.position = Vector3(aperture.x / 2, aperture.y / 2, -0.19 if side == 0 else 0.19)
 		if side == 1: wheel.rotation.y = PI
-		wheel.add_child(DoorView.mesh_piece(mesh(&"wheel", aperture), Transform3D.IDENTITY, masks[side], hardware()))
+		wheel.add_child(mesh_piece(mesh(&"wheel", aperture), Transform3D.IDENTITY, masks[side], hardware()))
 		root.add_child(wheel)
 	return root
 
 
 static func steel() -> StandardMaterial3D:
 	if _steel == null:
-		_steel = Hatch._flat_grey(0.34)
+		_steel = flat_grey(0.34)
 		_steel.albedo_color = Color(0.33, 0.36, 0.35)
 		_steel.metallic = 0.55
 		_steel.roughness = 0.78
@@ -35,7 +89,7 @@ static func steel() -> StandardMaterial3D:
 
 static func hardware() -> StandardMaterial3D:
 	if _hardware == null:
-		_hardware = Hatch._flat_grey(0.20)
+		_hardware = flat_grey(0.20)
 		_hardware.metallic = 0.75
 		_hardware.roughness = 0.67
 	return _hardware
@@ -102,7 +156,7 @@ static func _append(tool: SurfaceTool, source: Mesh, pose: Transform3D) -> void:
 static func _bar(tool: SurfaceTool, a: Vector3, b: Vector3, width: float, depth: float) -> void:
 	var delta := b - a
 	var pose := Transform3D(Basis(Vector3.BACK, -atan2(delta.x, delta.y)), (a + b) / 2)
-	_append(tool, Hallway._box_mesh(Vector3(width, delta.length(), depth)), pose)
+	_append(tool, box_mesh(Vector3(width, delta.length(), depth)), pose)
 
 static func mesh(kind: StringName, aperture: Vector2) -> ArrayMesh:
 	var key := [kind, aperture]
@@ -121,7 +175,7 @@ static func mesh(kind: StringName, aperture: Vector2) -> ArrayMesh:
 			if kind == &"straps":
 				_rounded(tool, Vector2(0.43, 0.15), 0.04, 0.08, Vector3(0.10, height, -0.075))
 			else:
-				_append(tool, DoorView._cylinder(0.085, 0.28), Transform3D(Basis(), Vector3(0, height, 0)))
+				_append(tool, cylinder(0.085, 0.28), Transform3D(Basis(), Vector3(0, height, 0)))
 	elif kind == &"lugs":
 		for height: float in [0.40, 1.17, aperture.y - 0.33]:
 			_rounded(tool, Vector2(0.19, 0.13), 0.025, 0.075, Vector3(aperture.x - 0.025, height, -0.08))
@@ -134,7 +188,7 @@ static func mesh(kind: StringName, aperture: Vector2) -> ArrayMesh:
 		ring.rings = 32
 		ring.ring_segments = 8
 		_append(tool, ring, Transform3D(Basis(Vector3.RIGHT, PI / 2), Vector3.ZERO))
-		_append(tool, DoorView._cylinder(0.082, 0.16), Transform3D(Basis(Vector3.RIGHT, PI / 2), Vector3(0, 0, 0.045)))
+		_append(tool, cylinder(0.082, 0.16), Transform3D(Basis(Vector3.RIGHT, PI / 2), Vector3(0, 0, 0.045)))
 		for i: int in range(6):
 			var angle := i * TAU / 6
 			_bar(tool, Vector3.ZERO, Vector3(cos(angle), sin(angle), 0) * 0.28, 0.035, 0.045)
@@ -164,7 +218,7 @@ static func rivets(kind: StringName, aperture: Vector2) -> MultiMesh:
 				positions.append(Vector3(lerpf(aperture.x / 2 - diagonal * (aperture.x / 2 - 0.14), aperture.x / 2 + diagonal * (aperture.x / 2 - 0.14), t), lerpf(0.28, aperture.y - 0.15, t), -0.087))
 	var batch := MultiMesh.new()
 	batch.transform_format = MultiMesh.TRANSFORM_3D
-	batch.mesh = DoorView._cylinder(0.018, 0.012)
+	batch.mesh = cylinder(0.018, 0.012)
 	batch.instance_count = positions.size()
 	for i: int in range(positions.size()): batch.set_instance_transform(i, Transform3D(Basis(Vector3.RIGHT, PI / 2), positions[i]))
 	_rivets[key] = batch
@@ -181,7 +235,7 @@ static func add_faces(parent: Node3D, kind: StringName, aperture: Vector2, masks
 			# Reflect depth only; rotating the face would put its hinges on the latch jamb.
 			pose.basis = Basis(Vector3.RIGHT, Vector3.UP, Vector3.FORWARD)
 		var prefix := "Fore" if side == 0 else "Aft"
-		var piece := DoorView.mesh_piece(mesh(kind, aperture), pose, masks[side], steel() if kind in [&"frame", &"leaf"] else hardware())
+		var piece := mesh_piece(mesh(kind, aperture), pose, masks[side], steel() if kind in [&"frame", &"leaf"] else hardware())
 		piece.name = prefix + "Steel"
 		parent.add_child(piece)
 		if kind in [&"frame", &"leaf"]:

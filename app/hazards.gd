@@ -44,7 +44,7 @@ var _smoke_shader: ShaderMaterial
 var _vents: Array[AudioStreamPlayer3D] = []
 var _vent_started: bool = false
 
-static func build(ventilation: BayVentilation = BayVentilation.new()) -> Hazards:
+static func build(ventilation: BayVentilation = BayVentilation.new(), bay: ShipLayout.BaySpec = ShipLayout.authored().layout.bay()) -> Hazards:
 	var hazards := Hazards.new()
 	hazards.name = "Hazards"
 	hazards._ventilation = ventilation
@@ -58,10 +58,10 @@ static func build(ventilation: BayVentilation = BayVentilation.new()) -> Hazards
 	hazards._smoke_field = hazards._smoke()
 	hazards._smoke_shader = hazards._smoke_field.draw_pass_1.material as ShaderMaterial
 	hazards.add_child(hazards._smoke_field)
-	for x: float in [-3.0, 3.0]:
+	for frame: Transform3D in bay.ceiling_vent_frames():
 		var vent := AudioStreamPlayer3D.new()
 		vent.name = "CeilingVent"
-		vent.position = Vector3(x, 3.05, 0.0)
+		vent.transform = frame
 		vent.stream = VENT_HISS
 		vent.volume_db = -6.0
 		vent.max_distance = 18.0

@@ -72,6 +72,8 @@ class State:
 		return _height
 	func pending() -> float:
 		return _pending
+	func velocity() -> float:
+		return _velocity
 	func well_id() -> StringName:
 		return _well.id()
 	func landing_deck() -> int:
@@ -145,8 +147,7 @@ class State:
 	func _climb(intent: float, collision: ShipCollision) -> Ladder.Result:
 		var top := _layout.floor_y(_well.top_deck())
 		var bottom := _layout.floor_y(_well.bottom_deck())
-		var alpha := 1.0 - exp(-Controller.INTENT_EASE_EXPONENT * Sim.LOGICAL_TICK_SECS / Controller.CLIMB_EASE_SECONDS)
-		var velocity := _velocity + (intent * Ladder.CLIMB_SPEED - _velocity) * alpha
+		var velocity := ClimbEase.step(_velocity, intent, Ladder.CLIMB_SPEED)
 		var target_height := clampf(_height + _pending + velocity * Sim.LOGICAL_TICK_SECS, bottom, top)
 		if absf(target_height - top) < Ladder.HEIGHT_EPSILON:
 			target_height = top

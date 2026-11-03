@@ -349,7 +349,17 @@ class BaySpec:
 		var result := super.data()
 		result["section_id"] = _section_id
 		result["frame"] = _frame
+		result["regular_light_frames"] = regular_light_frames()
+		result["ceiling_vent_frames"] = ceiling_vent_frames()
 		return result
+	func regular_light_frames() -> Array[Transform3D]:
+		var frames: Array[Transform3D] = []
+		for x: float in [-4.0, 0.0, 4.0]:
+			for z: float in [-1.6, 1.6]:
+				frames.append(Transform3D(Basis(), Vector3(x, Pods.ROOM_CEILING_HEIGHT - 0.08, z)))
+		return frames
+	func ceiling_vent_frames() -> Array[Transform3D]:
+		return [Transform3D(Basis(), Vector3(-3, 3.05, 0)), Transform3D(Basis(), Vector3(3, 3.05, 0))]
 	func local_bounds() -> AABB:
 		return AABB(Vector3(-Pods.ROOM_LENGTH / 2, 0, -Pods.ROOM_WIDTH / 2), Vector3(Pods.ROOM_LENGTH, Pods.ROOM_CEILING_HEIGHT, Pods.ROOM_WIDTH))
 	func rod_local() -> Transform3D:

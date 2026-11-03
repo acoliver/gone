@@ -3,14 +3,9 @@ extends Node3D
 ## The bay uses the shared hatch dressing at its authored ajar leaf pose.
 ## The original solid recipe still owns collision and the retract/slide origin.
 
-const HATCH_FRAME_SHADE: float = 0.33
-const HATCH_DOOR_SHADE: float = 0.38
-
 ## How many of the hatch group's pieces are frame (posts, lintel, sill);
 ## the last piece is the ajar door slab.
 const HATCH_FRAME_PIECES: int = 4
-
-static var _box_cache: Dictionary = {}
 
 var _door_piece: MeshInstance3D = null
 var _door_base: Vector3 = Vector3.ZERO
@@ -27,7 +22,7 @@ static func build() -> Hatch:
 	HatchModel.add_faces(frame, &"frame", aperture, masks, false)
 	hatch.add_child(frame)
 	var sill := solids[3]
-	var coaming := DoorView.mesh_piece(_box_mesh(sill.size), sill.transform, 1, HatchModel.steel())
+	var coaming := HatchModel.mesh_piece(HatchModel.box_mesh(sill.size), sill.transform, 1, HatchModel.steel())
 	coaming.name = "Coaming"
 	hatch.add_child(coaming)
 	var solid := solids[HATCH_FRAME_PIECES]
@@ -45,7 +40,7 @@ static func build() -> Hatch:
 	HatchModel.add_faces(hinges, &"hinges", aperture, masks, true)
 	hatch.add_child(hinges)
 	for side: int in [-1, 1]:
-		var panel := DoorView.control_panel()
+		var panel := HatchModel.control_panel()
 		panel.name = "ForePanel" if side < 0 else "AftPanel"
 		panel.transform = frame.transform * Transform3D(Basis(Vector3.UP, PI) if side < 0 else Basis(), Vector3(aperture.x / 2 + 0.38, 1.25, -0.08 if side < 0 else ShipLayout.WALL + 0.08))
 		hatch.add_child(panel)
@@ -61,17 +56,3 @@ func set_door_offset(offset: Vector3) -> void:
 	if _door_piece == null:
 		return
 	_door_piece.position = _door_base + offset
-
-static func _box_mesh(size: Vector3) -> BoxMesh:
-	if _box_cache.has(size):
-		return _box_cache[size]
-	var mesh := BoxMesh.new()
-	mesh.size = size
-	_box_cache[size] = mesh
-	return mesh
-
-static func _flat_grey(shade: float) -> StandardMaterial3D:
-	var material := StandardMaterial3D.new()
-	material.albedo_color = Color(shade, shade, shade)
-	material.roughness = 0.95
-	return material

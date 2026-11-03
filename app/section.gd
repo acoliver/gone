@@ -27,8 +27,8 @@ static func surface(solid: ShipGeometry.SolidSpec, mask: int) -> MeshInstance3D:
 	match solid.material_role:
 		&"floor": material = RoomGeometry.floor_material()
 		&"ceiling": material = RoomGeometry.ceiling_material()
-		&"door", &"frame": material = Hatch._flat_grey(Hatch.HATCH_DOOR_SHADE)
-	var piece := DoorView.mesh_piece(Hallway._box_mesh(solid.size), solid.transform, mask, material)
+		&"door", &"frame": material = HatchModel.flat_grey(HatchModel.DOOR_SHADE)
+	var piece := HatchModel.mesh_piece(Hallway._box_mesh(solid.size), solid.transform, mask, material)
 	piece.name = String(solid.id).replace("/", "_")
 	piece.set_meta(&"solid_id", solid.id)
 	return piece

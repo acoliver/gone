@@ -36,9 +36,6 @@ const FIXTURE_ENERGY: float = FIXTURE_LUMENS / (2.0 * TAU)
 ## Plain exposure multiplier standing in for the Rust slice's EV100 0.
 const EXPOSURE_MULTIPLIER: float = 2.0
 
-const REGULAR_STATIONS_X: Array[float] = [-4.0, 0.0, 4.0]
-const REGULAR_STATIONS_Z: Array[float] = [-1.6, 1.6]
-
 var _game: Game
 var _white_fade: Intensity.FixtureFade
 var _white_lights: Array[OmniLight3D] = []
@@ -77,9 +74,8 @@ static func build(game: Game) -> Lighting:
 	var white_mesh := BoxMesh.new()
 	white_mesh.size = Hallway.REGULAR_LENS_SIZE
 	white_mesh.material = lighting._white_lens_material
-	for x: float in REGULAR_STATIONS_X:
-		for z: float in REGULAR_STATIONS_Z:
-			lighting.add_child(lighting._white_fixture(Vector3(x, Pods.ROOM_CEILING_HEIGHT - 0.08, z), white_mesh))
+	for frame: Transform3D in game.layout.bay().regular_light_frames():
+		lighting.add_child(lighting._white_fixture(frame, white_mesh))
 	lighting._apply_white_level(white_level)
 	lighting.add_child(_world_environment())
 	return lighting
@@ -175,10 +171,10 @@ func process_frame(delta_secs: float) -> void:
 func _circuit_target() -> float:
 	return 0.0 if _game.power_active else _game.emergency_circuit_target()
 
-func _white_fixture(origin: Vector3, mesh: BoxMesh) -> Node3D:
+func _white_fixture(frame: Transform3D, mesh: BoxMesh) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "BayRegularStrip"
-	fixture.position = origin
+	fixture.transform = frame
 	var light := OmniLight3D.new()
 	light.light_color = REGULAR_WHITE
 	light.omni_range = REGULAR_RANGE
@@ -280,7 +276,7 @@ static func steady_fixture(origin: Vector3, mask: int, radius: float, attenuatio
 	material.albedo_color = LENS_BASE_COLOR
 	material.emission = Color(FIXTURE_EMISSIVE, 0, 0)
 	material.roughness = 0.8
-	var lens := DoorView.mesh_piece(Hallway._box_mesh(LENS_SIZE), Transform3D.IDENTITY, mask, material)
+	var lens := HatchModel.mesh_piece(Hallway._box_mesh(LENS_SIZE), Transform3D.IDENTITY, mask, material)
 	lens.name = "Lens"
 	fixture.add_child(lens)
 	return fixture

@@ -44,7 +44,7 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 	scene.bay_root.add_child(scene.hatch)
 	scene.lighting = Lighting.build(game)
 	scene.bay_root.add_child(scene.lighting)
-	scene.hazards = Hazards.build(game.ventilation)
+	scene.hazards = Hazards.build(game.ventilation, game.layout.bay())
 	scene.bay_root.add_child(scene.hazards)
 	if production_wires:
 		scene.bay_root.add_child(Wires.build())

@@ -23,6 +23,7 @@ func test_climb_endpoint_clips_velocity_before_reversing() -> void:
 		for tick: int in range(30):
 			_tick(state, collision, outward)
 			assert_float_equal(state.height(), layout.floor_y(deck), "endpoint stays exact")
+			assert_float_equal(state.velocity(), 0.0, "accepted endpoint velocity is clipped")
 		_tick(state, collision, -outward)
 		var expected := -outward * Ladder.CLIMB_SPEED * (1 - exp(-log(20.0) / 9)) / 60
 		assert_true(absf(state.height() + state.pending() - layout.floor_y(deck) - expected) < 1e-10, "no hidden endpoint speed delays reversal")
@@ -266,9 +267,11 @@ func test_obstructed_mount_climb_and_dismount_are_typed_atomic_errors() -> void:
 	assert_false(result.is_ok(), "head collision stops climb")
 	assert_true(result.error.collider_id == &"test/obstruction", "head collision id")
 	assert_close(state.capsule().foot, before, "climb error atomic")
+	assert_float_equal(state.velocity(), 0.0, "blocked ascent does not accept velocity")
 	collision.obstruction = AABB(Vector3(2.5, before.y - 0.307, -4.8), Vector3(1, 0.01, 1))
 	assert_false(state.step(-1, false, collision).is_ok(), "foot collision stops descent")
 	assert_close(state.capsule().foot, before, "foot error atomic")
+	assert_float_equal(state.velocity(), 0.0, "blocked descent does not accept velocity")
 	collision.obstruction = AABB(Vector3(2.5, 0, -3.95), Vector3(1, 2.5, 0.02))
 	result = state.step(0, true, collision)
 	assert_false(result.is_ok(), "dismount never ignores solids")

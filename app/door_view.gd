@@ -24,9 +24,6 @@ static func bind_leaf(spec: ShipLayout.DoorSpec, leaf: Node3D) -> DoorView:
 	view._leaf_base = leaf.position
 	return view
 
-static var _materials: Dictionary = {}
-static var _cylinders: Dictionary = {}
-
 static func build(spec: ShipLayout.DoorSpec, fore_mask: int = 1, aft_mask: int = 1) -> DoorView:
 	assert(spec.animation() == ShipLayout.AnimationRecipe.HINGE and spec.has_wheel(), "hinged wheel fixture required")
 	var view := DoorView.new()
@@ -58,7 +55,7 @@ static func build(spec: ShipLayout.DoorSpec, fore_mask: int = 1, aft_mask: int =
 	HatchModel.add_faces(hinges, &"hinges", spec.aperture(), masks, true)
 	# Both faces have an unpowered button and reader, without emissive material.
 	for side: int in [-1, 1]:
-		var panel := control_panel()
+		var panel := HatchModel.control_panel()
 		panel.name = "ForePanel" if side < 0 else "AftPanel"
 		panel.position = Vector3(spec.aperture().x / 2 + 0.38, 1.25, -0.08 if side < 0 else ShipLayout.WALL + 0.08)
 		if side < 0:
@@ -70,49 +67,14 @@ static func build(spec: ShipLayout.DoorSpec, fore_mask: int = 1, aft_mask: int =
 static func split_surface(solid: ShipGeometry.SolidSpec, frame: Transform3D, fore_mask: int, aft_mask: int) -> Node3D:
 	var group := Node3D.new()
 	var pose := frame.affine_inverse() * solid.transform
-	var material := RoomGeometry.wall_material() if solid.material_role == &"wall" else _material(Hatch.HATCH_DOOR_SHADE)
+	var material := RoomGeometry.wall_material() if solid.material_role == &"wall" else HatchModel.material(HatchModel.DOOR_SHADE)
 	for side: int in [-1, 1]:
 		var half_size := solid.size
 		half_size.z /= 2
 		var half_pose := pose
 		half_pose.origin += pose.basis.z * side * half_size.z / 2
-		group.add_child(mesh_piece(Hallway._box_mesh(half_size), half_pose, fore_mask if side < 0 else aft_mask, material))
+		group.add_child(HatchModel.mesh_piece(HatchModel.box_mesh(half_size), half_pose, fore_mask if side < 0 else aft_mask, material))
 	return group
-
-static func mesh_piece(mesh: Mesh, pose: Transform3D, mask: int, material: Material = null) -> MeshInstance3D:
-	var piece := MeshInstance3D.new()
-	piece.mesh = mesh
-	piece.transform = pose
-	piece.layers = mask
-	piece.material_override = _material(Hatch.HATCH_DOOR_SHADE) if material == null else material
-	return piece
-
-static func control_panel() -> Node3D:
-	var panel := Node3D.new()
-	panel.add_child(mesh_piece(Hallway._box_mesh(Vector3(0.19, 0.34, 0.07)), Transform3D.IDENTITY, 1, _material(0.12)))
-	var button := _cylinder(0.036, 0.025)
-	var piece := mesh_piece(button, Transform3D(Basis(Vector3.RIGHT, PI / 2), Vector3(0, 0.07, 0.045)), 1, _material(0.055))
-	piece.name = "Button"
-	panel.add_child(piece)
-	var reader := mesh_piece(Hallway._box_mesh(Vector3(0.12, 0.018, 0.01)), Transform3D(Basis(), Vector3(0, -0.075, 0.04)), 1, _material(0.015))
-	reader.name = "CardReader"
-	panel.add_child(reader)
-	return panel
-
-static func _material(shade: float) -> StandardMaterial3D:
-	if not _materials.has(shade):
-		_materials[shade] = Hatch._flat_grey(shade)
-	return _materials[shade]
-
-static func _cylinder(radius: float, height: float) -> CylinderMesh:
-	var key := Vector2(radius, height)
-	if not _cylinders.has(key):
-		var mesh := CylinderMesh.new()
-		mesh.top_radius = radius
-		mesh.bottom_radius = radius
-		mesh.height = height
-		_cylinders[key] = mesh
-	return _cylinders[key]
 
 func label_leaf() -> Node3D:
 	return _hinge.get_node("Leaf") if _hinge != null else _leaf
