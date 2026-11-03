@@ -16,6 +16,7 @@ var _initial_labels: bool = false
 var _opening_nodes: Array[Node3D] = []
 var _sight_set: ColliderSet
 var _sight_solids: Array[AABB] = []
+var _sight_hatches: Dictionary = {}
 var bay_root: Node3D
 var room: RoomGeometry
 var pods_node: StasisPods
@@ -183,13 +184,17 @@ func tick_attention(eye: Vector3, forward: Vector3, deck: int = 14) -> void:
 					continue
 			var box: ColliderSet.Aabb = boxes[index]
 			_sight_solids.append(AABB(box.min_corner(), box.max_corner() - box.min_corner()))
-	var sight := _sight_solids.duplicate()
+	var sight: Array[ShipGeometry.SightBox] = []
 	for id: StringName in _game.layout.door_ids():
 		var spec := _game.layout.door(id)
 		if spec.deck_number() == deck and spec.animation() == ShipLayout.AnimationRecipe.HINGE:
 			var snapshot := _game.doors.snapshot(id)
-			sight.append_array(ShipGeometry.hatch_sight_boxes(spec, snapshot.open_radians * snapshot.leaf_fraction))
-	_game.label_attention.tick(deck, eye, forward, sight)
+			var angle := snapshot.open_radians * snapshot.leaf_fraction
+			var wheel := snapshot.wheel_angle + snapshot.refusal_offset
+			if not _sight_hatches.has(id) or _sight_hatches[id][0] != angle or _sight_hatches[id][1] != wheel:
+				_sight_hatches[id] = [angle, wheel, ShipGeometry.hatch_sight_boxes(spec, angle, wheel)]
+			sight.append_array(_sight_hatches[id][2])
+	_game.label_attention.tick(deck, eye, forward, _sight_solids, sight)
 	for label: ShipLabel in labels.values():
 		label.present()
 

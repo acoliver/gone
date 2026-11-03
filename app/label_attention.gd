@@ -70,7 +70,7 @@ func load_face(id: StringName) -> void:
 func decaying_count() -> int:
 	return _decay.size()
 
-func tick(deck: int, eye: Vector3, forward: Vector3, solids: Array[AABB]) -> void:
+func tick(deck: int, eye: Vector3, forward: Vector3, solids: Array[AABB], oriented: Array[ShipGeometry.SightBox] = []) -> void:
 	var attending: Dictionary = {}
 	if _index.has(deck):
 		var cell := _cell(eye)
@@ -79,7 +79,7 @@ func tick(deck: int, eye: Vector3, forward: Vector3, solids: Array[AABB]) -> voi
 				for z: int in range(-1, 2):
 					for id: StringName in _index[deck].get(cell + Vector3i(x, y, z), []):
 						var face: Face = _faces[id]
-						if face.loaded and _attends(face, eye, forward, solids):
+						if face.loaded and _attends(face, eye, forward, solids, oriented):
 							attending[id] = true
 	var work := attending.duplicate()
 	work.merge(_decay)
@@ -95,7 +95,7 @@ func tick(deck: int, eye: Vector3, forward: Vector3, solids: Array[AABB]) -> voi
 		else:
 			_decay.erase(id)
 
-static func _attends(face: Face, eye: Vector3, forward: Vector3, solids: Array[AABB]) -> bool:
+static func _attends(face: Face, eye: Vector3, forward: Vector3, solids: Array[AABB], oriented: Array[ShipGeometry.SightBox] = []) -> bool:
 	var frame := face.frame
 	if not DisplayPerception.attends(eye, forward, frame.origin, frame.basis.x * face.size.x / 2, frame.basis.y * face.size.y / 2, frame.basis.z):
 		return false
@@ -103,6 +103,10 @@ static func _attends(face: Face, eye: Vector3, forward: Vector3, solids: Array[A
 	var end := eye + forward * distance
 	for solid: AABB in solids:
 		var hit := Interactions.segment_hit(eye, end, solid)
+		if hit >= 0 and hit < 1.0 - 0.00001:
+			return false
+	for solid: ShipGeometry.SightBox in oriented:
+		var hit := Interactions.segment_hit(solid.inverse * eye, solid.inverse * end, solid.bounds)
 		if hit >= 0 and hit < 1.0 - 0.00001:
 			return false
 	return true

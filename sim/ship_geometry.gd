@@ -484,28 +484,43 @@ static func door_blockers(door: ShipLayout.DoorSpec) -> Array[SolidSpec]:
 		solids.append(transformed(envelope, door.frame()))
 	return solids
 
-## Includes both wheels/hubs, mirrored steel, straps, lugs and rivets.
-static func hatch_leaf_bounds(door: ShipLayout.DoorSpec) -> AABB:
-	return AABB(Vector3(-0.12, 0.09, -0.23), Vector3(door.leaf_aperture().x + 0.20, door.aperture().y - 0.06, 0.46))
+static var _leaf_bounds: Dictionary = {}
 
-## Sight uses physical pieces, not the passage gate or reserved motion volume.
-static func hatch_sight_boxes(door: ShipLayout.DoorSpec, angle: float) -> Array[AABB]:
+## Retain the movement reservation, enclosing every shared physical part.
+static func hatch_leaf_bounds(door: ShipLayout.DoorSpec) -> AABB:
 	var aperture := door.leaf_aperture()
+	if _leaf_bounds.has(aperture): return _leaf_bounds[aperture]
+	var bounds := AABB(Vector3(-0.12, 0.09, -0.23), Vector3(aperture.x + 0.20, door.aperture().y - 0.06, 0.46))
+	for group: HatchParts.Group in HatchParts.leaf(door):
+		for part: HatchParts.Part in group.parts:
+			bounds = bounds.merge(group.transform * part.transform * AABB(-part.size / 2, part.size))
+	_leaf_bounds[aperture] = bounds
+	return bounds
+
+class SightBox:
+	extends RefCounted
+	var id: StringName
+	var local_transform: Transform3D
+	var bounds: AABB
+	var inverse: Transform3D
+	func _init(part: HatchParts.Part, group: Transform3D, leaf: Transform3D) -> void:
+		id = part.id
+		local_transform = group * part.transform
+		bounds = AABB(-part.size / 2, part.size)
+		inverse = (leaf * local_transform).affine_inverse()
+
+## Sight keeps physical pieces oriented, excluding reserved motion volumes.
+static func hatch_sight_boxes(door: ShipLayout.DoorSpec, angle: float, wheel_degrees: float = 0.0) -> Array[SightBox]:
 	var hinge := door.hinge_frame()
 	hinge.basis = Basis(Vector3.UP, angle)
 	var frame := door.frame() * hinge
-	var boxes: Array[AABB] = []
-	var parts: Array[AABB] = [AABB(Vector3(0.0125, 0.0925, -0.138), Vector3(aperture.x - 0.025, aperture.y - 0.105, 0.276))]
-	for side: float in [-1, 1]:
-		parts.append(AABB(Vector3(aperture.x / 2, aperture.y / 2, side * 0.145) - Vector3(0.305, 0.305, 0.08), Vector3(0.61, 0.61, 0.16)))
-		for height: float in [0.48, aperture.y - 0.40]:
-			parts.append(AABB(Vector3(0.215, height, side * 0.125) - Vector3(0.215, 0.075, 0.04), Vector3(0.43, 0.15, 0.08)))
-		for height: float in [0.40, 1.17, aperture.y - 0.33]:
-			parts.append(AABB(Vector3(aperture.x - 0.12, height, side * 0.13) - Vector3(0.095, 0.065, 0.0375), Vector3(0.19, 0.13, 0.075)))
-		for height: float in [0.19, aperture.y - 0.13]:
-			parts.append(AABB(Vector3(aperture.x / 2, height, side * 0.13) - Vector3(0.07, 0.085, 0.0375), Vector3(0.14, 0.17, 0.075)))
-	for part: AABB in parts:
-		boxes.append(frame * part)
+	var boxes: Array[SightBox] = []
+	for group: HatchParts.Group in HatchParts.leaf(door):
+		var pose := group.transform
+		if group.path in [NodePath("Wheel"), NodePath("ReverseWheel")]:
+			pose.basis *= Basis(Vector3.BACK, deg_to_rad(wheel_degrees) * (1 if group.side == 0 else -1))
+		for part: HatchParts.Part in group.parts:
+			boxes.append(SightBox.new(part, pose, frame))
 	return boxes
 
 static func open_door_solids(door: ShipLayout.DoorSpec, run_seed: int = 0) -> Array[SolidSpec]:

@@ -60,23 +60,92 @@ static func control_panel() -> Node3D:
 	panel.add_child(reader)
 	return panel
 
-static func leaf(aperture: Vector2, masks: Array[int]) -> Node3D:
+static func leaf(spec: ShipLayout.DoorSpec, masks: Array[int]) -> Node3D:
 	var root := Node3D.new()
 	root.name = "Leaf"
-	add_faces(root, &"leaf", aperture, masks, true)
-	for kind: StringName in [&"straps", &"lugs"]:
+	for name: String in ["StrapHinges", "Lugs"]:
 		var group := Node3D.new()
-		group.name = "StrapHinges" if kind == &"straps" else "Lugs"
+		group.name = name
 		root.add_child(group)
-		add_faces(group, kind, aperture, masks, true)
-	for side: int in range(2):
-		var wheel := Node3D.new()
-		wheel.name = "Wheel" if side == 0 else "ReverseWheel"
-		wheel.position = Vector3(aperture.x / 2, aperture.y / 2, -0.19 if side == 0 else 0.19)
-		if side == 1: wheel.rotation.y = PI
-		wheel.add_child(mesh_piece(mesh(&"wheel", aperture), Transform3D.IDENTITY, masks[side], hardware()))
-		root.add_child(wheel)
+	for group: HatchParts.Group in HatchParts.leaf(spec):
+		var parent := root
+		if group.path.get_name_count() > 1:
+			parent = root.get_node(NodePath(group.path.get_name(0)))
+		var name := group.path.get_name(group.path.get_name_count() - 1)
+		if name.ends_with("Rivets"):
+			var bolts := MultiMeshInstance3D.new()
+			bolts.name = name
+			bolts.multimesh = _leaf_rivets(group, spec.leaf_aperture())
+			bolts.material_override = hardware()
+			bolts.layers = masks[group.side]
+			bolts.transform = group.transform
+			parent.add_child(bolts)
+		else:
+			var piece := mesh_piece(_leaf_mesh(group, spec.leaf_aperture()), group.transform, masks[group.side], steel() if group.steel else hardware())
+			if name in ["Wheel", "ReverseWheel"]:
+				var wheel := Node3D.new()
+				wheel.name = name
+				wheel.transform = group.transform
+				piece.transform = Transform3D.IDENTITY
+				wheel.add_child(piece)
+				parent.add_child(wheel)
+			else:
+				piece.name = name
+				parent.add_child(piece)
 	return root
+
+static func _part_mesh(part: HatchParts.Part) -> Mesh:
+	match part.shape:
+		&"box": return box_mesh(part.size)
+		&"cylinder": return cylinder(part.radius, part.size.y)
+		&"torus":
+			var ring := TorusMesh.new()
+			ring.inner_radius = part.inner_radius
+			ring.outer_radius = part.radius
+			ring.rings = 32
+			ring.ring_segments = 8
+			return ring
+	assert(part.shape == &"rounded", "known physical hatch shape")
+	var tool := SurfaceTool.new()
+	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	_rounded(tool, Vector2(part.size.x, part.size.y), part.radius, part.size.z, Vector3.ZERO)
+	tool.generate_normals()
+	tool.index()
+	return tool.commit()
+
+static func _leaf_mesh(group: HatchParts.Group, aperture: Vector2) -> ArrayMesh:
+	var key := [group.path, aperture]
+	if _meshes.has(key): return _meshes[key]
+	var result := ArrayMesh.new()
+	var poses: Dictionary = {}
+	for part: HatchParts.Part in group.parts:
+		var tool := SurfaceTool.new()
+		tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+		_append(tool, _part_mesh(part), part.transform)
+		tool.generate_normals()
+		tool.index()
+		tool.commit(result)
+		result.surface_set_name(result.get_surface_count() - 1, String(part.id))
+		poses[part.id] = part.transform
+	result.set_meta(&"part_transforms", poses)
+	_meshes[key] = result
+	return result
+
+static func _leaf_rivets(group: HatchParts.Group, aperture: Vector2) -> MultiMesh:
+	var key := [group.path, aperture]
+	if _rivets.has(key): return _rivets[key]
+	var batch := MultiMesh.new()
+	batch.transform_format = MultiMesh.TRANSFORM_3D
+	batch.mesh = _part_mesh(group.parts[0])
+	batch.instance_count = group.parts.size()
+	var poses: Array[Transform3D] = []
+	for index: int in range(group.parts.size()):
+		var pose := group.parts[index].transform
+		batch.set_instance_transform(index, pose)
+		poses.append(pose)
+	batch.set_meta(&"instance_poses", poses)
+	_rivets[key] = batch
+	return batch
 
 
 static func steel() -> StandardMaterial3D:
@@ -153,11 +222,6 @@ static func _append(tool: SurfaceTool, source: Mesh, pose: Transform3D) -> void:
 	for index: int in indices:
 		tool.add_vertex(pose * vertices[index])
 
-static func _bar(tool: SurfaceTool, a: Vector3, b: Vector3, width: float, depth: float) -> void:
-	var delta := b - a
-	var pose := Transform3D(Basis(Vector3.BACK, -atan2(delta.x, delta.y)), (a + b) / 2)
-	_append(tool, box_mesh(Vector3(width, delta.length(), depth)), pose)
-
 static func mesh(kind: StringName, aperture: Vector2) -> ArrayMesh:
 	var key := [kind, aperture]
 	if _meshes.has(key): return _meshes[key]
@@ -165,33 +229,10 @@ static func mesh(kind: StringName, aperture: Vector2) -> ArrayMesh:
 	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
 	if kind == &"frame":
 		_ring(tool, aperture)
-	elif kind == &"leaf":
-		_rounded(tool, Vector2(aperture.x - 0.025, aperture.y - ShipGeometry.SILL_HEIGHT - 0.025), 0.205, 0.10, Vector3(aperture.x / 2, (aperture.y + ShipGeometry.SILL_HEIGHT) / 2, 0))
-		for diagonal: float in [-1, 1]:
-			_bar(tool, Vector3(aperture.x / 2 - diagonal * (aperture.x / 2 - 0.14), 0.28, -0.06), Vector3(aperture.x / 2 + diagonal * (aperture.x / 2 - 0.14), aperture.y - 0.15, -0.06), 0.075, 0.035)
-		_rounded(tool, ShipLayout.HATCH_LABEL_SIZE + Vector2(0.04, 0.04), 0.025, 0.04, Vector3(aperture.x / 2, ShipLayout.DOOR_LABEL_HEIGHT, -0.068))
-	elif kind in [&"hinges", &"straps"]:
+	else:
+		assert(kind == &"hinges", "frame and fixed hinges are presentation-only")
 		for height: float in [0.48, aperture.y - 0.40]:
-			if kind == &"straps":
-				_rounded(tool, Vector2(0.43, 0.15), 0.04, 0.08, Vector3(0.215, height, -0.075))
-			else:
-				_append(tool, cylinder(0.085, 0.28), Transform3D(Basis(), Vector3(0, height, 0)))
-	elif kind == &"lugs":
-		for height: float in [0.40, 1.17, aperture.y - 0.33]:
-			_rounded(tool, Vector2(0.19, 0.13), 0.025, 0.075, Vector3(aperture.x - 0.12, height, -0.08))
-		for height: float in [0.19, aperture.y - 0.13]:
-			_rounded(tool, Vector2(0.14, 0.17), 0.025, 0.075, Vector3(aperture.x / 2, height, -0.08))
-	elif kind == &"wheel":
-		var ring := TorusMesh.new()
-		ring.inner_radius = 0.265
-		ring.outer_radius = 0.305
-		ring.rings = 32
-		ring.ring_segments = 8
-		_append(tool, ring, Transform3D(Basis(Vector3.RIGHT, PI / 2), Vector3.ZERO))
-		_append(tool, cylinder(0.082, 0.16), Transform3D(Basis(Vector3.RIGHT, PI / 2), Vector3(0, 0, 0.045)))
-		for i: int in range(6):
-			var angle := i * TAU / 6
-			_bar(tool, Vector3.ZERO, Vector3(cos(angle), sin(angle), 0) * 0.28, 0.035, 0.045)
+			_append(tool, cylinder(0.085, 0.28), Transform3D(Basis(), Vector3(0, height, 0)))
 	tool.generate_normals()
 	tool.index()
 	var result := tool.commit()
@@ -211,11 +252,6 @@ static func rivets(kind: StringName, aperture: Vector2) -> MultiMesh:
 			for n: int in range(count):
 				var point := a.lerp(b, float(n) / count)
 				positions.append(Vector3(point.x, point.y + (aperture.y + ShipGeometry.SILL_HEIGHT) / 2, -0.005))
-	else:
-		for diagonal: float in [-1, 1]:
-			for i: int in range(23):
-				var t := float(i) / 22
-				positions.append(Vector3(lerpf(aperture.x / 2 - diagonal * (aperture.x / 2 - 0.14), aperture.x / 2 + diagonal * (aperture.x / 2 - 0.14), t), lerpf(0.28, aperture.y - 0.15, t), -0.087))
 	var batch := MultiMesh.new()
 	batch.transform_format = MultiMesh.TRANSFORM_3D
 	batch.mesh = cylinder(0.018, 0.012)

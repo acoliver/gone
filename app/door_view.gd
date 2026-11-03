@@ -45,7 +45,7 @@ static func build(spec: ShipLayout.DoorSpec, fore_mask: int = 1, aft_mask: int =
 	view._hinge.name = "Hinge"
 	view._hinge.transform = spec.hinge_frame()
 	view.add_child(view._hinge)
-	var leaf := HatchModel.leaf(spec.leaf_aperture(), masks)
+	var leaf := HatchModel.leaf(spec, masks)
 	view._hinge.add_child(leaf)
 	view._wheel = leaf.get_node("Wheel")
 	view._reverse_wheel = leaf.get_node("ReverseWheel")
