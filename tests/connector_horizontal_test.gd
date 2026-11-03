@@ -48,7 +48,7 @@ func test_real_player_cranks_both_directions_and_locked_doors_refuse() -> void:
 		for id: StringName in ids:
 			var door := game.layout.door(id)
 			var position := door.frame().origin
-			route.walk_to(position - Vector3(outward * 1.85, 0, 0))
+			route.walk_to(position - Vector3(outward * 2.1, 0, 0))
 			route.look_at(position)
 			var schedule := HatchResistance.schedule(game.run_seed, id)
 			for _attempt: int in range(schedule.weights.size()):
@@ -57,7 +57,7 @@ func test_real_player_cranks_both_directions_and_locked_doors_refuse() -> void:
 			assert_int_equal(game.doors.snapshot(id).attempt, schedule.weights.size(), "one selected Space edge per attempt")
 			route.hold(48)
 			assert_int_equal(game.doors.snapshot(id).state, Doors.State.OPEN, "hatch completes swing")
-			route.walk_to(position + Vector3(outward * 1.85, 0, 0))
+			route.walk_to(position + Vector3(outward * 2.1, 0, 0))
 			assert_true((player.motion.capsule().foot.x - position.x) * outward > 1.7, "real player crosses the aperture")
 		var section := game.layout.section(ShipLayout.section_id(14, 42 if n == 1 else 40))
 		var side_id := section.side_door_ids()[0]
@@ -69,7 +69,7 @@ func test_real_player_cranks_both_directions_and_locked_doors_refuse() -> void:
 		assert_int_equal(game.doors.snapshot(side_id).attempt, 1, "side door refuses through input")
 		var boundary_id: StringName = &"D14-C-002-H-FORE" if n == 1 else &"D14-C-M001-H-AFT"
 		var boundary := game.layout.door(boundary_id)
-		route.walk_to(boundary.frame().origin - Vector3(outward * 1.85, 0, 0))
+		route.walk_to(boundary.frame().origin - Vector3(outward * 2.1, 0, 0))
 		route.look_at(boundary.frame().origin)
 		route.press()
 		assert_int_equal(game.doors.events().back().kind(), Doors.EventKind.REFUSED, "boundary refusal event")
@@ -77,8 +77,8 @@ func test_real_player_cranks_both_directions_and_locked_doors_refuse() -> void:
 		assert_int_equal(game.doors.snapshot(boundary_id).work, 0, "far boundary never gains work")
 		# Return through the open portals before approaching the lift face.
 		for id: StringName in [ids[1], ids[0]]:
-			route.walk_to(game.layout.door(id).frame().origin + Vector3(outward * 1.85, 0, 0))
-			route.walk_to(game.layout.door(id).frame().origin - Vector3(outward * 1.85, 0, 0))
+			route.walk_to(game.layout.door(id).frame().origin + Vector3(outward * 2.1, 0, 0))
+			route.walk_to(game.layout.door(id).frame().origin - Vector3(outward * 2.1, 0, 0))
 			if id == ids[1]:
 				var lift := game.layout.door(game.layout.lift(connector.lift_id()).door_id())
 				route.walk_to(Vector3(lift.frame().origin.x, 0, 0))

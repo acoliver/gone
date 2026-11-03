@@ -22,11 +22,11 @@ func test_both_wells_full_real_player_journey_and_replay_digest() -> void:
 				opened.append(id)
 		assert_true(opened == [&"D14-C-000-H-AFT", &"D14-C-000-H-FORE", &"D14-C-001-H-AFT", &"D14-C-001-H-FORE"], "exactly the four D14 internal hatches opened")
 		assert_true(game.power_active and game.door_open and game.power_door_open and player.motion.rod_carried, "opening state survives both complete trips")
-		assert_int_equal(player.motion.console_presses, 2, "console state not replayed or reset")
+		assert_int_equal(player.motion.console_presses, 1, "console state not replayed or reset")
 		digests.append("\n".join(route.digest_lines).sha256_text())
 		player.free()
 	assert_true(digests[0] == digests[1], "fixed seed/input event digest repeats")
-	assert_true(digests[0] == "e0b514ef37cef2f4df134a060c781ddd0ad5cb8e3c923c4ab7c44486b19a4e5d", "pinned full journey event digest")
+	assert_true(digests[0] == "9b78b8b349c91b331692a08ce9e8d2bf37e7695314626bf60c358412f13da228", "pinned full journey event digest")
 	print("connector route digest: ", digests[0])
 
 func test_climb_channel_is_single_consumption_and_scenario_validated() -> void:

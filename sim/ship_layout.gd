@@ -28,7 +28,7 @@ const POWER_GENERATOR_CENTER := Vector3(POWER_CENTER_X, 0, (POWER_NEAR_Z + POWER
 
 enum Policy { CRANK, NEVER_OPENS, ROD_PRY, PRESS_SLIDE }
 enum DoorKind { HATCH, SIDE, LIFT, BAY, POWER }
-enum AnimationRecipe { HINGE, FIXED, RETRACT_SLIDE, SLIDE }
+enum AnimationRecipe { HINGE, FIXED, SLIDE }
 
 class Spec:
 	extends RefCounted
@@ -203,12 +203,18 @@ class DoorSpec:
 		result["animation"] = _animation
 		result["has_wheel"] = _has_wheel
 		return result
+	func leaf_aperture() -> Vector2:
+		return _aperture - Vector2(0.12, 0)
 	func hinge_frame() -> Transform3D:
 		assert(_animation == ShipLayout.AnimationRecipe.HINGE, "hinge recipe required")
-		return Transform3D(Basis(), Vector3(-_aperture.x / 2.0, 0, ShipLayout.WALL / 2.0))
-	func swing_radians() -> float:
+		# The complete double-sided hardware must clear the bulkhead before rotating.
+		var into := 1.0 if swing_radians() < 0 else -1.0
+		return Transform3D(Basis(), Vector3(-_aperture.x / 2.0 + 0.03, 0, ShipLayout.WALL / 2.0 + into * 0.30))
+	func swing_radians(run_seed: int = 0) -> float:
 		assert(_animation == ShipLayout.AnimationRecipe.HINGE, "hinge recipe required")
-		return -PI / 2.0 if String(_id).ends_with("-FORE") else PI / 2.0
+		var value := HatchResistance.hash_bytes("hatch-rest-v1|%d|%s" % [run_seed, _id])
+		var degrees := 100.0 + 30.0 * float(value) / 4294967295.0
+		return deg_to_rad(degrees) * (-1.0 if String(_id).ends_with("-FORE") or _kind == ShipLayout.DoorKind.BAY else 1.0)
 	func closed_blocker() -> AABB:
 		return AABB(Vector3(-_aperture.x / 2.0, 0, 0), Vector3(_aperture.x, _aperture.y, ShipLayout.WALL))
 
@@ -244,10 +250,9 @@ class FaceSpec:
 	func label_size() -> Vector2:
 		return ShipLayout.HATCH_LABEL_SIZE
 	func leaf_label_frame(door: DoorSpec) -> Transform3D:
-		if door.kind() == ShipLayout.DoorKind.BAY:
-			var side := 1.0 if _surface_frame.basis.z.z < 0 else -1.0
-			return Transform3D(Basis(Vector3(0, 0, -side), Vector3.UP, Vector3(side, 0, 0)), Vector3(side * (ShipLayout.WALL / 2 + ShipLayout.HATCH_LABEL_OUTSET), ShipLayout.DOOR_LABEL_HEIGHT - ShipGeometry.DOOR_HEIGHT / 2, 0))
-		return door.hinge_frame().affine_inverse() * label_frame()
+		var frame := _surface_frame
+		frame.origin = Vector3(door.leaf_aperture().x / 2, ShipLayout.DOOR_LABEL_HEIGHT, frame.basis.z.z * (ShipLayout.WALL / 2 + ShipLayout.HATCH_LABEL_OUTSET))
+		return frame
 	func data() -> Dictionary:
 		var result := super.data()
 		result["door_id"] = _door_id
@@ -653,7 +658,7 @@ static func _add_door(specs: Array[Spec], id: StringName, deck: int, kind: int, 
 	var faces: Array[StringName] = [StringName("%s/%s" % [id, suffixes[0]]), StringName("%s/%s" % [id, suffixes[1]])]
 	var animation := AnimationRecipe.HINGE if kind == DoorKind.HATCH else AnimationRecipe.FIXED
 	if kind == DoorKind.BAY:
-		animation = AnimationRecipe.RETRACT_SLIDE
+		animation = AnimationRecipe.HINGE
 	elif kind == DoorKind.POWER:
 		animation = AnimationRecipe.SLIDE
 	specs.append(DoorSpec.new(id, deck, kind, policy, frame, aperture, spaces, faces, owner, animation, kind in [DoorKind.HATCH, DoorKind.BAY]))

@@ -122,10 +122,9 @@ func test_opening_manifest_has_exact_owners_order_and_door_differentials() -> vo
 		for pod: int in range(7):
 			for piece: int in range(pod_counts[pod]):
 				expected.append(StringName("D14-BAY/POD-%03d/%03d" % [pod, piece]))
-		for index: int in range(4):
-			expected.append(StringName("D14-BAY/FRAME/%03d" % index))
-		if flags.x == 0:
-			expected.append(&"D14-BAY-DOOR/LEAF")
+		for piece: String in ["FRAME/LEFT", "FRAME/RIGHT", "FRAME/TOP", "COAMING"]:
+			expected.append(StringName("D14-BAY-DOOR/%s" % piece))
+		expected.append(&"D14-BAY-DOOR/SWING" if flags.x == 0 else &"D14-BAY-DOOR/PARKED")
 		for owner: String in ["D14-S-041/SHELL", "D14-S-041/SIDE-LEAF", "D14-POWER/SHELL", "D14-POWER/CONSOLE"]:
 			var count: int = {"D14-S-041/SHELL": 8, "D14-S-041/SIDE-LEAF": 5, "D14-POWER/SHELL": 5, "D14-POWER/CONSOLE": 6}[owner]
 			for index: int in range(count):
@@ -146,7 +145,7 @@ func test_opening_counts_and_every_box_keep_original_insertion_order() -> void:
 	for flags: Vector2i in [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1)]:
 		var pure := ShipCollision.opening_set(registry, bool(flags.x), bool(flags.y))
 		var adapter := PowerRoom.scene_collider_set(registry, bool(flags.x), bool(flags.y))
-		var expected := 194 if flags.x == 0 else (192 if flags.y == 0 else 191)
+		var expected := 194 if flags.x == 0 else (193 if flags.y == 0 else 192)
 		assert_int_equal(pure.size(), expected, "full scene count")
 		for index: int in range(pure.size()):
 			assert_true(pure.boxes()[index].equals(adapter.boxes()[index]), "same ordered collider")

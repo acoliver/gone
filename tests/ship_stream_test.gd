@@ -43,7 +43,7 @@ func test_opening_does_no_remote_work() -> void:
 	assert_int_equal(scene.stream.shaft_count(), 0, "no shaft before its approach")
 	scene.prepare_near(Vector3(18, 0.305, 0))
 	assert_int_equal(scene.stream.pending_count(), 0, "opening queues no rooms")
-	assert_int_equal(scene.text_cache.pending_count(), 3, "only opening hatch/bay text pairs")
+	assert_int_equal(scene.text_cache.pending_count(), 4, "opening hatch/bay pairs and the initially inactive console")
 	root.free()
 
 func test_residency_clips_to_limits_and_only_occupied_well() -> void:

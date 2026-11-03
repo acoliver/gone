@@ -72,7 +72,7 @@ func _fixture(report: HarnessReport, spec: HarnessScenario) -> void:
 
 func test_connector_real_input_replay_batches_capture_stops_and_assertion_failures() -> void:
 	var spec: HarnessScenario = HarnessScenario.parse(FileAccess.get_file_as_string("res://scenarios/connector-route.json")).scenario
-	assert_true(spec.connector.digest == "77a9f1082aa02b5ff60ea3dfcd1d6586467480ee4231548522d958843aeb1ee6", "pinned connector capture schedule")
+	assert_true(spec.connector.digest == "db4bbdbb02b7e1ba8488144577a3815df940fe59eaebf9ebccc56cc22a0fba53", "pinned connector capture schedule")
 	var digests: Array[String] = []
 	for batch: int in [1, 4]:
 		var game := Game.new(spec.seed)

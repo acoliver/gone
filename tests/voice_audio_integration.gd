@@ -73,7 +73,7 @@ func _run() -> void:
 	if not Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, plane, game, game_motion):
 		_fail("rod-carried interact starts the hatch opening")
 		return
-	for _tick: int in range(Doors.BAY_RETRACT_TICKS + Doors.BAY_SLIDE_TICKS):
+	for _tick: int in range(Doors.SWING_TICKS):
 		game.advance_doors()
 		game_motion.advance(plane, game, 0.0, 1.0 / 60.0)
 	if not game.door_open or game.doors.snapshot(ShipLayout.BAY_DOOR_ID).state != Doors.State.OPEN:

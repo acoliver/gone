@@ -444,14 +444,18 @@ func verify_power(report) -> void:
 	if report.beats.has("console-inactive"):
 		var inactive_tick: int = report.beats["console-inactive"].tick
 		var inactive_ok := false
+		var pressed_before_capture := false
 		for event: Dictionary in report.events:
-			if event.kind == "console" and String(event.state) == "inactive" \
+			if event.kind != "console":
+				continue
+			if int(event.presses) > 0 and int(event.tick) <= inactive_tick:
+				pressed_before_capture = true
+			if int(event.presses) == 0 and String(event.state) == "inactive" \
 					and String(event.native_label) == "te mu nawa lina palo" \
 					and String(event.perceived_label) == "SISTEMA DE ENERGÍA SECUNDARIO INACTIVO" \
 					and int(event.tick) <= inactive_tick + BEAT_TICK_HEADROOM:
 				inactive_ok = true
-				break
-		if not inactive_ok:
+		if not inactive_ok or pressed_before_capture:
 			failures.append("console-inactive beat has no palo / INACTIVO-label evidence at or before tick %d" % inactive_tick)
 	if report.beats.has("power-active"):
 		var active_tick: int = report.beats["power-active"].tick
@@ -460,7 +464,7 @@ func verify_power(report) -> void:
 		for event: Dictionary in report.events:
 			if not event.has("tick") or int(event.tick) > active_tick + BEAT_TICK_HEADROOM:
 				continue
-			if event.kind == "console" and String(event.state) == "active" \
+			if event.kind == "console" and int(event.presses) == 1 and String(event.state) == "active" \
 					and String(event.native_label) == "te mu nawa lina shenu" \
 					and String(event.perceived_label) == "SISTEMA DE ENERGÍA SECUNDARIO EN FUNCIONAMIENTO":
 				console_ok = true

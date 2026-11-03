@@ -173,13 +173,13 @@ static func mesh(kind: StringName, aperture: Vector2) -> ArrayMesh:
 	elif kind in [&"hinges", &"straps"]:
 		for height: float in [0.48, aperture.y - 0.40]:
 			if kind == &"straps":
-				_rounded(tool, Vector2(0.43, 0.15), 0.04, 0.08, Vector3(0.10, height, -0.075))
+				_rounded(tool, Vector2(0.43, 0.15), 0.04, 0.08, Vector3(0.215, height, -0.075))
 			else:
 				_append(tool, cylinder(0.085, 0.28), Transform3D(Basis(), Vector3(0, height, 0)))
 	elif kind == &"lugs":
 		for height: float in [0.40, 1.17, aperture.y - 0.33]:
-			_rounded(tool, Vector2(0.19, 0.13), 0.025, 0.075, Vector3(aperture.x - 0.025, height, -0.08))
-		for height: float in [0.19, aperture.y - 0.06]:
+			_rounded(tool, Vector2(0.19, 0.13), 0.025, 0.075, Vector3(aperture.x - 0.12, height, -0.08))
+		for height: float in [0.19, aperture.y - 0.13]:
 			_rounded(tool, Vector2(0.14, 0.17), 0.025, 0.075, Vector3(aperture.x / 2, height, -0.08))
 	elif kind == &"wheel":
 		var ring := TorusMesh.new()
@@ -220,7 +220,13 @@ static func rivets(kind: StringName, aperture: Vector2) -> MultiMesh:
 	batch.transform_format = MultiMesh.TRANSFORM_3D
 	batch.mesh = cylinder(0.018, 0.012)
 	batch.instance_count = positions.size()
-	for i: int in range(positions.size()): batch.set_instance_transform(i, Transform3D(Basis(Vector3.RIGHT, PI / 2), positions[i]))
+	var poses: Array[Transform3D] = []
+	for i: int in range(positions.size()):
+		var pose := Transform3D(Basis(Vector3.RIGHT, PI / 2), positions[i])
+		batch.set_instance_transform(i, pose)
+		poses.append(pose)
+	# The headless dummy renderer does not retain MultiMesh instance buffers.
+	batch.set_meta(&"instance_poses", poses)
 	_rivets[key] = batch
 	return batch
 

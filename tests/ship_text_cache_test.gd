@@ -39,7 +39,8 @@ func test_prefetched_console_changes_cached_pixels_in_the_same_tick() -> void:
 		cache.complete(pair.key, image, image)
 		pairs.append(pair)
 	for pair: ShipTextCache.Pair in pairs:
-		game.press_console()
+		if pair == pairs[1]:
+			game.press_console()
 		room.process_frame(Sim.LOGICAL_TICK_SECS)
 		var quad := room.console_display.get_node("TextSurface") as MeshInstance3D
 		assert_true(quad.material_override.get_shader_parameter("native_ink") == pair.native_texture(), "console press installs prefetched pixels immediately")
@@ -73,13 +74,13 @@ func test_built_d14_faces_generate_labels_without_remote_or_startup_jobs() -> vo
 	var parent := Node3D.new()
 	var game := Game.new(0)
 	var scene := ShipScene.build_into(parent, game, false)
-	assert_int_equal(scene.text_cache.pending_count(), 0, "wake has no navigation raster jobs")
+	assert_int_equal(scene.text_cache.pending_count(), 1, "arrival console queues its inactive text")
 	scene.prepare_near(Vector3(18, 0, 0))
 	assert_int_equal(scene.labels.size(), 4, "both bay faces and two hall-facing hatches")
 	scene.prepare_near(Vector3(28, 0, 0))
 	scene.prepare_near(Vector3(8, 0, 0))
 	assert_int_equal(scene.labels.size(), 14, "ten reachable hatch faces, two bay faces, two lifts")
-	assert_int_equal(scene.text_cache.pending_count(), 6, "six unique navigation pairs for all D14 labels")
+	assert_int_equal(scene.text_cache.pending_count(), 7, "six navigation pairs plus arrival console text")
 	assert_int_equal(scene.text_cache.raster_viewport_count(), 0, "pure scene tests do not await GPU")
 	assert_true(scene.labels[&"D14-C-001-H-FORE/FORE"].pair.native == "lometa [16]\nshelani paki [52]", "corridor face points to section forty-two")
 	assert_true(scene.labels[&"D14-C-001-H-FORE/AFT"].pair.native == "lometa [16]\nshelani paki [51]", "connector face points back to forty-one")

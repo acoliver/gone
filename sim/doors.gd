@@ -8,10 +8,6 @@ enum Outcome { NOT_APPLICABLE, MOVED, STALLED, RELEASED, REFUSED }
 enum EventKind { CRANK_MOVED, CRANK_STALLED, RELEASED, OPENED, REFUSED }
 const WHEEL_TICKS: int = 6
 const SWING_TICKS: int = 48
-const BAY_RETRACT_TICKS: int = 12
-const BAY_SLIDE_TICKS: int = 36
-const BAY_RETRACT: float = 0.17
-const BAY_SLIDE: float = 1.2
 const POWER_SLIDE: float = 1.15
 
 class Context:
@@ -80,12 +76,14 @@ class Snapshot:
 	var refusal_offset: float = 0.0
 	var shudder: float = 0.0
 	var leaf_fraction: float = 0.0
+	var open_radians: float = 0.0
 	var offset := Vector3.ZERO
 	var releases: int = 0
 
 class Record:
 	extends RefCounted
 	var spec: ShipLayout.DoorSpec
+	var open_radians: float = 0.0
 	var schedule: HatchResistance.Schedule
 	var state: int = State.CLOSED
 	var attempt: int = 0
@@ -115,6 +113,8 @@ class Store:
 			var record := Record.new()
 			record.spec = layout.door(id)
 			_validate(record.spec)
+			if record.spec.animation() == ShipLayout.AnimationRecipe.HINGE:
+				record.open_radians = record.spec.swing_radians(run_seed)
 			if record.spec.policy() == Policy.CRANK:
 				record.schedule = HatchResistance.schedule(run_seed, id)
 			_records[id] = record
@@ -126,7 +126,7 @@ class Store:
 			Policy.NEVER_OPENS:
 				assert(spec.animation() in [ShipLayout.AnimationRecipe.HINGE, ShipLayout.AnimationRecipe.FIXED], "locked recipe must support refusal")
 			Policy.ROD_PRY:
-				assert(spec.animation() == ShipLayout.AnimationRecipe.RETRACT_SLIDE, "rod uses retract/slide")
+				assert(spec.animation() == ShipLayout.AnimationRecipe.HINGE and spec.has_wheel(), "rod pries the shared hinged hatch")
 			Policy.PRESS_SLIDE:
 				assert(spec.animation() == ShipLayout.AnimationRecipe.SLIDE, "press uses slide")
 			_:
@@ -232,6 +232,7 @@ class Store:
 		var record := _record(id)
 		var result := Snapshot.new()
 		result.id = id
+		result.open_radians = record.open_radians
 		result.state = record.state
 		result.attempt = record.attempt
 		result.work = record.work
@@ -243,8 +244,6 @@ class Store:
 		var progress := float(record.opening_elapsed) / float(SWING_TICKS)
 		result.leaf_fraction = progress * progress * (3.0 - 2.0 * progress)
 		match record.spec.animation():
-			ShipLayout.AnimationRecipe.RETRACT_SLIDE:
-				result.offset = Vector3(BAY_RETRACT * minf(float(record.opening_elapsed) / BAY_RETRACT_TICKS, 1.0), 0, -BAY_SLIDE * clampf(float(record.opening_elapsed - BAY_RETRACT_TICKS) / BAY_SLIDE_TICKS, 0.0, 1.0))
 			ShipLayout.AnimationRecipe.SLIDE:
 				result.offset = Vector3(-POWER_SLIDE * progress, 0, 0)
 		return result

@@ -9,7 +9,7 @@ extends Node3D
 ## looks inexplicably new next to the damaged walls (the stasis pods
 ## share that too-new quality; the reason is a later reveal). Under the
 ## emergency circuit the room reads red like the hall; actioning the
-## working console twice (palo / INACTIVO to shenu / EN FUNCIONAMIENTO) lights the generator and
+## working console once (palo / INACTIVO to shenu / EN FUNCIONAMIENTO) lights the generator and
 ## hands the hallway, bay and this room over to dim regular white.
 ## Colliders extend the hallway's set from
 ## solids authored here (Placement stays untouched): one construction
@@ -181,7 +181,7 @@ static func console_solid(station: ConsoleStation) -> Placement.SolidPlacement:
 static func generator_solid() -> Placement.SolidPlacement:
 	return ShipGeometry.generator_solid()
 
-## Both authored layers, flattened for the harness. STANDBY is blank.
+## Both authored layers, flattened for the harness.
 static func console_labels(state: int) -> Dictionary:
 	var id := _state_message_id(state)
 	if id.is_empty():
@@ -204,8 +204,6 @@ static func _state_message_id(state: int) -> String:
 
 static func console_state_name(state: int) -> String:
 	match state:
-		Game.ConsoleState.STANDBY:
-			return "standby"
 		Game.ConsoleState.INACTIVE:
 			return "inactive"
 		Game.ConsoleState.ACTIVE:
@@ -525,8 +523,6 @@ func _apply_console_state(state: int) -> void:
 	console_display.set_messages(HEADING_ID, _state_message_id(state))
 	var emission: float = 0.0
 	match state:
-		Game.ConsoleState.STANDBY:
-			emission = 0.10
 		Game.ConsoleState.INACTIVE:
 			emission = 0.30
 		Game.ConsoleState.ACTIVE:

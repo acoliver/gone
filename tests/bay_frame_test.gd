@@ -58,6 +58,11 @@ func test_resolver_sweep_is_covariant_in_the_moved_bay_and_ends_have_closed_hatc
 	var actual := Resolve.resolve_motion(world, frame.basis * Vector3(0, 0, 6), game.colliders)
 	assert_true(expected.is_ok() and actual.is_ok(), "both sweeps accepted")
 	assert_close(actual.motion.displacement, frame.basis * expected.motion.displacement, "rotated collision sweep")
+	var ids := game.collision.solid_ids(14)
 	for x: float in [5.9, 30.1]:
 		var probe := ColliderSet.Aabb.try_new(Vector3(x, 1.2, 0), Vector3(0.05, 0.5, 0.3)).box
-		assert_int_equal(game.colliders.overlapping(probe).size(), 1 if x < 6 else 2, "reserved swing at X=5.9; aperture plus swing at X=30.1")
+		var owners: Array[StringName] = []
+		for index: int in game.colliders.overlapping(probe):
+			owners.append(ids[index])
+		var expected_owners := [&"D14-C-000-H-AFT/SWING"] if x < 6 else [&"D14-C-001-H-FORE/BLOCKER", &"D14-C-001-H-FORE/SWING"]
+		assert_true(owners == expected_owners, "only the named passage gate and hardware sweep at X=%s: %s" % [x, owners])

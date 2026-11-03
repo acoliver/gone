@@ -101,7 +101,8 @@ The shipped lanes are listed below with what each covers.
   and a short corridor walk, pinning rod-picked-up, door-opened,
   hall-dark, hall-lit, and hall-corridor.
 - `scenarios/click-route.json`: floor and action objectives complete rod
-  pickup, bay-door pry, hall switch, power door and both console presses.
+  pickup, bay-door pry, hall switch, power door, inactive-console arrival
+  and the single console activation press.
 - `scenarios/perf-smoke.json`: frame-time sampling in the populated room
   against the frozen smoke policy.
 - `scenarios/calibration-step.json`: the luminance-step calibration cell.

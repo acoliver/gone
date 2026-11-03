@@ -90,7 +90,7 @@ func test_collider_sets_extend_the_walk_sim_open_and_shut() -> void:
 	var closed := Hallway.scene_collider_set(registry, false)
 	var open := Hallway.scene_collider_set(registry, true)
 	assert_int_equal(closed.size(), 87, "the closed set's box count is pinned")
-	assert_int_equal(open.size(), 85, "the open set drops the doorway block and the slid-aside slab")
+	assert_int_equal(open.size(), 86, "the open set replaces passage and sweep with the parked leaf")
 	var game := _awake_game()
 	assert_int_equal(game.colliders.size(), PowerRoom.scene_collider_set(registry, false, false).size(), "the game boots on the full D14 set")
 	# The aperture is solid while shut and clear when open: the walk
@@ -232,7 +232,7 @@ func test_presses_fall_through_to_the_beside_door_switch() -> void:
 	var plane := InputPlane.new()
 	_stand(motion, game, plane)
 	var adapter := InputPlane.ScriptedAdapter.new()
-	assert_true(_walk_to(motion, game, plane, adapter, _bay(Vector2(5.4, 0.5)), 0.2), "the walk arrived at the beside-door overlap")
+	assert_true(_walk_to(motion, game, plane, adapter, _bay(Vector2(4.18, 0.65)), 0.03), "the walk arrived at the beside-door overlap outside the reserved swing")
 	var hatch := Vector2(PlacementTruth.bay_door_center(game.layout).x, PlacementTruth.bay_door_center(game.layout).y)
 	var act := Vector2(Hallway.switch_act_center().x, Hallway.switch_act_center().z)
 	var foot := motion.capsule().foot
@@ -268,7 +268,7 @@ func test_switch_flips_exactly_once_from_a_full_crossing() -> void:
 	var adapter := InputPlane.ScriptedAdapter.new()
 	var hatch := PlacementTruth.bay_door_center(game.layout)
 	assert_true(_walk_to(motion, game, plane, adapter, hatch,
-		Interactions.HATCH_INTERACT_REACH * 0.9), "the walk arrived at the door")
+		Interactions.HATCH_INTERACT_REACH - 0.1), "the walk arrived at the door")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
 	assert_true(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, plane, game, motion), "the rod-carried press at the door starts the open")
 	assert_int_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).releases, 1, "one press, one opening")

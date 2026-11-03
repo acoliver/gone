@@ -36,15 +36,16 @@ static func build(spec: ShipLayout.DoorSpec, fore_mask: int = 1, aft_mask: int =
 	var masks: Array[int] = [fore_mask, aft_mask]
 	HatchModel.add_faces(frame, &"frame", spec.aperture(), masks, false)
 	for solid: ShipGeometry.SolidSpec in ShipGeometry.hatch_frame_solids(spec):
-		if solid.id == StringName("%s/COAMING" % spec.id()):
-			var piece := split_surface(solid, spec.frame(), fore_mask, aft_mask)
-			piece.name = "Coaming"
+		var suffix := String(solid.id).trim_prefix("%s/" % spec.id())
+		if suffix in ["COAMING", "FRAME/RIGHT", "FRAME/TOP"]:
+			var piece := collar_surface(solid, spec, fore_mask, aft_mask)
+			piece.name = {"COAMING": "Coaming", "FRAME/RIGHT": "LatchJamb", "FRAME/TOP": "Lintel"}[suffix]
 			view.add_child(piece)
 	view._hinge = Node3D.new()
 	view._hinge.name = "Hinge"
 	view._hinge.transform = spec.hinge_frame()
 	view.add_child(view._hinge)
-	var leaf := HatchModel.leaf(spec.aperture(), masks)
+	var leaf := HatchModel.leaf(spec.leaf_aperture(), masks)
 	view._hinge.add_child(leaf)
 	view._wheel = leaf.get_node("Wheel")
 	view._reverse_wheel = leaf.get_node("ReverseWheel")
@@ -63,6 +64,28 @@ static func build(spec: ShipLayout.DoorSpec, fore_mask: int = 1, aft_mask: int =
 		Lighting.mesh_layers(panel, fore_mask if side < 0 else aft_mask)
 		view.add_child(panel)
 	return view
+
+static func collar_surface(solid: ShipGeometry.SolidSpec, spec: ShipLayout.DoorSpec, fore_mask: int, aft_mask: int) -> Node3D:
+	var group := Node3D.new()
+	var arrays := HatchModel.box_mesh(solid.size).surface_get_arrays(0)
+	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var normals: PackedVector3Array = arrays[Mesh.ARRAY_NORMAL]
+	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+	var faces: Array[SurfaceTool] = [SurfaceTool.new(), SurfaceTool.new()]
+	for face: SurfaceTool in faces:
+		face.begin(Mesh.PRIMITIVE_TRIANGLES)
+	# The sleeve between the wall and setback leaf is in the approach room.
+	# Only its far end cap faces the other room, not half of every side wall.
+	var approach := 0 if spec.hinge_frame().origin.z > ShipLayout.WALL / 2 else 1
+	for index: int in indices:
+		var normal := normals[index]
+		var side := (0 if normal.z < 0 else 1) if absf(normal.z) > 0.5 else approach
+		faces[side].set_normal(normal)
+		faces[side].add_vertex(vertices[index])
+	var pose := spec.frame().affine_inverse() * solid.transform
+	for side: int in range(2):
+		group.add_child(HatchModel.mesh_piece(faces[side].commit(), pose, fore_mask if side == 0 else aft_mask))
+	return group
 
 static func split_surface(solid: ShipGeometry.SolidSpec, frame: Transform3D, fore_mask: int, aft_mask: int) -> Node3D:
 	var group := Node3D.new()
@@ -87,7 +110,7 @@ func present(snapshot: Doors.Snapshot) -> void:
 	if _leaf != null:
 		_leaf.position = _leaf_base + _spec.frame().basis.z * (snapshot.shudder * 0.012)
 	if _hinge != null:
-		_hinge.basis = Basis(Vector3.UP, _spec.swing_radians() * snapshot.leaf_fraction)
+		_hinge.basis = Basis(Vector3.UP, snapshot.open_radians * snapshot.leaf_fraction)
 		_wheel.rotation.z = deg_to_rad(_angle)
 		_reverse_wheel.rotation.z = -deg_to_rad(_angle)
 

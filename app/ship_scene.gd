@@ -39,7 +39,7 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 	scene.bay_root.add_child(scene.room)
 	scene.pods_node = StasisPods.build(game.registry)
 	scene.bay_root.add_child(scene.pods_node)
-	scene.hatch = Hatch.build()
+	scene.hatch = Hatch.build(game.layout)
 	scene.hatch.name = "Hatch"
 	scene.bay_root.add_child(scene.hatch)
 	scene.lighting = Lighting.build(game)
@@ -61,12 +61,15 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 	parent.add_child(scene.text_cache)
 	scene.power_room = PowerRoom.build(game, scene.text_cache)
 	scene._add_opening_node(scene.power_room)
-	scene.door_views.append(DoorView.adapter(game.layout.door(ShipLayout.BAY_DOOR_ID), scene.hatch.set_door_offset))
+	scene.door_views.append(scene.hatch.view)
 	scene.door_views.append(DoorView.adapter(game.layout.door(ShipLayout.POWER_DOOR_ID), scene.power_room.set_door_offset))
 	for id: StringName in scene.hallway.side_leaves:
 		scene.door_views.append(DoorView.bind_leaf(game.layout.door(id), scene.hallway.side_leaves[id]))
 	for view: DoorView in scene.door_views:
-		scene._add_opening_node(view)
+		if view.get_parent() == null:
+			scene._add_opening_node(view)
+		else:
+			scene._opening_nodes.append(view)
 		view.present(game.doors.snapshot(view.door_id()))
 	Lighting.isolate_lights(scene.bay_root, 1)
 	Lighting.isolate_lights(scene.hallway, 1)
@@ -171,12 +174,22 @@ func tick_attention(eye: Vector3, forward: Vector3, deck: int = 14) -> void:
 		var ids := _game.collision.solid_ids(deck)
 		var boxes := _sight_set.boxes()
 		for index: int in range(boxes.size()):
-			# Swing clearance reserves motion space; it is not an opaque surface.
-			if String(ids[index]).ends_with("/SWING"):
+			var id := String(ids[index])
+			if id.ends_with("/SWING"):
 				continue
+			if id.ends_with("/BLOCKER") or id.ends_with("/PARKED"):
+				var owner := StringName(id.get_slice("/", 0))
+				if _game.layout.door(owner).animation() == ShipLayout.AnimationRecipe.HINGE:
+					continue
 			var box: ColliderSet.Aabb = boxes[index]
 			_sight_solids.append(AABB(box.min_corner(), box.max_corner() - box.min_corner()))
-	_game.label_attention.tick(deck, eye, forward, _sight_solids)
+	var sight := _sight_solids.duplicate()
+	for id: StringName in _game.layout.door_ids():
+		var spec := _game.layout.door(id)
+		if spec.deck_number() == deck and spec.animation() == ShipLayout.AnimationRecipe.HINGE:
+			var snapshot := _game.doors.snapshot(id)
+			sight.append_array(ShipGeometry.hatch_sight_boxes(spec, snapshot.open_radians * snapshot.leaf_fraction))
+	_game.label_attention.tick(deck, eye, forward, sight)
 	for label: ShipLabel in labels.values():
 		label.present()
 

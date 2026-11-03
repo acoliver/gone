@@ -51,7 +51,7 @@ func _walk_to_hatch(motion: PlayerMotion, game: Game, plane: InputPlane) -> void
 	for _tick: int in range(1400):
 		var foot: Vector3 = motion.capsule().foot
 		var to_hatch := Vector2(hatch.x - foot.x, hatch.y - foot.z)
-		if to_hatch.length() <= Interactions.HATCH_INTERACT_REACH * 0.9:
+		if to_hatch.length() <= Interactions.HATCH_INTERACT_REACH - 0.1:
 			break
 		adapter.hold(1.0, 0.0)
 		adapter.offer_tick(plane)

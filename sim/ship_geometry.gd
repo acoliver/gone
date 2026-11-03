@@ -396,11 +396,23 @@ static func connector_solids(layout: ShipLayout, connector: ShipLayout.Connector
 
 static func hatch_frame_solids(door: ShipLayout.DoorSpec) -> Array[SolidSpec]:
 	var aperture := door.aperture()
+	var hinge := door.hinge_frame().origin
+	var minimum_depth := minf(-0.06, hinge.z)
+	var depth := maxf(WALL + 0.06, hinge.z) - minimum_depth
+	var center_depth := minimum_depth + depth / 2
 	var solids: Array[SolidSpec] = []
 	for side: int in [-1, 1]:
-		solids.append(transformed(SolidSpec.new(Vector3(side * (aperture.x / 2 + FRAME_POST_WIDTH / 2), aperture.y / 2, WALL / 2), Vector3(FRAME_POST_WIDTH, aperture.y, WALL + 0.12), Quaternion.IDENTITY, StringName("%s/FRAME/%s" % [door.id(), "LEFT" if side < 0 else "RIGHT"]), &"frame"), door.frame()))
-	solids.append(transformed(SolidSpec.new(Vector3(0, aperture.y + FRAME_POST_WIDTH / 2, WALL / 2), Vector3(aperture.x + 2 * FRAME_POST_WIDTH, FRAME_POST_WIDTH, WALL + 0.12), Quaternion.IDENTITY, StringName("%s/FRAME/TOP" % door.id()), &"frame"), door.frame()))
-	solids.append(transformed(SolidSpec.new(Vector3(0, SILL_HEIGHT / 2, WALL / 2), Vector3(aperture.x + 2 * FRAME_POST_WIDTH, SILL_HEIGHT, WALL + 0.12), Quaternion.IDENTITY, StringName("%s/COAMING" % door.id()), &"frame"), door.frame()))
+		var minimum := Vector3(-aperture.x / 2 - FRAME_POST_WIDTH, 0, -0.06)
+		var size := Vector3(FRAME_POST_WIDTH, aperture.y, WALL + 0.12)
+		if side > 0:
+			# Carry the latch jamb out to the offset closed leaf, without filling its swing.
+			minimum.x = hinge.x + door.leaf_aperture().x
+			minimum.z = minimum_depth
+			size.x = aperture.x / 2 + FRAME_POST_WIDTH - minimum.x
+			size.z = depth
+		solids.append(transformed(SolidSpec.new(minimum + size / 2, size, Quaternion.IDENTITY, StringName("%s/FRAME/%s" % [door.id(), "LEFT" if side < 0 else "RIGHT"]), &"frame"), door.frame()))
+	solids.append(transformed(SolidSpec.new(Vector3(0, aperture.y + FRAME_POST_WIDTH / 2, center_depth), Vector3(aperture.x + 2 * FRAME_POST_WIDTH, FRAME_POST_WIDTH, depth), Quaternion.IDENTITY, StringName("%s/FRAME/TOP" % door.id()), &"frame"), door.frame()))
+	solids.append(transformed(SolidSpec.new(Vector3(0, SILL_HEIGHT / 2, center_depth), Vector3(aperture.x + 2 * FRAME_POST_WIDTH, SILL_HEIGHT, depth), Quaternion.IDENTITY, StringName("%s/COAMING" % door.id()), &"frame"), door.frame()))
 	return solids
 
 static func hatch_wall_solids(door: ShipLayout.DoorSpec) -> Array[SolidSpec]:
@@ -459,22 +471,50 @@ static func door_blockers(door: ShipLayout.DoorSpec) -> Array[SolidSpec]:
 	var solid := SolidSpec.new(bounds.get_center(), bounds.size, Quaternion.IDENTITY, StringName("%s/BLOCKER" % door.id()), &"door", &"door_blocker")
 	var solids: Array[SolidSpec] = [transformed(solid, door.frame())]
 	if door.animation() == ShipLayout.AnimationRecipe.HINGE:
-		var width := door.aperture().x
-		var half_thickness := ShipLayout.WALL / 2.0
-		var radius := sqrt(width * width + half_thickness * half_thickness)
-		var into := 1.0 if door.swing_radians() < 0 else -1.0
-		var minimum := Vector3(-width / 2.0 - half_thickness, 0, ShipLayout.WALL / 2.0 - (half_thickness if into > 0 else radius))
-		var size := Vector3(width + half_thickness * 2.0, door.aperture().y, radius + half_thickness)
-		var envelope := SolidSpec.new(minimum + size / 2.0, size, Quaternion.IDENTITY, StringName("%s/SWING" % door.id()), &"door", &"door_sweep")
+		var swept := AABB()
+		var samples := 1 if door.policy() == ShipLayout.Policy.NEVER_OPENS else 131
+		for degree: int in range(samples):
+			var hinge := door.hinge_frame()
+			hinge.basis = Basis(Vector3.UP, signf(door.swing_radians()) * deg_to_rad(degree))
+			var swept_pose := hinge * hatch_leaf_bounds(door)
+			swept = swept_pose if degree == 0 else swept.merge(swept_pose)
+		# Enclose the continuous extrema between the one-degree samples.
+		swept = swept.grow(0.001)
+		var envelope := SolidSpec.new(swept.get_center(), swept.size, Quaternion.IDENTITY, StringName("%s/SWING" % door.id()), &"door", &"door_sweep")
 		solids.append(transformed(envelope, door.frame()))
 	return solids
 
-static func open_door_solids(door: ShipLayout.DoorSpec) -> Array[SolidSpec]:
+## Includes both wheels/hubs, mirrored steel, straps, lugs and rivets.
+static func hatch_leaf_bounds(door: ShipLayout.DoorSpec) -> AABB:
+	return AABB(Vector3(-0.12, 0.09, -0.23), Vector3(door.leaf_aperture().x + 0.20, door.aperture().y - 0.06, 0.46))
+
+## Sight uses physical pieces, not the passage gate or reserved motion volume.
+static func hatch_sight_boxes(door: ShipLayout.DoorSpec, angle: float) -> Array[AABB]:
+	var aperture := door.leaf_aperture()
+	var hinge := door.hinge_frame()
+	hinge.basis = Basis(Vector3.UP, angle)
+	var frame := door.frame() * hinge
+	var boxes: Array[AABB] = []
+	var parts: Array[AABB] = [AABB(Vector3(0.0125, 0.0925, -0.138), Vector3(aperture.x - 0.025, aperture.y - 0.105, 0.276))]
+	for side: float in [-1, 1]:
+		parts.append(AABB(Vector3(aperture.x / 2, aperture.y / 2, side * 0.145) - Vector3(0.305, 0.305, 0.08), Vector3(0.61, 0.61, 0.16)))
+		for height: float in [0.48, aperture.y - 0.40]:
+			parts.append(AABB(Vector3(0.215, height, side * 0.125) - Vector3(0.215, 0.075, 0.04), Vector3(0.43, 0.15, 0.08)))
+		for height: float in [0.40, 1.17, aperture.y - 0.33]:
+			parts.append(AABB(Vector3(aperture.x - 0.12, height, side * 0.13) - Vector3(0.095, 0.065, 0.0375), Vector3(0.19, 0.13, 0.075)))
+		for height: float in [0.19, aperture.y - 0.13]:
+			parts.append(AABB(Vector3(aperture.x / 2, height, side * 0.13) - Vector3(0.07, 0.085, 0.0375), Vector3(0.14, 0.17, 0.075)))
+	for part: AABB in parts:
+		boxes.append(frame * part)
+	return boxes
+
+static func open_door_solids(door: ShipLayout.DoorSpec, run_seed: int = 0) -> Array[SolidSpec]:
 	if door.animation() != ShipLayout.AnimationRecipe.HINGE:
 		return []
 	var hinge := door.hinge_frame()
-	hinge.basis = Basis(Vector3.UP, door.swing_radians())
-	var leaf := SolidSpec.new(Vector3(door.aperture().x / 2.0, door.aperture().y / 2.0, 0), Vector3(door.aperture().x, door.aperture().y, ShipLayout.WALL), Quaternion.IDENTITY, StringName("%s/PARKED" % door.id()), &"door", &"parked_leaf")
+	hinge.basis = Basis(Vector3.UP, door.swing_radians(run_seed))
+	var bounds := hatch_leaf_bounds(door)
+	var leaf := SolidSpec.new(bounds.get_center(), bounds.size, Quaternion.IDENTITY, StringName("%s/PARKED" % door.id()), &"door", &"parked_leaf")
 	return [transformed(leaf, door.frame() * hinge)]
 
 static func _shell_roles(solids: Array[SolidSpec]) -> Array[SolidSpec]:
@@ -482,17 +522,16 @@ static func _shell_roles(solids: Array[SolidSpec]) -> Array[SolidSpec]:
 	solids[1].material_role = &"ceiling"
 	return solids
 
-static func opening_hall_solids(registry: Pods.PodRegistry, door_open: bool, layout: ShipLayout) -> Array[ShipGeometry.SolidSpec]:
+static func opening_hall_solids(registry: Pods.PodRegistry, door_open: bool, layout: ShipLayout, include_blockers: bool = true, run_seed: int = 0) -> Array[ShipGeometry.SolidSpec]:
 	var solids: Array[ShipGeometry.SolidSpec] = []
 	var frame := layout.bay_to_world()
 	var shell := ShipGeometry.room_shell()
 	for index: int in range(shell.size()):
 		if index != ShipGeometry.ROOM_SHELL_EAST_WALL_INDEX:
 			solids.append(ShipGeometry.transformed(shell[index], frame, StringName("D14-BAY/SHELL/%03d" % index)))
-	if not door_open:
-		var block := ShipGeometry.doorway_block(layout)
-		block.id = &"D14-BAY-DOOR/BLOCKER"
-		solids.append(block)
+	var bay_door := layout.door(ShipLayout.BAY_DOOR_ID)
+	if include_blockers and not door_open:
+		solids.append(door_blockers(bay_door)[0])
 	for pod: Pods.Pod in registry.pods():
 		var pod_frame := ShipGeometry.pod_world_transform(pod.placement())
 		var pieces := PodGeometry.pod_solids(pod.state())
@@ -501,17 +540,15 @@ static func opening_hall_solids(registry: Pods.PodRegistry, door_open: bool, lay
 			var rotation: Quaternion = pod_frame[0] * Quaternion(Vector3.RIGHT, piece.roll_radians)
 			var center: Vector3 = pod_frame[0] * piece.center + pod_frame[1]
 			solids.append(ShipGeometry.transformed(ShipGeometry.SolidSpec.new(center, piece.size, rotation), frame, StringName("D14-BAY/POD-%03d/%03d" % [pod.id().index(), index])))
-	var hatch := ShipGeometry.hatch_solids()
-	for index: int in range(4):
-		solids.append(ShipGeometry.transformed(hatch[index], frame, StringName("D14-BAY/FRAME/%03d" % index)))
-	if not door_open:
-		solids.append(ShipGeometry.transformed(hatch[4], frame, &"D14-BAY-DOOR/LEAF"))
+	solids.append_array(hatch_frame_solids(bay_door))
+	if include_blockers:
+		solids.append_array(open_door_solids(bay_door, run_seed) if door_open else [door_blockers(bay_door)[1]])
 	_named_solids(solids, ShipGeometry.hallway_solids(layout), "D14-S-041/SHELL")
 	_named_solids(solids, ShipGeometry.side_door_solids(layout), "D14-S-041/SIDE-LEAF")
 	return solids
 
-static func opening_scene_solids(registry: Pods.PodRegistry, door_open: bool, power_door_open: bool, layout: ShipLayout, open_ids: Dictionary = {}, include_blockers: bool = true) -> Array[ShipGeometry.SolidSpec]:
-	var solids := opening_hall_solids(registry, door_open, layout)
+static func opening_scene_solids(registry: Pods.PodRegistry, door_open: bool, power_door_open: bool, layout: ShipLayout, open_ids: Dictionary = {}, include_blockers: bool = true, run_seed: int = 0) -> Array[ShipGeometry.SolidSpec]:
+	var solids := opening_hall_solids(registry, door_open, layout, include_blockers, run_seed)
 	_named_solids(solids, ShipGeometry.power_room_solids(), "D14-POWER/SHELL")
 	var stations := ShipGeometry.console_stations()
 	for index: int in range(stations.size()):
@@ -530,7 +567,7 @@ static func opening_scene_solids(registry: Pods.PodRegistry, door_open: bool, po
 		for id: StringName in layout.door_ids():
 			var door := layout.door(id)
 			if door.deck_number() == 14 and door.kind() in [ShipLayout.DoorKind.HATCH, ShipLayout.DoorKind.LIFT]:
-				solids.append_array(ShipGeometry.open_door_solids(door) if open_ids.has(id) else ShipGeometry.door_blockers(door))
+				solids.append_array(ShipGeometry.open_door_solids(door, run_seed) if open_ids.has(id) else ShipGeometry.door_blockers(door))
 	return solids
 
 static func _named_solids(target: Array[ShipGeometry.SolidSpec], pieces: Array[ShipGeometry.SolidSpec], owner: String) -> void:

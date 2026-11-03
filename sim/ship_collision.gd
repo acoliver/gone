@@ -8,6 +8,7 @@ class Slice:
 	var colliders := ColliderSet.new()
 	var ids: Array[StringName] = []
 
+var _run_seed: int
 var _layout: ShipLayout
 var _static: Dictionary = {}
 var _assembled: Dictionary = {}
@@ -16,7 +17,8 @@ var _open_doors: Dictionary = {}
 var _revisions: Dictionary = {}
 var _well_boxes: Dictionary = {}
 
-func _init(layout: ShipLayout) -> void:
+func _init(layout: ShipLayout, run_seed: int = 0) -> void:
+	_run_seed = run_seed
 	_layout = layout
 	for deck: int in range(1, 31):
 		layout.deck(deck)
@@ -55,17 +57,14 @@ func deck_set(deck: int) -> ColliderSet:
 			if door.deck_number() != deck or door.kind() == ShipLayout.DoorKind.SIDE:
 				continue
 			if id == ShipLayout.BAY_DOOR_ID:
-				if not _open_doors.has(id):
-					solids.append(ShipGeometry.doorway_block(_layout))
-					solids[-1].id = &"D14-BAY-DOOR/BLOCKER"
-					solids.append(ShipGeometry.transformed(ShipGeometry.hatch_solids()[4], _layout.bay_to_world(), &"D14-BAY-DOOR/LEAF"))
+				solids.append_array(ShipGeometry.open_door_solids(door, _run_seed) if _open_doors.has(id) else ShipGeometry.door_blockers(door))
 			elif id == ShipLayout.POWER_DOOR_ID:
 				if not _open_doors.has(id):
 					var leaf := ShipGeometry.power_door_leaf()
 					leaf.id = &"D14-POWER-DOOR/LEAF"
 					solids.append(leaf)
 			else:
-				solids.append_array(ShipGeometry.open_door_solids(door) if _open_doors.has(id) else ShipGeometry.door_blockers(door))
+				solids.append_array(ShipGeometry.open_door_solids(door, _run_seed) if _open_doors.has(id) else ShipGeometry.door_blockers(door))
 		solids.sort_custom(func(a: ShipGeometry.SolidSpec, b: ShipGeometry.SolidSpec) -> bool: return String(a.id) < String(b.id))
 		var ids: Array[StringName] = []
 		var set := ColliderSet.new()
