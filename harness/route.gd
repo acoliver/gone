@@ -31,6 +31,8 @@ func step(offered: Array = []) -> void:
 		player.adapter.press(InputPlane.Buttons.ACTIVATE if edge.button == "activate" else InputPlane.Buttons.INTERACT)
 	player.adapter.look(deg_to_rad(input.look_deg.x) - input.key_turn * InputPlane.TURN_SPEED / 60.0, deg_to_rad(input.look_deg.y) + input.key_pitch * InputPlane.PITCH_SPEED / 60.0)
 	player.adapter.hold(input.movement.x, input.movement.y)
+	if input.climb != null:
+		player.adapter.climb(input.climb)
 	stepper.advance()
 	assert(player.motion.failure().is_empty(), player.motion.failure())
 	tick += 1

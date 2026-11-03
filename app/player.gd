@@ -68,7 +68,7 @@ func step() -> void:
 	if scripted and adapter != null:
 		adapter.offer_tick(plane)
 	_integrate_look()
-	motion.advance(plane, game, _look_yaw, Sim.LOGICAL_TICK_SECS)
+	motion.advance(plane, game, _look_yaw, Sim.LOGICAL_TICK_SECS, -camera.basis.z.rotated(Vector3.UP, _look_yaw))
 	var context := Interactions.context_for(game, motion, -camera.basis.z.rotated(Vector3.UP, _look_yaw))
 	var selected := interactions.process(plane, context)
 	if selected == &"D14-BAY-ROD" and rod != null:
@@ -99,10 +99,11 @@ func _collect_device_input(delta: float) -> void:
 	# sim axis (strafe already shares signs between the frames): forward
 	# walks where the player looks, bridged like the look channel's
 	# -turn below. The scripted lane keeps the sim frame's signs.
-	plane.offer_movement(
-		-Input.get_axis("move_back", "move_forward"),
-		Input.get_axis("move_left", "move_right")
-	)
+	if motion.mounted():
+		var climb := clampf(Input.get_axis("climb_down", "climb_up") + Input.get_axis("move_back", "move_forward"), -1, 1)
+		plane.offer_climb(climb)
+	else:
+		plane.offer_movement(-Input.get_axis("move_back", "move_forward"), Input.get_axis("move_left", "move_right"))
 	if Input.is_action_just_pressed("activate"):
 		plane.offer_press(InputPlane.Buttons.ACTIVATE)
 	if Input.is_action_just_pressed("interact"):
@@ -111,7 +112,7 @@ func _collect_device_input(delta: float) -> void:
 		plane.offer_look_pixels(_mouse_pixels)
 		_mouse_pixels = Vector2.ZERO
 	var turn := Input.get_axis("look_left", "look_right")
-	var pitch := Input.get_axis("look_down", "look_up")
+	var pitch := 0.0 if motion.mounted() else Input.get_axis("look_down", "look_up")
 	if turn != 0.0 or pitch != 0.0:
 		plane.offer_look(-turn * InputPlane.TURN_SPEED * delta,
 			pitch * InputPlane.PITCH_SPEED * delta)

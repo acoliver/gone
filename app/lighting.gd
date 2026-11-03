@@ -188,6 +188,14 @@ static func space_mask(layout: ShipLayout, id: StringName) -> int:
 		return 4
 	if id in layout.deck(14).connector_ids():
 		return 8 << layout.connector(id).pitch_index()
+	if id in layout.connector_ids():
+		var spec := layout.connector(id)
+		return 1 << (5 + spec.pitch_index() * 5 + (spec.deck_number() - 1) % 5)
+	# Inaccessible faces on remote decks use the same local circuit.
+	if String(id).begins_with("D") and "-S-" in String(id):
+		var deck := String(id).substr(1, 2).to_int()
+		if deck != 14:
+			return 1 << (15 + (deck - 1) % 5)
 	return 1
 
 static func mesh_layers(node: Node, mask: int) -> void:

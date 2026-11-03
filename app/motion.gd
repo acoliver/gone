@@ -12,7 +12,8 @@ extends RefCounted
 enum BodyState { LYING, GET_UP, WALK }
 
 var _controller: Exit.GetUpController = null
-var _walk: Walk.WalkState = null
+var locomotion: Locomotion
+var ladder_events: Array[Ladder.Event] = []
 var _failure: String = ""
 var hallway_switch_flips: int = 0
 var console_presses: int = 0
@@ -21,15 +22,15 @@ var rod_carried: bool = false
 func state() -> int:
 	if _controller != null:
 		return BodyState.GET_UP
-	if _walk != null:
+	if locomotion != null:
 		return BodyState.WALK
 	return BodyState.LYING
 
 func capsule() -> Resolve.Capsule:
 	if _controller != null:
 		return _controller.capsule()
-	if _walk != null:
-		return _walk.capsule()
+	if locomotion != null:
+		return locomotion.capsule()
 	return null
 
 func failure() -> String:
@@ -53,7 +54,8 @@ func record_failure(message: String) -> void:
 ## Advance the body one fixed tick: consume the tick's activate press or
 ## movement intent from the shared plane and drive the sim controller
 ## the mirror currently holds. dt is the fixed tick's sim seconds.
-func advance(plane: InputPlane, game: Game, yaw: float, dt: float) -> void:
+func advance(plane: InputPlane, game: Game, yaw: float, dt: float, facing: Vector3 = Vector3.ZERO) -> void:
+	ladder_events = []
 	var previous := capsule()
 	match state():
 		BodyState.LYING:
@@ -61,7 +63,7 @@ func advance(plane: InputPlane, game: Game, yaw: float, dt: float) -> void:
 		BodyState.GET_UP:
 			_advance_get_up(game)
 		BodyState.WALK:
-			_advance_walk(plane, game, yaw, dt)
+			_advance_walk(plane, game, yaw, dt, Vector3(-sin(yaw), 0, -cos(yaw)) if facing == Vector3.ZERO else facing)
 	if previous != null and capsule() != null:
 		game.observe_bay_crossing(previous.foot, capsule().foot, state() == BodyState.WALK)
 
@@ -90,13 +92,13 @@ func _advance_get_up(game: Game) -> void:
 		var started := Walk.WalkState.start(game.phase, _controller.capsule())
 		if started.is_ok():
 			_controller = null
-			_walk = started.state
+			locomotion = Locomotion.start(game.layout, game.collision, 14, started.state).state
 		else:
 			record_failure("walk rejected: " + started.error._to_string())
 
 ## The Walk tick: the tick's movement intent, framed in the look yaw,
 ## sweeps the capsule through the resolver at the walk's current speed.
-func _advance_walk(plane: InputPlane, game: Game, yaw: float, dt: float) -> void:
+func _advance_walk(plane: InputPlane, game: Game, yaw: float, dt: float, facing: Vector3) -> void:
 	if game.phase.current() != Phase.Wake.STANDING:
 		record_failure("the walk state disagrees with the sim phase")
 		return
@@ -105,14 +107,58 @@ func _advance_walk(plane: InputPlane, game: Game, yaw: float, dt: float) -> void
 	if not intent.is_ok():
 		record_failure("walk rejected: " + intent.error._to_string())
 		return
-	var step := _walk.step(intent.intent, dt, game.colliders, game.collision.supported_walk)
-	_walk.end_tick()
-	if not step.is_ok():
-		record_failure("walk rejected: " + step.error._to_string())
+	var input := Locomotion.Intent.new()
+	input.walk = intent.intent
+	var climb: Variant = plane.take_climb()
+	input.has_climb = climb != null
+	input.climb = 0.0 if climb == null else float(climb)
+	if mounted():
+		input.space = plane.take_press(InputPlane.Buttons.INTERACT)
+	elif plane.has_press(InputPlane.Buttons.INTERACT):
+		input.well_id = mount_target(game.layout, facing)
+		if input.well_id != &"":
+			input.space = plane.take_press(InputPlane.Buttons.INTERACT)
+	input.facing = facing
+	var result := locomotion.step(input, dt)
+	locomotion.end_tick()
+	if not result.is_ok():
+		record_failure("locomotion rejected: %d" % result.error.kind)
+		return
+	ladder_events = result.events
+
+func mounted() -> bool:
+	return locomotion != null and locomotion.mode() != Locomotion.Mode.WALK
+
+func deck() -> int:
+	return locomotion.deck() if locomotion != null else 14
+
+func mount_target(layout: ShipLayout, facing: Vector3) -> StringName:
+	if locomotion == null or mounted() or capsule().foot.z > -1.5:
+		return &""
+	for id: StringName in layout.well_ids():
+		if not Ladder.try_mount(layout, id, deck(), capsule(), facing).is_ok():
+			continue
+		var well := layout.well(id)
+		var target := Interactions.Target.new()
+		target.policy = Interactions.Selection.FACE_RAY
+		target.deck = deck()
+		target.center = well.climb_line().origin
+		target.center.y = layout.floor_y(deck())
+		target.frame = Transform3D(Basis(), target.center)
+		target.size = well.doorway_size()
+		var context := Interactions.Context.new()
+		context.walking = true
+		context.deck = deck()
+		context.foot = capsule().foot
+		context.eye = standing_eye(capsule())
+		context.forward = facing
+		if Interactions.hit_distance(target, context, []) >= 0:
+			return id
+	return &""
 
 ## The walk's current steadying speed, in meters per second.
 func walk_speed() -> float:
-	return _walk.speed() if _walk != null else 0.0
+	return locomotion.walk_speed() if locomotion != null else 0.0
 
 ## The standing rig's eye point: above the foot's ground contact at the
 ## placement truth's standing eye height.

@@ -29,7 +29,16 @@ enum Buttons { ACTIVATE, INTERACT, EXIT }
 var _look: Vector2 = Vector2.ZERO
 var _forward: float = 0.0
 var _strafe: float = 0.0
+var _climb: Variant = null
 var _edges: Array[int] = []
+
+func offer_climb(value: float) -> void:
+	_climb = value if _climb == null else _climb + value
+
+func take_climb() -> Variant:
+	var taken: Variant = _climb
+	_climb = null
+	return taken
 
 func offer_look(yaw_delta: float, pitch_delta: float) -> void:
 	_look += Vector2(yaw_delta, pitch_delta)
@@ -78,6 +87,7 @@ func end_frame() -> void:
 	_look = Vector2.ZERO
 	_forward = 0.0
 	_strafe = 0.0
+	_climb = null
 	_edges.clear()
 
 ## Pure look integration over a plane delta in radians: pitch clamps to
@@ -104,6 +114,10 @@ class ScriptedAdapter:
 	var _pending_edges: Array[int] = []
 	var _pending_look: Vector2 = Vector2.ZERO
 	var _held: Vector2 = Vector2.ZERO
+	var _pending_climb: Variant = null
+
+	func climb(value: float) -> void:
+		_pending_climb = value
 
 	func press(button: int) -> void:
 		_pending_edges.append(button)
@@ -130,3 +144,6 @@ class ScriptedAdapter:
 		_pending_look = Vector2.ZERO
 		if _held != Vector2.ZERO:
 			plane.offer_movement(_held.x, _held.y)
+		if _pending_climb != null:
+			plane.offer_climb(_pending_climb)
+			_pending_climb = null

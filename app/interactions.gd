@@ -36,6 +36,7 @@ class Context:
 
 var _targets: Array[Target] = []
 var _solids: Array[AABB] = []
+var _remote_solids: Dictionary = {}
 var _layout: ShipLayout
 
 func _init(layout: ShipLayout, solids: Array[AABB] = []) -> void:
@@ -78,7 +79,8 @@ static func context_for(game: Game, motion: PlayerMotion, forward: Vector3 = Vec
 	var context := Context.new()
 	context.game = game
 	context.motion = motion
-	context.walking = motion.state() == PlayerMotion.BodyState.WALK
+	context.walking = motion.state() == PlayerMotion.BodyState.WALK and not motion.mounted()
+	context.deck = motion.deck()
 	context.eye = motion.eye(game)
 	context.forward = forward
 	if motion.capsule() != null:
@@ -88,7 +90,16 @@ static func context_for(game: Game, motion: PlayerMotion, forward: Vector3 = Vec
 func process(plane: InputPlane, context: Context) -> StringName:
 	if not plane.has_press(InputPlane.Buttons.INTERACT):
 		return &""
-	for target: Target in eligible(_targets, context, _solids):
+	var solids := _solids
+	if context.deck != 14:
+		if not _remote_solids.has(context.deck):
+			var boxes: Array[AABB] = []
+			for solid: ShipGeometry.SolidSpec in ShipGeometry.deck_static_solids(_layout, context.deck):
+				var box := ShipGeometry.box_aabb(solid)
+				boxes.append(AABB(box.min_corner(), box.max_corner() - box.min_corner()))
+			_remote_solids[context.deck] = boxes
+		solids = _remote_solids[context.deck]
+	for target: Target in eligible(_targets, context, solids):
 		if _dispatch(target, context):
 			var consumed := plane.take_press(InputPlane.Buttons.INTERACT)
 			assert(consumed)

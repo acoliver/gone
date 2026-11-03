@@ -1,6 +1,6 @@
 class_name Locomotion
 extends RefCounted
-## Standing locomotion only. Production keeps PlayerMotion until live adoption.
+## Standing locomotion shared by PlayerMotion and pure simulation tests.
 
 enum Mode { WALK, MOUNTING, CLIMBING, DISMOUNTING }
 

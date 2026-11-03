@@ -176,6 +176,7 @@ func _run_perf_window() -> void:
 			"height": int(perf_policy.resolution.height)},
 		"samples_ms": perf_samples_ms.duplicate(),
 		"stats": stats,
+		"stream": {"remote_rooms_built": game_step.ship_scene.stream.constructed_rooms, "shafts": game_step.ship_scene.stream.shaft_count(), "pending_rooms": game_step.ship_scene.stream.pending_count(), "rasterized_pairs": game_step.ship_scene.text_cache.rasterized_pairs},
 	}
 	print("GONE_PERF %s" % PerfPolicyModule.distribution_line(stats))
 
@@ -306,6 +307,8 @@ func drive_tick() -> void:
 	if not player.motion.failure().is_empty():
 		_fail("motion failure: %s" % player.motion.failure())
 		return
+	if step.climb != null:
+		adapter.climb(step.climb)
 	game_step.advance()
 	observe_phase()
 	tick += 1

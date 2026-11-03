@@ -135,7 +135,7 @@ func _check_level_gaze_at_console_stand() -> void:
 	var offset := Vector3(stand.x - capsule.foot.x, 0.0, stand.z - capsule.foot.z)
 	capsule.foot += offset
 	capsule.head += offset
-	player.motion._walk = Walk.WalkState.start(game.phase, capsule).state
+	player.motion.locomotion = Locomotion.start(game.layout, game.collision, 14, Walk.WalkState.start(game.phase, capsule).state).state
 	var to_screen := room.console_display.global_position - PlayerMotion.standing_eye(capsule)
 	var yaw := atan2(-to_screen.x, -to_screen.z)
 	player.adapter.look(yaw - player.look_angles().x, -player.look_angles().y)
