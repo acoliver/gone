@@ -1,5 +1,56 @@
 extends SimTestCase
 
+func test_released_climb_captures_nearby_landing_from_both_sides() -> void:
+	var layout := ShipLayout.authored().layout
+	var collision := ShipCollision.new(layout)
+	for direction: float in [-1, 1]:
+		var state := _mounted(layout, collision, &"C-000-LADDER", 14)
+		for tick: int in range(10):
+			_tick(state, collision, direction)
+		for tick: int in range(30):
+			assert_true(_tick(state, collision).is_ok(), "landing capture is swept")
+		assert_float_equal(state.height(), layout.floor_y(14), "released climb settles level with nearby landing")
+		assert_float_equal(state.velocity(), 0, "landing capture stops velocity")
+		assert_float_equal(state.pending(), 0, "landing capture consumes pending travel")
+		assert_int_equal(state.mode(), Ladder.Mode.CLIMBING, "capture does not dismount without Space")
+
+func test_released_climb_outside_capture_distance_keeps_eased_coast() -> void:
+	var layout := ShipLayout.authored().layout
+	var collision := ShipCollision.new(layout)
+	var state := _mounted(layout, collision, &"C-000-LADDER", 14)
+	for tick: int in range(18):
+		_tick(state, collision, 1)
+	assert_true(state.height() > 0.3, "release starts outside landing capture")
+	var height := state.height() + state.pending()
+	var velocity := state.velocity()
+	for tick: int in range(30):
+		velocity = ClimbEase.step(velocity, 0, Ladder.CLIMB_SPEED)
+		height += velocity * Sim.LOGICAL_TICK_SECS
+		_tick(state, collision, 0, tick == 0)
+		assert_true(absf(state.height() + state.pending() - height) < 1e-10, "midshaft coast remains unchanged")
+	assert_int_equal(state.mode(), Ladder.Mode.CLIMBING, "midshaft Space is dropped")
+
+func test_sub_tolerance_landing_capture_is_swept_and_atomic_on_obstruction() -> void:
+	var layout := ShipLayout.authored().layout
+	var collision := ShipCollision.new(layout)
+	var state := _mounted(layout, collision, &"C-000-LADDER", 14)
+	_tick(state, collision, -1)
+	var before := state.capsule().foot
+	var height := state.height()
+	var velocity := state.velocity()
+	var blocked := ObstructedCollision.new(layout)
+	blocked.obstruction = AABB(Vector3(2.5, before.y + 1.15 + 0.301, -4.8), Vector3(1, 0.1, 1))
+	var result := state.step(0, false, blocked)
+	assert_false(result.is_ok(), "small upward landing capture cannot cross a solid")
+	if result.is_ok():
+		return
+	assert_true(result.error.collider_id == &"test/obstruction", "capture collision retains solid identity")
+	assert_close(state.capsule().foot, before, "rejected capture preserves capsule")
+	assert_float_equal(state.height(), height, "rejected capture preserves height")
+	assert_float_equal(state.velocity(), velocity, "rejected capture preserves velocity")
+	assert_true(state.step(0, false, collision).is_ok(), "rejected capture leaves tick available")
+	state.end_tick()
+
 func test_climb_start_stop_and_reversal_ease_over_nine_ticks() -> void:
 	var layout := ShipLayout.authored().layout
 	var collision := ShipCollision.new(layout)
