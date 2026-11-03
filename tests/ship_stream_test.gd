@@ -20,10 +20,21 @@ func test_streaming_hides_only_explicit_d14_presenters() -> void:
 	for view: DoorView in scene.door_views:
 		assert_false(view.visible, "prepared D14 door view is owned")
 	for label: ShipLabel in scene.labels.values():
-		assert_false(label.visible, "prepared D14 label is owned")
+		var owner := _opening_owner(scene, label)
+		assert_true(owner != null, "leaf label belongs to an explicit D14 presenter")
+		assert_false(owner.visible, "leaf label inherits its presenter's hidden state")
+		assert_int_equal(owner.process_mode, Node.PROCESS_MODE_DISABLED, "leaf label's presenter is suspended")
 	scene.set_opening_visible(true)
 	assert_true(scene.hallway.visible and scene.hallway.process_mode == Node.PROCESS_MODE_INHERIT, "return restores owned presentation")
+	for label: ShipLabel in scene.labels.values():
+		assert_true(label.visible and _opening_owner(scene, label).visible, "return restores leaf writing through its presenter")
 	root.free()
+
+func _opening_owner(scene: ShipScene, node: Node3D) -> Node3D:
+	var owner := node.get_parent() as Node3D
+	while owner != null and owner not in scene._opening_nodes:
+		owner = owner.get_parent() as Node3D
+	return owner
 
 func test_opening_does_no_remote_work() -> void:
 	var root := Node3D.new()
@@ -153,10 +164,10 @@ func test_remote_hatch_label_is_not_occluded_by_reserved_swing_clearance() -> vo
 	# Raster completion is a separate windowed test; this exercises physical sight geometry.
 	game.label_attention.load_face(id)
 	var eye := Vector3(31.7, 73.185, 0)
-	var forward := (label.position - eye).normalized()
+	var forward := (ShipScene._world_frame(label).origin - eye).normalized()
 	for _tick: int in range(170):
 		scene.tick_attention(eye, forward, 1)
-	assert_float_equal(label.perception.perceive, 1, "closed hatch sign resolves above its physical leaf")
+	assert_float_equal(label.perception.perceive, 1, "closed hatch writing resolves on its physical leaf")
 	root.free()
 
 func test_ladder_results_are_identical_with_presentation_forced_out_between_ticks() -> void:

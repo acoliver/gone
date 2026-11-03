@@ -91,7 +91,7 @@ static func _boxes(solids: Array[ShipGeometry.SolidSpec], mask: int) -> MultiMes
 	elif role == &"ceiling":
 		mesh.material = RoomGeometry.ceiling_material()
 	elif role in [&"frame", &"door"]:
-		mesh.material = Hatch._flat_grey(Hatch.HATCH_DOOR_SHADE)
+		mesh.material = HatchModel.flat_grey(HatchModel.DOOR_SHADE)
 	var instances := MultiMesh.new()
 	instances.transform_format = MultiMesh.TRANSFORM_3D
 	instances.mesh = mesh

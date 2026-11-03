@@ -21,6 +21,7 @@ var room: RoomGeometry
 var pods_node: StasisPods
 var hatch: Hatch
 var lighting: Lighting
+var hazards: Hazards
 var rod: Rod
 var hallway: Hallway
 var power_room: PowerRoom
@@ -43,7 +44,8 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 	scene.bay_root.add_child(scene.hatch)
 	scene.lighting = Lighting.build(game)
 	scene.bay_root.add_child(scene.lighting)
-	scene.bay_root.add_child(Hazards.build())
+	scene.hazards = Hazards.build(game.ventilation, game.layout.bay())
+	scene.bay_root.add_child(scene.hazards)
 	if production_wires:
 		scene.bay_root.add_child(Wires.build())
 	scene.rod = Rod.build()
@@ -113,8 +115,7 @@ func _prepare_connector(spec: ShipLayout.ConnectorSpec) -> void:
 	_spaces[spec.id()] = true
 	_spaces[section_spec.id()] = true
 	_sync_labels()
-	var lift_spec := _game.layout.lift(spec.lift_id())
-	_add_label(lift_spec.id(), spec.deck_number(), spec.id(), lift_spec.label_anchor(), lift_spec.label_size(), ShipText.deck_label(spec.deck_number()))
+	_add_lift_label(spec, connector.lift_leaf)
 
 func _sync_labels() -> void:
 	for id: StringName in _game.layout.door_ids():
@@ -124,18 +125,33 @@ func _sync_labels() -> void:
 		for face_id: StringName in door.face_ids():
 			var face := _game.layout.face(face_id)
 			if _spaces.has(face.source_space()):
-				_add_label(face_id, door.deck_number(), face.source_space(), door.frame() * face.label_frame(), face.label_size(), ShipText.hatch_label(door.deck_number(), face.destination_section()))
+				_add_hatch_label(door, face)
 
-func _add_label(id: StringName, deck: int, space: StringName, frame: Transform3D, size: Vector2, text: ShipText.LabelText, parent: Node3D = null) -> void:
+static func _world_frame(node: Node3D) -> Transform3D:
+	var frame := node.transform
+	var parent := node.get_parent() as Node3D
+	while parent != null:
+		frame = parent.transform * frame
+		parent = parent.get_parent() as Node3D
+	return frame
+
+func _add_hatch_label(door: ShipLayout.DoorSpec, face: ShipLayout.FaceSpec) -> void:
+	var leaf: Node3D = hatch.door_piece() if door.kind() == ShipLayout.DoorKind.BAY else _hatches[door.id()].label_leaf()
+	var local := face.leaf_label_frame(door)
+	_add_label(face.id(), door.deck_number(), face.source_space(), door.frame() * face.label_frame(), face.label_size(), ShipText.hatch_label(door.deck_number(), face.destination_section()), leaf, local)
+
+func _add_lift_label(spec: ShipLayout.ConnectorSpec, leaf: Node3D) -> void:
+	var lift := _game.layout.lift(spec.lift_id())
+	var local := _game.layout.door(lift.door_id()).frame().affine_inverse() * lift.label_anchor()
+	_add_label(lift.id(), spec.deck_number(), spec.id(), lift.label_anchor(), lift.label_size(), ShipText.deck_label(spec.deck_number()), leaf, local)
+
+func _add_label(id: StringName, deck: int, space: StringName, anchor: Transform3D, size: Vector2, text: ShipText.LabelText, parent: Node3D, local: Transform3D) -> void:
 	if labels.has(id):
 		return
-	var state := _game.label_attention.register_face(id, deck, space, frame, size)
-	var label := ShipLabel.build(text_cache, text, id, frame, size, state)
+	var state := _game.label_attention.register_face(id, deck, space, anchor, size)
+	var label := ShipLabel.build(text_cache, text, id, local, size, state)
 	label.tree_exiting.connect(_game.label_attention.unload.bind(id))
-	if parent == null:
-		_add_opening_node(label)
-	else:
-		parent.add_child(label)
+	parent.add_child(label)
 	labels[id] = label
 	if not label.pair.ready():
 		_game.label_attention.unload(id)
@@ -146,6 +162,8 @@ func _labels_ready(key: String) -> void:
 			_game.label_attention.load_face(label.face_id)
 
 func tick_attention(eye: Vector3, forward: Vector3, deck: int = 14) -> void:
+	for label: ShipLabel in labels.values():
+		_game.label_attention.move_face(label.face_id, _world_frame(label))
 	var set := _game.collision.deck_set(deck)
 	if _sight_set != set:
 		_sight_set = set
@@ -206,8 +224,8 @@ func build_remote(spec: ShipLayout.ConnectorSpec) -> Node3D:
 		for face_id: StringName in door.face_ids():
 			var face := _game.layout.face(face_id)
 			if face.source_space() == spec.id():
-				_add_label(face_id, spec.deck_number(), spec.id(), door.frame() * face.label_frame(), face.label_size(), ShipText.hatch_label(spec.deck_number(), face.destination_section()), root)
-	_add_label(lift.id(), spec.deck_number(), spec.id(), lift.label_anchor(), lift.label_size(), ShipText.deck_label(spec.deck_number()), root)
+				_add_hatch_label(door, face)
+	_add_lift_label(spec, root.lift_leaf)
 	return root
 
 func remove_remote(spec: ShipLayout.ConnectorSpec, root: Node3D) -> void:
@@ -217,7 +235,7 @@ func remove_remote(spec: ShipLayout.ConnectorSpec, root: Node3D) -> void:
 	for id: StringName in spec.hatch_ids():
 		_hatches.erase(id)
 	for id: StringName in labels.keys():
-		if labels[id].get_parent() == root:
+		if root.is_ancestor_of(labels[id]):
 			_game.label_attention.unload(id)
 			labels.erase(id)
 	root.free()

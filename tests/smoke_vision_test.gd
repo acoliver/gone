@@ -4,6 +4,26 @@ var _bay_frame := ShipLayout.authored().layout.bay_to_world()
 
 const SHADER: Shader = preload("res://app/smoke_vision.gdshader")
 
+func test_ventilated_bay_removes_the_symptom_overlay_through_existing_recovery() -> void:
+	var game := Game.new(71)
+	var state := SmokeSymptoms.new(game.layout, game.ventilation)
+	var bay := _world(Vector3(0, 1.6, 0))
+	for _tick in range(1080):
+		state.tick(true, bay)
+	game.press_console()
+	game.press_console()
+	var step := GameStep.new(game)
+	for _tick in range(480):
+		step.advance()
+	for _tick in range(600):
+		state.tick(true, bay)
+	var sample := state.sample()
+	assert_float_equal(sample.dose, 0.0, "dose recovers without leaving the bay")
+	assert_float_equal(sample.cough_pulse, 0.0, "cough pulses settle")
+	assert_float_equal(sample.breath_pulse, 0.0, "breath pulses settle")
+	for source: Vector3 in [Vector3.ZERO, Vector3.ONE, Vector3(0.4, 0.3, 0.2)]:
+		assert_vec3_equal(_channel_response(source, 1.0, sample.dose, sample.cough_pulse, sample.breath_pulse), source, "cleared bay has no lingering visual symptoms")
+
 func test_smoke_vision_is_peripheral_and_hidden_during_wake() -> void:
 	var pass_layer := WakePass.build()
 	var state := SmokeSymptoms.new()

@@ -1,5 +1,73 @@
 extends SimTestCase
 
+func test_shared_hatch_model_has_no_presenter_dependencies() -> void:
+	var source := FileAccess.get_file_as_string("res://app/hatch_model.gd")
+	for presenter: String in ["DoorView.", "Hatch.", "Hallway."]:
+		assert_false(source.contains(presenter), "shared hatch construction must not depend on " + presenter)
+
+func test_hatch_hardware_shares_resources_without_sharing_room_masks() -> void:
+	var layout := ShipLayout.authored().layout
+	var first := DoorView.build(layout.door(&"D14-C-001-H-FORE"), 4, 8)
+	var remote := DoorView.build(layout.door(&"D01-C-001-H-FORE"), 32, 64)
+	var bay := Hatch.build()
+	for path: String in ["Frame/ForeSteel", "Frame/AftSteel", "Hinges/ForeSteel", "Hinge/Leaf/Wheel"]:
+		var a: MeshInstance3D = first.get_node(path).get_child(0) if path.ends_with("Wheel") else first.get_node(path)
+		var b: MeshInstance3D = remote.get_node(path).get_child(0) if path.ends_with("Wheel") else remote.get_node(path)
+		assert_true(a.mesh == b.mesh and a.material_override == b.material_override, "shared hardware resource " + path)
+		assert_int_equal(a.layers, 8 if path.contains("Aft") else 4, "D14 mask remains local")
+		assert_int_equal(b.layers, 64 if path.contains("Aft") else 32, "remote mask remains local")
+	for panel: String in ["ForePanel", "AftPanel"]:
+		for index: int in range(3):
+			var a: MeshInstance3D = first.get_node(panel).get_child(index)
+			var b: MeshInstance3D = remote.get_node(panel).get_child(index)
+			var c: MeshInstance3D = bay.get_node(panel).get_child(index)
+			assert_true(a.mesh == b.mesh and a.mesh == c.mesh, "all hatch panels share primitives")
+			assert_true(a.material_override == b.material_override and a.material_override == c.material_override, "all hatch panels share materials")
+			assert_int_equal(a.layers, 4 if panel == "ForePanel" else 8, "panel room mask")
+			assert_int_equal(c.layers, 1, "bay panel room mask")
+	first.free()
+	remote.free()
+	bay.free()
+
+func test_hatch_meshes_have_rounded_frame_braces_large_wheel_and_instanced_rivets() -> void:
+	var layout := ShipLayout.authored().layout
+	var first := DoorView.build(layout.door(&"D14-C-001-H-FORE"))
+	var remote := DoorView.build(layout.door(&"D01-C-001-H-FORE"))
+	for path: String in ["Frame/ForeSteel", "Frame/AftSteel", "Frame/ForeRivets", "Frame/AftRivets", "Hinge/Leaf/ForeSteel", "Hinge/Leaf/AftSteel", "Hinge/Leaf/ForeRivets", "Hinge/Leaf/AftRivets"]:
+		assert_true(first.has_node(NodePath(path)), "rounded steel and rivet assemblies exist: " + path)
+		if not first.has_node(NodePath(path)): continue
+		var piece := first.get_node(NodePath(path)) as GeometryInstance3D
+		var other := remote.get_node(NodePath(path)) as GeometryInstance3D
+		if piece is MultiMeshInstance3D:
+			assert_true(piece.multimesh.instance_count >= 40, "rivets are batched, not individual mesh nodes")
+			assert_true(piece.multimesh == other.multimesh, "all decks share the rivet batch")
+		else:
+			assert_true(piece.mesh == other.mesh, "all decks share generated geometry")
+		assert_true(piece.material_override == other.material_override, "all decks share steel materials")
+	for path: String in ["Hinges", "Hinge/Leaf/StrapHinges", "Hinge/Leaf/Lugs"]:
+		var fore: MeshInstance3D = first.get_node(path + "/ForeSteel")
+		var aft: MeshInstance3D = first.get_node(path + "/AftSteel")
+		var fore_bounds := fore.transform * fore.mesh.get_aabb()
+		var aft_bounds := aft.transform * aft.mesh.get_aabb()
+		assert_float_equal(fore_bounds.position.x, aft_bounds.position.x, "both faces keep the same physical hinge/latch edge: " + path)
+		assert_float_equal(fore_bounds.end.x, aft_bounds.end.x, "reverse-face hardware is not moved to the opposite jamb: " + path)
+	var leaf_mesh: Mesh = first.get_node("Hinge/Leaf/ForeSteel").mesh
+	assert_float_in_range(leaf_mesh.get_aabb().size.x, 1.17499, 1.17501, "rounded leaf body survives batching with the X ribs")
+	assert_float_in_range(leaf_mesh.get_aabb().size.y, 2.29499, 2.29501, "rounded leaf retains its full tall silhouette")
+	var leaf_arrays := leaf_mesh.surface_get_arrays(0)
+	var leaf_normals: PackedVector3Array = leaf_arrays[Mesh.ARRAY_NORMAL]
+	assert_true(leaf_normals[0].dot(Vector3.FORWARD) > 0.99, "leaf front faces outward, not into the steel")
+	var wheel: Node3D = first.get_node("Hinge/Leaf/Wheel")
+	var bounds := AABB()
+	for child: MeshInstance3D in wheel.get_children(): bounds = bounds.merge(child.transform * child.mesh.get_aabb())
+	assert_float_in_range(bounds.size.x, 0.58, 0.64, "wheel diameter is half the 1.2m leaf width")
+	var bay := Hatch.build()
+	assert_true(bay.door_piece().get_node("Leaf/ForeSteel").mesh == first.get_node("Hinge/Leaf/ForeSteel").mesh, "bay and connector hatches use the same shared leaf")
+	assert_true(bay.get_node("Frame/ForeSteel").mesh == first.get_node("Frame/ForeSteel").mesh, "bay and connector hatches use the same rounded frame")
+	bay.free()
+	first.free()
+	remote.free()
+
 func test_all_hatch_bulkheads_share_plated_wall_material_and_mapping() -> void:
 	var root := Node3D.new()
 	var game := Game.new(0)
@@ -104,7 +172,7 @@ func test_real_scene_has_shared_hatch_details_and_lazy_red_rooms() -> void:
 			hatches.append(view)
 	assert_int_equal(hatches.size(), 2, "opening contains only its two boundary hatch views")
 	for view: DoorView in hatches:
-		for path: String in ["Frame", "Coaming", "Hinge/Leaf", "Hinge/Wheel", "Hinge/ReverseWheel", "Hinges", "Hinge/Lugs", "ForePanel/Button", "ForePanel/CardReader", "AftPanel/Button", "AftPanel/CardReader"]:
+		for path: String in ["Frame", "Coaming", "Hinge/Leaf", "Hinge/Leaf/Wheel", "Hinge/Leaf/ReverseWheel", "Hinges", "Hinge/Leaf/Lugs", "ForePanel/Button", "ForePanel/CardReader", "AftPanel/Button", "AftPanel/CardReader"]:
 			assert_true(view.has_node(NodePath(path)), "shared hatch detail: " + path)
 	root.free()
 
@@ -176,7 +244,7 @@ func test_hatch_projects_model_wheel_and_leaf_without_advancing_them() -> void:
 			store.tick()
 			var snapshot := store.snapshot(id)
 			view.present(snapshot)
-			assert_float_in_range(view.get_node("Hinge/Wheel").rotation.z, deg_to_rad(snapshot.wheel_angle + snapshot.refusal_offset) - 1e-5, deg_to_rad(snapshot.wheel_angle + snapshot.refusal_offset) + 1e-5, "exact model wheel interpolation")
+			assert_float_in_range(view.get_node("Hinge/Leaf/Wheel").rotation.z, deg_to_rad(snapshot.wheel_angle + snapshot.refusal_offset) - 1e-5, deg_to_rad(snapshot.wheel_angle + snapshot.refusal_offset) + 1e-5, "exact model wheel interpolation")
 	for _tick: int in range(48):
 		store.tick()
 		view.present(store.snapshot(id))

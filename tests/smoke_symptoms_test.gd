@@ -6,6 +6,28 @@ const MILD: AudioStreamWAV = preload("res://assets/audio/smoke/wake-breath-mild-
 const PULSE: AudioStreamWAV = preload("res://assets/audio/smoke/linda-pulse-b-provisional.wav")
 const COUGH_AUDIO: AudioStreamWAV = preload("res://assets/audio/smoke/cough-mid-isolated.wav")
 
+func test_powered_ventilation_reduces_gain_then_recovers_in_place() -> void:
+	var game := Game.new(71)
+	var state := SmokeSymptoms.new(game.layout, game.ventilation)
+	var bay := _world(Vector3(0, 1.6, 0))
+	for _tick in range(540):
+		state.tick(true, bay)
+	var starting_dose := state.dose()
+	game.press_console()
+	game.press_console()
+	var step := GameStep.new(game)
+	var previous_exposure := state.exposure_at(bay)
+	for _tick in range(480):
+		step.advance()
+		state.tick(true, bay)
+		var exposure := state.exposure_at(bay)
+		assert_true(exposure < previous_exposure, "exposure gain falls on every clearing tick")
+		previous_exposure = exposure
+	assert_true(state.dose() < starting_dose, "clearing uses existing recovery as exposure falls")
+	for _tick in range(481):
+		state.tick(true, bay)
+	assert_float_equal(state.dose(), 0.0, "no fresh exposure after clearing")
+
 func test_phase_gate_and_smoke_exposure_recovery() -> void:
 	var state := SmokeSymptoms.new()
 	var bay := _world(Vector3(0.0, 1.6, 0.0))

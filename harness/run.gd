@@ -428,8 +428,8 @@ func verify_rod_pickup(report) -> void:
 ## The power room beats' machine checks (issue #59): the power door
 ## opened on its ungated press, the console's palo / INACTIVO label, the
 ## shenu / EN FUNCIONAMIENTO activation with the generator lit, the hallway's white
-## hand-off with the power room white too, and the stasis bay keeping
-## its red through it all. Scenarios without the beats skip them.
+## handoff with the power room and stasis bay white too, and the bay's
+## emergency red extinguished. Scenarios without the beats skip them.
 func verify_power(report) -> void:
 	if report.beats.has("power-door-opened"):
 		var door_tick: int = report.beats["power-door-opened"].tick
@@ -481,13 +481,15 @@ func verify_power(report) -> void:
 			if event.kind == "hallway" and bool(event.white) \
 					and float(event.white_level) >= 0.95:
 				hall_ok = true
-			if event.kind == "power" and float(event.stasis_red_level) >= 0.99 \
+			if event.kind == "power" and float(event.stasis_red_level) <= 0.01 \
+					and float(event.stasis_white_level) >= 0.95 \
+					and float(event.bay_smoke_density) == 0.0 \
 					and float(event.power_white_level) >= 0.95:
 				rooms_ok = true
 		if not hall_ok:
 			failures.append("hall-white beat has no white-hallway evidence at or before tick %d" % white_tick)
 		if not rooms_ok:
-			failures.append("hall-white beat has no stasis-stays-red + power-room-white evidence at or before tick %d" % white_tick)
+			failures.append("hall-white beat has no stasis-red-off + stasis-white + bay-clear + power-room-white evidence at or before tick %d" % white_tick)
 
 func _verdict() -> void:
 	var passed := failures.is_empty()

@@ -5,6 +5,51 @@ extends SimTestCase
 ## timing, the bridge's no-write-to-grid boundary, the retired pod
 ## plates' absence, and the authored no-light environment.
 
+func test_bay_handoff_matches_hallway_without_darkness() -> void:
+	var game := Game.new(71)
+	game.light_hallway()
+	var bay := Lighting.build(game)
+	var hall := Hallway.build(game)
+	game.press_console()
+	game.press_console()
+	for _tick in range(Lighting.FIXTURE_SETTLE_TICKS):
+		bay.process_frame(Sim.LOGICAL_TICK_SECS)
+		hall.process_frame(Sim.LOGICAL_TICK_SECS)
+		assert_float_equal(bay.level(), hall.level(), "red handoff matches hallway")
+		assert_float_equal(bay.white_level(), hall.white_level(), "white handoff matches hallway")
+		assert_float_equal(bay.level() + bay.white_level(), 1.0, "no blackout in handoff")
+	_assert_output(bay, 0.0)
+	assert_float_equal(bay.white_level(), 1.0, "white settles lit")
+	for light: OmniLight3D in bay.white_lights():
+		assert_true(light.light_color == Lighting.REGULAR_WHITE, "regular white color")
+		assert_true(is_equal_approx(light.light_energy, Lighting.regular_energy()), "regular white energy")
+	assert_true(bay.white_lens_material().emission == Lighting.REGULAR_WHITE * Lighting.REGULAR_EMISSIVE, "white lenses glow")
+	assert_true(bay.is_settled(), "both bay circuits settle")
+	var rebuilt := Lighting.build(game)
+	assert_float_equal(rebuilt.level(), 0.0, "powered scene does not rebuild red")
+	assert_float_equal(rebuilt.white_level(), 1.0, "powered scene rebuilds white")
+	bay.free()
+	hall.free()
+	rebuilt.free()
+
+func test_connectors_and_outer_sections_keep_their_steady_red_circuits() -> void:
+	var game := Game.new(71)
+	var nodes: Array[Node3D] = []
+	for id: StringName in game.layout.deck(14).connector_ids():
+		nodes.append(ShipConnector.build(game.layout, game.layout.connector(id)))
+	for number: int in [40, 42]:
+		nodes.append(ShipSection.build(game.layout, game.layout.section(ShipLayout.section_id(14, number))))
+	game.press_console()
+	game.press_console()
+	for node: Node3D in nodes:
+		var lights := node.find_children("*", "OmniLight3D", true, false)
+		assert_true(not lights.is_empty(), "room has emergency fixtures")
+		for light: OmniLight3D in lights:
+			assert_true(light.light_color == Lighting.EMERGENCY_RED, "independent circuit stays red")
+			assert_true(is_equal_approx(light.light_energy, Lighting.FIXTURE_ENERGY), "independent circuit stays steady")
+			assert_true(light.light_cull_mask != 1, "independent circuit stays isolated from bay")
+		node.free()
+
 func test_fixture_inventory_places_eight_red_lights_from_registry() -> void:
 	var game := Game.new(0)
 	var lighting := Lighting.build(game)
@@ -42,7 +87,9 @@ func test_fixture_inventory_places_eight_red_lights_from_registry() -> void:
 		)
 	for fixture: Node3D in fixtures:
 		assert_true(fixture.position.y > 2.4, "fixtures sit outside the walking envelope")
-	assert_int_equal(_count_class(lighting, "OmniLight3D"), 8, "the only omni lights are the fixtures")
+	assert_int_equal(_count_class(lighting, "OmniLight3D"), 14, "eight emergency fixtures plus six regular strips")
+	for light: OmniLight3D in lighting.white_lights():
+		assert_float_equal(light.light_energy, 0.0, "regular strips start dark")
 	assert_int_equal(_count_class(lighting, "DirectionalLight3D"), 0, "no directional light is authored")
 	assert_int_equal(_count_class(lighting, "SpotLight3D"), 0, "no spot light is authored")
 

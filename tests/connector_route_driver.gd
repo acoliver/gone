@@ -60,14 +60,12 @@ func mount() -> void:
 	hold(24)
 	assert(player.motion.locomotion.mode() == Locomotion.Mode.CLIMBING, "mount press cannot also dismount")
 
-func climb_to(deck: int) -> void:
+func climb_to(deck: int, capture_mid: bool = false) -> void:
 	crossings.clear()
 	var state := player.motion.locomotion.ladder_state()
 	var initial := state.nearest_landing()
 	var direction := signf(player.game.layout.floor_y(deck) - state.height())
-	var ticks := roundi(absf(player.game.layout.floor_y(deck) - state.height()) / 0.025)
-	for _tick: int in range(ticks):
-		step([{"type": "climb", "value": direction}])
+	super.climb_to(deck, capture_mid)
 	var expected: Array[int] = []
 	for d: int in range(initial - int(direction), deck - int(direction), -int(direction)):
 		expected.append(d)

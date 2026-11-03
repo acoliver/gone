@@ -21,9 +21,14 @@ var adapter: InputPlane.ScriptedAdapter = null
 ## Scripted mode: the harness adapter is the only input producer and the
 ## cursor gate on look is lifted (an unattended window never captures).
 var scripted: bool = false
+## Live play opts in; deterministic captures retain the exact tick pose.
+var interpolate_view: bool = false
 
 var _look_yaw: float = 0.0
 var _look_pitch: float = 0.0
+var _previous_eye := Vector3.ZERO
+var _previous_look := Vector2.ZERO
+var _presented_look := Vector2.ZERO
 var _mouse_pixels: Vector2 = Vector2.ZERO
 var _device_actions: bool = false
 
@@ -48,6 +53,9 @@ func _ready() -> void:
 	add_child(camera)
 	camera.make_current()
 	position = spawn.head()
+	_previous_eye = position
+	_previous_look = look_angles()
+	_presented_look = look_angles()
 	_project_rotation(Vector2.ZERO)
 	_device_actions = InputMap.has_action("move_forward")
 	if not scripted:
@@ -55,6 +63,9 @@ func _ready() -> void:
 
 func look_angles() -> Vector2:
 	return Vector2(_look_yaw, _look_pitch)
+
+func sim_forward() -> Vector3:
+	return -Basis.from_euler(Vector3(_look_pitch, 0, 0)).z.rotated(Vector3.UP, _look_yaw)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if scripted or Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
@@ -64,12 +75,15 @@ func _unhandled_input(event: InputEvent) -> void:
 		_mouse_pixels += motion_event.relative
 
 func step() -> void:
+	_previous_eye = motion.eye(game)
+	_previous_look = look_angles()
 	_collect_device_input(Sim.LOGICAL_TICK_SECS)
 	if scripted and adapter != null:
 		adapter.offer_tick(plane)
 	_integrate_look()
-	motion.advance(plane, game, _look_yaw, Sim.LOGICAL_TICK_SECS, -camera.basis.z.rotated(Vector3.UP, _look_yaw))
-	var context := Interactions.context_for(game, motion, -camera.basis.z.rotated(Vector3.UP, _look_yaw))
+	var facing := sim_forward()
+	motion.advance(plane, game, _look_yaw, Sim.LOGICAL_TICK_SECS, facing)
+	var context := Interactions.context_for(game, motion, facing)
 	var selected := interactions.process(plane, context)
 	if selected == &"D14-BAY-ROD" and rod != null:
 		rod.pick_up()
@@ -79,11 +93,23 @@ func step() -> void:
 		return
 	position = motion.eye(game)
 	if power_room != null:
-		power_room.tick_console_attention(position, -camera.basis.z.rotated(Vector3.UP, _look_yaw))
+		power_room.tick_console_attention(position, facing)
 	plane.end_frame()
 
 func present() -> void:
 	position = motion.eye(game)
+	_presented_look = look_angles()
+	_project_rotation(Vector2.ZERO)
+
+func present_interpolated(fraction: float) -> void:
+	position = _previous_eye.lerp(motion.eye(game), fraction)
+	_presented_look = Vector2(lerp_angle(_previous_look.x, _look_yaw, fraction), lerpf(_previous_look.y, _look_pitch, fraction))
+	_project_rotation(Vector2.ZERO)
+
+func _process(_delta: float) -> void:
+	# WakePresent owns the authored sway until the logical wake completes.
+	if interpolate_view and game.phase.look_allowed():
+		present_interpolated(Engine.get_physics_interpolation_fraction())
 
 ## The device producer: held InputMap actions become the plane's
 ## movement intent, fresh presses become its edges, mouse pixels and the
@@ -127,13 +153,14 @@ func _integrate_look() -> void:
 	var angles := InputPlane.integrate_look(_look_yaw, _look_pitch, delta)
 	_look_yaw = angles.x
 	_look_pitch = angles.y
+	_presented_look = angles
 	_project_rotation(Vector2.ZERO)
 
 ## Project the integrated look angles onto the rig, composed with the
 ## wake sway while the timeline owns the camera.
 func _project_rotation(sway: Vector2) -> void:
-	rotation.y = _look_yaw + sway.x
-	camera.rotation.x = clampf(_look_pitch + sway.y, -InputPlane.PITCH_LIMIT, InputPlane.PITCH_LIMIT)
+	rotation.y = _presented_look.x + sway.x
+	camera.rotation.x = clampf(_presented_look.y + sway.y, -InputPlane.PITCH_LIMIT, InputPlane.PITCH_LIMIT)
 
 ## WakePresent's sway carrier: a pure projection of the sample's sway on
 ## top of the (look-gated, so static through the wake) angles.

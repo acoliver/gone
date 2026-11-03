@@ -26,7 +26,7 @@ func test_both_wells_full_real_player_journey_and_replay_digest() -> void:
 		digests.append("\n".join(route.digest_lines).sha256_text())
 		player.free()
 	assert_true(digests[0] == digests[1], "fixed seed/input event digest repeats")
-	assert_true(digests[0] == "3043abbe8d96173ed9adda153efb92484750341ef24e502ae9c229cc79eb2fd3", "pinned full journey event digest")
+	assert_true(digests[0] == "e0b514ef37cef2f4df134a060c781ddd0ad5cb8e3c923c4ab7c44486b19a4e5d", "pinned full journey event digest")
 	print("connector route digest: ", digests[0])
 
 func test_climb_channel_is_single_consumption_and_scenario_validated() -> void:
@@ -77,7 +77,10 @@ func test_real_device_climbing_suppresses_letter_pitch_but_keeps_mouse() -> void
 	player.step()
 	for action: String in ["climb_up", "look_up", "move_forward"]:
 		Input.action_release(action)
-	assert_float_equal(player.motion.locomotion.ladder_state().height() - height, 0.025, "W plus Up ascends once, never twice")
+	var q := exp(-log(20.0) / 9)
+	var velocity := 1.5 * (1 - q)
+	var expected_height := height + velocity / 60
+	assert_float_equal(player.motion.locomotion.ladder_state().height(), expected_height, "W plus Up eases up once, never twice")
 	assert_float_equal(player.look_angles().y, pitch, "mounted W does not pitch")
 	var event := InputEventMouseMotion.new()
 	event.relative = Vector2(5, -8)
@@ -92,11 +95,19 @@ func test_real_device_climbing_suppresses_letter_pitch_but_keeps_mouse() -> void
 	player.step()
 	Input.action_release("climb_down")
 	Input.action_release("look_down")
-	assert_float_equal(player.motion.locomotion.ladder_state().height(), height, "S descends with correct sign")
+	velocity *= q # Mouse-only tick eases toward rest.
+	expected_height += velocity / 60
+	velocity = -1.5 + (velocity + 1.5) * q
+	expected_height += velocity / 60
+	var ladder := player.motion.locomotion.ladder_state()
+	assert_true(velocity < 0, "S reverses climb speed downward")
+	assert_true(absf(ladder.height() + ladder.pending() - expected_height) < 1e-10, "S preserves eased signed height")
 	player.scripted = true
 	player.adapter.hold(-1, 0)
 	player.step()
-	assert_float_equal(player.motion.locomotion.ladder_state().height() - height, 0.025, "legacy negative simulation forward ascends")
+	velocity = 1.5 + (velocity - 1.5) * q
+	expected_height += velocity / 60
+	assert_true(absf(ladder.height() + ladder.pending() - expected_height) < 1e-10, "legacy negative simulation forward eases upward")
 	player.adapter.climb(-1)
 	var before := player.motion.capsule().foot
 	# Check rejection at the state boundary without invoking Player's process-exit policy.

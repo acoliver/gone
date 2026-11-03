@@ -7,6 +7,7 @@ class Face:
 	var deck: int
 	var space: StringName
 	var frame: Transform3D
+	var anchor: Transform3D
 	var size: Vector2
 	var perception: DisplayPerception
 	var loaded: bool = true
@@ -26,13 +27,14 @@ static func _cell(position: Vector3) -> Vector3i:
 func register_face(id: StringName, deck: int, space: StringName, frame: Transform3D, size: Vector2) -> DisplayPerception:
 	if _faces.has(id):
 		var existing: Face = _faces[id]
-		assert(existing.deck == deck and existing.space == space and existing.frame == frame and existing.size == size, "face identity survives reload")
+		assert(existing.deck == deck and existing.space == space and existing.anchor == frame and existing.size == size, "face identity survives reload")
 		existing.loaded = true
 		return existing.perception
 	var face := Face.new()
 	face.deck = deck
 	face.space = space
 	face.frame = frame
+	face.anchor = frame
 	face.size = size
 	face.perception = DisplayPerception.new(_memory)
 	_faces[id] = face
@@ -46,6 +48,18 @@ func register_face(id: StringName, deck: int, space: StringName, frame: Transfor
 
 func state(id: StringName) -> DisplayPerception:
 	return _faces[id].perception
+
+func move_face(id: StringName, frame: Transform3D) -> void:
+	var face: Face = _faces[id]
+	if face.frame == frame: return
+	var before := _cell(face.frame.origin)
+	var after := _cell(frame.origin)
+	face.frame = frame
+	if before == after: return
+	_index[face.deck][before].erase(id)
+	if _index[face.deck][before].is_empty(): _index[face.deck].erase(before)
+	if not _index[face.deck].has(after): _index[face.deck][after] = []
+	_index[face.deck][after].append(id)
 
 func unload(id: StringName) -> void:
 	_faces[id].loaded = false

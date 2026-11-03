@@ -50,6 +50,7 @@ class State:
 	var _capsule: Resolve.Capsule
 	var _height: float = 0.0
 	var _pending: float = 0.0
+	var _velocity: float = 0.0
 	var _foot_offset: float
 	var _head_offset: Vector3
 	var _approach: Vector3
@@ -71,6 +72,8 @@ class State:
 		return _height
 	func pending() -> float:
 		return _pending
+	func velocity() -> float:
+		return _velocity
 	func well_id() -> StringName:
 		return _well.id()
 	func landing_deck() -> int:
@@ -144,7 +147,8 @@ class State:
 	func _climb(intent: float, collision: ShipCollision) -> Ladder.Result:
 		var top := _layout.floor_y(_well.top_deck())
 		var bottom := _layout.floor_y(_well.bottom_deck())
-		var target_height := clampf(_height + _pending + intent * Ladder.CLIMB_SPEED * Sim.LOGICAL_TICK_SECS, bottom, top)
+		var velocity := ClimbEase.step(_velocity, intent, Ladder.CLIMB_SPEED)
+		var target_height := clampf(_height + _pending + velocity * Sim.LOGICAL_TICK_SECS, bottom, top)
 		if absf(target_height - top) < Ladder.HEIGHT_EPSILON:
 			target_height = top
 		elif absf(target_height - bottom) < Ladder.HEIGHT_EPSILON:
@@ -153,6 +157,7 @@ class State:
 		var endpoint := target_height == top or target_height == bottom
 		if absf(travel) <= Controller.PENETRATION_TOLERANCE and not endpoint:
 			_pending = travel
+			_velocity = velocity
 			return _success()
 		var target := _pose(target_height)
 		var error := _sweep(_capsule, target, collision, endpoint)
@@ -169,6 +174,7 @@ class State:
 		_capsule = target
 		_height = target_height
 		_pending = 0.0
+		_velocity = 0.0 if endpoint else velocity
 		return _success(events)
 
 	func _dismount_deck() -> int:

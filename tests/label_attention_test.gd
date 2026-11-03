@@ -3,6 +3,20 @@ extends SimTestCase
 func _register(attention: LabelAttention, id: StringName, center: Vector3 = Vector3.ZERO) -> void:
 	attention.register_face(id, 14, &"room", Transform3D(Basis(), center), Vector2(0.92, 0.46))
 
+func test_moving_face_reindexes_and_reload_retains_its_original_identity() -> void:
+	var attention := LabelAttention.new(DisplayPerception.Memory.new())
+	_register(attention, &"moving")
+	var moved := Transform3D(Basis(), Vector3(16, 0, 0))
+	attention.move_face(&"moving", moved)
+	for _tick: int in range(168): attention.tick(14, Vector3(0, 0, 2), Vector3.FORWARD, [])
+	assert_float_equal(attention.state(&"moving").perceive, 0, "old face location cannot resolve")
+	for _tick: int in range(168): attention.tick(14, Vector3(16, 0, 2), Vector3.FORWARD, [])
+	assert_float_equal(attention.state(&"moving").perceive, 1, "new spatial cell resolves")
+	attention.unload(&"moving")
+	for _tick: int in range(21): attention.tick(14, Vector3(16, 0, 2), Vector3.FORWARD, [])
+	_register(attention, &"moving")
+	assert_float_equal(attention.state(&"moving").perceive, 0, "reload keeps decay after motion")
+
 func test_first_resolution_is_shared_but_face_state_is_independent() -> void:
 	var memory := DisplayPerception.Memory.new()
 	var attention := LabelAttention.new(memory)
@@ -52,10 +66,10 @@ func test_layout_sign_frames_sizes_and_destinations_are_generated() -> void:
 	var layout := ShipLayout.authored().layout
 	var face := layout.face(&"D14-C-001-H-FORE/FORE")
 	var frame := layout.door(face.door_id()).frame() * face.label_frame()
-	assert_close(frame.origin, Vector3(29.99, 2.85, 0), "corridor-facing sign anchor")
+	assert_close(frame.origin, Vector3(29.96, 1.82, 0), "corridor-facing sign anchor")
 	assert_vec3_equal(frame.basis.z, Vector3.LEFT, "sign faces corridor")
 	assert_true(face.label_size() == Vector2(0.92, 0.46), "hatch size")
 	var lift := layout.lift(&"D14-C-001-LIFT")
-	assert_close(lift.label_anchor().origin, Vector3(33, 2.55, 1.49), "lift sign anchor")
+	assert_close(lift.label_anchor().origin, Vector3(33, 1.82, 1.488), "lift sign anchor")
 	assert_vec3_equal(lift.label_anchor().basis.z, Vector3.FORWARD, "lift sign faces connector")
 	assert_true(lift.label_size() == Vector2(0.92, 0.23), "lift size")

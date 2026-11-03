@@ -83,7 +83,7 @@ const REGULAR_LENS_SIZE: Vector3 = Vector3(1.15, 0.05, 0.18)
 const REGULAR_LENS_BASE_COLOR: Color = Color(0.72, 0.72, 0.70)
 const REGULAR_MOUNT_Y: float = HALL_CEILING_HEIGHT - 0.08
 
-const SIDE_DOOR_SHADE: float = Hatch.HATCH_DOOR_SHADE
+const SIDE_DOOR_SHADE: float = HatchModel.DOOR_SHADE
 
 static var _box_cache: Dictionary = {}
 

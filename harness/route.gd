@@ -63,6 +63,25 @@ func walk_to(target: Vector3, stop: float = 0.1) -> void:
 		var yaw := atan2(delta.x, delta.y)
 		step([{"type": "look", "yaw_deg": rad_to_deg(InputPlane.wrap_angle(yaw - player.look_angles().x)), "pitch_deg": -rad_to_deg(player.look_angles().y)}, {"type": "move", "forward": 1.0, "strafe": 0.0}])
 
+func climb_to(deck: int, capture_mid: bool = false) -> void:
+	var state := player.motion.locomotion.ladder_state()
+	var target := player.game.layout.floor_y(deck)
+	var distance := target - state.height()
+	var midpoint := state.height() + distance * 0.5
+	var captured := false
+	while absf(target - state.height()) >= Ladder.HEIGHT_EPSILON:
+		var before := state.height() + state.pending()
+		# Solve the eased tick's input for the remaining distance. Full input
+		# drives the shaft; a fractional final tick lands without overshoot.
+		var desired := (target - before) / Sim.LOGICAL_TICK_SECS
+		var input := ClimbEase.intent_for_velocity(state.velocity(), desired, Ladder.CLIMB_SPEED)
+		step([{"type": "climb", "value": input}])
+		if capture_mid and not captured and (state.height() - midpoint) * signf(distance) >= 0:
+			look_at(player.motion.eye(player.game) + Vector3(0, 3, -2), 55)
+			beat("mid-shaft")
+			captured = true
+	assert(absf(state.height() - player.game.layout.floor_y(deck)) < 1e-8, "route reaches exact landing")
+
 func look_at(target: Vector3, pitch: float = 0.0) -> void:
 	var delta := target - player.motion.eye(player.game)
 	var yaw := atan2(-delta.x, -delta.z)

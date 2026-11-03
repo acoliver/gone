@@ -1,5 +1,28 @@
 extends SimTestCase
 
+func test_rebuilding_an_open_hatch_keeps_leaf_local_writing_and_face_identity() -> void:
+	var game := Game.new(0)
+	var root := Node3D.new()
+	var scene := ShipScene.build_into(root, game, false)
+	scene.prepare_near(Vector3(28.5, 0, 0))
+	var id: StringName = &"D14-C-001-H-FORE"
+	var face: StringName = &"D14-C-001-H-FORE/FORE"
+	var context := Doors.Context.new()
+	context.face_id = face
+	for _attempt: int in range(HatchResistance.schedule(0, id).weights.size()):
+		game.doors.press(id, context)
+		for _tick: int in range(6): game.advance_doors()
+	for _tick: int in range(48): game.advance_doors()
+	assert_int_equal(game.doors.snapshot(id).state, Doors.State.OPEN, "fixture opens the stored hatch")
+	var local: Transform3D = scene.labels[face].transform
+	root.free()
+	root = Node3D.new()
+	scene = ShipScene.build_into(root, game, false)
+	scene.prepare_near(Vector3(28.5, 0, 0))
+	assert_true(scene.labels[face].transform.is_equal_approx(local), "reload must not counter-rotate the ink back into the closed plane")
+	assert_true(ShipScene._world_frame(scene.labels[face]).basis.z.dot(Vector3.LEFT) < 0.01, "rebuilt ink remains on the open leaf")
+	root.free()
+
 func test_prefetched_console_changes_cached_pixels_in_the_same_tick() -> void:
 	var cache := ShipTextCache.new()
 	var game := Game.new(0)

@@ -27,6 +27,7 @@ func advance(paused: bool = false) -> void:
 		var transition := game.phase.wake_complete()
 		assert(transition.kind == Phase.Transition.Kind.ADVANCED)
 	game.advance_doors()
+	game.ventilation.tick(game.power_active)
 	if player != null:
 		sampled_eye = player.motion.eye(game)
 		if smoke != null:
@@ -36,13 +37,15 @@ func advance(paused: bool = false) -> void:
 		if player.motion.deck() == 14 and not player.motion.mounted():
 			ship_scene.prepare_near(player.motion.capsule().foot)
 		ship_scene.stream.update(player.motion)
+	for view: DoorView in door_views:
+		view.present(game.doors.snapshot(view.door_id()))
 	if ship_scene != null and player != null:
-		ship_scene.tick_attention(player.motion.eye(game), -player.camera.global_basis.z, player.motion.locomotion.ladder_state().nearest_landing() if player.motion.mounted() else player.motion.deck())
+		ship_scene.tick_attention(player.motion.eye(game), player.sim_forward(), player.motion.locomotion.ladder_state().nearest_landing() if player.motion.mounted() else player.motion.deck())
+	if ship_scene != null:
+		ship_scene.hazards.process_frame(Sim.LOGICAL_TICK_SECS)
 	for fixture: Node in fixtures:
 		fixture.process_frame(Sim.LOGICAL_TICK_SECS)
 	door_events = game.doors.events()
-	for view: DoorView in door_views:
-		view.present(game.doors.snapshot(view.door_id()))
 	if door_audio != null:
 		door_audio.consume(door_events)
 	if player != null:

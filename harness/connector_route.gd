@@ -44,9 +44,11 @@ func read_label(id: StringName, name: String, white: bool = false, first: bool =
 	var approach := frame.origin + frame.basis.z * 1.7
 	approach.y = layout.floor_y(door.deck_number())
 	walk_to(approach)
-	# Walking looks horizontally. Aim at the physical sign only after stopping.
-	var delta := frame.origin - player.motion.eye(player.game)
-	look_at(frame.origin, rad_to_deg(atan2(delta.y, Vector2(delta.x, delta.z).length())))
+	# The preceding level-gaze refusal can already start reading this leaf.
+	# Turn away for the real decay interval before recording a native baseline.
+	look_at(player.motion.eye(player.game) + frame.basis.x)
+	hold(DisplayPerception.DECAY)
+	look_at(frame.origin)
 	beat(name + "-native")
 	label_beats[name + "-native"] = {"id": String(id), "stage": "native"}
 	hold((DisplayPerception.FIRST_HOLD + DisplayPerception.FIRST_RAMP / 2 if first else DisplayPerception.LATER_HOLD + DisplayPerception.LATER_RAMP / 2) - 2)
@@ -72,17 +74,6 @@ func mount() -> void:
 	press()
 	hold(24)
 	assert(player.motion.mounted(), "real input mounts aft ladder")
-
-func climb_to(deck: int, capture_mid: bool = false) -> void:
-	var state := player.motion.locomotion.ladder_state()
-	var distance := player.game.layout.floor_y(deck) - state.height()
-	var steps := roundi(absf(distance) / (Ladder.CLIMB_SPEED * Sim.LOGICAL_TICK_SECS))
-	for index: int in range(steps):
-		step([{"type": "climb", "value": signf(distance)}])
-		if capture_mid and index == steps / 2:
-			look_at(player.motion.eye(player.game) + Vector3(0, 3, -2), 55)
-			beat("mid-shaft")
-	assert(absf(state.height() - player.game.layout.floor_y(deck)) < 1e-8, "route reaches exact landing")
 
 func dismount(deck: int) -> void:
 	press()

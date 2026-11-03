@@ -1,5 +1,33 @@
 extends SimTestCase
 
+func test_climb_start_stop_and_reversal_ease_over_nine_ticks() -> void:
+	var layout := ShipLayout.authored().layout
+	var collision := ShipCollision.new(layout)
+	var state := _mounted(layout, collision, &"C-000-LADDER", 14)
+	var velocity := 0.0
+	var position := 0.0
+	var alpha := 1 - exp(-log(20.0) / 9)
+	for tick: int in range(90):
+		var input := 1.0 if tick < 30 else (0.0 if tick < 60 else -1.0)
+		velocity += (input * Ladder.CLIMB_SPEED - velocity) * alpha
+		position += velocity * Sim.LOGICAL_TICK_SECS
+		assert_true(_tick(state, collision, input).is_ok(), "eased climb resolves")
+		assert_true(absf(state.height() + state.pending() - position) < 1e-10, "scalar ease tick %d" % tick)
+
+func test_climb_endpoint_clips_velocity_before_reversing() -> void:
+	var layout := ShipLayout.authored().layout
+	var collision := ShipCollision.new(layout)
+	for deck: int in [1, 30]:
+		var state := _mounted(layout, collision, &"C-001-LADDER", deck)
+		var outward := 1.0 if deck == 1 else -1.0
+		for tick: int in range(30):
+			_tick(state, collision, outward)
+			assert_float_equal(state.height(), layout.floor_y(deck), "endpoint stays exact")
+			assert_float_equal(state.velocity(), 0.0, "accepted endpoint velocity is clipped")
+		_tick(state, collision, -outward)
+		var expected := -outward * Ladder.CLIMB_SPEED * (1 - exp(-log(20.0) / 9)) / 60
+		assert_true(absf(state.height() + state.pending() - layout.floor_y(deck) - expected) < 1e-10, "no hidden endpoint speed delays reversal")
+
 class ObstructedCollision:
 	extends ShipCollision
 	var obstruction := AABB()
@@ -82,7 +110,7 @@ func test_every_deck_is_crossed_up_and_down_in_both_wells_without_height_drift()
 		var start := state.capsule().foot
 		var events: Array[int] = []
 		for direction: int in [1, -1]:
-			for tick: int in range(6380):
+			for tick: int in range(6383):
 				var result := _tick(state, collision, direction)
 				assert_true(result.is_ok(), "full-pitch climb sweep")
 				if not result.is_ok():
@@ -90,8 +118,10 @@ func test_every_deck_is_crossed_up_and_down_in_both_wells_without_height_drift()
 				for event: Ladder.Event in result.events:
 					if event.kind == Ladder.EventKind.LANDING:
 						events.append(event.deck)
-				var expected := -88.0 + (tick + 1) * 0.025 if direction > 0 else 71.5 - (tick + 1) * 0.025
-				assert_float_in_range(state.height(), expected - 1e-8, expected + 1e-8, "1.5 m/s scalar height")
+				var q := exp(-log(20.0) / 9)
+				var distance := 0.025 * (tick + 1 - q * (1 - pow(q, tick + 1)) / (1 - q))
+				var expected := minf(-88.0 + distance, 71.5) if direction > 0 else maxf(71.5 - distance, -88.0)
+				assert_float_in_range(state.height(), expected - 1e-8, expected + 1e-8, "eased 1.5 m/s scalar height")
 				assert_float_in_range(state.capsule().foot.y, expected + 0.305 - 1e-5, expected + 0.305 + 1e-5, "capsule projects scalar height")
 			var endpoint := 71.5 if direction > 0 else -88.0
 			for _held: int in range(120):
@@ -124,14 +154,21 @@ func test_tiny_analog_travel_is_swept_in_bounded_signed_batches() -> void:
 	for _tick_index: int in range(10):
 		assert_true(_tick(state, collision, 0.01).is_ok(), "tiny input accepted")
 	assert_float_equal(state.height(), 0, "unswept travel does not move scalar height")
-	assert_float_in_range(state.pending(), 0.0025 - 1e-12, 0.0025 + 1e-12, "small travel retained")
+	var q := exp(-log(20.0) / 9)
+	var velocity := 0.015 * (1 - pow(q, 10))
+	var expected := 0.00025 * (10 - q * (1 - pow(q, 10)) / (1 - q))
+	assert_float_in_range(state.pending(), expected - 1e-12, expected + 1e-12, "eased small travel retained")
 	for _tick_index: int in range(10):
+		velocity = -0.015 + (velocity + 0.015) * q
+		expected += velocity / 60
 		_tick(state, collision, -0.01)
-	assert_float_in_range(state.pending(), -1e-12, 1e-12, "direction reversal cancels signed remainder")
+	assert_float_in_range(state.height() + state.pending(), expected - 1e-12, expected + 1e-12, "reversal preserves eased signed travel")
 	for _tick_index: int in range(1000):
+		velocity = 0.015 + (velocity - 0.015) * q
+		expected += velocity / 60
 		assert_true(_tick(state, collision, 0.01).is_ok(), "partial input sweep")
 		assert_true(absf(state.pending()) <= 0.005, "remainder bounded by unchanged resolver tolerance")
-	assert_float_in_range(state.height() + state.pending(), 0.25 - 1e-10, 0.25 + 1e-10, "no analog travel lost")
+	assert_float_in_range(state.height() + state.pending(), expected - 1e-10, expected + 1e-10, "no eased analog travel lost")
 
 func test_partial_input_clamps_exactly_at_both_endpoints() -> void:
 	var layout := ShipLayout.authored().layout
@@ -157,7 +194,7 @@ func test_dismount_corrects_nearby_height_then_sweeps_to_supported_landing() -> 
 		assert_int_equal(state.mode(), Ladder.Mode.LANDED, "within 0.15 m can dismount")
 		assert_close(state.capsule().foot, _capsule(layout, &"C-000-LADDER", 14).foot, "exact floor restored")
 	var state := _mounted(layout, collision, &"C-000-LADDER", 14)
-	for _tick_index: int in range(7):
+	for _tick_index: int in range(10):
 		_tick(state, collision, 1)
 	_tick(state, collision, 0, true)
 	assert_int_equal(state.mode(), Ladder.Mode.CLIMBING, "outside 0.15 m cannot dismount")
@@ -225,22 +262,24 @@ func test_obstructed_mount_climb_and_dismount_are_typed_atomic_errors() -> void:
 	var clean := ShipCollision.new(layout)
 	state = _mounted(layout, clean, &"C-000-LADDER", 14)
 	var before := state.capsule().foot
-	collision.obstruction = AABB(Vector3(2.5, before.y + 1.15 + 0.31, -4.8), Vector3(1, 0.1, 1))
+	collision.obstruction = AABB(Vector3(2.5, before.y + 1.15 + 0.301, -4.8), Vector3(1, 0.1, 1))
 	result = state.step(1, false, collision)
 	assert_false(result.is_ok(), "head collision stops climb")
 	assert_true(result.error.collider_id == &"test/obstruction", "head collision id")
 	assert_close(state.capsule().foot, before, "climb error atomic")
-	collision.obstruction = AABB(Vector3(2.5, before.y - 0.32, -4.8), Vector3(1, 0.01, 1))
+	assert_float_equal(state.velocity(), 0.0, "blocked ascent does not accept velocity")
+	collision.obstruction = AABB(Vector3(2.5, before.y - 0.307, -4.8), Vector3(1, 0.01, 1))
 	assert_false(state.step(-1, false, collision).is_ok(), "foot collision stops descent")
 	assert_close(state.capsule().foot, before, "foot error atomic")
+	assert_float_equal(state.velocity(), 0.0, "blocked descent does not accept velocity")
 	collision.obstruction = AABB(Vector3(2.5, 0, -3.95), Vector3(1, 2.5, 0.02))
 	result = state.step(0, true, collision)
 	assert_false(result.is_ok(), "dismount never ignores solids")
 	assert_int_equal(state.mode(), Ladder.Mode.CLIMBING, "blocked dismount does not change mode")
 
 func test_replay_digest_includes_every_transition_and_capsule() -> void:
-	var expected := "62c0f9ccf0dd7580177415c2c0ac1e9d0736dd23c97969fa4d395fa25b406bc6"
-	assert_true(_digest() == expected, "pinned capsule and transition digest")
+	var expected := "fbba2c7615b40d743ca46bf19c86cc9da727f9f9e3f7b004519c04fdc45c10f4"
+	assert_true(_digest() == expected, "pinned eased capsule and transition digest")
 	assert_true(_digest() == expected, "second execution has identical fixed input replay")
 
 func test_exact_transition_events_and_final_landing_tick() -> void:
@@ -248,13 +287,13 @@ func test_exact_transition_events_and_final_landing_tick() -> void:
 	var collision := ShipCollision.new(layout)
 	var mounted := Ladder.try_mount(layout, &"C-000-LADDER", 14, _capsule(layout, &"C-000-LADDER", 14), Vector3.FORWARD)
 	var events: Array[String] = ["0:%d:14" % mounted.events[0].kind]
-	for tick: int in range(1, 269):
-		var result := _tick(mounted.state, collision, 1 if tick > 24 and tick <= 244 else 0, tick == 245)
+	for tick: int in range(1, 272):
+		var result := _tick(mounted.state, collision, 1 if tick > 24 and tick <= 247 else 0, tick == 248)
 		assert_true(result.is_ok(), "transition schedule tick")
 		for event: Ladder.Event in result.events:
 			assert_true(event.well_id == &"C-000-LADDER", "events retain well identity")
 			events.append("%d:%d:%d" % [tick, event.kind, event.deck])
-	assert_true(events == ["0:0:14", "24:1:14", "244:2:13", "245:3:13", "268:4:13"], "mount, climb, crossing, dismount and WALK commit occur once on exact ticks")
+	assert_true(events == ["0:0:14", "24:1:14", "247:2:13", "248:3:13", "271:4:13"], "mount, climb, crossing, dismount and WALK commit occur once on exact ticks")
 
 func test_capsule_reads_are_copies_and_rejections_preserve_pending_travel() -> void:
 	var layout := ShipLayout.authored().layout
@@ -271,7 +310,9 @@ func test_capsule_reads_are_copies_and_rejections_preserve_pending_travel() -> v
 	assert_float_equal(state.height(), 0, "height unchanged on rejected tick")
 	assert_int_equal(state.mode(), Ladder.Mode.CLIMBING, "mode unchanged on rejected tick")
 	assert_true(state.step(0.2, false, collision).is_ok(), "valid input still sweeps accumulated travel")
-	assert_float_in_range(state.height(), 0.0075 - 1e-10, 0.0075 + 1e-10, "pending consumed once")
+	var alpha := 1 - exp(-log(20.0) / 9)
+	var expected := (0.15 * alpha + (0.15 * alpha * (1 - alpha) + 0.3 * alpha)) / 60
+	assert_float_in_range(state.height() + state.pending(), expected - 1e-10, expected + 1e-10, "eased pending counted once")
 
 func _digest() -> String:
 	var layout := ShipLayout.authored().layout
