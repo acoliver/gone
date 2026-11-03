@@ -581,6 +581,14 @@ func well(id: StringName) -> LadderWellSpec:
 func well_ids() -> Array[StringName]:
 	return _ids_of(LadderWellSpec)
 
+func ladder_doorway_frame(well_id: StringName, deck_number: int) -> Transform3D:
+	for id: StringName in deck(deck_number).connector_ids():
+		var spec := connector(id)
+		if spec.well_id() == well_id:
+			return spec.port_opening()
+	assert(false, "ladder doorway belongs to a deck connector: %s" % well_id)
+	return Transform3D.IDENTITY
+
 func bay() -> BaySpec:
 	return _lookup(BAY_ID, BaySpec)
 

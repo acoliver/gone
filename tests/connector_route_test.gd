@@ -90,16 +90,20 @@ func test_real_device_climbing_suppresses_letter_pitch_but_keeps_mouse() -> void
 	player.step()
 	player.scripted = false
 	assert_float_in_range(player.look_angles().y - pitch, 8 * InputPlane.LOOK_SENSITIVITY - 1e-8, 8 * InputPlane.LOOK_SENSITIVITY + 1e-8, "mouse pitch remains available while mounted")
+	var before_capture := expected_height
+	expected_height = height + (expected_height - height) * q
+	if absf(expected_height - height) <= Controller.PENETRATION_TOLERANCE:
+		expected_height = height
+	velocity = (expected_height - before_capture) * 60
+	var ladder := player.motion.locomotion.ladder_state()
+	assert_true(absf(ladder.height() - expected_height) < 1e-10, "mouse-only tick captures toward nearby landing")
 	Input.action_press("climb_down")
 	Input.action_press("look_down")
 	player.step()
 	Input.action_release("climb_down")
 	Input.action_release("look_down")
-	velocity *= q # Mouse-only tick eases toward rest.
-	expected_height += velocity / 60
 	velocity = -1.5 + (velocity + 1.5) * q
 	expected_height += velocity / 60
-	var ladder := player.motion.locomotion.ladder_state()
 	assert_true(velocity < 0, "S reverses climb speed downward")
 	assert_true(absf(ladder.height() + ladder.pending() - expected_height) < 1e-10, "S preserves eased signed height")
 	player.scripted = true

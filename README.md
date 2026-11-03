@@ -55,9 +55,16 @@ expect it to take longer than later runs.
 - **A/D** swivel the head left/right and **W/S** up/down; comma and
   period also turn. The letters and the mouse feed the same look
   channel, so the player can choose or alternate between them.
-- **Space** or a left click acts: it starts the get-up out of the pod,
-  picks up the metal rod, pries the door open with it, and flips the
-  hallway's light switch beside the doorway.
+- **Space** starts get-up out of the pod and acts on nearby objects.
+- **Left click** sets a walking destination on the floor or approaches an
+  object and acts once in reach. Each hatch click cranks once. Movement
+  keys cancel the destination; mouse look stays free while walking.
+- **Hold Tab** to release the mouse pointer. While released, clicks aim
+  under the pointer; otherwise they aim at the center dot. Release Tab to
+  capture again. **Escape** releases capture until the next Tab press/release.
+  Switching window focus releases capture without recapturing on return.
+- On a ladder, **W/S** or **Up/Down** climbs; **Space** or a click through
+  the landing doorway dismounts when level with that deck.
 - Quit by closing the window.
 
 Q, E, and R are unused.
@@ -93,6 +100,8 @@ The shipped lanes are listed below with what each covers.
   door, the dark crossing, the beside-door switch flip, the lit settle,
   and a short corridor walk, pinning rod-picked-up, door-opened,
   hall-dark, hall-lit, and hall-corridor.
+- `scenarios/click-route.json`: floor and action objectives complete rod
+  pickup, bay-door pry, hall switch, power door and both console presses.
 - `scenarios/perf-smoke.json`: frame-time sampling in the populated room
   against the frozen smoke policy.
 - `scenarios/calibration-step.json`: the luminance-step calibration cell.

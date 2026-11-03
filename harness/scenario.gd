@@ -142,6 +142,25 @@ static func _parse_action(scenario_name: String, entry: Dictionary) -> Dictionar
 		"move":
 			action.forward = float(entry.get("forward", 0.0))
 			action.strafe = float(entry.get("strafe", 0.0))
+		"objective":
+			if entry.get("kind", "") not in ["floor", "act"] or not (entry.get("deck") is float or entry.get("deck") is int):
+				return {}
+			var deck_value := float(entry.deck)
+			if not is_finite(deck_value) or deck_value != int(deck_value) or deck_value < 1 or deck_value > 30:
+				return {}
+			action.kind = entry.kind
+			action.deck = int(deck_value)
+			if action.kind == "floor":
+				if not (entry.get("point") is Array) or entry.point.size() != 3:
+					return {}
+				for value in entry.point:
+					if not (value is float or value is int) or not is_finite(float(value)):
+						return {}
+				action.point = entry.point.duplicate()
+			else:
+				if not (entry.get("target") is String) or entry.target.is_empty():
+					return {}
+				action.target = entry.target
 		"climb":
 			if not entry.has("value") or not (entry.value is float or entry.value is int):
 				return {}
@@ -191,7 +210,7 @@ class InputAdapter:
 	## sum), and movement intent. Held actions stay queued
 	## until their wait lifts, whatever their own ticks say.
 	func step() -> Dictionary:
-		var out := {"edges": [], "look_deg": Vector2.ZERO, "key_turn": 0.0, "key_pitch": 0.0, "movement": Vector2.ZERO, "climb": null}
+		var out := {"edges": [], "look_deg": Vector2.ZERO, "key_turn": 0.0, "key_pitch": 0.0, "movement": Vector2.ZERO, "climb": null, "objective": null}
 		if _hold_remaining_ticks > 0.0:
 			_hold_remaining_ticks -= 1.0
 		while not _actions.is_empty():
@@ -227,6 +246,8 @@ class InputAdapter:
 				_pending_movement += Vector2(action.forward, action.strafe)
 			"climb":
 				out.climb = action.value
+			"objective":
+				out.objective = ClickObjective.floor_point(Vector3(action.point[0], action.point[1], action.point[2]), action.deck) if action.kind == "floor" else ClickObjective.act(StringName(action.target), action.deck)
 			"wait":
 				_hold_remaining_ticks = ceil(maxf(action.duration, 0.0) * float(_ticks_per_second))
 			"wait_until_tick":

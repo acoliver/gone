@@ -359,9 +359,11 @@ static func _section_side_leaves(layout: ShipLayout, section: ShipLayout.Section
 	var ids := section.side_door_ids()
 	ids.sort_custom(func(a: StringName, b: StringName) -> bool: return String(a) < String(b))
 	for id: StringName in ids:
-		var door := layout.door(id)
-		solids.append(transformed(SolidSpec.new(Vector3(0, door.aperture().y / 2, -SIDE_DOOR_THICKNESS / 2), Vector3(door.aperture().x, door.aperture().y, SIDE_DOOR_THICKNESS), Quaternion.IDENTITY, StringName("%s/LEAF" % id), &"door"), door.frame()))
+		solids.append(side_door_leaf(layout.door(id)))
 	return solids
+
+static func side_door_leaf(door: ShipLayout.DoorSpec) -> SolidSpec:
+	return transformed(SolidSpec.new(Vector3(0, door.aperture().y / 2, -SIDE_DOOR_THICKNESS / 2), Vector3(door.aperture().x, door.aperture().y, SIDE_DOOR_THICKNESS), Quaternion.IDENTITY, StringName("%s/LEAF" % door.id()), &"door"), door.frame())
 
 static func connector_solids(layout: ShipLayout, connector: ShipLayout.ConnectorSpec) -> Array[SolidSpec]:
 	var solids: Array[SolidSpec] = []

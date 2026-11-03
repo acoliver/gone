@@ -23,6 +23,7 @@ class Target:
 	var reach: float = 2.2
 	var frame := Transform3D.IDENTITY
 	var size := Vector2(1.2, 2.4)
+	var bounds := AABB()
 
 class Context:
 	extends RefCounted
@@ -62,6 +63,9 @@ func register_door(id: StringName) -> void:
 		target.frame = door.frame() * _layout.face(face_id).surface_frame()
 		target.center = door.frame().origin
 		target.size = door.aperture()
+		if door.kind() == ShipLayout.DoorKind.SIDE:
+			var leaf := ShipGeometry.box_aabb(ShipGeometry.side_door_leaf(door))
+			target.bounds = AABB(leaf.min_corner(), leaf.max_corner() - leaf.min_corner())
 		assert(not _targets.any(func(existing: Target) -> bool: return existing.id == face_id), "face registered once")
 		_targets.append(target)
 
@@ -73,6 +77,9 @@ func _legacy(id: StringName, kind: int, center: Vector3, reach: float, priority:
 	target.center = center
 	target.reach = reach
 	target.priority = priority
+	if kind == Kind.CONSOLE:
+		var body := ShipGeometry.box_aabb(ShipGeometry.console_solid(ShipGeometry.console_stations()[1]))
+		target.bounds = AABB(body.min_corner(), body.max_corner() - body.min_corner())
 	_targets.append(target)
 
 static func context_for(game: Game, motion: PlayerMotion, forward: Vector3 = Vector3.FORWARD) -> Context:
@@ -87,19 +94,90 @@ static func context_for(game: Game, motion: PlayerMotion, forward: Vector3 = Vec
 		context.foot = motion.capsule().foot
 	return context
 
-func process(plane: InputPlane, context: Context) -> StringName:
+func target_for(id: StringName, deck: int, foot: Vector3) -> Target:
+	for target: Target in _targets:
+		if target.id == id:
+			return target
+	# A door id in a script chooses the face on the approach side.
+	for target: Target in _targets:
+		if target.door_id == id and target.deck == deck and (target.frame.affine_inverse() * foot).z > 0:
+			return target
+	if id in _layout.well_ids():
+		return ladder_target(_layout, id, deck)
+	return null
+
+static func ladder_target(layout: ShipLayout, id: StringName, deck: int, exiting: bool = false) -> Target:
+	var well := layout.well(id)
+	var doorway := layout.ladder_doorway_frame(id, deck)
+	var target := Target.new()
+	target.id = id
+	target.kind = Kind.LADDER
+	target.policy = Selection.FACE_RAY
+	target.deck = deck
+	target.center = well.climb_line().origin
+	target.center.y = doorway.origin.y
+	target.frame = Transform3D(doorway.basis, target.center)
+	if exiting:
+		target.center = doorway.origin
+		target.frame = doorway * Transform3D(Basis(Vector3.LEFT, Vector3.UP, Vector3.FORWARD), Vector3.ZERO)
+	target.size = well.doorway_size()
+	return target
+
+func targets_on_deck(deck: int) -> Array[Target]:
+	var result: Array[Target] = []
+	for target: Target in _targets:
+		if target.deck == deck:
+			result.append(target)
+	for id: StringName in _layout.well_ids():
+		result.append(target_for(id, deck, Vector3.ZERO))
+	return result
+
+func target_visible(target: Target, eye: Vector3, collision: ShipCollision) -> bool:
+	var end := target.center
+	if target.policy == Selection.FACE_RAY:
+		var local_eye := target.frame.affine_inverse() * eye
+		end = target.frame * Vector3(0, clampf(local_eye.y, 0, target.size.y), 0)
+	elif target.kind == Kind.DOOR:
+		var door := _layout.door(target.door_id)
+		end.y = clampf(eye.y, end.y, end.y + door.aperture().y)
+	elif target.kind == Kind.CONSOLE:
+		end = target.bounds.get_center()
+	if target.bounds.has_volume():
+		var fraction := segment_hit(eye, end, target.bounds)
+		if fraction >= 0:
+			end = eye.lerp(end, fraction)
+	var boxes := collision.deck_set(target.deck).boxes()
+	var ids := collision.solid_ids(target.deck)
+	for index: int in range(boxes.size()):
+		var id := ids[index]
+		# A requested door's leaf, passage block and reserved swing are its own geometry.
+		if target.kind == Kind.DOOR and id in [StringName("%s/LEAF" % target.door_id), StringName("%s/BLOCKER" % target.door_id), StringName("%s/SWING" % target.door_id)]:
+			continue
+		var box := boxes[index]
+		var fraction := segment_hit(eye, end, AABB(box.min_corner(), box.max_corner() - box.min_corner()))
+		if fraction >= 0 and fraction < 1.0 - 0.00001:
+			return false
+	return true
+
+func selection_solids(deck: int) -> Array[AABB]:
+	if deck == 14:
+		return _solids
+	if not _remote_solids.has(deck):
+		var boxes: Array[AABB] = []
+		for solid: ShipGeometry.SolidSpec in ShipGeometry.deck_static_solids(_layout, deck):
+			var box := ShipGeometry.box_aabb(solid)
+			boxes.append(AABB(box.min_corner(), box.max_corner() - box.min_corner()))
+		_remote_solids[deck] = boxes
+	return _remote_solids[deck]
+
+func process(plane: InputPlane, context: Context, requested: StringName = &"") -> StringName:
 	if not plane.has_press(InputPlane.Buttons.INTERACT):
 		return &""
-	var solids := _solids
-	if context.deck != 14:
-		if not _remote_solids.has(context.deck):
-			var boxes: Array[AABB] = []
-			for solid: ShipGeometry.SolidSpec in ShipGeometry.deck_static_solids(_layout, context.deck):
-				var box := ShipGeometry.box_aabb(solid)
-				boxes.append(AABB(box.min_corner(), box.max_corner() - box.min_corner()))
-			_remote_solids[context.deck] = boxes
-		solids = _remote_solids[context.deck]
-	for target: Target in eligible(_targets, context, solids):
+	for target: Target in eligible(_targets, context, selection_solids(context.deck)):
+		if requested != &"" and target.id != requested:
+			continue
+		if requested != &"" and not target_visible(target, context.eye, context.game.collision):
+			continue
 		if _dispatch(target, context):
 			var consumed := plane.take_press(InputPlane.Buttons.INTERACT)
 			assert(consumed)

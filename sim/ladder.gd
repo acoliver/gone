@@ -6,6 +6,7 @@ extends RefCounted
 const TRANSFER_TICKS: int = 24
 const CLIMB_SPEED: float = 1.5
 const DISMOUNT_REACH: float = 0.15
+const LANDING_CAPTURE_REACH: float = 0.3
 const MOUNT_REACH: float = 2.2
 const FACING_DOT: float = 0.7071067811865476
 const HEIGHT_EPSILON: float = 1e-10
@@ -95,7 +96,7 @@ class State:
 			Ladder.Mode.MOUNTING, Ladder.Mode.DISMOUNTING:
 				result = _transfer(collision)
 			Ladder.Mode.CLIMBING:
-				var deck := _dismount_deck() if space else 0
+				var deck := dismount_deck() if space else 0
 				result = _begin_dismount(deck, collision) if deck != 0 else _climb(intent, collision)
 			_:
 				return Ladder._failure(Ladder.LadderError.Kind.WRONG_MODE)
@@ -149,18 +150,26 @@ class State:
 		var bottom := _layout.floor_y(_well.bottom_deck())
 		var velocity := ClimbEase.step(_velocity, intent, Ladder.CLIMB_SPEED)
 		var target_height := clampf(_height + _pending + velocity * Sim.LOGICAL_TICK_SECS, bottom, top)
+		var landing_height := _layout.floor_y(nearest_landing())
+		var capturing := intent == 0.0 and absf(_height + _pending - landing_height) <= Ladder.LANDING_CAPTURE_REACH
+		if capturing:
+			# A released key near a deck settles level instead of coasting out of Space's window.
+			target_height = ClimbEase.approach_height(_height + _pending, landing_height, Ladder.CLIMB_SPEED)
+			if absf(target_height - landing_height) <= Controller.PENETRATION_TOLERANCE:
+				target_height = landing_height
+			velocity = 0.0 if target_height == landing_height else (target_height - _height - _pending) / Sim.LOGICAL_TICK_SECS
 		if absf(target_height - top) < Ladder.HEIGHT_EPSILON:
 			target_height = top
 		elif absf(target_height - bottom) < Ladder.HEIGHT_EPSILON:
 			target_height = bottom
 		var travel := target_height - _height
 		var endpoint := target_height == top or target_height == bottom
-		if absf(travel) <= Controller.PENETRATION_TOLERANCE and not endpoint:
+		if absf(travel) <= Controller.PENETRATION_TOLERANCE and not endpoint and not capturing:
 			_pending = travel
 			_velocity = velocity
 			return _success()
 		var target := _pose(target_height)
-		var error := _sweep(_capsule, target, collision, endpoint)
+		var error := _sweep(_capsule, target, collision, endpoint or capturing)
 		if error != null:
 			return Ladder._with_error(error)
 		var events: Array[Ladder.Event] = []
@@ -177,7 +186,7 @@ class State:
 		_velocity = 0.0 if endpoint else velocity
 		return _success(events)
 
-	func _dismount_deck() -> int:
+	func dismount_deck() -> int:
 		var nearest := nearest_landing()
 		if absf(_height - _layout.floor_y(nearest)) <= Ladder.DISMOUNT_REACH + Ladder.HEIGHT_EPSILON:
 			return nearest

@@ -23,6 +23,12 @@ func test_ladder_exposes_accepted_velocity_after_variable_zero_input_holds() -> 
 		state.end_tick()
 	var expected := 0.0
 	var alpha := 1.0 - exp(-log(20.0) / 9.0)
+	# Measure free coasting away from the landing capture band.
+	for _tick: int in range(80):
+		assert_true(state.step(1, false, collision).is_ok(), "reach midshaft")
+		state.end_tick()
+		expected += (1.5 - expected) * alpha
+	assert_true(state.height() > Ladder.LANDING_CAPTURE_REACH, "coast fixture is outside landing capture")
 	for held: int in [1, 2, 5, 11]:
 		assert_true(state.step(1, false, collision).is_ok(), "accelerate")
 		state.end_tick()

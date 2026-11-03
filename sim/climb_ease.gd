@@ -11,3 +11,7 @@ static func step(velocity: float, intent: float, speed: float) -> float:
 static func intent_for_velocity(velocity: float, desired: float, speed: float) -> float:
 	var alpha := _alpha()
 	return clampf((desired - velocity * (1 - alpha)) / (speed * alpha), -1, 1)
+
+static func approach_height(height: float, target: float, speed: float) -> float:
+	var max_travel := speed * Sim.LOGICAL_TICK_SECS
+	return height + clampf((target - height) * _alpha(), -max_travel, max_travel)
