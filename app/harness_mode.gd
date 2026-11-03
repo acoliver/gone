@@ -322,6 +322,9 @@ func drive_tick() -> void:
 		return
 	if step.climb != null:
 		adapter.climb(step.climb)
+	if step.objective != null:
+		adapter.objective(step.objective)
+		report.add_event({"kind": "input", "tick": tick, "frame": frame, "what": "objective %s" % step.objective.target_id})
 	game_step.advance()
 	observe_phase()
 	tick += 1

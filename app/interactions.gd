@@ -87,19 +87,54 @@ static func context_for(game: Game, motion: PlayerMotion, forward: Vector3 = Vec
 		context.foot = motion.capsule().foot
 	return context
 
-func process(plane: InputPlane, context: Context) -> StringName:
+func target_for(id: StringName, deck: int, foot: Vector3) -> Target:
+	for target: Target in _targets:
+		if target.id == id:
+			return target
+	# A door id in a script chooses the face on the approach side.
+	for target: Target in _targets:
+		if target.door_id == id and target.deck == deck and (target.frame.affine_inverse() * foot).z > 0:
+			return target
+	if id in _layout.well_ids():
+		var well := _layout.well(id)
+		var target := Target.new()
+		target.id = id
+		target.kind = Kind.LADDER
+		target.policy = Selection.FACE_RAY
+		target.deck = deck
+		target.center = well.climb_line().origin
+		target.center.y = _layout.floor_y(deck)
+		target.frame = Transform3D(Basis(), target.center)
+		target.size = well.doorway_size()
+		return target
+	return null
+
+func targets_on_deck(deck: int) -> Array[Target]:
+	var result: Array[Target] = []
+	for target: Target in _targets:
+		if target.deck == deck:
+			result.append(target)
+	for id: StringName in _layout.well_ids():
+		result.append(target_for(id, deck, Vector3.ZERO))
+	return result
+
+func selection_solids(deck: int) -> Array[AABB]:
+	if deck == 14:
+		return _solids
+	if not _remote_solids.has(deck):
+		var boxes: Array[AABB] = []
+		for solid: ShipGeometry.SolidSpec in ShipGeometry.deck_static_solids(_layout, deck):
+			var box := ShipGeometry.box_aabb(solid)
+			boxes.append(AABB(box.min_corner(), box.max_corner() - box.min_corner()))
+		_remote_solids[deck] = boxes
+	return _remote_solids[deck]
+
+func process(plane: InputPlane, context: Context, requested: StringName = &"") -> StringName:
 	if not plane.has_press(InputPlane.Buttons.INTERACT):
 		return &""
-	var solids := _solids
-	if context.deck != 14:
-		if not _remote_solids.has(context.deck):
-			var boxes: Array[AABB] = []
-			for solid: ShipGeometry.SolidSpec in ShipGeometry.deck_static_solids(_layout, context.deck):
-				var box := ShipGeometry.box_aabb(solid)
-				boxes.append(AABB(box.min_corner(), box.max_corner() - box.min_corner()))
-			_remote_solids[context.deck] = boxes
-		solids = _remote_solids[context.deck]
-	for target: Target in eligible(_targets, context, solids):
+	for target: Target in eligible(_targets, context, selection_solids(context.deck)):
+		if requested != &"" and target.id != requested:
+			continue
 		if _dispatch(target, context):
 			var consumed := plane.take_press(InputPlane.Buttons.INTERACT)
 			assert(consumed)

@@ -33,6 +33,8 @@ func step(offered: Array = []) -> void:
 	player.adapter.hold(input.movement.x, input.movement.y)
 	if input.climb != null:
 		player.adapter.climb(input.climb)
+	if input.objective != null:
+		player.adapter.objective(input.objective)
 	stepper.advance()
 	assert(player.motion.failure().is_empty(), player.motion.failure())
 	tick += 1

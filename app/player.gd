@@ -32,6 +32,9 @@ var _presented_look := Vector2.ZERO
 var _mouse_pixels: Vector2 = Vector2.ZERO
 var _device_actions: bool = false
 var _device_released_at: Dictionary = {}
+var click_navigation := ClickNavigation.new()
+var _tab_released_cursor: bool = false
+var indicators: ClickIndicators
 
 const DEVICE_RELEASE_GRACE_USEC := 60000
 const DEVICE_HELD_ACTIONS := ["move_forward", "move_back", "move_left", "move_right",
@@ -65,6 +68,13 @@ func _ready() -> void:
 	_device_actions = InputMap.has_action("move_forward")
 	if not scripted:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	if is_inside_tree():
+		var layer := CanvasLayer.new()
+		layer.layer = 100
+		indicators = ClickIndicators.new()
+		indicators.player = self
+		layer.add_child(indicators)
+		add_child(layer)
 
 func look_angles() -> Vector2:
 	return Vector2(_look_yaw, _look_pitch)
@@ -79,6 +89,16 @@ func _input(event: InputEvent) -> void:
 	if scripted or not _device_actions:
 		return
 	if event is InputEventKey:
+		if event.is_action("release_cursor") and not event.echo:
+			if event.is_pressed():
+				_tab_released_cursor = true
+				_set_mouse_capture(false)
+			elif _tab_released_cursor:
+				_tab_released_cursor = false
+				_set_mouse_capture(true)
+		if event.physical_keycode == KEY_ESCAPE and event.is_pressed():
+			_tab_released_cursor = false
+			_set_mouse_capture(false)
 		for action: String in DEVICE_HELD_ACTIONS:
 			if not event.is_action(action):
 				continue
@@ -90,7 +110,15 @@ func _input(event: InputEvent) -> void:
 func _notification(what: int) -> void:
 	if what == MainLoop.NOTIFICATION_APPLICATION_FOCUS_OUT:
 		_device_released_at.clear()
-		_mouse_pixels = Vector2.ZERO
+		_tab_released_cursor = false
+		if not scripted:
+			_set_mouse_capture(false)
+
+func _set_mouse_capture(captured: bool) -> void:
+	_mouse_pixels = Vector2.ZERO
+	if plane != null:
+		plane.take_look()
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED if captured else Input.MOUSE_MODE_VISIBLE
 
 func _device_strength(action: String, now_usec: int) -> float:
 	var strength := Input.get_action_strength(action)
@@ -108,11 +136,15 @@ func _device_axis(negative: String, positive: String, now_usec: int) -> float:
 	return _device_strength(positive, now_usec) - _device_strength(negative, now_usec)
 
 func _unhandled_input(event: InputEvent) -> void:
-	if scripted or Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
+	if scripted:
 		return
-	var motion_event := event as InputEventMouseMotion
-	if motion_event != null:
-		_mouse_pixels += motion_event.relative
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed and not event.canceled:
+		var pixel: Vector2 = get_viewport().get_visible_rect().size * 0.5 if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED else event.position
+		var objective := ClickPicker.pick(camera.project_ray_origin(pixel), camera.project_ray_normal(pixel), game, motion, interactions)
+		if objective != null:
+			plane.offer_objective(objective)
+	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		_mouse_pixels += event.relative
 
 func step() -> void:
 	_previous_eye = motion.eye(game)
@@ -121,10 +153,13 @@ func step() -> void:
 	if scripted and adapter != null:
 		adapter.offer_tick(plane)
 	_integrate_look()
+	var objective_look := click_navigation.prepare(plane, game, motion, interactions, look_angles())
+	_look_yaw = objective_look.x
+	_look_pitch = objective_look.y
 	var facing := sim_forward()
 	motion.advance(plane, game, _look_yaw, Sim.LOGICAL_TICK_SECS, facing)
 	var context := Interactions.context_for(game, motion, facing)
-	var selected := interactions.process(plane, context)
+	var selected := interactions.process(plane, context, click_navigation.interaction_id)
 	if selected == &"D14-BAY-ROD" and rod != null:
 		rod.pick_up()
 	if not motion.failure().is_empty():
@@ -171,6 +206,9 @@ func _collect_device_input(delta: float) -> void:
 		plane.offer_climb(climb)
 	else:
 		plane.offer_movement(-_device_axis("move_back", "move_forward", now_usec), _device_axis("move_left", "move_right", now_usec))
+		for action: String in ["move_forward", "move_back", "move_left", "move_right"]:
+			if _device_strength(action, now_usec) != 0:
+				plane.offer_movement_press()
 	if Input.is_action_just_pressed("activate"):
 		plane.offer_press(InputPlane.Buttons.ACTIVATE)
 	if Input.is_action_just_pressed("interact"):
@@ -184,11 +222,10 @@ func _collect_device_input(delta: float) -> void:
 		plane.offer_look(-turn * InputPlane.TURN_SPEED * delta,
 			pitch * InputPlane.PITCH_SPEED * delta)
 
-## Look is armed by the phase gate (from AwakeInPod on) and the cursor
-## gate (a captured cursor in device mode; always in scripted mode).
+## The phase gates all look. Capture gates mouse pixels at their producer,
+## leaving keyboard look available with a released cursor.
 func _integrate_look() -> void:
-	var cursor_armed := scripted or Input.mouse_mode == Input.MOUSE_MODE_CAPTURED
-	if not cursor_armed or not game.phase.look_allowed():
+	if not game.phase.look_allowed():
 		return
 	var delta := plane.take_look()
 	var angles := InputPlane.integrate_look(_look_yaw, _look_pitch, delta)

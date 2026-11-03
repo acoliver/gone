@@ -18,6 +18,7 @@ var _failure: String = ""
 var hallway_switch_flips: int = 0
 var console_presses: int = 0
 var rod_carried: bool = false
+var objectives := ClickObjective.Follower.new()
 
 func state() -> int:
 	if _controller != null:
@@ -103,6 +104,11 @@ func _advance_walk(plane: InputPlane, game: Game, yaw: float, dt: float, facing:
 		record_failure("the walk state disagrees with the sim phase")
 		return
 	var movement := plane.take_movement()
+	if plane.movement_pressed():
+		objectives.cancel()
+	if not mounted():
+		movement = objectives.movement(capsule().foot, yaw, movement)
+	var before := capsule().foot
 	var intent := Walk.MoveIntent.try_new(yaw, movement.x, movement.y)
 	if not intent.is_ok():
 		record_failure("walk rejected: " + intent.error._to_string())
@@ -125,6 +131,7 @@ func _advance_walk(plane: InputPlane, game: Game, yaw: float, dt: float, facing:
 		record_failure("locomotion rejected: %d" % result.error.kind)
 		return
 	ladder_events = result.events
+	objectives.observe(before, capsule().foot)
 
 func mounted() -> bool:
 	return locomotion != null and locomotion.mode() != Locomotion.Mode.WALK

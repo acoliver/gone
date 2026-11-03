@@ -251,10 +251,10 @@ func test_letters_and_mouse_deltas_sum_in_one_tick() -> void:
 	_near_float(plane.take_look().x, 0.0, "the merged yaw is taken once")
 	_near_float(plane.take_look().y, 0.0, "both axes drain together")
 
-func test_left_click_and_space_are_the_act_keys() -> void:
-	# Issue #55: Space and a left click are the act keys; E is not.
-	assert_true(InputMap.event_is_action(_click(), "interact"), "a left click is an interact")
-	assert_true(InputMap.event_is_action(_click(), "activate"), "a left click is an activate")
+func test_space_acts_and_left_click_has_no_direct_action_binding() -> void:
+	assert_false(InputMap.event_is_action(_click(), "interact"), "click objectives cannot double-fire interact")
+	assert_false(InputMap.event_is_action(_click(), "activate"), "click objectives cannot start get-up")
+	assert_true(InputMap.event_is_action(_key(KEY_TAB), "release_cursor"), "Tab releases the cursor")
 	assert_true(InputMap.event_is_action(_key(KEY_SPACE), "activate"), "Space activates")
 	assert_true(InputMap.event_is_action(_key(KEY_SPACE), "interact"), "Space interacts")
 	for action: String in ["interact", "activate"]:

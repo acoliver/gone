@@ -31,6 +31,22 @@ var _forward: float = 0.0
 var _strafe: float = 0.0
 var _climb: Variant = null
 var _edges: Array[int] = []
+var _objective: ClickObjective
+var _movement_pressed: bool = false
+
+func offer_objective(value: ClickObjective) -> void:
+	_objective = value.copy()
+
+func take_objective() -> ClickObjective:
+	var taken := _objective
+	_objective = null
+	return taken
+
+func movement_pressed() -> bool:
+	return _movement_pressed
+
+func offer_movement_press() -> void:
+	_movement_pressed = true
 
 func offer_climb(value: float) -> void:
 	_climb = value if _climb == null else _climb + value
@@ -51,6 +67,7 @@ func offer_look_pixels(pixels: Vector2) -> void:
 func offer_movement(forward: float, strafe: float) -> void:
 	_forward += forward
 	_strafe += strafe
+	_movement_pressed = _movement_pressed or forward != 0 or strafe != 0
 
 func offer_press(button: int) -> void:
 	_edges.append(button)
@@ -89,6 +106,8 @@ func end_frame() -> void:
 	_strafe = 0.0
 	_climb = null
 	_edges.clear()
+	_objective = null
+	_movement_pressed = false
 
 ## Pure look integration over a plane delta in radians: pitch clamps to
 ## the vertical stop, yaw wraps into (-PI, PI].
@@ -115,6 +134,10 @@ class ScriptedAdapter:
 	var _pending_look: Vector2 = Vector2.ZERO
 	var _held: Vector2 = Vector2.ZERO
 	var _pending_climb: Variant = null
+	var _pending_objective: ClickObjective
+
+	func objective(value: ClickObjective) -> void:
+		_pending_objective = value.copy()
 
 	func climb(value: float) -> void:
 		_pending_climb = value
@@ -137,6 +160,9 @@ class ScriptedAdapter:
 	## Offer this fixed tick's scripted input onto the shared plane,
 	## draining the tick's queue.
 	func offer_tick(plane: InputPlane) -> void:
+		if _pending_objective != null:
+			plane.offer_objective(_pending_objective)
+			_pending_objective = null
 		for button: int in _pending_edges:
 			plane.offer_press(button)
 		_pending_edges.clear()

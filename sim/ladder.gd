@@ -96,7 +96,7 @@ class State:
 			Ladder.Mode.MOUNTING, Ladder.Mode.DISMOUNTING:
 				result = _transfer(collision)
 			Ladder.Mode.CLIMBING:
-				var deck := _dismount_deck() if space else 0
+				var deck := dismount_deck() if space else 0
 				result = _begin_dismount(deck, collision) if deck != 0 else _climb(intent, collision)
 			_:
 				return Ladder._failure(Ladder.LadderError.Kind.WRONG_MODE)
@@ -186,7 +186,7 @@ class State:
 		_velocity = 0.0 if endpoint else velocity
 		return _success(events)
 
-	func _dismount_deck() -> int:
+	func dismount_deck() -> int:
 		var nearest := nearest_landing()
 		if absf(_height - _layout.floor_y(nearest)) <= Ladder.DISMOUNT_REACH + Ladder.HEIGHT_EPSILON:
 			return nearest
