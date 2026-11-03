@@ -301,13 +301,24 @@ Before implementation, retain a baseline from `main` for `scenarios/perf-smoke.j
 
 ## 8. Audio
 
-Add `app/door_audio.gd`, `class_name DoorAudio`, subscribed to accepted door events after the logical step. Emit creak/grind for MOVED, strained clunk for STALLED and wheel REFUSED, thud for plain-door REFUSED, and heavier release once on entering OPENING after final crank. A generic event's selected face frame supplies the AudioStreamPlayer3D position. Do not trigger sound by observing a rendered angle delta: zero-progress presses need sound and scene eviction must not duplicate events.
+`app/door_audio.gd`, `class_name DoorAudio`, consumes accepted door events after each logical step in production. MOVED selects creak/grind, STALLED and wheel REFUSED select strained clunks, and plain-door REFUSED selects a thud. RELEASED starts the heavier clank on entering OPENING; OPENED is silent. The selected face frame supplies the AudioStreamPlayer3D position at half the aperture height. Audio never observes rendered angle changes, so stalled presses sound and scene eviction cannot replay events. Unrouted input produces no door event and stays silent.
 
-Use a small scene-level voice pool, not an audio player on every door. On pool exhaustion replace the oldest non-release effect, with release taking priority; this only limits presentation, never consumes another random resistance value or changes attempt timing. Variant index comes from a separate stable hash of door id and attempt index. Keep wake, smoke and Spanish voice playback paths and completion timing untouched.
+The scene-level pool has six voices, covering all six openable doors, and remains outside streamed room nodes. On exhaustion it replaces the oldest non-release effect. If every voice is a protected release, incidental effects are dropped. A completion signal frees each voice; no later event can cut off a release. The independent event sequence cursor suppresses duplicate batches. Variants use the event's existing stable door-id/attempt hash modulo family size, without drawing resistance randomness. Grind pitch interpolates from 1.4 for a tiny turn to 0.8 for a turn of 90 degrees or more, extending larger turns without trimming off the faded tail. Players use the existing Master bus, -5 dB gain, 2 m unit distance and 24 m maximum distance. Wake, smoke and Spanish voice paths retain their own players and completion timing. Harness lanes remain audio-free.
 
-Add tracked `tools/generate_hatch_audio.py`, using Python's standard library (`wave`, `struct`, `math`, a specified integer PRNG). It generates original mono 48 kHz PCM16 WAVs under `assets/audio/hatch/`: four creak/grind variants, one stalled clunk, one refusal wheel clunk, one plain-door thud and one release. Use seeded filtered noise, inharmonic decaying resonances and brief impact excitation, with fade-in/out and DC removal. Normalize each completed waveform to a -3 dBFS peak; prohibit clipping, nonfinite values, empty audio and silent output. No third-party recordings or model services.
+`tools/generate_hatch_audio.py` uses only Python's standard library (`wave`, `struct`, `math`, xorshift32). It generates 11 original mono 48 kHz PCM16 WAVs under `assets/audio/hatch/`: four creak/grind variants, three stalled clunks, one refusal wheel clunk, two plain-door thuds and one release. Recipes combine seeded filtered noise, irregular friction excitation and inharmonic decaying resonances. An 8 ms fade-in, 35 ms fade-out and window-weighted DC removal precede normalization to a -3 dBFS peak. The effects span 0.55 to 1.04 seconds, except the 1.85-second release. Even at the slowest grind pitch, playback stays below 1.5 seconds. No third-party recordings or model services are used.
 
-Track a manifest containing synthesis version, per-file seed, sample count, sample rate and SHA256. `--check` synthesizes in memory and compares exact PCM/headers with tracked assets without overwriting; explicit generation writes only the declared output files. Python tests cover reproducibility, WAV format, expected duration, headroom and rejection paths. Import with loop, trim and normalization disabled. A windowed audio test verifies event-to-stream selection and no duplicate release. Andrew's listening judgment remains separate from these signal checks.
+The tracked manifest contains synthesis version, per-file seed, sample count, sample rate and SHA256. Independent hashes in `tests/test_hatch_audio.py` pin the WAV bytes. `--check` synthesizes in memory and compares exact PCM/headers and manifest without overwriting. Generation writes only the declared effects and manifest. Import settings disable compression, loop, trim and normalization. Python tests cover reproducibility, format, duration, headroom, quantized DC, fades and rejection paths. The separate windowed test checks production wiring, stream selection, duplicate suppression, release protection and natural completion. These checks do not establish sound quality; Andrew judges the audition by ear.
+
+Commands from the repository root:
+
+```sh
+python3 tools/generate_hatch_audio.py --audition tmp/connectors/s12-audition
+python3 tools/generate_hatch_audio.py --check
+python3 -m unittest discover -s tests -p test_hatch_audio.py
+godot --path . -s tests/door_audio_integration.gd
+```
+
+The audition directory contains all 11 effects and `demo-20s.wav`: eight presses with six turns and two stalls, a release, then a locked-wheel attempt and a plain-door attempt. The demo uses the same pitch range as runtime and leaves space between attempts.
 
 ## 9. One logical tick and harness evidence
 

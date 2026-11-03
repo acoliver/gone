@@ -58,7 +58,7 @@ func _run() -> void:
 		_fail("production PlayerMotion reaches standing before the hallway event")
 		return
 	# Exercise the production rod pickup and the real opening sequence.
-	var walk_state: Walk.WalkState = game_motion.get("_walk")
+	var walk_state: Walk.WalkState = game_motion.locomotion.get("_walk")
 	var capsule: Resolve.Capsule = walk_state.get("_capsule")
 	var rod_center: Vector2 = Rod.floor_center()
 	capsule.foot.x = rod_center.x

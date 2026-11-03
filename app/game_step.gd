@@ -11,6 +11,7 @@ var sampled_eye := Vector3.ZERO
 var door_events: Array[Doors.Event] = []
 var door_views: Array[DoorView] = []
 var ship_scene: ShipScene
+var door_audio: DoorAudio
 
 func _init(p_game: Game, p_player: Player = null) -> void:
 	game = p_game
@@ -42,5 +43,7 @@ func advance(paused: bool = false) -> void:
 	door_events = game.doors.events()
 	for view: DoorView in door_views:
 		view.present(game.doors.snapshot(view.door_id()))
+	if door_audio != null:
+		door_audio.consume(door_events)
 	if player != null:
 		player.present()

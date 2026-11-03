@@ -24,6 +24,7 @@ var wake_present: WakePresent
 var smoke_symptoms: SmokeSymptoms
 var smoke_audio: AudioStreamPlayer
 var voice_presentation: VoicePresentation
+var door_audio: DoorAudio
 var _smoke_audio_queue: Array[SmokeSymptoms.Event] = []
 var _smoke_audio_in_flight := false
 var _smoke_silence_until_usec := 0
@@ -41,7 +42,10 @@ func _ready() -> void:
 	_add_wake_presentation()
 	_add_wake_audio()
 	_add_smoke_symptoms()
+	door_audio = DoorAudio.build(game.layout)
+	add_child(door_audio)
 	step = GameStep.new(game, player)
+	step.door_audio = door_audio
 	step.door_views = ship.door_views
 	step.ship_scene = ship
 	step.smoke = smoke_symptoms

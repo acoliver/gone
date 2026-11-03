@@ -1,0 +1,87 @@
+{
+  "version": "hatch-procedural-v1",
+  "prng": "xorshift32",
+  "sample_rate": 48000,
+  "channels": 1,
+  "format": "PCM16LE",
+  "peak_dbfs": -3,
+  "files": [
+    {
+      "file": "grind-01.wav",
+      "family": "grind",
+      "seed": 1640278273,
+      "frames": 43200,
+      "sha256": "b9c015d7b2d7f0383e6f6b7491b8b52e38ea26791ad948996c7fbd93ffdda6d9"
+    },
+    {
+      "file": "grind-02.wav",
+      "family": "grind",
+      "seed": 1640278274,
+      "frames": 48000,
+      "sha256": "07a505651e079e63492fe04ca50859d9301d7add7446f3c6151ae37023093f00"
+    },
+    {
+      "file": "grind-03.wav",
+      "family": "grind",
+      "seed": 1640278275,
+      "frames": 46080,
+      "sha256": "ae726b00cb2c0510a2194c94909ab91d7b2b6aa206f402b23d8cbf219c6841bb"
+    },
+    {
+      "file": "grind-04.wav",
+      "family": "grind",
+      "seed": 1640278276,
+      "frames": 49920,
+      "sha256": "563d9b21b07f128060ebd8838eab510653e4372d05f5d2f17a8da0defb92c86e"
+    },
+    {
+      "file": "stall-01.wav",
+      "family": "stall",
+      "seed": 758648833,
+      "frames": 26400,
+      "sha256": "9d3fb909aa8363cb48fea37ae43dbe3b92c1e227b29d9cd85923dff73647f566"
+    },
+    {
+      "file": "stall-02.wav",
+      "family": "stall",
+      "seed": 758648834,
+      "frames": 29760,
+      "sha256": "3722c81371b9941c74a07b891fc8e7dd077b13404f96859b30646c967630c6cc"
+    },
+    {
+      "file": "stall-03.wav",
+      "family": "stall",
+      "seed": 758648835,
+      "frames": 27840,
+      "sha256": "04b386e38e10d0e4fd0b1742f492651ae84ec6552e32ce3b1efbf849d441d016"
+    },
+    {
+      "file": "wheel-refused-01.wav",
+      "family": "wheel-refused",
+      "seed": 1940000513,
+      "frames": 34560,
+      "sha256": "463ffe6d5dadf0a87f3071626d05e55a69df2a65aebe3a7b60d40ee0ececd16f"
+    },
+    {
+      "file": "thud-01.wav",
+      "family": "thud",
+      "seed": 2668763649,
+      "frames": 30720,
+      "sha256": "ea246b2e369a1183cc714ef7e3954b7a6b87f9ff4a9762d36e3a0cea80d433db"
+    },
+    {
+      "file": "thud-02.wav",
+      "family": "thud",
+      "seed": 2668763650,
+      "frames": 36480,
+      "sha256": "c36d988451afb6762b0fb12f95b182658a0c523e5693dc57b861e3029f8649ee"
+    },
+    {
+      "file": "release-01.wav",
+      "family": "release",
+      "seed": 2336431361,
+      "frames": 88800,
+      "sha256": "c7b1582928f382d9b25600d5399a8d5a557b7e2ba1c7cb49108b583fde1770bb"
+    }
+  ]
+}
