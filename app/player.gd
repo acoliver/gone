@@ -31,6 +31,11 @@ var _previous_look := Vector2.ZERO
 var _presented_look := Vector2.ZERO
 var _mouse_pixels: Vector2 = Vector2.ZERO
 var _device_actions: bool = false
+var _device_released_at: Dictionary = {}
+
+const DEVICE_RELEASE_GRACE_USEC := 60000
+const DEVICE_HELD_ACTIONS := ["move_forward", "move_back", "move_left", "move_right",
+	"look_left", "look_right", "look_up", "look_down", "climb_up", "climb_down"]
 
 static func build(p_game: Game, p_hatch: Node3D) -> Player:
 	var player := Player.new()
@@ -66,6 +71,41 @@ func look_angles() -> Vector2:
 
 func sim_forward() -> Vector3:
 	return -Basis.from_euler(Vector3(_look_pitch, 0, 0)).z.rotated(Vector3.UP, _look_yaw)
+
+func _device_time_usec() -> int:
+	return Time.get_ticks_usec()
+
+func _input(event: InputEvent) -> void:
+	if scripted or not _device_actions:
+		return
+	if event is InputEventKey:
+		for action: String in DEVICE_HELD_ACTIONS:
+			if not event.is_action(action):
+				continue
+			if event.is_pressed():
+				_device_released_at.erase(action)
+			else:
+				_device_released_at[action] = _device_time_usec()
+
+func _notification(what: int) -> void:
+	if what == MainLoop.NOTIFICATION_APPLICATION_FOCUS_OUT:
+		_device_released_at.clear()
+		_mouse_pixels = Vector2.ZERO
+
+func _device_strength(action: String, now_usec: int) -> float:
+	var strength := Input.get_action_strength(action)
+	if strength != 0.0:
+		return strength
+	# Remote key repeats can release briefly between presses. Delay only
+	# device releases; the sim and scripted input retain exact tick edges.
+	if _device_released_at.has(action):
+		if now_usec - int(_device_released_at[action]) < DEVICE_RELEASE_GRACE_USEC:
+			return 1.0
+		_device_released_at.erase(action)
+	return 0.0
+
+func _device_axis(negative: String, positive: String, now_usec: int) -> float:
+	return _device_strength(positive, now_usec) - _device_strength(negative, now_usec)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if scripted or Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
@@ -120,16 +160,17 @@ func _process(_delta: float) -> void:
 func _collect_device_input(delta: float) -> void:
 	if scripted or not _device_actions:
 		return
+	var now_usec := _device_time_usec()
 	# The rig's camera looks along Godot's -Z at the yaw while the sim's
 	# walk frame steps along +Z, so the forward key offers the negative
 	# sim axis (strafe already shares signs between the frames): forward
 	# walks where the player looks, bridged like the look channel's
 	# -turn below. The scripted lane keeps the sim frame's signs.
 	if motion.mounted():
-		var climb := clampf(Input.get_axis("climb_down", "climb_up") + Input.get_axis("move_back", "move_forward"), -1, 1)
+		var climb := clampf(_device_axis("climb_down", "climb_up", now_usec) + _device_axis("move_back", "move_forward", now_usec), -1, 1)
 		plane.offer_climb(climb)
 	else:
-		plane.offer_movement(-Input.get_axis("move_back", "move_forward"), Input.get_axis("move_left", "move_right"))
+		plane.offer_movement(-_device_axis("move_back", "move_forward", now_usec), _device_axis("move_left", "move_right", now_usec))
 	if Input.is_action_just_pressed("activate"):
 		plane.offer_press(InputPlane.Buttons.ACTIVATE)
 	if Input.is_action_just_pressed("interact"):
@@ -137,8 +178,8 @@ func _collect_device_input(delta: float) -> void:
 	if _mouse_pixels != Vector2.ZERO:
 		plane.offer_look_pixels(_mouse_pixels)
 		_mouse_pixels = Vector2.ZERO
-	var turn := Input.get_axis("look_left", "look_right")
-	var pitch := 0.0 if motion.mounted() else Input.get_axis("look_down", "look_up")
+	var turn := _device_axis("look_left", "look_right", now_usec)
+	var pitch := 0.0 if motion.mounted() else _device_axis("look_down", "look_up", now_usec)
 	if turn != 0.0 or pitch != 0.0:
 		plane.offer_look(-turn * InputPlane.TURN_SPEED * delta,
 			pitch * InputPlane.PITCH_SPEED * delta)
