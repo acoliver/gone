@@ -49,7 +49,6 @@ const ROOM_SHELL_EAST_WALL_INDEX = ShipGeometry.ROOM_SHELL_EAST_WALL_INDEX
 const SIDE_DOOR_WIDTH = ShipGeometry.SIDE_DOOR_WIDTH
 const SIDE_DOOR_HEIGHT = ShipGeometry.SIDE_DOOR_HEIGHT
 const SIDE_DOOR_THICKNESS = ShipGeometry.SIDE_DOOR_THICKNESS
-const SIDE_DOOR_STATIONS_X = ShipGeometry.SIDE_DOOR_STATIONS_X
 ## The emergency-power room entrance (issue #59 proper): the last door
 ## on the left walking out of the stasis room — the north (-Z) wall,
 ## pierced here. The PowerRoom module authors the door's leaf, its
@@ -136,9 +135,6 @@ static func hallway_solids() -> Array[Placement.SolidPlacement]:
 static func side_door_solids() -> Array[Placement.SolidPlacement]:
 	return ShipGeometry.side_door_solids()
 
-static func _side_door(station_x: float, side: float) -> Placement.SolidPlacement:
-	return ShipGeometry._side_door(station_x, side)
-
 ## The switch's floor-plan act center: where the reach test measures.
 static func switch_act_center() -> Vector3:
 	return Vector3(SWITCH_PLATE_CENTER.x, 0.0, SWITCH_PLATE_CENTER.z)
@@ -195,12 +191,13 @@ static func build(game: Game) -> Hallway:
 	var doors := Node3D.new()
 	doors.name = "HallSideDoors"
 	var door_material := _flat_grey(SIDE_DOOR_SHADE)
-	var placements := side_door_solids()
-	var ids := game.layout.section(&"D14-S-041").side_door_ids()
-	assert(placements.size() == ids.size(), "each existing side leaf has a layout id")
-	for index: int in range(placements.size()):
-		var leaf := _box_instance(placements[index], door_material)
-		hallway.side_leaves[ids[index]] = leaf
+	var by_solid_id: Dictionary = {}
+	for id: StringName in game.layout.section(&"D14-S-041").side_door_ids():
+		by_solid_id[StringName("%s/LEAF" % id)] = id
+	for solid: ShipGeometry.SolidSpec in ShipGeometry.side_door_solids(game.layout):
+		var leaf := _box_instance(solid, door_material)
+		leaf.set_meta(&"solid_id", solid.id)
+		hallway.side_leaves[by_solid_id[solid.id]] = leaf
 		doors.add_child(leaf)
 	hallway.add_child(doors)
 

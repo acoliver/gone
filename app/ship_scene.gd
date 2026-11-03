@@ -32,7 +32,7 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 	scene.bay_root = Node3D.new()
 	scene.bay_root.name = "BayRoot"
 	scene.bay_root.transform = game.layout.bay_to_world()
-	parent.add_child(scene.bay_root)
+	scene._add_opening_node(scene.bay_root)
 	scene.room = RoomGeometry.build(true)
 	scene.room.name = "RoomGeometry"
 	scene.bay_root.add_child(scene.room)
@@ -52,19 +52,19 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 	scene.lighting.remove_child(environment)
 	parent.add_child(environment)
 	scene.hallway = Hallway.build(game)
-	parent.add_child(scene.hallway)
+	scene._add_opening_node(scene.hallway)
 	scene.text_cache = ShipTextCache.new()
 	scene.text_cache.name = "ShipTextCache"
 	scene.text_cache.pair_ready.connect(scene._labels_ready)
 	parent.add_child(scene.text_cache)
 	scene.power_room = PowerRoom.build(game, scene.text_cache)
-	parent.add_child(scene.power_room)
+	scene._add_opening_node(scene.power_room)
 	scene.door_views.append(DoorView.adapter(game.layout.door(ShipLayout.BAY_DOOR_ID), scene.hatch.set_door_offset))
 	scene.door_views.append(DoorView.adapter(game.layout.door(ShipLayout.POWER_DOOR_ID), scene.power_room.set_door_offset))
 	for id: StringName in scene.hallway.side_leaves:
 		scene.door_views.append(DoorView.bind_leaf(game.layout.door(id), scene.hallway.side_leaves[id]))
 	for view: DoorView in scene.door_views:
-		parent.add_child(view)
+		scene._add_opening_node(view)
 		view.present(game.doors.snapshot(view.door_id()))
 	Lighting.isolate_lights(scene.bay_root, 1)
 	Lighting.isolate_lights(scene.hallway, 1)
@@ -73,7 +73,6 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 		scene._add_hatch(id)
 	scene.stream = ShipStream.build(scene, game, parent)
 	parent.add_child(scene.stream)
-	scene._remember_opening_nodes()
 	return scene
 
 func prepare_near(foot: Vector3) -> void:
@@ -93,18 +92,18 @@ func _prepare_connector(spec: ShipLayout.ConnectorSpec) -> void:
 		return
 	_prepared[spec.id()] = true
 	var connector := ShipConnector.build(_game.layout, spec)
-	_parent.add_child(connector)
+	_add_opening_node(connector)
 	var lift := _game.layout.door(_game.layout.lift(spec.lift_id()).door_id())
 	var lift_view := DoorView.bind_leaf(lift, connector.lift_leaf)
-	_parent.add_child(lift_view)
+	_add_opening_node(lift_view)
 	door_views.append(lift_view)
 	var number := 40 if spec.pitch_index() == 0 else 42
 	var section_spec := _game.layout.section(ShipLayout.section_id(14, number))
 	var section := ShipSection.build(_game.layout, section_spec)
-	_parent.add_child(section)
+	_add_opening_node(section)
 	for id: StringName in section.side_leaves:
 		var view := DoorView.bind_leaf(_game.layout.door(id), section.side_leaves[id])
-		_parent.add_child(view)
+		_add_opening_node(view)
 		door_views.append(view)
 	for id: StringName in section_spec.opening_ids():
 		if _game.layout.door(id).kind() == ShipLayout.DoorKind.HATCH:
@@ -114,7 +113,6 @@ func _prepare_connector(spec: ShipLayout.ConnectorSpec) -> void:
 	_spaces[spec.id()] = true
 	_spaces[section_spec.id()] = true
 	_sync_labels()
-	_remember_opening_nodes()
 	var lift_spec := _game.layout.lift(spec.lift_id())
 	_add_label(lift_spec.id(), spec.deck_number(), spec.id(), lift_spec.label_anchor(), lift_spec.label_size(), ShipText.deck_label(spec.deck_number()))
 
@@ -134,10 +132,11 @@ func _add_label(id: StringName, deck: int, space: StringName, frame: Transform3D
 	var state := _game.label_attention.register_face(id, deck, space, frame, size)
 	var label := ShipLabel.build(text_cache, text, id, frame, size, state)
 	label.tree_exiting.connect(_game.label_attention.unload.bind(id))
-	(_parent if parent == null else parent).add_child(label)
+	if parent == null:
+		_add_opening_node(label)
+	else:
+		parent.add_child(label)
 	labels[id] = label
-	if deck == 14:
-		_opening_nodes.append(label)
 	if not label.pair.ready():
 		_game.label_attention.unload(id)
 
@@ -171,13 +170,19 @@ func _add_hatch(id: StringName, parent: Node3D = null) -> void:
 	for face: StringName in spec.face_ids():
 		masks.append(Lighting.space_mask(_game.layout, _game.layout.face(face).source_space()))
 	var view := DoorView.build(spec, masks[0], masks[1])
-	(_parent if parent == null else parent).add_child(view)
+	if parent == null:
+		_add_opening_node(view)
+	else:
+		parent.add_child(view)
 	# The wall and frame recipes also supply the collision manifest.
 	for solid: ShipGeometry.SolidSpec in ShipGeometry.hatch_wall_solids(spec):
 		var wall := DoorView.split_surface(solid, spec.frame(), masks[0], masks[1])
 		wall.transform = spec.frame()
 		wall.set_meta(&"solid_id", solid.id)
-		(_parent if parent == null else parent).add_child(wall)
+		if parent == null:
+			_add_opening_node(wall)
+		else:
+			parent.add_child(wall)
 	door_views.append(view)
 	_hatches[id] = view
 	view.present(_game.doors.snapshot(id))
@@ -217,10 +222,9 @@ func remove_remote(spec: ShipLayout.ConnectorSpec, root: Node3D) -> void:
 			labels.erase(id)
 	root.free()
 
-func _remember_opening_nodes() -> void:
-	for node: Node in _parent.get_children():
-		if node is Node3D and not node is Player and not node is LadderShaft and not node.has_meta(&"remote_connector") and node not in _opening_nodes:
-			_opening_nodes.append(node)
+func _add_opening_node(node: Node3D) -> void:
+	_parent.add_child(node)
+	_opening_nodes.append(node)
 
 func set_opening_visible(show: bool) -> void:
 	for node: Node3D in _opening_nodes:

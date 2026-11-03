@@ -1,5 +1,30 @@
 extends SimTestCase
 
+func test_streaming_hides_only_explicit_d14_presenters() -> void:
+	var root := Node3D.new()
+	var global_before := Node3D.new()
+	root.add_child(global_before)
+	var game := Game.new(0)
+	var scene := ShipScene.build_into(root, game, false)
+	var global_after := DoorAudio.build(game.layout)
+	root.add_child(global_after)
+	scene.prepare_near(Vector3(26, 0.305, 0))
+	scene.prepare_near(Vector3(8, 0.305, 0))
+	scene.set_opening_visible(false)
+	assert_true(global_before.visible and global_before.process_mode == Node.PROCESS_MODE_INHERIT, "unowned preexisting nodes stay global")
+	assert_true(global_after.visible and global_after.process_mode == Node.PROCESS_MODE_INHERIT, "DoorAudio stays global after connector preparation")
+	assert_true(scene.text_cache.process_mode == Node.PROCESS_MODE_INHERIT, "shared text cache keeps running")
+	for node: Node3D in [scene.bay_root, scene.hallway, scene.power_room]:
+		assert_false(node.visible, "owned opening geometry is hidden")
+		assert_int_equal(node.process_mode, Node.PROCESS_MODE_DISABLED, "owned presentation is suspended")
+	for view: DoorView in scene.door_views:
+		assert_false(view.visible, "prepared D14 door view is owned")
+	for label: ShipLabel in scene.labels.values():
+		assert_false(label.visible, "prepared D14 label is owned")
+	scene.set_opening_visible(true)
+	assert_true(scene.hallway.visible and scene.hallway.process_mode == Node.PROCESS_MODE_INHERIT, "return restores owned presentation")
+	root.free()
+
 func test_opening_does_no_remote_work() -> void:
 	var root := Node3D.new()
 	var scene := ShipScene.build_into(root, Game.new(0), false)
