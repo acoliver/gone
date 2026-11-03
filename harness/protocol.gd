@@ -2,7 +2,7 @@ class_name HarnessProtocol
 extends RefCounted
 ## The harness wire protocol shared by the app lane (app/harness_mode.gd)
 ## and the runner (harness/run.gd), ported from the Rust harness module
-## (gone_app harness/{mod,frame,beat,report}.rs, PROTOCOL_VERSION 4).
+## (gone_app harness/{mod,frame,beat,report}.rs). Version 5 adds connector evidence.
 ## One truth for the frame-code chip encoding, the sha256 identity
 ## contract, the event schema's canonical order, and beat accounting.
 ## Pure logic: no Node or scene types, so tests cover it headless.
@@ -35,7 +35,7 @@ extends RefCounted
 ##   (sorted by relative path, each prefixed by its UTF-8 relative
 ##   path + one NUL byte + its exact file bytes).
 
-const PROTOCOL_VERSION: int = 4
+const PROTOCOL_VERSION: int = 5
 
 const ENV_HARNESS: String = "GONE_HARNESS"
 const ENV_SCENARIO: String = "GONE_SCENARIO"
@@ -209,20 +209,24 @@ static func event_order_key(event: Dictionary) -> Array:
 			return [0, 0, event.frame]
 		"room_check":
 			return [1, 0, event.frame]
-		"input", "beat", "wake_phase", "player_yaw", "player_position", "door_open", "power_door", "hallway", "rod_pickup", "console", "power", "calibration":
+		"input", "beat", "wake_phase", "player_yaw", "player_position", "door_open", "power_door", "hallway", "rod_pickup", "console", "power", "calibration", "logical_tick", "door_attempt", "door_release", "door_opened", "portal_crossed", "ladder_mount", "landing", "ladder_dismount", "label", "residency":
 			return [1, event.tick, event.frame]
 		_:
 			return [2, 9223372036854775807, event.frame]
 
 static func sort_events(events: Array) -> void:
-	events.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
-		var key_a := event_order_key(a)
-		var key_b := event_order_key(b)
-		if key_a[0] != key_b[0]:
-			return key_a[0] < key_b[0]
-		if key_a[1] != key_b[1]:
-			return key_a[1] < key_b[1]
-		return key_a[2] < key_b[2])
+	var indexed: Array = []
+	for index: int in range(events.size()):
+		indexed.append([events[index], index])
+	indexed.sort_custom(func(a: Array, b: Array) -> bool:
+		var key_a := event_order_key(a[0])
+		var key_b := event_order_key(b[0])
+		for slot: int in range(3):
+			if key_a[slot] != key_b[slot]:
+				return key_a[slot] < key_b[slot]
+		return a[1] < b[1])
+	for index: int in range(events.size()):
+		events[index] = indexed[index][0]
 
 ## Verify every expected beat name happened, ported from Rust
 ## beat.rs verify_beats. Returns "" or an error naming the first gap.

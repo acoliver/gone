@@ -3,7 +3,7 @@
 This is the contract between the app lane and the runner in the Godot
 tree: how a scenario is declared, how the runner drives the app, what
 lands on disk, and what makes a run pass or fail. The protocol both sides
-embed and compare is `harness/protocol.gd`, `PROTOCOL_VERSION = 4`,
+embed and compare is `harness/protocol.gd`, `PROTOCOL_VERSION = 5`,
 preloaded verbatim by the runner (`harness/run.gd`) and by the app lanes
 (`app/harness_mode.gd` for gameplay and perf, `app/calibration_mode.gd`
 for calibration). A report whose version does not equal the runner's is
@@ -78,6 +78,49 @@ rod-picked-up, at-door, door-opened). `scenarios/hallway.json` continues
 past the doorway: the dark crossing of the unlit hall, the switch flip at
 the plate beside the doorway, the lit settle, and a short corridor walk,
 pinning door-opened, hall-dark, hall-lit, and hall-corridor.
+
+### Connector capture route
+
+Generate `scenarios/connector-route.json` with:
+
+    godot --headless --path . -s tools/build_connector_scenarios.gd -- --connector-only
+
+The compiler drives the real Player through the unchanged power-room opening,
+all four D14 crank hatches, a section-42 refusal and the aft ladder's
+D14/D01/D30/D14 journey. It authors coordinates from layout doors, faces,
+sections and landings. The capture lane uses `logical_steps_per_present: 4`;
+all existing scenarios default to 1. Each step consumes its own input and
+advances GameStep once at 1/60 second. The batch stops at a due beat, pending
+room construction, pending label rasterization or completion. Captures freeze
+logic while rendering continues. Perf and calibration reject this setting.
+The runner's 300-second watchdog and beat tolerance are unchanged.
+
+Protocol 5 adds typed `logical_tick`, `door_attempt`, `door_release`,
+`door_opened`, `portal_crossed`, `ladder_mount`, `landing`, `ladder_dismount`,
+`label` and `residency` events. Logical samples include deck, body state,
+locomotion mode, world eye and capsule, and opening state. Before locomotion
+exists, mode is -1; the lying body has no capsule. Movement transitions carry
+source and destination decks. Named opening events remain unchanged adapters.
+
+`ConnectorAssertions` checks the exact allowed open set, seeded crank work
+and stalls, one release/open per door, legal traversals, ordered landing
+crossings, endpoint refusals, return state, label quantities and capture
+residency. Each requested label has native, partial and resolved captures.
+Native boxed octal quantities must equal the Spanish decimal quantities.
+New section-41 captures declare `light: "white"`; connector captures use
+the existing red threshold. Existing image checks are unchanged.
+
+The report echoes the batch setting, logical tick count and SHA-256 logical
+event digest. The digest covers every logical sample and door, portal and
+ladder transition, with rendered frame numbers excluded and numeric values
+encoded to nine decimal places for hashing. This avoids last-bit differences
+in Godot's JSON number parser; the raw report retains full numeric precision.
+Presentation-only
+label/residency observations are checked separately, since GPU queue timing
+is not simulation input. Headless batch-1/batch-4 replays must match the
+compiled digest and stop at every exact capture tick. The compiler derives
+the new deadline from the measured terminal tick using the power-room lane's
+5400/3695 headroom ratio. No existing scenario budget changes.
 
 ### Perf (mode "perf")
 

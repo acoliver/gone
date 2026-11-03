@@ -7,6 +7,7 @@ class Lane:
 	var busy_capturing: bool = false
 	var pending_captures: Array = []
 	var ticks: int = 0
+	var scenario := HarnessScenario.new()
 	func drive_tick() -> void:
 		ticks += 1
 
@@ -26,4 +27,14 @@ func test_queued_label_capture_stops_physics_before_render_starts_capture() -> v
 	lane.busy_capturing = false
 	driver._physics_process(Sim.LOGICAL_TICK_SECS)
 	assert_int_equal(lane.ticks, 2, "physics resumes after capture")
+	driver.free()
+
+func test_accelerated_capture_is_not_also_advanced_by_physics() -> void:
+	var driver = load("res://app/harness_mode.gd").Driver.new()
+	var lane := Lane.new()
+	lane.scenario.logical_steps_per_present = 4
+	driver.mode = lane
+	for _tick: int in range(8):
+		driver._physics_process(Sim.LOGICAL_TICK_SECS)
+	assert_int_equal(lane.ticks, 0, "batched capture has only the presentation driver as its clock")
 	driver.free()

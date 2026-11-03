@@ -165,6 +165,12 @@ func verify_run(app_hash: String, scenario_hash: String, config_hash: String) ->
 		verify_hallway(report)
 		verify_rod_pickup(report)
 		verify_power(report)
+		if not scenario.connector.is_empty():
+			for outcome: Dictionary in ConnectorAssertions.evaluate(report, scenario):
+				beat_lines.append("connector assertion `%s`: %s %s" % [outcome.name, "PASS" if outcome.passed else "FAIL", outcome.detail])
+				if not outcome.passed:
+					failures.append("connector assertion failed: %s %s" % [outcome.name, outcome.detail])
+			beat_lines.append("logical digest %s (%d ticks, batch %d)" % [report.logical_digest, report.logical_ticks, report.logical_steps_per_present])
 	elif scenario.mode == "perf":
 		verify_perf(report)
 	else:
@@ -346,7 +352,8 @@ func verify_beat_stats(name: String, image: Image, entry: Dictionary) -> void:
 		return
 	if luma <= LIT_MIN_LUMA:
 		failures.append("beat `%s` is black: luma %.4f" % [name, luma])
-	if WHITE_LIGHT_BEATS.has(name):
+	var declared_white: bool = scenario.beats.any(func(beat: Dictionary) -> bool: return beat.name == name and beat.get("light", "red") == "white")
+	if WHITE_LIGHT_BEATS.has(name) or declared_white:
 		if red >= green + WHITE_MAX_RED_ADVANCE and red >= blue + WHITE_MAX_RED_ADVANCE:
 			failures.append("beat `%s` still red-dominant: r/g/b %.4f/%.4f/%.4f" % [
 				name, red, green, blue])

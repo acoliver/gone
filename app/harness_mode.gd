@@ -42,6 +42,9 @@ var busy_capturing: bool = false
 var last_phase: String = ""
 var perf_policy
 var perf_samples_ms: Array[float] = []
+var connector_evidence: ConnectorEvidence
+var finished: bool = false
+var last_batch_wait: String = ""
 
 func _initialize() -> void:
 	if OS.get_environment(Protocol.ENV_HARNESS) != "1":
@@ -87,6 +90,9 @@ func _initialize() -> void:
 			"scenario_hash": OS.get_environment(Protocol.ENV_SCENARIO_HASH),
 			"config_hash": OS.get_environment(Protocol.ENV_CONFIG_HASH),
 		})
+	report.logical_steps_per_present = scenario.logical_steps_per_present
+	if not scenario.connector.is_empty():
+		connector_evidence = ConnectorEvidence.new()
 	input = ScenarioModule.InputAdapter.new(
 		scenario.actions, scenario.ticks_per_second)
 	adapter = InputPlane.ScriptedAdapter.new()
@@ -197,6 +203,10 @@ func _fail(what: String) -> void:
 	_finish(false)
 
 func _finish(success: bool) -> void:
+	finished = true
+	report.logical_ticks = tick
+	if connector_evidence != null:
+		report.logical_digest = connector_evidence.finish_digest()
 	if success:
 		report.add_event({"kind": "complete", "frame": frame})
 	report.frame_stats = {"frames": frame, "mean_us": 0.0, "p95_us": 0.0,
@@ -226,10 +236,9 @@ static func phase_name(phase: int) -> String:
 
 ## The fixed-timeline driver: added to the root before the game scene,
 ## so its physics tick runs first and the scripted input is on the plane
-## before the player's tick consumes it. One physics tick = one scenario
-## tick: the adapter step is offered through the input plane, the wake
-## advances exactly one authored tick, the phase is observed, and due
-## beats are pinned for capture.
+## before the player's tick consumes it. Default lanes use one physics tick
+## per scenario tick. Accelerated captures use _process instead, with the same
+## fixed GameStep and a separate input/evidence sample for each logical tick.
 class Driver:
 	extends Node
 
@@ -241,12 +250,16 @@ class Driver:
 		var harness = mode
 		if not harness.ready or harness.failed or harness.busy_capturing or not harness.pending_captures.is_empty():
 			return
-		harness.drive_tick()
+		if harness.scenario.logical_steps_per_present == 1:
+			harness.drive_tick()
 
 	func _process(_delta: float) -> void:
 		var harness = mode
-		if harness.failed or harness.busy_capturing:
+		if harness.failed or harness.finished or harness.busy_capturing:
 			return
+		if harness.ready and harness.scenario.logical_steps_per_present > 1:
+			harness.observe_batch_wait()
+			CaptureBatch.advance(harness.scenario.logical_steps_per_present, harness.drive_tick, harness.batch_boundary)
 		harness.frame += 1
 		harness.chip.set_code(harness.tick, harness.frame)
 		# The lane renders roughly two frames per fixed tick, so the
@@ -312,6 +325,9 @@ func drive_tick() -> void:
 	game_step.advance()
 	observe_phase()
 	tick += 1
+	if connector_evidence != null:
+		for event: Dictionary in connector_evidence.observe(player, tick, frame):
+			report.add_event(event)
 	while next_beat_index < scenario.beats.size() and scenario.beats[next_beat_index].tick < tick:
 		pending_captures.append(scenario.beats[next_beat_index])
 		next_beat_index += 1
@@ -350,6 +366,8 @@ func capture_next_beat() -> void:
 	var pinned_tick: int = tick
 	var pinned_frame: int = frame
 	chip.set_code(pinned_tick, pinned_frame)
+	if connector_evidence != null:
+		print("GONE_CONNECTOR_CAPTURE %s tick=%d frame=%d" % [beat.name, pinned_tick, pinned_frame])
 	await RenderingServer.frame_post_draw
 	var image := root.get_texture().get_image()
 	var file := "beats/%s.png" % beat.name
@@ -413,7 +431,35 @@ func capture_next_beat() -> void:
 				"power_red_level": power_room.level(),
 				"power_white_level": power_room.white_level(),
 				"stasis_red_level": stasis_lighting.level()})
+	if connector_evidence != null:
+		var ship := game_step.ship_scene
+		var residency := ConnectorEvidence.pose(player)
+		var doors: Dictionary = {}
+		for id: StringName in game.layout.door_ids():
+			if game.layout.door(id).deck_number() == int(residency.deck):
+				var state := game.doors.snapshot(id)
+				doors[String(id)] = {"state": state.state, "attempt": state.attempt, "work": state.work, "wheel_angle": state.wheel_angle, "releases": state.releases}
+		residency.doors = doors
+		residency.merge({"kind": "residency", "beat": beat.name, "tick": pinned_tick, "frame": pinned_frame, "rooms": ship.stream.resident_ids(), "pending_rooms": ship.stream.pending_count(), "pending_labels": ship.text_cache.pending_count(), "remote_lights": ship.stream.remote_light_count(), "build_usec": ship.stream.last_build_usec})
+		report.add_event(residency)
+		if scenario.connector.labels.has(beat.name):
+			var id := StringName(scenario.connector.labels[beat.name].id)
+			if not ship.labels.has(id):
+				_fail("capture missing label %s" % id)
+				return
+			report.add_event(ConnectorEvidence.label(ship.labels[id], game.layout, beat.name, pinned_tick, pinned_frame, player))
 	busy_capturing = false
+
+func observe_batch_wait() -> void:
+	var rooms := game_step.ship_scene.stream.pending_count()
+	var labels := game_step.ship_scene.text_cache.pending_count()
+	var waiting := "%d:%d:%d" % [tick, rooms, labels] if rooms > 0 or labels > 0 else ""
+	if waiting != last_batch_wait:
+		last_batch_wait = waiting
+		print("GONE_CONNECTOR_QUEUE tick=%d rooms=%d labels=%d" % [tick, rooms, labels])
+
+func batch_boundary() -> bool:
+	return finished or failed or busy_capturing or not pending_captures.is_empty() or game_step.ship_scene.stream.pending_count() > 0 or game_step.ship_scene.text_cache.pending_count() > 0
 
 func _button(name: String) -> int:
 	match name:

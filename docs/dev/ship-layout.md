@@ -394,6 +394,53 @@ godot --headless --path . -s harness/run.gd -- scenarios/connector-route.json
 
 Run all existing positive and negative harness lanes, plus the separate windowed main/voice audio integrations and cache raster checks. Machine PASS does not establish visual or listening acceptance. Keep raw artifacts in unique workspace paths. No tests, game run, audio audition or performance benchmark were executed as part of writing this design. Automated OCR review is skipped per Andrew's standing instruction.
 
+#### S13 implementation verification
+
+`tools/build_connector_scenarios.gd -- --connector-only` now generates the
+windowed route without rewriting any existing scenario. It replays the
+power-room opening, captures all four D14 crank hatches, visits section 42,
+then takes the aft ladder through D01, D30 and back to D14. Closed and
+mid-crank section-41 approaches declare white lighting. Their open-hatch
+captures show the reverse face from inside the red connector. D14's first
+reading uses the first-resolution hold; the endpoint readings use shared
+reading memory. Each reading has native, partial and resolved captures.
+
+The measured route has 24,998 logical ticks. Its deadline is 36,533 ticks,
+rounded up from the power-room lane's unchanged 5400/3695 headroom ratio.
+All 36 captures stop at the requested tick plus one, preserving the existing
+pinning convention. Protocol 5 retains the named opening adapters and adds
+per-tick pose/state, door, portal, ladder, label and residency evidence.
+Capture snapshots include the current deck's door states and queue counters.
+The digest excludes rendered frame numbers and presentation-only evidence;
+it encodes numbers to nine decimal places because Godot's JSON parser can
+change the last double bit. Raw reports retain full precision. Headless
+batch-1/batch-4 replay and serialized-report roundtrip tests pin the same
+digest, while corrupted, missing or reordered evidence must fail.
+
+Verification artifacts for this slice use `tmp/connectors/s13-suite.log`,
+`tmp/connectors/s13-harness-<scenario>/` and the corresponding lane logs.
+Calibration or perf failures require alternating HEAD/working-tree runs
+under the same external GPU workload, with unchanged assertions and policy.
+Machine verdicts do not establish visual or listening acceptance.
+
+The final guarded run passed 482 tests with zero failures, SCRIPT ERRORs or
+RUNNER VIOLATIONs. All seven Python hatch-audio tests and the 11-WAV asset
+check passed, as did cache, main-audio, voice-audio and door-audio windowed
+integrations. Existing gameplay lanes passed; both negative lanes failed as
+expected. Initial calibration runs failed, followed by passing alternating
+HEAD/working-tree calibration runs at unchanged thresholds. Matched perf
+mean/p95 measurements were 2.884/6.510 ms on HEAD and 2.851/7.690 ms on the
+working tree, below the unchanged 25/50 ms limits.
+
+Connector runs `run-1793668660` and `run-1793668880` passed all assertions
+with identical app hashes and logical digest
+`d10b0792e4dcf0717aa0c09cdca7bcafbc81c0135287a2a14dc0ffbe853e638a`.
+Launch-to-report measurements were about 135 and 60 seconds. One earlier
+run, `run-1793668206`, exhausted the watchdog after its D30 resolved capture.
+Its cause was not isolated; subsequent instrumented runs did not reproduce
+it. Queue and capture progress remain in the connector log for diagnosis.
+Visual and listening acceptance remain pending.
+
 ## 10. Trade-offs, risks and remaining questions
 
 The local-frame approach adds explicit conversions at a few boundaries but preserves the bay's many authored relationships. Rewriting world coordinates would spread a quarter-turn through pod/camera/lighting/hazard/interaction tests and make a second placement change equally expensive. A whole-game local-coordinate simulation would add repeated frame switching for every doorway; keeping world capsules avoids that cost.
