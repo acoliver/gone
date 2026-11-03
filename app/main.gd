@@ -122,6 +122,7 @@ func _add_wake_presentation() -> void:
 ## projects its pose, and the wake presentation sways the same camera.
 func _add_player() -> void:
 	player = Player.build(game, hatch)
+	player.interpolate_view = true
 	player.rod = rod
 	player.power_room = power_room
 	add_child(player)
