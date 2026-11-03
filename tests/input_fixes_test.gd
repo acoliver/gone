@@ -14,14 +14,16 @@ const NEAR: float = 1e-4
 const ScenarioModule := preload("res://harness/scenario.gd")
 
 func _awake_game() -> Game:
-	var game := Game.new()
+	var game := Game.new(0)
 	game.phase.wake_complete()
 	return game
 
 func _stand(motion: PlayerMotion, game: Game, plane: InputPlane) -> void:
 	plane.offer_press(InputPlane.Buttons.ACTIVATE)
+	game.advance_doors()
 	motion.advance(plane, game, 0.0, DT)
 	for _segment: int in range(Exit.EXIT_POSE_COUNT - 1):
+		game.advance_doors()
 		motion.advance(plane, game, 0.0, DT)
 
 func _key(physical: Key) -> InputEventKey:
@@ -44,19 +46,20 @@ func _near_float(actual: float, expected: float, message: String) -> void:
 		_fail("%s: expected %s, got %s" % [message, str(expected), str(actual)])
 
 func _walk_to_hatch(motion: PlayerMotion, game: Game, plane: InputPlane) -> void:
-	var hatch := game.registry.hatch().center
+	var hatch := PlacementTruth.bay_door_center(game.layout)
 	var adapter := InputPlane.ScriptedAdapter.new()
 	for _tick: int in range(1400):
 		var foot: Vector3 = motion.capsule().foot
 		var to_hatch := Vector2(hatch.x - foot.x, hatch.y - foot.z)
-		if to_hatch.length() <= PlayerMotion.HATCH_INTERACT_REACH * 0.9:
+		if to_hatch.length() <= Interactions.HATCH_INTERACT_REACH * 0.9:
 			break
 		adapter.hold(1.0, 0.0)
 		adapter.offer_tick(plane)
+		game.advance_doors()
 		motion.advance(plane, game, atan2(to_hatch.x, to_hatch.y), DT)
 		plane.end_frame()
 	assert_true(motion.failure().is_empty(), motion.failure())
-	assert_float_in_range(Vector2(motion.capsule().foot.x - hatch.x, motion.capsule().foot.z - hatch.y).length(), 0.0, PlayerMotion.HATCH_INTERACT_REACH, "the walk arrived at the door")
+	assert_float_in_range(Vector2(motion.capsule().foot.x - hatch.x, motion.capsule().foot.z - hatch.y).length(), 0.0, Interactions.HATCH_INTERACT_REACH, "the walk arrived at the door")
 
 func test_arrow_keys_map_onto_the_movement_actions() -> void:
 	assert_true(InputMap.event_is_action(_key(KEY_UP), "move_forward"), "up arrow is move_forward")
@@ -112,7 +115,7 @@ func test_held_forward_walks_where_the_camera_looks() -> void:
 	var motion := PlayerMotion.new()
 	var plane := InputPlane.new()
 	_stand(motion, game, plane)
-	var hatch := game.registry.hatch().center
+	var hatch := PlacementTruth.bay_door_center(game.layout)
 	var foot: Vector3 = motion.capsule().foot
 	var to_hatch := Vector2(hatch.x - foot.x, hatch.y - foot.z).normalized()
 	var yaw := atan2(to_hatch.x, to_hatch.y) + PI
@@ -123,6 +126,7 @@ func test_held_forward_walks_where_the_camera_looks() -> void:
 		Input.get_axis("move_left", "move_right")
 	)
 	Input.action_release("move_forward")
+	game.advance_doors()
 	motion.advance(plane, game, yaw, DT)
 	plane.end_frame()
 	var stepped: Vector3 = motion.capsule().foot - foot
@@ -270,10 +274,11 @@ func test_click_edges_start_the_authored_get_up_after_wake() -> void:
 	# producer offers them and consumed in the player's order.
 	plane.offer_press(InputPlane.Buttons.ACTIVATE)
 	plane.offer_press(InputPlane.Buttons.INTERACT)
+	game.advance_doors()
 	motion.advance(plane, game, 0.0, DT)
 	assert_int_equal(motion.state(), PlayerMotion.BodyState.GET_UP, "the click's activate edge starts the get-up")
-	assert_false(motion.interact_with_door(plane, game), "the same click's interact edge does not open the door mid-get-up")
-	var early_game := Game.new()
+	assert_false(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, plane, game, motion), "the same click's interact edge does not open the door mid-get-up")
+	var early_game := Game.new(0)
 	var early_motion := PlayerMotion.new()
 	var early_plane := InputPlane.new()
 	early_plane.offer_press(InputPlane.Buttons.ACTIVATE)
@@ -289,9 +294,9 @@ func test_click_edge_opens_the_door() -> void:
 	# The rod is the door's pry bar; carrying it is the door's only ask.
 	motion.rod_carried = true
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_door(plane, game), "the click's interact edge opens the rod-carried door")
-	assert_int_equal(motion.door_state, PlayerMotion.DoorState.OPENING, "one click starts the opening")
-	assert_int_equal(motion.door_openings, 1, "one click, one opening")
+	assert_true(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, plane, game, motion), "the click's interact edge opens the rod-carried door")
+	assert_int_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).state, Doors.State.OPENING, "one click starts the opening")
+	assert_int_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).releases, 1, "one click, one opening")
 
 func test_click_edges_consume_exactly_once_interleaved() -> void:
 	var plane := InputPlane.new()
@@ -315,15 +320,15 @@ func test_click_edges_consume_exactly_once_interleaved() -> void:
 	_walk_to_hatch(motion, game, hatch_plane)
 	motion.rod_carried = true
 	hatch_plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_door(hatch_plane, game), "the acting press is eaten at the door")
+	assert_true(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, hatch_plane, game, motion), "the acting press is eaten at the door")
 	hatch_plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_false(motion.interact_with_door(hatch_plane, game), "the click on the next tick is not the door's to eat")
+	assert_false(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, hatch_plane, game, motion), "the click on the next tick is not the door's to eat")
 	assert_true(hatch_plane.take_press(InputPlane.Buttons.INTERACT), "the uneaten edge stays on the channel")
 	hatch_plane.end_frame()
 	hatch_plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_false(motion.interact_with_door(hatch_plane, game), "the same-tick Space and click pair's edge is also left")
+	assert_false(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, hatch_plane, game, motion), "the same-tick Space and click pair's edge is also left")
 	assert_true(hatch_plane.take_press(InputPlane.Buttons.INTERACT), "that edge also stays on the channel")
-	assert_int_equal(motion.door_openings, 1, "three edges across the ticks, still one opening")
+	assert_int_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).releases, 1, "three edges across the ticks, still one opening")
 
 func test_scenario_accepts_key_turn_actions() -> void:
 	var parsed: Dictionary = ScenarioModule.parse(JSON.stringify({

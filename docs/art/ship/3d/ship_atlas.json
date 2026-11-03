@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 1.0,
   "purpose": "out-of-world design proposal; only built labels describe walkable game geometry",
   "sources": {
     "built": [
@@ -23,36 +23,80 @@
     },
     "envelope_max": {
       "x": [
-        -1200,
-        1200
+        -1200.0,
+        1200.0
       ],
       "y": [
-        -96,
-        96
+        -96.0,
+        96.0
       ],
       "z": [
-        -360,
-        360
+        -360.0,
+        360.0
       ]
     },
     "hull_profile": [
-      {"x": -1200, "halfwidth": 18, "halfheight": 32},
-      {"x": -1100, "halfwidth": 60, "halfheight": 50},
-      {"x": -900, "halfwidth": 120, "halfheight": 78},
-      {"x": -720, "halfwidth": 185, "halfheight": 86},
-      {"x": -600, "halfwidth": 245, "halfheight": 90},
-      {"x": -480, "halfwidth": 290, "halfheight": 94},
-      {"x": -240, "halfwidth": 335, "halfheight": 96},
-      {"x": 240, "halfwidth": 350, "halfheight": 96},
-      {"x": 720, "halfwidth": 350, "halfheight": 96},
-      {"x": 1150, "halfwidth": 330, "halfheight": 96},
-      {"x": 1200, "halfwidth": 260, "halfheight": 90}
+      {
+        "x": -1200.0,
+        "halfwidth": 18.0,
+        "halfheight": 32.0
+      },
+      {
+        "x": -1100.0,
+        "halfwidth": 60.0,
+        "halfheight": 50.0
+      },
+      {
+        "x": -900.0,
+        "halfwidth": 120.0,
+        "halfheight": 78.0
+      },
+      {
+        "x": -720.0,
+        "halfwidth": 185.0,
+        "halfheight": 86.0
+      },
+      {
+        "x": -600.0,
+        "halfwidth": 245.0,
+        "halfheight": 90.0
+      },
+      {
+        "x": -480.0,
+        "halfwidth": 290.0,
+        "halfheight": 94.0
+      },
+      {
+        "x": -240.0,
+        "halfwidth": 335.0,
+        "halfheight": 96.0
+      },
+      {
+        "x": 240.0,
+        "halfwidth": 350.0,
+        "halfheight": 96.0
+      },
+      {
+        "x": 720.0,
+        "halfwidth": 350.0,
+        "halfheight": 96.0
+      },
+      {
+        "x": 1150.0,
+        "halfwidth": 330.0,
+        "halfheight": 96.0
+      },
+      {
+        "x": 1200.0,
+        "halfwidth": 260.0,
+        "halfheight": 90.0
+      }
     ],
     "hull_occupancy": "proposed exterior-compatible guide, not a measured tracing; district rectangles are diagrammatic indexing bins, not occupied geometry",
     "deck_floor_formula": "y = (14 - deck_number) * 5.5",
     "deck_pitch": 5.5,
     "opening_deck": "D14",
-    "opening_floor_y": 0,
+    "opening_floor_y": 0.0,
     "opening_clear_height": 3.2
   },
   "grid": {
@@ -60,87 +104,87 @@
       {
         "id": "D01-04",
         "decks": [
-          1,
-          4
+          1.0,
+          4.0
         ]
       },
       {
         "id": "D05-08",
         "decks": [
-          5,
-          8
+          5.0,
+          8.0
         ]
       },
       {
         "id": "D09-12",
         "decks": [
-          9,
-          12
+          9.0,
+          12.0
         ]
       },
       {
         "id": "D13-16",
         "decks": [
-          13,
-          16
+          13.0,
+          16.0
         ]
       },
       {
         "id": "D17-20",
         "decks": [
-          17,
-          20
+          17.0,
+          20.0
         ]
       },
       {
         "id": "D21-25",
         "decks": [
-          21,
-          25
+          21.0,
+          25.0
         ]
       },
       {
         "id": "D26-30",
         "decks": [
-          26,
-          30
+          26.0,
+          30.0
         ]
       }
     ],
     "sectors": [
       {
-        "id": 0,
+        "id": 0.0,
         "x": [
-          -1200,
-          -720
+          -1200.0,
+          -720.0
         ]
       },
       {
-        "id": 1,
+        "id": 1.0,
         "x": [
-          -720,
-          -240
+          -720.0,
+          -240.0
         ]
       },
       {
-        "id": 2,
+        "id": 2.0,
         "x": [
-          -240,
-          240
+          -240.0,
+          240.0
         ]
       },
       {
-        "id": 3,
+        "id": 3.0,
         "x": [
-          240,
-          720
+          240.0,
+          720.0
         ]
       },
       {
-        "id": 4,
+        "id": 4.0,
         "x": [
-          720,
-          1200
+          720.0,
+          1200.0
         ]
       }
     ],
@@ -148,22 +192,22 @@
       {
         "id": "port",
         "z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ]
       },
       {
         "id": "core",
         "z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ]
       },
       {
         "id": "starboard",
         "z": [
-          120,
-          310
+          120.0,
+          310.0
         ]
       }
     ],
@@ -171,19 +215,19 @@
       {
         "id": "D01-04-0-port",
         "group": "D01-04",
-        "sector": 0,
+        "sector": 0.0,
         "side": "port",
         "deck_range": [
-          1,
-          4
+          1.0,
+          4.0
         ],
         "diagrammatic_x": [
-          -1200,
-          -720
+          -1200.0,
+          -720.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -198,19 +242,19 @@
       {
         "id": "D01-04-1-port",
         "group": "D01-04",
-        "sector": 1,
+        "sector": 1.0,
         "side": "port",
         "deck_range": [
-          1,
-          4
+          1.0,
+          4.0
         ],
         "diagrammatic_x": [
-          -720,
-          -240
+          -720.0,
+          -240.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -225,19 +269,19 @@
       {
         "id": "D01-04-2-port",
         "group": "D01-04",
-        "sector": 2,
+        "sector": 2.0,
         "side": "port",
         "deck_range": [
-          1,
-          4
+          1.0,
+          4.0
         ],
         "diagrammatic_x": [
-          -240,
-          240
+          -240.0,
+          240.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -252,19 +296,19 @@
       {
         "id": "D01-04-3-port",
         "group": "D01-04",
-        "sector": 3,
+        "sector": 3.0,
         "side": "port",
         "deck_range": [
-          1,
-          4
+          1.0,
+          4.0
         ],
         "diagrammatic_x": [
-          240,
-          720
+          240.0,
+          720.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -279,19 +323,19 @@
       {
         "id": "D01-04-4-port",
         "group": "D01-04",
-        "sector": 4,
+        "sector": 4.0,
         "side": "port",
         "deck_range": [
-          1,
-          4
+          1.0,
+          4.0
         ],
         "diagrammatic_x": [
-          720,
-          1200
+          720.0,
+          1200.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -306,19 +350,19 @@
       {
         "id": "D01-04-0-core",
         "group": "D01-04",
-        "sector": 0,
+        "sector": 0.0,
         "side": "core",
         "deck_range": [
-          1,
-          4
+          1.0,
+          4.0
         ],
         "diagrammatic_x": [
-          -1200,
-          -720
+          -1200.0,
+          -720.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -333,19 +377,19 @@
       {
         "id": "D01-04-1-core",
         "group": "D01-04",
-        "sector": 1,
+        "sector": 1.0,
         "side": "core",
         "deck_range": [
-          1,
-          4
+          1.0,
+          4.0
         ],
         "diagrammatic_x": [
-          -720,
-          -240
+          -720.0,
+          -240.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -360,19 +404,19 @@
       {
         "id": "D01-04-2-core",
         "group": "D01-04",
-        "sector": 2,
+        "sector": 2.0,
         "side": "core",
         "deck_range": [
-          1,
-          4
+          1.0,
+          4.0
         ],
         "diagrammatic_x": [
-          -240,
-          240
+          -240.0,
+          240.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -387,19 +431,19 @@
       {
         "id": "D01-04-3-core",
         "group": "D01-04",
-        "sector": 3,
+        "sector": 3.0,
         "side": "core",
         "deck_range": [
-          1,
-          4
+          1.0,
+          4.0
         ],
         "diagrammatic_x": [
-          240,
-          720
+          240.0,
+          720.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -416,19 +460,19 @@
       {
         "id": "D01-04-4-core",
         "group": "D01-04",
-        "sector": 4,
+        "sector": 4.0,
         "side": "core",
         "deck_range": [
-          1,
-          4
+          1.0,
+          4.0
         ],
         "diagrammatic_x": [
-          720,
-          1200
+          720.0,
+          1200.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -443,19 +487,19 @@
       {
         "id": "D01-04-0-starboard",
         "group": "D01-04",
-        "sector": 0,
+        "sector": 0.0,
         "side": "starboard",
         "deck_range": [
-          1,
-          4
+          1.0,
+          4.0
         ],
         "diagrammatic_x": [
-          -1200,
-          -720
+          -1200.0,
+          -720.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -470,19 +514,19 @@
       {
         "id": "D01-04-1-starboard",
         "group": "D01-04",
-        "sector": 1,
+        "sector": 1.0,
         "side": "starboard",
         "deck_range": [
-          1,
-          4
+          1.0,
+          4.0
         ],
         "diagrammatic_x": [
-          -720,
-          -240
+          -720.0,
+          -240.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -497,19 +541,19 @@
       {
         "id": "D01-04-2-starboard",
         "group": "D01-04",
-        "sector": 2,
+        "sector": 2.0,
         "side": "starboard",
         "deck_range": [
-          1,
-          4
+          1.0,
+          4.0
         ],
         "diagrammatic_x": [
-          -240,
-          240
+          -240.0,
+          240.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -524,19 +568,19 @@
       {
         "id": "D01-04-3-starboard",
         "group": "D01-04",
-        "sector": 3,
+        "sector": 3.0,
         "side": "starboard",
         "deck_range": [
-          1,
-          4
+          1.0,
+          4.0
         ],
         "diagrammatic_x": [
-          240,
-          720
+          240.0,
+          720.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -551,19 +595,19 @@
       {
         "id": "D01-04-4-starboard",
         "group": "D01-04",
-        "sector": 4,
+        "sector": 4.0,
         "side": "starboard",
         "deck_range": [
-          1,
-          4
+          1.0,
+          4.0
         ],
         "diagrammatic_x": [
-          720,
-          1200
+          720.0,
+          1200.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -578,19 +622,19 @@
       {
         "id": "D05-08-0-port",
         "group": "D05-08",
-        "sector": 0,
+        "sector": 0.0,
         "side": "port",
         "deck_range": [
-          5,
-          8
+          5.0,
+          8.0
         ],
         "diagrammatic_x": [
-          -1200,
-          -720
+          -1200.0,
+          -720.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -605,19 +649,19 @@
       {
         "id": "D05-08-1-port",
         "group": "D05-08",
-        "sector": 1,
+        "sector": 1.0,
         "side": "port",
         "deck_range": [
-          5,
-          8
+          5.0,
+          8.0
         ],
         "diagrammatic_x": [
-          -720,
-          -240
+          -720.0,
+          -240.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -632,19 +676,19 @@
       {
         "id": "D05-08-2-port",
         "group": "D05-08",
-        "sector": 2,
+        "sector": 2.0,
         "side": "port",
         "deck_range": [
-          5,
-          8
+          5.0,
+          8.0
         ],
         "diagrammatic_x": [
-          -240,
-          240
+          -240.0,
+          240.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -659,19 +703,19 @@
       {
         "id": "D05-08-3-port",
         "group": "D05-08",
-        "sector": 3,
+        "sector": 3.0,
         "side": "port",
         "deck_range": [
-          5,
-          8
+          5.0,
+          8.0
         ],
         "diagrammatic_x": [
-          240,
-          720
+          240.0,
+          720.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -686,19 +730,19 @@
       {
         "id": "D05-08-4-port",
         "group": "D05-08",
-        "sector": 4,
+        "sector": 4.0,
         "side": "port",
         "deck_range": [
-          5,
-          8
+          5.0,
+          8.0
         ],
         "diagrammatic_x": [
-          720,
-          1200
+          720.0,
+          1200.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -713,19 +757,19 @@
       {
         "id": "D05-08-0-core",
         "group": "D05-08",
-        "sector": 0,
+        "sector": 0.0,
         "side": "core",
         "deck_range": [
-          5,
-          8
+          5.0,
+          8.0
         ],
         "diagrammatic_x": [
-          -1200,
-          -720
+          -1200.0,
+          -720.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -740,19 +784,19 @@
       {
         "id": "D05-08-1-core",
         "group": "D05-08",
-        "sector": 1,
+        "sector": 1.0,
         "side": "core",
         "deck_range": [
-          5,
-          8
+          5.0,
+          8.0
         ],
         "diagrammatic_x": [
-          -720,
-          -240
+          -720.0,
+          -240.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -767,19 +811,19 @@
       {
         "id": "D05-08-2-core",
         "group": "D05-08",
-        "sector": 2,
+        "sector": 2.0,
         "side": "core",
         "deck_range": [
-          5,
-          8
+          5.0,
+          8.0
         ],
         "diagrammatic_x": [
-          -240,
-          240
+          -240.0,
+          240.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -794,19 +838,19 @@
       {
         "id": "D05-08-3-core",
         "group": "D05-08",
-        "sector": 3,
+        "sector": 3.0,
         "side": "core",
         "deck_range": [
-          5,
-          8
+          5.0,
+          8.0
         ],
         "diagrammatic_x": [
-          240,
-          720
+          240.0,
+          720.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -821,19 +865,19 @@
       {
         "id": "D05-08-4-core",
         "group": "D05-08",
-        "sector": 4,
+        "sector": 4.0,
         "side": "core",
         "deck_range": [
-          5,
-          8
+          5.0,
+          8.0
         ],
         "diagrammatic_x": [
-          720,
-          1200
+          720.0,
+          1200.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -848,19 +892,19 @@
       {
         "id": "D05-08-0-starboard",
         "group": "D05-08",
-        "sector": 0,
+        "sector": 0.0,
         "side": "starboard",
         "deck_range": [
-          5,
-          8
+          5.0,
+          8.0
         ],
         "diagrammatic_x": [
-          -1200,
-          -720
+          -1200.0,
+          -720.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -875,19 +919,19 @@
       {
         "id": "D05-08-1-starboard",
         "group": "D05-08",
-        "sector": 1,
+        "sector": 1.0,
         "side": "starboard",
         "deck_range": [
-          5,
-          8
+          5.0,
+          8.0
         ],
         "diagrammatic_x": [
-          -720,
-          -240
+          -720.0,
+          -240.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -902,19 +946,19 @@
       {
         "id": "D05-08-2-starboard",
         "group": "D05-08",
-        "sector": 2,
+        "sector": 2.0,
         "side": "starboard",
         "deck_range": [
-          5,
-          8
+          5.0,
+          8.0
         ],
         "diagrammatic_x": [
-          -240,
-          240
+          -240.0,
+          240.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -929,19 +973,19 @@
       {
         "id": "D05-08-3-starboard",
         "group": "D05-08",
-        "sector": 3,
+        "sector": 3.0,
         "side": "starboard",
         "deck_range": [
-          5,
-          8
+          5.0,
+          8.0
         ],
         "diagrammatic_x": [
-          240,
-          720
+          240.0,
+          720.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -956,19 +1000,19 @@
       {
         "id": "D05-08-4-starboard",
         "group": "D05-08",
-        "sector": 4,
+        "sector": 4.0,
         "side": "starboard",
         "deck_range": [
-          5,
-          8
+          5.0,
+          8.0
         ],
         "diagrammatic_x": [
-          720,
-          1200
+          720.0,
+          1200.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -983,19 +1027,19 @@
       {
         "id": "D09-12-0-port",
         "group": "D09-12",
-        "sector": 0,
+        "sector": 0.0,
         "side": "port",
         "deck_range": [
-          9,
-          12
+          9.0,
+          12.0
         ],
         "diagrammatic_x": [
-          -1200,
-          -720
+          -1200.0,
+          -720.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1010,19 +1054,19 @@
       {
         "id": "D09-12-1-port",
         "group": "D09-12",
-        "sector": 1,
+        "sector": 1.0,
         "side": "port",
         "deck_range": [
-          9,
-          12
+          9.0,
+          12.0
         ],
         "diagrammatic_x": [
-          -720,
-          -240
+          -720.0,
+          -240.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1037,19 +1081,19 @@
       {
         "id": "D09-12-2-port",
         "group": "D09-12",
-        "sector": 2,
+        "sector": 2.0,
         "side": "port",
         "deck_range": [
-          9,
-          12
+          9.0,
+          12.0
         ],
         "diagrammatic_x": [
-          -240,
-          240
+          -240.0,
+          240.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1064,19 +1108,19 @@
       {
         "id": "D09-12-3-port",
         "group": "D09-12",
-        "sector": 3,
+        "sector": 3.0,
         "side": "port",
         "deck_range": [
-          9,
-          12
+          9.0,
+          12.0
         ],
         "diagrammatic_x": [
-          240,
-          720
+          240.0,
+          720.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1091,19 +1135,19 @@
       {
         "id": "D09-12-4-port",
         "group": "D09-12",
-        "sector": 4,
+        "sector": 4.0,
         "side": "port",
         "deck_range": [
-          9,
-          12
+          9.0,
+          12.0
         ],
         "diagrammatic_x": [
-          720,
-          1200
+          720.0,
+          1200.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1118,19 +1162,19 @@
       {
         "id": "D09-12-0-core",
         "group": "D09-12",
-        "sector": 0,
+        "sector": 0.0,
         "side": "core",
         "deck_range": [
-          9,
-          12
+          9.0,
+          12.0
         ],
         "diagrammatic_x": [
-          -1200,
-          -720
+          -1200.0,
+          -720.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -1145,19 +1189,19 @@
       {
         "id": "D09-12-1-core",
         "group": "D09-12",
-        "sector": 1,
+        "sector": 1.0,
         "side": "core",
         "deck_range": [
-          9,
-          12
+          9.0,
+          12.0
         ],
         "diagrammatic_x": [
-          -720,
-          -240
+          -720.0,
+          -240.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1172,19 +1216,19 @@
       {
         "id": "D09-12-2-core",
         "group": "D09-12",
-        "sector": 2,
+        "sector": 2.0,
         "side": "core",
         "deck_range": [
-          9,
-          12
+          9.0,
+          12.0
         ],
         "diagrammatic_x": [
-          -240,
-          240
+          -240.0,
+          240.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -1199,19 +1243,19 @@
       {
         "id": "D09-12-3-core",
         "group": "D09-12",
-        "sector": 3,
+        "sector": 3.0,
         "side": "core",
         "deck_range": [
-          9,
-          12
+          9.0,
+          12.0
         ],
         "diagrammatic_x": [
-          240,
-          720
+          240.0,
+          720.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1226,19 +1270,19 @@
       {
         "id": "D09-12-4-core",
         "group": "D09-12",
-        "sector": 4,
+        "sector": 4.0,
         "side": "core",
         "deck_range": [
-          9,
-          12
+          9.0,
+          12.0
         ],
         "diagrammatic_x": [
-          720,
-          1200
+          720.0,
+          1200.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -1253,19 +1297,19 @@
       {
         "id": "D09-12-0-starboard",
         "group": "D09-12",
-        "sector": 0,
+        "sector": 0.0,
         "side": "starboard",
         "deck_range": [
-          9,
-          12
+          9.0,
+          12.0
         ],
         "diagrammatic_x": [
-          -1200,
-          -720
+          -1200.0,
+          -720.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1280,19 +1324,19 @@
       {
         "id": "D09-12-1-starboard",
         "group": "D09-12",
-        "sector": 1,
+        "sector": 1.0,
         "side": "starboard",
         "deck_range": [
-          9,
-          12
+          9.0,
+          12.0
         ],
         "diagrammatic_x": [
-          -720,
-          -240
+          -720.0,
+          -240.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1307,19 +1351,19 @@
       {
         "id": "D09-12-2-starboard",
         "group": "D09-12",
-        "sector": 2,
+        "sector": 2.0,
         "side": "starboard",
         "deck_range": [
-          9,
-          12
+          9.0,
+          12.0
         ],
         "diagrammatic_x": [
-          -240,
-          240
+          -240.0,
+          240.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1334,19 +1378,19 @@
       {
         "id": "D09-12-3-starboard",
         "group": "D09-12",
-        "sector": 3,
+        "sector": 3.0,
         "side": "starboard",
         "deck_range": [
-          9,
-          12
+          9.0,
+          12.0
         ],
         "diagrammatic_x": [
-          240,
-          720
+          240.0,
+          720.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1361,19 +1405,19 @@
       {
         "id": "D09-12-4-starboard",
         "group": "D09-12",
-        "sector": 4,
+        "sector": 4.0,
         "side": "starboard",
         "deck_range": [
-          9,
-          12
+          9.0,
+          12.0
         ],
         "diagrammatic_x": [
-          720,
-          1200
+          720.0,
+          1200.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1388,19 +1432,19 @@
       {
         "id": "D13-16-0-port",
         "group": "D13-16",
-        "sector": 0,
+        "sector": 0.0,
         "side": "port",
         "deck_range": [
-          13,
-          16
+          13.0,
+          16.0
         ],
         "diagrammatic_x": [
-          -1200,
-          -720
+          -1200.0,
+          -720.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1415,19 +1459,19 @@
       {
         "id": "D13-16-1-port",
         "group": "D13-16",
-        "sector": 1,
+        "sector": 1.0,
         "side": "port",
         "deck_range": [
-          13,
-          16
+          13.0,
+          16.0
         ],
         "diagrammatic_x": [
-          -720,
-          -240
+          -720.0,
+          -240.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1442,19 +1486,19 @@
       {
         "id": "D13-16-2-port",
         "group": "D13-16",
-        "sector": 2,
+        "sector": 2.0,
         "side": "port",
         "deck_range": [
-          13,
-          16
+          13.0,
+          16.0
         ],
         "diagrammatic_x": [
-          -240,
-          240
+          -240.0,
+          240.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1469,19 +1513,19 @@
       {
         "id": "D13-16-3-port",
         "group": "D13-16",
-        "sector": 3,
+        "sector": 3.0,
         "side": "port",
         "deck_range": [
-          13,
-          16
+          13.0,
+          16.0
         ],
         "diagrammatic_x": [
-          240,
-          720
+          240.0,
+          720.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1496,19 +1540,19 @@
       {
         "id": "D13-16-4-port",
         "group": "D13-16",
-        "sector": 4,
+        "sector": 4.0,
         "side": "port",
         "deck_range": [
-          13,
-          16
+          13.0,
+          16.0
         ],
         "diagrammatic_x": [
-          720,
-          1200
+          720.0,
+          1200.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1523,19 +1567,19 @@
       {
         "id": "D13-16-0-core",
         "group": "D13-16",
-        "sector": 0,
+        "sector": 0.0,
         "side": "core",
         "deck_range": [
-          13,
-          16
+          13.0,
+          16.0
         ],
         "diagrammatic_x": [
-          -1200,
-          -720
+          -1200.0,
+          -720.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1550,19 +1594,19 @@
       {
         "id": "D13-16-1-core",
         "group": "D13-16",
-        "sector": 1,
+        "sector": 1.0,
         "side": "core",
         "deck_range": [
-          13,
-          16
+          13.0,
+          16.0
         ],
         "diagrammatic_x": [
-          -720,
-          -240
+          -720.0,
+          -240.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1577,19 +1621,19 @@
       {
         "id": "D13-16-2-core",
         "group": "D13-16",
-        "sector": 2,
+        "sector": 2.0,
         "side": "core",
         "deck_range": [
-          13,
-          16
+          13.0,
+          16.0
         ],
         "diagrammatic_x": [
-          -240,
-          240
+          -240.0,
+          240.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "opening",
@@ -1611,19 +1655,19 @@
       {
         "id": "D13-16-3-core",
         "group": "D13-16",
-        "sector": 3,
+        "sector": 3.0,
         "side": "core",
         "deck_range": [
-          13,
-          16
+          13.0,
+          16.0
         ],
         "diagrammatic_x": [
-          240,
-          720
+          240.0,
+          720.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1638,19 +1682,19 @@
       {
         "id": "D13-16-4-core",
         "group": "D13-16",
-        "sector": 4,
+        "sector": 4.0,
         "side": "core",
         "deck_range": [
-          13,
-          16
+          13.0,
+          16.0
         ],
         "diagrammatic_x": [
-          720,
-          1200
+          720.0,
+          1200.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1665,19 +1709,19 @@
       {
         "id": "D13-16-0-starboard",
         "group": "D13-16",
-        "sector": 0,
+        "sector": 0.0,
         "side": "starboard",
         "deck_range": [
-          13,
-          16
+          13.0,
+          16.0
         ],
         "diagrammatic_x": [
-          -1200,
-          -720
+          -1200.0,
+          -720.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1692,19 +1736,19 @@
       {
         "id": "D13-16-1-starboard",
         "group": "D13-16",
-        "sector": 1,
+        "sector": 1.0,
         "side": "starboard",
         "deck_range": [
-          13,
-          16
+          13.0,
+          16.0
         ],
         "diagrammatic_x": [
-          -720,
-          -240
+          -720.0,
+          -240.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1719,19 +1763,19 @@
       {
         "id": "D13-16-2-starboard",
         "group": "D13-16",
-        "sector": 2,
+        "sector": 2.0,
         "side": "starboard",
         "deck_range": [
-          13,
-          16
+          13.0,
+          16.0
         ],
         "diagrammatic_x": [
-          -240,
-          240
+          -240.0,
+          240.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1746,19 +1790,19 @@
       {
         "id": "D13-16-3-starboard",
         "group": "D13-16",
-        "sector": 3,
+        "sector": 3.0,
         "side": "starboard",
         "deck_range": [
-          13,
-          16
+          13.0,
+          16.0
         ],
         "diagrammatic_x": [
-          240,
-          720
+          240.0,
+          720.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1773,19 +1817,19 @@
       {
         "id": "D13-16-4-starboard",
         "group": "D13-16",
-        "sector": 4,
+        "sector": 4.0,
         "side": "starboard",
         "deck_range": [
-          13,
-          16
+          13.0,
+          16.0
         ],
         "diagrammatic_x": [
-          720,
-          1200
+          720.0,
+          1200.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1800,19 +1844,19 @@
       {
         "id": "D17-20-0-port",
         "group": "D17-20",
-        "sector": 0,
+        "sector": 0.0,
         "side": "port",
         "deck_range": [
-          17,
-          20
+          17.0,
+          20.0
         ],
         "diagrammatic_x": [
-          -1200,
-          -720
+          -1200.0,
+          -720.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1827,19 +1871,19 @@
       {
         "id": "D17-20-1-port",
         "group": "D17-20",
-        "sector": 1,
+        "sector": 1.0,
         "side": "port",
         "deck_range": [
-          17,
-          20
+          17.0,
+          20.0
         ],
         "diagrammatic_x": [
-          -720,
-          -240
+          -720.0,
+          -240.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1854,19 +1898,19 @@
       {
         "id": "D17-20-2-port",
         "group": "D17-20",
-        "sector": 2,
+        "sector": 2.0,
         "side": "port",
         "deck_range": [
-          17,
-          20
+          17.0,
+          20.0
         ],
         "diagrammatic_x": [
-          -240,
-          240
+          -240.0,
+          240.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1881,19 +1925,19 @@
       {
         "id": "D17-20-3-port",
         "group": "D17-20",
-        "sector": 3,
+        "sector": 3.0,
         "side": "port",
         "deck_range": [
-          17,
-          20
+          17.0,
+          20.0
         ],
         "diagrammatic_x": [
-          240,
-          720
+          240.0,
+          720.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -1908,19 +1952,19 @@
       {
         "id": "D17-20-4-port",
         "group": "D17-20",
-        "sector": 4,
+        "sector": 4.0,
         "side": "port",
         "deck_range": [
-          17,
-          20
+          17.0,
+          20.0
         ],
         "diagrammatic_x": [
-          720,
-          1200
+          720.0,
+          1200.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1935,19 +1979,19 @@
       {
         "id": "D17-20-0-core",
         "group": "D17-20",
-        "sector": 0,
+        "sector": 0.0,
         "side": "core",
         "deck_range": [
-          17,
-          20
+          17.0,
+          20.0
         ],
         "diagrammatic_x": [
-          -1200,
-          -720
+          -1200.0,
+          -720.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -1962,19 +2006,19 @@
       {
         "id": "D17-20-1-core",
         "group": "D17-20",
-        "sector": 1,
+        "sector": 1.0,
         "side": "core",
         "deck_range": [
-          17,
-          20
+          17.0,
+          20.0
         ],
         "diagrammatic_x": [
-          -720,
-          -240
+          -720.0,
+          -240.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -1989,19 +2033,19 @@
       {
         "id": "D17-20-2-core",
         "group": "D17-20",
-        "sector": 2,
+        "sector": 2.0,
         "side": "core",
         "deck_range": [
-          17,
-          20
+          17.0,
+          20.0
         ],
         "diagrammatic_x": [
-          -240,
-          240
+          -240.0,
+          240.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -2016,19 +2060,19 @@
       {
         "id": "D17-20-3-core",
         "group": "D17-20",
-        "sector": 3,
+        "sector": 3.0,
         "side": "core",
         "deck_range": [
-          17,
-          20
+          17.0,
+          20.0
         ],
         "diagrammatic_x": [
-          240,
-          720
+          240.0,
+          720.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -2043,19 +2087,19 @@
       {
         "id": "D17-20-4-core",
         "group": "D17-20",
-        "sector": 4,
+        "sector": 4.0,
         "side": "core",
         "deck_range": [
-          17,
-          20
+          17.0,
+          20.0
         ],
         "diagrammatic_x": [
-          720,
-          1200
+          720.0,
+          1200.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -2070,19 +2114,19 @@
       {
         "id": "D17-20-0-starboard",
         "group": "D17-20",
-        "sector": 0,
+        "sector": 0.0,
         "side": "starboard",
         "deck_range": [
-          17,
-          20
+          17.0,
+          20.0
         ],
         "diagrammatic_x": [
-          -1200,
-          -720
+          -1200.0,
+          -720.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -2097,19 +2141,19 @@
       {
         "id": "D17-20-1-starboard",
         "group": "D17-20",
-        "sector": 1,
+        "sector": 1.0,
         "side": "starboard",
         "deck_range": [
-          17,
-          20
+          17.0,
+          20.0
         ],
         "diagrammatic_x": [
-          -720,
-          -240
+          -720.0,
+          -240.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -2124,19 +2168,19 @@
       {
         "id": "D17-20-2-starboard",
         "group": "D17-20",
-        "sector": 2,
+        "sector": 2.0,
         "side": "starboard",
         "deck_range": [
-          17,
-          20
+          17.0,
+          20.0
         ],
         "diagrammatic_x": [
-          -240,
-          240
+          -240.0,
+          240.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -2151,19 +2195,19 @@
       {
         "id": "D17-20-3-starboard",
         "group": "D17-20",
-        "sector": 3,
+        "sector": 3.0,
         "side": "starboard",
         "deck_range": [
-          17,
-          20
+          17.0,
+          20.0
         ],
         "diagrammatic_x": [
-          240,
-          720
+          240.0,
+          720.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -2178,19 +2222,19 @@
       {
         "id": "D17-20-4-starboard",
         "group": "D17-20",
-        "sector": 4,
+        "sector": 4.0,
         "side": "starboard",
         "deck_range": [
-          17,
-          20
+          17.0,
+          20.0
         ],
         "diagrammatic_x": [
-          720,
-          1200
+          720.0,
+          1200.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -2205,19 +2249,19 @@
       {
         "id": "D21-25-0-port",
         "group": "D21-25",
-        "sector": 0,
+        "sector": 0.0,
         "side": "port",
         "deck_range": [
-          21,
-          25
+          21.0,
+          25.0
         ],
         "diagrammatic_x": [
-          -1200,
-          -720
+          -1200.0,
+          -720.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -2232,19 +2276,19 @@
       {
         "id": "D21-25-1-port",
         "group": "D21-25",
-        "sector": 1,
+        "sector": 1.0,
         "side": "port",
         "deck_range": [
-          21,
-          25
+          21.0,
+          25.0
         ],
         "diagrammatic_x": [
-          -720,
-          -240
+          -720.0,
+          -240.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "hazard",
@@ -2265,19 +2309,19 @@
       {
         "id": "D21-25-2-port",
         "group": "D21-25",
-        "sector": 2,
+        "sector": 2.0,
         "side": "port",
         "deck_range": [
-          21,
-          25
+          21.0,
+          25.0
         ],
         "diagrammatic_x": [
-          -240,
-          240
+          -240.0,
+          240.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -2292,19 +2336,19 @@
       {
         "id": "D21-25-3-port",
         "group": "D21-25",
-        "sector": 3,
+        "sector": 3.0,
         "side": "port",
         "deck_range": [
-          21,
-          25
+          21.0,
+          25.0
         ],
         "diagrammatic_x": [
-          240,
-          720
+          240.0,
+          720.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -2319,19 +2363,19 @@
       {
         "id": "D21-25-4-port",
         "group": "D21-25",
-        "sector": 4,
+        "sector": 4.0,
         "side": "port",
         "deck_range": [
-          21,
-          25
+          21.0,
+          25.0
         ],
         "diagrammatic_x": [
-          720,
-          1200
+          720.0,
+          1200.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -2346,19 +2390,19 @@
       {
         "id": "D21-25-0-core",
         "group": "D21-25",
-        "sector": 0,
+        "sector": 0.0,
         "side": "core",
         "deck_range": [
-          21,
-          25
+          21.0,
+          25.0
         ],
         "diagrammatic_x": [
-          -1200,
-          -720
+          -1200.0,
+          -720.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -2373,19 +2417,19 @@
       {
         "id": "D21-25-1-core",
         "group": "D21-25",
-        "sector": 1,
+        "sector": 1.0,
         "side": "core",
         "deck_range": [
-          21,
-          25
+          21.0,
+          25.0
         ],
         "diagrammatic_x": [
-          -720,
-          -240
+          -720.0,
+          -240.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -2400,19 +2444,19 @@
       {
         "id": "D21-25-2-core",
         "group": "D21-25",
-        "sector": 2,
+        "sector": 2.0,
         "side": "core",
         "deck_range": [
-          21,
-          25
+          21.0,
+          25.0
         ],
         "diagrammatic_x": [
-          -240,
-          240
+          -240.0,
+          240.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -2427,19 +2471,19 @@
       {
         "id": "D21-25-3-core",
         "group": "D21-25",
-        "sector": 3,
+        "sector": 3.0,
         "side": "core",
         "deck_range": [
-          21,
-          25
+          21.0,
+          25.0
         ],
         "diagrammatic_x": [
-          240,
-          720
+          240.0,
+          720.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -2454,19 +2498,19 @@
       {
         "id": "D21-25-4-core",
         "group": "D21-25",
-        "sector": 4,
+        "sector": 4.0,
         "side": "core",
         "deck_range": [
-          21,
-          25
+          21.0,
+          25.0
         ],
         "diagrammatic_x": [
-          720,
-          1200
+          720.0,
+          1200.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -2481,19 +2525,19 @@
       {
         "id": "D21-25-0-starboard",
         "group": "D21-25",
-        "sector": 0,
+        "sector": 0.0,
         "side": "starboard",
         "deck_range": [
-          21,
-          25
+          21.0,
+          25.0
         ],
         "diagrammatic_x": [
-          -1200,
-          -720
+          -1200.0,
+          -720.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -2508,19 +2552,19 @@
       {
         "id": "D21-25-1-starboard",
         "group": "D21-25",
-        "sector": 1,
+        "sector": 1.0,
         "side": "starboard",
         "deck_range": [
-          21,
-          25
+          21.0,
+          25.0
         ],
         "diagrammatic_x": [
-          -720,
-          -240
+          -720.0,
+          -240.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -2535,19 +2579,19 @@
       {
         "id": "D21-25-2-starboard",
         "group": "D21-25",
-        "sector": 2,
+        "sector": 2.0,
         "side": "starboard",
         "deck_range": [
-          21,
-          25
+          21.0,
+          25.0
         ],
         "diagrammatic_x": [
-          -240,
-          240
+          -240.0,
+          240.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -2562,19 +2606,19 @@
       {
         "id": "D21-25-3-starboard",
         "group": "D21-25",
-        "sector": 3,
+        "sector": 3.0,
         "side": "starboard",
         "deck_range": [
-          21,
-          25
+          21.0,
+          25.0
         ],
         "diagrammatic_x": [
-          240,
-          720
+          240.0,
+          720.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -2589,19 +2633,19 @@
       {
         "id": "D21-25-4-starboard",
         "group": "D21-25",
-        "sector": 4,
+        "sector": 4.0,
         "side": "starboard",
         "deck_range": [
-          21,
-          25
+          21.0,
+          25.0
         ],
         "diagrammatic_x": [
-          720,
-          1200
+          720.0,
+          1200.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -2616,19 +2660,19 @@
       {
         "id": "D26-30-0-port",
         "group": "D26-30",
-        "sector": 0,
+        "sector": 0.0,
         "side": "port",
         "deck_range": [
-          26,
-          30
+          26.0,
+          30.0
         ],
         "diagrammatic_x": [
-          -1200,
-          -720
+          -1200.0,
+          -720.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -2643,19 +2687,19 @@
       {
         "id": "D26-30-1-port",
         "group": "D26-30",
-        "sector": 1,
+        "sector": 1.0,
         "side": "port",
         "deck_range": [
-          26,
-          30
+          26.0,
+          30.0
         ],
         "diagrammatic_x": [
-          -720,
-          -240
+          -720.0,
+          -240.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -2670,19 +2714,19 @@
       {
         "id": "D26-30-2-port",
         "group": "D26-30",
-        "sector": 2,
+        "sector": 2.0,
         "side": "port",
         "deck_range": [
-          26,
-          30
+          26.0,
+          30.0
         ],
         "diagrammatic_x": [
-          -240,
-          240
+          -240.0,
+          240.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -2697,19 +2741,19 @@
       {
         "id": "D26-30-3-port",
         "group": "D26-30",
-        "sector": 3,
+        "sector": 3.0,
         "side": "port",
         "deck_range": [
-          26,
-          30
+          26.0,
+          30.0
         ],
         "diagrammatic_x": [
-          240,
-          720
+          240.0,
+          720.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -2724,19 +2768,19 @@
       {
         "id": "D26-30-4-port",
         "group": "D26-30",
-        "sector": 4,
+        "sector": 4.0,
         "side": "port",
         "deck_range": [
-          26,
-          30
+          26.0,
+          30.0
         ],
         "diagrammatic_x": [
-          720,
-          1200
+          720.0,
+          1200.0
         ],
         "diagrammatic_z": [
-          -310,
-          -120
+          -310.0,
+          -120.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -2751,19 +2795,19 @@
       {
         "id": "D26-30-0-core",
         "group": "D26-30",
-        "sector": 0,
+        "sector": 0.0,
         "side": "core",
         "deck_range": [
-          26,
-          30
+          26.0,
+          30.0
         ],
         "diagrammatic_x": [
-          -1200,
-          -720
+          -1200.0,
+          -720.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -2778,19 +2822,19 @@
       {
         "id": "D26-30-1-core",
         "group": "D26-30",
-        "sector": 1,
+        "sector": 1.0,
         "side": "core",
         "deck_range": [
-          26,
-          30
+          26.0,
+          30.0
         ],
         "diagrammatic_x": [
-          -720,
-          -240
+          -720.0,
+          -240.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -2805,19 +2849,19 @@
       {
         "id": "D26-30-2-core",
         "group": "D26-30",
-        "sector": 2,
+        "sector": 2.0,
         "side": "core",
         "deck_range": [
-          26,
-          30
+          26.0,
+          30.0
         ],
         "diagrammatic_x": [
-          -240,
-          240
+          -240.0,
+          240.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -2832,19 +2876,19 @@
       {
         "id": "D26-30-3-core",
         "group": "D26-30",
-        "sector": 3,
+        "sector": 3.0,
         "side": "core",
         "deck_range": [
-          26,
-          30
+          26.0,
+          30.0
         ],
         "diagrammatic_x": [
-          240,
-          720
+          240.0,
+          720.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "generation",
@@ -2861,19 +2905,19 @@
       {
         "id": "D26-30-4-core",
         "group": "D26-30",
-        "sector": 4,
+        "sector": 4.0,
         "side": "core",
         "deck_range": [
-          26,
-          30
+          26.0,
+          30.0
         ],
         "diagrammatic_x": [
-          720,
-          1200
+          720.0,
+          1200.0
         ],
         "diagrammatic_z": [
-          -100,
-          100
+          -100.0,
+          100.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -2890,19 +2934,19 @@
       {
         "id": "D26-30-0-starboard",
         "group": "D26-30",
-        "sector": 0,
+        "sector": 0.0,
         "side": "starboard",
         "deck_range": [
-          26,
-          30
+          26.0,
+          30.0
         ],
         "diagrammatic_x": [
-          -1200,
-          -720
+          -1200.0,
+          -720.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -2917,19 +2961,19 @@
       {
         "id": "D26-30-1-starboard",
         "group": "D26-30",
-        "sector": 1,
+        "sector": 1.0,
         "side": "starboard",
         "deck_range": [
-          26,
-          30
+          26.0,
+          30.0
         ],
         "diagrammatic_x": [
-          -720,
-          -240
+          -720.0,
+          -240.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -2944,19 +2988,19 @@
       {
         "id": "D26-30-2-starboard",
         "group": "D26-30",
-        "sector": 2,
+        "sector": 2.0,
         "side": "starboard",
         "deck_range": [
-          26,
-          30
+          26.0,
+          30.0
         ],
         "diagrammatic_x": [
-          -240,
-          240
+          -240.0,
+          240.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "habitation",
@@ -2971,19 +3015,19 @@
       {
         "id": "D26-30-3-starboard",
         "group": "D26-30",
-        "sector": 3,
+        "sector": 3.0,
         "side": "starboard",
         "deck_range": [
-          26,
-          30
+          26.0,
+          30.0
         ],
         "diagrammatic_x": [
-          240,
-          720
+          240.0,
+          720.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "ship systems",
@@ -2998,19 +3042,19 @@
       {
         "id": "D26-30-4-starboard",
         "group": "D26-30",
-        "sector": 4,
+        "sector": 4.0,
         "side": "starboard",
         "deck_range": [
-          26,
-          30
+          26.0,
+          30.0
         ],
         "diagrammatic_x": [
-          720,
-          1200
+          720.0,
+          1200.0
         ],
         "diagrammatic_z": [
-          120,
-          310
+          120.0,
+          310.0
         ],
         "geometry": "diagrammatic; no rectangular hull occupancy implied",
         "category": "hazard",
@@ -3031,9 +3075,9 @@
       "kind": "proposed command bridge anchor",
       "deck": "D03",
       "xyz": [
-        480,
+        480.0,
         60.5,
-        0
+        0.0
       ],
       "source": "proposed: exterior-compatible aft-mid upper placement",
       "status": "proposed",
@@ -3044,21 +3088,21 @@
       "kind": "stasis bay",
       "deck": "D14",
       "xyz": [
-        0,
-        0,
-        0
+        15.0,
+        0.0,
+        7.7
       ],
-      "source": "sim/pods.gd",
+      "source": "sim/ship_layout.gd via tools/export_ship_layout.gd",
       "status": "built",
       "district": "D13-16-2-core",
       "bounds": {
         "x": [
-          -6,
-          6
+          11.0,
+          19.0
         ],
         "z": [
-          -4,
-          4
+          1.7,
+          13.7
         ]
       },
       "clear_height": 3.2
@@ -3068,11 +3112,11 @@
       "kind": "pry rod",
       "deck": "D14",
       "xyz": [
-        -0.6,
-        0,
-        -1.55
+        13.45,
+        0.0,
+        8.3
       ],
-      "source": "app/rod.gd",
+      "source": "sim/ship_layout.gd via tools/export_ship_layout.gd",
       "status": "built",
       "district": "D13-16-2-core"
     },
@@ -3081,11 +3125,11 @@
       "kind": "jammed hatch",
       "deck": "D14",
       "xyz": [
-        6,
-        0,
-        0
+        15.0,
+        0.0,
+        1.5
       ],
-      "source": "sim/pods.gd",
+      "source": "sim/ship_layout.gd via tools/export_ship_layout.gd",
       "status": "built",
       "district": "D13-16-2-core"
     },
@@ -3094,35 +3138,35 @@
       "kind": "corridor",
       "deck": "D14",
       "xyz": [
-        18,
-        0,
-        0
+        18.0,
+        0.0,
+        0.0
       ],
-      "source": "app/hallway.gd",
+      "source": "sim/ship_layout.gd via tools/export_ship_layout.gd",
       "status": "built",
       "district": "D13-16-2-core",
       "bounds": {
         "x": [
-          6,
-          30
+          6.0,
+          30.0
         ],
         "z": [
           -1.5,
           1.5
         ]
       },
-      "endcap_x": 30
+      "endcap_x": 30.0
     },
     {
       "id": "switch",
       "kind": "hall light switch",
       "deck": "D14",
       "xyz": [
-        6.22,
+        16.2,
         1.25,
-        0.85
+        1.45
       ],
-      "source": "app/hallway.gd",
+      "source": "sim/ship_layout.gd via tools/export_ship_layout.gd",
       "status": "built",
       "district": "D13-16-2-core"
     },
@@ -3131,11 +3175,11 @@
       "kind": "pierced power door",
       "deck": "D14",
       "xyz": [
-        27,
-        0,
+        27.0,
+        0.0,
         -1.5
       ],
-      "source": "app/hallway.gd; app/power_room.gd",
+      "source": "sim/ship_layout.gd via tools/export_ship_layout.gd",
       "status": "built",
       "district": "D13-16-2-core"
     },
@@ -3144,17 +3188,17 @@
       "kind": "secondary power room",
       "deck": "D14",
       "xyz": [
-        27,
-        0,
+        27.0,
+        0.0,
         -5.7
       ],
-      "source": "app/power_room.gd",
+      "source": "sim/ship_layout.gd via tools/export_ship_layout.gd",
       "status": "built",
       "district": "D13-16-2-core",
       "bounds": {
         "x": [
-          21,
-          33
+          21.0,
+          33.0
         ],
         "z": [
           -9.7,
@@ -3167,11 +3211,11 @@
       "kind": "secondary generator (local backup)",
       "deck": "D14",
       "xyz": [
-        27,
-        0,
+        27.0,
+        0.0,
         -5.7
       ],
-      "source": "app/power_room.gd",
+      "source": "sim/ship_layout.gd via tools/export_ship_layout.gd",
       "status": "built",
       "district": "D13-16-2-core"
     },
@@ -3180,9 +3224,9 @@
       "kind": "medical annex",
       "deck": "D14",
       "xyz": [
-        68,
-        0,
-        14
+        68.0,
+        0.0,
+        14.0
       ],
       "source": "proposed: phase-1 ship atlas",
       "status": "proposed",
@@ -3193,9 +3237,9 @@
       "kind": "primary generation plant",
       "deck": "D27",
       "xyz": [
-        700,
+        700.0,
         -71.5,
-        0
+        0.0
       ],
       "source": "proposed: phase-1 ship atlas",
       "status": "proposed",
@@ -3206,9 +3250,9 @@
       "kind": "M-drive engine",
       "deck": "D28",
       "xyz": [
-        1030,
-        -77,
-        0
+        1030.0,
+        -77.0,
+        0.0
       ],
       "source": "proposed: phase-1 ship atlas",
       "status": "proposed",
@@ -3219,26 +3263,26 @@
       "kind": "M-drive-adjacent isolated radiation region",
       "deck": "D28",
       "xyz": [
-        1045,
-        -77,
-        235
+        1045.0,
+        -77.0,
+        235.0
       ],
       "source": "proposed: phase-1 ship atlas; radiation source unknown",
       "status": "proposed",
       "district": "D26-30-4-starboard",
       "bounds": {
         "x": [
-          970,
-          1120
+          970.0,
+          1120.0
         ],
         "z": [
-          170,
-          300
+          170.0,
+          300.0
         ]
       },
       "deck_range": [
-        26,
-        30
+        26.0,
+        30.0
       ],
       "radiation_source": "unknown"
     },
@@ -3247,26 +3291,26 @@
       "kind": "forward-mid isolated radiation region",
       "deck": "D22",
       "xyz": [
-        -525,
-        -44,
-        -180
+        -525.0,
+        -44.0,
+        -180.0
       ],
       "source": "proposed: phase-1 ship atlas; radiation source unknown",
       "status": "proposed",
       "district": "D21-25-1-port",
       "bounds": {
         "x": [
-          -600,
-          -450
+          -600.0,
+          -450.0
         ],
         "z": [
-          -230,
-          -130
+          -230.0,
+          -130.0
         ]
       },
       "deck_range": [
-        21,
-        23
+        21.0,
+        23.0
       ],
       "radiation_source": "unknown"
     },
@@ -3275,21 +3319,21 @@
       "kind": "isolated two-pod room",
       "deck": "D22",
       "xyz": [
-        -490,
-        -44,
-        -170
+        -490.0,
+        -44.0,
+        -170.0
       ],
       "source": "proposed: phase-1 ship atlas",
       "status": "proposed",
       "district": "D21-25-1-port",
       "bounds": {
         "x": [
-          -507,
-          -473
+          -507.0,
+          -473.0
         ],
         "z": [
-          -184,
-          -156
+          -184.0,
+          -156.0
         ]
       },
       "radiation_region": "r2"
@@ -3299,21 +3343,21 @@
       "kind": "separately shielded irradiated armory",
       "deck": "D22",
       "xyz": [
-        -560,
-        -44,
-        -190
+        -560.0,
+        -44.0,
+        -190.0
       ],
       "source": "docs/design/biblia.md (armory irradiated); proposed placement and shielding",
       "status": "proposed",
       "district": "D21-25-1-port",
       "bounds": {
         "x": [
-          -577,
-          -543
+          -577.0,
+          -543.0
         ],
         "z": [
-          -208,
-          -172
+          -208.0,
+          -172.0
         ]
       },
       "radiation_region": "r2",
@@ -3324,11 +3368,11 @@
       "kind": "stasis pod",
       "deck": "D14",
       "xyz": [
-        -4.8,
-        0,
-        -2.9
+        12.1,
+        0.0,
+        12.5
       ],
-      "source": "sim/pods.gd",
+      "source": "sim/ship_layout.gd via tools/export_ship_layout.gd",
       "status": "built",
       "district": "D13-16-2-core",
       "room": "bay",
@@ -3339,11 +3383,11 @@
       "kind": "stasis pod",
       "deck": "D14",
       "xyz": [
-        -3.4,
-        0,
-        -2.9
+        12.1,
+        0.0,
+        11.1
       ],
-      "source": "sim/pods.gd",
+      "source": "sim/ship_layout.gd via tools/export_ship_layout.gd",
       "status": "built",
       "district": "D13-16-2-core",
       "room": "bay",
@@ -3354,11 +3398,11 @@
       "kind": "stasis pod",
       "deck": "D14",
       "xyz": [
-        -2,
-        0,
-        -2.9
+        12.1,
+        0.0,
+        9.7
       ],
-      "source": "sim/pods.gd",
+      "source": "sim/ship_layout.gd via tools/export_ship_layout.gd",
       "status": "built",
       "district": "D13-16-2-core",
       "room": "bay",
@@ -3369,11 +3413,11 @@
       "kind": "stasis pod",
       "deck": "D14",
       "xyz": [
-        -0.6,
-        0,
-        -2.9
+        12.1,
+        0.0,
+        8.3
       ],
-      "source": "sim/pods.gd",
+      "source": "sim/ship_layout.gd via tools/export_ship_layout.gd",
       "status": "built",
       "district": "D13-16-2-core",
       "room": "bay",
@@ -3384,11 +3428,11 @@
       "kind": "stasis pod",
       "deck": "D14",
       "xyz": [
-        -2,
-        0,
-        2.9
+        17.9,
+        0.0,
+        9.7
       ],
-      "source": "sim/pods.gd",
+      "source": "sim/ship_layout.gd via tools/export_ship_layout.gd",
       "status": "built",
       "district": "D13-16-2-core",
       "room": "bay",
@@ -3399,11 +3443,11 @@
       "kind": "stasis pod",
       "deck": "D14",
       "xyz": [
-        -3.4,
-        0,
-        2.9
+        17.9,
+        0.0,
+        11.1
       ],
-      "source": "sim/pods.gd",
+      "source": "sim/ship_layout.gd via tools/export_ship_layout.gd",
       "status": "built",
       "district": "D13-16-2-core",
       "room": "bay",
@@ -3414,11 +3458,11 @@
       "kind": "stasis pod",
       "deck": "D14",
       "xyz": [
-        -4.8,
-        0,
-        2.9
+        17.9,
+        0.0,
+        12.5
       ],
-      "source": "sim/pods.gd",
+      "source": "sim/ship_layout.gd via tools/export_ship_layout.gd",
       "status": "built",
       "district": "D13-16-2-core",
       "room": "bay",
@@ -3430,8 +3474,8 @@
       "deck": "D22",
       "xyz": [
         -490.7,
-        -44,
-        -170
+        -44.0,
+        -170.0
       ],
       "source": "proposed: phase-1 ship atlas",
       "status": "proposed",
@@ -3445,8 +3489,8 @@
       "deck": "D22",
       "xyz": [
         -489.3,
-        -44,
-        -170
+        -44.0,
+        -170.0
       ],
       "source": "proposed: phase-1 ship atlas",
       "status": "proposed",
@@ -3459,8 +3503,8 @@
       "kind": "decorative solid side leaf",
       "deck": "D14",
       "xyz": [
-        9,
-        0,
+        9.0,
+        0.0,
         -1.5
       ],
       "source": "app/hallway.gd",
@@ -3473,8 +3517,8 @@
       "kind": "decorative solid side leaf",
       "deck": "D14",
       "xyz": [
-        9,
-        0,
+        9.0,
+        0.0,
         1.5
       ],
       "source": "app/hallway.gd",
@@ -3487,8 +3531,8 @@
       "kind": "decorative solid side leaf",
       "deck": "D14",
       "xyz": [
-        15,
-        0,
+        15.0,
+        0.0,
         -1.5
       ],
       "source": "app/hallway.gd",
@@ -3501,22 +3545,23 @@
       "kind": "decorative solid side leaf",
       "deck": "D14",
       "xyz": [
-        15,
-        0,
+        15.0,
+        0.0,
         1.5
       ],
-      "source": "app/hallway.gd",
-      "status": "built",
+      "source": "Earlier atlas proposal, superseded by the built bay portal",
+      "status": "proposed",
       "district": "D13-16-2-core",
-      "pierced": false
+      "pierced": false,
+      "superseded_by": "hatch"
     },
     {
       "id": "leaf_21_north",
       "kind": "decorative solid side leaf",
       "deck": "D14",
       "xyz": [
-        21,
-        0,
+        21.0,
+        0.0,
         -1.5
       ],
       "source": "app/hallway.gd",
@@ -3529,8 +3574,8 @@
       "kind": "decorative solid side leaf",
       "deck": "D14",
       "xyz": [
-        21,
-        0,
+        21.0,
+        0.0,
         1.5
       ],
       "source": "app/hallway.gd",
@@ -3543,16 +3588,16 @@
       "kind": "through-deck trunk",
       "deck": "D14",
       "xyz": [
-        -550,
-        0,
-        -90
+        -550.0,
+        0.0,
+        -90.0
       ],
       "source": "proposed: phase-1 ship atlas",
       "status": "proposed",
       "district": "D13-16-1-core",
       "deck_range": [
-        1,
-        30
+        1.0,
+        30.0
       ]
     },
     {
@@ -3560,16 +3605,16 @@
       "kind": "through-deck trunk",
       "deck": "D14",
       "xyz": [
-        -300,
-        0,
-        90
+        -300.0,
+        0.0,
+        90.0
       ],
       "source": "proposed: phase-1 ship atlas",
       "status": "proposed",
       "district": "D13-16-1-core",
       "deck_range": [
-        1,
-        30
+        1.0,
+        30.0
       ]
     },
     {
@@ -3577,16 +3622,16 @@
       "kind": "through-deck trunk",
       "deck": "D14",
       "xyz": [
-        300,
-        0,
-        -90
+        300.0,
+        0.0,
+        -90.0
       ],
       "source": "proposed: phase-1 ship atlas",
       "status": "proposed",
       "district": "D13-16-3-core",
       "deck_range": [
-        1,
-        30
+        1.0,
+        30.0
       ]
     },
     {
@@ -3594,16 +3639,16 @@
       "kind": "through-deck trunk",
       "deck": "D14",
       "xyz": [
-        850,
-        0,
-        90
+        850.0,
+        0.0,
+        90.0
       ],
       "source": "proposed: phase-1 ship atlas",
       "status": "proposed",
       "district": "D13-16-4-core",
       "deck_range": [
-        1,
-        30
+        1.0,
+        30.0
       ]
     }
   ],
@@ -3667,7 +3712,7 @@
       {
         "id": "leaf_15_south",
         "facility_ref": "leaf_15_south",
-        "status": "built"
+        "status": "proposed"
       },
       {
         "id": "trunk_1",
@@ -3692,9 +3737,9 @@
       {
         "id": "route_port_0",
         "xyz": [
-          -850,
-          0,
-          -90
+          -850.0,
+          0.0,
+          -90.0
         ],
         "deck": "D14",
         "status": "proposed"
@@ -3702,9 +3747,9 @@
       {
         "id": "route_port_1",
         "xyz": [
-          -300,
-          0,
-          -90
+          -300.0,
+          0.0,
+          -90.0
         ],
         "deck": "D14",
         "status": "proposed"
@@ -3712,9 +3757,9 @@
       {
         "id": "route_port_2",
         "xyz": [
-          300,
-          0,
-          -90
+          300.0,
+          0.0,
+          -90.0
         ],
         "deck": "D14",
         "status": "proposed"
@@ -3722,9 +3767,9 @@
       {
         "id": "route_port_3",
         "xyz": [
-          850,
-          0,
-          -90
+          850.0,
+          0.0,
+          -90.0
         ],
         "deck": "D14",
         "status": "proposed"
@@ -3732,9 +3777,9 @@
       {
         "id": "route_starboard_0",
         "xyz": [
-          -850,
-          0,
-          90
+          -850.0,
+          0.0,
+          90.0
         ],
         "deck": "D14",
         "status": "proposed"
@@ -3742,9 +3787,9 @@
       {
         "id": "route_starboard_1",
         "xyz": [
-          -300,
-          0,
-          90
+          -300.0,
+          0.0,
+          90.0
         ],
         "deck": "D14",
         "status": "proposed"
@@ -3752,9 +3797,9 @@
       {
         "id": "route_starboard_2",
         "xyz": [
-          300,
-          0,
-          90
+          300.0,
+          0.0,
+          90.0
         ],
         "deck": "D14",
         "status": "proposed"
@@ -3762,9 +3807,9 @@
       {
         "id": "route_starboard_3",
         "xyz": [
-          850,
-          0,
-          90
+          850.0,
+          0.0,
+          90.0
         ],
         "deck": "D14",
         "status": "proposed"
@@ -3772,9 +3817,9 @@
       {
         "id": "future_neighbor",
         "xyz": [
-          15,
-          0,
-          12
+          15.0,
+          0.0,
+          12.0
         ],
         "deck": "D14",
         "status": "proposed"
@@ -3808,8 +3853,8 @@
       {
         "from": "hall",
         "to": "leaf_15_south",
-        "status": "built",
-        "kind": "decorative solid; impassable"
+        "status": "future",
+        "kind": "superseded proposal; bay portal occupies this station"
       },
       {
         "from": "leaf_15_south",
@@ -3963,10 +4008,10 @@
       "trunk_4"
     ],
     "longitudinal_passages_z": [
-      -90,
-      90
+      -90.0,
+      90.0
     ],
-    "opening_future_portal": "leaf_15_south; requires piercing solid wall at x=15,z=+1.5"
+    "opening_future_portal": "Earlier leaf_15_south extension is superseded by the built bay; connector proposals remain unbuilt."
   },
   "power": {
     "nodes": [

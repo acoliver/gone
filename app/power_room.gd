@@ -1,6 +1,6 @@
 class_name PowerRoom
 extends Node3D
-## The emergency power room behind the hallway's last right-hand door
+## The emergency power room behind the hallway's last port (-Z) door walking aft (+X)
 ## (issue #59): the same footprint as the stasis room, pierced off the
 ## corridor's north wall at the power door. The room's consoles read
 ## futuristic-but-broken — flatscreens, blank colored-button keyboards,
@@ -21,12 +21,12 @@ extends Node3D
 ## supplies the rest of the shell — the same wall thickness, ceiling,
 ## and tucked floor slabs as the hallway's construction language.
 const WALL: float = Placement.WALL_THICKNESS
-const ROOM_CENTER_X: float = Hallway.POWER_DOOR_X
-const ROOM_START_Z: float = -(Hallway.HALL_WIDTH / 2.0 + WALL)
-const ROOM_END_Z: float = ROOM_START_Z - Pods.ROOM_WIDTH
-const ROOM_START_X: float = ROOM_CENTER_X - Pods.ROOM_LENGTH / 2.0
-const ROOM_END_X: float = ROOM_CENTER_X + Pods.ROOM_LENGTH / 2.0
-const ROOM_CEILING: float = Pods.ROOM_CEILING_HEIGHT
+const ROOM_CENTER_X = ShipGeometry.ROOM_CENTER_X
+const ROOM_START_Z = ShipGeometry.ROOM_START_Z
+const ROOM_END_Z = ShipGeometry.ROOM_END_Z
+const ROOM_START_X = ShipGeometry.ROOM_START_X
+const ROOM_END_X = ShipGeometry.ROOM_END_X
+const ROOM_CEILING = ShipGeometry.ROOM_CEILING
 
 ## The power door's leaf: the side doors' exact dimensions, proud of
 ## the corridor side of the wall band, sliding aside along the wall
@@ -42,11 +42,7 @@ const DOOR_SHADE: float = Hallway.SIDE_DOOR_SHADE
 ## blank colored buttons — a 4x3 grid plus three wider function buttons
 ## off to the side. Nothing mechanical; buttons carry no letters.
 ## Only the working screen carries native writing.
-const CONSOLE_HEALTHS := {
-	"dead_black": 0,
-	"dead_busted": 1,
-	"active": 2,
-}
+const CONSOLE_HEALTHS = ShipGeometry.CONSOLE_HEALTHS
 const SCREEN_SIZE: Vector3 = Vector3(0.92, 0.58, 0.06)
 const SCREEN_CENTER_Y: float = 1.30
 const SHELF_SIZE: Vector3 = Vector3(1.10, 0.05, 0.42)
@@ -84,9 +80,9 @@ const HEADING_ID: String = "secondary_power.heading"
 ## unaged next to the damaged consoles and walls, reading as a black
 ## cylinder tinted red under the emergency circuit until the console
 ## activation lights it slick.
-const GENERATOR_CENTER: Vector3 = Vector3(ROOM_CENTER_X, 0.0, (ROOM_START_Z + ROOM_END_Z) / 2.0)
-const GENERATOR_RADIUS: float = 0.8
-const GENERATOR_HEIGHT: float = 2.6
+const GENERATOR_CENTER = ShipGeometry.GENERATOR_CENTER
+const GENERATOR_RADIUS = ShipGeometry.GENERATOR_RADIUS
+const GENERATOR_HEIGHT = ShipGeometry.GENERATOR_HEIGHT
 const GENERATOR_RING_RADII_Y: Array[float] = [0.7, 1.5, 2.3]
 const GENERATOR_RING_INNER: float = 0.66
 const GENERATOR_RING_OUTER: float = 0.84
@@ -118,19 +114,7 @@ const REGULAR_STATIONS_Z: Array[float] = [-3.7, -7.7]
 ## One console station's authored frame: the position is the origin at
 ## the wall's inner face (station-local +Z faces into the room), the
 ## yaw turns the panel off the wall, the health picks the broken look.
-class ConsoleStation:
-	extends RefCounted
-
-	var position: Vector3
-	var yaw: float
-	var health: int
-
-	static func make(position: Vector3, yaw: float, health: int) -> ConsoleStation:
-		var station := ConsoleStation.new()
-		station.position = position
-		station.yaw = yaw
-		station.health = health
-		return station
+const ConsoleStation = ShipGeometry.ConsoleStation
 
 var _game: Game = null
 var _fade: Intensity.FixtureFade = null
@@ -151,6 +135,7 @@ var _door_leaf_base: Vector3 = Vector3.ZERO
 var _console_state: int = -1
 var _screen_material: StandardMaterial3D = null
 var console_display: ShipDisplay = null
+var _text_cache: ShipTextCache
 var _remainder: float = 0.0
 static var _box_cache: Dictionary = {}
 var _palette_cache: Dictionary = {}
@@ -161,125 +146,40 @@ var _palette_cache: Dictionary = {}
 ## of the south face. The slabs tuck under the wall bands so the power
 ## doorway's tunnel shows no seam.
 static func room_solids() -> Array[Placement.SolidPlacement]:
-	var mid_height := ROOM_CEILING / 2.0
-	var slab_x_center := (ROOM_START_X - WALL + ROOM_END_X + WALL) / 2.0
-	var slab_x_size := (ROOM_END_X + WALL) - (ROOM_START_X - WALL)
-	var slab_z_center := (ROOM_START_Z + ROOM_END_Z - WALL) / 2.0
-	var slab_z_size := (ROOM_START_Z - ROOM_END_Z) + 2.0 * WALL
-	return [
-		Placement.SolidPlacement.new(
-			Vector3(slab_x_center, -WALL / 2.0, slab_z_center),
-			Vector3(slab_x_size, WALL, slab_z_size)
-		),
-		Placement.SolidPlacement.new(
-			Vector3(slab_x_center, ROOM_CEILING + WALL / 2.0, slab_z_center),
-			Vector3(slab_x_size, WALL, slab_z_size)
-		),
-		Placement.SolidPlacement.new(
-			Vector3(ROOM_START_X - WALL / 2.0, mid_height, slab_z_center),
-			Vector3(WALL, ROOM_CEILING, slab_z_size)
-		),
-		Placement.SolidPlacement.new(
-			Vector3(ROOM_END_X + WALL / 2.0, mid_height, slab_z_center),
-			Vector3(WALL, ROOM_CEILING, slab_z_size)
-		),
-		Placement.SolidPlacement.new(
-			Vector3(slab_x_center, mid_height, ROOM_END_Z - WALL / 2.0),
-			Vector3(slab_x_size, ROOM_CEILING, WALL)
-		),
-		Placement.SolidPlacement.new(
-			Vector3(
-				Hallway.HALL_END_X + WALL + (ROOM_END_X + WALL - Hallway.HALL_END_X - WALL) / 2.0,
-				mid_height,
-				-(Hallway.HALL_WIDTH / 2.0 + WALL / 2.0)
-			),
-			Vector3(
-				(ROOM_END_X + WALL) - (Hallway.HALL_END_X + WALL),
-				ROOM_CEILING,
-				WALL
-			)
-		),
-	]
+	return ShipGeometry.power_room_solids()
 
 ## The power door's closed leaf: the side doors' exact proud-mount
 ## placement on the corridor side of the north wall band, at the power
 ## door station. Slides into the wall band when it opens; the collider
 ## rides only while shut, exactly like the stasis hatch's slab.
 static func door_leaf() -> Placement.SolidPlacement:
-	return Placement.SolidPlacement.new(
-		Vector3(
-			Hallway.POWER_DOOR_X,
-			DOOR_HEIGHT / 2.0,
-			-(Hallway.HALL_WIDTH / 2.0 - DOOR_THICKNESS / 2.0)
-		),
-		Vector3(DOOR_WIDTH, DOOR_HEIGHT, DOOR_THICKNESS)
-	)
+	return ShipGeometry.power_door_leaf()
 
 ## The console stations: six wall stations, most dead (blacked or
 ## visibly busted), exactly one working — its screen is the room's only
 ## active one, the secondary power's control surface.
 static func console_stations() -> Array[ConsoleStation]:
-	return [
-		ConsoleStation.make(
-			Vector3(ROOM_START_X, 0.0, -3.7), PI / 2.0, CONSOLE_HEALTHS["dead_black"]),
-		ConsoleStation.make(
-			Vector3(ROOM_START_X, 0.0, -7.5), PI / 2.0, CONSOLE_HEALTHS["active"]),
-		ConsoleStation.make(
-			Vector3(ROOM_END_X, 0.0, -3.7), -PI / 2.0, CONSOLE_HEALTHS["dead_busted"]),
-		ConsoleStation.make(
-			Vector3(ROOM_END_X, 0.0, -7.5), -PI / 2.0, CONSOLE_HEALTHS["dead_black"]),
-		ConsoleStation.make(
-			Vector3(24.5, 0.0, ROOM_END_Z), 0.0, CONSOLE_HEALTHS["dead_busted"]),
-		ConsoleStation.make(
-			Vector3(29.5, 0.0, ROOM_END_Z), 0.0, CONSOLE_HEALTHS["dead_black"]),
-	]
+	return ShipGeometry.console_stations()
 
 ## The working console's act volume center: on the floor plane, in
 ## front of the active station's screen.
 static func console_act_center() -> Vector3:
-	var station := console_stations()[1]
-	return station.position + Vector3(sin(station.yaw), 0.0, cos(station.yaw)) * 1.05
+	return ShipGeometry.console_act_center()
 
 ## The power door's act volume center: on the floor plane, in front of
 ## the closed leaf, on the corridor side.
 static func door_act_center() -> Vector3:
-	return Vector3(
-		Hallway.POWER_DOOR_X,
-		0.0,
-		-(Hallway.HALL_WIDTH / 2.0) + 0.6
-	)
+	return ShipGeometry.door_act_center()
 
 ## One station's collider hull: the station-local frame's extent box
 ## spun by the station yaw — a multiple of a quarter turn, so the hull
 ## stays axis-aligned and cheap.
 static func console_solid(station: ConsoleStation) -> Placement.SolidPlacement:
-	var facing := Vector3(sin(station.yaw), 0.0, cos(station.yaw))
-	var along := Vector3(facing.z, 0.0, -facing.x)
-	var local_size := Vector3(1.25, 1.75, 0.56)
-	var center := station.position + facing * 0.28
-	return Placement.SolidPlacement.new(
-		Vector3(center.x, 0.875, center.z),
-		Vector3(
-			absf(along.x) * local_size.x + absf(facing.x) * local_size.z,
-			local_size.y,
-			absf(along.z) * local_size.x + absf(facing.z) * local_size.z
-		)
-	)
+	return ShipGeometry.console_solid(station)
 
 ## The generator's collider: the column's conservative square hull.
 static func generator_solid() -> Placement.SolidPlacement:
-	return Placement.SolidPlacement.new(
-		Vector3(
-			GENERATOR_CENTER.x,
-			GENERATOR_HEIGHT / 2.0,
-			GENERATOR_CENTER.z
-		),
-		Vector3(
-			GENERATOR_RADIUS * 2.0,
-			GENERATOR_HEIGHT,
-			GENERATOR_RADIUS * 2.0
-		)
-	)
+	return ShipGeometry.generator_solid()
 
 ## Both authored layers, flattened for the harness. STANDBY is blank.
 static func console_labels(state: int) -> Dictionary:
@@ -320,41 +220,13 @@ static func console_state_name(state: int) -> String:
 static func scene_collider_set(
 	registry: Pods.PodRegistry, door_open: bool, power_door_open: bool
 ) -> ColliderSet:
-	var set := Hallway.scene_collider_set(registry, door_open)
-	for placement: Placement.SolidPlacement in room_solids():
-		_insert_placement(set, placement)
-	for station: ConsoleStation in console_stations():
-		_insert_placement(set, console_solid(station))
-	_insert_placement(set, generator_solid())
-	if not power_door_open:
-		_insert_placement(set, door_leaf())
-	return set
+	return ShipCollision.opening_set(registry, door_open, power_door_open)
 
-## Insert one world-frame placement as a collider box: the conservative
-## corner-hull AABB, mirroring Placement's derivation.
-static func _insert_placement(set: ColliderSet, placement: Placement.SolidPlacement) -> void:
-	_insert_box(set, placement.center, placement.size, placement.rotation)
-
-static func _insert_box(
-	set: ColliderSet, center: Vector3, size: Vector3, rotation: Quaternion
-) -> void:
-	var half := size * 0.5
-	var lo := Vector3(INF, INF, INF)
-	var hi := Vector3(-INF, -INF, -INF)
-	for x: float in [-1.0, 1.0]:
-		for y: float in [-1.0, 1.0]:
-			for z: float in [-1.0, 1.0]:
-				var corner: Vector3 = center + rotation * (Vector3(x, y, z) * half)
-				lo = lo.min(corner)
-				hi = hi.max(corner)
-	var result: ColliderSet.Result = ColliderSet.Aabb.from_min_max(lo, hi)
-	assert(result.is_ok(), "the frozen power room placement data derives a valid collider box")
-	set.insert(result.box)
-
-static func build(game: Game) -> PowerRoom:
+static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 	var room := PowerRoom.new()
 	room.name = "PowerRoom"
 	room._game = game
+	room._text_cache = text_cache
 	var level := 1.0 if (game.hallway_lit and not game.power_active) else 0.0
 	var white_level := 1.0 if game.power_active else 0.0
 	var glow_level := 1.0 if game.power_active else 0.0
@@ -365,9 +237,8 @@ static func build(game: Game) -> PowerRoom:
 		"PowerWallWest",
 		"PowerWallEast",
 		"PowerWallNorth",
-		"PowerWallSouthGap",
 	]
-	var surface_roles := ["floor", "ceiling", "wall", "wall", "wall", "wall"]
+	var surface_roles := ["floor", "ceiling", "wall", "wall", "wall"]
 	var solids := room_solids()
 	assert(
 		solids.size() == surface_names.size(),
@@ -461,7 +332,7 @@ func _build_console(station: ConsoleStation) -> Node3D:
 		screen.position = Vector3(0.0, SCREEN_CENTER_Y, 0.13)
 	group.add_child(screen)
 	if station.health == CONSOLE_HEALTHS["active"]:
-		console_display = ShipDisplay.build(_game.writing_memory)
+		console_display = ShipDisplay.build(_game.writing_memory, _text_cache)
 		console_display.position = Vector3(0.0, SCREEN_CENTER_Y, 0.166)
 		group.add_child(console_display)
 	var shelf := MeshInstance3D.new()
@@ -591,9 +462,6 @@ func _white_fixture(station_x: float, station_z: float, level: float) -> Node3D:
 	_white_lenses.append(lens)
 	return fixture
 
-func _physics_process(_delta: float) -> void:
-	process_frame(Sim.LOGICAL_TICK_SECS)
-
 ## One render-bridge frame, the hallway's exact pattern: retarget only
 ## on the sim-side target change, consume whole logical ticks, project
 ## the fades onto the render state. The console's screen state reads
@@ -720,6 +588,8 @@ func perceived_state_text() -> String:
 
 ## Called after the player's eye and look have advanced on the fixed tick.
 func tick_console_attention(eye: Vector3, camera_forward: Vector3) -> void:
+	if eye.distance_to(_game.layout.door(ShipLayout.POWER_DOOR_ID).frame().origin + Vector3.UP * 1.6) <= DisplayPerception.ATTENTION_RANGE:
+		console_display.prefetch(HEADING_ID, ["secondary_power.inactive", "secondary_power.active"])
 	_apply_console_state(_game.console_state)
 	console_display.tick_attention(eye, camera_forward)
 

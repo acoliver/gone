@@ -8,8 +8,8 @@ const Protocol := preload("res://harness/protocol.gd")
 const ScenarioModule := preload("res://harness/scenario.gd")
 const ReportModule := preload("res://harness/report.gd")
 
-func test_protocol_version_matches_the_rust_harness() -> void:
-	assert_int_equal(Protocol.PROTOCOL_VERSION, 4, "protocol version")
+func test_protocol_version_supports_deck_aware_evidence() -> void:
+	assert_int_equal(Protocol.PROTOCOL_VERSION, 5, "protocol version")
 
 func _paint_chip_image(tick: int, frame: int) -> Image:
 	var size := Protocol.chip_size()
@@ -152,14 +152,14 @@ func test_adapter_wait_until_tick_pins_the_floor() -> void:
 
 func test_report_roundtrip_and_canonical_order() -> void:
 	var identity := {"app_hash": "a", "scenario_hash": "s", "config_hash": "c"}
-	var run_a := ReportModule.new(4, "probe", 1, identity)
+	var run_a := ReportModule.new(5, "probe", 1, identity)
 	run_a.add_event({"kind": "ready", "frame": 0})
 	run_a.add_event({"kind": "beat", "name": "beat-a", "tick": 2, "frame": 2, "request_id": 1})
 	run_a.add_event({"kind": "input", "tick": 0, "frame": 0, "what": "look 15 0"})
 	run_a.add_event({"kind": "input", "tick": 5, "frame": 5, "what": "activate press"})
 	run_a.add_event({"kind": "complete", "frame": 11})
 	run_a.beats["beat-a"] = {"file": "beats/beat-a.png", "tick": 2, "frame": 2, "request_id": 1}
-	var run_b := ReportModule.new(4, "probe", 1, identity)
+	var run_b := ReportModule.new(5, "probe", 1, identity)
 	run_b.add_event({"kind": "complete", "frame": 11})
 	run_b.add_event({"kind": "input", "tick": 5, "frame": 5, "what": "activate press"})
 	run_b.add_event({"kind": "beat", "name": "beat-a", "tick": 2, "frame": 2, "request_id": 1})
@@ -173,7 +173,7 @@ func test_report_roundtrip_and_canonical_order() -> void:
 	assert_true(parsed.error.is_empty(), parsed.error)
 	if parsed.error.is_empty():
 		var report = parsed.report
-		assert_int_equal(report.protocol_version, 4, "version survives")
+		assert_int_equal(report.protocol_version, 5, "version survives")
 		assert_int_equal(report.ready_frame(), 0, "ready frame")
 		assert_true(report.first_failure() == "", "no failure on a clean report")
 		assert_true(report.events[0].kind == "ready", "ready first")

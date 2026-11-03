@@ -72,7 +72,7 @@ func test_spark_strobe_positions_carry_wire_anchor_clusters() -> void:
 ## pod-area wires must cross inside that cone so the up-facing beats
 ## read wires from the first opening blink.
 func test_pod_view_cone_carries_three_wire_crossings() -> void:
-	var eye: Vector3 = PlacementTruth.player_exit_path().poses()[0].head()
+	var eye: Vector3 = Exit.ExitPath.try_new(Pods.PodRegistry.frozen().player_pod().placement(), PodGeometry.TRAY_FLOOR_Y).path.poses()[0].head()
 	var yaw: float = Pods.PodRegistry.frozen().player_pod().placement().yaw_radians
 	var forward: Vector3 = (Basis(Vector3.UP, yaw) * Basis(Vector3.RIGHT, InputPlane.PITCH_LIMIT)) \
 		* Vector3.FORWARD

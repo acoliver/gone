@@ -11,77 +11,26 @@ extends RefCounted
 
 enum BodyState { LYING, GET_UP, WALK }
 
-## How close to the hatch center, in meters on the floor plane, an
-## interact press must land to act at the door.
-const HATCH_INTERACT_REACH: float = 2.2
-
-## How close to the rod's floor-plan center, in meters, an interact
-## press must land to pick it up.
-const ROD_PICKUP_REACH: float = 1.3
-
-## How close to the hallway switch's plate, in meters on the floor
-## plane, an interact press must land to flip it.
-const SWITCH_ACT_REACH: float = 2.2
-
-## The door's deterministic opening, in fixed ticks: the slab retracts
-## flat into the doorway's wall band, then slides aside along -Z. The
-## tick counts are the whole animation contract — no runtime
-## randomness, no wall-clock term.
-const DOOR_RETRACT_TICKS: int = 12
-const DOOR_SLIDE_TICKS: int = 36
-
-## How far, in meters, the slab travels in each phase: the retract
-## tucks the slab inside the east wall's band, the slide clears the
-## doorway's walkable width past its frame edge.
-const DOOR_RETRACT_DISTANCE: float = 0.17
-const DOOR_SLIDE_DISTANCE: float = 1.2
-
-## How close to the power door's leaf, in meters on the floor plane,
-## an interact press must land to open it. The power door is a crew
-## door: no rod gate, no pry bar.
-const POWER_DOOR_REACH: float = 2.2
-
-## The power door's deterministic opening, in fixed ticks: one slide
-## along the wall band, the same animation language as the stasis
-## door's slide phase.
-const POWER_DOOR_SLIDE_TICKS: int = 48
-
-## How far, in meters, the power door's leaf slides along -X into the
-## wall band: clear of the aperture's walkable width.
-const POWER_DOOR_SLIDE_DISTANCE: float = 1.15
-
-## How close to the working console's screen, in meters on the floor
-## plane, an interact press must land to act at the console.
-const CONSOLE_ACT_REACH: float = 1.8
-
-enum DoorState { CLOSED, OPENING, OPEN }
-enum PowerDoorState { CLOSED, OPENING, OPEN }
-
 var _controller: Exit.GetUpController = null
-var _walk: Walk.WalkState = null
+var locomotion: Locomotion
+var ladder_events: Array[Ladder.Event] = []
 var _failure: String = ""
-var door_state: int = DoorState.CLOSED
-var door_elapsed: int = 0
-var door_openings: int = 0
 var hallway_switch_flips: int = 0
-var power_door_state: int = PowerDoorState.CLOSED
-var power_door_elapsed: int = 0
-var power_door_openings: int = 0
 var console_presses: int = 0
 var rod_carried: bool = false
 
 func state() -> int:
 	if _controller != null:
 		return BodyState.GET_UP
-	if _walk != null:
+	if locomotion != null:
 		return BodyState.WALK
 	return BodyState.LYING
 
 func capsule() -> Resolve.Capsule:
 	if _controller != null:
 		return _controller.capsule()
-	if _walk != null:
-		return _walk.capsule()
+	if locomotion != null:
+		return locomotion.capsule()
 	return null
 
 func failure() -> String:
@@ -105,16 +54,18 @@ func record_failure(message: String) -> void:
 ## Advance the body one fixed tick: consume the tick's activate press or
 ## movement intent from the shared plane and drive the sim controller
 ## the mirror currently holds. dt is the fixed tick's sim seconds.
-func advance(plane: InputPlane, game: Game, yaw: float, dt: float) -> void:
-	_tick_door(game)
-	_tick_power_door(game)
+func advance(plane: InputPlane, game: Game, yaw: float, dt: float, facing: Vector3 = Vector3.ZERO) -> void:
+	ladder_events = []
+	var previous := capsule()
 	match state():
 		BodyState.LYING:
 			_begin_get_up_if_pressed(plane, game)
 		BodyState.GET_UP:
 			_advance_get_up(game)
 		BodyState.WALK:
-			_advance_walk(plane, game, yaw, dt)
+			_advance_walk(plane, game, yaw, dt, Vector3(-sin(yaw), 0, -cos(yaw)) if facing == Vector3.ZERO else facing)
+	if previous != null and capsule() != null:
+		game.observe_bay_crossing(previous.foot, capsule().foot, state() == BodyState.WALK)
 
 ## The Lying tick: a fresh activate press starts the get-up, but only in
 ## AwakeInPod; every other phase drops the edge, never buffers it.
@@ -141,13 +92,13 @@ func _advance_get_up(game: Game) -> void:
 		var started := Walk.WalkState.start(game.phase, _controller.capsule())
 		if started.is_ok():
 			_controller = null
-			_walk = started.state
+			locomotion = Locomotion.start(game.layout, game.collision, 14, started.state).state
 		else:
 			record_failure("walk rejected: " + started.error._to_string())
 
 ## The Walk tick: the tick's movement intent, framed in the look yaw,
 ## sweeps the capsule through the resolver at the walk's current speed.
-func _advance_walk(plane: InputPlane, game: Game, yaw: float, dt: float) -> void:
+func _advance_walk(plane: InputPlane, game: Game, yaw: float, dt: float, facing: Vector3) -> void:
 	if game.phase.current() != Phase.Wake.STANDING:
 		record_failure("the walk state disagrees with the sim phase")
 		return
@@ -156,173 +107,58 @@ func _advance_walk(plane: InputPlane, game: Game, yaw: float, dt: float) -> void
 	if not intent.is_ok():
 		record_failure("walk rejected: " + intent.error._to_string())
 		return
-	var step := _walk.step(intent.intent, dt, game.colliders)
-	_walk.end_tick()
-	if not step.is_ok():
-		record_failure("walk rejected: " + step.error._to_string())
-
-## Consume an interact press at the stasis room door: the rod is the
-## door's pry bar, so while standing in reach a press with the rod
-## carried starts the door's deterministic opening and is consumed by
-## the act itself. Without the rod the press does nothing here — the
-## door never starts, no refusal machinery — and the press stays on the
-## channel; once the door has opened it owns no press either. The
-## switch beside the doorway receives every press the door cannot use.
-## Returns true when the press was consumed at the door.
-func interact_with_door(plane: InputPlane, game: Game) -> bool:
-	if state() != BodyState.WALK:
-		return false
-	var foot: Vector3 = capsule().foot
-	var hatch: Vector2 = game.registry.hatch().center
-	var reach := Vector2(foot.x - hatch.x, foot.z - hatch.y)
-	if reach.length() > HATCH_INTERACT_REACH:
-		return false
-	if door_state != DoorState.CLOSED or not rod_carried:
-		return false
-	if not plane.take_press(InputPlane.Buttons.INTERACT):
-		return false
-	door_state = DoorState.OPENING
-	door_openings += 1
-	return true
-
-## The door's opening tick, driven at the head of every advance so the
-## animation runs whatever the body is doing. The doorway's colliders
-## open only when the animation lands, so the capsule can never cut
-## through the moving door.
-func _tick_door(game: Game) -> void:
-	if door_state != DoorState.OPENING:
+	var input := Locomotion.Intent.new()
+	input.walk = intent.intent
+	var climb: Variant = plane.take_climb()
+	input.has_climb = climb != null
+	input.climb = 0.0 if climb == null else float(climb)
+	if mounted():
+		input.space = plane.take_press(InputPlane.Buttons.INTERACT)
+	elif plane.has_press(InputPlane.Buttons.INTERACT):
+		input.well_id = mount_target(game.layout, facing)
+		if input.well_id != &"":
+			input.space = plane.take_press(InputPlane.Buttons.INTERACT)
+	input.facing = facing
+	var result := locomotion.step(input, dt)
+	locomotion.end_tick()
+	if not result.is_ok():
+		record_failure("locomotion rejected: %d" % result.error.kind)
 		return
-	door_elapsed += 1
-	if door_elapsed >= DOOR_RETRACT_TICKS + DOOR_SLIDE_TICKS:
-		door_state = DoorState.OPEN
-		game.open_doorway()
+	ladder_events = result.events
 
-## The door slab's animated offset from its authored ajar pose, in world
-## space: the deterministic projection the hatch's door piece renders.
-func door_slab_offset() -> Vector3:
-	if door_state == DoorState.CLOSED:
-		return Vector3.ZERO
-	var retract: float = clampf(float(door_elapsed) / float(DOOR_RETRACT_TICKS), 0.0, 1.0)
-	var slide: float = clampf(
-		float(door_elapsed - DOOR_RETRACT_TICKS) / float(DOOR_SLIDE_TICKS),
-		0.0, 1.0)
-	return Vector3(DOOR_RETRACT_DISTANCE * retract, 0.0, -DOOR_SLIDE_DISTANCE * slide)
+func mounted() -> bool:
+	return locomotion != null and locomotion.mode() != Locomotion.Mode.WALK
 
-## Open the power room's door: while standing in reach of the leaf on
-## the corridor side, one interact press starts the door's deterministic
-## slide and is consumed by the act itself. No rod gate — the power
-## door is a crew door — and once the door has opened it owns no press.
-## Returns true when the press was consumed at the door.
-func interact_with_power_door(plane: InputPlane, game: Game) -> bool:
-	if state() != BodyState.WALK:
-		return false
-	var foot: Vector3 = capsule().foot
-	var center: Vector3 = PowerRoom.door_act_center()
-	var reach := Vector2(foot.x - center.x, foot.z - center.z)
-	if reach.length() > POWER_DOOR_REACH:
-		return false
-	if power_door_state != PowerDoorState.CLOSED:
-		return false
-	if not plane.take_press(InputPlane.Buttons.INTERACT):
-		return false
-	power_door_state = PowerDoorState.OPENING
-	power_door_openings += 1
-	return true
+func deck() -> int:
+	return locomotion.deck() if locomotion != null else 14
 
-## The power door's opening tick, driven at the head of every advance
-## beside the stasis door's, same contract: the doorway's colliders
-## open only when the animation lands.
-func _tick_power_door(game: Game) -> void:
-	if power_door_state != PowerDoorState.OPENING:
-		return
-	power_door_elapsed += 1
-	if power_door_elapsed >= POWER_DOOR_SLIDE_TICKS:
-		power_door_state = PowerDoorState.OPEN
-		game.open_power_doorway()
-
-## The power door leaf's animated offset from its authored closed pose,
-## in world space: the deterministic projection the power room module's
-## leaf renders.
-func power_door_slab_offset() -> Vector3:
-	if power_door_state == PowerDoorState.CLOSED:
-		return Vector3.ZERO
-	var slide: float = clampf(
-		float(power_door_elapsed) / float(POWER_DOOR_SLIDE_TICKS), 0.0, 1.0)
-	return Vector3(-POWER_DOOR_SLIDE_DISTANCE * slide, 0.0, 0.0)
-
-## Act at the power room's working console: while standing in reach of
-## the screen, one interact press advances the secondary power's state
-## machine one step: standby shows palo / INACTIVO, inactive
-## activates the generator — and is consumed only when a step lands.
-## A press at the dead consoles or at an already-active console owns
-## nothing and stays on the channel, exactly like the other interact
-## consumers. Returns true when the press was consumed at the console.
-func interact_with_console(plane: InputPlane, game: Game) -> bool:
-	if state() != BodyState.WALK:
-		return false
-	if game.console_state == Game.ConsoleState.ACTIVE:
-		return false
-	var foot: Vector3 = capsule().foot
-	var center: Vector3 = PowerRoom.console_act_center()
-	var reach := Vector2(foot.x - center.x, foot.z - center.z)
-	if reach.length() > CONSOLE_ACT_REACH:
-		return false
-	if not plane.take_press(InputPlane.Buttons.INTERACT):
-		return false
-	var advanced: bool = game.press_console()
-	assert(advanced, "the console's pre-checked state machine must advance")
-	console_presses += 1
-	return true
-
-## Flip the hallway switch: while standing in reach of the plate beside
-## the doorway, one interact press lights the hallway fixtures, exactly
-## once. The press is consumed only when the flip lands, like the rod
-## pickup: a press out of reach or before standing stays on the
-## channel, and the door ahead of it consumes a press only when its
-## rod-carried press starts the open, so the beside-door overlap always
-## delivers the press here once the rod work is done.
-func flip_hallway_switch(plane: InputPlane, game: Game) -> bool:
-	if hallway_switch_flips >= 1:
-		return false
-	if state() != BodyState.WALK:
-		return false
-	var foot: Vector3 = capsule().foot
-	var center: Vector3 = Hallway.switch_act_center()
-	var reach := Vector2(foot.x - center.x, foot.z - center.z)
-	if reach.length() > SWITCH_ACT_REACH:
-		return false
-	if not plane.take_press(InputPlane.Buttons.INTERACT):
-		return false
-	hallway_switch_flips += 1
-	game.light_hallway()
-	return true
-
-## Pick up the dropped rod: while standing in reach, one interact press
-## sets the carried flag, exactly once. The press is consumed only when
-## the pickup lands: the rod, the door, and the hallway switch share
-## the interact channel, and each consumer takes only the press it can
-## act on — the rod when in reach, the door when the rod is carried and
-## the door still shut, the switch when the plate is in reach — so no
-## consumer starves another of the press. A press after the pickup is a
-## no-op.
-func pickup_rod(plane: InputPlane) -> bool:
-	if rod_carried:
-		return false
-	if state() != BodyState.WALK:
-		return false
-	var foot: Vector3 = capsule().foot
-	var center := Rod.floor_center()
-	var reach := Vector2(foot.x - center.x, foot.z - center.y)
-	if reach.length() > ROD_PICKUP_REACH:
-		return false
-	if not plane.take_press(InputPlane.Buttons.INTERACT):
-		return false
-	rod_carried = true
-	return true
+func mount_target(layout: ShipLayout, facing: Vector3) -> StringName:
+	if locomotion == null or mounted() or capsule().foot.z > -1.5:
+		return &""
+	for id: StringName in layout.well_ids():
+		if not Ladder.try_mount(layout, id, deck(), capsule(), facing).is_ok():
+			continue
+		var well := layout.well(id)
+		var target := Interactions.Target.new()
+		target.policy = Interactions.Selection.FACE_RAY
+		target.deck = deck()
+		target.center = well.climb_line().origin
+		target.center.y = layout.floor_y(deck())
+		target.frame = Transform3D(Basis(), target.center)
+		target.size = well.doorway_size()
+		var context := Interactions.Context.new()
+		context.walking = true
+		context.deck = deck()
+		context.foot = capsule().foot
+		context.eye = standing_eye(capsule())
+		context.forward = facing
+		if Interactions.hit_distance(target, context, []) >= 0:
+			return id
+	return &""
 
 ## The walk's current steadying speed, in meters per second.
 func walk_speed() -> float:
-	return _walk.speed() if _walk != null else 0.0
+	return locomotion.walk_speed() if locomotion != null else 0.0
 
 ## The standing rig's eye point: above the foot's ground contact at the
 ## placement truth's standing eye height.

@@ -162,11 +162,6 @@ def room(s, p, bounds, fill, color, width=4):
     s.rect((*p(x0, z1), *p(x1, z0)), fill, color, width)
 
 
-def moved(point):
-    x, z = point
-    return 15 + z, 7.7 - x
-
-
 def floor_y(deck, atlas):
     return (14 - deck) * atlas["coordinate_system"]["deck_pitch"]
 
@@ -239,7 +234,7 @@ def ship_scale(atlas, facilities):
         s.text(at, f"D{deck:02}", 27, PROPOSED if deck == 14 else MUTED)
         s.leader([(2190, at[1] + 14), side(1190, floor_y(deck, atlas))])
     # The actual slice remains a tiny mark, not an enlarged ship district.
-    a, b = side(-6, 3.2), side(33, 0)
+    a, b = side(facilities["hall"]["bounds"]["x"][0], 3.2), side(facilities["power_room"]["bounds"]["x"][1], 0)
     s.rect((*a, *b), BUILT, BUILT, 1)
     s.leader([side(14, 0), (1370, 440), (1370, 505), (650, 505), (650, 555)], BUILT)
     s.text((930, 465), "Tiny green mark = built opening", 27, BUILT)
@@ -315,7 +310,7 @@ def local_plan(atlas, facilities):
         s.text((mid, y), text, 27, PROPOSED if a != 6 else BUILT, "mt")
     for a, b in ((-24, 0), (36, 60)):
         room(s, p, (a, b, -1.5, 1.5), None, PROPOSED, 3)
-        for x in (a + 3, a + 9, a + 15, a + 21):
+        for x in (a + 3, a + 9, a + 15):
             for z in (-1.5, 1.5):
                 leaf(s, p, x, z, PROPOSED)
         s.text((p((a + b) / 2, 0)[0], 610), "next section (not built)", 28, PROPOSED, "mt")
@@ -338,18 +333,17 @@ def local_plan(atlas, facilities):
     pod_points = []
     for i in range(7):
         x, _, z = facilities[f"pod_{i}"]["xyz"]
-        x, z = moved((x, z))
         pod_points.append((x, z))
         s.d.rounded_rectangle((*p(x - 1.1, z + .45), *p(x + 1.1, z - .45)),
                               radius=7, fill=PLAYER if i == 6 else BG, outline=MOVED, width=3)
         s.line([p(x - .7, z), p(x + .7, z)], MOVED)
     rx, _, rz = facilities["rod"]["xyz"]
-    rod = moved((rx, rz))
+    rod = (rx, rz)
     s.line([p(rod[0], rod[1] - .5), p(rod[0], rod[1] + .5)], MOVED, 6)
     u, v = p(16.2, 1.45)
     s.rect((u - 6, v - 6, u + 6, v + 6), PLAYER, MOVED, 3)
     for x in (0, 6, 30, 36):
-        s.hatch(p(x, 0), "rust" if x == 0 else "hand")
+        s.hatch(p(x, 0), "hand")
     for ladder_x, lift_x in ((3, 3), (34.5, 33)):
         # The aft well clears the unchanged power-room back at X=33.
         room(s, p, (ladder_x - .85, ladder_x + .85, -5.8, -1.5), BLUE_BG, PROPOSED)
@@ -376,7 +370,7 @@ def local_plan(atlas, facilities):
     s.leader([(1580, 424), (1360, 424), p(19, 12)], MOVED)
     s.text((1290, 210), "Player pod 6: far from door", 28, MOVED)
     s.leader([(1390, 250), (1390, 370), p(*pod_points[6])], MOVED)
-    s.lines((90, 785), ["X=0: rusted shut", "Won't open early."], 28, RUST)
+    s.lines((90, 785), ["D14 hatches: crank", "Connectors not built yet."], 28, RUST)
     s.leader([(420, 801), (710, 801), p(0, 0)], RUST)
     s.lines((630, 890), ["Open ladder doorway", "Port wall; up / down"], 27, PROPOSED)
     s.leader([(870, 879), p(3, -5.8)], PROPOSED)
@@ -422,7 +416,7 @@ def local_plan(atlas, facilities):
     s.text((715, 1225), "Button + card reader: after main power", 26, PROPOSED)
     s.text((1510, 1225), "Split doors + call button: dead lift", 26, PROPOSED)
     s.text((70, 1271), "ladder on the port wall, lifts on the starboard wall: ladder on your left walking aft", 28)
-    s.text((70, 1310), "Only the hall and power room retain built positions here. Connectors, new openings and bay relocation are proposals.", 26, MUTED)
+    s.text((70, 1310), "Bay, hall and backup room use the built layout export. Connectors and neighboring sections remain proposals.", 26, MUTED)
     s.save("d14-local-plan.png")
 
 
@@ -462,15 +456,15 @@ def connector_section(atlas):
             s.line([(a, y), (b, y)], BUILT if built_stub else PROPOSED, 5)
             s.line([(a, y - 80), (b, y - 80)], RULE, 2)
         # Cutaway corridor floors do not bridge the continuous ladder/lift wells.
-        fore = "sealed" if deck in (12, 16) else "rust" if deck == 15 else "hand"
-        aft = "sealed" if deck in (12, 16) else "hand"
+        fore = "hand" if deck == 14 else "sealed"
+        aft = "hand" if deck == 14 else "sealed"
         s.hatch((650, y - 40), fore, 38)
         s.hatch((1430, y - 40), aft, 38)
         s.text((70, y - 77), f"D{deck:02}", 32, color)
-        detail = {12: "Both sealed: won't open", 13: "crew quarters (proposed)",
-                  14: "built opening", 15: "Fore rusted; aft hand wheel", 16: "Both sealed: won't open"}[deck]
+        detail = {12: "Both sealed: won't open", 13: "Both sealed: won't open",
+                  14: "built opening", 15: "Both sealed: won't open", 16: "Both sealed: won't open"}[deck]
         s.text((70, y - 30), detail, 27, color)
-        if deck in (13, 14):
+        if deck == 14:
             s.text((1630, y - 60), f"D{deck:02}: both open by hand", 28, PROPOSED)
             s.leader([(1610, y - 43), (1510, y - 43), (1440, y - 43)], PROPOSED)
     s.arrow([(837, 420), (837, 320)])
@@ -510,13 +504,16 @@ def connector_section(atlas):
 
 def main():
     atlas = json.loads(ATLAS.read_text(encoding="utf-8"))
-    facilities = {item["id"]: item for item in atlas["facilities"]}
+    facilities = {item["id"]: item.copy() for item in atlas["facilities"]}
+    built = json.loads((ATLAS.parent / "built-layout.json").read_text())["facilities"]
+    for name, placement in built.items():
+        if name in facilities:
+            facilities[name].update(placement)
     assert sum(b - a + 1 for a, b in (g["decks"] for g in atlas["grid"]["groups"])) == 30
     assert atlas["coordinate_system"]["envelope_max"]["x"] == [-1200, 1200]
     assert atlas["coordinate_system"]["deck_pitch"] == 5.5
     assert facilities["hall"]["bounds"] == {"x": [6, 30], "z": [-1.5, 1.5]}
     assert facilities["power_room"]["bounds"] == {"x": [21, 33], "z": [-9.7, -1.7]}
-    assert moved((-4.8, 2.9)) == (17.9, 12.5)
     assert 34.5 - .85 > facilities["power_room"]["bounds"]["x"][1]
     ship_scale(atlas, facilities)
     local_plan(atlas, facilities)

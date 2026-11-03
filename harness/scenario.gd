@@ -47,6 +47,8 @@ var max_frames: int = DEFAULT_MAX_FRAMES
 var actions: Array = []
 var beats: Array = []
 var calibration: Dictionary = {}
+var logical_steps_per_present: int = 1
+var connector: Dictionary = {}
 
 const CalibrationModule := preload("res://harness/calibration.gd")
 
@@ -70,6 +72,15 @@ static func parse(text: String) -> Dictionary:
 	scenario.content = String(data.get("content", "gameplay"))
 	if not VALID_CONTENTS.has(scenario.content):
 		return {"scenario": null, "error": "scenario `%s` has unknown content `%s`" % [scenario.scenario_name, scenario.content]}
+	if data.has("logical_steps_per_present"):
+		var batch = data.logical_steps_per_present
+		if scenario.mode != "capture" or not (batch is int or batch is float) or not is_finite(float(batch)) or float(batch) != int(batch) or int(batch) not in [1, 4]:
+			return {"scenario": null, "error": "logical_steps_per_present requires capture mode and an integer 1 or 4"}
+		scenario.logical_steps_per_present = int(batch)
+	if data.has("connector"):
+		if not (data.connector is Dictionary) or not data.connector.has_all(["digest", "route_ticks", "labels", "white_beats"]):
+			return {"scenario": null, "error": "connector scenario needs its compiled evidence contract"}
+		scenario.connector = data.connector
 	scenario.max_frames = int(data.get("max_frames", DEFAULT_MAX_FRAMES))
 	for entry: Dictionary in data.get("actions", []):
 		var action := _parse_action(scenario.scenario_name, entry)
@@ -83,7 +94,12 @@ static func parse(text: String) -> Dictionary:
 		if beat_names.has(entry.name):
 			return {"scenario": null, "error": "scenario `%s` has duplicate beat `%s`" % [scenario.scenario_name, entry.name]}
 		beat_names[entry.name] = true
-		scenario.beats.append({"name": String(entry.name), "tick": int(entry.tick)})
+		var beat := {"name": String(entry.name), "tick": int(entry.tick)}
+		if entry.has("light"):
+			if entry.light not in ["white", "red"]:
+				return {"scenario": null, "error": "unknown beat light classification"}
+			beat.light = entry.light
+		scenario.beats.append(beat)
 	scenario.beats.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
 		return a.tick < b.tick)
 	for action: Dictionary in scenario.actions:
@@ -126,6 +142,12 @@ static func _parse_action(scenario_name: String, entry: Dictionary) -> Dictionar
 		"move":
 			action.forward = float(entry.get("forward", 0.0))
 			action.strafe = float(entry.get("strafe", 0.0))
+		"climb":
+			if not entry.has("value") or not (entry.value is float or entry.value is int):
+				return {}
+			action.value = float(entry.value)
+			if not is_finite(action.value) or absf(action.value) > 1:
+				return {}
 		"wait":
 			action.duration = float(entry.get("duration", 0.0))
 		"wait_until_tick":
@@ -169,7 +191,7 @@ class InputAdapter:
 	## sum), and movement intent. Held actions stay queued
 	## until their wait lifts, whatever their own ticks say.
 	func step() -> Dictionary:
-		var out := {"edges": [], "look_deg": Vector2.ZERO, "key_turn": 0.0, "key_pitch": 0.0, "movement": Vector2.ZERO}
+		var out := {"edges": [], "look_deg": Vector2.ZERO, "key_turn": 0.0, "key_pitch": 0.0, "movement": Vector2.ZERO, "climb": null}
 		if _hold_remaining_ticks > 0.0:
 			_hold_remaining_ticks -= 1.0
 		while not _actions.is_empty():
@@ -203,6 +225,8 @@ class InputAdapter:
 				_pending_key_pitch += 1.0 if action.dir == "up" else -1.0
 			"move":
 				_pending_movement += Vector2(action.forward, action.strafe)
+			"climb":
+				out.climb = action.value
 			"wait":
 				_hold_remaining_ticks = ceil(maxf(action.duration, 0.0) * float(_ticks_per_second))
 			"wait_until_tick":

@@ -10,31 +10,31 @@ extends RefCounted
 ## spawns it under each pod group. Pure data: no Node types.
 
 ## Shell wall and floor slab thickness, in meters.
-const WALL_THICKNESS: float = 0.2
+const WALL_THICKNESS = ShipGeometry.WALL_THICKNESS
 
 ## The hatch opening's size, in meters, and the frame pieces around it.
-const HATCH_WIDTH: float = 1.2
-const HATCH_HEIGHT: float = 2.4
-const FRAME_DEPTH: float = 0.18
-const FRAME_POST_WIDTH: float = 0.16
-const SILL_HEIGHT: float = 0.08
+const HATCH_WIDTH = ShipGeometry.HATCH_WIDTH
+const HATCH_HEIGHT = ShipGeometry.HATCH_HEIGHT
+const FRAME_DEPTH = ShipGeometry.FRAME_DEPTH
+const FRAME_POST_WIDTH = ShipGeometry.FRAME_POST_WIDTH
+const SILL_HEIGHT = ShipGeometry.SILL_HEIGHT
 
 ## The hatch door slab: smaller than the opening, recessed behind the
 ## frame front, ajar about its hinge edge, leaning into the room.
-const DOOR_WIDTH: float = 1.12
-const DOOR_HEIGHT: float = 2.2
-const DOOR_THICKNESS: float = 0.06
-const DOOR_RECESS: float = 0.1
-const DOOR_HINGE_INSET: float = 0.04
-const HATCH_DOOR_AJAR: float = deg_to_rad(8.0)
+const DOOR_WIDTH = ShipGeometry.DOOR_WIDTH
+const DOOR_HEIGHT = ShipGeometry.DOOR_HEIGHT
+const DOOR_THICKNESS = ShipGeometry.DOOR_THICKNESS
+const DOOR_RECESS = ShipGeometry.DOOR_RECESS
+const DOOR_HINGE_INSET = ShipGeometry.DOOR_HINGE_INSET
+const HATCH_DOOR_AJAR = ShipGeometry.HATCH_DOOR_AJAR
 
 ## X of the hatch frame's center plane: protruding FRAME_DEPTH from the
 ## wall's inner face.
-const HATCH_FRAME_X: float = Pods.ROOM_LENGTH / 2.0 - FRAME_DEPTH / 2.0
+const HATCH_FRAME_X = ShipGeometry.HATCH_FRAME_X
 
 ## X of the hatch door slab's center plane: recessed behind the frame's
 ## front face.
-const HATCH_DOOR_X: float = Pods.ROOM_LENGTH / 2.0 - DOOR_RECESS
+const HATCH_DOOR_X = ShipGeometry.HATCH_DOOR_X
 
 ## Cable tray cross-section, in meters, and the drop of the tray center
 ## line below the ceiling.
@@ -64,20 +64,7 @@ const PLATE_THICKNESS: float = 0.04
 const PLATE_STANDOFF: float = 0.02
 const PLATE_MOUNT_HEIGHT: float = 0.55
 
-class SolidPlacement:
-	extends RefCounted
-	## One placed solid box: world center, full size, and the world
-	## rotation applied at spawn. Most pieces are axis-aligned; the ajar
-	## hatch door and the torn cable trays carry real rotations.
-
-	var center: Vector3 = Vector3.ZERO
-	var size: Vector3 = Vector3.ZERO
-	var rotation: Quaternion = Quaternion.IDENTITY
-
-	func _init(p_center: Vector3, p_size: Vector3, p_rotation: Quaternion = Quaternion.IDENTITY) -> void:
-		center = p_center
-		size = p_size
-		rotation = p_rotation
+const SolidPlacement = ShipGeometry.SolidSpec
 
 class WireLoop:
 	extends RefCounted
@@ -107,80 +94,13 @@ class HangingWire:
 ## -Z, +Z, -X, and +X walls. The playable interior is exactly
 ## ROOM_LENGTH by ROOM_WIDTH with its ceiling at ROOM_CEILING_HEIGHT.
 static func room_shell() -> Array[Placement.SolidPlacement]:
-	var slab := Vector3(
-		Pods.ROOM_LENGTH + 2.0 * WALL_THICKNESS,
-		WALL_THICKNESS,
-		Pods.ROOM_WIDTH + 2.0 * WALL_THICKNESS
-	)
-	var wall_along_x := Vector3(
-		Pods.ROOM_LENGTH + 2.0 * WALL_THICKNESS,
-		Pods.ROOM_CEILING_HEIGHT,
-		WALL_THICKNESS
-	)
-	var wall_along_z := Vector3(WALL_THICKNESS, Pods.ROOM_CEILING_HEIGHT, Pods.ROOM_WIDTH)
-	var mid_height := Pods.ROOM_CEILING_HEIGHT / 2.0
-	return [
-		Placement.SolidPlacement.new(Vector3(0.0, -WALL_THICKNESS / 2.0, 0.0), slab),
-		Placement.SolidPlacement.new(
-			Vector3(0.0, Pods.ROOM_CEILING_HEIGHT + WALL_THICKNESS / 2.0, 0.0),
-			slab
-		),
-		Placement.SolidPlacement.new(
-			Vector3(0.0, mid_height, -(Pods.ROOM_WIDTH / 2.0 + WALL_THICKNESS / 2.0)),
-			wall_along_x
-		),
-		Placement.SolidPlacement.new(
-			Vector3(0.0, mid_height, Pods.ROOM_WIDTH / 2.0 + WALL_THICKNESS / 2.0),
-			wall_along_x
-		),
-		Placement.SolidPlacement.new(
-			Vector3(-(Pods.ROOM_LENGTH / 2.0 + WALL_THICKNESS / 2.0), mid_height, 0.0),
-			wall_along_z
-		),
-		Placement.SolidPlacement.new(
-			Vector3(Pods.ROOM_LENGTH / 2.0 + WALL_THICKNESS / 2.0, mid_height, 0.0),
-			wall_along_z
-		),
-	]
+	return ShipGeometry.room_shell()
 
 ## The hatch group's five boxes in fixed order: the -Z frame post, the
 ## +Z frame post, the lintel, the sill, and the ajar door slab. The group
 ## itself sits at the identity transform, so these are world placements.
 static func hatch_solids() -> Array[Placement.SolidPlacement]:
-	var post := Vector3(FRAME_DEPTH, HATCH_HEIGHT + FRAME_POST_WIDTH, FRAME_POST_WIDTH)
-	var lintel := Vector3(FRAME_DEPTH, FRAME_POST_WIDTH, HATCH_WIDTH + 2.0 * FRAME_POST_WIDTH)
-	var sill := Vector3(FRAME_DEPTH, SILL_HEIGHT, HATCH_WIDTH + 2.0 * FRAME_POST_WIDTH)
-	var door_rotation := Quaternion(Vector3.UP, -HATCH_DOOR_AJAR)
-	var door_group_origin := Vector3(HATCH_DOOR_X, 0.0, -(HATCH_WIDTH / 2.0 - DOOR_HINGE_INSET))
-	var door_center: Vector3 = door_group_origin + door_rotation * Vector3(0.0, DOOR_HEIGHT / 2.0, DOOR_WIDTH / 2.0)
-	return [
-		Placement.SolidPlacement.new(
-			Vector3(
-				HATCH_FRAME_X,
-				(HATCH_HEIGHT + FRAME_POST_WIDTH) / 2.0,
-				-(HATCH_WIDTH + FRAME_POST_WIDTH) / 2.0
-			),
-			post
-		),
-		Placement.SolidPlacement.new(
-			Vector3(
-				HATCH_FRAME_X,
-				(HATCH_HEIGHT + FRAME_POST_WIDTH) / 2.0,
-				(HATCH_WIDTH + FRAME_POST_WIDTH) / 2.0
-			),
-			post
-		),
-		Placement.SolidPlacement.new(
-			Vector3(HATCH_FRAME_X, HATCH_HEIGHT + FRAME_POST_WIDTH / 2.0, 0.0),
-			lintel
-		),
-		Placement.SolidPlacement.new(Vector3(HATCH_FRAME_X, SILL_HEIGHT / 2.0, 0.0), sill),
-		Placement.SolidPlacement.new(
-			door_center,
-			Vector3(DOOR_THICKNESS, DOOR_HEIGHT, DOOR_WIDTH),
-			door_rotation
-		),
-	]
+	return ShipGeometry.hatch_solids()
 
 ## The torn ceiling's cable trays, concentrated over the room center: a
 ## junction of runs and one stub toward the player row, each tipped off
@@ -328,10 +248,7 @@ static func indicator_plate() -> Placement.SolidPlacement:
 ## rotation and the floor translation derived from the registry
 ## placement, as `[rotation, translation]`.
 static func pod_world_transform(placement: Pods.PodPlacement) -> Array:
-	return [
-		Quaternion(Vector3.UP, placement.yaw_radians),
-		Vector3(placement.center.x, 0.0, placement.center.y),
-	]
+	return ShipGeometry.pod_world_transform(placement)
 
 ## Build the whole static collider set from the same placement data the
 ## scene spawns: the room shell, every pod's construction solids through
@@ -340,55 +257,4 @@ static func pod_world_transform(placement: Pods.PodPlacement) -> Array:
 ## dressing outside the walking envelope and are deliberately not
 ## colliders, so the exit aperture mouth stays exactly as authored.
 static func scene_collider_set(registry: Pods.PodRegistry) -> ColliderSet:
-	var set := ColliderSet.new()
-	for placement: Placement.SolidPlacement in room_shell():
-		_insert_placement(set, placement, Quaternion.IDENTITY, Vector3.ZERO)
-	for pod: Pods.Pod in registry.pods():
-		var frame := pod_world_transform(pod.placement())
-		for solid: PodBody.PodSolid in PodBody.pod_solids(pod.state()):
-			_insert_pod_solid(set, solid, frame[0], frame[1])
-	for placement: Placement.SolidPlacement in hatch_solids():
-		_insert_placement(set, placement, Quaternion.IDENTITY, Vector3.ZERO)
-	return set
-
-## Insert one world-frame placement as a collider box, through an optional
-## parent transform.
-static func _insert_placement(
-	set: ColliderSet,
-	placement: Placement.SolidPlacement,
-	parent_rotation: Quaternion,
-	parent_translation: Vector3
-) -> void:
-	var rotation: Quaternion = parent_rotation * placement.rotation
-	var center: Vector3 = parent_rotation * placement.center + parent_translation
-	_insert_box(set, center, placement.size, rotation)
-
-## Insert one pod-local construction solid through the pod group's world
-## transform: the group yaw carries the local frame into the room, and
-## the solid's local roll composes inside it.
-static func _insert_pod_solid(
-	set: ColliderSet,
-	solid: PodBody.PodSolid,
-	group_rotation: Quaternion,
-	group_translation: Vector3
-) -> void:
-	var rotation: Quaternion = group_rotation * Quaternion(Vector3.RIGHT, solid.roll_radians)
-	var center: Vector3 = group_rotation * solid.center + group_translation
-	_insert_box(set, center, solid.size, rotation)
-
-## The conservative world AABB of one placed box: the hull of its eight
-## transformed corners. Exact for axis-aligned rotations; a tight
-## conservative hull otherwise.
-static func _insert_box(set: ColliderSet, center: Vector3, size: Vector3, rotation: Quaternion) -> void:
-	var half := size * 0.5
-	var lo := Vector3(INF, INF, INF)
-	var hi := Vector3(-INF, -INF, -INF)
-	for x: float in [-1.0, 1.0]:
-		for y: float in [-1.0, 1.0]:
-			for z: float in [-1.0, 1.0]:
-				var corner: Vector3 = center + rotation * (Vector3(x, y, z) * half)
-				lo = lo.min(corner)
-				hi = hi.max(corner)
-	var result: ColliderSet.Result = ColliderSet.Aabb.from_min_max(lo, hi)
-	assert(result.is_ok(), "the frozen placement data derives a valid collider box")
-	set.insert(result.box)
+	return ShipCollision.bay_set(registry)

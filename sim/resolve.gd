@@ -29,6 +29,7 @@ class ResolvedMotion:
 	var displacement: Vector3 = Vector3.ZERO
 	var grounded: bool = false
 	var contact_normals: Array[Vector3] = []
+	var collider_indices: Array[int] = []
 
 class ResolveError:
 	extends RefCounted
@@ -111,6 +112,7 @@ class Contact:
 	var entry: float = 0.0
 	var normal: Vector3 = Vector3.ZERO
 	var box_top: float = 0.0
+	var collider_index: int = -1
 
 class SweepState:
 	extends RefCounted
@@ -118,6 +120,7 @@ class SweepState:
 	var head: Vector3 = Vector3.ZERO
 	var remaining: Vector3 = Vector3.ZERO
 	var contacts: Array[Vector3] = []
+	var collider_indices: Array[int] = []
 
 	func advance(colliders: ColliderSet) -> Resolve.ResolveError:
 		var capsule_bounds := Resolve._capsule_aabb(foot, head)
@@ -135,6 +138,7 @@ class SweepState:
 			if hit.entry > 1.0 or (first != null and hit.entry > first.entry):
 				continue
 			first = hit
+			first.collider_index = index
 		if first == null:
 			move_by(remaining)
 			remaining = Vector3.ZERO
@@ -143,6 +147,8 @@ class SweepState:
 		return null
 
 	func apply_contact(contact: Resolve.Contact, colliders: ColliderSet) -> void:
+		if not collider_indices.has(contact.collider_index):
+			collider_indices.append(contact.collider_index)
 		var path: float = remaining.length()
 		# The tolerance is owed on the struck face's own axis, not along the
 		# path, so the slack divides by the axial direction cosine.
@@ -177,6 +183,13 @@ static func resolve_motion(capsule: Capsule, displacement: Vector3, colliders: C
 # The sweep with an explicit iteration bound so the bound-exceeded error
 # path is testable without manufacturing an unsettleable scenario.
 static func sweep_with_bound(capsule: Capsule, displacement: Vector3, colliders: ColliderSet, bound: int) -> Result:
+	return _sweep(capsule, displacement, colliders, bound, Controller.PENETRATION_TOLERANCE)
+
+## Constrained transfers must sweep even the final sub-tolerance correction.
+static func resolve_constrained_motion(capsule: Capsule, displacement: Vector3, colliders: ColliderSet) -> Result:
+	return _sweep(capsule, displacement, colliders, Controller.SWEEP_ITERATION_BOUND, 0.0)
+
+static func _sweep(capsule: Capsule, displacement: Vector3, colliders: ColliderSet, bound: int, settle_tolerance: float) -> Result:
 	var input_failure := _input_error(capsule, displacement)
 	if input_failure != null:
 		return Result.with_error(input_failure)
@@ -184,7 +197,7 @@ static func sweep_with_bound(capsule: Capsule, displacement: Vector3, colliders:
 	state.foot = capsule.foot
 	state.head = capsule.head
 	state.remaining = displacement
-	var residual: float = Controller.PENETRATION_TOLERANCE * Controller.PENETRATION_TOLERANCE
+	var residual: float = settle_tolerance * settle_tolerance
 	for _iteration: int in range(bound):
 		if state.remaining.length_squared() <= residual:
 			break
@@ -197,6 +210,7 @@ static func sweep_with_bound(capsule: Capsule, displacement: Vector3, colliders:
 	motion.displacement = state.foot - capsule.foot
 	motion.grounded = _is_grounded(state.foot, colliders)
 	motion.contact_normals = state.contacts
+	motion.collider_indices = state.collider_indices
 	return Result.with_motion(motion)
 
 static func _input_error(capsule: Capsule, displacement: Vector3) -> ResolveError:

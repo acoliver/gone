@@ -177,6 +177,7 @@ class MoveIntent:
 	extends RefCounted
 
 	var _forward: float = 0.0
+	var _forward_input: float = 0.0
 	var _strafe: float = 0.0
 	var _yaw: float = 0.0
 
@@ -198,6 +199,7 @@ class MoveIntent:
 			strafe = p_strafe * scale
 		var valid: Walk.MoveIntent = Walk.MoveIntent.new()
 		valid._forward = forward
+		valid._forward_input = p_forward
 		valid._strafe = strafe
 		valid._yaw = p_yaw
 		return Walk.IntentResult.with_intent(valid)
@@ -210,6 +212,10 @@ class MoveIntent:
 		var look := Vector3(sin_yaw, 0.0, cos_yaw)
 		var right := Vector3(cos_yaw, 0.0, -sin_yaw)
 		return look * _forward + right * _strafe
+
+	## Preserve the independent axis for constrained movement, before planar capping.
+	func forward_input() -> float:
+		return _forward_input
 
 ## What one stepped walk tick did.
 class WalkOutcome:
@@ -243,6 +249,15 @@ class WalkState:
 	func capsule() -> Resolve.Capsule:
 		return Walk._copy_capsule(_capsule)
 
+	## Install an already-swept landing pose without resetting the steadying clock.
+	func resume(capsule: Resolve.Capsule) -> Walk.StartResult:
+		if _tick_stepped:
+			return Walk.StartResult.with_error(Walk.WalkError.step_already_taken())
+		if not capsule.foot.is_finite() or not capsule.head.is_finite():
+			return Walk.StartResult.with_error(Walk.WalkError.non_finite_capsule())
+		_capsule = Walk._copy_capsule(capsule)
+		return Walk.StartResult.with_state(self)
+
 	## The walk speed the next consumed tick will move at, in meters per
 	## second: the exact frozen initial product at a full stop, thereafter
 	## the frozen exponential approach toward SURVIVAL_WALK_SPEED.
@@ -254,13 +269,15 @@ class WalkState:
 	## resolved position, and advance the steadying clock by dt. The tick
 	## moves at the speed the ramp held when the call arrived; the clock
 	## advances after the sweep. Errors never mutate.
-	func step(intent: Walk.MoveIntent, dt: float, colliders: ColliderSet) -> Walk.StepResult:
+	func step(intent: Walk.MoveIntent, dt: float, colliders: ColliderSet, support: Callable = Callable()) -> Walk.StepResult:
 		if _tick_stepped:
 			return Walk.StepResult.with_error(Walk.WalkError.step_already_taken())
 		if not is_finite(dt) or dt <= 0.0:
 			return Walk.StepResult.with_error(Walk.WalkError.invalid_tick_seconds(dt))
 		var direction: Vector3 = intent.world_direction()
 		var intended: Vector3 = direction * (speed() * dt)
+		if support.is_valid():
+			intended = support.call(_capsule, intended)
 		var resolved: Resolve.Result = Resolve.resolve_motion(_capsule, intended, colliders)
 		if not resolved.is_ok():
 			return Walk.StepResult.with_error(Walk.WalkError.resolver_error(resolved.error))

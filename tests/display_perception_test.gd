@@ -73,13 +73,13 @@ func test_text_change_during_first_reading_restarts_slow_timing_until_completed(
 	assert_true(model.perceive == 1.0, "next replacement completes in the later 57 ticks")
 
 func test_first_resolution_memory_is_shared_across_displays_and_new_game_is_fresh() -> void:
-	var game := Game.new()
+	var game := Game.new(0)
 	var first := Perception.new(game.writing_memory)
 	var second := Perception.new(game.writing_memory)
 	_ticks(first, true, 168)
 	_ticks(second, true, 21 + 18)
 	assert_true(is_equal_approx(second.perceive, 0.5), "another display uses protagonist's completed first reading")
-	var fresh_game := Game.new()
+	var fresh_game := Game.new(0)
 	assert_false(fresh_game.writing_memory.has_resolved, "new game has independent memory")
 
 func test_interrupted_first_attempt_does_not_consume_first_resolution() -> void:

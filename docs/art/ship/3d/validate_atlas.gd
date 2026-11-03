@@ -91,6 +91,11 @@ func _at(facilities: Dictionary, id: String, xyz: Array, deck: String, status: S
 		_check(_same(item.xyz, xyz) and item.deck == deck and item.status == status, "coordinate/deck/status " + id)
 
 func _check_facilities(data: Dictionary, facilities: Dictionary) -> void:
+	var built: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://docs/art/ship/3d/built-layout.json")).facilities
+	for id: String in built:
+		if facilities.has(id):
+			for field: String in built[id]:
+				_check(_same(facilities[id][field], built[id][field]), "exported built record %s/%s" % [id, field])
 	var coordinates: Dictionary = data.coordinate_system
 	_check(_same(coordinates.envelope_max, {"x": [-1200, 1200], "y": [-96, 96], "z": [-360, 360]}), "2400x720x192 maximum envelope")
 	_check(coordinates.deck_pitch == 5.5 and coordinates.opening_deck == "D14" and coordinates.opening_floor_y == 0 and coordinates.opening_clear_height == 3.2, "opening deck and clearance")
@@ -117,12 +122,12 @@ func _check_facilities(data: Dictionary, facilities: Dictionary) -> void:
 	for cell: Dictionary in data.grid.districts:
 		for ref: String in cell.facility_refs:
 			_check(facilities.has(ref) and facilities[ref].district == cell.id, "district facility reference " + cell.id + " -> " + ref)
-	_check(_same(facilities.bay.bounds, {"x": [-6, 6], "z": [-4, 4]}) and facilities.bay.clear_height == 3.2, "built bay bounds")
+	_check(_same(facilities.bay.bounds, built.bay.bounds) and facilities.bay.clear_height == 3.2, "built bay bounds")
 	_check(_same(facilities.hall.bounds, {"x": [6, 30], "z": [-1.5, 1.5]}) and facilities.hall.endcap_x == 30, "hall bounds and blocked endcap")
 	_check(_same(facilities.power_room.bounds, {"x": [21, 33], "z": [-9.7, -1.7]}), "power room bounds")
-	_at(facilities, "rod", [-0.6, 0, -1.55], "D14", "built")
-	_at(facilities, "hatch", [6, 0, 0], "D14", "built")
-	_at(facilities, "switch", [6.22, 1.25, 0.85], "D14", "built")
+	_at(facilities, "rod", built.rod.xyz, "D14", "built")
+	_at(facilities, "hatch", built.hatch.xyz, "D14", "built")
+	_at(facilities, "switch", built.switch.xyz, "D14", "built")
 	_at(facilities, "power_door", [27, 0, -1.5], "D14", "built")
 	_at(facilities, "backup", [27, 0, -5.7], "D14", "built")
 	_at(facilities, "primary", [700, -71.5, 0], "D27", "proposed")
@@ -137,10 +142,9 @@ func _check_facilities(data: Dictionary, facilities: Dictionary) -> void:
 	_at(facilities, "remote_pod_2", [-489.3, -44, -170], "D22", "proposed")
 	_check(_same(cells["D21-25-0-port"].facility_refs, []) and _same(cells["D21-25-1-port"].facility_refs, ["r2", "remote_room", "armory", "remote_pod_1", "remote_pod_2"]), "single sector 1 port hazard program")
 	_check(cells["D21-25-0-port"].category != "hazard" and cells["D21-25-1-port"].category == "hazard", "former bow district remains safe")
-	var opening_pods: Array = [
-		[-4.8, 0, -2.9], [-3.4, 0, -2.9], [-2, 0, -2.9], [-0.6, 0, -2.9],
-		[-2, 0, 2.9], [-3.4, 0, 2.9], [-4.8, 0, 2.9]
-	]
+	var opening_pods: Array = []
+	for index: int in range(7):
+		opening_pods.append(built["pod_%d" % index].xyz)
 	var built_pods := 0
 	var remote_pods := 0
 	var primary_count := 0
@@ -161,12 +165,12 @@ func _check_facilities(data: Dictionary, facilities: Dictionary) -> void:
 			_check(item.radiation_source == "unknown", "unknown radiation origin " + item.id)
 	_check(built_pods == 7 and remote_pods == 2 and built_pods + remote_pods == 9, "seven built and two proposed pods only")
 	_check(primary_count == 1 and backup_count == 1, "one main plant and one backup")
-	_at(facilities, "pod_6", [-4.8, 0, 2.9], "D14", "built")
+	_at(facilities, "pod_6", built.pod_6.xyz, "D14", "built")
 	_check(facilities.pod_6.state == "player", "player pod id 6")
 	for x in [9, 15, 21]:
 		for side in ["north", "south"]:
 			var id: String = "leaf_%s_%s" % [x, side]
-			_at(facilities, id, [x, 0, -1.5 if side == "north" else 1.5], "D14", "built")
+			_at(facilities, id, [x, 0, -1.5 if side == "north" else 1.5], "D14", "proposed" if id == "leaf_15_south" else "built")
 			_check(facilities[id].pierced == false, "unpierced visual leaf " + id)
 	_check(radiation_count == 2, "two separate radiation regions")
 	_check(_same(facilities.r1.bounds, {"x": [970, 1120], "z": [170, 300]}) and _same(facilities.r1.deck_range, [26, 30]), "M-drive-side radiation bounds")

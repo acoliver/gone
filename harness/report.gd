@@ -15,6 +15,9 @@ var checkpoints: Array[String] = []
 var frame_stats: Dictionary = {"frames": 0, "mean_us": 0.0, "p95_us": 0.0, "median_us": 0.0}
 var perf: Dictionary = {}
 var beats: Dictionary = {}
+var logical_steps_per_present: int = 1
+var logical_ticks: int = 0
+var logical_digest: String = ""
 var identity: Dictionary = {"app_hash": "", "scenario_hash": "", "config_hash": ""}
 
 func _init(p_protocol_version: int = 0, p_scenario: String = "", p_seed: int = 0, p_identity: Dictionary = {}) -> void:
@@ -36,10 +39,21 @@ static func parse(text: String) -> Dictionary:
 	report.protocol_version = int(data.protocol_version)
 	report.scenario = String(data.scenario)
 	report.seed = int(data.seed)
-	for event: Dictionary in data.events:
-		if not event.has("kind"):
+	if not data.events is Array:
+		return {"report": null, "error": "report parse error: events must be an array"}
+	for value in data.events:
+		if not value is Dictionary:
+			return {"report": null, "error": "report parse error: event must be an object"}
+		var event: Dictionary = value
+		if not event.has("kind") or not event.kind is String:
 			return {"report": null, "error": "report parse error: event without a kind"}
+		var event_error := ConnectorAssertions.validate(event)
+		if not event_error.is_empty():
+			return {"report": null, "error": event_error}
 		report.events.append(event)
+	report.logical_steps_per_present = int(data.get("logical_steps_per_present", 1))
+	report.logical_ticks = int(data.get("logical_ticks", 0))
+	report.logical_digest = String(data.get("logical_digest", ""))
 	for checkpoint: String in data.checkpoints:
 		report.checkpoints.append(checkpoint)
 	if data.has("frame_stats") and data.frame_stats is Dictionary:
@@ -96,7 +110,10 @@ func to_json() -> String:
 		"frame_stats": frame_stats,
 		"beats": beats,
 		"identity": identity,
+		"logical_steps_per_present": logical_steps_per_present,
+		"logical_ticks": logical_ticks,
+		"logical_digest": logical_digest,
 	}
 	if not perf.is_empty():
 		data.perf = perf
-	return JSON.stringify(data, "\t")
+	return JSON.stringify(data, "\t", true, true)

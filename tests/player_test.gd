@@ -11,7 +11,7 @@ const DT: float = 1.0 / 60.0
 const NEAR: float = 1e-4
 
 func _awake_game() -> Game:
-	var game := Game.new()
+	var game := Game.new(0)
 	game.phase.wake_complete()
 	return game
 
@@ -19,8 +19,10 @@ func _awake_game() -> Game:
 ## the waypoint; leaves the mirror in WALK on the sim's Standing phase.
 func _stand(motion: PlayerMotion, game: Game, plane: InputPlane) -> void:
 	plane.offer_press(InputPlane.Buttons.ACTIVATE)
+	game.advance_doors()
 	motion.advance(plane, game, 0.0, DT)
 	for _segment: int in range(Exit.EXIT_POSE_COUNT - 1):
+		game.advance_doors()
 		motion.advance(plane, game, 0.0, DT)
 
 ## Walk the standing capsule toward a floor-plan target, re-aiming each
@@ -39,6 +41,7 @@ func _walk_to(
 		if to_target.length() <= stop_distance:
 			return true
 		plane.offer_movement(1.0, 0.0)
+		game.advance_doors()
 		motion.advance(plane, game, atan2(to_target.x, to_target.y), DT)
 		plane.end_frame()
 	return false
@@ -58,16 +61,19 @@ func test_get_up_walks_authored_path_per_tick() -> void:
 	var plane := InputPlane.new()
 	var poses := game.exit_path.poses()
 	plane.offer_press(InputPlane.Buttons.ACTIVATE)
+	game.advance_doors()
 	motion.advance(plane, game, 0.0, DT)
 	assert_int_equal(motion.state(), PlayerMotion.BodyState.GET_UP, "press starts the get-up")
 	assert_int_equal(game.phase.current(), Phase.Wake.EXITING_POD, "machine advanced to ExitingPod")
 	_near_vec3(motion.capsule().foot, poses[0].foot(), "start pose foot")
 	_near_vec3(motion.capsule().head, poses[0].head(), "start pose head")
 	for index: int in range(1, Exit.EXIT_POSE_COUNT - 1):
+		game.advance_doors()
 		motion.advance(plane, game, 0.0, DT)
 		_near_vec3(motion.capsule().foot, poses[index].foot(), "pose %d foot" % index)
 		_near_vec3(motion.capsule().head, poses[index].head(), "pose %d head" % index)
 		_near_vec3(motion.eye(game), poses[index].head(), "get-up eye rides the head at pose %d" % index)
+	game.advance_doors()
 	motion.advance(plane, game, 0.0, DT)
 	_near_vec3(motion.capsule().foot, poses[Exit.EXIT_POSE_COUNT - 1].foot(), "waypoint foot")
 	assert_true(motion.failure().is_empty(), motion.failure())
@@ -79,7 +85,7 @@ func test_get_up_walks_authored_path_per_tick() -> void:
 	_near_vec3(standing, motion.eye(game), "standing eye over the waypoint foot")
 
 func test_get_up_start_rejected_outside_awake_in_pod() -> void:
-	var game := Game.new()
+	var game := Game.new(0)
 	var result := Exit.GetUpController.start(game.phase, game.exit_path)
 	assert_false(result.is_ok(), "start in Waking is rejected")
 	assert_int_equal(result.error.kind, Exit.ExitError.Kind.WRONG_PHASE, "typed rejection")
@@ -106,12 +112,14 @@ func test_first_walk_steps_follow_frozen_ramp_in_look_frame() -> void:
 	var yaw := 1.234
 	var before := motion.capsule().foot
 	plane.offer_movement(1.0, 0.0)
+	game.advance_doors()
 	motion.advance(plane, game, yaw, DT)
 	var first := motion.capsule().foot - before
 	var expected_first := Vector3(sin(yaw), 0.0, cos(yaw)) * (Controller.STEADY_INITIAL_SPEED_FACTOR * Controller.SURVIVAL_WALK_SPEED * DT)
 	_near_vec3(first, expected_first, "first tick moves along the look forward axis at the initial speed")
 	var before2 := motion.capsule().foot
 	plane.offer_movement(0.0, 1.0)
+	game.advance_doors()
 	motion.advance(plane, game, yaw, DT)
 	var second := motion.capsule().foot - before2
 	var ramped := Controller.SURVIVAL_WALK_SPEED * (1.0 - (1.0 - Controller.STEADY_INITIAL_SPEED_FACTOR) * exp(-DT / Controller.STEADYING_TIME_CONSTANT))
@@ -150,6 +158,7 @@ func test_movement_before_standing_moves_nothing() -> void:
 	var plane := InputPlane.new()
 	for _tick: int in range(5):
 		plane.offer_movement(1.0, 0.0)
+		game.advance_doors()
 		motion.advance(plane, game, 0.0, DT)
 		plane.end_frame()
 	assert_int_equal(motion.state(), PlayerMotion.BodyState.LYING, "no controller while lying")
@@ -158,17 +167,20 @@ func test_movement_before_standing_moves_nothing() -> void:
 	_near_vec3(motion.eye(game), game.exit_path.poses()[0].head(), "the lying eye stays at the spawn")
 
 func test_press_in_waking_is_dropped_not_buffered() -> void:
-	var game := Game.new()
+	var game := Game.new(0)
 	var motion := PlayerMotion.new()
 	var plane := InputPlane.new()
 	plane.offer_press(InputPlane.Buttons.ACTIVATE)
+	game.advance_doors()
 	motion.advance(plane, game, 0.0, DT)
 	plane.end_frame()
 	assert_int_equal(motion.state(), PlayerMotion.BodyState.LYING, "the press did not start a get-up in Waking")
 	game.phase.wake_complete()
+	game.advance_doors()
 	motion.advance(plane, game, 0.0, DT)
 	assert_int_equal(motion.state(), PlayerMotion.BodyState.LYING, "the earlier press was dropped, not buffered")
 	plane.offer_press(InputPlane.Buttons.ACTIVATE)
+	game.advance_doors()
 	motion.advance(plane, game, 0.0, DT)
 	assert_int_equal(motion.state(), PlayerMotion.BodyState.GET_UP, "a fresh press in AwakeInPod starts the get-up")
 
@@ -178,50 +190,52 @@ func test_door_opens_only_in_reach_and_standing() -> void:
 	var plane := InputPlane.new()
 	var colliders_closed := game.colliders.size()
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_false(motion.interact_with_door(plane, game), "interact while lying does not open the door")
-	assert_int_equal(motion.door_state, PlayerMotion.DoorState.CLOSED, "no opening started while lying")
+	assert_false(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, plane, game, motion), "interact while lying does not open the door")
+	assert_int_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).state, Doors.State.CLOSED, "no opening started while lying")
 	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the lying press stays on the channel: only standing presses belong to the door")
 	_stand(motion, game, plane)
-	var hatch := game.registry.hatch().center
+	var hatch := PlacementTruth.bay_door_center(game.layout)
 	var foot := motion.capsule().foot
-	assert_float_in_range(Vector2(foot.x - hatch.x, foot.z - hatch.y).length(), PlayerMotion.HATCH_INTERACT_REACH + 1.0, 30.0, "the waypoint starts out of reach")
+	assert_float_in_range(Vector2(foot.x - hatch.x, foot.z - hatch.y).length(), Interactions.HATCH_INTERACT_REACH + 1.0, 30.0, "the waypoint starts out of reach")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_false(motion.interact_with_door(plane, game), "interact out of reach does not open the door")
-	assert_int_equal(motion.door_state, PlayerMotion.DoorState.CLOSED, "no opening started out of reach")
+	assert_false(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, plane, game, motion), "interact out of reach does not open the door")
+	assert_int_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).state, Doors.State.CLOSED, "no opening started out of reach")
 	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the out-of-reach press stays on the channel: the hallway switch may still take it")
 	# Walk the aisle to the hatch, re-aiming at the door as the sway of the
 	# ramp settles; the swept resolver carries the capsule the whole way.
 	assert_true(_walk_to(motion, game, plane, hatch,
-		PlayerMotion.HATCH_INTERACT_REACH * 0.9), "the walk arrived at the door")
+		Interactions.HATCH_INTERACT_REACH * 0.9), "the walk arrived at the door")
 	assert_true(motion.failure().is_empty(), motion.failure())
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_false(motion.interact_with_door(plane, game), "interact at the door without the rod starts nothing")
-	assert_int_equal(motion.door_state, PlayerMotion.DoorState.CLOSED, "the rod-less press leaves the door shut")
-	assert_int_equal(motion.door_openings, 0, "the rod-less press records no opening")
+	assert_false(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, plane, game, motion), "interact at the door without the rod starts nothing")
+	assert_int_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).state, Doors.State.CLOSED, "the rod-less press leaves the door shut")
+	assert_int_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).releases, 0, "the rod-less press records no opening")
 	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the refused press stays on the channel: the beside-door switch may still take it")
 	motion.rod_carried = true
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_door(plane, game), "the rod-carried interact at the door starts the opening")
-	assert_int_equal(motion.door_state, PlayerMotion.DoorState.OPENING, "the pry-bar press starts the door's opening")
-	assert_int_equal(motion.door_openings, 1, "the door opens exactly once")
+	assert_true(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, plane, game, motion), "the rod-carried interact at the door starts the opening")
+	assert_int_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).state, Doors.State.OPENING, "the pry-bar press starts the door's opening")
+	assert_int_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).releases, 1, "the door opens exactly once")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_false(motion.interact_with_door(plane, game), "a second in-reach interact is not the door's to eat anymore")
+	assert_false(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, plane, game, motion), "a second in-reach interact is not the door's to eat anymore")
 	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the uneaten press stays on the channel")
-	assert_int_equal(motion.door_openings, 1, "a second press never re-opens the door")
+	assert_int_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).releases, 1, "a second press never re-opens the door")
 	# The deterministic opening: the retract phase is half done at half
 	# its ticks, and the doorway lands open after its authored budget.
 	for _tick: int in range(6):
+		game.advance_doors()
 		motion.advance(plane, game, 0.0, DT)
 		plane.end_frame()
-	assert_vec3_equal(motion.door_slab_offset(), Vector3(PlayerMotion.DOOR_RETRACT_DISTANCE * 0.5, 0.0, 0.0), "the retract phase is half done at half its ticks")
-	for _tick: int in range(PlayerMotion.DOOR_RETRACT_TICKS + PlayerMotion.DOOR_SLIDE_TICKS - 6):
+	assert_vec3_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).offset, Vector3(Doors.BAY_RETRACT * 0.5, 0.0, 0.0), "the retract phase is half done at half its ticks")
+	for _tick: int in range(Doors.BAY_RETRACT_TICKS + Doors.BAY_SLIDE_TICKS - 6):
+		game.advance_doors()
 		motion.advance(plane, game, 0.0, DT)
 		plane.end_frame()
-	assert_int_equal(motion.door_state, PlayerMotion.DoorState.OPEN, "the opening completed on the tick clock")
+	assert_int_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).state, Doors.State.OPEN, "the opening completed on the tick clock")
 	assert_true(game.door_open, "the doorway opened with the collider rebuild")
 	assert_int_equal(game.colliders.size(), PowerRoom.scene_collider_set(game.registry, true, game.power_door_open).size(), "the open doorway carries the open collider set")
 	assert_true(game.colliders.size() != colliders_closed, "the collider set changed when the doorway opened")
-	assert_vec3_equal(motion.door_slab_offset(), Vector3(PlayerMotion.DOOR_RETRACT_DISTANCE, 0.0, -PlayerMotion.DOOR_SLIDE_DISTANCE), "the slid-aside slab pose is pinned")
+	assert_vec3_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).offset, Vector3(Doors.BAY_RETRACT, 0.0, -Doors.BAY_SLIDE), "the slid-aside slab pose is pinned")
 	assert_int_equal(motion.state(), PlayerMotion.BodyState.WALK, "the body still owns a standing capsule")
 	assert_int_equal(game.phase.current(), Phase.Wake.STANDING, "the phase machine never left Standing")
 

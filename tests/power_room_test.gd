@@ -1,4 +1,6 @@
 extends SimTestCase
+
+var _bay_frame := ShipLayout.authored().layout.bay_to_world()
 ## The emergency power room (issue #59): the room's envelope mirrors
 ## the stasis room's footprint behind the corridor's pierced north
 ## wall, the power door opens on its ungated press and slides its leaf
@@ -11,14 +13,16 @@ extends SimTestCase
 const DT: float = 1.0 / 60.0
 
 func _awake_game() -> Game:
-	var game := Game.new()
+	var game := Game.new(0)
 	game.phase.wake_complete()
 	return game
 
 func _stand(motion: PlayerMotion, game: Game, plane: InputPlane) -> void:
 	plane.offer_press(InputPlane.Buttons.ACTIVATE)
+	game.advance_doors()
 	motion.advance(plane, game, 0.0, DT)
 	for _segment: int in range(Exit.EXIT_POSE_COUNT - 1):
+		game.advance_doors()
 		motion.advance(plane, game, 0.0, DT)
 
 func _walk_to(motion: PlayerMotion, game: Game, plane: InputPlane,
@@ -29,11 +33,13 @@ func _walk_to(motion: PlayerMotion, game: Game, plane: InputPlane,
 		if to_target.length() <= stop_distance:
 			adapter.release()
 			adapter.offer_tick(plane)
+			game.advance_doors()
 			motion.advance(plane, game, 0.0, DT)
 			plane.end_frame()
 			return true
 		adapter.hold(1.0, 0.0)
 		adapter.offer_tick(plane)
+		game.advance_doors()
 		motion.advance(plane, game, atan2(to_target.x, to_target.y), DT)
 		plane.end_frame()
 	return false
@@ -51,12 +57,12 @@ func test_room_envelope_mirrors_the_stasis_room() -> void:
 	assert_float_in_range(PowerRoom.ROOM_START_Z, -(Hallway.HALL_WIDTH / 2.0 + Placement.WALL_THICKNESS) - 1e-4, -(Hallway.HALL_WIDTH / 2.0 + Placement.WALL_THICKNESS) + 1e-4, "the corridor's north wall band is the room's south wall")
 	assert_float_in_range(PowerRoom.ROOM_CEILING, Pods.ROOM_CEILING_HEIGHT - 1e-4, Pods.ROOM_CEILING_HEIGHT + 1e-4, "the room carries the stasis room's ceiling")
 	var solids := PowerRoom.room_solids()
-	assert_int_equal(solids.size(), 6, "the room shell holds floor, ceiling, both side walls, the far wall, and the south gap band")
+	assert_int_equal(solids.size(), 5, "the room shell holds floor, ceiling, both side walls and far wall; hall owns the shared south wall")
 	assert_vec3_equal(solids[0].center, Vector3(27.0, -0.1, -5.8), "the room floor slab's center is pinned")
 	assert_vec3_equal(solids[0].size, Vector3(12.4, 0.2, 8.4), "the room floor slab tucks under the wall bands")
 	assert_vec3_equal(solids[4].center, Vector3(27.0, 1.6, -9.8), "the far wall's center is pinned")
-	assert_vec3_equal(solids[5].center, Vector3(31.7, 1.6, -1.6), "the south gap band centers east of the corridor's pierce")
-	assert_vec3_equal(solids[5].size, Vector3(3.0, 3.2, 0.2), "the south gap band closes the corner the corridor leaves open")
+	assert_vec3_equal(Hallway.power_doorway_wall_solids()[1].center, Vector3(30.35, 1.6, -1.6), "the south gap band centers east of the corridor's pierce")
+	assert_vec3_equal(Hallway.power_doorway_wall_solids()[1].size, Vector3(5.7, 3.2, 0.2), "the south gap band closes the corner the corridor leaves open")
 
 func test_the_south_face_tiles_the_band_minus_the_aperture() -> void:
 	var pierce := Hallway.power_doorway_wall_solids()
@@ -64,8 +70,6 @@ func test_the_south_face_tiles_the_band_minus_the_aperture() -> void:
 	var volume := 0.0
 	for piece: Placement.SolidPlacement in pierce:
 		volume += piece.size.x * piece.size.y * piece.size.z
-	var gap := PowerRoom.room_solids()[5]
-	volume += gap.size.x * gap.size.y * gap.size.z
 	var band_length: float = (PowerRoom.ROOM_END_X + Placement.WALL_THICKNESS) - Hallway.HALL_START_X
 	var band_volume: float = band_length * Hallway.HALL_CEILING_HEIGHT * Placement.WALL_THICKNESS
 	var aperture: float = Hallway.SIDE_DOOR_WIDTH * Hallway.SIDE_DOOR_HEIGHT * Placement.WALL_THICKNESS
@@ -111,9 +115,9 @@ func test_collider_sets_extend_the_hallways_both_doors() -> void:
 	var shut := PowerRoom.scene_collider_set(registry, false, false)
 	var hall_open := PowerRoom.scene_collider_set(registry, true, false)
 	var both_open := PowerRoom.scene_collider_set(registry, true, true)
-	assert_int_equal(shut.size(), 86, "the shut set's box count is pinned")
-	assert_int_equal(hall_open.size(), 84, "opening the stasis doorway drops its block and slab")
-	assert_int_equal(both_open.size(), 83, "opening the power door drops its leaf")
+	assert_int_equal(shut.size(), 194, "the shut set's box count is pinned")
+	assert_int_equal(hall_open.size(), 192, "opening the stasis doorway drops its block and slab")
+	assert_int_equal(both_open.size(), 191, "opening the power door drops its leaf")
 	var game := _awake_game()
 	assert_int_equal(game.colliders.size(), shut.size(), "the game boots on the shut set")
 	# The power aperture is solid while shut and clear once the leaf
@@ -152,9 +156,9 @@ func test_power_door_opens_on_an_ungated_press() -> void:
 	_stand(motion, game, plane)
 	assert_false(motion.rod_carried, "this lane never touches the rod")
 	var adapter := InputPlane.ScriptedAdapter.new()
-	assert_true(_walk_to(motion, game, plane, adapter, Vector2(5.5, 0.6), 0.3), "the walk reached the stasis door")
+	assert_true(_walk_to(motion, game, plane, adapter, _bay(Vector2(5.5, 0.6)), 0.3), "the walk reached the stasis door")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_false(motion.interact_with_power_door(plane, game), "the shut stasis door is not the power door")
+	assert_false(Interactions.new(game.layout).process_id(ShipLayout.POWER_DOOR_ID, plane, game, motion), "the shut stasis door is not the power door")
 	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the refused press stays on the channel")
 	plane.end_frame()
 	# The rod gate: the door test lanes carry the rod by pickup; here
@@ -164,34 +168,37 @@ func test_power_door_opens_on_an_ungated_press() -> void:
 	# shortcut, exactly like the hallway milestone's crossing test.)
 	motion.rod_carried = true
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_door(plane, game), "the rod-carried press opens the stasis door")
+	assert_true(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, plane, game, motion), "the rod-carried press opens the stasis door")
 	for _tick: int in range(60):
+		game.advance_doors()
 		motion.advance(plane, game, 0.0, DT)
 		plane.end_frame()
-	assert_true(_walk_to(motion, game, plane, adapter, Vector2(5.6, 0.15), 0.15), "the walk aligned to the aperture axis")
-	assert_true(_walk_to(motion, game, plane, adapter, Vector2(7.3, 0.15), 0.2), "the walk crossed the threshold")
+	assert_true(_walk_to(motion, game, plane, adapter, _bay(Vector2(5.6, 0.15)), 0.15), "the walk aligned to the aperture axis")
+	assert_true(_walk_to(motion, game, plane, adapter, _bay(Vector2(7.3, 0.15)), 0.2), "the walk crossed the threshold")
 	assert_true(_walk_to(motion, game, plane, adapter, Vector2(27.0, -0.3), 0.3), "the walk reached the power door")
 	motion.rod_carried = false
 	var foot := motion.capsule().foot
 	var reach := Vector2(PowerRoom.door_act_center().x - foot.x, PowerRoom.door_act_center().z - foot.z)
-	assert_float_in_range(reach.length(), 0.0, PlayerMotion.POWER_DOOR_REACH, "the stand holds the power door in reach")
+	assert_float_in_range(reach.length(), 0.0, Interactions.POWER_DOOR_REACH, "the stand holds the power door in reach")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_power_door(plane, game), "the ungated press starts the power door")
-	assert_int_equal(motion.power_door_openings, 1, "one press, one opening")
-	assert_int_equal(motion.power_door_state, PlayerMotion.PowerDoorState.OPENING, "the leaf slides")
-	for _tick: int in range(PlayerMotion.POWER_DOOR_SLIDE_TICKS - 24):
+	assert_true(Interactions.new(game.layout).process_id(ShipLayout.POWER_DOOR_ID, plane, game, motion), "the ungated press starts the power door")
+	assert_int_equal(game.doors.snapshot(ShipLayout.POWER_DOOR_ID).releases, 1, "one press, one opening")
+	assert_int_equal(game.doors.snapshot(ShipLayout.POWER_DOOR_ID).state, Doors.State.OPENING, "the leaf slides")
+	for _tick: int in range(Doors.SWING_TICKS - 24):
+		game.advance_doors()
 		motion.advance(plane, game, 0.0, DT)
 		plane.end_frame()
-	assert_int_equal(motion.power_door_state, PlayerMotion.PowerDoorState.OPENING, "the slide runs on the tick clock")
-	assert_vec3_equal(motion.power_door_slab_offset(), Vector3(-PlayerMotion.POWER_DOOR_SLIDE_DISTANCE * 0.5, 0.0, 0.0), "the leaf is half-slid at half its ticks")
+	assert_int_equal(game.doors.snapshot(ShipLayout.POWER_DOOR_ID).state, Doors.State.OPENING, "the slide runs on the tick clock")
+	assert_vec3_equal(game.doors.snapshot(ShipLayout.POWER_DOOR_ID).offset, Vector3(-Doors.POWER_SLIDE * 0.5, 0.0, 0.0), "the leaf is half-slid at half its ticks")
 	for _tick: int in range(24):
+		game.advance_doors()
 		motion.advance(plane, game, 0.0, DT)
 		plane.end_frame()
-	assert_int_equal(motion.power_door_state, PlayerMotion.PowerDoorState.OPEN, "the slide completed on the tick clock")
+	assert_int_equal(game.doors.snapshot(ShipLayout.POWER_DOOR_ID).state, Doors.State.OPEN, "the slide completed on the tick clock")
 	assert_true(game.power_door_open, "the power doorway opened with the collider rebuild")
 	assert_int_equal(game.colliders.size(), PowerRoom.scene_collider_set(game.registry, game.door_open, true).size(), "the opened set drops the leaf")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_false(motion.interact_with_power_door(plane, game), "the open power door eats no press")
+	assert_false(Interactions.new(game.layout).process_id(ShipLayout.POWER_DOOR_ID, plane, game, motion), "the open power door eats no press")
 	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the open door leaves the press on the channel")
 	assert_true(motion.failure().is_empty(), motion.failure())
 
@@ -202,25 +209,27 @@ func test_console_presses_consume_only_when_they_act() -> void:
 	_stand(motion, game, plane)
 	# Fresh body: a press before standing at the console owns nothing.
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_false(motion.interact_with_console(plane, game), "an out-of-reach press consumes nothing")
+	assert_false(Interactions.new(game.layout).process_id(&"D14-POWER-CONSOLE", plane, game, motion), "an out-of-reach press consumes nothing")
 	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the refused press stays on the channel")
 	plane.end_frame()
 	var adapter := InputPlane.ScriptedAdapter.new()
 	motion.rod_carried = true
-	assert_true(_walk_to(motion, game, plane, adapter, Vector2(5.5, 0.6), 0.3), "the walk reached the stasis door")
+	assert_true(_walk_to(motion, game, plane, adapter, _bay(Vector2(5.5, 0.6)), 0.3), "the walk reached the stasis door")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_door(plane, game), "the door press landed")
+	assert_true(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, plane, game, motion), "the door press landed")
 	for _tick: int in range(60):
+		game.advance_doors()
 		motion.advance(plane, game, 0.0, DT)
 		plane.end_frame()
 	# Align to the aperture axis before crossing, exactly like the lane
 	# generator: the door jamb grazes any diagonal crossing.
-	assert_true(_walk_to(motion, game, plane, adapter, Vector2(5.6, 0.15), 0.15), "the walk aligned to the aperture axis")
-	assert_true(_walk_to(motion, game, plane, adapter, Vector2(7.3, 0.15), 0.2), "the walk crossed the threshold")
+	assert_true(_walk_to(motion, game, plane, adapter, _bay(Vector2(5.6, 0.15)), 0.15), "the walk aligned to the aperture axis")
+	assert_true(_walk_to(motion, game, plane, adapter, _bay(Vector2(7.3, 0.15)), 0.2), "the walk crossed the threshold")
 	assert_true(_walk_to(motion, game, plane, adapter, Vector2(27.0, -0.5), 0.3), "the walk reached the power door")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_power_door(plane, game), "the power door press landed")
+	assert_true(Interactions.new(game.layout).process_id(ShipLayout.POWER_DOOR_ID, plane, game, motion), "the power door press landed")
 	for _tick: int in range(60):
+		game.advance_doors()
 		motion.advance(plane, game, 0.0, DT)
 		plane.end_frame()
 	assert_true(game.power_door_open, "the power doorway opened before the room walk")
@@ -231,19 +240,19 @@ func test_console_presses_consume_only_when_they_act() -> void:
 	assert_true(_walk_to(motion, game, plane, adapter, Vector2(22.4, -7.5), 0.2), "the walk reached the working console")
 	var foot := motion.capsule().foot
 	var reach := Vector2(PowerRoom.console_act_center().x - foot.x, PowerRoom.console_act_center().z - foot.z)
-	assert_float_in_range(reach.length(), 0.0, PlayerMotion.CONSOLE_ACT_REACH, "the stand holds the working console in reach")
+	assert_float_in_range(reach.length(), 0.0, Interactions.CONSOLE_ACT_REACH, "the stand holds the working console in reach")
 	# A stand at a dead console owns no press: the far wall's busted one.
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_console(plane, game), "the first press at the working console shows the label")
+	assert_true(Interactions.new(game.layout).process_id(&"D14-POWER-CONSOLE", plane, game, motion), "the first press at the working console shows the label")
 	assert_int_equal(game.console_state, Game.ConsoleState.INACTIVE, "the console reads palo / INACTIVO")
 	assert_int_equal(motion.console_presses, 1, "one press consumed")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_console(plane, game), "the second press activates")
+	assert_true(Interactions.new(game.layout).process_id(&"D14-POWER-CONSOLE", plane, game, motion), "the second press activates")
 	assert_int_equal(game.console_state, Game.ConsoleState.ACTIVE, "the console reads shenu / EN FUNCIONAMIENTO")
 	assert_true(game.power_active, "the secondary power lit")
 	assert_int_equal(motion.console_presses, 2, "two presses consumed, exactly")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_false(motion.interact_with_console(plane, game), "a press at the active console owns nothing")
+	assert_false(Interactions.new(game.layout).process_id(&"D14-POWER-CONSOLE", plane, game, motion), "a press at the active console owns nothing")
 	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the surplus press stays on the channel")
 	assert_true(motion.failure().is_empty(), motion.failure())
 
@@ -320,20 +329,22 @@ func test_full_route_lights_the_power() -> void:
 	_stand(motion, game, plane)
 	var adapter := InputPlane.ScriptedAdapter.new()
 	motion.rod_carried = true
-	assert_true(_walk_to(motion, game, plane, adapter, Vector2(5.5, 0.6), 0.3), "the walk reached the stasis door")
+	assert_true(_walk_to(motion, game, plane, adapter, _bay(Vector2(5.5, 0.6)), 0.3), "the walk reached the stasis door")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_door(plane, game), "the door press landed")
+	assert_true(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, plane, game, motion), "the door press landed")
 	for _tick: int in range(60):
+		game.advance_doors()
 		motion.advance(plane, game, 0.0, DT)
 		plane.end_frame()
 	# Align to the aperture axis before crossing, exactly like the lane
 	# generator: the door jamb grazes any diagonal crossing.
-	assert_true(_walk_to(motion, game, plane, adapter, Vector2(5.6, 0.15), 0.15), "the walk aligned to the aperture axis")
-	assert_true(_walk_to(motion, game, plane, adapter, Vector2(7.3, 0.15), 0.2), "the walk crossed the threshold")
+	assert_true(_walk_to(motion, game, plane, adapter, _bay(Vector2(5.6, 0.15)), 0.15), "the walk aligned to the aperture axis")
+	assert_true(_walk_to(motion, game, plane, adapter, _bay(Vector2(7.3, 0.15)), 0.2), "the walk crossed the threshold")
 	assert_true(_walk_to(motion, game, plane, adapter, Vector2(27.0, -0.5), 0.3), "the walk reached the power door")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_power_door(plane, game), "the power door press landed")
+	assert_true(Interactions.new(game.layout).process_id(ShipLayout.POWER_DOOR_ID, plane, game, motion), "the power door press landed")
 	for _tick: int in range(60):
+		game.advance_doors()
 		motion.advance(plane, game, 0.0, DT)
 		plane.end_frame()
 	assert_true(game.power_door_open, "the power doorway opened before the room walk")
@@ -342,11 +353,25 @@ func test_full_route_lights_the_power() -> void:
 	assert_true(_walk_to(motion, game, plane, adapter, Vector2(24.5, -4.5), 0.3), "the walk crossed to the room's center line west of the generator")
 	assert_true(_walk_to(motion, game, plane, adapter, Vector2(22.4, -7.5), 0.2), "the walk reached the working console")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_console(plane, game), "the label press landed")
+	assert_true(Interactions.new(game.layout).process_id(&"D14-POWER-CONSOLE", plane, game, motion), "the label press landed")
 	assert_int_equal(game.console_state, Game.ConsoleState.INACTIVE, "the console shows palo / INACTIVO")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(motion.interact_with_console(plane, game), "the activation press landed")
+	assert_true(Interactions.new(game.layout).process_id(&"D14-POWER-CONSOLE", plane, game, motion), "the activation press landed")
 	assert_true(game.power_active, "the secondary power is on")
 	assert_true(game.door_open and game.power_door_open, "both doorways stand open")
 	assert_int_equal(game.colliders.size(), PowerRoom.scene_collider_set(game.registry, true, true).size(), "the rebuilt set carries both open doorways")
 	assert_true(motion.failure().is_empty(), motion.failure())
+
+func test_rendered_power_shell_uses_pure_collision_recipe() -> void:
+	var room := PowerRoom.build(Game.new(0))
+	var names := ["PowerFloor", "PowerCeiling", "PowerWallWest", "PowerWallEast", "PowerWallNorth"]
+	var solids := ShipGeometry.power_room_solids()
+	for index: int in range(solids.size()):
+		var mesh: MeshInstance3D = room.get_node(NodePath(names[index]))
+		assert_vec3_equal(mesh.position, solids[index].center, "rendered power center is collider input")
+		assert_vec3_equal((mesh.mesh as BoxMesh).size, solids[index].size, "rendered power size is collider input")
+	room.free()
+
+func _bay(local: Vector2) -> Vector2:
+	var point := _bay_frame * Vector3(local.x, 0, local.y)
+	return Vector2(point.x, point.z)

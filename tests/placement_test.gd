@@ -49,7 +49,7 @@ func test_room_shell_bounds_are_the_envelope() -> void:
 
 func test_hatch_door_placement_sits_ajar_in_the_opening() -> void:
 	var registry := Pods.PodRegistry.frozen()
-	var hatch: Pods.HatchPlacement = registry.hatch()
+	var hatch: Pods.HatchPlacement = registry.local_hatch()
 	var door: Placement.SolidPlacement = Placement.hatch_solids()[4]
 	assert_true(door.center.x > Pods.ROOM_LENGTH / 2.0 - 0.5, "the door sits at the short wall")
 	assert_true(absf(door.center.y - 1.1) < 1e-5, "the door sits at mid height")
@@ -82,7 +82,7 @@ func test_pod_boxes_stay_in_the_room_and_clear_the_aisle() -> void:
 func test_hatch_constants_sit_on_the_plus_x_wall() -> void:
 	assert_true(Placement.HATCH_DOOR_X < Pods.ROOM_LENGTH / 2.0, "the door is recessed inside the wall")
 	var registry := Pods.PodRegistry.frozen()
-	var hatch: Pods.HatchPlacement = registry.hatch()
+	var hatch: Pods.HatchPlacement = registry.local_hatch()
 	assert_true(
 		absf(hatch.center.x - Pods.ROOM_LENGTH / 2.0) < 1e-6,
 		"the registry puts the hatch on the +X wall"
@@ -179,8 +179,8 @@ func test_shared_exit_path_is_the_scene_construction() -> void:
 	assert_true(built.is_ok(), "the frozen player pod authors a valid exit path")
 	assert_int_equal(shared.poses().size(), Exit.EXIT_POSE_COUNT, "the path holds its key poses")
 	for index: int in range(shared.poses().size()):
-		assert_vec3_equal(shared.poses()[index].foot(), built.path.poses()[index].foot(), "pose foot parity")
-		assert_vec3_equal(shared.poses()[index].head(), built.path.poses()[index].head(), "pose head parity")
+		assert_vec3_equal(shared.poses()[index].foot(), ShipLayout.authored().layout.bay_to_world() * built.path.poses()[index].foot(), "pose foot parity")
+		assert_vec3_equal(shared.poses()[index].head(), ShipLayout.authored().layout.bay_to_world() * built.path.poses()[index].head(), "pose head parity")
 		assert_float_equal(
 			shared.poses()[index].tolerance(),
 			built.path.poses()[index].tolerance(),
@@ -196,3 +196,13 @@ func test_shared_exit_path_is_the_scene_construction() -> void:
 		absf(expected_eye_y - (Controller.PENETRATION_TOLERANCE + PlacementTruth.STANDING_EYE_HEIGHT)) < 1e-6,
 		"the standing eye height derives from the waypoint foot"
 	)
+
+func test_furnishing_recipe_uses_the_shared_pure_solid_type() -> void:
+	assert_true(Placement.indicator_plate() is ShipGeometry.SolidSpec, "furnishing solid is the pure shared type")
+	for tray: ShipGeometry.SolidSpec in Placement.cable_trays():
+		assert_true(tray.transform.origin == tray.center, "render transform uses the collider input center")
+	var pure := ShipCollision.bay_set(Pods.PodRegistry.frozen())
+	var adapter := Placement.scene_collider_set(Pods.PodRegistry.frozen())
+	assert_int_equal(pure.size(), 56, "old bay fixture stays at 56 colliders")
+	for index: int in range(pure.size()):
+		assert_true(pure.boxes()[index].equals(adapter.boxes()[index]), "old bay order retained")

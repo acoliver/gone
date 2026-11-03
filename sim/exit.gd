@@ -352,6 +352,18 @@ class ExitPath:
 		path._moves = moves
 		return Exit.PathResult.with_path(path)
 
+	func transformed(frame: Transform3D) -> Exit.ExitPath:
+		assert(frame.basis.is_equal_approx(frame.basis.orthonormalized()) and is_equal_approx(frame.basis.determinant(), 1.0), "exit frame must be rigid")
+		var path := Exit.ExitPath.new()
+		for pose: Exit.ExitPose in _poses:
+			path._poses.append(Exit.ExitPose.new(frame * pose.foot(), frame * pose.head(), pose.tolerance()))
+		for movement: Exit.SegmentMove in _moves:
+			var moved := Exit.SegmentMove.new()
+			moved.kind = movement.kind
+			moved._vector = frame.basis * movement.vector()
+			path._moves.append(moved)
+		return path
+
 	func poses() -> Array[Exit.ExitPose]:
 		return _poses
 

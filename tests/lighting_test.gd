@@ -6,7 +6,7 @@ extends SimTestCase
 ## plates' absence, and the authored no-light environment.
 
 func test_fixture_inventory_places_eight_red_lights_from_registry() -> void:
-	var game := Game.new()
+	var game := Game.new(0)
 	var lighting := Lighting.build(game)
 	var fixtures: Array[Node3D] = lighting.fixtures()
 	var lights: Array[OmniLight3D] = lighting.lights()
@@ -47,7 +47,7 @@ func test_fixture_inventory_places_eight_red_lights_from_registry() -> void:
 	assert_int_equal(_count_class(lighting, "SpotLight3D"), 0, "no spot light is authored")
 
 func test_lenses_share_one_cuboid_and_never_ride_the_light_node() -> void:
-	var lighting := Lighting.build(Game.new())
+	var lighting := Lighting.build(Game.new(0))
 	var lenses: Array[MeshInstance3D] = lighting.lenses()
 	assert_int_equal(lenses.size(), 8, "one lens per fixture")
 	var shared_mesh: BoxMesh = lenses[0].mesh
@@ -73,7 +73,7 @@ func test_lenses_share_one_cuboid_and_never_ride_the_light_node() -> void:
 	)
 
 func test_bridge_follows_sim_fade_and_repeated_dead_does_not_restart() -> void:
-	var game := Game.new()
+	var game := Game.new(0)
 	var lighting := Lighting.build(game)
 	_assert_output(lighting, 1.0)
 	var material: StandardMaterial3D = lighting.lens_material()
@@ -101,7 +101,7 @@ func test_bridge_follows_sim_fade_and_repeated_dead_does_not_restart() -> void:
 	assert_true(game.power.state() == Power.State.DEAD, "the grid holds Dead")
 
 func test_held_frames_and_fractional_steps_obey_the_logical_clock() -> void:
-	var game := Game.new()
+	var game := Game.new(0)
 	var lighting := Lighting.build(game)
 	game.power.cut_emergency_power()
 	for _hold: int in range(20):
@@ -120,7 +120,7 @@ func test_held_frames_and_fractional_steps_obey_the_logical_clock() -> void:
 	_assert_output(lighting, mirror.intensity())
 
 func test_render_observations_cannot_change_power_and_are_projected_from_sim() -> void:
-	var game := Game.new()
+	var game := Game.new(0)
 	var lighting := Lighting.build(game)
 	for light: OmniLight3D in lighting.lights():
 		light.light_energy = 0.0
@@ -132,7 +132,7 @@ func test_render_observations_cannot_change_power_and_are_projected_from_sim() -
 	_assert_output(lighting, 1.0)
 
 func test_bridge_running_alone_never_changes_power() -> void:
-	var game := Game.new()
+	var game := Game.new(0)
 	var lighting := Lighting.build(game)
 	for _tick: int in range(Lighting.FIXTURE_SETTLE_TICKS * 2):
 		lighting.process_frame(Sim.LOGICAL_TICK_SECS)
@@ -148,7 +148,7 @@ func test_bridge_running_alone_never_changes_power() -> void:
 	_assert_output(lighting, 0.0)
 
 func test_no_pod_indicator_plates_render_across_power_changes() -> void:
-	var game := Game.new()
+	var game := Game.new(0)
 	var pods := StasisPods.build(game.registry)
 	var plate_center: Vector3 = Placement.indicator_plate().center
 	game.power.cut_emergency_power()
@@ -163,7 +163,7 @@ func test_no_pod_indicator_plates_render_across_power_changes() -> void:
 		assert_int_equal(plates, 0, "the retired indicator plates stay gone through the power cut")
 
 func test_authored_environment_contributes_no_light() -> void:
-	var lighting := Lighting.build(Game.new())
+	var lighting := Lighting.build(Game.new(0))
 	var world: WorldEnvironment = _find_world_environment(lighting)
 	if world == null:
 		_fail("the lighting node authors a WorldEnvironment")

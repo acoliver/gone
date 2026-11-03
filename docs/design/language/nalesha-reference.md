@@ -512,6 +512,12 @@ These eleven roots extend v0.13 and do not appear in the original PDFs. They are
 | Ko Lu Ki Wena | Our Planet, the shipbuilders' homeworld name. |
 | Tewa | Earth. |
 
+## Project additions: navigation compounds
+
+**Shelani paki** means section on ship navigation signs: literally “corridor part,” using **shelani** (106) and **paki** (235), modifier before head. This is a project compound, separate from the v0.13 lexicon and the synopsis additions above. It introduces no new root. Deck remains **lometa** (104), lift **kotewa** (119), and hatch **pana** (105).
+
+Signs use boxed identifiers read digit by digit: deck 14 is `lometa [16]` (na wi); section 41 is `shelani paki [51]` (chi na). Perceived Spanish shows `CUBIERTA 14` and `SECCIÓN 41`. Square brackets in source text are renderer markup, never printed punctuation. The stroked rectangle, 0.72-unit stroke and one-unit padding beyond digit ink are implementation choices, not additions to the language rules.
+
 ## Errata and open questions
 
 - **Negation erratum:** source reference line 539 says **nu no kuta**. It should read **nu cha kuta**, consistent with the defined negator cha. No second negator is introduced.

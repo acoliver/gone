@@ -11,6 +11,7 @@ const SMOKE_COUGH: AudioStreamWAV = preload("res://assets/audio/smoke/cough-mid-
 ## power grid through its own bridge; ceiling hazards are inert
 ## dressing.
 
+var step: GameStep
 var game: Game
 var camera: Camera3D
 var player: Player
@@ -23,36 +24,37 @@ var wake_present: WakePresent
 var smoke_symptoms: SmokeSymptoms
 var smoke_audio: AudioStreamPlayer
 var voice_presentation: VoicePresentation
+var door_audio: DoorAudio
 var _smoke_audio_queue: Array[SmokeSymptoms.Event] = []
 var _smoke_audio_in_flight := false
 var _smoke_silence_until_usec := 0
 
 func _ready() -> void:
-	game = Game.new()
-	add_child(RoomGeometry.build(true))
-	add_child(StasisPods.build(game.registry))
-	hatch = Hatch.build()
-	add_child(hatch)
-	add_child(Lighting.build(game))
-	add_child(Hazards.build())
-	add_child(Wires.build())
-	rod = Rod.build()
-	add_child(rod)
-	hallway = Hallway.build(game)
-	add_child(hallway)
-	power_room = PowerRoom.build(game)
-	add_child(power_room)
+	var seed := int(Time.get_unix_time_from_system())
+	print("GONE_RUN_SEED %d" % seed)
+	game = Game.new(seed)
+	var ship := ShipScene.build_into(self, game)
+	hatch = ship.hatch
+	rod = ship.rod
+	hallway = ship.hallway
+	power_room = ship.power_room
 	_add_player()
 	_add_wake_presentation()
 	_add_wake_audio()
 	_add_smoke_symptoms()
+	door_audio = DoorAudio.build(game.layout)
+	add_child(door_audio)
+	step = GameStep.new(game, player)
+	step.door_audio = door_audio
+	step.door_views = ship.door_views
+	step.ship_scene = ship
+	step.smoke = smoke_symptoms
+	step.fixtures.assign([ship.lighting, hallway, power_room])
 	voice_presentation = VoicePresentation.build(game, player)
 	add_child(voice_presentation)
 
 func _physics_process(_delta: float) -> void:
-	game.tick()
-	var accepted_position := player.motion.eye(game)
-	smoke_symptoms.tick(game.phase.look_allowed(), accepted_position)
+	step.advance()
 	if smoke_symptoms.dose() <= 0.0:
 		_smoke_audio_queue.clear()
 		_smoke_audio_in_flight = false
@@ -70,7 +72,7 @@ func _add_wake_audio() -> void:
 	wake_present.wake_started.connect(player_2d.play)
 
 func _add_smoke_symptoms() -> void:
-	smoke_symptoms = SmokeSymptoms.new()
+	smoke_symptoms = SmokeSymptoms.new(game.layout)
 	var layer := SmokeVision.build(smoke_symptoms, wake_pass)
 	add_child(layer)
 	smoke_audio = AudioStreamPlayer.new()

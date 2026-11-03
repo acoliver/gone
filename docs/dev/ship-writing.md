@@ -20,11 +20,18 @@ once. The heading and state word remain at the old screen positions, with
 native ink heights of about 0.05 m and 0.10 m. Spanish uses Godot's fallback
 font, centered in those areas and reduced in size if necessary to fit.
 
-`ShipDisplay` holds two transparent 1024 by 640 SubViewports and one emissive
-3D quad. The textures redraw only when the message changes. This retains the
-core's stroke geometry and provides enough texture detail for a 2304 by 1296
-window without rebuilding geometry every perception tick. The screen shader
-crossfades the texture alpha masks. Its nine-tap blur radius rises from zero
+`ShipTextCache` owns at most two reusable transparent raster SubViewports for
+all scene text. It copies completed images after `frame_post_draw` into shared
+`ImageTexture` pairs, one unique pair per frame on cache misses. Its key includes
+both complete strings, style, dimensions, layout version and font identity.
+Reference counts protect resident pairs; LRU eviction retains at most 32
+unreferenced pairs. Headless tests exercise queue and image completion without
+awaiting rendering. A separate windowed integration checks the GPU boundary.
+
+`ShipDisplay` retains its 1024 by 640 console style and observable semantic
+canvases, without owning raster viewports. Approaching the power doorway
+prefetches both console states. Each display and navigation sign owns its own
+blend material. The screen shader crossfades the texture alpha masks. Its nine-tap blur radius rises from zero
 to 12 texture pixels on native ink and falls from 12 to zero on Spanish.
 Both opacity and blur depend only on `perceive`, never wall-clock time. The
 native texture remains unchanged underneath the effect. The shader parameter
@@ -61,6 +68,40 @@ Set `power_room.console_display.physical_only = true` to force only the
 rendered amount to zero. Attention and perception state continue unchanged
 by the switch. Disabling it immediately presents the current model amount,
 so a player who kept attending to resolved text sees Spanish at once.
+
+## Navigation signs
+
+`ShipText.hatch_label(deck, section)` and `deck_label(deck)` accept positive
+integer identifiers. They convert quantities once to octal for native text:
+`lometa [16]
+shelani paki [51]` resolves to `CUBIERTA 14
+SECCIÓN 41`.
+The section term is the project compound recorded in the
+[language reference](../design/language/nalesha-reference.md#project-additions-navigation-compounds).
+Native digit runs are indivisible boxed tokens. Brackets never reach a font.
+The rectangle uses the same 0.72-unit stroke as the signs, padded one native
+unit beyond the digit ink edges; layout includes its half-stroke extents.
+These box dimensions are renderer choices, not language rules.
+
+Navigation uses 1024 by 512 textures with equally sized lines. Hatch quads
+are 0.92 by 0.46 m, centered 2.85 m above the deck on fixed faces, offset
+0.01 m outward. Lift quads are 0.92 by 0.23 m at 2.55 m and show only the deck.
+Anchors come from layout face/lift records. The destination section belongs to
+the face's travel direction, including both section-41 bay faces. Inaccessible
+boundary reverse faces retain data but have no visible surface.
+
+`ShipScene` requests initial navigation pairs after standing, before approaching
+the hatch, and connector pairs at the existing four-meter prefetch threshold.
+No navigation raster jobs run during wake. A sign surface attaches only after
+its immutable pair is ready. `LabelAttention` indexes faces by deck and spatial
+cell, retaining the source space for each face. Only nearby, front-facing,
+ray-hit rectangles with unobstructed sight accrue perception. The same pure
+segment/AABB test as interaction rejects occlusion. Previously attended faces
+decay to native within 21 ticks, including after unload; their lightweight state
+belongs to Game and survives scene replacement. Candidate ids are sorted.
+The cache contains no perception state. All labels and the console share
+`Game.writing_memory`, so a completed hatch reading establishes later timing
+for the console too.
 
 ## Adding a string
 

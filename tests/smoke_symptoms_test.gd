@@ -1,12 +1,14 @@
 extends SimTestCase
 
+var _bay_frame := ShipLayout.authored().layout.bay_to_world()
+
 const MILD: AudioStreamWAV = preload("res://assets/audio/smoke/wake-breath-mild-reference.wav")
 const PULSE: AudioStreamWAV = preload("res://assets/audio/smoke/linda-pulse-b-provisional.wav")
 const COUGH_AUDIO: AudioStreamWAV = preload("res://assets/audio/smoke/cough-mid-isolated.wav")
 
 func test_phase_gate_and_smoke_exposure_recovery() -> void:
 	var state := SmokeSymptoms.new()
-	var bay := Vector3(0.0, 1.6, 0.0)
+	var bay := _world(Vector3(0.0, 1.6, 0.0))
 	for _i in range(600):
 		state.tick(false, bay)
 	assert_float_equal(state.dose(), 0.0, "wake cannot accumulate exposure")
@@ -16,20 +18,20 @@ func test_phase_gate_and_smoke_exposure_recovery() -> void:
 	assert_true(state.dose() > 0.99, "stationary bay exposure reaches cap")
 	assert_true(state.dose() <= 1.0, "dose remains capped")
 	for _i in range(8 * 60):
-		state.tick(true, Vector3(7.0, 1.6, 0.0))
+		state.tick(true, _world(Vector3(7.0, 1.6, 0.0)))
 	assert_float_equal(state.dose(), 0.0, "clean hallway gradually recovers dose")
 
 func test_spatial_exposure_bounds_and_taper() -> void:
-	assert_float_equal(SmokeSymptoms.exposure_at(Vector3(5.5, 1.0, 0.0)), 1.0, "bay edge is full exposure")
-	assert_float_equal(SmokeSymptoms.exposure_at(Vector3(5.75, 1.0, 0.0)), 0.5, "threshold tapers")
-	assert_float_equal(SmokeSymptoms.exposure_at(Vector3(6.0, 1.0, 0.0)), 0.0, "hall is clean air")
-	assert_float_equal(SmokeSymptoms.exposure_at(Vector3(2.0, 3.21, 0.0)), 0.0, "above bay has no exposure")
-	assert_float_equal(SmokeSymptoms.exposure_at(Vector3(2.0, 1.0, 4.01)), 0.0, "outside width has no exposure")
+	assert_float_equal(SmokeSymptoms.new().exposure_at(_world(Vector3(5.5, 1.0, 0.0))), 1.0, "bay edge is full exposure")
+	assert_float_equal(SmokeSymptoms.new().exposure_at(_world(Vector3(5.75, 1.0, 0.0))), 0.5, "threshold tapers")
+	assert_float_equal(SmokeSymptoms.new().exposure_at(_world(Vector3(6.0, 1.0, 0.0))), 0.0, "hall is clean air")
+	assert_float_equal(SmokeSymptoms.new().exposure_at(_world(Vector3(2.0, 3.21, 0.0))), 0.0, "above bay has no exposure")
+	assert_float_equal(SmokeSymptoms.new().exposure_at(_world(Vector3(2.0, 1.0, 4.01))), 0.0, "outside width has no exposure")
 
 func test_audio_events_begin_after_unlock_and_are_ordered() -> void:
 	var first := SmokeSymptoms.new()
 	var second := SmokeSymptoms.new()
-	var position := Vector3(0.0, 1.6, 0.0)
+	var position := _world(Vector3(0.0, 1.6, 0.0))
 	var a: Array[SmokeSymptoms.Event] = []
 	var b: Array[SmokeSymptoms.Event] = []
 	for tick: int in range(1500):
@@ -59,7 +61,7 @@ func test_full_exposure_and_recovery_event_timeline() -> void:
 	var high_dose_kinds: Dictionary = {}
 	var gate_ticks := 120
 	for _i in range(gate_ticks):
-		state.tick(false, Vector3(0.0, 1.6, 0.0))
+		state.tick(false, _world(Vector3(0.0, 1.6, 0.0)))
 		assert_int_equal(state.drain_events().size(), 0, "no stems before unlock")
 	var first_cough_tick := -1
 	var first_active_tick := -1
@@ -67,7 +69,7 @@ func test_full_exposure_and_recovery_event_timeline() -> void:
 	var min_gap := 100000
 	for elapsed: int in range(1, 50 * 60 + 1):
 		var in_bay := elapsed <= 40 * 60
-		state.tick(true, Vector3(0.0 if in_bay else 7.0, 1.6, 0.0))
+		state.tick(true, _world(Vector3(0.0 if in_bay else 7.0, 1.6, 0.0)))
 		var emitted := state.drain_events()
 		var sample := state.sample()
 		assert_true(emitted.size() <= 1, "only one stem may start per tick")
@@ -108,7 +110,7 @@ func test_full_exposure_and_recovery_event_timeline() -> void:
 
 func test_due_cough_waits_for_occupancy_and_keeps_priority() -> void:
 	var state := SmokeSymptoms.new()
-	var bay := Vector3(0.0, 1.6, 0.0)
+	var bay := _world(Vector3(0.0, 1.6, 0.0))
 	for _i in range(21):
 		state.tick(true, bay)
 	var initial := state.drain_events()
@@ -131,7 +133,7 @@ func test_due_cough_waits_for_occupancy_and_keeps_priority() -> void:
 
 func test_occupied_breath_resets_cadence_without_catch_up() -> void:
 	var state := SmokeSymptoms.new()
-	var bay := Vector3(0.0, 1.6, 0.0)
+	var bay := _world(Vector3(0.0, 1.6, 0.0))
 	for _i in range(21):
 		state.tick(true, bay)
 	var initial := state.drain_events()
@@ -158,3 +160,6 @@ func test_smoke_wavs_import_as_uncompressed_pcm16() -> void:
 	assert_float_equal(PULSE.get_length(), 0.95, "pulse stem retains its exact duration")
 	assert_float_equal(MILD.get_length(), 0.75, "mild stem retains its exact duration")
 	assert_float_equal(COUGH_AUDIO.get_length(), 1.01, "cough stem retains its exact duration")
+
+func _world(local: Vector3) -> Vector3:
+	return _bay_frame * local

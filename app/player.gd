@@ -15,6 +15,7 @@ var hatch: Node3D = null
 var power_room: PowerRoom = null
 var rod: Rod = null
 var plane: InputPlane
+var interactions: Interactions
 var motion: PlayerMotion
 var adapter: InputPlane.ScriptedAdapter = null
 ## Scripted mode: the harness adapter is the only input producer and the
@@ -36,10 +37,11 @@ static func build(p_game: Game, p_hatch: Node3D) -> Player:
 func _ready() -> void:
 	plane = InputPlane.new()
 	motion = PlayerMotion.new()
+	interactions = Interactions.new(game.layout, ShipCollision.opening_sight_solids(game.registry, game.layout))
 	# Authored spawn: lying at the exit path's first pose head, facing
 	# the pod's opening, aimed one stop short of the vertical.
 	var spawn: Exit.ExitPose = game.exit_path.poses()[0]
-	_look_yaw = game.registry.player_pod().placement().yaw_radians
+	_look_yaw = game.registry.player_pod().placement().yaw_radians + game.layout.bay_to_world().basis.get_euler().y
 	_look_pitch = InputPlane.PITCH_LIMIT
 	camera = Camera3D.new()
 	camera.name = "PlayerPitch"
@@ -61,37 +63,27 @@ func _unhandled_input(event: InputEvent) -> void:
 	if motion_event != null:
 		_mouse_pixels += motion_event.relative
 
-func _physics_process(delta: float) -> void:
-	_collect_device_input(delta)
+func step() -> void:
+	_collect_device_input(Sim.LOGICAL_TICK_SECS)
 	if scripted and adapter != null:
 		adapter.offer_tick(plane)
 	_integrate_look()
-	motion.advance(plane, game, _look_yaw, delta)
-	# The rod, the door, the hallway switch, the power door, and the
-	# working console share the interact channel: each consumes a press
-	# only when it acts — the rod when the pickup lands, the door when
-	# its rod-carried press starts the open — and the switch beside the
-	# doorway takes one press only when the flip lands, fed by every
-	# press the door cannot use; the power door and the console sit down
-	# the corridor, each taking only the press its own act lands.
-	if motion.pickup_rod(plane):
+	motion.advance(plane, game, _look_yaw, Sim.LOGICAL_TICK_SECS, -camera.basis.z.rotated(Vector3.UP, _look_yaw))
+	var context := Interactions.context_for(game, motion, -camera.basis.z.rotated(Vector3.UP, _look_yaw))
+	var selected := interactions.process(plane, context)
+	if selected == &"D14-BAY-ROD" and rod != null:
 		rod.pick_up()
-	motion.interact_with_door(plane, game)
-	motion.flip_hallway_switch(plane, game)
-	motion.interact_with_power_door(plane, game)
-	motion.interact_with_console(plane, game)
-	if hatch != null and hatch is Hatch:
-		hatch.set_door_offset(motion.door_slab_offset())
-	if power_room != null:
-		power_room.set_door_offset(motion.power_door_slab_offset())
 	if not motion.failure().is_empty():
 		push_error("halting on player motion failure: " + motion.failure())
 		get_tree().quit(1)
 		return
 	position = motion.eye(game)
 	if power_room != null:
-		power_room.tick_console_attention(camera.global_position, -camera.global_basis.z)
+		power_room.tick_console_attention(position, -camera.basis.z.rotated(Vector3.UP, _look_yaw))
 	plane.end_frame()
+
+func present() -> void:
+	position = motion.eye(game)
 
 ## The device producer: held InputMap actions become the plane's
 ## movement intent, fresh presses become its edges, mouse pixels and the
@@ -107,10 +99,11 @@ func _collect_device_input(delta: float) -> void:
 	# sim axis (strafe already shares signs between the frames): forward
 	# walks where the player looks, bridged like the look channel's
 	# -turn below. The scripted lane keeps the sim frame's signs.
-	plane.offer_movement(
-		-Input.get_axis("move_back", "move_forward"),
-		Input.get_axis("move_left", "move_right")
-	)
+	if motion.mounted():
+		var climb := clampf(Input.get_axis("climb_down", "climb_up") + Input.get_axis("move_back", "move_forward"), -1, 1)
+		plane.offer_climb(climb)
+	else:
+		plane.offer_movement(-Input.get_axis("move_back", "move_forward"), Input.get_axis("move_left", "move_right"))
 	if Input.is_action_just_pressed("activate"):
 		plane.offer_press(InputPlane.Buttons.ACTIVATE)
 	if Input.is_action_just_pressed("interact"):
@@ -119,7 +112,7 @@ func _collect_device_input(delta: float) -> void:
 		plane.offer_look_pixels(_mouse_pixels)
 		_mouse_pixels = Vector2.ZERO
 	var turn := Input.get_axis("look_left", "look_right")
-	var pitch := Input.get_axis("look_down", "look_up")
+	var pitch := 0.0 if motion.mounted() else Input.get_axis("look_down", "look_up")
 	if turn != 0.0 or pitch != 0.0:
 		plane.offer_look(-turn * InputPlane.TURN_SPEED * delta,
 			pitch * InputPlane.PITCH_SPEED * delta)

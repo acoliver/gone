@@ -49,50 +49,57 @@ func _run() -> void:
 	var game_motion := rig.motion
 	var plane: InputPlane = rig.plane
 	plane.offer_press(InputPlane.Buttons.ACTIVATE)
+	game.advance_doors()
 	game_motion.advance(plane, game, 0.0, 1.0 / 60.0)
 	for _segment: int in range(Exit.EXIT_POSE_COUNT):
+		game.advance_doors()
 		game_motion.advance(plane, game, 0.0, 1.0 / 60.0)
 	if game_motion.state() != PlayerMotion.BodyState.WALK:
 		_fail("production PlayerMotion reaches standing before the hallway event")
 		return
 	# Exercise the production rod pickup and the real opening sequence.
-	var walk_state: Walk.WalkState = game_motion.get("_walk")
+	var walk_state: Walk.WalkState = game_motion.locomotion.get("_walk")
 	var capsule: Resolve.Capsule = walk_state.get("_capsule")
 	var rod_center: Vector2 = Rod.floor_center()
 	capsule.foot.x = rod_center.x
 	capsule.foot.z = rod_center.y
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	if not game_motion.pickup_rod(plane):
+	if not Interactions.new(game.layout).process_id(&"D14-BAY-ROD", plane, game, game_motion):
 		_fail("production motion picks up the rod through its interact channel")
 		return
-	capsule.foot.x = 4.9
-	capsule.foot.z = 0.0
+	capsule.foot.x = 15.0
+	capsule.foot.z = 2.8
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	if not game_motion.interact_with_door(plane, game):
+	if not Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, plane, game, game_motion):
 		_fail("rod-carried interact starts the hatch opening")
 		return
-	for _tick: int in range(PlayerMotion.DOOR_RETRACT_TICKS + PlayerMotion.DOOR_SLIDE_TICKS):
+	for _tick: int in range(Doors.BAY_RETRACT_TICKS + Doors.BAY_SLIDE_TICKS):
+		game.advance_doors()
 		game_motion.advance(plane, game, 0.0, 1.0 / 60.0)
-	if not game.door_open or game_motion.door_state != PlayerMotion.DoorState.OPEN:
+	if not game.door_open or game.doors.snapshot(ShipLayout.BAY_DOOR_ID).state != Doors.State.OPEN:
 		_fail("actual PlayerMotion hatch sequence opens the doorway")
 		return
 	voice.poll_events()
 	if observed.starts != [1]:
 		_fail("hatch opening without a hallway crossing does not trigger line 2")
 		return
-	capsule.foot.x = 5.9
-	voice.poll_events()
-	capsule.foot.x = 6.01
+	capsule.foot.x = 15.0
+	capsule.foot.y = 0.385
+	capsule.foot.z = 1.505
+	capsule.head = capsule.foot + Vector3.UP * 1.15
+	plane.offer_movement(1.0, 0.0)
+	game.advance_doors()
+	game_motion.advance(plane, game, PI, Sim.LOGICAL_TICK_SECS)
 	voice.poll_events()
 	if observed.starts != [1, 2]:
-		_fail("physical capsule crossing x=6 starts line 2 once; starts=%s" % observed.starts)
+		_fail("physical capsule crossing z=1.5 starts line 2 once; starts=%s" % observed.starts)
 		return
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	if not game_motion.flip_hallway_switch(plane, game) or not game.hallway_lit:
+	if not Interactions.new(game.layout).process_id(&"D14-HALL-SWITCH", plane, game, game_motion) or not game.hallway_lit:
 		_fail("production interact at the hallway switch changes hallway_lit")
 		return
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	if game_motion.flip_hallway_switch(plane, game) or not game.hallway_lit or game_motion.door_state != PlayerMotion.DoorState.OPEN:
+	if Interactions.new(game.layout).process_id(&"D14-HALL-SWITCH", plane, game, game_motion) or not game.hallway_lit or game.doors.snapshot(ShipLayout.BAY_DOOR_ID).state != Doors.State.OPEN:
 		_fail("repeated switch press is a no-op and leaves gameplay doorway state intact")
 		return
 	voice.poll_events()

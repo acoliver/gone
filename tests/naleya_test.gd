@@ -2,6 +2,26 @@ extends SimTestCase
 
 const Writing = preload("res://app/naleya.gd")
 
+func test_boxed_identifier_has_native_digits_and_exact_ink_padding() -> void:
+	var result := Writing.layout("[16]", 100)
+	assert_true(result != null, "boxed identifier lays out")
+	if result == null:
+		return
+	assert_true(result.units.map(func(unit: Writing.Unit) -> String: return unit.value) == ["16"], "one unbreakable identifier unit")
+	var box := result.strokes[-1]
+	assert_true(box == PackedVector2Array([Vector2(0.36, -1.36), Vector2(19.38, -1.36), Vector2(19.38, 10.36), Vector2(0.36, 10.36), Vector2(0.36, -1.36)]), "box pads digit centerline bounds by one native unit")
+	assert_float_equal(Writing.STROKE_WIDTH, 0.72, "box and signs share stroke")
+	assert_float_equal(result.end.x, Vector2(19.74, 0).x, "advance includes both half-stroke extents")
+	assert_int_equal(result.strokes.size(), Writing.glyph_paths("na").size() + Writing.glyph_paths("wi").size() + 1, "digits plus one rectangle, no font brackets")
+
+func test_boxed_identifiers_wrap_whole_and_reject_malformed_markup() -> void:
+	var result := Writing.layout("pa [16]", 30)
+	assert_int_equal(result.rows, 2, "box wraps as a whole")
+	assert_true(result.units[1].origin == Vector2(0, -16.5), "box starts next baseline")
+	assert_true(Writing.layout("[16]", 19.0) == null, "box extent participates in width")
+	for text: String in ["[", "]", "[]", "[16", "16]", "[[16]]", "[pa]", "[8]", "[19]", "[1 6]"]:
+		assert_true(Writing.layout(text, 100) == null, "reject malformed identifier " + text)
+
 # Independent transcription of the guide's tables, in its onset/vowel order.
 const EXPECTED_ONSETS: Array = [
 	[[[3, 6], [3, 9], [6, 9], [6, 6], [3, 6]]],

@@ -4,6 +4,32 @@ extends SimTestCase
 const TOL: float = Controller.PENETRATION_TOLERANCE
 const RADIUS: float = Controller.CAPSULE_RADIUS
 
+func test_constrained_correction_sweeps_tiny_motion_without_changing_normal_residual_rule() -> void:
+	var capsule := standing(0, 0.005, 0)
+	var colliders := ColliderSet.new()
+	var delta := Vector3(0.003, 0, 0)
+	var ordinary := Resolve.resolve_motion(capsule, delta, colliders)
+	var exact := Resolve.resolve_constrained_motion(capsule, delta, colliders)
+	assert_true(ordinary.is_ok() and exact.is_ok(), "both free sweeps accepted")
+	assert_close(ordinary.motion.displacement, Vector3.ZERO, "ordinary resolver retains 0.005 m residual policy")
+	assert_close(exact.motion.displacement, delta, "constrained final correction actually sweeps")
+	colliders.insert(ColliderSet.Aabb.from_parts(Vector3(0.351, 1, 0), Vector3(0.05, 1, 1)))
+	exact = Resolve.resolve_constrained_motion(capsule, delta, colliders)
+	assert_true(exact.is_ok(), "tiny collision resolves without bypassing wall")
+	assert_close(exact.motion.displacement, Vector3.ZERO, "real solid absorbs tiny motion")
+	assert_true(exact.motion.collider_indices == [0], "contact identifies obstructing solid")
+
+func test_constrained_sweep_preserves_finite_validation_and_start_penetration_errors() -> void:
+	var capsule := standing(0, 0.005, 0)
+	var colliders := ColliderSet.new()
+	colliders.insert(ColliderSet.Aabb.from_parts(Vector3(0, 1, 0), Vector3.ONE))
+	var result := Resolve.resolve_constrained_motion(capsule, Vector3(0.003, 0, 0), colliders)
+	assert_int_equal(result.error.kind, Resolve.ResolveError.Kind.START_PENETRATION, "tiny embedded start fails")
+	assert_int_equal(result.error.index, 0, "embedded collider index")
+	result = Resolve.resolve_constrained_motion(capsule, Vector3(NAN, 0, 0), colliders)
+	assert_int_equal(result.error.kind, Resolve.ResolveError.Kind.NON_FINITE_INPUT, "nonfinite transfer fails")
+	assert_float_equal(capsule.foot.x, 0, "resolver never edits caller capsule")
+
 func standing(x: float, foot_y: float, z: float) -> Resolve.Capsule:
 	var segment: float = Controller.CAPSULE_STANDING_HEIGHT - 2.0 * Controller.CAPSULE_RADIUS
 	var capsule: Resolve.Capsule = Resolve.Capsule.new()
