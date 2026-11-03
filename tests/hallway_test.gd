@@ -302,17 +302,110 @@ func test_rendered_shell_uses_pure_collision_recipe() -> void:
 		var mesh: MeshInstance3D = hallway.get_node(NodePath(names[index]))
 		var solid := solids[index]
 		assert_vec3_equal(mesh.position, solid.center, "rendered hall center is collider input")
-		var source := BoxMesh.new()
-		source.size = solid.size
-		var vertices: PackedVector3Array = source.surface_get_arrays(0)[Mesh.ARRAY_VERTEX]
-		var bounds := AABB(ShipGeometry.hatch_wall_vertex(solid, vertices[0]), Vector3.ZERO)
-		for vertex: Vector3 in vertices:
-			var expected := ShipGeometry.hatch_wall_vertex(solid, vertex)
-			assert_true(expected.abs().x <= solid.size.x / 2 + 1e-6 and expected.abs().y <= solid.size.y / 2 + 1e-6 and expected.abs().z <= solid.size.z / 2 + 1e-6, "shared wall profile stays inside its collision envelope")
-			bounds = bounds.expand(expected)
-		assert_vec3_equal(mesh.mesh.get_aabb().position, bounds.position, "rendered hall bounds start at the shared solid profile")
-		assert_vec3_equal(mesh.mesh.get_aabb().size, bounds.size, "rendered hall size follows the shared solid profile")
+		var rendered := _expanded_faces(mesh.mesh)
+		if solid.hatch_profile == null:
+			assert_true(mesh.mesh is BoxMesh, "unprofiled hall solid renders as an exact box")
+			if mesh.mesh is BoxMesh:
+				assert_vec3_equal(mesh.mesh.size, solid.size, "rendered hall box size is collider input")
+		else:
+			var expected := _profile_faces(solid)
+			assert_true(_same_triangles(rendered, expected), "rendered hall triangles match the shared wall profile and winding within 1e-6")
+			var bounds := AABB(expected[0], Vector3.ZERO)
+			for vertex: Vector3 in expected:
+				bounds = bounds.expand(vertex)
+			assert_vec3_equal(mesh.mesh.get_aabb().position, bounds.position, "rendered hall bounds start at the shared solid profile")
+			assert_vec3_equal(mesh.mesh.get_aabb().size, bounds.size, "rendered hall size follows the shared solid profile")
+		for vertex: Vector3 in rendered:
+			assert_true(vertex.abs().x <= solid.size.x / 2 + 1e-6 and vertex.abs().y <= solid.size.y / 2 + 1e-6 and vertex.abs().z <= solid.size.z / 2 + 1e-6, "rendered wall vertices stay inside their collision envelope")
 	hallway.free()
+
+func test_profile_triangle_comparison_rejects_malformed_meshes_with_identical_bounds() -> void:
+	var profiled := 0
+	for solid: ShipGeometry.SolidSpec in ShipGeometry.hallway_solids():
+		if solid.hatch_profile == null:
+			continue
+		profiled += 1
+		var expected := _profile_faces(solid)
+		var intact := _mesh_from_faces(expected)
+		var missing_triangle := expected.slice(3)
+		var reversed_triangle := expected.duplicate()
+		reversed_triangle[0] = expected[1]
+		reversed_triangle[1] = expected[0]
+		var duplicated_triangle := expected.duplicate()
+		for index: int in range(3):
+			duplicated_triangle[index] = expected[index + 3]
+		for faces: PackedVector3Array in [missing_triangle, reversed_triangle, duplicated_triangle]:
+			var malformed := _mesh_from_faces(faces)
+			assert_true(malformed.get_aabb() == intact.get_aabb(), "malformed profile retains the exact bounds that previously passed")
+			assert_false(_same_triangles(_expanded_faces(malformed), expected), "triangle comparison rejects missing, reversed or duplicated geometry despite identical bounds")
+	assert_true(profiled > 0, "negative controls exercise a profiled hallway solid")
+
+func test_profile_triangle_comparison_accepts_reordered_triangles_and_cyclic_vertices() -> void:
+	for solid: ShipGeometry.SolidSpec in ShipGeometry.hallway_solids():
+		if solid.hatch_profile == null:
+			continue
+		var expected := _profile_faces(solid)
+		var reordered := PackedVector3Array()
+		for triangle: int in range(expected.size() - 3, -1, -3):
+			for offset: int in [1, 2, 0]:
+				reordered.append(expected[triangle + offset])
+		assert_true(_same_triangles(reordered, expected), "triangle order and cyclic vertex order preserve the same oriented triangle set")
+
+func _expanded_faces(mesh: Mesh) -> PackedVector3Array:
+	# Expand indices directly; Mesh.get_faces() welds and rounds small details.
+	var faces := PackedVector3Array()
+	for surface: int in range(mesh.get_surface_count()):
+		var arrays := mesh.surface_get_arrays(surface)
+		var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+		var indices := PackedInt32Array()
+		if arrays[Mesh.ARRAY_INDEX] != null:
+			indices = arrays[Mesh.ARRAY_INDEX]
+		if indices.is_empty():
+			faces.append_array(vertices)
+		else:
+			for index: int in indices:
+				faces.append(vertices[index])
+	return faces
+
+func _profile_faces(solid: ShipGeometry.SolidSpec) -> PackedVector3Array:
+	var source := BoxMesh.new()
+	source.size = solid.size
+	var faces := _expanded_faces(source)
+	for index: int in range(faces.size()):
+		faces[index] = ShipGeometry.hatch_wall_vertex(solid, faces[index])
+	return faces
+
+func _same_triangles(actual: PackedVector3Array, expected: PackedVector3Array) -> bool:
+	if actual.is_empty() or actual.size() != expected.size() or actual.size() % 3 != 0:
+		return false
+	var unmatched: Array[int] = []
+	for triangle: int in range(0, expected.size(), 3):
+		unmatched.append(triangle)
+	for triangle: int in range(0, actual.size(), 3):
+		var match_index := -1
+		for candidate: int in range(unmatched.size()):
+			for rotation: int in range(3):
+				var matches := true
+				for vertex: int in range(3):
+					if actual[triangle + vertex].distance_to(expected[unmatched[candidate] + (vertex + rotation) % 3]) > 1e-6:
+						matches = false
+						break
+				if matches:
+					match_index = candidate
+					break
+			if match_index != -1:
+				break
+		if match_index == -1:
+			return false
+		unmatched.remove_at(match_index)
+	return true
+
+func _mesh_from_faces(faces: PackedVector3Array) -> ArrayMesh:
+	var tool := SurfaceTool.new()
+	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for vertex: Vector3 in faces:
+		tool.add_vertex(vertex)
+	return tool.commit()
 
 func _bay(local: Vector2) -> Vector2:
 	var point := _bay_frame * Vector3(local.x, 0, local.y)

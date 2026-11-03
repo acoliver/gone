@@ -1,5 +1,22 @@
 extends SimTestCase
 
+func test_building_and_freeing_every_hatch_leaves_no_orphans() -> void:
+	var layout := ShipLayout.authored().layout
+	var initial_orphans := Node.get_orphan_node_ids().size()
+	var builds := 0
+	for cycle: int in range(2):
+		for id: StringName in layout.door_ids():
+			var spec := layout.door(id)
+			if spec.animation() != ShipLayout.AnimationRecipe.HINGE:
+				continue
+			var view := DoorView.build(spec)
+			for solid: ShipGeometry.SolidSpec in ShipGeometry.hatch_wall_solids(spec):
+				view.add_child(DoorView.split_surface(solid, spec.frame(), 1, 1))
+			view.free()
+			builds += 1
+			assert_int_equal(Node.get_orphan_node_ids().size(), initial_orphans, "building and freeing %s in cycle %d leaves no orphan nodes" % [id, cycle])
+	print("HATCH BUILD/FREE builds=%d orphan_growth=%d" % [builds, Node.get_orphan_node_ids().size() - initial_orphans])
+
 func test_shared_hatch_model_has_no_presenter_dependencies() -> void:
 	var source := FileAccess.get_file_as_string("res://app/hatch_model.gd")
 	for presenter: String in ["DoorView.", "Hatch.", "Hallway."]:

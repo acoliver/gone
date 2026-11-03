@@ -94,12 +94,12 @@ static func collar_surface(solid: ShipGeometry.SolidSpec, spec: ShipLayout.DoorS
 	return group
 
 static func split_surface(solid: ShipGeometry.SolidSpec, frame: Transform3D, fore_mask: int, aft_mask: int) -> Node3D:
-	var group := Node3D.new()
-	var pose := frame.affine_inverse() * solid.transform
 	var material := RoomGeometry.wall_material() if solid.material_role == &"wall" else HatchModel.material(HatchModel.DOOR_SHADE)
 	if solid.hatch_profile != null:
 		assert(frame == solid.hatch_profile.frame(), "profiled wall uses its portal frame")
 		return collar_surface(solid, solid.hatch_profile, fore_mask, aft_mask, material)
+	var group := Node3D.new()
+	var pose := frame.affine_inverse() * solid.transform
 	for side: int in [-1, 1]:
 		var half_size := solid.size
 		half_size.z /= 2
