@@ -51,7 +51,7 @@ func test_speed_at_one_time_constant_is_the_exponential_approach_value() -> void
 	var stepped := state.step(intent(0.0, 1.0, 0.0), Controller.STEADYING_TIME_CONSTANT, empty_scene())
 	assert_true(stepped.is_ok(), "free step resolves")
 	var start_speed: float = Controller.STEADY_INITIAL_SPEED_FACTOR * Controller.SURVIVAL_WALK_SPEED
-	assert_vec_close(stepped.outcome.displacement, Vector3(0.0, 0.0, start_speed * Controller.STEADYING_TIME_CONSTANT), FLIGHT_EPSILON, "the tick moves at the start speed")
+	assert_vec_close(stepped.outcome.displacement, Vector3(0.0, 0.0, start_speed * Controller.STEADYING_TIME_CONSTANT), FLIGHT_EPSILON, "a long tick reaches the start cap")
 	var expected: float = Controller.SURVIVAL_WALK_SPEED * (1.0 - (1.0 - Controller.STEADY_INITIAL_SPEED_FACTOR) * exp(-1.0))
 	assert_true(absf(state.speed() - expected) < SPEED_EPSILON, "speed at one time constant: got %s, expected %s" % [str(state.speed()), str(expected)])
 
@@ -65,7 +65,7 @@ func test_speed_settles_within_epsilon_of_full_speed() -> void:
 
 func test_yaw_frames_steer_the_capsule_across_the_world() -> void:
 	var dt: float = 0.1
-	var speed: float = Controller.STEADY_INITIAL_SPEED_FACTOR * Controller.SURVIVAL_WALK_SPEED
+	var speed: float = Controller.STEADY_INITIAL_SPEED_FACTOR * Controller.SURVIVAL_WALK_SPEED * (1 - exp(-Controller.INTENT_EASE_EXPONENT * dt / Controller.WALK_START_SECONDS))
 	var cases: Array = [
 		[0.0, 1.0, 0.0, Vector3(0.0, 0.0, speed * dt), "forward at yaw 0"],
 		[PI / 2.0, 1.0, 0.0, Vector3(speed * dt, 0.0, 0.0), "forward at yaw pi/2"],

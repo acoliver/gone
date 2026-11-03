@@ -83,7 +83,9 @@ func test_dedicated_climb_and_negative_sim_forward_have_identical_sign_and_no_do
 		_step(legacy, _input(-1))
 		_step(dedicated, input)
 	assert_close(dedicated.capsule().foot, legacy.capsule().foot, "dual agreeing channels never multiply speed")
-	assert_float_in_range(dedicated.capsule().foot.y, 2.805 - 1e-5, 2.805 + 1e-5, "positive dedicated climbs up")
+	var q := exp(-log(20.0) / 9)
+	var expected := 0.305 + 0.025 * (100 - q * (1 - pow(q, 100)) / (1 - q))
+	assert_float_in_range(dedicated.capsule().foot.y, expected - 1e-5, expected + 1e-5, "positive dedicated eases upward")
 
 func test_conflicting_nonfinite_and_duplicate_input_reject_without_mode_or_pose_change() -> void:
 	var state := _start()

@@ -115,16 +115,17 @@ func test_first_walk_steps_follow_frozen_ramp_in_look_frame() -> void:
 	game.advance_doors()
 	motion.advance(plane, game, yaw, DT)
 	var first := motion.capsule().foot - before
-	var expected_first := Vector3(sin(yaw), 0.0, cos(yaw)) * (Controller.STEADY_INITIAL_SPEED_FACTOR * Controller.SURVIVAL_WALK_SPEED * DT)
-	_near_vec3(first, expected_first, "first tick moves along the look forward axis at the initial speed")
+	var alpha := 1 - exp(-log(20.0) * DT / 0.25)
+	var expected_first := Vector3(sin(yaw), 0.0, cos(yaw)) * (Controller.STEADY_INITIAL_SPEED_FACTOR * Controller.SURVIVAL_WALK_SPEED * DT * alpha)
+	_near_vec3(first, expected_first, "first tick eases toward the initial cap along look forward")
 	var before2 := motion.capsule().foot
 	plane.offer_movement(0.0, 1.0)
 	game.advance_doors()
 	motion.advance(plane, game, yaw, DT)
 	var second := motion.capsule().foot - before2
 	var ramped := Controller.SURVIVAL_WALK_SPEED * (1.0 - (1.0 - Controller.STEADY_INITIAL_SPEED_FACTOR) * exp(-DT / Controller.STEADYING_TIME_CONSTANT))
-	var expected_second := Vector3(cos(yaw), 0.0, -sin(yaw)) * (ramped * DT)
-	_near_vec3(second, expected_second, "second tick moves along the look right axis at the ramped speed")
+	var expected_second := expected_first * (1 - alpha) + Vector3(cos(yaw), 0.0, -sin(yaw)) * (ramped * DT * alpha)
+	_near_vec3(second, expected_second, "second tick blends forward into right under the ramped cap")
 	_near_float(motion.walk_speed(), Controller.SURVIVAL_WALK_SPEED * (1.0 - (1.0 - Controller.STEADY_INITIAL_SPEED_FACTOR) * exp(-(2.0 * DT) / Controller.STEADYING_TIME_CONSTANT)), "steadying clock advances per consumed tick")
 	assert_true(motion.failure().is_empty(), motion.failure())
 

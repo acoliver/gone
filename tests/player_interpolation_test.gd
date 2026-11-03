@@ -21,13 +21,15 @@ func test_presented_eye_interpolates_without_mutating_sim() -> void:
 	var step := GameStep.new(player.game, player)
 	_stand(player, step)
 	var before := player.motion.eye(player.game)
+	var cap := player.motion.walk_speed()
 	player.adapter.hold(1, 0)
 	step.advance()
 	var after := player.motion.eye(player.game)
 	var foot := player.motion.capsule().foot
 	var speed := player.motion.walk_speed()
 	var tick := step.logical_tick
-	assert_true(after.distance_to(before) > 0.005, "the real fixed tick moves the eye")
+	var expected := cap * Sim.LOGICAL_TICK_SECS * (1 - exp(-log(20.0) * Sim.LOGICAL_TICK_SECS / 0.25))
+	assert_true(absf(after.distance_to(before) - expected) < 1e-6, "the real fixed tick eases the eye by the specified distance")
 	for fraction: float in [0.0, 0.25, 0.5, 1.0]:
 		player.present_interpolated(fraction)
 		assert_vec3_equal(player.position, before.lerp(after, fraction), "presented eye follows the fraction")

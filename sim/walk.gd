@@ -235,6 +235,9 @@ class WalkState:
 
 	var _capsule: Resolve.Capsule = null
 	var _steadied_seconds: float = 0.0
+	# Scalar floats retain f64 precision between fixed ticks (Vector3 is f32).
+	var _velocity_x: float = 0.0
+	var _velocity_z: float = 0.0
 	var _tick_stepped: bool = false
 
 	static func start(phase: Phase.Machine, capsule: Resolve.Capsule) -> Walk.StartResult:
@@ -256,11 +259,12 @@ class WalkState:
 		if not capsule.foot.is_finite() or not capsule.head.is_finite():
 			return Walk.StartResult.with_error(Walk.WalkError.non_finite_capsule())
 		_capsule = Walk._copy_capsule(capsule)
+		_velocity_x = 0.0
+		_velocity_z = 0.0
 		return Walk.StartResult.with_state(self)
 
-	## The walk speed the next consumed tick will move at, in meters per
-	## second: the exact frozen initial product at a full stop, thereafter
-	## the frozen exponential approach toward SURVIVAL_WALK_SPEED.
+	## The next tick's steadying speed cap, in meters per second. Intent
+	## velocity eases beneath this unchanged post-get-up recovery ramp.
 	func speed() -> float:
 		return Walk._steadied_speed(_steadied_seconds)
 
@@ -275,13 +279,30 @@ class WalkState:
 		if not is_finite(dt) or dt <= 0.0:
 			return Walk.StepResult.with_error(Walk.WalkError.invalid_tick_seconds(dt))
 		var direction: Vector3 = intent.world_direction()
-		var intended: Vector3 = direction * (speed() * dt)
+		var cap := speed()
+		var seconds := Controller.WALK_STOP_SECONDS if direction == Vector3.ZERO else Controller.WALK_START_SECONDS
+		var alpha := 1.0 - exp(-Controller.INTENT_EASE_EXPONENT * dt / seconds)
+		var vx := _velocity_x + (float(direction.x) * cap - _velocity_x) * alpha
+		var vz := _velocity_z + (float(direction.z) * cap - _velocity_z) * alpha
+		var magnitude := sqrt(vx * vx + vz * vz)
+		if magnitude > cap:
+			vx *= cap / magnitude
+			vz *= cap / magnitude
+		var intended := Vector3(vx * dt, 0, vz * dt)
+		var supported := intended
 		if support.is_valid():
-			intended = support.call(_capsule, intended)
-		var resolved: Resolve.Result = Resolve.resolve_motion(_capsule, intended, colliders)
+			supported = support.call(_capsule, intended)
+		# Eased starts and stops are smaller than the ordinary sweep's settle
+		# tolerance; they still need a collision sweep and actual displacement.
+		var resolved := Resolve.resolve_constrained_motion(_capsule, supported, colliders)
 		if not resolved.is_ok():
 			return Walk.StepResult.with_error(Walk.WalkError.resolver_error(resolved.error))
-		var contact: int = Walk._classify_contact(resolved.motion.displacement, direction, resolved.motion.contact_normals)
+		var contact: int = Walk._classify_contact(resolved.motion.displacement, intended, resolved.motion.contact_normals)
+		_velocity_x = vx
+		_velocity_z = vz
+		if supported != intended or not resolved.motion.contact_normals.is_empty():
+			_velocity_x = float(resolved.motion.displacement.x) / dt
+			_velocity_z = float(resolved.motion.displacement.z) / dt
 		_capsule.foot += resolved.motion.displacement
 		_capsule.head += resolved.motion.displacement
 		_steadied_seconds += dt

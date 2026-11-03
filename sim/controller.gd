@@ -31,5 +31,12 @@ const STEADY_INITIAL_SPEED_FACTOR: float = 0.35
 ## Exponential steadying time constant, in seconds.
 const STEADYING_TIME_CONSTANT: float = 1.2
 
+## Ease intent changes to remove the full-speed start/stop lurch, independently
+## of recovery after standing. Exponentials reach 95% in these seconds.
+const WALK_START_SECONDS: float = 0.25
+const WALK_STOP_SECONDS: float = 0.20
+const CLIMB_EASE_SECONDS: float = 0.15
+const INTENT_EASE_EXPONENT: float = 2.995732273553991 # log(20)
+
 ## Input magnitude at which the move vector is normalized.
 const MAX_INPUT_LENGTH: float = 1.0

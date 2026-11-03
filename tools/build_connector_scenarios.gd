@@ -39,6 +39,7 @@ func _build() -> void:
 		print("ROUTE %s ticks=%d foot=%s" % [name, route.tick, player.motion.capsule().foot])
 		player.rod.free()
 		player.free()
+	_build_connector()
 	quit(0)
 
 class CaptureRoute:
@@ -64,9 +65,11 @@ func _build_connector() -> void:
 	for beat: Dictionary in route.beats:
 		if beat.name in route.white_beats:
 			beat.light = "white"
-	# Use the continued-opening lane's measured-route headroom ratio, 5400/3695.
-	var source_ticks := int(source.beats.back().tick) + 5
-	var data := {"name": "connector-route", "seed": game.run_seed, "ticks_per_second": 60, "mode": "capture", "content": "gameplay", "logical_steps_per_present": 4, "max_frames": ceili(float(route.tick) * float(source.max_frames) / source_ticks), "actions": route.actions, "beats": route.beats, "connector": {"digest": digest, "route_ticks": route.tick, "labels": route.label_beats, "white_beats": route.white_beats}}
+	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://scenarios/connector-route.json"))
+	assert(route.tick < int(data.max_frames), "connector route preserves its scenario budget")
+	data.actions = route.actions
+	data.beats = route.beats
+	data.connector = {"digest": digest, "route_ticks": route.tick, "labels": route.label_beats, "white_beats": route.white_beats}
 	FileAccess.open("res://scenarios/connector-route.json", FileAccess.WRITE).store_string(JSON.stringify(data, "\t") + "\n")
 	print("CONNECTOR ROUTE ticks=%d budget=%d digest=%s" % [route.tick, data.max_frames, digest])
 	for beat: Dictionary in route.beats:

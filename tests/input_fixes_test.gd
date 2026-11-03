@@ -130,7 +130,8 @@ func test_held_forward_walks_where_the_camera_looks() -> void:
 	motion.advance(plane, game, yaw, DT)
 	plane.end_frame()
 	var stepped: Vector3 = motion.capsule().foot - foot
-	assert_true(stepped.dot(camera_forward) > 0.002, "a held forward steps toward the camera's forward, not behind it: dot %s" % str(stepped.dot(camera_forward)))
+	var expected := Controller.STEADY_INITIAL_SPEED_FACTOR * Controller.SURVIVAL_WALK_SPEED * DT * (1 - exp(-log(20.0) * DT / 0.25))
+	_near_float(stepped.dot(camera_forward), expected, "held forward eases toward the camera forward at the specified speed")
 	assert_true(motion.failure().is_empty(), motion.failure())
 
 func test_look_keys_map_onto_yaw_actions_without_collisions() -> void:
