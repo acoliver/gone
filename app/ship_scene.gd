@@ -35,7 +35,7 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 	scene.bay_root.name = "BayRoot"
 	scene.bay_root.transform = game.layout.bay_to_world()
 	scene._add_opening_node(scene.bay_root)
-	scene.room = RoomGeometry.build(true)
+	scene.room = RoomGeometry.build(true, game.layout)
 	scene.room.name = "RoomGeometry"
 	scene.bay_root.add_child(scene.room)
 	scene.pods_node = StasisPods.build(game.registry)
@@ -132,12 +132,7 @@ func _sync_labels() -> void:
 				_add_hatch_label(door, face)
 
 static func _world_frame(node: Node3D) -> Transform3D:
-	var frame := node.transform
-	var parent := node.get_parent() as Node3D
-	while parent != null:
-		frame = parent.transform * frame
-		parent = parent.get_parent() as Node3D
-	return frame
+	return Surfaces.world_frame(node)
 
 func _add_hatch_label(door: ShipLayout.DoorSpec, face: ShipLayout.FaceSpec) -> void:
 	var leaf: Node3D = hatch.door_piece() if door.kind() == ShipLayout.DoorKind.BAY else _hatches[door.id()].label_leaf()
@@ -212,7 +207,7 @@ func _add_hatch(id: StringName, parent: Node3D = null) -> void:
 		parent.add_child(view)
 	# The wall and frame recipes also supply the collision manifest.
 	for solid: ShipGeometry.SolidSpec in ShipGeometry.hatch_wall_solids(spec):
-		var wall := DoorView.split_surface(solid, spec.frame(), masks[0], masks[1])
+		var wall := DoorView.split_surface(solid, spec.frame(), masks[0], masks[1], _game.layout)
 		wall.transform = spec.frame()
 		wall.set_meta(&"solid_id", solid.id)
 		if parent == null:

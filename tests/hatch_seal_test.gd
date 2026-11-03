@@ -3,6 +3,22 @@ extends SimTestCase
 const IDS: Array[StringName] = [ShipLayout.BAY_DOOR_ID, &"D14-C-000-H-FORE", &"D14-C-000-H-AFT", &"D14-C-001-H-FORE", &"D14-C-001-H-AFT"]
 const PIECES := {"COAMING": "Coaming", "FRAME/LEFT": "HingeJamb", "FRAME/RIGHT": "LatchJamb", "FRAME/TOP": "Lintel", "FRAME/STOP-LEFT": "StopLeft", "FRAME/STOP-RIGHT": "StopRight", "FRAME/STOP-TOP": "StopTop", "FRAME/STOP-BOTTOM": "StopBottom"}
 
+func test_shader_steel_seal_queries_keep_opaque_back_face_and_reflected_winding_contracts() -> void:
+	var piece := HatchModel.mesh_piece(QuadMesh.new(), Transform3D.IDENTITY, 4, Surfaces.material(&"hatch_leaf"))
+	var query := preload("res://tests/hatch_render_faces.gd")
+	var faces := PackedVector3Array()
+	query.collect(piece, Vector3.BACK, 4, faces)
+	assert_int_equal(faces.size(), 6, "opaque shader steel draws the front")
+	faces.clear()
+	query.collect(piece, Vector3.FORWARD, 4, faces)
+	assert_true(faces.is_empty(), "shader steel does not make the back seal a hatch")
+	piece.basis = Basis(Vector3.RIGHT, Vector3.UP, Vector3.FORWARD)
+	query.collect(piece, Vector3.BACK, 4, faces)
+	assert_true(faces.is_empty(), "reflected shader steel reverses the front")
+	query.collect(piece, Vector3.FORWARD, 4, faces)
+	assert_int_equal(faces.size(), 6, "reflected shader steel draws its transformed front")
+	piece.free()
+
 func _mesh_faces(node: Node3D, faces: PackedVector3Array) -> void:
 	var world := ShipScene._world_frame(node)
 	if node is MeshInstance3D:

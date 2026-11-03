@@ -7,8 +7,6 @@ const CONTROL_SIZE := Vector3(0.19, 0.34, 0.07)
 
 static var _meshes: Dictionary = {}
 static var _rivets: Dictionary = {}
-static var _steel: StandardMaterial3D
-static var _hardware: StandardMaterial3D
 static var _boxes: Dictionary = {}
 static var _cylinders: Dictionary = {}
 static var _materials: Dictionary = {}
@@ -60,12 +58,12 @@ static func material(shade: float) -> StandardMaterial3D:
 		_materials[shade] = flat_grey(shade)
 	return _materials[shade]
 
-static func mesh_piece(mesh: Mesh, pose: Transform3D, mask: int, surface: Material = null) -> MeshInstance3D:
+static func mesh_piece(mesh: Mesh, pose: Transform3D, mask: int, surface: Material) -> MeshInstance3D:
 	var piece := MeshInstance3D.new()
 	piece.mesh = mesh
 	piece.transform = pose
 	piece.layers = mask
-	piece.material_override = material(DOOR_SHADE) if surface == null else surface
+	piece.material_override = surface
 	return piece
 
 static func control_panel() -> Node3D:
@@ -80,9 +78,12 @@ static func control_panel() -> Node3D:
 	panel.add_child(reader)
 	return panel
 
-static func leaf(spec: ShipLayout.DoorSpec, masks: Array[int]) -> Node3D:
+static func leaf(spec: ShipLayout.DoorSpec, masks: Array[int], bindings: Array[Surfaces.MotionBinding]) -> Node3D:
 	var root := Node3D.new()
 	root.name = "Leaf"
+	var leaf_binding := Surfaces.MotionBinding.new(root)
+	bindings.append(leaf_binding)
+	var leaf_frame := Surfaces.door_frame(spec, &"LEAF")
 	for name: String in ["StrapHinges", "Lugs"]:
 		var group := Node3D.new()
 		group.name = name
@@ -100,6 +101,8 @@ static func leaf(spec: ShipLayout.DoorSpec, masks: Array[int]) -> Node3D:
 			bolts.layers = masks[group.side]
 			bolts.transform = group.transform
 			parent.add_child(bolts)
+			Surfaces.bind(bolts, &"hardware", leaf_frame)
+			leaf_binding.pieces.append(bolts)
 		else:
 			var piece := mesh_piece(_leaf_mesh(group, spec.leaf_aperture()), group.transform, masks[group.side], steel() if group.steel else hardware())
 			if name in ["Wheel", "ReverseWheel"]:
@@ -109,9 +112,19 @@ static func leaf(spec: ShipLayout.DoorSpec, masks: Array[int]) -> Node3D:
 				piece.transform = Transform3D.IDENTITY
 				wheel.add_child(piece)
 				parent.add_child(wheel)
+				var wheel_frame := Surfaces.door_frame(spec, &"WHEEL/FORE" if group.side == 0 else &"WHEEL/AFT")
+				wheel_frame.world_from_surface *= group.transform
+				wheel_frame.floor_datum = -group.transform.origin.y
+				wheel_frame.bounds = group.transform.affine_inverse() * leaf_frame.bounds
+				Surfaces.bind(piece, &"wheel", wheel_frame)
+				var wheel_binding := Surfaces.MotionBinding.new(wheel)
+				wheel_binding.pieces.append(piece)
+				bindings.append(wheel_binding)
 			else:
 				piece.name = name
 				parent.add_child(piece)
+				Surfaces.bind(piece, &"hatch_leaf" if group.steel else &"hardware", leaf_frame)
+				leaf_binding.pieces.append(piece)
 	return root
 
 static func _part_mesh(part: HatchParts.Part) -> Mesh:
@@ -167,20 +180,11 @@ static func _leaf_rivets(group: HatchParts.Group, aperture: Vector2) -> MultiMes
 	return batch
 
 
-static func steel() -> StandardMaterial3D:
-	if _steel == null:
-		_steel = flat_grey(0.34)
-		_steel.albedo_color = Color(0.33, 0.36, 0.35)
-		_steel.metallic = 0.55
-		_steel.roughness = 0.78
-	return _steel
+static func steel() -> ShaderMaterial:
+	return Surfaces.material(&"hatch_leaf")
 
-static func hardware() -> StandardMaterial3D:
-	if _hardware == null:
-		_hardware = flat_grey(0.20)
-		_hardware.metallic = 0.75
-		_hardware.roughness = 0.67
-	return _hardware
+static func hardware() -> ShaderMaterial:
+	return Surfaces.material(&"hardware")
 
 static func outline(size: Vector2, radius: float) -> PackedVector2Array:
 	var points := PackedVector2Array()
@@ -291,7 +295,7 @@ static func rivets(kind: StringName, aperture: Vector2) -> MultiMesh:
 	_rivets[key] = batch
 	return batch
 
-static func add_faces(parent: Node3D, kind: StringName, aperture: Vector2, masks: Array[int], leaf_space: bool) -> void:
+static func add_faces(parent: Node3D, kind: StringName, aperture: Vector2, masks: Array[int], leaf_space: bool, surface_frame: Surfaces.SurfaceFrame) -> void:
 	for side: int in range(2):
 		var pose := Transform3D.IDENTITY
 		if leaf_space:
@@ -305,6 +309,7 @@ static func add_faces(parent: Node3D, kind: StringName, aperture: Vector2, masks
 		var piece := mesh_piece(mesh(kind, aperture), pose, masks[side], steel() if kind in [&"frame", &"leaf"] else hardware())
 		piece.name = prefix + "Steel"
 		parent.add_child(piece)
+		Surfaces.bind(piece, &"frame" if kind == &"frame" else &"hardware", surface_frame)
 		if kind in [&"frame", &"leaf"]:
 			var bolts := MultiMeshInstance3D.new()
 			bolts.name = prefix + "Rivets"
@@ -313,3 +318,4 @@ static func add_faces(parent: Node3D, kind: StringName, aperture: Vector2, masks
 			bolts.layers = masks[side]
 			bolts.transform = pose
 			parent.add_child(bolts)
+			Surfaces.bind(bolts, &"hardware", surface_frame)

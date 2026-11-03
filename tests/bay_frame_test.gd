@@ -1,5 +1,17 @@
 extends SimTestCase
 
+func test_bay_shell_weather_uses_the_layout_frame_exactly_once() -> void:
+	var root := Node3D.new()
+	var game := Game.new(0)
+	var scene := ShipScene.build_into(root, game, false)
+	var wall: GeometryInstance3D = scene.room.get_child(2)
+	var frame: Surfaces.SurfaceFrame = wall.get_meta(&"surface_frame")
+	assert_true(frame.world_from_surface == game.layout.bay_to_world(), "weather follows the same bay-local frame as geometry")
+	assert_true(frame.key == &"D14-BAY/PORT", "bay wall uses semantic layout identity")
+	var point := Vector3(2, 1, -4)
+	assert_true(Surfaces.sample_position(wall, game.layout.bay_to_world() * point).is_equal_approx(point), "sample frame is applied once")
+	root.free()
+
 func test_runtime_exit_is_the_rigidly_transformed_local_path() -> void:
 	var game := Game.new(0)
 	var frame := ShipLayout.authored().layout.bay_to_world()

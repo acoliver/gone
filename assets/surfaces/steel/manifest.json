@@ -1,0 +1,64 @@
+{
+  "version": "steel-v1-round5",
+  "images": {
+    "r4-green_metal_rust-albedo.png": {
+      "sha256": "9b5de492bdfdf3aa76d2d69c41a0e36350b72371ac8ebf125af219ff64533b7a",
+      "normal": false,
+      "source_bytes": 856107
+    },
+    "r4-rusty_painted_metal-albedo.png": {
+      "sha256": "d3838a76509131ca4bc3d152e9f6b09b3facc22c73a1a653cbef84e4f15adcff",
+      "normal": false,
+      "source_bytes": 866740
+    },
+    "r4-rusty_metal_04-albedo.png": {
+      "sha256": "e9cda2b8d6d1b5346c8ed1375b914d06fba311d33e2afa6b0191b3c0a974d418",
+      "normal": false,
+      "source_bytes": 1240181
+    },
+    "green_metal_rust_normal.jpg": {
+      "sha256": "8ecb28b0ea4026b740ce492e3f606f61a76bdce1f78cb2e29287bf9a56c54a80",
+      "normal": true,
+      "source_bytes": 121379
+    },
+    "green_metal_rust_orm.jpg": {
+      "sha256": "c1a48da0c5bba8f490497bbedadf4cb21d5387de8b3d49988c065e4b16805434",
+      "normal": false,
+      "source_bytes": 108674
+    },
+    "rusty_painted_metal_normal.jpg": {
+      "sha256": "f3372e2f60517df2d0e02c1472eb24071d95182d771c30b7ecd8e1b5142768bb",
+      "normal": true,
+      "source_bytes": 484158
+    },
+    "rusty_painted_metal_orm.jpg": {
+      "sha256": "cd3ef3750348bd8afa552ac41120310f740cd4bfd3c303d81e68e3100bdf7fdd",
+      "normal": false,
+      "source_bytes": 372615
+    },
+    "rusty_metal_04_normal.jpg": {
+      "sha256": "9c432bee334e65e73ff0b20676dd3f0efbed3f91d261a13dc03b9c8c1a4f4eec",
+      "normal": true,
+      "source_bytes": 896980
+    },
+    "rusty_metal_04_orm.jpg": {
+      "sha256": "b040e35ed5e885d04b465761782a5d0ebd241175f562821f8fba35a12dccb789",
+      "normal": false,
+      "source_bytes": 787679
+    },
+    "r3-rust_coarse_01-albedo.jpg": {
+      "sha256": "369f69eb86a7dcc4e5b6e30b1f3a4da5ce6ba50cf417de937efb4f09101f88d4",
+      "normal": false,
+      "source_bytes": 845196
+    },
+    "r3-rust_coarse_01-normal.jpg": {
+      "sha256": "08ae69576b453b0970f5982d359897f09aae41c7cb18c19c02de37324160625c",
+      "normal": true,
+      "source_bytes": 763053
+    }
+  },
+  "max_gpu_payload_bytes": 16882073,
+  "ao_channel": "R",
+  "roughness_channel": "G",
+  "metallic": "procedural .20 to .025; ORM.B deliberately unused"
+}

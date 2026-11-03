@@ -55,6 +55,8 @@ class SolidSpec:
 	var material_role: StringName
 	var collision_role: StringName
 	var hatch_profile: ShipLayout.DoorSpec
+	var surface_owner: StringName
+	var surface_part: StringName
 	var transform: Transform3D:
 		get: return _parent * Transform3D(Basis(_local_rotation), _local_center)
 	var center: Vector3:
@@ -68,6 +70,17 @@ class SolidSpec:
 		size = p_size
 		material_role = p_material_role
 		collision_role = p_collision_role
+		var path := String(id).split("/")
+		if path.size() > 1:
+			surface_owner = StringName(path[0])
+			path.remove_at(0)
+			if path.size() > 1 and path[-1].is_valid_int(): path.remove_at(path.size() - 1)
+			if path[0] == "FRAME": path = PackedStringArray(["FRAME"])
+			if path[0] in ["BLOCKER", "PARKED", "SWING"]: path = PackedStringArray(["LEAF"])
+			surface_part = StringName("/".join(path))
+	func surface_identity(owner: StringName, part: StringName) -> void:
+		surface_owner = owner
+		surface_part = part
 	func corner(local: Vector3) -> Vector3:
 		# Preserve authored quaternion arithmetic, then apply exact cardinal frames.
 		return _parent * (_local_center + _local_rotation * local)
@@ -121,7 +134,7 @@ static func room_shell() -> Array[ShipGeometry.SolidSpec]:
 			Vector3(Pods.ROOM_LENGTH / 2.0 + WALL_THICKNESS / 2.0, mid_height, 0.0),
 			wall_along_z
 		),
-	])
+	], ShipLayout.BAY_ID, [&"PORT", &"STARBOARD", &"FORE", &"AFT"])
 
 static func hatch_solids() -> Array[ShipGeometry.SolidSpec]:
 	var post := Vector3(FRAME_DEPTH, HATCH_HEIGHT + FRAME_POST_WIDTH, FRAME_POST_WIDTH)
@@ -212,7 +225,7 @@ static func power_room_solids() -> Array[ShipGeometry.SolidSpec]:
 			Vector3(slab_x_center, mid_height, ROOM_END_Z - WALL / 2.0),
 			Vector3(slab_x_size, ROOM_CEILING, WALL)
 		),
-	])
+	], ShipLayout.POWER_ID, [&"FORE", &"AFT", &"PORT"])
 
 static func power_door_leaf() -> ShipGeometry.SolidSpec:
 	return ShipGeometry.SolidSpec.new(
@@ -292,6 +305,7 @@ static func transformed(solid: SolidSpec, frame: Transform3D, id: StringName = &
 	var placed := SolidSpec.new(solid._local_center, solid.size, solid._local_rotation, solid.id if id == &"" else id, solid.material_role, solid.collision_role)
 	placed._parent = frame * solid._parent
 	placed.hatch_profile = solid.hatch_profile
+	if solid.surface_owner != &"": placed.surface_identity(solid.surface_owner, solid.surface_part)
 	return placed
 
 ## The wall's local X interval, pierced once, with +Z wall-band depth.
@@ -587,9 +601,12 @@ static func open_door_solids(door: ShipLayout.DoorSpec, run_seed: int = 0) -> Ar
 	var leaf := SolidSpec.new(bounds.get_center(), bounds.size, Quaternion.IDENTITY, StringName("%s/PARKED" % door.id()), &"door", &"parked_leaf")
 	return [transformed(leaf, door.frame() * hinge)]
 
-static func _shell_roles(solids: Array[SolidSpec]) -> Array[SolidSpec]:
+static func _shell_roles(solids: Array[SolidSpec], owner: StringName, walls: Array[StringName]) -> Array[SolidSpec]:
 	solids[0].material_role = &"floor"
 	solids[1].material_role = &"ceiling"
+	var parts: Array[StringName] = [&"FLOOR", &"CEILING"]
+	parts.append_array(walls)
+	for index: int in range(solids.size()): solids[index].surface_identity(owner, parts[index])
 	return solids
 
 static func opening_hall_solids(registry: Pods.PodRegistry, door_open: bool, layout: ShipLayout, include_blockers: bool = true, run_seed: int = 0) -> Array[ShipGeometry.SolidSpec]:

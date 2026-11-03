@@ -132,6 +132,7 @@ var _generator_light: OmniLight3D = null
 var _generator_ring_material: StandardMaterial3D = null
 var _door_leaf: MeshInstance3D = null
 var _door_leaf_base: Vector3 = Vector3.ZERO
+var _door_binding: Surfaces.MotionBinding
 var _console_state: int = -1
 var _screen_material: StandardMaterial3D = null
 var console_display: ShipDisplay = null
@@ -243,11 +244,17 @@ static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 		"every power room surface carries its name"
 	)
 	for index: int in range(solids.size()):
-		var piece := _surface_instance(surface_roles[index], solids[index])
+		var piece := _surface_instance(surface_roles[index], solids[index], game.layout)
 		piece.name = surface_names[index]
 		room.add_child(piece)
 
-	room._door_leaf = _box_instance(door_leaf(), _flat_grey(DOOR_SHADE))
+	var leaf_solid := door_leaf()
+	leaf_solid.material_role = &"door"
+	leaf_solid.surface_identity(ShipLayout.POWER_DOOR_ID, &"LEAF")
+	room._door_leaf = _box_instance(leaf_solid, Surfaces.material(&"hatch_leaf"))
+	Surfaces.bind_solid(room._door_leaf, game.layout, leaf_solid)
+	room._door_binding = Surfaces.MotionBinding.new(room._door_leaf)
+	room._door_binding.pieces.append(room._door_leaf)
 	room._door_leaf.name = "PowerDoorLeaf"
 	room._door_leaf_base = door_leaf().center
 	room.add_child(room._door_leaf)
@@ -533,6 +540,7 @@ func _apply_console_state(state: int) -> void:
 ## space: the deterministic projection this module's leaf renders.
 func set_door_offset(offset: Vector3) -> void:
 	_door_leaf.position = _door_leaf_base + offset
+	_door_binding.refresh()
 
 ## The emergency red circuit's level in this room.
 func level() -> float:
@@ -591,15 +599,11 @@ func tick_console_attention(eye: Vector3, camera_forward: Vector3) -> void:
 
 ## One textured surface piece wearing the stasis room's shared material
 ## for its role — the same resource instance, never a copy.
-static func _surface_instance(
-	role: String, placement: Placement.SolidPlacement
-) -> MeshInstance3D:
-	var material := RoomGeometry.wall_material()
-	if role == "floor":
-		material = RoomGeometry.floor_material()
-	elif role == "ceiling":
-		material = RoomGeometry.ceiling_material()
-	return _box_instance(placement, material)
+static func _surface_instance(role: String, placement: Placement.SolidPlacement, layout: ShipLayout = ShipLayout.authored().layout) -> MeshInstance3D:
+	assert(StringName(role) == placement.material_role, "surface role agrees with pure recipe")
+	var piece := _box_instance(placement, Surfaces.material(placement.material_role))
+	Surfaces.bind_solid(piece, layout, placement)
+	return piece
 
 static func _box_instance(
 	placement: Placement.SolidPlacement, material: Material

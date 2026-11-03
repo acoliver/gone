@@ -99,8 +99,8 @@ func test_all_hatch_bulkheads_share_plated_wall_material_and_mapping() -> void:
 		assert_int_equal(node.get_child_count(), 2, "bulkhead retains independently masked halves")
 		for piece: MeshInstance3D in node.get_children():
 			assert_true(piece.material_override == RoomGeometry.wall_material(), "hatch bulkhead shares exact plated wall material resource")
-			assert_true(piece.material_override.uv1_triplanar, "hatch bulkhead uses shared triplanar mapping")
-			assert_true(piece.material_override.uv1_scale == RoomGeometry.WALL_UV1_SCALE, "same wall texture density")
+			assert_true(piece.has_meta(&"surface_frame"), "hatch bulkhead uses explicit surface-local mapping")
+			assert_true(piece.material_override.get_shader_parameter(&"panel_pitch") == Surfaces.PANEL_PITCH, "same wall panel density")
 	assert_int_equal(count, 18, "three bulkhead pieces around each of six hatches")
 	root.free()
 

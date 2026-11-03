@@ -1,5 +1,19 @@
 extends SimTestCase
 
+func test_power_room_binds_shell_and_sliding_leaf_without_replacing_console_materials() -> void:
+	var game := Game.new(0)
+	var room := PowerRoom.build(game)
+	assert_true(room.get_node("PowerFloor").material_override == Surfaces.material(&"floor"), "power floor shares architectural material")
+	assert_true(room.get_node("PowerWallNorth").get_meta(&"surface_frame").key == &"D14-POWER/PORT", "power wall has layout identity")
+	var leaf: GeometryInstance3D = room.get_node("PowerDoorLeaf")
+	var material := leaf.material_override
+	var local := Vector3(0.2, 0.4, 0.01)
+	var before := Surfaces.sample_position(leaf, Surfaces.world_frame(leaf) * local)
+	room.set_door_offset(Vector3(0.75, 0, 0))
+	assert_true(Surfaces.sample_position(leaf, Surfaces.world_frame(leaf) * local).is_equal_approx(before), "power leaf scan follows offset")
+	assert_true(leaf.material_override == material and material == Surfaces.material(&"hatch_leaf"), "slide never allocates a material")
+	room.free()
+
 var _bay_frame := ShipLayout.authored().layout.bay_to_world()
 ## The emergency power room (issue #59): the room's envelope mirrors
 ## the stasis room's footprint behind the corridor's pierced north

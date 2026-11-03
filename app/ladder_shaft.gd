@@ -34,7 +34,7 @@ static func build(layout: ShipLayout, well: ShipLayout.LadderWellSpec) -> Ladder
 		var lift := layout.door(layout.lift(spec.lift_id()).door_id())
 		solids.append(ShipGeometry.door_blockers(lift)[0])
 		for solid: ShipGeometry.SolidSpec in solids:
-			var key := "%d/%s" % [layer, solid.material_role]
+			var key := "%d/%s/%s/%s" % [layer, solid.material_role, solid.surface_owner, solid.surface_part]
 			if not groups.has(key):
 				groups[key] = {"mask": layer, "solids": [], "decks": []}
 			groups[key].solids.append(solid)
@@ -43,17 +43,17 @@ static func build(layout: ShipLayout, well: ShipLayout.LadderWellSpec) -> Ladder
 		var group: Dictionary = groups[key]
 		var solids: Array[ShipGeometry.SolidSpec] = []
 		solids.assign(group.solids)
-		var view := _boxes(solids, group.mask)
+		var view := _boxes(solids, group.mask, Surfaces.frame_for_solid(layout, solids[0]))
 		shaft.add_child(view)
 		for i: int in range(solids.size()):
 			var deck: int = group.decks[i]
 			if not shaft._shell_instances.has(deck):
 				shaft._shell_instances[deck] = []
 			shaft._shell_instances[deck].append([view.multimesh, i, view.multimesh.get_instance_transform(i)])
-	var walls := _boxes(ShipGeometry.well_solids(well), mask)
+	var walls := _boxes(ShipGeometry.well_solids(well), mask, Surfaces.surface_frame(layout, well.id(), &"BACK"))
 	walls.name = "ShaftWalls"
 	shaft.add_child(walls)
-	var pitch_closures := _boxes(closures, mask)
+	var pitch_closures := _boxes(closures, mask, Surfaces.surface_frame(layout, well.id(), &"CLOSURES"))
 	pitch_closures.name = "PitchClosures"
 	shaft.add_child(pitch_closures)
 	var bounds := well.bounds()
@@ -61,14 +61,14 @@ static func build(layout: ShipLayout, well: ShipLayout.LadderWellSpec) -> Ladder
 	var rails: Array[ShipGeometry.SolidSpec] = []
 	for side: int in [-1, 1]:
 		rails.append(ShipGeometry.SolidSpec.new(Vector3(bounds.get_center().x + side * 0.38, bounds.get_center().y, ladder_z), Vector3(0.065, bounds.size.y, 0.08), Quaternion.IDENTITY, &"", &"frame"))
-	var rail_view := _boxes(rails, mask)
+	var rail_view := _boxes(rails, mask, Surfaces.surface_frame(layout, well.id(), &"RAILS"))
 	rail_view.name = "Rails"
 	shaft.add_child(rail_view)
 	var rungs: Array[ShipGeometry.SolidSpec] = []
 	var count := ceili(bounds.size.y / 0.28)
 	for rung: int in range(count):
 		rungs.append(ShipGeometry.SolidSpec.new(Vector3(bounds.get_center().x, bounds.position.y + rung * 0.28, ladder_z), Vector3(0.76, 0.045, 0.08), Quaternion.IDENTITY, &"", &"frame"))
-	var rung_view := _boxes(rungs, mask)
+	var rung_view := _boxes(rungs, mask, Surfaces.surface_frame(layout, well.id(), &"RUNGS"))
 	rung_view.name = "Rungs"
 	shaft.add_child(rung_view)
 	return shaft
@@ -79,19 +79,13 @@ func detail_resident(deck: int, resident: bool) -> void:
 		var transform: Transform3D = entry[2]
 		mesh.set_instance_transform(entry[1], Transform3D(Basis(Vector3.ZERO, Vector3.ZERO, Vector3.ZERO), transform.origin) if resident else transform)
 
-static func _boxes(solids: Array[ShipGeometry.SolidSpec], mask: int) -> MultiMeshInstance3D:
+static func _boxes(solids: Array[ShipGeometry.SolidSpec], mask: int, frame: Surfaces.SurfaceFrame) -> MultiMeshInstance3D:
 	var view := MultiMeshInstance3D.new()
 	view.layers = mask
 	var mesh := BoxMesh.new()
 	mesh.size = Vector3.ONE
 	var role := solids[0].material_role
-	mesh.material = RoomGeometry.wall_material()
-	if role == &"floor":
-		mesh.material = RoomGeometry.floor_material()
-	elif role == &"ceiling":
-		mesh.material = RoomGeometry.ceiling_material()
-	elif role in [&"frame", &"door"]:
-		mesh.material = HatchModel.flat_grey(HatchModel.DOOR_SHADE)
+	Surfaces.bind(view, &"hatch_leaf" if role == &"door" else role, frame)
 	var instances := MultiMesh.new()
 	instances.transform_format = MultiMesh.TRANSFORM_3D
 	instances.mesh = mesh

@@ -1,5 +1,23 @@
 extends SimTestCase
 
+func test_hall_planes_and_refused_leaves_keep_explicit_weather_frames() -> void:
+	var game := Game.new(0)
+	var hall := Hallway.build(game)
+	var west: Surfaces.SurfaceFrame = hall.get_node("HallWallNorthWest").get_meta(&"surface_frame")
+	var east: Surfaces.SurfaceFrame = hall.get_node("HallWallNorthEast").get_meta(&"surface_frame")
+	assert_true(west.key == &"D14-S-041/PORT" and east.key == west.key, "wall pieces retain their physical plane identity")
+	for id: StringName in hall.side_leaves:
+		var leaf: GeometryInstance3D = hall.side_leaves[id]
+		assert_true(leaf.material_override == Surfaces.material(&"hatch_leaf"), "side leaves use shared steel")
+		var view := DoorView.bind_leaf(game.layout.door(id), leaf)
+		var before := Surfaces.sample_position(leaf, Surfaces.world_frame(leaf).origin)
+		var pose := game.doors.snapshot(id)
+		pose.shudder = 1.0
+		view.present(pose)
+		assert_true(Surfaces.sample_position(leaf, Surfaces.world_frame(leaf).origin).is_equal_approx(before), "refusal shudder moves the scan with the leaf")
+		view.free()
+	hall.free()
+
 var _bay_frame := ShipLayout.authored().layout.bay_to_world()
 ## The hallway behind the door (the #59 prerequisite milestone): the
 ## corridor's envelope derives from the room's authored constants (twice

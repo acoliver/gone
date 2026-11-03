@@ -182,7 +182,7 @@ static func build(game: Game) -> Hallway:
 		"every hallway surface carries its name"
 	)
 	for index: int in range(hall_solids.size()):
-		var piece := _surface_instance(surface_roles[index], hall_solids[index])
+		var piece := _surface_instance(surface_roles[index], hall_solids[index], game.layout)
 		piece.name = surface_names[index]
 		hallway.add_child(piece)
 
@@ -190,12 +190,13 @@ static func build(game: Game) -> Hallway:
 
 	var doors := Node3D.new()
 	doors.name = "HallSideDoors"
-	var door_material := _flat_grey(SIDE_DOOR_SHADE)
+	var door_material := Surfaces.material(&"hatch_leaf")
 	var by_solid_id: Dictionary = {}
 	for id: StringName in game.layout.section(&"D14-S-041").side_door_ids():
 		by_solid_id[StringName("%s/LEAF" % id)] = id
 	for solid: ShipGeometry.SolidSpec in ShipGeometry.side_door_solids(game.layout):
 		var leaf := _box_instance(solid, door_material)
+		Surfaces.bind_solid(leaf, game.layout, solid)
 		leaf.set_meta(&"solid_id", solid.id)
 		hallway.side_leaves[by_solid_id[solid.id]] = leaf
 		doors.add_child(leaf)
@@ -316,7 +317,10 @@ static func _build_switch() -> Node3D:
 	dome_material.roughness = 0.35
 	dome.material_override = dome_material
 	group.add_child(dome)
-	var bezel := HatchModel.mesh_piece(HatchModel.cylinder(SWITCH_DOME_RADIUS * 1.15, 0.012), Transform3D(Basis(Vector3.BACK, -PI / 2), Vector3(front, 0, 0)), 1, HatchModel.hardware())
+	var bezel_material := _flat_grey(0.20)
+	bezel_material.metallic = 0.75
+	bezel_material.roughness = 0.67
+	var bezel := HatchModel.mesh_piece(HatchModel.cylinder(SWITCH_DOME_RADIUS * 1.15, 0.012), Transform3D(Basis(Vector3.BACK, -PI / 2), Vector3(front, 0, 0)), 1, bezel_material)
 	bezel.name = "ButtonBezel"
 	group.add_child(bezel)
 	return group
@@ -450,13 +454,11 @@ func white_lens_material() -> StandardMaterial3D:
 
 ## One textured surface piece wearing the stasis room's shared material
 ## for its role — the same resource instance, never a copy.
-static func _surface_instance(role: String, placement: Placement.SolidPlacement) -> MeshInstance3D:
-	var material := RoomGeometry.wall_material()
-	if role == "floor":
-		material = RoomGeometry.floor_material()
-	elif role == "ceiling":
-		material = RoomGeometry.ceiling_material()
-	return _box_instance(placement, material)
+static func _surface_instance(role: String, placement: Placement.SolidPlacement, layout: ShipLayout = ShipLayout.authored().layout) -> MeshInstance3D:
+	assert(StringName(role) == placement.material_role, "surface role agrees with pure recipe")
+	var piece := _box_instance(placement, Surfaces.material(placement.material_role))
+	Surfaces.bind_solid(piece, layout, placement)
+	return piece
 
 static func _box_instance(placement: Placement.SolidPlacement, material: Material) -> MeshInstance3D:
 	var instance := MeshInstance3D.new()

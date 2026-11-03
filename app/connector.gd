@@ -12,14 +12,16 @@ static func build(layout: ShipLayout, spec: ShipLayout.ConnectorSpec) -> ShipCon
 	connector.name = String(spec.id())
 	var mask := Lighting.space_mask(layout, spec.id())
 	for solid: ShipGeometry.SolidSpec in ShipGeometry.connector_solids(layout, spec):
-		connector.add_child(ShipSection.surface(solid, mask))
+		connector.add_child(ShipSection.surface(solid, mask, layout))
 	var lift := layout.door(layout.lift(spec.lift_id()).door_id())
 	connector.lift_leaf = Node3D.new()
 	connector.lift_leaf.name = "LiftDoors"
 	connector.lift_leaf.transform = lift.frame()
 	connector.add_child(connector.lift_leaf)
 	for side: int in [-1, 1]:
-		connector.lift_leaf.add_child(HatchModel.mesh_piece(Hallway._box_mesh(Vector3(lift.aperture().x / 2 - 0.008, lift.aperture().y, ShipLayout.WALL)), Transform3D(Basis(), Vector3(side * lift.aperture().x / 4, lift.aperture().y / 2, ShipLayout.WALL / 2)), mask))
+		var piece := HatchModel.mesh_piece(Hallway._box_mesh(Vector3(lift.aperture().x / 2 - 0.008, lift.aperture().y, ShipLayout.WALL)), Transform3D(Basis(), Vector3(side * lift.aperture().x / 4, lift.aperture().y / 2, ShipLayout.WALL / 2)), mask, Surfaces.material(&"hatch_leaf"))
+		Surfaces.bind(piece, &"hatch_leaf", Surfaces.door_frame(lift, &"LEAF"))
+		connector.lift_leaf.add_child(piece)
 	var panel := HatchModel.control_panel()
 	panel.name = "LiftCallPanel"
 	panel.transform = lift.frame() * Transform3D(Basis(Vector3.UP, PI), Vector3(lift.aperture().x / 2 + 0.25, 1.25, -0.06))
