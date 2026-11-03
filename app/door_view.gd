@@ -37,10 +37,11 @@ static func build(spec: ShipLayout.DoorSpec, fore_mask: int = 1, aft_mask: int =
 	HatchModel.add_faces(frame, &"frame", spec.aperture(), masks, false)
 	for solid: ShipGeometry.SolidSpec in ShipGeometry.hatch_frame_solids(spec):
 		var suffix := String(solid.id).trim_prefix("%s/" % spec.id())
-		if suffix in ["COAMING", "FRAME/RIGHT", "FRAME/TOP"]:
-			var piece := collar_surface(solid, spec, fore_mask, aft_mask)
-			piece.name = {"COAMING": "Coaming", "FRAME/RIGHT": "LatchJamb", "FRAME/TOP": "Lintel"}[suffix]
-			view.add_child(piece)
+		var pieces := {"COAMING": "Coaming", "FRAME/LEFT": "HingeJamb", "FRAME/RIGHT": "LatchJamb", "FRAME/TOP": "Lintel", "FRAME/STOP-LEFT": "StopLeft", "FRAME/STOP-RIGHT": "StopRight", "FRAME/STOP-TOP": "StopTop", "FRAME/STOP-BOTTOM": "StopBottom"}
+		assert(pieces.has(suffix), "shared hatch frame piece must be rendered")
+		var piece := collar_surface(solid, spec, fore_mask, aft_mask)
+		piece.name = pieces[suffix]
+		view.add_child(piece)
 	view._hinge = Node3D.new()
 	view._hinge.name = "Hinge"
 	view._hinge.transform = spec.hinge_frame()
@@ -58,18 +59,17 @@ static func build(spec: ShipLayout.DoorSpec, fore_mask: int = 1, aft_mask: int =
 	for side: int in [-1, 1]:
 		var panel := HatchModel.control_panel()
 		panel.name = "ForePanel" if side < 0 else "AftPanel"
-		panel.position = Vector3(spec.aperture().x / 2 + 0.38, 1.25, -0.08 if side < 0 else ShipLayout.WALL + 0.08)
+		panel.position = Vector3(spec.aperture().x / 2 + 0.38, 1.25, -HatchModel.CONTROL_SIZE.z / 2 if side < 0 else ShipLayout.WALL + HatchModel.CONTROL_SIZE.z / 2)
 		if side < 0:
 			panel.rotation.y = PI
 		Lighting.mesh_layers(panel, fore_mask if side < 0 else aft_mask)
 		view.add_child(panel)
 	return view
 
-static func collar_surface(solid: ShipGeometry.SolidSpec, spec: ShipLayout.DoorSpec, fore_mask: int, aft_mask: int) -> Node3D:
+static func collar_surface(solid: ShipGeometry.SolidSpec, spec: ShipLayout.DoorSpec, fore_mask: int, aft_mask: int, material: Material = null) -> Node3D:
 	var group := Node3D.new()
 	var arrays := HatchModel.box_mesh(solid.size).surface_get_arrays(0)
 	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
-	var normals: PackedVector3Array = arrays[Mesh.ARRAY_NORMAL]
 	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
 	var faces: Array[SurfaceTool] = [SurfaceTool.new(), SurfaceTool.new()]
 	for face: SurfaceTool in faces:
@@ -77,20 +77,29 @@ static func collar_surface(solid: ShipGeometry.SolidSpec, spec: ShipLayout.DoorS
 	# The sleeve between the wall and setback leaf is in the approach room.
 	# Only its far end cap faces the other room, not half of every side wall.
 	var approach := 0 if spec.hinge_frame().origin.z > ShipLayout.WALL / 2 else 1
-	for index: int in indices:
-		var normal := normals[index]
+	for index: int in range(vertices.size()):
+		vertices[index] = ShipGeometry.hatch_wall_vertex(solid, vertices[index]) if solid.hatch_profile != null else ShipGeometry.hatch_frame_vertex(spec, solid, vertices[index])
+	for triangle: int in range(0, indices.size(), 3):
+		var a := vertices[indices[triangle]]
+		var b := vertices[indices[triangle + 1]]
+		var c := vertices[indices[triangle + 2]]
+		var normal := (c - a).cross(b - a).normalized()
 		var side := (0 if normal.z < 0 else 1) if absf(normal.z) > 0.5 else approach
-		faces[side].set_normal(normal)
-		faces[side].add_vertex(vertices[index])
+		for vertex: Vector3 in [a, b, c]:
+			faces[side].set_normal(normal)
+			faces[side].add_vertex(vertex)
 	var pose := spec.frame().affine_inverse() * solid.transform
 	for side: int in range(2):
-		group.add_child(HatchModel.mesh_piece(faces[side].commit(), pose, fore_mask if side == 0 else aft_mask))
+		group.add_child(HatchModel.mesh_piece(faces[side].commit(), pose, fore_mask if side == 0 else aft_mask, material))
 	return group
 
 static func split_surface(solid: ShipGeometry.SolidSpec, frame: Transform3D, fore_mask: int, aft_mask: int) -> Node3D:
 	var group := Node3D.new()
 	var pose := frame.affine_inverse() * solid.transform
 	var material := RoomGeometry.wall_material() if solid.material_role == &"wall" else HatchModel.material(HatchModel.DOOR_SHADE)
+	if solid.hatch_profile != null:
+		assert(frame == solid.hatch_profile.frame(), "profiled wall uses its portal frame")
+		return collar_surface(solid, solid.hatch_profile, fore_mask, aft_mask, material)
 	for side: int in [-1, 1]:
 		var half_size := solid.size
 		half_size.z /= 2

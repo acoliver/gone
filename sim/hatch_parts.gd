@@ -2,6 +2,10 @@ class_name HatchParts
 extends RefCounted
 ## Physical leaf geometry in pure leaf/group-local frames. Meshes belong to app.
 
+const SEAL_DEPTH: float = 0.02
+const SEAL_LAP: float = 0.02
+const HINGE_RETURN_WIDTH: float = 0.10
+
 static var _leaves: Dictionary = {}
 
 class Part:
@@ -41,7 +45,9 @@ static func _bar(group: Group, id: String, a: Vector3, b: Vector3, width: float,
 
 static func leaf(door: ShipLayout.DoorSpec) -> Array[Group]:
 	var aperture := door.leaf_aperture()
-	if _leaves.has(aperture): return _leaves[aperture]
+	var into := signf(door.hinge_frame().origin.z - ShipLayout.WALL / 2)
+	var key := [aperture, into]
+	if _leaves.has(key): return _leaves[key]
 	var groups: Array[Group] = []
 	for side: int in range(2):
 		var prefix := "Fore" if side == 0 else "Aft"
@@ -81,5 +87,27 @@ static func leaf(door: ShipLayout.DoorSpec) -> Array[Group]:
 				var position := Vector3(lerpf(aperture.x / 2 - diagonal * (aperture.x / 2 - 0.14), aperture.x / 2 + diagonal * (aperture.x / 2 - 0.14), t), lerpf(0.28, aperture.y - 0.15, t), -0.087)
 				rivets.add("%03d" % rivets.parts.size(), &"cylinder", Vector3(0.036, 0.012, 0.036), Transform3D(Basis(Vector3.RIGHT, PI / 2), position), 0.018)
 		groups.append(rivets)
-	_leaves[aperture] = groups
+	# A thin leaf lip laps the existing collar on its swing side. The hinge-side
+	# return stays separate so its bounds do not fill the latch-side swing gap.
+	for side: int in range(2):
+		var prefix := "Fore" if side == 0 else "Aft"
+		var pose := Transform3D(Basis(), Vector3(0, 0, into * SEAL_DEPTH / 2 + (-1 if side == 0 else 1) * SEAL_DEPTH / 4))
+		var height := aperture.y - ShipGeometry.SILL_HEIGHT
+		var center_y := ShipGeometry.SILL_HEIGHT + height / 2
+		var face_depth := SEAL_DEPTH / 2
+		var face_z := (-1 if side == 0 else 1) * (ShipLayout.WALL / 2 - SEAL_DEPTH / 40 - face_depth / 2)
+		var face_seal := Group.new(NodePath(prefix + "FaceSealSteel"), Transform3D(Basis(), Vector3(0, 0, face_z)), side, true)
+		face_seal.add("face-return", &"box", Vector3(aperture.x, height, face_depth), Transform3D(Basis(), Vector3(aperture.x / 2, center_y, 0)))
+		groups.append(face_seal)
+		var pivot_seal := Group.new(NodePath(prefix + "PivotSealSteel"), face_seal.transform, side, true)
+		pivot_seal.add("pivot-return", &"box", Vector3(HINGE_RETURN_WIDTH, height, face_depth), Transform3D(Basis(), Vector3(-HINGE_RETURN_WIDTH / 2, center_y, 0)))
+		groups.append(pivot_seal)
+		var width := aperture.x + SEAL_LAP
+		var seal := Group.new(NodePath(prefix + "SealSteel"), pose, side, true)
+		seal.add("lip", &"box", Vector3(width, height, SEAL_DEPTH / 2), Transform3D(Basis(), Vector3(width / 2, center_y, 0)))
+		groups.append(seal)
+		var hinge_seal := Group.new(NodePath(prefix + "HingeSealSteel"), pose, side, true)
+		hinge_seal.add("return", &"box", Vector3(HINGE_RETURN_WIDTH, height, SEAL_DEPTH / 2), Transform3D(Basis(), Vector3(-HINGE_RETURN_WIDTH / 2, center_y, 0)))
+		groups.append(hinge_seal)
+	_leaves[key] = groups
 	return groups

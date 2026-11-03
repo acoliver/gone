@@ -89,8 +89,8 @@ func test_collider_sets_extend_the_walk_sim_open_and_shut() -> void:
 	var registry := Pods.PodRegistry.frozen()
 	var closed := Hallway.scene_collider_set(registry, false)
 	var open := Hallway.scene_collider_set(registry, true)
-	assert_int_equal(closed.size(), 87, "the closed set's box count is pinned")
-	assert_int_equal(open.size(), 86, "the open set replaces passage and sweep with the parked leaf")
+	assert_int_equal(closed.size(), 99, "the closed set's box count is pinned, including four stops on each hatch")
+	assert_int_equal(open.size(), 98, "the open set replaces passage and sweep with the parked leaf")
 	var game := _awake_game()
 	assert_int_equal(game.colliders.size(), PowerRoom.scene_collider_set(registry, false, false).size(), "the game boots on the full D14 set")
 	# The aperture is solid while shut and clear when open: the walk
@@ -300,8 +300,18 @@ func test_rendered_shell_uses_pure_collision_recipe() -> void:
 	var solids := ShipGeometry.hallway_solids()
 	for index: int in range(solids.size()):
 		var mesh: MeshInstance3D = hallway.get_node(NodePath(names[index]))
-		assert_vec3_equal(mesh.position, solids[index].center, "rendered hall center is collider input")
-		assert_vec3_equal((mesh.mesh as BoxMesh).size, solids[index].size, "rendered hall size is collider input")
+		var solid := solids[index]
+		assert_vec3_equal(mesh.position, solid.center, "rendered hall center is collider input")
+		var source := BoxMesh.new()
+		source.size = solid.size
+		var vertices: PackedVector3Array = source.surface_get_arrays(0)[Mesh.ARRAY_VERTEX]
+		var bounds := AABB(ShipGeometry.hatch_wall_vertex(solid, vertices[0]), Vector3.ZERO)
+		for vertex: Vector3 in vertices:
+			var expected := ShipGeometry.hatch_wall_vertex(solid, vertex)
+			assert_true(expected.abs().x <= solid.size.x / 2 + 1e-6 and expected.abs().y <= solid.size.y / 2 + 1e-6 and expected.abs().z <= solid.size.z / 2 + 1e-6, "shared wall profile stays inside its collision envelope")
+			bounds = bounds.expand(expected)
+		assert_vec3_equal(mesh.mesh.get_aabb().position, bounds.position, "rendered hall bounds start at the shared solid profile")
+		assert_vec3_equal(mesh.mesh.get_aabb().size, bounds.size, "rendered hall size follows the shared solid profile")
 	hallway.free()
 
 func _bay(local: Vector2) -> Vector2:

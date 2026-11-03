@@ -54,6 +54,7 @@ class SolidSpec:
 	var size: Vector3
 	var material_role: StringName
 	var collision_role: StringName
+	var hatch_profile: ShipLayout.DoorSpec
 	var transform: Transform3D:
 		get: return _parent * Transform3D(Basis(_local_rotation), _local_center)
 	var center: Vector3:
@@ -290,6 +291,7 @@ static func box_aabb(solid: SolidSpec, parent: Transform3D = Transform3D.IDENTIT
 static func transformed(solid: SolidSpec, frame: Transform3D, id: StringName = &"") -> SolidSpec:
 	var placed := SolidSpec.new(solid._local_center, solid.size, solid._local_rotation, solid.id if id == &"" else id, solid.material_role, solid.collision_role)
 	placed._parent = frame * solid._parent
+	placed.hatch_profile = solid.hatch_profile
 	return placed
 
 ## The wall's local X interval, pierced once, with +Z wall-band depth.
@@ -338,7 +340,9 @@ static func _section_portal_solids(layout: ShipLayout, section: ShipLayout.Secti
 	var frame := door.frame()
 	var aperture := door.aperture()
 	if door.kind() == ShipLayout.DoorKind.BAY:
-		return portal_wall(StringName("%s/STARBOARD" % section.id()), frame, Vector2(bounds.position.x - frame.origin.x, bounds.end.x + WALL - frame.origin.x), ShipLayout.CLEAR_HEIGHT, aperture)
+		var walls := portal_wall(StringName("%s/STARBOARD" % section.id()), frame, Vector2(bounds.position.x - frame.origin.x, bounds.end.x + WALL - frame.origin.x), ShipLayout.CLEAR_HEIGHT, aperture)
+		walls[2].hatch_profile = door
+		return walls
 	var end := bounds.end.x + WALL
 	if door.kind() == ShipLayout.DoorKind.POWER:
 		end = layout.power_room().bounds().end.x + WALL
@@ -406,17 +410,68 @@ static func hatch_frame_solids(door: ShipLayout.DoorSpec) -> Array[SolidSpec]:
 		var size := Vector3(FRAME_POST_WIDTH, aperture.y, WALL + 0.12)
 		if side > 0:
 			# Carry the latch jamb out to the offset closed leaf, without filling its swing.
-			minimum.x = hinge.x + door.leaf_aperture().x
+			minimum.x = hinge.x + door.leaf_aperture().x + HatchParts.SEAL_LAP / 2
 			minimum.z = minimum_depth
 			size.x = aperture.x / 2 + FRAME_POST_WIDTH - minimum.x
 			size.z = depth
 		solids.append(transformed(SolidSpec.new(minimum + size / 2, size, Quaternion.IDENTITY, StringName("%s/FRAME/%s" % [door.id(), "LEFT" if side < 0 else "RIGHT"]), &"frame"), door.frame()))
-	solids.append(transformed(SolidSpec.new(Vector3(0, aperture.y + FRAME_POST_WIDTH / 2, center_depth), Vector3(aperture.x + 2 * FRAME_POST_WIDTH, FRAME_POST_WIDTH, depth), Quaternion.IDENTITY, StringName("%s/FRAME/TOP" % door.id()), &"frame"), door.frame()))
+	var lintel_height := hatch_lintel_height(door)
+	solids.append(transformed(SolidSpec.new(Vector3(0, aperture.y + lintel_height / 2, center_depth), Vector3(aperture.x + 2 * FRAME_POST_WIDTH, lintel_height, depth), Quaternion.IDENTITY, StringName("%s/FRAME/TOP" % door.id()), &"frame"), door.frame()))
 	solids.append(transformed(SolidSpec.new(Vector3(0, SILL_HEIGHT / 2, center_depth), Vector3(aperture.x + 2 * FRAME_POST_WIDTH, SILL_HEIGHT, depth), Quaternion.IDENTITY, StringName("%s/COAMING" % door.id()), &"frame"), door.frame()))
+	var stop_depth := 0.03125
+	var stop_width := 0.125
+	var into := signf(hinge.z - WALL / 2)
+	var stop_z := hinge.z - into * (WALL / 2 + stop_depth / 2)
+	var edge := hinge.x + door.leaf_aperture().x
+	var lap := HatchParts.SEAL_LAP / 8
+	var cross_width := door.leaf_aperture().x - HatchParts.HINGE_RETURN_WIDTH
+	var cross_x := hinge.x + HatchParts.HINGE_RETURN_WIDTH + cross_width / 2
+	var hinge_radius := Vector2(HatchParts.HINGE_RETURN_WIDTH, WALL / 2).length()
+	var hinge_stop_z := hinge.z - into * (hinge_radius + 0.001 + stop_depth / 2)
+	var stops: Array[SolidSpec] = [
+		SolidSpec.new(Vector3(hinge.x - stop_width / 2 - 0.001, aperture.y / 2, hinge_stop_z), Vector3(stop_width, aperture.y, stop_depth), Quaternion.IDENTITY, StringName("%s/FRAME/STOP-LEFT" % door.id()), &"frame"),
+		SolidSpec.new(Vector3(edge + (stop_width - lap) / 2, aperture.y / 2, stop_z), Vector3(stop_width + lap, aperture.y, stop_depth), Quaternion.IDENTITY, StringName("%s/FRAME/STOP-RIGHT" % door.id()), &"frame"),
+		SolidSpec.new(Vector3(cross_x, aperture.y + (stop_width - lap) / 2, stop_z), Vector3(cross_width, stop_width + lap, stop_depth), Quaternion.IDENTITY, StringName("%s/FRAME/STOP-TOP" % door.id()), &"frame"),
+		SolidSpec.new(Vector3(cross_x, (SILL_HEIGHT + lap) / 2, stop_z), Vector3(cross_width, SILL_HEIGHT + lap, stop_depth), Quaternion.IDENTITY, StringName("%s/FRAME/STOP-BOTTOM" % door.id()), &"frame"),
+	]
+	for stop: SolidSpec in stops: solids.append(transformed(stop, door.frame()))
 	return solids
 
+static func hatch_frame_vertex(door: ShipLayout.DoorSpec, solid: SolidSpec, vertex: Vector3) -> Vector3:
+	# Cut the wall-side underside back into the shared collision envelope.
+	# A horizontal return is black under ceiling-only direct lighting.
+	var into := signf(door.hinge_frame().origin.z - ShipLayout.WALL / 2)
+	if String(solid.id).ends_with("/FRAME/STOP-TOP") and vertex.z * into < 0 and vertex.y < 0:
+		vertex.y += solid.size.y - HatchParts.SEAL_DEPTH
+	if String(solid.id).ends_with("/FRAME/TOP"):
+		if vertex.z * into < 0 and vertex.y < 0:
+			vertex.y += solid.size.y - HatchParts.SEAL_DEPTH
+		if vertex.z * into > 0 and vertex.y > 0:
+			vertex.y -= solid.size.y - HatchParts.SEAL_DEPTH
+	if vertex.z * into < 0 and String(solid.id).ends_with("/FRAME/RIGHT") and vertex.x < 0:
+		vertex.x += solid.size.x - HatchParts.SEAL_DEPTH
+	return vertex
+
+static func hatch_lintel_height(door: ShipLayout.DoorSpec) -> float:
+	var hinge := door.hinge_frame().origin.z
+	var depth := maxf(WALL + 0.06, hinge) - minf(-0.06, hinge)
+	return maxf(FRAME_POST_WIDTH, depth * 0.75)
+
+static func hatch_wall_vertex(solid: SolidSpec, vertex: Vector3) -> Vector3:
+	if solid.hatch_profile == null or not String(solid.id).ends_with("/002") or vertex.y >= 0: return vertex
+	var door := solid.hatch_profile
+	var relative := door.frame().affine_inverse() * solid.transform
+	var point := relative * vertex
+	var hinge := door.hinge_frame().origin.z
+	var wall_end := minf(-0.06, hinge) if hinge > WALL / 2 else maxf(WALL + 0.06, hinge)
+	var fraction := clampf((hinge - point.z) / (hinge - wall_end), 0, 1)
+	point.y = door.aperture().y + (hatch_lintel_height(door) - HatchParts.SEAL_DEPTH) * fraction
+	return relative.affine_inverse() * point
+
 static func hatch_wall_solids(door: ShipLayout.DoorSpec) -> Array[SolidSpec]:
-	return portal_wall(StringName("%s/WALL" % door.id()), door.frame(), Vector2(-ShipLayout.CORRIDOR_WIDTH / 2, ShipLayout.CORRIDOR_WIDTH / 2), ShipLayout.CLEAR_HEIGHT, door.aperture())
+	var walls := portal_wall(StringName("%s/WALL" % door.id()), door.frame(), Vector2(-ShipLayout.CORRIDOR_WIDTH / 2, ShipLayout.CORRIDOR_WIDTH / 2), ShipLayout.CLEAR_HEIGHT, door.aperture())
+	for wall: SolidSpec in walls: wall.hatch_profile = door
+	return walls
 
 static func d14_extension_solids(layout: ShipLayout) -> Array[SolidSpec]:
 	var solids: Array[SolidSpec] = []

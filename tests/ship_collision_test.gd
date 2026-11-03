@@ -122,7 +122,7 @@ func test_opening_manifest_has_exact_owners_order_and_door_differentials() -> vo
 		for pod: int in range(7):
 			for piece: int in range(pod_counts[pod]):
 				expected.append(StringName("D14-BAY/POD-%03d/%03d" % [pod, piece]))
-		for piece: String in ["FRAME/LEFT", "FRAME/RIGHT", "FRAME/TOP", "COAMING"]:
+		for piece: String in ["FRAME/LEFT", "FRAME/RIGHT", "FRAME/TOP", "COAMING", "FRAME/STOP-LEFT", "FRAME/STOP-RIGHT", "FRAME/STOP-TOP", "FRAME/STOP-BOTTOM"]:
 			expected.append(StringName("D14-BAY-DOOR/%s" % piece))
 		expected.append(&"D14-BAY-DOOR/SWING" if flags.x == 0 else &"D14-BAY-DOOR/PARKED")
 		for owner: String in ["D14-S-041/SHELL", "D14-S-041/SIDE-LEAF", "D14-POWER/SHELL", "D14-POWER/CONSOLE"]:
@@ -145,7 +145,7 @@ func test_opening_counts_and_every_box_keep_original_insertion_order() -> void:
 	for flags: Vector2i in [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1)]:
 		var pure := ShipCollision.opening_set(registry, bool(flags.x), bool(flags.y))
 		var adapter := PowerRoom.scene_collider_set(registry, bool(flags.x), bool(flags.y))
-		var expected := 194 if flags.x == 0 else (193 if flags.y == 0 else 192)
+		var expected := 222 if flags.x == 0 else (221 if flags.y == 0 else 220)
 		assert_int_equal(pure.size(), expected, "full scene count")
 		for index: int in range(pure.size()):
 			assert_true(pure.boxes()[index].equals(adapter.boxes()[index]), "same ordered collider")
@@ -153,7 +153,7 @@ func test_opening_counts_and_every_box_keep_original_insertion_order() -> void:
 	assert_vec3_equal(closed.boxes()[0].center(), Vector3(15, -0.1, 7.7), "first bay floor")
 	assert_vec3_equal(closed.boxes()[5].center(), Vector3(15, 1.2, 1.6), "pierce replaces east wall at same index")
 	assert_vec3_equal(closed.boxes()[8].center(), Vector3(11.03, 0.45, 12.5), "closed bay blocker index")
-	assert_vec3_equal(closed.boxes()[81].center(), Vector3(27, 1.1, -1.47), "last power leaf")
+	assert_vec3_equal(closed.boxes()[85].center(), Vector3(27, 1.1, -1.47), "last power leaf follows the four bay frame stops")
 
 func test_approved_layout_cache_and_blocker_revisions_are_deck_local() -> void:
 	var collision := ShipCollision.new(ShipLayout.authored().layout)
@@ -216,7 +216,7 @@ func _extension_ids() -> Array[StringName]:
 			ids.append(StringName("%s-LIFT/%s" % [connector, surface]))
 	var hatches: Array[String] = ["D14-C-000-H-AFT", "D14-C-000-H-FORE", "D14-C-001-H-AFT", "D14-C-001-H-FORE", "D14-C-002-H-FORE", "D14-C-M001-H-AFT"]
 	for hatch: String in hatches:
-		for surface: String in ["WALL/000", "WALL/001", "WALL/002", "FRAME/LEFT", "FRAME/RIGHT", "FRAME/TOP", "COAMING"]:
+		for surface: String in ["WALL/000", "WALL/001", "WALL/002", "FRAME/LEFT", "FRAME/RIGHT", "FRAME/TOP", "COAMING", "FRAME/STOP-LEFT", "FRAME/STOP-RIGHT", "FRAME/STOP-TOP", "FRAME/STOP-BOTTOM"]:
 			ids.append(StringName("%s/%s" % [hatch, surface]))
 	for door: String in ["D14-C-000-H-AFT", "D14-C-000-H-FORE", "D14-C-000-LIFT-DOOR", "D14-C-001-H-AFT", "D14-C-001-H-FORE", "D14-C-001-LIFT-DOOR", "D14-C-002-H-FORE", "D14-C-M001-H-AFT"]:
 		ids.append(StringName("%s/BLOCKER" % door))

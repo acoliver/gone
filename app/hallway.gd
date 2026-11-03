@@ -292,7 +292,10 @@ static func _build_switch() -> Node3D:
 	var plate := MeshInstance3D.new()
 	plate.name = "Plate"
 	var plate_mesh := BoxMesh.new()
-	plate_mesh.size = SWITCH_PLATE_SIZE
+	var wall_depth := ShipLayout.CORRIDOR_WIDTH / 2 - SWITCH_PLATE_CENTER.z
+	var front := SWITCH_PLATE_SIZE.x / 2
+	plate_mesh.size = Vector3(front + wall_depth, SWITCH_PLATE_SIZE.y, SWITCH_PLATE_SIZE.z)
+	plate.position.x = (front - wall_depth) / 2
 	plate.mesh = plate_mesh
 	plate.material_override = _flat_grey(SWITCH_PLATE_SHADE)
 	group.add_child(plate)
@@ -300,8 +303,12 @@ static func _build_switch() -> Node3D:
 	dome.name = "Dome"
 	var dome_mesh := SphereMesh.new()
 	dome_mesh.radius = SWITCH_DOME_RADIUS
-	dome_mesh.height = SWITCH_DOME_RADIUS * 2.0
-	dome.mesh = dome_mesh
+	dome_mesh.height = SWITCH_DOME_RADIUS
+	dome_mesh.is_hemisphere = true
+	var cap := SurfaceTool.new()
+	cap.begin(Mesh.PRIMITIVE_TRIANGLES)
+	cap.append_from(dome_mesh, 0, Transform3D(Basis(Vector3.BACK, -PI / 2), Vector3(-SWITCH_DOME_RADIUS * 0.55 - 0.001, 0, 0)))
+	dome.mesh = cap.commit()
 	dome.position = Vector3(
 		SWITCH_PLATE_SIZE.x / 2.0 + SWITCH_DOME_RADIUS * 0.55, 0.0, 0.0)
 	var dome_material := StandardMaterial3D.new()
@@ -309,6 +316,9 @@ static func _build_switch() -> Node3D:
 	dome_material.roughness = 0.35
 	dome.material_override = dome_material
 	group.add_child(dome)
+	var bezel := HatchModel.mesh_piece(HatchModel.cylinder(SWITCH_DOME_RADIUS * 1.15, 0.012), Transform3D(Basis(Vector3.BACK, -PI / 2), Vector3(front, 0, 0)), 1, HatchModel.hardware())
+	bezel.name = "ButtonBezel"
+	group.add_child(bezel)
 	return group
 
 ## The hall's ceiling damage, in the stasis room's language: tray runs
@@ -450,7 +460,7 @@ static func _surface_instance(role: String, placement: Placement.SolidPlacement)
 
 static func _box_instance(placement: Placement.SolidPlacement, material: Material) -> MeshInstance3D:
 	var instance := MeshInstance3D.new()
-	instance.mesh = _box_mesh(placement.size)
+	instance.mesh = HatchModel.solid_mesh(placement)
 	instance.material_override = material
 	instance.position = placement.center
 	instance.quaternion = placement.rotation

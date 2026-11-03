@@ -3,6 +3,7 @@ extends RefCounted
 ## Shared presentation meshes in the portal frame. No collision geometry lives here.
 
 const DOOR_SHADE: float = 0.38
+const CONTROL_SIZE := Vector3(0.19, 0.34, 0.07)
 
 static var _meshes: Dictionary = {}
 static var _rivets: Dictionary = {}
@@ -18,6 +19,25 @@ static func box_mesh(size: Vector3) -> BoxMesh:
 		box.size = size
 		_boxes[size] = box
 	return _boxes[size]
+
+static func solid_mesh(solid: ShipGeometry.SolidSpec) -> Mesh:
+	if solid.hatch_profile == null: return box_mesh(solid.size)
+	var arrays := box_mesh(solid.size).surface_get_arrays(0)
+	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+	for index: int in range(vertices.size()):
+		vertices[index] = ShipGeometry.hatch_wall_vertex(solid, vertices[index])
+	var tool := SurfaceTool.new()
+	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for triangle: int in range(0, indices.size(), 3):
+		var a := vertices[indices[triangle]]
+		var b := vertices[indices[triangle + 1]]
+		var c := vertices[indices[triangle + 2]]
+		var normal := (c - a).cross(b - a).normalized()
+		for vertex: Vector3 in [a, b, c]:
+			tool.set_normal(normal)
+			tool.add_vertex(vertex)
+	return tool.commit()
 
 static func cylinder(radius: float, height: float) -> CylinderMesh:
 	var key := Vector2(radius, height)
@@ -50,7 +70,7 @@ static func mesh_piece(mesh: Mesh, pose: Transform3D, mask: int, surface: Materi
 
 static func control_panel() -> Node3D:
 	var panel := Node3D.new()
-	panel.add_child(mesh_piece(box_mesh(Vector3(0.19, 0.34, 0.07)), Transform3D.IDENTITY, 1, material(0.12)))
+	panel.add_child(mesh_piece(box_mesh(CONTROL_SIZE), Transform3D.IDENTITY, 1, material(0.12)))
 	var button := cylinder(0.036, 0.025)
 	var piece := mesh_piece(button, Transform3D(Basis(Vector3.RIGHT, PI / 2), Vector3(0, 0.07, 0.045)), 1, material(0.055))
 	piece.name = "Button"
@@ -122,7 +142,6 @@ static func _leaf_mesh(group: HatchParts.Group, aperture: Vector2) -> ArrayMesh:
 		var tool := SurfaceTool.new()
 		tool.begin(Mesh.PRIMITIVE_TRIANGLES)
 		_append(tool, _part_mesh(part), part.transform)
-		tool.generate_normals()
 		tool.index()
 		tool.commit(result)
 		result.surface_set_name(result.get_surface_count() - 1, String(part.id))
@@ -190,11 +209,14 @@ static func _rounded(tool: SurfaceTool, size: Vector2, radius: float, depth: flo
 			var b := center + Vector3(inset[j].x, inset[j].y, side * depth / 2)
 			var c := center + Vector3(outer[i].x, outer[i].y, side * (depth / 2 - 0.0125))
 			var d := center + Vector3(outer[j].x, outer[j].y, side * (depth / 2 - 0.0125))
+			tool.set_smooth_group(-1)
 			if side < 0:
 				_triangle(tool, center + Vector3(0, 0, -depth / 2), b, a)
+				tool.set_smooth_group(0)
 				_quad(tool, a, b, d, c)
 			else:
 				_triangle(tool, center + Vector3(0, 0, depth / 2), a, b)
+				tool.set_smooth_group(0)
 				_quad(tool, b, a, c, d)
 		_quad(tool, center + Vector3(outer[i].x, outer[i].y, -depth / 2 + 0.0125), center + Vector3(outer[j].x, outer[j].y, -depth / 2 + 0.0125), center + Vector3(outer[j].x, outer[j].y, depth / 2 - 0.0125), center + Vector3(outer[i].x, outer[i].y, depth / 2 - 0.0125))
 
@@ -209,7 +231,7 @@ static func _ring(tool: SurfaceTool, aperture: Vector2) -> void:
 		var c := center + Vector3(outer[i].x, outer[i].y, -0.045)
 		var d := center + Vector3(outer[j].x, outer[j].y, -0.045)
 		_quad(tool, a, b, d, c)
-		_quad(tool, a + Vector3(0, 0, 0.14), b + Vector3(0, 0, 0.14), b, a)
+		# The shared collar owns the return; duplicate curved sleeves expose the far room's mask.
 		_quad(tool, c, d, d + Vector3(0, 0, 0.145), c + Vector3(0, 0, 0.145))
 
 static func _append(tool: SurfaceTool, source: Mesh, pose: Transform3D) -> void:
@@ -217,9 +239,12 @@ static func _append(tool: SurfaceTool, source: Mesh, pose: Transform3D) -> void:
 	# indexed primitive surfaces would silently discard the hand-built leaf.
 	var arrays := source.surface_get_arrays(0)
 	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var normals: PackedVector3Array = arrays[Mesh.ARRAY_NORMAL]
 	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
 	assert(not indices.is_empty(), "shared primitive mesh must supply indexed triangles")
+	var normal_basis := pose.basis.inverse().transposed()
 	for index: int in indices:
+		tool.set_normal((normal_basis * normals[index]).normalized())
 		tool.add_vertex(pose * vertices[index])
 
 static func mesh(kind: StringName, aperture: Vector2) -> ArrayMesh:
