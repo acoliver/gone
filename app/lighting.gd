@@ -10,14 +10,23 @@ extends Node3D
 
 const FIXTURE_LUMENS: float = 45.0
 const FIXTURE_RANGE: float = 6.0
+const EMERGENCY_POOL_RANGE: float = 2.5
+const FIXTURE_ATTENUATION: float = 3.0
+const BAY_POOL_RANGE: float = 3.5
+const BAY_POOL_ATTENUATION: float = 1.0
+const BAY_HATCH_POOL_RANGE: float = 5.5
+const BAY_HATCH_ATTENUATION: float = 1.0
 const FIXTURE_EMISSIVE: float = 2.6
 const FIXTURE_SETTLE_TICKS: int = 30
 const EMERGENCY_RED: Color = Color(1.0, 0.28, 0.12)
 const EMERGENCY_ENERGY_MULTIPLIER: float = 1.0
 # Independent rooms have no fill; stronger keys restore readability on the darker steel.
 const EMERGENCY_NO_FILL_KEY_MULTIPLIER: float = 1.916
-const EMERGENCY_FILL_SHARE: float = 0.1
-const EMERGENCY_FILL_COLOR: Color = Color(1.0, 0.94, 0.84)
+const EMERGENCY_FILL_SHARE: float = 0.28
+const EMERGENCY_BAY_FILL_SHARE: float = 0.56
+const EMERGENCY_FILL_COLOR: Color = Color(1.0, 0.97, 0.92)
+const EMERGENCY_END_FILL_SHARE: float = 0.84
+const EMERGENCY_END_FILL_COLOR: Color = Color(1.0, 0.80, 0.62)
 const EMERGENCY_FILL_RANGE: float = 4.0
 const EMERGENCY_FILL_CEILING_DROP: float = 0.77
 # Layers 18-20 belong only to the three switched-room fills.
@@ -43,12 +52,19 @@ static func emergency_lens_material(level: float) -> StandardMaterial3D:
 	material.roughness = 0.8
 	return material
 
-static func emergency_fill(origin: Vector3, level: float, room_mask: int) -> OmniLight3D:
-	var fill := OmniLight3D.new()
+class EmergencyFill:
+	extends OmniLight3D
+	var energy_share: float
+	func apply_level(level: float) -> void:
+		light_energy = Lighting.emergency_energy() * energy_share * level
+
+static func emergency_fill(origin: Vector3, level: float, room_mask: int, share: float = EMERGENCY_FILL_SHARE, color: Color = EMERGENCY_FILL_COLOR) -> EmergencyFill:
+	var fill := EmergencyFill.new()
 	fill.name = "EmergencyFill"
-	fill.position = origin - Vector3.UP * EMERGENCY_FILL_CEILING_DROP
-	fill.light_color = EMERGENCY_FILL_COLOR
-	fill.light_energy = emergency_energy() * EMERGENCY_FILL_SHARE * level
+	fill.position = origin
+	fill.light_color = color
+	fill.energy_share = share
+	fill.apply_level(level)
 	fill.omni_range = EMERGENCY_FILL_RANGE
 	fill.light_cull_mask = room_mask
 	fill.shadow_enabled = false
@@ -81,7 +97,7 @@ var _white_lens_material: StandardMaterial3D
 var _fade: Intensity.FixtureFade = null
 var _fixtures: Array[Node3D] = []
 var _lights: Array[OmniLight3D] = []
-var _fill_lights: Array[OmniLight3D] = []
+var _fill_lights: Array[Lighting.EmergencyFill] = []
 var _lenses: Array[MeshInstance3D] = []
 var _lens_mesh: BoxMesh = null
 var _lens_material: StandardMaterial3D = null
@@ -101,6 +117,9 @@ static func build(game: Game) -> Lighting:
 	lighting._fade = held.fade
 	for fixture_transform: Transform3D in fixture_transforms(game.registry):
 		lighting.add_child(lighting._fixture(fixture_transform, level))
+	# The bay's last key seats in its hatch cage and must reach the unlit hall opposite it.
+	lighting._lights[-1].omni_range = BAY_HATCH_POOL_RANGE
+	lighting._lights[-1].omni_attenuation = BAY_HATCH_ATTENUATION
 	var white_level := 1.0 if game.power_active else 0.0
 	lighting._white_fade = Intensity.FixtureFade.holding(white_level).fade
 	lighting._white_lens_material = StandardMaterial3D.new()
@@ -112,7 +131,7 @@ static func build(game: Game) -> Lighting:
 	white_mesh.material = lighting._white_lens_material
 	for frame: Transform3D in game.layout.bay().regular_light_frames():
 		lighting.add_child(lighting._white_fixture(frame, white_mesh))
-		var fill := emergency_fill(frame.origin, level, BAY_FILL_MASK)
+		var fill := emergency_fill(frame.origin - Vector3.UP * EMERGENCY_FILL_CEILING_DROP, level, BAY_FILL_MASK, EMERGENCY_BAY_FILL_SHARE)
 		fill.name = "EmergencyFill%d" % lighting._fill_lights.size()
 		lighting.add_child(fill)
 		lighting._fill_lights.append(fill)
@@ -158,7 +177,8 @@ func _fixture(fixture_transform: Transform3D, level: float) -> Node3D:
 	var light := OmniLight3D.new()
 	light.light_color = EMERGENCY_RED
 	light.light_energy = emergency_energy() * level
-	light.omni_range = FIXTURE_RANGE
+	light.omni_range = BAY_POOL_RANGE
+	light.omni_attenuation = BAY_POOL_ATTENUATION
 	light.light_cull_mask = 1
 	light.shadow_enabled = false
 	fixture.add_child(light)
@@ -251,8 +271,8 @@ func _apply_level(level: float) -> void:
 	for light: OmniLight3D in _lights:
 		if light.light_energy != energy:
 			light.light_energy = energy
-	for fill: OmniLight3D in _fill_lights:
-		fill.light_energy = energy * EMERGENCY_FILL_SHARE
+	for fill: Lighting.EmergencyFill in _fill_lights:
+		fill.apply_level(level)
 	var emissive := emergency_emission(level)
 	if _lens_material.emission != emissive:
 		_lens_material.emission = emissive

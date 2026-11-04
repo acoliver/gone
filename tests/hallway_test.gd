@@ -199,7 +199,7 @@ func test_fixtures_hold_zero_until_the_switch_flips() -> void:
 	for light: OmniLight3D in lights:
 		assert_float_in_range(light.light_energy, -1e-4, 1e-4, "every hall fixture starts dark")
 		assert_true(light.light_color == Lighting.EMERGENCY_RED, "the hall fixtures hold the stasis bay's emergency red")
-		assert_float_in_range(light.omni_range, Lighting.FIXTURE_RANGE - 1e-4, Lighting.FIXTURE_RANGE + 1e-4, "the hall fixtures hold the stasis bay's range")
+		assert_float_in_range(light.omni_range, Lighting.EMERGENCY_POOL_RANGE - 1e-4, Lighting.EMERGENCY_POOL_RANGE + 1e-4, "the hall fixtures hold the stasis bay's pool range")
 	assert_true(hallway.lens_material().emission == Color(0.0, 0.0, 0.0), "the lenses hold no emission before the flip")
 	assert_true(hallway.is_settled(), "the dark hallway starts settled")
 	assert_false(game.hallway_lit, "the sim starts the hallway unlit")

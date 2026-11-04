@@ -89,6 +89,14 @@ class SectionSpec:
 		return _side_door_ids.duplicate()
 	func circuit() -> StringName:
 		return _circuit
+	func emergency_fill_positions() -> Array[Vector3]:
+		var positions: Array[Vector3] = []
+		for index: int in range(7):
+			positions.append(Vector3(_bounds.position.x + 1.5 + index * 3.0, _bounds.end.y - 0.85, _bounds.get_center().z))
+		return positions
+	func emergency_end_fill_position() -> Vector3:
+		return Vector3(_bounds.end.x - 0.9, _bounds.position.y + 1.7, _bounds.get_center().z)
+
 	func is_built() -> bool:
 		return _is_built
 	func data() -> Dictionary:
@@ -232,7 +240,7 @@ class DoorSpec:
 		var face := Transform3D.IDENTITY if side == 0 else Transform3D(Basis(Vector3.LEFT, Vector3.UP, Vector3.FORWARD), Vector3(0, 0, ShipLayout.WALL))
 		var services: Array[HatchServiceSpec] = [
 			HatchServiceSpec.new(&"Control", face * Transform3D(Basis(), Vector3(-_aperture.x / 2 - 0.48, 1.37, -0.10))),
-			HatchServiceSpec.new(&"Lamp", face * Transform3D(Basis(), Vector3(_aperture.x / 2 + 0.39, _aperture.y + 0.16, -0.11))),
+			HatchServiceSpec.new(&"Lamp", face * Transform3D(Basis(), Vector3(0.0 if _kind == ShipLayout.DoorKind.BAY and side == 1 else _aperture.x / 2 + 0.39, _aperture.y + 0.16, -0.11))),
 		]
 		for x: float in [-1.04, -1.15]:
 			var top := 2.72 if x > -1.1 else 2.82

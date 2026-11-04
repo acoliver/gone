@@ -91,7 +91,7 @@ var side_leaves: Dictionary = {}
 var _game: Game = null
 var _fade: Intensity.FixtureFade = null
 var _lights: Array[OmniLight3D] = []
-var _fill_lights: Array[OmniLight3D] = []
+var _fill_lights: Array[Lighting.EmergencyFill] = []
 var _lenses: Array[MeshInstance3D] = []
 var _lens_mesh: BoxMesh = null
 var _lens_material: StandardMaterial3D = null
@@ -218,10 +218,16 @@ static func build(game: Game) -> Hallway:
 	hallway._white_fade = white_held.fade
 	for station_x: float in REGULAR_STATIONS_X:
 		hallway.add_child(hallway._white_fixture(station_x, white_level))
-		var fill := Lighting.emergency_fill(Vector3(station_x, REGULAR_MOUNT_Y, 0.0), level, Lighting.HALL_FILL_MASK)
+	var section := game.layout.section(&"D14-S-041")
+	for position: Vector3 in section.emergency_fill_positions():
+		var fill := Lighting.emergency_fill(position, level, Lighting.HALL_FILL_MASK)
 		fill.name = "EmergencyFill%d" % hallway._fill_lights.size()
 		hallway.add_child(fill)
 		hallway._fill_lights.append(fill)
+	var bounce := Lighting.emergency_fill(section.emergency_end_fill_position(), level, Lighting.HALL_FILL_MASK, Lighting.EMERGENCY_END_FILL_SHARE, Lighting.EMERGENCY_END_FILL_COLOR)
+	bounce.name = "EmergencyFillEnd"
+	hallway.add_child(bounce)
+	hallway._fill_lights.append(bounce)
 	Lighting.mesh_layers(hallway, 1 | Lighting.HALL_FILL_MASK)
 	return hallway
 
@@ -252,7 +258,8 @@ func _fixture(fixture_transform: Transform3D, level: float) -> Node3D:
 	var light := OmniLight3D.new()
 	light.light_color = Lighting.EMERGENCY_RED
 	light.light_energy = Lighting.emergency_energy() * level
-	light.omni_range = Lighting.FIXTURE_RANGE
+	light.omni_range = Lighting.EMERGENCY_POOL_RANGE
+	light.omni_attenuation = Lighting.FIXTURE_ATTENUATION
 	light.light_cull_mask = 1
 	light.shadow_enabled = false
 	fixture.add_child(light)
@@ -413,8 +420,8 @@ func _apply_level(level: float) -> void:
 	for light: OmniLight3D in _lights:
 		if light.light_energy != energy:
 			light.light_energy = energy
-	for fill: OmniLight3D in _fill_lights:
-		fill.light_energy = energy * Lighting.EMERGENCY_FILL_SHARE
+	for fill: Lighting.EmergencyFill in _fill_lights:
+		fill.apply_level(level)
 	var emissive := Lighting.emergency_emission(level)
 	if _lens_material.emission != emissive:
 		_lens_material.emission = emissive

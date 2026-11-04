@@ -5,6 +5,17 @@ extends SimTestCase
 ## ceiling-dense distribution and the spark strobes stay exactly as
 ## they were.
 
+func test_smoke_glow_follows_the_shared_emergency_palette() -> void:
+	var hazards := Hazards.build()
+	var smoke: GPUParticles3D = hazards.get_node("CeilingSmoke")
+	var material := smoke.draw_pass_1.material as ShaderMaterial
+	var emission: Color = material.get_shader_parameter("emission_tint")
+	var expected := Lighting.EMERGENCY_RED * 0.03
+	expected.a = 1.0
+	assert_true(emission.is_equal_approx(expected), "smoke uses the emergency palette at a restrained glow strength")
+	assert_true(Hazards.SMOKE_EMISSION.is_equal_approx(expected), "smoke has no independent pure-red palette")
+	hazards.free()
+
 func test_ventilation_fades_particles_stops_emission_and_preserves_sparks() -> void:
 	var game := Game.new(71)
 	var hazards := Hazards.build(game.ventilation)

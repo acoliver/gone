@@ -79,7 +79,7 @@ func test_fixture_inventory_places_eight_red_lights_from_registry() -> void:
 	)
 	for light: OmniLight3D in lights:
 		assert_true(light.light_color == Color(1.0, 0.28, 0.12), "fixture color is the approved red-orange")
-		assert_float_equal(light.omni_range, 6.0, "fixture range is 6 m")
+		assert_float_equal(light.omni_range, 5.5 if light == lights[-1] else 3.5, "bay keys have local wall pools and one longer hatch spill")
 		assert_false(light.shadow_enabled, "fixture shadows are disabled")
 		assert_true(
 			absf(light.light_energy - Lighting.FIXTURE_ENERGY) < 1e-4,

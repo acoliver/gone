@@ -121,7 +121,7 @@ var _fade: Intensity.FixtureFade = null
 var _white_fade: Intensity.FixtureFade = null
 var _generator_fade: Intensity.FixtureFade = null
 var _lights: Array[OmniLight3D] = []
-var _fill_lights: Array[OmniLight3D] = []
+var _fill_lights: Array[Lighting.EmergencyFill] = []
 var _lenses: Array[MeshInstance3D] = []
 var _lens_mesh: BoxMesh = null
 var _lens_material: StandardMaterial3D = null
@@ -288,7 +288,7 @@ static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 	for station_x: float in REGULAR_STATIONS_X:
 		for station_z: float in REGULAR_STATIONS_Z:
 			room.add_child(room._white_fixture(station_x, station_z, white_level))
-			var fill := Lighting.emergency_fill(Vector3(station_x, REGULAR_MOUNT_Y, station_z), level, Lighting.POWER_FILL_MASK)
+			var fill := Lighting.emergency_fill(Vector3(station_x, REGULAR_MOUNT_Y - Lighting.EMERGENCY_FILL_CEILING_DROP, station_z), level, Lighting.POWER_FILL_MASK)
 			fill.name = "EmergencyFill%d" % room._fill_lights.size()
 			room.add_child(fill)
 			room._fill_lights.append(fill)
@@ -440,7 +440,8 @@ func _fixture(position: Vector3, level: float) -> Node3D:
 	var light := OmniLight3D.new()
 	light.light_color = Lighting.EMERGENCY_RED
 	light.light_energy = Lighting.emergency_energy() * level
-	light.omni_range = Lighting.FIXTURE_RANGE
+	light.omni_range = Lighting.EMERGENCY_POOL_RANGE
+	light.omni_attenuation = Lighting.FIXTURE_ATTENUATION
 	light.light_cull_mask = 1
 	light.shadow_enabled = false
 	fixture.add_child(light)
@@ -508,8 +509,8 @@ func _apply_level(level: float) -> void:
 	for light: OmniLight3D in _lights:
 		if light.light_energy != energy:
 			light.light_energy = energy
-	for fill: OmniLight3D in _fill_lights:
-		fill.light_energy = energy * Lighting.EMERGENCY_FILL_SHARE
+	for fill: Lighting.EmergencyFill in _fill_lights:
+		fill.apply_level(level)
 	var emissive := Lighting.emergency_emission(level)
 	if _lens_material.emission != emissive:
 		_lens_material.emission = emissive

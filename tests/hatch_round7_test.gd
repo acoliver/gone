@@ -127,7 +127,8 @@ func test_hatch_lamps_reuse_existing_circuit_keys_and_follow_switching() -> void
 		if not light.get_parent().has_meta(&"hatch_lamp"): continue
 		moved += 1
 		assert_false(light.get_parent().get_node("Lens").visible, "old fixture lens is not duplicated")
-		assert_float_equal(light.omni_range, Lighting.FIXTURE_RANGE, "existing key range is unchanged")
+		var bay_doorway := light == scene.lighting.lights()[-1]
+		assert_float_equal(light.omni_range, 5.5 if bay_doorway else 2.5, "only the bay hatch key has the longer doorway spill")
 	assert_int_equal(moved, 4, "two bay faces and two section-end faces reuse four existing keys")
 	var bay_lens: MeshInstance3D = scene.hatch.view.get_node("AftServices/Lamp/Lens")
 	var hall_lens: MeshInstance3D = scene.hatch.view.get_node("ForeServices/Lamp/Lens")

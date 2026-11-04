@@ -1,5 +1,68 @@
 extends SimTestCase
 
+func test_bay_hatch_lamp_is_layout_owned_and_reuses_its_existing_key() -> void:
+	var game := Game.new(91)
+	var spec := game.layout.door(ShipLayout.BAY_DOOR_ID)
+	var lamp_frame: Transform3D
+	for service: ShipLayout.HatchServiceSpec in spec.hatch_services(1):
+		if service.kind == &"Lamp": lamp_frame = spec.frame() * service.frame
+	assert_true(lamp_frame.origin.is_equal_approx(Vector3(15, 2.56, 1.81)), "bay cage is centered over its hatch in layout data")
+	var root := Node3D.new()
+	var scene := ShipScene.build_into(root, game, false)
+	assert_int_equal(scene.lighting.lights().size(), 8, "doorway reuses an existing key")
+	var key := scene.lighting.lights()[-1]
+	var expected := lamp_frame.origin - lamp_frame.basis.z * 0.20
+	assert_true(Surfaces.world_frame(key).origin.is_equal_approx(expected), "production key is seated in the layout-owned cage")
+	assert_float_equal(key.omni_range, 5.5, "doorway key reaches the unlit hall opposite the hatch")
+	assert_float_equal(key.omni_attenuation, 1.0, "doorway spill falls off gently enough to read")
+	assert_int_equal(key.light_cull_mask, 1, "key retains its existing shared surface mask")
+	assert_false(key.shadow_enabled, "doorway key stays shadowless")
+	var cage: Node3D = scene.hatch.view.get_node("AftServices/Lamp")
+	assert_true(Surfaces.world_frame(cage).origin.is_equal_approx(lamp_frame.origin), "cage and key share the authored position")
+	var hall_lamp: Node3D = scene.hatch.view.get_node("ForeServices/Lamp")
+	assert_true(Surfaces.world_frame(hall_lamp).origin.is_equal_approx(Vector3(15.99, 2.56, 1.39)), "hall-side lamp is unchanged")
+	root.free()
+
+func test_short_pools_do_not_change_independent_fixture_throw() -> void:
+	var layout := ShipLayout.authored().layout
+	for deck: int in [1, 14, 30]:
+		for id: StringName in layout.deck(deck).connector_ids():
+			var spec := layout.connector(id)
+			var connector := ShipConnector.build(layout, spec)
+			for light: OmniLight3D in connector.find_children("*", "OmniLight3D", true, false):
+				assert_float_equal(light.omni_range, minf(6.0, spec.bounds().size.x / 2), "independent connector throw is unchanged")
+				assert_true(is_equal_approx(light.omni_attenuation, 0.15), "independent connector falloff is unchanged")
+			connector.free()
+	for number: int in [40, 42]:
+		var spec := layout.section(ShipLayout.section_id(14, number))
+		var section := ShipSection.build(layout, spec)
+		for light: OmniLight3D in section.find_children("*", "OmniLight3D", true, false):
+			assert_float_equal(light.omni_range, minf(6.0, spec.bounds().size.x / 4), "independent section throw is unchanged")
+		section.free()
+
+func test_switched_keys_keep_bright_red_orange_energy_in_short_pools() -> void:
+	var game := Game.new(91)
+	game.light_hallway()
+	for room: Node3D in _rooms(game):
+		for light: OmniLight3D in room.lights():
+			assert_true(is_equal_approx(light.light_energy, Lighting.FIXTURE_ENERGY), "short throw does not dim the practical")
+			var doorway: bool = room is Lighting and light == room.lights()[-1]
+			var bay := room is Lighting
+			assert_float_equal(light.omni_range, 5.5 if doorway else (3.5 if bay else 2.5), "bay pools reach the pod walls; corridor pools remain unchanged")
+			assert_float_equal(light.omni_attenuation, 1.0 if bay else 3.0, "only bay pools use the gentler falloff")
+			assert_true(light.light_color == Color(1.0, 0.28, 0.12), "practical stays red-orange")
+		room.free()
+
+func test_hall_fill_placements_are_layout_owned_and_cover_both_ends() -> void:
+	var hall := Hallway.build(Game.new(91))
+	var fills := _fills(hall)
+	assert_int_equal(fills.size(), 8, "seven neutral stations plus the warm end bounce")
+	if fills.size() == 8:
+		for index: int in range(7):
+			assert_true(fills[index].position.is_equal_approx(Vector3(7.5 + index * 3.0, 2.35, 0)), "neutral fill station")
+		assert_true(fills[7].position.is_equal_approx(Vector3(29.1, 1.7, 0)), "end bounce in front of the hatch")
+	hall.free()
+
 func _fill_mask(room: Node3D) -> int:
 	if room is Lighting or room.name == "BayRoot":
 		return 1 << 17
@@ -19,7 +82,7 @@ func test_real_scene_fills_only_reach_their_own_room_layers() -> void:
 	var surfaces: Array[Node3D] = [scene.room, scene.hallway, scene.power_room]
 	for source: int in range(rooms.size()):
 		var fills := _fills(rooms[source])
-		assert_int_equal(fills.size(), [6, 4, 6][source], "production fills survive scene assembly")
+		assert_int_equal(fills.size(), [6, 8, 6][source], "production fills survive scene assembly")
 		for fill: OmniLight3D in fills:
 			assert_int_equal(fill.light_cull_mask, _fill_mask(rooms[source]), "scene assembly preserves fill mask")
 			for target: int in range(surfaces.size()):
@@ -55,14 +118,16 @@ func _assert_fills(room: Node3D, count: int, level: float) -> void:
 	assert_int_equal(fills.size(), count, "explicit switched-room fill inventory")
 	for fill: OmniLight3D in fills:
 		assert_true(fill.get_parent() == room, "room owns fill beside its key fixtures")
-		assert_true(fill.light_color == Color(1.0, 0.94, 0.84), "localized warm fill")
-		assert_true(is_equal_approx(fill.light_energy, Lighting.FIXTURE_ENERGY * 0.1 * level), "fill follows the emergency fade")
+		var end_bounce := room is Hallway and fill.name == "EmergencyFillEnd"
+		assert_true(fill.light_color == (Color(1.0, 0.80, 0.62) if end_bounce else Color(1.0, 0.97, 0.92)), "warm-neutral base and localized warm hatch bounce")
+		var share := 0.56 if room is Lighting else (0.84 if end_bounce else 0.28)
+		assert_true(is_equal_approx(fill.light_energy, Lighting.FIXTURE_ENERGY * share * level), "fill follows the emergency fade")
 		assert_int_equal(fill.light_cull_mask, _fill_mask(room), "fill uses only its room's reserved layer")
 
 func test_fills_start_on_their_circuit_and_fade_without_restarting() -> void:
 	var game := Game.new(91)
 	var rooms := _rooms(game)
-	var counts := [6, 4, 6]
+	var counts := [6, 8, 6]
 	for index: int in range(rooms.size()):
 		_assert_fills(rooms[index], counts[index], 1.0 if index == 0 else 0.0)
 	game.light_hallway()
@@ -80,7 +145,7 @@ func test_fills_hold_then_extinguish_with_keys_at_secondary_handoff() -> void:
 	var game := Game.new(91)
 	game.light_hallway()
 	var rooms := _rooms(game)
-	var counts := [6, 4, 6]
+	var counts := [6, 8, 6]
 	game.press_console()
 	for hold: int in range(10):
 		for index: int in range(rooms.size()):
