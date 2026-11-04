@@ -142,6 +142,9 @@ class ConnectorSpec:
 		return _lift_id
 	func port_opening() -> Transform3D:
 		return _port_opening
+	func landing_key_position() -> Vector3:
+		# The low landing key reaches the shaft rails and the connector centre floor.
+		return Vector3(_bounds.get_center().x + (0.85 if _pitch_index == 1 else 0.0), _bounds.position.y + 0.50, -2.50)
 	func shared_wall_owner() -> StringName:
 		return _shared_wall_owner
 	func is_built() -> bool:
@@ -164,6 +167,7 @@ class HatchServiceSpec:
 	var frame: Transform3D
 	var route := PackedVector3Array()
 	var radius: float
+	var stand_off: float = 0.0
 	func _init(p_kind: StringName, p_frame: Transform3D, p_route := PackedVector3Array(), p_radius: float = 0.0) -> void:
 		kind = p_kind
 		frame = p_frame
@@ -238,10 +242,15 @@ class DoorSpec:
 	func hatch_services(side: int) -> Array[HatchServiceSpec]:
 		assert(_animation == ShipLayout.AnimationRecipe.HINGE and side in [0, 1], "hinged service face")
 		var face := Transform3D.IDENTITY if side == 0 else Transform3D(Basis(Vector3.LEFT, Vector3.UP, Vector3.FORWARD), Vector3(0, 0, ShipLayout.WALL))
+		# Connector cages reach the floor/lift while remaining above the leaf sweep.
+		var connector_face := _spaces[side] in [ShipLayout.connector_id(_deck, 0), ShipLayout.connector_id(_deck, 1)]
+		var lamp_x := 0.80 if connector_face else (0.0 if _kind == ShipLayout.DoorKind.BAY and side == 1 else _aperture.x / 2 + 0.39)
+		var lamp_stand_off := 0.30 if connector_face else 0.0
 		var services: Array[HatchServiceSpec] = [
 			HatchServiceSpec.new(&"Control", face * Transform3D(Basis(), Vector3(-_aperture.x / 2 - 0.48, 1.37, -0.10))),
-			HatchServiceSpec.new(&"Lamp", face * Transform3D(Basis(), Vector3(0.0 if _kind == ShipLayout.DoorKind.BAY and side == 1 else _aperture.x / 2 + 0.39, _aperture.y + 0.16, -0.11))),
+			HatchServiceSpec.new(&"Lamp", face * Transform3D(Basis(), Vector3(lamp_x, _aperture.y + 0.16, -0.11 - lamp_stand_off))),
 		]
+		services[1].stand_off = lamp_stand_off
 		for x: float in [-1.04, -1.15]:
 			var top := 2.72 if x > -1.1 else 2.82
 			services.append(HatchServiceSpec.new(&"Conduit", face, PackedVector3Array([Vector3(x, 1.63, -0.08), Vector3(x, top, -0.08), Vector3(1.12, top, -0.08)]), 0.018))

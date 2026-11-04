@@ -33,15 +33,23 @@ func test_hatch_hardware_shares_resources_without_sharing_room_masks() -> void:
 		assert_true(a.mesh == b.mesh and a.material_override == b.material_override, "shared hardware resource " + path)
 		assert_int_equal(a.layers, 8 if path.contains("Aft") else 4, "D14 mask remains local")
 		assert_int_equal(b.layers, 64 if path.contains("Aft") else 32, "remote mask remains local")
+	var panel_parts: Array[String] = ["MountingBox", "Housing", "FacePlate", "Fastener00", "Fastener01", "Fastener10", "Fastener11", "ButtonBezel", "Button", "CardReader", "Indicator", "Toggle"]
 	for panel: String in ["ForePanel", "AftPanel"]:
-		for index: int in range(3):
-			var a: MeshInstance3D = first.get_node(panel).get_child(index)
-			var b: MeshInstance3D = remote.get_node(panel).get_child(index)
-			var c: MeshInstance3D = bay.view.get_node(panel).get_child(index)
-			assert_true(a.mesh == b.mesh and a.mesh == c.mesh, "all hatch panels share primitives")
-			assert_true(a.material_override == b.material_override and a.material_override == c.material_override, "all hatch panels share materials")
-			assert_int_equal(a.layers, 4 if panel == "ForePanel" else 8, "panel room mask")
-			assert_int_equal(c.layers, 1, "bay panel room mask")
+		var first_panel := first.get_node(panel)
+		var remote_panel := remote.get_node(panel)
+		var bay_panel := bay.view.get_node(panel)
+		for owner: Node in [first_panel, remote_panel, bay_panel]:
+			assert_int_equal(owner.get_child_count(), panel_parts.size(), "complete panel part inventory")
+			for part: String in panel_parts:
+				assert_true(owner.has_node(NodePath(part)), "stable panel part name: " + part)
+		for a: MeshInstance3D in first_panel.get_children():
+			var b := remote_panel.get_node(NodePath(a.name)) as MeshInstance3D
+			var c := bay_panel.get_node(NodePath(a.name)) as MeshInstance3D
+			assert_true(a.mesh == b.mesh and a.mesh == c.mesh, "all hatch panels share primitives: " + a.name)
+			assert_true(a.material_override == b.material_override and a.material_override == c.material_override, "all hatch panels share materials: " + a.name)
+			assert_int_equal(a.layers, 4 if panel == "ForePanel" else 8, "panel room mask: " + a.name)
+			assert_int_equal(b.layers, 32 if panel == "ForePanel" else 64, "remote panel room mask: " + a.name)
+			assert_int_equal(c.layers, 1, "bay panel room mask: " + a.name)
 	first.free()
 	remote.free()
 	bay.free()
@@ -105,12 +113,24 @@ func test_all_hatch_bulkheads_share_plated_wall_material_and_mapping() -> void:
 	root.free()
 
 func test_connector_lights_reach_hatches_floor_ladder_and_lift_inside_falloff() -> void:
-	var layout := ShipLayout.authored().layout
-	for id: StringName in layout.deck(14).connector_ids():
+	var game := Game.new(0)
+	var layout := game.layout
+	var root := Node3D.new()
+	var scene := ShipScene.build_into(root, game, false)
+	scene.prepare_near(Vector3(10, 0, 0))
+	scene.prepare_near(Vector3(26, 0, 0))
+	for id: StringName in layout.connector_ids():
 		var spec := layout.connector(id)
-		var connector := ShipConnector.build(layout, spec)
+		var connector := root.get_node(NodePath(id)) as ShipConnector if spec.deck_number() == 14 else scene.build_remote(spec) as ShipConnector
 		var lights: Array[OmniLight3D] = []
 		_collect_lights(connector, lights)
+		assert_int_equal(lights.size(), 3, "%s keeps its three-light budget after composition" % id)
+		var caged := 0
+		for light: OmniLight3D in lights:
+			assert_float_equal(light.omni_range, 3.0, "%s keeps its original key ranges" % id)
+			if light.get_parent().has_meta(&"hatch_lamp"): caged += 1
+			else: assert_close(Surfaces.world_frame(light).origin, spec.landing_key_position(), "remaining key uses the authored landing position")
+		assert_int_equal(caged, 2, "%s keeps both hatch keys seated in cages" % id)
 		var bounds := spec.bounds()
 		var probes: Array[Vector3] = []
 		for offset: float in [0.5, 3.0, 5.5]:
@@ -128,10 +148,12 @@ func test_connector_lights_reach_hatches_floor_ladder_and_lift_inside_falloff() 
 		for probe: Vector3 in probes:
 			var best := INF
 			for light: OmniLight3D in lights:
-				var origin: Vector3 = light.position + light.get_parent().position
+				var origin := Surfaces.world_frame(light).origin
 				best = minf(best, origin.distance_to(probe) / light.omni_range)
-			assert_true(best <= 0.9, "room detail lies inside useful light range, not its black cutoff: %s ratio=%f" % [probe, best])
-		connector.free()
+			assert_true(best <= 0.9, "%s room detail lies inside useful light range, not its black cutoff: %s ratio=%f" % [id, probe, best])
+		if spec.deck_number() != 14:
+			scene.remove_remote(spec, connector)
+	root.free()
 
 func test_d14_topology_and_exact_openability() -> void:
 	var layout := ShipLayout.authored().layout

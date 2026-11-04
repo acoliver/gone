@@ -32,6 +32,5 @@ static func build(layout: ShipLayout, spec: ShipLayout.ConnectorSpec) -> ShipCon
 	for side: int in [-1, 1]:
 		var origin := Vector3(bounds.get_center().x + side * bounds.size.x / 4, bounds.position.y + WALL_MOUNT_HEIGHT, side * (bounds.size.z / 2 - WALL_STANDOFF))
 		connector.add_child(Lighting.steady_fixture(origin, mask, minf(Lighting.FIXTURE_RANGE, bounds.size.x / 2), FIXTURE_ATTENUATION))
-	var landing := layout.well(spec.well_id()).landing_bounds(spec.deck_number())
-	connector.add_child(Lighting.steady_fixture(Vector3(landing.get_center().x, landing.position.y + WALL_MOUNT_HEIGHT, landing.get_center().z), mask, minf(Lighting.FIXTURE_RANGE, bounds.size.x / 2), FIXTURE_ATTENUATION))
+	connector.add_child(Lighting.steady_fixture(spec.landing_key_position(), mask, minf(Lighting.FIXTURE_RANGE, bounds.size.x / 2), FIXTURE_ATTENUATION))
 	return connector

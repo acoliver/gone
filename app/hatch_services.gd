@@ -34,7 +34,7 @@ static func build(spec: ShipLayout.DoorSpec, side: int, mask: int) -> Node3D:
 		root.add_child(group)
 		match service.kind:
 			&"Control": _control(group, mask, frame)
-			&"Lamp": _lamp(group, mask, frame)
+			&"Lamp": _lamp(group, service, mask, frame)
 			&"Conduit": _conduit(group, service, mask, frame)
 		if service.kind != &"Control": _batch_metal(group, mask, frame)
 	return root
@@ -63,14 +63,16 @@ static func _batch_metal(root: Node3D, mask: int, frame: Surfaces.SurfaceFrame) 
 	batch.name = "Steel"
 
 static func _control(root: Node3D, mask: int, frame: Surfaces.SurfaceFrame) -> void:
-	_box(root, Vector3(0.38, 0.56, 0.05), Vector3(0, 0, 0.075), mask, frame)
-	_rounded(root, Vector3(0.34, 0.52, 0.13), 0.035, Vector3.ZERO, mask, &"frame", frame)
+	_box(root, Vector3(0.38, 0.56, 0.05), Vector3(0, 0, 0.075), mask, frame).name = "MountingBox"
+	_rounded(root, Vector3(0.34, 0.52, 0.13), 0.035, Vector3.ZERO, mask, &"frame", frame).name = "Housing"
 	var face := _box(root, Vector3(0.285, 0.445, 0.016), Vector3(0, 0, -0.070), mask, frame)
+	face.name = "FacePlate"
 	face.material_override = Surfaces.control_material(&"face")
 	for dx: float in [-0.12, 0.12]:
 		for dy: float in [-0.19, 0.19]:
-			_pin(root, 0.013, 0.016, Vector3(dx, dy, -0.080), Vector3.BACK, mask, frame)
+			_pin(root, 0.013, 0.016, Vector3(dx, dy, -0.080), Vector3.BACK, mask, frame).name = "Fastener%d%d" % [int(dx > 0), int(dy > 0)]
 	var bezel := _pin(root, 0.059, 0.030, Vector3(0, 0.080, -0.092), Vector3.BACK, mask, frame)
+	bezel.name = "ButtonBezel"
 	bezel.material_override = Surfaces.control_material(&"dark")
 	var button := _pin(root, 0.043, 0.030, Vector3(0, 0.080, -0.116), Vector3.BACK, mask, frame)
 	button.name = "Button"
@@ -79,12 +81,15 @@ static func _control(root: Node3D, mask: int, frame: Surfaces.SurfaceFrame) -> v
 	slot.name = "CardReader"
 	slot.material_override = Surfaces.control_material(&"dark")
 	var indicator := _pin(root, 0.015, 0.022, Vector3(-0.090, 0.160, -0.088), Vector3.BACK, mask, frame)
+	indicator.name = "Indicator"
 	indicator.material_override = Surfaces.control_material(&"indicator")
 	var toggle := _box(root, Vector3(0.018, 0.060, 0.025), Vector3(0.085, -0.040, -0.083), mask, frame)
+	toggle.name = "Toggle"
 	toggle.rotation.x = -0.3
 
-static func _lamp(root: Node3D, mask: int, frame: Surfaces.SurfaceFrame) -> void:
-	_box(root, Vector3(0.31, 0.24, 0.10), Vector3(0, 0, 0.070), mask, frame)
+static func _lamp(root: Node3D, service: ShipLayout.HatchServiceSpec, mask: int, frame: Surfaces.SurfaceFrame) -> void:
+	var mount_depth := 0.10 + service.stand_off
+	_box(root, Vector3(0.31, 0.24, mount_depth), Vector3(0, 0, 0.02 + mount_depth / 2), mask, frame)
 	_rounded(root, Vector3(0.37, 0.31, 0.055), 0.045, Vector3.ZERO, mask, &"hardware", frame)
 	var lens := _rounded(root, Vector3(0.26, 0.16, 0.07), 0.065, Vector3(0, 0, -0.060), mask, &"hardware", frame)
 	lens.name = "Lens"

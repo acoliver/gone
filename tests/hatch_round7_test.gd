@@ -48,7 +48,32 @@ func _boxes(node: Node3D, boxes: Array[AABB]) -> void:
 				boxes.append(Surfaces.world_frame(node) * bounds[surface])
 		else:
 			boxes.append(Surfaces.world_frame(node) * node.mesh.get_aabb())
+	if node is MultiMeshInstance3D:
+		for pose: Transform3D in node.multimesh.get_meta(&"instance_poses"):
+			boxes.append(Surfaces.world_frame(node) * pose * node.multimesh.mesh.get_aabb())
 	for child: Node3D in node.get_children(): _boxes(child, boxes)
+
+func test_prop_clearance_collects_each_multimesh_instance_in_world_space() -> void:
+	var root := Node3D.new()
+	root.position = Vector3(7, 3, -2)
+	var rivets := MultiMeshInstance3D.new()
+	rivets.position = Vector3(1, 2, 3)
+	root.add_child(rivets)
+	var batch := MultiMesh.new()
+	batch.transform_format = MultiMesh.TRANSFORM_3D
+	batch.mesh = BoxMesh.new()
+	batch.instance_count = 2
+	var poses: Array[Transform3D] = [Transform3D(Basis(), Vector3(-0.5, 0, 0)), Transform3D(Basis(Vector3.UP, 0.4), Vector3(0.5, 0.25, 0))]
+	batch.set_meta(&"instance_poses", poses)
+	for index: int in range(poses.size()): batch.set_instance_transform(index, poses[index])
+	rivets.multimesh = batch
+	var boxes: Array[AABB] = []
+	_boxes(root, boxes)
+	var expected: Array[AABB] = []
+	for pose: Transform3D in poses:
+		expected.append(Surfaces.world_frame(rivets) * pose * batch.mesh.get_aabb())
+	assert_true(boxes == expected, "prop-clearance collector includes each rivet with its instance and ancestor transforms")
+	root.free()
 
 func test_services_clear_walk_band_leaf_swing_labels_and_switch() -> void:
 	var layout := ShipLayout.authored().layout
@@ -61,15 +86,19 @@ func test_services_clear_walk_band_leaf_swing_labels_and_switch() -> void:
 			var local := spec.frame().affine_inverse() * prop
 			var walk := AABB(Vector3(-0.60, 0.08, -1), Vector3(1.20, 2.32, 2))
 			assert_false(local.intersects(walk), "service hardware stays outside the walk band: %s %s" % [id, local])
-		for degree: int in range(131):
+		var degrees: Array[float] = []
+		for degree: int in range(131): degrees.append(float(degree))
+		for seed: int in [0, 7, -913]: degrees.append(absf(rad_to_deg(spec.swing_radians(seed))))
+		for degree: float in degrees:
 			view.get_node("Hinge").basis = Basis(Vector3.UP, signf(spec.swing_radians()) * deg_to_rad(degree))
 			var moving: Array[AABB] = []
 			_boxes(view.label_leaf(), moving)
+			assert_true(moving.size() > 50, "prop clearance includes steel, wheel, latches, straps and individual rivets")
 			for prop: AABB in props:
 				for part: AABB in moving:
 					var contact := prop.intersection(part)
 					if contact.size.x > 0.001 and contact.size.y > 0.001 and contact.size.z > 0.001:
-						assert_true(false, "%s service touches leaf at degree %d: %s" % [id, degree, contact])
+						assert_true(false, "%s service touches leaf at degree %.6f: %s" % [id, degree, contact])
 						view.free()
 						return
 		for seed: int in [0, 7, -913]:
