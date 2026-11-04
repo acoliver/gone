@@ -12,9 +12,46 @@ const FIXTURE_LUMENS: float = 45.0
 const FIXTURE_RANGE: float = 6.0
 const FIXTURE_EMISSIVE: float = 2.6
 const FIXTURE_SETTLE_TICKS: int = 30
-const EMERGENCY_RED: Color = Color(1.0, 0.0, 0.0)
+const EMERGENCY_RED: Color = Color(1.0, 0.28, 0.12)
+const EMERGENCY_ENERGY_MULTIPLIER: float = 1.0
+# Independent rooms have no fill; stronger keys restore readability on the darker steel.
+const EMERGENCY_NO_FILL_KEY_MULTIPLIER: float = 1.916
+const EMERGENCY_FILL_SHARE: float = 0.1
+const EMERGENCY_FILL_COLOR: Color = Color(1.0, 0.94, 0.84)
+const EMERGENCY_FILL_RANGE: float = 4.0
+const EMERGENCY_FILL_CEILING_DROP: float = 0.77
+# Layers 18-20 belong only to the three switched-room fills.
+const BAY_FILL_MASK: int = 1 << 17
+const HALL_FILL_MASK: int = 1 << 18
+const POWER_FILL_MASK: int = 1 << 19
 const LENS_SIZE: Vector3 = Vector3(0.42, 0.16, 0.12)
-const LENS_BASE_COLOR: Color = Color(0.18, 0.01, 0.01)
+const LENS_BASE_COLOR: Color = Color(0.18, 0.05, 0.025)
+
+static func emergency_energy() -> float:
+	return FIXTURE_ENERGY * EMERGENCY_ENERGY_MULTIPLIER
+
+static func emergency_emission(level: float) -> Color:
+	var emission := EMERGENCY_RED * FIXTURE_EMISSIVE * level
+	emission.a = 1.0
+	return emission
+
+static func emergency_lens_material(level: float) -> StandardMaterial3D:
+	var material := StandardMaterial3D.new()
+	material.albedo_color = LENS_BASE_COLOR
+	material.emission = emergency_emission(level)
+	material.roughness = 0.8
+	return material
+
+static func emergency_fill(origin: Vector3, level: float, room_mask: int) -> OmniLight3D:
+	var fill := OmniLight3D.new()
+	fill.name = "EmergencyFill"
+	fill.position = origin - Vector3.UP * EMERGENCY_FILL_CEILING_DROP
+	fill.light_color = EMERGENCY_FILL_COLOR
+	fill.light_energy = emergency_energy() * EMERGENCY_FILL_SHARE * level
+	fill.omni_range = EMERGENCY_FILL_RANGE
+	fill.light_cull_mask = room_mask
+	fill.shadow_enabled = false
+	return fill
 ## The regular-service white the activated secondary power restores
 ## (issue #59): warm-neutral strips in the hallway and the power room,
 ## dim by design, shared by the bay, hallway and power room.
@@ -43,6 +80,7 @@ var _white_lens_material: StandardMaterial3D
 var _fade: Intensity.FixtureFade = null
 var _fixtures: Array[Node3D] = []
 var _lights: Array[OmniLight3D] = []
+var _fill_lights: Array[OmniLight3D] = []
 var _lenses: Array[MeshInstance3D] = []
 var _lens_mesh: BoxMesh = null
 var _lens_material: StandardMaterial3D = null
@@ -55,10 +93,7 @@ static func build(game: Game) -> Lighting:
 	var level: float = lighting._circuit_target()
 	lighting._lens_mesh = BoxMesh.new()
 	lighting._lens_mesh.size = LENS_SIZE
-	lighting._lens_material = StandardMaterial3D.new()
-	lighting._lens_material.albedo_color = LENS_BASE_COLOR
-	lighting._lens_material.emission = Color(FIXTURE_EMISSIVE * level, 0.0, 0.0)
-	lighting._lens_material.roughness = 0.8
+	lighting._lens_material = emergency_lens_material(level)
 	lighting._lens_mesh.material = lighting._lens_material
 	var held: Intensity.Result = Intensity.FixtureFade.holding(level)
 	assert(held.is_ok(), "power maps to a finite nonnegative level")
@@ -76,6 +111,10 @@ static func build(game: Game) -> Lighting:
 	white_mesh.material = lighting._white_lens_material
 	for frame: Transform3D in game.layout.bay().regular_light_frames():
 		lighting.add_child(lighting._white_fixture(frame, white_mesh))
+		var fill := emergency_fill(frame.origin, level, BAY_FILL_MASK)
+		fill.name = "EmergencyFill%d" % lighting._fill_lights.size()
+		lighting.add_child(fill)
+		lighting._fill_lights.append(fill)
 	lighting._apply_white_level(white_level)
 	lighting.add_child(_world_environment())
 	return lighting
@@ -117,8 +156,9 @@ func _fixture(fixture_transform: Transform3D, level: float) -> Node3D:
 	fixture.transform = fixture_transform
 	var light := OmniLight3D.new()
 	light.light_color = EMERGENCY_RED
-	light.light_energy = FIXTURE_ENERGY * level
+	light.light_energy = emergency_energy() * level
 	light.omni_range = FIXTURE_RANGE
+	light.light_cull_mask = 1
 	light.shadow_enabled = false
 	fixture.add_child(light)
 	var lens := MeshInstance3D.new()
@@ -178,6 +218,7 @@ func _white_fixture(frame: Transform3D, mesh: BoxMesh) -> Node3D:
 	var light := OmniLight3D.new()
 	light.light_color = REGULAR_WHITE
 	light.omni_range = REGULAR_RANGE
+	light.light_cull_mask = 1
 	light.shadow_enabled = false
 	light.position.y = -0.12
 	fixture.add_child(light)
@@ -205,11 +246,13 @@ func white_lens_material() -> StandardMaterial3D:
 ## Writes render state only, and only when a value actually changed: no
 ## per-tick material allocation.
 func _apply_level(level: float) -> void:
-	var energy: float = FIXTURE_ENERGY * level
+	var energy: float = emergency_energy() * level
 	for light: OmniLight3D in _lights:
 		if light.light_energy != energy:
 			light.light_energy = energy
-	var emissive := Color(FIXTURE_EMISSIVE * level, 0.0, 0.0)
+	for fill: OmniLight3D in _fill_lights:
+		fill.light_energy = energy * EMERGENCY_FILL_SHARE
+	var emissive := emergency_emission(level)
 	if _lens_material.emission != emissive:
 		_lens_material.emission = emissive
 
@@ -245,7 +288,8 @@ static func space_mask(layout: ShipLayout, id: StringName) -> int:
 	if String(id).begins_with("D") and "-S-" in String(id):
 		var deck := String(id).substr(1, 2).to_int()
 		if deck != 14:
-			return 1 << (15 + (deck - 1) % 5)
+			# Alternate remote section faces by deck; keep layers 18-20 for fills.
+			return 1 << (15 + (deck - 1) % 2)
 	return 1
 
 static func mesh_layers(node: Node, mask: int) -> void:
@@ -266,16 +310,13 @@ static func steady_fixture(origin: Vector3, mask: int, radius: float, attenuatio
 	fixture.position = origin
 	var light := OmniLight3D.new()
 	light.light_color = EMERGENCY_RED
-	light.light_energy = FIXTURE_ENERGY
+	light.light_energy = emergency_energy() * EMERGENCY_NO_FILL_KEY_MULTIPLIER
 	light.omni_range = radius
 	light.omni_attenuation = attenuation
 	light.light_cull_mask = mask
 	light.shadow_enabled = false
 	fixture.add_child(light)
-	var material := StandardMaterial3D.new()
-	material.albedo_color = LENS_BASE_COLOR
-	material.emission = Color(FIXTURE_EMISSIVE, 0, 0)
-	material.roughness = 0.8
+	var material := emergency_lens_material(1.0)
 	var lens := HatchModel.mesh_piece(Hallway._box_mesh(LENS_SIZE), Transform3D.IDENTITY, mask, material)
 	lens.name = "Lens"
 	fixture.add_child(lens)

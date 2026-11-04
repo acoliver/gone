@@ -4,10 +4,10 @@ extends Node3D
 
 var view: DoorView
 
-static func build(layout: ShipLayout = ShipLayout.authored().layout) -> Hatch:
+static func build(layout: ShipLayout = ShipLayout.authored().layout, fore_mask: int = 1, aft_mask: int = 1) -> Hatch:
 	var hatch := Hatch.new()
 	var spec := layout.door(ShipLayout.BAY_DOOR_ID)
-	hatch.view = DoorView.build(spec)
+	hatch.view = DoorView.build(spec, fore_mask, aft_mask)
 	hatch.view.transform = layout.world_to_bay() * spec.frame()
 	hatch.add_child(hatch.view)
 	return hatch

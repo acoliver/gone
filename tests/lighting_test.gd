@@ -46,7 +46,7 @@ func test_connectors_and_outer_sections_keep_their_steady_red_circuits() -> void
 		assert_true(not lights.is_empty(), "room has emergency fixtures")
 		for light: OmniLight3D in lights:
 			assert_true(light.light_color == Lighting.EMERGENCY_RED, "independent circuit stays red")
-			assert_true(is_equal_approx(light.light_energy, Lighting.FIXTURE_ENERGY), "independent circuit stays steady")
+			assert_true(is_equal_approx(light.light_energy, Lighting.FIXTURE_ENERGY * Lighting.EMERGENCY_NO_FILL_KEY_MULTIPLIER), "independent circuit stays steady")
 			assert_true(light.light_cull_mask != 1, "independent circuit stays isolated from bay")
 		node.free()
 
@@ -78,7 +78,7 @@ func test_fixture_inventory_places_eight_red_lights_from_registry() -> void:
 		"hatch fixture uses the lintel placement at 2.70 m"
 	)
 	for light: OmniLight3D in lights:
-		assert_true(light.light_color == Color(1.0, 0.0, 0.0), "fixture color is linear red")
+		assert_true(light.light_color == Color(1.0, 0.28, 0.12), "fixture color is the approved red-orange")
 		assert_float_equal(light.omni_range, 6.0, "fixture range is 6 m")
 		assert_false(light.shadow_enabled, "fixture shadows are disabled")
 		assert_true(
@@ -87,7 +87,7 @@ func test_fixture_inventory_places_eight_red_lights_from_registry() -> void:
 		)
 	for fixture: Node3D in fixtures:
 		assert_true(fixture.position.y > 2.4, "fixtures sit outside the walking envelope")
-	assert_int_equal(_count_class(lighting, "OmniLight3D"), 14, "eight emergency fixtures plus six regular strips")
+	assert_int_equal(_count_class(lighting, "OmniLight3D"), 20, "eight emergency fixtures plus six regular strips plus six warm fills")
 	for light: OmniLight3D in lighting.white_lights():
 		assert_float_equal(light.light_energy, 0.0, "regular strips start dark")
 	assert_int_equal(_count_class(lighting, "DirectionalLight3D"), 0, "no directional light is authored")
@@ -114,9 +114,11 @@ func test_lenses_share_one_cuboid_and_never_ride_the_light_node() -> void:
 			2,
 			"fixture groups pair one light with one lens"
 		)
+	var expected_emission := Color(1.0, 0.28, 0.12) * Lighting.FIXTURE_EMISSIVE
+	expected_emission.a = 1.0
 	assert_true(
-		lighting.lens_material().emission == Color(2.6, 0.0, 0.0),
-		"full-power lens emission is linear (2.6, 0, 0)"
+		lighting.lens_material().emission == expected_emission,
+		"full-power lens emission matches the emergency palette"
 	)
 
 func test_bridge_follows_sim_fade_and_repeated_dead_does_not_restart() -> void:
@@ -242,8 +244,9 @@ func _assert_output(lighting: Lighting, level: float) -> void:
 		"lens emission tracks the fade: expected %.5f, got %.5f"
 		% [emission_red, emissive.r]
 	)
-	assert_float_equal(emissive.g, 0.0, "lens emission stays red")
-	assert_float_equal(emissive.b, 0.0, "lens emission stays red")
+	var palette_emission := Color(1.0, 0.28, 0.12) * Lighting.FIXTURE_EMISSIVE * level
+	assert_float_equal(emissive.g, palette_emission.g, "lens emission follows palette green")
+	assert_float_equal(emissive.b, palette_emission.b, "lens emission follows palette blue")
 
 func _count_class(node: Node, native_class: String) -> int:
 	var total := 0

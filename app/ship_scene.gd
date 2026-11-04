@@ -40,9 +40,6 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 	scene.bay_root.add_child(scene.room)
 	scene.pods_node = StasisPods.build(game.registry)
 	scene.bay_root.add_child(scene.pods_node)
-	scene.hatch = Hatch.build(game.layout)
-	scene.hatch.name = "Hatch"
-	scene.bay_root.add_child(scene.hatch)
 	scene.lighting = Lighting.build(game)
 	scene.bay_root.add_child(scene.lighting)
 	scene.hazards = Hazards.build(game.ventilation, game.layout.bay())
@@ -51,6 +48,11 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 		scene.bay_root.add_child(Wires.build())
 	scene.rod = Rod.build()
 	scene.bay_root.add_child(scene.rod)
+	Lighting.mesh_layers(scene.bay_root, 1 | Lighting.BAY_FILL_MASK)
+	# The shared hatch is split by visible room, including its collar returns.
+	scene.hatch = Hatch.build(game.layout, 1 | Lighting.HALL_FILL_MASK, 1 | Lighting.BAY_FILL_MASK)
+	scene.hatch.name = "Hatch"
+	scene.bay_root.add_child(scene.hatch)
 	var environment := scene.lighting.get_node("RoomEnvironment")
 	scene.lighting.remove_child(environment)
 	parent.add_child(environment)
@@ -72,9 +74,6 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 		else:
 			scene._opening_nodes.append(view)
 		view.present(game.doors.snapshot(view.door_id()))
-	Lighting.isolate_lights(scene.bay_root, 1)
-	Lighting.isolate_lights(scene.hallway, 1)
-	Lighting.isolate_lights(scene.power_room, 1)
 	for id: StringName in [&"D14-C-000-H-AFT", &"D14-C-001-H-FORE"]:
 		scene._add_hatch(id)
 	scene.stream = ShipStream.build(scene, game, parent)
@@ -199,7 +198,9 @@ func _add_hatch(id: StringName, parent: Node3D = null) -> void:
 	var spec := _game.layout.door(id)
 	var masks: Array[int] = []
 	for face: StringName in spec.face_ids():
-		masks.append(Lighting.space_mask(_game.layout, _game.layout.face(face).source_space()))
+		var space := _game.layout.face(face).source_space()
+		var mask := Lighting.space_mask(_game.layout, space)
+		masks.append(mask | Lighting.HALL_FILL_MASK if space == &"D14-S-041" else mask)
 	var view := DoorView.build(spec, masks[0], masks[1])
 	if parent == null:
 		_add_opening_node(view)

@@ -232,7 +232,8 @@ func test_lit_fixtures_hold_their_level_steady() -> void:
 	for _tick: int in range(Lighting.FIXTURE_SETTLE_TICKS):
 		hallway.process_frame(Sim.LOGICAL_TICK_SECS)
 	assert_true(hallway.is_settled(), "the flip settles on the fixture clock")
-	var steady_emission := Color(Lighting.FIXTURE_EMISSIVE, 0.0, 0.0)
+	var steady_emission := Lighting.EMERGENCY_RED * Lighting.FIXTURE_EMISSIVE
+	steady_emission.a = 1.0
 	for _frame: int in range(300):
 		hallway.process_frame(Sim.LOGICAL_TICK_SECS)
 		for light: OmniLight3D in hallway.lights():

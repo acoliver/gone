@@ -91,6 +91,7 @@ var side_leaves: Dictionary = {}
 var _game: Game = null
 var _fade: Intensity.FixtureFade = null
 var _lights: Array[OmniLight3D] = []
+var _fill_lights: Array[OmniLight3D] = []
 var _lenses: Array[MeshInstance3D] = []
 var _lens_mesh: BoxMesh = null
 var _lens_material: StandardMaterial3D = null
@@ -153,13 +154,10 @@ static func build(game: Game) -> Hallway:
 	var hallway := Hallway.new()
 	hallway.name = "Hallway"
 	hallway._game = game
-	var level := 1.0 if game.hallway_lit else 0.0
+	var level := 1.0 if (game.hallway_lit and not game.power_active) else 0.0
 	hallway._lens_mesh = BoxMesh.new()
 	hallway._lens_mesh.size = Lighting.LENS_SIZE
-	hallway._lens_material = StandardMaterial3D.new()
-	hallway._lens_material.albedo_color = Lighting.LENS_BASE_COLOR
-	hallway._lens_material.emission = Color(Lighting.FIXTURE_EMISSIVE * level, 0.0, 0.0)
-	hallway._lens_material.roughness = 0.8
+	hallway._lens_material = Lighting.emergency_lens_material(level)
 	hallway._lens_mesh.material = hallway._lens_material
 	var held: Intensity.Result = Intensity.FixtureFade.holding(level)
 	assert(held.is_ok(), "the hallway's level maps to a finite nonnegative fade")
@@ -220,6 +218,11 @@ static func build(game: Game) -> Hallway:
 	hallway._white_fade = white_held.fade
 	for station_x: float in REGULAR_STATIONS_X:
 		hallway.add_child(hallway._white_fixture(station_x, white_level))
+		var fill := Lighting.emergency_fill(Vector3(station_x, REGULAR_MOUNT_Y, 0.0), level, Lighting.HALL_FILL_MASK)
+		fill.name = "EmergencyFill%d" % hallway._fill_lights.size()
+		hallway.add_child(fill)
+		hallway._fill_lights.append(fill)
+	Lighting.mesh_layers(hallway, 1 | Lighting.HALL_FILL_MASK)
 	return hallway
 
 ## The fixture group mirrors the stasis bay's: a pair at every station
@@ -248,8 +251,9 @@ func _fixture(fixture_transform: Transform3D, level: float) -> Node3D:
 	fixture.transform = fixture_transform
 	var light := OmniLight3D.new()
 	light.light_color = Lighting.EMERGENCY_RED
-	light.light_energy = Lighting.FIXTURE_ENERGY * level
+	light.light_energy = Lighting.emergency_energy() * level
 	light.omni_range = Lighting.FIXTURE_RANGE
+	light.light_cull_mask = 1
 	light.shadow_enabled = false
 	fixture.add_child(light)
 	var lens := MeshInstance3D.new()
@@ -271,6 +275,7 @@ func _white_fixture(station_x: float, level: float) -> Node3D:
 	light.light_color = Lighting.REGULAR_WHITE
 	light.light_energy = Lighting.regular_energy() * level
 	light.omni_range = Lighting.REGULAR_RANGE
+	light.light_cull_mask = 1
 	light.shadow_enabled = false
 	light.position = Vector3(0.0, -0.12, 0.0)
 	fixture.add_child(light)
@@ -404,11 +409,13 @@ func process_frame(delta_secs: float) -> void:
 ## Writes render state only, and only when a value actually changed: no
 ## per-tick material allocation.
 func _apply_level(level: float) -> void:
-	var energy: float = Lighting.FIXTURE_ENERGY * level
+	var energy: float = Lighting.emergency_energy() * level
 	for light: OmniLight3D in _lights:
 		if light.light_energy != energy:
 			light.light_energy = energy
-	var emissive := Color(Lighting.FIXTURE_EMISSIVE * level, 0.0, 0.0)
+	for fill: OmniLight3D in _fill_lights:
+		fill.light_energy = energy * Lighting.EMERGENCY_FILL_SHARE
+	var emissive := Lighting.emergency_emission(level)
 	if _lens_material.emission != emissive:
 		_lens_material.emission = emissive
 

@@ -1,8 +1,9 @@
 extends SceneTree
 ## Production scene and circuits only. Neutral inspection belongs to capture_steel_probe.
+## Run: godot --path . -s tools/capture_ship_surfaces.gd -- <output-dir>
 
-const OUT := "res://tmp/ship-look/s123/captures/"
 const SEED: int = 91
+var output_dir: String
 var world: Node3D
 var scene: ShipScene
 var game: Game
@@ -10,11 +11,17 @@ var camera: Camera3D
 var records: Array[Dictionary] = []
 
 func _init() -> void:
+	var args := OS.get_cmdline_user_args()
+	if args.size() != 1 or args[0].strip_edges().is_empty():
+		printerr("usage: godot --path . -s tools/capture_ship_surfaces.gd -- <output-dir>")
+		quit(2)
+		return
+	output_dir = args[0]
 	_run.call_deferred()
 
 func _run() -> void:
 	assert(DisplayServer.get_name() != "headless", "windowed native captures required")
-	DirAccess.make_dir_recursive_absolute(OUT)
+	DirAccess.make_dir_recursive_absolute(output_dir)
 	root.size = Vector2i(2304, 1296)
 	DisplayServer.window_set_size(root.size)
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
@@ -35,7 +42,7 @@ func _run() -> void:
 		camera.current = true
 		camera.fov = 76
 		await _settle(36)
-		var circuit := "secondary-white" if white else "pure-red"
+		var circuit := "secondary-white" if white else "emergency-red-orange"
 		await _shot(circuit, "section41-corridor", &"D14-S-041", Vector3(18, 1.6, 0.25), Vector3(29.6, 1.5, 0))
 		await _shot(circuit, "section41-detail", &"D14-S-041", Vector3(18, 1.6, -0.4), Vector3(18.2, 1.5, -1.5))
 		await _shot(circuit, "section41-end-hatch", &"D14-C-001-H-FORE", Vector3(27.5, 1.6, 0), Vector3(30, 1.4, 0))
@@ -78,7 +85,7 @@ func _run() -> void:
 		for suffix: String in ["", ".import"]: hashes[Surfaces.ROOT + file + suffix] = FileAccess.get_sha256(Surfaces.ROOT + file + suffix)
 	for file: String in ["app/surfaces.gd", "app/shaders/weathered_steel.gdshader", "app/shaders/steel_sampling.gdshaderinc", "app/shaders/weathered_tape.gdshader"]:
 		hashes[file] = FileAccess.get_sha256("res://" + file)
-	FileAccess.open(OUT + "captures.json", FileAccess.WRITE).store_string(JSON.stringify({"seed": SEED, "material": "round5-steel-v1", "lighting": "unchanged production circuits; remote connectors remain independent red under secondary power", "resources": hashes, "captures": records}, "\t") + "\n")
+	FileAccess.open(output_dir.path_join("captures.json"), FileAccess.WRITE).store_string(JSON.stringify({"seed": SEED, "material": "round5-steel-v1", "lighting": {"palette": str(Lighting.EMERGENCY_RED), "key_energy": Lighting.emergency_energy(), "fill_energy": Lighting.emergency_energy() * Lighting.EMERGENCY_FILL_SHARE, "fill_range": Lighting.EMERGENCY_FILL_RANGE, "fill_rooms": "D14 bay/hall/power only; remote connectors remain independent under secondary power"}, "resources": hashes, "captures": records}, "\t") + "\n")
 	print("SHIP SURFACES COMPLETE captures=", records.size())
 	quit(0)
 
@@ -100,7 +107,7 @@ func _shot(circuit: String, name: String, owner: StringName, eye: Vector3, targe
 	camera.position = eye
 	camera.look_at(target)
 	await _settle(12)
-	var path := OUT + "%s-%s.png" % [circuit, name]
+	var path := output_dir.path_join("%s-%s.png" % [circuit, name])
 	var image := root.get_texture().get_image()
 	assert(image.get_size() == Vector2i(2304, 1296), "native capture resolution")
 	assert(image.save_png(path) == OK, "capture saved: " + path)
