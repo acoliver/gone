@@ -12,7 +12,10 @@ static func build(layout: ShipLayout, spec: ShipLayout.ConnectorSpec) -> ShipCon
 	connector.name = String(spec.id())
 	var mask := Lighting.space_mask(layout, spec.id())
 	for solid: ShipGeometry.SolidSpec in ShipGeometry.connector_solids(layout, spec):
-		connector.add_child(ShipSection.surface(solid, mask, layout))
+		var piece := ShipSection.surface(solid, mask, layout)
+		if solid.id == StringName("%s/FLOOR/000" % spec.id()): piece.visible = false
+		connector.add_child(piece)
+	connector.add_child(CorridorDressing.build(layout, spec.id()))
 	var lift := layout.door(layout.lift(spec.lift_id()).door_id())
 	connector.lift_leaf = Node3D.new()
 	connector.lift_leaf.name = "LiftDoors"

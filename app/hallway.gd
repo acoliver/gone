@@ -182,9 +182,11 @@ static func build(game: Game) -> Hallway:
 	for index: int in range(hall_solids.size()):
 		var piece := _surface_instance(surface_roles[index], hall_solids[index], game.layout)
 		piece.name = surface_names[index]
+		if hall_solids[index].material_role == &"floor": piece.visible = false
 		hallway.add_child(piece)
 
-	hallway.add_child(_build_ceiling_damage())
+	hallway.add_child(CorridorDressing.build(game.layout, &"D14-S-041"))
+	hallway.add_child(_build_ceiling_damage(game.layout.section(&"D14-S-041")))
 
 	var doors := Node3D.new()
 	doors.name = "HallSideDoors"
@@ -202,7 +204,7 @@ static func build(game: Game) -> Hallway:
 
 	hallway.add_child(_build_switch())
 
-	for fixture_transform: Transform3D in fixture_transforms():
+	for fixture_transform: Transform3D in game.layout.section(&"D14-S-041").emergency_fixture_frames():
 		hallway.add_child(hallway._fixture(fixture_transform, level))
 
 	var white_level := 1.0 if game.power_active else 0.0
@@ -216,8 +218,10 @@ static func build(game: Game) -> Hallway:
 	var white_held: Intensity.Result = Intensity.FixtureFade.holding(white_level)
 	assert(white_held.is_ok(), "the white strip level maps to a valid fade")
 	hallway._white_fade = white_held.fade
-	for station_x: float in REGULAR_STATIONS_X:
-		hallway.add_child(hallway._white_fixture(station_x, white_level))
+	for frame: Transform3D in game.layout.section(&"D14-S-041").regular_light_frames():
+		var fixture := hallway._white_fixture(frame.origin.x, white_level)
+		fixture.transform = frame
+		hallway.add_child(fixture)
 	var section := game.layout.section(&"D14-S-041")
 	for position: Vector3 in section.emergency_fill_positions():
 		var fill := Lighting.emergency_fill(position, level, Lighting.HALL_FILL_MASK)
@@ -235,18 +239,7 @@ static func build(game: Game) -> Hallway:
 ## standoff from both side walls, so the whole corridor reads one
 ## rhythm from the doorway to the power door.
 static func fixture_transforms() -> Array[Transform3D]:
-	var transforms: Array[Transform3D] = []
-	for station_x: float in FIXTURE_STATIONS_X:
-		for side: float in [-1.0, 1.0]:
-			transforms.append(Transform3D(
-				Basis(),
-				Vector3(
-					station_x,
-					Lighting.WALL_MOUNT_HEIGHT,
-					side * (HALL_WIDTH / 2.0 - Lighting.WALL_STANDOFF)
-				)
-			))
-	return transforms
+	return ShipLayout.authored().layout.section(&"D14-S-041").emergency_fixture_frames()
 
 ## The fixture group holds the light and the lens as siblings, exactly
 ## as the stasis bay's do, so no mesh bounds stand in for the light's
@@ -334,14 +327,14 @@ static func _build_switch() -> Node3D:
 ## The hall's ceiling damage, in the stasis room's language: tray runs
 ## tipped off level, hanging wire loops beneath them. Dressing only —
 ## outside the walking envelope, deliberately not colliders.
-static func _build_ceiling_damage() -> Node3D:
+static func _build_ceiling_damage(spec: ShipLayout.SectionSpec) -> Node3D:
 	var damage := Node3D.new()
 	damage.name = "HallCeilingDamage"
 	var tray_material := _flat_grey(RoomGeometry.TRAY_SHADE)
 	var wire_material := _flat_grey(RoomGeometry.WIRE_SHADE)
-	for placement: Placement.SolidPlacement in _ceiling_trays():
+	for placement: ShipGeometry.SolidSpec in spec.ceiling_trays():
 		damage.add_child(_box_instance(placement, tray_material))
-	for loop: Placement.WireLoop in _ceiling_loops():
+	for loop: Placement.WireLoop in spec.ceiling_loops():
 		var mesh := TorusMesh.new()
 		mesh.inner_radius = Placement.WIRE_INNER_RADIUS
 		mesh.outer_radius = Placement.WIRE_OUTER_RADIUS
@@ -356,33 +349,12 @@ static func _build_ceiling_damage() -> Node3D:
 ## One long tray run down the corridor and one torn cross stub, tipped
 ## off level the way the stasis room's trays read.
 static func _ceiling_trays() -> Array[Placement.SolidPlacement]:
-	var drop := HALL_CEILING_HEIGHT - Placement.TRAY_CEILING_DROP
-	return [
-		Placement.SolidPlacement.new(
-			Vector3(16.5, drop, 0.35),
-			Vector3(9.0, Placement.TRAY_HEIGHT, Placement.TRAY_WIDTH),
-			Quaternion(Vector3.UP, 0.0) * Quaternion(Vector3.RIGHT, 0.05)
-		),
-		Placement.SolidPlacement.new(
-			Vector3(23.0, drop - 0.04, -0.55),
-			Vector3(3.2, Placement.TRAY_HEIGHT, Placement.TRAY_WIDTH),
-			Quaternion(Vector3.UP, PI / 2.0) * Quaternion(Vector3.RIGHT, -0.06)
-		),
-	]
+	return ShipLayout.authored().layout.section(&"D14-S-041").ceiling_trays()
 
 ## Two hanging wire loops under the tray run, at the stasis room's
 ## scale and above the camera-clearance floor.
 static func _ceiling_loops() -> Array[Placement.WireLoop]:
-	return [
-		Placement.WireLoop.new(
-			Vector3(13.6, 2.72, 0.42),
-			Quaternion(Vector3.RIGHT, PI / 2.0) * Quaternion(Vector3.UP, 0.8)
-		),
-		Placement.WireLoop.new(
-			Vector3(21.4, 2.66, -0.48),
-			Quaternion(Vector3.RIGHT, PI / 2.0) * Quaternion(Vector3.UP, 2.1)
-		),
-	]
+	return ShipLayout.authored().layout.section(&"D14-S-041").ceiling_loops()
 
 ## One render-bridge frame, mirroring the stasis bay's Lighting bridge:
 ## retarget only on the sim-side target change (the switch flip, the

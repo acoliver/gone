@@ -6,10 +6,11 @@ extends RefCounted
 const STEEL := preload("res://app/shaders/weathered_steel.gdshader")
 const TAPE := preload("res://app/shaders/weathered_tape.gdshader")
 const ROOT := "res://assets/surfaces/steel/"
-const PANEL_PITCH := Vector2(1.5, 1.0)
+const PANEL_PITCH := ShipDressing.PANEL_PITCH
 const SCANS: Array[String] = ["green_metal_rust", "rusty_painted_metal", "rusty_metal_04"]
 const ROLES := {
 	&"wall": {}, &"floor": {"floor_surface": true}, &"ceiling": {},
+	&"pipe": {"curved_surface": true}, &"subfloor": {"floor_surface": true},
 	&"hatch_leaf": {"hatch_surface": true, "leaf_paint": true}, &"seal": {"hatch_surface": true}, &"sill": {"hatch_surface": true, "raised_base": true}, &"frame": {"hatch_surface": true},
 	&"hardware": {"hatch_surface": true, "wheel_surface": true, "curved_surface": true, "leaf_hardware": true},
 	&"wheel": {"hatch_surface": true, "wheel_surface": true, "wheel_only": true, "curved_surface": true, "hero_wheel": true},
@@ -61,6 +62,7 @@ static func material(role: StringName) -> ShaderMaterial:
 	result.set_shader_parameter(&"wheel_height", HatchParts.WHEEL_HEIGHT)
 	var hatch: bool = ROLES[role].get("hatch_surface", false)
 	result.set_shader_parameter(&"gain", (0.36 if role == &"wheel" else (0.48 if role == &"sill" else 0.265)) if hatch else 0.19)
+	if role == &"subfloor": result.set_shader_parameter(&"gain", 0.025)
 	result.set_shader_parameter(&"contrast", 0.35 if hatch else 0.65)
 	result.set_shader_parameter(&"macro", 0.18 if hatch else 0.22)
 	result.set_shader_parameter(&"seam_strength", 0.36)

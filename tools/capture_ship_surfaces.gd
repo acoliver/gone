@@ -74,6 +74,11 @@ func _run() -> void:
 		camera.fov = 76
 		await _settle(36)
 		var circuit := "secondary-white" if white else "emergency-red-orange"
+		var hall_bounds := game.layout.section(&"D14-S-041").bounds()
+		camera.fov = 68
+		await _shot(circuit, "section41-approved-view", &"D14-S-041", hall_bounds.position + Vector3(4, 1.62, hall_bounds.size.z / 2 + 0.06), Vector3(hall_bounds.end.x, hall_bounds.position.y + 1.50, hall_bounds.get_center().z))
+		camera.fov = 76
+		await _shot(circuit, "grate-grazing", &"D14-S-041", Vector3(hall_bounds.position.x + 5, hall_bounds.position.y + 0.25, 0), Vector3(hall_bounds.end.x - 1, hall_bounds.position.y, 0))
 		await _shot(circuit, "section41-corridor", &"D14-S-041", Vector3(18, 1.6, 0.25), Vector3(29.6, 1.5, 0))
 		await _shot(circuit, "section41-detail", &"D14-S-041", Vector3(18, 1.6, -0.4), Vector3(18.2, 1.5, -1.5))
 		await _shot(circuit, "section41-end-hatch", &"D14-C-001-H-FORE", Vector3(27.5, 1.6, 0), Vector3(30, 1.4, 0))

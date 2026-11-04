@@ -9,6 +9,20 @@ const HATCH_HEIGHT: float = ShipLayout.HATCH_HEIGHT
 const FRAME_DEPTH: float = 0.18
 const FRAME_POST_WIDTH: float = 0.16
 const SILL_HEIGHT: float = 0.08
+const TRAY_WIDTH: float = 0.3
+const TRAY_HEIGHT: float = 0.08
+const TRAY_CEILING_DROP: float = 0.15
+const WIRE_INNER_RADIUS: float = 0.035
+const WIRE_OUTER_RADIUS: float = 0.11
+
+class WireLoop:
+	extends RefCounted
+	var center: Vector3
+	var rotation: Quaternion
+	func _init(p_center: Vector3, p_rotation: Quaternion) -> void:
+		center = p_center
+		rotation = p_rotation
+
 const SILL_WALK_WIDTH: float = 1.0
 const DOOR_WIDTH: float = 1.12
 const DOOR_HEIGHT: float = 2.2

@@ -10,6 +10,8 @@ const DECK_PITCH: float = 5.5
 const CLEAR_HEIGHT: float = 3.2
 const WALL: float = 0.2
 const CORRIDOR_WIDTH: float = 3.0
+const DRESSING_RIB_PITCH: float = 2.0
+const DRESSING_PANEL_PITCH := Vector2(1.5, 1.0)
 const HATCH_WIDTH: float = 1.2
 const HATCH_HEIGHT: float = 2.4
 const DOOR_LABEL_HEIGHT: float = 1.82
@@ -53,6 +55,41 @@ class Spec:
 		return _deck
 	func data() -> Dictionary:
 		return {"id": _id, "deck": _deck}
+
+class DressingBatch:
+	extends RefCounted
+	var family: StringName
+	var shape: StringName
+	var role: StringName
+	var surface_part: StringName
+	var poses: Array[Transform3D] = []
+	func _init(p_family: StringName, p_shape: StringName, p_role: StringName, p_part: StringName) -> void:
+		family = p_family
+		shape = p_shape
+		role = p_role
+		surface_part = p_part
+
+class DressingClearance:
+	extends RefCounted
+	var id: StringName
+	var bounds: AABB
+	func _init(p_id: StringName, p_bounds: AABB) -> void:
+		id = p_id
+		bounds = p_bounds
+
+class DressingSpec:
+	extends RefCounted
+	var owner_id: StringName
+	var bounds: AABB
+	var rib_pitch: float = ShipLayout.DRESSING_RIB_PITCH
+	var panel_pitch := ShipLayout.DRESSING_PANEL_PITCH
+	var rib_stations: Array[float] = []
+	var pipe_paths: Array[PackedVector3Array] = []
+	var kick_rail_paths: Array[PackedVector3Array] = []
+	var grate_footprint: AABB
+	var grate_depth: float = 0.20
+	var clearances: Array[DressingClearance] = []
+	var batches: Array[DressingBatch] = []
 
 class DeckSpec:
 	extends Spec
@@ -104,6 +141,40 @@ class SectionSpec:
 		return _circuit
 	func emergency_light_role() -> EmergencyLightRole:
 		return ShipLayout.EmergencyLightRole.ROOM_POOL
+	func emergency_fixture_frames() -> Array[Transform3D]:
+		var frames: Array[Transform3D] = []
+		var pitch := _bounds.size.x / 4
+		for station: int in range(4):
+			for side: int in [-1, 1]:
+				frames.append(Transform3D(Basis(), Vector3(_bounds.position.x + (station + 0.5) * pitch, _bounds.position.y + 2.65, _bounds.get_center().z + side * (_bounds.size.z / 2 - 0.10))))
+		return frames
+	func regular_light_frames() -> Array[Transform3D]:
+		var frames: Array[Transform3D] = []
+		var pitch := _bounds.size.x / 4
+		for station: int in range(4):
+			frames.append(Transform3D(Basis(), Vector3(_bounds.position.x + (station + 0.5) * pitch, _bounds.end.y - 0.08, _bounds.get_center().z)))
+		return frames
+	func ceiling_trays() -> Array[ShipGeometry.SolidSpec]:
+		var datum := Vector3(_bounds.position.x, _bounds.end.y - ShipGeometry.TRAY_CEILING_DROP, _bounds.get_center().z)
+		return [
+			ShipGeometry.SolidSpec.new(datum + Vector3(10.5, 0, 0.35), Vector3(9, ShipGeometry.TRAY_HEIGHT, ShipGeometry.TRAY_WIDTH), Quaternion(Vector3.RIGHT, 0.05)),
+			ShipGeometry.SolidSpec.new(datum + Vector3(17, -0.04, -0.55), Vector3(3.2, ShipGeometry.TRAY_HEIGHT, ShipGeometry.TRAY_WIDTH), Quaternion(Vector3.UP, PI / 2) * Quaternion(Vector3.RIGHT, -0.06)),
+		]
+	func ceiling_loops() -> Array[ShipGeometry.WireLoop]:
+		var datum := Vector3(_bounds.position.x, _bounds.position.y, _bounds.get_center().z)
+		return [
+			ShipGeometry.WireLoop.new(datum + Vector3(7.6, 2.72, 0.42), Quaternion(Vector3.RIGHT, PI / 2) * Quaternion(Vector3.UP, 0.8)),
+			ShipGeometry.WireLoop.new(datum + Vector3(15.4, 2.66, -0.48), Quaternion(Vector3.RIGHT, PI / 2) * Quaternion(Vector3.UP, 2.1)),
+		]
+	func ceiling_damage_bounds() -> Array[AABB]:
+		var boxes: Array[AABB] = []
+		for solid: ShipGeometry.SolidSpec in ceiling_trays():
+			var box := ShipGeometry.box_aabb(solid)
+			boxes.append(AABB(box.min_corner(), box.max_corner() - box.min_corner()).grow(0.02))
+		for loop: ShipGeometry.WireLoop in ceiling_loops():
+			var size := Vector3.ONE * ShipGeometry.WIRE_OUTER_RADIUS * 2
+			boxes.append(AABB(loop.center - size / 2, size).grow(0.02))
+		return boxes
 	func emergency_fill_positions() -> Array[Vector3]:
 		var positions: Array[Vector3] = []
 		for index: int in range(7):
@@ -432,7 +503,7 @@ class BaySpec:
 			var side := signf(placement.center.y)
 			var frame := Transform3D(Basis(), Vector3(placement.center.x, 2.65, side * (Pods.ROOM_WIDTH / 2.0 - 0.10)))
 			fixtures.append(EmergencyFixtureSpec.new(StringName("D14-BAY-POD-%d-KEY" % pod.id().index()), ShipLayout.EmergencyLightRole.BAY_POOL, frame))
-		var lintel: Placement.SolidPlacement = Placement.hatch_solids()[2]
+		var lintel: ShipGeometry.SolidSpec = ShipGeometry.hatch_solids()[2]
 		fixtures.append(EmergencyFixtureSpec.new(ShipLayout.BAY_HATCH_KEY_ID, ShipLayout.EmergencyLightRole.BAY_HATCH, Transform3D(Basis(Vector3.UP, PI / 2.0), lintel.center + Vector3(-0.10, 0.22, 0.0))))
 		return fixtures
 	func emergency_fill_positions() -> Array[Vector3]:
@@ -685,6 +756,11 @@ func bay() -> BaySpec:
 
 func power_room() -> PowerRoomSpec:
 	return _lookup(POWER_ID, PowerRoomSpec)
+
+func dressing(space_id: StringName) -> DressingSpec:
+	var space: Spec = _records[space_id]
+	assert((space is SectionSpec or space is ConnectorSpec) and space.is_built(), "dressing requires a built corridor space: %s" % space_id)
+	return ShipDressing.build(self, space)
 
 func anchor(id: StringName) -> Transform3D:
 	assert(_anchors.has(id), "layout anchor exists: %s" % id)
