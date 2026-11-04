@@ -10,8 +10,7 @@ static func build(layout: ShipLayout, space_id: StringName) -> Node3D:
 	var root := Node3D.new()
 	root.name = "CorridorDressing"
 	root.set_meta(&"space_id", space_id)
-	var mask := Lighting.space_mask(layout, space_id)
-	if space_id == &"D14-S-041": mask |= Lighting.HALL_FILL_MASK
+	var mask := Lighting.architectural_mask(layout, space_id)
 	for family: ShipLayout.DressingBatch in spec.batches:
 		assert(not family.poses.is_empty(), "dressing batch has instances")
 		var batch := MultiMesh.new()

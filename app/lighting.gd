@@ -296,6 +296,12 @@ func lenses() -> Array[MeshInstance3D]:
 func lens_material() -> StandardMaterial3D:
 	return _lens_material
 
+static func architectural_mask(layout: ShipLayout, id: StringName) -> int:
+	var mask := space_mask(layout, id)
+	if layout.architectural_light_role(id) == ShipLayout.ArchitecturalLightRole.HALL_FILL:
+		mask |= HALL_FILL_MASK
+	return mask
+
 static func space_mask(layout: ShipLayout, id: StringName) -> int:
 	if id == &"D14-S-040":
 		return 2

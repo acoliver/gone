@@ -1,6 +1,123 @@
 extends SimTestCase
 
 const HALL: StringName = &"D14-S-041"
+func test_outer_sections_reserve_only_presented_services() -> void:
+	var layout := ShipLayout.authored().layout
+	for id: StringName in [&"D14-S-040", &"D14-S-042"]:
+		var section := layout.section(id)
+		assert_int_equal(section.regular_light_frames().size(), 0, "emergency-only section has no white strips")
+		var dressing := layout.dressing(id)
+		assert_int_equal(_reservation_count(dressing, "STRIP/"), 0, "absent white strips reserve no volume")
+		assert_int_equal(_reservation_count(dressing, "LAMP/"), section.emergency_fixture_frames().size(), "every actual fixture reserves its volume")
+		assert_int_equal(_reservation_count(dressing, "SWITCH_REACH"), 0, "no switch means no switch reservation")
+
+func test_service_exclusions_follow_inventory_without_room_identity() -> void:
+	var layout := ShipLayout.authored().layout
+	var section := layout.section(HALL)
+	var original := ShipDressing.build(layout, section)
+	section._id = &"TEST-SERVICE-BEARING-SPACE"
+	var renamed := ShipDressing.build(layout, section)
+	for prefix: String in ["SWITCH_REACH", "CEILING_DAMAGE/", "FILL/", "LAMP/", "STRIP/"]:
+		assert_true(_reservation_count(original, prefix) > 0, "authored service exists: %s" % prefix)
+		assert_int_equal(_reservation_count(renamed, prefix), _reservation_count(original, prefix), "service inventory survives renaming: %s" % prefix)
+	assert_true(_clearance(renamed, &"SWITCH_REACH").is_equal_approx(_clearance(original, &"SWITCH_REACH")), "switch bounds come from the service, not an id")
+	var bare := layout.section(&"D14-S-040")
+	bare._id = HALL
+	var no_switch := ShipDressing.build(layout, bare)
+	assert_int_equal(_reservation_count(no_switch, "SWITCH_REACH"), 0, "a familiar id does not invent a switch")
+	assert_int_equal(_reservation_count(no_switch, "CEILING_DAMAGE/"), 0, "a familiar id does not invent damage")
+	assert_int_equal(_reservation_count(no_switch, "FILL/"), 0, "a familiar id does not invent fills")
+
+func test_typed_service_inventory_is_consumed_and_tracks_authored_changes() -> void:
+	var layout := ShipLayout.authored().layout
+	for id: StringName in _spaces(layout):
+		var space: ShipLayout.Spec = layout.section(id) if id in layout.deck(14).section_ids() else layout.connector(id)
+		var dressing := layout.dressing(id)
+		for reservation: ShipLayout.ServiceReservation in space.service_reservations():
+			assert_true(reservation.kind in ShipLayout.ServiceKind.values(), "typed service reservation")
+			assert_true(_clearance(dressing, reservation.id).is_equal_approx(reservation.bounds), "recipe consumes the authored service bounds")
+	var section := layout.section(&"D14-S-040")
+	var frame := Transform3D(Basis(), section.bounds().position + Vector3(2, 1.25, 0.1))
+	section._services.switch_frames.append(frame)
+	var with_switch := layout.dressing(section.id())
+	assert_int_equal(_reservation_count(with_switch, "SWITCH_REACH"), 1, "adding a switch requires no recipe identity change")
+	assert_vec3_equal(_clearance(with_switch, &"SWITCH_REACH").get_center(), frame.origin, "switch reach follows authored placement")
+	section._services.light_role = ShipLayout.ArchitecturalLightRole.HALL_FILL
+	var root := CorridorDressing.build(layout, section.id())
+	for child: MultiMeshInstance3D in root.get_children():
+		assert_int_equal(child.layers, Lighting.space_mask(layout, section.id()) | Lighting.HALL_FILL_MASK, "semantic fill role reaches every architectural batch without hall identity")
+	root.free()
+
+func test_adjacent_generated_floor_geometry_has_unique_ownership_and_complete_coverage() -> void:
+	var layout := ShipLayout.authored().layout
+	for door_id: StringName in layout.door_ids():
+		var door := layout.door(door_id)
+		if door.kind() != ShipLayout.DoorKind.HATCH: continue
+		var spaces := door.spaces()
+		var connector_id := spaces[0] if "-C-" in String(spaces[0]) else spaces[1]
+		var section_id := spaces[1] if connector_id == spaces[0] else spaces[0]
+		var connector := layout.connector(connector_id)
+		var section := layout.section(section_id)
+		if not connector.is_built() or not section.is_built(): continue
+		var owners: Array[ShipLayout.DressingSpec] = [layout.dressing(section_id), layout.dressing(connector_id)]
+		var first_trays := _floor_boxes(owners[0], false)
+		var second_trays := _floor_boxes(owners[1], false)
+		for a: AABB in first_trays:
+			for b: AABB in second_trays:
+				assert_false(_xz_overlap(a, b), "opaque faces have one threshold owner: %s" % door_id)
+		for index: int in range(2):
+			var other_trays := second_trays if index == 0 else first_trays
+			for bar: AABB in _floor_boxes(owners[index], true):
+				for tray: AABB in other_trays:
+					assert_false(_xz_overlap(bar, tray), "grate cannot enter its neighbor's floor patch: %s" % door_id)
+	var trays: Array[AABB] = []
+	var expected: Array[AABB] = []
+	# Include every owner on the deck: the opposite end of a connector can
+	# belong to a third room's bridge rather than either member of a pair.
+	for id: StringName in layout.deck(14).section_ids() + layout.deck(14).connector_ids():
+		var solids := ShipGeometry.section_solids(layout, layout.section(id)) if id in layout.deck(14).section_ids() else ShipGeometry.connector_solids(layout, layout.connector(id))
+		var box := ShipGeometry.box_aabb(solids[0])
+		expected.append(AABB(box.min_corner(), box.max_corner() - box.min_corner()))
+		trays.append_array(_floor_boxes(layout.dressing(id), false))
+	# Partition at every generated and structural edge, so even a narrow gap
+	# or overlap occupies a complete checked cell rather than evading a grid.
+	var xs: Array[float] = []
+	var zs: Array[float] = []
+	for box: AABB in expected + trays:
+		xs.append_array([box.position.x, box.end.x])
+		zs.append_array([box.position.z, box.end.z])
+	xs.sort()
+	zs.sort()
+	for xi: int in range(xs.size() - 1):
+		if xs[xi + 1] - xs[xi] < 0.0001: continue
+		for zi: int in range(zs.size() - 1):
+			if zs[zi + 1] - zs[zi] < 0.0001: continue
+			var point := Vector2((xs[xi] + xs[xi + 1]) / 2, (zs[zi] + zs[zi + 1]) / 2)
+			var supported := _xz_count(expected, point) > 0
+			assert_int_equal(_xz_count(trays, point), 1 if supported else 0, "complete unique generated tray coverage at %s" % point)
+
+func _reservation_count(spec: ShipLayout.DressingSpec, prefix: String) -> int:
+	var count := 0
+	for clearance: ShipLayout.DressingClearance in spec.clearances:
+		if String(clearance.id).begins_with(prefix): count += 1
+	return count
+
+func _floor_boxes(spec: ShipLayout.DressingSpec, bars: bool) -> Array[AABB]:
+	var boxes: Array[AABB] = []
+	for batch: ShipLayout.DressingBatch in spec.batches:
+		if (bars and String(batch.family).begins_with("Grate")) or (not bars and batch.family == &"SubfloorTray"):
+			for pose: Transform3D in batch.poses: boxes.append(pose * ShipDressing.UNIT)
+	return boxes
+
+func _xz_overlap(a: AABB, b: AABB) -> bool:
+	return minf(a.end.x, b.end.x) - maxf(a.position.x, b.position.x) > 0.0001 and minf(a.end.z, b.end.z) - maxf(a.position.z, b.position.z) > 0.0001
+
+func _xz_count(boxes: Array[AABB], point: Vector2) -> int:
+	var count := 0
+	for box: AABB in boxes:
+		if point.x > box.position.x and point.x < box.end.x and point.y > box.position.z and point.y < box.end.z: count += 1
+	return count
+
 func test_grate_retains_the_complete_shared_wall_threshold_footprint() -> void:
 	if not _available(): return
 	var layout := ShipLayout.authored().layout
@@ -29,7 +146,7 @@ func test_layout_owns_stations_and_moved_opening_exclusions() -> void:
 	var bounds := section.bounds()
 	bounds.position.x -= 1
 	bounds.size.x += 1
-	records[records.find(section)] = ShipLayout.SectionSpec.new(section.id(), 14, section.number(), bounds, section.opening_ids(), section.side_door_ids(), section.circuit(), true)
+	records[records.find(section)] = ShipLayout.SectionSpec.new(section.id(), 14, section.number(), bounds, section.opening_ids(), section.side_door_ids(), section.circuit(), true, section._services)
 	var door := original.door(&"D14-S-041-SIDE-003-PORT")
 	var frame := door.frame()
 	frame.origin.x += 0.75
@@ -89,7 +206,7 @@ func test_batch_count_depends_on_families_not_corridor_length() -> void:
 	var records := layout.records()
 	var bounds := section.bounds()
 	bounds.size.x *= 4
-	records[records.find(section)] = ShipLayout.SectionSpec.new(section.id(), 14, section.number(), bounds, section.opening_ids(), section.side_door_ids(), section.circuit(), true)
+	records[records.find(section)] = ShipLayout.SectionSpec.new(section.id(), 14, section.number(), bounds, section.opening_ids(), section.side_door_ids(), section.circuit(), true, section._services)
 	var longer := ShipLayout.try_new(records)
 	assert_true(longer.is_ok(), "extended section valid")
 	var extended: Variant = longer.layout.call(&"dressing", HALL)
@@ -101,11 +218,11 @@ func test_presenter_uses_owned_masked_batches_only() -> void:
 	if not _available(): return
 	var script: GDScript = load("res://app/corridor_dressing.gd")
 	var layout := ShipLayout.authored().layout
-	for id: StringName in [HALL, &"D14-S-040", &"D01-C-000", &"D30-C-001"]:
+	for id: StringName in [HALL, &"D14-C-001", &"D14-S-040", &"D01-C-000", &"D30-C-001"]:
 		var node: Node3D = script.build(layout, id)
 		var spec: Variant = layout.call(&"dressing", id)
 		assert_int_equal(node.get_child_count(), spec.batches.size(), "one MultiMesh per family")
-		var mask := Lighting.space_mask(layout, id) | (Lighting.HALL_FILL_MASK if id == HALL else 0)
+		var mask := Lighting.space_mask(layout, id) | (Lighting.HALL_FILL_MASK if _reservation_count(spec, "FILL/") > 0 else 0)
 		for child: Node in node.get_children():
 			assert_true(child is MultiMeshInstance3D, "dressing adds only batched geometry")
 			assert_int_equal(child.layers, mask, "room light mask")

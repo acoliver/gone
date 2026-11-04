@@ -232,7 +232,7 @@ static func build(game: Game) -> Hallway:
 	bounce.name = "EmergencyFillEnd"
 	hallway.add_child(bounce)
 	hallway._fill_lights.append(bounce)
-	Lighting.mesh_layers(hallway, 1 | Lighting.HALL_FILL_MASK)
+	Lighting.mesh_layers(hallway, Lighting.architectural_mask(game.layout, section.id()))
 	return hallway
 
 ## The fixture group mirrors the stasis bay's: a pair at every station

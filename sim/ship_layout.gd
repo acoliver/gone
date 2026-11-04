@@ -34,6 +34,8 @@ enum Policy { CRANK, NEVER_OPENS, ROD_PRY, PRESS_SLIDE }
 enum DoorKind { HATCH, SIDE, LIFT, BAY, POWER }
 enum AnimationRecipe { HINGE, FIXED, SLIDE }
 enum EmergencyLightRole { BAY_POOL, BAY_HATCH, ROOM_POOL }
+enum ArchitecturalLightRole { LOCAL, HALL_FILL }
+enum ServiceKind { SWITCH, CEILING_DAMAGE, FIXTURE, FILL, REGULAR_STRIP }
 
 class EmergencyFixtureSpec:
 	extends RefCounted
@@ -55,6 +57,10 @@ class Spec:
 		return _deck
 	func data() -> Dictionary:
 		return {"id": _id, "deck": _deck}
+	func service_reservations() -> Array[ServiceReservation]:
+		return []
+	func architectural_light_role() -> ArchitecturalLightRole:
+		return ArchitecturalLightRole.LOCAL
 
 class DressingBatch:
 	extends RefCounted
@@ -77,6 +83,20 @@ class DressingClearance:
 		id = p_id
 		bounds = p_bounds
 
+class ServiceReservation:
+	extends DressingClearance
+	var kind: ServiceKind
+	func _init(p_id: StringName, p_kind: ServiceKind, p_bounds: AABB) -> void:
+		super(p_id, p_bounds)
+		kind = p_kind
+
+class SectionServices:
+	extends RefCounted
+	var switch_frames: Array[Transform3D] = []
+	var regular_strips: bool = false
+	var ceiling_damage: bool = false
+	var light_role: ArchitecturalLightRole = ArchitecturalLightRole.LOCAL
+
 class DressingSpec:
 	extends RefCounted
 	var owner_id: StringName
@@ -87,6 +107,7 @@ class DressingSpec:
 	var pipe_paths: Array[PackedVector3Array] = []
 	var kick_rail_paths: Array[PackedVector3Array] = []
 	var grate_footprint: AABB
+	var floor_patches: Array[AABB] = []
 	var grate_depth: float = 0.20
 	var clearances: Array[DressingClearance] = []
 	var batches: Array[DressingBatch] = []
@@ -120,7 +141,8 @@ class SectionSpec:
 	var _side_door_ids: Array[StringName]
 	var _circuit: StringName
 	var _is_built: bool
-	func _init(p_id: StringName, p_deck: int, p_number: int, p_bounds: AABB, p_opening_ids: Array[StringName], p_side_door_ids: Array[StringName], p_circuit: StringName, p_is_built: bool) -> void:
+	var _services: SectionServices
+	func _init(p_id: StringName, p_deck: int, p_number: int, p_bounds: AABB, p_opening_ids: Array[StringName], p_side_door_ids: Array[StringName], p_circuit: StringName, p_is_built: bool, p_services: SectionServices = null) -> void:
 		_id = p_id
 		_deck = p_deck
 		_number = p_number
@@ -129,6 +151,7 @@ class SectionSpec:
 		_side_door_ids = p_side_door_ids.duplicate()
 		_circuit = p_circuit
 		_is_built = p_is_built
+		_services = p_services if p_services != null else SectionServices.new()
 	func number() -> int:
 		return _number
 	func bounds() -> AABB:
@@ -150,17 +173,20 @@ class SectionSpec:
 		return frames
 	func regular_light_frames() -> Array[Transform3D]:
 		var frames: Array[Transform3D] = []
+		if not _services.regular_strips: return frames
 		var pitch := _bounds.size.x / 4
 		for station: int in range(4):
 			frames.append(Transform3D(Basis(), Vector3(_bounds.position.x + (station + 0.5) * pitch, _bounds.end.y - 0.08, _bounds.get_center().z)))
 		return frames
 	func ceiling_trays() -> Array[ShipGeometry.SolidSpec]:
+		if not _services.ceiling_damage: return []
 		var datum := Vector3(_bounds.position.x, _bounds.end.y - ShipGeometry.TRAY_CEILING_DROP, _bounds.get_center().z)
 		return [
 			ShipGeometry.SolidSpec.new(datum + Vector3(10.5, 0, 0.35), Vector3(9, ShipGeometry.TRAY_HEIGHT, ShipGeometry.TRAY_WIDTH), Quaternion(Vector3.RIGHT, 0.05)),
 			ShipGeometry.SolidSpec.new(datum + Vector3(17, -0.04, -0.55), Vector3(3.2, ShipGeometry.TRAY_HEIGHT, ShipGeometry.TRAY_WIDTH), Quaternion(Vector3.UP, PI / 2) * Quaternion(Vector3.RIGHT, -0.06)),
 		]
 	func ceiling_loops() -> Array[ShipGeometry.WireLoop]:
+		if not _services.ceiling_damage: return []
 		var datum := Vector3(_bounds.position.x, _bounds.position.y, _bounds.get_center().z)
 		return [
 			ShipGeometry.WireLoop.new(datum + Vector3(7.6, 2.72, 0.42), Quaternion(Vector3.RIGHT, PI / 2) * Quaternion(Vector3.UP, 0.8)),
@@ -177,11 +203,35 @@ class SectionSpec:
 		return boxes
 	func emergency_fill_positions() -> Array[Vector3]:
 		var positions: Array[Vector3] = []
+		if _services.light_role == ArchitecturalLightRole.LOCAL: return positions
 		for index: int in range(7):
 			positions.append(Vector3(_bounds.position.x + 1.5 + index * 3.0, _bounds.end.y - 0.85, _bounds.get_center().z))
 		return positions
 	func emergency_end_fill_position() -> Vector3:
 		return Vector3(_bounds.end.x - 0.9, _bounds.position.y + 1.7, _bounds.get_center().z)
+
+	func switch_frames() -> Array[Transform3D]:
+		return _services.switch_frames.duplicate()
+	func architectural_light_role() -> ArchitecturalLightRole:
+		return _services.light_role
+	func service_reservations() -> Array[ServiceReservation]:
+		var reservations: Array[ServiceReservation] = []
+		for index: int in range(_services.switch_frames.size()):
+			var frame := _services.switch_frames[index]
+			var name := "SWITCH_REACH" if index == 0 else "SWITCH_REACH/%d" % index
+			reservations.append(ServiceReservation.new(StringName(name), ServiceKind.SWITCH, AABB(frame.origin - Vector3(0.35, 0.35, 0.40), Vector3(0.7, 0.7, 0.8))))
+		for frame: Transform3D in emergency_fixture_frames():
+			reservations.append(ServiceReservation.new(StringName("LAMP/%s" % frame.origin), ServiceKind.FIXTURE, AABB(frame.origin - Vector3(0.28, 0.20, 0.20), Vector3(0.56, 0.40, 0.40))))
+		for frame: Transform3D in regular_light_frames():
+			reservations.append(ServiceReservation.new(StringName("STRIP/%s" % frame.origin), ServiceKind.REGULAR_STRIP, AABB(frame.origin - Vector3(0.60, 0.20, 0.12), Vector3(1.20, 0.24, 0.24))))
+		var damage := ceiling_damage_bounds()
+		for index: int in range(damage.size()):
+			reservations.append(ServiceReservation.new(StringName("CEILING_DAMAGE/%d" % index), ServiceKind.CEILING_DAMAGE, damage[index]))
+		var fills := emergency_fill_positions()
+		if _services.light_role != ArchitecturalLightRole.LOCAL: fills.append(emergency_end_fill_position())
+		for point: Vector3 in fills:
+			reservations.append(ServiceReservation.new(StringName("FILL/%s" % point), ServiceKind.FILL, AABB(point - Vector3.ONE * 0.12, Vector3.ONE * 0.24)))
+		return reservations
 
 	func is_built() -> bool:
 		return _is_built
@@ -193,6 +243,10 @@ class SectionSpec:
 		result["side_door_ids"] = _side_door_ids.duplicate(true)
 		result["circuit"] = _circuit
 		result["is_built"] = _is_built
+		result["architectural_light_role"] = architectural_light_role()
+		result["services"] = []
+		for reservation: ServiceReservation in service_reservations():
+			result["services"].append({"id": reservation.id, "kind": reservation.kind, "bounds": reservation.bounds})
 		return result
 
 class ConnectorSpec:
@@ -233,6 +287,17 @@ class ConnectorSpec:
 		return Vector3(_bounds.get_center().x + (0.85 if _pitch_index == 1 else 0.0), _bounds.position.y + 0.50, -2.50)
 	func shared_wall_owner() -> StringName:
 		return _shared_wall_owner
+	func emergency_fixture_frames() -> Array[Transform3D]:
+		var frames: Array[Transform3D] = []
+		for side: int in [-1, 1]:
+			frames.append(Transform3D(Basis(), Vector3(_bounds.get_center().x + side * _bounds.size.x / 4, _bounds.position.y + 1.75, side * (_bounds.size.z / 2 - 0.30))))
+		frames.append(Transform3D(Basis(), landing_key_position()))
+		return frames
+	func service_reservations() -> Array[ServiceReservation]:
+		var reservations: Array[ServiceReservation] = []
+		for frame: Transform3D in emergency_fixture_frames():
+			reservations.append(ServiceReservation.new(StringName("LAMP/%s" % frame.origin), ServiceKind.FIXTURE, AABB(frame.origin - Vector3(0.28, 0.20, 0.20), Vector3(0.56, 0.40, 0.40))))
+		return reservations
 	func is_built() -> bool:
 		return _is_built
 	func data() -> Dictionary:
@@ -650,7 +715,7 @@ static func try_new(specs: Array[Spec]) -> Result:
 	for id: StringName in expected_cranks + [BAY_DOOR_ID, POWER_DOOR_ID]:
 		if not id in door_ids:
 			return _failure(LayoutError.Kind.OPENABILITY, id)
-	layout._anchors[&"D14-HALL-SWITCH"] = Transform3D(Basis(Vector3.UP, PI), Vector3(16.2, 1.25, 1.45))
+	layout._anchors[&"D14-HALL-SWITCH"] = authored_hall_switch_frame()
 	layout._anchors[&"D14-BAY-ROD"] = layout.bay_to_world() * layout.bay().rod_local()
 	layout._anchors[&"D14-POWER-CONSOLE"] = Transform3D(Basis(), Vector3(22.05, 0, -7.5))
 	var result := Result.new()
@@ -757,6 +822,44 @@ func bay() -> BaySpec:
 func power_room() -> PowerRoomSpec:
 	return _lookup(POWER_ID, PowerRoomSpec)
 
+func architectural_light_role(space_id: StringName) -> ArchitecturalLightRole:
+	assert(has_space(space_id), "architectural lighting requires a space")
+	return _records[space_id].architectural_light_role()
+
+func visual_floor_patches(space: Spec) -> Array[AABB]:
+	var patches: Array[AABB] = [_floor_bounds(space)]
+	if space is ConnectorSpec:
+		# Sections own their wall-band bridges; collision slabs may still overlap.
+		for id: StringName in space.hatch_ids():
+			for neighbor_id: StringName in door(id).spaces():
+				var neighbor: Spec = _records[neighbor_id]
+				if not neighbor is SectionSpec or not neighbor.is_built(): continue
+				var remaining: Array[AABB] = []
+				for patch: AABB in patches:
+					remaining.append_array(_subtract_floor(patch, _floor_bounds(neighbor)))
+				patches = remaining
+	return patches
+
+func _floor_bounds(space: Spec) -> AABB:
+	var solids := ShipGeometry.section_solids(self, space) if space is SectionSpec else ShipGeometry.connector_solids(self, space)
+	var box := ShipGeometry.box_aabb(solids[0])
+	return AABB(box.min_corner(), box.max_corner() - box.min_corner())
+
+static func _subtract_floor(patch: AABB, owned: AABB) -> Array[AABB]:
+	var start := patch.position.max(owned.position)
+	var end := patch.end.min(owned.end)
+	if end.x <= start.x or end.z <= start.z: return [patch]
+	var result: Array[AABB] = []
+	for rect: Rect2 in [
+		Rect2(patch.position.x, patch.position.z, start.x - patch.position.x, patch.size.z),
+		Rect2(end.x, patch.position.z, patch.end.x - end.x, patch.size.z),
+		Rect2(start.x, patch.position.z, end.x - start.x, start.z - patch.position.z),
+		Rect2(start.x, end.z, end.x - start.x, patch.end.z - end.z),
+	]:
+		if rect.size.x > 0 and rect.size.y > 0:
+			result.append(AABB(Vector3(rect.position.x, patch.position.y, rect.position.y), Vector3(rect.size.x, patch.size.y, rect.size.y)))
+	return result
+
 func dressing(space_id: StringName) -> DressingSpec:
 	var space: Spec = _records[space_id]
 	assert((space is SectionSpec or space is ConnectorSpec) and space.is_built(), "dressing requires a built corridor space: %s" % space_id)
@@ -832,6 +935,9 @@ static func _add_door(specs: Array[Spec], id: StringName, deck: int, kind: int, 
 		interaction.origin += Vector3(0, 1.2, 0)
 		specs.append(FaceSpec.new(faces[index], deck, id, spaces[index], destinations[index], local, interaction))
 
+static func authored_hall_switch_frame() -> Transform3D:
+	return Transform3D(Basis(Vector3.UP, PI), Vector3(16.2, 1.25, 1.45))
+
 static func _authored_records() -> Array[Spec]:
 	var specs: Array[Spec] = []
 	for d: int in range(1, 31):
@@ -865,7 +971,13 @@ static func _authored_records() -> Array[Spec]:
 				openings.append(aft_hatch)
 				if number == 41:
 					openings.append_array([BAY_DOOR_ID, POWER_DOOR_ID])
-			specs.append(SectionSpec.new(id, d, number, AABB(Vector3(start, y, -1.5), Vector3(24, CLEAR_HEIGHT, 3)), openings, side_ids, &"opening" if number == 41 else &"emergency", d == 14))
+			var services := SectionServices.new()
+			if d == 14 and number == 41:
+				services.switch_frames = [authored_hall_switch_frame()]
+				services.regular_strips = true
+				services.ceiling_damage = true
+				services.light_role = ArchitecturalLightRole.HALL_FILL
+			specs.append(SectionSpec.new(id, d, number, AABB(Vector3(start, y, -1.5), Vector3(24, CLEAR_HEIGHT, 3)), openings, side_ids, &"opening" if number == 41 else &"emergency", d == 14, services))
 		for n: int in range(2):
 			var id := connector_id(d, n)
 			var start: float = 30 * n

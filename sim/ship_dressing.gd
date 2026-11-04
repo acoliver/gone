@@ -48,18 +48,7 @@ static func _clearances(layout: ShipLayout, space: ShipLayout.Spec, spec: ShipLa
 		var landing := well.landing_bounds(space.deck_number())
 		_reserve(spec, &"TRANSFER", AABB(Vector3(landing.position.x + 0.15, landing.position.y, well.climb_line().origin.z - 0.35), Vector3(landing.size.x - 0.30, 2.4, b.position.z - well.climb_line().origin.z + 0.7)))
 		_reserve(spec, &"CLIMB", AABB(Vector3(well.climb_line().origin.x - 0.35, b.position.y, well.climb_line().origin.z - 0.35), Vector3(0.7, b.size.y, 0.7)))
-	else:
-		for frame: Transform3D in space.emergency_fixture_frames():
-			_reserve(spec, StringName("LAMP/%s" % frame.origin), AABB(frame.origin - Vector3(0.28, 0.20, 0.20), Vector3(0.56, 0.40, 0.40)))
-		for frame: Transform3D in space.regular_light_frames():
-			_reserve(spec, StringName("STRIP/%s" % frame.origin), AABB(frame.origin - Vector3(0.60, 0.20, 0.12), Vector3(1.20, 0.24, 0.24)))
-		if space.id() == &"D14-S-041":
-			var switch := layout.anchor(&"D14-HALL-SWITCH").origin
-			_reserve(spec, &"SWITCH_REACH", AABB(switch - Vector3(0.35, 0.35, 0.40), Vector3(0.7, 0.7, 0.8)))
-			for index: int in range(space.ceiling_damage_bounds().size()):
-				_reserve(spec, StringName("CEILING_DAMAGE/%d" % index), space.ceiling_damage_bounds()[index])
-			for point: Vector3 in space.emergency_fill_positions() + [space.emergency_end_fill_position()]:
-				_reserve(spec, StringName("FILL/%s" % point), AABB(point - Vector3.ONE * 0.12, Vector3.ONE * 0.24))
+	spec.clearances.append_array(space.service_reservations())
 
 static func _sweep(door: ShipLayout.DoorSpec) -> AABB:
 	var result := AABB()
@@ -92,9 +81,18 @@ static func _put(spec: ShipLayout.DressingSpec, family: StringName, size: Vector
 
 static func _append(spec: ShipLayout.DressingSpec, family: StringName, shape: StringName, role: StringName, part: StringName, pose: Transform3D) -> void:
 	if String(family).begins_with("Grate") or family == &"SubfloorTray":
-		var top := Vector3(0, spec.bounds.position.y - (spec.grate_depth if family == &"SubfloorTray" else 0.0), 0).y
-		# Correct the f32 transform rounding at remote deck elevations.
-		pose.origin.y += top - (pose * UNIT).end.y
+		var bounds := pose * UNIT
+		for patch: AABB in spec.floor_patches:
+			var start := Vector3(maxf(bounds.position.x, patch.position.x), bounds.position.y, maxf(bounds.position.z, patch.position.z))
+			var end := Vector3(minf(bounds.end.x, patch.end.x), bounds.end.y, minf(bounds.end.z, patch.end.z))
+			if end.x <= start.x or end.z <= start.z: continue
+			# Keep the existing grid and transforms away from the ownership seam.
+			var clipped := pose if start == bounds.position and end == bounds.end else _pose((start + end) / 2, end - start)
+			var top := Vector3(0, spec.bounds.position.y - (spec.grate_depth if family == &"SubfloorTray" else 0.0), 0).y
+			# Correct the f32 transform rounding at remote deck elevations.
+			clipped.origin.y += top - (clipped * UNIT).end.y
+			_batch(spec, family, shape, role, part).poses.append(clipped)
+		return
 	_batch(spec, family, shape, role, part).poses.append(pose)
 
 ## Subtract every reserved interval from a straight run, including its section.
@@ -184,7 +182,8 @@ static func _on_path(x: float, paths: Array[PackedVector3Array]) -> bool:
 static func _grate(layout: ShipLayout, space: ShipLayout.Spec, spec: ShipLayout.DressingSpec) -> void:
 	var solids := ShipGeometry.section_solids(layout, space) if space is ShipLayout.SectionSpec else ShipGeometry.connector_solids(layout, space)
 	var floor_box := ShipGeometry.box_aabb(solids[0])
-	# Preserve the structural floor's wall-band bridges at room thresholds.
+	spec.floor_patches = layout.visual_floor_patches(space)
+	# Preserve the structural grid while clipping to uniquely owned visual patches.
 	var b := AABB(Vector3(floor_box.min_corner().x, spec.bounds.position.y, floor_box.min_corner().z), Vector3(floor_box.half_extents().x * 2, spec.bounds.size.y, floor_box.half_extents().z * 2))
 	spec.grate_footprint = AABB(Vector3(b.position.x, b.position.y - 0.09, b.position.z), Vector3(b.size.x, 0.09, b.size.z))
 	var coamings: Array[AABB] = []
