@@ -30,6 +30,12 @@ uniform bool floor_surface = false;
 uniform bool rivet_surface = false;
 uniform bool edge_surface = false;
 uniform bool curved_surface = false;
+uniform bool baked_hatch = false;
+uniform float hatch_detail_pitch = 0.20;
+uniform vec3 hatch_colour_gain = vec3(1.0);
+uniform sampler2D baked_albedo : source_color, repeat_disable, filter_linear_mipmap_anisotropic;
+uniform sampler2D baked_normal : hint_normal, repeat_disable, filter_linear_mipmap_anisotropic;
+uniform sampler2D baked_orm : repeat_disable, filter_linear_mipmap_anisotropic;
 uniform vec2 panel_pitch = vec2(1.5, 1.0);
 instance uniform vec4 surface_x = vec4(1,0,0,0);
 instance uniform vec4 surface_y = vec4(0,1,0,0);
@@ -52,7 +58,49 @@ void vertex() {
     vec3 normal_world = normalize(MODEL_NORMAL_MATRIX * NORMAL);
     wn = vec3(dot(surface_x.xyz, normal_world), dot(surface_y.xyz, normal_world), dot(surface_z.xyz, normal_world));
 }
+vec3 hatch_tone(vec3 colour, float saturation, float value) {
+    colour = max(mix(vec3(max(colour.r, max(colour.g, colour.b))), colour, saturation), vec3(0.0)) * value;
+    float luminance = dot(colour, vec3(0.2126, 0.7152, 0.0722));
+    return colour * min(1.0, 0.105 / max(luminance, 0.0001));
+}
 void fragment() {
+    if (baked_hatch) {
+        vec3 masks = texture(baked_albedo, UV).rgb;
+        vec3 weather = texture(baked_orm, UV).rgb;
+        vec3 n = normalize(wn);
+        vec3 signs = mix(vec3(-1.0), vec3(1.0), step(vec3(0.0), n));
+        vec3 weights = pow(abs(n), vec3(4.0));
+        weights /= dot(weights, vec3(1.0));
+        // Scan coordinates belong to the moving leaf, wheel or fixed frame,
+        // independent of atlas packing and room/world placement.
+        vec3 steel = scan_sample(albedo_a, wp, signs, weights, hatch_detail_pitch, vec2(0));
+        vec3 paint = scan_sample(albedo_b, wp, signs, weights, hatch_detail_pitch, vec2(0));
+        vec3 oxide = scan_sample(albedo_c, wp, signs, weights, hatch_detail_pitch, vec2(0));
+        vec3 base = hatch_tone(steel, 0.80, 0.78);
+        vec3 colour = mix(base, hatch_tone(oxide, 1.0, 0.70), masks.g);
+        colour = mix(colour, mix(base, hatch_tone(paint, 0.65, 0.70), 0.45), masks.r);
+        colour = mix(colour, mix(vec3(max(steel.r, max(steel.g, steel.b))), steel, 0.20), masks.b);
+        // Warning paint uses an analytic diagonal at physical scale. Mask
+        // interpolation cannot erase its alternating yellow and black fields.
+        float stripe = step(0.48, fract((wp.x + wp.y) / 0.12));
+        float intact = smoothstep(0.035, 0.065, dot(steel, vec3(0.2126, 0.7152, 0.0722)));
+        vec3 warning = mix(vec3(0.004, 0.003, 0.002), vec3(0.32, 0.20, 0.045), stripe);
+        colour = mix(colour, warning * (0.80 + 0.20 * steel), weather.b * intact);
+        ALBEDO = colour * (1.0 - weather.g) * hatch_colour_gain;
+        vec3 orm = mix(scan_sample(orm_a, wp, signs, weights, hatch_detail_pitch, vec2(0)), scan_sample(orm_c, wp, signs, weights, hatch_detail_pitch, vec2(0)), masks.g);
+        orm = mix(orm, scan_sample(orm_b, wp, signs, weights, hatch_detail_pitch, vec2(0)), masks.r);
+        vec3 grain = mix(scan_normal(normal_a, wp, signs, weights, hatch_detail_pitch, vec2(0)), scan_normal(normal_c, wp, signs, weights, hatch_detail_pitch, vec2(0)), masks.g);
+        grain = mix(grain, scan_normal(normal_b, wp, signs, weights, hatch_detail_pitch, vec2(0)), masks.r);
+        mat3 world_from_surface = mat3(surface_x.xyz, surface_y.xyz, surface_z.xyz);
+        vec3 detail_normal = (VIEW_MATRIX * vec4(world_from_surface * grain, 0.0)).xyz;
+        vec3 tangent_normal = bc5_normal(texture(baked_normal, UV).rg);
+        NORMAL = normalize(TANGENT * tangent_normal.x + BINORMAL * tangent_normal.y + NORMAL * tangent_normal.z + detail_normal * 0.24);
+        ROUGHNESS = clamp(orm.g - masks.g * 0.12, 0.24, 0.97);
+        METALLIC = orm.b * (1.0 - masks.g) * 0.55;
+        AO = weather.r;
+        AO_LIGHT_AFFECT = 1.0;
+        SPECULAR = 0.32;
+    } else {
     vec3 n=normalize(wn), an=abs(n);
     vec3 signs=mix(vec3(-1.0), vec3(1.0), step(vec3(0.0),n));
     int axis=an.y>max(an.x,an.z)?1:(an.x>an.z?0:2);
@@ -239,4 +287,5 @@ void fragment() {
     METALLIC=mix(0.20,0.025,oxide);
     SPECULAR=0.32;
     AO=mix(0.86,1.0,orm.r)*mix(0.90,1.0,pits);
+    }
 }

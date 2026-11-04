@@ -57,6 +57,29 @@ static func outline(size: Vector2, radius: float) -> PackedVector2Array:
 			points.append(center + Vector2(cos(angle), sin(angle)) * radius)
 	return points
 
+static func loop_length(loop: PackedVector2Array) -> float:
+	var length := 0.0
+	for index: int in range(loop.size()):
+		length += loop[index].distance_to(loop[(index + 1) % loop.size()])
+	return length
+
+## Equal arc-length spacing around a closed loop. Restarting at every edge crowds
+## the short tangent segments of a rounded corner against the straight runs.
+static func evenly_spaced(loop: PackedVector2Array, count: int) -> PackedVector2Array:
+	var spacing := loop_length(loop) / count
+	var points := PackedVector2Array()
+	var edge := 0
+	var edge_start := 0.0
+	for step: int in range(count):
+		var distance := step * spacing
+		var edge_length := loop[edge].distance_to(loop[(edge + 1) % loop.size()])
+		while distance > edge_start + edge_length:
+			edge_start += edge_length
+			edge += 1
+			edge_length = loop[edge].distance_to(loop[(edge + 1) % loop.size()])
+		points.append(loop[edge].lerp(loop[(edge + 1) % loop.size()], (distance - edge_start) / edge_length))
+	return points
+
 static func leaf(door: ShipLayout.DoorSpec) -> Array[Group]:
 	var aperture := door.leaf_aperture()
 	var into := signf(door.hinge_frame().origin.z - ShipLayout.WALL / 2)
@@ -96,24 +119,25 @@ static func leaf(door: ShipLayout.DoorSpec) -> Array[Group]:
 		var wheel := Group.new(NodePath("Wheel" if side == 0 else "ReverseWheel"), wheel_pose, side)
 		wheel.add("ring", &"torus", Vector3(0.888, 0.064, 0.888), Transform3D(Basis(Vector3.RIGHT, PI / 2), Vector3.ZERO), 0.444, 0.380)
 		wheel.add("flange", &"torus", Vector3(0.864, 0.011, 0.864), Transform3D(Basis(Vector3.RIGHT, PI / 2), Vector3(0, 0, -0.026)), 0.432, 0.322)
-		_pin(wheel, "hub", 0.150, 0.110, Vector3(0, 0, 0.030))
+		_pin(wheel, "hub", 0.150, 0.110, Vector3(0, 0, 0.025))
 		_pin(wheel, "shaft", 0.062, 0.050, Vector3(0, 0, 0.095))
 		_pin(wheel, "cap", 0.085, 0.010, Vector3(0, 0, -0.027))
 		for index: int in range(6):
 			var angle := PI / 6 + index * TAU / 6
 			var direction := Vector3(cos(angle), sin(angle), 0)
 			_bar(wheel, "spoke-%d" % index, direction * 0.075 + Vector3(0, 0, 0.006), direction * 0.413 + Vector3(0, 0, 0.006), 0.090, 0.064)
-		wheel.add("hazard-band", &"band", Vector3(0.75, 0.24, 0.012), Transform3D(Basis(Vector3.BACK, 0.060), Vector3(0, -0.150, -0.026)))
+		var wheel_diameter := wheel.parts[0].radius * 2
+		wheel.add("hazard-band", &"band", Vector3(0.75, wheel_diameter * 0.10, 0.012), Transform3D(Basis(Vector3.BACK, 0.060), Vector3(0, -0.150, -0.026)))
 		var band := wheel.parts[-1]
 		var rng := RandomNumberGenerator.new()
 		rng.seed = 7308
 		var bottom := PackedVector2Array()
 		for index: int in range(25):
-			var x := -0.375 + index * 0.75 / 24
-			band.contour.append(Vector2(x, 0.120 - rng.randf_range(0, 0.018)))
-			bottom.append(Vector2(x, maxf(-0.120 + rng.randf_range(0, 0.019), 0.15 - sqrt(0.43 * 0.43 - x * x))))
-		band.contour[12].y = 0.120
-		bottom[12].y = -0.120
+			var x := -band.size.x / 2 + index * band.size.x / 24
+			band.contour.append(Vector2(x, band.size.y / 2 - rng.randf_range(0, band.size.y * 0.075)))
+			bottom.append(Vector2(x, -band.size.y / 2 + rng.randf_range(0, band.size.y * 0.08)))
+		band.contour[12].y = band.size.y / 2
+		bottom[12].y = -band.size.y / 2
 		bottom.reverse()
 		band.contour.append_array(bottom)
 		for x: float in [-0.32, 0.32]:
@@ -123,15 +147,16 @@ static func leaf(door: ShipLayout.DoorSpec) -> Array[Group]:
 		var rivets := Group.new(NodePath(prefix + "Rivets"), face, side)
 		var border := outline(Vector2(aperture.x - 0.105, aperture.y - 0.19), 0.22)
 		var contour := Group.new(NodePath(prefix + "Contour"), face, side)
+		var border_centre := Vector2(aperture.x / 2, center_y)
 		for index: int in range(border.size()):
-			var a := border[index] + Vector2(aperture.x / 2, center_y)
-			var b := border[(index + 1) % border.size()] + Vector2(aperture.x / 2, center_y)
+			var a := border[index] + border_centre
+			var b := border[(index + 1) % border.size()] + border_centre
 			var delta := b - a
 			_pin(contour, "edge-%02d" % index, 0.009, delta.length(), Vector3((a.x + b.x) / 2, (a.y + b.y) / 2, -0.103), Vector3(delta.x, delta.y, 0).normalized())
-			var count := maxi(1, int(ceil(a.distance_to(b) / 0.16)))
-			for step: int in range(count):
-				var point := a.lerp(b, float(step) / count)
-				_pin(rivets, "%03d" % rivets.parts.size(), 0.012, 0.010, Vector3(point.x, point.y, -0.111))
+		var rivet_loop := PackedVector2Array()
+		for point: Vector2 in border: rivet_loop.append(point + border_centre)
+		for point: Vector2 in evenly_spaced(rivet_loop, ceili(loop_length(rivet_loop) / ShipGeometry.HATCH_RIVET_PITCH)):
+			_pin(rivets, "%03d" % rivets.parts.size(), 0.012, 0.010, Vector3(point.x, point.y, -0.111))
 		groups.append(contour)
 		groups.append(rivets)
 	for entry: Array in [["Body", Vector3(1.10, 2.32, 0.03), Vector3(0.55, center_y, into * 0.035), 0.235], ["Hinge", Vector3(0.09, 2.32, 0.03), Vector3(-0.045, center_y, into * 0.035), 0.04], ["Latch", Vector3(0.05, 2.32, 0.03), Vector3(1.125, center_y, into * 0.035), 0.024]]:

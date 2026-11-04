@@ -6,17 +6,12 @@ func _rendered_parts(node: Node3D, parent: Transform3D, parts: Dictionary) -> vo
 	var frame := parent * node.transform
 	if node is MeshInstance3D:
 		var poses: Dictionary = node.mesh.get_meta(&"part_transforms", {})
-		for surface: int in range(node.mesh.get_surface_count()):
-			var id := StringName(node.mesh.surface_get_name(surface))
-			assert_true(poses.has(id), "rendered surface has a physical part pose: " + String(id))
-			if not poses.has(id): return
+		var submitted: Dictionary = preload("res://tests/hatch_mesh_ranges.gd").parts(node.mesh)
+		for id: StringName in submitted:
+			assert_true(poses.has(id), "rendered range has a physical part pose: " + String(id))
 			assert_false(parts.has(id), "rendered part ids are unique")
 			var pose: Transform3D = poses[id]
-			var vertices: PackedVector3Array = node.mesh.surface_get_arrays(surface)[Mesh.ARRAY_VERTEX]
-			var inverse := pose.affine_inverse()
-			var bounds := AABB(inverse * vertices[0], Vector3.ZERO)
-			for vertex: Vector3 in vertices: bounds = bounds.expand(inverse * vertex)
-			parts[id] = {"transform": frame * pose, "bounds": bounds}
+			parts[id] = {"transform": frame * pose, "bounds": submitted[id].bounds}
 	if node is MultiMeshInstance3D:
 		var poses: Array = node.multimesh.get_meta(&"instance_poses")
 		for index: int in range(poses.size()):

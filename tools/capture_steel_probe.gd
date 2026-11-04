@@ -271,13 +271,14 @@ func _normal_direction(layout: ShipLayout) -> void:
 		var reversed := (await _read_center()) * 2 - Vector3.ONE
 		_check(reversed.distance_to(expected) > 0.10, "negative control detects reversed signed projection: %s" % normal)
 		results.append({"face": str(normal), "actual": str(actual), "expected": str(expected)})
-	# Use the real reflected leaf mesh and winding conversion, not a rotated quad.
+	# Use the real reflected imported leaf, not a rotated quad.
 	var spec := layout.door(&"D14-C-001-H-FORE")
-	var reverse: HatchParts.Group = HatchParts.leaf(spec)[HatchParts.leaf(spec).size() / 2]
-	for group: HatchParts.Group in HatchParts.leaf(spec):
-		if group.path == NodePath("AftSteel"): reverse = group
-	piece.mesh = HatchModel._leaf_mesh(reverse, spec.leaf_aperture())
+	var bindings: Array[Surfaces.MotionBinding] = []
+	var leaf := HatchModel.leaf(spec, [1, 1], bindings)
+	var reverse := leaf.get_node("AftSteel") as MeshInstance3D
+	piece.mesh = reverse.mesh
 	piece.transform = reverse.transform
+	leaf.free()
 	_diagnostic_camera(Vector3(spec.leaf_aperture().x / 2, 1.5, 0.1), Vector3.BACK)
 	piece.material_override = _diagnostic_material("NORMAL*0.5+0.5", Color.WHITE, tilted)
 	var actual := (await _read_center()) * 2 - Vector3.ONE

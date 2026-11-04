@@ -27,7 +27,7 @@ func test_hatch_hardware_shares_resources_without_sharing_room_masks() -> void:
 	var first := DoorView.build(layout.door(&"D14-C-001-H-FORE"), 4, 8)
 	var remote := DoorView.build(layout.door(&"D01-C-001-H-FORE"), 32, 64)
 	var bay := Hatch.build()
-	for path: String in ["Frame/ForeSteel", "Frame/AftSteel", "Hinge/Leaf/StrapHinges/ForeSteel", "Hinge/Leaf/Wheel"]:
+	for path: String in ["Frame/ForeSteel", "Frame/AftSteel", "Hinge/Leaf/ForeSteel", "Hinge/Leaf/Wheel"]:
 		var a: MeshInstance3D = first.get_node(path).get_child(0) if path.ends_with("Wheel") else first.get_node(path)
 		var b: MeshInstance3D = remote.get_node(path).get_child(0) if path.ends_with("Wheel") else remote.get_node(path)
 		assert_true(a.mesh == b.mesh and a.material_override == b.material_override, "shared hardware resource " + path)
@@ -69,16 +69,17 @@ func test_hatch_meshes_have_rounded_frame_braces_large_wheel_and_instanced_rivet
 		else:
 			assert_true(piece.mesh == other.mesh, "all decks share generated geometry")
 		assert_true(piece.material_override == other.material_override, "all decks share steel materials")
-	for path: String in ["Hinge/Leaf/StrapHinges", "Hinge/Leaf/Lugs"]:
-		var fore: MeshInstance3D = first.get_node(path + "/ForeSteel")
-		var aft: MeshInstance3D = first.get_node(path + "/AftSteel")
-		var fore_bounds := fore.transform * fore.mesh.get_aabb()
-		var aft_bounds := aft.transform * aft.mesh.get_aabb()
+	for path: String in ["StrapHinges", "Lugs"]:
+		var fore: MeshInstance3D = first.get_node("Hinge/Leaf/ForeSteel")
+		var aft: MeshInstance3D = first.get_node("Hinge/Leaf/AftSteel")
+		var fore_bounds := _group_bounds(fore.mesh, path + "/ForeSteel/")
+		var aft_bounds := _group_bounds(aft.mesh, path + "/AftSteel/")
 		assert_float_equal(fore_bounds.position.x, aft_bounds.position.x, "both faces keep the same physical hinge/latch edge: " + path)
 		assert_float_equal(fore_bounds.end.x, aft_bounds.end.x, "reverse-face hardware is not moved to the opposite jamb: " + path)
 	var leaf_mesh: Mesh = first.get_node("Hinge/Leaf/ForeSteel").mesh
-	assert_float_in_range(leaf_mesh.get_aabb().size.x, 1.07999, 1.08001, "rounded leaf body survives batching without the obsolete X ribs")
-	assert_float_in_range(leaf_mesh.get_aabb().size.y, 2.31999, 2.32001, "rounded leaf retains its full tall silhouette")
+	var plate_bounds := _group_bounds(leaf_mesh, "ForeSteel/plate")
+	assert_float_in_range(plate_bounds.size.x, 1.07999, 1.08001, "rounded leaf body survives batching without the obsolete X ribs")
+	assert_float_in_range(plate_bounds.size.y, 2.31999, 2.32001, "rounded leaf retains its full tall silhouette")
 	var leaf_arrays := leaf_mesh.surface_get_arrays(0)
 	var leaf_normals: PackedVector3Array = leaf_arrays[Mesh.ARRAY_NORMAL]
 	assert_true(leaf_normals[0].dot(Vector3.FORWARD) > 0.99, "leaf front faces outward, not into the steel")
@@ -92,6 +93,19 @@ func test_hatch_meshes_have_rounded_frame_braces_large_wheel_and_instanced_rivet
 	bay.free()
 	first.free()
 	remote.free()
+
+func _group_bounds(mesh: Mesh, prefix: String) -> AABB:
+	var found := false
+	var result := AABB()
+	var parts: Dictionary = preload("res://tests/hatch_mesh_ranges.gd").parts(mesh)
+	for id: StringName in parts:
+		if not String(id).begins_with(prefix): continue
+		var part: Dictionary = parts[id]
+		var bounds: AABB = part.pose * part.bounds
+		result = result.merge(bounds) if found else bounds
+		found = true
+	assert_true(found, "all original hardware groups remain in the submitted buffers: " + prefix)
+	return result
 
 func test_all_hatch_bulkheads_share_plated_wall_material_and_mapping() -> void:
 	var root := Node3D.new()
@@ -177,10 +191,14 @@ func test_setback_collar_sides_use_the_approach_rooms_light_mask() -> void:
 		var spec := layout.door(id)
 		var view := DoorView.build(spec, 1, 8)
 		var approach_mask := 1 if spec.hinge_frame().origin.z > ShipLayout.WALL / 2 else 8
-		for part: String in ["LatchJamb", "Lintel", "Coaming"]:
-			for piece: MeshInstance3D in view.get_node(part).get_children():
+		for part: String in ["FRAME/RIGHT", "FRAME/TOP", "COAMING"]:
+			for side: String in ["ForeSteel", "AftSteel"]:
+				var piece: MeshInstance3D = view.get_node("Frame/" + side)
+				var ranges: Dictionary = preload("res://tests/hatch_mesh_ranges.gd").parts(piece.mesh, &"hatch_reservations")
+				var row: Dictionary = ranges[StringName(part)].row
 				var normals: PackedVector3Array = piece.mesh.surface_get_arrays(0)[Mesh.ARRAY_NORMAL]
-				for normal: Vector3 in normals:
+				for index: int in range(int(row.vertex_start), int(row.vertex_start + row.vertex_count)):
+					var normal := normals[index]
 					var expected := (1 if normal.z < 0 else 8) if absf(normal.z) > 0.5 else approach_mask
 					assert_int_equal(piece.layers, expected, "%s %s normal %s belongs to its visible room" % [id, part, normal])
 		view.free()
@@ -225,8 +243,12 @@ func test_real_scene_has_shared_hatch_details_and_lazy_red_rooms() -> void:
 			hatches.append(view)
 	assert_int_equal(hatches.size(), 2, "opening contains only its two boundary hatch views")
 	for view: DoorView in hatches:
-		for path: String in ["Frame", "Coaming", "Hinge/Leaf", "Hinge/Leaf/Wheel", "Hinge/Leaf/ReverseWheel", "Hinge/Leaf/StrapHinges", "Hinge/Leaf/Lugs", "ForePanel/Button", "ForePanel/CardReader", "AftPanel/Button", "AftPanel/CardReader"]:
+		for path: String in ["Frame", "Hinge/Leaf", "Hinge/Leaf/Wheel", "Hinge/Leaf/ReverseWheel", "ForePanel/Button", "ForePanel/CardReader", "AftPanel/Button", "AftPanel/CardReader"]:
 			assert_true(view.has_node(NodePath(path)), "shared hatch detail: " + path)
+		var fixed: Dictionary = preload("res://tests/hatch_mesh_ranges.gd").parts(view.get_node("Frame/ForeSteel").mesh, &"hatch_reservations")
+		assert_true(fixed.has(&"COAMING"), "coaming is present in the submitted fixed buffer")
+		for group: String in ["StrapHinges/ForeSteel/", "Lugs/ForeSteel/"]:
+			assert_true(_group_bounds(view.get_node("Hinge/Leaf/ForeSteel").mesh, group).has_volume(), "shared hatch hardware remains rendered: " + group)
 	root.free()
 
 func test_four_open_hatches_allow_both_directions_and_locked_faces_contain() -> void:

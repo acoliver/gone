@@ -11,6 +11,12 @@ static func capture_identity() -> Dictionary:
 			hashes[path] = FileAccess.get_sha256("res://" + path)
 	for path: String in ["app/surfaces.gd", "app/lighting.gd", "app/hallway.gd", "app/power_room.gd", "app/ship_scene.gd", "tools/capture_ship_surfaces.gd", "app/shaders/weathered_steel.gdshader", "app/shaders/steel_sampling.gdshaderinc", "app/shaders/weathered_tape.gdshader", "assets/surfaces/steel/manifest.json", "assets/surfaces/hatch/leaf-weather.png", "assets/surfaces/hatch/leaf-weather.png.import"]:
 		hashes[path] = FileAccess.get_sha256("res://" + path)
+	for path: String in [HatchAsset.SOURCE, HatchAsset.SOURCE + ".import", HatchAsset.MANIFEST]:
+		hashes[path.trim_prefix("res://")] = FileAccess.get_sha256(path)
+	for texture: Texture2D in Surfaces.HATCH_TEXTURES.values():
+		for suffix: String in ["", ".import"]:
+			var path := texture.resource_path + suffix
+			hashes[path.trim_prefix("res://")] = FileAccess.get_sha256(path)
 	return {"app_hash": Protocol.app_hash(ProjectSettings.globalize_path("res://")), "resources": hashes, "lighting": {
 		"key_color": [Lighting.EMERGENCY_RED.r, Lighting.EMERGENCY_RED.g, Lighting.EMERGENCY_RED.b],
 		"fill_color": [Lighting.EMERGENCY_FILL_COLOR.r, Lighting.EMERGENCY_FILL_COLOR.g, Lighting.EMERGENCY_FILL_COLOR.b],

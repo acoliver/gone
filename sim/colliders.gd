@@ -1,8 +1,8 @@
 class_name ColliderSet
 extends RefCounted
 ## Static-world collider set, ported from gone_sim colliders.rs.
-## A small list of validated AABBs with a linear broad-phase; at the
-## scene's scale (tens of boxes) the linear scan is the whole broad-phase.
+## Validated AABBs with an insertion-ordered spatial broad phase. Refined
+## hatch outlines contribute many small boxes but queries remain local.
 ## Every Aabb is validated at construction so nothing downstream can
 ## observe a degenerate or non-finite box. Units: meters, up is positive
 ## Y. Pure simulation data: no Node, scene, rendering, or input types.
@@ -138,11 +138,32 @@ class Result:
 	func is_ok() -> bool:
 		return error == null
 
+const CELL_SIZE := 2.0
+
 var _boxes: Array[ColliderSet.Aabb] = []
+var _cells: Dictionary = {}
+
+static func _cell(point: Vector3) -> Vector3i:
+	return Vector3i(floori(point.x / CELL_SIZE), floori(point.y / CELL_SIZE), floori(point.z / CELL_SIZE))
 
 func insert(aabb: ColliderSet.Aabb) -> int:
+	var index := _boxes.size()
 	_boxes.append(aabb)
-	return _boxes.size() - 1
+	var low := _cell(aabb.min_corner())
+	var high := _cell(aabb.max_corner())
+	for x: int in range(low.x, high.x + 1):
+		for y: int in range(low.y, high.y + 1):
+			for z: int in range(low.z, high.z + 1):
+				var cell := Vector3i(x, y, z)
+				if not _cells.has(cell): _cells[cell] = []
+				_cells[cell].append(index)
+	return index
+
+func copy() -> ColliderSet:
+	var result := ColliderSet.new()
+	result._boxes = _boxes.duplicate()
+	result._cells = _cells.duplicate(true)
+	return result
 
 func size() -> int:
 	return _boxes.size()
@@ -155,8 +176,17 @@ func boxes() -> Array[ColliderSet.Aabb]:
 
 # Broad-phase: insertion indices of every box whose bounds overlap the query.
 func overlapping(query: ColliderSet.Aabb) -> PackedInt32Array:
+	var candidates: Dictionary = {}
+	var low := _cell(query.min_corner())
+	var high := _cell(query.max_corner())
+	for x: int in range(low.x, high.x + 1):
+		for y: int in range(low.y, high.y + 1):
+			for z: int in range(low.z, high.z + 1):
+				var cell := Vector3i(x, y, z)
+				if not _cells.has(cell): continue
+				for index: int in _cells[cell]: candidates[index] = true
 	var indices := PackedInt32Array()
-	for index: int in range(_boxes.size()):
-		if _boxes[index].overlaps(query):
-			indices.append(index)
+	for index: int in candidates:
+		if _boxes[index].overlaps(query): indices.append(index)
+	indices.sort()
 	return indices

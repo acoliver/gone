@@ -14,6 +14,12 @@ func test_capture_identity_pins_build_resources_and_lighting_policy() -> void:
 		for suffix: String in ["", ".import"]:
 			var path := "assets/surfaces/steel/" + file + suffix
 			assert_true(identity.resources.get(path) == FileAccess.get_sha256("res://" + path), "scan/import identity: " + path)
+	for path: String in [HatchAsset.SOURCE, HatchAsset.SOURCE + ".import", HatchAsset.MANIFEST]:
+		assert_true(identity.resources.get(path.trim_prefix("res://")) == FileAccess.get_sha256(path), "imported hatch identity: " + path)
+	for texture: Texture2D in Surfaces.HATCH_TEXTURES.values():
+		for suffix: String in ["", ".import"]:
+			var path := texture.resource_path + suffix
+			assert_true(identity.resources.get(path.trim_prefix("res://")) == FileAccess.get_sha256(path), "baked hatch texture identity: " + path)
 	var policy: Dictionary = identity.lighting
 	assert_true(policy.key_color == [Lighting.EMERGENCY_RED.r, Lighting.EMERGENCY_RED.g, Lighting.EMERGENCY_RED.b], "key palette")
 	assert_true(policy.fill_color == [Lighting.EMERGENCY_FILL_COLOR.r, Lighting.EMERGENCY_FILL_COLOR.g, Lighting.EMERGENCY_FILL_COLOR.b], "fill palette")

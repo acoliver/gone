@@ -37,19 +37,6 @@ static func build(spec: ShipLayout.DoorSpec, fore_mask: int = 1, aft_mask: int =
 	view.transform = spec.frame()
 	var masks: Array[int] = [fore_mask, aft_mask]
 	view.add_child(HatchModel.surround_faces(spec, masks))
-	for solid: ShipGeometry.SolidSpec in ShipGeometry.hatch_frame_solids(spec):
-		var suffix := String(solid.id).trim_prefix("%s/" % spec.id())
-		var pieces := {"COAMING": "Coaming", "FRAME/LEFT": "HingeJamb", "FRAME/RIGHT": "LatchJamb", "FRAME/TOP": "Lintel", "FRAME/STOP-LEFT": "StopLeft", "FRAME/STOP-RIGHT": "StopRight", "FRAME/STOP-TOP": "StopTop", "FRAME/STOP-BOTTOM": "StopBottom"}
-		if not pieces.has(suffix):
-			if not solid.section.is_empty(): continue
-			assert(suffix.begins_with("SURROUND/"), "known shared surround solid")
-			var piece := collar_surface(solid, spec, fore_mask, aft_mask)
-			piece.name = suffix.replace("/", "_")
-			view.add_child(piece)
-			continue
-		var piece := collar_surface(solid, spec, fore_mask, aft_mask)
-		piece.name = pieces[suffix]
-		view.add_child(piece)
 	view._hinge = Node3D.new()
 	view._hinge.name = "Hinge"
 	view._hinge.transform = spec.hinge_frame()

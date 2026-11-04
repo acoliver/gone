@@ -26,7 +26,7 @@ func test_round7_surround_is_collision_owned() -> void:
 		if "/PIER/" in String(solid.id): piers += 1
 	assert_true(ring >= 36, "rounded ring is partitioned around its empty opening")
 	assert_int_equal(throat, 36, "fitted throat has 36 actual solid cells")
-	assert_int_equal(piers, 2, "two end piers stay on the fixed approach side")
+	assert_int_equal(piers, 0, "the continuous lower ring has no rectangular pier overlays")
 
 func test_leaf_weather_is_promoted_and_role_owned() -> void:
 	assert_true(FileAccess.file_exists("res://assets/surfaces/hatch/leaf-weather.png"), "unique procedural leaf weather ships")
@@ -45,6 +45,9 @@ func _boxes(node: Node3D, boxes: Array[AABB]) -> void:
 				for vertex: Vector3 in vertices:
 					assert_true(bounds[surface].grow(0.000001).has_point(vertex), "original fitting bounds enclose its actual batched vertices")
 				boxes.append(Surfaces.world_frame(node) * bounds[surface])
+		elif node.mesh.has_meta(&"part_ranges"):
+			for part: Dictionary in preload("res://tests/hatch_mesh_ranges.gd").parts(node.mesh).values():
+				boxes.append(Surfaces.world_frame(node) * part.pose * part.bounds)
 		else:
 			boxes.append(Surfaces.world_frame(node) * node.mesh.get_aabb())
 	if node is MultiMeshInstance3D:

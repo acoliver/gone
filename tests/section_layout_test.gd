@@ -55,7 +55,10 @@ func test_moved_side_door_frame_moves_mesh_collider_and_interaction_together() -
 	assert_vec3_equal(new_box.center(), new_leaf.position, "mesh and collider coincide")
 	assert_vec3_equal(new_box.half_extents(), old_box.half_extents(), "move preserves collider dimensions")
 	var colliders := ShipCollision.opening_set(result.layout.bay().template(), true, true, result.layout)
-	assert_true(colliders.boxes()[new_solids.size() - 5].equals(new_box), "live collision set consumes the moved leaf")
+	var leaf_index := 0
+	for solid: ShipGeometry.SolidSpec in new_solids.slice(0, new_solids.size() - 5):
+		leaf_index += ShipGeometry.collision_boxes(solid).size()
+	assert_true(colliders.boxes()[leaf_index].equals(new_box), "live collision set consumes the moved leaf after the subdivided frame")
 	var old_targets := Interactions.new(original)
 	var new_targets := Interactions.new(result.layout)
 	for target: Interactions.Target in new_targets._targets:

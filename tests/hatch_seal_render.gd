@@ -36,8 +36,7 @@ func run() -> void:
 		hatches += 1
 		var view := DoorView.build(spec)
 		if OS.has_environment("GONE_SEAL_NEGATIVE_CONTROL"):
-			for piece: Node3D in view.label_leaf().get_children():
-				if "SealSteel" in String(piece.name): piece.visible = false
+			preload("res://tests/hatch_mesh_ranges.gd").remove_seals(view)
 		scene.add_child(view)
 		var inverse := spec.frame().affine_inverse()
 		var aperture := spec.aperture()
@@ -76,7 +75,8 @@ func run() -> void:
 				checks += 1
 				print("RENDER_SEAL %s face=%+d eye=%s samples=%d green=%d" % [id, side, eye, covered, green_pixels])
 				if green_pixels > 0:
-					var out := "res://tmp/slit/render-red/"
+					var args := OS.get_cmdline_user_args()
+					var out := args[0].trim_suffix("/") + "/" if args.size() == 1 else "res://tmp/slit/render-red/"
 					DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(out))
 					if hatches <= 3: image.save_png(out + "%s-%d-%d.png" % [id, side, EYES.find(eye)])
 		view.free()

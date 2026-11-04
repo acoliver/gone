@@ -19,6 +19,10 @@ func test_shader_steel_seal_queries_keep_opaque_back_face_and_reflected_winding_
 	assert_int_equal(faces.size(), 6, "reflected shader steel draws its transformed front")
 	piece.free()
 
+func _fixed_faces(view: DoorView, id: String, faces: PackedVector3Array) -> void:
+	for side: String in ["ForeSteel", "AftSteel"]:
+		preload("res://tests/hatch_mesh_ranges.gd").faces(view.get_node("Frame/" + side), id, faces, &"hatch_reservations")
+
 func _mesh_faces(node: Node3D, faces: PackedVector3Array) -> void:
 	var world := ShipScene._world_frame(node)
 	if node is MeshInstance3D:
@@ -44,8 +48,7 @@ func _sealed(id: StringName, side: float) -> void:
 	var spec := ShipLayout.authored().layout.door(id)
 	var view := DoorView.build(spec)
 	if OS.has_environment("GONE_SEAL_NEGATIVE_CONTROL"):
-		for piece: Node3D in view.label_leaf().get_children():
-			if "SealSteel" in String(piece.name): piece.visible = false
+		preload("res://tests/hatch_mesh_ranges.gd").remove_seals(view)
 	var misses := 0
 	var first := ""
 	var rays := 0
@@ -155,7 +158,7 @@ func test_lintel_return_faces_the_approach_lights() -> void:
 		var spec := layout.door(id)
 		var view := DoorView.build(spec)
 		var faces := PackedVector3Array()
-		_mesh_faces(view.get_node("Lintel"), faces)
+		_fixed_faces(view, "FRAME/TOP", faces)
 		var into := signf(spec.hinge_frame().origin.z - ShipLayout.WALL / 2)
 		var sloped := false
 		for index: int in range(0, faces.size(), 3):
@@ -174,7 +177,7 @@ func test_rendered_collar_boxes_match_collision_within_one_micrometer() -> void:
 			var suffix := String(solid.id).trim_prefix("%s/" % id)
 			if not PIECES.has(suffix): continue
 			var faces := PackedVector3Array()
-			_mesh_faces(view.get_node(NodePath(PIECES[suffix])), faces)
+			_fixed_faces(view, suffix, faces)
 			var inverse := solid.transform.affine_inverse()
 			var bounds := AABB(inverse * faces[0], Vector3.ZERO)
 			for vertex: Vector3 in faces: bounds = bounds.expand(inverse * vertex)
@@ -201,7 +204,7 @@ func test_wall_returns_use_the_approach_mask_and_stops_have_no_horizontal_slot()
 			wall.free()
 		var view := DoorView.build(spec)
 		var faces := PackedVector3Array()
-		_mesh_faces(view.get_node("StopTop"), faces)
+		_fixed_faces(view, "FRAME/STOP-TOP", faces)
 		var bevel := false
 		for triangle: int in range(0, faces.size(), 3):
 			var normal := spec.frame().basis.inverse() * (faces[triangle + 2] - faces[triangle]).cross(faces[triangle + 1] - faces[triangle]).normalized()
@@ -212,14 +215,17 @@ func test_wall_returns_use_the_approach_mask_and_stops_have_no_horizontal_slot()
 func test_seal_box_faces_keep_flat_normals() -> void:
 	var spec := ShipLayout.authored().layout.door(ShipLayout.BAY_DOOR_ID)
 	var view := DoorView.build(spec)
-	for piece: Node3D in view.label_leaf().get_children():
-		if not "SealSteel" in String(piece.name): continue
-		for surface: int in range(piece.mesh.get_surface_count()):
-			var arrays: Array = piece.mesh.surface_get_arrays(surface)
+	for side: String in ["ForeSteel", "AftSteel"]:
+		var piece: MeshInstance3D = view.label_leaf().get_node(side)
+		var ranges: Dictionary = preload("res://tests/hatch_mesh_ranges.gd").parts(piece.mesh)
+		for id: StringName in ranges:
+			if not "SealSteel/" in String(id): continue
+			var row: Dictionary = ranges[id].row
+			var arrays: Array = piece.mesh.surface_get_arrays(0)
 			var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
 			var normals: PackedVector3Array = arrays[Mesh.ARRAY_NORMAL]
 			var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
-			for triangle: int in range(0, indices.size(), 3):
+			for triangle: int in range(int(row.index_start), int(row.index_start + row.index_count), 3):
 				var a := vertices[indices[triangle]]
 				var b := vertices[indices[triangle + 1]]
 				var c := vertices[indices[triangle + 2]]

@@ -5,6 +5,22 @@ extends RefCounted
 
 const STEEL := preload("res://app/shaders/weathered_steel.gdshader")
 const TAPE := preload("res://app/shaders/weathered_tape.gdshader")
+const HATCH_TEXTURES := {
+	"albedo": preload("res://assets/props/hatch/hatch_albedo.png"),
+	"normal": preload("res://assets/props/hatch/hatch_normal.png"),
+	"orm": preload("res://assets/props/hatch/hatch_orm.png"),
+}
+const HATCH_DETAIL_TEXTURES := {
+	"albedo_a": preload("res://assets/props/hatch/hatch_detail_steel_albedo.png"),
+	"normal_a": preload("res://assets/props/hatch/hatch_detail_steel_normal.png"),
+	"orm_a": preload("res://assets/props/hatch/hatch_detail_steel_orm.png"),
+	"albedo_b": preload("res://assets/props/hatch/hatch_detail_paint_albedo.png"),
+	"normal_b": preload("res://assets/props/hatch/hatch_detail_paint_normal.png"),
+	"orm_b": preload("res://assets/props/hatch/hatch_detail_paint_orm.png"),
+	"albedo_c": preload("res://assets/props/hatch/hatch_detail_oxide_albedo.png"),
+	"normal_c": preload("res://assets/props/hatch/hatch_detail_oxide_normal.png"),
+	"orm_c": preload("res://assets/props/hatch/hatch_detail_oxide_orm.png"),
+}
 const ROOT := "res://assets/surfaces/steel/"
 const PANEL_PITCH := ShipDressing.PANEL_PITCH
 const SCANS: Array[String] = ["green_metal_rust", "rusty_painted_metal", "rusty_metal_04"]
@@ -16,6 +32,7 @@ const ROLES := {
 	&"wheel": {"hatch_surface": true, "wheel_surface": true, "wheel_only": true, "curved_surface": true, "hero_wheel": true},
 	&"plate_edge": {"edge_surface": true},
 	&"rivet": {"rivet_surface": true, "curved_surface": true},
+	&"modelled_hatch": {"baked_hatch": true},
 }
 const PARTS: Array[StringName] = [
 	&"PORT", &"STARBOARD", &"FORE", &"AFT", &"BACK", &"FLOOR", &"CEILING",
@@ -59,6 +76,15 @@ static func material(role: StringName) -> ShaderMaterial:
 	if _materials.has(role): return _materials[role]
 	var result := ShaderMaterial.new()
 	result.shader = STEEL
+	if role == &"modelled_hatch":
+		result.set_shader_parameter(&"baked_hatch", true)
+		for kind: String in HATCH_TEXTURES:
+			result.set_shader_parameter("baked_" + kind, HATCH_TEXTURES[kind])
+		for parameter: String in HATCH_DETAIL_TEXTURES:
+			result.set_shader_parameter(parameter, HATCH_DETAIL_TEXTURES[parameter])
+		result.set_shader_parameter(&"hatch_detail_pitch", 0.20)
+		_materials[role] = result
+		return result
 	result.set_shader_parameter(&"wheel_height", HatchParts.WHEEL_HEIGHT)
 	var hatch: bool = ROLES[role].get("hatch_surface", false)
 	result.set_shader_parameter(&"gain", (0.36 if role == &"wheel" else (0.48 if role == &"sill" else 0.265)) if hatch else 0.19)

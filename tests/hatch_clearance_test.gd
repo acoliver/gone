@@ -4,7 +4,11 @@ const IDS: Array[StringName] = [ShipLayout.BAY_DOOR_ID, &"D14-C-000-H-FORE", &"D
 
 func _meshes(node: Node, boxes: Array[AABB]) -> void:
 	if node is MeshInstance3D and node.mesh != null:
-		boxes.append(ShipScene._world_frame(node) * node.mesh.get_aabb())
+		if node.mesh.has_meta(&"part_ranges"):
+			for part: Dictionary in preload("res://tests/hatch_mesh_ranges.gd").parts(node.mesh).values():
+				boxes.append(ShipScene._world_frame(node) * part.pose * part.bounds)
+		else:
+			boxes.append(ShipScene._world_frame(node) * node.mesh.get_aabb())
 	if node is MultiMeshInstance3D:
 		for pose: Transform3D in node.multimesh.get_meta(&"instance_poses"):
 			boxes.append(ShipScene._world_frame(node) * pose * node.multimesh.mesh.get_aabb())

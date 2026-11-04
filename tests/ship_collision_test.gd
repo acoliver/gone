@@ -1,5 +1,30 @@
 extends SimTestCase
 
+class CountedCollision:
+	extends ShipCollision
+	var deck_queries := 0
+	func deck_set(deck: int) -> ColliderSet:
+		deck_queries += 1
+		return super.deck_set(deck)
+
+func test_unchanged_well_slice_reuses_assembly_but_not_caller_mutation() -> void:
+	var collision := CountedCollision.new(ShipLayout.authored().layout)
+	var capsule := Resolve.Capsule.new()
+	capsule.foot = Vector3(3, 0.305, -4.3)
+	capsule.head = capsule.foot + Vector3.UP * 1.15
+	var first := collision.well_slice(&"C-000-LADDER", capsule, Vector3.UP * 0.025)
+	var expected := first.ids.duplicate()
+	first.ids.append(&"test/private")
+	first.colliders.insert(ColliderSet.Aabb.from_parts(Vector3(3, 1, -4.3), Vector3.ONE))
+	collision.deck_queries = 0
+	var second := collision.well_slice(&"C-000-LADDER", capsule, Vector3.UP * 0.020)
+	assert_int_equal(collision.deck_queries, 0, "same selected decks and revisions reuse the sorted slice assembly")
+	assert_true(second.ids == expected, "caller's slice IDs stay private")
+	assert_int_equal(second.colliders.size(), expected.size(), "caller cannot add a collider to the cached template")
+	collision.open_door(&"D14-C-000-H-AFT")
+	var opened := collision.well_slice(&"C-000-LADDER", capsule, Vector3.UP * 0.025)
+	assert_true(&"D14-C-000-H-AFT/PARKED" in opened.ids and &"D14-C-000-H-AFT/BLOCKER" not in opened.ids, "opening invalidates the reused slice")
+
 func test_well_slice_includes_adjacent_floor_for_head_and_foot_with_stable_ids() -> void:
 	var layout := ShipLayout.authored().layout
 	var collision := ShipCollision.new(layout)
@@ -137,16 +162,20 @@ func test_opening_manifest_has_exact_owners_order_and_door_differentials() -> vo
 		var solids := ShipCollision.opening_solids(layout.bay().template(), bool(flags.x), bool(flags.y), layout)
 		assert_int_equal(solids.size(), expected.size(), "exact D14 solid manifest")
 		var set := ShipCollision.opening_set(layout.bay().template(), bool(flags.x), bool(flags.y), layout)
+		var offset := 0
 		for index: int in range(expected.size()):
 			assert_true(solids[index].id == expected[index], "ordered owner and piece %d" % index)
-			assert_true(ShipGeometry.box_aabb(solids[index]).equals(set.boxes()[index]), "manifest covers collider %d" % index)
+			for box: ColliderSet.Aabb in ShipGeometry.collision_boxes(solids[index]):
+				assert_true(box.equals(set.boxes()[offset]), "manifest covers ordered collider %d" % offset)
+				offset += 1
+		assert_int_equal(offset, set.size(), "manifest covers every subdivided collider exactly once")
 
 func test_opening_counts_and_every_box_keep_original_insertion_order() -> void:
 	var registry := Pods.PodRegistry.frozen()
 	for flags: Vector2i in [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1)]:
 		var pure := ShipCollision.opening_set(registry, bool(flags.x), bool(flags.y))
 		var adapter := PowerRoom.scene_collider_set(registry, bool(flags.x), bool(flags.y))
-		var expected := 1013 if flags.x == 0 else (1012 if flags.y == 0 else 1011)
+		var expected := 985 if flags.x == 0 else (984 if flags.y == 0 else 983)
 		assert_int_equal(pure.size(), expected, "full scene count")
 		for index: int in range(pure.size()):
 			assert_true(pure.boxes()[index].equals(adapter.boxes()[index]), "same ordered collider")
@@ -154,7 +183,7 @@ func test_opening_counts_and_every_box_keep_original_insertion_order() -> void:
 	assert_vec3_equal(closed.boxes()[0].center(), Vector3(15, -0.1, 7.7), "first bay floor")
 	assert_vec3_equal(closed.boxes()[5].center(), Vector3(15, 1.2, 1.6), "pierce replaces east wall at same index")
 	assert_vec3_equal(closed.boxes()[8].center(), Vector3(11.03, 0.45, 12.5), "closed bay blocker index")
-	assert_vec3_equal(closed.boxes()[198].center(), Vector3(27, 1.1, -1.47), "last power leaf follows the four bay frame stops")
+	assert_vec3_equal(closed.boxes()[194].center(), Vector3(27, 1.1, -1.47), "last power leaf follows the 117 inscribed bay frame boxes and its four stops")
 
 func test_approved_layout_cache_and_blocker_revisions_are_deck_local() -> void:
 	var collision := ShipCollision.new(ShipLayout.authored().layout)
@@ -230,6 +259,5 @@ func _surround_ids(hatch: String, side: String) -> Array[StringName]:
 	var ids: Array[StringName] = []
 	for ring: String in ["RING", "LIP", "THROAT"]:
 		for cell: int in range(36): ids.append(StringName("%s/SURROUND/%s/%s/%03d" % [hatch, side, ring, cell]))
-	for step: int in range(3): ids.append(StringName("%s/SURROUND/%s/STEP/%03d" % [hatch, side, step]))
-	for pier: int in [-1, 1]: ids.append(StringName("%s/SURROUND/%s/PIER/%d" % [hatch, side, pier]))
+	ids.append(StringName("%s/SURROUND/%s/STEP/000" % [hatch, side]))
 	return ids

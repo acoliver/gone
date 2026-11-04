@@ -9,6 +9,11 @@ const HATCH_HEIGHT: float = ShipLayout.HATCH_HEIGHT
 const FRAME_DEPTH: float = 0.18
 const FRAME_POST_WIDTH: float = 0.16
 const SILL_HEIGHT: float = 0.08
+const HATCH_RING_WIDTH: float = 0.16
+const HATCH_FLOOR_SKIN_HEIGHT: float = 0.001
+const HATCH_RIVET_RADIUS: float = 0.021
+const HATCH_RIVET_DEPTH: float = 0.025
+const HATCH_RIVET_PITCH: float = 0.13
 const TRAY_WIDTH: float = 0.3
 const TRAY_HEIGHT: float = 0.08
 const TRAY_CEILING_DROP: float = 0.15
@@ -71,6 +76,7 @@ class SolidSpec:
 	var collision_role: StringName
 	var hatch_profile: ShipLayout.DoorSpec
 	var section := PackedVector2Array()
+	var collision_outline := PackedVector2Array()
 	var surface_owner: StringName
 	var surface_part: StringName
 	var transform: Transform3D:
@@ -321,11 +327,48 @@ static func box_aabb(solid: SolidSpec, parent: Transform3D = Transform3D.IDENTIT
 	assert(result.is_ok(), "authored solid derives a valid AABB: %s" % solid.id)
 	return result.box
 
+## One conservative box per reservation. Sectioned collars retain exact Y/Z
+## contact planes; the floor skin remains below standing capsule clearance.
+static func collision_boxes(solid: SolidSpec) -> Array[ColliderSet.Aabb]:
+	if String(solid.id).ends_with("/STEP/000"):
+		# The collar and lower ring already cover the raised step's walk band.
+		# Its single additional box covers only the floor skin, never an early ledge.
+		var box := box_aabb(solid)
+		var center := box.center()
+		var half := box.half_extents()
+		center.y = solid._parent.origin.y + HATCH_FLOOR_SKIN_HEIGHT / 2
+		half.y = HATCH_FLOOR_SKIN_HEIGHT / 2
+		return [ColliderSet.Aabb.from_parts(center, half)]
+	if solid.section.is_empty(): return [box_aabb(solid)]
+	assert(not solid.collision_outline.is_empty(), "sectioned hatch has its outer collision boundary")
+	var minimum := -solid.size / 2
+	var maximum := solid.size / 2
+	for y: float in [minimum.y, maximum.y]:
+		var span := Vector2(INF, -INF)
+		for edge: int in range(solid.collision_outline.size()):
+			var a := solid.collision_outline[edge]
+			var b := solid.collision_outline[(edge + 1) % solid.collision_outline.size()]
+			if y < minf(a.y, b.y) - 0.000001 or y > maxf(a.y, b.y) + 0.000001: continue
+			if absf(b.y - a.y) < 0.0000001:
+				span.x = minf(span.x, minf(a.x, b.x))
+				span.y = maxf(span.y, maxf(a.x, b.x))
+			else:
+				var x := lerpf(a.x, b.x, clampf((y - a.y) / (b.y - a.y), 0, 1))
+				span.x = minf(span.x, x)
+				span.y = maxf(span.y, x)
+		minimum.x = maxf(minimum.x, span.x)
+		maximum.x = minf(maximum.x, span.y)
+	assert(maximum.x > minimum.x, "inscribed hatch collision has positive width: " + String(solid.id))
+	var cell := SolidSpec.new(solid._local_center + solid._local_rotation * ((minimum + maximum) / 2), maximum - minimum, solid._local_rotation)
+	cell._parent = solid._parent
+	return [box_aabb(cell)]
+
 static func transformed(solid: SolidSpec, frame: Transform3D, id: StringName = &"") -> SolidSpec:
 	var placed := SolidSpec.new(solid._local_center, solid.size, solid._local_rotation, solid.id if id == &"" else id, solid.material_role, solid.collision_role)
 	placed._parent = frame * solid._parent
 	placed.hatch_profile = solid.hatch_profile
 	placed.section = solid.section
+	placed.collision_outline = solid.collision_outline
 	if solid.surface_owner != &"": placed.surface_identity(solid.surface_owner, solid.surface_part)
 	return placed
 
@@ -467,16 +510,54 @@ static func hatch_frame_solids(door: ShipLayout.DoorSpec) -> Array[SolidSpec]:
 		SolidSpec.new(Vector3(hinge.x - stop_width / 2 - 0.001, aperture.y / 2, hinge_stop_z), Vector3(stop_width, aperture.y, stop_depth), Quaternion.IDENTITY, StringName("%s/FRAME/STOP-LEFT" % door.id()), &"frame"),
 		SolidSpec.new(Vector3(edge + (stop_width - lap) / 2, aperture.y / 2, stop_z), Vector3(stop_width + lap, aperture.y, stop_depth), Quaternion.IDENTITY, StringName("%s/FRAME/STOP-RIGHT" % door.id()), &"frame"),
 		SolidSpec.new(Vector3(cross_x, aperture.y + (stop_width - lap) / 2, stop_z), Vector3(cross_width, stop_width + lap, stop_depth), Quaternion.IDENTITY, StringName("%s/FRAME/STOP-TOP" % door.id()), &"frame"),
-		SolidSpec.new(Vector3(cross_x, (SILL_HEIGHT + lap) / 2, stop_z), Vector3(cross_width, SILL_HEIGHT + lap, stop_depth), Quaternion.IDENTITY, StringName("%s/FRAME/STOP-BOTTOM" % door.id()), &"frame"),
+		SolidSpec.new(Vector3(cross_x, (SILL_HEIGHT - lap) / 2, stop_z), Vector3(cross_width, SILL_HEIGHT + lap, stop_depth), Quaternion.IDENTITY, StringName("%s/FRAME/STOP-BOTTOM" % door.id()), &"frame"),
 	]
 	for stop: SolidSpec in stops: solids.append(transformed(stop, door.frame()))
+	# Clip the complete collar, preserving its sealing returns at the corners.
+	# Shortening straight posts leaves parallax holes beside the setback leaf.
+	for solid: SolidSpec in solids: _clip_hatch_frame(door, solid)
 	solids.append_array(hatch_surround_solids(door))
+	var outer := hatch_ring_outline(door, HATCH_RING_WIDTH)
+	var center_y := (aperture.y + SILL_HEIGHT) / 2
+	for solid: SolidSpec in solids:
+		var parent := Transform3D(door.frame().basis.inverse() * solid._parent.basis, Vector3(0, 0, WALL if "/SURROUND/AFT/" in String(solid.id) else 0.0))
+		var inverse := (parent * Transform3D(Basis(solid._local_rotation), solid._local_center)).affine_inverse()
+		for point: Vector2 in outer:
+			var local := inverse * Vector3(point.x, point.y + center_y, 0)
+			solid.collision_outline.append(Vector2(local.x, local.y))
 	return solids
+
+static func _clip_hatch_frame(door: ShipLayout.DoorSpec, solid: SolidSpec) -> void:
+	var outer := hatch_ring_outline(door, HATCH_RING_WIDTH)
+	var center_y := (door.aperture().y + SILL_HEIGHT) / 2
+	for index: int in range(outer.size()): outer[index].y += center_y
+	var center := Vector2(solid._local_center.x, solid._local_center.y)
+	var half := Vector2(solid.size.x, solid.size.y) / 2
+	var rectangle := PackedVector2Array([center - half, center + Vector2(half.x, -half.y), center + half, center + Vector2(-half.x, half.y)])
+	var clipped := Geometry2D.intersect_polygons(rectangle, outer)
+	assert(clipped.size() == 1 and clipped[0].size() >= 3, "fixed collar intersects the ring outline")
+	var polygon: PackedVector2Array = clipped[0]
+	# Integer-grid clipping may move a boundary by a few micrometres. Never
+	# raise the authored coaming or expand a collar outside its reservation.
+	for index: int in range(polygon.size()): polygon[index] = polygon[index].clamp(center - half, center + half)
+	var lo := polygon[0]
+	var hi := lo
+	for point: Vector2 in polygon:
+		lo = lo.min(point)
+		hi = hi.max(point)
+	center = (lo + hi) / 2
+	solid._local_center.x = center.x
+	solid._local_center.y = center.y
+	solid.size.x = hi.x - lo.x
+	solid.size.y = hi.y - lo.y
+	for point: Vector2 in polygon: solid.section.append(point - center)
 
 static func hatch_frame_vertex(door: ShipLayout.DoorSpec, solid: SolidSpec, vertex: Vector3) -> Vector3:
 	# Cut the wall-side underside back into the shared collision envelope.
 	# A horizontal return is black under ceiling-only direct lighting.
 	var into := signf(door.hinge_frame().origin.z - ShipLayout.WALL / 2)
+	if String(solid.id).ends_with("/STEP/000") and vertex.z > 0:
+		vertex.z = 0.27 - solid._local_center.z
 	if String(solid.id).ends_with("/FRAME/STOP-TOP") and vertex.z * into < 0 and vertex.y < 0:
 		vertex.y += solid.size.y - HatchParts.SEAL_DEPTH
 	if String(solid.id).ends_with("/FRAME/TOP"):
@@ -486,6 +567,14 @@ static func hatch_frame_vertex(door: ShipLayout.DoorSpec, solid: SolidSpec, vert
 			vertex.y -= solid.size.y - HatchParts.SEAL_DEPTH
 	if vertex.z * into < 0 and String(solid.id).ends_with("/FRAME/RIGHT") and vertex.x < 0:
 		vertex.x += solid.size.x - HatchParts.SEAL_DEPTH
+	var xy := Vector2(vertex.x, vertex.y)
+	if not solid.section.is_empty() and not Geometry2D.is_point_in_polygon(xy, solid.section):
+		var nearest := Vector2.INF
+		for index: int in range(solid.section.size()):
+			var point := Geometry2D.get_closest_point_to_segment(xy, solid.section[index], solid.section[(index + 1) % solid.section.size()])
+			if point.distance_squared_to(xy) < nearest.distance_squared_to(xy): nearest = point
+		vertex.x = nearest.x
+		vertex.y = nearest.y
 	return vertex
 
 static func hatch_lintel_height(door: ShipLayout.DoorSpec) -> float:
@@ -684,6 +773,60 @@ static func _named_solids(target: Array[ShipGeometry.SolidSpec], pieces: Array[S
 		pieces[index].id = StringName("%s/%03d" % [owner, index])
 		target.append(pieces[index])
 
+static func _hatch_inner_outline(aperture: Vector2, clearance: float, radius: float) -> PackedVector2Array:
+	var size := Vector2(aperture.x + clearance, aperture.y - SILL_HEIGHT)
+	var points := HatchParts.outline(size, radius)
+	# Keep the lower arcs outside the walk band instead of flattening their
+	# vertices into sharp joins that cannot carry a constant-width offset.
+	var lower_radius := (size.x - SILL_WALK_WIDTH) / 2 - 0.005
+	assert(lower_radius > 0 and lower_radius <= radius, "lower hatch returns fit outside the walk band")
+	var lower := HatchParts.outline(size, lower_radius)
+	for index: int in range(points.size() / 2, points.size()):
+		points[index] = lower[index]
+	return points
+
+static func _hatch_offset_outline(inner: PackedVector2Array, offset: float) -> PackedVector2Array:
+	var outer := PackedVector2Array()
+	for index: int in range(inner.size()):
+		var incoming := (inner[index] - inner[(index + inner.size() - 1) % inner.size()]).normalized()
+		var outgoing := (inner[(index + 1) % inner.size()] - inner[index]).normalized()
+		var previous_normal := Vector2(incoming.y, -incoming.x)
+		var next_normal := Vector2(outgoing.y, -outgoing.x)
+		# Intersect adjacent parallel edge offsets, retaining their correspondence
+		# for convex ring cells rather than rounding two rectangles separately.
+		outer.append(inner[index] + (previous_normal + next_normal) * offset / (1 + previous_normal.dot(next_normal)))
+	return outer
+
+static func _hatch_ring_outline(aperture: Vector2, offset: float) -> PackedVector2Array:
+	return _hatch_offset_outline(_hatch_inner_outline(aperture, 0.01, 0.24), offset)
+
+## Centered XY; portal placement adds (aperture.y + SILL_HEIGHT) / 2 to Y.
+static func hatch_ring_outline(door: ShipLayout.DoorSpec, offset: float = 0.0) -> PackedVector2Array:
+	return _hatch_ring_outline(door.aperture(), offset)
+
+## Portal-local XY including center Y, Z=0; cylinder axes point along +Z.
+static func hatch_frame_rivet_stations(aperture: Vector2) -> Array[Transform3D]:
+	var contour := _hatch_ring_outline(aperture, HATCH_RING_WIDTH / 2)
+	var perimeter := 0.0
+	for index: int in range(contour.size()):
+		perimeter += contour[index].distance_to(contour[(index + 1) % contour.size()])
+	var count := roundi(perimeter / HATCH_RIVET_PITCH)
+	var pitch := perimeter / count
+	var stations: Array[Transform3D] = []
+	var edge := 0
+	var edge_start := 0.0
+	var edge_length := contour[0].distance_to(contour[1])
+	var center_y := (aperture.y + SILL_HEIGHT) / 2
+	for index: int in range(count):
+		var distance := index * pitch
+		while distance > edge_start + edge_length:
+			edge_start += edge_length
+			edge += 1
+			edge_length = contour[edge].distance_to(contour[(edge + 1) % contour.size()])
+		var point := contour[edge].lerp(contour[(edge + 1) % contour.size()], (distance - edge_start) / edge_length)
+		stations.append(Transform3D(Basis(Vector3.RIGHT, PI / 2), Vector3(point.x, point.y + center_y, 0)))
+	return stations
+
 static func hatch_surround_solids(door: ShipLayout.DoorSpec) -> Array[SolidSpec]:
 	var solids: Array[SolidSpec] = []
 	var aperture := door.aperture()
@@ -692,42 +835,31 @@ static func hatch_surround_solids(door: ShipLayout.DoorSpec) -> Array[SolidSpec]
 	for side: int in [0 if into > 0 else 1]:
 		var face := Transform3D.IDENTITY if side == 0 else Transform3D(Basis(Vector3.RIGHT, Vector3.UP, Vector3.FORWARD), Vector3(0, 0, WALL))
 		var owner := "%s/SURROUND/%s" % [door.id(), "FORE" if side == 0 else "AFT"]
-		_annulus(solids, owner + "/RING", door.frame() * face, Vector2(aperture.x + 0.01, aperture.y - SILL_HEIGHT), Vector2(aperture.x + 0.46, aperture.y + 0.12), center_y, 0.24, 0.35, -0.085, 0.10)
-		_annulus(solids, owner + "/LIP", door.frame() * face, Vector2(aperture.x, aperture.y - SILL_HEIGHT), Vector2(aperture.x + 0.07, aperture.y - 0.01), center_y, 0.235, 0.27, -0.098, -0.06)
+		var ring := hatch_ring_outline(door)
+		var opening := ring
+		_annulus(solids, owner + "/RING", door.frame() * face, ring, hatch_ring_outline(door, HATCH_RING_WIDTH), center_y, -0.085, 0.10)
+		_annulus(solids, owner + "/LIP", door.frame() * face, opening, _hatch_offset_outline(opening, 0.035), center_y, -0.098, -0.085)
 		if (side == 0 and into > 0) or (side == 1 and into < 0):
-			_annulus(solids, owner + "/THROAT", door.frame() * face, Vector2(aperture.x, aperture.y - SILL_HEIGHT), Vector2(aperture.x + 0.10, aperture.y + 0.04), center_y, 0.235, 0.285, 0.02, 0.27, WALL / 2 + absf(door.hinge_frame().origin.z - WALL / 2) - Vector2(HatchParts.HINGE_RETURN_WIDTH, WALL / 2).length() - 0.001)
+			_annulus(solids, owner + "/THROAT", door.frame() * face, opening, _hatch_offset_outline(opening, 0.05), center_y, 0.10, 0.18, WALL / 2 + absf(door.hinge_frame().origin.z - WALL / 2) - Vector2(HatchParts.HINGE_RETURN_WIDTH, WALL / 2).length() - 0.001)
+		var bridge_rear := WALL + absf(door.hinge_frame().origin.z - WALL / 2) + HatchParts.SEAL_LAP
 		var steps: Array[SolidSpec] = [
-			SolidSpec.new(Vector3(0, 0.0275, -0.20), Vector3(aperture.x + 0.60, 0.055, 0.60)),
-			SolidSpec.new(Vector3(0, 0.0675, -0.10), Vector3(aperture.x + 0.45, 0.025, 0.40)),
-			SolidSpec.new(Vector3(0, 0.049, -0.48), Vector3(aperture.x + 0.60, 0.013, 0.04)),
+			SolidSpec.new(Vector3(0, SILL_HEIGHT / 2, (-0.098 + bridge_rear) / 2), Vector3(SILL_WALK_WIDTH, SILL_HEIGHT, bridge_rear + 0.098)),
 		]
 		for index: int in range(steps.size()):
 			var step := transformed(steps[index], door.frame() * face, StringName("%s/STEP/%03d" % [owner, index]))
 			step.material_role = &"sill"
 			step.surface_identity(door.id(), &"COAMING")
 			solids.append(step)
-		for x: int in [-1, 1]:
-			var pier := transformed(SolidSpec.new(Vector3(x * (aperture.x / 2 + 0.175), 0.125, -0.02), Vector3(0.25, 0.25, 0.24)), door.frame() * face, StringName("%s/PIER/%s" % [owner, x]))
-			pier.material_role = &"hardware"
-			pier.surface_identity(door.id(), &"FRAME")
-			solids.append(pier)
 	return solids
 
-static func _annulus(solids: Array[SolidSpec], owner: String, frame: Transform3D, inner_size: Vector2, outer_size: Vector2, center_y: float, inner_radius: float, outer_radius: float, front: float, rear: float, hinge_rear: float = INF) -> void:
-	var inner := HatchParts.outline(inner_size, inner_radius)
-	var outer := HatchParts.outline(outer_size, outer_radius)
-	# The lower returns meet the coaming without raising the capsule's walk band.
-	var notched: Dictionary = {}
-	for index: int in range(inner.size()):
-		var next := (index + 1) % inner.size()
-		var lo := minf(minf(inner[index].x, inner[next].x), minf(outer[index].x, outer[next].x))
-		var hi := maxf(maxf(inner[index].x, inner[next].x), maxf(outer[index].x, outer[next].x))
-		if inner[index].y < 0 and inner[next].y < 0 and lo < SILL_WALK_WIDTH / 2 and hi > -SILL_WALK_WIDTH / 2:
-			notched[index] = true
-			notched[next] = true
-	for index: int in notched:
-		inner[index].y = SILL_HEIGHT - center_y
-		outer[index].y = minf(outer[index].y, SILL_HEIGHT - center_y - HatchParts.SEAL_DEPTH)
+## Floor skin attached to the step mesh, supported by the structural floor.
+## Its 1 mm lap is below capsule clearance but above TriangleMesh welding precision.
+static func hatch_floor_bridge(step: SolidSpec) -> SolidSpec:
+	var bridge := SolidSpec.new(Vector3(0, HATCH_FLOOR_SKIN_HEIGHT / 2, step._local_center.z), Vector3(SILL_WALK_WIDTH, HATCH_FLOOR_SKIN_HEIGHT, step.size.z))
+	bridge._parent = step._parent
+	return bridge
+
+static func _annulus(solids: Array[SolidSpec], owner: String, frame: Transform3D, inner: PackedVector2Array, outer: PackedVector2Array, center_y: float, front: float, rear: float, hinge_rear: float = INF) -> void:
 	for index: int in range(inner.size()):
 		var next := (index + 1) % inner.size()
 		var points := PackedVector2Array([inner[index], inner[next], outer[next], outer[index]])
@@ -737,7 +869,8 @@ static func _annulus(solids: Array[SolidSpec], owner: String, frame: Transform3D
 			lo = lo.min(point)
 			hi = hi.max(point)
 		var center := (lo + hi) / 2
-		var cell_rear := minf(rear, hinge_rear) if center.x < 0 else rear
+		# One reveal depth for the whole annulus: a depth chosen per side steps at the arch.
+		var cell_rear := minf(rear, hinge_rear)
 		var cell := SolidSpec.new(Vector3(center.x, center.y + center_y, (front + cell_rear) / 2), Vector3(hi.x - lo.x, hi.y - lo.y, cell_rear - front), Quaternion.IDENTITY, StringName("%s/%03d" % [owner, index]), &"frame")
 		for point: Vector2 in points: cell.section.append(point - center)
 		cell.surface_identity(StringName(owner.get_slice("/", 0)), &"FRAME")
