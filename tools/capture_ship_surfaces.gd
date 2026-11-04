@@ -1,6 +1,29 @@
 extends SceneTree
 ## Production scene and circuits only. Neutral inspection belongs to capture_steel_probe.
 ## Run: godot --path . -s tools/capture_ship_surfaces.gd -- <output-dir>
+const Protocol := preload("res://harness/protocol.gd")
+
+static func capture_identity() -> Dictionary:
+	var hashes: Dictionary = {}
+	for file: String in Surfaces.IMAGES:
+		for suffix: String in ["", ".import"]:
+			var path := "assets/surfaces/steel/" + file + suffix
+			hashes[path] = FileAccess.get_sha256("res://" + path)
+	for path: String in ["app/surfaces.gd", "app/lighting.gd", "app/hallway.gd", "app/power_room.gd", "app/ship_scene.gd", "tools/capture_ship_surfaces.gd", "app/shaders/weathered_steel.gdshader", "app/shaders/steel_sampling.gdshaderinc", "app/shaders/weathered_tape.gdshader", "assets/surfaces/steel/manifest.json", "assets/surfaces/hatch/leaf-weather.png", "assets/surfaces/hatch/leaf-weather.png.import"]:
+		hashes[path] = FileAccess.get_sha256("res://" + path)
+	return {"app_hash": Protocol.app_hash(ProjectSettings.globalize_path("res://")), "resources": hashes, "lighting": {
+		"key_color": [Lighting.EMERGENCY_RED.r, Lighting.EMERGENCY_RED.g, Lighting.EMERGENCY_RED.b],
+		"fill_color": [Lighting.EMERGENCY_FILL_COLOR.r, Lighting.EMERGENCY_FILL_COLOR.g, Lighting.EMERGENCY_FILL_COLOR.b],
+		"lens_base_color": str(Lighting.LENS_BASE_COLOR), "lens_emission": str(Lighting.emergency_emission(1.0)),
+		"key_energy": Lighting.emergency_energy(), "fill_energy": Lighting.emergency_energy() * Lighting.EMERGENCY_FILL_SHARE,
+		"fill_counts": [6, 4, 6],
+		"no_fill_multiplier": Lighting.EMERGENCY_NO_FILL_KEY_MULTIPLIER, "fill_range": Lighting.EMERGENCY_FILL_RANGE,
+		"fill_ceiling_drop": Lighting.EMERGENCY_FILL_CEILING_DROP,
+		"key_shadows": false, "fill_shadows": false,
+		"fill_masks": [Lighting.BAY_FILL_MASK, Lighting.HALL_FILL_MASK, Lighting.POWER_FILL_MASK],
+		"fill_rooms": "D14 bay/hall/power only; remote connectors remain independent under secondary power",
+	}}
+
 
 const SEED: int = 91
 var output_dir: String
@@ -26,6 +49,7 @@ func _run() -> void:
 	DisplayServer.window_set_size(root.size)
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 	root.msaa_3d = Viewport.MSAA_2X
+	var identity := capture_identity()
 	for white: bool in [false, true]:
 		game = Game.new(SEED)
 		game.light_hallway()
@@ -83,13 +107,12 @@ func _run() -> void:
 			scene.remove_remote(spec, remote)
 		world.free()
 		await process_frame
-	var hashes: Dictionary = {}
-	var manifest: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(Surfaces.ROOT + "manifest.json"))
-	for file: String in manifest.images:
-		for suffix: String in ["", ".import"]: hashes[Surfaces.ROOT + file + suffix] = FileAccess.get_sha256(Surfaces.ROOT + file + suffix)
-	for file: String in ["app/surfaces.gd", "app/shaders/weathered_steel.gdshader", "app/shaders/steel_sampling.gdshaderinc", "app/shaders/weathered_tape.gdshader"]:
-		hashes[file] = FileAccess.get_sha256("res://" + file)
-	FileAccess.open(output_dir.path_join("captures.json"), FileAccess.WRITE).store_string(JSON.stringify({"seed": SEED, "material": "round5-steel-v1", "lighting": {"palette": str(Lighting.EMERGENCY_RED), "key_energy": Lighting.emergency_energy(), "fill_energy": Lighting.emergency_energy() * Lighting.EMERGENCY_FILL_SHARE, "fill_range": Lighting.EMERGENCY_FILL_RANGE, "fill_rooms": "D14 bay/hall/power only; remote connectors remain independent under secondary power"}, "resources": hashes, "captures": records}, "\t") + "\n")
+	if identity != capture_identity():
+		push_error("Capture inputs changed during rendering; capture set is inconsistent")
+		quit(1)
+		return
+	identity.merge({"seed": SEED, "material": "round5-steel-v1", "captures": records})
+	FileAccess.open(output_dir.path_join("captures.json"), FileAccess.WRITE).store_string(JSON.stringify(identity, "\t") + "\n")
 	print("SHIP SURFACES COMPLETE captures=", records.size())
 	quit(0)
 

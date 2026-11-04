@@ -28,8 +28,20 @@ const IMAGES: Array[String] = [
 	"green_metal_rust_orm.jpg", "rusty_painted_metal_orm.jpg", "rusty_metal_04_orm.jpg",
 	"r3-rust_coarse_01-albedo.jpg", "r3-rust_coarse_01-normal.jpg",
 ]
+const TEXTURES := {
+	"r4-green_metal_rust-albedo.png": preload("res://assets/surfaces/steel/r4-green_metal_rust-albedo.png"),
+	"r4-rusty_painted_metal-albedo.png": preload("res://assets/surfaces/steel/r4-rusty_painted_metal-albedo.png"),
+	"r4-rusty_metal_04-albedo.png": preload("res://assets/surfaces/steel/r4-rusty_metal_04-albedo.png"),
+	"green_metal_rust_normal.jpg": preload("res://assets/surfaces/steel/green_metal_rust_normal.jpg"),
+	"rusty_painted_metal_normal.jpg": preload("res://assets/surfaces/steel/rusty_painted_metal_normal.jpg"),
+	"rusty_metal_04_normal.jpg": preload("res://assets/surfaces/steel/rusty_metal_04_normal.jpg"),
+	"green_metal_rust_orm.jpg": preload("res://assets/surfaces/steel/green_metal_rust_orm.jpg"),
+	"rusty_painted_metal_orm.jpg": preload("res://assets/surfaces/steel/rusty_painted_metal_orm.jpg"),
+	"rusty_metal_04_orm.jpg": preload("res://assets/surfaces/steel/rusty_metal_04_orm.jpg"),
+	"r3-rust_coarse_01-albedo.jpg": preload("res://assets/surfaces/steel/r3-rust_coarse_01-albedo.jpg"),
+	"r3-rust_coarse_01-normal.jpg": preload("res://assets/surfaces/steel/r3-rust_coarse_01-normal.jpg"),
+}
 static var _materials: Dictionary = {}
-static var _textures: Dictionary = {}
 static var _tape: ShaderMaterial
 
 class SurfaceFrame:
@@ -69,12 +81,7 @@ static func material(role: StringName) -> ShaderMaterial:
 	return result
 
 static func texture(file: String) -> Texture2D:
-	assert(IMAGES.has(file), "texture belongs to the finite approved inventory: %s" % file)
-	if not _textures.has(file):
-		var resource := load(ROOT + file) as Texture2D
-		assert(resource != null, "required steel texture is imported: %s" % (ROOT + file))
-		_textures[file] = resource
-	return _textures[file]
+	return TEXTURES[file]
 
 static func tape_material() -> ShaderMaterial:
 	if _tape == null:
