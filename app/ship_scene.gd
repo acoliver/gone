@@ -64,6 +64,10 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 	parent.add_child(scene.text_cache)
 	scene.power_room = PowerRoom.build(game, scene.text_cache)
 	scene._add_opening_node(scene.power_room)
+	HatchServices.bind_lens(scene.hatch.view, 0, scene.hallway.lens_material())
+	HatchServices.bind_lens(scene.hatch.view, 1, scene.lighting.lens_material())
+	HatchServices.seat_fixture(scene.hatch.view, 1, scene.lighting.fixtures()[-1])
+	HatchServices.seat_nearest(scene.hatch.view, 0, scene.hallway.lights())
 	scene.door_views.append(scene.hatch.view)
 	scene.door_views.append(DoorView.adapter(game.layout.door(ShipLayout.POWER_DOOR_ID), scene.power_room.set_door_offset))
 	for id: StringName in scene.hallway.side_leaves:
@@ -75,7 +79,7 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 			scene._opening_nodes.append(view)
 		view.present(game.doors.snapshot(view.door_id()))
 	for id: StringName in [&"D14-C-000-H-AFT", &"D14-C-001-H-FORE"]:
-		scene._add_hatch(id)
+		scene._add_hatch(id, null, scene.hallway)
 	scene.stream = ShipStream.build(scene, game, parent)
 	parent.add_child(scene.stream)
 	return scene
@@ -112,9 +116,11 @@ func _prepare_connector(spec: ShipLayout.ConnectorSpec) -> void:
 		door_views.append(view)
 	for id: StringName in section_spec.opening_ids():
 		if _game.layout.door(id).kind() == ShipLayout.DoorKind.HATCH:
-			_add_hatch(id)
+			_add_hatch(id, null, hallway)
 	for id: StringName in spec.hatch_ids():
-		_add_hatch(id)
+		_add_hatch(id, null, hallway)
+	_seat_connector_lamps(spec, connector)
+	_seat_section_lamps(section_spec, section)
 	_spaces[spec.id()] = true
 	_spaces[section_spec.id()] = true
 	_sync_labels()
@@ -192,7 +198,7 @@ func tick_attention(eye: Vector3, forward: Vector3, deck: int = 14) -> void:
 	for label: ShipLabel in labels.values():
 		label.present()
 
-func _add_hatch(id: StringName, parent: Node3D = null) -> void:
+func _add_hatch(id: StringName, parent: Node3D = null, circuit: Hallway = null) -> void:
 	if _hatches.has(id):
 		return
 	var spec := _game.layout.door(id)
@@ -202,6 +208,10 @@ func _add_hatch(id: StringName, parent: Node3D = null) -> void:
 		var mask := Lighting.space_mask(_game.layout, space)
 		masks.append(mask | Lighting.HALL_FILL_MASK if space == &"D14-S-041" else mask)
 	var view := DoorView.build(spec, masks[0], masks[1])
+	for side: int in range(2):
+		if _game.layout.face(spec.face_ids()[side]).source_space() == &"D14-S-041" and circuit != null:
+			HatchServices.bind_lens(view, side, circuit.lens_material())
+			HatchServices.seat_nearest(view, side, circuit.lights())
 	if parent == null:
 		_add_opening_node(view)
 	else:
@@ -239,6 +249,7 @@ func build_remote(spec: ShipLayout.ConnectorSpec) -> Node3D:
 			var face := _game.layout.face(face_id)
 			if face.source_space() == spec.id():
 				_add_hatch_label(door, face)
+	_seat_connector_lamps(spec, root)
 	_add_lift_label(spec, root.lift_leaf)
 	return root
 
@@ -264,3 +275,26 @@ func set_opening_visible(show: bool) -> void:
 		node.process_mode = Node.PROCESS_MODE_INHERIT if show else Node.PROCESS_MODE_DISABLED
 	for id: StringName in _game.layout.well_ids():
 		stream.show_d14_shell(id, not show)
+
+func _seat_connector_lamps(spec: ShipLayout.ConnectorSpec, connector: ShipConnector) -> void:
+	var lights := _fixture_lights(connector)
+	assert(lights.size() == 3, "connector retains two hatch keys and one landing key")
+	for id: StringName in spec.hatch_ids():
+		var door := _game.layout.door(id)
+		var side := door.spaces().find(spec.id())
+		assert(side >= 0, "hatch has a connector-facing cage")
+		HatchServices.seat_nearest(_hatches[id], side, lights)
+
+static func _fixture_lights(owner: Node3D) -> Array[OmniLight3D]:
+	var lights: Array[OmniLight3D] = []
+	for fixture: Node in owner.get_children():
+		for child: Node in fixture.get_children():
+			if child is OmniLight3D: lights.append(child)
+	return lights
+
+func _seat_section_lamps(spec: ShipLayout.SectionSpec, section: ShipSection) -> void:
+	var lights := _fixture_lights(section)
+	for id: StringName in spec.opening_ids():
+		var door := _game.layout.door(id)
+		if door.kind() != ShipLayout.DoorKind.HATCH: continue
+		HatchServices.seat_nearest(_hatches[id], door.spaces().find(spec.id()), lights)

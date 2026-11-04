@@ -10,9 +10,9 @@ const PANEL_PITCH := Vector2(1.5, 1.0)
 const SCANS: Array[String] = ["green_metal_rust", "rusty_painted_metal", "rusty_metal_04"]
 const ROLES := {
 	&"wall": {}, &"floor": {"floor_surface": true}, &"ceiling": {},
-	&"hatch_leaf": {"hatch_surface": true}, &"frame": {"hatch_surface": true},
-	&"hardware": {"hatch_surface": true, "wheel_surface": true, "curved_surface": true},
-	&"wheel": {"hatch_surface": true, "wheel_surface": true, "wheel_only": true, "curved_surface": true},
+	&"hatch_leaf": {"hatch_surface": true, "leaf_paint": true}, &"seal": {"hatch_surface": true}, &"sill": {"hatch_surface": true, "raised_base": true}, &"frame": {"hatch_surface": true},
+	&"hardware": {"hatch_surface": true, "wheel_surface": true, "curved_surface": true, "leaf_hardware": true},
+	&"wheel": {"hatch_surface": true, "wheel_surface": true, "wheel_only": true, "curved_surface": true, "hero_wheel": true},
 	&"plate_edge": {"edge_surface": true},
 	&"rivet": {"rivet_surface": true, "curved_surface": true},
 }
@@ -46,12 +46,14 @@ static func material(role: StringName) -> ShaderMaterial:
 	if _materials.has(role): return _materials[role]
 	var result := ShaderMaterial.new()
 	result.shader = STEEL
-	var hatch := role in [&"hatch_leaf", &"frame", &"hardware", &"wheel"]
-	result.set_shader_parameter(&"gain", 0.265 if hatch else 0.19)
+	result.set_shader_parameter(&"wheel_height", HatchParts.WHEEL_HEIGHT)
+	var hatch: bool = ROLES[role].get("hatch_surface", false)
+	result.set_shader_parameter(&"gain", (0.36 if role == &"wheel" else (0.48 if role == &"sill" else 0.265)) if hatch else 0.19)
 	result.set_shader_parameter(&"contrast", 0.35 if hatch else 0.65)
 	result.set_shader_parameter(&"macro", 0.18 if hatch else 0.22)
 	result.set_shader_parameter(&"seam_strength", 0.36)
 	result.set_shader_parameter(&"colour_gain", Vector3.ONE)
+	result.set_shader_parameter(&"finish_chroma", 0.15 if hatch else 1.0)
 	result.set_shader_parameter(&"panel_pitch", PANEL_PITCH)
 	for option: String in ROLES[role]: result.set_shader_parameter(option, ROLES[role][option])
 	for index: int in range(SCANS.size()):
@@ -62,6 +64,7 @@ static func material(role: StringName) -> ShaderMaterial:
 			result.set_shader_parameter(kind + "_" + suffix, texture("%s_%s.jpg" % [scan, kind]))
 	result.set_shader_parameter(&"oxide_grain", texture("r3-rust_coarse_01-albedo.jpg"))
 	result.set_shader_parameter(&"oxide_normal", texture("r3-rust_coarse_01-normal.jpg"))
+	result.set_shader_parameter(&"leaf_weather", preload("res://assets/surfaces/hatch/leaf-weather.png"))
 	_materials[role] = result
 	return result
 
@@ -212,3 +215,18 @@ static func sample_position(piece: GeometryInstance3D, point: Vector3) -> Vector
 	var z: Vector4 = piece.get_instance_shader_parameter(&"surface_z")
 	var p := Vector4(point.x, point.y, point.z, 1)
 	return Vector3(x.dot(p), y.dot(p), z.dot(p))
+
+static var _controls: Dictionary = {}
+
+static func control_material(role: StringName) -> StandardMaterial3D:
+	assert(role in [&"face", &"dark", &"button", &"indicator"], "known control finish")
+	if not _controls.has(role):
+		var material := StandardMaterial3D.new()
+		material.albedo_color = {&"face": Color(0.18, 0.19, 0.145), &"dark": Color(0.045, 0.048, 0.042), &"button": Color(0.30, 0.028, 0.015), &"indicator": Color(0.05, 0.16, 0.06)}[role]
+		material.roughness = 0.96
+		material.metallic = 0.04
+		if role == &"indicator":
+			material.emission_enabled = true
+			material.emission = Color(0.015, 0.10, 0.025)
+		_controls[role] = material
+	return _controls[role]

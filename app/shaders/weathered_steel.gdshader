@@ -14,10 +14,17 @@ uniform sampler2D oxide_grain : source_color, repeat_enable, filter_linear_mipma
 uniform sampler2D oxide_normal : hint_normal, repeat_enable, filter_linear_mipmap_anisotropic;
 uniform float gain = 0.30;
 uniform vec3 colour_gain = vec3(1.0);
+uniform float finish_chroma = 1.0;
 uniform float contrast = 1.2;
 uniform float macro = 0.2;
 uniform float seam_strength = 0.65;
 uniform bool hatch_surface = false;
+uniform bool leaf_paint = false;
+uniform float wheel_height = 1.15;
+uniform bool raised_base = false;
+uniform bool hero_wheel = false;
+uniform bool leaf_hardware = false;
+uniform sampler2D leaf_weather : repeat_disable, filter_linear_mipmap;
 uniform bool wheel_surface = false;
 uniform bool wheel_only = false;
 uniform bool floor_surface = false;
@@ -152,6 +159,74 @@ void fragment() {
     if(floor_surface) { colour*=0.65; }
     if(rivet_surface) { colour*=1.65; }
     if(edge_surface) { colour=mix(colour,dot(colour,vec3(0.2126,0.7152,0.0722))*vec3(1.03,1.05,0.93),0.60)*1.80; }
+    if(hatch_surface) {
+        vec3 local_p=wp;
+        vec2 p=local_p.xy;
+        vec3 seed=local_p*5.3+vec3(0,0,13.7);
+        float coarse=noise(seed);
+        float torn=coarse*0.67+noise(seed*2.7+vec3(7,2,3))*0.24+noise(seed*9.1)*0.09;
+        vec4 weather=texture(leaf_weather,p/vec2(aperture.x,aperture.y));
+        float paint=weather.r;
+        float patina=mix(noise(vec3(p*37.0,7)),weather.g,0.6);
+        float patch=noise(vec3(p.x*7.1,p.y*4.3,2))+noise(vec3(p*19.0,8))*0.22;
+        vec3 dark_steel=vec3(0.053,0.051,0.043)*(0.82+0.34*patina);
+        vec3 dark_paint=vec3(0.061,0.073,0.060)*(0.85+0.22*patina);
+        vec3 dry_rust=mix(vec3(0.075,0.040,0.021),vec3(0.145,0.074,0.034),patina);
+        float edge_distance=min(min(p.x,aperture.x-p.x),min(p.y-0.08,aperture.y-p.y));
+        float edge_oxide=exp(-max(edge_distance,0.0)*22.0);
+        if(leaf_paint) {
+            float rust_patch=smoothstep(0.55,0.78,patch)*0.76;
+            colour=mix(dark_steel,dry_rust,rust_patch);
+            colour=mix(colour,dry_rust*0.70,max(weather.a*0.70,edge_oxide*0.72));
+            colour=mix(colour,dark_paint,paint);
+            float runoff=weather.b;
+            for(int i=0;i<8;i++) {
+                vec2 source=vec2(0.19,2.0);
+                if(i==1) source=vec2(0.35,2.0);
+                if(i==2) source=vec2(0.19,0.48);
+                if(i==3) source=vec2(0.35,0.48);
+                if(i==4) source=vec2(0.87,2.07);
+                if(i==5) source=vec2(0.87,1.17);
+                if(i==6) source=vec2(0.87,0.40);
+                if(i==7) source=vec2(aperture.x*0.5,wheel_height);
+                float drop=source.y-p.y;
+                float length_run=i==7?0.98:0.72+0.12*sin(float(i)*7.3);
+                float width_run=i==7?0.035:0.020+0.006*sin(float(i)*3.7);
+                float run=exp(-pow((p.x-source.x+0.003*sin(p.y*13.0+float(i)))/width_run,2.0));
+                run*=step(0.0,drop)*pow(clamp(1.0-drop/length_run,0.0,1.0),0.55);
+                runoff=max(runoff,run);
+            }
+            colour=mix(colour,vec3(0.145,0.063,0.029),smoothstep(0.015,0.14,runoff)*0.78);
+            colour=mix(colour,vec3(0.32,0.125,0.043)*(0.84+0.32*patina),smoothstep(0.15,0.65,runoff)*0.95);
+            colour=mix(colour,vec3(0.070,0.032,0.014),smoothstep(0.86,0.99,runoff)*0.32);
+            float wheel_shadow=1.0-smoothstep(0.36,0.50,length((p-vec2(aperture.x*0.5,wheel_height))/vec2(1.0,0.95)));
+            colour*=1.0-wheel_shadow*0.72;
+            colour=mix(colour,vec3(0.29,0.118,0.047)*(0.85+0.25*patina),smoothstep(0.12,0.64,runoff)*0.80);
+            relief+=paint*0.00065-weather.a*0.0006+(weather.g-0.5)*0.00045;
+        } else {
+            vec3 deep_rust=mix(vec3(0.070,0.026,0.010),vec3(0.23,0.086,0.025),0.32+0.68*noise(vec3(p.x*4.8,p.y*1.8,2)));
+            deep_rust*=mix(0.65,1.20,pits);
+            vec3 frame_steel=vec3(0.105,0.106,0.087)*(0.80+0.30*noise(local_p*2.0+vec3(3,1,7)));
+            float frame_oxide=0.45+0.35*noise(local_p*6.5+vec3(11,4,2));
+            colour=mix(frame_steel,deep_rust*0.85,frame_oxide);
+            if(wheel_surface) colour*=0.62;
+            float base=1.0-smoothstep(0.05,0.30,p.y);
+            float corner_grime=exp(-min(abs(p.x+0.11),abs(p.x-1.19))*12.0)*(1.0-smoothstep(0.12,0.52,p.y));
+            colour*=1.0-max(base*0.72,corner_grime*0.85)*(0.80+0.20*noise(local_p*41.0));
+        }
+        colour*=mix(raised_base?0.48:(leaf_paint?0.18:0.20),1.0,smoothstep(0.035,0.52,p.y));
+        if(leaf_hardware) {
+            float crust=noise(local_p*21.0)*0.58+noise(local_p*93.0)*0.42;
+            colour=mix(vec3(0.060,0.035,0.018),vec3(0.21,0.084,0.029),smoothstep(0.24,0.75,crust));
+            relief+=(crust-0.5)*0.0025;
+        }
+        if(hero_wheel) {
+            float crust=noise(local_p*19.0)*0.52+noise(local_p*63.0)*0.30+noise(local_p*191.0)*0.18;
+            colour=mix(vec3(0.058,0.029,0.013),vec3(0.25,0.125,0.051),smoothstep(0.24,0.74,crust));
+            colour*=0.80+0.30*pits;
+            relief+=(crust-0.5)*0.0030;
+        }
+    }
     vec3 normal_surface=normalize(n+pn*(hatch_surface?0.10:0.26)+grain_normal*(hatch_surface?0.05:0.14));
     mat3 world_from_surface=mat3(surface_x.xyz,surface_y.xyz,surface_z.xyz);
     vec3 view_n=normalize((VIEW_MATRIX*vec4(world_from_surface*normal_surface,0)).xyz);
@@ -160,6 +235,7 @@ void fragment() {
     float det=dot(dpdx,r1);
     vec3 gradient=(dFdx(relief)*r1+dFdy(relief)*r2)/(sign(det)*max(abs(det),0.00000001));
     NORMAL=normalize(view_n-clamp(gradient,vec3(-0.3),vec3(0.3)));
+    colour=mix(vec3(dot(colour,vec3(0.2126,0.7152,0.0722))),colour,finish_chroma);
     ALBEDO=max(colour*gain*colour_gain,vec3(0.0001));
     ROUGHNESS=clamp(0.84+orm.g*0.10,0.88,0.97);
     METALLIC=mix(0.20,0.025,oxide);

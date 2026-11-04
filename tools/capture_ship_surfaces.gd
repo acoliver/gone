@@ -46,6 +46,10 @@ func _run() -> void:
 		await _shot(circuit, "section41-corridor", &"D14-S-041", Vector3(18, 1.6, 0.25), Vector3(29.6, 1.5, 0))
 		await _shot(circuit, "section41-detail", &"D14-S-041", Vector3(18, 1.6, -0.4), Vector3(18.2, 1.5, -1.5))
 		await _shot(circuit, "section41-end-hatch", &"D14-C-001-H-FORE", Vector3(27.5, 1.6, 0), Vector3(30, 1.4, 0))
+		camera.fov = 86
+		await _shot(circuit, "hatch-close", &"D14-C-001-H-FORE", Vector3(28.45, 1.30, 0.03), Vector3(29.92, 1.30, 0))
+		camera.fov = 76
+		await _shot(circuit, "hatch-three-quarter", &"D14-C-001-H-FORE", Vector3(28.05, 1.40, -1.16), Vector3(29.92, 1.30, 0))
 		var bay_frame := game.layout.bay_to_world()
 		await _shot(circuit, "bay", ShipLayout.BAY_ID, bay_frame * Vector3(-0.4, 1.6, 1.49), bay_frame * Vector3(5.8, 1.5, 0))
 		await _shot(circuit, "power-doorway", ShipLayout.POWER_ID, Vector3(25.5, 1.6, -0.1), Vector3(27, 1.4, -1.6))

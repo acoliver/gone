@@ -35,15 +35,18 @@ static func build(spec: ShipLayout.DoorSpec, fore_mask: int = 1, aft_mask: int =
 	view.name = String(spec.id())
 	view._spec = spec
 	view.transform = spec.frame()
-	var frame := Node3D.new()
-	frame.name = "Frame"
-	view.add_child(frame)
 	var masks: Array[int] = [fore_mask, aft_mask]
-	HatchModel.add_faces(frame, &"frame", spec.aperture(), masks, false, Surfaces.door_frame(spec, &"FRAME"))
+	view.add_child(HatchModel.surround_faces(spec, masks))
 	for solid: ShipGeometry.SolidSpec in ShipGeometry.hatch_frame_solids(spec):
 		var suffix := String(solid.id).trim_prefix("%s/" % spec.id())
 		var pieces := {"COAMING": "Coaming", "FRAME/LEFT": "HingeJamb", "FRAME/RIGHT": "LatchJamb", "FRAME/TOP": "Lintel", "FRAME/STOP-LEFT": "StopLeft", "FRAME/STOP-RIGHT": "StopRight", "FRAME/STOP-TOP": "StopTop", "FRAME/STOP-BOTTOM": "StopBottom"}
-		assert(pieces.has(suffix), "shared hatch frame piece must be rendered")
+		if not pieces.has(suffix):
+			if not solid.section.is_empty(): continue
+			assert(suffix.begins_with("SURROUND/"), "known shared surround solid")
+			var piece := collar_surface(solid, spec, fore_mask, aft_mask)
+			piece.name = suffix.replace("/", "_")
+			view.add_child(piece)
+			continue
 		var piece := collar_surface(solid, spec, fore_mask, aft_mask)
 		piece.name = pieces[suffix]
 		view.add_child(piece)
@@ -55,26 +58,19 @@ static func build(spec: ShipLayout.DoorSpec, fore_mask: int = 1, aft_mask: int =
 	view._hinge.add_child(leaf)
 	view._wheel = leaf.get_node("Wheel")
 	view._reverse_wheel = leaf.get_node("ReverseWheel")
-	var hinges := Node3D.new()
-	hinges.name = "Hinges"
-	view.add_child(hinges)
-	hinges.transform = spec.hinge_frame()
-	HatchModel.add_faces(hinges, &"hinges", spec.aperture(), masks, true, Surfaces.door_frame(spec, &"FRAME"))
-	# Both faces have an unpowered button and reader, without emissive material.
-	for side: int in [-1, 1]:
-		var panel := HatchModel.control_panel()
-		panel.name = "ForePanel" if side < 0 else "AftPanel"
-		panel.position = Vector3(spec.aperture().x / 2 + 0.38, 1.25, -HatchModel.CONTROL_SIZE.z / 2 if side < 0 else ShipLayout.WALL + HatchModel.CONTROL_SIZE.z / 2)
-		if side < 0:
-			panel.rotation.y = PI
-		Lighting.mesh_layers(panel, fore_mask if side < 0 else aft_mask)
+	for side: int in range(2):
+		var services := HatchServices.build(spec, side, masks[side])
+		view.add_child(services)
+		var panel := services.get_node("Control")
+		services.remove_child(panel)
+		panel.name = "ForePanel" if side == 0 else "AftPanel"
 		view.add_child(panel)
 	view.refresh_surfaces()
 	return view
 
 static func collar_surface(solid: ShipGeometry.SolidSpec, spec: ShipLayout.DoorSpec, fore_mask: int, aft_mask: int, material: Material = null, surface_frame: Surfaces.SurfaceFrame = null) -> Node3D:
 	var group := Node3D.new()
-	var arrays := HatchModel.box_mesh(solid.size).surface_get_arrays(0)
+	var arrays := (HatchModel.box_mesh(solid.size) if solid.section.is_empty() else HatchModel.solid_mesh(solid)).surface_get_arrays(0)
 	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
 	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
 	var faces: Array[SurfaceTool] = [SurfaceTool.new(), SurfaceTool.new()]
@@ -96,10 +92,11 @@ static func collar_surface(solid: ShipGeometry.SolidSpec, spec: ShipLayout.DoorS
 			faces[side].add_vertex(vertex)
 	var pose := spec.frame().affine_inverse() * solid.transform
 	var binding := Surfaces.door_frame(spec, &"FRAME") if surface_frame == null else surface_frame
-	var surface := Surfaces.material(&"frame") if material == null else material
+	var role := solid.material_role if material == null else &"wall"
+	var surface := Surfaces.material(role) if material == null else material
 	for side: int in range(2):
 		var piece := HatchModel.mesh_piece(faces[side].commit(), pose, fore_mask if side == 0 else aft_mask, surface)
-		Surfaces.bind(piece, &"frame" if surface_frame == null else &"wall", binding)
+		Surfaces.bind(piece, role, binding)
 		group.add_child(piece)
 	return group
 

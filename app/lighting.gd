@@ -38,6 +38,7 @@ static func emergency_emission(level: float) -> Color:
 static func emergency_lens_material(level: float) -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
 	material.albedo_color = LENS_BASE_COLOR
+	material.emission_enabled = true
 	material.emission = emergency_emission(level)
 	material.roughness = 0.8
 	return material

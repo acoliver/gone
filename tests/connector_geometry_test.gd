@@ -27,7 +27,7 @@ func test_hatch_hardware_shares_resources_without_sharing_room_masks() -> void:
 	var first := DoorView.build(layout.door(&"D14-C-001-H-FORE"), 4, 8)
 	var remote := DoorView.build(layout.door(&"D01-C-001-H-FORE"), 32, 64)
 	var bay := Hatch.build()
-	for path: String in ["Frame/ForeSteel", "Frame/AftSteel", "Hinges/ForeSteel", "Hinge/Leaf/Wheel"]:
+	for path: String in ["Frame/ForeSteel", "Frame/AftSteel", "Hinge/Leaf/StrapHinges/ForeSteel", "Hinge/Leaf/Wheel"]:
 		var a: MeshInstance3D = first.get_node(path).get_child(0) if path.ends_with("Wheel") else first.get_node(path)
 		var b: MeshInstance3D = remote.get_node(path).get_child(0) if path.ends_with("Wheel") else remote.get_node(path)
 		assert_true(a.mesh == b.mesh and a.material_override == b.material_override, "shared hardware resource " + path)
@@ -61,7 +61,7 @@ func test_hatch_meshes_have_rounded_frame_braces_large_wheel_and_instanced_rivet
 		else:
 			assert_true(piece.mesh == other.mesh, "all decks share generated geometry")
 		assert_true(piece.material_override == other.material_override, "all decks share steel materials")
-	for path: String in ["Hinges", "Hinge/Leaf/StrapHinges", "Hinge/Leaf/Lugs"]:
+	for path: String in ["Hinge/Leaf/StrapHinges", "Hinge/Leaf/Lugs"]:
 		var fore: MeshInstance3D = first.get_node(path + "/ForeSteel")
 		var aft: MeshInstance3D = first.get_node(path + "/AftSteel")
 		var fore_bounds := fore.transform * fore.mesh.get_aabb()
@@ -69,15 +69,15 @@ func test_hatch_meshes_have_rounded_frame_braces_large_wheel_and_instanced_rivet
 		assert_float_equal(fore_bounds.position.x, aft_bounds.position.x, "both faces keep the same physical hinge/latch edge: " + path)
 		assert_float_equal(fore_bounds.end.x, aft_bounds.end.x, "reverse-face hardware is not moved to the opposite jamb: " + path)
 	var leaf_mesh: Mesh = first.get_node("Hinge/Leaf/ForeSteel").mesh
-	assert_float_in_range(leaf_mesh.get_aabb().size.x, 1.05499, 1.05501, "rounded leaf body survives batching with the X ribs")
-	assert_float_in_range(leaf_mesh.get_aabb().size.y, 2.29499, 2.29501, "rounded leaf retains its full tall silhouette")
+	assert_float_in_range(leaf_mesh.get_aabb().size.x, 1.07999, 1.08001, "rounded leaf body survives batching without the obsolete X ribs")
+	assert_float_in_range(leaf_mesh.get_aabb().size.y, 2.31999, 2.32001, "rounded leaf retains its full tall silhouette")
 	var leaf_arrays := leaf_mesh.surface_get_arrays(0)
 	var leaf_normals: PackedVector3Array = leaf_arrays[Mesh.ARRAY_NORMAL]
 	assert_true(leaf_normals[0].dot(Vector3.FORWARD) > 0.99, "leaf front faces outward, not into the steel")
 	var wheel: Node3D = first.get_node("Hinge/Leaf/Wheel")
 	var bounds := AABB()
 	for child: MeshInstance3D in wheel.get_children(): bounds = bounds.merge(child.transform * child.mesh.get_aabb())
-	assert_float_in_range(bounds.size.x, 0.58, 0.64, "wheel diameter is half the 1.2m leaf width")
+	assert_float_in_range(bounds.size.x, 0.88799, 0.88801, "round7 wheel outside diameter is 0.888m")
 	var bay := Hatch.build()
 	assert_true(bay.door_piece().get_node("ForeSteel").mesh == first.get_node("Hinge/Leaf/ForeSteel").mesh, "bay and connector hatches use the same shared leaf")
 	assert_true(bay.view.get_node("Frame/ForeSteel").mesh == first.get_node("Frame/ForeSteel").mesh, "bay and connector hatches use the same rounded frame")
@@ -203,7 +203,7 @@ func test_real_scene_has_shared_hatch_details_and_lazy_red_rooms() -> void:
 			hatches.append(view)
 	assert_int_equal(hatches.size(), 2, "opening contains only its two boundary hatch views")
 	for view: DoorView in hatches:
-		for path: String in ["Frame", "Coaming", "Hinge/Leaf", "Hinge/Leaf/Wheel", "Hinge/Leaf/ReverseWheel", "Hinges", "Hinge/Leaf/Lugs", "ForePanel/Button", "ForePanel/CardReader", "AftPanel/Button", "AftPanel/CardReader"]:
+		for path: String in ["Frame", "Coaming", "Hinge/Leaf", "Hinge/Leaf/Wheel", "Hinge/Leaf/ReverseWheel", "Hinge/Leaf/StrapHinges", "Hinge/Leaf/Lugs", "ForePanel/Button", "ForePanel/CardReader", "AftPanel/Button", "AftPanel/CardReader"]:
 			assert_true(view.has_node(NodePath(path)), "shared hatch detail: " + path)
 	root.free()
 

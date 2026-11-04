@@ -127,9 +127,9 @@ func test_collider_sets_extend_the_hallways_both_doors() -> void:
 	var shut := PowerRoom.scene_collider_set(registry, false, false)
 	var hall_open := PowerRoom.scene_collider_set(registry, true, false)
 	var both_open := PowerRoom.scene_collider_set(registry, true, true)
-	assert_int_equal(shut.size(), 222, "the shut set's box count is pinned, including four stops on each hatch")
-	assert_int_equal(hall_open.size(), 221, "opening the stasis doorway replaces its block and swing reservation with the parked leaf")
-	assert_int_equal(both_open.size(), 220, "opening the power door drops its leaf")
+	assert_int_equal(shut.size(), 1013, "the shut set's box count is pinned, including four stops on each hatch")
+	assert_int_equal(hall_open.size(), 1012, "opening the stasis doorway replaces its block and swing reservation with the parked leaf")
+	assert_int_equal(both_open.size(), 1011, "opening the power door drops its leaf")
 	var game := _awake_game()
 	assert_int_equal(game.colliders.size(), shut.size(), "the game boots on the shut set")
 	# The power aperture is solid while shut and clear once the leaf

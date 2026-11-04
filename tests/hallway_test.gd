@@ -107,8 +107,8 @@ func test_collider_sets_extend_the_walk_sim_open_and_shut() -> void:
 	var registry := Pods.PodRegistry.frozen()
 	var closed := Hallway.scene_collider_set(registry, false)
 	var open := Hallway.scene_collider_set(registry, true)
-	assert_int_equal(closed.size(), 99, "the closed set's box count is pinned, including four stops on each hatch")
-	assert_int_equal(open.size(), 98, "the open set replaces passage and sweep with the parked leaf")
+	assert_int_equal(closed.size(), 438, "the closed set's box count is pinned, including four stops on each hatch")
+	assert_int_equal(open.size(), 437, "the open set replaces passage and sweep with the parked leaf")
 	var game := _awake_game()
 	assert_int_equal(game.colliders.size(), PowerRoom.scene_collider_set(registry, false, false).size(), "the game boots on the full D14 set")
 	# The aperture is solid while shut and clear when open: the walk

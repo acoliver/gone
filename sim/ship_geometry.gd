@@ -9,6 +9,7 @@ const HATCH_HEIGHT: float = ShipLayout.HATCH_HEIGHT
 const FRAME_DEPTH: float = 0.18
 const FRAME_POST_WIDTH: float = 0.16
 const SILL_HEIGHT: float = 0.08
+const SILL_WALK_WIDTH: float = 1.0
 const DOOR_WIDTH: float = 1.12
 const DOOR_HEIGHT: float = 2.2
 const DOOR_THICKNESS: float = 0.06
@@ -55,6 +56,7 @@ class SolidSpec:
 	var material_role: StringName
 	var collision_role: StringName
 	var hatch_profile: ShipLayout.DoorSpec
+	var section := PackedVector2Array()
 	var surface_owner: StringName
 	var surface_part: StringName
 	var transform: Transform3D:
@@ -305,6 +307,7 @@ static func transformed(solid: SolidSpec, frame: Transform3D, id: StringName = &
 	var placed := SolidSpec.new(solid._local_center, solid.size, solid._local_rotation, solid.id if id == &"" else id, solid.material_role, solid.collision_role)
 	placed._parent = frame * solid._parent
 	placed.hatch_profile = solid.hatch_profile
+	placed.section = solid.section
 	if solid.surface_owner != &"": placed.surface_identity(solid.surface_owner, solid.surface_part)
 	return placed
 
@@ -449,6 +452,7 @@ static func hatch_frame_solids(door: ShipLayout.DoorSpec) -> Array[SolidSpec]:
 		SolidSpec.new(Vector3(cross_x, (SILL_HEIGHT + lap) / 2, stop_z), Vector3(cross_width, SILL_HEIGHT + lap, stop_depth), Quaternion.IDENTITY, StringName("%s/FRAME/STOP-BOTTOM" % door.id()), &"frame"),
 	]
 	for stop: SolidSpec in stops: solids.append(transformed(stop, door.frame()))
+	solids.append_array(hatch_surround_solids(door))
 	return solids
 
 static func hatch_frame_vertex(door: ShipLayout.DoorSpec, solid: SolidSpec, vertex: Vector3) -> Vector3:
@@ -661,3 +665,62 @@ static func _named_solids(target: Array[ShipGeometry.SolidSpec], pieces: Array[S
 	for index: int in range(pieces.size()):
 		pieces[index].id = StringName("%s/%03d" % [owner, index])
 		target.append(pieces[index])
+
+static func hatch_surround_solids(door: ShipLayout.DoorSpec) -> Array[SolidSpec]:
+	var solids: Array[SolidSpec] = []
+	var aperture := door.aperture()
+	var center_y := (aperture.y + SILL_HEIGHT) / 2
+	var into := signf(door.hinge_frame().origin.z - WALL / 2)
+	for side: int in [0 if into > 0 else 1]:
+		var face := Transform3D.IDENTITY if side == 0 else Transform3D(Basis(Vector3.RIGHT, Vector3.UP, Vector3.FORWARD), Vector3(0, 0, WALL))
+		var owner := "%s/SURROUND/%s" % [door.id(), "FORE" if side == 0 else "AFT"]
+		_annulus(solids, owner + "/RING", door.frame() * face, Vector2(aperture.x + 0.01, aperture.y - SILL_HEIGHT), Vector2(aperture.x + 0.46, aperture.y + 0.12), center_y, 0.24, 0.35, -0.085, 0.10)
+		_annulus(solids, owner + "/LIP", door.frame() * face, Vector2(aperture.x, aperture.y - SILL_HEIGHT), Vector2(aperture.x + 0.07, aperture.y - 0.01), center_y, 0.235, 0.27, -0.098, -0.06)
+		if (side == 0 and into > 0) or (side == 1 and into < 0):
+			_annulus(solids, owner + "/THROAT", door.frame() * face, Vector2(aperture.x, aperture.y - SILL_HEIGHT), Vector2(aperture.x + 0.10, aperture.y + 0.04), center_y, 0.235, 0.285, 0.02, 0.27, WALL / 2 + absf(door.hinge_frame().origin.z - WALL / 2) - Vector2(HatchParts.HINGE_RETURN_WIDTH, WALL / 2).length() - 0.001)
+		var steps: Array[SolidSpec] = [
+			SolidSpec.new(Vector3(0, 0.0275, -0.20), Vector3(aperture.x + 0.60, 0.055, 0.60)),
+			SolidSpec.new(Vector3(0, 0.0675, -0.10), Vector3(aperture.x + 0.45, 0.025, 0.40)),
+			SolidSpec.new(Vector3(0, 0.049, -0.48), Vector3(aperture.x + 0.60, 0.013, 0.04)),
+		]
+		for index: int in range(steps.size()):
+			var step := transformed(steps[index], door.frame() * face, StringName("%s/STEP/%03d" % [owner, index]))
+			step.material_role = &"sill"
+			step.surface_identity(door.id(), &"COAMING")
+			solids.append(step)
+		for x: int in [-1, 1]:
+			var pier := transformed(SolidSpec.new(Vector3(x * (aperture.x / 2 + 0.175), 0.125, -0.02), Vector3(0.25, 0.25, 0.24)), door.frame() * face, StringName("%s/PIER/%s" % [owner, x]))
+			pier.material_role = &"hardware"
+			pier.surface_identity(door.id(), &"FRAME")
+			solids.append(pier)
+	return solids
+
+static func _annulus(solids: Array[SolidSpec], owner: String, frame: Transform3D, inner_size: Vector2, outer_size: Vector2, center_y: float, inner_radius: float, outer_radius: float, front: float, rear: float, hinge_rear: float = INF) -> void:
+	var inner := HatchParts.outline(inner_size, inner_radius)
+	var outer := HatchParts.outline(outer_size, outer_radius)
+	# The lower returns meet the coaming without raising the capsule's walk band.
+	var notched: Dictionary = {}
+	for index: int in range(inner.size()):
+		var next := (index + 1) % inner.size()
+		var lo := minf(minf(inner[index].x, inner[next].x), minf(outer[index].x, outer[next].x))
+		var hi := maxf(maxf(inner[index].x, inner[next].x), maxf(outer[index].x, outer[next].x))
+		if inner[index].y < 0 and inner[next].y < 0 and lo < SILL_WALK_WIDTH / 2 and hi > -SILL_WALK_WIDTH / 2:
+			notched[index] = true
+			notched[next] = true
+	for index: int in notched:
+		inner[index].y = SILL_HEIGHT - center_y
+		outer[index].y = minf(outer[index].y, SILL_HEIGHT - center_y - HatchParts.SEAL_DEPTH)
+	for index: int in range(inner.size()):
+		var next := (index + 1) % inner.size()
+		var points := PackedVector2Array([inner[index], inner[next], outer[next], outer[index]])
+		var lo := points[0]
+		var hi := lo
+		for point: Vector2 in points:
+			lo = lo.min(point)
+			hi = hi.max(point)
+		var center := (lo + hi) / 2
+		var cell_rear := minf(rear, hinge_rear) if center.x < 0 else rear
+		var cell := SolidSpec.new(Vector3(center.x, center.y + center_y, (front + cell_rear) / 2), Vector3(hi.x - lo.x, hi.y - lo.y, cell_rear - front), Quaternion.IDENTITY, StringName("%s/%03d" % [owner, index]), &"frame")
+		for point: Vector2 in points: cell.section.append(point - center)
+		cell.surface_identity(StringName(owner.get_slice("/", 0)), &"FRAME")
+		solids.append(transformed(cell, frame))
