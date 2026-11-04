@@ -1,5 +1,23 @@
 extends SimTestCase
 
+func test_bay_side_wall_caps_do_not_compete_with_the_hall_facing_wall() -> void:
+	var room := RoomGeometry.build(true)
+	for index: int in [2, 3]:
+		var wall: MeshInstance3D = room.get_child(index)
+		var end: float = wall.position.x + wall.mesh.size.x / 2
+		assert_true(end <= Pods.ROOM_LENGTH / 2 + 0.00001, "bay-only cap is behind the hall wall, not coplanar with its hall-lit face")
+		assert_true(is_equal_approx(wall.position.x - wall.mesh.size.x / 2, -Pods.ROOM_LENGTH / 2 - ShipLayout.WALL), "far bay corner remains sealed")
+	var layout := ShipLayout.authored().layout
+	var hall := ShipGeometry.hallway_solids(layout)
+	for side: float in [-1.0, 1.0]:
+		for offset: float in [0.025, 0.1, 0.175]:
+			var point := layout.bay_to_world() * Vector3(Pods.ROOM_LENGTH / 2 + ShipLayout.WALL / 2, 1.6, side * (Pods.ROOM_WIDTH / 2 + offset))
+			var closed := false
+			for solid: ShipGeometry.SolidSpec in hall:
+				if AABB(-solid.size / 2, solid.size).has_point(solid.transform.affine_inverse() * point): closed = true
+			assert_true(closed, "hall wall owns the removed overlap, with no see-through gap")
+	room.free()
+
 func test_bay_shell_weather_uses_the_layout_frame_exactly_once() -> void:
 	var root := Node3D.new()
 	var game := Game.new(0)

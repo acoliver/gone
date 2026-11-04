@@ -93,8 +93,8 @@ class HangingWire:
 ## The room shell's six boxes in fixed order: floor, ceiling, then the
 ## -Z, +Z, -X, and +X walls. The playable interior is exactly
 ## ROOM_LENGTH by ROOM_WIDTH with its ceiling at ROOM_CEILING_HEIGHT.
-static func room_shell() -> Array[Placement.SolidPlacement]:
-	return ShipGeometry.room_shell()
+static func room_shell(open_east_wall: bool = false) -> Array[Placement.SolidPlacement]:
+	return ShipGeometry.room_shell(open_east_wall)
 
 ## The hatch group's five boxes in fixed order: the -Z frame post, the
 ## +Z frame post, the lintel, the sill, and the ajar door slab. The group

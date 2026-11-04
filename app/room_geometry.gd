@@ -15,7 +15,7 @@ const EAST_WALL_INDEX: int = 5
 
 static func build(p_open_east_wall := false, layout: ShipLayout = ShipLayout.authored().layout) -> RoomGeometry:
 	var room := RoomGeometry.new()
-	var shell := Placement.room_shell()
+	var shell := Placement.room_shell(p_open_east_wall)
 	assert(
 		shell[EAST_WALL_INDEX].center.x > 0.0,
 		"the east wall's authored shell index holds"

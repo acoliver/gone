@@ -101,7 +101,7 @@ class ConsoleStation:
 		station.health = health
 		return station
 
-static func room_shell() -> Array[ShipGeometry.SolidSpec]:
+static func room_shell(open_east_wall: bool = false) -> Array[ShipGeometry.SolidSpec]:
 	var slab := Vector3(
 		Pods.ROOM_LENGTH + 2.0 * WALL_THICKNESS,
 		WALL_THICKNESS,
@@ -112,6 +112,10 @@ static func room_shell() -> Array[ShipGeometry.SolidSpec]:
 		Pods.ROOM_CEILING_HEIGHT,
 		WALL_THICKNESS
 	)
+	# The hall owns the shared band. Bay-side caps must stop at its bay face,
+	# rather than compete with its differently lit, coplanar corridor face.
+	if open_east_wall: wall_along_x.x -= WALL_THICKNESS
+	var side_center_x := -WALL_THICKNESS / 2.0 if open_east_wall else 0.0
 	var wall_along_z := Vector3(WALL_THICKNESS, Pods.ROOM_CEILING_HEIGHT, Pods.ROOM_WIDTH)
 	var mid_height := Pods.ROOM_CEILING_HEIGHT / 2.0
 	return _shell_roles([
@@ -121,11 +125,11 @@ static func room_shell() -> Array[ShipGeometry.SolidSpec]:
 			slab
 		),
 		ShipGeometry.SolidSpec.new(
-			Vector3(0.0, mid_height, -(Pods.ROOM_WIDTH / 2.0 + WALL_THICKNESS / 2.0)),
+			Vector3(side_center_x, mid_height, -(Pods.ROOM_WIDTH / 2.0 + WALL_THICKNESS / 2.0)),
 			wall_along_x
 		),
 		ShipGeometry.SolidSpec.new(
-			Vector3(0.0, mid_height, Pods.ROOM_WIDTH / 2.0 + WALL_THICKNESS / 2.0),
+			Vector3(side_center_x, mid_height, Pods.ROOM_WIDTH / 2.0 + WALL_THICKNESS / 2.0),
 			wall_along_x
 		),
 		ShipGeometry.SolidSpec.new(
@@ -616,7 +620,7 @@ static func _shell_roles(solids: Array[SolidSpec], owner: StringName, walls: Arr
 static func opening_hall_solids(registry: Pods.PodRegistry, door_open: bool, layout: ShipLayout, include_blockers: bool = true, run_seed: int = 0) -> Array[ShipGeometry.SolidSpec]:
 	var solids: Array[ShipGeometry.SolidSpec] = []
 	var frame := layout.bay_to_world()
-	var shell := ShipGeometry.room_shell()
+	var shell := ShipGeometry.room_shell(true)
 	for index: int in range(shell.size()):
 		if index != ShipGeometry.ROOM_SHELL_EAST_WALL_INDEX:
 			solids.append(ShipGeometry.transformed(shell[index], frame, StringName("D14-BAY/SHELL/%03d" % index)))
