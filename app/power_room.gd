@@ -285,10 +285,11 @@ static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 	var white_held: Intensity.Result = Intensity.FixtureFade.holding(white_level)
 	assert(white_held.is_ok(), "the white strip level maps to a valid fade")
 	room._white_fade = white_held.fade
+	var fill_positions := game.layout.power_room().emergency_fill_positions()
 	for station_x: float in REGULAR_STATIONS_X:
 		for station_z: float in REGULAR_STATIONS_Z:
 			room.add_child(room._white_fixture(station_x, station_z, white_level))
-			var fill := Lighting.emergency_fill(Vector3(station_x, REGULAR_MOUNT_Y - Lighting.EMERGENCY_FILL_CEILING_DROP, station_z), level, Lighting.POWER_FILL_MASK)
+			var fill := Lighting.emergency_fill(fill_positions[room._fill_lights.size()], level, Lighting.POWER_FILL_MASK)
 			fill.name = "EmergencyFill%d" % room._fill_lights.size()
 			room.add_child(fill)
 			room._fill_lights.append(fill)
@@ -437,13 +438,7 @@ func _fixture(position: Vector3, level: float) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "PowerFixture"
 	fixture.position = position
-	var light := OmniLight3D.new()
-	light.light_color = Lighting.EMERGENCY_RED
-	light.light_energy = Lighting.emergency_energy() * level
-	light.omni_range = Lighting.EMERGENCY_POOL_RANGE
-	light.omni_attenuation = Lighting.FIXTURE_ATTENUATION
-	light.light_cull_mask = 1
-	light.shadow_enabled = false
+	var light := Lighting.switched_key(_game.layout.power_room().emergency_light_role(), level)
 	fixture.add_child(light)
 	var lens := MeshInstance3D.new()
 	lens.name = "Lens"

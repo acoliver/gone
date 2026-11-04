@@ -255,13 +255,7 @@ func _fixture(fixture_transform: Transform3D, level: float) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "HallFixture"
 	fixture.transform = fixture_transform
-	var light := OmniLight3D.new()
-	light.light_color = Lighting.EMERGENCY_RED
-	light.light_energy = Lighting.emergency_energy() * level
-	light.omni_range = Lighting.EMERGENCY_POOL_RANGE
-	light.omni_attenuation = Lighting.FIXTURE_ATTENUATION
-	light.light_cull_mask = 1
-	light.shadow_enabled = false
+	var light := Lighting.switched_key(_game.layout.section(&"D14-S-041").emergency_light_role(), level)
 	fixture.add_child(light)
 	var lens := MeshInstance3D.new()
 	lens.name = "Lens"

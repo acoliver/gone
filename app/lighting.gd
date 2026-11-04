@@ -28,7 +28,8 @@ const EMERGENCY_FILL_COLOR: Color = Color(1.0, 0.97, 0.92)
 const EMERGENCY_END_FILL_SHARE: float = 0.84
 const EMERGENCY_END_FILL_COLOR: Color = Color(1.0, 0.80, 0.62)
 const EMERGENCY_FILL_RANGE: float = 4.0
-const EMERGENCY_FILL_CEILING_DROP: float = 0.77
+const SMOKE_EMISSION_STRENGTH: float = 0.03
+const SMOKE_EMISSION: Color = Color(EMERGENCY_RED.r * SMOKE_EMISSION_STRENGTH, EMERGENCY_RED.g * SMOKE_EMISSION_STRENGTH, EMERGENCY_RED.b * SMOKE_EMISSION_STRENGTH)
 # Layers 18-20 belong only to the three switched-room fills.
 const BAY_FILL_MASK: int = 1 << 17
 const HALL_FILL_MASK: int = 1 << 18
@@ -38,6 +39,10 @@ const LENS_BASE_COLOR: Color = Color(0.18, 0.05, 0.025)
 
 static func emergency_energy() -> float:
 	return FIXTURE_ENERGY * EMERGENCY_ENERGY_MULTIPLIER
+
+static func bind_smoke_emission(material: ShaderMaterial) -> void:
+	material.set_shader_parameter("emission_tint", SMOKE_EMISSION)
+	assert(material.get_shader_parameter("emission_tint") == SMOKE_EMISSION, "smoke material requires the shared emission policy")
 
 static func emergency_emission(level: float) -> Color:
 	var emission := EMERGENCY_RED * FIXTURE_EMISSIVE * level
@@ -96,6 +101,7 @@ var _white_lights: Array[OmniLight3D] = []
 var _white_lens_material: StandardMaterial3D
 var _fade: Intensity.FixtureFade = null
 var _fixtures: Array[Node3D] = []
+var _fixtures_by_id: Dictionary[StringName, Node3D] = {}
 var _lights: Array[OmniLight3D] = []
 var _fill_lights: Array[Lighting.EmergencyFill] = []
 var _lenses: Array[MeshInstance3D] = []
@@ -115,11 +121,10 @@ static func build(game: Game) -> Lighting:
 	var held: Intensity.Result = Intensity.FixtureFade.holding(level)
 	assert(held.is_ok(), "power maps to a finite nonnegative level")
 	lighting._fade = held.fade
-	for fixture_transform: Transform3D in fixture_transforms(game.registry):
-		lighting.add_child(lighting._fixture(fixture_transform, level))
-	# The bay's last key seats in its hatch cage and must reach the unlit hall opposite it.
-	lighting._lights[-1].omni_range = BAY_HATCH_POOL_RANGE
-	lighting._lights[-1].omni_attenuation = BAY_HATCH_ATTENUATION
+	for spec: ShipLayout.EmergencyFixtureSpec in game.layout.bay().emergency_fixtures(game.registry):
+		lighting.add_child(lighting._fixture(spec, level))
+	var hatch_key := lighting.fixture(ShipLayout.BAY_HATCH_KEY_ID)
+	assert(hatch_key.get_meta(&"light_role") == ShipLayout.EmergencyLightRole.BAY_HATCH, "bay hatch identity requires the doorway profile")
 	var white_level := 1.0 if game.power_active else 0.0
 	lighting._white_fade = Intensity.FixtureFade.holding(white_level).fade
 	lighting._white_lens_material = StandardMaterial3D.new()
@@ -129,9 +134,10 @@ static func build(game: Game) -> Lighting:
 	var white_mesh := BoxMesh.new()
 	white_mesh.size = Hallway.REGULAR_LENS_SIZE
 	white_mesh.material = lighting._white_lens_material
+	var fill_positions := game.layout.bay().emergency_fill_positions()
 	for frame: Transform3D in game.layout.bay().regular_light_frames():
 		lighting.add_child(lighting._white_fixture(frame, white_mesh))
-		var fill := emergency_fill(frame.origin - Vector3.UP * EMERGENCY_FILL_CEILING_DROP, level, BAY_FILL_MASK, EMERGENCY_BAY_FILL_SHARE)
+		var fill := emergency_fill(fill_positions[lighting._fill_lights.size()], level, BAY_FILL_MASK, EMERGENCY_BAY_FILL_SHARE)
 		fill.name = "EmergencyFill%d" % lighting._fill_lights.size()
 		lighting.add_child(fill)
 		lighting._fill_lights.append(fill)
@@ -139,48 +145,39 @@ static func build(game: Game) -> Lighting:
 	lighting.add_child(_world_environment())
 	return lighting
 
-## One wall fixture above each registry pod and one above the existing
-## hatch lintel. All sit outside the standing envelope; route solids are
-## untouched.
-static func fixture_transforms(registry: Pods.PodRegistry) -> Array[Transform3D]:
-	var transforms: Array[Transform3D] = []
-	for pod: Pods.Pod in registry.pods():
-		var placement := pod.placement()
-		var side := signf(placement.center.y)
-		transforms.append(
-			Transform3D(
-				Basis(),
-				Vector3(
-					placement.center.x,
-					WALL_MOUNT_HEIGHT,
-					side * (Pods.ROOM_WIDTH / 2.0 - WALL_STANDOFF)
-				)
-			)
-		)
-	var lintel: Placement.SolidPlacement = Placement.hatch_solids()[2]
-	transforms.append(
-		Transform3D(
-			Basis(Vector3.UP, PI / 2.0),
-			lintel.center + Vector3(-WALL_STANDOFF, 0.22, 0.0)
-		)
-	)
-	return transforms
+static func switched_key(role: ShipLayout.EmergencyLightRole, level: float) -> OmniLight3D:
+	var light := OmniLight3D.new()
+	match role:
+		ShipLayout.EmergencyLightRole.BAY_POOL:
+			light.omni_range = BAY_POOL_RANGE
+			light.omni_attenuation = BAY_POOL_ATTENUATION
+		ShipLayout.EmergencyLightRole.BAY_HATCH:
+			light.omni_range = BAY_HATCH_POOL_RANGE
+			light.omni_attenuation = BAY_HATCH_ATTENUATION
+		ShipLayout.EmergencyLightRole.ROOM_POOL:
+			light.omni_range = EMERGENCY_POOL_RANGE
+			light.omni_attenuation = FIXTURE_ATTENUATION
+		_:
+			assert(false, "switched emergency key requires an authored role")
+	light.light_color = EMERGENCY_RED
+	light.light_energy = emergency_energy() * level
+	light.light_cull_mask = 1
+	light.shadow_enabled = false
+	return light
 
 ## The fixture group holds the light and the lens as siblings. The lens
 ## never rides on the OmniLight3D node itself, so no mesh bounds can
 ## stand in for the light's influence volume (culling parity with the
 ## Rust fix).
-func _fixture(fixture_transform: Transform3D, level: float) -> Node3D:
+func _fixture(spec: ShipLayout.EmergencyFixtureSpec, level: float) -> Node3D:
+	assert(not _fixtures_by_id.has(spec.id), "emergency fixture identity is unique")
 	var fixture := Node3D.new()
 	fixture.name = "EmergencyFixture"
-	fixture.transform = fixture_transform
-	var light := OmniLight3D.new()
-	light.light_color = EMERGENCY_RED
-	light.light_energy = emergency_energy() * level
-	light.omni_range = BAY_POOL_RANGE
-	light.omni_attenuation = BAY_POOL_ATTENUATION
-	light.light_cull_mask = 1
-	light.shadow_enabled = false
+	fixture.transform = spec.frame
+	fixture.set_meta(&"fixture_id", spec.id)
+	fixture.set_meta(&"light_role", spec.role)
+	_fixtures_by_id[spec.id] = fixture
+	var light := switched_key(spec.role, level)
 	fixture.add_child(light)
 	var lens := MeshInstance3D.new()
 	lens.name = "Lens"
@@ -285,6 +282,10 @@ func is_settled() -> bool:
 
 func fixtures() -> Array[Node3D]:
 	return _fixtures
+
+func fixture(id: StringName) -> Node3D:
+	assert(_fixtures_by_id.has(id), "layout-owned emergency fixture must exist: %s" % id)
+	return _fixtures_by_id[id]
 
 func lights() -> Array[OmniLight3D]:
 	return _lights

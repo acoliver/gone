@@ -73,13 +73,13 @@ func test_fixture_inventory_places_eight_red_lights_from_registry() -> void:
 		)
 	var lintel: Placement.SolidPlacement = Placement.hatch_solids()[2]
 	assert_vec3_equal(
-		fixtures[7].position,
+		lighting.fixture(ShipLayout.BAY_HATCH_KEY_ID).position,
 		lintel.center + Vector3(-0.10, 0.22, 0.0),
 		"hatch fixture uses the lintel placement at 2.70 m"
 	)
 	for light: OmniLight3D in lights:
 		assert_true(light.light_color == Color(1.0, 0.28, 0.12), "fixture color is the approved red-orange")
-		assert_float_equal(light.omni_range, 5.5 if light == lights[-1] else 3.5, "bay keys have local wall pools and one longer hatch spill")
+		assert_float_equal(light.omni_range, 5.5 if light.get_parent() == lighting.fixture(ShipLayout.BAY_HATCH_KEY_ID) else 3.5, "bay keys have local wall pools and one longer hatch spill")
 		assert_false(light.shadow_enabled, "fixture shadows are disabled")
 		assert_true(
 			absf(light.light_energy - Lighting.FIXTURE_ENERGY) < 1e-4,

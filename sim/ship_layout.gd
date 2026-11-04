@@ -18,6 +18,8 @@ const HATCH_LABEL_SIZE := Vector2(0.92, 0.46)
 const BAY_ID: StringName = &"D14-BAY"
 const POWER_ID: StringName = &"D14-POWER"
 const BAY_DOOR_ID: StringName = &"D14-BAY-DOOR"
+const BAY_HATCH_KEY_ID: StringName = &"D14-BAY-HATCH-KEY"
+const EMERGENCY_FILL_CEILING_DROP: float = 0.77
 const POWER_DOOR_ID: StringName = &"D14-POWER-DOOR"
 const POWER_CENTER_X: float = 27.0
 const POWER_NEAR_Z: float = -(Pods.AISLE_HALF_WIDTH + WALL)
@@ -29,6 +31,17 @@ const POWER_GENERATOR_CENTER := Vector3(POWER_CENTER_X, 0, (POWER_NEAR_Z + POWER
 enum Policy { CRANK, NEVER_OPENS, ROD_PRY, PRESS_SLIDE }
 enum DoorKind { HATCH, SIDE, LIFT, BAY, POWER }
 enum AnimationRecipe { HINGE, FIXED, SLIDE }
+enum EmergencyLightRole { BAY_POOL, BAY_HATCH, ROOM_POOL }
+
+class EmergencyFixtureSpec:
+	extends RefCounted
+	var id: StringName
+	var role: EmergencyLightRole
+	var frame: Transform3D
+	func _init(p_id: StringName, p_role: EmergencyLightRole, p_frame: Transform3D) -> void:
+		id = p_id
+		role = p_role
+		frame = p_frame
 
 class Spec:
 	extends RefCounted
@@ -89,6 +102,8 @@ class SectionSpec:
 		return _side_door_ids.duplicate()
 	func circuit() -> StringName:
 		return _circuit
+	func emergency_light_role() -> EmergencyLightRole:
+		return ShipLayout.EmergencyLightRole.ROOM_POOL
 	func emergency_fill_positions() -> Array[Vector3]:
 		var positions: Array[Vector3] = []
 		for index: int in range(7):
@@ -410,6 +425,21 @@ class BaySpec:
 			for z: float in [-1.6, 1.6]:
 				frames.append(Transform3D(Basis(), Vector3(x, Pods.ROOM_CEILING_HEIGHT - 0.08, z)))
 		return frames
+	func emergency_fixtures(registry: Pods.PodRegistry) -> Array[EmergencyFixtureSpec]:
+		var fixtures: Array[EmergencyFixtureSpec] = []
+		for pod: Pods.Pod in registry.pods():
+			var placement := pod.placement()
+			var side := signf(placement.center.y)
+			var frame := Transform3D(Basis(), Vector3(placement.center.x, 2.65, side * (Pods.ROOM_WIDTH / 2.0 - 0.10)))
+			fixtures.append(EmergencyFixtureSpec.new(StringName("D14-BAY-POD-%d-KEY" % pod.id().index()), ShipLayout.EmergencyLightRole.BAY_POOL, frame))
+		var lintel: Placement.SolidPlacement = Placement.hatch_solids()[2]
+		fixtures.append(EmergencyFixtureSpec.new(ShipLayout.BAY_HATCH_KEY_ID, ShipLayout.EmergencyLightRole.BAY_HATCH, Transform3D(Basis(Vector3.UP, PI / 2.0), lintel.center + Vector3(-0.10, 0.22, 0.0))))
+		return fixtures
+	func emergency_fill_positions() -> Array[Vector3]:
+		var positions: Array[Vector3] = []
+		for frame: Transform3D in regular_light_frames():
+			positions.append(frame.origin - Vector3.UP * ShipLayout.EMERGENCY_FILL_CEILING_DROP)
+		return positions
 	func ceiling_vent_frames() -> Array[Transform3D]:
 		return [Transform3D(Basis(), Vector3(-3, 3.05, 0)), Transform3D(Basis(), Vector3(3, 3.05, 0))]
 	func local_bounds() -> AABB:
@@ -444,6 +474,15 @@ class PowerRoomSpec:
 		return _console_stations.duplicate()
 	func generator_anchor() -> Transform3D:
 		return _generator_anchor
+	func emergency_light_role() -> EmergencyLightRole:
+		return ShipLayout.EmergencyLightRole.ROOM_POOL
+	func emergency_fill_positions() -> Array[Vector3]:
+		var positions: Array[Vector3] = []
+		var mount_y := Pods.ROOM_CEILING_HEIGHT - 0.08
+		for x: float in [24.0, ShipLayout.POWER_CENTER_X, 30.0]:
+			for z: float in [-3.7, -7.7]:
+				positions.append(Vector3(x, mount_y - ShipLayout.EMERGENCY_FILL_CEILING_DROP, z))
+		return positions
 	func data() -> Dictionary:
 		var result := super.data()
 		result["section_id"] = _section_id

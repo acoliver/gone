@@ -24,7 +24,6 @@ const SMOKE_SHADER_PATH: String = "res://app/smoke_puff.gdshader"
 ## falloff eats the outer rim.
 const SMOKE_PUFF_SIZE: float = 1.7
 const SMOKE_TINT: Color = Color(0.26, 0.25, 0.25)
-const SMOKE_EMISSION: Color = Color(Lighting.EMERGENCY_RED.r * 0.03, Lighting.EMERGENCY_RED.g * 0.03, Lighting.EMERGENCY_RED.b * 0.03)
 const SMOKE_OPACITY: float = 0.48
 
 var auto_bursts: bool = true
@@ -210,6 +209,6 @@ static func _smoke_material() -> ShaderMaterial:
 	var material := ShaderMaterial.new()
 	material.shader = load(SMOKE_SHADER_PATH) as Shader
 	material.set_shader_parameter("tint", SMOKE_TINT)
-	material.set_shader_parameter("emission_tint", SMOKE_EMISSION)
+	Lighting.bind_smoke_emission(material)
 	material.set_shader_parameter("opacity", SMOKE_OPACITY)
 	return material

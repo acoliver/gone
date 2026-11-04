@@ -13,7 +13,8 @@ func test_smoke_glow_follows_the_shared_emergency_palette() -> void:
 	var expected := Lighting.EMERGENCY_RED * 0.03
 	expected.a = 1.0
 	assert_true(emission.is_equal_approx(expected), "smoke uses the emergency palette at a restrained glow strength")
-	assert_true(Hazards.SMOKE_EMISSION.is_equal_approx(expected), "smoke has no independent pure-red palette")
+	assert_true(Lighting.SMOKE_EMISSION.is_equal_approx(expected), "Lighting owns the smoke emission policy")
+	assert_float_equal(Lighting.SMOKE_EMISSION_STRENGTH, 0.03, "smoke glow strength is unchanged")
 	hazards.free()
 
 func test_ventilation_fades_particles_stops_emission_and_preserves_sparks() -> void:
