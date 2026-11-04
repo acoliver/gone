@@ -181,6 +181,7 @@ func _fixture(spec: ShipLayout.EmergencyFixtureSpec, level: float) -> Node3D:
 	fixture.add_child(light)
 	var lens := MeshInstance3D.new()
 	lens.name = "Lens"
+	lens.set_meta(&"lamp_circuit", "emergency")
 	lens.mesh = _lens_mesh
 	fixture.add_child(lens)
 	_fixtures.append(fixture)
@@ -242,6 +243,7 @@ func _white_fixture(frame: Transform3D, mesh: BoxMesh) -> Node3D:
 	fixture.add_child(light)
 	var lens := MeshInstance3D.new()
 	lens.name = "Lens"
+	lens.set_meta(&"lamp_circuit", "white")
 	lens.mesh = mesh
 	fixture.add_child(lens)
 	_white_lights.append(light)
@@ -347,5 +349,6 @@ static func steady_fixture(origin: Vector3, mask: int, radius: float, attenuatio
 	var material := emergency_lens_material(1.0)
 	var lens := HatchModel.mesh_piece(Hallway._box_mesh(LENS_SIZE), Transform3D.IDENTITY, mask, material)
 	lens.name = "Lens"
+	lens.set_meta(&"lamp_circuit", "emergency")
 	fixture.add_child(lens)
 	return fixture

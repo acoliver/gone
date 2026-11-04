@@ -12,4 +12,4 @@ The generator uses NumPy seed 73041 and writes a unique 1024 × 2048 RGBA data t
 
 The surrounding steel scans retain their existing provenance in `../steel/SOURCES.md`. The hatch shader adds the round-7 treatment to the existing steel shader family. Wheel weathering follows the wheel's frame independently of the leaf.
 
-Production keeps the generated mask and spatial relief unchanged. Shared hatch roles retain 15 percent of the prototype finish's chroma, preserving its luminance variation while keeping the dull rust from reading as emergency-red illumination under the existing warm-white circuit. Wall roles retain their approved round-5 finish. No lighting palette or harness color threshold changes accompany this material adjustment.
+Production keeps the generated mask, spatial relief and full rust colour. Wall roles retain their approved round-5 finish. White-light harness checks sample the fixture lenses rather than treating the hatch's rust colour as evidence of emergency illumination.

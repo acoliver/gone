@@ -67,7 +67,6 @@ static func material(role: StringName) -> ShaderMaterial:
 	result.set_shader_parameter(&"macro", 0.18 if hatch else 0.22)
 	result.set_shader_parameter(&"seam_strength", 0.36)
 	result.set_shader_parameter(&"colour_gain", Vector3.ONE)
-	result.set_shader_parameter(&"finish_chroma", 0.15 if hatch else 1.0)
 	result.set_shader_parameter(&"panel_pitch", PANEL_PITCH)
 	for option: String in ROLES[role]: result.set_shader_parameter(option, ROLES[role][option])
 	for index: int in range(SCANS.size()):

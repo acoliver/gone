@@ -252,6 +252,7 @@ func _fixture(fixture_transform: Transform3D, level: float) -> Node3D:
 	fixture.add_child(light)
 	var lens := MeshInstance3D.new()
 	lens.name = "Lens"
+	lens.set_meta(&"lamp_circuit", "emergency")
 	lens.mesh = _lens_mesh
 	fixture.add_child(lens)
 	_lights.append(light)
@@ -275,6 +276,7 @@ func _white_fixture(station_x: float, level: float) -> Node3D:
 	fixture.add_child(light)
 	var lens := MeshInstance3D.new()
 	lens.name = "Lens"
+	lens.set_meta(&"lamp_circuit", "white")
 	lens.mesh = _white_lens_mesh
 	fixture.add_child(lens)
 	_white_lights.append(light)

@@ -14,7 +14,6 @@ uniform sampler2D oxide_grain : source_color, repeat_enable, filter_linear_mipma
 uniform sampler2D oxide_normal : hint_normal, repeat_enable, filter_linear_mipmap_anisotropic;
 uniform float gain = 0.30;
 uniform vec3 colour_gain = vec3(1.0);
-uniform float finish_chroma = 1.0;
 uniform float contrast = 1.2;
 uniform float macro = 0.2;
 uniform float seam_strength = 0.65;
@@ -235,7 +234,6 @@ void fragment() {
     float det=dot(dpdx,r1);
     vec3 gradient=(dFdx(relief)*r1+dFdy(relief)*r2)/(sign(det)*max(abs(det),0.00000001));
     NORMAL=normalize(view_n-clamp(gradient,vec3(-0.3),vec3(0.3)));
-    colour=mix(vec3(dot(colour,vec3(0.2126,0.7152,0.0722))),colour,finish_chroma);
     ALBEDO=max(colour*gain*colour_gain,vec3(0.0001));
     ROUGHNESS=clamp(0.84+orm.g*0.10,0.88,0.97);
     METALLIC=mix(0.20,0.025,oxide);

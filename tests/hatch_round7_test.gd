@@ -33,8 +33,7 @@ func test_leaf_weather_is_promoted_and_role_owned() -> void:
 	var material := Surfaces.material(&"hatch_leaf")
 	assert_true(material.get_shader_parameter(&"leaf_paint") == true, "leaf role selects round7 flaking")
 	assert_true(material.get_shader_parameter(&"leaf_weather") is Texture2D, "leaf mask is an imported resource")
-	assert_true(material.get_shader_parameter(&"finish_chroma") == 0.15, "dull rust must retain its value contrast without tinting the white circuit red")
-	assert_true(Surfaces.material(&"wall").get_shader_parameter(&"finish_chroma") == 1.0, "round5 wall finish remains unchanged")
+	assert_true(not Surfaces.STEEL.code.contains("finish_chroma"), "production preserves full rust colour without a desaturation control")
 
 func _boxes(node: Node3D, boxes: Array[AABB]) -> void:
 	if node is MeshInstance3D:

@@ -183693,11 +183693,13 @@
 			"tick": 3660.0
 		},
 		{
+			"camera_back": 3.0,
 			"light": "white",
 			"name": "fore-inner-closed",
 			"tick": 4943
 		},
 		{
+			"camera_back": 3.0,
 			"light": "white",
 			"name": "fore-inner-mid-crank",
 			"tick": 4980
@@ -183719,26 +183721,31 @@
 			"tick": 5537
 		},
 		{
+			"camera_back": 3.0,
 			"light": "white",
 			"name": "d14-label-native",
 			"tick": 7851
 		},
 		{
+			"camera_back": 3.0,
 			"light": "white",
 			"name": "d14-label-partial",
 			"tick": 7971
 		},
 		{
+			"camera_back": 3.0,
 			"light": "white",
 			"name": "d14-label-resolved",
 			"tick": 8141
 		},
 		{
+			"camera_back": 3.0,
 			"light": "white",
 			"name": "x30-closed",
 			"tick": 8144
 		},
 		{
+			"camera_back": 3.0,
 			"light": "white",
 			"name": "x30-mid-crank",
 			"tick": 8174

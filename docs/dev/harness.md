@@ -64,7 +64,7 @@ declared beat present and decodable, its chip equal to the report's
 (tick, frame) and correlated to the scripted tick; per-beat luminance and
 channel stats (the eyes-closed beat must be dark, the hall-dark beat
 must be dark while the hallway's fixtures hold zero, every other beat
-nonblack and red-dominant); the wake progression waking, awake_in_pod,
+nonblack, and red beats red-dominant); the wake progression waking, awake_in_pod,
 exiting_pod, standing in order with non-regressing ticks; door-open
 evidence at or before the door-opened beat; and hallway light evidence
 for the lanes that declare the hall beats.
@@ -78,6 +78,41 @@ rod-picked-up, at-door, door-opened). `scenarios/hallway.json` continues
 past the doorway: the dark crossing of the unlit hall, the switch flip at
 the plate beside the doorway, the lit settle, and a short corridor walk,
 pinning door-opened, hall-dark, hall-lit, and hall-corridor.
+
+### White-beat lens checks
+
+Beats declaring `light: "white"`, plus `power-active` and `hall-white`,
+keep the whole-frame nonblack requirement (`luma > 0.008`) and the existing
+console, generator and white-handoff event checks. Surface colour does not
+classify the lighting: a frame dominated by rusty steel may pass.
+
+At the pinned capture, fixture-owned `lamp_circuit` records identify regular
+strip and emergency lenses, including the hatch service lamps. The capture
+projects their mesh bounds through the beat camera. Pixel-centre rays must
+hit the lens without crossing visible opaque scene meshes, including moving
+hatches and MultiMesh instances. Hidden lenses, offscreen lenses and pixels
+in the chip's excluded columns are not sampled. Transparent smoke and label
+ink do not act as opaque blockers. Each visible lens records a small patch
+(up to 5 by 5 pixels) in the beat's `lamps` list in `report.json`.
+
+The runner measures the saved PNG at those coordinates. At least one regular
+strip must be visible with mean sRGB luminance at least 0.5 and without red
+exceeding both other channels by 0.02. Every visible emergency lens must have
+mean luminance at most 0.45 and mean red at most 0.6. This allows reflected
+white light on an unlit brown lens (measured up to 0.33 in the power-room lane), while rejecting the
+bright emergency emitter. Each sample prints its fixture path, circuit,
+pixels, luminance, RGB and result in `verdict.txt`. No visible regular strip
+is a scenario authoring error, not a skipped check. Red-beat checks retain
+their existing whole-frame thresholds.
+
+A beat may declare `camera_back` as a finite nonnegative distance in metres.
+The capture camera moves back along its view axis only for that pinned image
+and lens projection, then restores its transform before logic resumes. Its
+actual world eye is recorded as `camera_eye` beside the beat. The seven white
+connector hatch close-ups use 3 metres so a regular ceiling strip appears in
+the same frame as the hatch. Player input, label attention, logical ticks and
+the replay digest are unchanged; there is no automatic reframing when a lamp
+is missing.
 
 ### Connector capture route
 
@@ -108,7 +143,7 @@ crossings, endpoint refusals, return state, label quantities and capture
 residency. Each requested label has native, partial and resolved captures.
 Native boxed octal quantities must equal the Spanish decimal quantities.
 New section-41 captures declare `light: "white"`; connector captures use
-the existing red threshold. Existing image checks are unchanged.
+the existing red threshold. White beats use the lens checks above.
 
 The report echoes the batch setting, logical tick count and SHA-256 logical
 event digest. The digest covers every logical sample and door, portal and
@@ -158,7 +193,7 @@ a uniform mask) as `calibration-move.json`.
 
 ## Negative cases
 
-Two scenarios under `scenarios/negative/` must fail:
+The scenarios under `scenarios/negative/` must fail:
 
 - `never-beat.json` declares a beat at tick 600 under `max_frames` 300.
   The app must record the beat as missing, write the report, and exit
@@ -168,6 +203,10 @@ Two scenarios under `scenarios/negative/` must fail:
 - `calibration-no-autoexposure.json` runs the cell A setup with
   `auto_exposure` false. Without the adaptation loop the cell's assertions
   must fail, so the lane exits nonzero.
+
+- `white-without-handoff.json` declares a white beat without activating
+  secondary power. The real bay fixtures remain on the emergency circuit;
+  the lens gate and console/generator handoff evidence must reject it.
 
 Run them the same way as any lane and expect exit 1; a nonzero exit is
 the passing outcome for a negative case. They pin the instrument: the

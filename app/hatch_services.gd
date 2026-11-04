@@ -93,6 +93,7 @@ static func _lamp(root: Node3D, service: ShipLayout.HatchServiceSpec, mask: int,
 	_rounded(root, Vector3(0.37, 0.31, 0.055), 0.045, Vector3.ZERO, mask, &"hardware", frame)
 	var lens := _rounded(root, Vector3(0.26, 0.16, 0.07), 0.065, Vector3(0, 0, -0.060), mask, &"hardware", frame)
 	lens.name = "Lens"
+	lens.set_meta(&"lamp_circuit", "emergency")
 	lens.material_override = Lighting.emergency_lens_material(1.0)
 	lens.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	for dy: float in [-0.115, 0.115]:

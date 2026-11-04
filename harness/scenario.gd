@@ -99,6 +99,11 @@ static func parse(text: String) -> Dictionary:
 			if entry.light not in ["white", "red"]:
 				return {"scenario": null, "error": "unknown beat light classification"}
 			beat.light = entry.light
+		if entry.has("camera_back"):
+			var distance: Variant = entry.camera_back
+			if not (distance is int or distance is float) or not is_finite(float(distance)) or float(distance) < 0:
+				return {"scenario": null, "error": "beat camera_back must be a finite nonnegative distance"}
+			beat.camera_back = float(distance)
 		scenario.beats.append(beat)
 	scenario.beats.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
 		return a.tick < b.tick)
