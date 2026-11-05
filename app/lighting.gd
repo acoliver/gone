@@ -47,6 +47,8 @@ var _lenses: Array[MeshInstance3D] = []
 var _lens_mesh: BoxMesh = null
 var _lens_material: StandardMaterial3D = null
 var _remainder: float = 0.0
+var _reflection_probe: ReflectionProbe
+var _reflected_levels: Vector2
 
 static func build(game: Game) -> Lighting:
 	var lighting := Lighting.new()
@@ -77,8 +79,27 @@ static func build(game: Game) -> Lighting:
 	for frame: Transform3D in game.layout.bay().regular_light_frames():
 		lighting.add_child(lighting._white_fixture(frame, white_mesh))
 	lighting._apply_white_level(white_level)
+	lighting._reflection_probe = bay_reflection_probe()
+	lighting.add_child(lighting._reflection_probe)
+	lighting._reflected_levels = Vector2(level, white_level)
 	lighting.add_child(_world_environment())
 	return lighting
+
+## One room-sized specular capture, without ambient fill or shadow work.
+## UPDATE_ONCE spreads the six faces across frames instead of redrawing
+## the bay every frame. The bridge replaces it only at a settled light change.
+static func bay_reflection_probe() -> ReflectionProbe:
+	var probe := ReflectionProbe.new()
+	probe.name = "BayReflections"
+	probe.position = Vector3(0.0, Pods.ROOM_CEILING_HEIGHT / 2.0, 0.0)
+	probe.size = Vector3(Pods.ROOM_LENGTH, Pods.ROOM_CEILING_HEIGHT, Pods.ROOM_WIDTH)
+	probe.interior = true
+	probe.box_projection = true
+	probe.ambient_mode = ReflectionProbe.AMBIENT_DISABLED
+	probe.enable_shadows = false
+	probe.cull_mask = 1
+	probe.update_mode = ReflectionProbe.UPDATE_ONCE
+	return probe
 
 ## One wall fixture above each registry pod and one above the existing
 ## hatch lintel. All sit outside the standing envelope; route solids are
@@ -167,6 +188,15 @@ func process_frame(delta_secs: float) -> void:
 		_white_fade.tick()
 	_apply_level(_fade.intensity())
 	_apply_white_level(_white_fade.intensity())
+	var levels := Vector2(level(), white_level())
+	if is_settled() and levels != _reflected_levels:
+		# UPDATE_ONCE keeps its captured lighting until invalidated. Replace
+		# the probe once after a fade so red reflections do not survive the
+		# switch to secondary white power (or an emergency blackout).
+		_reflection_probe.free()
+		_reflection_probe = bay_reflection_probe()
+		add_child(_reflection_probe)
+		_reflected_levels = levels
 
 func _circuit_target() -> float:
 	return 0.0 if _game.power_active else _game.emergency_circuit_target()

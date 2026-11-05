@@ -7,7 +7,46 @@ hinged open 55 degrees, padded couch inside) that exercises every hop a
 real asset will take: authored build, GLB export, Khronos validation,
 Godot import, render, machine pixel gates, and visual review.
 
-## The chain
+## Production pod (#88)
+
+The seven pods now share `assets/props/pod/pod-v3.glb`, built by the same
+parametric script as the original probe. Rebuild from the repo root:
+
+```sh
+/Volumes/XS1000/acoliver/projects/threedee/branch-1/.tools/Blender-4.5.11.app/Contents/MacOS/Blender \
+    --background --factory-startup --python tools/blender/build_pod_probe.py -- \
+    --output assets/props/pod/pod-v3.glb
+godot --headless --path . --import
+godot --headless --path . --import
+```
+
+Commit the GLB and its `.glb.import` sidecar. The builder has fixed vertex
+order and no random or clock inputs. It bakes the hinge and modifiers,
+then fits the assembly to 0.9 m width, 0.8 m height and 2.2 m length.
+Vertices export directly in the pod frame: +Z foot, -Z head, +Y up, deck
+at zero. `PodMesh.shell_transform()` is identity. No runtime bounding-box
+fit or collider change is needed.
+
+The asset has 15,496 triangles: 7,792 shell, 5,904 canopy and 1,800 couch.
+Curved panels are welded smooth quad lofts with a solid rim, not separate
+flat-shaded triangles. Pads have beveled edges. One mesh carries three
+surfaces named `ShellPlastic`, `CanopyGlass` and `CouchFabric`, with no
+textures. `app/pod_mesh.gd` assigns one cached material per named surface
+and shares the resulting mesh across all seven pods. Plastic is neutral
+near-white, roughness 0.12, metallic 0, clearcoat 1 with roughness 0.08.
+Glass is dark tinted and opaque to avoid sorting between its two skins,
+with roughness 0.06 and metallic 0. Fabric is dark with roughness 0.9.
+
+`Lighting` adds one interior, box-projected bay reflection probe without
+ambient fill, lights, shadows or colliders. It captures once at startup
+and once when a lighting fade settles, including secondary white power
+and an emergency blackout. It does not recapture every frame. The flank
+strip waypoints are frozen measurements of triangle intersections at
+y 0.580 and 0.310 m, with centers 0.006 m inside the new skin. Tests check
+contact between stations as well as at the authored waypoints, and keep
+the existing dressing clearances and sit-up corridor limits.
+
+## Original probe chain
 
 All commands run from the repo root. Scratch output lives under
 `tmp/pipeline/` (gitignored). Blender 4.5.11 LTS is borrowed from the
@@ -28,7 +67,7 @@ BLENDER=/Volumes/XS1000/acoliver/projects/threedee/branch-1/.tools/Blender-4.5.1
        [--lid-angle 55.0] [--rim-angle 55.0]
    ```
 
-   The script prints `MESH` stats per object and a `RISE` line (canopy
+   The script prints `TOTAL` mesh stats and a `RISE` line (canopy
    far rim above the shell rim) and exits nonzero if the rise collapses
    below 80 percent of the expected open angle, so a lost transform
    fails the build instead of shipping silently.
@@ -112,9 +151,9 @@ BLENDER=/Volumes/XS1000/acoliver/projects/threedee/branch-1/.tools/Blender-4.5.1
 
 ## Next
 
-- #37 grows `build_pod_probe.py` into the real pod set (open and sealed
-  states, occupancy blankets). Placement and clearance pins must keep
-  holding.
+- The production mesh currently uses the same open canopy on all seven
+  pods. Rendered state variants and occupancy blankets remain separate
+  work. Placement and clearance pins must keep holding.
 - #35 wall textures ride the same validator and import gates: geometry
   first, then PBR from ambientCG CC0 bases plus locally generated
   decals.
