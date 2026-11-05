@@ -1,28 +1,47 @@
 # Shared modelled hatch
 
-The mesh comes from the simulation reservations in `sim/hatch_parts.gd` and `sim/ship_geometry.gd`. The finish uses Poly Haven photographic PBR maps under CC0 1.0. The concept at `docs/art/corridors/hatch-concept-rusted.png` is a visual reference, never a texture or dimension source.
+## Concept-derived painted finish
+
+Leaf and fixed-frame colour uses the driver's selected concept-derived images, replacing the text-only round-seven sources. `art-source/hatch/leaf-front.png` is the unchanged 512 by 896 `round8/gen3/edit-300.png`; `leaf-back.png` is its horizontal mirror, preserving downward runs. `frame.png` is the unchanged 1024 by 960 `round8/gen4/frame-402.png`. No gen4 leaf or Z-Image refinement is used. Hardware, wheel and rivets retain the CC0 scan finish below. Mesh positions and simulation reservations are unchanged.
+
+The input is our own `docs/art/corridors/hatch-concept-rusted.png`. `docs/art/corridors/README.md` records that the concept images were image-model generated. Leaf input crop: `[365,77,875,960]`. Frame input crop: `[285,120,365,900]`; `[400,30,840,77]` was an additional top-band reference only. Coordinates use Pillow's exclusive right and bottom edges. The concept supplies paint imagery, never dimensions.
+
+Generation used [black-forest-labs/FLUX.2-klein-4B](https://huggingface.co/black-forest-labs/FLUX.2-klein-4B), mflux 0.17.5 on local MLX, four steps, 4-bit weights, leaf seed 300 and frame seed 402. Full original recipes, prompts and literal CLI flags are preserved in `art-source/hatch/gen3-recipe.md`, `gen4-recipe.md`, `leaf-prompt.txt`, `frame-prompt.txt` and the per-image `.metadata.json` records. FLUX's original edit sidecars contained JSON null; the recipes preserve the actual commands. `HF_HOME=/Volumes/XS1000/hf-cache`, `HF_HUB_OFFLINE=1`. Generation runs sequentially with `mflux-generate-flux2-edit --model flux2-klein-4b --quantize 4 --steps 4 --width WIDTH --height HEIGHT --seed SEED --image-paths INPUT --prompt-file PROMPT --metadata --output OUTPUT`.
+
+Licence: **Apache-2.0**, including commercial use. The cached weights are revision `e7b7dc27f91deacad38e78976d1f2b499d76a294` under `/Volumes/XS1000/hf-cache/hub/models--black-forest-labs--FLUX.2-klein-4B/`. That snapshot did not contain its model card or licence file. Both were retrieved from the exact revision, rather than inferring the licence from a model name: [model card](https://huggingface.co/black-forest-labs/FLUX.2-klein-4B/raw/e7b7dc27f91deacad38e78976d1f2b499d76a294/README.md), [licence](https://huggingface.co/black-forest-labs/FLUX.2-klein-4B/raw/e7b7dc27f91deacad38e78976d1f2b499d76a294/LICENSE.md). Copies are `art-source/hatch/FLUX.2-klein-4B-model-card.md` and `Apache-2.0.txt`. The card declares `license: apache-2.0` and links the Apache terms.
+
+Run `tools/prepare_hatch_paint.py` with Pillow and NumPy before the Blender rebuild. It uses a fractional centre crop `[45.1764705882,0,466.8235294118,896]` and uniform scale `1088/896` for each leaf, yielding separate 512 by 1088 cells. Fractional bounds avoid an integer-width aspect stretch. The frame fills the 1024 by 960 lower cell without resizing. The packed atlas is 1024 by 2048. UV2 and vertex-colour ownership retain the shared material and geometry-derived projections; hardware never selects painted cells.
+
+RGB stores albedo. Alpha separates paint sheets from rust by chroma, representing paint raised 1.5 mm. `paint_height.png`, `paint_normal.png` and `paint_roughness.png` remain derived authoring maps. Runtime differentiates that alpha height in physical space and derives roughness without extra samplers. Baked AO, edge wear, fastener contact/runoff and bottom grime remain geometry-owned. The shader grades the new sources and multiplies those masks into their colour. AO affects ambient illumination only (`AO_LIGHT_AFFECT = 0.0`), preserving the round-seven sill fix.
+
+The upper ring/lip/throat faces are downward outward soffits. They cannot face an above-door key. The ray tests retain outward camera-facing normals and clear key-facing threshold checks. `tests/hatch_soffit_capture.gd` checks ray-identified soffit rows in both production X=30 close captures: every sampled maximum channel exceeds 2/255 and mean linear luminance is below the exposed upper leaf. A white-circuit end bounce at the existing layout-owned position supplies the fill absent after emergency handoff, using 0.12 of regular-strip energy, the white fade and only the hallway fill layer. Emergency keys and fills still extinguish.
+
+The original smart-projected atlas contains subpixel bevel/contour triangles. A white-emission coverage bake found 4,551 centroids with no initial shaded texel, which an eight-pixel margin cannot repair. The bake copy now gives subpixel triangles a conservative three-texel footprint centred on their runtime centroid's texel. Cycles evaluates the actual material there and applies the existing dilation. The delivered UVs, topology, paint projection and vertex positions are untouched. `hatch_coverage.png` is a white-emission authoring mask, not a runtime sampler. Build-time checks and `tests/hatch_bake_coverage_test.gd` require covered centroids for every triangle; zero AO from genuine occlusion remains valid.
+
+The painted BC7 RGBA atlas with full mips occupies 2,796,240 bytes. Total shared hatch GPU payload is 22,719,504 bytes including all detail samplers. Each leaf supplies at least 468.97 texels/metre: 1.248 texels/pixel at the production close camera, 1.199 front and 1.259 reverse at the reused lookdev camera. Delivered variants have 37,095 / 37,135 triangles and ten draw submissions. Limits remain 40,000 triangles, twelve submissions and 24,000,000 bytes. The GLB embeds only the original three runtime maps; `Surfaces` owns the external paint atlas.
 
 ## Rebuild
 
 Keep the supplied GLB and PNG `.import` files. From the repository root:
 
 ```sh
-mkdir -p tmp/hatch-model/round5
+mkdir -p tmp/hatch-model/round8/run
+/Volumes/XS1000/tools/mlximg-venv/bin/python tools/prepare_hatch_paint.py
 godot --headless --path . -s tools/export_hatch_parts.gd -- \
-  --output tmp/hatch-model/round5/parts-source.json
+  --output tmp/hatch-model/round8/run/parts-source.json
 /Volumes/XS1000/acoliver/projects/threedee/branch-1/.tools/Blender-4.5.11.app/Contents/MacOS/Blender \
   --background --factory-startup --python-exit-code 1 --python tools/blender/build_hatch.py -- \
-  --input tmp/hatch-model/round5/parts-source.json --output assets/props/hatch/hatch.glb \
+  --input tmp/hatch-model/round8/run/parts-source.json --output assets/props/hatch/hatch.glb \
   --resolution 2048 --samples 8
 node tmp/pipeline/valtool/validate.cjs assets/props/hatch/hatch.glb \
-  tmp/hatch-model/round5/validate.json
+  tmp/hatch-model/round8/run/validate.json
 godot --headless --path . --import
 godot --headless --path . --import
 ```
 
 Blender 4.5.11 LTS and the import/validator pipeline are described in `docs/dev/asset-pipeline.md`. Cycles uses CPU baking, eight threads, eight samples and fixed seed 7308. Geometry, UVs and weather fields are deterministic. `--reuse-bakes` rejects changed source reservations, either authoring module, photographic inputs, resolution or sample count.
 
-`parts.json` records the exported dimensions, transforms, contours and corrected source vertices for both hinge variants. It also records source and recipe hashes, photographic input hashes, per-node reservations, texture hashes, AO measurements and delivered GLB triangle counts. The authoring triangle count is separate because glTF export can omit collapsed loop triangles. Texture measurements distinguish the three runtime maps from three auxiliary authoring maps.
+`parts.json` records the exported dimensions, transforms, contours and corrected source vertices for both hinge variants. It also records source and recipe hashes, photographic input hashes, per-node reservations, texture hashes, AO measurements and delivered GLB triangle counts. The authoring triangle count is separate because glTF export can omit collapsed loop triangles. Texture measurements distinguish the three original runtime maps, external paint atlas and nine detail maps from auxiliary authoring maps, including bake coverage.
 
 ## Photographic inputs
 
@@ -54,12 +73,12 @@ Merged buffers retain contiguous part ranges and original local transforms. Rese
 
 ## Maps and measurements
 
-- `hatch_albedo.png`: sRGB photographic colour.
-- `hatch_normal.png`: linear tangent-space +Y normal, BC5.
-- `hatch_orm.png`: linear R=geometry AO, G=roughness, B=metallic, BC7.
-- `hatch_ao.png`, `hatch_height.png`, `hatch_curvature.png`: auxiliary authoring outputs, not runtime samplers.
+- `hatch_albedo.png`: sRGB-encoded geometry layer masks: paint, oxide and machined wear, BC7.
+- `hatch_normal.png`: linear tangent-space +Y geometry normal, BC5.
+- `hatch_orm.png`: linear R=geometry AO, G=grime, B=warning-paint ownership, BC7.
+- `hatch_ao.png`, `hatch_height.png`, `hatch_curvature.png`, `hatch_coverage.png`: auxiliary authoring outputs, not runtime samplers.
 
-All six maps are 2048 by 2048. Runtime albedo and ORM use BC7, the normal uses BC5, and each has eleven mip levels after its base. Each compressed chain occupies 5,592,432 bytes; the shared runtime set occupies 16,777,296 bytes including minimum-size blocks. Delivered triangle counts are 37,129 for variant 0 and 37,169 for variant 1, with ten imported submissions in either case. Runtime limits are 40,000 triangles and twelve material submissions per complete imported hatch, and 24,000,000 bytes for its shared maps.
+All seven maps are 2048 by 2048. Runtime albedo and ORM use BC7, the normal uses BC5, and each has eleven mip levels after its base. Each compressed chain occupies 5,592,432 bytes; the shared runtime set occupies 16,777,296 bytes including minimum-size blocks. Delivered triangle counts are 37,095 for variant 0 and 37,135 for variant 1, with ten imported submissions in either case. Runtime limits are 40,000 triangles and twelve material submissions per complete imported hatch, and 24,000,000 bytes for its shared maps.
 
 The GLB embeds only the three runtime images and one material. Godot resolves them to the same external maps used by `Surfaces`; embedded materials are released on extraction. Keep the existing import precision, compression and UIDs. Sidecar coordinates are Godot X-right/Y-up/Z-back; transform basis arrays are columns. Face normals and tangent handedness are transformed when reflected parts are merged, with triangle winding reversed where required.
 
@@ -68,7 +87,7 @@ The GLB embeds only the three runtime images and one material. Godot resolves th
 ```sh
 godot --headless --path . -s tests/run_tests.gd
 BLENDER --background --factory-startup --python-exit-code 1 --python tools/blender/test_hatch_construction.py
-HATCH_SOURCE_JSON=tmp/hatch-model/round5/parts-source.json \
+HATCH_SOURCE_JSON=tmp/hatch-model/round8/run/parts-source.json \
   BLENDER --background --factory-startup --python-exit-code 1 --python tools/blender/test_hatch_round3.py
 BLENDER --background --factory-startup --python-exit-code 1 --python tools/blender/test_hatch_finish_construction.py
 BLENDER --background --factory-startup --python-exit-code 1 --python tools/blender/test_hatch_scan_finish.py

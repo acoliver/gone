@@ -202,6 +202,23 @@ class HatchConstructionTest(unittest.TestCase):
             finishes.append(tuple(item.value for item in attribute.data))
         self.assertTrue(all(values == finishes[0] for values in finishes))
 
+    def test_leaf_contour_uv_islands_cover_at_least_one_bake_texel(self):
+        from bpy_extras.mesh_utils import mesh_linked_uv_islands
+        import numpy as np
+        build.atlas(self.objects, 2048)
+        checked = 0
+        for obj in self.objects:
+            if self.nodes[obj.name]["id"] != "ForeContour/edge-08":
+                continue
+            uv = obj.data.uv_layers.active.data
+            for island in mesh_linked_uv_islands(obj.data):
+                points = np.array([uv[index].uv[:] for face in island for index in obj.data.polygons[face].loop_indices])
+                _, axes = np.linalg.eigh(np.cov(points.T))
+                span = np.ptp(points @ axes, axis=0)
+                self.assertGreaterEqual(min(span) * 2048, 1.0, obj.name + " has subtexel bake islands")
+                checked += 1
+        self.assertGreater(checked, 0)
+
     def test_original_bounds_are_preserved(self):
         self.assertLess(self.error, 1e-6)
         for name, row in self.nodes.items():

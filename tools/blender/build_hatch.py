@@ -623,6 +623,35 @@ def construct(document, mat):
     return objects, nodes, max_error
 
 
+def painted_coordinates(objects, nodes, document):
+    frame_bounds = {}
+    for variant in document["variants"]:
+        points = [CINV @ (obj.matrix_world @ vertex.co).to_4d()
+                  for obj in objects if nodes[obj.name]["kind"] == "frame"
+                  and nodes[obj.name]["variant"] == variant["index"] for vertex in obj.data.vertices]
+        frame_bounds[variant["index"]] = (min(p.x for p in points), max(p.x for p in points),
+                                           min(p.y for p in points), max(p.y for p in points))
+    for obj in objects:
+        row = nodes[obj.name]
+        leaf = row["kind"] == "leaf" and row["id"].endswith("Steel/plate")
+        frame = row["kind"] == "frame"
+        colour = obj.data.color_attributes.new(name="PaintOwnership", type="BYTE_COLOR", domain="CORNER")
+        uv = obj.data.uv_layers.new(name="PaintProjection")
+        if leaf:
+            part = document["variants"][row["variant"]]["groups"][row["group"]]["parts"][row["part"]]
+        for loop in obj.data.loops:
+            colour.data[loop.index].color = (float(leaf), float(row["side"]), float(frame), 1)
+            if leaf:
+                point = CINV @ obj.data.vertices[loop.vertex_index].co.to_4d()
+                uv.data[loop.index].uv = (point.x / part["size"][0] + .5, .5 + point.y / part["size"][1])
+            elif frame:
+                point = CINV @ (obj.matrix_world @ obj.data.vertices[loop.vertex_index].co).to_4d()
+                xlo, xhi, ylo, yhi = frame_bounds[row["variant"]]
+                uv.data[loop.index].uv = ((point.x - xlo) / (xhi - xlo), (point.y - ylo) / (yhi - ylo))
+        obj.data.color_attributes.active_color = colour
+        obj.data.uv_layers.active_index = 0
+
+
 def atlas(objects, resolution):
     bpy.ops.object.select_all(action="DESELECT")
     for obj in objects:
@@ -664,6 +693,54 @@ def bake_mesh(objects):
     joined = bpy.context.view_layer.objects.active
     joined.name = "HatchBakeContext"
     return joined
+
+
+def bake_footprints(joined, resolution):
+    """Give subpixel triangles a Cycles sample without changing delivered UVs."""
+    source = joined.data.uv_layers["UVMap"]
+    target = joined.data.uv_layers.new(name="BakeCoverage")
+    repaired = 0
+    for polygon in joined.data.polygons:
+        loops = list(polygon.loop_indices)
+        points = np.array([source.data[index].uv[:] for index in loops], dtype=np.float64)
+        edges = np.roll(points, -1, axis=0) - points
+        lengths = np.linalg.norm(edges, axis=1)
+        area = abs(float(np.linalg.det(np.stack((edges[0], -edges[2])))))
+        inradius = area / lengths.sum()
+        if inradius * resolution < .75:
+            # A bake margin needs an initial shaded pixel. Skinny bevels often
+            # contain none. Rasterize their material onto a minimum footprint,
+            # centred on the runtime centroid's texel, then let Cycles dilate.
+            centre = points.mean(axis=0)
+            axis = edges[int(np.argmax(lengths))] / max(lengths)
+            across = np.array([-axis[1], axis[0]])
+            local = np.stack(((points - centre) @ axis, (points - centre) @ across), axis=1)
+            spans = np.ptp(local, axis=0)
+            local *= np.maximum(1, (3 / resolution) / spans)
+            centre = (np.floor(centre * resolution) + .5) / resolution
+            points = centre + local[:, :1] * axis + local[:, 1:] * across
+            repaired += 1
+        for index, point in zip(loops, points):
+            target.data[index].uv = point
+    joined.data.uv_layers.active_index = 0
+    print("BAKE_FOOTPRINTS", repaired, "subpixel triangles", flush=True)
+    return repaired
+
+
+def verify_bake_coverage(joined, coverage, resolution):
+    pixels = np.empty(resolution * resolution * 4, dtype=np.float32)
+    coverage.pixels.foreach_get(pixels)
+    pixels = pixels.reshape(resolution, resolution, 4)
+    uv = joined.data.uv_layers["UVMap"].data
+    missing = []
+    for polygon in joined.data.polygons:
+        centre = np.mean([uv[index].uv[:] for index in polygon.loop_indices], axis=0)
+        x, y = np.floor(centre * resolution).astype(int)
+        if not (0 <= x < resolution and 0 <= y < resolution) or pixels[y, x, 0] == 0:
+            missing.append(polygon.index)
+    print("BAKE_COVERAGE triangles=%d uncovered=%d" % (len(joined.data.polygons), len(missing)), flush=True)
+    if missing:
+        raise RuntimeError("unbaked triangle centroids: " + str(missing[:8]))
 
 
 def new_image(name, resolution, color=False):
@@ -767,10 +844,14 @@ def bake(joined, mat, output_dir, resolution, samples, context):
         else:
             nt.links.new(fields["bsdf"].outputs[0], fields["output"].inputs["Surface"])
         print("BAKE", name, resolution, samples, flush=True)
-        bpy.ops.object.bake(type=bake_type)
+        bpy.ops.object.bake(type=bake_type, uv_layer="BakeCoverage")
         images[name] = image
         rows.append(save_image(image, output_dir / ("hatch_" + name + ".png")))
         return image
+    white = nt.nodes.new("ShaderNodeRGB")
+    white.outputs[0].default_value = (1, 1, 1, 1)
+    coverage = execute("coverage", "EMIT", white.outputs[0])
+    verify_bake_coverage(joined, coverage, resolution)
     ao = execute("ao", "AO")
     pixels = np.empty(resolution * resolution * 4, dtype=np.float32)
     ao.pixels.foreach_get(pixels)
@@ -801,7 +882,8 @@ def bake(joined, mat, output_dir, resolution, samples, context):
     nt.links.new(weather.outputs[0], combine.inputs[1])
     nt.links.new(weather.outputs[1], combine.inputs[2])
     execute("orm", "EMIT", combine.outputs[0])
-    return images, rows, {"ao_method": "cycles_geometry_ao", "ao_min": float(geometry_ao.min()),
+    return images, rows, {"bake_coverage": "cycles_emit_conservative_subpixel_footprints", "uncovered_triangle_centroids": 0,
+                          "ao_method": "cycles_geometry_ao", "ao_min": float(geometry_ao.min()),
                           "ao_max": float(geometry_ao.max()), "ao_mean": float(geometry_ao.mean()),
                           "ao_stdev": float(geometry_ao.std()), "atlas_occupied_fraction": float(occupied.mean()),
                           "bake_samples": samples, "bake_seed": 7308}
@@ -877,7 +959,9 @@ def main(argv):
     objects, nodes, error = construct(document, mat)
     context = weather_context(objects, nodes, document)
     atlas(objects, args.resolution)
+    painted_coordinates(objects, nodes, document)
     joined = bake_mesh(objects)
+    bake_footprints(joined, args.resolution)
     if args.reuse_bakes:
         old = json.loads((output.parent / "parts.json").read_text())
         if (old["source_sha256"] != hashlib.sha256(raw).hexdigest() or
@@ -887,7 +971,7 @@ def main(argv):
                 old["measurements"]["bake_samples"] != args.samples):
             raise ValueError("cannot reuse textures after source, recipe or bake settings change")
         images = {name: bpy.data.images.load(str(output.parent / f"hatch_{name}.png"))
-                  for name in ("albedo", "ao", "normal", "orm", "height", "curvature")}
+                  for name in ("albedo", "ao", "normal", "orm", "height", "curvature", "coverage")}
         for name, image in images.items():
             image.colorspace_settings.name = "sRGB" if name == "albedo" else "Non-Color"
         textures, measures = old["textures"], old["measurements"]
@@ -895,6 +979,11 @@ def main(argv):
         images, textures, measures = bake(joined, mat, output.parent, args.resolution, args.samples, context)
     textures = [row for row in textures if not row["file"].startswith("hatch_detail_")]
     textures.extend(detail_textures(output.parent))
+    painted_path = output.parent / "hatch_painted.png"
+    painted = bpy.data.images.load(str(painted_path), check_existing=True)
+    textures = [row for row in textures if row["file"] != painted_path.name]
+    textures.append(dict(file=painted_path.name, width=painted.size[0], height=painted.size[1],
+                         bytes=painted_path.stat().st_size, sha256=hashlib.sha256(painted_path.read_bytes()).hexdigest()))
     bpy.data.objects.remove(joined, do_unlink=True)
     final_material(mat, images)
     for vi in range(2):
@@ -927,9 +1016,11 @@ def main(argv):
                     mesh_nodes_per_variant={str(i): sum(n["variant"] == i for n in nodes.values()) for i in range(2)},
                     max_reservation_error_m=error, atlas_resolution=args.resolution,
                     draw_calls_unbatched_per_variant={str(i): sum(n["variant"] == i for n in nodes.values()) for i in range(2)},
-                    texture_gpu_bc7_bc5_mips_bytes=3 * compressed_map_bytes + 9 * sum(max(1, ((512 >> level) + 3) // 4) ** 2 * 16 for level in range(10)),
+                    texture_gpu_bc7_bc5_mips_bytes=3 * compressed_map_bytes + 9 * sum(max(1, ((512 >> level) + 3) // 4) ** 2 * 16 for level in range(10))
+                    + sum(max(1, ((1024 >> level) + 3) // 4) * max(1, ((2048 >> level) + 3) // 4) * 16 for level in range(12)),
+                    painted_atlas_resolution=[1024, 2048], painted_leaf_cell=[512, 1088], painted_height_m=.0015,
                     detail_resolution=512, detail_pitch_m=.20, atlas_content="low_frequency_layer_weather_masks_and_geometric_normal",
-                    texture_gpu_auxiliary_mips_bytes=3 * compressed_map_bytes,
+                    texture_gpu_auxiliary_mips_bytes=4 * compressed_map_bytes,
                     texture_png_disk_bytes=sum(row["bytes"] for row in textures),
                     render_texture_png_disk_bytes=sum(row["bytes"] for row in textures if row["file"] in ("hatch_albedo.png", "hatch_orm.png", "hatch_normal.png")))
     bpy.ops.export_scene.gltf(filepath=str(output), export_format="GLB", use_selection=True,
@@ -937,6 +1028,7 @@ def main(argv):
                               export_lights=False, export_skins=False, export_animations=False,
                               export_texcoords=True, export_normals=True, export_tangents=True,
                               export_attributes=False, export_extras=False,
+                              export_vertex_color="ACTIVE", export_all_vertex_colors=True,
                               export_materials="EXPORT", export_image_format="AUTO")
     # The exporter welds coincident loop vertices and omits collapsed triangles.
     # Budget the delivered index buffers, not the pre-export authoring topology.

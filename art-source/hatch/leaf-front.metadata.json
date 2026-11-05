@@ -1,0 +1,25 @@
+{
+  "model": "black-forest-labs/FLUX.2-klein-4B",
+  "revision": "e7b7dc27f91deacad38e78976d1f2b499d76a294",
+  "licence": "Apache-2.0",
+  "source_concept": "docs/art/corridors/hatch-concept-rusted.png",
+  "concept_provenance": "Own concept image; docs/art/corridors/README.md records image-model generation.",
+  "concept_crop_xyxy": [
+    365,
+    77,
+    875,
+    960
+  ],
+  "chosen_candidate": "tmp/hatch-model/round8/gen3/edit-300.png",
+  "seed": 300,
+  "steps": 4,
+  "quantize": 4,
+  "size": [
+    512,
+    896
+  ],
+  "preparation": "Centre-crop fractional source box [45.1764705882, 0, 466.8235294118, 896] and uniformly scale to 512x1088 in prepare_hatch_paint.py.",
+  "prompt": "Remove the handwheel, the hinges, the latches, the rivets and bolts, and the door edge from this image. Replace all hardware and edges with a continuous rusted, peeling painted steel surface matching the surrounding surface. Preserve the extensive dark reddish-brown rust, flaking orange corrosion and scattered broken grey-green paint islands from the reference. Fill the entire image edge to edge with only this continuous flat material surface, lit flat and evenly, without shadows, seams, borders or hardware.",
+  "recipe": "gen3-recipe.md",
+  "original_generator_metadata": "FLUX edit metadata sidecar contained JSON null; commands and recipes are the generation record."
+}

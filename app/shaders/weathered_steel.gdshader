@@ -33,6 +33,7 @@ uniform bool curved_surface = false;
 uniform bool baked_hatch = false;
 uniform float hatch_detail_pitch = 0.20;
 uniform vec3 hatch_colour_gain = vec3(1.0);
+uniform sampler2D hatch_painted : source_color, repeat_disable, filter_linear_mipmap_anisotropic;
 uniform sampler2D baked_albedo : source_color, repeat_disable, filter_linear_mipmap_anisotropic;
 uniform sampler2D baked_normal : hint_normal, repeat_disable, filter_linear_mipmap_anisotropic;
 uniform sampler2D baked_orm : repeat_disable, filter_linear_mipmap_anisotropic;
@@ -86,6 +87,21 @@ void fragment() {
         float intact = smoothstep(0.035, 0.065, dot(steel, vec3(0.2126, 0.7152, 0.0722)));
         vec3 warning = mix(vec3(0.004, 0.003, 0.002), vec3(0.32, 0.20, 0.045), stripe);
         colour = mix(colour, warning * (0.80 + 0.20 * steel), weather.b * intact);
+        vec2 paint_uv = clamp(UV2, vec2(0.004), vec2(0.996));
+        if (COLOR.r > 0.5) {
+            paint_uv = vec2(paint_uv.x * 0.5 + step(0.5, COLOR.g) * 0.5, paint_uv.y * 0.53125);
+        } else {
+            paint_uv = vec2(paint_uv.x, 0.53125 + paint_uv.y * 0.46875);
+        }
+        vec4 painted = texture(hatch_painted, paint_uv);
+        float paint_owner = max(COLOR.r, COLOR.b);
+        float paint_edge = min(min(UV2.x, 1.0 - UV2.x), min(UV2.y, 1.0 - UV2.y));
+        float edge_wear = (1.0 - smoothstep(0.002, 0.014, paint_edge)) * COLOR.r;
+        vec3 painted_colour = painted.rgb * vec3(1.20, 1.00, 0.85) * 0.32;
+        painted_colour = mix(painted_colour, hatch_tone(oxide, 1.0, 0.70), masks.g * 0.25);
+        painted_colour = mix(painted_colour, base, max(edge_wear, masks.b * 0.4));
+        colour = max(mix(vec3(max(colour.r, max(colour.g, colour.b))), colour, mix(1.22, 1.0, weather.b)), vec3(0.0));
+        colour = mix(colour, painted_colour, paint_owner);
         ALBEDO = colour * (1.0 - weather.g) * hatch_colour_gain;
         vec3 orm = mix(scan_sample(orm_a, wp, signs, weights, hatch_detail_pitch, vec2(0)), scan_sample(orm_c, wp, signs, weights, hatch_detail_pitch, vec2(0)), masks.g);
         orm = mix(orm, scan_sample(orm_b, wp, signs, weights, hatch_detail_pitch, vec2(0)), masks.r);
@@ -95,10 +111,16 @@ void fragment() {
         vec3 detail_normal = (VIEW_MATRIX * vec4(world_from_surface * grain, 0.0)).xyz;
         vec3 tangent_normal = bc5_normal(texture(baked_normal, UV).rg);
         NORMAL = normalize(TANGENT * tangent_normal.x + BINORMAL * tangent_normal.y + NORMAL * tangent_normal.z + detail_normal * 0.24);
-        ROUGHNESS = clamp(orm.g - masks.g * 0.12, 0.24, 0.97);
+        float paint_height = painted.a * 0.0015 * paint_owner * (1.0 - edge_wear);
+        vec3 dx = dFdx(VERTEX), dy = dFdy(VERTEX);
+        vec3 r1 = cross(dy, NORMAL), r2 = cross(NORMAL, dx);
+        float determinant = dot(dx, r1);
+        vec3 gradient = (dFdx(paint_height) * r1 + dFdy(paint_height) * r2) / (sign(determinant) * max(abs(determinant), 0.00000001));
+        NORMAL = normalize(NORMAL - clamp(gradient, vec3(-0.5), vec3(0.5)));
+        ROUGHNESS = mix(clamp(orm.g - masks.g * 0.12, 0.24, 0.97), mix(0.91, 0.69, painted.a), paint_owner);
         METALLIC = orm.b * (1.0 - masks.g) * 0.55;
         AO = weather.r;
-        AO_LIGHT_AFFECT = 1.0;
+        AO_LIGHT_AFFECT = 0.0;
         SPECULAR = 0.32;
     } else {
     vec3 n=normalize(wn), an=abs(n);

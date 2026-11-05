@@ -1,21 +1,22 @@
 {
   "asset": "hatch.glb",
-  "build_recipe_sha256": "83ed677c922c4754b81482d3542205e4f58dd4591a10d35cb6b48cfe6cba0393",
+  "build_recipe_sha256": "ede745819a84c0f6d36c4a99671cc127a4414657658b53fbd13b8e8dacdb94ea",
   "coordinate_system": "godot_y_up",
   "finish_recipe_sha256": "162900a766d93d54b102128c465682488483bc66f8bff46ffe15b641aa38cc3b",
   "measurements": {
     "ao_max": 1.0,
-    "ao_mean": 0.21077072620391846,
+    "ao_mean": 0.20766498148441315,
     "ao_method": "cycles_geometry_ao",
     "ao_min": 0.0,
-    "ao_stdev": 0.3174377679824829,
+    "ao_stdev": 0.3126741945743561,
     "atlas_content": "low_frequency_layer_weather_masks_and_geometric_normal",
-    "atlas_occupied_fraction": 0.8054904937744141,
+    "atlas_occupied_fraction": 0.9067585468292236,
     "atlas_resolution": 2048,
     "authoring_triangles_per_variant": {
       "0": 37097,
       "1": 37138
     },
+    "bake_coverage": "cycles_emit_conservative_subpixel_footprints",
     "bake_samples": 8,
     "bake_seed": 7308,
     "detail_pitch_m": 0.2,
@@ -30,6 +31,15 @@
       "0": 613,
       "1": 613
     },
+    "painted_atlas_resolution": [
+      1024,
+      2048
+    ],
+    "painted_height_m": 0.0015,
+    "painted_leaf_cell": [
+      512,
+      1088
+    ],
     "physical_finish": {
       "v0_g00_p000": {
         "islands": 88,
@@ -64,14 +74,15 @@
         "width_min_m": 0.05004468560218811
       }
     },
-    "render_texture_png_disk_bytes": 7896407,
-    "texture_gpu_auxiliary_mips_bytes": 16777296,
-    "texture_gpu_bc7_bc5_mips_bytes": 19923264,
-    "texture_png_disk_bytes": 16781641,
+    "render_texture_png_disk_bytes": 8566360,
+    "texture_gpu_auxiliary_mips_bytes": 22369728,
+    "texture_gpu_bc7_bc5_mips_bytes": 22719504,
+    "texture_png_disk_bytes": 24034394,
     "triangles_per_variant": {
       "0": 37095,
       "1": 37135
-    }
+    },
+    "uncovered_triangle_centroids": 0
   },
   "nodes": {
     "v0_f000_s0": {
@@ -53342,45 +53353,52 @@
   "source_sha256": "9f87f3ce0f44037305b50a86c7e1eca94299a90d8c76a8c0b5a6a6ee45f9b8b8",
   "textures": [
     {
-      "bytes": 1987483,
+      "bytes": 284964,
+      "file": "hatch_coverage.png",
+      "height": 2048,
+      "sha256": "0004a44995ec3f39b40625a1c3f615bf1e7c201926146e7b442df1a3c9a5f200",
+      "width": 2048
+    },
+    {
+      "bytes": 2321629,
       "file": "hatch_ao.png",
       "height": 2048,
-      "sha256": "2b9be5114ff2a87382119a088364431b533f3628ef533a86a6d9adcfe75a7745",
+      "sha256": "a397ced2c0c48ef4e67b9045fb40794028b756651f44267c241d0da0f28a7637",
       "width": 2048
     },
     {
-      "bytes": 3475320,
+      "bytes": 3897516,
       "file": "hatch_albedo.png",
       "height": 2048,
-      "sha256": "f80b2d438e70ff23a5a48f94d80c6b7271dad6a76f05f046b79691239e614275",
+      "sha256": "5a909379da0888d7d2b7ac59b580007e237ef26e83b9c6e91837fbd67bd682b0",
       "width": 2048
     },
     {
-      "bytes": 805760,
+      "bytes": 649945,
       "file": "hatch_normal.png",
       "height": 2048,
-      "sha256": "63fa42ae6ecc8980f5d3343870ccdece6afaf9662c8c6a6e951992de81c41922",
+      "sha256": "a9e72ab73b9fa9feedde3ec8f2ebca1f0cb5b90478e90a2029a3df6590be5078",
       "width": 2048
     },
     {
-      "bytes": 2160895,
+      "bytes": 2373569,
       "file": "hatch_height.png",
       "height": 2048,
-      "sha256": "e25e21b7921ec840e678815171d8bbf3bf898cb75386f170a539556afd078eab",
+      "sha256": "db47ea2d30fe3fcce3a9c197fae0920be4cf5e760dbfc88536d5a28d9f377942",
       "width": 2048
     },
     {
-      "bytes": 1189961,
+      "bytes": 1361223,
       "file": "hatch_curvature.png",
       "height": 2048,
-      "sha256": "7b0a573facee37d432bf329266b69963da4ff1efa32f78c627570dac93e32f7e",
+      "sha256": "71fdcfab115cf55be5ccdf19688b588b692ddd101ad22d7b80a0e9fedeefb494",
       "width": 2048
     },
     {
-      "bytes": 3615327,
+      "bytes": 4018899,
       "file": "hatch_orm.png",
       "height": 2048,
-      "sha256": "d4a0e158fe1c5613480ff3cd5761729c2b126f220841b2e3d138b4590b15e080",
+      "sha256": "e9ede2396f890121f847b45c9ae32851ceb5d7eaeafd4d1ec426bcc4df209ecf",
       "width": 2048
     },
     {
@@ -53445,6 +53463,13 @@
       "height": 512,
       "sha256": "74b76f53cc22f591a1514e166caf0c405f8c3bc2d57039b8ce77d0124d42d15a",
       "width": 512
+    },
+    {
+      "bytes": 5579754,
+      "file": "hatch_painted.png",
+      "height": 2048,
+      "sha256": "82c4d756841f355ed72f346f39bd78e6ca438f0539aba67273fe068958243dac",
+      "width": 1024
     }
   ],
   "variants": [

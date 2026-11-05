@@ -21,6 +21,7 @@ const HATCH_DETAIL_TEXTURES := {
 	"normal_c": preload("res://assets/props/hatch/hatch_detail_oxide_normal.png"),
 	"orm_c": preload("res://assets/props/hatch/hatch_detail_oxide_orm.png"),
 }
+const HATCH_PAINTED := preload("res://assets/props/hatch/hatch_painted.png")
 const ROOT := "res://assets/surfaces/steel/"
 const PANEL_PITCH := ShipDressing.PANEL_PITCH
 const SCANS: Array[String] = ["green_metal_rust", "rusty_painted_metal", "rusty_metal_04"]
@@ -83,6 +84,7 @@ static func material(role: StringName) -> ShaderMaterial:
 		for parameter: String in HATCH_DETAIL_TEXTURES:
 			result.set_shader_parameter(parameter, HATCH_DETAIL_TEXTURES[parameter])
 		result.set_shader_parameter(&"hatch_detail_pitch", 0.20)
+		result.set_shader_parameter(&"hatch_painted", HATCH_PAINTED)
 		_materials[role] = result
 		return result
 	result.set_shader_parameter(&"wheel_height", HatchParts.WHEEL_HEIGHT)
