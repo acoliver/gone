@@ -1,7 +1,7 @@
 class_name StasisPods
 extends Node3D
 ## Seven stasis pods at their registry placements: each pod is a Node3D
-## group at its pod_world_transform carrying the shared pod-v2 shell
+## group at its pod_world_transform carrying the shared pod-v3 shell
 ## instance from PodMesh and the PodStrips flank tubes. The greybox box
 ## kit the shell replaced — body trays, lids, the standing canopy, the
 ## foot indicator plates, the hanging blankets — is retired from the

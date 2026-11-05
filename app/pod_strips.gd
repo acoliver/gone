@@ -1,26 +1,11 @@
 class_name PodStrips
 extends RefCounted
-## The pods' red emissive flank strips: two constant-height belt tubes
-## inlaid into the shell skin — one along the +X dome shoulder just
-## below its canopy line (y 0.580), one along the -X tray wall just
-## below the recess rim the canopy lid closes onto (y 0.310) — built
-## once as one merged capped-tube surface and instanced under every
-## pod group, so the registry transform carries them. Every waypoint
-## is an authored frozen constant in pod-local meters, measured against
-## the pod-v2 shell silhouette read through PodMesh.shell_transform()
-## (max |x| per z window at the belt heights), each sitting 0.006 m
-## inside the measured skin so the 0.012 m tube reads as an inlaid
-## light bar, nominally half embedded and half proud; every waypoint
-## stays within 0.011 m of the skin, so the tube touches the shell
-## everywhere along its path. The +X belt stops at z -0.85 at the head
-## end because the authored hanging blanket owns the shoulder beyond
-## it (0.050 m clear at the worst waypoint) and runs to +0.90, where
-## the shoulder's own skin dives below the belt; the -X belt spans the
-## tray wall's full extent at its height. Emission follows the fixture
-## lens convention (Lighting.FIXTURE_EMISSIVE, docs/dev/
-## emergency-lighting.md): the strips are the pod's own always-on bay
-## markings, dressing only — no lights, no colliders, no flicker, and
-## no tracker of the power fade.
+## Two red status belts shared by all pods, with no lights or colliders.
+## Frozen pod-local waypoints were measured by intersecting pod-v3's
+## triangles at y 0.580 on the canopy shoulder and y 0.310 on the tray.
+## Centers sit 0.006 m inside the skin; the tube radius is 0.012 m.
+## The head end still stops at -0.850 to clear the blanket collider.
+## Emission follows Lighting.FIXTURE_EMISSIVE and remains always on.
 
 const STRIP_EMISSION: Color = Color(Lighting.FIXTURE_EMISSIVE, 0.0, 0.0)
 const STRIP_BASE: Color = Color(0.18, 0.01, 0.01)
@@ -32,46 +17,46 @@ const RADIAL_SEGMENTS: int = 8
 ## The +X dome-shoulder belt at y 0.580: 19 waypoints, z -0.850 (head)
 ## to +0.900 (foot).
 const FLANK_DOME: Array[Vector3] = [
-	Vector3(0.562, 0.58, -0.85),
-	Vector3(0.591, 0.58, -0.8),
-	Vector3(0.62, 0.58, -0.7),
-	Vector3(0.64, 0.58, -0.6),
-	Vector3(0.648, 0.58, -0.5),
-	Vector3(0.658, 0.58, -0.4),
-	Vector3(0.66, 0.58, -0.3),
-	Vector3(0.678, 0.58, -0.2),
-	Vector3(0.686, 0.58, -0.1),
-	Vector3(0.676, 0.58, 0.0),
-	Vector3(0.684, 0.58, 0.1),
-	Vector3(0.674, 0.58, 0.2),
-	Vector3(0.66, 0.58, 0.3),
-	Vector3(0.662, 0.58, 0.4),
-	Vector3(0.65, 0.58, 0.5),
-	Vector3(0.634, 0.58, 0.6),
-	Vector3(0.606, 0.58, 0.7),
-	Vector3(0.596, 0.58, 0.8),
-	Vector3(0.536, 0.58, 0.9),
+	Vector3(0.331, 0.58, -0.85),
+	Vector3(0.351, 0.58, -0.80),
+	Vector3(0.369, 0.58, -0.70),
+	Vector3(0.370, 0.58, -0.60),
+	Vector3(0.370, 0.58, -0.50),
+	Vector3(0.370, 0.58, -0.40),
+	Vector3(0.370, 0.58, -0.30),
+	Vector3(0.370, 0.58, -0.20),
+	Vector3(0.370, 0.58, -0.10),
+	Vector3(0.370, 0.58, 0.00),
+	Vector3(0.370, 0.58, 0.10),
+	Vector3(0.370, 0.58, 0.20),
+	Vector3(0.370, 0.58, 0.30),
+	Vector3(0.370, 0.58, 0.40),
+	Vector3(0.370, 0.58, 0.50),
+	Vector3(0.370, 0.58, 0.60),
+	Vector3(0.369, 0.58, 0.70),
+	Vector3(0.351, 0.58, 0.80),
+	Vector3(0.303, 0.58, 0.90),
 ]
 
 ## The -X tray-wall belt at y 0.310: 17 waypoints, z -0.800 to +0.800.
 const FLANK_TRAY: Array[Vector3] = [
-	Vector3(-0.024, 0.31, -0.8),
-	Vector3(-0.058, 0.31, -0.7),
-	Vector3(-0.062, 0.31, -0.6),
-	Vector3(-0.07, 0.31, -0.5),
-	Vector3(-0.076, 0.31, -0.4),
-	Vector3(-0.088, 0.31, -0.3),
-	Vector3(-0.088, 0.31, -0.2),
-	Vector3(-0.087, 0.31, -0.1),
-	Vector3(-0.09, 0.31, 0.0),
-	Vector3(-0.087, 0.31, 0.1),
-	Vector3(-0.088, 0.31, 0.2),
-	Vector3(-0.085, 0.31, 0.3),
-	Vector3(-0.073, 0.31, 0.4),
-	Vector3(-0.072, 0.31, 0.5),
-	Vector3(-0.062, 0.31, 0.6),
-	Vector3(-0.05, 0.31, 0.7),
-	Vector3(-0.034, 0.31, 0.8),
+	Vector3(-0.418, 0.31, -0.80),
+	Vector3(-0.437, 0.31, -0.70),
+	Vector3(-0.438, 0.31, -0.60),
+	Vector3(-0.438, 0.31, -0.50),
+	Vector3(-0.438, 0.31, -0.40),
+	Vector3(-0.438, 0.31, -0.30),
+	Vector3(-0.438, 0.31, -0.20),
+	Vector3(-0.438, 0.31, -0.10),
+	Vector3(-0.438, 0.31, 0.00),
+	Vector3(-0.438, 0.31, 0.10),
+	Vector3(-0.438, 0.31, 0.20),
+	Vector3(-0.438, 0.31, 0.30),
+	Vector3(-0.438, 0.31, 0.40),
+	Vector3(-0.438, 0.31, 0.50),
+	Vector3(-0.438, 0.31, 0.60),
+	Vector3(-0.437, 0.31, 0.70),
+	Vector3(-0.418, 0.31, 0.80),
 ]
 
 static var _strips_mesh: ArrayMesh = null

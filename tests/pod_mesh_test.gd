@@ -1,14 +1,7 @@
 extends SimTestCase
-## Pins for the pod-v2 shell wiring: the GLB loads and yields exactly
-## one cheap mesh carrying the authored lacquer material, every pod
-## instances that one shared mesh
-## under the frozen transform, the transformed envelope matches the
-## authored (0.9, 0.8, 2.2) footprint within 1% per axis, the authored
-## sit-up corridor stays clear with its worst clearance at the lying
-## eye, the transform derivation is deterministic, and the greybox box
-## dressing is retired from every pod — no sealed lids, no tilted open
-## lids, no indicator plates, no hanging blankets: per pod only the
-## round shell and the flank tubes render.
+## The authored pod keeps envelope and sit-up clearance parity while all
+## seven instances share one smooth, three-material mesh. Collision data
+## stays independent of this presentation mesh.
 
 ## The lying eye, pod-local, from the authored pose table (sim/exit.gd):
 ## the tray floor plus the capsule radius and penetration tolerance, at
@@ -85,28 +78,41 @@ func test_shell_resource_loads_and_stays_cheap() -> void:
 	if mesh == null:
 		assert_true(false, "the shell mesh extracts from the GLB")
 		return
-	assert_int_equal(mesh.get_surface_count(), 1, "the shell carries exactly one surface")
-	var material: Material = mesh.surface_get_material(0)
-	assert_true(material == PodMesh.shell_material(), "the shell's one material is the authored lacquer, nothing per-instance")
-	var lacquer: StandardMaterial3D = PodMesh.shell_material()
-	assert_true(lacquer.albedo_color == Color(0.88, 0.84, 0.78), "the shell albedo is the warm bone white")
-	assert_true(absf(lacquer.roughness - 0.18) < 1e-4, "the shell under-coat sits mid semi-gloss")
-	assert_float_equal(lacquer.metallic, 0.0, "the shell is a dielectric lacquer")
-	assert_true(lacquer.clearcoat_enabled, "the shell carries the lacquer clearcoat")
-	assert_true(absf(lacquer.clearcoat - 1.0) < 1e-4, "the clearcoat is full")
-	assert_true(absf(lacquer.clearcoat_roughness - 0.1) < 1e-4, "the clearcoat highlight stays tight")
-	assert_false(lacquer.emission_enabled, "the shell does not emit; it only returns the room's red light")
-	assert_true(lacquer.albedo_texture == null and lacquer.normal_texture == null and lacquer.roughness_texture == null, "the shell carries no texture maps")
-	var arrays: Array = mesh.surface_get_arrays(0)
-	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
-	var triangles: int = indices.size() / 3
-	assert_int_equal(indices.size() % 3, 0, "the shell surface index buffer is whole triangles")
-	assert_true(triangles > 0, "the shell mesh is not empty")
-	assert_true(triangles <= 20000, "the shell stays cheap: %d tris must be <= 20000" % triangles)
+	# Issue #88 replaces the scan's single bone-white lacquer with pristine
+	# neutral plastic, dark glass, and rough fabric on authored geometry.
+	assert_int_equal(mesh.get_surface_count(), 3, "plastic, glass and fabric have separate surfaces")
+	var expected: Array[Material] = [PodMesh.shell_material(), PodMesh.canopy_material(), PodMesh.couch_material()]
+	var triangles := 0
+	for surface: int in range(mesh.get_surface_count()):
+		assert_true(mesh.surface_get_material(surface) == expected[surface], "surface material is cached, nothing per-instance")
+		var arrays: Array = mesh.surface_get_arrays(surface)
+		var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+		var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+		assert_int_equal(indices.size() % 3, 0, "surface index buffer is whole triangles")
+		triangles += indices.size() / 3
+		assert_true(vertices.size() < indices.size() / 2, "curved surfaces reuse smooth vertices rather than split every triangle")
+	var lacquer := PodMesh.shell_material()
+	assert_true(lacquer.albedo_color == Color(0.96, 0.96, 0.96), "the shell is near-white without a warm bone tint")
+	assert_true(absf(lacquer.roughness - 0.12) < 1e-4, "plastic has a low-roughness highlight")
+	assert_float_equal(lacquer.metallic, 0.0, "plastic is dielectric")
+	assert_true(lacquer.clearcoat_enabled, "plastic carries a clearcoat")
+	assert_float_equal(lacquer.clearcoat, 1.0, "clearcoat is full")
+	assert_true(absf(lacquer.clearcoat_roughness - 0.08) < 1e-4, "clearcoat highlight stays tight")
+	assert_false(lacquer.emission_enabled, "plastic reflects room light without emitting")
+	for material: StandardMaterial3D in expected:
+		assert_true(material.albedo_texture == null and material.normal_texture == null and material.roughness_texture == null, "authored surfaces have no grunge textures")
+	assert_true(PodMesh.canopy_material().albedo_color == Color(0.025, 0.035, 0.045), "canopy is dark tinted glass")
+	assert_true(absf(PodMesh.canopy_material().roughness - 0.06) < 1e-4, "glass is very glossy")
+	assert_float_equal(PodMesh.canopy_material().metallic, 0.0, "glass is dielectric")
+	assert_true(PodMesh.couch_material().albedo_color == Color(0.09, 0.12, 0.14), "couch is darker fabric")
+	assert_true(absf(PodMesh.couch_material().roughness - 0.9) < 1e-4, "fabric stays rough")
+	assert_true(triangles > 0, "the pod mesh is not empty")
+	assert_true(triangles <= 20000, "the entire pod stays cheap: %d tris must be <= 20000" % triangles)
 
 func test_shell_transforms_are_deterministic() -> void:
 	var first := PodMesh.shell_transform()
 	var second := PodMesh.shell_transform()
+	assert_true(first == Transform3D.IDENTITY, "asset is authored directly in pod-local meters")
 	assert_vec3_equal(first.origin, second.origin, "the transform origin rebuilds identically")
 	assert_true(first.basis == second.basis, "the transform basis rebuilds identically")
 	var shell_a := PodMesh.make_shell()
@@ -200,25 +206,21 @@ func _matches_solid(instance: MeshInstance3D, solid: PodBody.PodSolid) -> bool:
 func _ensure_triangles() -> void:
 	if not _tri_a.is_empty():
 		return
-	var arrays: Array = PodMesh.shell_mesh().surface_get_arrays(0)
-	var verts: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
-	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
 	var to_pod := PodMesh.shell_transform()
-	var count := indices.size() / 3
-	_tri_a.resize(count)
-	_tri_b.resize(count)
-	_tri_c.resize(count)
-	_tri_min.resize(count)
-	_tri_max.resize(count)
-	for index: int in range(count):
-		var a: Vector3 = to_pod * verts[indices[index * 3]]
-		var b: Vector3 = to_pod * verts[indices[index * 3 + 1]]
-		var c: Vector3 = to_pod * verts[indices[index * 3 + 2]]
-		_tri_a[index] = a
-		_tri_b[index] = b
-		_tri_c[index] = c
-		_tri_min[index] = a.min(b.min(c))
-		_tri_max[index] = a.max(b.max(c))
+	var mesh := PodMesh.shell_mesh()
+	for surface: int in range(mesh.get_surface_count()):
+		var arrays: Array = mesh.surface_get_arrays(surface)
+		var verts: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+		var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+		for index: int in range(indices.size() / 3):
+			var a: Vector3 = to_pod * verts[indices[index * 3]]
+			var b: Vector3 = to_pod * verts[indices[index * 3 + 1]]
+			var c: Vector3 = to_pod * verts[indices[index * 3 + 2]]
+			_tri_a.append(a)
+			_tri_b.append(b)
+			_tri_c.append(c)
+			_tri_min.append(a.min(b.min(c)))
+			_tri_max.append(a.max(b.max(c)))
 
 ## Minimum distance from a pod-frame point to the transformed shell
 ## surface, or 99.0 when no triangle sits within the prune radius.

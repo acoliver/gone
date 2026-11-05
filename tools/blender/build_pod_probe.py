@@ -1,23 +1,13 @@
 #!/usr/bin/env python3
-"""Parametric stasis-pod probe builder for gone issue #45 (Blender 4.5 headless).
+"""Deterministic smooth stasis pod for gone #88, built with Blender 4.5.
 
-Builds the three pod components of the approved concept design as clean
-deterministic geometry — the open shell tub, the hinged canopy lid, and the
-padded couch inside — with principled materials, then exports one
-selected-objects GLB for the Godot asset-pipeline smoke.
+Loft a capsule tub and hinged glass canopy, add beveled fabric pads, pillow
+and restraints, then bake one three-material mesh into pod-local meters.
+Godot uses +Z foot, -Z head, +Y up; Blender's exporter maps (X, Y, Z) to
+(X, Z, -Y). No textures, randomness, lights or collision geometry.
 
-The shell and canopy are lofts of one elliptical cross-section arc along the
-pod's long axis: the shell takes the arc through the bottom, the canopy the
-complementary arc over the top, so the lid closes onto the rim at rotation
-zero. Both ends round off following a stadium side profile. The canopy is
-re-origined onto its hinge line so the open angle is a plain object rotation
-(baked as a glTF node transform, never a modifier). No randomness, no time
-dependence, fixed vertex order.
-
-Usage (headless):
-  Blender --background --factory-startup --python build_pod_probe.py -- \
-      --output <pod.glb> [--length 2.2] [--half-width 0.45]
-      [--half-height 0.425] [--lid-angle 55.0] [--rim-angle 55.0]
+Blender --background --factory-startup --python tools/blender/build_pod_probe.py \
+    -- --output assets/props/pod/pod-v3.glb
 """
 
 import argparse
@@ -27,290 +17,215 @@ import sys
 
 import bmesh
 import bpy
+from mathutils import Vector
 
-# Cross-section resolution (segments along the arc) and longitudinal
-# resolution (rings: 2 * CAP_STATIONS cap rings + STRAIGHT_STATIONS + 1).
 SHELL_ARC_SEGMENTS = 32
-CANOPY_ARC_SEGMENTS = 16
+CANOPY_ARC_SEGMENTS = 24
 CAP_STATIONS = 18
-STRAIGHT_STATIONS = 8
-
-# Concept-design material targets: off-white composite shell, dark glass
-# (opaque) canopy, dark red-brown fabric couch. Values land in the GLB
-# verbatim as linear base-color inputs.
-SHELL_BASE_COLOR = (0.85, 0.84, 0.82)
-SHELL_ROUGHNESS = 0.45
-SHELL_METALLIC = 0.0
-CANOPY_BASE_COLOR = (0.03, 0.03, 0.035)
-CANOPY_ROUGHNESS = 0.08
-CANOPY_METALLIC = 0.1
-COUCH_BASE_COLOR = (0.16, 0.07, 0.05)
-COUCH_ROUGHNESS = 0.9
-COUCH_METALLIC = 0.0
-
-# Couch pads (location, size, y-tilt degrees) inside the tub interior:
-# seat slab, tilted backrest under the head, slight leg-rest wedge. Pads
-# intentionally overlap a few millimeters so they read as one couch.
-COUCH_PADS = [
-    ((0.08, 0.0, -0.32), (1.30, 0.50, 0.11), 0.0),
-    ((-0.56, 0.0, -0.11), (0.44, 0.50, 0.11), -24.0),
-    ((0.76, 0.0, -0.27), (0.30, 0.50, 0.09), 10.0),
-]
-COUCH_BEVEL_WIDTH = 0.035
-COUCH_BEVEL_SEGMENTS = 4
-COUCH_SMOOTH_ANGLE_DEG = 40.0
+STRAIGHT_STATIONS = 24
 
 
 def parse_args(argv):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--output", required=True, help="output GLB path")
-    parser.add_argument("--length", type=float, default=2.2, help="pod length along X (m)")
-    parser.add_argument("--half-width", type=float, default=0.45, help="cross-section half extent Y")
-    parser.add_argument("--half-height", type=float, default=0.425, help="cross-section half extent Z")
-    parser.add_argument("--lid-angle", type=float, default=55.0, help="canopy open angle (deg)")
-    parser.add_argument("--rim-angle", type=float, default=55.0,
-                        help="cockpit opening half-angle from the top (deg)")
-    return parser.parse_args(argv)
+    parser.add_argument("--output", required=True)
+    parser.add_argument("--length", type=float, default=2.2)
+    parser.add_argument("--half-width", type=float, default=0.45)
+    parser.add_argument("--half-height", type=float, default=0.425)
+    parser.add_argument("--height", type=float, default=0.8)
+    parser.add_argument("--lid-angle", type=float, default=55.0)
+    parser.add_argument("--rim-angle", type=float, default=55.0)
+    args = parser.parse_args(argv)
+    if min(args.half_width, args.half_height, args.height) <= 0:
+        parser.error("pod extents must be positive")
+    if args.length <= 2 * args.half_height:
+        parser.error("length must exceed the two rounded caps")
+    if not 0 < args.lid_angle < 90 or not 0 < args.rim_angle < 90:
+        parser.error("lid and rim angles must lie between 0 and 90 degrees")
+    return args
 
 
 def reset_scene():
-    """Remove the factory startup objects and any orphan data blocks."""
     bpy.ops.object.select_all(action="SELECT")
     bpy.ops.object.delete()
-    for block in (bpy.data.meshes, bpy.data.materials, bpy.data.cameras,
-                  bpy.data.lights, bpy.data.images):
-        for item in list(block):
+    for blocks in (bpy.data.meshes, bpy.data.materials, bpy.data.images):
+        for item in list(blocks):
             if item.users == 0:
-                block.remove(item)
+                blocks.remove(item)
 
 
-def principled(name, base_color, roughness, metallic):
-    """Principled BSDF material with backface culling off (glTF doubleSided),
-    so the tub interior and canopy underside stay visible in Godot."""
+def principled(name, color, roughness, coat=0.0):
     material = bpy.data.materials.new(name)
     material.use_nodes = True
     bsdf = material.node_tree.nodes["Principled BSDF"]
-    bsdf.inputs["Base Color"].default_value = (*base_color, 1.0)
+    bsdf.inputs["Base Color"].default_value = (*color, 1.0)
     bsdf.inputs["Roughness"].default_value = roughness
-    bsdf.inputs["Metallic"].default_value = metallic
-    material.use_backface_culling = False
+    bsdf.inputs["Metallic"].default_value = 0.0
+    bsdf.inputs["Coat Weight"].default_value = coat
+    bsdf.inputs["Coat Roughness"].default_value = 0.08
+    material.use_backface_culling = True
     return material
 
 
-def section_point(half_width, half_height, alpha, x, scale):
-    """One cross-section vertex: azimuth alpha around the +Z top of an
-    ellipse (y = a sin, z = b cos) placed at station x, shrunk by scale."""
-    return (x,
-            half_width * scale * math.sin(alpha),
-            half_height * scale * math.cos(alpha))
-
-
 def stations(length, cap_radius):
-    """Longitudinal stations (x, cross-section scale) following the stadium
-    side profile: straight section at full scale, quarter-circle caps that
-    shrink the section toward each tip. The final tip rings stay tiny but
-    non-degenerate; flat fans close them."""
-    half_straight = length / 2.0 - cap_radius
+    """Stadium profile with shared arc rings and small, closed tip fans."""
+    half_straight = length / 2 - cap_radius
     out = []
     for k in range(CAP_STATIONS - 1, 0, -1):
-        psi = math.radians(90.0 * k / CAP_STATIONS)
+        psi = math.pi / 2 * k / CAP_STATIONS
         out.append((-half_straight - cap_radius * math.sin(psi), math.cos(psi)))
     for k in range(STRAIGHT_STATIONS + 1):
-        out.append((-half_straight + 2.0 * half_straight * k / STRAIGHT_STATIONS, 1.0))
+        out.append((-half_straight + 2 * half_straight * k / STRAIGHT_STATIONS, 1.0))
     for k in range(1, CAP_STATIONS):
-        psi = math.radians(90.0 * k / CAP_STATIONS)
+        psi = math.pi / 2 * k / CAP_STATIONS
         out.append((half_straight + cap_radius * math.sin(psi), math.cos(psi)))
     return out
 
 
 def cap_open_ring(bm, ring):
-    """Close an open arc ring with a chord and a centroid triangle fan."""
-    center = bm.verts.new(tuple(
-        sum(vertex.co[axis] for vertex in ring) / len(ring) for axis in range(3)))
-    for i in range(len(ring) - 1):
-        bm.faces.new((ring[i], ring[i + 1], center))
-    bm.faces.new((ring[-1], ring[0], center))
+    center = bm.verts.new(sum((v.co for v in ring), Vector()) / len(ring))
+    for index in range(len(ring)):
+        bm.faces.new((ring[index], ring[(index + 1) % len(ring)], center))
 
 
-def loft_panel(name, material, alpha_start, alpha_end, arc_segments, station_list,
-               half_width, half_height):
-    """Loft an open elliptical-arc cross-section along X through the stations
-    and close both ends with chord fans. Everything is smooth-shaded."""
+def loft_panel(name, material, alpha_start, alpha_end, segments, station_list,
+               half_width, half_height, thickness):
+    """Welded quad loft; solidify closes the visible rim with a crisp edge."""
     bm = bmesh.new()
-    alphas = [math.radians(alpha_start + (alpha_end - alpha_start) * i / arc_segments)
-              for i in range(arc_segments + 1)]
+    alphas = [math.radians(alpha_start + (alpha_end - alpha_start) * i / segments)
+              for i in range(segments + 1)]
     rings = []
     for x, scale in station_list:
-        rings.append([bm.verts.new(section_point(half_width, half_height, alpha, x, scale))
+        rings.append([bm.verts.new((x, half_width * scale * math.sin(alpha),
+                                    half_height * scale * math.cos(alpha)))
                       for alpha in alphas])
-    for r in range(len(rings) - 1):
-        for i in range(arc_segments):
-            bm.faces.new((rings[r][i], rings[r + 1][i],
-                          rings[r + 1][i + 1], rings[r][i + 1]))
+    for lower, upper in zip(rings, rings[1:]):
+        for i in range(segments):
+            bm.faces.new((lower[i], upper[i], upper[i + 1], lower[i + 1]))
     cap_open_ring(bm, rings[0])
     cap_open_ring(bm, rings[-1])
-    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
     for face in bm.faces:
         face.smooth = True
     mesh = bpy.data.meshes.new(name + "Mesh")
     bm.to_mesh(mesh)
     bm.free()
     obj = bpy.data.objects.new(name, mesh)
-    obj.data.materials.append(material)
+    bpy.context.scene.collection.objects.link(obj)
+    mesh.materials.append(material)
+    solidify = obj.modifiers.new("MoldedRim", "SOLIDIFY")
+    solidify.thickness = thickness
+    solidify.offset = -1.0
+    solidify.use_even_offset = True
     return obj
 
 
-def reorigin_hinge(obj, half_width, half_height, rim_angle_deg):
-    """Move the canopy's mesh data so the -Y hinge rim line passes through the
-    object origin; the object location restores world placement, so the open
-    angle is a pure object rotation about that hinge."""
-    rim = math.radians(rim_angle_deg)
-    hinge_y = -half_width * math.sin(rim)
-    hinge_z = half_height * math.cos(rim)
-    for vertex in obj.data.vertices:
-        vertex.co.y -= hinge_y
-        vertex.co.z -= hinge_z
-    obj.location = (0.0, hinge_y, hinge_z)
+def padded_box(name, location, size, tilt, material, bevel_width=0.035):
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=location,
+                                    rotation=(0, math.radians(tilt), 0))
+    obj = bpy.context.active_object
+    obj.name = name
+    obj.scale = size
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+    obj.data.materials.append(material)
+    bevel = obj.modifiers.new("PadBevel", "BEVEL")
+    bevel.width = bevel_width
+    bevel.segments = 4
+    for polygon in obj.data.polygons:
+        polygon.use_smooth = True
+    weighted = obj.modifiers.new("PadNormals", "WEIGHTED_NORMAL")
+    weighted.keep_sharp = True
+    return obj
 
 
-def smooth_by_angle(mesh):
-    """Mark every face smooth and split shading across edges whose face
-    angle exceeds the threshold (the padded-cushion look: rounded bevels
-    shade smoothly, flat pad faces stay flat)."""
-    bm = bmesh.new()
-    bm.from_mesh(mesh)
-    threshold = math.cos(math.radians(COUCH_SMOOTH_ANGLE_DEG))
-    for edge in bm.edges:
-        if len(edge.link_faces) == 2:
-            edge.smooth = edge.link_faces[0].normal.dot(
-                edge.link_faces[1].normal) >= threshold
-        else:
-            edge.smooth = False
-    for face in bm.faces:
-        face.smooth = True
-    bm.to_mesh(mesh)
-    bm.free()
+def bake_pod_frame(objects, args):
+    """Bake modifiers/hinge, then fit the full assembly to the frozen envelope.
 
-
-def build_couch(material):
-    """Three beveled pads joined into one couch object."""
-    pads = []
-    for location, size, tilt in COUCH_PADS:
-        bpy.ops.mesh.primitive_cube_add(size=1.0, location=location,
-                                        rotation=(0.0, math.radians(tilt), 0.0))
-        pad = bpy.context.active_object
-        pad.scale = size
-        pads.append(pad)
-    bpy.ops.object.select_all(action="DESELECT")
-    for pad in pads:
-        pad.select_set(True)
-    bpy.context.view_layer.objects.active = pads[0]
-    bpy.ops.object.join()
-    couch = bpy.context.active_object
-    couch.name = "Couch"
-    couch.data.materials.append(material)
-    bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
-    bevel = couch.modifiers.new("PadBevel", "BEVEL")
-    bevel.width = COUCH_BEVEL_WIDTH
-    bevel.segments = COUCH_BEVEL_SEGMENTS
-    smooth_by_angle(couch.data)
-    return couch
-
-
-def mesh_stats(objects):
-    """Per-object evaluated (modifier-applied) vertex and triangle counts."""
-    depsgraph = bpy.context.evaluated_depsgraph_get()
-    rows = []
-    for obj in objects:
-        evaluated = obj.evaluated_get(depsgraph)
-        mesh = evaluated.to_mesh()
-        rows.append((obj.name, len(mesh.vertices), len(mesh.loop_triangles)))
-        evaluated.to_mesh_clear()
-    return rows
-
-
-def rim_rise(shell, canopy):
-    """World-space top of the open canopy vs the shell rim, proving the lid
-    angle survived into the authored scene (the far rim should lift well
-    above the shell at any nonzero --lid-angle)."""
+    Width and length stay centered; height starts on the deck. This fit is
+    authored once in Blender, never recomputed or distorted at runtime.
+    """
     bpy.context.view_layer.update()
-    depsgraph = bpy.context.evaluated_depsgraph_get()
-    tops = []
-    for obj in (shell, canopy):
-        evaluated = obj.evaluated_get(depsgraph)
-        mesh = evaluated.to_mesh()
-        tops.append(max((obj.matrix_world @ v.co for v in mesh.vertices),
-                        key=lambda co: co.z).z)
-        evaluated.to_mesh_clear()
-    return tops[0], tops[1]
+    for obj in objects:
+        bpy.context.view_layer.objects.active = obj
+        for modifier in list(obj.modifiers):
+            bpy.ops.object.modifier_apply(modifier=modifier.name)
+        obj.data.transform(obj.matrix_world)
+        obj.matrix_world.identity()
+    points = [v.co for obj in objects for v in obj.data.vertices]
+    lo = Vector(tuple(min(p[i] for p in points) for i in range(3)))
+    hi = Vector(tuple(max(p[i] for p in points) for i in range(3)))
+    scale = Vector((args.length / (hi.x - lo.x),
+                    2 * args.half_width / (hi.y - lo.y),
+                    args.height / (hi.z - lo.z)))
+    for obj in objects:
+        for vertex in obj.data.vertices:
+            p = vertex.co
+            # Rotate long X onto Blender Y; export maps it onto Godot -Z.
+            vertex.co = (-(p.y - (hi.y + lo.y) / 2) * scale.y,
+                         (p.x - (hi.x + lo.x) / 2) * scale.x,
+                         (p.z - lo.z) * scale.z)
+        obj.data.update()
 
 
 def main(argv):
     args = parse_args(argv)
     os.makedirs(os.path.dirname(os.path.abspath(args.output)), exist_ok=True)
-
     reset_scene()
-    shell_material = principled("ShellComposite", SHELL_BASE_COLOR,
-                                SHELL_ROUGHNESS, SHELL_METALLIC)
-    canopy_material = principled("CanopyGlass", CANOPY_BASE_COLOR,
-                                 CANOPY_ROUGHNESS, CANOPY_METALLIC)
-    couch_material = principled("CouchFabric", COUCH_BASE_COLOR,
-                                COUCH_ROUGHNESS, COUCH_METALLIC)
-
-    station_list = stations(args.length, args.half_height)
-    shell = loft_panel("Shell", shell_material, args.rim_angle,
-                       360.0 - args.rim_angle, SHELL_ARC_SEGMENTS, station_list,
-                       args.half_width, args.half_height)
-    canopy = loft_panel("Canopy", canopy_material, -args.rim_angle,
-                        args.rim_angle, CANOPY_ARC_SEGMENTS, station_list,
-                        args.half_width, args.half_height)
-    reorigin_hinge(canopy, args.half_width, args.half_height, args.rim_angle)
-    canopy.rotation_euler = (math.radians(args.lid_angle), 0.0, 0.0)
-    couch = build_couch(couch_material)
-
-    pod = [shell, canopy, couch]
-    for obj in pod:
-        bpy.context.scene.collection.objects.link(obj)
-
-    rows = mesh_stats(pod)
-    total_verts = sum(row[1] for row in rows)
-    total_tris = sum(row[2] for row in rows)
-    for name, verts, tris in rows:
-        print("MESH %s verts=%d tris=%d" % (name, verts, tris))
-    print("TOTAL objects=%d verts=%d tris=%d" % (len(rows), total_verts, total_tris))
-    if total_tris >= 50000:
-        print("FAIL mesh budget: %d tris >= 50000" % total_tris)
-        sys.exit(1)
-
-    shell_rim, canopy_rim = rim_rise(shell, canopy)
-    print("RISE shell_rim=%.4f canopy_rim=%.4f rise=%.4f" % (
-        shell_rim, canopy_rim, canopy_rim - shell_rim))
-    expected = (2.0 * args.half_width * math.sin(math.radians(args.rim_angle))
-                * math.sin(math.radians(args.lid_angle)))
-    if canopy_rim - shell_rim < 0.8 * expected:
-        print("FAIL rim rise %.4f < %.4f: open canopy angle lost before export" % (
-            canopy_rim - shell_rim, 0.8 * expected))
-        sys.exit(1)
-
+    plastic = principled("ShellPlastic", (0.96, 0.96, 0.96), 0.12, 1.0)
+    glass = principled("CanopyGlass", (0.025, 0.035, 0.045), 0.06)
+    fabric = principled("CouchFabric", (0.09, 0.12, 0.14), 0.9)
+    profile = stations(args.length, args.half_height)
+    shell = loft_panel("Shell", plastic, args.rim_angle, 360 - args.rim_angle,
+                       SHELL_ARC_SEGMENTS, profile, args.half_width,
+                       args.half_height, 0.018)
+    canopy = loft_panel("Canopy", glass, -args.rim_angle, args.rim_angle,
+                        CANOPY_ARC_SEGMENTS, profile, args.half_width,
+                        args.half_height, 0.008)
+    rim = math.radians(args.rim_angle)
+    hinge = Vector((0, -args.half_width * math.sin(rim),
+                    args.half_height * math.cos(rim)))
+    for vertex in canopy.data.vertices:
+        vertex.co -= hinge
+    canopy.location = hinge
+    canopy.rotation_euler.x = math.radians(args.lid_angle)
+    pads = [
+        padded_box("Seat", (0, 0, -0.23), (1.45, 0.50, 0.11), 0, fabric),
+        padded_box("Backrest", (0.60, 0, -0.14), (0.45, 0.50, 0.11), -20, fabric),
+        padded_box("Pillow", (0.77, 0, -0.04), (0.23, 0.39, 0.12), -20, fabric),
+        padded_box("Footrest", (-0.79, 0, -0.24), (0.24, 0.47, 0.10), 10, fabric),
+    ]
+    for x in (-0.35, 0.29):
+        pads.append(padded_box("Restraint", (x, 0, -0.16), (0.065, 0.52, 0.025),
+                               0, fabric, 0.008))
+    objects = [shell, canopy, *pads]
+    bpy.context.view_layer.update()
+    shell_rim = max((shell.matrix_world @ v.co).z for v in shell.data.vertices)
+    canopy_rim = max((canopy.matrix_world @ v.co).z for v in canopy.data.vertices)
+    rise = canopy_rim - shell_rim
+    expected = 2 * args.half_width * math.sin(rim) * math.sin(math.radians(args.lid_angle))
+    print("RISE shell_rim=%.4f canopy_rim=%.4f rise=%.4f" % (shell_rim, canopy_rim, rise))
+    if rise < 0.8 * expected:
+        raise RuntimeError("canopy open transform lost")
+    bake_pod_frame(objects, args)
     bpy.ops.object.select_all(action="DESELECT")
-    for obj in pod:
+    for obj in objects:
         obj.select_set(True)
     bpy.context.view_layer.objects.active = shell
+    bpy.ops.object.join()
+    pod = bpy.context.active_object
+    pod.name = "Pod"
+    pod.data.calc_loop_triangles()
+    triangles = len(pod.data.loop_triangles)
+    print("TOTAL objects=1 verts=%d tris=%d materials=%s" % (
+        len(pod.data.vertices), triangles, [m.name for m in pod.data.materials]))
+    if triangles >= 20000:
+        raise RuntimeError("pod must remain below 20000 triangles")
     bpy.ops.export_scene.gltf(
-        filepath=args.output,
-        export_format="GLB",
-        use_selection=True,
-        export_apply=True,
-        export_yup=True,
-        export_cameras=False,
-        export_lights=False,
-        export_skins=False,
-        export_texcoords=False,
-        export_animations=False,
-        export_extras=False,
+        filepath=args.output, export_format="GLB", use_selection=True,
+        export_apply=True, export_yup=True, export_cameras=False,
+        export_lights=False, export_skins=False, export_texcoords=False,
+        export_animations=False, export_extras=False,
     )
-    print("EXPORT path=%s bytes=%d" % (os.path.abspath(args.output),
-                                       os.path.getsize(args.output)))
+    print("EXPORT path=%s bytes=%d" % (os.path.abspath(args.output), os.path.getsize(args.output)))
 
 
 if __name__ == "__main__":

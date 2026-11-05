@@ -3,12 +3,17 @@
 Direction (Andrew, 2026-09-17): the ship reads as an old, broken-down
 colonial warship in the Battlestar Galactica / Stargate Universe
 tradition. Walls are paneled, ribbed, piped structure, not flat cubes.
-The stasis pods read as rounded, smooth, and newer than the ship around
-them: the pods are recent hardware installed in a worn hull. The pods
-are OPEN: the crew came out of stasis and left, so most canopies stand
-raised with empty couches and hanging occupancy blankets; a few pods
-remain sealed. These images are the visual target for the wall and pod
-work.
+The stasis pods are rounded capsules with smooth, shiny white molded
+plastic shells. The plastic never corroded, and the maintenance robot
+keeps the pods clean. The metal hull corrodes in the ship's oxygenated
+atmosphere. This material contrast makes the pods look brand-new beside
+the worn compartment without implying that they were recently installed.
+Shells use neutral near-white dielectric plastic with low roughness and
+no textures or grunge. Raised canopies use dark tinted glossy glass;
+the single padded couch, pillow and restraint straps use darker rough
+fabric. The crew has left stasis, so the rendered canopies stand open.
+These images guide the capsule form and worn-ship contrast; the current
+material direction supersedes the older off-white wording in the prompts.
 
 ## Pieces
 
