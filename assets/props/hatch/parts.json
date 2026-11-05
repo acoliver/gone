@@ -1,20 +1,20 @@
 {
   "asset": "hatch.glb",
-  "build_recipe_sha256": "ede745819a84c0f6d36c4a99671cc127a4414657658b53fbd13b8e8dacdb94ea",
+  "build_recipe_sha256": "636785bde5c8b32fc1f356833ea71973446b384d05f83c6ee5d965db182dbbcc",
   "coordinate_system": "godot_y_up",
   "finish_recipe_sha256": "162900a766d93d54b102128c465682488483bc66f8bff46ffe15b641aa38cc3b",
   "measurements": {
     "ao_max": 1.0,
-    "ao_mean": 0.20766498148441315,
+    "ao_mean": 0.20983727276325226,
     "ao_method": "cycles_geometry_ao",
     "ao_min": 0.0,
-    "ao_stdev": 0.3126741945743561,
+    "ao_stdev": 0.3136047124862671,
     "atlas_content": "low_frequency_layer_weather_masks_and_geometric_normal",
-    "atlas_occupied_fraction": 0.9067585468292236,
+    "atlas_occupied_fraction": 0.9170610904693604,
     "atlas_resolution": 2048,
     "authoring_triangles_per_variant": {
-      "0": 37097,
-      "1": 37138
+      "0": 37145,
+      "1": 37186
     },
     "bake_coverage": "cycles_emit_conservative_subpixel_footprints",
     "bake_samples": 8,
@@ -74,13 +74,13 @@
         "width_min_m": 0.05004468560218811
       }
     },
-    "render_texture_png_disk_bytes": 8566360,
+    "render_texture_png_disk_bytes": 8567995,
     "texture_gpu_auxiliary_mips_bytes": 22369728,
     "texture_gpu_bc7_bc5_mips_bytes": 22719504,
-    "texture_png_disk_bytes": 24034394,
+    "texture_png_disk_bytes": 23997729,
     "triangles_per_variant": {
-      "0": 37095,
-      "1": 37135
+      "0": 37143,
+      "1": 37183
     },
     "uncovered_triangle_centroids": 0
   },
@@ -53353,52 +53353,52 @@
   "source_sha256": "9f87f3ce0f44037305b50a86c7e1eca94299a90d8c76a8c0b5a6a6ee45f9b8b8",
   "textures": [
     {
-      "bytes": 284964,
+      "bytes": 274480,
       "file": "hatch_coverage.png",
       "height": 2048,
-      "sha256": "0004a44995ec3f39b40625a1c3f615bf1e7c201926146e7b442df1a3c9a5f200",
+      "sha256": "0549275ed540876437639fb602320d5a9d14e5f67bae5f2326432f752b0a2181",
       "width": 2048
     },
     {
-      "bytes": 2321629,
+      "bytes": 2345465,
       "file": "hatch_ao.png",
       "height": 2048,
-      "sha256": "a397ced2c0c48ef4e67b9045fb40794028b756651f44267c241d0da0f28a7637",
+      "sha256": "4d08873365292bfd277896da162b824b05981487a0798459d78487e5a85869c9",
       "width": 2048
     },
     {
-      "bytes": 3897516,
+      "bytes": 3902308,
       "file": "hatch_albedo.png",
       "height": 2048,
-      "sha256": "5a909379da0888d7d2b7ac59b580007e237ef26e83b9c6e91837fbd67bd682b0",
+      "sha256": "87168f5769e7cf0ce1481186cfeaad1e40e16a5e4e5aaa49a1607cfc883ea9ca",
       "width": 2048
     },
     {
-      "bytes": 649945,
+      "bytes": 633476,
       "file": "hatch_normal.png",
       "height": 2048,
-      "sha256": "a9e72ab73b9fa9feedde3ec8f2ebca1f0cb5b90478e90a2029a3df6590be5078",
+      "sha256": "b17c95397996dd12012ccb8e3cd97a77b31983d0f79e8dff689c8752f9678ff4",
       "width": 2048
     },
     {
-      "bytes": 2373569,
+      "bytes": 2361143,
       "file": "hatch_height.png",
       "height": 2048,
-      "sha256": "db47ea2d30fe3fcce3a9c197fae0920be4cf5e760dbfc88536d5a28d9f377942",
+      "sha256": "7727a3566de508a352e40e57c09d5a6edea41ba647404610e71556da95e5428c",
       "width": 2048
     },
     {
-      "bytes": 1361223,
+      "bytes": 1369349,
       "file": "hatch_curvature.png",
       "height": 2048,
-      "sha256": "71fdcfab115cf55be5ccdf19688b588b692ddd101ad22d7b80a0e9fedeefb494",
+      "sha256": "393681f864896f073bdfe29b67af867c80c6e4ad21cca14ae30b3d016e765261",
       "width": 2048
     },
     {
-      "bytes": 4018899,
+      "bytes": 4032211,
       "file": "hatch_orm.png",
       "height": 2048,
-      "sha256": "e9ede2396f890121f847b45c9ae32851ceb5d7eaeafd4d1ec426bcc4df209ecf",
+      "sha256": "9521856f22afdeb0d342faf200d4f3a0d28ab67b2905d751db6c394b338219d8",
       "width": 2048
     },
     {
@@ -53465,10 +53465,10 @@
       "width": 512
     },
     {
-      "bytes": 5579754,
+      "bytes": 5532402,
       "file": "hatch_painted.png",
       "height": 2048,
-      "sha256": "82c4d756841f355ed72f346f39bd78e6ca438f0539aba67273fe068958243dac",
+      "sha256": "02002ebdddda3f035b1281b32692305532f5174e81243f018b37e29598458469",
       "width": 1024
     }
   ],

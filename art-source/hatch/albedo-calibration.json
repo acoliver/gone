@@ -1,0 +1,82 @@
+{
+  "method": "linear_rgb_factor = (concept - zero_paint_render) / (unit_paint_render - zero_paint_render)",
+  "light": "unchanged round8 neutral lookdev; white key energy 2.6, ambient 0.13",
+  "reason": "Round-nine owner targets require luminance within 10%, hue within 12 degrees and HSL saturation within 0.10. Leaf and frame responses require independent channel conversion; a shared scalar cannot satisfy both luminance intervals. Zero paint separates unchanged hardware and specular contributions. Original source PNGs and alpha-derived relief remain unchanged.",
+  "regions": {
+    "leaf": {
+      "box": [
+        420,
+        560,
+        560,
+        900
+      ],
+      "concept_linear_rgb": [
+        0.066239588457777,
+        0.03267963159595736,
+        0.018296037076154043
+      ],
+      "unit_linear_rgb": [
+        0.046381063818985525,
+        0.02540753214152209,
+        0.017377789196062598
+      ],
+      "zero_linear_rgb": [
+        0.022192937416932134,
+        0.013532269315461405,
+        0.009266653565918968
+      ],
+      "linear_rgb_factor": [
+        1.8210030123335899,
+        1.6123737689810445,
+        1.7407119138746734
+      ],
+      "unconstrained_linear_rgb_factor": [
+        1.8210030123335899,
+        1.6123737689810445,
+        1.1132083005342601
+      ],
+      "existing_patch_box": [
+        603,
+        472,
+        627,
+        496
+      ],
+      "existing_patch_concept_hsv_saturation": 0.3743031509363421,
+      "blue_factor_feasible_interval": [
+        1.397417827861732,
+        2.084005999887615
+      ],
+      "blue_factor_selection": "Midpoint of interval satisfying unchanged patch HSV saturation and broad-box HSL saturation in measured zero/unit response. Red and green factors retain the direct concept-linear-RGB match.",
+      "predicted_patch_hsv_saturation": 0.4217431456298251,
+      "predicted_broad_hsl_saturation": 0.2851590249669188
+    },
+    "frame": {
+      "box": [
+        300,
+        300,
+        340,
+        700
+      ],
+      "concept_linear_rgb": [
+        0.05814466033218542,
+        0.023193615342998245,
+        0.013708638923653623
+      ],
+      "unit_linear_rgb": [
+        0.07238666909084261,
+        0.03361223260966496,
+        0.028400624311375564
+      ],
+      "zero_linear_rgb": [
+        0.010712692092209996,
+        0.009632431990260362,
+        0.009213349538398963
+      ],
+      "linear_rgb_factor": [
+        0.7690758817292915,
+        0.5655252755422867,
+        0.23428493303206532
+      ]
+    }
+  }
+}

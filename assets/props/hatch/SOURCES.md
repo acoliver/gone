@@ -2,7 +2,7 @@
 
 ## Concept-derived painted finish
 
-Leaf and fixed-frame colour uses the driver's selected concept-derived images, replacing the text-only round-seven sources. `art-source/hatch/leaf-front.png` is the unchanged 512 by 896 `round8/gen3/edit-300.png`; `leaf-back.png` is its horizontal mirror, preserving downward runs. `frame.png` is the unchanged 1024 by 960 `round8/gen4/frame-402.png`. No gen4 leaf or Z-Image refinement is used. Hardware, wheel and rivets retain the CC0 scan finish below. Mesh positions and simulation reservations are unchanged.
+Leaf and fixed-frame colour uses the driver's selected concept-derived images, replacing the text-only round-seven sources. `art-source/hatch/leaf-front.png` is the unchanged 512 by 896 `round8/gen3/edit-300.png`; `leaf-back.png` is its horizontal mirror, preserving downward runs. `frame.png` is the unchanged 1024 by 960 `round8/gen4/frame-402.png`. No gen4 leaf or Z-Image refinement is used. Hardware, wheel and rivets retain the CC0 scan finish below. Part transforms and simulation reservations are unchanged.
 
 The input is our own `docs/art/corridors/hatch-concept-rusted.png`. `docs/art/corridors/README.md` records that the concept images were image-model generated. Leaf input crop: `[365,77,875,960]`. Frame input crop: `[285,120,365,900]`; `[400,30,840,77]` was an additional top-band reference only. Coordinates use Pillow's exclusive right and bottom edges. The concept supplies paint imagery, never dimensions.
 
@@ -10,31 +10,44 @@ Generation used [black-forest-labs/FLUX.2-klein-4B](https://huggingface.co/black
 
 Licence: **Apache-2.0**, including commercial use. The cached weights are revision `e7b7dc27f91deacad38e78976d1f2b499d76a294` under `/Volumes/XS1000/hf-cache/hub/models--black-forest-labs--FLUX.2-klein-4B/`. That snapshot did not contain its model card or licence file. Both were retrieved from the exact revision, rather than inferring the licence from a model name: [model card](https://huggingface.co/black-forest-labs/FLUX.2-klein-4B/raw/e7b7dc27f91deacad38e78976d1f2b499d76a294/README.md), [licence](https://huggingface.co/black-forest-labs/FLUX.2-klein-4B/raw/e7b7dc27f91deacad38e78976d1f2b499d76a294/LICENSE.md). Copies are `art-source/hatch/FLUX.2-klein-4B-model-card.md` and `Apache-2.0.txt`. The card declares `license: apache-2.0` and links the Apache terms.
 
-Run `tools/prepare_hatch_paint.py` with Pillow and NumPy before the Blender rebuild. It uses a fractional centre crop `[45.1764705882,0,466.8235294118,896]` and uniform scale `1088/896` for each leaf, yielding separate 512 by 1088 cells. Fractional bounds avoid an integer-width aspect stretch. The frame fills the 1024 by 960 lower cell without resizing. The packed atlas is 1024 by 2048. UV2 and vertex-colour ownership retain the shared material and geometry-derived projections; hardware never selects painted cells.
+Run `tools/prepare_hatch_paint.py` with Pillow and NumPy before the Blender rebuild. It uses a fractional centre crop `[45.1764705882,0,466.8235294118,896]` and uniform scale `1088/896` for each leaf, yielding separate 512 by 1088 cells. Fractional bounds avoid an integer-width aspect stretch. The frame fills the 1024 by 960 lower cell without resizing. The packed atlas is 1024 by 2048. UV2 and vertex-colour ownership retain the shared material and geometry-derived projections; hardware never selects painted cells. Fronts keep their X/Y projection. Depth faces select the dominant geometric-normal plane and include Z in their UV2, at the same physical texel scale. The old X/Y-only projection collapsed depth into one line and produced alpha-height bands. `tests/hatch_paint_projection_test.gd` checks singular values of the delivered UV2-to-surface mapping for painted depth triangles: both axes must be nonzero and within 4:1 density.
 
-RGB stores albedo. Alpha separates paint sheets from rust by chroma, representing paint raised 1.5 mm. `paint_height.png`, `paint_normal.png` and `paint_roughness.png` remain derived authoring maps. Runtime differentiates that alpha height in physical space and derives roughness without extra samplers. Baked AO, edge wear, fastener contact/runoff and bottom grime remain geometry-owned. The shader grades the new sources and multiplies those masks into their colour. AO affects ambient illumination only (`AO_LIGHT_AFFECT = 0.0`), preserving the round-seven sill fix.
+RGB stores prepared albedo. Alpha separates paint sheets from rust by the original source chroma, representing paint raised 1.5 mm. `paint_height.png`, `paint_normal.png` and `paint_roughness.png` remain derived authoring maps and do not change during colour conversion. Runtime differentiates alpha height in physical space and derives roughness without extra samplers. Painted areas sample that RGB directly, without the former 0.32 darkening, red tint, second oxide/steel overlay or second grime multiplication. A narrow geometric leaf-perimeter wear mask still exposes steel. Unpainted hardware keeps its scan finish and geometry-owned weather masks. AO affects ambient illumination only (`AO_LIGHT_AFFECT = 0.0`).
+
+### Measured albedo conversion
+
+`art-source/hatch/albedo-calibration.json` records the round-nine measurements, fixed concept rectangles and factors. The original generated PNGs are untouched. `prepare_hatch_paint.py` decodes their sRGB to linear RGB, applies the measured per-cell conversion, then re-encodes sRGB. Both leaf faces use the same factor; the frame has its own. There is no runtime colour-conversion control.
+
+The unchanged round-eight neutral lookdev rig supplies a white 2.6-energy key and 0.13 ambient. The owner's leaf box is `[420,560,560,900]`; frame is `[300,300,340,700]`. Mean per-pixel linear RGB was measured in the concept (`T`), an unscaled direct-albedo render (`U`) and a zero-paint render (`Z`). `Z` retains hardware, edge wear and specular contributions. The initial channel factor is `(T-Z)/(U-Z)`. A shared brightness scalar cannot meet both boxes: unscaled leaf luminance is 0.7553 of its reference, while frame is 1.3854.
+
+| Cell | Concept linear RGB T | Unit response U | Zero response Z | Final linear RGB factor |
+| --- | --- | --- | --- | --- |
+| Leaf, both faces | [0.066240, 0.032680, 0.018296] | [0.046381, 0.025408, 0.017378] | [0.022193, 0.013532, 0.009267] | [1.821003, 1.612374, 1.740712] |
+| Frame | [0.058145, 0.023194, 0.013709] | [0.072387, 0.033612, 0.028401] | [0.010713, 0.009632, 0.009213] | [0.769076, 0.565525, 0.234285] |
+
+An unconstrained leaf blue factor of 1.113208 matched broad-box linear RGB but failed the existing small leaf HSV saturation check. The same zero/unit pixel response gives a blue-factor interval `[1.397418,2.084006]` satisfying both the unchanged patch HSV tolerance and the new broad-box HSL tolerance. Its midpoint, 1.740712, completes the conversion. Red and green retain their direct measurement factors. No reference rectangle or tolerance changes. Broad-box requirements are mean linear luminance within 10%, hue within 12 degrees and HSL saturation within 0.10; HSL matches the brief's saturation definition. The older leaf/wheel/hazard patch gates retain their HSV definition. `tests/test_hatch_colour.py` checks the new targets from a native capture; `tests/test_hatch_paint.py` checks linear-space conversion and unchanged alpha.
 
 The upper ring/lip/throat faces are downward outward soffits. They cannot face an above-door key. The ray tests retain outward camera-facing normals and clear key-facing threshold checks. `tests/hatch_soffit_capture.gd` checks ray-identified soffit rows in both production X=30 close captures: every sampled maximum channel exceeds 2/255 and mean linear luminance is below the exposed upper leaf. A white-circuit end bounce at the existing layout-owned position supplies the fill absent after emergency handoff, using 0.12 of regular-strip energy, the white fade and only the hallway fill layer. Emergency keys and fills still extinguish.
 
 The original smart-projected atlas contains subpixel bevel/contour triangles. A white-emission coverage bake found 4,551 centroids with no initial shaded texel, which an eight-pixel margin cannot repair. The bake copy now gives subpixel triangles a conservative three-texel footprint centred on their runtime centroid's texel. Cycles evaluates the actual material there and applies the existing dilation. The delivered UVs, topology, paint projection and vertex positions are untouched. `hatch_coverage.png` is a white-emission authoring mask, not a runtime sampler. Build-time checks and `tests/hatch_bake_coverage_test.gd` require covered centroids for every triangle; zero AO from genuine occlusion remains valid.
 
-The painted BC7 RGBA atlas with full mips occupies 2,796,240 bytes. Total shared hatch GPU payload is 22,719,504 bytes including all detail samplers. Each leaf supplies at least 468.97 texels/metre: 1.248 texels/pixel at the production close camera, 1.199 front and 1.259 reverse at the reused lookdev camera. Delivered variants have 37,095 / 37,135 triangles and ten draw submissions. Limits remain 40,000 triangles, twelve submissions and 24,000,000 bytes. The GLB embeds only the original three runtime maps; `Surfaces` owns the external paint atlas.
+The painted BC7 RGBA atlas with full mips occupies 2,796,240 bytes. Total shared hatch GPU payload is 22,719,504 bytes including all detail samplers. Each leaf supplies at least 468.97 texels/metre: 1.248 texels/pixel at the production close camera, 1.199 front and 1.259 reverse at the reused lookdev camera. Delivered variants have 37,143 / 37,183 triangles and ten draw submissions. Limits remain 40,000 triangles, twelve submissions and 24,000,000 bytes. The GLB embeds only the original three runtime maps; `Surfaces` owns the external paint atlas.
 
 ## Rebuild
 
 Keep the supplied GLB and PNG `.import` files. From the repository root:
 
 ```sh
-mkdir -p tmp/hatch-model/round8/run
+mkdir -p tmp/hatch-model/round9/run
 /Volumes/XS1000/tools/mlximg-venv/bin/python tools/prepare_hatch_paint.py
 godot --headless --path . -s tools/export_hatch_parts.gd -- \
-  --output tmp/hatch-model/round8/run/parts-source.json
+  --output tmp/hatch-model/round9/run/parts-source.json
 /Volumes/XS1000/acoliver/projects/threedee/branch-1/.tools/Blender-4.5.11.app/Contents/MacOS/Blender \
   --background --factory-startup --python-exit-code 1 --python tools/blender/build_hatch.py -- \
-  --input tmp/hatch-model/round8/run/parts-source.json --output assets/props/hatch/hatch.glb \
+  --input tmp/hatch-model/round9/run/parts-source.json --output assets/props/hatch/hatch.glb \
   --resolution 2048 --samples 8
 node tmp/pipeline/valtool/validate.cjs assets/props/hatch/hatch.glb \
-  tmp/hatch-model/round8/run/validate.json
+  tmp/hatch-model/round9/run/validate.json
 godot --headless --path . --import
 godot --headless --path . --import
 ```
@@ -65,7 +78,7 @@ Collision assembly preserves the clipped sections through adaptive AABB spans, i
 
 Collar skins are rounded, sliced along long runs, welded and triangulated with area-balanced diagonals. This avoids needle triangles with undefined tangent bases. Stop roundovers are smaller than their sealing overlap. Both source and actual submitted fixed-frame vertices are tested against the outer outline with the unchanged 2 mm tolerance.
 
-Moving parts remain inside the simulation-owned reservations. Each plate has two connected sheets made from 88 adjoining tiles, with 1.8 mm lifted perimeter edges over a 2.0 mm recessed substrate. Internal tile edges have no raised side walls. Turned small hardware uses eight radial segments; the stepped hub uses 32. Wheel tubes use 44 by eight segments, spokes use 12 segments and small layered plates use four segments per corner. The hub's front shoulder is moved ahead of the spoke roots, which remain six structural spokes. The open rim, shaft, pin necks and all three forged dogs per face remain modelled.
+Moving parts remain inside the simulation-owned reservations. Each plate has two connected sheets made from 88 adjoining tiles, with 1.8 mm lifted perimeter edges over a 2.0 mm recessed substrate. Internal tile edges have no raised side walls. Turned small hardware uses eight radial segments; the stepped hub uses 32. Wheel tubes use 44 by eight segments, spokes use 12 segments and small layered plates use four segments per corner. The hub retains three radial steps ahead of the six spoke roots. Its narrower nose seats a six-sided retention nut with two real 2 mm axial chamfers; the nut sits 15.2 mm ahead of the surrounding boss shoulder. All extrema retain the existing part reservations. Strap/dog/grip front bevels extend through 12% of their reserved depth rather than 7%, with a 16% outer inset rather than 12%; their existing machined-edge wear weight rises from 0.8 to 1.0 and includes the bevel facets. No lights are added. The open rim, shaft, pin necks and all three forged dogs per face remain modelled.
 
 The GLB remains part-local for inspection. Runtime construction merges stationary leaf parts into one surface per face, keeps the two wheels separate and merges all fixed collar/surround faces by room mask. Four shared MultiMeshes carry leaf and fixed rivets. The result is ten imported material submissions per complete hatch, shared across all 123 hatch instances. Services and control panels are outside this imported leaf/frame budget and retain their existing batching.
 
@@ -78,7 +91,7 @@ Merged buffers retain contiguous part ranges and original local transforms. Rese
 - `hatch_orm.png`: linear R=geometry AO, G=grime, B=warning-paint ownership, BC7.
 - `hatch_ao.png`, `hatch_height.png`, `hatch_curvature.png`, `hatch_coverage.png`: auxiliary authoring outputs, not runtime samplers.
 
-All seven maps are 2048 by 2048. Runtime albedo and ORM use BC7, the normal uses BC5, and each has eleven mip levels after its base. Each compressed chain occupies 5,592,432 bytes; the shared runtime set occupies 16,777,296 bytes including minimum-size blocks. Delivered triangle counts are 37,095 for variant 0 and 37,135 for variant 1, with ten imported submissions in either case. Runtime limits are 40,000 triangles and twelve material submissions per complete imported hatch, and 24,000,000 bytes for its shared maps.
+All seven maps are 2048 by 2048. Runtime albedo and ORM use BC7, the normal uses BC5, and each has eleven mip levels after its base. Each compressed chain occupies 5,592,432 bytes; the shared runtime set occupies 16,777,296 bytes including minimum-size blocks. Delivered triangle counts are 37,143 for variant 0 and 37,183 for variant 1, with ten imported submissions in either case. Runtime limits are 40,000 triangles and twelve material submissions per complete imported hatch, and 24,000,000 bytes for its shared maps.
 
 The GLB embeds only the three runtime images and one material. Godot resolves them to the same external maps used by `Surfaces`; embedded materials are released on extraction. Keep the existing import precision, compression and UIDs. Sidecar coordinates are Godot X-right/Y-up/Z-back; transform basis arrays are columns. Face normals and tangent handedness are transformed when reflected parts are merged, with triangle winding reversed where required.
 
@@ -87,7 +100,7 @@ The GLB embeds only the three runtime images and one material. Godot resolves th
 ```sh
 godot --headless --path . -s tests/run_tests.gd
 BLENDER --background --factory-startup --python-exit-code 1 --python tools/blender/test_hatch_construction.py
-HATCH_SOURCE_JSON=tmp/hatch-model/round8/run/parts-source.json \
+HATCH_SOURCE_JSON=tmp/hatch-model/round9/run/parts-source.json \
   BLENDER --background --factory-startup --python-exit-code 1 --python tools/blender/test_hatch_round3.py
 BLENDER --background --factory-startup --python-exit-code 1 --python tools/blender/test_hatch_finish_construction.py
 BLENDER --background --factory-startup --python-exit-code 1 --python tools/blender/test_hatch_scan_finish.py

@@ -121,10 +121,10 @@ def radial(size, radius, part_id):
                    (.13, 1), (.15, .70), (.18, .70), (.20, 1),
                    (.42, 1), (.45, .94), (.47, .70), (.5, .70)]
     elif "hub" in part_id:
-        profile = [(-.5, .50), (-.42, .50), (-.42, .72), (-.30, .72),
+        profile = [(-.5, .32), (-.38, .32), (-.38, .72), (-.30, .72),
                    (-.30, 1), (.30, 1), (.5, .94)]
     elif part_id.endswith("/cap"):
-        profile = [(-.5, 1), (.5, 1)]
+        profile = [(-.5, .86), (-.30, 1), (.30, 1), (.5, .86)]
     elif any(key in part_id for key in ("pivot", "shaft")):
         profile = [(-.5, .63), (-.46, .70), (-.28, .70), (-.28, .96),
                    (-.23, 1), (.10, 1), (.14, .94), (.14, .68),
@@ -215,7 +215,7 @@ def spoke(size):
 def layered_plate(size, radius):
     contour = rounded_outline(size, radius, segments=4)
     count = len(contour)
-    profile = [(-.5, .12), (-.43, .08), (-.25, .08), (-.22, 0), (.38, 0), (.5, .06)]
+    profile = [(-.5, .16), (-.38, .08), (-.25, .08), (-.22, 0), (.38, 0), (.5, .06)]
     vertices = [(x * (1 - inset), y * (1 - inset), z * size[2])
                 for z, inset in profile for x, y in contour]
     faces = [(ring * count + i, ring * count + (i + 1) % count,
@@ -400,7 +400,7 @@ def leaf_attributes(obj, part, steel):
         if part["shape"] == "cylinder":
             machined.append(1.0 if abs(normal.y) > .65 else .15)
         else:
-            machined.append(.8 if any(key in part_id for key in ("/strap-", "/plate-", "/grip-")) and abs(normal.z) < .85 else 0)
+            machined.append(1.0 if any(key in part_id for key in ("/strap-", "/plate-", "/grip-")) and abs(normal.z) < .95 else 0)
     for name, values in (("flake", flake), ("chip_edge", chip_edge), ("substrate", substrate),
                          ("relief", relief), ("machined", machined)):
         attr(obj, name, values, "FACE")
@@ -639,15 +639,31 @@ def painted_coordinates(objects, nodes, document):
         uv = obj.data.uv_layers.new(name="PaintProjection")
         if leaf:
             part = document["variants"][row["variant"]]["groups"][row["group"]]["parts"][row["part"]]
-        for loop in obj.data.loops:
-            colour.data[loop.index].color = (float(leaf), float(row["side"]), float(frame), 1)
-            if leaf:
-                point = CINV @ obj.data.vertices[loop.vertex_index].co.to_4d()
-                uv.data[loop.index].uv = (point.x / part["size"][0] + .5, .5 + point.y / part["size"][1])
-            elif frame:
-                point = CINV @ (obj.matrix_world @ obj.data.vertices[loop.vertex_index].co).to_4d()
-                xlo, xhi, ylo, yhi = frame_bounds[row["variant"]]
-                uv.data[loop.index].uv = ((point.x - xlo) / (xhi - xlo), (point.y - ylo) / (yhi - ylo))
+        for polygon in obj.data.polygons:
+            normal = polygon.normal if leaf else obj.matrix_world.to_3x3().inverted().transposed() @ polygon.normal
+            normal = CINV.to_3x3() @ normal
+            axis = max(range(3), key=lambda i: abs(normal[i]))
+            for index in polygon.loop_indices:
+                loop = obj.data.loops[index]
+                colour.data[index].color = (float(leaf), float(row["side"]), float(frame), 1)
+                if not (leaf or frame):
+                    continue
+                point = obj.data.vertices[loop.vertex_index].co
+                point = CINV @ (point.to_4d() if leaf else (obj.matrix_world @ point).to_4d())
+                if leaf:
+                    xspan, yspan = part["size"][:2]
+                    u, v = point.x / xspan + .5, point.y / yspan + .5
+                else:
+                    xlo, xhi, ylo, yhi = frame_bounds[row["variant"]]
+                    xspan, yspan = xhi - xlo, yhi - ylo
+                    u, v = (point.x - xlo) / xspan, (point.y - ylo) / yspan
+                # The face projection must include depth on returns. Dropping Z
+                # collapses their UVs and turns alpha relief into clamped bands.
+                if axis == 0:
+                    u = .5 + point.z / xspan
+                elif axis == 1:
+                    v = .5 + point.z / yspan
+                uv.data[index].uv = (u, v)
         obj.data.color_attributes.active_color = colour
         obj.data.uv_layers.active_index = 0
 

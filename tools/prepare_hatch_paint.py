@@ -34,12 +34,21 @@ def paint_fields(image):
     return colour, paint
 
 
-def pack(front, back, frame):
+def calibrate_albedo(colour, gain):
+    linear = np.where(colour <= .04045, colour / 12.92, ((colour + .055) / 1.055) ** 2.4)
+    linear = np.clip(linear * np.asarray(gain), 0, 1)
+    return np.where(linear <= .0031308, linear * 12.92, 1.055 * linear ** (1 / 2.4) - .055)
+
+
+def pack(front, back, frame, gains=None):
     atlas = np.zeros((2048, 1024, 4), dtype=np.uint8)
     fields = []
-    for image, box in [(front, (0, 0, 512, 1088)), (back, (512, 0, 1024, 1088)), (frame, (0, 1088, 1024, 2048))]:
+    cells = [(front, (0, 0, 512, 1088)), (back, (512, 0, 1024, 1088)), (frame, (0, 1088, 1024, 2048))]
+    for index, (image, box) in enumerate(cells):
         x0, y0, x1, y1 = box
         colour, paint = paint_fields(crop_resize(image, (x1 - x0, y1 - y0)))
+        if gains is not None:
+            colour = calibrate_albedo(colour, gains[index])
         atlas[y0:y1, x0:x1, :3] = np.round(colour * 255).astype(np.uint8)
         atlas[y0:y1, x0:x1, 3] = np.round(paint * 255).astype(np.uint8)
         fields.append(paint)
@@ -52,7 +61,9 @@ def main():
     parser.add_argument("--output", type=Path, default=ROOT / "assets/props/hatch")
     args = parser.parse_args()
     images = [Image.open(args.source / (name + ".png")).convert("RGB") for name in ("leaf-front", "leaf-back", "frame")]
-    atlas, _ = pack(*images)
+    calibration = json.loads((args.source / "albedo-calibration.json").read_text())["regions"]
+    gains = [calibration[name]["linear_rgb_factor"] for name in ("leaf", "leaf", "frame")]
+    atlas, _ = pack(*images, gains=gains)
     atlas.save(args.output / "hatch_painted.png")
     rgba = np.asarray(atlas, dtype=np.float32) / 255
     paint = rgba[:, :, 3]

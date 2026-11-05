@@ -97,12 +97,12 @@ void fragment() {
         float paint_owner = max(COLOR.r, COLOR.b);
         float paint_edge = min(min(UV2.x, 1.0 - UV2.x), min(UV2.y, 1.0 - UV2.y));
         float edge_wear = (1.0 - smoothstep(0.002, 0.014, paint_edge)) * COLOR.r;
-        vec3 painted_colour = painted.rgb * vec3(1.20, 1.00, 0.85) * 0.32;
-        painted_colour = mix(painted_colour, hatch_tone(oxide, 1.0, 0.70), masks.g * 0.25);
-        painted_colour = mix(painted_colour, base, max(edge_wear, masks.b * 0.4));
+        // The image already contains paint failure, oxide and grime. Only the
+        // physical perimeter exposes additional steel; AO remains ambient-only.
+        vec3 painted_colour = mix(painted.rgb, base, edge_wear);
         colour = max(mix(vec3(max(colour.r, max(colour.g, colour.b))), colour, mix(1.22, 1.0, weather.b)), vec3(0.0));
-        colour = mix(colour, painted_colour, paint_owner);
-        ALBEDO = colour * (1.0 - weather.g) * hatch_colour_gain;
+        colour *= 1.0 - weather.g;
+        ALBEDO = mix(colour, painted_colour, paint_owner) * hatch_colour_gain;
         vec3 orm = mix(scan_sample(orm_a, wp, signs, weights, hatch_detail_pitch, vec2(0)), scan_sample(orm_c, wp, signs, weights, hatch_detail_pitch, vec2(0)), masks.g);
         orm = mix(orm, scan_sample(orm_b, wp, signs, weights, hatch_detail_pitch, vec2(0)), masks.r);
         vec3 grain = mix(scan_normal(normal_a, wp, signs, weights, hatch_detail_pitch, vec2(0)), scan_normal(normal_c, wp, signs, weights, hatch_detail_pitch, vec2(0)), masks.g);
