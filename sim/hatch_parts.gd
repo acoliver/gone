@@ -5,7 +5,15 @@ extends RefCounted
 const WHEEL_HEIGHT: float = 1.15
 const SEAL_DEPTH: float = 0.02
 const SEAL_LAP: float = 0.02
-const HINGE_RETURN_WIDTH: float = 0.10
+const HINGE_RETURN_WIDTH: float = 0.02
+# Andrew's 2026-11-05 heavy, flush slab. The offset hinge stays behind the
+# wall for its 130-degree swing; solid steel now reaches the raised front bead.
+const HINGE_OUTSET: float = 0.03
+const APPROACH_SLAB_DEPTH: float = 0.22
+const REVERSE_SLAB_DEPTH: float = 0.04
+const HARDWARE_FACE_DEPTH: float = 0.10
+const SLAB_EDGE_BEVEL: float = 0.004
+const PAINT_LAYER_DEPTH: float = 0.002
 
 static var _leaves: Dictionary = {}
 
@@ -18,6 +26,8 @@ class Part:
 	var radius: float
 	var inner_radius: float
 	var contour := PackedVector2Array()
+	var edge_bevel: float = 0.0
+	var paint_layer_depth: float = 0.0
 	func _init(p_id: StringName, p_shape: StringName, p_size: Vector3, p_transform: Transform3D, p_radius: float = 0.0, p_inner_radius: float = 0.0) -> void:
 		id = p_id
 		shape = p_shape
@@ -91,19 +101,29 @@ static func leaf(door: ShipLayout.DoorSpec) -> Array[Group]:
 		var prefix := "Fore" if side == 0 else "Aft"
 		var face := Transform3D(Basis() if side == 0 else Basis(Vector3.RIGHT, Vector3.UP, Vector3.FORWARD), Vector3.ZERO)
 		var plate := Group.new(NodePath(prefix + "Steel"), face, side, true)
-		plate.add("plate", &"rounded", Vector3(aperture.x, aperture.y - ShipGeometry.SILL_HEIGHT, 0.10), Transform3D(Basis(), Vector3(aperture.x / 2, center_y, -0.05)), 0.255)
+		var approach := (side == 0) == (into > 0)
+		var depth := APPROACH_SLAB_DEPTH if approach else REVERSE_SLAB_DEPTH
+		plate.add("plate", &"rounded", Vector3(aperture.x, aperture.y - ShipGeometry.SILL_HEIGHT, depth), Transform3D(Basis(), Vector3(aperture.x / 2, center_y, -depth / 2)), ShipGeometry.HATCH_CORNER_RADIUS)
+		# Slab thickness must not scale the existing paint relief or widen its face bevel.
+		plate.parts[0].edge_bevel = SLAB_EDGE_BEVEL
+		plate.parts[0].paint_layer_depth = PAINT_LAYER_DEPTH
+		var lower := outline(Vector2(aperture.x, aperture.y - ShipGeometry.SILL_HEIGHT), (aperture.x - ShipGeometry.SILL_WALK_WIDTH) / 2 - 0.005)
+		plate.parts[0].contour = outline(Vector2(aperture.x, aperture.y - ShipGeometry.SILL_HEIGHT), plate.parts[0].radius)
+		for index: int in range(lower.size() / 2, lower.size()): plate.parts[0].contour[index] = lower[index]
 		groups.append(plate)
-		var straps := Group.new(NodePath("StrapHinges/" + prefix + "Steel"), face, side)
+		var hardware_face := face
+		hardware_face.origin.z = (-1 if side == 0 else 1) * (depth - HARDWARE_FACE_DEPTH)
+		var straps := Group.new(NodePath("StrapHinges/" + prefix + "Steel"), hardware_face, side)
 		for index: int in range(2):
 			var y := 0.48 if index == 0 else aperture.y - 0.40
-			straps.add("strap-%d" % index, &"rounded", Vector3(0.40, 0.21, 0.055), Transform3D(Basis(), Vector3(0.215, y, -0.125)), 0.035)
-			_pin(straps, "barrel-%d" % index, 0.074, 0.32, Vector3(0.09, y, -0.125), Vector3.UP)
+			straps.add("strap-%d" % index, &"rounded", Vector3(0.40, 0.21, 0.055), Transform3D(Basis(), Vector3(0.230, y, -0.125)), 0.035)
+			_pin(straps, "barrel-%d" % index, 0.10, 0.32, Vector3(0.30, y, -0.125), Vector3.UP)
 			for cap: int in [-1, 1]:
-				_pin(straps, "cap-%d-%d" % [index, cap], 0.080, 0.030, Vector3(0.09, y + cap * 0.15, -0.125), Vector3.UP)
+				_pin(straps, "cap-%d-%d" % [index, cap], 0.106, 0.030, Vector3(0.30, y + cap * 0.15, -0.125), Vector3.UP)
 			for x: float in [0.19, 0.35]:
 				_pin(straps, "bolt-%d-%s" % [index, x], 0.021, 0.014, Vector3(x, y, -0.159))
 		groups.append(straps)
-		var lugs := Group.new(NodePath("Lugs/" + prefix + "Steel"), face, side)
+		var lugs := Group.new(NodePath("Lugs/" + prefix + "Steel"), hardware_face, side)
 		for index: int in range(3):
 			var y: float = [0.40, 1.17, aperture.y - 0.33][index]
 			lugs.add("plate-%d" % index, &"rounded", Vector3(0.11, 0.23, 0.055), Transform3D(Basis(), Vector3(0.87, y, -0.125)), 0.025)
@@ -115,7 +135,8 @@ static func leaf(door: ShipLayout.DoorSpec) -> Array[Group]:
 			for dy: float in [-0.085, 0.085]:
 				_pin(lugs, "bolt-%d-%s" % [index, dy], 0.018, 0.015, Vector3(0.87, y + dy, -0.153))
 		groups.append(lugs)
-		var wheel_pose := Transform3D(Basis() if side == 0 else Basis(Vector3.LEFT, Vector3.UP, Vector3.FORWARD), Vector3(aperture.x / 2, WHEEL_HEIGHT, -0.198 if side == 0 else 0.198))
+		var wheel_pose := Transform3D(Basis() if side == 0 else Basis(Vector3.LEFT, Vector3.UP, Vector3.FORWARD), Vector3(aperture.x / 2, WHEEL_HEIGHT, -0.190 if side == 0 else 0.190))
+		wheel_pose.origin += hardware_face.origin
 		var wheel := Group.new(NodePath("Wheel" if side == 0 else "ReverseWheel"), wheel_pose, side)
 		wheel.add("ring", &"torus", Vector3(0.888, 0.064, 0.888), Transform3D(Basis(Vector3.RIGHT, PI / 2), Vector3.ZERO), 0.444, 0.380)
 		wheel.add("flange", &"torus", Vector3(0.864, 0.011, 0.864), Transform3D(Basis(Vector3.RIGHT, PI / 2), Vector3(0, 0, -0.026)), 0.432, 0.322)
@@ -144,9 +165,9 @@ static func leaf(door: ShipLayout.DoorSpec) -> Array[Group]:
 			var pin_pose := band.transform * Transform3D(Basis(Quaternion(Vector3.UP, Vector3.BACK)), Vector3(x, 0, -0.004))
 			wheel.add("band-bolt-%s" % x, &"cylinder", Vector3(0.028, 0.003, 0.028), pin_pose, 0.014)
 		groups.append(wheel)
-		var rivets := Group.new(NodePath(prefix + "Rivets"), face, side)
+		var rivets := Group.new(NodePath(prefix + "Rivets"), hardware_face, side)
 		var border := outline(Vector2(aperture.x - 0.105, aperture.y - 0.19), 0.22)
-		var contour := Group.new(NodePath(prefix + "Contour"), face, side)
+		var contour := Group.new(NodePath(prefix + "Contour"), hardware_face, side)
 		var border_centre := Vector2(aperture.x / 2, center_y)
 		for index: int in range(border.size()):
 			var a := border[index] + border_centre
@@ -159,7 +180,7 @@ static func leaf(door: ShipLayout.DoorSpec) -> Array[Group]:
 			_pin(rivets, "%03d" % rivets.parts.size(), 0.012, 0.010, Vector3(point.x, point.y, -0.111))
 		groups.append(contour)
 		groups.append(rivets)
-	for entry: Array in [["Body", Vector3(1.10, 2.32, 0.03), Vector3(0.55, center_y, into * 0.035), 0.235], ["Hinge", Vector3(0.09, 2.32, 0.03), Vector3(-0.045, center_y, into * 0.035), 0.04], ["Latch", Vector3(0.05, 2.32, 0.03), Vector3(1.125, center_y, into * 0.035), 0.024]]:
+	for entry: Array in [["Body", Vector3(1.10, 2.32, 0.03), Vector3(0.55, center_y, into * 0.035), 0.235], ["Hinge", Vector3(0.03, 2.32, 0.01), Vector3(-0.015, center_y, into * 0.025), 0.01], ["Latch", Vector3(0.05, 2.32, 0.03), Vector3(1.125, center_y, into * 0.035), 0.024]]:
 		var lap := Group.new(NodePath("BackingLap" + entry[0]), Transform3D.IDENTITY, 0, true)
 		lap.add("lap", &"rounded", entry[1], Transform3D(Basis(), entry[2]), entry[3])
 		groups.append(lap)
@@ -170,11 +191,14 @@ static func leaf(door: ShipLayout.DoorSpec) -> Array[Group]:
 		var pose := Transform3D(Basis(), Vector3(0, 0, into * SEAL_DEPTH / 2 + (-1 if side == 0 else 1) * SEAL_DEPTH / 4))
 		var height := aperture.y - ShipGeometry.SILL_HEIGHT
 		var face_depth := SEAL_DEPTH / 2
-		var face_z := (-1 if side == 0 else 1) * (ShipLayout.WALL / 2 - SEAL_DEPTH / 40 - face_depth / 2)
+		var face_z := (-1 if side == 0 else 1) * (door.leaf_face_depth(side) - SEAL_DEPTH / 40 - face_depth / 2)
 		var face_seal := Group.new(NodePath(prefix + "FaceSealSteel"), Transform3D(Basis(), Vector3(0, 0, face_z)), side, true)
-		face_seal.add("face-return", &"box", Vector3(aperture.x, height, face_depth), Transform3D(Basis(), Vector3(aperture.x / 2, center_y, 0)))
+		# Carry the latch-side lap to the flush face, so oblique aperture rays
+		# cannot pass the rounded lower edge before reaching the old rear lip.
+		var face_width := aperture.x + SEAL_LAP
+		face_seal.add("face-return", &"box", Vector3(face_width, height, face_depth), Transform3D(Basis(), Vector3(face_width / 2, center_y, 0)))
 		groups.append(face_seal)
-		var pivot_seal := Group.new(NodePath(prefix + "PivotSealSteel"), face_seal.transform, side, true)
+		var pivot_seal := Group.new(NodePath(prefix + "PivotSealSteel"), Transform3D(Basis(), Vector3(0, 0, face_z)), side, true)
 		pivot_seal.add("pivot-return", &"box", Vector3(HINGE_RETURN_WIDTH, height, face_depth), Transform3D(Basis(), Vector3(-HINGE_RETURN_WIDTH / 2, center_y, 0)))
 		groups.append(pivot_seal)
 		var width := aperture.x + SEAL_LAP
@@ -184,5 +208,6 @@ static func leaf(door: ShipLayout.DoorSpec) -> Array[Group]:
 		var hinge_seal := Group.new(NodePath(prefix + "HingeSealSteel"), pose, side, true)
 		hinge_seal.add("return", &"box", Vector3(HINGE_RETURN_WIDTH, height, SEAL_DEPTH / 2), Transform3D(Basis(), Vector3(-HINGE_RETURN_WIDTH / 2, center_y, 0)))
 		groups.append(hinge_seal)
+	for group: Group in groups: group.transform.origin.x += HINGE_OUTSET
 	_leaves[key] = groups
 	return groups

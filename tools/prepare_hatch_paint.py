@@ -8,6 +8,12 @@ import numpy as np
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
+# The wider, forward leaf from Andrew's 2026-11-05 design still needs one texel
+# per production-camera pixel. These cells retain that density within 24 MB.
+ATLAS_WIDTH = 1088
+LEAF_WIDTH = ATLAS_WIDTH // 2
+LEAF_HEIGHT = 1088
+ATLAS_HEIGHT = 2048
 
 
 def crop_resize(image, size):
@@ -41,9 +47,11 @@ def calibrate_albedo(colour, gain):
 
 
 def pack(front, back, frame, gains=None):
-    atlas = np.zeros((2048, 1024, 4), dtype=np.uint8)
+    atlas = np.zeros((ATLAS_HEIGHT, ATLAS_WIDTH, 4), dtype=np.uint8)
     fields = []
-    cells = [(front, (0, 0, 512, 1088)), (back, (512, 0, 1024, 1088)), (frame, (0, 1088, 1024, 2048))]
+    cells = [(front, (0, 0, LEAF_WIDTH, LEAF_HEIGHT)),
+             (back, (LEAF_WIDTH, 0, ATLAS_WIDTH, LEAF_HEIGHT)),
+             (frame, (0, LEAF_HEIGHT, ATLAS_WIDTH, ATLAS_HEIGHT))]
     for index, (image, box) in enumerate(cells):
         x0, y0, x1, y1 = box
         colour, paint = paint_fields(crop_resize(image, (x1 - x0, y1 - y0)))
@@ -59,6 +67,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", type=Path, default=ROOT / "art-source/hatch")
     parser.add_argument("--output", type=Path, default=ROOT / "assets/props/hatch")
+    parser.add_argument("--parts", type=Path, help="fresh simulation export for physical map scale")
     args = parser.parse_args()
     images = [Image.open(args.source / (name + ".png")).convert("RGB") for name in ("leaf-front", "leaf-back", "frame")]
     calibration = json.loads((args.source / "albedo-calibration.json").read_text())["regions"]
@@ -70,17 +79,20 @@ def main():
     Image.fromarray(np.round(paint * 255).astype(np.uint8)).save(args.output / "paint_height.png")
     # Source normal is +Y OpenGL. Runtime differentiates the same height at
     # the physical leaf/frame projection, avoiding a second high-res sampler.
-    document = json.loads((args.output / "parts.json").read_text())
+    document = json.loads((args.parts or args.output / "parts.json").read_text())
     plate = next(part for group in document["variants"][0]["groups"] for part in group["parts"]
                  if part["id"] == "ForeSteel/plate")
-    density_x, density_y = 512 / plate["size"][0], 1088 / plate["size"][1]
+    density_x, density_y = LEAF_WIDTH / plate["size"][0], LEAF_HEIGHT / plate["size"][1]
     dy, dx = np.gradient(paint * .0015)
     normal = np.dstack((-dx * density_x, dy * density_y, np.ones_like(paint)))
     normal /= np.linalg.norm(normal, axis=2, keepdims=True)
     Image.fromarray(np.round((normal * .5 + .5) * 255).astype(np.uint8)).save(args.output / "paint_normal.png")
     roughness = .91 * (1 - paint) + .69 * paint
     Image.fromarray(np.round(roughness * 255).astype(np.uint8)).save(args.output / "paint_roughness.png")
-    print(json.dumps({"atlas": [1024, 2048], "leaf_faces": [[0, 0, 512, 1088], [512, 0, 1024, 1088]], "frame": [0, 1088, 1024, 2048], "paint_height_m": .0015, "leaf_texels_per_metre": min(density_x, density_y)}))
+    print(json.dumps({"atlas": [ATLAS_WIDTH, ATLAS_HEIGHT],
+                      "leaf_faces": [[0, 0, LEAF_WIDTH, LEAF_HEIGHT], [LEAF_WIDTH, 0, ATLAS_WIDTH, LEAF_HEIGHT]],
+                      "frame": [0, LEAF_HEIGHT, ATLAS_WIDTH, ATLAS_HEIGHT], "paint_height_m": .0015,
+                      "leaf_texels_per_metre": min(density_x, density_y)}))
 
 
 if __name__ == "__main__":

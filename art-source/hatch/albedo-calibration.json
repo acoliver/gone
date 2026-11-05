@@ -1,7 +1,7 @@
 {
   "method": "linear_rgb_factor = (concept - zero_paint_render) / (unit_paint_render - zero_paint_render)",
   "light": "unchanged round8 neutral lookdev; white key energy 2.6, ambient 0.13",
-  "reason": "Round-nine owner targets require luminance within 10%, hue within 12 degrees and HSL saturation within 0.10. Leaf and frame responses require independent channel conversion; a shared scalar cannot satisfy both luminance intervals. Zero paint separates unchanged hardware and specular contributions. Original source PNGs and alpha-derived relief remain unchanged.",
+  "reason": "Andrew changed the frame band from 160 to 90 mm and brought the leaf to the wall plane on 2026-11-05. These geometry changes move the surfaces inside the fixed frame rectangle. The final native zero/unit captures from tools/capture_hatch_lookdev.gd determine the frame factors by the existing response method. The leaf retains its passing round-nine factors. Source PNGs, alpha relief, comparison rectangles and all tolerances are unchanged.",
   "regions": {
     "leaf": {
       "box": [
@@ -63,19 +63,19 @@
         0.013708638923653623
       ],
       "unit_linear_rgb": [
-        0.07238666909084261,
-        0.03361223260966496,
-        0.028400624311375564
+        0.09631085664991418,
+        0.04508969483658456,
+        0.03654383827165823
       ],
       "zero_linear_rgb": [
-        0.010712692092209996,
-        0.009632431990260362,
-        0.009213349538398963
+        0.006740866558506916,
+        0.006740866558506916,
+        0.006740866558506916
       ],
       "linear_rgb_factor": [
-        0.7690758817292915,
-        0.5655252755422867,
-        0.23428493303206532
+        0.5738952714097691,
+        0.4290287219517643,
+        0.23379455016131834
       ]
     }
   }

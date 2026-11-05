@@ -192,15 +192,17 @@ static func _quad(tool: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, d: Vect
 
 static func _rounded(tool: SurfaceTool, size: Vector2, radius: float, depth: float, center: Vector3) -> void:
 	# Two inset contours bevel the perimeter rather than leaving a sharp slab edge.
+	var bevel := minf(0.0125, minf(depth, minf(size.x, size.y)) / 4)
+	bevel = minf(bevel, radius / 2)
 	var outer := outline(size, radius)
-	var inset := outline(size - Vector2.ONE * 0.025, radius - 0.0125)
+	var inset := outline(size - Vector2.ONE * bevel * 2, radius - bevel)
 	for i: int in range(outer.size()):
 		var j := (i + 1) % outer.size()
 		for side: float in [-1, 1]:
 			var a := center + Vector3(inset[i].x, inset[i].y, side * depth / 2)
 			var b := center + Vector3(inset[j].x, inset[j].y, side * depth / 2)
-			var c := center + Vector3(outer[i].x, outer[i].y, side * (depth / 2 - 0.0125))
-			var d := center + Vector3(outer[j].x, outer[j].y, side * (depth / 2 - 0.0125))
+			var c := center + Vector3(outer[i].x, outer[i].y, side * (depth / 2 - bevel))
+			var d := center + Vector3(outer[j].x, outer[j].y, side * (depth / 2 - bevel))
 			tool.set_smooth_group(-1)
 			if side < 0:
 				_triangle(tool, center + Vector3(0, 0, -depth / 2), b, a)
@@ -210,7 +212,7 @@ static func _rounded(tool: SurfaceTool, size: Vector2, radius: float, depth: flo
 				_triangle(tool, center + Vector3(0, 0, depth / 2), a, b)
 				tool.set_smooth_group(0)
 				_quad(tool, b, a, c, d)
-		_quad(tool, center + Vector3(outer[i].x, outer[i].y, -depth / 2 + 0.0125), center + Vector3(outer[j].x, outer[j].y, -depth / 2 + 0.0125), center + Vector3(outer[j].x, outer[j].y, depth / 2 - 0.0125), center + Vector3(outer[i].x, outer[i].y, depth / 2 - 0.0125))
+		_quad(tool, center + Vector3(outer[i].x, outer[i].y, -depth / 2 + bevel), center + Vector3(outer[j].x, outer[j].y, -depth / 2 + bevel), center + Vector3(outer[j].x, outer[j].y, depth / 2 - bevel), center + Vector3(outer[i].x, outer[i].y, depth / 2 - bevel))
 
 static func _append(tool: SurfaceTool, source: Mesh, pose: Transform3D) -> void:
 	# Keep one nonindexed triangle stream: mixing add_vertex with append_from's
@@ -240,19 +242,6 @@ static func rivets(kind: StringName, aperture: Vector2) -> MultiMesh:
 	batch.set_meta(&"instance_poses", poses)
 	_rivets[key] = batch
 	return batch
-
-static func fixed_surface(spec: ShipLayout.DoorSpec, physical: ShipGeometry.SolidSpec, masks: Array[int]) -> Node3D:
-	var variant := HatchAsset.variant(spec)
-	var id := String(physical.id).trim_prefix(String(spec.id()) + "/")
-	var pose := spec.frame().affine_inverse() * physical.transform
-	var group := Node3D.new()
-	for side: int in range(2):
-		var piece := mesh_piece(HatchAsset.fixed_mesh(int(variant.index), id, side), pose, masks[side], Surfaces.material(&"modelled_hatch"))
-		piece.name = "ForeSteel" if side == 0 else "AftSteel"
-		piece.set_meta(&"hatch_reservation", id)
-		Surfaces.bind(piece, &"modelled_hatch", Surfaces.door_frame(spec, &"FRAME"))
-		group.add_child(piece)
-	return group
 
 static func surround_faces(spec: ShipLayout.DoorSpec, masks: Array[int]) -> Node3D:
 	var root := Node3D.new()

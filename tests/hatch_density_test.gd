@@ -10,7 +10,8 @@ func test_close_camera_detail_density_exceeds_two_texels_per_pixel() -> void:
 	camera.position = Vector3(28.45, 1.30, 0.03)
 	camera.fov = 86
 	var door := ShipLayout.authored().layout.door(&"D14-C-001-H-FORE")
-	var centre := door.frame() * door.hinge_frame() * Vector3(door.leaf_aperture().x / 2, 1.30, -0.10)
+	# Andrew's flush slab moves this camera measurement with the physical face.
+	var centre := door.frame() * door.hinge_frame() * Vector3(door.leaf_aperture().x / 2 + HatchParts.HINGE_OUTSET, 1.30, -door.leaf_face_depth(0))
 	var distance := camera.position.distance_to(centre)
 	var pixels_per_metre := 1296.0 / (2 * tan(deg_to_rad(camera.fov / 2)) * distance)
 	var detail_density: float = detail.get_width() / pitch

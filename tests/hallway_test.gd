@@ -85,7 +85,8 @@ func test_envelope_derives_from_the_room_constants() -> void:
 	assert_vec3_equal(solids[2].center, Vector3(16.25, 1.6, -1.6), "the north wall's west pierce piece centers on its band")
 	assert_vec3_equal(solids[3].center, Vector3(30.35, 1.6, -1.6), "the north wall's east pierce piece centers on its band")
 	assert_vec3_equal(solids[4].center, Vector3(27.0, 2.7, -1.6), "the north wall's lintel sits over the power aperture")
-	assert_vec3_equal(solids[5].center, Vector3(10.2, 1.6, 1.6), "the south side wall's center is pinned")
+	# Andrew's forward flush slab needs the hidden 180 mm wider wall pocket.
+	assert_vec3_equal(solids[5].center, Vector3(10.155, 1.6, 1.6), "the south side wall's center is pinned")
 
 func test_doorway_pierces_the_east_walls_envelope() -> void:
 	var pierce := Hallway.doorway_wall_solids()
@@ -96,8 +97,10 @@ func test_doorway_pierces_the_east_walls_envelope() -> void:
 	for piece: Placement.SolidPlacement in pierce:
 		pierce_volume += piece.size.x * piece.size.y * piece.size.z
 	var wall_volume := east_wall.size.x * east_wall.size.y * east_wall.size.z
-	var aperture_volume := Placement.WALL_THICKNESS * Hallway.DOORWAY_HEIGHT * Hallway.DOORWAY_WIDTH
-	assert_float_in_range(pierce_volume + aperture_volume, wall_volume - 1e-4, wall_volume + 1e-4, "the pierce pieces tile the wall's envelope minus exactly the aperture")
+	# Andrew's thicker flush slab changes the hidden cutout, not the nominal mouth.
+	var pocket_width := Hallway.DOORWAY_WIDTH + 2 * ShipGeometry.HATCH_RING_WIDTH
+	var aperture_volume := Placement.WALL_THICKNESS * Hallway.DOORWAY_HEIGHT * pocket_width
+	assert_float_in_range(pierce_volume + aperture_volume, wall_volume - 1e-4, wall_volume + 1e-4, "the pierce pieces tile the wall's envelope minus exactly the pocket")
 	assert_float_in_range(Hallway.DOORWAY_WIDTH, Placement.HATCH_WIDTH - 1e-4, Placement.HATCH_WIDTH + 1e-4, "the aperture is the hatch's width")
 	assert_float_in_range(Hallway.DOORWAY_HEIGHT, Placement.HATCH_HEIGHT - 1e-4, Placement.HATCH_HEIGHT + 1e-4, "the aperture is the hatch's height")
 	assert_vec3_equal(Hallway.doorway_block().center, Vector3(15.0, 1.2, 1.6), "the closed block fills the aperture's center")

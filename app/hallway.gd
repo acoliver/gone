@@ -82,7 +82,6 @@ const REGULAR_STATIONS_X: Array[float] = [9.0, 15.0, 21.0, POWER_DOOR_X]
 const REGULAR_LENS_SIZE: Vector3 = Vector3(1.15, 0.05, 0.18)
 const REGULAR_LENS_BASE_COLOR: Color = Color(0.72, 0.72, 0.70)
 const REGULAR_MOUNT_Y: float = HALL_CEILING_HEIGHT - 0.08
-const REGULAR_END_FILL_SHARE: float = 0.12
 
 const SIDE_DOOR_SHADE: float = HatchModel.DOOR_SHADE
 
@@ -98,7 +97,7 @@ var _lens_mesh: BoxMesh = null
 var _lens_material: StandardMaterial3D = null
 var _white_fade: Intensity.FixtureFade = null
 var _white_lights: Array[OmniLight3D] = []
-var _white_end_fill: OmniLight3D
+var _white_end_fill: Lighting.RegularEndFill
 var _white_lenses: Array[MeshInstance3D] = []
 var _white_lens_mesh: BoxMesh = null
 var _white_lens_material: StandardMaterial3D = null
@@ -236,14 +235,7 @@ static func build(game: Game) -> Hallway:
 	hallway._fill_lights.append(bounce)
 	# Ceiling strips cannot directly light the downward arch. Reuse the
 	# layout-owned end bounce on the regular circuit, leaving emergency off.
-	hallway._white_end_fill = OmniLight3D.new()
-	hallway._white_end_fill.name = "RegularFillEnd"
-	hallway._white_end_fill.position = section.emergency_end_fill_position()
-	hallway._white_end_fill.light_color = Lighting.REGULAR_WHITE
-	hallway._white_end_fill.light_energy = Lighting.regular_energy() * REGULAR_END_FILL_SHARE * white_level
-	hallway._white_end_fill.omni_range = Lighting.EMERGENCY_FILL_RANGE
-	hallway._white_end_fill.light_cull_mask = Lighting.HALL_FILL_MASK
-	hallway._white_end_fill.shadow_enabled = false
+	hallway._white_end_fill = Lighting.regular_end_fill(section.emergency_end_fill_position(), white_level)
 	hallway.add_child(hallway._white_end_fill)
 	Lighting.mesh_layers(hallway, Lighting.architectural_mask(game.layout, section.id()))
 	return hallway
@@ -410,7 +402,7 @@ func _apply_level(level: float) -> void:
 ## Writes the regular strips' render state the same way.
 func _apply_white_level(level: float) -> void:
 	var energy: float = Lighting.regular_energy() * level
-	_white_end_fill.light_energy = energy * REGULAR_END_FILL_SHARE
+	_white_end_fill.apply_level(level)
 	for light: OmniLight3D in _white_lights:
 		if light.light_energy != energy:
 			light.light_energy = energy

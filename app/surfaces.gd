@@ -72,6 +72,12 @@ class SurfaceFrame:
 	var aperture := Vector2(1.08, 2.4)
 	var seed_offset: Vector3
 
+static func hatch_runtime_textures() -> Dictionary:
+	var textures := {"hatch_painted": HATCH_PAINTED}
+	for kind: String in HATCH_TEXTURES: textures["baked_" + kind] = HATCH_TEXTURES[kind]
+	textures.merge(HATCH_DETAIL_TEXTURES)
+	return textures
+
 static func material(role: StringName) -> ShaderMaterial:
 	assert(ROLES.has(role), "unknown steel role: %s" % role)
 	if _materials.has(role): return _materials[role]
@@ -79,12 +85,9 @@ static func material(role: StringName) -> ShaderMaterial:
 	result.shader = STEEL
 	if role == &"modelled_hatch":
 		result.set_shader_parameter(&"baked_hatch", true)
-		for kind: String in HATCH_TEXTURES:
-			result.set_shader_parameter("baked_" + kind, HATCH_TEXTURES[kind])
-		for parameter: String in HATCH_DETAIL_TEXTURES:
-			result.set_shader_parameter(parameter, HATCH_DETAIL_TEXTURES[parameter])
+		for parameter: String in hatch_runtime_textures():
+			result.set_shader_parameter(parameter, hatch_runtime_textures()[parameter])
 		result.set_shader_parameter(&"hatch_detail_pitch", 0.20)
-		result.set_shader_parameter(&"hatch_painted", HATCH_PAINTED)
 		_materials[role] = result
 		return result
 	result.set_shader_parameter(&"wheel_height", HatchParts.WHEEL_HEIGHT)

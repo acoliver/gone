@@ -23,6 +23,10 @@ func test_shared_render_maps_are_2048_and_no_more_than_24_mb_with_mips() -> void
 		assert_true(image.has_mipmaps() and image.get_mipmap_count() == 9, "full tiled detail mip chain")
 		assert_int_equal(image.get_format(), Image.FORMAT_RGTC_RG if parameter.begins_with("normal") else Image.FORMAT_BPTC_RGBA, "compressed tiled detail format")
 		bytes += image.get_data().size()
+	var painted := Surfaces.HATCH_PAINTED.get_image()
+	assert_true(painted.has_mipmaps() and painted.get_mipmap_count() == 11, "full painted mip chain")
+	assert_int_equal(painted.get_format(), Image.FORMAT_BPTC_RGBA, "compressed painted colour and relief")
+	bytes += painted.get_data().size()
 	print("HATCH_TEXTURE_PAYLOAD ", bytes)
 	assert_true(bytes <= 24000000, "shared hatch texture payload is at most 24 MB")
 

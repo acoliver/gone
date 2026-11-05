@@ -31,7 +31,9 @@ func _check(node: Node) -> Vector2i:
 			var tangent := edge.normalized()
 			var across := normal.cross(tangent)
 			var height := other.dot(across)
-			var texels := Vector2(512, 1088) if colours[a].r > 0.5 else Vector2(1024, 960)
+			# The wider cells retain density for Andrew's larger, forward leaf.
+			var atlas_size := Surfaces.HATCH_PAINTED.get_size()
+			var texels := atlas_size * Vector2(0.5, 0.53125) if colours[a].r > 0.5 else atlas_size * Vector2(1, 0.46875)
 			var du := (uvs[b] - uvs[a]) * texels / edge.length()
 			var dv := ((uvs[c] - uvs[a]) * texels - du * other.dot(tangent)) / height
 			var trace := du.length_squared() + dv.length_squared()

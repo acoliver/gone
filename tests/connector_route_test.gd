@@ -26,7 +26,9 @@ func test_both_wells_full_real_player_journey_and_replay_digest() -> void:
 		digests.append("\n".join(route.digest_lines).sha256_text())
 		player.free()
 	assert_true(digests[0] == digests[1], "fixed seed/input event digest repeats")
-	assert_true(digests[0] == "9b78b8b349c91b331692a08ce9e8d2bf37e7695314626bf60c358412f13da228", "pinned full journey event digest")
+	# Andrew's forward flush hinge changes contact timing in the same journey.
+	# Both complete real-input replays above must still match this recorded pin.
+	assert_true(digests[0] == "f66dd791d05d8b7bfce9ce4d3972ff9331249566eb23f23f9aadd972a1b0e497", "pinned full journey event digest")
 	print("connector route digest: ", digests[0])
 
 func test_climb_channel_is_single_consumption_and_scenario_validated() -> void:

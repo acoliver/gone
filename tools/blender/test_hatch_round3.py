@@ -154,7 +154,7 @@ class HatchRound3Test(unittest.TestCase):
             self.assertGreater(diagonal / axis, 1.15, row["id"] + " round cross-section")
         self.assertGreater(checked, 0)
 
-    def test_guard_fixed_ring_is_constant_width_with_fifty_six_rivets_per_face(self):
+    def test_guard_fixed_ring_is_constant_width_with_fifty_four_rivets_per_face(self):
         for variant in self.document["variants"]:
             widths = []
             for solid in variant["frame_solids"]:
@@ -164,10 +164,12 @@ class HatchRound3Test(unittest.TestCase):
                 edge = (b - a).normalized()
                 widths.append(abs(edge.x * (d - a).y - edge.y * (d - a).x))
             # Section vertices are exported as float32, so compare at micrometre scale.
-            self.assertAlmostEqual(min(widths), .16, delta=1e-6)
-            self.assertAlmostEqual(max(widths), .16, delta=1e-6)
+            # Andrew's 2026-11-05 raised bead replaces the 160 mm band.
+            # Equal arc pitch remains unchanged as its shorter centreline loses stations.
+            self.assertAlmostEqual(min(widths), .09, delta=1e-6)
+            self.assertAlmostEqual(max(widths), .09, delta=1e-6)
             for side in (0, 1):
-                self.assertEqual(sum(1 for rivet in variant["frame_rivets"] if rivet["side"] == side), 56)
+                self.assertEqual(sum(1 for rivet in variant["frame_rivets"] if rivet["side"] == side), 54)
 
     def test_guard_original_reservations_stay_exact(self):
         self.assertLess(self.error, 1e-6)

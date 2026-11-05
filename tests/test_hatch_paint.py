@@ -44,13 +44,14 @@ class HatchPaintTest(unittest.TestCase):
         atlas, fields = paint.pack(Image.new("RGB", (100, 220), (100, 110, 100)),
                                    Image.new("RGB", (100, 220), (110, 45, 15)),
                                    Image.new("RGB", (100, 220), (90, 100, 90)))
-        self.assertEqual(atlas.size, (1024, 2048))
+        # Andrew's wider, flush slab needs 544-wide cells at the unchanged close camera.
+        self.assertEqual(atlas.size, (1088, 2048))
         pixels = np.asarray(atlas)
         np.testing.assert_array_equal(pixels[500, 250, :3], [100, 110, 100])
         np.testing.assert_array_equal(pixels[500, 750, :3], [110, 45, 15])
         np.testing.assert_array_equal(pixels[1500, 500, :3], [90, 100, 90])
         self.assertGreater(pixels[500, 250, 3], pixels[500, 750, 3])
-        self.assertEqual([field.shape for field in fields], [(1088, 512), (1088, 512), (960, 1024)])
+        self.assertEqual([field.shape for field in fields], [(1088, 544), (1088, 544), (960, 1088)])
 
 
 if __name__ == "__main__":

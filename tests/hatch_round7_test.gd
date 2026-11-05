@@ -12,7 +12,8 @@ func test_round7_leaf_is_one_physical_description() -> void:
 	assert_true(found.has("Lugs/ForeSteel/grip-2"), "all three latch dogs are physical parts")
 	if not found.has("Wheel/flange"): return
 	assert_float_equal(found["Wheel/ring"].radius, 0.444, "round7 wheel outside radius")
-	assert_float_equal(found["ForeSteel/plate"].radius, 0.255, "round7 rounded face")
+	# Andrew's 2026-11-05 flush slab follows the ring instead of the old 255 mm corner.
+	assert_float_equal(found["ForeSteel/plate"].radius, 0.24, "flush rounded face")
 	assert_false(found.has("ForeSteel/brace-0"), "no old X braces behind the concept skin")
 
 func test_round7_surround_is_collision_owned() -> void:

@@ -58,7 +58,7 @@ static func variant(source: ShipLayout.DoorSpec, index: int) -> Dictionary:
 	for group: HatchParts.Group in HatchParts.leaf(door):
 		var row := {"index": result.groups.size(), "path": String(group.path), "transform": pose(group.transform), "side": group.side, "steel": group.steel, "parts": []}
 		for part: HatchParts.Part in group.parts:
-			row.parts.append({"index": row.parts.size(), "id": String(part.id), "shape": String(part.shape), "size": vector3(part.size), "transform": pose(part.transform), "radius": part.radius, "inner_radius": part.inner_radius, "contour": polygon(part.contour)})
+			row.parts.append({"index": row.parts.size(), "id": String(part.id), "shape": String(part.shape), "size": vector3(part.size), "transform": pose(part.transform), "radius": part.radius, "inner_radius": part.inner_radius, "contour": polygon(part.contour), "edge_bevel": part.edge_bevel, "paint_layer_depth": part.paint_layer_depth})
 		result.groups.append(row)
 	var solids := ShipGeometry.hatch_frame_solids(door)
 	for solid: ShipGeometry.SolidSpec in solids:

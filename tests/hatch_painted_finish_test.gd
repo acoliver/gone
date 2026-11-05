@@ -6,11 +6,13 @@ func test_unique_painted_atlas_has_both_faces_frame_and_close_camera_density() -
 	assert_true(texture != null, "generated leaf and frame albedo is bound by the shared material")
 	if texture == null: return
 	var image := texture.get_image()
-	assert_true(image.get_size() == Vector2i(1024, 2048), "packed generated paint")
+	# Andrew's wider, flush leaf needs larger cells to retain the unchanged density gate.
+	assert_true(image.get_size() == Vector2i(1088, 2048), "packed generated paint")
 	assert_int_equal(image.get_format(), Image.FORMAT_BPTC_RGBA, "albedo and derived height share BC7 RGBA")
 	assert_true(image.has_mipmaps(), "paint has a complete mip chain")
 	var door := ShipLayout.authored().layout.door(&"D14-C-001-H-FORE")
-	var centre := door.frame() * door.hinge_frame() * Vector3(door.leaf_aperture().x / 2, 1.30, -0.10)
+	# Andrew moved the leaf forward; evaluate the actual face, not the old 100 mm plate.
+	var centre := door.frame() * door.hinge_frame() * Vector3(door.leaf_aperture().x / 2 + HatchParts.HINGE_OUTSET, 1.30, -door.leaf_face_depth(0))
 	var distance := Vector3(28.45, 1.30, 0.03).distance_to(centre)
 	var production_pixels := 1296.0 / (2 * tan(deg_to_rad(86.0 / 2)) * distance)
 	var view := DoorView.build(door)
@@ -23,7 +25,7 @@ func test_unique_painted_atlas_has_both_faces_frame_and_close_camera_density() -
 			var id := StringName(side + "/plate")
 			var part: Dictionary = preload("res://tests/hatch_mesh_ranges.gd").parts(piece.mesh)[id]
 			var dimensions: Vector3 = part.bounds.size
-			var density := minf(512.0 / dimensions.x, 1088.0 / dimensions.y)
+			var density := minf(image.get_width() / 2.0 / dimensions.x, image.get_height() * 0.53125 / dimensions.y)
 			var face: Vector3 = door.frame().affine_inverse() * Surfaces.world_frame(piece) * part.pose * Vector3(0, 0, -dimensions.z / 2)
 			var lookdev_pixels := 1312.0 / (2 * tan(deg_to_rad(46.0 / 2)) * absf(face.z + 3.65))
 			print("HATCH_PAINT_DENSITY side=%s texels_per_metre=%.3f production_pixels_per_metre=%.3f lookdev_pixels_per_metre=%.3f production_texels_per_pixel=%.3f lookdev_texels_per_pixel=%.3f" % [side, density, production_pixels, lookdev_pixels, density / production_pixels, density / lookdev_pixels])

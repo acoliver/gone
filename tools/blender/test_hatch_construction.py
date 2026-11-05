@@ -35,6 +35,20 @@ class HatchConstructionTest(unittest.TestCase):
             hit, _, _, _ = tree.ray_cast(eye, (target - eye).normalized(), 6)
             self.assertIsNotNone(hit, "coaming seals the oblique lower hinge corner")
 
+    def test_thick_slab_does_not_scale_paint_relief_or_edge_bevel(self):
+        for variant in self.document["variants"]:
+            for group in variant["groups"]:
+                for part in group["parts"]:
+                    if not part["id"].endswith("Steel/plate"):
+                        continue
+                    self.assertEqual(part["paint_layer_depth"], .002)
+                    self.assertEqual(part["edge_bevel"], .004)
+                    vertices, _ = build.geometry(part, True)
+                    count = len(part["contour"])
+                    front = -part["size"][2] / 2
+                    self.assertAlmostEqual(vertices[2 * count][2] - front, .004, delta=1e-7)
+                    self.assertTrue(any(abs(point[2] - front - .002) < 1e-7 for point in vertices))
+
     def test_spokes_have_elliptic_sections_not_flat_bars(self):
         for variant in self.document["variants"]:
             for group in variant["groups"]:
@@ -55,7 +69,8 @@ class HatchConstructionTest(unittest.TestCase):
         islands = vertices[base_count:]
         self.assertGreater(len(islands), 400)
         relief = max(v[2] for v in islands) - min(v[2] for v in islands)
-        self.assertGreaterEqual(relief, part["size"][2] * .01)
+        # Andrew changed the solid slab thickness; its paint keeps the existing 1 mm floor.
+        self.assertGreaterEqual(relief, .001)
         spans = [max(v[0] for v in islands[i:i+8]) - min(v[0] for v in islands[i:i+8])
                  for i in range(0, len(islands), 8)]
         self.assertGreater(min(spans), min(part["size"][:2]) * .015)
@@ -85,7 +100,9 @@ class HatchConstructionTest(unittest.TestCase):
     def test_every_raised_sheet_top_faces_out_of_the_leaf(self):
         obj = self.by_name["v0_g00_p000"]
         size = self.document["variants"][0]["groups"][0]["parts"][0]["size"]
-        front = -size[2] / 2 + size[2] * .020 * .10
+        # Paint relief stays independent of Andrew's thicker slab.
+        part = self.document["variants"][0]["groups"][0]["parts"][0]
+        front = -size[2] / 2 + part["paint_layer_depth"] * .10
         checked = 0
         for face in obj.data.polygons:
             points = [build.CINV @ obj.data.vertices[index].co.to_4d() for index in face.vertices]

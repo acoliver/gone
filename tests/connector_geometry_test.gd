@@ -78,7 +78,8 @@ func test_hatch_meshes_have_rounded_frame_braces_large_wheel_and_instanced_rivet
 		assert_float_equal(fore_bounds.end.x, aft_bounds.end.x, "reverse-face hardware is not moved to the opposite jamb: " + path)
 	var leaf_mesh: Mesh = first.get_node("Hinge/Leaf/ForeSteel").mesh
 	var plate_bounds := _group_bounds(leaf_mesh, "ForeSteel/plate")
-	assert_float_in_range(plate_bounds.size.x, 1.07999, 1.08001, "rounded leaf body survives batching without the obsolete X ribs")
+	# Andrew's 2026-11-05 flush-leaf design closes the old 60 mm side recesses.
+	assert_float_in_range(plate_bounds.size.x, 1.17999, 1.18001, "flush leaf body survives batching without the obsolete X ribs")
 	assert_float_in_range(plate_bounds.size.y, 2.31999, 2.32001, "rounded leaf retains its full tall silhouette")
 	var leaf_arrays := leaf_mesh.surface_get_arrays(0)
 	var leaf_normals: PackedVector3Array = leaf_arrays[Mesh.ARRAY_NORMAL]

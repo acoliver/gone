@@ -19,9 +19,9 @@ func test_shader_steel_seal_queries_keep_opaque_back_face_and_reflected_winding_
 	assert_int_equal(faces.size(), 6, "reflected shader steel draws its transformed front")
 	piece.free()
 
-func _fixed_faces(view: DoorView, id: String, faces: PackedVector3Array) -> void:
+func _fixed_faces(view: DoorView, id: String, faces: PackedVector3Array, reference_inverse: Transform3D = Transform3D.IDENTITY) -> void:
 	for side: String in ["ForeSteel", "AftSteel"]:
-		preload("res://tests/hatch_mesh_ranges.gd").faces(view.get_node("Frame/" + side), id, faces, &"hatch_reservations")
+		preload("res://tests/hatch_mesh_ranges.gd").faces(view.get_node("Frame/" + side), id, faces, &"hatch_reservations", reference_inverse)
 
 func _mesh_faces(node: Node3D, faces: PackedVector3Array) -> void:
 	var world := ShipScene._world_frame(node)
@@ -89,14 +89,16 @@ func test_leaf_perimeter_is_steel_at_the_face_not_a_recessed_backing() -> void:
 		var view := DoorView.build(spec)
 		var pose := spec.frame() * spec.hinge_frame()
 		for side: int in [-1, 1]:
-			var eye := pose * Vector3(spec.leaf_aperture().x / 2, 1.4, side * 2.0)
+			var eye := pose * Vector3(spec.leaf_aperture().x / 2 + HatchParts.HINGE_OUTSET, 1.4, side * 2.0)
 			var faces := PackedVector3Array()
 			preload("res://tests/hatch_render_faces.gd").collect(view.label_leaf(), eye, 1, faces)
 			var triangles := TriangleMesh.new()
 			assert_true(triangles.create_from_faces(faces), "leaf has visible steel")
 			for x: float in [-HatchParts.HINGE_RETURN_WIDTH + 0.001, 0.001, spec.leaf_aperture().x / 2, spec.leaf_aperture().x - 0.001]:
 				for y: float in [ShipGeometry.SILL_HEIGHT + 0.001, spec.aperture().y - 0.001]:
-					var target := pose * Vector3(x, y, side * ShipLayout.WALL / 2)
+					# Andrew's flush slab replaces the old symmetric 100 mm face depth.
+					var depth := spec.leaf_face_depth(0 if side < 0 else 1)
+					var target := pose * Vector3(x + HatchParts.HINGE_OUTSET, y, side * depth)
 					var hit := triangles.intersect_segment(eye, eye + (target - eye) * 2)
 					assert_true(not hit.is_empty() and hit.position.distance_to(eye) <= target.distance_to(eye) + 0.001, "leaf perimeter meets its face without a dark recess: %s face=%+d" % [id, side])
 		view.free()
@@ -177,8 +179,10 @@ func test_rendered_collar_boxes_match_collision_within_one_micrometer() -> void:
 			var suffix := String(solid.id).trim_prefix("%s/" % id)
 			if not PIECES.has(suffix): continue
 			var faces := PackedVector3Array()
-			_fixed_faces(view, suffix, faces)
-			var inverse := solid.transform.affine_inverse()
+			# Compose frames before transforming vertices: a float32 world round
+			# trip at X=36 discards precision larger than this unchanged 1 µm gate.
+			_fixed_faces(view, suffix, faces, solid._parent.affine_inverse())
+			var inverse := Transform3D(Basis(solid._local_rotation), solid._local_center).affine_inverse()
 			var bounds := AABB(inverse * faces[0], Vector3.ZERO)
 			for vertex: Vector3 in faces: bounds = bounds.expand(inverse * vertex)
 			assert_true(bounds.position.distance_to(-solid.size / 2) <= 1e-6 and bounds.size.distance_to(solid.size) <= 1e-6, "rendered box matches collision: " + String(solid.id))

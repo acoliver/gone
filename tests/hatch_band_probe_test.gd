@@ -26,7 +26,9 @@ func test_probe_collects_service_triangles_without_optional_uvs() -> void:
 func test_close_camera_visible_reveal_and_threshold_have_outward_normals() -> void:
 	var probe := Probe.from_hatch()
 	var samples := 0
-	for pixel: Vector2 in [Vector2(600, 190), Vector2(600, 200), Vector2(600, 1170), Vector2(600, 1180)]:
+	# Andrew's shallow flush bead moves the soffit to rows 180/181 in the
+	# unchanged camera; the former 190/200 rays now hit the leaf itself.
+	for pixel: Vector2 in [Vector2(600, 180), Vector2(600, 181), Vector2(600, 1170), Vector2(600, 1180)]:
 		var hit := probe.camera_hit(pixel)
 		assert_true(not hit.is_empty(), "band camera ray hits steel")
 		if hit.is_empty(): continue

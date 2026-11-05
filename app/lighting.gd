@@ -83,6 +83,23 @@ const REGULAR_RANGE: float = 7.0
 ## What share of an emergency fixture's throw a regular strip holds
 ## once lit: the "dim but regular" brief.
 const REGULAR_DIM_SHARE: float = 0.55
+const REGULAR_END_FILL_SHARE: float = 0.12
+
+class RegularEndFill:
+	extends OmniLight3D
+	func apply_level(level: float) -> void:
+		light_energy = Lighting.regular_energy() * Lighting.REGULAR_END_FILL_SHARE * level
+
+static func regular_end_fill(origin: Vector3, level: float) -> RegularEndFill:
+	var fill := RegularEndFill.new()
+	fill.name = "RegularFillEnd"
+	fill.position = origin
+	fill.light_color = REGULAR_WHITE
+	fill.omni_range = EMERGENCY_FILL_RANGE
+	fill.light_cull_mask = HALL_FILL_MASK
+	fill.shadow_enabled = false
+	fill.apply_level(level)
+	return fill
 
 ## A lit regular strip's omni energy, one definition for every module.
 static func regular_energy() -> float:

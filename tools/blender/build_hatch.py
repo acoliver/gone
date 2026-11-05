@@ -17,6 +17,7 @@ import sys
 
 import bmesh
 import bpy
+from bpy_extras.mesh_utils import mesh_linked_uv_islands
 import numpy as np
 from mathutils import Matrix, Vector
 from mathutils.geometry import tessellate_polygon
@@ -327,8 +328,10 @@ def geometry(part, steel=False):
     if shape == "rounded":
         if "/strap-" in part["id"] or "/plate-" in part["id"] or "/grip-" in part["id"]:
             return layered_plate(size, part["radius"])
-        layer = size[2] * .020 if steel and part["id"].endswith("/plate") else 0.0
-        vertices, faces = extrusion(rounded_outline(size, part["radius"]), size[2], min(size) * .12, layer)
+        slab = steel and part["id"].endswith("/plate")
+        layer = part["paint_layer_depth"] if slab else 0.0
+        bevel = part["edge_bevel"] if slab else min(size) * .12
+        vertices, faces = extrusion(part["contour"] or rounded_outline(size, part["radius"]), size[2], bevel, layer)
         if layer:
             flakes(vertices, faces, size, part["radius"], layer)
         return vertices, faces
@@ -385,7 +388,7 @@ def leaf_attributes(obj, part, steel):
     flake, chip_edge, substrate, relief = [], [], [], []
     chipped = steel and part_id.endswith("/plate")
     base_count = len(rounded_outline(part["size"], part["radius"])) * 5 if chipped else 0
-    front, layer = -part["size"][2] / 2, part["size"][2] * .020
+    front, layer = -part["size"][2] / 2, part["paint_layer_depth"]
     for polygon in obj.data.polygons:
         indices = list(polygon.vertices)
         points = [CINV @ obj.data.vertices[i].co.to_4d() for i in indices]
@@ -400,7 +403,7 @@ def leaf_attributes(obj, part, steel):
         if part["shape"] == "cylinder":
             machined.append(1.0 if abs(normal.y) > .65 else .15)
         else:
-            machined.append(1.0 if any(key in part_id for key in ("/strap-", "/plate-", "/grip-")) and abs(normal.z) < .95 else 0)
+            machined.append(1.0 if any(key in part_id for key in ("/strap-", "/plate-", "/grip-", "Steel/plate")) and abs(normal.z) < .95 else 0)
     for name, values in (("flake", flake), ("chip_edge", chip_edge), ("substrate", substrate),
                          ("relief", relief), ("machined", machined)):
         attr(obj, name, values, "FACE")
@@ -419,7 +422,10 @@ def collar_geometry(solid):
     bmesh.ops.dissolve_limit(bm, angle_limit=1e-5, verts=list(bm.verts), edges=list(bm.edges))
     # Stop roundovers must stay smaller than the 2.5 mm sealing lap.
     roundover = .03 if solid["id"].startswith("FRAME/STOP-") else .10
-    bmesh.ops.bevel(bm, geom=list(bm.edges), offset=min(solid["size"]) * roundover,
+    # The clipped coaming has short arc segments. A size-only offset makes
+    # overlap clamping collapse their fillets into almost-square corners.
+    offset = min(min(solid["size"]) * roundover, min(edge.calc_length() for edge in bm.edges) * .25)
+    bmesh.ops.bevel(bm, geom=list(bm.edges), offset=offset,
                     segments=3, affect="EDGES", clamp_overlap=True)
     bmesh.ops.remove_doubles(bm, verts=list(bm.verts), dist=min(solid["size"]) * .01)
     bmesh.ops.dissolve_degenerate(bm, edges=list(bm.edges), dist=min(solid["size"]) * .01)
@@ -439,12 +445,10 @@ def collar_geometry(solid):
     bmesh.ops.dissolve_degenerate(bm, edges=list(bm.edges), dist=min(solid["size"]) * .01)
     bmesh.ops.triangulate(bm, faces=list(bm.faces))
     bm.normal_update()
-    # The coaming's top is a sealing plane. Rotate only its planar diagonals;
-    # crossing bevel facets here opens an oblique gap beneath the closed leaf.
-    edges = list(bm.edges)
-    if solid["id"] == "COAMING":
-        edges = [edge for edge in edges
-                 if len(edge.link_faces) == 2 and edge.calc_face_angle() < 1e-5]
+    # Preserve the bevel facets and sealing planes. Rotating their shared
+    # edges makes sliver faces across the roundover rather than improving it.
+    edges = [edge for edge in bm.edges
+             if len(edge.link_faces) == 2 and edge.calc_face_angle() < 1e-5]
     bmesh.ops.beautify_fill(bm, faces=list(bm.faces), edges=edges, method="AREA")
     bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context="VERTS")
     bm.verts.index_update()
@@ -471,7 +475,7 @@ def annular_geometry(solid):
     tangent = (b - a).normalized()
     width = abs(tangent.x * (d-a).y - tangent.y * (d-a).x)
     depth = solid["size"][2]
-    bevel = min(width * .14, depth * .18) if "/RING/" in solid["id"] else 0
+    bevel = min(width * .45, depth * .45) if "/RING/" in solid["id"] else 0
     profile = []
     if bevel:
         for step in range(4):
@@ -501,7 +505,7 @@ def annular_normals(obj, solid):
     tangent = (section[1]-section[0]).normalized()
     width = abs(tangent.x * (section[3]-section[0]).y - tangent.y * (section[3]-section[0]).x)
     depth = solid["size"][2]
-    bevel = min(width * .14, depth * .18)
+    bevel = min(width * .45, depth * .45)
     normals = []
     for polygon in obj.data.polygons:
         for loop in polygon.loop_indices:
@@ -552,7 +556,7 @@ def construct(document, mat):
                 visual = part
                 if part["id"].endswith("/face-return"):
                     plate = plates[group["side"]]
-                    layer = plate["size"][2] * .020
+                    layer = plate["paint_layer_depth"]
                     plate_face = abs(plate["transform"]["origin"][2]) + plate["size"][2] / 2
                     seal_face = abs(group["transform"]["origin"][2]) + part["size"][2] / 2
                     visual = dict(part, visual_recess=seal_face - plate_face + layer * 1.1,
@@ -645,7 +649,8 @@ def painted_coordinates(objects, nodes, document):
             axis = max(range(3), key=lambda i: abs(normal[i]))
             for index in polygon.loop_indices:
                 loop = obj.data.loops[index]
-                colour.data[index].color = (float(leaf), float(row["side"]), float(frame), 1)
+                # The solid slab's edge is machined steel; only its broad caps carry paint.
+                colour.data[index].color = (float(leaf and axis == 2), float(row["side"]), float(frame), 1)
                 if not (leaf or frame):
                     continue
                 point = obj.data.vertices[loop.vertex_index].co
@@ -677,6 +682,25 @@ def atlas(objects, resolution):
     bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.uv.smart_project(angle_limit=math.radians(66), island_margin=2 / resolution,
                              area_weight=0.0, correct_aspect=True, scale_to_bounds=False)
+    bpy.ops.object.mode_set(mode="OBJECT")
+    # Smart projection allocates subpixel cross-sections to narrow contour
+    # islands. Give both principal axes two texels before the shared pack.
+    for obj in objects:
+        uv = obj.data.uv_layers.active.data
+        for island in mesh_linked_uv_islands(obj.data):
+            indices = [i for face in island for i in obj.data.polygons[face].loop_indices]
+            points = np.array([uv[i].uv[:] for i in indices], dtype=np.float64)
+            centre = points.mean(axis=0)
+            _, axes = np.linalg.eigh(np.cov(points.T))
+            projected = (points - centre) @ axes
+            span = np.ptp(projected, axis=0)
+            if min(span) <= 0:
+                raise ValueError(f"collapsed UV island: {obj.name}")
+            scale = np.maximum(1, 2 / resolution / span)
+            for i, point in zip(indices, (projected * scale) @ axes.T + centre):
+                uv[i].uv = point
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.uv.pack_islands(rotate=True, scale=True, margin=2 / resolution)
     bpy.ops.object.mode_set(mode="OBJECT")
     print("ATLAS unwrapped", len(objects), "objects", flush=True)
 
@@ -1025,7 +1049,7 @@ def main(argv):
         lifts = [max(v.z for v in island[:4]) - min(v.z for v in island[4:]) for island in islands]
         physical_finish[obj.name] = dict(islands=len(islands), width_min_m=min(spans), width_max_m=max(spans),
                                           lifted_edge_min_m=min(lifts), lifted_edge_max_m=max(lifts),
-                                          substrate_recess_m=part["size"][2] * .020)
+                                          substrate_recess_m=part["paint_layer_depth"])
     levels = range(int(math.log2(args.resolution)) + 1)
     compressed_map_bytes = sum(max(1, ((args.resolution >> level) + 3) // 4) ** 2 * 16 for level in levels)
     measures.update(physical_finish=physical_finish, triangles_per_variant=triangles, mesh_nodes=len(objects),
@@ -1033,8 +1057,8 @@ def main(argv):
                     max_reservation_error_m=error, atlas_resolution=args.resolution,
                     draw_calls_unbatched_per_variant={str(i): sum(n["variant"] == i for n in nodes.values()) for i in range(2)},
                     texture_gpu_bc7_bc5_mips_bytes=3 * compressed_map_bytes + 9 * sum(max(1, ((512 >> level) + 3) // 4) ** 2 * 16 for level in range(10))
-                    + sum(max(1, ((1024 >> level) + 3) // 4) * max(1, ((2048 >> level) + 3) // 4) * 16 for level in range(12)),
-                    painted_atlas_resolution=[1024, 2048], painted_leaf_cell=[512, 1088], painted_height_m=.0015,
+                    + sum(max(1, ((painted.size[0] >> level) + 3) // 4) * max(1, ((painted.size[1] >> level) + 3) // 4) * 16 for level in range(int(math.log2(max(painted.size))) + 1)),
+                    painted_atlas_resolution=list(painted.size), painted_leaf_cell=[painted.size[0] // 2, round(painted.size[1] * .53125)], painted_height_m=.0015,
                     detail_resolution=512, detail_pitch_m=.20, atlas_content="low_frequency_layer_weather_masks_and_geometric_normal",
                     texture_gpu_auxiliary_mips_bytes=4 * compressed_map_bytes,
                     texture_png_disk_bytes=sum(row["bytes"] for row in textures),

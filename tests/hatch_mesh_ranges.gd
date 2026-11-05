@@ -32,12 +32,12 @@ static func parts(mesh: Mesh, metadata: StringName = &"part_ranges") -> Dictiona
 	_bounds[key] = result
 	return result
 
-static func faces(node: MeshInstance3D, id: String, result: PackedVector3Array, metadata: StringName) -> void:
+static func faces(node: MeshInstance3D, id: String, result: PackedVector3Array, metadata: StringName, reference_inverse: Transform3D = Transform3D.IDENTITY) -> void:
 	var part: Dictionary = parts(node.mesh, metadata)[StringName(id)]
 	var arrays := node.mesh.surface_get_arrays(0)
 	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
 	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
-	var world := Surfaces.world_frame(node)
+	var world := reference_inverse * Surfaces.world_frame(node)
 	for index: int in range(int(part.row.index_start), int(part.row.index_start + part.row.index_count)):
 		result.append(world * vertices[indices[index]])
 

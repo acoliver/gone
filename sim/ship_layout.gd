@@ -379,12 +379,18 @@ class DoorSpec:
 		result["has_wheel"] = _has_wheel
 		return result
 	func leaf_aperture() -> Vector2:
-		return _aperture - Vector2(0.12, 0)
+		# Andrew's flush-leaf design leaves 15 mm to the ring's inner curve.
+		return _aperture - Vector2(0.02, 0)
 	func hinge_frame() -> Transform3D:
 		assert(_animation == ShipLayout.AnimationRecipe.HINGE, "hinge recipe required")
-		# The complete double-sided hardware must clear the bulkhead before rotating.
+		# Andrew's flush slab reaches its approach wall plane. The outboard axis
+		# leaves room for the reverse hardware throughout the 130-degree swing.
 		var into := 1.0 if swing_radians() < 0 else -1.0
-		return Transform3D(Basis(), Vector3(-_aperture.x / 2.0 + 0.03, 0, ShipLayout.WALL / 2.0 + into * 0.30))
+		var setback := HatchParts.APPROACH_SLAB_DEPTH - ShipLayout.WALL / 2.0
+		return Transform3D(Basis(), Vector3(-leaf_aperture().x / 2.0 - HatchParts.HINGE_OUTSET, 0, ShipLayout.WALL / 2.0 + into * setback))
+	func leaf_face_depth(side: int) -> float:
+		var approach := (side == 0) == (swing_radians() < 0)
+		return HatchParts.APPROACH_SLAB_DEPTH if approach else HatchParts.REVERSE_SLAB_DEPTH
 	func swing_radians(run_seed: int = 0) -> float:
 		assert(_animation == ShipLayout.AnimationRecipe.HINGE, "hinge recipe required")
 		var value := HatchResistance.hash_bytes("hatch-rest-v1|%d|%s" % [run_seed, _id])
@@ -402,11 +408,13 @@ class DoorSpec:
 			HatchServiceSpec.new(&"Lamp", face * Transform3D(Basis(), Vector3(lamp_x, _aperture.y + 0.16, -0.11 - lamp_stand_off))),
 		]
 		services[1].stand_off = lamp_stand_off
+		# Keep the riser beyond the wider flush slab's complete parked envelope.
+		var riser_x := 1.50
 		for x: float in [-1.04, -1.15]:
 			var top := 2.72 if x > -1.1 else 2.82
-			services.append(HatchServiceSpec.new(&"Conduit", face, PackedVector3Array([Vector3(x, 1.63, -0.08), Vector3(x, top, -0.08), Vector3(1.12, top, -0.08)]), 0.018))
+			services.append(HatchServiceSpec.new(&"Conduit", face, PackedVector3Array([Vector3(x, 1.63, -0.08), Vector3(x, top, -0.08), Vector3(riser_x, top, -0.08)]), 0.018))
 		services.append(HatchServiceSpec.new(&"Conduit", face, PackedVector3Array([Vector3(-1.08, 1.11, -0.08), Vector3(-1.08, 0.29, -0.08), Vector3(-1.48, 0.29, -0.08)]), 0.021))
-		services.append(HatchServiceSpec.new(&"Conduit", face, PackedVector3Array([Vector3(1.12, 0.20, -0.065), Vector3(1.12, 2.82, -0.065)]), 0.032))
+		services.append(HatchServiceSpec.new(&"Conduit", face, PackedVector3Array([Vector3(riser_x, 0.20, -0.065), Vector3(riser_x, 2.82, -0.065)]), 0.032))
 		if side == 0 and hinge_frame().origin.z < ShipLayout.WALL / 2:
 			# The swing-side control must sit opposite the parked leaf, not behind it.
 			for service: HatchServiceSpec in services:
@@ -449,7 +457,7 @@ class FaceSpec:
 		return ShipLayout.HATCH_LABEL_SIZE
 	func leaf_label_frame(door: DoorSpec) -> Transform3D:
 		var frame := _surface_frame
-		frame.origin = Vector3(door.leaf_aperture().x / 2, ShipLayout.DOOR_LABEL_HEIGHT, frame.basis.z.z * (ShipLayout.WALL / 2 + ShipLayout.HATCH_LABEL_OUTSET))
+		frame.origin = Vector3(door.leaf_aperture().x / 2 + HatchParts.HINGE_OUTSET, ShipLayout.DOOR_LABEL_HEIGHT, frame.basis.z.z * (door.leaf_face_depth(0 if frame.basis.z.z < 0 else 1) + ShipLayout.HATCH_LABEL_OUTSET))
 		return frame
 	func data() -> Dictionary:
 		var result := super.data()

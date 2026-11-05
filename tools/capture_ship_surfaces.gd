@@ -13,7 +13,7 @@ static func capture_identity() -> Dictionary:
 		hashes[path] = FileAccess.get_sha256("res://" + path)
 	for path: String in [HatchAsset.SOURCE, HatchAsset.SOURCE + ".import", HatchAsset.MANIFEST]:
 		hashes[path.trim_prefix("res://")] = FileAccess.get_sha256(path)
-	for texture: Texture2D in Surfaces.HATCH_TEXTURES.values():
+	for texture: Texture2D in Surfaces.hatch_runtime_textures().values():
 		for suffix: String in ["", ".import"]:
 			var path := texture.resource_path + suffix
 			hashes[path.trim_prefix("res://")] = FileAccess.get_sha256(path)
@@ -58,7 +58,9 @@ func _init() -> void:
 func _run() -> void:
 	assert(DisplayServer.get_name() != "headless", "windowed native captures required")
 	DirAccess.make_dir_recursive_absolute(output_dir)
-	root.size = Vector2i(2304, 1296)
+	root.content_scale_mode = Window.CONTENT_SCALE_MODE_VIEWPORT
+	root.content_scale_size = Vector2i(2304, 1296)
+	root.size = root.content_scale_size
 	DisplayServer.window_set_size(root.size)
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 	root.msaa_3d = Viewport.MSAA_2X
@@ -117,6 +119,8 @@ func _run() -> void:
 		for tick: int in range(Doors.SWING_TICKS): game.advance_doors()
 		_present()
 		await _faces(circuit, id, "parked")
+		for open_id: StringName in [ShipLayout.BAY_DOOR_ID, &"D14-C-001-H-FORE"]:
+			await _open_rest_views(circuit, open_id)
 		for deck: int in [1, 30]:
 			var spec := game.layout.connector(ShipLayout.connector_id(deck, 1))
 			var remote := scene.build_remote(spec)
@@ -134,6 +138,33 @@ func _run() -> void:
 	print("SHIP SURFACES COMPLETE captures=", records.size())
 	quit(0)
 
+func _open_rest_views(circuit: String, id: StringName) -> void:
+	var spec := game.layout.door(id)
+	var context := Doors.Context.new()
+	context.face_id = spec.face_ids()[0]
+	context.rod_carried = true
+	for attempt: int in range(HatchResistance.schedule(SEED, id).weights.size() + 1):
+		if game.doors.snapshot(id).state == Doors.State.OPEN: break
+		game.doors.press(id, context)
+		for tick: int in range(Doors.WHEEL_TICKS + Doors.SWING_TICKS): game.advance_doors()
+	assert(game.doors.snapshot(id).state == Doors.State.OPEN, "open-rest capture follows the real store")
+	_present()
+	var leaf: Node3D
+	for view: DoorView in scene.door_views:
+		if view.door_id() == id: leaf = view.label_leaf()
+	assert(leaf != null, "open-rest leaf exists")
+	var pose := Surfaces.world_frame(leaf)
+	var into := signf(spec.hinge_frame().origin.z - ShipLayout.WALL / 2)
+	var mid_depth := -into * (HatchParts.APPROACH_SLAB_DEPTH - HatchParts.REVERSE_SLAB_DEPTH) / 2
+	var centre := pose * Vector3(spec.leaf_aperture().x / 2 + HatchParts.HINGE_OUTSET, 1.25, mid_depth)
+	# The free-edge eye stays inside the connector; a wider lens fits the slab height.
+	var previous_fov := camera.fov
+	camera.fov = 100
+	await _shot(circuit, "%s-open-rest-edge-on" % id, id, centre + pose.basis.x * 1.15, centre)
+	camera.fov = previous_fov
+	var eye := spec.frame() * Vector3(0.8, 1.40, spec.hinge_frame().origin.z + into * 2.1)
+	await _shot(circuit, "%s-open-rest-swing-three-quarter" % id, id, eye, centre)
+
 func _present() -> void:
 	for view: DoorView in scene.door_views: view.present(game.doors.snapshot(view.door_id()))
 
@@ -145,7 +176,8 @@ func _faces(circuit: String, id: StringName, pose: String) -> void:
 	assert(view != null, "capture door exists")
 	var frame := Surfaces.world_frame(view.label_leaf())
 	for side: int in [-1, 1]:
-		var center := frame * Vector3(spec.leaf_aperture().x / 2, 1.25, side * 0.1)
+		var depth := spec.leaf_face_depth(0 if side < 0 else 1)
+		var center := frame * Vector3(spec.leaf_aperture().x / 2 + HatchParts.HINGE_OUTSET, 1.25, side * depth)
 		await _shot(circuit, "%s-%s-%s" % [id, "fore" if side < 0 else "aft", pose], id, center + frame.basis.z * side * 1.85, center)
 
 func _shot(circuit: String, name: String, owner: StringName, eye: Vector3, target: Vector3) -> void:
