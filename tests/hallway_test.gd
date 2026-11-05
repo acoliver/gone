@@ -77,7 +77,7 @@ func test_envelope_derives_from_the_room_constants() -> void:
 	assert_float_in_range(Hallway.HALL_START_X, Pods.ROOM_LENGTH / 2.0 - 1e-4, Pods.ROOM_LENGTH / 2.0 + 1e-4, "the corridor starts at the room's east wall face")
 	assert_float_in_range(Hallway.HALL_END_X, Hallway.HALL_START_X + 24.0 - 1e-4, Hallway.HALL_START_X + 24.0 + 1e-4, "the corridor's far wall sits at its authored end")
 	var solids := Hallway.hallway_solids()
-	assert_int_equal(solids.size(), 8, "floor, ceiling and two pierced side walls; hatch owners supply transverse walls")
+	assert_int_equal(solids.size(), 12, "eight shell slabs plus four wall-pocket corner skins; hatch owners supply transverse walls")
 	assert_vec3_equal(solids[0].center, Vector3(18.1, -0.1, 0.0), "the hall floor slab's center is pinned")
 	assert_vec3_equal(solids[0].size, Vector3(24.2, 0.2, 3.4), "the hall floor slab tucks under the room's wall band")
 	assert_vec3_equal(solids[1].center, Vector3(18.1, 3.3, 0.0), "the hall ceiling slab's center is pinned")
@@ -90,17 +90,29 @@ func test_envelope_derives_from_the_room_constants() -> void:
 
 func test_doorway_pierces_the_east_walls_envelope() -> void:
 	var pierce := Hallway.doorway_wall_solids()
-	assert_int_equal(pierce.size(), 3, "the pierce holds two side pieces and a lintel")
+	assert_int_equal(pierce.size(), 7, "two side pieces, a lintel and four wall-pocket corner skins")
 	var east_wall := ShipGeometry.SolidSpec.new(Vector3(18.1, 1.6, 1.6), Vector3(24.2, 3.2, 0.2))
 	assert_float_in_range(east_wall.center.z, 1.6 - 1e-4, 1.6 + 1e-4, "the pierce replaces the east wall's own band")
 	var pierce_volume := 0.0
+	var skin_volume := 0.0
 	for piece: Placement.SolidPlacement in pierce:
-		pierce_volume += piece.size.x * piece.size.y * piece.size.z
+		var volume := piece.size.x * piece.size.y * piece.size.z
+		if not piece.section.is_empty():
+			var twice_area := 0.0
+			for edge: int in range(piece.section.size()): twice_area += piece.section[edge].cross(piece.section[(edge + 1) % piece.section.size()])
+			volume = absf(twice_area) / 2 * piece.size.z
+			skin_volume += volume
+		pierce_volume += volume
 	var wall_volume := east_wall.size.x * east_wall.size.y * east_wall.size.z
-	# Andrew's thicker flush slab changes the hidden cutout, not the nominal mouth.
+	# The deep sweep pocket stays rectangular. Its mouth is rounded by four
+	# 6 mm steel skins outside the wall band, seated at the raised bead's rear.
+	# Account for their polygon area, not their bounding boxes or an empty
+	# rectangle assumed to be hidden by the ring.
 	var pocket_width := Hallway.DOORWAY_WIDTH + 2 * ShipGeometry.HATCH_RING_WIDTH
 	var aperture_volume := Placement.WALL_THICKNESS * Hallway.DOORWAY_HEIGHT * pocket_width
-	assert_float_in_range(pierce_volume + aperture_volume, wall_volume - 1e-4, wall_volume + 1e-4, "the pierce pieces tile the wall's envelope minus exactly the pocket")
+	print("POCKET_VOLUME skins=%.9f total=%.9f" % [skin_volume, pierce_volume])
+	assert_float_in_range(skin_volume, 0.000233902 - 1e-9, 0.000233902 + 1e-9, "rounded mouth skins contribute their polygon volume, including the bead seating lap")
+	assert_float_in_range(pierce_volume + aperture_volume - skin_volume, wall_volume - 1e-4, wall_volume + 1e-4, "wall band minus sweep pocket plus rounded mouth skins accounts for all material")
 	assert_float_in_range(Hallway.DOORWAY_WIDTH, Placement.HATCH_WIDTH - 1e-4, Placement.HATCH_WIDTH + 1e-4, "the aperture is the hatch's width")
 	assert_float_in_range(Hallway.DOORWAY_HEIGHT, Placement.HATCH_HEIGHT - 1e-4, Placement.HATCH_HEIGHT + 1e-4, "the aperture is the hatch's height")
 	assert_vec3_equal(Hallway.doorway_block().center, Vector3(15.0, 1.2, 1.6), "the closed block fills the aperture's center")
@@ -110,8 +122,9 @@ func test_collider_sets_extend_the_walk_sim_open_and_shut() -> void:
 	var registry := Pods.PodRegistry.frozen()
 	var closed := Hallway.scene_collider_set(registry, false)
 	var open := Hallway.scene_collider_set(registry, true)
-	assert_int_equal(closed.size(), 426, "the closed set includes one inscribed box per frame reservation and all four stops on each hatch")
-	assert_int_equal(open.size(), 425, "the open set replaces passage and sweep with the parked leaf")
+	# Four wall-pocket corner skins on the bay hatch and two hall end hatches.
+	assert_int_equal(closed.size(), 438, "frame reservations, stops and twelve wall-pocket corner skins")
+	assert_int_equal(open.size(), 437, "the open set replaces passage and sweep with the parked leaf")
 	var game := _awake_game()
 	assert_int_equal(game.colliders.size(), PowerRoom.scene_collider_set(registry, false, false).size(), "the game boots on the full D14 set")
 	# The aperture is solid while shut and clear when open: the walk
@@ -319,6 +332,7 @@ func test_switch_flips_exactly_once_from_a_full_crossing() -> void:
 func test_rendered_shell_uses_pure_collision_recipe() -> void:
 	var hallway := Hallway.build(Game.new(0))
 	var names := ["HallFloor", "HallCeiling", "HallWallNorthWest", "HallWallNorthEast", "HallWallNorthLintel", "HallWallSouthWest", "HallWallSouthEast", "HallWallSouthLintel"]
+	for corner: int in range(4): names.append("HallWallSouthPocket%d" % corner)
 	var solids := ShipGeometry.hallway_solids()
 	for index: int in range(solids.size()):
 		var mesh: MeshInstance3D = hallway.get_node(NodePath(names[index]))
@@ -390,6 +404,22 @@ func _expanded_faces(mesh: Mesh) -> PackedVector3Array:
 	return faces
 
 func _profile_faces(solid: ShipGeometry.SolidSpec) -> PackedVector3Array:
+	if not solid.section.is_empty():
+		var polygon := solid.section.duplicate()
+		if Geometry2D.is_polygon_clockwise(polygon): polygon.reverse()
+		var faces := PackedVector3Array()
+		var triangles := Geometry2D.triangulate_polygon(polygon)
+		for index: int in range(0, triangles.size(), 3):
+			for side: int in [-1, 1]:
+				for corner: int in ([0, 1, 2] if side < 0 else [0, 2, 1]):
+					var xy := polygon[triangles[index + corner]]
+					faces.append(Vector3(xy.x, xy.y, side * solid.size.z / 2))
+		for edge: int in range(polygon.size()):
+			var a := polygon[edge]
+			var b := polygon[(edge + 1) % polygon.size()]
+			var corners := PackedVector3Array([Vector3(b.x, b.y, -solid.size.z / 2), Vector3(a.x, a.y, -solid.size.z / 2), Vector3(a.x, a.y, solid.size.z / 2), Vector3(b.x, b.y, solid.size.z / 2)])
+			for index: int in [0, 2, 1, 0, 3, 2]: faces.append(corners[index])
+		return faces
 	var source := BoxMesh.new()
 	source.size = solid.size
 	var faces := _expanded_faces(source)

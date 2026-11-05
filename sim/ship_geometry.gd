@@ -343,7 +343,9 @@ static func collision_boxes(solid: SolidSpec) -> Array[ColliderSet.Aabb]:
 		center.y = solid._parent.origin.y + HATCH_FLOOR_SKIN_HEIGHT / 2
 		half.y = HATCH_FLOOR_SKIN_HEIGHT / 2
 		return [ColliderSet.Aabb.from_parts(center, half)]
-	if solid.section.is_empty(): return [box_aabb(solid)]
+	# Wall skins, like wall slabs, use conservative boxes. Their depth is
+	# wholly ahead of the sweep, including the rectangular leaf sealing laps.
+	if solid.section.is_empty() or solid.hatch_profile != null: return [box_aabb(solid)]
 	assert(not solid.collision_outline.is_empty(), "sectioned hatch has its outer collision boundary")
 	var minimum := -solid.size / 2
 	var maximum := solid.size / 2
@@ -446,6 +448,7 @@ static func _section_portal_solids(layout: ShipLayout, section: ShipLayout.Secti
 	if door.kind() == ShipLayout.DoorKind.BAY:
 		var walls := portal_wall(StringName("%s/STARBOARD" % section.id()), frame, Vector2(bounds.position.x - frame.origin.x, bounds.end.x + WALL - frame.origin.x), ShipLayout.CLEAR_HEIGHT, aperture)
 		walls[2].hatch_profile = door
+		walls.append_array(hatch_pocket_infill(door, StringName("%s/STARBOARD" % section.id())))
 		return walls
 	var end := bounds.end.x + WALL
 	if door.kind() == ShipLayout.DoorKind.POWER:
@@ -619,7 +622,7 @@ static func hatch_lintel_height(door: ShipLayout.DoorSpec) -> float:
 	return maxf(FRAME_POST_WIDTH, depth * 0.75)
 
 static func hatch_wall_vertex(solid: SolidSpec, vertex: Vector3) -> Vector3:
-	if solid.hatch_profile == null or not String(solid.id).ends_with("/002") or vertex.y >= 0: return vertex
+	if solid.hatch_profile == null or not solid.section.is_empty() or not String(solid.id).ends_with("/002") or vertex.y >= 0: return vertex
 	var door := solid.hatch_profile
 	var relative := door.frame().affine_inverse() * solid.transform
 	var point := relative * vertex
@@ -633,7 +636,52 @@ static func hatch_wall_solids(door: ShipLayout.DoorSpec) -> Array[SolidSpec]:
 	var pocket := door.aperture() + Vector2(2 * HATCH_RING_WIDTH, 0)
 	var walls := portal_wall(StringName("%s/WALL" % door.id()), door.frame(), Vector2(-ShipLayout.CORRIDOR_WIDTH / 2, ShipLayout.CORRIDOR_WIDTH / 2), ShipLayout.CLEAR_HEIGHT, pocket)
 	for wall: SolidSpec in walls: wall.hatch_profile = door
+	walls.append_array(hatch_pocket_infill(door, StringName("%s/WALL" % door.id())))
 	return walls
+
+static func hatch_pocket_infill(door: ShipLayout.DoorSpec, owner: StringName) -> Array[SolidSpec]:
+	var aperture := door.aperture()
+	var half_width := aperture.x / 2 + HATCH_RING_WIDTH
+	var center_y := (aperture.y + SILL_HEIGHT) / 2
+	var mouth := hatch_ring_outline(door)
+	# Lap by the bead's depth beneath its rounded rear edge. Touching only
+	# its outer silhouette leaves cracks where the bead profile narrows.
+	var contour := hatch_ring_outline(door, HATCH_RING_WIDTH - (HATCH_RING_REAR - HATCH_RING_FRONT))
+	for index: int in range(contour.size()): contour[index].y += center_y
+	var corners: Array[PackedVector2Array] = []
+	for upper: bool in [false, true]:
+		var bottom := mouth[0].y + center_y if upper else 0.0
+		var top := aperture.y if upper else mouth[mouth.size() / 2].y + center_y
+		# Straight posts seal the middle; the coaming seals the lower walk
+		# band. Keep the four new reservations outside those existing solids.
+		var inner_x := 0.0 if upper else SILL_WALK_WIDTH / 2
+		for side: int in [-1, 1]:
+			var left := -half_width if side < 0 else inner_x
+			var right := -inner_x if side < 0 else half_width
+			var rectangle := PackedVector2Array([Vector2(left, bottom), Vector2(right, bottom), Vector2(right, top), Vector2(left, top)])
+			corners.append_array(Geometry2D.clip_polygons(rectangle, contour))
+	assert(corners.size() == 4, "four wall-pocket corner skins")
+	# The slab's rectangular sealing laps sweep through the deeper pocket even
+	# outside the rounded plate. Close its mouth with a steel wall skin seated
+	# between the bead's rear and the wall face, wholly ahead of those laps.
+	# The ring remains 90 mm wide and 20 mm proud; no frame geometry changes.
+	var into := signf(door.hinge_frame().origin.z - WALL / 2)
+	var front := HATCH_RING_REAR if into > 0 else WALL
+	var rear := 0.0 if into > 0 else WALL - HATCH_RING_REAR
+	var solids: Array[SolidSpec] = []
+	for polygon: PackedVector2Array in corners:
+		var lo := polygon[0]
+		var hi := lo
+		for point: Vector2 in polygon:
+			lo = lo.min(point)
+			hi = hi.max(point)
+		var center := (lo + hi) / 2
+		var solid := SolidSpec.new(Vector3(center.x, center.y, (front + rear) / 2), Vector3(hi.x - lo.x, hi.y - lo.y, rear - front), Quaternion.IDENTITY, StringName("%s/POCKET/%03d" % [owner, solids.size()]))
+		for point: Vector2 in polygon: solid.section.append(point - center)
+		solid.hatch_profile = door
+		solid.surface_identity(StringName(String(owner).get_slice("/", 0)), StringName(String(owner).get_slice("/", 1)))
+		solids.append(transformed(solid, door.frame()))
+	return solids
 
 static func d14_extension_solids(layout: ShipLayout) -> Array[SolidSpec]:
 	var solids: Array[SolidSpec] = []

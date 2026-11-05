@@ -25,10 +25,12 @@ static func solid_mesh(solid: ShipGeometry.SolidSpec) -> Mesh:
 		var polygon := solid.section.duplicate()
 		if Geometry2D.is_polygon_clockwise(polygon): polygon.reverse()
 		var half := solid.size.z / 2
-		for index: int in range(1, polygon.size() - 1):
-			var a := polygon[0]
-			var b := polygon[index]
-			var c := polygon[index + 1]
+		# Wall-pocket corners have a concave arc; a fan would fill across it.
+		var triangles := Geometry2D.triangulate_polygon(polygon)
+		for index: int in range(0, triangles.size(), 3):
+			var a := polygon[triangles[index]]
+			var b := polygon[triangles[index + 1]]
+			var c := polygon[triangles[index + 2]]
 			_triangle(tool, Vector3(a.x, a.y, -half), Vector3(c.x, c.y, -half), Vector3(b.x, b.y, -half))
 			_triangle(tool, Vector3(a.x, a.y, half), Vector3(b.x, b.y, half), Vector3(c.x, c.y, half))
 		for index: int in range(polygon.size()):

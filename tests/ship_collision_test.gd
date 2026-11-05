@@ -152,7 +152,7 @@ func test_opening_manifest_has_exact_owners_order_and_door_differentials() -> vo
 		expected.append_array(_surround_ids("D14-BAY-DOOR", "FORE"))
 		expected.append(&"D14-BAY-DOOR/SWING" if flags.x == 0 else &"D14-BAY-DOOR/PARKED")
 		for owner: String in ["D14-S-041/SHELL", "D14-S-041/SIDE-LEAF", "D14-POWER/SHELL", "D14-POWER/CONSOLE"]:
-			var count: int = {"D14-S-041/SHELL": 8, "D14-S-041/SIDE-LEAF": 5, "D14-POWER/SHELL": 5, "D14-POWER/CONSOLE": 6}[owner]
+			var count: int = {"D14-S-041/SHELL": 12, "D14-S-041/SIDE-LEAF": 5, "D14-POWER/SHELL": 5, "D14-POWER/CONSOLE": 6}[owner]
 			for index: int in range(count):
 				expected.append(StringName("%s/%03d" % [owner, index]))
 		expected.append(&"D14-POWER/GENERATOR")
@@ -175,7 +175,8 @@ func test_opening_counts_and_every_box_keep_original_insertion_order() -> void:
 	for flags: Vector2i in [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1)]:
 		var pure := ShipCollision.opening_set(registry, bool(flags.x), bool(flags.y))
 		var adapter := PowerRoom.scene_collider_set(registry, bool(flags.x), bool(flags.y))
-		var expected := 985 if flags.x == 0 else (984 if flags.y == 0 else 983)
+		# Four corner infills on each of the seven D14 hinged hatches.
+		var expected := 1013 if flags.x == 0 else (1012 if flags.y == 0 else 1011)
 		assert_int_equal(pure.size(), expected, "full scene count")
 		for index: int in range(pure.size()):
 			assert_true(pure.boxes()[index].equals(adapter.boxes()[index]), "same ordered collider")
@@ -183,7 +184,7 @@ func test_opening_counts_and_every_box_keep_original_insertion_order() -> void:
 	assert_vec3_equal(closed.boxes()[0].center(), Vector3(15, -0.1, 7.7), "first bay floor")
 	assert_vec3_equal(closed.boxes()[5].center(), Vector3(15, 1.2, 1.6), "pierce replaces east wall at same index")
 	assert_vec3_equal(closed.boxes()[8].center(), Vector3(11.03, 0.45, 12.5), "closed bay blocker index")
-	assert_vec3_equal(closed.boxes()[194].center(), Vector3(27, 1.1, -1.47), "last power leaf follows the 117 inscribed bay frame boxes and its four stops")
+	assert_vec3_equal(closed.boxes()[198].center(), Vector3(27, 1.1, -1.47), "power leaf follows the bay frame and four new wall-pocket corner skins")
 
 func test_approved_layout_cache_and_blocker_revisions_are_deck_local() -> void:
 	var collision := ShipCollision.new(ShipLayout.authored().layout)
@@ -246,7 +247,7 @@ func _extension_ids() -> Array[StringName]:
 			ids.append(StringName("%s-LIFT/%s" % [connector, surface]))
 	var hatches: Array[String] = ["D14-C-000-H-AFT", "D14-C-000-H-FORE", "D14-C-001-H-AFT", "D14-C-001-H-FORE", "D14-C-002-H-FORE", "D14-C-M001-H-AFT"]
 	for hatch: String in hatches:
-		for surface: String in ["WALL/000", "WALL/001", "WALL/002", "FRAME/LEFT", "FRAME/RIGHT", "FRAME/TOP", "COAMING", "FRAME/STOP-LEFT", "FRAME/STOP-RIGHT", "FRAME/STOP-TOP", "FRAME/STOP-BOTTOM"]:
+		for surface: String in ["WALL/000", "WALL/001", "WALL/002", "WALL/POCKET/000", "WALL/POCKET/001", "WALL/POCKET/002", "WALL/POCKET/003", "FRAME/LEFT", "FRAME/RIGHT", "FRAME/TOP", "COAMING", "FRAME/STOP-LEFT", "FRAME/STOP-RIGHT", "FRAME/STOP-TOP", "FRAME/STOP-BOTTOM"]:
 			ids.append(StringName("%s/%s" % [hatch, surface]))
 		ids.append_array(_surround_ids(hatch, "FORE" if hatch.ends_with("FORE") else "AFT"))
 	for door: String in ["D14-C-000-H-AFT", "D14-C-000-H-FORE", "D14-C-000-LIFT-DOOR", "D14-C-001-H-AFT", "D14-C-001-H-FORE", "D14-C-001-LIFT-DOOR", "D14-C-002-H-FORE", "D14-C-M001-H-AFT"]:

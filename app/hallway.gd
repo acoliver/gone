@@ -175,6 +175,9 @@ static func build(game: Game) -> Hallway:
 		"HallWallSouthLintel",
 	]
 	var surface_roles := ["floor", "ceiling", "wall", "wall", "wall", "wall", "wall", "wall"]
+	for corner: int in range(4):
+		surface_names.append("HallWallSouthPocket%d" % corner)
+		surface_roles.append("wall")
 	var hall_solids := ShipGeometry.hallway_solids(game.layout)
 	assert(
 		hall_solids.size() == surface_names.size(),
