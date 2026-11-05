@@ -15,6 +15,8 @@ const DRESSING_PANEL_PITCH := Vector2(1.5, 1.0)
 const HATCH_WIDTH: float = 1.2
 const HATCH_HEIGHT: float = 2.4
 const DOOR_LABEL_HEIGHT: float = 1.82
+# Andrew's Round 11 clear-panel label: 36 mm above the wheel's projected rim.
+const HATCH_LABEL_HEIGHT: float = 1.86
 const HATCH_LABEL_OUTSET: float = 0.04
 const HATCH_LABEL_SIZE := Vector2(0.92, 0.46)
 const BAY_ID: StringName = &"D14-BAY"
@@ -457,7 +459,7 @@ class FaceSpec:
 		return ShipLayout.HATCH_LABEL_SIZE
 	func leaf_label_frame(door: DoorSpec) -> Transform3D:
 		var frame := _surface_frame
-		frame.origin = Vector3(door.leaf_aperture().x / 2 + HatchParts.HINGE_OUTSET, ShipLayout.DOOR_LABEL_HEIGHT, frame.basis.z.z * (door.leaf_face_depth(0 if frame.basis.z.z < 0 else 1) + ShipLayout.HATCH_LABEL_OUTSET))
+		frame.origin = Vector3(door.leaf_aperture().x / 2 + HatchParts.HINGE_OUTSET, ShipLayout.HATCH_LABEL_HEIGHT, frame.basis.z.z * (door.leaf_face_depth(0 if frame.basis.z.z < 0 else 1) + ShipLayout.HATCH_LABEL_OUTSET))
 		return frame
 	func data() -> Dictionary:
 		var result := super.data()

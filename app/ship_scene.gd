@@ -186,6 +186,11 @@ func tick_attention(eye: Vector3, forward: Vector3, deck: int = 14) -> void:
 					continue
 			var box: ColliderSet.Aabb = boxes[index]
 			_sight_solids.append(AABB(box.min_corner(), box.max_corner() - box.min_corner()))
+		for id: StringName in _game.layout.door_ids():
+			var door := _game.layout.door(id)
+			if door.deck_number() != deck or door.animation() != ShipLayout.AnimationRecipe.HINGE: continue
+			for detail: ShipGeometry.SolidSpec in ShipGeometry.hatch_fixed_hardware(door):
+				_sight_solids.append(detail.transform * AABB(-detail.size / 2, detail.size))
 	var sight: Array[ShipGeometry.SightBox] = []
 	for id: StringName in _game.layout.door_ids():
 		var spec := _game.layout.door(id)

@@ -17,7 +17,11 @@ func _meshes(node: Node, boxes: Array[AABB]) -> void:
 
 func test_every_leaf_mesh_clears_solids_at_every_degree_of_swing() -> void:
 	var layout := ShipLayout.authored().layout
-	var solids := ShipGeometry.deck_static_solids(layout, 14)
+	var solids: Array[ShipGeometry.SolidSpec] = []
+	for solid: ShipGeometry.SolidSpec in ShipGeometry.deck_static_solids(layout, 14):
+		# Round 11 details use the oriented reservation test below; structural
+		# walls and frames retain their original conservative AABB gate.
+		if solid.collision_role != &"frame_detail": solids.append(solid)
 	var solid_boxes: Array[AABB] = []
 	for solid: ShipGeometry.SolidSpec in solids:
 		var bounds := ShipGeometry.box_aabb(solid)

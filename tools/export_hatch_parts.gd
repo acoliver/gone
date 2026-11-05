@@ -18,6 +18,17 @@ static func polygon(value: PackedVector2Array) -> Array:
 static func frame_geometry(door: ShipLayout.DoorSpec, solid: ShipGeometry.SolidSpec) -> Dictionary:
 	var vertices: Array = []
 	var faces: Array = []
+	if "/HINGE/KNUCKLE-" in String(solid.id):
+		for y: int in [-1, 1]:
+			for index: int in range(8):
+				var angle := index * TAU / 8
+				vertices.append(vector3(Vector3(cos(angle) * solid.size.x / 2, y * solid.size.y / 2, sin(angle) * solid.size.z / 2)))
+		faces.append([7, 6, 5, 4, 3, 2, 1, 0])
+		faces.append([8, 9, 10, 11, 12, 13, 14, 15])
+		for index: int in range(8):
+			var next := (index + 1) % 8
+			faces.append([index, next, next + 8, index + 8])
+		return {"vertices": vertices, "faces": faces}
 	if solid.section.is_empty():
 		for z: int in [-1, 1]:
 			for y: int in [-1, 1]:

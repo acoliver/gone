@@ -103,6 +103,8 @@ func _run() -> void:
 		await _shot(circuit, "section42", &"D14-S-042", Vector3(46, 1.6, 0.25), Vector3(59.8, 1.5, 0))
 		for id: StringName in [ShipLayout.BAY_DOOR_ID, &"D14-C-000-H-AFT", &"D14-C-001-H-FORE"]:
 			await _faces(circuit, id, "closed")
+		for hinge_id: StringName in [ShipLayout.BAY_DOOR_ID, &"D14-C-001-H-FORE"]:
+			await _hinge_views(circuit, hinge_id, "closed")
 		var id := &"D14-C-001-H-FORE"
 		var context := Doors.Context.new()
 		context.face_id = game.layout.door(id).face_ids()[0]
@@ -164,6 +166,19 @@ func _open_rest_views(circuit: String, id: StringName) -> void:
 	camera.fov = previous_fov
 	var eye := spec.frame() * Vector3(0.8, 1.40, spec.hinge_frame().origin.z + into * 2.1)
 	await _shot(circuit, "%s-open-rest-swing-three-quarter" % id, id, eye, centre)
+	await _hinge_views(circuit, id, "open")
+
+func _hinge_views(circuit: String, id: StringName, state: String) -> void:
+	var spec := game.layout.door(id)
+	var axis := spec.hinge_frame().origin
+	var into := signf(axis.z - ShipLayout.WALL / 2)
+	var previous_fov := camera.fov
+	camera.fov = 60
+	for station: int in range(HatchParts.HINGE_HEIGHTS.size()):
+		var target := axis + Vector3.UP * HatchParts.HINGE_HEIGHTS[station]
+		var eye := target + Vector3(-0.75, 0.08, into * 0.65)
+		await _shot(circuit, "%s-hinge-%d-%s" % [id, station, state], id, spec.frame() * eye, spec.frame() * target)
+	camera.fov = previous_fov
 
 func _present() -> void:
 	for view: DoorView in scene.door_views: view.present(game.doors.snapshot(view.door_id()))

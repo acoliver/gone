@@ -150,6 +150,8 @@ func test_opening_manifest_has_exact_owners_order_and_door_differentials() -> vo
 		for piece: String in ["FRAME/LEFT", "FRAME/RIGHT", "FRAME/TOP", "COAMING", "FRAME/STOP-LEFT", "FRAME/STOP-RIGHT", "FRAME/STOP-TOP", "FRAME/STOP-BOTTOM"]:
 			expected.append(StringName("D14-BAY-DOOR/%s" % piece))
 		expected.append_array(_surround_ids("D14-BAY-DOOR", "FORE"))
+		# Round 11 adds named presentation reservations, with no added colliders.
+		expected.append_array(_fixed_detail_ids("D14-BAY-DOOR"))
 		expected.append(&"D14-BAY-DOOR/SWING" if flags.x == 0 else &"D14-BAY-DOOR/PARKED")
 		for owner: String in ["D14-S-041/SHELL", "D14-S-041/SIDE-LEAF", "D14-POWER/SHELL", "D14-POWER/CONSOLE"]:
 			var count: int = {"D14-S-041/SHELL": 12, "D14-S-041/SIDE-LEAF": 5, "D14-POWER/SHELL": 5, "D14-POWER/CONSOLE": 6}[owner]
@@ -250,10 +252,17 @@ func _extension_ids() -> Array[StringName]:
 		for surface: String in ["WALL/000", "WALL/001", "WALL/002", "WALL/POCKET/000", "WALL/POCKET/001", "WALL/POCKET/002", "WALL/POCKET/003", "FRAME/LEFT", "FRAME/RIGHT", "FRAME/TOP", "COAMING", "FRAME/STOP-LEFT", "FRAME/STOP-RIGHT", "FRAME/STOP-TOP", "FRAME/STOP-BOTTOM"]:
 			ids.append(StringName("%s/%s" % [hatch, surface]))
 		ids.append_array(_surround_ids(hatch, "FORE" if hatch.ends_with("FORE") else "AFT"))
+		ids.append_array(_fixed_detail_ids(hatch))
 	for door: String in ["D14-C-000-H-AFT", "D14-C-000-H-FORE", "D14-C-000-LIFT-DOOR", "D14-C-001-H-AFT", "D14-C-001-H-FORE", "D14-C-001-LIFT-DOOR", "D14-C-002-H-FORE", "D14-C-M001-H-AFT"]:
 		ids.append(StringName("%s/BLOCKER" % door))
 		if not "LIFT" in door:
 			ids.append(StringName("%s/SWING" % door))
+	return ids
+
+func _fixed_detail_ids(hatch: String) -> Array[StringName]:
+	var ids: Array[StringName] = []
+	for piece: String in ["HINGE/PLATE-0", "HINGE/KNUCKLE-0", "HINGE/PLATE-1", "HINGE/KNUCKLE-1", "KEEPER/0", "KEEPER/1", "KEEPER/2"]:
+		ids.append(StringName("%s/%s" % [hatch, piece]))
 	return ids
 
 func _surround_ids(hatch: String, side: String) -> Array[StringName]:

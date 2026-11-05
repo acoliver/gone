@@ -334,6 +334,7 @@ static func box_aabb(solid: SolidSpec, parent: Transform3D = Transform3D.IDENTIT
 ## One conservative box per reservation. Sectioned collars retain exact Y/Z
 ## contact planes; the floor skin remains below standing capsule clearance.
 static func collision_boxes(solid: SolidSpec) -> Array[ColliderSet.Aabb]:
+	if solid.collision_role == &"frame_detail": return []
 	if String(solid.id).ends_with("/STEP/000"):
 		# The collar and lower ring already cover the raised step's walk band.
 		# Its single additional box covers only the floor skin, never an early ledge.
@@ -564,7 +565,31 @@ static func hatch_frame_solids(door: ShipLayout.DoorSpec) -> Array[SolidSpec]:
 		for point: Vector2 in outer:
 			var local := inverse * Vector3(point.x, point.y + center_y, 0)
 			solid.collision_outline.append(Vector2(local.x, local.y))
+	solids.append_array(hatch_fixed_hardware(door))
 	return solids
+
+static func hatch_fixed_hardware(door: ShipLayout.DoorSpec) -> Array[SolidSpec]:
+	var hinge := door.hinge_frame().origin
+	var into := signf(hinge.z - WALL / 2)
+	var front := HATCH_RING_FRONT if into > 0 else WALL - HATCH_RING_FRONT
+	var solids: Array[SolidSpec] = []
+	for index: int in range(HatchParts.HINGE_HEIGHTS.size()):
+		var y := HatchParts.HINGE_HEIGHTS[index]
+		# The fixed plate bridges the bead and the pin at a separate axial station.
+		var seat := hinge.z - into * 0.01
+		var minimum := Vector3(hinge.x - 0.075, y + HatchParts.BARREL_LENGTH / 2, minf(front, seat))
+		var maximum := Vector3(hinge.x, y + HatchParts.BARREL_LENGTH / 2 + 0.04, maxf(front, seat))
+		solids.append(SolidSpec.new((minimum + maximum) / 2, maximum - minimum, Quaternion.IDENTITY, StringName("%s/HINGE/PLATE-%d" % [door.id(), index]), &"frame", &"frame_detail"))
+		solids.append(SolidSpec.new(Vector3(hinge.x, y + HatchParts.BARREL_LENGTH / 2 + 0.02, hinge.z), Vector3(0.02, 0.04, 0.02), Quaternion.IDENTITY, StringName("%s/HINGE/KNUCKLE-%d" % [door.id(), index]), &"frame", &"frame_detail"))
+	var edge := hinge.x + HatchParts.HINGE_OUTSET + door.leaf_aperture().x
+	for index: int in range(HatchParts.DOG_HEIGHTS.size()):
+		solids.append(SolidSpec.new(Vector3(edge + 0.04, HatchParts.DOG_HEIGHTS[index], front - into * 0.02), Vector3(0.08, 0.16, 0.04), Quaternion.IDENTITY, StringName("%s/KEEPER/%d" % [door.id(), index]), &"frame", &"frame_detail"))
+	var placed: Array[SolidSpec] = []
+	for solid: SolidSpec in solids:
+		_clip_hatch_frame(door, solid)
+		solid.surface_identity(door.id(), &"FRAME")
+		placed.append(transformed(solid, door.frame()))
+	return placed
 
 static func _clip_hatch_frame(door: ShipLayout.DoorSpec, solid: SolidSpec) -> void:
 	var outer := hatch_ring_outline(door, HATCH_RING_WIDTH)

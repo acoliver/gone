@@ -83,8 +83,13 @@ class HatchFinishConstructionTest(unittest.TestCase):
 
     def test_weather_field_uses_fasteners_not_zero_radius_pivot_seals(self):
         objects, nodes, _ = build.construct(self.document, build.material())
-        selected = [obj for obj in objects if nodes[obj.name]["id"].endswith("/pivot-return")
-                    or nodes[obj.name]["id"].startswith("StrapHinges/ForeSteel/bolt-0-")]
+        # Round 11 splits the zero-radius returns around the fixed knuckles;
+        # retain those seal pieces alongside the real fastener controls.
+        returns = [obj for obj in objects if "PivotSealSteel/return-" in nodes[obj.name]["id"]]
+        fasteners = [obj for obj in objects if nodes[obj.name]["id"].startswith("StrapHinges/ForeSteel/bolt-0-")]
+        self.assertTrue(returns, "zero-radius split pivot seals remain in the probe")
+        self.assertTrue(fasteners, "real fasteners remain in the probe")
+        selected = returns + fasteners
         self.assertGreater(len(selected), 4)
         with np.errstate(divide="raise", invalid="raise"):
             image, _ = build.weather_context(selected, nodes, self.document)

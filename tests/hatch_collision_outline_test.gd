@@ -7,7 +7,8 @@ func test_every_deck_uses_positive_single_frame_boxes() -> void:
 		if door.animation() != ShipLayout.AnimationRecipe.HINGE: continue
 		for solid: ShipGeometry.SolidSpec in ShipGeometry.hatch_frame_solids(door):
 			var boxes := ShipGeometry.collision_boxes(solid)
-			assert_int_equal(boxes.size(), 1, "one positive inscribed box on remote decks: " + String(solid.id))
+			# Andrew's Round 11 decision assigns fixed hinge/keeper details no colliders.
+			assert_int_equal(boxes.size(), 0 if solid.collision_role == &"frame_detail" else 1, "one inscribed frame box, no detail collider: " + String(solid.id))
 
 func test_frame_collision_has_one_inscribed_box_per_reservation() -> void:
 	var layout := ShipLayout.authored().layout
@@ -15,7 +16,8 @@ func test_frame_collision_has_one_inscribed_box_per_reservation() -> void:
 		var count := 0
 		for solid: ShipGeometry.SolidSpec in ShipGeometry.hatch_frame_solids(layout.door(id)):
 			var boxes := ShipGeometry.collision_boxes(solid)
-			assert_int_equal(boxes.size(), 1, "fixed frame reservation needs one conservative box: " + String(solid.id))
+			# Andrew's Round 11 decision keeps decorative fixed mounts behind existing boxes.
+			assert_int_equal(boxes.size(), 0 if solid.collision_role == &"frame_detail" else 1, "fixed structural frame has one box, details have none: " + String(solid.id))
 			count += boxes.size()
 		assert_true(count <= 120, "fixed frame collider count stays near the unsubdivided model")
 	var count := ShipCollision.opening_set(layout.bay().template(), false, false, layout).size()
@@ -40,7 +42,9 @@ func test_assembled_deck_frame_colliders_respect_the_ring_outline() -> void:
 	for id: StringName in [ShipLayout.BAY_DOOR_ID, &"D14-C-001-H-FORE", &"D14-C-001-H-AFT"]:
 		var door := layout.door(id)
 		var fixed: Dictionary = {}
-		for solid: ShipGeometry.SolidSpec in ShipGeometry.hatch_frame_solids(door): fixed[solid.id] = true
+		for solid: ShipGeometry.SolidSpec in ShipGeometry.hatch_frame_solids(door):
+			# Round 11 frame details are tested for capsule standoff, not inserted.
+			if solid.collision_role != &"frame_detail": fixed[solid.id] = true
 		var outer := ShipGeometry.hatch_ring_outline(door, ShipGeometry.HATCH_RING_WIDTH)
 		var inverse := door.frame().affine_inverse()
 		var center_y := (door.aperture().y + ShipGeometry.SILL_HEIGHT) / 2

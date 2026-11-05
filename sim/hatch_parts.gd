@@ -14,6 +14,11 @@ const REVERSE_SLAB_DEPTH: float = 0.04
 const HARDWARE_FACE_DEPTH: float = 0.10
 const SLAB_EDGE_BEVEL: float = 0.004
 const PAINT_LAYER_DEPTH: float = 0.002
+# Round 11: real pivot knuckles and upper fittings clear the level-gaze label.
+const HINGE_HEIGHTS: Array[float] = [0.48, 2.24]
+const DOG_HEIGHTS: Array[float] = [0.40, 1.17, 2.24]
+const BARREL_RADIUS: float = 0.028
+const BARREL_LENGTH: float = 0.06
 
 static var _leaves: Dictionary = {}
 
@@ -90,6 +95,16 @@ static func evenly_spaced(loop: PackedVector2Array, count: int) -> PackedVector2
 		points.append(loop[edge].lerp(loop[(edge + 1) % loop.size()], (distance - edge_start) / edge_length))
 	return points
 
+static func _hinge_return(group: Group, size: Vector3, center: Vector3) -> void:
+	var bottom := center.y - size.y / 2
+	for top: float in [HINGE_HEIGHTS[0] + BARREL_LENGTH / 2, HINGE_HEIGHTS[1] + BARREL_LENGTH / 2, center.y + size.y / 2]:
+		var segment := size
+		segment.y = top - bottom
+		var point := center
+		point.y = (bottom + top) / 2
+		group.add("return-%d" % group.parts.size(), &"box", segment, Transform3D(Basis(), point))
+		bottom = top + 0.04
+
 static func leaf(door: ShipLayout.DoorSpec) -> Array[Group]:
 	var aperture := door.leaf_aperture()
 	var into := signf(door.hinge_frame().origin.z - ShipLayout.WALL / 2)
@@ -115,25 +130,32 @@ static func leaf(door: ShipLayout.DoorSpec) -> Array[Group]:
 		hardware_face.origin.z = (-1 if side == 0 else 1) * (depth - HARDWARE_FACE_DEPTH)
 		var straps := Group.new(NodePath("StrapHinges/" + prefix + "Steel"), hardware_face, side)
 		for index: int in range(2):
-			var y := 0.48 if index == 0 else aperture.y - 0.40
-			straps.add("strap-%d" % index, &"rounded", Vector3(0.40, 0.21, 0.055), Transform3D(Basis(), Vector3(0.230, y, -0.125)), 0.035)
-			_pin(straps, "barrel-%d" % index, 0.10, 0.32, Vector3(0.30, y, -0.125), Vector3.UP)
-			for cap: int in [-1, 1]:
-				_pin(straps, "cap-%d-%d" % [index, cap], 0.106, 0.030, Vector3(0.30, y + cap * 0.15, -0.125), Vector3.UP)
-			for x: float in [0.19, 0.35]:
+			var y := HINGE_HEIGHTS[index]
+			var strap_x := 0.230 if index == 0 else 0.40
+			straps.add("strap-%d" % index, &"rounded", Vector3(0.40, 0.21, 0.055), Transform3D(Basis(), Vector3(strap_x, y, -0.125)), 0.035)
+			var axis := hardware_face.affine_inverse() * Vector3(-HINGE_OUTSET, y, 0)
+			var elbow := axis + Vector3.RIGHT * (0.15 if index == 0 else 0.30)
+			var join := Vector3(elbow.x, y, -0.125)
+			_pin(straps, "neck-axis-%d" % index, 0.018, axis.distance_to(elbow), (axis + elbow) / 2, Vector3.RIGHT)
+			_pin(straps, "neck-face-%d" % index, 0.018, elbow.distance_to(join), (elbow + join) / 2, (join - elbow).normalized())
+			if approach:
+				_pin(straps, "barrel-%d" % index, BARREL_RADIUS, BARREL_LENGTH, axis, Vector3.UP)
+				_pin(straps, "cap-%d" % index, BARREL_RADIUS, 0.01, axis - Vector3.UP * 0.035, Vector3.UP)
+			for x: float in [strap_x - 0.08, strap_x + 0.08]:
 				_pin(straps, "bolt-%d-%s" % [index, x], 0.021, 0.014, Vector3(x, y, -0.159))
 		groups.append(straps)
 		var lugs := Group.new(NodePath("Lugs/" + prefix + "Steel"), hardware_face, side)
 		for index: int in range(3):
-			var y: float = [0.40, 1.17, aperture.y - 0.33][index]
-			lugs.add("plate-%d" % index, &"rounded", Vector3(0.11, 0.23, 0.055), Transform3D(Basis(), Vector3(0.87, y, -0.125)), 0.025)
-			var a := Vector3(0.87, y, -0.170)
-			var b := Vector3(1.01, y + 0.035, -0.170)
+			var y := DOG_HEIGHTS[index]
+			var x := 0.87 if index < 2 else 0.77
+			lugs.add("plate-%d" % index, &"rounded", Vector3(0.11, 0.23, 0.055), Transform3D(Basis(), Vector3(x, y, -0.125)), 0.025)
+			var a := Vector3(x, y, -0.170)
+			var b := Vector3(x + 0.14, y + 0.035, -0.170)
 			_pin(lugs, "arm-%d" % index, 0.028, a.distance_to(b), (a + b) / 2, (b - a).normalized())
-			lugs.add("grip-%d" % index, &"rounded", Vector3(0.050, 0.14, 0.050), Transform3D(Basis(), Vector3(1.01, y + 0.090, -0.170)), 0.018)
-			_pin(lugs, "pivot-%d" % index, 0.047, 0.035, Vector3(0.87, y, -0.200))
+			lugs.add("grip-%d" % index, &"rounded", Vector3(0.050, 0.13 if index == 2 else 0.14, 0.050), Transform3D(Basis(), Vector3(x + 0.14, y + 0.090, -0.170)), 0.018)
+			_pin(lugs, "pivot-%d" % index, 0.047, 0.035, Vector3(x, y, -0.200))
 			for dy: float in [-0.085, 0.085]:
-				_pin(lugs, "bolt-%d-%s" % [index, dy], 0.018, 0.015, Vector3(0.87, y + dy, -0.153))
+				_pin(lugs, "bolt-%d-%s" % [index, dy], 0.018, 0.015, Vector3(x, y + dy, -0.153))
 		groups.append(lugs)
 		var wheel_pose := Transform3D(Basis() if side == 0 else Basis(Vector3.LEFT, Vector3.UP, Vector3.FORWARD), Vector3(aperture.x / 2, WHEEL_HEIGHT, -0.190 if side == 0 else 0.190))
 		wheel_pose.origin += hardware_face.origin
@@ -182,7 +204,11 @@ static func leaf(door: ShipLayout.DoorSpec) -> Array[Group]:
 		groups.append(rivets)
 	for entry: Array in [["Body", Vector3(1.10, 2.32, 0.03), Vector3(0.55, center_y, into * 0.035), 0.235], ["Hinge", Vector3(0.03, 2.32, 0.01), Vector3(-0.015, center_y, into * 0.025), 0.01], ["Latch", Vector3(0.05, 2.32, 0.03), Vector3(1.125, center_y, into * 0.035), 0.024]]:
 		var lap := Group.new(NodePath("BackingLap" + entry[0]), Transform3D.IDENTITY, 0, true)
-		lap.add("lap", &"rounded", entry[1], Transform3D(Basis(), entry[2]), entry[3])
+		if entry[0] == "Hinge":
+			# Interrupt only the rear return at the fixed knuckles' axial stations.
+			_hinge_return(lap, entry[1], entry[2])
+		else:
+			lap.add("lap", &"rounded", entry[1], Transform3D(Basis(), entry[2]), entry[3])
 		groups.append(lap)
 	# A thin leaf lip laps the existing collar on its swing side. The hinge-side
 	# return stays separate so its bounds do not fill the latch-side swing gap.
@@ -199,14 +225,14 @@ static func leaf(door: ShipLayout.DoorSpec) -> Array[Group]:
 		face_seal.add("face-return", &"box", Vector3(face_width, height, face_depth), Transform3D(Basis(), Vector3(face_width / 2, center_y, 0)))
 		groups.append(face_seal)
 		var pivot_seal := Group.new(NodePath(prefix + "PivotSealSteel"), Transform3D(Basis(), Vector3(0, 0, face_z)), side, true)
-		pivot_seal.add("pivot-return", &"box", Vector3(HINGE_RETURN_WIDTH, height, face_depth), Transform3D(Basis(), Vector3(-HINGE_RETURN_WIDTH / 2, center_y, 0)))
+		_hinge_return(pivot_seal, Vector3(HINGE_RETURN_WIDTH, height, face_depth), Vector3(-HINGE_RETURN_WIDTH / 2, center_y, 0))
 		groups.append(pivot_seal)
 		var width := aperture.x + SEAL_LAP
 		var seal := Group.new(NodePath(prefix + "SealSteel"), pose, side, true)
 		seal.add("lip", &"box", Vector3(width, height, SEAL_DEPTH / 2), Transform3D(Basis(), Vector3(width / 2, center_y, 0)))
 		groups.append(seal)
 		var hinge_seal := Group.new(NodePath(prefix + "HingeSealSteel"), pose, side, true)
-		hinge_seal.add("return", &"box", Vector3(HINGE_RETURN_WIDTH, height, SEAL_DEPTH / 2), Transform3D(Basis(), Vector3(-HINGE_RETURN_WIDTH / 2, center_y, 0)))
+		_hinge_return(hinge_seal, Vector3(HINGE_RETURN_WIDTH, height, SEAL_DEPTH / 2), Vector3(-HINGE_RETURN_WIDTH / 2, center_y, 0))
 		groups.append(hinge_seal)
 	for group: Group in groups: group.transform.origin.x += HINGE_OUTSET
 	_leaves[key] = groups

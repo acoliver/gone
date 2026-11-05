@@ -74,8 +74,8 @@ func test_every_seeded_open_hatch_resolves_from_each_exposed_face_and_refuses_ba
 				var local := face.leaf_label_frame(spec)
 				if seed == 0 and id == &"D14-C-001-H-FORE" and face_id == spec.face_ids()[0]:
 					assert_true(absf(rad_to_deg(spec.swing_radians(seed)) + 117.919218) < 1e-6, "review rest-angle fixture")
-					# Andrew's thicker flush slab moves the label outward with its actual face.
-					assert_true(local.origin.distance_to(Vector3(0.62, 1.82, -0.26)) < 1e-6, "flush-slab label-local fixture")
+					# Andrew's Round 11 clear panel raises the label above the wheel by 36 mm.
+					assert_true(local.origin.distance_to(Vector3(0.62, 1.86, -0.26)) < 1e-6, "clear-panel flush-slab label-local fixture")
 				var frame := spec.frame() * hinge * local
 				var normal := frame.basis.z
 				var wall_boxes := ShipGeometry.deck_static_solids(game.layout, 14)

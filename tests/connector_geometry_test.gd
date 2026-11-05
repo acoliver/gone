@@ -72,8 +72,10 @@ func test_hatch_meshes_have_rounded_frame_braces_large_wheel_and_instanced_rivet
 	for path: String in ["StrapHinges", "Lugs"]:
 		var fore: MeshInstance3D = first.get_node("Hinge/Leaf/ForeSteel")
 		var aft: MeshInstance3D = first.get_node("Hinge/Leaf/AftSteel")
-		var fore_bounds := _group_bounds(fore.mesh, path + "/ForeSteel/")
-		var aft_bounds := _group_bounds(aft.mesh, path + "/AftSteel/")
+		# Round 11 shares one real-axis barrel, rather than duplicating face-offset
+		# pins. Compare the straps/links here; the attachment test pins barrel axes.
+		var fore_bounds := _group_bounds(fore.mesh, path + "/ForeSteel/", path == "StrapHinges")
+		var aft_bounds := _group_bounds(aft.mesh, path + "/AftSteel/", path == "StrapHinges")
 		assert_float_equal(fore_bounds.position.x, aft_bounds.position.x, "both faces keep the same physical hinge/latch edge: " + path)
 		assert_float_equal(fore_bounds.end.x, aft_bounds.end.x, "reverse-face hardware is not moved to the opposite jamb: " + path)
 	var leaf_mesh: Mesh = first.get_node("Hinge/Leaf/ForeSteel").mesh
@@ -95,12 +97,13 @@ func test_hatch_meshes_have_rounded_frame_braces_large_wheel_and_instanced_rivet
 	first.free()
 	remote.free()
 
-func _group_bounds(mesh: Mesh, prefix: String) -> AABB:
+func _group_bounds(mesh: Mesh, prefix: String, straps_only: bool = false) -> AABB:
 	var found := false
 	var result := AABB()
 	var parts: Dictionary = preload("res://tests/hatch_mesh_ranges.gd").parts(mesh)
 	for id: StringName in parts:
 		if not String(id).begins_with(prefix): continue
+		if straps_only and ("/barrel-" in String(id) or "/cap-" in String(id)): continue
 		var part: Dictionary = parts[id]
 		var bounds: AABB = part.pose * part.bounds
 		result = result.merge(bounds) if found else bounds
