@@ -7,7 +7,7 @@ Godot uses +Z foot, -Z head, +Y up; Blender's exporter maps (X, Y, Z) to
 (X, Z, -Y). No textures, randomness, lights or collision geometry.
 
 Blender --background --factory-startup --python tools/blender/build_pod_probe.py \
-    -- --output assets/props/pod/pod-v3.glb
+    -- --output assets/props/probe/pod-probe.glb
 """
 
 import argparse

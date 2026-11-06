@@ -1,14 +1,7 @@
 class_name StasisPods
 extends Node3D
-## Seven stasis pods at their registry placements: each pod is a Node3D
-## group at its pod_world_transform carrying the shared pod-v3 shell
-## instance from PodMesh and the PodStrips flank tubes. The greybox box
-## kit the shell replaced — body trays, lids, the standing canopy, the
-## foot indicator plates, the hanging blankets — is retired from the
-## render entirely; the round mesh is the rendered truth for every
-## state. Colliders and placements stay authored in PodBody and
-## Placement; positions and orientations derive from the sim registry,
-## so this builder never hard-codes a pod placement.
+## Seven registry-placed clean-cage pods with shared meshes/materials.
+## PodLid and its pane rotate together about the authored hidden pivot.
 
 static func build(registry: Pods.PodRegistry) -> StasisPods:
 	var pods := StasisPods.new()
@@ -23,6 +16,6 @@ static func _pod_group(pod: Pods.Pod) -> Node3D:
 	group.name = "Pod%d" % pod.id().index()
 	group.position = frame[1]
 	group.quaternion = frame[0]
-	group.add_child(PodMesh.make_shell())
+	group.add_child(PodMesh.make_shell(pod.state()))
 	group.add_child(PodStrips.make())
 	return group

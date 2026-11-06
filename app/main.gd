@@ -5,7 +5,7 @@ const SMOKE_BREATH: AudioStreamWAV = preload("res://assets/audio/smoke/wake-brea
 const SMOKE_PULSE: AudioStreamWAV = preload("res://assets/audio/smoke/linda-pulse-b-provisional.wav")
 const SMOKE_COUGH: AudioStreamWAV = preload("res://assets/audio/smoke/cough-mid-isolated.wav")
 ## The stasis-room root: builds the scene procedurally at runtime (the
-## greybox room shell and fixtures around the authored pod-v3 pod
+## greybox room shell and fixtures around the authored pod-v4 pod
 ## shells) and owns the Game container, ticking the sim at the fixed
 ## 60 Hz physics rate. The emergency lighting node reads the sim's
 ## power state through its own bridge; ceiling smoke reads the same
