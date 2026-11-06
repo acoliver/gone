@@ -106,11 +106,13 @@ func test_shell_resource_loads_and_stays_cheap() -> void:
 	assert_float_equal(lacquer.clearcoat, 1.0, "clearcoat is full")
 	assert_true(absf(lacquer.clearcoat_roughness - 0.08) < 1e-4, "clearcoat highlight stays tight")
 	assert_false(lacquer.emission_enabled, "plastic reflects room light without emitting")
-	for material: StandardMaterial3D in expected:
-		assert_true(material.albedo_texture == null and material.normal_texture == null and material.roughness_texture == null, "authored surfaces have no grunge textures")
-	assert_true(PodMesh.canopy_material().albedo_color == Color(0.018, 0.028, 0.038).linear_to_srgb(), "canopy is dark tinted glass")
-	assert_true(absf(PodMesh.canopy_material().roughness - 0.07) < 1e-4, "glass is very glossy")
-	assert_float_equal(PodMesh.canopy_material().metallic, 0.0, "glass is dielectric")
+	for material: Material in expected:
+		if material is StandardMaterial3D:
+			assert_true(material.albedo_texture == null and material.normal_texture == null and material.roughness_texture == null, "opaque surfaces have no grunge textures")
+		else:
+			# #88: replace the opaque color pin with the tested thin-glass contract.
+			assert_true(material == PodMesh.canopy_material() and material is ShaderMaterial, "only glazing uses a shader")
+			assert_true(material.shader.get_shader_uniform_list().is_empty(), "glass needs no texture bindings")
 	assert_true(PodMesh.couch_material().albedo_color == Color(0.045, 0.065, 0.085).linear_to_srgb(), "couch is darker fabric")
 	assert_true(absf(PodMesh.couch_material().roughness - 0.95) < 1e-4, "fabric stays rough")
 	assert_true(triangles > 0, "the pod mesh is not empty")
@@ -299,25 +301,26 @@ func test_lids_follow_each_state_about_the_authored_pivot() -> void:
 	for pod: Pods.Pod in registry.pods():
 		var shell := _shell_of(pods.get_child(pod.id().index()))
 		var lid: Node3D = shell.get_node("PodLid")
-		var expected := {Pods.PodState.SEALED: 0.0, Pods.PodState.EMPTY_OPEN: -70.0, Pods.PodState.PLAYER: -78.0}
-		# #88: keep the exported pivot and pane parenting; 78 degrees clears the ceiling by 54 mm.
-		assert_close(lid.position, Vector3(0, 0.976, -1.15330785), "hidden hinge")
+		var expected := {Pods.PodState.SEALED: 0.0, Pods.PodState.EMPTY_OPEN: -67.7295, Pods.PodState.PLAYER: -67.7295}
+		# #88: a seam-level hinge stays in contact and the rear sweep limits opening.
+		assert_close(lid.position, Vector3(0, 0.437, -1.17250931), "hidden hinge")
 		assert_true(absf(rad_to_deg(lid.rotation.x) - expected[pod.state()]) < 1e-4, "state lid angle")
 		assert_true(lid.has_node("WindowPane"), "pane moves with the lid")
 		assert_true(shell.get_node("PodBase").has_node("Couch") and shell.get_node("PodBase").has_node("Pillow"), "upholstery stays under the base")
 	pods.free()
 
-func test_player_lid_uses_the_largest_whole_degree_below_the_ceiling() -> void:
-	# #88: measure the exported lid and pane, not an axis-aligned proxy.
+func test_open_lid_uses_the_largest_angle_inside_the_wall_sweep_budget() -> void:
+	# #88: the 2.5 m walkway and 20 mm wall reserve now limit opening, not height.
 	var source: PackedScene = load(PodMesh.POD_PATH)
 	var shell: Node3D = source.instantiate()
 	var lid: MeshInstance3D = shell.get_node("PodLid")
 	lid.rotation.x = PodGeometry.lid_angle(Pods.PodState.PLAYER)
 	var top := _lid_top(lid)
-	assert_float_in_range(top, 3.1459, 3.1461, "78-degree lid height about the authored pivot")
+	assert_float_in_range(top, 2.6313, 2.6316, "#88: measured seam-hinge open height")
 	assert_true(Pods.ROOM_CEILING_HEIGHT - top >= 0.05, "player lid leaves at least 50 mm ceiling clearance")
-	lid.rotation.x -= deg_to_rad(1.0)
-	assert_true(Pods.ROOM_CEILING_HEIGHT - _lid_top(lid) < 0.05, "the next whole degree cannot retain 50 mm clearance")
+	assert_true(_lid_rear(lid) <= Pods.ROW_WALL_OFFSET - 0.02 + 1e-6, "open lid retains 20 mm wall clearance")
+	lid.rotation.x -= deg_to_rad(0.001)
+	assert_true(_lid_rear(lid) > Pods.ROW_WALL_OFFSET - 0.02, "the next millidegree exceeds the wall sweep budget")
 	shell.free()
 
 func _lid_top(lid: MeshInstance3D) -> float:
@@ -330,6 +333,16 @@ func _lid_top(lid: MeshInstance3D) -> float:
 			for vertex: Vector3 in vertices:
 				top = maxf(top, (frame * vertex).y)
 	return top
+
+func _lid_rear(lid: MeshInstance3D) -> float:
+	var rear := -Pods.POD_LENGTH / 2.0
+	var pane: MeshInstance3D = lid.get_node("WindowPane")
+	for instance: MeshInstance3D in [lid, pane]:
+		var frame := lid.transform if instance == lid else lid.transform * pane.transform
+		for surface: int in range(instance.mesh.get_surface_count()):
+			for vertex: Vector3 in instance.mesh.surface_get_arrays(surface)[Mesh.ARRAY_VERTEX]:
+				rear = minf(rear, (frame * vertex).z)
+	return -Pods.POD_LENGTH / 2.0 - rear
 
 func test_live_camera_interpolation_clears_the_model() -> void:
 	_ensure_triangles()

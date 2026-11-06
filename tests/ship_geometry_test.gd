@@ -91,18 +91,18 @@ func _assert_solids(actual: Array[ShipGeometry.SolidSpec], expected: Array[ShipG
 func test_lid_collision_slabs_follow_the_same_hidden_pivot() -> void:
 	# New pod #88: independent closed section centers and sizes, not
 	# expectations obtained by calling the production recipe.
-	var pivot := Vector3(0, 0.976, -1.15330785124)
+	var pivot := Vector3(0, 0.437, -1.17250931263)
 	var centers: Array[Vector3] = [Vector3(0, 0.73, -0.79), Vector3(0, 0.84, 0), Vector3(0, 0.73, 0.79)]
 	var sizes: Array[Vector3] = [Vector3(0.40, 0.04, 0.38), Vector3(0.64, 0.10, 1.2), Vector3(0.40, 0.04, 0.38)]
-	# #88: 78 degrees leaves 54 mm under the bay ceiling; empty-open stays 70.
+	# #88: the seam hinge's rear sweep and 2.5 m walkway limit both open states.
 	for state: int in [Pods.PodState.SEALED, Pods.PodState.EMPTY_OPEN, Pods.PodState.PLAYER]:
-		var angle: float = {Pods.PodState.SEALED: 0.0, Pods.PodState.EMPTY_OPEN: deg_to_rad(-70), Pods.PodState.PLAYER: deg_to_rad(-78)}[state]
+		var angle: float = {Pods.PodState.SEALED: 0.0, Pods.PodState.EMPTY_OPEN: deg_to_rad(-67.7295), Pods.PodState.PLAYER: deg_to_rad(-67.7295)}[state]
 		var expected_centers := centers
 		var expected_sizes := sizes
 		if state == Pods.PodState.PLAYER:
 			# #88: upper-panel proxies leave the conservative body sweep open below the lid.
-			expected_centers = [Vector3(0, 0.84, 0.15), Vector3(0, 0.84, 0.45), Vector3(0, 0.73, 0.79)]
-			expected_sizes = [Vector3(0.64, 0.10, 0.3), Vector3(0.64, 0.10, 0.3), Vector3(0.40, 0.04, 0.38)]
+			expected_centers = [Vector3(0, 0.84, 0.225), Vector3(0, 0.84, 0.45), Vector3(0, 0.73, 0.79)]
+			expected_sizes = [Vector3(0.64, 0.10, 0.15), Vector3(0.64, 0.10, 0.15), Vector3(0.40, 0.04, 0.38)]
 		var solids := PodGeometry.pod_solids(state)
 		assert_int_equal(solids.size(), 8, "five tray pieces plus three articulated lid slabs")
 		for section: int in range(3):

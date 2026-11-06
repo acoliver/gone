@@ -59,6 +59,7 @@ static func build(game: Game) -> Lighting:
 	lighting._lens_mesh.size = LENS_SIZE
 	lighting._lens_material = StandardMaterial3D.new()
 	lighting._lens_material.albedo_color = LENS_BASE_COLOR
+	lighting._lens_material.emission_enabled = true
 	lighting._lens_material.emission = Color(FIXTURE_EMISSIVE * level, 0.0, 0.0)
 	lighting._lens_material.roughness = 0.8
 	lighting._lens_mesh.material = lighting._lens_material
@@ -115,7 +116,7 @@ static func fixture_transforms(registry: Pods.PodRegistry) -> Array[Transform3D]
 				Vector3(
 					placement.center.x,
 					WALL_MOUNT_HEIGHT,
-					side * (Pods.ROOM_WIDTH / 2.0 - WALL_STANDOFF)
+					side * (Pods.ROOM_WIDTH / 2.0 - WALL_STANDOFF - Pods.ROW_WALL_OFFSET)
 				)
 			)
 		)

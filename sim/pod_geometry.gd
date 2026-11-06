@@ -12,8 +12,9 @@ const TUB_TOP_Y: float = 0.419
 const EXIT_MOUTH_DEPTH: float = 0.2965
 const EXIT_APERTURE_WIDTH: float = 2.0 * (Controller.CAPSULE_RADIUS + Controller.POD_EXIT_CLEARANCE)
 const LID_THICKNESS: float = 0.10
-const LID_OPEN_TILT: float = deg_to_rad(70.0)
-const LID_PIVOT := Vector3(0.0, 0.976, -1.15330785124)
+# #88: maximum sweep with a 2.5 m aisle, 150 mm exit reserve and 20 mm wall gap.
+const LID_OPEN_TILT: float = deg_to_rad(67.7295)
+const LID_PIVOT := Vector3(0.0, 0.437, -1.17250931263)
 
 # Retained only as a clearance reference for the retired blanket dressing.
 const BLANKET_THICKNESS: float = 0.05
@@ -44,8 +45,7 @@ static func lid_angle(state: int) -> float:
 		Pods.PodState.EMPTY_OPEN:
 			return -LID_OPEN_TILT
 		Pods.PodState.PLAYER:
-			# #88: 78 degrees leaves 54 mm below the 3.2 m ceiling; 79 leaves only 38 mm.
-			return deg_to_rad(-78.0)
+			return -LID_OPEN_TILT
 	assert(false, "unknown pod state")
 	return 0.0
 
@@ -79,11 +79,11 @@ static func lid_solids(state: int) -> Array[PodGeometry.PodSolid]:
 	var centers: Array[Vector3] = [Vector3(0, 0.73, -0.79), Vector3(0, 0.84, 0), Vector3(0, 0.73, 0.79)]
 	var sizes: Array[Vector3] = [Vector3(0.40, 0.04, 0.38), Vector3(0.64, LID_THICKNESS, 1.2), Vector3(0.40, 0.04, 0.38)]
 	if state == Pods.PodState.PLAYER:
-		# #88: at the ceiling-safe angle, reserve the lower lid for the
-		# authored body sweep, as the tub mouth does. Three upper panels
-		# retain lid collision without an AABB over the get-up corridor.
-		centers = [Vector3(0, 0.84, 0.15), Vector3(0, 0.84, 0.45), Vector3(0, 0.73, 0.79)]
-		sizes = [Vector3(0.64, LID_THICKNESS, 0.3), Vector3(0.64, LID_THICKNESS, 0.3), Vector3(0.40, 0.04, 0.38)]
+		# #88: the resolver sweeps an axis-aligned get-up envelope. Keep the
+		# lower opening reserved and split the upper lid, rather than let a
+		# long rotated slab's AABB block space that the mesh leaves clear.
+		centers = [Vector3(0, 0.84, 0.225), Vector3(0, 0.84, 0.45), Vector3(0, 0.73, 0.79)]
+		sizes = [Vector3(0.64, LID_THICKNESS, 0.15), Vector3(0.64, LID_THICKNESS, 0.15), Vector3(0.40, 0.04, 0.38)]
 	for index: int in range(centers.size()):
 		solids.append(PodGeometry.PodSolid.new(
 			LID_PIVOT + rotation * (centers[index] - LID_PIVOT),

@@ -11,7 +11,7 @@ const SHELL_CLEARCOAT: float = 1.0
 const SHELL_CLEARCOAT_ROUGHNESS: float = 0.08
 
 static var _scene: PackedScene
-static var _materials: Dictionary[String, StandardMaterial3D] = {}
+static var _materials: Dictionary[String, Material] = {}
 static var _shells: Dictionary[int, ArrayMesh] = {}
 
 static func make_shell(state: int = Pods.PodState.PLAYER) -> Node3D:
@@ -29,7 +29,7 @@ static func shell_material() -> StandardMaterial3D:
 	_ensure_scene()
 	return _materials["ShellPlastic"]
 
-static func canopy_material() -> StandardMaterial3D:
+static func canopy_material() -> ShaderMaterial:
 	_ensure_scene()
 	return _materials["WindowTint"]
 
@@ -85,15 +85,28 @@ static func _prepare(node: Node3D) -> void:
 			var material_name := material.resource_name
 			assert(material_name in SURFACE_NAMES, "unexpected pod material")
 			if not _materials.has(material_name):
-				var shared: StandardMaterial3D = material.duplicate()
-				if material_name == "ShellPlastic":
-					# Godot drops KHR_materials_clearcoat on glTF import.
-					shared.clearcoat_enabled = true
-					shared.clearcoat = SHELL_CLEARCOAT
-					shared.clearcoat_roughness = SHELL_CLEARCOAT_ROUGHNESS
-				_materials[material_name] = shared
+				if material_name == "WindowTint":
+					# #88: Godot ignores glTF transmission; own the thin-sheet contract here.
+					var glass := ShaderMaterial.new()
+					glass.resource_name = "WindowTint"
+					glass.shader = preload("res://app/pod_glass.gdshader")
+					_materials[material_name] = glass
+				else:
+					var shared: StandardMaterial3D = material.duplicate()
+					if material_name == "ShellPlastic":
+						# Godot drops KHR_materials_clearcoat on glTF import.
+						shared.clearcoat_enabled = true
+						shared.clearcoat = SHELL_CLEARCOAT
+						shared.clearcoat_roughness = SHELL_CLEARCOAT_ROUGHNESS
+					_materials[material_name] = shared
 			var arrays := source.surface_get_arrays(surface)
-			if material_name in ["ShellPlastic", "WindowTint"]:
+			if material_name == "WindowTint":
+				# #88: preserve the unsimplified single sheet's 0.5 mm polished edge.
+				assert(arrays[Mesh.ARRAY_COLOR] != null, "glass requires explicit region colors")
+				node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+				node.sorting_use_aabb_center = true
+				node.sorting_offset = 0.0
+			elif material_name == "ShellPlastic":
 				# First Godot LOD has <1 mm measured error on these three
 				# surfaces and retains the existing 20k per-pod budget (#88).
 				assert(importer.get_surface_lod_count(surface) > 0, "smooth shell needs its first LOD")

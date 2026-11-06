@@ -355,7 +355,8 @@ class BaySpec:
 	func regular_light_frames() -> Array[Transform3D]:
 		var frames: Array[Transform3D] = []
 		for x: float in [-4.0, 0.0, 4.0]:
-			for z: float in [-1.6, 1.6]:
+			# #88: the ceiling strips retain their offset from the shifted pod rows.
+			for z: float in [-1.6 + Pods.ROW_WALL_OFFSET, 1.6 - Pods.ROW_WALL_OFFSET]:
 				frames.append(Transform3D(Basis(), Vector3(x, Pods.ROOM_CEILING_HEIGHT - 0.08, z)))
 		return frames
 	func ceiling_vent_frames() -> Array[Transform3D]:
@@ -363,7 +364,9 @@ class BaySpec:
 	func local_bounds() -> AABB:
 		return AABB(Vector3(-Pods.ROOM_LENGTH / 2, 0, -Pods.ROOM_WIDTH / 2), Vector3(Pods.ROOM_LENGTH, Pods.ROOM_CEILING_HEIGHT, Pods.ROOM_WIDTH))
 	func rod_local() -> Transform3D:
-		return Transform3D(Basis(), Vector3(-0.6, 0, -1.40))
+		# #88: keep the floor-level rod outside the 1.3 m centerline pickup
+		# reach. The curved tub's foot clears it after the row moves inward.
+		return Transform3D(Basis(), Vector3(-0.6, 0, -1.4))
 	func template() -> Pods.PodRegistry:
 		return Pods.PodRegistry.frozen()
 

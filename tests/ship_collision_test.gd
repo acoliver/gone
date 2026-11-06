@@ -154,7 +154,7 @@ func test_opening_counts_and_every_box_keep_original_insertion_order() -> void:
 	var closed := ShipCollision.opening_set(registry, false, false)
 	assert_vec3_equal(closed.boxes()[0].center(), Vector3(15, -0.1, 7.7), "first bay floor")
 	assert_vec3_equal(closed.boxes()[5].center(), Vector3(15, 1.2, 1.6), "pierce replaces east wall at same index")
-	assert_vec3_equal(closed.boxes()[8].center(), Vector3(11.1665, 0.275, 12.5), "new pod #88 head-wall index")
+	assert_vec3_equal(closed.boxes()[8].center(), Vector3(11.373499, 0.275, 12.5), "#88 seam-hinge wall offset, unchanged head-wall index")
 	assert_vec3_equal(closed.boxes()[92].center(), Vector3(27, 1.1, -1.47), "last power leaf")
 
 func test_approved_layout_cache_and_blocker_revisions_are_deck_local() -> void:

@@ -64,7 +64,7 @@ func test_fixture_inventory_places_eight_red_lights_from_registry() -> void:
 		var expected := Vector3(
 			placement.center.x,
 			2.65,
-			side * (Pods.ROOM_WIDTH / 2.0 - 0.10)
+			side * (Pods.ROOM_WIDTH / 2.0 - 0.10 - Pods.ROW_WALL_OFFSET)
 		)
 		assert_vec3_equal(
 			fixtures[index].position,

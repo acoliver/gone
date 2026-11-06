@@ -126,7 +126,7 @@ func test_named_boxes_derive_from_their_placements() -> void:
 			break
 		before_player += PodBody.pod_solids(pod.state()).size()
 	var base: ColliderSet.Aabb = boxes[Placement.room_shell().size() + before_player]
-	assert_vec3_near(base.center(), Vector3(-4.8, 0.114, 2.8035), "player base center")
+	assert_vec3_near(base.center(), Vector3(-4.8, 0.114, 2.5965), "#88: player base follows the seam-hinge wall offset")
 	assert_vec3_near(
 		base.half_extents(),
 		Vector3(0.275, 0.114, 0.95),

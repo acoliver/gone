@@ -28,11 +28,14 @@ const POD_WIDTH: float = 0.9
 ## Pod height from floor to the top of the body, in meters.
 const POD_HEIGHT: float = 0.896
 
-## Bay-only aisle: the longer clean-cage pod leaves 157 mm exit clearance (#88).
-const AISLE_HALF_WIDTH: float = 1.45
+## #88: reserve a 2.5 m walkway plus the unchanged 150 mm exit margin.
+const AISLE_HALF_WIDTH: float = 1.25
+
+## #88: seam-hinged lids sweep 187 mm behind the body, with 20 mm wall margin.
+const ROW_WALL_OFFSET: float = 0.206999 # Float32 row centers retain the full exit reserve.
 
 ## Distance from a long wall to the center line of its pod row.
-const ROW_CENTER_FROM_WALL: float = POD_LENGTH / 2.0
+const ROW_CENTER_FROM_WALL: float = POD_LENGTH / 2.0 + ROW_WALL_OFFSET
 
 ## Floor-plan Z of the -Z wall row's pod centers (openings face +Z).
 const ROW_A_Z: float = -(ROOM_WIDTH / 2.0 - ROW_CENTER_FROM_WALL)

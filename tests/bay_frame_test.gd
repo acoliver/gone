@@ -6,8 +6,8 @@ func test_runtime_exit_is_the_rigidly_transformed_local_path() -> void:
 	var frame := ShipLayout.authored().layout.bay_to_world()
 	assert_true(frame.basis == Basis(Vector3(0, 0, -1), Vector3.UP, Vector3.RIGHT), "exact cardinal basis")
 	var local := Exit.ExitPath.try_new(game.registry.player_pod().placement(), PodGeometry.TRAY_FLOOR_Y).path
-	assert_vec3_equal(frame * Vector3(-4.8, 0, 2.8035), Vector3(17.8035, 0, 12.5), "player pod world pin")
-	assert_vec3_equal(frame * Vector3(-0.6, 0, -1.40), Vector3(13.6, 0, 8.3), "rod world pin")
+	assert_vec3_equal(frame * Vector3(-4.8, 0, 2.5965), Vector3(17.5965, 0, 12.5), "player pod world pin")
+	assert_vec3_equal(frame * Vector3(-0.6, 0, -1.4), Vector3(13.6, 0, 8.3), "rod world pin")
 	assert_close(frame * Vector3(6, 0, 0), Vector3(15, 0, 1.7), "bay threshold pin")
 	for index: int in range(5):
 		assert_vec3_equal(game.exit_path.poses()[index].foot(), frame * local.poses()[index].foot(), "world foot %d" % index)
@@ -31,7 +31,8 @@ func test_switch_world_pin() -> void:
 func test_all_pod_and_light_frames_rotate_without_changing_local_fixtures() -> void:
 	var game := Game.new(0)
 	var frame := game.layout.bay_to_world()
-	var pins: Array[Vector3] = [Vector3(12.1965, 0, 12.5), Vector3(12.1965, 0, 11.1), Vector3(12.1965, 0, 9.7), Vector3(12.1965, 0, 8.3), Vector3(17.8035, 0, 9.7), Vector3(17.8035, 0, 11.1), Vector3(17.8035, 0, 12.5)]
+	# #88: both rows move 206.999 mm inward without changing the bay frame.
+	var pins: Array[Vector3] = [Vector3(12.4035, 0, 12.5), Vector3(12.4035, 0, 11.1), Vector3(12.4035, 0, 9.7), Vector3(12.4035, 0, 8.3), Vector3(17.5965, 0, 9.7), Vector3(17.5965, 0, 11.1), Vector3(17.5965, 0, 12.5)]
 	for pod: Pods.Pod in game.registry.pods():
 		var center := pod.placement().center
 		assert_close(frame * Vector3(center.x, 0, center.y), pins[pod.id().index()], "world pod pin")

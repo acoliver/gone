@@ -5,8 +5,9 @@ func test_bay_fixture_frames_have_independent_local_and_world_pins() -> void:
 	var bay := layout.bay()
 	var lights := bay.regular_light_frames()
 	var vents := bay.ceiling_vent_frames()
-	var local_lights := [Vector3(-4, 3.12, -1.6), Vector3(-4, 3.12, 1.6), Vector3(0, 3.12, -1.6), Vector3(0, 3.12, 1.6), Vector3(4, 3.12, -1.6), Vector3(4, 3.12, 1.6)]
-	var world_lights := [Vector3(13.4, 3.12, 11.7), Vector3(16.6, 3.12, 11.7), Vector3(13.4, 3.12, 7.7), Vector3(16.6, 3.12, 7.7), Vector3(13.4, 3.12, 3.7), Vector3(16.6, 3.12, 3.7)]
+	# #88: ceiling lights follow the 206.999 mm inward row translation.
+	var local_lights := [Vector3(-4, 3.12, -1.393001), Vector3(-4, 3.12, 1.393001), Vector3(0, 3.12, -1.393001), Vector3(0, 3.12, 1.393001), Vector3(4, 3.12, -1.393001), Vector3(4, 3.12, 1.393001)]
+	var world_lights := [Vector3(13.606999, 3.12, 11.7), Vector3(16.393001, 3.12, 11.7), Vector3(13.606999, 3.12, 7.7), Vector3(16.393001, 3.12, 7.7), Vector3(13.606999, 3.12, 3.7), Vector3(16.393001, 3.12, 3.7)]
 	var local_vents := [Vector3(-3, 3.05, 0), Vector3(3, 3.05, 0)]
 	var world_vents := [Vector3(15, 3.05, 10.7), Vector3(15, 3.05, 4.7)]
 	assert_int_equal(lights.size(), 6, "six ordered regular fixtures")
