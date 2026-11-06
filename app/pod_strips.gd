@@ -1,10 +1,9 @@
 class_name PodStrips
 extends RefCounted
 ## Two red status belts shared by all pods, with no lights or colliders.
-## Frozen pod-local waypoints were measured by intersecting pod-v3's
-## triangles at y 0.580 on the canopy shoulder and y 0.310 on the tray.
-## Centers sit 0.006 m inside the skin; the tube radius is 0.012 m.
-## The head end still stops at -0.850 to clear the blanket collider.
+## New pod #88: measured +X/-X base flanks at Y=0.280/0.120 m.
+## Centers are 24 mm outward from ray-intersected skin, leaving the
+## 12 mm tube outside the curved tub in every lid state.
 ## Emission follows Lighting.FIXTURE_EMISSIVE and remains always on.
 
 const STRIP_EMISSION: Color = Color(Lighting.FIXTURE_EMISSIVE, 0.0, 0.0)
@@ -14,49 +13,48 @@ const STRIP_METALLIC: float = 0.0
 const STRIP_RADIUS: float = 0.012
 const RADIAL_SEGMENTS: int = 8
 
-## The +X dome-shoulder belt at y 0.580: 19 waypoints, z -0.850 (head)
-## to +0.900 (foot).
+## Measured +X base flank (#88).
 const FLANK_DOME: Array[Vector3] = [
-	Vector3(0.331, 0.58, -0.85),
-	Vector3(0.351, 0.58, -0.80),
-	Vector3(0.369, 0.58, -0.70),
-	Vector3(0.370, 0.58, -0.60),
-	Vector3(0.370, 0.58, -0.50),
-	Vector3(0.370, 0.58, -0.40),
-	Vector3(0.370, 0.58, -0.30),
-	Vector3(0.370, 0.58, -0.20),
-	Vector3(0.370, 0.58, -0.10),
-	Vector3(0.370, 0.58, 0.00),
-	Vector3(0.370, 0.58, 0.10),
-	Vector3(0.370, 0.58, 0.20),
-	Vector3(0.370, 0.58, 0.30),
-	Vector3(0.370, 0.58, 0.40),
-	Vector3(0.370, 0.58, 0.50),
-	Vector3(0.370, 0.58, 0.60),
-	Vector3(0.369, 0.58, 0.70),
-	Vector3(0.351, 0.58, 0.80),
-	Vector3(0.303, 0.58, 0.90),
+	Vector3(0.3772, 0.28, -0.85),
+	Vector3(0.3918, 0.28, -0.80),
+	Vector3(0.4150, 0.28, -0.70),
+	Vector3(0.4326, 0.28, -0.60),
+	Vector3(0.4465, 0.28, -0.50),
+	Vector3(0.4566, 0.28, -0.40),
+	Vector3(0.4640, 0.28, -0.30),
+	Vector3(0.4690, 0.28, -0.20),
+	Vector3(0.4721, 0.28, -0.10),
+	Vector3(0.4733, 0.28, 0.00),
+	Vector3(0.4721, 0.28, 0.10),
+	Vector3(0.4692, 0.28, 0.20),
+	Vector3(0.4642, 0.28, 0.30),
+	Vector3(0.4567, 0.28, 0.40),
+	Vector3(0.4465, 0.28, 0.50),
+	Vector3(0.4331, 0.28, 0.60),
+	Vector3(0.4150, 0.28, 0.70),
+	Vector3(0.3918, 0.28, 0.80),
+	Vector3(0.3599, 0.28, 0.90),
 ]
 
-## The -X tray-wall belt at y 0.310: 17 waypoints, z -0.800 to +0.800.
+## Measured -X base flank (#88).
 const FLANK_TRAY: Array[Vector3] = [
-	Vector3(-0.418, 0.31, -0.80),
-	Vector3(-0.437, 0.31, -0.70),
-	Vector3(-0.438, 0.31, -0.60),
-	Vector3(-0.438, 0.31, -0.50),
-	Vector3(-0.438, 0.31, -0.40),
-	Vector3(-0.438, 0.31, -0.30),
-	Vector3(-0.438, 0.31, -0.20),
-	Vector3(-0.438, 0.31, -0.10),
-	Vector3(-0.438, 0.31, 0.00),
-	Vector3(-0.438, 0.31, 0.10),
-	Vector3(-0.438, 0.31, 0.20),
-	Vector3(-0.438, 0.31, 0.30),
-	Vector3(-0.438, 0.31, 0.40),
-	Vector3(-0.438, 0.31, 0.50),
-	Vector3(-0.438, 0.31, 0.60),
-	Vector3(-0.437, 0.31, 0.70),
-	Vector3(-0.418, 0.31, 0.80),
+	Vector3(-0.3704, 0.12, -0.80),
+	Vector3(-0.3939, 0.12, -0.70),
+	Vector3(-0.4120, 0.12, -0.60),
+	Vector3(-0.4258, 0.12, -0.50),
+	Vector3(-0.4360, 0.12, -0.40),
+	Vector3(-0.4435, 0.12, -0.30),
+	Vector3(-0.4486, 0.12, -0.20),
+	Vector3(-0.4518, 0.12, -0.10),
+	Vector3(-0.4526, 0.12, 0.00),
+	Vector3(-0.4518, 0.12, 0.10),
+	Vector3(-0.4486, 0.12, 0.20),
+	Vector3(-0.4435, 0.12, 0.30),
+	Vector3(-0.4360, 0.12, 0.40),
+	Vector3(-0.4258, 0.12, 0.50),
+	Vector3(-0.4120, 0.12, 0.60),
+	Vector3(-0.3939, 0.12, 0.70),
+	Vector3(-0.3704, 0.12, 0.80),
 ]
 
 static var _strips_mesh: ArrayMesh = null
