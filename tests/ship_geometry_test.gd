@@ -42,9 +42,9 @@ func test_extracted_opening_recipes_match_presentation_placements() -> void:
 		assert_vec3_equal(actual.size, rendered.size, "console hull extent")
 
 func test_pod_geometry_preserves_cavity_tray_and_top_recipes() -> void:
-	assert_float_equal(PodGeometry.TRAY_FLOOR_Y, 0.112, "shared tray floor")
+	assert_float_equal(PodGeometry.TRAY_FLOOR_Y, 0.240, "new pod #88 couch plateau")
 	assert_int_equal(PodGeometry.cavity_solids().size(), 5, "five cavity pieces")
-	assert_vec3_equal(PodGeometry.cavity_solids()[0].size, Vector3(0.9, 0.1, 2.2), "base slab")
+	assert_vec3_equal(PodGeometry.cavity_solids()[0].size, Vector3(0.55, 0.228, 1.9), "base slab")
 	for state: int in [Pods.PodState.PLAYER, Pods.PodState.EMPTY_OPEN, Pods.PodState.SEALED]:
 		var pure := PodGeometry.pod_solids(state)
 		var adapter := PodBody.pod_solids(state)
@@ -87,3 +87,19 @@ func _assert_solids(actual: Array[ShipGeometry.SolidSpec], expected: Array[ShipG
 		assert_vec3_equal(actual[index].center, expected[index].center, context + " center")
 		assert_vec3_equal(actual[index].size, expected[index].size, context + " size")
 		assert_true(actual[index].rotation == expected[index].rotation, context + " rotation")
+
+func test_lid_collision_slabs_follow_the_same_hidden_pivot() -> void:
+	# New pod #88: independent closed section centers and sizes, not
+	# expectations obtained by calling the production recipe.
+	var pivot := Vector3(0, 0.976, -1.15330785124)
+	var centers: Array[Vector3] = [Vector3(0, 0.73, -0.79), Vector3(0, 0.84, 0), Vector3(0, 0.73, 0.79)]
+	var sizes: Array[Vector3] = [Vector3(0.40, 0.04, 0.38), Vector3(0.64, 0.10, 1.2), Vector3(0.40, 0.04, 0.38)]
+	for state: int in [Pods.PodState.SEALED, Pods.PodState.EMPTY_OPEN, Pods.PodState.PLAYER]:
+		var angle: float = {Pods.PodState.SEALED: 0.0, Pods.PodState.EMPTY_OPEN: deg_to_rad(-70), Pods.PodState.PLAYER: -PI / 2}[state]
+		var solids := PodGeometry.pod_solids(state)
+		assert_int_equal(solids.size(), 8, "five tray pieces plus three articulated lid slabs")
+		for section: int in range(3):
+			var solid := solids[5 + section]
+			assert_close(solid.center, pivot + Basis(Vector3.RIGHT, angle) * (centers[section] - pivot), "rotated section")
+			assert_vec3_equal(solid.size, sizes[section], "section size")
+			assert_float_equal(solid.roll_radians, angle, "lid rotation")

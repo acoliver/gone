@@ -1,4 +1,5 @@
 extends SimTestCase
+# New pod #88: pins follow the fitted asset, row centers and eight-piece topology.
 
 func _player(foot: Vector3, deck: int = 14) -> Player:
 	var player := Player.build(Game.new(0), null)
@@ -212,7 +213,7 @@ func test_click_route_uses_only_objectives_after_get_up_and_replays_deterministi
 
 func test_picker_resolves_layout_targets_and_stops_at_shared_solids() -> void:
 	var fixtures := [
-		[&"D14-BAY-ROD", Vector3(15, 0.305, 8.3), Vector3(13.45, 0.04, 8.3)],
+		[&"D14-BAY-ROD", Vector3(15, 0.305, 8.3), Vector3(13.6, 0.04, 8.3)],
 		[ShipLayout.BAY_DOOR_ID, Vector3(15, 0.305, 4), Vector3(15, 1.2, 1.7)],
 		[&"D14-HALL-SWITCH", Vector3(18, 0.305, 0), Vector3(16.2, 1.25, 1.45)],
 		[ShipLayout.POWER_DOOR_ID, Vector3(25, 0.305, 0), Vector3(27, 1.2, -1.5)],

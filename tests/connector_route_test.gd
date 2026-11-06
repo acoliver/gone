@@ -1,4 +1,5 @@
 extends SimTestCase
+# New pod #88: regenerated ordinary-input routes retain exact schedule/digest checks.
 
 const Driver := preload("res://tests/connector_route_driver.gd")
 
@@ -26,7 +27,7 @@ func test_both_wells_full_real_player_journey_and_replay_digest() -> void:
 		digests.append("\n".join(route.digest_lines).sha256_text())
 		player.free()
 	assert_true(digests[0] == digests[1], "fixed seed/input event digest repeats")
-	assert_true(digests[0] == "e0b514ef37cef2f4df134a060c781ddd0ad5cb8e3c923c4ab7c44486b19a4e5d", "pinned full journey event digest")
+	assert_true(digests[0] == "0706edce0347fc6ec00279dec7a41b73ef9d302af01613e6d79f8d61cb8bb34c", "pinned full journey event digest")
 	print("connector route digest: ", digests[0])
 
 func test_climb_channel_is_single_consumption_and_scenario_validated() -> void:

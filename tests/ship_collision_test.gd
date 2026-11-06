@@ -1,4 +1,5 @@
 extends SimTestCase
+# New pod #88: pins follow the fitted asset, row centers and eight-piece topology.
 
 func test_well_slice_includes_adjacent_floor_for_head_and_foot_with_stable_ids() -> void:
 	var layout := ShipLayout.authored().layout
@@ -118,7 +119,7 @@ func test_opening_manifest_has_exact_owners_order_and_door_differentials() -> vo
 			expected.append(StringName("D14-BAY/SHELL/%03d" % index))
 		if flags.x == 0:
 			expected.append(&"D14-BAY-DOOR/BLOCKER")
-		var pod_counts := [6, 7, 6, 7, 6, 7, 6]
+		var pod_counts := [8, 8, 8, 8, 8, 8, 8]
 		for pod: int in range(7):
 			for piece: int in range(pod_counts[pod]):
 				expected.append(StringName("D14-BAY/POD-%03d/%03d" % [pod, piece]))
@@ -146,15 +147,15 @@ func test_opening_counts_and_every_box_keep_original_insertion_order() -> void:
 	for flags: Vector2i in [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1)]:
 		var pure := ShipCollision.opening_set(registry, bool(flags.x), bool(flags.y))
 		var adapter := PowerRoom.scene_collider_set(registry, bool(flags.x), bool(flags.y))
-		var expected := 194 if flags.x == 0 else (192 if flags.y == 0 else 191)
+		var expected := 205 if flags.x == 0 else (203 if flags.y == 0 else 202)
 		assert_int_equal(pure.size(), expected, "full scene count")
 		for index: int in range(pure.size()):
 			assert_true(pure.boxes()[index].equals(adapter.boxes()[index]), "same ordered collider")
 	var closed := ShipCollision.opening_set(registry, false, false)
 	assert_vec3_equal(closed.boxes()[0].center(), Vector3(15, -0.1, 7.7), "first bay floor")
 	assert_vec3_equal(closed.boxes()[5].center(), Vector3(15, 1.2, 1.6), "pierce replaces east wall at same index")
-	assert_vec3_equal(closed.boxes()[8].center(), Vector3(11.03, 0.45, 12.5), "closed bay blocker index")
-	assert_vec3_equal(closed.boxes()[81].center(), Vector3(27, 1.1, -1.47), "last power leaf")
+	assert_vec3_equal(closed.boxes()[8].center(), Vector3(11.1665, 0.275, 12.5), "new pod #88 head-wall index")
+	assert_vec3_equal(closed.boxes()[92].center(), Vector3(27, 1.1, -1.47), "last power leaf")
 
 func test_approved_layout_cache_and_blocker_revisions_are_deck_local() -> void:
 	var collision := ShipCollision.new(ShipLayout.authored().layout)

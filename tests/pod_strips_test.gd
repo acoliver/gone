@@ -1,4 +1,5 @@
 extends SimTestCase
+# New pod #88: pins follow the fitted asset, row centers and eight-piece topology.
 ## Pins for the PodStrips emissive flank belts: every pod group carries
 ## exactly one "PodStrips" child instancing the one shared merged mesh
 ## (one surface, one material, exactly 576 triangles), the build is
@@ -8,8 +9,8 @@ extends SimTestCase
 ## authored dressing solid by the measured margins, and nothing in the
 ## strip pass adds a light or a collider.
 
-const BELT_DOME_Y: float = 0.58
-const BELT_TRAY_Y: float = 0.31
+const BELT_DOME_Y: float = 0.28
+const BELT_TRAY_Y: float = 0.12
 const CONTACT_TOLERANCE: float = 0.011
 const GAP_EPSILON: float = 1e-4
 
@@ -80,13 +81,14 @@ func test_strip_material_follows_the_lens_convention() -> void:
 	assert_true(strip == PodStrips._strip_material(), "the one material in play is the cached shared strip material")
 
 func test_strip_geometry_stays_within_the_pinned_bounds() -> void:
+	# New pod #88: outward-offset base belts, measured from the mesh.
 	var bounds: AABB = PodStrips.strips_mesh().get_aabb()
-	assert_true(bounds.position.x >= -0.450 - 1e-4 and bounds.end.x <= 0.382 + 1e-4,
-		"strip x within [-0.450, 0.382], got %s" % str(bounds))
-	assert_true(bounds.position.y >= 0.298 - 1e-4 and bounds.end.y <= 0.592 + 1e-4,
-		"strip y within [0.298, 0.592], got %s" % str(bounds))
-	assert_true(bounds.position.z >= -0.862 - 1e-4 and bounds.end.z <= 0.912 + 1e-4,
-		"strip z within [-0.862, 0.912], got %s" % str(bounds))
+	assert_true(bounds.position.x >= -0.4646 - 1e-4 and bounds.end.x <= 0.4853 + 1e-4,
+		"strip x within [-0.4646, 0.4853], got %s" % str(bounds))
+	assert_true(bounds.position.y >= 0.108 - 1e-4 and bounds.end.y <= 0.292 + 1e-4,
+		"strip y within [0.108, 0.292], got %s" % str(bounds))
+	assert_true(bounds.position.z >= -0.8534 - 1e-4 and bounds.end.z <= 0.9037 + 1e-4,
+		"strip z within [-0.8534, 0.9037], got %s" % str(bounds))
 	assert_true(bounds.end.y <= 0.692, "the strip top stays under the 0.692 m pin")
 	assert_true(bounds.end.y < Placement.HANGING_WIRE_CLEARANCE,
 		"the strips stay far under the overhead clearance floor")
@@ -110,7 +112,9 @@ func _assert_skin_contact(points: Array[Vector3], positive_x: bool) -> void:
 
 func _assert_point_contact(point: Vector3, positive_x: bool) -> void:
 	var skin := _skin_x(point, positive_x)
-	var deviation := absf(point.x) + 0.006 - skin
+	# New pod #88: tubes sit outside, rather than embedded in, the tub.
+	var deviation := absf(point.x) - 0.024 - skin
+	assert_true(absf(point.x) - skin >= 0.012, "the tube radius stays outside the shell")
 	assert_true(absf(deviation) <= CONTACT_TOLERANCE,
 		"belt at %s sits within %.3f of the skin, got %.4f (skin %.4f)" % [
 			str(point), CONTACT_TOLERANCE, deviation, skin])
@@ -126,8 +130,8 @@ func test_strips_add_no_lights_and_no_colliders() -> void:
 	assert_int_equal(_count_type(pods, "Light3D"), 0, "the pod tree adds no Light3D")
 	assert_int_equal(_count_type(pods, "CollisionShape3D"), 0, "the pod tree adds no CollisionShape3D")
 	var colliders := Placement.scene_collider_set(Pods.PodRegistry.frozen())
-	assert_int_equal(colliders.size(), 56,
-		"the scene collider set stays the 56 authored boxes: strips add no solids")
+	assert_int_equal(colliders.size(), 67,
+		"the scene collider set stays the 67 authored boxes: strips add no solids")
 
 ## The pod group's strip instance, or null when the group lacks one.
 func _strips_of(group: Node) -> MeshInstance3D:
@@ -140,7 +144,7 @@ func _strips_of(group: Node) -> MeshInstance3D:
 func _ensure_skin_triangles() -> void:
 	if not _skin_triangles.is_empty():
 		return
-	var mesh := PodMesh.shell_mesh()
+	var mesh := PodMesh.shell_mesh(Pods.PodState.SEALED)
 	for surface: int in range(mesh.get_surface_count()):
 		var arrays := mesh.surface_get_arrays(surface)
 		var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]

@@ -1,16 +1,17 @@
 extends SimTestCase
+# New pod #88: pins follow the fitted asset, row centers and eight-piece topology.
 ## The authored pod keeps envelope and sit-up clearance parity while all
-## seven instances share one smooth, three-material mesh. Collision data
+## seven instances share five smooth mesh nodes and five materials (#88). Collision data
 ## stays independent of this presentation mesh.
 
 ## The lying eye, pod-local, from the authored pose table (sim/exit.gd):
 ## the tray floor plus the capsule radius and penetration tolerance, at
 ## the head sphere's station.
-const EYE_POD: Vector3 = Vector3(0.0, 0.417, -0.575)
+const EYE_POD: Vector3 = Vector3(0.0, 0.545, -0.575)
 
 ## The sit-up arc's pivot and radius, pod-local: the capsule pivots
 ## about the foot sphere from lying to upright.
-const ARC_CENTER: Vector3 = Vector3(0.0, 0.417, 0.575)
+const ARC_CENTER: Vector3 = Vector3(0.0, 0.545, 0.575)
 const ARC_RADIUS: float = 1.15
 const ARC_SAMPLES: int = 17
 
@@ -25,19 +26,25 @@ func test_all_seven_pods_share_the_one_shell_mesh() -> void:
 	var groups: Array[Node] = pods.get_children()
 	assert_int_equal(groups.size(), Pods.POD_COUNT, "every registry pod gets a group")
 	var total_shells := 0
+	var shared: Dictionary[String, Mesh] = {}
 	for group: Node in groups:
-		var shells := 0
-		for child: Node in group.get_children():
-			var instance := child as MeshInstance3D
-			if instance != null and instance.mesh == PodMesh.shell_mesh():
-				shells += 1
-		assert_int_equal(shells, 1, "%s carries exactly one shell instance" % group.name)
-		total_shells += shells
-	assert_int_equal(total_shells, Pods.POD_COUNT, "all seven pods share the one shell mesh")
+		var shell := _shell_of(group)
+		assert_true(shell != null, "%s carries exactly one shell hierarchy" % group.name)
+		if shell == null:
+			continue
+		total_shells += 1
+		var meshes := shell.find_children("*", "MeshInstance3D", true, false)
+		assert_int_equal(meshes.size(), 5, "new pod #88 retains five authored mesh nodes")
+		for instance: MeshInstance3D in meshes:
+			if shared.has(String(instance.name)):
+				assert_true(instance.mesh == shared[String(instance.name)], "all pods share %s" % instance.name)
+			else:
+				shared[String(instance.name)] = instance.mesh
+	assert_int_equal(total_shells, Pods.POD_COUNT, "all seven pods share the one shell hierarchy")
 
 func test_every_pod_envelope_matches_the_authored_footprint() -> void:
 	var pods := StasisPods.build(Pods.PodRegistry.frozen())
-	var bounds: AABB = PodMesh.shell_mesh().get_aabb()
+	var bounds: AABB = PodMesh.shell_mesh(Pods.PodState.SEALED).get_aabb()
 	for group: Node in pods.get_children():
 		var shell := _shell_of(group)
 		if shell == null:
@@ -48,7 +55,7 @@ func test_every_pod_envelope_matches_the_authored_footprint() -> void:
 		for x: float in [bounds.position.x, bounds.end.x]:
 			for y: float in [bounds.position.y, bounds.end.y]:
 				for z: float in [bounds.position.z, bounds.end.z]:
-					var corner: Vector3 = shell.transform * Vector3(x, y, z)
+					var corner: Vector3 = PodMesh.shell_transform() * Vector3(x, y, z)
 					lo = lo.min(corner)
 					hi = hi.max(corner)
 		var size := hi - lo
@@ -80,8 +87,8 @@ func test_shell_resource_loads_and_stays_cheap() -> void:
 		return
 	# Issue #88 replaces the scan's single bone-white lacquer with pristine
 	# neutral plastic, dark glass, and rough fabric on authored geometry.
-	assert_int_equal(mesh.get_surface_count(), 3, "plastic, glass and fabric have separate surfaces")
-	var expected: Array[Material] = [PodMesh.shell_material(), PodMesh.canopy_material(), PodMesh.couch_material()]
+	assert_int_equal(mesh.get_surface_count(), 5, "new pod #88 has plastic, tint, couch, pillow and gasket surfaces")
+	var expected: Array[Material] = [PodMesh.shell_material(), PodMesh.canopy_material(), PodMesh.couch_material(), PodMesh._materials["PillowFabric"], PodMesh._materials["Gasket"]]
 	var triangles := 0
 	for surface: int in range(mesh.get_surface_count()):
 		assert_true(mesh.surface_get_material(surface) == expected[surface], "surface material is cached, nothing per-instance")
@@ -92,7 +99,7 @@ func test_shell_resource_loads_and_stays_cheap() -> void:
 		triangles += indices.size() / 3
 		assert_true(vertices.size() < indices.size() / 2, "curved surfaces reuse smooth vertices rather than split every triangle")
 	var lacquer := PodMesh.shell_material()
-	assert_true(lacquer.albedo_color == Color(0.96, 0.96, 0.96), "the shell is near-white without a warm bone tint")
+	assert_true(lacquer.albedo_color == Color(0.95, 0.95, 0.95).linear_to_srgb(), "the shell is near-white without a warm bone tint")
 	assert_true(absf(lacquer.roughness - 0.12) < 1e-4, "plastic has a low-roughness highlight")
 	assert_float_equal(lacquer.metallic, 0.0, "plastic is dielectric")
 	assert_true(lacquer.clearcoat_enabled, "plastic carries a clearcoat")
@@ -101,11 +108,11 @@ func test_shell_resource_loads_and_stays_cheap() -> void:
 	assert_false(lacquer.emission_enabled, "plastic reflects room light without emitting")
 	for material: StandardMaterial3D in expected:
 		assert_true(material.albedo_texture == null and material.normal_texture == null and material.roughness_texture == null, "authored surfaces have no grunge textures")
-	assert_true(PodMesh.canopy_material().albedo_color == Color(0.025, 0.035, 0.045), "canopy is dark tinted glass")
-	assert_true(absf(PodMesh.canopy_material().roughness - 0.06) < 1e-4, "glass is very glossy")
+	assert_true(PodMesh.canopy_material().albedo_color == Color(0.018, 0.028, 0.038).linear_to_srgb(), "canopy is dark tinted glass")
+	assert_true(absf(PodMesh.canopy_material().roughness - 0.07) < 1e-4, "glass is very glossy")
 	assert_float_equal(PodMesh.canopy_material().metallic, 0.0, "glass is dielectric")
-	assert_true(PodMesh.couch_material().albedo_color == Color(0.09, 0.12, 0.14), "couch is darker fabric")
-	assert_true(absf(PodMesh.couch_material().roughness - 0.9) < 1e-4, "fabric stays rough")
+	assert_true(PodMesh.couch_material().albedo_color == Color(0.045, 0.065, 0.085).linear_to_srgb(), "couch is darker fabric")
+	assert_true(absf(PodMesh.couch_material().roughness - 0.95) < 1e-4, "fabric stays rough")
 	assert_true(triangles > 0, "the pod mesh is not empty")
 	assert_true(triangles <= 20000, "the entire pod stays cheap: %d tris must be <= 20000" % triangles)
 
@@ -118,7 +125,7 @@ func test_shell_transforms_are_deterministic() -> void:
 	var shell_a := PodMesh.make_shell()
 	var shell_b := PodMesh.make_shell()
 	assert_true(shell_a.transform == shell_b.transform, "fresh shell instances land on the identical transform")
-	assert_true(shell_a.mesh == shell_b.mesh, "fresh shell instances share the one mesh")
+	assert_true((shell_a.get_node("PodBase") as MeshInstance3D).mesh == (shell_b.get_node("PodBase") as MeshInstance3D).mesh, "fresh shell hierarchies share the one base mesh")
 	var pods_a := StasisPods.build(Pods.PodRegistry.frozen())
 	var pods_b := StasisPods.build(Pods.PodRegistry.frozen())
 	assert_int_equal(pods_b.get_child_count(), pods_a.get_child_count(), "both scene builds carry every pod group")
@@ -136,7 +143,7 @@ func test_sit_up_corridor_stays_clear() -> void:
 	for step: int in range(ARC_SAMPLES):
 		var phi: float = PI * 0.5 * float(step) / float(ARC_SAMPLES - 1)
 		var sample: Vector3 = ARC_CENTER + Vector3(0.0, sin(phi) * ARC_RADIUS, -cos(phi) * ARC_RADIUS)
-		var distance := _min_distance(sample, 1.0)
+		var distance := _min_distance(sample, 1.5)
 		assert_true(distance < 1.5, "arc sample (%s) finds the shell, got %s" % [str(sample), str(distance)])
 		if step == 0:
 			assert_close(sample, EYE_POD, "the arc starts at the authored lying eye")
@@ -175,12 +182,8 @@ func test_greybox_dressing_is_fully_retired() -> void:
 	assert_int_equal(plates, 0, "no pod keeps its indicator plate")
 
 ## The pod group's shell instance, or null when the group lacks one.
-func _shell_of(group: Node) -> MeshInstance3D:
-	for child: Node in group.get_children():
-		var instance := child as MeshInstance3D
-		if instance != null and instance.mesh == PodMesh.shell_mesh():
-			return instance
-	return null
+func _shell_of(group: Node) -> Node3D:
+	return group.get_node_or_null("PodShell") as Node3D
 
 ## The group's BoxMesh instances: with the greybox kit and the hanging
 ## blankets retired, no box renders in a pod group at all.
@@ -289,3 +292,33 @@ func test_presentation_and_exit_path_share_pure_tray_geometry() -> void:
 	var expected := Exit.ExitPath.try_new(Pods.PodRegistry.frozen().player_pod().placement(), PodGeometry.TRAY_FLOOR_Y)
 	assert_true(expected.is_ok(), "pure tray floor supports the existing exit path")
 	assert_vec3_equal(PlacementTruth.player_exit_path().poses()[0].foot(), ShipLayout.authored().layout.bay_to_world() * expected.path.poses()[0].foot(), "path starts at the shared tray floor")
+
+func test_lids_follow_each_state_about_the_authored_pivot() -> void:
+	var registry := Pods.PodRegistry.frozen()
+	var pods := StasisPods.build(registry)
+	for pod: Pods.Pod in registry.pods():
+		var shell := _shell_of(pods.get_child(pod.id().index()))
+		var lid: Node3D = shell.get_node("PodLid")
+		var expected := {Pods.PodState.SEALED: 0.0, Pods.PodState.EMPTY_OPEN: -70.0, Pods.PodState.PLAYER: -90.0}
+		# New pod #88 keeps the exported pivot, including its pane child.
+		assert_close(lid.position, Vector3(0, 0.976, -1.15330785), "hidden hinge")
+		assert_true(absf(rad_to_deg(lid.rotation.x) - expected[pod.state()]) < 1e-4, "state lid angle")
+		assert_true(lid.has_node("WindowPane"), "pane moves with the lid")
+		assert_true(shell.get_node("PodBase").has_node("Couch") and shell.get_node("PodBase").has_node("Pillow"), "upholstery stays under the base")
+	pods.free()
+
+func test_live_camera_interpolation_clears_the_model() -> void:
+	_ensure_triangles()
+	# New pod #88: actual rig interpolates the eye, rather than following
+	# the capsule's quarter-circle. The final tick uses standing-eye height.
+	var waypoints: Array[Vector3] = [Vector3(0, 0.545, -0.575), Vector3(0, 1.695, 0.575), Vector3(0, 1.695, 0.8865), Vector3(0, 1.695, 1.5065), Vector3(0, 1.605, 1.5065)]
+	var placement := Pods.PodRegistry.frozen().player_pod().placement()
+	var pod_to_bay := Transform3D(Basis(Vector3.UP, placement.yaw_radians), Vector3(placement.center.x, 0, placement.center.y))
+	var path := Exit.ExitPath.try_new(placement, PodGeometry.TRAY_FLOOR_Y).path
+	for index: int in range(5):
+		var actual := path.poses()[index].head() if index < 4 else PlayerMotion.standing_eye(path.waypoint().capsule())
+		assert_close(pod_to_bay.affine_inverse() * actual, waypoints[index], "measured path matches the rig's eye projection")
+	for segment: int in range(4):
+		for station: int in range(101):
+			var point := waypoints[segment].lerp(waypoints[segment + 1], station / 100.0)
+			assert_true(_min_distance(point, 2.0) >= 0.13, "the live eye stays at least 13 cm from pod-v4")

@@ -1,4 +1,5 @@
 extends SimTestCase
+# New pod #88: regenerated ordinary-input routes retain exact schedule/digest checks.
 const Route := preload("res://harness/route.gd")
 
 func test_all_opening_schedules_replay_through_actual_player() -> void:
@@ -30,8 +31,8 @@ func test_fixed_opening_schedule_snapshots() -> void:
 		"gameplay-full": "31a542d425080d8148b18b87e80767a5746461fd7b660a59f024245a8eb9211d",
 		"gameplay-keyboard-turn": "b3f83b97da223ee17b547866edf75039d8366493efa5965d80bdbbaa2d3758c9",
 		"rod-pickup": "d95d2693a787ee073b842574406e6199d8fa06771c058b222a22f2cdd0fbc372",
-		"hallway": "dff9deb9db17bed5f516c81bcd2d60417d60b690f44887983cd7dc9be8952abc",
-		"power-room": "cde2a28193324ca608e0f9308c0994a77040c9998d262d1a403364e0f07add74",
+		"hallway": "e621029347b470f20f28cc36c9285845015d2f31cc6885b3e454bd2524bbe7b2",
+		"power-room": "1cf22877df1ff2af4bdc498c8f5e1c4d49383d39778cb6e90d2dd24a9dc41a8f",
 	}
 	for name: String in expected:
 		assert_true(FileAccess.get_sha256("res://scenarios/%s.json" % name) == expected[name], name + " fixed compiled schedule")

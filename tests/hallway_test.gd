@@ -54,7 +54,7 @@ func _probe(set: ColliderSet, lo: Vector3, hi: Vector3) -> int:
 
 func test_envelope_derives_from_the_room_constants() -> void:
 	assert_float_in_range(Hallway.HALL_LENGTH, Pods.ROOM_LENGTH * 2.0 - 1e-4, Pods.ROOM_LENGTH * 2.0 + 1e-4, "the corridor runs twice the stasis room's length")
-	assert_float_in_range(Hallway.HALL_WIDTH, Pods.AISLE_HALF_WIDTH * 2.0 - 1e-4, Pods.AISLE_HALF_WIDTH * 2.0 + 1e-4, "the corridor carries the pod bay's aisle width through the doorway")
+	assert_float_in_range(Hallway.HALL_WIDTH, 3.0 - 1e-4, 3.0 + 1e-4, "new pod #88 narrows only the bay aisle; the corridor remains 3 m")
 	assert_float_in_range(Hallway.HALL_CEILING_HEIGHT, Pods.ROOM_CEILING_HEIGHT - 1e-4, Pods.ROOM_CEILING_HEIGHT + 1e-4, "the ceiling matches the room's height language")
 	assert_float_in_range(Hallway.HALL_START_X, Pods.ROOM_LENGTH / 2.0 - 1e-4, Pods.ROOM_LENGTH / 2.0 + 1e-4, "the corridor starts at the room's east wall face")
 	assert_float_in_range(Hallway.HALL_END_X, Hallway.HALL_START_X + 24.0 - 1e-4, Hallway.HALL_START_X + 24.0 + 1e-4, "the corridor's far wall sits at its authored end")
@@ -89,8 +89,8 @@ func test_collider_sets_extend_the_walk_sim_open_and_shut() -> void:
 	var registry := Pods.PodRegistry.frozen()
 	var closed := Hallway.scene_collider_set(registry, false)
 	var open := Hallway.scene_collider_set(registry, true)
-	assert_int_equal(closed.size(), 87, "the closed set's box count is pinned")
-	assert_int_equal(open.size(), 85, "the open set drops the doorway block and the slid-aside slab")
+	assert_int_equal(closed.size(), 98, "the closed set's box count is pinned")
+	assert_int_equal(open.size(), 96, "the open set drops the doorway block and the slid-aside slab")
 	var game := _awake_game()
 	assert_int_equal(game.colliders.size(), PowerRoom.scene_collider_set(registry, false, false).size(), "the game boots on the full D14 set")
 	# The aperture is solid while shut and clear when open: the walk

@@ -79,7 +79,9 @@ func climb_to(deck: int, capture_mid: bool = false) -> void:
 		var input := ClimbEase.intent_for_velocity(state.velocity(), desired, Ladder.CLIMB_SPEED)
 		step([{"type": "climb", "value": input}])
 		if capture_mid and not captured and (state.height() - midpoint) * signf(distance) >= 0:
-			look_at(player.motion.eye(player.game) + Vector3(0, 3, -2), 55)
+			# New pod #88 route capture: face the lit landing rather than
+			# the unlit back wall above it, without moving the climb pose.
+			look_at(player.motion.eye(player.game) + Vector3(0, -1.5, 2), -35)
 			beat("mid-shaft")
 			captured = true
 	assert(absf(state.height() - player.game.layout.floor_y(deck)) < 1e-8, "route reaches exact landing")

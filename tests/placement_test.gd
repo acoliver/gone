@@ -4,10 +4,11 @@ extends SimTestCase
 ## and collider set completeness (colliders.rs), asserted against the
 ## same pure data the scene builders spawn.
 
+## New pod #88: five tray and three lid pieces per pod.
 ## The pinned static box count: six shell slabs, one box per pod
-## construction solid (6+7+6+7+6+7+6 across the frozen states), and five
+## construction solid (8+8+8+8+8+8+8 across the frozen states), and five
 ## hatch pieces.
-const PINNED_BOX_COUNT: int = 56
+const PINNED_BOX_COUNT: int = 67
 
 func assert_vec3_near(actual: Vector3, expected: Vector3, message: String) -> void:
 	var drift: Vector3 = (actual - expected).abs()
@@ -125,10 +126,10 @@ func test_named_boxes_derive_from_their_placements() -> void:
 			break
 		before_player += PodBody.pod_solids(pod.state()).size()
 	var base: ColliderSet.Aabb = boxes[Placement.room_shell().size() + before_player]
-	assert_vec3_near(base.center(), Vector3(-4.8, 0.05, 2.9), "player base center")
+	assert_vec3_near(base.center(), Vector3(-4.8, 0.114, 2.8035), "player base center")
 	assert_vec3_near(
 		base.half_extents(),
-		Vector3(Pods.POD_WIDTH / 2.0, 0.05, Pods.POD_LENGTH / 2.0),
+		Vector3(0.275, 0.114, 0.95),
 		"player base half extents"
 	)
 	var first_post: ColliderSet.Aabb = boxes[PINNED_BOX_COUNT - Placement.hatch_solids().size()]
@@ -203,6 +204,6 @@ func test_furnishing_recipe_uses_the_shared_pure_solid_type() -> void:
 		assert_true(tray.transform.origin == tray.center, "render transform uses the collider input center")
 	var pure := ShipCollision.bay_set(Pods.PodRegistry.frozen())
 	var adapter := Placement.scene_collider_set(Pods.PodRegistry.frozen())
-	assert_int_equal(pure.size(), 56, "old bay fixture stays at 56 colliders")
+	assert_int_equal(pure.size(), 67, "old bay fixture stays at 67 colliders")
 	for index: int in range(pure.size()):
 		assert_true(pure.boxes()[index].equals(adapter.boxes()[index]), "old bay order retained")

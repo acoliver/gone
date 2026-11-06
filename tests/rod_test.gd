@@ -1,4 +1,5 @@
 extends SimTestCase
+# New pod #88: pins follow the fitted asset, row centers and eight-piece topology.
 ## The dropped rod (issue #58): the prop sits at its authored placement
 ## beside a non-player pod, a deliberate step off the aisle beyond the
 ## pickup reach of every walking line, where the walking capsule can
@@ -61,13 +62,13 @@ func test_rod_sits_beside_a_pod_clear_of_the_walk_and_pods() -> void:
 	var half := Rod.ROD_LENGTH / 2.0
 	var end_a := center + Vector2(axis.x, axis.z) * half
 	var end_b := center - Vector2(axis.x, axis.z) * half
-	assert_float_in_range(minf(end_a.y, end_b.y), -1.8, 1.195, "the whole body stays clear of the pod row's solids (z >= -1.8)")
-	assert_float_in_range(maxf(end_a.y, end_b.y), -1.8, 1.195, "the whole body stays clear of the aisle's swept walking band (z <= 1.195)")
-	assert_true(absf(center.y - 1.49) > Interactions.ROD_PICKUP_REACH, "the pod-exit walking line (z = 1.49) never wanders into the pickup reach")
+	assert_float_in_range(minf(end_a.y, end_b.y), -1.607, 1.002, "the whole body stays clear of the pod row's solids (z >= -1.607)")
+	assert_float_in_range(maxf(end_a.y, end_b.y), -1.607, 1.002, "the whole body stays clear of the aisle's swept walking band (z <= 1.002)")
+	assert_true(absf(center.y - 1.297) > Interactions.ROD_PICKUP_REACH, "the pod-exit walking line (z = 1.297) never wanders into the pickup reach")
 	assert_true(absf(center.y) > Interactions.ROD_PICKUP_REACH, "the aisle centerline (z = 0) never wanders into the pickup reach")
 	var mouth_stand := Vector2(center.x, center.y + 1.0)
 	assert_float_in_range(mouth_stand.distance_to(center), 0.0, Interactions.ROD_PICKUP_REACH * 0.9, "a deliberate stand at the row's mouth brings the bar in reach")
-	assert_float_in_range(mouth_stand.y - Controller.CAPSULE_RADIUS, -1.8 + 1e-4, 4.0, "the deliberate stand's swept capsule stays clear of the row's solids")
+	assert_float_in_range(mouth_stand.y - Controller.CAPSULE_RADIUS, -1.607 + 1e-4, 4.0, "the deliberate stand's swept capsule stays clear of the row's solids")
 	var player_center := game.registry.player_pod().placement().center
 	var nearest := Vector2(INF, INF)
 	for pod: Pods.Pod in game.registry.pods():
