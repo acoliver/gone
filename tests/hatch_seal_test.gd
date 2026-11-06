@@ -169,12 +169,17 @@ func test_lintel_return_faces_the_approach_lights() -> void:
 		assert_true(sloped, "lintel has an inward bevel facing the approach room, not an unlit horizontal slot: " + id)
 		view.free()
 
-func test_rendered_collar_boxes_match_collision_within_one_micrometer() -> void:
+func test_collision_reservations_trimmed_rendering_and_both_sided_seals() -> void:
+	# Driver decision: replace drawn-box equality with unchanged 1 um collision
+	# extents, contained/behind-ring rendered interfaces and unchanged zero-miss
+	# both-sided seal/pocket rays. Visible roundovers remain; threshold exempt.
+	var baseline: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://art-source/hatch/hunyuan/baseline-physical.json"))
 	var layout := ShipLayout.authored().layout
 	for id: StringName in IDS:
 		var spec := layout.door(id)
 		var view := DoorView.build(spec)
 		var matched := 0
+		var exported: Dictionary = preload("res://tools/export_hatch_parts.gd").variant(spec, 0)
 		for solid: ShipGeometry.SolidSpec in ShipGeometry.hatch_frame_solids(spec):
 			var suffix := String(solid.id).trim_prefix("%s/" % id)
 			if not PIECES.has(suffix): continue
@@ -183,12 +188,36 @@ func test_rendered_collar_boxes_match_collision_within_one_micrometer() -> void:
 			# trip at X=36 discards precision larger than this unchanged 1 µm gate.
 			_fixed_faces(view, suffix, faces, solid._parent.affine_inverse())
 			var inverse := Transform3D(Basis(solid._local_rotation), solid._local_center).affine_inverse()
-			var bounds := AABB(inverse * faces[0], Vector3.ZERO)
-			for vertex: Vector3 in faces: bounds = bounds.expand(inverse * vertex)
-			assert_true(bounds.position.distance_to(-solid.size / 2) <= 1e-6 and bounds.size.distance_to(solid.size) <= 1e-6, "rendered box matches collision: " + String(solid.id))
+			var into := signf(spec.hinge_frame().origin.z - ShipLayout.WALL / 2)
+			var old: Dictionary
+			for row: Dictionary in baseline.variants[0 if into > 0 else 1].frame_solids:
+				if row.id == suffix: old = row
+			var record: Dictionary
+			for row: Dictionary in exported.frame_solids:
+				if row.id == suffix: record = row
+			assert_true(HatchAsset.vector(record.size).distance_to(HatchAsset.vector(old.size)) <= 1e-6, "sim/export collision extent unchanged: " + suffix)
+			assert_true(HatchAsset.vector(record.transform.origin).distance_to(HatchAsset.vector(old.transform.origin)) <= 1e-6, "sim/export collision pose unchanged: " + suffix)
+			for axis: int in range(3):
+				assert_true(HatchAsset.vector(record.transform.basis[axis]).distance_to(HatchAsset.vector(old.transform.basis[axis])) <= 1e-6, "sim/export collision axes unchanged: " + suffix)
+			for corner: int in range(record.vertices.size()):
+				assert_true(HatchAsset.vector(record.vertices[corner]).distance_to(HatchAsset.vector(old.vertices[corner])) <= 1e-6, "sim/export collision vertices unchanged: " + suffix)
+			var front := ShipGeometry.HATCH_RING_FRONT if into > 0 else ShipLayout.WALL - ShipGeometry.HATCH_RING_FRONT
+			var unique := {}
+			for vertex: Vector3 in faces:
+				var local := inverse * vertex
+				assert_true(local.abs().x <= solid.size.x / 2 + 1e-6 and local.abs().y <= solid.size.y / 2 + 1e-6 and local.abs().z <= solid.size.z / 2 + 1e-6, "rendered interface inside collision: " + suffix)
+				if suffix != "COAMING":
+					assert_true(into * (front - vertex.z) <= 1e-6, "rendered interface behind ring: " + suffix)
+				unique[local] = true
+			assert_true(unique.size() > 24, "visible interface edges retain modelled roundovers: " + suffix)
 			matched += 1
-		assert_int_equal(matched, PIECES.size(), "every shared collar box is checked")
+		assert_int_equal(matched, PIECES.size(), "every shared collar reservation is checked")
 		view.free()
+		_sealed(id, -1)
+		_sealed(id, 1)
+	var pocket := preload("res://tests/hatch_pocket_test.gd").new()
+	pocket.test_wall_and_frame_seal_the_whole_pocket_outside_the_mouth()
+	assert_true(pocket.failure.is_empty(), pocket.failure)
 
 func test_wall_returns_use_the_approach_mask_and_stops_have_no_horizontal_slot() -> void:
 	var layout := ShipLayout.authored().layout

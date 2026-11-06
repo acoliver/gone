@@ -1,6 +1,7 @@
 """Focused geometry probes, run with Blender --background --python-exit-code 1."""
 import importlib.util
 import json
+import os
 from pathlib import Path
 import unittest
 
@@ -19,8 +20,10 @@ class HatchConstructionTest(unittest.TestCase):
     def setUpClass(cls):
         bpy.ops.object.select_all(action="SELECT")
         bpy.ops.object.delete(use_global=False)
-        cls.document = json.loads((ROOT / "assets/props/hatch/parts.json").read_text())
-        cls.objects, cls.nodes, cls.error = build.construct(cls.document, build.material())
+        source = Path(os.environ.get("HATCH_SOURCE_JSON", ROOT / "assets/props/hatch/parts.json"))
+        cls.document = json.loads(source.read_text())
+        from hatch_generated_frame import load_frames
+        cls.objects, cls.nodes, cls.error = build.construct(cls.document, build.material(), load_frames(cls.document))
         cls.by_name = {obj.name: obj for obj in cls.objects}
 
     def test_coaming_roundover_preserves_the_lower_corner_seal(self):

@@ -1,6 +1,20 @@
 # Shared modelled hatch
 
+## Generated frame, slice 2
+
+The production build now fits the frozen machine-generated `art-source/hatch/hunyuan/C-s410-sv.glb` frame, retaining the existing authored leaf and both wheels. This is a build-stage composition; runtime has one imported asset path. Raw source SHA-256 is `ba8831fbf528fe8de5b586b6c4c6c7c5a95f77eda2c137fb73db2b20f811ec78`. Source selections, conditioning inputs, model/checkpoint identities, generator snapshot and exact licence evidence are frozen under `art-source/hatch/hunyuan/`; `parts.json` records their hashes and the fitting operations. No inference or Hunyuan Paint runs during rebuilding.
+
+**Distribution restriction:** the Tencent Hunyuan 3D 2.0 Community License excludes the EU, UK and South Korea and restricts output distribution/display outside its Territory. Local asset promotion does not resolve that release restriction. See `art-source/hatch/hunyuan/LICENSE`, `Notice` and `SOURCES.md`; do not distribute these assets as unrestricted worldwide content.
+
+`hatch_generated_frame.py` partitions the frozen ring, rivet and hinge source surfaces, removes declared zero-area faces, repairs the original hinge attachment from the opposite clean ring half, and relocates extracted hardware into the two exported hinge stations. Generated rivets are reused at the exported stations. The ring's visible front relief is cut at source Z = -0.0131168831, then fitted between 28 mm proud and 6 mm proud of the wall. Front-relief depth scale divided by in-plane scale is 0.2389911578. The exported generated ring retains distinct crown normals and depth levels; delivered-mesh measurements and clay captures are required independently of this provenance record.
+
+The collision reservations remain unchanged. Rendered collar posts, top and stops are trimmed inside those reservations, behind or flush with the generated ring; the floor threshold retains its full reservation. The driver explicitly accepted this separation of rendered surfaces from collision margins. The three latch keepers and two jamb-running hinge plates remain intended fixed hardware. Required interface seals remain explicitly authored surfaces. `fit_recipe` records the bounded edits; `build_dependencies` records fitting/baking module hashes. Generated-source selected-to-active normal transfer is part-isolated.
+
+Use the Asset rebuild command below with a freshly exported contract. Do not copy a scratch candidate over production. The slice-2 build retains the 2048 maps, concept-derived paint atlas, 22,894,480-byte shared GPU payload and ten runtime submissions. Delivered variants contain 39,531 and 39,855 triangles. The limits remain 40,000 triangles, twelve submissions and 24,000,000 bytes. Older primitive-frame measurements below describe the pre-migration build and are superseded for the frame by this section and the delivered `parts.json`.
+
 ## Concept-derived painted finish
+Godot's direct `.blend` importer is disabled in `project.godot`: this pipeline exports GLB explicitly with pinned Blender. Otherwise a saved scratch `.blend` triggers an unset editor-Blender-path error during headless `--import`, which can exit zero without updating any imported resources. Check the imported hatch source MD5 and actual runtime triangle counts after rebuilding; a zero import exit status alone is insufficient.
+
 
 Leaf and fixed-frame colour uses the driver's selected concept-derived images, replacing the text-only round-seven sources. `art-source/hatch/leaf-front.png` is the unchanged 512 by 896 `round8/gen3/edit-300.png`; `leaf-back.png` is its horizontal mirror, preserving downward runs. `frame.png` is the unchanged 1024 by 960 `round8/gen4/frame-402.png`. No gen4 leaf or Z-Image refinement is used. Hardware, wheel and rivets retain the CC0 scan finish below. Andrew changed the proportions on 2026-11-05: a narrow raised ring, a nearly flush leaf and a heavy solid slab replace the recessed thin leaf. Simulation reservations and the imported asset follow that design together.
 

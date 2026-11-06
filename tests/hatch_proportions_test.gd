@@ -84,5 +84,13 @@ func _check(imported: bool) -> void:
 func test_exported_proportions_match_the_concept_dimensions() -> void: _check(false)
 func test_imported_proportions_match_the_concept_dimensions() -> void: _check(true)
 
+func test_generated_ring_uses_only_visible_front_relief() -> void:
+	# Driver decision after the contract stop: fit the visible source relief
+	# into 22 mm, keeping 2 mm margin inside the unchanged flushness limit.
+	assert_float_equal(ShipGeometry.HATCH_RING_FRONT, -0.028, "generated bead stands 28 mm proud")
+	var geometry_script: GDScript = load("res://sim/ship_geometry.gd")
+	assert_false(geometry_script.get_script_constant_map().has("HATCH_RING_BACK"), "no ring reservation behind its original rear plane")
+	assert_float_equal(ShipGeometry.HATCH_RING_REAR, -0.006, "existing pocket sealing seat stays fixed")
+
 func test_unused_fixed_surface_api_is_absent() -> void:
 	assert_false(HatchModel.new().has_method("fixed_surface"), "merged surround is the only fixed assembly path")

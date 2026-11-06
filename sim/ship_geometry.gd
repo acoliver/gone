@@ -12,8 +12,13 @@ const SILL_HEIGHT: float = 0.08
 # Andrew's 2026-11-05 proportions: a narrow raised bead, not a deep box frame.
 const HATCH_CORNER_RADIUS: float = 0.24
 const HATCH_RING_WIDTH: float = 0.09
-const HATCH_RING_FRONT: float = -0.02
+# Driver decision after the generated-frame contract stop: only the source's
+# visible front relief fits these 22 mm. Keep 2 mm flushness margin and the
+# existing rear sealing plane; reserve no hidden tube depth inside the wall.
+const HATCH_RING_FRONT: float = -0.028
 const HATCH_RING_REAR: float = -0.006
+# The existing pocket lap must not change with decorative bead relief.
+const HATCH_POCKET_SEATING_LAP: float = 0.014
 const HATCH_FLOOR_SKIN_HEIGHT: float = 0.001
 const HATCH_RIVET_RADIUS: float = 0.021
 const HATCH_RIVET_DEPTH: float = 0.025
@@ -671,7 +676,7 @@ static func hatch_pocket_infill(door: ShipLayout.DoorSpec, owner: StringName) ->
 	var mouth := hatch_ring_outline(door)
 	# Lap by the bead's depth beneath its rounded rear edge. Touching only
 	# its outer silhouette leaves cracks where the bead profile narrows.
-	var contour := hatch_ring_outline(door, HATCH_RING_WIDTH - (HATCH_RING_REAR - HATCH_RING_FRONT))
+	var contour := hatch_ring_outline(door, HATCH_RING_WIDTH - HATCH_POCKET_SEATING_LAP)
 	for index: int in range(contour.size()): contour[index].y += center_y
 	var corners: Array[PackedVector2Array] = []
 	for upper: bool in [false, true]:

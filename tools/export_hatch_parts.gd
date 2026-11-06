@@ -62,6 +62,33 @@ static func frame_geometry(door: ShipLayout.DoorSpec, solid: ShipGeometry.SolidS
 			faces.append(indices)
 	return {"vertices": vertices, "faces": faces}
 
+static func fitting_records(door: ShipLayout.DoorSpec, solids: Array[ShipGeometry.SolidSpec]) -> Dictionary:
+	var fit := {"schema_version": 1, "coordinate_system": "godot_y_up", "ring": {"inner": [], "outer": [], "reservation_ids": []}, "leaf_faces": [], "wheel_axes": [], "labels": [], "hinge_stations": [], "required_seal_ids": []}
+	for solid: ShipGeometry.SolidSpec in solids:
+		var id := String(solid.id).trim_prefix(String(door.id()) + "/")
+		if "/RING/" in id:
+			fit.ring.inner.append(vector3(solid.transform * Vector3(solid.section[0].x, solid.section[0].y, 0)))
+			fit.ring.outer.append(vector3(solid.transform * Vector3(solid.section[3].x, solid.section[3].y, 0)))
+			fit.ring.reservation_ids.append(id)
+		if id.begins_with("HINGE/KNUCKLE-"):
+			fit.hinge_stations.append({"reservation_id": id, "transform": pose(solid.transform), "axis": vector3(solid.transform.basis.y), "size": vector3(solid.size)})
+		if id.begins_with("FRAME/") or id == "COAMING" or "/LIP/" in id or "/THROAT/" in id or "/STEP/" in id:
+			fit.required_seal_ids.append(id)
+	for group: HatchParts.Group in HatchParts.leaf(door):
+		if String(group.path) in ["Wheel", "ReverseWheel"]:
+			fit.wheel_axes.append({"group": String(group.path), "transform": pose(group.transform), "axis": vector3(group.transform.basis.z)})
+		for part: HatchParts.Part in group.parts:
+			if String(part.id).ends_with("Steel/plate"):
+				var local := group.transform * part.transform
+				var face := local * Vector3(0, 0, -part.size.z / 2)
+				fit.leaf_faces.append({"reservation_id": String(part.id), "side": group.side, "plane_origin": vector3(face), "plane_normal": vector3(-local.basis.z), "transform": pose(local), "size": vector3(part.size), "contour": polygon(part.contour)})
+			if "Seal" in String(group.path): fit.required_seal_ids.append(String(part.id))
+	var layout := ShipLayout.authored().layout
+	for id: StringName in door.face_ids():
+		var face := layout.face(id)
+		fit.labels.append({"face_id": String(id), "transform": pose(face.leaf_label_frame(door)), "size": vector2(face.label_size())})
+	return fit
+
 static func variant(source: ShipLayout.DoorSpec, index: int) -> Dictionary:
 	# Evaluate the shared recipe before large-world translation loses local precision.
 	var door := ShipLayout.DoorSpec.new(source.id(), source.deck_number(), source.kind(), source.policy(), Transform3D.IDENTITY, source.aperture(), source.spaces(), source.face_ids(), source.owner_id(), source.animation(), source.has_wheel())
@@ -94,6 +121,7 @@ static func variant(source: ShipLayout.DoorSpec, index: int) -> Dictionary:
 			var transform := station
 			transform.origin.z = (ring_min + ShipGeometry.HATCH_RIVET_DEPTH * 0.08) if side == 0 else (ring_max - ShipGeometry.HATCH_RIVET_DEPTH * 0.08)
 			result.frame_rivets.append({"index": result.frame_rivets.size(), "id": "FRAME/RIVETS/%d/%03d" % [side, result.frame_rivets.size()], "side": side, "size": vector3(Vector3(ShipGeometry.HATCH_RIVET_RADIUS * 2, ShipGeometry.HATCH_RIVET_DEPTH, ShipGeometry.HATCH_RIVET_RADIUS * 2)), "radius": ShipGeometry.HATCH_RIVET_RADIUS, "transform": pose(transform)})
+	result["fit"] = fitting_records(door, solids)
 	return result
 
 func _init() -> void:

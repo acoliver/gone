@@ -1,0 +1,1577 @@
+[
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/renders/A-s410-mv/A-s410-mv-projection.glb",
+    "category": "A",
+    "vertices": 2635251,
+    "faces": 888924,
+    "watertight": false,
+    "welded_vertices": 444482,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.6594438552856445,
+        -1.000359296798706,
+        -0.5958935022354126
+      ],
+      [
+        0.6548850536346436,
+        0.994364321231842,
+        0.6050213575363159
+      ]
+    ],
+    "extents": [
+      1.314328908920288,
+      1.994723618030548,
+      1.2009148597717285
+    ],
+    "volume": 1.9343082210790261,
+    "components": 20,
+    "largest_component_face_fraction": 0.995230188407558,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": {
+      "median": 0.7936116499999999,
+      "p10": 0.79335918,
+      "p90": 0.79401084,
+      "minimum": 0.7807980999999999,
+      "maximum": 1.041933,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.3978554436446474,
+      "method": "Mesh ray intersections: frontmost minus backmost z at 90 off-wheel interior samples, x=25..75% bbox width, y=18..33% and 72..82% bbox height. Proxy for leaf slab thickness; fused assembly or invented hardware may affect spans. Not semantic part segmentation."
+    },
+    "variant": "projection",
+    "source_shape": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/A-s410-mv.glb"
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/A-s410-mv.glb",
+    "category": "A",
+    "vertices": 444482,
+    "faces": 888948,
+    "watertight": false,
+    "welded_vertices": 444482,
+    "welded_watertight": false,
+    "bounds": [
+      [
+        -0.6594438552856445,
+        -1.000359296798706,
+        -0.5958935022354126
+      ],
+      [
+        0.6548850536346436,
+        0.994364321231842,
+        0.6050213575363159
+      ]
+    ],
+    "extents": [
+      1.314328908920288,
+      1.994723618030548,
+      1.2009148597717285
+    ],
+    "volume": 1.9343082210790261,
+    "components": 42,
+    "largest_component_face_fraction": 0.9952033189792879,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": {
+      "median": 0.7936116499999999,
+      "p10": 0.79335918,
+      "p90": 0.79401084,
+      "minimum": 0.7807980999999999,
+      "maximum": 1.041933,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.3978554436446474,
+      "method": "Mesh ray intersections: frontmost minus backmost z at 90 off-wheel interior samples, x=25..75% bbox width, y=18..33% and 72..82% bbox height. Proxy for leaf slab thickness; fused assembly or invented hardware may affect spans. Not semantic part segmentation."
+    },
+    "variant": "shape",
+    "settings": {
+      "subfolder": "hunyuan3d-dit-v2-mv",
+      "steps": 30,
+      "guidance": 5,
+      "octree_resolution": 384,
+      "dtype": "float16",
+      "seed": 410,
+      "views": "front+left"
+    },
+    "front_silhouette_iou": 0.9736991552495209
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/renders/A-s410-sv/A-s410-sv-projection.glb",
+    "category": "A",
+    "vertices": 1668852,
+    "faces": 564032,
+    "watertight": false,
+    "welded_vertices": 282002,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.6617323160171509,
+        -0.9998565316200256,
+        -0.26566651463508606
+      ],
+      [
+        0.6594599485397339,
+        0.9943700432777405,
+        0.26411330699920654
+      ]
+    ],
+    "extents": [
+      1.3211922645568848,
+      1.9942265748977661,
+      0.5297798216342926
+    ],
+    "volume": 0.19206967986763246,
+    "components": 1,
+    "largest_component_face_fraction": 1.0,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": {
+      "median": 0.05251979999999999,
+      "p10": 0.05228383,
+      "p90": 0.05267089999999999,
+      "minimum": 0.04293060000000001,
+      "maximum": 0.38651409999999997,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.026335924243057696,
+      "method": "Mesh ray intersections: frontmost minus backmost z at 90 off-wheel interior samples, x=25..75% bbox width, y=18..33% and 72..82% bbox height. Proxy for leaf slab thickness; fused assembly or invented hardware may affect spans. Not semantic part segmentation."
+    },
+    "variant": "projection",
+    "source_shape": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/A-s410-sv.glb"
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/A-s410-sv.glb",
+    "category": "A",
+    "vertices": 282002,
+    "faces": 564032,
+    "watertight": true,
+    "welded_vertices": 282002,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.6617323160171509,
+        -0.9998565316200256,
+        -0.26566651463508606
+      ],
+      [
+        0.6594599485397339,
+        0.9943700432777405,
+        0.26411330699920654
+      ]
+    ],
+    "extents": [
+      1.3211922645568848,
+      1.9942265748977661,
+      0.5297798216342926
+    ],
+    "volume": 0.19206967986763246,
+    "components": 1,
+    "largest_component_face_fraction": 1.0,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": {
+      "median": 0.05251979999999999,
+      "p10": 0.05228383,
+      "p90": 0.05267089999999999,
+      "minimum": 0.04293060000000001,
+      "maximum": 0.38651409999999997,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.026335924243057696,
+      "method": "Mesh ray intersections: frontmost minus backmost z at 90 off-wheel interior samples, x=25..75% bbox width, y=18..33% and 72..82% bbox height. Proxy for leaf slab thickness; fused assembly or invented hardware may affect spans. Not semantic part segmentation."
+    },
+    "variant": "shape",
+    "settings": {
+      "subfolder": "hunyuan3d-dit-v2-mv",
+      "steps": 30,
+      "guidance": 5,
+      "octree_resolution": 384,
+      "dtype": "float16",
+      "seed": 410,
+      "views": "front"
+    },
+    "front_silhouette_iou": 0.9721131047174152
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/renders/A-s411-sv/A-s411-sv-projection.glb",
+    "category": "A",
+    "vertices": 1772331,
+    "faces": 599266,
+    "watertight": false,
+    "welded_vertices": 299621,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.6350445747375488,
+        -0.9997820258140564,
+        -0.591609537601471
+      ],
+      [
+        0.6380071640014648,
+        0.9945372343063354,
+        0.5449631214141846
+      ]
+    ],
+    "extents": [
+      1.2730517387390137,
+      1.9943192601203918,
+      1.1365726590156555
+    ],
+    "volume": 0.2048856763604446,
+    "components": 1,
+    "largest_component_face_fraction": 1.0,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": {
+      "median": 0.05675049999999998,
+      "p10": 0.05641693000000002,
+      "p90": 0.8669733,
+      "minimum": 0.05413279999999998,
+      "maximum": 0.8799343,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.0284560757822567,
+      "method": "Mesh ray intersections: frontmost minus backmost z at 90 off-wheel interior samples, x=25..75% bbox width, y=18..33% and 72..82% bbox height. Proxy for leaf slab thickness; fused assembly or invented hardware may affect spans. Not semantic part segmentation."
+    },
+    "variant": "projection",
+    "source_shape": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/A-s411-sv.glb"
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/A-s411-sv.glb",
+    "category": "A",
+    "vertices": 299621,
+    "faces": 599268,
+    "watertight": false,
+    "welded_vertices": 299621,
+    "welded_watertight": false,
+    "bounds": [
+      [
+        -0.6350445747375488,
+        -0.9997820258140564,
+        -0.591609537601471
+      ],
+      [
+        0.6380071640014648,
+        0.9945372343063354,
+        0.5449631214141846
+      ]
+    ],
+    "extents": [
+      1.2730517387390137,
+      1.9943192601203918,
+      1.1365726590156555
+    ],
+    "volume": 0.2048856763604446,
+    "components": 2,
+    "largest_component_face_fraction": 0.9999966625950326,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": {
+      "median": 0.05675049999999998,
+      "p10": 0.05641693000000002,
+      "p90": 0.8669733,
+      "minimum": 0.05413279999999998,
+      "maximum": 0.8799343,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.0284560757822567,
+      "method": "Mesh ray intersections: frontmost minus backmost z at 90 off-wheel interior samples, x=25..75% bbox width, y=18..33% and 72..82% bbox height. Proxy for leaf slab thickness; fused assembly or invented hardware may affect spans. Not semantic part segmentation."
+    },
+    "variant": "shape",
+    "settings": {
+      "subfolder": "hunyuan3d-dit-v2-mv",
+      "steps": 30,
+      "guidance": 5,
+      "octree_resolution": 384,
+      "dtype": "float16",
+      "seed": 411,
+      "views": "front"
+    },
+    "front_silhouette_iou": 0.9875054482057243
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/renders/A-s412-sv/A-s412-sv-projection.glb",
+    "category": "A",
+    "vertices": 2166881,
+    "faces": 731686,
+    "watertight": false,
+    "welded_vertices": 365827,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.6657529473304749,
+        -0.9999314546585083,
+        -0.38126257061958313
+      ],
+      [
+        0.6503348350524902,
+        0.9945363998413086,
+        0.37358778715133667
+      ]
+    ],
+    "extents": [
+      1.316087782382965,
+      1.994467854499817,
+      0.7548503577709198
+    ],
+    "volume": 1.2071795718583342,
+    "components": 3,
+    "largest_component_face_fraction": 0.9999671990443988,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": {
+      "median": 0.4923818,
+      "p10": 0.48842424999999995,
+      "p90": 0.49279539,
+      "minimum": 0.4854408,
+      "maximum": 0.6652994,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.2468737708101503,
+      "method": "Mesh ray intersections: frontmost minus backmost z at 90 off-wheel interior samples, x=25..75% bbox width, y=18..33% and 72..82% bbox height. Proxy for leaf slab thickness; fused assembly or invented hardware may affect spans. Not semantic part segmentation."
+    },
+    "variant": "projection",
+    "source_shape": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/A-s412-sv.glb"
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/A-s412-sv.glb",
+    "category": "A",
+    "vertices": 365827,
+    "faces": 731700,
+    "watertight": false,
+    "welded_vertices": 365827,
+    "welded_watertight": false,
+    "bounds": [
+      [
+        -0.6657529473304749,
+        -0.9999314546585083,
+        -0.38126257061958313
+      ],
+      [
+        0.6503348350524902,
+        0.9945363998413086,
+        0.37358778715133667
+      ]
+    ],
+    "extents": [
+      1.316087782382965,
+      1.994467854499817,
+      0.7548503577709198
+    ],
+    "volume": 1.2071795718583342,
+    "components": 16,
+    "largest_component_face_fraction": 0.9999480661473281,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": {
+      "median": 0.4923818,
+      "p10": 0.48842424999999995,
+      "p90": 0.49279539,
+      "minimum": 0.4854408,
+      "maximum": 0.6652994,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.2468737708101503,
+      "method": "Mesh ray intersections: frontmost minus backmost z at 90 off-wheel interior samples, x=25..75% bbox width, y=18..33% and 72..82% bbox height. Proxy for leaf slab thickness; fused assembly or invented hardware may affect spans. Not semantic part segmentation."
+    },
+    "variant": "shape",
+    "settings": {
+      "subfolder": "hunyuan3d-dit-v2-mv",
+      "steps": 30,
+      "guidance": 5,
+      "octree_resolution": 384,
+      "dtype": "float16",
+      "seed": 412,
+      "views": "front"
+    },
+    "front_silhouette_iou": 0.9770845231296402
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/renders/A-s413-sv/A-s413-sv-projection.glb",
+    "category": "A",
+    "vertices": 1595459,
+    "faces": 540200,
+    "watertight": false,
+    "welded_vertices": 270088,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.6710941195487976,
+        -0.9999961256980896,
+        -0.21135859191417694
+      ],
+      [
+        0.6574829816818237,
+        0.9948182106018066,
+        0.255869597196579
+      ]
+    ],
+    "extents": [
+      1.3285771012306213,
+      1.9948143362998962,
+      0.4672281891107559
+    ],
+    "volume": 0.2637700026149916,
+    "components": 2,
+    "largest_component_face_fraction": 0.9999851906701221,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": {
+      "median": 0.0957316,
+      "p10": 0.09547115999999999,
+      "p90": 0.09589103999999998,
+      "minimum": 0.08911260000000001,
+      "maximum": 0.3937607,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.047990230598386835,
+      "method": "Mesh ray intersections: frontmost minus backmost z at 90 off-wheel interior samples, x=25..75% bbox width, y=18..33% and 72..82% bbox height. Proxy for leaf slab thickness; fused assembly or invented hardware may affect spans. Not semantic part segmentation."
+    },
+    "variant": "projection",
+    "source_shape": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/A-s413-sv.glb"
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/A-s413-sv.glb",
+    "category": "A",
+    "vertices": 270088,
+    "faces": 540244,
+    "watertight": false,
+    "welded_vertices": 270088,
+    "welded_watertight": false,
+    "bounds": [
+      [
+        -0.6710941195487976,
+        -0.9999961256980896,
+        -0.21135859191417694
+      ],
+      [
+        0.6574829816818237,
+        0.9948182106018066,
+        0.255869597196579
+      ]
+    ],
+    "extents": [
+      1.3285771012306213,
+      1.9948143362998962,
+      0.4672281891107559
+    ],
+    "volume": 0.2637700026149916,
+    "components": 43,
+    "largest_component_face_fraction": 0.9999037471957115,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": {
+      "median": 0.0957316,
+      "p10": 0.09547115999999999,
+      "p90": 0.09589103999999998,
+      "minimum": 0.08911260000000001,
+      "maximum": 0.3937607,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.047990230598386835,
+      "method": "Mesh ray intersections: frontmost minus backmost z at 90 off-wheel interior samples, x=25..75% bbox width, y=18..33% and 72..82% bbox height. Proxy for leaf slab thickness; fused assembly or invented hardware may affect spans. Not semantic part segmentation."
+    },
+    "variant": "shape",
+    "settings": {
+      "subfolder": "hunyuan3d-dit-v2-mv",
+      "steps": 30,
+      "guidance": 5,
+      "octree_resolution": 384,
+      "dtype": "float16",
+      "seed": 413,
+      "views": "front"
+    },
+    "front_silhouette_iou": 0.9719987239924858
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/renders/B-s410-mv/B-s410-mv-projection.glb",
+    "category": "B",
+    "vertices": 2002822,
+    "faces": 679076,
+    "watertight": false,
+    "welded_vertices": 339516,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.5482879281044006,
+        -1.0000303983688354,
+        -0.3938226103782654
+      ],
+      [
+        0.546870768070221,
+        0.9945598244667053,
+        0.43494170904159546
+      ]
+    ],
+    "extents": [
+      1.0951586961746216,
+      1.9945902228355408,
+      0.8287643194198608
+    ],
+    "volume": 0.17188878850812286,
+    "components": 1,
+    "largest_component_face_fraction": 1.0,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": {
+      "median": 0.03865479999999999,
+      "p10": 0.03785955000000002,
+      "p90": 0.03930400999999997,
+      "minimum": 0.037422100000000014,
+      "maximum": 0.0397344,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.01937982025453214,
+      "method": "Mesh ray intersections: frontmost minus backmost z at 90 off-wheel interior samples, x=25..75% bbox width, y=18..33% and 72..82% bbox height. Proxy for leaf slab thickness; fused assembly or invented hardware may affect spans. Not semantic part segmentation."
+    },
+    "variant": "projection",
+    "source_shape": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/B-s410-mv.glb"
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/B-s410-mv.glb",
+    "category": "B",
+    "vertices": 339516,
+    "faces": 679104,
+    "watertight": false,
+    "welded_vertices": 339516,
+    "welded_watertight": false,
+    "bounds": [
+      [
+        -0.5482879281044006,
+        -1.0000303983688354,
+        -0.3938226103782654
+      ],
+      [
+        0.546870768070221,
+        0.9945598244667053,
+        0.43494170904159546
+      ]
+    ],
+    "extents": [
+      1.0951586961746216,
+      1.9945902228355408,
+      0.8287643194198608
+    ],
+    "volume": 0.1718887885081228,
+    "components": 26,
+    "largest_component_face_fraction": 0.9999587692017717,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": {
+      "median": 0.03865479999999999,
+      "p10": 0.03785955000000002,
+      "p90": 0.03930400999999997,
+      "minimum": 0.037422100000000014,
+      "maximum": 0.0397344,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.01937982025453214,
+      "method": "Mesh ray intersections: frontmost minus backmost z at 90 off-wheel interior samples, x=25..75% bbox width, y=18..33% and 72..82% bbox height. Proxy for leaf slab thickness; fused assembly or invented hardware may affect spans. Not semantic part segmentation."
+    },
+    "variant": "shape",
+    "settings": {
+      "subfolder": "hunyuan3d-dit-v2-mv",
+      "steps": 30,
+      "guidance": 5,
+      "octree_resolution": 384,
+      "dtype": "float16",
+      "seed": 410,
+      "views": "front+left"
+    },
+    "front_silhouette_iou": 0.9721593291404612
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/renders/B-s410-sv/B-s410-sv-projection.glb",
+    "category": "B",
+    "vertices": 1081856,
+    "faces": 366924,
+    "watertight": false,
+    "welded_vertices": 183454,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.5667064189910889,
+        -1.0001919269561768,
+        -0.17330530285835266
+      ],
+      [
+        0.5614378452301025,
+        0.9944441914558411,
+        0.24630038440227509
+      ]
+    ],
+    "extents": [
+      1.1281442642211914,
+      1.9946361184120178,
+      0.41960568726062775
+    ],
+    "volume": 0.10480071040682075,
+    "components": 1,
+    "largest_component_face_fraction": 1.0,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": {
+      "median": 0.046738,
+      "p10": 0.04566404,
+      "p90": 0.04737616,
+      "minimum": 0.0452993,
+      "maximum": 0.048235,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.023431842815124268,
+      "method": "Mesh ray intersections: frontmost minus backmost z at 90 off-wheel interior samples, x=25..75% bbox width, y=18..33% and 72..82% bbox height. Proxy for leaf slab thickness; fused assembly or invented hardware may affect spans. Not semantic part segmentation."
+    },
+    "variant": "projection",
+    "source_shape": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/B-s410-sv.glb"
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/B-s410-sv.glb",
+    "category": "B",
+    "vertices": 183454,
+    "faces": 366924,
+    "watertight": true,
+    "welded_vertices": 183454,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.5667064189910889,
+        -1.0001919269561768,
+        -0.17330530285835266
+      ],
+      [
+        0.5614378452301025,
+        0.9944441914558411,
+        0.24630038440227509
+      ]
+    ],
+    "extents": [
+      1.1281442642211914,
+      1.9946361184120178,
+      0.41960568726062775
+    ],
+    "volume": 0.10480071040682078,
+    "components": 1,
+    "largest_component_face_fraction": 1.0,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": {
+      "median": 0.046738,
+      "p10": 0.04566404,
+      "p90": 0.04737616,
+      "minimum": 0.0452993,
+      "maximum": 0.048235,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.023431842815124268,
+      "method": "Mesh ray intersections: frontmost minus backmost z at 90 off-wheel interior samples, x=25..75% bbox width, y=18..33% and 72..82% bbox height. Proxy for leaf slab thickness; fused assembly or invented hardware may affect spans. Not semantic part segmentation."
+    },
+    "variant": "shape",
+    "settings": {
+      "subfolder": "hunyuan3d-dit-v2-mv",
+      "steps": 30,
+      "guidance": 5,
+      "octree_resolution": 384,
+      "dtype": "float16",
+      "seed": 410,
+      "views": "front"
+    },
+    "front_silhouette_iou": 0.9739921438908414
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/renders/B-s411-sv/B-s411-sv-projection.glb",
+    "category": "B",
+    "vertices": 1066501,
+    "faces": 362770,
+    "watertight": false,
+    "welded_vertices": 181377,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.5644339919090271,
+        -0.9997822046279907,
+        -0.0035679140128195286
+      ],
+      [
+        0.5596461296081543,
+        0.9948435425758362,
+        0.13510213792324066
+      ]
+    ],
+    "extents": [
+      1.1240801215171814,
+      1.994625747203827,
+      0.1386700519360602
+    ],
+    "volume": 0.08398825007059661,
+    "components": 1,
+    "largest_component_face_fraction": 1.0,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": {
+      "median": 0.0384359,
+      "p10": 0.032095570000000004,
+      "p90": 0.038852,
+      "minimum": 0.031117699999999998,
+      "maximum": 0.0392202,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.019269730200706325,
+      "method": "Mesh ray intersections: frontmost minus backmost z at 90 off-wheel interior samples, x=25..75% bbox width, y=18..33% and 72..82% bbox height. Proxy for leaf slab thickness; fused assembly or invented hardware may affect spans. Not semantic part segmentation."
+    },
+    "variant": "projection",
+    "source_shape": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/B-s411-sv.glb"
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/B-s411-sv.glb",
+    "category": "B",
+    "vertices": 181377,
+    "faces": 362784,
+    "watertight": false,
+    "welded_vertices": 181377,
+    "welded_watertight": false,
+    "bounds": [
+      [
+        -0.5644339919090271,
+        -0.9997822046279907,
+        -0.0035679140128195286
+      ],
+      [
+        0.5596461296081543,
+        0.9948435425758362,
+        0.13510213792324066
+      ]
+    ],
+    "extents": [
+      1.1240801215171814,
+      1.994625747203827,
+      0.1386700519360602
+    ],
+    "volume": 0.08398825007059658,
+    "components": 14,
+    "largest_component_face_fraction": 0.9999614095439711,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": {
+      "median": 0.0384359,
+      "p10": 0.032095570000000004,
+      "p90": 0.038852,
+      "minimum": 0.031117699999999998,
+      "maximum": 0.0392202,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.019269730200706325,
+      "method": "Mesh ray intersections: frontmost minus backmost z at 90 off-wheel interior samples, x=25..75% bbox width, y=18..33% and 72..82% bbox height. Proxy for leaf slab thickness; fused assembly or invented hardware may affect spans. Not semantic part segmentation."
+    },
+    "variant": "shape",
+    "settings": {
+      "subfolder": "hunyuan3d-dit-v2-mv",
+      "steps": 30,
+      "guidance": 5,
+      "octree_resolution": 384,
+      "dtype": "float16",
+      "seed": 411,
+      "views": "front"
+    },
+    "front_silhouette_iou": 0.9735178682090477
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/renders/B-s412-sv/B-s412-sv-projection.glb",
+    "category": "B",
+    "vertices": 1114230,
+    "faces": 378086,
+    "watertight": false,
+    "welded_vertices": 189035,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.5476120114326477,
+        -1.0000957250595093,
+        -0.0723956823348999
+      ],
+      [
+        0.5481460690498352,
+        0.9946646690368652,
+        0.14485765993595123
+      ]
+    ],
+    "extents": [
+      1.095758080482483,
+      1.9947603940963745,
+      0.21725334227085114
+    ],
+    "volume": 0.2105597285666271,
+    "components": 1,
+    "largest_component_face_fraction": 1.0,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": {
+      "median": 0.10286529999999999,
+      "p10": 0.08961785,
+      "p90": 0.10313205,
+      "minimum": 0.0891548,
+      "maximum": 0.10330310000000001,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.05156774733669099,
+      "method": "Mesh ray intersections: frontmost minus backmost z at 90 off-wheel interior samples, x=25..75% bbox width, y=18..33% and 72..82% bbox height. Proxy for leaf slab thickness; fused assembly or invented hardware may affect spans. Not semantic part segmentation."
+    },
+    "variant": "projection",
+    "source_shape": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/B-s412-sv.glb"
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/B-s412-sv.glb",
+    "category": "B",
+    "vertices": 189035,
+    "faces": 378104,
+    "watertight": false,
+    "welded_vertices": 189035,
+    "welded_watertight": false,
+    "bounds": [
+      [
+        -0.5476120114326477,
+        -1.0000957250595093,
+        -0.0723956823348999
+      ],
+      [
+        0.5481460690498352,
+        0.9946646690368652,
+        0.14485765993595123
+      ]
+    ],
+    "extents": [
+      1.095758080482483,
+      1.9947603940963745,
+      0.21725334227085114
+    ],
+    "volume": 0.2105597285666272,
+    "components": 18,
+    "largest_component_face_fraction": 0.9999523940503142,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": {
+      "median": 0.10286529999999999,
+      "p10": 0.08961785,
+      "p90": 0.10313205,
+      "minimum": 0.0891548,
+      "maximum": 0.10330310000000001,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.05156774733669099,
+      "method": "Mesh ray intersections: frontmost minus backmost z at 90 off-wheel interior samples, x=25..75% bbox width, y=18..33% and 72..82% bbox height. Proxy for leaf slab thickness; fused assembly or invented hardware may affect spans. Not semantic part segmentation."
+    },
+    "variant": "shape",
+    "settings": {
+      "subfolder": "hunyuan3d-dit-v2-mv",
+      "steps": 30,
+      "guidance": 5,
+      "octree_resolution": 384,
+      "dtype": "float16",
+      "seed": 412,
+      "views": "front"
+    },
+    "front_silhouette_iou": 0.9794537815126051
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/renders/B-s413-sv/B-s413-sv-projection.glb",
+    "category": "B",
+    "vertices": 1090559,
+    "faces": 370222,
+    "watertight": false,
+    "welded_vertices": 185103,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.5697131156921387,
+        -1.000006079673767,
+        -0.22774764895439148
+      ],
+      [
+        0.5603299736976624,
+        0.9944656491279602,
+        0.2199402004480362
+      ]
+    ],
+    "extents": [
+      1.130043089389801,
+      1.9944717288017273,
+      0.4476878494024277
+    ],
+    "volume": 0.0965170929556306,
+    "components": 1,
+    "largest_component_face_fraction": 1.0,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": {
+      "median": 0.0427674,
+      "p10": 0.042133210000000004,
+      "p90": 0.0432793,
+      "minimum": 0.0393623,
+      "maximum": 0.0435723,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.021442971280267044,
+      "method": "Mesh ray intersections: frontmost minus backmost z at 90 off-wheel interior samples, x=25..75% bbox width, y=18..33% and 72..82% bbox height. Proxy for leaf slab thickness; fused assembly or invented hardware may affect spans. Not semantic part segmentation."
+    },
+    "variant": "projection",
+    "source_shape": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/B-s413-sv.glb"
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/B-s413-sv.glb",
+    "category": "B",
+    "vertices": 185103,
+    "faces": 370228,
+    "watertight": false,
+    "welded_vertices": 185103,
+    "welded_watertight": false,
+    "bounds": [
+      [
+        -0.5697131156921387,
+        -1.000006079673767,
+        -0.22774764895439148
+      ],
+      [
+        0.5603299736976624,
+        0.9944656491279602,
+        0.2199402004480362
+      ]
+    ],
+    "extents": [
+      1.130043089389801,
+      1.9944717288017273,
+      0.4476878494024277
+    ],
+    "volume": 0.0965170929556306,
+    "components": 7,
+    "largest_component_face_fraction": 0.9999837937703253,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": {
+      "median": 0.0427674,
+      "p10": 0.042133210000000004,
+      "p90": 0.0432793,
+      "minimum": 0.0393623,
+      "maximum": 0.0435723,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.021442971280267044,
+      "method": "Mesh ray intersections: frontmost minus backmost z at 90 off-wheel interior samples, x=25..75% bbox width, y=18..33% and 72..82% bbox height. Proxy for leaf slab thickness; fused assembly or invented hardware may affect spans. Not semantic part segmentation."
+    },
+    "variant": "shape",
+    "settings": {
+      "subfolder": "hunyuan3d-dit-v2-mv",
+      "steps": 30,
+      "guidance": 5,
+      "octree_resolution": 384,
+      "dtype": "float16",
+      "seed": 413,
+      "views": "front"
+    },
+    "front_silhouette_iou": 0.9787613556228482
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/renders/C-s410-mv/C-s410-mv-projection.glb",
+    "category": "C",
+    "vertices": 1254843,
+    "faces": 423052,
+    "watertight": false,
+    "welded_vertices": 211526,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.6899627447128296,
+        -1.0001705884933472,
+        -0.6940324902534485
+      ],
+      [
+        0.6828354597091675,
+        0.994774341583252,
+        0.6857799887657166
+      ]
+    ],
+    "extents": [
+      1.372798204421997,
+      1.9949449300765991,
+      1.379812479019165
+    ],
+    "volume": 0.20303531302268651,
+    "components": 1,
+    "largest_component_face_fraction": 1.0,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": null,
+    "thickness_note": "Not applicable: frame ring has no leaf. Total rim/hardware z extent is extents[2].",
+    "variant": "projection",
+    "source_shape": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/C-s410-mv.glb"
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/C-s410-mv.glb",
+    "category": "C",
+    "vertices": 211526,
+    "faces": 423064,
+    "watertight": false,
+    "welded_vertices": 211526,
+    "welded_watertight": false,
+    "bounds": [
+      [
+        -0.6899627447128296,
+        -1.0001705884933472,
+        -0.6940324902534485
+      ],
+      [
+        0.6828354597091675,
+        0.994774341583252,
+        0.6857799887657166
+      ]
+    ],
+    "extents": [
+      1.372798204421997,
+      1.9949449300765991,
+      1.379812479019165
+    ],
+    "volume": 0.20303531302268651,
+    "components": 12,
+    "largest_component_face_fraction": 0.9999716354972298,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": null,
+    "thickness_note": "Not applicable: frame ring has no leaf. Total rim/hardware z extent is extents[2].",
+    "variant": "shape",
+    "settings": {
+      "subfolder": "hunyuan3d-dit-v2-mv",
+      "steps": 30,
+      "guidance": 5,
+      "octree_resolution": 384,
+      "dtype": "float16",
+      "seed": 410,
+      "views": "front+left"
+    },
+    "front_silhouette_iou": 0.8470698546647913
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/renders/C-s410-sv/C-s410-sv-projection.glb",
+    "category": "C",
+    "vertices": 826602,
+    "faces": 277904,
+    "watertight": false,
+    "welded_vertices": 138952,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.7081401348114014,
+        -1.0003265142440796,
+        -0.1067512035369873
+      ],
+      [
+        0.7002793550491333,
+        0.9947053790092468,
+        0.14683231711387634
+      ]
+    ],
+    "extents": [
+      1.4084194898605347,
+      1.9950318932533264,
+      0.25358352065086365
+    ],
+    "volume": 0.12044150262139709,
+    "components": 1,
+    "largest_component_face_fraction": 1.0,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": null,
+    "thickness_note": "Not applicable: frame ring has no leaf. Total rim/hardware z extent is extents[2].",
+    "variant": "projection",
+    "source_shape": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/C-s410-sv.glb"
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/C-s410-sv.glb",
+    "category": "C",
+    "vertices": 138952,
+    "faces": 277912,
+    "watertight": false,
+    "welded_vertices": 138952,
+    "welded_watertight": false,
+    "bounds": [
+      [
+        -0.7081401348114014,
+        -1.0003265142440796,
+        -0.1067512035369873
+      ],
+      [
+        0.7002793550491333,
+        0.9947053790092468,
+        0.14683231711387634
+      ]
+    ],
+    "extents": [
+      1.4084194898605347,
+      1.9950318932533264,
+      0.25358352065086365
+    ],
+    "volume": 0.12044150262139715,
+    "components": 9,
+    "largest_component_face_fraction": 0.999971213909439,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": null,
+    "thickness_note": "Not applicable: frame ring has no leaf. Total rim/hardware z extent is extents[2].",
+    "variant": "shape",
+    "settings": {
+      "subfolder": "hunyuan3d-dit-v2-mv",
+      "steps": 30,
+      "guidance": 5,
+      "octree_resolution": 384,
+      "dtype": "float16",
+      "seed": 410,
+      "views": "front"
+    },
+    "front_silhouette_iou": 0.8899143672692673
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/renders/C-s411-sv/C-s411-sv-projection.glb",
+    "category": "C",
+    "vertices": 847435,
+    "faces": 285724,
+    "watertight": false,
+    "welded_vertices": 142862,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.6868311166763306,
+        -1.0001142024993896,
+        -0.13062195479869843
+      ],
+      [
+        0.6853224039077759,
+        0.9943689703941345,
+        0.1307828724384308
+      ]
+    ],
+    "extents": [
+      1.3721535205841064,
+      1.9944831728935242,
+      0.2614048272371292
+    ],
+    "volume": 0.12663407996132411,
+    "components": 1,
+    "largest_component_face_fraction": 1.0,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": null,
+    "thickness_note": "Not applicable: frame ring has no leaf. Total rim/hardware z extent is extents[2].",
+    "variant": "projection",
+    "source_shape": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/C-s411-sv.glb"
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/C-s411-sv.glb",
+    "category": "C",
+    "vertices": 142862,
+    "faces": 285724,
+    "watertight": true,
+    "welded_vertices": 142862,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.6868311166763306,
+        -1.0001142024993896,
+        -0.13062195479869843
+      ],
+      [
+        0.6853224039077759,
+        0.9943689703941345,
+        0.1307828724384308
+      ]
+    ],
+    "extents": [
+      1.3721535205841064,
+      1.9944831728935242,
+      0.2614048272371292
+    ],
+    "volume": 0.12663407996132411,
+    "components": 1,
+    "largest_component_face_fraction": 1.0,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": null,
+    "thickness_note": "Not applicable: frame ring has no leaf. Total rim/hardware z extent is extents[2].",
+    "variant": "shape",
+    "settings": {
+      "subfolder": "hunyuan3d-dit-v2-mv",
+      "steps": 30,
+      "guidance": 5,
+      "octree_resolution": 384,
+      "dtype": "float16",
+      "seed": 411,
+      "views": "front"
+    },
+    "front_silhouette_iou": 0.8304890838020784
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/renders/C-s412-sv/C-s412-sv-projection.glb",
+    "category": "C",
+    "vertices": 797155,
+    "faces": 268294,
+    "watertight": false,
+    "welded_vertices": 134147,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.7181074023246765,
+        -1.0002543926239014,
+        -0.10103771090507507
+      ],
+      [
+        0.7041471600532532,
+        0.9945407509803772,
+        0.1239800825715065
+      ]
+    ],
+    "extents": [
+      1.4222545623779297,
+      1.9947951436042786,
+      0.22501779347658157
+    ],
+    "volume": 0.11284208998727241,
+    "components": 1,
+    "largest_component_face_fraction": 1.0,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": null,
+    "thickness_note": "Not applicable: frame ring has no leaf. Total rim/hardware z extent is extents[2].",
+    "variant": "projection",
+    "source_shape": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/C-s412-sv.glb"
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/C-s412-sv.glb",
+    "category": "C",
+    "vertices": 134147,
+    "faces": 268304,
+    "watertight": false,
+    "welded_vertices": 134147,
+    "welded_watertight": false,
+    "bounds": [
+      [
+        -0.7181074023246765,
+        -1.0002543926239014,
+        -0.10103771090507507
+      ],
+      [
+        0.7041471600532532,
+        0.9945407509803772,
+        0.1239800825715065
+      ]
+    ],
+    "extents": [
+      1.4222545623779297,
+      1.9947951436042786,
+      0.22501779347658157
+    ],
+    "volume": 0.1128420899872724,
+    "components": 11,
+    "largest_component_face_fraction": 0.9999627288448923,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": null,
+    "thickness_note": "Not applicable: frame ring has no leaf. Total rim/hardware z extent is extents[2].",
+    "variant": "shape",
+    "settings": {
+      "subfolder": "hunyuan3d-dit-v2-mv",
+      "steps": 30,
+      "guidance": 5,
+      "octree_resolution": 384,
+      "dtype": "float16",
+      "seed": 412,
+      "views": "front"
+    },
+    "front_silhouette_iou": 0.8658315004303337
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/renders/C-s413-sv/C-s413-sv-projection.glb",
+    "category": "C",
+    "vertices": 808168,
+    "faces": 272720,
+    "watertight": false,
+    "welded_vertices": 136360,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.7092320322990417,
+        -1.0002425909042358,
+        -0.11483029276132584
+      ],
+      [
+        0.7060426473617554,
+        0.9944854974746704,
+        0.11594431102275848
+      ]
+    ],
+    "extents": [
+      1.4152746796607971,
+      1.9947280883789062,
+      0.23077460378408432
+    ],
+    "volume": 0.12418063128002375,
+    "components": 1,
+    "largest_component_face_fraction": 1.0,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": null,
+    "thickness_note": "Not applicable: frame ring has no leaf. Total rim/hardware z extent is extents[2].",
+    "variant": "projection",
+    "source_shape": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/C-s413-sv.glb"
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/C-s413-sv.glb",
+    "category": "C",
+    "vertices": 136360,
+    "faces": 272732,
+    "watertight": false,
+    "welded_vertices": 136360,
+    "welded_watertight": false,
+    "bounds": [
+      [
+        -0.7092320322990417,
+        -1.0002425909042358,
+        -0.11483029276132584
+      ],
+      [
+        0.7060426473617554,
+        0.9944854974746704,
+        0.11594431102275848
+      ]
+    ],
+    "extents": [
+      1.4152746796607971,
+      1.9947280883789062,
+      0.23077460378408432
+    ],
+    "volume": 0.12418063128002381,
+    "components": 13,
+    "largest_component_face_fraction": 0.9999560007626535,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": null,
+    "thickness_note": "Not applicable: frame ring has no leaf. Total rim/hardware z extent is extents[2].",
+    "variant": "shape",
+    "settings": {
+      "subfolder": "hunyuan3d-dit-v2-mv",
+      "steps": 30,
+      "guidance": 5,
+      "octree_resolution": 384,
+      "dtype": "float16",
+      "seed": 413,
+      "views": "front"
+    },
+    "front_silhouette_iou": 0.8655093475772606
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/A-s410-sv-paint.glb",
+    "category": "A",
+    "vertices": 1668852,
+    "faces": 564032,
+    "watertight": false,
+    "welded_vertices": 282002,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.6625086069107056,
+        -1.0,
+        -0.26565679907798767
+      ],
+      [
+        0.6625086069107056,
+        1.0,
+        0.26565679907798767
+      ]
+    ],
+    "extents": [
+      1.3250172138214111,
+      2.0,
+      0.5313135981559753
+    ],
+    "volume": 0.19374267918464128,
+    "components": 1,
+    "largest_component_face_fraction": 1.0,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": {
+      "median": 0.052671850000000006,
+      "p10": 0.052435140000000005,
+      "p90": 0.052823409999999994,
+      "minimum": 0.04305489999999998,
+      "maximum": 0.3876331,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.026335925000000003,
+      "method": "Mesh ray intersections: frontmost minus backmost z at 90 off-wheel interior samples, x=25..75% bbox width, y=18..33% and 72..82% bbox height. Proxy for leaf slab thickness; fused assembly or invented hardware may affect spans. Not semantic part segmentation."
+    },
+    "variant": "paint+delight",
+    "source_shape": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/A-s410-sv.glb"
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/A-s411-sv-paint.glb",
+    "category": "A",
+    "vertices": 1772350,
+    "faces": 599266,
+    "watertight": false,
+    "welded_vertices": 299621,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.6383389830589294,
+        -1.0,
+        -0.5699050426483154
+      ],
+      [
+        0.6383389830589294,
+        1.0,
+        0.5699050426483154
+      ]
+    ],
+    "extents": [
+      1.2766779661178589,
+      2.0,
+      1.1398100852966309
+    ],
+    "volume": 0.2066414952660668,
+    "components": 1,
+    "largest_component_face_fraction": 1.0,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": {
+      "median": 0.05691209999999999,
+      "p10": 0.05657764000000003,
+      "p90": 0.86944291,
+      "minimum": 0.05428709999999998,
+      "maximum": 0.8824407999999999,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.028456049999999997,
+      "method": "Mesh ray intersections: frontmost minus backmost z at 90 off-wheel interior samples, x=25..75% bbox width, y=18..33% and 72..82% bbox height. Proxy for leaf slab thickness; fused assembly or invented hardware may affect spans. Not semantic part segmentation."
+    },
+    "variant": "paint+delight",
+    "source_shape": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/A-s411-sv.glb"
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/B-s410-sv-paint.glb",
+    "category": "B",
+    "vertices": 1081856,
+    "faces": 366924,
+    "watertight": false,
+    "welded_vertices": 183454,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.5655890107154846,
+        -1.0,
+        -0.21036703884601593
+      ],
+      [
+        0.5655890107154846,
+        1.0,
+        0.21036703884601593
+      ]
+    ],
+    "extents": [
+      1.1311780214309692,
+      2.0,
+      0.42073407769203186
+    ],
+    "volume": 0.10564846127408639,
+    "components": 1,
+    "largest_component_face_fraction": 1.0,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": {
+      "median": 0.04686365000000001,
+      "p10": 0.04578684,
+      "p90": 0.04750355999999999,
+      "minimum": 0.045421199999999995,
+      "maximum": 0.0483647,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.023431825000000003,
+      "method": "Mesh ray intersections: frontmost minus backmost z at 90 off-wheel interior samples, x=25..75% bbox width, y=18..33% and 72..82% bbox height. Proxy for leaf slab thickness; fused assembly or invented hardware may affect spans. Not semantic part segmentation."
+    },
+    "variant": "paint+delight",
+    "source_shape": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/B-s410-sv.glb"
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/B-s412-sv-paint.glb",
+    "category": "B",
+    "vertices": 1114230,
+    "faces": 378086,
+    "watertight": false,
+    "welded_vertices": 189035,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.5493181347846985,
+        -1.0,
+        -0.10891199856996536
+      ],
+      [
+        0.5493181347846985,
+        1.0,
+        0.10891199856996536
+      ]
+    ],
+    "extents": [
+      1.098636269569397,
+      2.0,
+      0.21782399713993073
+    ],
+    "volume": 0.21222331238463585,
+    "components": 1,
+    "largest_component_face_fraction": 1.0,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": {
+      "median": 0.10313555,
+      "p10": 0.08985314,
+      "p90": 0.10340286,
+      "minimum": 0.089389,
+      "maximum": 0.1035745,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.051567775,
+      "method": "Mesh ray intersections: frontmost minus backmost z at 90 off-wheel interior samples, x=25..75% bbox width, y=18..33% and 72..82% bbox height. Proxy for leaf slab thickness; fused assembly or invented hardware may affect spans. Not semantic part segmentation."
+    },
+    "variant": "paint+delight",
+    "source_shape": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/B-s412-sv.glb"
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/C-s411-sv-paint.glb",
+    "category": "C",
+    "vertices": 847437,
+    "faces": 285724,
+    "watertight": false,
+    "welded_vertices": 142862,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.6879744529724121,
+        -1.0,
+        -0.13106393814086914
+      ],
+      [
+        0.6879744529724121,
+        1.0,
+        0.13106393814086914
+      ]
+    ],
+    "extents": [
+      1.3759489059448242,
+      2.0,
+      0.2621278762817383
+    ],
+    "volume": 0.12768781519265382,
+    "components": 1,
+    "largest_component_face_fraction": 1.0,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": null,
+    "thickness_note": "Not applicable: frame ring has no leaf. Total rim/hardware z extent is extents[2].",
+    "variant": "paint+delight",
+    "source_shape": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/C-s411-sv.glb"
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/C-s410-sv-paint.glb",
+    "category": "C",
+    "vertices": 826603,
+    "faces": 277904,
+    "watertight": false,
+    "welded_vertices": 138952,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.7059633731842041,
+        -1.0,
+        -0.12710750102996826
+      ],
+      [
+        0.7059633731842041,
+        1.0,
+        0.12710750102996826
+      ]
+    ],
+    "extents": [
+      1.4119267463684082,
+      2.0,
+      0.2542150020599365
+    ],
+    "volume": 0.12134353032307137,
+    "components": 1,
+    "largest_component_face_fraction": 1.0,
+    "units": "native normalized Hunyuan units, no metric scale assigned",
+    "leaf_slab_thickness": null,
+    "thickness_note": "Not applicable: frame ring has no leaf. Total rim/hardware z extent is extents[2].",
+    "variant": "paint+delight",
+    "source_shape": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/meshes/C-s410-sv.glb"
+  }
+]

@@ -17,6 +17,7 @@ static func document() -> Dictionary:
 	if _document.is_empty():
 		_document = JSON.parse_string(FileAccess.get_file_as_string(MANIFEST))
 		assert(_document.schema_version == 1 and _document.coordinate_system == "godot_y_up", "supported hatch export schema")
+		assert(_document.generated_sources.schema_version == 1 and _document.fit_recipe.schema_version == 1, "supported generated hatch provenance and fitting recipe")
 		var packed: PackedScene = load(SOURCE)
 		var scene := packed.instantiate()
 		_collect(scene)

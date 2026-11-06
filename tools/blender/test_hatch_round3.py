@@ -73,7 +73,8 @@ class HatchRound3Test(unittest.TestCase):
         bpy.ops.object.select_all(action="SELECT")
         bpy.ops.object.delete(use_global=False)
         cls.document = __import__("json").loads(SOURCE.read_text())
-        cls.objects, cls.nodes, cls.error = build.construct(cls.document, build.material())
+        from hatch_generated_frame import load_frames
+        cls.objects, cls.nodes, cls.error = build.construct(cls.document, build.material(), load_frames(cls.document))
         cls.by_name = {obj.name: obj for obj in cls.objects}
 
     def test_leaf_rivets_follow_one_pitch_around_each_run(self):
@@ -108,19 +109,12 @@ class HatchRound3Test(unittest.TestCase):
                      for solid in variant["frame_solids"] if "/THROAT/" in solid["id"]}
             self.assertEqual(len(rears), 1, "throat rear depths " + str(sorted(rears)))
 
-    def test_guard_legacy_collar_boxes_keep_their_reservation_extents(self):
-        # Collision and the rendered collar box must agree to the reservation extents; a clipped pad would not.
-        # A solid is split into fore and aft mesh objects, so extents are gathered across all of its objects.
-        solids = {}
-        for name, row in self.nodes.items():
-            if row["kind"] == "frame" and row["variant"] == 0 and row["id"] in ("FRAME/TOP", "FRAME/LEFT", "FRAME/RIGHT", "COAMING"):
-                solids.setdefault(row["part"], []).extend(source_points(self.by_name[name]))
-        self.assertEqual(len(solids), 4)
-        for part, points in solids.items():
-            solid = self.document["variants"][0]["frame_solids"][part]
-            for axis, name in enumerate("xyz"):
-                values = [p[axis] for p in points]
-                self.assertAlmostEqual(max(values) - min(values), solid["size"][axis], delta=1e-6, msg=solid["id"] + name)
+    def test_guard_collision_reservations_trimmed_rendering_and_both_sided_seals(self):
+        # Driver decision: drawn boxes no longer equal collision boxes. Preserve
+        # collision to 1 um, contained/behind-ring rounded interfaces, and the
+        # unchanged zero-miss seal/pocket grids on both sides. Threshold exempt.
+        from hatch_interface_checks import check_interfaces
+        check_interfaces(self, build, self.document, self.objects, self.nodes)
 
     def test_hinge_caps_are_seated_with_a_neck(self):
         checked = 0

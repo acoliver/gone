@@ -22,7 +22,10 @@ spec.loader.exec_module(build)
 class HatchFinishConstructionTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.document = json.loads((ROOT / "assets/props/hatch/parts.json").read_text())
+        source = Path(os.environ.get("HATCH_SOURCE_JSON", ROOT / "assets/props/hatch/parts.json"))
+        cls.document = json.loads(source.read_text())
+        from hatch_generated_frame import load_frames
+        cls.frames = load_frames(cls.document)
 
     def setUp(self):
         bpy.ops.object.select_all(action="SELECT")
@@ -69,7 +72,7 @@ class HatchFinishConstructionTest(unittest.TestCase):
                                "mirrored bake geometry faces into the steel instead of out of it")
 
     def test_production_atlas_has_unit_tangents_on_every_constructed_triangle(self):
-        objects, _, _ = build.construct(self.document, build.material())
+        objects, _, _ = build.construct(self.document, build.material(), self.frames)
         for resolution in (2048, 4096):
             with self.subTest(resolution=resolution):
                 build.atlas(objects, resolution)
@@ -82,7 +85,7 @@ class HatchFinishConstructionTest(unittest.TestCase):
                 self.assertEqual(bad, [], "invalid atlas tangents " + str(bad[:8]))
 
     def test_weather_field_uses_fasteners_not_zero_radius_pivot_seals(self):
-        objects, nodes, _ = build.construct(self.document, build.material())
+        objects, nodes, _ = build.construct(self.document, build.material(), self.frames)
         # Round 11 splits the zero-radius returns around the fixed knuckles;
         # retain those seal pieces alongside the real fastener controls.
         returns = [obj for obj in objects if "PivotSealSteel/return-" in nodes[obj.name]["id"]]
@@ -99,9 +102,14 @@ class HatchFinishConstructionTest(unittest.TestCase):
         self.assertGreater(float(pixels.reshape(-1, 4)[:, 0].max()), .8,
                            "real fastener blooms disappeared")
 
-    def test_collar_and_stop_edges_are_modelled_roundovers_with_the_same_extents(self):
+    def test_collar_roundovers_collision_reservations_trimmed_rendering_and_both_sided_seals(self):
+        # Driver decision replaces drawn-box equality at this guard too. Retain
+        # 1 um collision pins, contained/behind-ring render triangles and the
+        # unchanged both-sided zero-miss seal/pocket grids, with visible roundovers.
+        from hatch_interface_checks import check_interfaces
         document = self.document
-        objects, nodes, _ = build.construct(document, build.material())
+        objects, nodes, _ = build.construct(document, build.material(), self.frames)
+        check_interfaces(self, build, document, objects, nodes)
         by_name = {obj.name: obj for obj in objects}
         for variant in document["variants"]:
             for solid in variant["frame_solids"]:
@@ -117,9 +125,6 @@ class HatchFinishConstructionTest(unittest.TestCase):
                     for corner in solid["vertices"]:
                         self.assertGreater(min((p.to_3d() - build.Vector(corner)).length for p in points), .0001,
                                            solid["id"] + " subdivides a square corner without rounding it")
-                for axis in range(3):
-                    self.assertAlmostEqual(min(p[axis] for p in points), -solid["size"][axis]/2, delta=1e-6)
-                    self.assertAlmostEqual(max(p[axis] for p in points), solid["size"][axis]/2, delta=1e-6)
 
     def test_square_seal_pocket_has_a_rolled_reveal_not_a_vertical_cut(self):
         part = self.document["variants"][0]["groups"][0]["parts"][0]

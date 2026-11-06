@@ -1,0 +1,26 @@
+{
+  "logical_replays": {
+    "connector_capture": {
+      "batches": [
+        1,
+        4
+      ],
+      "digest": "fd818bdfe5065bab2c598975cb72b5cca217359751dbee006b42aa0399e296b7",
+      "test": "tests/connector_harness_test.gd"
+    },
+    "connector_route": {
+      "digest": "f66dd791d05d8b7bfce9ce4d3972ff9331249566eb23f23f9aadd972a1b0e497",
+      "test": "tests/connector_route_test.gd"
+    }
+  },
+  "scenarios_sha256": {
+    "click-route": "3dd389d83980334d8659f21e312b0fd9723d5718dbe62869f56683e742555d6b",
+    "connector-route": "7ef725c65420e8bf33660016cdc593a44346ab9eed511af042f1b83d5cf24529",
+    "gameplay-full": "31a542d425080d8148b18b87e80767a5746461fd7b660a59f024245a8eb9211d",
+    "gameplay-keyboard-turn": "b3f83b97da223ee17b547866edf75039d8366493efa5965d80bdbbaa2d3758c9",
+    "hallway": "de483f1247c8f5119582b551a3f7ae4ca1c915d6fb85a0b4a726d7a27b71e1fb",
+    "power-room": "aae6c93908cf41bc70177305d466b98fa24d7b530de4b33a70f7a68ec1984cad",
+    "rod-pickup": "d95d2693a787ee073b842574406e6199d8fa06771c058b222a22f2cdd0fbc372"
+  },
+  "source_head": "c2a0157"
+}
