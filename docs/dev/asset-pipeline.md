@@ -34,24 +34,30 @@ clearcoat 1 and coat roughness 0.08. PodMesh restores clearcoat in code
 because Godot drops the glTF extension. WindowTint stays dark and opaque;
 CouchFabric, PillowFabric and Gasket retain their source material values.
 Sealed lids are closed, empty-open lids rotate -70° about local X, and
-the player lid rotates -90°. Meshes and materials are shared across pods.
+the player lid rotates -78° for ceiling clearance (#88). Meshes and
+materials are shared across pods.
 
 The 8 m bay retains its reflection probe. Only the bay aisle narrows to
 2.9 m; the hallway and ship layout retain their independent 3.0 m width.
 The couch height drives the get-up path. The foot wall has no collider,
 as before; passing the body capsule through that visible tub wall is an
-accepted limitation. The eye trajectory is checked separately against
+accepted limitation. At the 78-degree player pose, the three lid proxies
+cover the upper panels, leaving the lower lid outside collision so its
+AABBs do not block the conservative get-up sweep (#88). Body-to-mesh
+collision remains approximate; sealed and empty-open proxies are unchanged.
+The eye trajectory is checked separately against
 the actual asset. Dense nearest-surface sampling finds a 237.140 mm
 minimum on the live rig's straight eye interpolation, at the pillow.
 The independent capsule quarter-circle eye arc approaches the raised lid
-to 108.583 mm; this arc is not the live camera interpolation. The runtime
+to 91.897 mm; this arc is not the live camera interpolation. The runtime
 mesh test checks the live eye against the unchanged 130 mm requirement.
 
-The required player lid pose reaches Y=3.301817 m, exceeding the existing
-3.2 m ceiling by 101.817 mm. Empty-open at 70 degrees reaches 2.997180 m.
-This is a retained fit limitation: integration does not change the room
-height, scale the pod, move its hinge or reduce the required 90-degree
-player opening to conceal it.
+The player lid opens 78 degrees, reaching Y=3.145976 m with 54.024 mm
+clearance below the 3.2 m ceiling (#88). This is the largest whole-degree
+opening that retains at least 50 mm clearance: 79 degrees leaves only
+37.684 mm. Measurements use the actual pod-v4 lid and pane vertices about
+the exported pivot, without changing the room height, pod scale or hinge.
+Empty-open remains at 70 degrees and reaches 2.997186 m.
 
 Both red flank tubes remain on the stationary base in every state.
 Waypoints are measured at Y=0.280 m (+X) and 0.120 m (-X), 24 mm outward

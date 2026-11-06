@@ -299,13 +299,37 @@ func test_lids_follow_each_state_about_the_authored_pivot() -> void:
 	for pod: Pods.Pod in registry.pods():
 		var shell := _shell_of(pods.get_child(pod.id().index()))
 		var lid: Node3D = shell.get_node("PodLid")
-		var expected := {Pods.PodState.SEALED: 0.0, Pods.PodState.EMPTY_OPEN: -70.0, Pods.PodState.PLAYER: -90.0}
-		# New pod #88 keeps the exported pivot, including its pane child.
+		var expected := {Pods.PodState.SEALED: 0.0, Pods.PodState.EMPTY_OPEN: -70.0, Pods.PodState.PLAYER: -78.0}
+		# #88: keep the exported pivot and pane parenting; 78 degrees clears the ceiling by 54 mm.
 		assert_close(lid.position, Vector3(0, 0.976, -1.15330785), "hidden hinge")
 		assert_true(absf(rad_to_deg(lid.rotation.x) - expected[pod.state()]) < 1e-4, "state lid angle")
 		assert_true(lid.has_node("WindowPane"), "pane moves with the lid")
 		assert_true(shell.get_node("PodBase").has_node("Couch") and shell.get_node("PodBase").has_node("Pillow"), "upholstery stays under the base")
 	pods.free()
+
+func test_player_lid_uses_the_largest_whole_degree_below_the_ceiling() -> void:
+	# #88: measure the exported lid and pane, not an axis-aligned proxy.
+	var source: PackedScene = load(PodMesh.POD_PATH)
+	var shell: Node3D = source.instantiate()
+	var lid: MeshInstance3D = shell.get_node("PodLid")
+	lid.rotation.x = PodGeometry.lid_angle(Pods.PodState.PLAYER)
+	var top := _lid_top(lid)
+	assert_float_in_range(top, 3.1459, 3.1461, "78-degree lid height about the authored pivot")
+	assert_true(Pods.ROOM_CEILING_HEIGHT - top >= 0.05, "player lid leaves at least 50 mm ceiling clearance")
+	lid.rotation.x -= deg_to_rad(1.0)
+	assert_true(Pods.ROOM_CEILING_HEIGHT - _lid_top(lid) < 0.05, "the next whole degree cannot retain 50 mm clearance")
+	shell.free()
+
+func _lid_top(lid: MeshInstance3D) -> float:
+	var top := -INF
+	var pane: MeshInstance3D = lid.get_node("WindowPane")
+	for instance: MeshInstance3D in [lid, pane]:
+		var frame := lid.transform if instance == lid else lid.transform * pane.transform
+		for surface: int in range(instance.mesh.get_surface_count()):
+			var vertices: PackedVector3Array = instance.mesh.surface_get_arrays(surface)[Mesh.ARRAY_VERTEX]
+			for vertex: Vector3 in vertices:
+				top = maxf(top, (frame * vertex).y)
+	return top
 
 func test_live_camera_interpolation_clears_the_model() -> void:
 	_ensure_triangles()

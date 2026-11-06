@@ -44,7 +44,8 @@ static func lid_angle(state: int) -> float:
 		Pods.PodState.EMPTY_OPEN:
 			return -LID_OPEN_TILT
 		Pods.PodState.PLAYER:
-			return -PI / 2.0
+			# #88: 78 degrees leaves 54 mm below the 3.2 m ceiling; 79 leaves only 38 mm.
+			return deg_to_rad(-78.0)
 	assert(false, "unknown pod state")
 	return 0.0
 
@@ -75,11 +76,18 @@ static func lid_solids(state: int) -> Array[PodGeometry.PodSolid]:
 	var rotation := Basis(Vector3.RIGHT, angle)
 	var solids: Array[PodGeometry.PodSolid] = []
 	# Sections fit under the 896 mm crown and the lower rounded ends.
-	for center: Vector3 in [Vector3(0, 0.73, -0.79), Vector3(0, 0.84, 0), Vector3(0, 0.73, 0.79)]:
-		var length := 1.2 if center.z == 0.0 else 0.38
+	var centers: Array[Vector3] = [Vector3(0, 0.73, -0.79), Vector3(0, 0.84, 0), Vector3(0, 0.73, 0.79)]
+	var sizes: Array[Vector3] = [Vector3(0.40, 0.04, 0.38), Vector3(0.64, LID_THICKNESS, 1.2), Vector3(0.40, 0.04, 0.38)]
+	if state == Pods.PodState.PLAYER:
+		# #88: at the ceiling-safe angle, reserve the lower lid for the
+		# authored body sweep, as the tub mouth does. Three upper panels
+		# retain lid collision without an AABB over the get-up corridor.
+		centers = [Vector3(0, 0.84, 0.15), Vector3(0, 0.84, 0.45), Vector3(0, 0.73, 0.79)]
+		sizes = [Vector3(0.64, LID_THICKNESS, 0.3), Vector3(0.64, LID_THICKNESS, 0.3), Vector3(0.40, 0.04, 0.38)]
+	for index: int in range(centers.size()):
 		solids.append(PodGeometry.PodSolid.new(
-			LID_PIVOT + rotation * (center - LID_PIVOT),
-			Vector3(0.64 if center.z == 0.0 else 0.40, LID_THICKNESS if center.z == 0.0 else 0.04, length), angle, SolidKind.LID))
+			LID_PIVOT + rotation * (centers[index] - LID_PIVOT),
+			sizes[index], angle, SolidKind.LID))
 	return solids
 
 # Single central slabs remain available to dressing-clearance callers.
