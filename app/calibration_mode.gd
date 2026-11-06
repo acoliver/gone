@@ -303,7 +303,8 @@ func capture_next_beat() -> void:
 	var pinned_tick: int = tick
 	var pinned_frame: int = frame
 	chip.set_code(pinned_tick, pinned_frame)
-	# A pinned, motionless capture still needs a draw on render-on-change backends.
+	# Flush scene transforms before explicitly drawing a motionless capture.
+	await process_frame
 	RenderingServer.call_deferred("force_draw", false)
 	await RenderingServer.frame_post_draw
 	var image := root.get_texture().get_image()
@@ -366,7 +367,8 @@ class CalibrationDriver:
 		if harness.failed:
 			return
 		harness.frame += 1
-		harness.chip.set_code(harness.tick, harness.frame)
+		if not harness.busy_capturing:
+			harness.chip.set_code(harness.tick, harness.frame)
 		if harness.frame > harness.scenario.max_frames + 900:
 			harness._fail("hard frame budget exhausted")
 			return

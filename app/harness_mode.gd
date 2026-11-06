@@ -371,7 +371,8 @@ func capture_next_beat() -> void:
 	chip.set_code(pinned_tick, pinned_frame)
 	if connector_evidence != null:
 		print("GONE_CONNECTOR_CAPTURE %s tick=%d frame=%d" % [beat.name, pinned_tick, pinned_frame])
-	# A pinned, motionless capture still needs a draw on render-on-change backends.
+	# Flush scene transforms before explicitly drawing a motionless capture.
+	await process_frame
 	RenderingServer.call_deferred("force_draw", false)
 	await RenderingServer.frame_post_draw
 	var image := root.get_texture().get_image()
