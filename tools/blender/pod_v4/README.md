@@ -3,7 +3,13 @@
 `pod-v4-working.blend` is the editable, Y-up clean-cage pass-13 source.
 It retains the fitted shell, matching dome/window boundary, couch, pillow,
 gasket, material assignments and smooth normals. `build.py` exports it
-without depending on gitignored scratch files or external weights:
+without depending on gitignored scratch files or external weights. Re-export
+matches the delivered GLB byte-for-byte with the retained Blender version.
+Keep pivot subtraction in Python double precision before assigning the
+converted vertex coordinates; early Vector rounding changes exporter
+vertex welding and smooth normals.
+
+Run from the repository root:
 
 ```sh
 /Volumes/XS1000/acoliver/projects/threedee/branch-1/.tools/Blender-4.5.11.app/Contents/MacOS/Blender \

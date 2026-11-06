@@ -22,7 +22,12 @@ The five-node hierarchy preserves PodLid's hidden pivot and its WindowPane
 child. Closed size is 2.392917 × 0.899940 × 0.895995 m (length, width,
 height), with the couch plateau at Y=0.240 m. Coordinates are pod-local
 metres: +Y up, +Z foot, -Z head, floor at zero. No mesh fitting transform
-is applied. The source has 28,566 triangles.
+is applied. The source has 28,566 triangles. To preserve the existing 20,000-triangle
+runtime budget, PodMesh uses the first generated Godot LOD on the two
+ShellPlastic surfaces and WindowTint, leaving upholstery and gasket
+unchanged. Runtime total is 17,062 triangles. The importer reports maximum
+errors of 0.923 mm (base), 0.729 mm (lid), and 0.657 mm (pane); code rejects
+an error of 1 mm or more. The full-resolution GLB is retained unchanged.
 
 ShellPlastic is glossy white dielectric plastic, roughness 0.12,
 clearcoat 1 and coat roughness 0.08. PodMesh restores clearcoat in code
@@ -36,7 +41,24 @@ The 8 m bay retains its reflection probe. Only the bay aisle narrows to
 The couch height drives the get-up path. The foot wall has no collider,
 as before; passing the body capsule through that visible tub wall is an
 accepted limitation. The eye trajectory is checked separately against
-the actual asset.
+the actual asset. Dense nearest-surface sampling finds a 237.140 mm
+minimum on the live rig's straight eye interpolation, at the pillow.
+The independent capsule quarter-circle eye arc approaches the raised lid
+to 108.583 mm; this arc is not the live camera interpolation. The runtime
+mesh test checks the live eye against the unchanged 130 mm requirement.
+
+The required player lid pose reaches Y=3.301817 m, exceeding the existing
+3.2 m ceiling by 101.817 mm. Empty-open at 70 degrees reaches 2.997180 m.
+This is a retained fit limitation: integration does not change the room
+height, scale the pod, move its hinge or reduce the required 90-degree
+player opening to conceal it.
+
+Both red flank tubes remain on the stationary base in every state.
+Waypoints are measured at Y=0.280 m (+X) and 0.120 m (-X), 24 mm outward
+from the horizontal skin intersection, with a 12 mm tube radius. Full
+strip/source triangle checks find no intersections in any state, with a
+minimum sampled base gap of 9.362 mm. Existing skin-contact tolerance,
+dressing clearance checks and 576-triangle strip budget are retained.
 
 ## Original probe chain
 

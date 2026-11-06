@@ -8,11 +8,10 @@ from pathlib import Path
 import sys
 
 import bpy
-from mathutils import Vector
 
 ROOT = Path(__file__).resolve().parent
 NAMES = ("PodBase", "PodLid", "WindowPane", "Couch", "Pillow")
-PIVOT = Vector((0.0, 0.976, -1.1533078512396695))
+PIVOT = (0.0, 0.976, -1.1533078512396695)
 
 
 def main():
@@ -26,12 +25,12 @@ def main():
     for name in NAMES:
         obj = bpy.data.objects[name]
         normals = [tuple(n.vector) for n in obj.data.corner_normals]
-        origin = PIVOT if name in ("PodLid", "WindowPane") else Vector()
+        origin = PIVOT if name in ("PodLid", "WindowPane") else (0.0, 0.0, 0.0)
         for vertex in obj.data.vertices:
-            x, y, z = vertex.co - origin
+            x, y, z = (float(vertex.co[i]) - origin[i] for i in range(3))
             vertex.co = (x, -z, y)
         obj.data.normals_split_custom_set([(x, -z, y) for x, y, z in normals])
-        obj.location = (origin.x, -origin.z, origin.y)
+        obj.location = (origin[0], -origin[2], origin[1])
     for child, parent in (("Couch", "PodBase"), ("Pillow", "PodBase"), ("WindowPane", "PodLid")):
         obj = bpy.data.objects[child]
         frame = obj.matrix_world.copy()

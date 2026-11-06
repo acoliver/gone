@@ -21,7 +21,10 @@ material direction supersedes the older off-white wording in the prompts.
 model, not the original parametric probe. It has a glossy white tub,
 a separate pivoted white lid with an opaque dark pane, a couch and a
 pillow. Its nominal size is 2393 × 900 × 896 mm, with a 240 mm couch
-plateau. The retained editable source and export instructions are in
+plateau. The player's required 90-degree lid pose reaches 3.302 m and
+intersects the current 3.2 m ceiling; this fit limitation is recorded in
+the asset pipeline rather than hidden by changing the opening angle.
+The retained editable source and export instructions are in
 [`tools/blender/pod_v4/`](../../tools/blender/pod_v4/README.md); material and
 coordinate details are in [the asset pipeline](../dev/asset-pipeline.md).
 
