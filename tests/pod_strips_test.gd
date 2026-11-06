@@ -10,11 +10,21 @@ extends SimTestCase
 ## strip pass adds a light or a collider.
 
 const BELT_DOME_Y: float = 0.28
-const BELT_TRAY_Y: float = 0.12
+const BELT_TRAY_Y: float = 0.28 # #88: both flanks share the mid-height belt.
 const CONTACT_TOLERANCE: float = 0.011
 const GAP_EPSILON: float = 1e-4
 
 var _skin_triangles: Array[PackedVector3Array] = []
+
+func test_both_flanks_have_the_same_world_height_in_both_rows() -> void:
+	# #88: yaw preserves Y; the authored 120 mm tray table caused the low belt.
+	for pod: Pods.Pod in Pods.PodRegistry.frozen().pods():
+		var placement := pod.placement()
+		var frame := Transform3D(Basis(Vector3.UP, placement.yaw_radians), Vector3(placement.center.x, 0, placement.center.y))
+		for plus: Vector3 in PodStrips.FLANK_DOME:
+			for minus: Vector3 in PodStrips.FLANK_TRAY:
+				assert_true(absf((frame * plus).y - (frame * minus).y) < 1e-5,
+					"pod %d has matching world-space flank heights" % pod.id().index())
 
 func test_every_pod_carries_the_one_shared_strip_mesh() -> void:
 	var pods := StasisPods.build(Pods.PodRegistry.frozen())
@@ -83,10 +93,10 @@ func test_strip_material_follows_the_lens_convention() -> void:
 func test_strip_geometry_stays_within_the_pinned_bounds() -> void:
 	# New pod #88: outward-offset base belts, measured from the mesh.
 	var bounds: AABB = PodStrips.strips_mesh().get_aabb()
-	assert_true(bounds.position.x >= -0.4646 - 1e-4 and bounds.end.x <= 0.4853 + 1e-4,
-		"strip x within [-0.4646, 0.4853], got %s" % str(bounds))
-	assert_true(bounds.position.y >= 0.108 - 1e-4 and bounds.end.y <= 0.292 + 1e-4,
-		"strip y within [0.108, 0.292], got %s" % str(bounds))
+	assert_true(bounds.position.x >= -0.4856 - 1e-4 and bounds.end.x <= 0.4853 + 1e-4,
+		"strip x within [-0.4856, 0.4853], got %s" % str(bounds))
+	assert_true(bounds.position.y >= 0.268 - 1e-4 and bounds.end.y <= 0.292 + 1e-4,
+		"strip y within [0.268, 0.292], got %s" % str(bounds))
 	assert_true(bounds.position.z >= -0.8534 - 1e-4 and bounds.end.z <= 0.9037 + 1e-4,
 		"strip z within [-0.8534, 0.9037], got %s" % str(bounds))
 	assert_true(bounds.end.y <= 0.692, "the strip top stays under the 0.692 m pin")

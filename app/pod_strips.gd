@@ -1,7 +1,7 @@
 class_name PodStrips
 extends RefCounted
 ## Two red status belts shared by all pods, with no lights or colliders.
-## New pod #88: measured +X/-X base flanks at Y=0.280/0.120 m.
+## #88: both base flanks use the same measured Y=0.280 m belt.
 ## Centers are 24 mm outward from ray-intersected skin, leaving the
 ## 12 mm tube outside the curved tub in every lid state.
 ## Emission follows Lighting.FIXTURE_EMISSIVE and remains always on.
@@ -36,25 +36,25 @@ const FLANK_DOME: Array[Vector3] = [
 	Vector3(0.3599, 0.28, 0.90),
 ]
 
-## Measured -X base flank (#88).
+## #88: re-sampled -X skin at the +X belt height, with the same 24 mm stand-off.
 const FLANK_TRAY: Array[Vector3] = [
-	Vector3(-0.3704, 0.12, -0.80),
-	Vector3(-0.3939, 0.12, -0.70),
-	Vector3(-0.4120, 0.12, -0.60),
-	Vector3(-0.4258, 0.12, -0.50),
-	Vector3(-0.4360, 0.12, -0.40),
-	Vector3(-0.4435, 0.12, -0.30),
-	Vector3(-0.4486, 0.12, -0.20),
-	Vector3(-0.4518, 0.12, -0.10),
-	Vector3(-0.4526, 0.12, 0.00),
-	Vector3(-0.4518, 0.12, 0.10),
-	Vector3(-0.4486, 0.12, 0.20),
-	Vector3(-0.4435, 0.12, 0.30),
-	Vector3(-0.4360, 0.12, 0.40),
-	Vector3(-0.4258, 0.12, 0.50),
-	Vector3(-0.4120, 0.12, 0.60),
-	Vector3(-0.3939, 0.12, 0.70),
-	Vector3(-0.3704, 0.12, 0.80),
+	Vector3(-0.3921, 0.28, -0.80),
+	Vector3(-0.4153, 0.28, -0.70),
+	Vector3(-0.4333, 0.28, -0.60),
+	Vector3(-0.4466, 0.28, -0.50),
+	Vector3(-0.4568, 0.28, -0.40),
+	Vector3(-0.4643, 0.28, -0.30),
+	Vector3(-0.4694, 0.28, -0.20),
+	Vector3(-0.4725, 0.28, -0.10),
+	Vector3(-0.4736, 0.28, 0.00),
+	Vector3(-0.4725, 0.28, 0.10),
+	Vector3(-0.4694, 0.28, 0.20),
+	Vector3(-0.4643, 0.28, 0.30),
+	Vector3(-0.4568, 0.28, 0.40),
+	Vector3(-0.4466, 0.28, 0.50),
+	Vector3(-0.4333, 0.28, 0.60),
+	Vector3(-0.4153, 0.28, 0.70),
+	Vector3(-0.3921, 0.28, 0.80),
 ]
 
 static var _strips_mesh: ArrayMesh = null
