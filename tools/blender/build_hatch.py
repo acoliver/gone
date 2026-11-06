@@ -94,7 +94,8 @@ def radial(size, radius, part_id):
         profile = [(-.5, .86), (0, 1), (.5, .64)]
     # The atlas normal carries pitting; eight radial stations retain exact
     # axis bounds and the machined shoulders without spending rings on pixels.
-    segments = 6 if part_id.endswith("/cap") else (32 if "hub" in part_id else 8)
+    # Four stations on 20 mm rivets fund the generated wheel's 4,000 triangles.
+    segments = 4 if "Rivets/" in part_id else (6 if part_id.endswith("/cap") else (32 if "hub" in part_id else 8))
     zscale = 1 / math.sin(math.pi / 3) if segments == 6 else 1
     vertices = [(radius * scale * math.cos(TAU * i / segments), y * size[1],
                  radius * scale * math.sin(TAU * i / segments) * zscale)
@@ -295,7 +296,7 @@ def leaf_attributes(obj, part, steel):
         indices = list(polygon.vertices)
         points = [CINV @ obj.data.vertices[i].co.to_4d() for i in indices]
         normal = CINV.to_3x3() @ polygon.normal
-        island = chipped and min(indices) >= base_count
+        island = chipped and min(indices) >= base_count and max(indices) < obj.get('paint_vertices_end', len(obj.data.vertices))
         edge = island and abs(normal.z) < .85
         recessed = chipped and not island and abs(sum(p.z for p in points) / len(points) - (front + layer)) < 1e-6
         flake.append(float(island and not edge))
@@ -350,10 +351,13 @@ def material():
     return mat
 
 
-def construct(document, mat, frames=None, high_sources=None):
+def construct(document, mat, frames=None, high_sources=None, parts_source=None):
     nodes, objects, max_error = {}, [], 0.0
     if high_sources is None:
         high_sources = {}
+    if parts_source is None and any(part['shape'].startswith('generated_') for variant in document['variants'] for group in variant['groups'] for part in group['parts']):
+        from hatch_generated_parts import GeneratedParts
+        parts_source = GeneratedParts(document)
     for variant in document["variants"]:
         vi = variant["index"]
         root = empty(f"Variant{vi}")
@@ -380,8 +384,27 @@ def construct(document, mat, frames=None, high_sources=None):
                     seal_face = abs(group["transform"]["origin"][2]) + part["size"][2] / 2
                     visual = dict(part, visual_recess=seal_face - plate_face + layer * 1.1,
                                   visual_radius=plate["radius"], visual_side=group["side"])
-                verts, faces = geometry(visual, group["steel"])
+                high = None
+                paint_end = None
+                source_digest = None
+                if parts_source is not None and part['id'].endswith('Steel/plate'):
+                    verts, faces, high, paint_end = parts_source.slab(part, group, variant, geometry, parent, mesh_object, mat)
+                    source_digest = document['generated_sources']['parts']['leaf']['sha256']
+                elif parts_source is not None and part['shape'].startswith('generated_'):
+                    verts, faces, high, source_digest = parts_source.geometry(part, parent, mesh_object, mat)
+                else:
+                    verts, faces = geometry(visual, group["steel"])
                 obj = mesh_object(name, verts, faces, parent, transform(part["transform"]), mat)
+                if high is not None:
+                    high.matrix_basis = obj.matrix_basis.copy()
+                    high_sources[name] = high
+                if paint_end is not None:
+                    obj['paint_vertices_end'] = paint_end
+                # The wheel's narrow Boolean-seam facets need geometric low
+                # normals; their smooth source field is transferred by bake.
+                if part['shape'].startswith('generated_') and part['shape'] != 'generated_wheel':
+                    for face in obj.data.polygons:
+                        face.use_smooth = True
                 if part["shape"] == "torus":
                     for face in obj.data.polygons:
                         face.use_smooth = True
@@ -391,6 +414,8 @@ def construct(document, mat, frames=None, high_sources=None):
                 leaf_attributes(obj, part, group["steel"])
                 nodes[name] = dict(variant=vi, kind="leaf", group=gi, part=pi,
                                    id=part["id"], side=group["side"], transform=part["transform"], bounds=bounds(obj))
+                if source_digest is not None:
+                    nodes[name]['generated_source'] = source_digest
                 objects.append(obj)
         for solid in variant["frame_solids"]:
             pose = transform(solid["transform"])
@@ -460,7 +485,7 @@ def construct(document, mat, frames=None, high_sources=None):
             name = f"v{vi}_r{rivet['side']}_{rivet['index']:03d}"
             if frames is not None:
                 from hatch_generated_frame import reduce_region
-                verts, faces, high = reduce_region(frames[vi].rivets[rivet["index"]], rivet["transform"], 48, mesh_object, frame, mat)
+                verts, faces, high = reduce_region(frames[vi].rivets[rivet["index"]], rivet["transform"], 24, mesh_object, frame, mat)
                 high.matrix_basis = transform(rivet["transform"])
                 high_sources[name] = high
             else:
@@ -487,7 +512,7 @@ def construct(document, mat, frames=None, high_sources=None):
 def build_dependencies():
     directory = Path(__file__).resolve().parent
     return {name: hashlib.sha256((directory / name).read_bytes()).hexdigest()
-            for name in ("build_hatch.py", "hatch_bake.py", "hatch_interfaces.py", "hatch_fit.py", "hatch_generated_frame.py")}
+            for name in ("build_hatch.py", "hatch_bake.py", "hatch_interfaces.py", "hatch_fit.py", "hatch_generated_frame.py", "hatch_generated_parts.py", "hatch_leaf_surface.py")}
 
 
 def main(argv):
@@ -515,8 +540,10 @@ def main(argv):
     mat = material()
     from hatch_generated_frame import load_frames
     frames = load_frames(document)
+    from hatch_generated_parts import GeneratedParts
+    parts_source = GeneratedParts(document)
     high_sources = {}
-    objects, nodes, error = construct(document, mat, frames, high_sources)
+    objects, nodes, error = construct(document, mat, frames, high_sources, parts_source)
     for variant in document["variants"]:
         count = sum(len(obj.data.polygons) for obj in objects if nodes[obj.name]["variant"] == variant["index"])
         print("CANDIDATE_TRIANGLES", variant["index"], count, flush=True)
@@ -553,7 +580,7 @@ def main(argv):
     for high in set(high_sources.values()):
         bpy.data.objects.remove(high, do_unlink=True)
     for name in high_sources:
-        nodes[name]["generated_source"] = document["generated_sources"]["source_sha256"]
+        nodes[name].setdefault("generated_source", document["generated_sources"]["source_sha256"])
     textures = [row for row in textures if not row["file"].startswith("hatch_detail_")]
     textures.extend(detail_textures(output.parent))
     painted_path = output.parent / "hatch_painted.png"
@@ -580,7 +607,7 @@ def main(argv):
             continue
         part = document["variants"][row["variant"]]["groups"][row["group"]]["parts"][row["part"]]
         base_count = len(rounded_outline(part["size"], part["radius"])) * 5
-        points = [CINV @ vertex.co.to_4d() for vertex in obj.data.vertices[base_count:]]
+        points = [CINV @ vertex.co.to_4d() for vertex in obj.data.vertices[base_count:obj.get('paint_vertices_end', len(obj.data.vertices))]]
         islands = [points[i:i+8] for i in range(0, len(points), 8)]
         spans = [max(v.x for v in island) - min(v.x for v in island) for island in islands]
         lifts = [max(v.z for v in island[:4]) - min(v.z for v in island[4:]) for island in islands]

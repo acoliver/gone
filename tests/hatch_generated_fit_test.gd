@@ -73,8 +73,28 @@ func test_physical_records_change_only_at_the_approved_ring_depth_planes() -> vo
 			var front_back: Array = [-0.026, -0.008] if index == 0 else [0.208, 0.226]
 			assert_true(absf(row.transform.origin[2] - front_back[int(row.side)]) < 0.000001, "rivet seats on approved front/back plane")
 			row.transform.origin[2] = expected.frame_rivets[ri].transform.origin[2]
+		# Whole-object latches/wheels and the two source ribs have independent
+		# dimensional/station pins in hatch_generated_parts_test. Preserve all
+		# other fixture bytes, including every keeper and the wheel roots.
+		var kept_actual: Array = []
+		var kept_expected: Array = []
+		for group: Dictionary in actual.groups:
+			if String(group.path).begins_with("Rib/"): continue
+			if String(group.path).begins_with("Lugs/") or group.path in ["Wheel", "ReverseWheel"]:
+				var old: Dictionary = expected.groups[int(group.index)]
+				# Fixture decimal parsing leaves float64 tails around 1e-17 m.
+				# Both records describe native float32 poses, so compare those
+				# Transform3D values exactly, without introducing a tolerance.
+				assert_true(HatchAsset.pose(group.transform) == HatchAsset.pose(old.transform), "whole-object replacement preserves group roots")
+				continue
+			kept_actual.append(group)
+		for group: Dictionary in expected.groups:
+			if String(group.path).begins_with("Lugs/") or group.path in ["Wheel", "ReverseWheel"]: continue
+			kept_expected.append(group)
+		actual.groups = kept_actual
+		expected.groups = kept_expected
 		var serialized: Dictionary = JSON.parse_string(JSON.stringify(actual, "", false, true))
-		assert_true(serialized == expected, "all other physical IDs, poses, extents and vertices remain bit identical")
+		assert_true(serialized == expected, "all unchanged physical IDs, poses, extents and vertices remain bit identical")
 		index += 1
 
 func test_delivered_frame_records_frozen_source_and_build_dependencies() -> void:

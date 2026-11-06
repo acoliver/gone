@@ -27,7 +27,7 @@ static func parts(mesh: Mesh, metadata: StringName = &"part_ranges") -> Dictiona
 		for index: int in range(int(row.vertex_start), vertex_end): bounds = bounds.expand(inverse * vertices[index])
 		for index: int in range(int(row.index_start), index_end):
 			assert(indices[index] >= int(row.vertex_start) and indices[index] < vertex_end, "triangles stay in their physical range")
-		result[StringName(id)] = {"pose": pose, "bounds": bounds, "row": row}
+		result[StringName(id)] = {"id": StringName(id), "pose": pose, "bounds": bounds, "row": row}
 	assert(vertex_end == vertices.size() and index_end == indices.size(), "every rendered vertex and index is tested")
 	_bounds[key] = result
 	return result
@@ -40,6 +40,23 @@ static func faces(node: MeshInstance3D, id: String, result: PackedVector3Array, 
 	var world := reference_inverse * Surfaces.world_frame(node)
 	for index: int in range(int(part.row.index_start), int(part.row.index_start + part.row.index_count)):
 		result.append(world * vertices[indices[index]])
+
+static func world_bounds(mesh: Mesh, part: Dictionary, frame: Transform3D) -> AABB:
+	if part.id not in [&"Wheel/hub", &"ReverseWheel/hub"]: return frame * part.pose * part.bounds
+	# The whole wheel is circular, not its rotating rectangular local bounds.
+	# Derive continuous crank support from every actual submitted vertex.
+	var points: PackedVector3Array = mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX]
+	var lo := Vector3(INF, INF, INF)
+	var hi := -lo
+	for index: int in range(int(part.row.vertex_start), int(part.row.vertex_start + part.row.vertex_count)):
+		var point := points[index]
+		var radius := Vector2(point.x, point.y).length()
+		var center := frame * Vector3(0, 0, point.z)
+		for axis: int in range(3):
+			var amplitude := radius * Vector2(frame.basis.x[axis], frame.basis.y[axis]).length()
+			lo[axis] = minf(lo[axis], center[axis] - amplitude)
+			hi[axis] = maxf(hi[axis], center[axis] + amplitude)
+	return AABB(lo, hi - lo)
 
 static func remove_seals(view: DoorView) -> void:
 	for side: String in ["ForeSteel", "AftSteel"]:

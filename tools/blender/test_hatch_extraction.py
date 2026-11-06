@@ -31,7 +31,8 @@ class ExtractionTest(unittest.TestCase):
     def test_each_extracted_module_invalidates_reused_bakes(self):
         from unittest.mock import patch
         dependencies = build.build_dependencies()
-        self.assertEqual(set(dependencies), {"build_hatch.py", "hatch_bake.py", "hatch_interfaces.py", "hatch_fit.py", "hatch_generated_frame.py"})
+        # Generated hardware and leaf surfaces also affect the reused bake.
+        self.assertEqual(set(dependencies), {"build_hatch.py", "hatch_bake.py", "hatch_interfaces.py", "hatch_fit.py", "hatch_generated_frame.py", "hatch_generated_parts.py", "hatch_leaf_surface.py"})
         original = Path.read_bytes
         for name in dependencies:
             with self.subTest(module=name):

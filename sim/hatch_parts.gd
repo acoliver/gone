@@ -16,7 +16,10 @@ const SLAB_EDGE_BEVEL: float = 0.004
 const PAINT_LAYER_DEPTH: float = 0.002
 # Round 11: real pivot knuckles and upper fittings clear the level-gaze label.
 const HINGE_HEIGHTS: Array[float] = [0.48, 2.24]
-const DOG_HEIGHTS: Array[float] = [0.40, 1.17, 2.24]
+const DOG_HEIGHTS: Array[float] = [0.40, 1.17, 1.496046]
+const KEEPER_HEIGHTS: Array[float] = [0.40, 1.17, 2.24]
+const DOG_INSET: float = 0.193619
+const WHEEL_SCALE: float = 0.643 / 0.888
 const BARREL_RADIUS: float = 0.028
 const BARREL_LENGTH: float = 0.06
 
@@ -146,30 +149,15 @@ static func leaf(door: ShipLayout.DoorSpec) -> Array[Group]:
 		groups.append(straps)
 		var lugs := Group.new(NodePath("Lugs/" + prefix + "Steel"), hardware_face, side)
 		for index: int in range(3):
-			var y := DOG_HEIGHTS[index]
-			var x := 0.87 if index < 2 else 0.77
-			lugs.add("plate-%d" % index, &"rounded", Vector3(0.11, 0.23, 0.055), Transform3D(Basis(), Vector3(x, y, -0.125)), 0.025)
-			var a := Vector3(x, y, -0.170)
-			var b := Vector3(x + 0.14, y + 0.035, -0.170)
-			_pin(lugs, "arm-%d" % index, 0.028, a.distance_to(b), (a + b) / 2, (b - a).normalized())
-			lugs.add("grip-%d" % index, &"rounded", Vector3(0.050, 0.13 if index == 2 else 0.14, 0.050), Transform3D(Basis(), Vector3(x + 0.14, y + 0.090, -0.170)), 0.018)
-			_pin(lugs, "pivot-%d" % index, 0.047, 0.035, Vector3(x, y, -0.200))
-			for dy: float in [-0.085, 0.085]:
-				_pin(lugs, "bolt-%d-%s" % [index, dy], 0.018, 0.015, Vector3(x, y + dy, -0.153))
+			var pivot := Vector3(aperture.x - DOG_INSET, DOG_HEIGHTS[index], -HARDWARE_FACE_DEPTH)
+			lugs.add("whole-%d" % index, &"generated_latch", HatchGeneratedParts.LATCH_SIZE, Transform3D(Basis(), pivot + HatchGeneratedParts.LATCH_CENTER))
 		groups.append(lugs)
 		var wheel_pose := Transform3D(Basis() if side == 0 else Basis(Vector3.LEFT, Vector3.UP, Vector3.FORWARD), Vector3(aperture.x / 2, WHEEL_HEIGHT, -0.190 if side == 0 else 0.190))
 		wheel_pose.origin += hardware_face.origin
 		var wheel := Group.new(NodePath("Wheel" if side == 0 else "ReverseWheel"), wheel_pose, side)
-		wheel.add("ring", &"torus", Vector3(0.888, 0.064, 0.888), Transform3D(Basis(Vector3.RIGHT, PI / 2), Vector3.ZERO), 0.444, 0.380)
-		wheel.add("flange", &"torus", Vector3(0.864, 0.011, 0.864), Transform3D(Basis(Vector3.RIGHT, PI / 2), Vector3(0, 0, -0.026)), 0.432, 0.322)
-		_pin(wheel, "hub", 0.150, 0.110, Vector3(0, 0, 0.025))
-		_pin(wheel, "shaft", 0.062, 0.050, Vector3(0, 0, 0.095))
-		_pin(wheel, "cap", 0.085, 0.010, Vector3(0, 0, -0.027))
-		for index: int in range(6):
-			var angle := PI / 6 + index * TAU / 6
-			var direction := Vector3(cos(angle), sin(angle), 0)
-			_bar(wheel, "spoke-%d" % index, direction * 0.075 + Vector3(0, 0, 0.006), direction * 0.413 + Vector3(0, 0, 0.006), 0.090, 0.064)
-		var wheel_diameter := wheel.parts[0].radius * 2
+		wheel.add("hub", &"generated_wheel", HatchGeneratedParts.WHEEL_SIZE, Transform3D(Basis(), HatchGeneratedParts.WHEEL_CENTER), 0.3215)
+		_pin(wheel, "cap", 0.085 * WHEEL_SCALE, 0.010 * WHEEL_SCALE, Vector3(0, 0, -HatchGeneratedParts.NUT_SEAT - 0.005 * WHEEL_SCALE))
+		var wheel_diameter := 0.888
 		wheel.add("hazard-band", &"band", Vector3(0.75, wheel_diameter * 0.10, 0.012), Transform3D(Basis(Vector3.BACK, 0.060), Vector3(0, -0.150, -0.026)))
 		var band := wheel.parts[-1]
 		var rng := RandomNumberGenerator.new()
@@ -186,6 +174,13 @@ static func leaf(door: ShipLayout.DoorSpec) -> Array[Group]:
 		for x: float in [-0.32, 0.32]:
 			var pin_pose := band.transform * Transform3D(Basis(Quaternion(Vector3.UP, Vector3.BACK)), Vector3(x, 0, -0.004))
 			wheel.add("band-bolt-%s" % x, &"cylinder", Vector3(0.028, 0.003, 0.028), pin_pose, 0.014)
+		for part: Part in wheel.parts:
+			if not ("/hazard-band" in String(part.id) or "/band-bolt" in String(part.id)): continue
+			part.size *= WHEEL_SCALE
+			part.transform.origin *= WHEEL_SCALE
+			part.radius *= WHEEL_SCALE
+			part.inner_radius *= WHEEL_SCALE
+			for index: int in range(part.contour.size()): part.contour[index] *= WHEEL_SCALE
 		groups.append(wheel)
 		var rivets := Group.new(NodePath(prefix + "Rivets"), hardware_face, side)
 		var border := outline(Vector2(aperture.x - 0.105, aperture.y - 0.19), 0.22)
@@ -234,6 +229,18 @@ static func leaf(door: ShipLayout.DoorSpec) -> Array[Group]:
 		var hinge_seal := Group.new(NodePath(prefix + "HingeSealSteel"), pose, side, true)
 		_hinge_return(hinge_seal, Vector3(HINGE_RETURN_WIDTH, height, SEAL_DEPTH / 2), Vector3(-HINGE_RETURN_WIDTH / 2, center_y, 0))
 		groups.append(hinge_seal)
+	var rib_side := 0 if into > 0 else 1
+	var rib_face := Basis() if rib_side == 0 else Basis(Vector3.RIGHT, Vector3.UP, Vector3.FORWARD)
+	var rib := Group.new(NodePath("Rib/ForeSteel" if rib_side == 0 else "Rib/AftSteel"), Transform3D(rib_face, Vector3.ZERO), rib_side)
+	for index: int in range(2):
+		var interval := HatchGeneratedParts.RIB_INTERVALS[index]
+		var size := Vector3(HatchGeneratedParts.RIB_WIDTH, interval.y - interval.x, HatchGeneratedParts.RIB_DEPTH)
+		rib.add("segment-%d" % index, &"generated_rib", size, Transform3D(Basis(), Vector3(aperture.x / 2, (interval.x + interval.y) / 2, -APPROACH_SLAB_DEPTH - size.z / 2)))
+	groups.append(rib)
 	for group: Group in groups: group.transform.origin.x += HINGE_OUTSET
 	_leaves[key] = groups
 	return groups
+
+static func part_bounds(part: Part, pose: Transform3D) -> AABB:
+	if part.shape == &"generated_wheel": return HatchGeneratedParts.bounds(pose)
+	return pose * AABB(-part.size / 2, part.size)

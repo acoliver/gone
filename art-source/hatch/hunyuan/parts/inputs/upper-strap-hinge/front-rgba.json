@@ -1,0 +1,18 @@
+{
+  "source": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/inputs/upper-strap-hinge/isolated.png",
+  "output": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/inputs/upper-strap-hinge/front-rgba.png",
+  "method": "rembg U2-Net CPU, default parameters, no manual cleanup",
+  "model": "/Users/acoliver/.u2net/u2net.onnx",
+  "size": [
+    768,
+    768
+  ],
+  "alpha_bbox_xyxy": [
+    187,
+    103,
+    579,
+    668
+  ],
+  "foreground_fraction": 0.24416944715711805,
+  "opaque_fraction": 0.05922105577256945
+}

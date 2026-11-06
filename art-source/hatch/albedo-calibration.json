@@ -1,7 +1,7 @@
 {
   "method": "linear_rgb_factor = (concept - zero_paint_render) / (unit_paint_render - zero_paint_render)",
   "light": "unchanged round8 neutral lookdev; white key energy 2.6, ambient 0.13",
-  "reason": "Andrew changed the frame band from 160 to 90 mm and brought the leaf to the wall plane on 2026-11-05. These geometry changes move the surfaces inside the fixed frame rectangle. The final native zero/unit captures from tools/capture_hatch_lookdev.gd determine the frame factors by the existing response method. The leaf retains its passing round-nine factors. Source PNGs, alpha relief, comparison rectangles and all tolerances are unchanged.",
+  "reason": "The 0.643 m whole generated wheel exposes more painted leaf inside the fixed leaf rectangle than the previous 0.888 m wheel. Native zero/unit captures from tools/capture_hatch_lookdev.gd determine fresh leaf factors by the existing response method. Frame factors retain their measured flush-leaf calibration. Source PNGs, alpha relief, comparison rectangles, capture settings and all tolerances are unchanged.",
   "regions": {
     "leaf": {
       "box": [
@@ -16,39 +16,20 @@
         0.018296037076154043
       ],
       "unit_linear_rgb": [
-        0.046381063818985525,
-        0.02540753214152209,
-        0.017377789196062598
+        0.05378228236593341,
+        0.029830750260877212,
+        0.021718109461844208
       ],
       "zero_linear_rgb": [
-        0.022192937416932134,
-        0.013532269315461405,
-        0.009266653565918968
+        0.01604476412288168,
+        0.010836819071815065,
+        0.008343769058556508
       ],
       "linear_rgb_factor": [
-        1.8210030123335899,
-        1.6123737689810445,
-        1.7407119138746734
-      ],
-      "unconstrained_linear_rgb_factor": [
-        1.8210030123335899,
-        1.6123737689810445,
-        1.1132083005342601
-      ],
-      "existing_patch_box": [
-        603,
-        472,
-        627,
-        496
-      ],
-      "existing_patch_concept_hsv_saturation": 0.3743031509363421,
-      "blue_factor_feasible_interval": [
-        1.397417827861732,
-        2.084005999887615
-      ],
-      "blue_factor_selection": "Midpoint of interval satisfying unchanged patch HSV saturation and broad-box HSL saturation in measured zero/unit response. Red and green factors retain the direct concept-linear-RGB match.",
-      "predicted_patch_hsv_saturation": 0.4217431456298251,
-      "predicted_broad_hsl_saturation": 0.2851590249669188
+        1.3301040097976564,
+        1.149989031060653,
+        0.744131502376824
+      ]
     },
     "frame": {
       "box": [

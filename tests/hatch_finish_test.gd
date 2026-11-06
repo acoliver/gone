@@ -5,8 +5,10 @@ func test_hazard_band_is_physically_narrow_and_its_contour_fits() -> void:
 	for group: HatchParts.Group in HatchParts.leaf(spec):
 		if String(group.path) not in ["Wheel", "ReverseWheel"]: continue
 		var diameter := 0.0
+		# Slice 3 v2 replaces the separate rim with one whole generated wheel;
+		# its hub record owns the same radial scale used by the hazard band.
 		for part: HatchParts.Part in group.parts:
-			if String(part.id).ends_with("/ring"): diameter = part.radius * 2
+			if String(part.id).ends_with("/hub"): diameter = part.radius * 2
 		assert_true(diameter > 0, "the wheel owns the band scale")
 		for part: HatchParts.Part in group.parts:
 			if part.shape != &"band": continue

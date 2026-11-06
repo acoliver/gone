@@ -87,9 +87,14 @@ func test_hatch_meshes_have_rounded_frame_braces_large_wheel_and_instanced_rivet
 	var leaf_normals: PackedVector3Array = leaf_arrays[Mesh.ARRAY_NORMAL]
 	assert_true(leaf_normals[0].dot(Vector3.FORWARD) > 0.99, "leaf front faces outward, not into the steel")
 	var wheel: Node3D = first.get_node("Hinge/Leaf/Wheel")
-	var bounds := AABB()
-	for child: MeshInstance3D in wheel.get_children(): bounds = bounds.merge(child.transform * child.mesh.get_aabb())
-	assert_float_in_range(bounds.size.x, 0.88799, 0.88801, "round7 wheel outside diameter is 0.888m")
+	# Slice 3 v2 uses the concept's 0.3215 m radial bound. A faceted rim's
+	# X extent is smaller; measure actual submitted vertices about the wheel axis.
+	var radius := 0.0
+	for child: MeshInstance3D in wheel.get_children():
+		for vertex: Vector3 in child.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX]:
+			var point := child.transform * vertex
+			radius = maxf(radius, Vector2(point.x, point.y).length())
+	assert_float_in_range(radius, 0.32149, 0.32151, "slice3v2 wheel radial bound is 0.3215m")
 	var bay := Hatch.build()
 	assert_true(bay.door_piece().get_node("ForeSteel").mesh == first.get_node("Hinge/Leaf/ForeSteel").mesh, "bay and connector hatches use the same shared leaf")
 	assert_true(bay.view.get_node("Frame/ForeSteel").mesh == first.get_node("Frame/ForeSteel").mesh, "bay and connector hatches use the same rounded frame")

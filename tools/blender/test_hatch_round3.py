@@ -5,6 +5,7 @@ source, not new attributes. Guards pin the geometry that must not change.
 HATCH_SOURCE_JSON selects the exported source (default: tmp/hatch-model/parts-source.json).
 """
 import importlib.util
+import json
 import os
 from pathlib import Path
 import unittest
@@ -65,6 +66,21 @@ def inside_convex(polygon, x, y, tolerance=1e-6):
         if signed < -tolerance:
             return False
     return True
+
+
+def forged_section_ratio(section):
+    # Driver 2026-11-06: the raw ratio penalised flat bars for their aspect
+    # ratio. Normalise by each half-extent so rectangles score sqrt(2) and
+    # ellipses score 1, preserving the 1.15 non-roundness threshold.
+    lo = Vector((min(p.x for p in section), min(p.y for p in section)))
+    hi = Vector((max(p.x for p in section), max(p.y for p in section)))
+    center = (lo + hi) / 2
+    half = (hi - lo) / 2
+    points = [Vector(((p.x - center.x) / half.x,
+                      (p.y - center.y) / half.y)) for p in section]
+    axis = max(abs(p.x) for p in points)
+    diagonal = max((abs(p.x) + abs(p.y)) / 2 ** .5 for p in points)
+    return diagonal / axis
 
 
 class HatchRound3Test(unittest.TestCase):
@@ -130,22 +146,55 @@ class HatchRound3Test(unittest.TestCase):
             self.assertLessEqual(min(end_radii) / max(radii), .6, row["id"] + " flat disc without neck")
         self.assertGreater(checked, 0)
 
-    def test_latch_dog_arms_are_forged_bars_not_round_rods(self):
+    def test_latch_dog_helper_arms_are_forged_bars_not_round_rods(self):
+        baseline = json.loads((ROOT / 'art-source/hatch/hunyuan/baseline-physical.json').read_text())
+        checked = 0
+        for variant in baseline['variants']:
+            for group in variant['groups']:
+                for part in group['parts']:
+                    if 'Lugs' not in part['id'] or '/arm-' not in part['id']: continue
+                    vertices, faces = build.geometry(part)
+                    obj = build.mesh_object('ForgedArmFixture', vertices, faces, None, Matrix.Identity(4), build.material())
+                    points = source_points(obj)
+                    levels = sorted({round(p.y, 6) for p in points})
+                    middle = (levels[0] + levels[-1]) / 2
+                    level = min(levels, key=lambda y: abs(y - middle))
+                    section = [p for p in points if abs(p.y - level) < 1e-6]
+                    ratio = forged_section_ratio([Vector((p.x, p.z)) for p in section])
+                    self.assertGreater(ratio, 1.15, part['id'] + ' round cross-section')
+                    checked += 1
+                    bpy.data.objects.remove(obj, do_unlink=True)
+        self.assertEqual(checked, 12, 'all original forged-arm helper fixtures are tested')
+
+    def test_whole_latch_mid_arm_retains_a_flat_sided_section(self):
         checked = 0
         for name, row in self.nodes.items():
-            if row["kind"] != "leaf" or "Lugs" not in row["id"] or "/arm-" not in row["id"]:
+            if row["kind"] != "leaf" or "Lugs" not in row["id"] or "/whole-" not in row["id"]:
                 continue
             checked += 1
-            points = source_points(self.by_name[name])
-            levels = sorted({round(p.y, 6) for p in points})
-            # Compare radii within the section ring nearest the arm's middle.
-            middle = (levels[0] + levels[-1]) / 2
-            level = min(levels, key=lambda y: abs(y - middle))
-            section = [p for p in points if abs(p.y - level) < 1e-6]
-            # Flats sit on the axes and corners on the diagonals: a rod gives a ratio of 1.
-            axis = max(abs(p.x) for p in section)
-            diagonal = max((abs(p.x) + abs(p.z)) / 2 ** .5 for p in section)
-            self.assertGreater(diagonal / axis, 1.15, row["id"] + " round cross-section")
+            variant = self.document['variants'][row['variant']]
+            part = variant['groups'][row['group']]['parts'][row['part']]
+            points = source_points(self.by_name[name], part['transform'])
+            direction = Vector((.14, .035, 0)).normalized()
+            across = Vector((direction.y, -direction.x, 0))
+            pivot = Vector(part['transform']['origin']) - Vector((.069857674387797, .034979292176354, -.031947860536794))
+            middle = pivot + Vector((.07, .0175, 0))
+            section = []
+            for face in self.by_name[name].data.polygons:
+                corners = [points[index] for index in face.vertices]
+                distances = [(point - middle).dot(direction) for point in corners]
+                for i, j in [(0, 1), (1, 2), (2, 0)]:
+                    if (distances[i] < 0) == (distances[j] < 0): continue
+                    point = corners[i].lerp(corners[j], -distances[i] / (distances[j] - distances[i]))
+                    section.append(Vector((point.dot(across), point.z)))
+            self.assertGreater(len(section), 3, 'actual whole-latch mid-arm section')
+            lo = Vector((min(p.x for p in section), min(p.y for p in section)))
+            hi = Vector((max(p.x for p in section), max(p.y for p in section)))
+            ratio = forged_section_ratio(section)
+            print('WHOLE_LATCH_SECTION', row['id'], 'width_m', hi.x-lo.x,
+                  'depth_m', hi.y-lo.y, 'diagonal_over_axis', ratio,
+                  'required', 1.15, flush=True)
+            self.assertGreater(ratio, 1.15, row["id"] + " round cross-section")
         self.assertGreater(checked, 0)
 
     def test_guard_fixed_ring_is_constant_width_with_fifty_four_rivets_per_face(self):

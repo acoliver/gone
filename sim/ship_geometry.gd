@@ -587,8 +587,8 @@ static func hatch_fixed_hardware(door: ShipLayout.DoorSpec) -> Array[SolidSpec]:
 		solids.append(SolidSpec.new((minimum + maximum) / 2, maximum - minimum, Quaternion.IDENTITY, StringName("%s/HINGE/PLATE-%d" % [door.id(), index]), &"frame", &"frame_detail"))
 		solids.append(SolidSpec.new(Vector3(hinge.x, y + HatchParts.BARREL_LENGTH / 2 + 0.02, hinge.z), Vector3(0.02, 0.04, 0.02), Quaternion.IDENTITY, StringName("%s/HINGE/KNUCKLE-%d" % [door.id(), index]), &"frame", &"frame_detail"))
 	var edge := hinge.x + HatchParts.HINGE_OUTSET + door.leaf_aperture().x
-	for index: int in range(HatchParts.DOG_HEIGHTS.size()):
-		solids.append(SolidSpec.new(Vector3(edge + 0.04, HatchParts.DOG_HEIGHTS[index], front - into * 0.02), Vector3(0.08, 0.16, 0.04), Quaternion.IDENTITY, StringName("%s/KEEPER/%d" % [door.id(), index]), &"frame", &"frame_detail"))
+	for index: int in range(HatchParts.KEEPER_HEIGHTS.size()):
+		solids.append(SolidSpec.new(Vector3(edge + 0.04, HatchParts.KEEPER_HEIGHTS[index], front - into * 0.02), Vector3(0.08, 0.16, 0.04), Quaternion.IDENTITY, StringName("%s/KEEPER/%d" % [door.id(), index]), &"frame", &"frame_detail"))
 	var placed: Array[SolidSpec] = []
 	for solid: SolidSpec in solids:
 		_clip_hatch_frame(door, solid)
@@ -789,7 +789,7 @@ static func hatch_leaf_bounds(door: ShipLayout.DoorSpec) -> AABB:
 	var bounds := AABB(Vector3(-0.12, 0.09, -0.23), Vector3(aperture.x + 0.20, door.aperture().y - 0.06, 0.46))
 	for group: HatchParts.Group in HatchParts.leaf(door):
 		for part: HatchParts.Part in group.parts:
-			bounds = bounds.merge(group.transform * part.transform * AABB(-part.size / 2, part.size))
+			bounds = bounds.merge(HatchParts.part_bounds(part, group.transform * part.transform))
 	_leaf_bounds[key] = bounds
 	return bounds
 
@@ -830,7 +830,7 @@ static func open_door_solids(door: ShipLayout.DoorSpec, run_seed: int = 0) -> Ar
 	var first := true
 	for group: HatchParts.Group in HatchParts.leaf(door):
 		for part: HatchParts.Part in group.parts:
-			var placed := door.frame() * hinge * group.transform * part.transform * AABB(-part.size / 2, part.size)
+			var placed := HatchParts.part_bounds(part, door.frame() * hinge * group.transform * part.transform)
 			bounds = placed if first else bounds.merge(placed)
 			first = false
 	return [SolidSpec.new(bounds.get_center(), bounds.size, Quaternion.IDENTITY, StringName("%s/PARKED" % door.id()), &"door", &"parked_leaf")]

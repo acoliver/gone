@@ -6,7 +6,7 @@ func _meshes(node: Node, boxes: Array[AABB]) -> void:
 	if node is MeshInstance3D and node.mesh != null:
 		if node.mesh.has_meta(&"part_ranges"):
 			for part: Dictionary in preload("res://tests/hatch_mesh_ranges.gd").parts(node.mesh).values():
-				boxes.append(ShipScene._world_frame(node) * part.pose * part.bounds)
+				boxes.append(preload("res://tests/hatch_mesh_ranges.gd").world_bounds(node.mesh, part, ShipScene._world_frame(node)))
 		else:
 			boxes.append(ShipScene._world_frame(node) * node.mesh.get_aabb())
 	if node is MultiMeshInstance3D:

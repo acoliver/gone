@@ -38,8 +38,10 @@ func test_dog_pivots_are_on_the_free_edge() -> void:
 		var checked := 0
 		for group: HatchParts.Group in HatchParts.leaf(spec):
 			for part: HatchParts.Part in group.parts:
-				if not String(part.id).begins_with("Lugs/") or not "/pivot-" in String(part.id): continue
-				var point := (group.transform * part.transform).origin
+				if part.shape != &"generated_latch": continue
+				var pivot := part.transform
+				pivot.origin -= HatchGeneratedParts.LATCH_CENTER
+				var point := (group.transform * pivot).origin
 				var pivot_distance := absf(point.x)
 				var free_distance := absf(spec.leaf_aperture().x + HatchParts.HINGE_OUTSET - point.x)
 				assert_true(free_distance < pivot_distance, "dog is closer to the free edge than to the hinge: " + String(part.id))

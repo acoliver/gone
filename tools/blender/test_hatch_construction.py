@@ -52,8 +52,12 @@ class HatchConstructionTest(unittest.TestCase):
                     self.assertAlmostEqual(vertices[2 * count][2] - front, .004, delta=1e-7)
                     self.assertTrue(any(abs(point[2] - front - .002) < 1e-7 for point in vertices))
 
-    def test_spokes_have_elliptic_sections_not_flat_bars(self):
-        for variant in self.document["variants"]:
+    def test_primitive_spoke_helper_has_elliptic_sections_not_flat_bars(self):
+        # Keep the helper's exact construction guard until that helper is
+        # removed. Delivered generated wheels use whole-object hole/axis tests.
+        baseline = json.loads((ROOT / 'art-source/hatch/hunyuan/baseline-physical.json').read_text())
+        checked = 0
+        for variant in baseline["variants"]:
             for group in variant["groups"]:
                 for part in group["parts"]:
                     if "/spoke-" not in part["id"]:
@@ -64,6 +68,8 @@ class HatchConstructionTest(unittest.TestCase):
                                 if abs(y) < sy * .49 and .1 < abs(x) / (sx / 2) < .95 and .1 < abs(z) / (sz / 2) < .95]
                     self.assertGreater(len(diagonal), 8, part["id"])
                     self.assertTrue(all(abs(x*x + z*z - 1) < 1e-5 for x, z in diagonal), part["id"])
+                    checked += 1
+        self.assertEqual(checked, 24, 'both original wheel helper fixtures retain all six spokes')
 
     def test_lifted_islands_have_camera_scale_width_and_relief(self):
         part = self.document["variants"][0]["groups"][0]["parts"][0]

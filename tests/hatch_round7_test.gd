@@ -6,12 +6,14 @@ func test_round7_leaf_is_one_physical_description() -> void:
 	var found: Dictionary = {}
 	for group: HatchParts.Group in groups:
 		for part: HatchParts.Part in group.parts: found[String(part.id)] = part
-	assert_true(found.has("Wheel/flange"), "round7 broad rim flange is a physical leaf part")
+	# The generated wheel replaces ring/flange/spokes with one whole object;
+	# whole latches replace their plate/arm/grip/pivot/bolt reservations.
+	assert_true(found.has("Wheel/hub"), "whole generated wheel is a physical leaf part")
 	assert_true(found.has("Wheel/hazard-band"), "hazard band belongs to the rotating physical wheel")
 	assert_true(found.has("StrapHinges/ForeSteel/barrel-0"), "hinge barrel is a physical part")
-	assert_true(found.has("Lugs/ForeSteel/grip-2"), "all three latch dogs are physical parts")
-	if not found.has("Wheel/flange"): return
-	assert_float_equal(found["Wheel/ring"].radius, 0.444, "round7 wheel outside radius")
+	assert_true(found.has("Lugs/ForeSteel/whole-2"), "all three latch dogs are physical parts")
+	if not found.has("Wheel/hub"): return
+	assert_float_equal(found["Wheel/hub"].radius, 0.3215, "driver-approved 643 mm wheel outside diameter")
 	# Andrew's 2026-11-05 flush slab follows the ring instead of the old 255 mm corner.
 	assert_float_equal(found["ForeSteel/plate"].radius, 0.24, "flush rounded face")
 	assert_false(found.has("ForeSteel/brace-0"), "no old X braces behind the concept skin")
@@ -48,7 +50,7 @@ func _boxes(node: Node3D, boxes: Array[AABB]) -> void:
 				boxes.append(Surfaces.world_frame(node) * bounds[surface])
 		elif node.mesh.has_meta(&"part_ranges"):
 			for part: Dictionary in preload("res://tests/hatch_mesh_ranges.gd").parts(node.mesh).values():
-				boxes.append(Surfaces.world_frame(node) * part.pose * part.bounds)
+				boxes.append(preload("res://tests/hatch_mesh_ranges.gd").world_bounds(node.mesh, part, Surfaces.world_frame(node)))
 		else:
 			boxes.append(Surfaces.world_frame(node) * node.mesh.get_aabb())
 	if node is MultiMeshInstance3D:

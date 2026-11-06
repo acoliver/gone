@@ -72,9 +72,9 @@ func _fixture(report: HarnessReport, spec: HarnessScenario) -> void:
 
 func test_connector_real_input_replay_batches_capture_stops_and_assertion_failures() -> void:
 	var spec: HarnessScenario = HarnessScenario.parse(FileAccess.get_file_as_string("res://scenarios/connector-route.json")).scenario
-	# Andrew's Round 11 pivot hardware changes parked collision and raises the
-	# reading target. The prescribed compiler retains every beat, check and budget.
-	assert_true(spec.connector.digest == "fd818bdfe5065bab2c598975cb72b5cca217359751dbee006b42aa0399e296b7", "pinned connector capture schedule")
+	# Whole generated hardware changes derived parked collision. The prescribed
+	# compiler retains every beat, check and budget while refreshing this digest.
+	assert_true(spec.connector.digest == "273ba3427b883e07e956022e5af788ca37798923b173f03e1d991aba8ef51259", "pinned connector capture schedule")
 	var digests: Array[String] = []
 	for batch: int in [1, 4]:
 		var game := Game.new(spec.seed)

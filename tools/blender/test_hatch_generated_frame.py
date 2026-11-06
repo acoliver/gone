@@ -80,8 +80,9 @@ class GeneratedFrameTest(unittest.TestCase):
         points, triangles, ancestry = fit.close_selection(vertices, faces, selected, "rivet")
         region = fit.FittedRegion("rivet", points, triangles, ancestry)
         pose = dict(origin=[0, 0, 0], basis=np.eye(3).tolist())
-        low, indices, high = reduce_region(region, pose, 48, build.mesh_object, None, build.material())
-        self.assertLessEqual(len(indices), 48)
+        # Halved rivet tessellation reallocates triangles to the 4,000-triangle wheel.
+        low, indices, high = reduce_region(region, pose, 24, build.mesh_object, None, build.material())
+        self.assertLessEqual(len(indices), 24)
         np.testing.assert_allclose(np.min(low, axis=0), points.min(axis=0), atol=1e-6)
         np.testing.assert_allclose(np.max(low, axis=0), points.max(axis=0), atol=1e-6)
         self.assertEqual(len(np.unique(indices)), len(low))
