@@ -303,6 +303,8 @@ func capture_next_beat() -> void:
 	var pinned_tick: int = tick
 	var pinned_frame: int = frame
 	chip.set_code(pinned_tick, pinned_frame)
+	# A pinned, motionless capture still needs a draw on render-on-change backends.
+	RenderingServer.call_deferred("force_draw", false)
 	await RenderingServer.frame_post_draw
 	var image := root.get_texture().get_image()
 	var file := "beats/%s.png" % beat.name
