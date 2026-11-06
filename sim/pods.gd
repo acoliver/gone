@@ -20,17 +20,16 @@ const ROOM_WIDTH: float = 8.0
 const ROOM_CEILING_HEIGHT: float = 3.2
 
 ## Pod length along the pod's local Z (out from its wall), in meters.
-const POD_LENGTH: float = 2.2
+const POD_LENGTH: float = 2.393
 
 ## Pod width along the pod's local X (along its wall), in meters.
 const POD_WIDTH: float = 0.9
 
 ## Pod height from floor to the top of the body, in meters.
-const POD_HEIGHT: float = 0.8
+const POD_HEIGHT: float = 0.896
 
-## Half-width of the central aisle: the frozen 3 m walk corridor between
-## the two pod rows.
-const AISLE_HALF_WIDTH: float = 1.5
+## Bay-only aisle: the longer clean-cage pod leaves 157 mm exit clearance (#88).
+const AISLE_HALF_WIDTH: float = 1.45
 
 ## Distance from a long wall to the center line of its pod row.
 const ROW_CENTER_FROM_WALL: float = POD_LENGTH / 2.0
