@@ -9,42 +9,34 @@ Godot import, render, machine pixel gates, and visual review.
 
 ## Production pod (#88)
 
-The seven pods now share `assets/props/pod/pod-v3.glb`, built by the same
-parametric script as the original probe. Rebuild from the repo root:
+The seven pods use `assets/props/pod/pod-v4.glb`, copied from the
+Hunyuan-derived clean-cage pass-13 delivery. The editable source and
+self-contained export script live in [`tools/blender/pod_v4/`](../../tools/blender/pod_v4/README.md).
+This replaces the parametric v3 production pod. `build_pod_probe.py` is
+retained for the original #45 probe commands below, not as a production
+pod builder.
 
-```sh
-/Volumes/XS1000/acoliver/projects/threedee/branch-1/.tools/Blender-4.5.11.app/Contents/MacOS/Blender \
-    --background --factory-startup --python tools/blender/build_pod_probe.py -- \
-    --output assets/props/pod/pod-v3.glb
-godot --headless --path . --import
-godot --headless --path . --import
-```
+Rebuild from the repository root using the commands in that README,
+then import twice and commit the GLB and its `.glb.import` sidecar.
+The five-node hierarchy preserves PodLid's hidden pivot and its WindowPane
+child. Closed size is 2.392917 × 0.899940 × 0.895995 m (length, width,
+height), with the couch plateau at Y=0.240 m. Coordinates are pod-local
+metres: +Y up, +Z foot, -Z head, floor at zero. No mesh fitting transform
+is applied. The source has 28,566 triangles.
 
-Commit the GLB and its `.glb.import` sidecar. The builder has fixed vertex
-order and no random or clock inputs. It bakes the hinge and modifiers,
-then fits the assembly to 0.9 m width, 0.8 m height and 2.2 m length.
-Vertices export directly in the pod frame: +Z foot, -Z head, +Y up, deck
-at zero. `PodMesh.shell_transform()` is identity. No runtime bounding-box
-fit or collider change is needed.
+ShellPlastic is glossy white dielectric plastic, roughness 0.12,
+clearcoat 1 and coat roughness 0.08. PodMesh restores clearcoat in code
+because Godot drops the glTF extension. WindowTint stays dark and opaque;
+CouchFabric, PillowFabric and Gasket retain their source material values.
+Sealed lids are closed, empty-open lids rotate -70° about local X, and
+the player lid rotates -90°. Meshes and materials are shared across pods.
 
-The asset has 15,496 triangles: 7,792 shell, 5,904 canopy and 1,800 couch.
-Curved panels are welded smooth quad lofts with a solid rim, not separate
-flat-shaded triangles. Pads have beveled edges. One mesh carries three
-surfaces named `ShellPlastic`, `CanopyGlass` and `CouchFabric`, with no
-textures. `app/pod_mesh.gd` assigns one cached material per named surface
-and shares the resulting mesh across all seven pods. Plastic is neutral
-near-white, roughness 0.12, metallic 0, clearcoat 1 with roughness 0.08.
-Glass is dark tinted and opaque to avoid sorting between its two skins,
-with roughness 0.06 and metallic 0. Fabric is dark with roughness 0.9.
-
-`Lighting` adds one interior, box-projected bay reflection probe without
-ambient fill, lights, shadows or colliders. It captures once at startup
-and once when a lighting fade settles, including secondary white power
-and an emergency blackout. It does not recapture every frame. The flank
-strip waypoints are frozen measurements of triangle intersections at
-y 0.580 and 0.310 m, with centers 0.006 m inside the new skin. Tests check
-contact between stations as well as at the authored waypoints, and keep
-the existing dressing clearances and sit-up corridor limits.
+The 8 m bay retains its reflection probe. Only the bay aisle narrows to
+2.9 m; the hallway and ship layout retain their independent 3.0 m width.
+The couch height drives the get-up path. The foot wall has no collider,
+as before; passing the body capsule through that visible tub wall is an
+accepted limitation. The eye trajectory is checked separately against
+the actual asset.
 
 ## Original probe chain
 
