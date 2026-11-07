@@ -103,13 +103,20 @@ That is about 25 distinct props, a few of them repeated.
 ## Stage 0: room layout
 
 **Plan view.** Draw a top-down plan from concept B and place each prop with its footprint and its clearance to walk past.
-- Proposed room: about 5.6 m along the hall by 5.0 m deep, with the ship's 3.2 m clear height. The 6 m spacing between side-door stations allows this width.
+- Room: 8.0 m along the hall by 6.0 m deep, with the ship's 3.2 m clear height. Andrew found 5.6 × 5.0 m too small. The quarters are on a deck that isn't built yet, so the 6 m spacing between D14's side doors doesn't constrain them.
 - Entrance in the near wall. Bed centred on the far wall. Living area and screen on the left. Desk, console and wardrobe on the right. Table in the middle-left.
 - Andrew approves the plan view before any prop is generated.
 
 **Camera.** Record the doorway camera that matches the concept, for later comparison captures.
 
-**Output.** `docs/art/quarters/layout.json` with the room size and every prop's position, footprint and facing, plus a plan image.
+**Output.** `docs/art/quarters/layout.json` holds the room size and every prop's position, footprint and facing. `tools/art/quarters_plan.py` renders `plan.png` from it and checks the layout, writing the results to `plan-checks.json`:
+- footprints inside the room, with no overlaps;
+- every use point reachable by the 0.6 m player capsule;
+- walkways at least 0.9 m wide on the widest route;
+- no storage on the entrance wall;
+- the doorway clear.
+
+One change from the concept: the dining table sits right of the door path. On the left it blocked the aisle beside the bed.
 
 ## Stage 1: contact sheets (unaged)
 
@@ -260,5 +267,4 @@ Each step gets its own issue under #95 and goes to PRs on issue branches.
 
 ## Open questions for Andrew
 
-1. **Room size:** is about 5.6 × 5.0 m right, or should the plan view try something else?
-2. **Location:** D16, or another deck once the deck plan is set?
+1. **Location:** D16, or another deck once the deck plan is set?
