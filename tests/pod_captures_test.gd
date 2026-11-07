@@ -26,7 +26,7 @@ func test_red_clipping_excludes_other_geometry_and_the_pane_boundary() -> void:
 	png.set_pixel(4,4,Color.BLACK)
 	var stats := Captures._red_clipping(linear,png,mask,aperture)
 	assert_int_equal(stats.pixels,1,"only selected fabric enters the measurement")
-	assert_int_equal(stats.clipped_pixels,0,"bright fixtures outside the fabric mask do not fail its shape check")
+	assert_int_equal(stats.clipped_pixels,0,"bright fixtures outside the fabric mask are excluded from the measurement")
 	aperture.set_pixel(6,4,Color.BLACK)
 	stats = Captures._red_clipping(linear,png,mask,aperture)
 	assert_int_equal(stats.pixels,0,"fabric beside the pane boundary is excluded")

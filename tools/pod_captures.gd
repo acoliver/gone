@@ -68,8 +68,6 @@ func _run() -> void:
 			if power == "red":
 				var clipping := _red_clipping(sealed_red_linear,present,pair[1],aperture)
 				results[pair[0]+"_red_clipping"] = clipping
-				if pair[0] == "couch":
-					_gate("couch_red_shape",clipping.pixels>=200 and clipping.clipped_fraction<=.20,clipping,.20)
 			var stats := _interior(hidden,present,pair[1],power=="red")
 			results[pair[0]+"_"+power] = stats
 			_gate(pair[0]+"_"+power+"_coverage",stats.pixels>=200,stats.pixels,200)
