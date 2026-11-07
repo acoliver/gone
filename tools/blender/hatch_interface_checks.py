@@ -37,6 +37,7 @@ def check_interfaces(test, build, document, objects, nodes):
     # This invokes the unchanged delivered ray grids, culling and both sides,
     # not a permissive box approximation of construction geometry.
     project = Path(os.environ.get("HATCH_TEST_PROJECT", ROOT))
-    runner = ROOT / "tmp/hunyuan-hatch/slice2e/interface_guard.gd"
+    runner = ROOT / "tests/hatch_interface_guard.gd"
     result = subprocess.run(["godot", "--headless", "--path", str(project), "-s", str(runner)], capture_output=True, text=True)
     test.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+    test.assertIn("INTERFACE_GUARD PASS", result.stdout.splitlines(), result.stdout + result.stderr)

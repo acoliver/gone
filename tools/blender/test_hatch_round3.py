@@ -146,26 +146,6 @@ class HatchRound3Test(unittest.TestCase):
             self.assertLessEqual(min(end_radii) / max(radii), .6, row["id"] + " flat disc without neck")
         self.assertGreater(checked, 0)
 
-    def test_latch_dog_helper_arms_are_forged_bars_not_round_rods(self):
-        baseline = json.loads((ROOT / 'art-source/hatch/hunyuan/baseline-physical.json').read_text())
-        checked = 0
-        for variant in baseline['variants']:
-            for group in variant['groups']:
-                for part in group['parts']:
-                    if 'Lugs' not in part['id'] or '/arm-' not in part['id']: continue
-                    vertices, faces = build.geometry(part)
-                    obj = build.mesh_object('ForgedArmFixture', vertices, faces, None, Matrix.Identity(4), build.material())
-                    points = source_points(obj)
-                    levels = sorted({round(p.y, 6) for p in points})
-                    middle = (levels[0] + levels[-1]) / 2
-                    level = min(levels, key=lambda y: abs(y - middle))
-                    section = [p for p in points if abs(p.y - level) < 1e-6]
-                    ratio = forged_section_ratio([Vector((p.x, p.z)) for p in section])
-                    self.assertGreater(ratio, 1.15, part['id'] + ' round cross-section')
-                    checked += 1
-                    bpy.data.objects.remove(obj, do_unlink=True)
-        self.assertEqual(checked, 12, 'all original forged-arm helper fixtures are tested')
-
     def test_whole_latch_mid_arm_retains_a_flat_sided_section(self):
         checked = 0
         for name, row in self.nodes.items():

@@ -17,7 +17,6 @@ const PAINT_LAYER_DEPTH: float = 0.002
 # Round 11: real pivot knuckles and upper fittings clear the level-gaze label.
 const HINGE_HEIGHTS: Array[float] = [0.48, 2.24]
 const DOG_HEIGHTS: Array[float] = [0.40, 1.17, 1.496046]
-const KEEPER_HEIGHTS: Array[float] = [0.40, 1.17, 2.24]
 const DOG_INSET: float = 0.193619
 const WHEEL_SCALE: float = 0.643 / 0.888
 # Concept hinges span 112-127 px at 1.949 mm/px. Lengthen the axial
@@ -65,10 +64,6 @@ class Group:
 		steel = p_steel
 	func add(id: String, shape: StringName, size: Vector3, pose: Transform3D, radius: float = 0.0, inner_radius: float = 0.0) -> void:
 		parts.append(Part.new(StringName("%s/%s" % [path, id]), shape, size, pose, radius, inner_radius))
-
-static func _bar(group: Group, id: String, a: Vector3, b: Vector3, width: float, depth: float) -> void:
-	var delta := b - a
-	group.add(id, &"box", Vector3(width, delta.length(), depth), Transform3D(Basis(Vector3.BACK, -atan2(delta.x, delta.y)), (a + b) / 2))
 
 static func _pin(group: Group, id: String, radius: float, length: float, center: Vector3, axis: Vector3 = Vector3.BACK) -> void:
 	group.add(id, &"cylinder", Vector3(radius * 2, length, radius * 2), Transform3D(Basis(Quaternion(Vector3.UP, axis)), center), radius)

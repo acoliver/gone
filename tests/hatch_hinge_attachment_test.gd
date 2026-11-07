@@ -84,6 +84,34 @@ func test_frame_recipe_contains_fixed_hinge_mounts_and_free_edge_keepers() -> vo
 		assert_true(mounts >= 2, "each hinge joins a fixed, simulation-owned frame mount: " + String(id))
 		assert_int_equal(keepers, 3, "three dogs have fixed frame keepers: " + String(id))
 
+func test_closed_latches_align_with_their_fixed_keeper_stations_on_both_signs() -> void:
+	var layout := ShipLayout.authored().layout
+	var signs: Dictionary = {}
+	for id: StringName in [&"D14-C-001-H-FORE", &"D14-C-001-H-AFT"]:
+		var spec := layout.door(id)
+		signs[signf(spec.hinge_frame().origin.z - ShipLayout.WALL / 2)] = true
+		var keepers: Dictionary = {}
+		for solid: ShipGeometry.SolidSpec in ShipGeometry.hatch_fixed_hardware(spec):
+			if not "/KEEPER/" in String(solid.id): continue
+			keepers[int(String(solid.id).get_file())] = spec.frame().affine_inverse() * solid.transform * AABB(-solid.size / 2, solid.size)
+		assert_int_equal(keepers.size(), 3, "every closed latch has a fixed keeper")
+		var checked := 0
+		for group: HatchParts.Group in HatchParts.leaf(spec):
+			for part: HatchParts.Part in group.parts:
+				if part.shape != &"generated_latch": continue
+				var station := int(String(part.id).get_file().get_slice("-", 1))
+				var closed := spec.hinge_frame() * group.transform * part.transform
+				var pivot := closed * -HatchGeneratedParts.LATCH_CENTER
+				var keeper: AABB = keepers[station]
+				var latch := closed * AABB(-part.size / 2, part.size)
+				var error := absf(keeper.get_center().y - pivot.y)
+				print("LATCH_KEEPER id=%s part=%s station=%d error_m=%.6f" % [id, part.id, station, error])
+				assert_true(error <= 0.000001, "keeper aligns with its closed latch pivot: %s %s" % [id, part.id])
+				assert_true(latch.position.y <= keeper.end.y and keeper.position.y <= latch.end.y, "closed latch and keeper overlap vertically")
+				checked += 1
+		assert_int_equal(checked, 6, "all three latch stations on both leaf faces")
+	assert_int_equal(signs.size(), 2, "both hinge signs checked")
+
 func test_dog_pivots_are_on_the_free_edge() -> void:
 	var layout := ShipLayout.authored().layout
 	for id: StringName in IDS:
@@ -153,7 +181,7 @@ func test_leaf_reservations_clear_every_fixed_detail_through_the_full_swing() ->
 		var spec := layout.door(id)
 		# Full-height leaves stay on the bead; separate upper bridges meet the
 		# fixed knuckles without placing a full-height web in the moving barrel.
-		assert_int_equal(ShipGeometry.hatch_fixed_hardware(spec).size(), 9, "two plates, two axial bridges, two fixed knuckles and three unchanged keepers")
+		assert_int_equal(ShipGeometry.hatch_fixed_hardware(spec).size(), 9, "two plates, two axial bridges, two fixed knuckles and three station-aligned keepers")
 		var envelope := ShipGeometry.box_aabb(ShipGeometry.door_blockers(spec)[1])
 		var swept := AABB(envelope.min_corner(), envelope.max_corner() - envelope.min_corner())
 		var details: Array[ShipGeometry.SolidSpec] = []

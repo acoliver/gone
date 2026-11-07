@@ -74,6 +74,16 @@ func test_physical_records_change_only_at_approved_fittings_and_ring_planes() ->
 			elif String(row.id).begins_with("KEEPER/"):
 				assert_true(absf(row.transform.origin[2] - (-0.048 if index == 0 else 0.248)) < 0.000001, "keeper remains seated on approved bead front")
 				row.transform.origin[2] = old.transform.origin[2]
+				if row.id == "KEEPER/2":
+					# Moving to the third latch removes the old upper-corner clip.
+					# Pin the new rectangular mesh before normalizing the fixture.
+					assert_true(absf(row.transform.origin[1] - 1.496046) < 0.000001, "third keeper follows the closed latch station")
+					assert_true(HatchAsset.vector(row.size).distance_to(Vector3(0.079998135567, 0.159999847412, 0.04)) < 0.000001, "keeper retains its full straight-jamb reservation")
+					assert_int_equal(row.vertices.size(), 8, "unclipped rectangular keeper corners")
+					for vertex: Array in row.vertices:
+						assert_true(HatchAsset.vector(vertex).abs().distance_to(HatchAsset.vector(row.size) / 2) < 0.000001, "each keeper vertex lies on a reservation corner")
+					row.transform.origin[1] = old.transform.origin[1]
+					for field: String in ["size", "vertices", "faces", "section"]: row[field] = old[field]
 		actual.frame_solids = kept_solids
 		var original_kept_solids: Array = []
 		for row: Dictionary in expected.frame_solids:
@@ -86,7 +96,7 @@ func test_physical_records_change_only_at_approved_fittings_and_ring_planes() ->
 			row.transform.origin[2] = expected.frame_rivets[ri].transform.origin[2]
 		# Whole-object latches/wheels and the two source ribs have independent
 		# dimensional/station pins in hatch_generated_parts_test. Preserve all
-		# other fixture bytes, including every keeper and the wheel roots.
+		# other fixture bytes, including the unchanged keeper fields and wheel roots.
 		var kept_actual: Array = []
 		var kept_expected: Array = []
 		var original_groups: Dictionary = {}

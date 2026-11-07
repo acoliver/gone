@@ -111,25 +111,6 @@ def radial(size, radius, part_id):
     return vertices, faces
 
 
-def torus(size, outer, inner):
-    major, minor = (outer + inner) / 2, (outer - inner) / 2
-    segments, tube = 44, 8
-    vertices = []
-    for i in range(segments):
-        angle = TAU * i / segments
-        for j in range(tube):
-            phi = TAU * j / tube
-            r = major + minor * math.cos(phi)
-            vertices.append((r * math.cos(angle), size[1] / 2 * math.sin(phi), r * math.sin(angle)))
-    faces = []
-    for i in range(segments):
-        for j in range(tube):
-            faces.append((i * tube + j, ((i + 1) % segments) * tube + j,
-                          ((i + 1) % segments) * tube + (j + 1) % tube,
-                          i * tube + (j + 1) % tube))
-    return vertices, faces
-
-
 def flakes(vertices, faces, size, radius, layer):
     # Tiles share their edges within two connected sheets. Only the broken
     # perimeter lifts; isolated diagonal prisms were reading as warning strips.
@@ -157,20 +138,6 @@ def flakes(vertices, faces, size, radius, layer):
                         faces.append((start + j, start + k, start + k + 4, start + j + 4))
 
 
-def spoke(size):
-    segments = 12
-    profile = [(-.5, .74), (-.47, 1), (.47, 1), (.5, .74)]
-    vertices = [(size[0] / 2 * scale * math.cos(TAU * i / segments), y * size[1],
-                 size[2] / 2 * scale * math.sin(TAU * i / segments))
-                for y, scale in profile for i in range(segments)]
-    faces = [(ring * segments + i, ring * segments + (i + 1) % segments,
-              (ring + 1) * segments + (i + 1) % segments, (ring + 1) * segments + i)
-             for ring in range(len(profile) - 1) for i in range(segments)]
-    faces.extend([tuple(range(segments - 1, -1, -1)),
-                  tuple((len(profile) - 1) * segments + i for i in range(segments))])
-    return vertices, faces
-
-
 def layered_plate(size, radius):
     contour = rounded_outline(size, radius, segments=4)
     count = len(contour)
@@ -185,45 +152,15 @@ def layered_plate(size, radius):
     return vertices, faces
 
 
-def forged_bar(size):
-    # Flat-faced arm in its round reservation box: an octagonal section reads as forged steel, not a rod.
-    half_x, half_z = size[0] / 2, size[2] / 2
-    radius = min(half_x, half_z) * .2
-    section = []
-    for corner, (sx, sz) in enumerate(((1, 1), (-1, 1), (-1, -1), (1, -1))):
-        centre = (sx * (half_x - radius), sz * (half_z - radius))
-        for step in range(2):
-            angle = corner * math.pi / 2 + step * math.pi / 4
-            section.append((centre[0] + math.cos(angle) * radius, centre[1] + math.sin(angle) * radius))
-    profile = [(-.5, .84), (-.44, 1), (.44, 1), (.5, .84)]
-    vertices = [(x * scale, y * size[1], z * scale) for y, scale in profile for x, z in section]
-    count = len(section)
-    faces = [(ring * count + i, ring * count + (i + 1) % count,
-              (ring + 1) * count + (i + 1) % count, (ring + 1) * count + i)
-             for ring in range(len(profile) - 1) for i in range(count)]
-    faces.append(tuple(range(count - 1, -1, -1)))
-    faces.append(tuple((len(profile) - 1) * count + i for i in range(count)))
-    return vertices, faces
-
-
 def geometry(part, steel=False):
     shape, size = part["shape"], part["size"]
     if "visual_recess" in part:
         return seal_pocket(size, part["visual_radius"], part["visual_recess"], part["visual_side"])
-    if shape == "cylinder" and "/arm-" in part["id"]:
-        return forged_bar(size)
     if shape == "cylinder":
         return radial(size, part["radius"], part["id"])
-    if shape == "torus":
-        inner = part["inner_radius"]
-        if part["id"].endswith("/flange"):
-            inner = max(inner, part["radius"] - size[1] * 1.8)
-        return torus(size, part["radius"], inner)
     if shape == "band":
         return extrusion(part["contour"], size[2])
     if shape == "box":
-        if "/spoke-" in part["id"]:
-            return spoke(size)
         contour = [(-size[0]/2, -size[1]/2), (size[0]/2, -size[1]/2),
                    (size[0]/2, size[1]/2), (-size[0]/2, size[1]/2)]
         # All simulation box seals retain square, flat corners without bevels.
@@ -405,10 +342,7 @@ def construct(document, mat, frames=None, high_sources=None, parts_source=None):
                 if part['shape'].startswith('generated_') and part['shape'] != 'generated_wheel':
                     for face in obj.data.polygons:
                         face.use_smooth = True
-                if part["shape"] == "torus":
-                    for face in obj.data.polygons:
-                        face.use_smooth = True
-                elif (part["shape"] == "cylinder" and "/arm-" not in part["id"] and not part["id"].endswith("/cap")) or "/spoke-" in part["id"]:
+                if part["shape"] == "cylinder" and not part["id"].endswith("/cap"):
                     radial_normals(obj, part["size"])
                 max_error = max(max_error, exact_bounds(obj, part["size"]))
                 leaf_attributes(obj, part, group["steel"])
