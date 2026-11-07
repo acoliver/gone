@@ -1,0 +1,953 @@
+{
+  "settings": {
+    "model": "Hunyuan3D-2mv full non-turbo",
+    "view": "front only",
+    "steps": 30,
+    "cfg": 5,
+    "requested_octree_resolution": 512,
+    "seeds": [
+      600,
+      601,
+      602,
+      603
+    ]
+  },
+  "inputs": {
+    "upper-strap-hinge": {
+      "crop": [
+        850,
+        185,
+        1080,
+        395
+      ],
+      "description": "the same upper strap hinge, its mounting plate and vertical knuckle barrel together as one whole object",
+      "flux_seed": 590,
+      "prompt": "Isolate the same upper strap hinge, its mounting plate and vertical knuckle barrel together as one whole object from the reference image. Same object, isolated, plain grey background, no other parts. Keep its exact shape, proportions, orientation and mechanical details. Remove the door, wall and surrounding hardware; show only this complete object centered with a clear margin on all sides."
+    },
+    "latch-dog": {
+      "crop": [
+        380,
+        200,
+        565,
+        350
+      ],
+      "description": "the same upper latch dog, its horizontal handle lug and keeper together as one whole object",
+      "flux_seed": 591,
+      "prompt": "Isolate the same upper latch dog, its horizontal handle lug and keeper together as one whole object from the reference image. Same object, isolated, plain grey background, no other parts. Keep its exact shape, proportions, orientation and mechanical details. Remove the door, wall and surrounding hardware; show only this complete object centered with a clear margin on all sides."
+    },
+    "handwheel": {
+      "crop": [
+        490,
+        340,
+        890,
+        740
+      ],
+      "description": "the same handwheel, its circular rim, six spokes and central hub together as one whole object",
+      "flux_seed": 592,
+      "prompt": "Isolate the same handwheel, its circular rim, six spokes and central hub together as one whole object from the reference image. Same object, isolated, plain grey background, no other parts. Keep its exact shape, proportions, orientation and mechanical details. Remove the door, wall and surrounding hardware; show only this complete object centered with a clear margin on all sides."
+    }
+  },
+  "runs": [
+    {
+      "triangles": 1076692,
+      "vertices": 538332,
+      "bounds_xyz": [
+        [
+          -0.7650516033172607,
+          -0.999366044998169,
+          -0.3733634054660797
+        ],
+        [
+          0.7612869143486023,
+          0.995265543460846,
+          0.37189075350761414
+        ]
+      ],
+      "extents_xyz": [
+        1.526338517665863,
+        1.994631588459015,
+        0.7452541589736938
+      ],
+      "aspect_ratios": {
+        "width_over_height": 0.7652232755649181,
+        "depth_over_height": 0.3736299792331335,
+        "width_over_depth": 2.0480778259162187,
+        "longest_over_shortest": 2.6764447597392365
+      },
+      "connected_components": 22,
+      "component_triangles_descending": [
+        1076524,
+        148,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "axes": "glTF: x width, y height, z depth; face-adjacency components without mesh cleanup",
+      "object": "upper-strap-hinge",
+      "seed": 600,
+      "mesh": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/meshes/upper-strap-hinge-s600.glb",
+      "octree_resolution": 512,
+      "wall_seconds": 642.0884358339827,
+      "total_attempt_wall_seconds": 642.0884358339827,
+      "attempts": [
+        {
+          "label": "shape-upper-strap-hinge-s600-r512-attempt1",
+          "command": "HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/home XDG_CACHE_HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/xdg TMPDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/tmp NUMBA_CACHE_DIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/numba MPLCONFIGDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/matplotlib BLENDER_USER_CONFIG=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/config BLENDER_USER_SCRIPTS=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/scripts BLENDER_USER_DATAFILES=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/datafiles HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 HF_HUB_DISABLE_TELEMETRY=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 U2NET_HOME=/Users/acoliver/.u2net /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python -B /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/generate.py --model-path /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/weights/Hunyuan3D-2mv --subfolder hunyuan3d-dit-v2-mv --front /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/inputs/upper-strap-hinge/front-rgba.png --dtype float16 --steps 30 --guidance-scale 5 --octree-resolution 512 --seed 600 --out /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/meshes/upper-strap-hinge-s600.glb",
+          "returncode": 0,
+          "wall_seconds": 642.0884358339827,
+          "log": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/logs/shape-upper-strap-hinge-s600-r512-attempt1.log",
+          "octree_resolution": 512
+        }
+      ],
+      "render_wall_seconds": 6.698771791998297
+    },
+    {
+      "triangles": 1168268,
+      "vertices": 584108,
+      "bounds_xyz": [
+        [
+          -0.7232869863510132,
+          -0.9993016719818115,
+          -0.4126572608947754
+        ],
+        [
+          0.7189772129058838,
+          0.9952458143234253,
+          0.42515406012535095
+        ]
+      ],
+      "extents_xyz": [
+        1.442264199256897,
+        1.9945474863052368,
+        0.8378113210201263
+      ],
+      "aspect_ratios": {
+        "width_over_height": 0.723103465402367,
+        "depth_over_height": 0.4200508269532929,
+        "width_over_depth": 1.7214665916674217,
+        "longest_over_shortest": 2.38066428116137
+      },
+      "connected_components": 45,
+      "component_triangles_descending": [
+        1108044,
+        60180,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "axes": "glTF: x width, y height, z depth; face-adjacency components without mesh cleanup",
+      "object": "upper-strap-hinge",
+      "seed": 601,
+      "mesh": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/meshes/upper-strap-hinge-s601.glb",
+      "octree_resolution": 512,
+      "wall_seconds": 700.475091457949,
+      "total_attempt_wall_seconds": 700.475091457949,
+      "attempts": [
+        {
+          "label": "shape-upper-strap-hinge-s601-r512-attempt1",
+          "command": "HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/home XDG_CACHE_HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/xdg TMPDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/tmp NUMBA_CACHE_DIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/numba MPLCONFIGDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/matplotlib BLENDER_USER_CONFIG=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/config BLENDER_USER_SCRIPTS=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/scripts BLENDER_USER_DATAFILES=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/datafiles HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 HF_HUB_DISABLE_TELEMETRY=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 U2NET_HOME=/Users/acoliver/.u2net /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python -B /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/generate.py --model-path /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/weights/Hunyuan3D-2mv --subfolder hunyuan3d-dit-v2-mv --front /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/inputs/upper-strap-hinge/front-rgba.png --dtype float16 --steps 30 --guidance-scale 5 --octree-resolution 512 --seed 601 --out /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/meshes/upper-strap-hinge-s601.glb",
+          "returncode": 0,
+          "wall_seconds": 700.475091457949,
+          "log": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/logs/shape-upper-strap-hinge-s601-r512-attempt1.log",
+          "octree_resolution": 512
+        }
+      ],
+      "render_wall_seconds": 9.269601208041422
+    },
+    {
+      "triangles": 1629968,
+      "vertices": 814969,
+      "bounds_xyz": [
+        [
+          -0.7223578691482544,
+          -0.9991353154182434,
+          -0.9992622137069702
+        ],
+        [
+          0.7182254195213318,
+          0.9952163696289062,
+          0.9090349674224854
+        ]
+      ],
+      "extents_xyz": [
+        1.4405832886695862,
+        1.9943516850471497,
+        1.9082971811294556
+      ],
+      "aspect_ratios": {
+        "width_over_height": 0.722331622587181,
+        "depth_over_height": 0.956850888154333,
+        "width_over_depth": 0.7549051075037245,
+        "longest_over_shortest": 1.3844056784033516
+      },
+      "connected_components": 18,
+      "component_triangles_descending": [
+        1629950,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "axes": "glTF: x width, y height, z depth; face-adjacency components without mesh cleanup",
+      "object": "upper-strap-hinge",
+      "seed": 602,
+      "mesh": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/meshes/upper-strap-hinge-s602.glb",
+      "octree_resolution": 512,
+      "wall_seconds": 697.9876248749788,
+      "total_attempt_wall_seconds": 697.9876248749788,
+      "attempts": [
+        {
+          "label": "shape-upper-strap-hinge-s602-r512-attempt1",
+          "command": "HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/home XDG_CACHE_HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/xdg TMPDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/tmp NUMBA_CACHE_DIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/numba MPLCONFIGDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/matplotlib BLENDER_USER_CONFIG=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/config BLENDER_USER_SCRIPTS=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/scripts BLENDER_USER_DATAFILES=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/datafiles HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 HF_HUB_DISABLE_TELEMETRY=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 U2NET_HOME=/Users/acoliver/.u2net /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python -B /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/generate.py --model-path /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/weights/Hunyuan3D-2mv --subfolder hunyuan3d-dit-v2-mv --front /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/inputs/upper-strap-hinge/front-rgba.png --dtype float16 --steps 30 --guidance-scale 5 --octree-resolution 512 --seed 602 --out /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/meshes/upper-strap-hinge-s602.glb",
+          "returncode": 0,
+          "wall_seconds": 697.9876248749788,
+          "log": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/logs/shape-upper-strap-hinge-s602-r512-attempt1.log",
+          "octree_resolution": 512
+        }
+      ],
+      "render_wall_seconds": 9.850600332953036
+    },
+    {
+      "triangles": 1126584,
+      "vertices": 563270,
+      "bounds_xyz": [
+        [
+          -0.725101113319397,
+          -0.9994595646858215,
+          -0.38993650674819946
+        ],
+        [
+          0.7204915285110474,
+          0.9950875639915466,
+          0.41106197237968445
+        ]
+      ],
+      "extents_xyz": [
+        1.4455926418304443,
+        1.9945471286773682,
+        0.8009984791278839
+      ],
+      "aspect_ratios": {
+        "width_over_height": 0.7247723661406043,
+        "depth_over_height": 0.40159416020369754,
+        "width_over_depth": 1.804738310370309,
+        "longest_over_shortest": 2.4900760496436942
+      },
+      "connected_components": 37,
+      "component_triangles_descending": [
+        583266,
+        543282,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "axes": "glTF: x width, y height, z depth; face-adjacency components without mesh cleanup",
+      "object": "upper-strap-hinge",
+      "seed": 603,
+      "mesh": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/meshes/upper-strap-hinge-s603.glb",
+      "octree_resolution": 512,
+      "wall_seconds": 656.2073092919891,
+      "total_attempt_wall_seconds": 656.2073092919891,
+      "attempts": [
+        {
+          "label": "shape-upper-strap-hinge-s603-r512-attempt1",
+          "command": "HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/home XDG_CACHE_HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/xdg TMPDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/tmp NUMBA_CACHE_DIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/numba MPLCONFIGDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/matplotlib BLENDER_USER_CONFIG=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/config BLENDER_USER_SCRIPTS=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/scripts BLENDER_USER_DATAFILES=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/datafiles HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 HF_HUB_DISABLE_TELEMETRY=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 U2NET_HOME=/Users/acoliver/.u2net /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python -B /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/generate.py --model-path /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/weights/Hunyuan3D-2mv --subfolder hunyuan3d-dit-v2-mv --front /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/inputs/upper-strap-hinge/front-rgba.png --dtype float16 --steps 30 --guidance-scale 5 --octree-resolution 512 --seed 603 --out /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/meshes/upper-strap-hinge-s603.glb",
+          "returncode": 0,
+          "wall_seconds": 656.2073092919891,
+          "log": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/logs/shape-upper-strap-hinge-s603-r512-attempt1.log",
+          "octree_resolution": 512
+        }
+      ],
+      "render_wall_seconds": 6.946279250027146
+    },
+    {
+      "triangles": 777120,
+      "vertices": 388555,
+      "bounds_xyz": [
+        [
+          -0.9989596009254456,
+          -0.6690987944602966,
+          -0.27848345041275024
+        ],
+        [
+          0.9951804280281067,
+          0.6651504635810852,
+          0.280997633934021
+        ]
+      ],
+      "extents_xyz": [
+        1.9941400289535522,
+        1.3342492580413818,
+        0.5594810843467712
+      ],
+      "aspect_ratios": {
+        "width_over_height": 1.4945783307991944,
+        "depth_over_height": 0.41932276220116804,
+        "width_over_depth": 3.5642671124115557,
+        "longest_over_shortest": 3.5642671124115557
+      },
+      "connected_components": 15,
+      "component_triangles_descending": [
+        777106,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "axes": "glTF: x width, y height, z depth; face-adjacency components without mesh cleanup",
+      "object": "latch-dog",
+      "seed": 600,
+      "mesh": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/meshes/latch-dog-s600.glb",
+      "octree_resolution": 512,
+      "wall_seconds": 705.5063533329521,
+      "total_attempt_wall_seconds": 705.5063533329521,
+      "attempts": [
+        {
+          "label": "shape-latch-dog-s600-r512-attempt1",
+          "command": "HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/home XDG_CACHE_HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/xdg TMPDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/tmp NUMBA_CACHE_DIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/numba MPLCONFIGDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/matplotlib BLENDER_USER_CONFIG=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/config BLENDER_USER_SCRIPTS=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/scripts BLENDER_USER_DATAFILES=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/datafiles HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 HF_HUB_DISABLE_TELEMETRY=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 U2NET_HOME=/Users/acoliver/.u2net /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python -B /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/generate.py --model-path /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/weights/Hunyuan3D-2mv --subfolder hunyuan3d-dit-v2-mv --front /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/inputs/latch-dog/front-rgba.png --dtype float16 --steps 30 --guidance-scale 5 --octree-resolution 512 --seed 600 --out /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/meshes/latch-dog-s600.glb",
+          "returncode": 0,
+          "wall_seconds": 705.5063533329521,
+          "log": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/logs/shape-latch-dog-s600-r512-attempt1.log",
+          "octree_resolution": 512
+        }
+      ],
+      "render_wall_seconds": 5.815812957996968
+    },
+    {
+      "triangles": 827988,
+      "vertices": 413982,
+      "bounds_xyz": [
+        [
+          -0.9990947246551514,
+          -0.6815921068191528,
+          -0.32747697830200195
+        ],
+        [
+          0.9950214624404907,
+          0.6779405474662781,
+          0.31649380922317505
+        ]
+      ],
+      "extents_xyz": [
+        1.994116187095642,
+        1.359532654285431,
+        0.643970787525177
+      ],
+      "aspect_ratios": {
+        "width_over_height": 1.4667659366694268,
+        "depth_over_height": 0.47367070257216254,
+        "width_over_depth": 3.096594171234327,
+        "longest_over_shortest": 3.096594171234327
+      },
+      "connected_components": 29,
+      "component_triangles_descending": [
+        827960,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "axes": "glTF: x width, y height, z depth; face-adjacency components without mesh cleanup",
+      "object": "latch-dog",
+      "seed": 601,
+      "mesh": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/meshes/latch-dog-s601.glb",
+      "octree_resolution": 512,
+      "wall_seconds": 649.1223645830178,
+      "total_attempt_wall_seconds": 649.1223645830178,
+      "attempts": [
+        {
+          "label": "shape-latch-dog-s601-r512-attempt1",
+          "command": "HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/home XDG_CACHE_HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/xdg TMPDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/tmp NUMBA_CACHE_DIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/numba MPLCONFIGDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/matplotlib BLENDER_USER_CONFIG=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/config BLENDER_USER_SCRIPTS=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/scripts BLENDER_USER_DATAFILES=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/datafiles HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 HF_HUB_DISABLE_TELEMETRY=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 U2NET_HOME=/Users/acoliver/.u2net /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python -B /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/generate.py --model-path /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/weights/Hunyuan3D-2mv --subfolder hunyuan3d-dit-v2-mv --front /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/inputs/latch-dog/front-rgba.png --dtype float16 --steps 30 --guidance-scale 5 --octree-resolution 512 --seed 601 --out /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/meshes/latch-dog-s601.glb",
+          "returncode": 0,
+          "wall_seconds": 649.1223645830178,
+          "log": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/logs/shape-latch-dog-s601-r512-attempt1.log",
+          "octree_resolution": 512
+        }
+      ],
+      "render_wall_seconds": 4.9376368329976685
+    },
+    {
+      "triangles": 776164,
+      "vertices": 388073,
+      "bounds_xyz": [
+        [
+          -0.9989224076271057,
+          -0.6629877090454102,
+          -0.2579420506954193
+        ],
+        [
+          0.9948492646217346,
+          0.6598090529441833,
+          0.2869706451892853
+        ]
+      ],
+      "extents_xyz": [
+        1.9937716722488403,
+        1.3227967619895935,
+        0.5449126958847046
+      ],
+      "aspect_ratios": {
+        "width_over_height": 1.5072396074284655,
+        "depth_over_height": 0.4119398471047901,
+        "width_over_depth": 3.6588827665536585,
+        "longest_over_shortest": 3.6588827665536585
+      },
+      "connected_components": 18,
+      "component_triangles_descending": [
+        776146,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "axes": "glTF: x width, y height, z depth; face-adjacency components without mesh cleanup",
+      "object": "latch-dog",
+      "seed": 602,
+      "mesh": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/meshes/latch-dog-s602.glb",
+      "octree_resolution": 512,
+      "wall_seconds": 626.0324435829534,
+      "total_attempt_wall_seconds": 626.0324435829534,
+      "attempts": [
+        {
+          "label": "shape-latch-dog-s602-r512-attempt1",
+          "command": "HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/home XDG_CACHE_HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/xdg TMPDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/tmp NUMBA_CACHE_DIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/numba MPLCONFIGDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/matplotlib BLENDER_USER_CONFIG=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/config BLENDER_USER_SCRIPTS=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/scripts BLENDER_USER_DATAFILES=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/datafiles HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 HF_HUB_DISABLE_TELEMETRY=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 U2NET_HOME=/Users/acoliver/.u2net /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python -B /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/generate.py --model-path /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/weights/Hunyuan3D-2mv --subfolder hunyuan3d-dit-v2-mv --front /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/inputs/latch-dog/front-rgba.png --dtype float16 --steps 30 --guidance-scale 5 --octree-resolution 512 --seed 602 --out /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/meshes/latch-dog-s602.glb",
+          "returncode": 0,
+          "wall_seconds": 626.0324435829534,
+          "log": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/logs/shape-latch-dog-s602-r512-attempt1.log",
+          "octree_resolution": 512
+        }
+      ],
+      "render_wall_seconds": 5.57980312500149
+    },
+    {
+      "triangles": 785756,
+      "vertices": 392870,
+      "bounds_xyz": [
+        [
+          -0.9989899396896362,
+          -0.6697797179222107,
+          -0.2839587330818176
+        ],
+        [
+          0.9950201511383057,
+          0.6649630069732666,
+          0.29305121302604675
+        ]
+      ],
+      "extents_xyz": [
+        1.994010090827942,
+        1.3347427248954773,
+        0.5770099461078644
+      ],
+      "aspect_ratios": {
+        "width_over_height": 1.4939284205381913,
+        "depth_over_height": 0.432300499074119,
+        "width_over_depth": 3.455763811834169,
+        "longest_over_shortest": 3.455763811834169
+      },
+      "connected_components": 21,
+      "component_triangles_descending": [
+        785736,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "axes": "glTF: x width, y height, z depth; face-adjacency components without mesh cleanup",
+      "object": "latch-dog",
+      "seed": 603,
+      "mesh": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/meshes/latch-dog-s603.glb",
+      "octree_resolution": 512,
+      "wall_seconds": 680.8366681670304,
+      "total_attempt_wall_seconds": 680.8366681670304,
+      "attempts": [
+        {
+          "label": "shape-latch-dog-s603-r512-attempt1",
+          "command": "HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/home XDG_CACHE_HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/xdg TMPDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/tmp NUMBA_CACHE_DIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/numba MPLCONFIGDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/matplotlib BLENDER_USER_CONFIG=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/config BLENDER_USER_SCRIPTS=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/scripts BLENDER_USER_DATAFILES=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/datafiles HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 HF_HUB_DISABLE_TELEMETRY=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 U2NET_HOME=/Users/acoliver/.u2net /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python -B /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/generate.py --model-path /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/weights/Hunyuan3D-2mv --subfolder hunyuan3d-dit-v2-mv --front /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/inputs/latch-dog/front-rgba.png --dtype float16 --steps 30 --guidance-scale 5 --octree-resolution 512 --seed 603 --out /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/meshes/latch-dog-s603.glb",
+          "returncode": 0,
+          "wall_seconds": 680.8366681670304,
+          "log": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/logs/shape-latch-dog-s603-r512-attempt1.log",
+          "octree_resolution": 512
+        }
+      ],
+      "render_wall_seconds": 5.877736292022746
+    },
+    {
+      "triangles": 939156,
+      "vertices": 469570,
+      "bounds_xyz": [
+        [
+          -0.9801422357559204,
+          -0.9992018938064575,
+          -0.3212861120700836
+        ],
+        [
+          0.9747129082679749,
+          0.994313657283783,
+          0.32880380749702454
+        ]
+      ],
+      "extents_xyz": [
+        1.9548551440238953,
+        1.9935155510902405,
+        0.6500899195671082
+      ],
+      "aspect_ratios": {
+        "width_over_height": 0.9806069197477781,
+        "depth_over_height": 0.32610225649435154,
+        "width_over_depth": 3.0070534631972516,
+        "longest_over_shortest": 3.0665227856751156
+      },
+      "connected_components": 21,
+      "component_triangles_descending": [
+        938964,
+        96,
+        36,
+        36,
+        8,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "axes": "glTF: x width, y height, z depth; face-adjacency components without mesh cleanup",
+      "object": "handwheel",
+      "seed": 600,
+      "mesh": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/meshes/handwheel-s600.glb",
+      "octree_resolution": 512,
+      "wall_seconds": 615.6959642079892,
+      "total_attempt_wall_seconds": 615.6959642079892,
+      "attempts": [
+        {
+          "label": "shape-handwheel-s600-r512-attempt1",
+          "command": "HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/home XDG_CACHE_HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/xdg TMPDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/tmp NUMBA_CACHE_DIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/numba MPLCONFIGDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/matplotlib BLENDER_USER_CONFIG=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/config BLENDER_USER_SCRIPTS=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/scripts BLENDER_USER_DATAFILES=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/datafiles HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 HF_HUB_DISABLE_TELEMETRY=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 U2NET_HOME=/Users/acoliver/.u2net /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python -B /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/generate.py --model-path /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/weights/Hunyuan3D-2mv --subfolder hunyuan3d-dit-v2-mv --front /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/inputs/handwheel/front-rgba.png --dtype float16 --steps 30 --guidance-scale 5 --octree-resolution 512 --seed 600 --out /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/meshes/handwheel-s600.glb",
+          "returncode": 0,
+          "wall_seconds": 615.6959642079892,
+          "log": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/logs/shape-handwheel-s600-r512-attempt1.log",
+          "octree_resolution": 512
+        }
+      ],
+      "render_wall_seconds": 10.722897500032559
+    },
+    {
+      "triangles": 970932,
+      "vertices": 485451,
+      "bounds_xyz": [
+        [
+          -0.9989413022994995,
+          -0.9995973110198975,
+          -0.34825050830841064
+        ],
+        [
+          0.9945995807647705,
+          0.9951279163360596,
+          0.34353503584861755
+        ]
+      ],
+      "extents_xyz": [
+        1.99354088306427,
+        1.994725227355957,
+        0.6917855441570282
+      ],
+      "aspect_ratios": {
+        "width_over_height": 0.9994062619375116,
+        "depth_over_height": 0.3468074372699452,
+        "width_over_depth": 2.881732496294772,
+        "longest_over_shortest": 2.8834445070496804
+      },
+      "connected_components": 24,
+      "component_triangles_descending": [
+        970530,
+        304,
+        76,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "axes": "glTF: x width, y height, z depth; face-adjacency components without mesh cleanup",
+      "object": "handwheel",
+      "seed": 601,
+      "mesh": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/meshes/handwheel-s601.glb",
+      "octree_resolution": 512,
+      "wall_seconds": 651.0011198749999,
+      "total_attempt_wall_seconds": 651.0011198749999,
+      "attempts": [
+        {
+          "label": "shape-handwheel-s601-r512-attempt1",
+          "command": "HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/home XDG_CACHE_HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/xdg TMPDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/tmp NUMBA_CACHE_DIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/numba MPLCONFIGDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/matplotlib BLENDER_USER_CONFIG=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/config BLENDER_USER_SCRIPTS=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/scripts BLENDER_USER_DATAFILES=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/datafiles HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 HF_HUB_DISABLE_TELEMETRY=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 U2NET_HOME=/Users/acoliver/.u2net /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python -B /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/generate.py --model-path /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/weights/Hunyuan3D-2mv --subfolder hunyuan3d-dit-v2-mv --front /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/inputs/handwheel/front-rgba.png --dtype float16 --steps 30 --guidance-scale 5 --octree-resolution 512 --seed 601 --out /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/meshes/handwheel-s601.glb",
+          "returncode": 0,
+          "wall_seconds": 651.0011198749999,
+          "log": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/logs/shape-handwheel-s601-r512-attempt1.log",
+          "octree_resolution": 512
+        }
+      ],
+      "render_wall_seconds": 5.223546999972314
+    },
+    {
+      "triangles": 843584,
+      "vertices": 421776,
+      "bounds_xyz": [
+        [
+          -0.9989006519317627,
+          -0.9990168213844299,
+          -0.24727191030979156
+        ],
+        [
+          0.9946529269218445,
+          0.994596540927887,
+          0.24348749220371246
+        ]
+      ],
+      "extents_xyz": [
+        1.9935535788536072,
+        1.993613362312317,
+        0.49075940251350403
+      ],
+      "aspect_ratios": {
+        "width_over_height": 0.9999700125110316,
+        "depth_over_height": 0.24616578710341844,
+        "width_over_depth": 4.062181118982741,
+        "longest_over_shortest": 4.062302937247258
+      },
+      "connected_components": 17,
+      "component_triangles_descending": [
+        843568,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "axes": "glTF: x width, y height, z depth; face-adjacency components without mesh cleanup",
+      "object": "handwheel",
+      "seed": 602,
+      "mesh": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/meshes/handwheel-s602.glb",
+      "octree_resolution": 512,
+      "wall_seconds": 513.8061438339646,
+      "total_attempt_wall_seconds": 513.8061438339646,
+      "attempts": [
+        {
+          "label": "shape-handwheel-s602-r512-attempt1",
+          "command": "HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/home XDG_CACHE_HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/xdg TMPDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/tmp NUMBA_CACHE_DIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/numba MPLCONFIGDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/matplotlib BLENDER_USER_CONFIG=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/config BLENDER_USER_SCRIPTS=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/scripts BLENDER_USER_DATAFILES=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/datafiles HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 HF_HUB_DISABLE_TELEMETRY=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 U2NET_HOME=/Users/acoliver/.u2net /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python -B /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/generate.py --model-path /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/weights/Hunyuan3D-2mv --subfolder hunyuan3d-dit-v2-mv --front /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/inputs/handwheel/front-rgba.png --dtype float16 --steps 30 --guidance-scale 5 --octree-resolution 512 --seed 602 --out /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/meshes/handwheel-s602.glb",
+          "returncode": 0,
+          "wall_seconds": 513.8061438339646,
+          "log": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/logs/shape-handwheel-s602-r512-attempt1.log",
+          "octree_resolution": 512
+        }
+      ],
+      "render_wall_seconds": 4.663672625028994
+    },
+    {
+      "triangles": 832368,
+      "vertices": 416166,
+      "bounds_xyz": [
+        [
+          -0.9730616211891174,
+          -0.9986041188240051,
+          -0.21428315341472626
+        ],
+        [
+          0.9683330655097961,
+          0.9946597814559937,
+          0.21104080975055695
+        ]
+      ],
+      "extents_xyz": [
+        1.9413946866989136,
+        1.9932639002799988,
+        0.4253239631652832
+      ],
+      "aspect_ratios": {
+        "width_over_height": 0.9739777489705207,
+        "depth_over_height": 0.21338065827888464,
+        "width_over_depth": 4.564508127524611,
+        "longest_over_shortest": 4.686460375865081
+      },
+      "connected_components": 19,
+      "component_triangles_descending": [
+        832348,
+        2,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "axes": "glTF: x width, y height, z depth; face-adjacency components without mesh cleanup",
+      "object": "handwheel",
+      "seed": 603,
+      "mesh": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/meshes/handwheel-s603.glb",
+      "octree_resolution": 512,
+      "wall_seconds": 514.3030277080252,
+      "total_attempt_wall_seconds": 514.3030277080252,
+      "attempts": [
+        {
+          "label": "shape-handwheel-s603-r512-attempt1",
+          "command": "HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/home XDG_CACHE_HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/xdg TMPDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/tmp NUMBA_CACHE_DIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/numba MPLCONFIGDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/matplotlib BLENDER_USER_CONFIG=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/config BLENDER_USER_SCRIPTS=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/scripts BLENDER_USER_DATAFILES=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/datafiles HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 HF_HUB_DISABLE_TELEMETRY=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 U2NET_HOME=/Users/acoliver/.u2net /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python -B /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/generate.py --model-path /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/weights/Hunyuan3D-2mv --subfolder hunyuan3d-dit-v2-mv --front /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/inputs/handwheel/front-rgba.png --dtype float16 --steps 30 --guidance-scale 5 --octree-resolution 512 --seed 603 --out /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/meshes/handwheel-s603.glb",
+          "returncode": 0,
+          "wall_seconds": 514.3030277080252,
+          "log": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/logs/shape-handwheel-s603-r512-attempt1.log",
+          "octree_resolution": 512
+        }
+      ],
+      "render_wall_seconds": 4.633294665953144
+    }
+  ],
+  "issues": [],
+  "edits": [
+    {
+      "object": "upper-strap-hinge",
+      "attempts": [
+        {
+          "label": "flux-upper-strap-hinge-attempt1",
+          "command": "HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/home XDG_CACHE_HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/xdg TMPDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/tmp NUMBA_CACHE_DIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/numba MPLCONFIGDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/matplotlib BLENDER_USER_CONFIG=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/config BLENDER_USER_SCRIPTS=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/scripts BLENDER_USER_DATAFILES=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/datafiles HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 HF_HUB_DISABLE_TELEMETRY=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 U2NET_HOME=/Users/acoliver/.u2net /Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit --model flux2-klein-4b --quantize 4 --steps 4 --seed 590 --image-paths /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/inputs/upper-strap-hinge/concept-crop.png --prompt 'Isolate the same upper strap hinge, its mounting plate and vertical knuckle barrel together as one whole object from the reference image. Same object, isolated, plain grey background, no other parts. Keep its exact shape, proportions, orientation and mechanical details. Remove the door, wall and surrounding hardware; show only this complete object centered with a clear margin on all sides.' --width 768 --height 768 --metadata --output /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/inputs/upper-strap-hinge/isolated.png",
+          "returncode": 0,
+          "wall_seconds": 34.873241875029635,
+          "log": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/logs/flux-upper-strap-hinge-attempt1.log"
+        }
+      ]
+    },
+    {
+      "object": "latch-dog",
+      "attempts": [
+        {
+          "label": "flux-latch-dog-attempt1",
+          "command": "HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/home XDG_CACHE_HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/xdg TMPDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/tmp NUMBA_CACHE_DIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/numba MPLCONFIGDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/matplotlib BLENDER_USER_CONFIG=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/config BLENDER_USER_SCRIPTS=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/scripts BLENDER_USER_DATAFILES=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/datafiles HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 HF_HUB_DISABLE_TELEMETRY=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 U2NET_HOME=/Users/acoliver/.u2net /Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit --model flux2-klein-4b --quantize 4 --steps 4 --seed 591 --image-paths /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/inputs/latch-dog/concept-crop.png --prompt 'Isolate the same upper latch dog, its horizontal handle lug and keeper together as one whole object from the reference image. Same object, isolated, plain grey background, no other parts. Keep its exact shape, proportions, orientation and mechanical details. Remove the door, wall and surrounding hardware; show only this complete object centered with a clear margin on all sides.' --width 768 --height 768 --metadata --output /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/inputs/latch-dog/isolated.png",
+          "returncode": 0,
+          "wall_seconds": 28.873489707999397,
+          "log": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/logs/flux-latch-dog-attempt1.log"
+        }
+      ]
+    },
+    {
+      "object": "handwheel",
+      "attempts": [
+        {
+          "label": "flux-handwheel-attempt1",
+          "command": "HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/home XDG_CACHE_HOME=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/xdg TMPDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/tmp NUMBA_CACHE_DIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/numba MPLCONFIGDIR=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/matplotlib BLENDER_USER_CONFIG=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/config BLENDER_USER_SCRIPTS=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/scripts BLENDER_USER_DATAFILES=/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/cache/blender/datafiles HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 HF_HUB_DISABLE_TELEMETRY=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 U2NET_HOME=/Users/acoliver/.u2net /Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit --model flux2-klein-4b --quantize 4 --steps 4 --seed 592 --image-paths /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/inputs/handwheel/concept-crop.png --prompt 'Isolate the same handwheel, its circular rim, six spokes and central hub together as one whole object from the reference image. Same object, isolated, plain grey background, no other parts. Keep its exact shape, proportions, orientation and mechanical details. Remove the door, wall and surrounding hardware; show only this complete object centered with a clear margin on all sides.' --width 768 --height 768 --metadata --output /Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/inputs/handwheel/isolated.png",
+          "returncode": 0,
+          "wall_seconds": 29.746731999970507,
+          "log": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/logs/flux-handwheel-attempt1.log"
+        }
+      ]
+    }
+  ]
+}

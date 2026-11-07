@@ -1,6 +1,31 @@
 extends SimTestCase
 # New pod #88: pins follow the fitted asset, row centers and eight-piece topology.
 
+class CountedCollision:
+	extends ShipCollision
+	var deck_queries := 0
+	func deck_set(deck: int) -> ColliderSet:
+		deck_queries += 1
+		return super.deck_set(deck)
+
+func test_unchanged_well_slice_reuses_assembly_but_not_caller_mutation() -> void:
+	var collision := CountedCollision.new(ShipLayout.authored().layout)
+	var capsule := Resolve.Capsule.new()
+	capsule.foot = Vector3(3, 0.305, -4.3)
+	capsule.head = capsule.foot + Vector3.UP * 1.15
+	var first := collision.well_slice(&"C-000-LADDER", capsule, Vector3.UP * 0.025)
+	var expected := first.ids.duplicate()
+	first.ids.append(&"test/private")
+	first.colliders.insert(ColliderSet.Aabb.from_parts(Vector3(3, 1, -4.3), Vector3.ONE))
+	collision.deck_queries = 0
+	var second := collision.well_slice(&"C-000-LADDER", capsule, Vector3.UP * 0.020)
+	assert_int_equal(collision.deck_queries, 0, "same selected decks and revisions reuse the sorted slice assembly")
+	assert_true(second.ids == expected, "caller's slice IDs stay private")
+	assert_int_equal(second.colliders.size(), expected.size(), "caller cannot add a collider to the cached template")
+	collision.open_door(&"D14-C-000-H-AFT")
+	var opened := collision.well_slice(&"C-000-LADDER", capsule, Vector3.UP * 0.025)
+	assert_true(&"D14-C-000-H-AFT/PARKED" in opened.ids and &"D14-C-000-H-AFT/BLOCKER" not in opened.ids, "opening invalidates the reused slice")
+
 func test_well_slice_includes_adjacent_floor_for_head_and_foot_with_stable_ids() -> void:
 	var layout := ShipLayout.authored().layout
 	var collision := ShipCollision.new(layout)
@@ -123,10 +148,12 @@ func test_opening_manifest_has_exact_owners_order_and_door_differentials() -> vo
 		for pod: int in range(7):
 			for piece: int in range(pod_counts[pod]):
 				expected.append(StringName("D14-BAY/POD-%03d/%03d" % [pod, piece]))
-		for index: int in range(4):
-			expected.append(StringName("D14-BAY/FRAME/%03d" % index))
-		if flags.x == 0:
-			expected.append(&"D14-BAY-DOOR/LEAF")
+		for piece: String in ["FRAME/LEFT", "FRAME/RIGHT", "FRAME/TOP", "COAMING", "FRAME/STOP-LEFT", "FRAME/STOP-RIGHT", "FRAME/STOP-TOP", "FRAME/STOP-BOTTOM"]:
+			expected.append(StringName("D14-BAY-DOOR/%s" % piece))
+		expected.append_array(_surround_ids("D14-BAY-DOOR", "FORE"))
+		# Round 11 adds named presentation reservations, with no added colliders.
+		expected.append_array(_fixed_detail_ids("D14-BAY-DOOR"))
+		expected.append(&"D14-BAY-DOOR/SWING" if flags.x == 0 else &"D14-BAY-DOOR/PARKED")
 		for owner: String in ["D14-S-041/SHELL", "D14-S-041/SIDE-LEAF", "D14-POWER/SHELL", "D14-POWER/CONSOLE"]:
 			var count: int = {"D14-S-041/SHELL": 8, "D14-S-041/SIDE-LEAF": 5, "D14-POWER/SHELL": 5, "D14-POWER/CONSOLE": 6}[owner]
 			for index: int in range(count):
@@ -138,24 +165,32 @@ func test_opening_manifest_has_exact_owners_order_and_door_differentials() -> vo
 		var solids := ShipCollision.opening_solids(layout.bay().template(), bool(flags.x), bool(flags.y), layout)
 		assert_int_equal(solids.size(), expected.size(), "exact D14 solid manifest")
 		var set := ShipCollision.opening_set(layout.bay().template(), bool(flags.x), bool(flags.y), layout)
+		var offset := 0
 		for index: int in range(expected.size()):
 			assert_true(solids[index].id == expected[index], "ordered owner and piece %d" % index)
-			assert_true(ShipGeometry.box_aabb(solids[index]).equals(set.boxes()[index]), "manifest covers collider %d" % index)
+			for box: ColliderSet.Aabb in ShipGeometry.collision_boxes(solids[index]):
+				assert_true(box.equals(set.boxes()[offset]), "manifest covers ordered collider %d" % offset)
+				offset += 1
+		assert_int_equal(offset, set.size(), "manifest covers every subdivided collider exactly once")
 
 func test_opening_counts_and_every_box_keep_original_insertion_order() -> void:
 	var registry := Pods.PodRegistry.frozen()
 	for flags: Vector2i in [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1)]:
 		var pure := ShipCollision.opening_set(registry, bool(flags.x), bool(flags.y))
 		var adapter := PowerRoom.scene_collider_set(registry, bool(flags.x), bool(flags.y))
-		var expected := 205 if flags.x == 0 else (203 if flags.y == 0 else 202)
+		# #88 adds eleven pod solids; the stack's hatch reservations are unchanged.
+		var expected := 1024 if flags.x == 0 else (1023 if flags.y == 0 else 1022)
 		assert_int_equal(pure.size(), expected, "full scene count")
 		for index: int in range(pure.size()):
 			assert_true(pure.boxes()[index].equals(adapter.boxes()[index]), "same ordered collider")
 	var closed := ShipCollision.opening_set(registry, false, false)
 	assert_vec3_equal(closed.boxes()[0].center(), Vector3(15, -0.1, 7.7), "first bay floor")
 	assert_vec3_equal(closed.boxes()[5].center(), Vector3(15, 1.2, 1.6), "pierce replaces east wall at same index")
-	assert_vec3_equal(closed.boxes()[8].center(), Vector3(11.373499, 0.275, 12.5), "#88 seam-hinge wall offset, unchanged head-wall index")
-	assert_vec3_equal(closed.boxes()[92].center(), Vector3(27, 1.1, -1.47), "last power leaf")
+	assert_vec3_equal(closed.boxes()[8].center(), Vector3(11.373499, 0.275, 12.5), "#88 fitted head wall retains the first pod slot")
+	# Eleven additional pod solids move the power leaf from slot 198 to 209.
+	# Compare the native AABB midpoint
+	# exactly; its float32 min/max average differs from the authored centre.
+	assert_vec3_equal(closed.boxes()[209].center(), ShipGeometry.box_aabb(ShipGeometry.power_door_leaf()).center(), "power leaf follows the fitted pod solids with unchanged pocket dimensions")
 
 func test_approved_layout_cache_and_blocker_revisions_are_deck_local() -> void:
 	var collision := ShipCollision.new(ShipLayout.authored().layout)
@@ -218,10 +253,33 @@ func _extension_ids() -> Array[StringName]:
 			ids.append(StringName("%s-LIFT/%s" % [connector, surface]))
 	var hatches: Array[String] = ["D14-C-000-H-AFT", "D14-C-000-H-FORE", "D14-C-001-H-AFT", "D14-C-001-H-FORE", "D14-C-002-H-FORE", "D14-C-M001-H-AFT"]
 	for hatch: String in hatches:
-		for surface: String in ["WALL/000", "WALL/001", "WALL/002", "FRAME/LEFT", "FRAME/RIGHT", "FRAME/TOP", "COAMING"]:
+		for surface: String in ["WALL/000", "WALL/001", "WALL/002", "FRAME/LEFT", "FRAME/RIGHT", "FRAME/TOP", "COAMING", "FRAME/STOP-LEFT", "FRAME/STOP-RIGHT", "FRAME/STOP-TOP", "FRAME/STOP-BOTTOM"]:
 			ids.append(StringName("%s/%s" % [hatch, surface]))
+		ids.append_array(_surround_ids(hatch, "FORE" if hatch.ends_with("FORE") else "AFT"))
+		ids.append_array(_fixed_detail_ids(hatch))
 	for door: String in ["D14-C-000-H-AFT", "D14-C-000-H-FORE", "D14-C-000-LIFT-DOOR", "D14-C-001-H-AFT", "D14-C-001-H-FORE", "D14-C-001-LIFT-DOOR", "D14-C-002-H-FORE", "D14-C-M001-H-AFT"]:
 		ids.append(StringName("%s/BLOCKER" % door))
 		if not "LIFT" in door:
 			ids.append(StringName("%s/SWING" % door))
+	return ids
+
+func _fixed_detail_ids(hatch: String) -> Array[StringName]:
+	var ids: Array[StringName] = []
+	# Each heavy hinge now has two fixed knuckles, caps and six frame bolts.
+	# These ordered presentation reservations still add no collision boxes.
+	for station: int in range(2):
+		ids.append(StringName("%s/HINGE/PLATE-%d" % [hatch, station]))
+		for zone: String in ["LOWER", "UPPER"]:
+			for piece: String in ["BRIDGE", "KNUCKLE", "CAP"]:
+				ids.append(StringName("%s/HINGE/%s-%s-%d" % [hatch, piece, zone, station]))
+			for bolt: int in range(3):
+				ids.append(StringName("%s/HINGE/BOLT-%s-%d-%d" % [hatch, zone, bolt, station]))
+	for station: int in range(3): ids.append(StringName("%s/KEEPER/%d" % [hatch, station]))
+	return ids
+
+func _surround_ids(hatch: String, side: String) -> Array[StringName]:
+	var ids: Array[StringName] = []
+	for ring: String in ["RING", "LIP", "THROAT"]:
+		for cell: int in range(36): ids.append(StringName("%s/SURROUND/%s/%s/%03d" % [hatch, side, ring, cell]))
+	ids.append(StringName("%s/SURROUND/%s/STEP/000" % [hatch, side]))
 	return ids

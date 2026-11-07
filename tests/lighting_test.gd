@@ -46,7 +46,7 @@ func test_connectors_and_outer_sections_keep_their_steady_red_circuits() -> void
 		assert_true(not lights.is_empty(), "room has emergency fixtures")
 		for light: OmniLight3D in lights:
 			assert_true(light.light_color == Lighting.EMERGENCY_RED, "independent circuit stays red")
-			assert_true(is_equal_approx(light.light_energy, Lighting.FIXTURE_ENERGY), "independent circuit stays steady")
+			assert_true(is_equal_approx(light.light_energy, Lighting.FIXTURE_ENERGY * Lighting.EMERGENCY_NO_FILL_KEY_MULTIPLIER), "independent circuit stays steady")
 			assert_true(light.light_cull_mask != 1, "independent circuit stays isolated from bay")
 		node.free()
 
@@ -64,22 +64,22 @@ func test_fixture_inventory_places_eight_red_lights_from_registry() -> void:
 		var expected := Vector3(
 			placement.center.x,
 			2.65,
-			side * (Pods.ROOM_WIDTH / 2.0 - 0.10 - Pods.ROW_WALL_OFFSET)
+			side * (Pods.ROOM_WIDTH / 2.0 - 0.10)
 		)
 		assert_vec3_equal(
 			fixtures[index].position,
 			expected,
-			"wall fixture %d uses its registry pod's X and wall side" % index
+			"architectural fixture %d stays on the wall; separate pod keys follow #88's inset" % index
 		)
 	var lintel: Placement.SolidPlacement = Placement.hatch_solids()[2]
 	assert_vec3_equal(
-		fixtures[7].position,
+		lighting.fixture(ShipLayout.BAY_HATCH_KEY_ID).position,
 		lintel.center + Vector3(-0.10, 0.22, 0.0),
 		"hatch fixture uses the lintel placement at 2.70 m"
 	)
 	for light: OmniLight3D in lights:
-		assert_true(light.light_color == Color(1.0, 0.0, 0.0), "fixture color is linear red")
-		assert_float_equal(light.omni_range, 6.0, "fixture range is 6 m")
+		assert_true(light.light_color == Color(1.0, 0.28, 0.12), "fixture color is the approved red-orange")
+		assert_float_equal(light.omni_range, 5.5 if light.get_parent() == lighting.fixture(ShipLayout.BAY_HATCH_KEY_ID) else 3.5, "bay keys have local wall pools and one longer hatch spill")
 		assert_false(light.shadow_enabled, "fixture shadows are disabled")
 		assert_true(
 			absf(light.light_energy - Lighting.FIXTURE_ENERGY) < 1e-4,
@@ -87,7 +87,7 @@ func test_fixture_inventory_places_eight_red_lights_from_registry() -> void:
 		)
 	for fixture: Node3D in fixtures:
 		assert_true(fixture.position.y > 2.4, "fixtures sit outside the walking envelope")
-	assert_int_equal(_count_class(lighting, "OmniLight3D"), 14 + 6 * Pods.POD_COUNT, "eight emergency fixtures, six regular strips and six local status spill samples per pod")
+	assert_int_equal(_count_class(lighting, "OmniLight3D"), 28 + 6 * Pods.POD_COUNT, "eight architectural keys, eight pod-only keys, six regular strips, six warm fills and six status spill samples per pod")
 	for light: OmniLight3D in lighting.white_lights():
 		assert_float_equal(light.light_energy, 0.0, "regular strips start dark")
 	assert_int_equal(_count_class(lighting, "DirectionalLight3D"), 0, "no directional light is authored")
@@ -114,9 +114,11 @@ func test_lenses_share_one_cuboid_and_never_ride_the_light_node() -> void:
 			2,
 			"fixture groups pair one light with one lens"
 		)
+	var expected_emission := Color(1.0, 0.28, 0.12) * Lighting.FIXTURE_EMISSIVE
+	expected_emission.a = 1.0
 	assert_true(
-		lighting.lens_material().emission == Color(2.6, 0.0, 0.0),
-		"full-power lens emission is linear (2.6, 0, 0)"
+		lighting.lens_material().emission == expected_emission,
+		"full-power lens emission matches the emergency palette"
 	)
 
 func test_bridge_follows_sim_fade_and_repeated_dead_does_not_restart() -> void:
@@ -242,8 +244,9 @@ func _assert_output(lighting: Lighting, level: float) -> void:
 		"lens emission tracks the fade: expected %.5f, got %.5f"
 		% [emission_red, emissive.r]
 	)
-	assert_float_equal(emissive.g, 0.0, "lens emission stays red")
-	assert_float_equal(emissive.b, 0.0, "lens emission stays red")
+	var palette_emission := Color(1.0, 0.28, 0.12) * Lighting.FIXTURE_EMISSIVE * level
+	assert_float_equal(emissive.g, palette_emission.g, "lens emission follows palette green")
+	assert_float_equal(emissive.b, palette_emission.b, "lens emission follows palette blue")
 
 func _count_class(node: Node, native_class: String) -> int:
 	var total := 0
@@ -268,10 +271,10 @@ func test_bay_reflections_cover_the_room_without_adding_light() -> void:
 	assert_vec3_equal(probe.size, Vector3(12, 3.2, 8), "probe covers the stasis room")
 	assert_true(probe.box_projection and probe.interior, "room reflections use interior box projection")
 	assert_int_equal(probe.update_mode, ReflectionProbe.UPDATE_ONCE, "steady lighting does not recapture every frame")
-	assert_int_equal(probe.cull_mask, 1, "probe captures only the bay lighting layer")
+	assert_int_equal(probe.cull_mask, 1 | Lighting.POD_STATUS_MASK, "probe captures bay architecture and the isolated pod receivers")
 	assert_false(probe.enable_shadows, "reflection capture needs no shadow pass")
 	assert_int_equal(probe.ambient_mode, ReflectionProbe.AMBIENT_DISABLED, "probe adds no ambient fill")
-	assert_int_equal(_count_class(lighting, "OmniLight3D"), 14 + 6 * Pods.POD_COUNT, "reflections add no lights beyond fixtures and local status spill")
+	assert_int_equal(_count_class(lighting, "OmniLight3D"), 28 + 6 * Pods.POD_COUNT, "reflections add no lights beyond architectural keys, isolated pod keys, regular strips, fills and status spill")
 	assert_int_equal(_count_class(lighting, "CollisionShape3D"), 0, "reflections add no colliders")
 	lighting.free()
 

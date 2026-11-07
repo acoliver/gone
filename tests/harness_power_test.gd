@@ -35,3 +35,16 @@ func test_power_evidence_rejects_bay_red_and_darkness() -> void:
 		verifier.verify_power(_report(levels.x, levels.y))
 		assert_int_equal(verifier.failures.size(), 1, "bay must extinguish red and light white")
 		verifier.free()
+
+func test_inactive_capture_precedes_the_first_console_press() -> void:
+	for press_tick: int in [100, 101]:
+		var verifier := PowerVerifier.new()
+		verifier.verify_power({
+			"beats": {"console-inactive": {"tick": 100}},
+			"events": [
+				{"kind": "console", "tick": 1, "presses": 0, "state": "inactive", "native_label": "te mu nawa lina palo", "perceived_label": "SISTEMA DE ENERGÍA SECUNDARIO INACTIVO"},
+				{"kind": "console", "tick": press_tick, "presses": 1, "state": "active", "native_label": "te mu nawa lina shenu", "perceived_label": "SISTEMA DE ENERGÍA SECUNDARIO EN FUNCIONAMIENTO"},
+			],
+		})
+		assert_int_equal(verifier.failures.size(), 1 if press_tick == 100 else 0, "arrival capture must precede activation, not merely have an earlier inactive event")
+		verifier.free()

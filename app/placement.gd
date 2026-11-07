@@ -38,14 +38,14 @@ const HATCH_DOOR_X = ShipGeometry.HATCH_DOOR_X
 
 ## Cable tray cross-section, in meters, and the drop of the tray center
 ## line below the ceiling.
-const TRAY_WIDTH: float = 0.3
-const TRAY_HEIGHT: float = 0.08
-const TRAY_CEILING_DROP: float = 0.15
+const TRAY_WIDTH: float = ShipGeometry.TRAY_WIDTH
+const TRAY_HEIGHT: float = ShipGeometry.TRAY_HEIGHT
+const TRAY_CEILING_DROP: float = ShipGeometry.TRAY_CEILING_DROP
 
 ## Hanging wire loop torus mesh radii, in meters: the inner ring radius
 ## and the outer extent.
-const WIRE_INNER_RADIUS: float = 0.035
-const WIRE_OUTER_RADIUS: float = 0.11
+const WIRE_INNER_RADIUS: float = ShipGeometry.WIRE_INNER_RADIUS
+const WIRE_OUTER_RADIUS: float = ShipGeometry.WIRE_OUTER_RADIUS
 
 ## The hanging wires' authored centerline sampling resolution: points
 ## per wire, shared by every strand. Fine enough that the catenaries and
@@ -66,17 +66,7 @@ const PLATE_MOUNT_HEIGHT: float = 0.55
 
 const SolidPlacement = ShipGeometry.SolidSpec
 
-class WireLoop:
-	extends RefCounted
-	## One hanging wire loop: a torus hanging under the torn ceiling,
-	## tipped from face-up to vertical, with a per-loop swing yaw.
-
-	var center: Vector3 = Vector3.ZERO
-	var rotation: Quaternion = Quaternion.IDENTITY
-
-	func _init(p_center: Vector3, p_rotation: Quaternion) -> void:
-		center = p_center
-		rotation = p_rotation
+const WireLoop = ShipGeometry.WireLoop
 
 class HangingWire:
 	extends RefCounted
@@ -93,8 +83,8 @@ class HangingWire:
 ## The room shell's six boxes in fixed order: floor, ceiling, then the
 ## -Z, +Z, -X, and +X walls. The playable interior is exactly
 ## ROOM_LENGTH by ROOM_WIDTH with its ceiling at ROOM_CEILING_HEIGHT.
-static func room_shell() -> Array[Placement.SolidPlacement]:
-	return ShipGeometry.room_shell()
+static func room_shell(open_east_wall: bool = false) -> Array[Placement.SolidPlacement]:
+	return ShipGeometry.room_shell(open_east_wall)
 
 ## The hatch group's five boxes in fixed order: the -Z frame post, the
 ## +Z frame post, the lintel, the sill, and the ajar door slab. The group

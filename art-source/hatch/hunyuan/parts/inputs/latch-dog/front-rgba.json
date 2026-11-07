@@ -1,0 +1,18 @@
+{
+  "source": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/inputs/latch-dog/isolated.png",
+  "output": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/inputs/latch-dog/front-rgba.png",
+  "method": "rembg U2-Net CPU, default parameters, no manual cleanup",
+  "model": "/Users/acoliver/.u2net/u2net.onnx",
+  "size": [
+    768,
+    768
+  ],
+  "alpha_bbox_xyxy": [
+    158,
+    216,
+    632,
+    545
+  ],
+  "foreground_fraction": 0.1589084201388889,
+  "opaque_fraction": 0.02020263671875
+}

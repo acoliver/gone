@@ -19,7 +19,7 @@ static func build(cache: ShipTextCache, text: ShipText.LabelText, id: StringName
 	label._size = size
 	label.perception = state
 	label._cache = cache
-	label.pair = cache.acquire(text, &"navigation")
+	label.pair = cache.acquire(text, &"door" if text.native.count("\n") > 1 else &"navigation")
 	cache.pair_ready.connect(label._pair_ready)
 	if label.pair.ready():
 		label._attach()

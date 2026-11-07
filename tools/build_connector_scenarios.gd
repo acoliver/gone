@@ -65,6 +65,8 @@ func _build_connector() -> void:
 	for beat: Dictionary in route.beats:
 		if beat.name in route.white_beats:
 			beat.light = "white"
+			if beat.name not in ["power-active", "hall-white"]:
+				beat.camera_back = 3.0
 	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://scenarios/connector-route.json"))
 	assert(route.tick < int(data.max_frames), "connector route preserves its scenario budget")
 	data.actions = route.actions

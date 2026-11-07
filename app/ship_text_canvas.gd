@@ -5,6 +5,7 @@ extends Node2D
 const Writing = preload("res://app/naleya.gd")
 const TEXTURE_SIZE := Vector2i(1024, 640)
 const NAVIGATION_SIZE := Vector2i(1024, 512)
+const DOOR_SIZE := Vector2i(1024, 768)
 const SCREEN_HEIGHT: float = 0.58
 const HEAD_Y: float = 0.12
 const STATE_Y: float = -0.10
@@ -24,7 +25,8 @@ var texture_size := TEXTURE_SIZE
 var _vertical_scale: float = 1.0
 
 static func size_for(style: StringName) -> Vector2i:
-	assert(style in [&"console", &"navigation"], "known text style")
+	assert(style in [&"console", &"navigation", &"door"], "known text style")
+	if style == &"door": return DOOR_SIZE
 	return TEXTURE_SIZE if style == &"console" else NAVIGATION_SIZE
 
 func set_text(head: String, state: String) -> void:
@@ -41,10 +43,11 @@ func set_lines(text: String, style: StringName) -> void:
 	_colors.clear()
 	_centers.clear()
 	_font_sizes.clear()
-	assert(lines.size() <= 2, "ship signs have at most two lines")
+	assert(lines.size() <= (4 if style == &"door" else 2), "text fits its authored sign style")
 	for index: int in range(lines.size()):
 		var console := style == &"console"
 		var center := TEXTURE_SIZE.y * (0.5 - (HEAD_Y if index == 0 else STATE_Y) / SCREEN_HEIGHT) if console else NAVIGATION_SIZE.y * (0.5 if lines.size() == 1 else 0.27 + 0.46 * index)
+		if style == &"door": center = DOOR_SIZE.y * (index + 0.5) / lines.size()
 		var color := HEAD_COLOR if console and index == 0 else STATE_COLOR
 		_centers.append(center)
 		_font_sizes.append((52 if index == 0 else 104) if console else 82)

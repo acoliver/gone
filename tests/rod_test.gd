@@ -163,7 +163,7 @@ func test_door_refuses_without_the_rod_and_opens_with_it() -> void:
 	# The rod is the door's pry bar: without it, the press at the shut
 	# door starts nothing and stays on the channel.
 	assert_true(_walk_to(motion, game, plane, adapter, hatch,
-		Interactions.HATCH_INTERACT_REACH * 0.9), "the walk arrived at the door")
+		Interactions.HATCH_INTERACT_REACH - 0.1), "the walk arrived at the door")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
 	assert_false(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, plane, game, motion), "a press without the rod never starts the open")
 	assert_int_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).releases, 0, "no opening was recorded")
@@ -178,7 +178,7 @@ func test_door_refuses_without_the_rod_and_opens_with_it() -> void:
 	assert_true(motion.rod_carried, "the rod is carried")
 	# With the bar in hand, the door's press opens it exactly as before.
 	assert_true(_walk_to(motion, game, plane, adapter, hatch,
-		Interactions.HATCH_INTERACT_REACH * 0.9), "the walk returned to the door with the rod carried")
+		Interactions.HATCH_INTERACT_REACH - 0.1), "the walk returned to the door with the rod carried")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
 	assert_true(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, plane, game, motion), "the rod-carried press starts the open")
 	assert_int_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).releases, 1, "one press, one opening")
@@ -187,7 +187,7 @@ func test_door_refuses_without_the_rod_and_opens_with_it() -> void:
 	assert_false(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, plane, game, motion), "the press at the opening door is not eaten")
 	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the uneaten press stays on the channel")
 	assert_int_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).releases, 1, "no second opening")
-	for _tick: int in range(Doors.BAY_RETRACT_TICKS + Doors.BAY_SLIDE_TICKS + 2):
+	for _tick: int in range(Doors.SWING_TICKS + 2):
 		game.advance_doors()
 		motion.advance(plane, game, 0.0, DT)
 		plane.end_frame()

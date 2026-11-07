@@ -7,7 +7,13 @@ class Slice:
 	extends RefCounted
 	var colliders := ColliderSet.new()
 	var ids: Array[StringName] = []
+	func copy() -> Slice:
+		var result := Slice.new()
+		result.colliders = colliders.copy()
+		result.ids = ids.duplicate()
+		return result
 
+var _run_seed: int
 var _layout: ShipLayout
 var _static: Dictionary = {}
 var _assembled: Dictionary = {}
@@ -15,8 +21,10 @@ var _ids: Dictionary = {}
 var _open_doors: Dictionary = {}
 var _revisions: Dictionary = {}
 var _well_boxes: Dictionary = {}
+var _well_slices: Dictionary = {}
 
-func _init(layout: ShipLayout) -> void:
+func _init(layout: ShipLayout, run_seed: int = 0) -> void:
+	_run_seed = run_seed
 	_layout = layout
 	for deck: int in range(1, 31):
 		layout.deck(deck)
@@ -55,23 +63,22 @@ func deck_set(deck: int) -> ColliderSet:
 			if door.deck_number() != deck or door.kind() == ShipLayout.DoorKind.SIDE:
 				continue
 			if id == ShipLayout.BAY_DOOR_ID:
-				if not _open_doors.has(id):
-					solids.append(ShipGeometry.doorway_block(_layout))
-					solids[-1].id = &"D14-BAY-DOOR/BLOCKER"
-					solids.append(ShipGeometry.transformed(ShipGeometry.hatch_solids()[4], _layout.bay_to_world(), &"D14-BAY-DOOR/LEAF"))
+				solids.append_array(ShipGeometry.open_door_solids(door, _run_seed) if _open_doors.has(id) else ShipGeometry.door_blockers(door))
 			elif id == ShipLayout.POWER_DOOR_ID:
 				if not _open_doors.has(id):
 					var leaf := ShipGeometry.power_door_leaf()
 					leaf.id = &"D14-POWER-DOOR/LEAF"
 					solids.append(leaf)
 			else:
-				solids.append_array(ShipGeometry.open_door_solids(door) if _open_doors.has(id) else ShipGeometry.door_blockers(door))
+				solids.append_array(ShipGeometry.open_door_solids(door, _run_seed) if _open_doors.has(id) else ShipGeometry.door_blockers(door))
 		solids.sort_custom(func(a: ShipGeometry.SolidSpec, b: ShipGeometry.SolidSpec) -> bool: return String(a.id) < String(b.id))
 		var ids: Array[StringName] = []
 		var set := ColliderSet.new()
 		for solid: ShipGeometry.SolidSpec in solids:
-			ids.append(solid.id)
-			set.insert(ShipGeometry.box_aabb(solid))
+			var boxes := ShipGeometry.collision_boxes(solid)
+			for index: int in range(boxes.size()):
+				ids.append(solid.id if boxes.size() == 1 else StringName("%s/CELL/%04d" % [solid.id, index]))
+				set.insert(boxes[index])
 		_ids[deck] = ids
 		_assembled[deck] = set
 	return _assembled[deck]
@@ -118,7 +125,7 @@ static func opening_set(registry: Pods.PodRegistry, door_open: bool, power_door_
 
 static func _insert_solids(set: ColliderSet, solids: Array[ShipGeometry.SolidSpec]) -> void:
 	for solid: ShipGeometry.SolidSpec in solids:
-		set.insert(ShipGeometry.box_aabb(solid))
+		for box: ColliderSet.Aabb in ShipGeometry.collision_boxes(solid): set.insert(box)
 
 static func _insert_pods(set: ColliderSet, registry: Pods.PodRegistry, parent: Transform3D = Transform3D.IDENTITY) -> void:
 	for pod: Pods.Pod in registry.pods():
@@ -148,11 +155,21 @@ func well_slice(well_id: StringName, capsule: Resolve.Capsule, displacement: Vec
 	var radius := Controller.CAPSULE_RADIUS
 	var low := minf(capsule.foot.y, capsule.head.y) + minf(0, displacement.y) - radius
 	var high := maxf(capsule.foot.y, capsule.head.y) + maxf(0, displacement.y) + radius
-	var boxes: Dictionary = {}
+	var decks := PackedInt32Array()
+	var signature := PackedInt32Array()
 	for deck: int in range(1, 31):
 		var floor_y := _layout.floor_y(deck)
 		if high < floor_y - ShipLayout.WALL or low > floor_y + ShipLayout.CLEAR_HEIGHT + ShipLayout.WALL:
 			continue
+		decks.append(deck)
+		signature.append(deck)
+		signature.append(_revisions[deck])
+	# Membership changes at deck boundaries or after a door completes opening,
+	# not on every ladder tick. Keep one template per well, private to its owner.
+	if _well_slices.has(well_id) and _well_slices[well_id].signature == signature:
+		return _well_slices[well_id].slice.copy()
+	var boxes: Dictionary = {}
+	for deck: int in decks:
 		var set := deck_set(deck)
 		var ids := solid_ids(deck)
 		for index: int in range(ids.size()):
@@ -168,4 +185,5 @@ func well_slice(well_id: StringName, capsule: Resolve.Capsule, displacement: Vec
 	slice.ids.sort()
 	for id: StringName in slice.ids:
 		slice.colliders.insert(boxes[id])
-	return slice
+	_well_slices[well_id] = {"signature": signature, "slice": slice}
+	return slice.copy()

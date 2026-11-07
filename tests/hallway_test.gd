@@ -1,5 +1,23 @@
 extends SimTestCase
 
+func test_hall_planes_and_refused_leaves_keep_explicit_weather_frames() -> void:
+	var game := Game.new(0)
+	var hall := Hallway.build(game)
+	var west: Surfaces.SurfaceFrame = hall.get_node("HallWallNorthWest").get_meta(&"surface_frame")
+	var east: Surfaces.SurfaceFrame = hall.get_node("HallWallNorthEast").get_meta(&"surface_frame")
+	assert_true(west.key == &"D14-S-041/PORT" and east.key == west.key, "wall pieces retain their physical plane identity")
+	for id: StringName in hall.side_leaves:
+		var leaf: GeometryInstance3D = hall.side_leaves[id]
+		assert_true(leaf.material_override == Surfaces.material(&"hatch_leaf"), "side leaves use shared steel")
+		var view := DoorView.bind_leaf(game.layout.door(id), leaf)
+		var before := Surfaces.sample_position(leaf, Surfaces.world_frame(leaf).origin)
+		var pose := game.doors.snapshot(id)
+		pose.shudder = 1.0
+		view.present(pose)
+		assert_true(Surfaces.sample_position(leaf, Surfaces.world_frame(leaf).origin).is_equal_approx(before), "refusal shudder moves the scan with the leaf")
+		view.free()
+	hall.free()
+
 var _bay_frame := ShipLayout.authored().layout.bay_to_world()
 ## The hallway behind the door (the #59 prerequisite milestone): the
 ## corridor's envelope derives from the room's authored constants (twice
@@ -59,7 +77,7 @@ func test_envelope_derives_from_the_room_constants() -> void:
 	assert_float_in_range(Hallway.HALL_START_X, Pods.ROOM_LENGTH / 2.0 - 1e-4, Pods.ROOM_LENGTH / 2.0 + 1e-4, "the corridor starts at the room's east wall face")
 	assert_float_in_range(Hallway.HALL_END_X, Hallway.HALL_START_X + 24.0 - 1e-4, Hallway.HALL_START_X + 24.0 + 1e-4, "the corridor's far wall sits at its authored end")
 	var solids := Hallway.hallway_solids()
-	assert_int_equal(solids.size(), 8, "floor, ceiling and two pierced side walls; hatch owners supply transverse walls")
+	assert_int_equal(solids.size(), 8, "eight shell slabs; the rounded wall faces replace separate corner skins")
 	assert_vec3_equal(solids[0].center, Vector3(18.1, -0.1, 0.0), "the hall floor slab's center is pinned")
 	assert_vec3_equal(solids[0].size, Vector3(24.2, 0.2, 3.4), "the hall floor slab tucks under the room's wall band")
 	assert_vec3_equal(solids[1].center, Vector3(18.1, 3.3, 0.0), "the hall ceiling slab's center is pinned")
@@ -67,19 +85,24 @@ func test_envelope_derives_from_the_room_constants() -> void:
 	assert_vec3_equal(solids[2].center, Vector3(16.25, 1.6, -1.6), "the north wall's west pierce piece centers on its band")
 	assert_vec3_equal(solids[3].center, Vector3(30.35, 1.6, -1.6), "the north wall's east pierce piece centers on its band")
 	assert_vec3_equal(solids[4].center, Vector3(27.0, 2.7, -1.6), "the north wall's lintel sits over the power aperture")
-	assert_vec3_equal(solids[5].center, Vector3(10.2, 1.6, 1.6), "the south side wall's center is pinned")
+	# Andrew's forward flush slab needs the hidden 180 mm wider wall pocket.
+	assert_vec3_equal(solids[5].center, Vector3(10.155, 1.6, 1.6), "the south side wall's center is pinned")
 
 func test_doorway_pierces_the_east_walls_envelope() -> void:
 	var pierce := Hallway.doorway_wall_solids()
-	assert_int_equal(pierce.size(), 3, "the pierce holds two side pieces and a lintel")
+	assert_int_equal(pierce.size(), 3, "two side pieces and a lintel now own the whole rounded wall face")
 	var east_wall := ShipGeometry.SolidSpec.new(Vector3(18.1, 1.6, 1.6), Vector3(24.2, 3.2, 0.2))
 	assert_float_in_range(east_wall.center.z, 1.6 - 1e-4, 1.6 + 1e-4, "the pierce replaces the east wall's own band")
 	var pierce_volume := 0.0
 	for piece: Placement.SolidPlacement in pierce:
 		pierce_volume += piece.size.x * piece.size.y * piece.size.z
+		assert_true(not piece.section.is_empty(), "each existing wall reservation now carries its continuous drawn face")
 	var wall_volume := east_wall.size.x * east_wall.size.y * east_wall.size.z
-	var aperture_volume := Placement.WALL_THICKNESS * Hallway.DOORWAY_HEIGHT * Hallway.DOORWAY_WIDTH
-	assert_float_in_range(pierce_volume + aperture_volume, wall_volume - 1e-4, wall_volume + 1e-4, "the pierce pieces tile the wall's envelope minus exactly the aperture")
+	# Sections describe the rounded drawn wall now, not four extra thin solids.
+	# The three original box reservations still clear the same deep sweep.
+	var pocket_width := Hallway.DOORWAY_WIDTH + 2 * ShipGeometry.HATCH_RING_WIDTH
+	var aperture_volume := Placement.WALL_THICKNESS * Hallway.DOORWAY_HEIGHT * pocket_width
+	assert_float_in_range(pierce_volume + aperture_volume, wall_volume - 1e-4, wall_volume + 1e-4, "unchanged wall boxes account for the full band minus the hidden sweep cavity")
 	assert_float_in_range(Hallway.DOORWAY_WIDTH, Placement.HATCH_WIDTH - 1e-4, Placement.HATCH_WIDTH + 1e-4, "the aperture is the hatch's width")
 	assert_float_in_range(Hallway.DOORWAY_HEIGHT, Placement.HATCH_HEIGHT - 1e-4, Placement.HATCH_HEIGHT + 1e-4, "the aperture is the hatch's height")
 	assert_vec3_equal(Hallway.doorway_block().center, Vector3(15.0, 1.2, 1.6), "the closed block fills the aperture's center")
@@ -89,8 +112,10 @@ func test_collider_sets_extend_the_walk_sim_open_and_shut() -> void:
 	var registry := Pods.PodRegistry.frozen()
 	var closed := Hallway.scene_collider_set(registry, false)
 	var open := Hallway.scene_collider_set(registry, true)
-	assert_int_equal(closed.size(), 98, "the closed set's box count is pinned")
-	assert_int_equal(open.size(), 96, "the open set drops the doorway block and the slid-aside slab")
+	# #88 replaces 45 pod solids with 56 articulated solids (+11).
+	# All wall, frame, stop and parked-hatch reservations remain unchanged.
+	assert_int_equal(closed.size(), 449, "fitted pods plus unchanged architectural collision reservations")
+	assert_int_equal(open.size(), 448, "the open set replaces passage and sweep with the parked leaf")
 	var game := _awake_game()
 	assert_int_equal(game.colliders.size(), PowerRoom.scene_collider_set(registry, false, false).size(), "the game boots on the full D14 set")
 	# The aperture is solid while shut and clear when open: the walk
@@ -181,7 +206,7 @@ func test_fixtures_hold_zero_until_the_switch_flips() -> void:
 	for light: OmniLight3D in lights:
 		assert_float_in_range(light.light_energy, -1e-4, 1e-4, "every hall fixture starts dark")
 		assert_true(light.light_color == Lighting.EMERGENCY_RED, "the hall fixtures hold the stasis bay's emergency red")
-		assert_float_in_range(light.omni_range, Lighting.FIXTURE_RANGE - 1e-4, Lighting.FIXTURE_RANGE + 1e-4, "the hall fixtures hold the stasis bay's range")
+		assert_float_in_range(light.omni_range, Lighting.EMERGENCY_POOL_RANGE - 1e-4, Lighting.EMERGENCY_POOL_RANGE + 1e-4, "the hall fixtures hold the stasis bay's pool range")
 	assert_true(hallway.lens_material().emission == Color(0.0, 0.0, 0.0), "the lenses hold no emission before the flip")
 	assert_true(hallway.is_settled(), "the dark hallway starts settled")
 	assert_false(game.hallway_lit, "the sim starts the hallway unlit")
@@ -214,7 +239,8 @@ func test_lit_fixtures_hold_their_level_steady() -> void:
 	for _tick: int in range(Lighting.FIXTURE_SETTLE_TICKS):
 		hallway.process_frame(Sim.LOGICAL_TICK_SECS)
 	assert_true(hallway.is_settled(), "the flip settles on the fixture clock")
-	var steady_emission := Color(Lighting.FIXTURE_EMISSIVE, 0.0, 0.0)
+	var steady_emission := Lighting.EMERGENCY_RED * Lighting.FIXTURE_EMISSIVE
+	steady_emission.a = 1.0
 	for _frame: int in range(300):
 		hallway.process_frame(Sim.LOGICAL_TICK_SECS)
 		for light: OmniLight3D in hallway.lights():
@@ -232,7 +258,7 @@ func test_presses_fall_through_to_the_beside_door_switch() -> void:
 	var plane := InputPlane.new()
 	_stand(motion, game, plane)
 	var adapter := InputPlane.ScriptedAdapter.new()
-	assert_true(_walk_to(motion, game, plane, adapter, _bay(Vector2(5.4, 0.5)), 0.2), "the walk arrived at the beside-door overlap")
+	assert_true(_walk_to(motion, game, plane, adapter, _bay(Vector2(4.18, 0.65)), 0.03), "the walk arrived at the beside-door overlap outside the reserved swing")
 	var hatch := Vector2(PlacementTruth.bay_door_center(game.layout).x, PlacementTruth.bay_door_center(game.layout).y)
 	var act := Vector2(Hallway.switch_act_center().x, Hallway.switch_act_center().z)
 	var foot := motion.capsule().foot
@@ -268,7 +294,7 @@ func test_switch_flips_exactly_once_from_a_full_crossing() -> void:
 	var adapter := InputPlane.ScriptedAdapter.new()
 	var hatch := PlacementTruth.bay_door_center(game.layout)
 	assert_true(_walk_to(motion, game, plane, adapter, hatch,
-		Interactions.HATCH_INTERACT_REACH * 0.9), "the walk arrived at the door")
+		Interactions.HATCH_INTERACT_REACH - 0.1), "the walk arrived at the door")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
 	assert_true(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, plane, game, motion), "the rod-carried press at the door starts the open")
 	assert_int_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).releases, 1, "one press, one opening")
@@ -300,9 +326,163 @@ func test_rendered_shell_uses_pure_collision_recipe() -> void:
 	var solids := ShipGeometry.hallway_solids()
 	for index: int in range(solids.size()):
 		var mesh: MeshInstance3D = hallway.get_node(NodePath(names[index]))
-		assert_vec3_equal(mesh.position, solids[index].center, "rendered hall center is collider input")
-		assert_vec3_equal((mesh.mesh as BoxMesh).size, solids[index].size, "rendered hall size is collider input")
+		var solid := solids[index]
+		assert_vec3_equal(mesh.position, solid.center, "rendered hall center is collider input")
+		var rendered := _expanded_faces(mesh.mesh)
+		if solid.hatch_profile == null:
+			# Pocket and side-door mouths are drawn cutouts; collision stays solid.
+			var expected := PackedVector3Array()
+			for box: AABB in SlidingDoorParts.wall_boxes(ShipLayout.authored().layout, solid):
+				for vertex: Vector3 in _expanded_faces(HatchModel.box_mesh(box.size)):
+					expected.append(vertex + box.get_center())
+			assert_true(_same_triangles(rendered, expected), "drawn wall returns match the sim recipe and winding within 1e-6")
+		else:
+			var expected := _profile_faces(solid)
+			assert_true(_same_triangles(rendered, expected), "rendered hall triangles match the shared wall profile and winding within 1e-6")
+			var bounds := AABB(expected[0], Vector3.ZERO)
+			for vertex: Vector3 in expected:
+				bounds = bounds.expand(vertex)
+			assert_vec3_equal(mesh.mesh.get_aabb().position, bounds.position, "rendered hall bounds start at the shared solid profile")
+			assert_vec3_equal(mesh.mesh.get_aabb().size, bounds.size, "rendered hall size follows the shared solid profile")
+		for vertex: Vector3 in rendered:
+			if solid.hatch_profile == null:
+				assert_true(vertex.abs().x <= solid.size.x / 2 + 1e-6 and vertex.abs().y <= solid.size.y / 2 + 1e-6 and vertex.abs().z <= solid.size.z / 2 + 1e-6, "unprofiled wall vertices stay inside their collision envelope")
+			else:
+				# A continuous drawn face now spans the old box boundaries. Its
+				# contact boxes stay fixed; no wall metal may precede the bead.
+				var door := solid.hatch_profile
+				var point := door.frame().affine_inverse() * solid.transform * vertex
+				var into := signf(door.hinge_frame().origin.z - ShipLayout.WALL / 2)
+				var front := ShipGeometry.HATCH_RING_FRONT if into > 0 else ShipLayout.WALL - ShipGeometry.HATCH_RING_FRONT
+				assert_true((point.z - front) * into >= -1e-6, "rounded wall remains behind the raised ring")
+				assert_true(point.y >= -1e-6 and point.y <= ShipLayout.CLEAR_HEIGHT + 1e-6, "continuous wall face stays between floor and ceiling")
 	hallway.free()
+
+func test_profile_triangle_comparison_rejects_malformed_meshes_with_identical_bounds() -> void:
+	var profiled := 0
+	for solid: ShipGeometry.SolidSpec in ShipGeometry.hallway_solids():
+		if solid.hatch_profile == null:
+			continue
+		profiled += 1
+		var expected := _profile_faces(solid)
+		var intact := _mesh_from_faces(expected)
+		var missing_triangle := expected.slice(3)
+		var reversed_triangle := expected.duplicate()
+		reversed_triangle[0] = expected[1]
+		reversed_triangle[1] = expected[0]
+		var duplicated_triangle := expected.duplicate()
+		for index: int in range(3):
+			duplicated_triangle[index] = expected[index + 3]
+		for faces: PackedVector3Array in [missing_triangle, reversed_triangle, duplicated_triangle]:
+			var malformed := _mesh_from_faces(faces)
+			assert_true(malformed.get_aabb() == intact.get_aabb(), "malformed profile retains the exact bounds that previously passed")
+			assert_false(_same_triangles(_expanded_faces(malformed), expected), "triangle comparison rejects missing, reversed or duplicated geometry despite identical bounds")
+	assert_true(profiled > 0, "negative controls exercise a profiled hallway solid")
+
+func test_profile_triangle_comparison_accepts_reordered_triangles_and_cyclic_vertices() -> void:
+	for solid: ShipGeometry.SolidSpec in ShipGeometry.hallway_solids():
+		if solid.hatch_profile == null:
+			continue
+		var expected := _profile_faces(solid)
+		var reordered := PackedVector3Array()
+		for triangle: int in range(expected.size() - 3, -1, -3):
+			for offset: int in [1, 2, 0]:
+				reordered.append(expected[triangle + offset])
+		assert_true(_same_triangles(reordered, expected), "triangle order and cyclic vertex order preserve the same oriented triangle set")
+
+func _expanded_faces(mesh: Mesh) -> PackedVector3Array:
+	# Expand indices directly; Mesh.get_faces() welds and rounds small details.
+	var faces := PackedVector3Array()
+	for surface: int in range(mesh.get_surface_count()):
+		var arrays := mesh.surface_get_arrays(surface)
+		var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+		var indices := PackedInt32Array()
+		if arrays[Mesh.ARRAY_INDEX] != null:
+			indices = arrays[Mesh.ARRAY_INDEX]
+		if indices.is_empty():
+			faces.append_array(vertices)
+		else:
+			for index: int in indices:
+				faces.append(vertices[index])
+	return faces
+
+func _profile_faces(solid: ShipGeometry.SolidSpec) -> PackedVector3Array:
+	if not solid.section.is_empty():
+		var polygon := solid.section.duplicate()
+		if Geometry2D.is_polygon_clockwise(polygon): polygon.reverse()
+		var faces := PackedVector3Array()
+		var depth := -ShipGeometry.HATCH_RING_REAR
+		var into := signf(solid.hatch_profile.hinge_frame().origin.z - ShipLayout.WALL / 2)
+		# Each room now has a rounded mouth; only the concealed cavity is square.
+		for face_side: int in [-1, 1]:
+			polygon = solid.wall_seat_section.duplicate() if face_side * into > 0 else solid.section.duplicate()
+			if Geometry2D.is_polygon_clockwise(polygon): polygon.reverse()
+			var triangles := Geometry2D.triangulate_polygon(polygon)
+			var center_z := face_side * (ShipLayout.WALL + depth) / 2
+			for index: int in range(0, triangles.size(), 3):
+				for side: int in [-1, 1]:
+					for corner: int in ([0, 1, 2] if side < 0 else [0, 2, 1]):
+						var xy := polygon[triangles[index + corner]]
+						faces.append(Vector3(xy.x, xy.y, center_z + side * depth / 2))
+			for edge: int in range(polygon.size()):
+				var a := polygon[edge]
+				var b := polygon[(edge + 1) % polygon.size()]
+				var corners := PackedVector3Array([Vector3(b.x, b.y, center_z - depth / 2), Vector3(a.x, a.y, center_z - depth / 2), Vector3(a.x, a.y, center_z + depth / 2), Vector3(b.x, b.y, center_z + depth / 2)])
+				for index: int in [0, 2, 1, 0, 3, 2]: faces.append(corners[index])
+		var body := BoxMesh.new()
+		body.size = solid.size
+		var body_faces := _expanded_faces(body)
+		for index: int in range(body_faces.size()): body_faces[index] = ShipGeometry.hatch_wall_vertex(solid, body_faces[index])
+		for triangle: int in range(0, body_faces.size(), 3):
+			var normal := (body_faces[triangle + 2] - body_faces[triangle]).cross(body_faces[triangle + 1] - body_faces[triangle]).normalized()
+			if absf(normal.z) > 0.5: continue
+			for corner: int in range(3): faces.append(body_faces[triangle + corner])
+		# Regular side mouths now interrupt the straight band, while the round
+		# hatch profile above is unchanged. Apply only those sim-owned cutouts.
+		var expected: Mesh = _mesh_from_faces(faces)
+		for cut: AABB in SlidingDoorParts.wall_cuts(ShipLayout.authored().layout, solid):
+			if expected.get_aabb().intersection(cut).has_volume(): expected = SlidingDoorModel.cut_mesh(expected, cut)
+		return _expanded_faces(expected)
+	var source := BoxMesh.new()
+	source.size = solid.size
+	var faces := _expanded_faces(source)
+	for index: int in range(faces.size()):
+		faces[index] = ShipGeometry.hatch_wall_vertex(solid, faces[index])
+	return faces
+
+func _same_triangles(actual: PackedVector3Array, expected: PackedVector3Array) -> bool:
+	if actual.is_empty() or actual.size() != expected.size() or actual.size() % 3 != 0:
+		return false
+	var unmatched: Array[int] = []
+	for triangle: int in range(0, expected.size(), 3):
+		unmatched.append(triangle)
+	for triangle: int in range(0, actual.size(), 3):
+		var match_index := -1
+		for candidate: int in range(unmatched.size()):
+			for rotation: int in range(3):
+				var matches := true
+				for vertex: int in range(3):
+					if actual[triangle + vertex].distance_to(expected[unmatched[candidate] + (vertex + rotation) % 3]) > 1e-6:
+						matches = false
+						break
+				if matches:
+					match_index = candidate
+					break
+			if match_index != -1:
+				break
+		if match_index == -1:
+			return false
+		unmatched.remove_at(match_index)
+	return true
+
+func _mesh_from_faces(faces: PackedVector3Array) -> ArrayMesh:
+	var tool := SurfaceTool.new()
+	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for vertex: Vector3 in faces:
+		tool.add_vertex(vertex)
+	tool.generate_normals()
+	tool.index()
+	return tool.commit()
 
 func _bay(local: Vector2) -> Vector2:
 	var point := _bay_frame * Vector3(local.x, 0, local.y)

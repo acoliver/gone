@@ -1,0 +1,5 @@
+# Third-party and generator records archived byte-for-byte; provenance.json pins their hashes,
+# so whitespace checks do not apply.
+LICENSE -whitespace
+model/README.md -whitespace
+generation/recipe.md -whitespace

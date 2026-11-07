@@ -49,7 +49,7 @@ func test_navigation_terms_are_authored_and_canvas_lines_have_equal_scale() -> v
 
 func test_catalog_validates_every_native_word_on_load() -> void:
 	assert_true(Catalog.VALID, "the loaded catalog is valid")
-	assert_int_equal(Catalog.MESSAGES.size(), 7, "three console messages and four navigation terms")
+	assert_int_equal(Catalog.MESSAGES.size(), 10, "console and navigation terms plus level, bay and short room name")
 	for id: String in Catalog.MESSAGES:
 		var message: Dictionary = Catalog.message(id)
 		assert_false(message.native.is_empty(), "native text required for " + id)

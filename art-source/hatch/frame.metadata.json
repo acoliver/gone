@@ -1,0 +1,25 @@
+{
+  "model": "black-forest-labs/FLUX.2-klein-4B",
+  "revision": "e7b7dc27f91deacad38e78976d1f2b499d76a294",
+  "licence": "Apache-2.0",
+  "source_concept": "docs/art/corridors/hatch-concept-rusted.png",
+  "concept_provenance": "Own concept image; docs/art/corridors/README.md records image-model generation.",
+  "concept_crop_xyxy": [
+    285,
+    120,
+    365,
+    900
+  ],
+  "chosen_candidate": "tmp/hatch-model/round8/gen4/frame-402.png",
+  "seed": 402,
+  "steps": 4,
+  "quantize": 4,
+  "size": [
+    1024,
+    960
+  ],
+  "preparation": "No crop or resize for the 1024x960 atlas cell; [400,30,840,77] was additional reference only.",
+  "prompt": "Remove every rivet, bolt, edge and shadow from this image of the heavy door frame. Replace all hardware, edges and shadows with a continuous rusted, peeling painted steel surface matching the surrounding frame surface. Preserve the extensive dark reddish-brown rust, flaking orange corrosion and scattered broken grey-green paint islands from the reference. Fill the entire image edge to edge with only this continuous flat material surface, lit flat and evenly, without shadows, seams, borders, rivets, bolts or hardware.",
+  "recipe": "gen4-recipe.md",
+  "original_generator_metadata": "FLUX edit metadata sidecar contained JSON null; commands and recipes are the generation record."
+}

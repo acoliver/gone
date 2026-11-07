@@ -1,0 +1,11 @@
+{
+	"name": "white-without-handoff",
+	"seed": 91,
+	"ticks_per_second": 60,
+	"max_frames": 600,
+	"actions": [
+		{"tick": 284, "type": "press", "button": "activate"},
+		{"tick": 289, "type": "look", "yaw_deg": 90.0, "pitch_deg": -55.0}
+	],
+	"beats": [{"name": "power-active", "tick": 400, "light": "white"}]
+}

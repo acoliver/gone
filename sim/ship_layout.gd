@@ -10,14 +10,20 @@ const DECK_PITCH: float = 5.5
 const CLEAR_HEIGHT: float = 3.2
 const WALL: float = 0.2
 const CORRIDOR_WIDTH: float = 3.0
+const DRESSING_RIB_PITCH: float = 2.0
+const DRESSING_PANEL_PITCH := Vector2(1.5, 1.0)
 const HATCH_WIDTH: float = 1.2
 const HATCH_HEIGHT: float = 2.4
 const DOOR_LABEL_HEIGHT: float = 1.82
+# Andrew's Round 11 clear-panel label: 36 mm above the wheel's projected rim.
+const HATCH_LABEL_HEIGHT: float = 1.86
 const HATCH_LABEL_OUTSET: float = 0.04
 const HATCH_LABEL_SIZE := Vector2(0.92, 0.46)
 const BAY_ID: StringName = &"D14-BAY"
 const POWER_ID: StringName = &"D14-POWER"
 const BAY_DOOR_ID: StringName = &"D14-BAY-DOOR"
+const BAY_HATCH_KEY_ID: StringName = &"D14-BAY-HATCH-KEY"
+const EMERGENCY_FILL_CEILING_DROP: float = 0.77
 const POWER_DOOR_ID: StringName = &"D14-POWER-DOOR"
 const POWER_CENTER_X: float = 27.0
 const POWER_NEAR_Z: float = -(CORRIDOR_WIDTH / 2.0 + WALL)
@@ -28,7 +34,20 @@ const POWER_GENERATOR_CENTER := Vector3(POWER_CENTER_X, 0, (POWER_NEAR_Z + POWER
 
 enum Policy { CRANK, NEVER_OPENS, ROD_PRY, PRESS_SLIDE }
 enum DoorKind { HATCH, SIDE, LIFT, BAY, POWER }
-enum AnimationRecipe { HINGE, FIXED, RETRACT_SLIDE, SLIDE }
+enum AnimationRecipe { HINGE, FIXED, SLIDE }
+enum EmergencyLightRole { BAY_POOL, BAY_HATCH, ROOM_POOL }
+enum ArchitecturalLightRole { LOCAL, HALL_FILL }
+enum ServiceKind { SWITCH, CEILING_DAMAGE, FIXTURE, FILL, REGULAR_STRIP }
+
+class EmergencyFixtureSpec:
+	extends RefCounted
+	var id: StringName
+	var role: EmergencyLightRole
+	var frame: Transform3D
+	func _init(p_id: StringName, p_role: EmergencyLightRole, p_frame: Transform3D) -> void:
+		id = p_id
+		role = p_role
+		frame = p_frame
 
 class Spec:
 	extends RefCounted
@@ -40,6 +59,60 @@ class Spec:
 		return _deck
 	func data() -> Dictionary:
 		return {"id": _id, "deck": _deck}
+	func service_reservations() -> Array[ServiceReservation]:
+		return []
+	func architectural_light_role() -> ArchitecturalLightRole:
+		return ArchitecturalLightRole.LOCAL
+
+class DressingBatch:
+	extends RefCounted
+	var family: StringName
+	var shape: StringName
+	var role: StringName
+	var surface_part: StringName
+	var poses: Array[Transform3D] = []
+	func _init(p_family: StringName, p_shape: StringName, p_role: StringName, p_part: StringName) -> void:
+		family = p_family
+		shape = p_shape
+		role = p_role
+		surface_part = p_part
+
+class DressingClearance:
+	extends RefCounted
+	var id: StringName
+	var bounds: AABB
+	func _init(p_id: StringName, p_bounds: AABB) -> void:
+		id = p_id
+		bounds = p_bounds
+
+class ServiceReservation:
+	extends DressingClearance
+	var kind: ServiceKind
+	func _init(p_id: StringName, p_kind: ServiceKind, p_bounds: AABB) -> void:
+		super(p_id, p_bounds)
+		kind = p_kind
+
+class SectionServices:
+	extends RefCounted
+	var switch_frames: Array[Transform3D] = []
+	var regular_strips: bool = false
+	var ceiling_damage: bool = false
+	var light_role: ArchitecturalLightRole = ArchitecturalLightRole.LOCAL
+
+class DressingSpec:
+	extends RefCounted
+	var owner_id: StringName
+	var bounds: AABB
+	var rib_pitch: float = ShipLayout.DRESSING_RIB_PITCH
+	var panel_pitch := ShipLayout.DRESSING_PANEL_PITCH
+	var rib_stations: Array[float] = []
+	var pipe_paths: Array[PackedVector3Array] = []
+	var kick_rail_paths: Array[PackedVector3Array] = []
+	var grate_footprint: AABB
+	var floor_patches: Array[AABB] = []
+	var grate_depth: float = 0.20
+	var clearances: Array[DressingClearance] = []
+	var batches: Array[DressingBatch] = []
 
 class DeckSpec:
 	extends Spec
@@ -70,7 +143,8 @@ class SectionSpec:
 	var _side_door_ids: Array[StringName]
 	var _circuit: StringName
 	var _is_built: bool
-	func _init(p_id: StringName, p_deck: int, p_number: int, p_bounds: AABB, p_opening_ids: Array[StringName], p_side_door_ids: Array[StringName], p_circuit: StringName, p_is_built: bool) -> void:
+	var _services: SectionServices
+	func _init(p_id: StringName, p_deck: int, p_number: int, p_bounds: AABB, p_opening_ids: Array[StringName], p_side_door_ids: Array[StringName], p_circuit: StringName, p_is_built: bool, p_services: SectionServices = null) -> void:
 		_id = p_id
 		_deck = p_deck
 		_number = p_number
@@ -79,6 +153,7 @@ class SectionSpec:
 		_side_door_ids = p_side_door_ids.duplicate()
 		_circuit = p_circuit
 		_is_built = p_is_built
+		_services = p_services if p_services != null else SectionServices.new()
 	func number() -> int:
 		return _number
 	func bounds() -> AABB:
@@ -89,6 +164,77 @@ class SectionSpec:
 		return _side_door_ids.duplicate()
 	func circuit() -> StringName:
 		return _circuit
+	func emergency_light_role() -> EmergencyLightRole:
+		return ShipLayout.EmergencyLightRole.ROOM_POOL
+	func emergency_fixture_frames() -> Array[Transform3D]:
+		var frames: Array[Transform3D] = []
+		var pitch := _bounds.size.x / 4
+		for station: int in range(4):
+			for side: int in [-1, 1]:
+				frames.append(Transform3D(Basis(), Vector3(_bounds.position.x + (station + 0.5) * pitch, _bounds.position.y + 2.65, _bounds.get_center().z + side * (_bounds.size.z / 2 - 0.10))))
+		return frames
+	func regular_light_frames() -> Array[Transform3D]:
+		var frames: Array[Transform3D] = []
+		if not _services.regular_strips: return frames
+		var pitch := _bounds.size.x / 4
+		for station: int in range(4):
+			frames.append(Transform3D(Basis(), Vector3(_bounds.position.x + (station + 0.5) * pitch, _bounds.end.y - 0.08, _bounds.get_center().z)))
+		return frames
+	func ceiling_trays() -> Array[ShipGeometry.SolidSpec]:
+		if not _services.ceiling_damage: return []
+		var datum := Vector3(_bounds.position.x, _bounds.end.y - ShipGeometry.TRAY_CEILING_DROP, _bounds.get_center().z)
+		return [
+			ShipGeometry.SolidSpec.new(datum + Vector3(10.5, 0, 0.35), Vector3(9, ShipGeometry.TRAY_HEIGHT, ShipGeometry.TRAY_WIDTH), Quaternion(Vector3.RIGHT, 0.05)),
+			ShipGeometry.SolidSpec.new(datum + Vector3(17, -0.04, -0.55), Vector3(3.2, ShipGeometry.TRAY_HEIGHT, ShipGeometry.TRAY_WIDTH), Quaternion(Vector3.UP, PI / 2) * Quaternion(Vector3.RIGHT, -0.06)),
+		]
+	func ceiling_loops() -> Array[ShipGeometry.WireLoop]:
+		if not _services.ceiling_damage: return []
+		var datum := Vector3(_bounds.position.x, _bounds.position.y, _bounds.get_center().z)
+		return [
+			ShipGeometry.WireLoop.new(datum + Vector3(7.6, 2.72, 0.42), Quaternion(Vector3.RIGHT, PI / 2) * Quaternion(Vector3.UP, 0.8)),
+			ShipGeometry.WireLoop.new(datum + Vector3(15.4, 2.66, -0.48), Quaternion(Vector3.RIGHT, PI / 2) * Quaternion(Vector3.UP, 2.1)),
+		]
+	func ceiling_damage_bounds() -> Array[AABB]:
+		var boxes: Array[AABB] = []
+		for solid: ShipGeometry.SolidSpec in ceiling_trays():
+			var box := ShipGeometry.box_aabb(solid)
+			boxes.append(AABB(box.min_corner(), box.max_corner() - box.min_corner()).grow(0.02))
+		for loop: ShipGeometry.WireLoop in ceiling_loops():
+			var size := Vector3.ONE * ShipGeometry.WIRE_OUTER_RADIUS * 2
+			boxes.append(AABB(loop.center - size / 2, size).grow(0.02))
+		return boxes
+	func emergency_fill_positions() -> Array[Vector3]:
+		var positions: Array[Vector3] = []
+		if _services.light_role == ArchitecturalLightRole.LOCAL: return positions
+		for index: int in range(7):
+			positions.append(Vector3(_bounds.position.x + 1.5 + index * 3.0, _bounds.end.y - 0.85, _bounds.get_center().z))
+		return positions
+	func emergency_end_fill_position() -> Vector3:
+		return Vector3(_bounds.end.x - 0.9, _bounds.position.y + 1.7, _bounds.get_center().z)
+
+	func switch_frames() -> Array[Transform3D]:
+		return _services.switch_frames.duplicate()
+	func architectural_light_role() -> ArchitecturalLightRole:
+		return _services.light_role
+	func service_reservations() -> Array[ServiceReservation]:
+		var reservations: Array[ServiceReservation] = []
+		for index: int in range(_services.switch_frames.size()):
+			var frame := _services.switch_frames[index]
+			var name := "SWITCH_REACH" if index == 0 else "SWITCH_REACH/%d" % index
+			reservations.append(ServiceReservation.new(StringName(name), ServiceKind.SWITCH, AABB(frame.origin - Vector3(0.35, 0.35, 0.40), Vector3(0.7, 0.7, 0.8))))
+		for frame: Transform3D in emergency_fixture_frames():
+			reservations.append(ServiceReservation.new(StringName("LAMP/%s" % frame.origin), ServiceKind.FIXTURE, AABB(frame.origin - Vector3(0.28, 0.20, 0.20), Vector3(0.56, 0.40, 0.40))))
+		for frame: Transform3D in regular_light_frames():
+			reservations.append(ServiceReservation.new(StringName("STRIP/%s" % frame.origin), ServiceKind.REGULAR_STRIP, AABB(frame.origin - Vector3(0.60, 0.20, 0.12), Vector3(1.20, 0.24, 0.24))))
+		var damage := ceiling_damage_bounds()
+		for index: int in range(damage.size()):
+			reservations.append(ServiceReservation.new(StringName("CEILING_DAMAGE/%d" % index), ServiceKind.CEILING_DAMAGE, damage[index]))
+		var fills := emergency_fill_positions()
+		if _services.light_role != ArchitecturalLightRole.LOCAL: fills.append(emergency_end_fill_position())
+		for point: Vector3 in fills:
+			reservations.append(ServiceReservation.new(StringName("FILL/%s" % point), ServiceKind.FILL, AABB(point - Vector3.ONE * 0.12, Vector3.ONE * 0.24)))
+		return reservations
+
 	func is_built() -> bool:
 		return _is_built
 	func data() -> Dictionary:
@@ -99,6 +245,10 @@ class SectionSpec:
 		result["side_door_ids"] = _side_door_ids.duplicate(true)
 		result["circuit"] = _circuit
 		result["is_built"] = _is_built
+		result["architectural_light_role"] = architectural_light_role()
+		result["services"] = []
+		for reservation: ServiceReservation in service_reservations():
+			result["services"].append({"id": reservation.id, "kind": reservation.kind, "bounds": reservation.bounds})
 		return result
 
 class ConnectorSpec:
@@ -134,8 +284,22 @@ class ConnectorSpec:
 		return _lift_id
 	func port_opening() -> Transform3D:
 		return _port_opening
+	func landing_key_position() -> Vector3:
+		# The low landing key reaches the shaft rails and the connector centre floor.
+		return Vector3(_bounds.get_center().x + (0.85 if _pitch_index == 1 else 0.0), _bounds.position.y + 0.50, -2.50)
 	func shared_wall_owner() -> StringName:
 		return _shared_wall_owner
+	func emergency_fixture_frames() -> Array[Transform3D]:
+		var frames: Array[Transform3D] = []
+		for side: int in [-1, 1]:
+			frames.append(Transform3D(Basis(), Vector3(_bounds.get_center().x + side * _bounds.size.x / 4, _bounds.position.y + 1.75, side * (_bounds.size.z / 2 - 0.30))))
+		frames.append(Transform3D(Basis(), landing_key_position()))
+		return frames
+	func service_reservations() -> Array[ServiceReservation]:
+		var reservations: Array[ServiceReservation] = []
+		for frame: Transform3D in emergency_fixture_frames():
+			reservations.append(ServiceReservation.new(StringName("LAMP/%s" % frame.origin), ServiceKind.FIXTURE, AABB(frame.origin - Vector3(0.28, 0.20, 0.20), Vector3(0.56, 0.40, 0.40))))
+		return reservations
 	func is_built() -> bool:
 		return _is_built
 	func data() -> Dictionary:
@@ -150,6 +314,19 @@ class ConnectorSpec:
 		result["is_built"] = _is_built
 		return result
 
+class HatchServiceSpec:
+	extends RefCounted
+	var kind: StringName
+	var frame: Transform3D
+	var route := PackedVector3Array()
+	var radius: float
+	var stand_off: float = 0.0
+	func _init(p_kind: StringName, p_frame: Transform3D, p_route := PackedVector3Array(), p_radius: float = 0.0) -> void:
+		kind = p_kind
+		frame = p_frame
+		route = p_route
+		radius = p_radius
+
 class DoorSpec:
 	extends Spec
 	var _kind: int
@@ -161,7 +338,8 @@ class DoorSpec:
 	var _owner_id: StringName
 	var _animation: int
 	var _has_wheel: bool
-	func _init(p_id: StringName, p_deck: int, p_kind: int, p_policy: int, p_frame: Transform3D, p_aperture: Vector2, p_spaces: Array[StringName], p_face_ids: Array[StringName], p_owner_id: StringName, p_animation: int, p_has_wheel: bool) -> void:
+	var _slide_sign: int
+	func _init(p_id: StringName, p_deck: int, p_kind: int, p_policy: int, p_frame: Transform3D, p_aperture: Vector2, p_spaces: Array[StringName], p_face_ids: Array[StringName], p_owner_id: StringName, p_animation: int, p_has_wheel: bool, p_slide_sign: int = 0) -> void:
 		_id = p_id
 		_deck = p_deck
 		_kind = p_kind
@@ -173,6 +351,7 @@ class DoorSpec:
 		_owner_id = p_owner_id
 		_animation = p_animation
 		_has_wheel = p_has_wheel
+		_slide_sign = p_slide_sign
 	func kind() -> int:
 		return _kind
 	func policy() -> int:
@@ -189,6 +368,8 @@ class DoorSpec:
 		return _owner_id
 	func animation() -> int:
 		return _animation
+	func slide_sign() -> int:
+		return _slide_sign
 	func has_wheel() -> bool:
 		return _has_wheel
 	func data() -> Dictionary:
@@ -202,13 +383,51 @@ class DoorSpec:
 		result["owner_id"] = _owner_id
 		result["animation"] = _animation
 		result["has_wheel"] = _has_wheel
+		result["slide_sign"] = _slide_sign
 		return result
+	func leaf_aperture() -> Vector2:
+		# Andrew's flush-leaf design leaves 15 mm to the ring's inner curve.
+		return _aperture - Vector2(0.02, 0)
 	func hinge_frame() -> Transform3D:
 		assert(_animation == ShipLayout.AnimationRecipe.HINGE, "hinge recipe required")
-		return Transform3D(Basis(), Vector3(-_aperture.x / 2.0, 0, ShipLayout.WALL / 2.0))
-	func swing_radians() -> float:
+		# Andrew's flush slab reaches its approach wall plane. The outboard axis
+		# leaves room for the reverse hardware throughout the 130-degree swing.
+		var into := 1.0 if swing_radians() < 0 else -1.0
+		var setback := HatchParts.APPROACH_SLAB_DEPTH - ShipLayout.WALL / 2.0
+		return Transform3D(Basis(), Vector3(-leaf_aperture().x / 2.0 - HatchParts.HINGE_OUTSET, 0, ShipLayout.WALL / 2.0 + into * setback))
+	func leaf_face_depth(side: int) -> float:
+		var approach := (side == 0) == (swing_radians() < 0)
+		return HatchParts.APPROACH_SLAB_DEPTH if approach else HatchParts.REVERSE_SLAB_DEPTH
+	func swing_radians(run_seed: int = 0) -> float:
 		assert(_animation == ShipLayout.AnimationRecipe.HINGE, "hinge recipe required")
-		return -PI / 2.0 if String(_id).ends_with("-FORE") else PI / 2.0
+		var value := HatchResistance.hash_bytes("hatch-rest-v1|%d|%s" % [run_seed, _id])
+		var degrees := 100.0 + 30.0 * float(value) / 4294967295.0
+		return deg_to_rad(degrees) * (-1.0 if String(_id).ends_with("-FORE") or _kind == ShipLayout.DoorKind.BAY else 1.0)
+	func hatch_services(side: int) -> Array[HatchServiceSpec]:
+		assert(_animation == ShipLayout.AnimationRecipe.HINGE and side in [0, 1], "hinged service face")
+		var face := Transform3D.IDENTITY if side == 0 else Transform3D(Basis(Vector3.LEFT, Vector3.UP, Vector3.FORWARD), Vector3(0, 0, ShipLayout.WALL))
+		# Connector cages reach the floor/lift while remaining above the leaf sweep.
+		var connector_face := _spaces[side] in [ShipLayout.connector_id(_deck, 0), ShipLayout.connector_id(_deck, 1)]
+		var lamp_x := 0.80 if connector_face else (0.0 if _kind == ShipLayout.DoorKind.BAY and side == 1 else _aperture.x / 2 + 0.39)
+		var lamp_stand_off := 0.30 if connector_face else 0.0
+		var services: Array[HatchServiceSpec] = [
+			HatchServiceSpec.new(&"Control", face * Transform3D(Basis(), Vector3(-_aperture.x / 2 - 0.48, 1.37, -0.10))),
+			HatchServiceSpec.new(&"Lamp", face * Transform3D(Basis(), Vector3(lamp_x, _aperture.y + 0.16, -0.11 - lamp_stand_off))),
+		]
+		services[1].stand_off = lamp_stand_off
+		# Keep the riser beyond the wider flush slab's complete parked envelope.
+		var riser_x := 1.50
+		for x: float in [-1.04, -1.15]:
+			var top := 2.72 if x > -1.1 else 2.82
+			services.append(HatchServiceSpec.new(&"Conduit", face, PackedVector3Array([Vector3(x, 1.63, -0.08), Vector3(x, top, -0.08), Vector3(riser_x, top, -0.08)]), 0.018))
+		services.append(HatchServiceSpec.new(&"Conduit", face, PackedVector3Array([Vector3(-1.08, 1.11, -0.08), Vector3(-1.08, 0.29, -0.08), Vector3(-1.48, 0.29, -0.08)]), 0.021))
+		services.append(HatchServiceSpec.new(&"Conduit", face, PackedVector3Array([Vector3(riser_x, 0.20, -0.065), Vector3(riser_x, 2.82, -0.065)]), 0.032))
+		if side == 0 and hinge_frame().origin.z < ShipLayout.WALL / 2:
+			# The swing-side control must sit opposite the parked leaf, not behind it.
+			for service: HatchServiceSpec in services:
+				service.frame.origin.x *= -1
+				for index: int in range(service.route.size()): service.route[index].x *= -1
+		return services
 	func closed_blocker() -> AABB:
 		return AABB(Vector3(-_aperture.x / 2.0, 0, 0), Vector3(_aperture.x, _aperture.y, ShipLayout.WALL))
 
@@ -244,10 +463,9 @@ class FaceSpec:
 	func label_size() -> Vector2:
 		return ShipLayout.HATCH_LABEL_SIZE
 	func leaf_label_frame(door: DoorSpec) -> Transform3D:
-		if door.kind() == ShipLayout.DoorKind.BAY:
-			var side := 1.0 if _surface_frame.basis.z.z < 0 else -1.0
-			return Transform3D(Basis(Vector3(0, 0, -side), Vector3.UP, Vector3(side, 0, 0)), Vector3(side * (ShipLayout.WALL / 2 + ShipLayout.HATCH_LABEL_OUTSET), ShipLayout.DOOR_LABEL_HEIGHT - ShipGeometry.DOOR_HEIGHT / 2, 0))
-		return door.hinge_frame().affine_inverse() * label_frame()
+		var frame := _surface_frame
+		frame.origin = Vector3(door.leaf_aperture().x / 2 + HatchParts.HINGE_OUTSET, ShipLayout.HATCH_LABEL_HEIGHT, frame.basis.z.z * (door.leaf_face_depth(0 if frame.basis.z.z < 0 else 1) + ShipLayout.HATCH_LABEL_OUTSET))
+		return frame
 	func data() -> Dictionary:
 		var result := super.data()
 		result["door_id"] = _door_id
@@ -359,6 +577,24 @@ class BaySpec:
 			for z: float in [-1.6 + Pods.ROW_WALL_OFFSET, 1.6 - Pods.ROW_WALL_OFFSET]:
 				frames.append(Transform3D(Basis(), Vector3(x, Pods.ROOM_CEILING_HEIGHT - 0.08, z)))
 		return frames
+	func emergency_fixtures(registry: Pods.PodRegistry) -> Array[EmergencyFixtureSpec]:
+		var fixtures: Array[EmergencyFixtureSpec] = []
+		for pod: Pods.Pod in registry.pods():
+			var placement := pod.placement()
+			var side := signf(placement.center.y)
+			var frame := Transform3D(Basis(), Vector3(placement.center.x, 2.65, side * (Pods.ROOM_WIDTH / 2.0 - 0.10)))
+			fixtures.append(EmergencyFixtureSpec.new(StringName("D14-BAY-POD-%d-KEY" % pod.id().index()), ShipLayout.EmergencyLightRole.BAY_POOL, frame))
+		var lintel: ShipGeometry.SolidSpec = ShipGeometry.hatch_solids()[2]
+		fixtures.append(EmergencyFixtureSpec.new(ShipLayout.BAY_HATCH_KEY_ID, ShipLayout.EmergencyLightRole.BAY_HATCH, Transform3D(Basis(Vector3.UP, PI / 2.0), lintel.center + Vector3(-0.10, 0.22, 0.0))))
+		return fixtures
+	func emergency_fill_positions() -> Array[Vector3]:
+		var positions: Array[Vector3] = []
+		# The architectural fill stays at its authored stations while #88's
+		# regular strips move inward with the pod rows.
+		for x: float in [-4.0, 0.0, 4.0]:
+			for z: float in [-1.6, 1.6]:
+				positions.append(Vector3(x, Pods.ROOM_CEILING_HEIGHT - 0.08 - ShipLayout.EMERGENCY_FILL_CEILING_DROP, z))
+		return positions
 	func ceiling_vent_frames() -> Array[Transform3D]:
 		return [Transform3D(Basis(), Vector3(-3, 3.05, 0)), Transform3D(Basis(), Vector3(3, 3.05, 0))]
 	func local_bounds() -> AABB:
@@ -395,6 +631,15 @@ class PowerRoomSpec:
 		return _console_stations.duplicate()
 	func generator_anchor() -> Transform3D:
 		return _generator_anchor
+	func emergency_light_role() -> EmergencyLightRole:
+		return ShipLayout.EmergencyLightRole.ROOM_POOL
+	func emergency_fill_positions() -> Array[Vector3]:
+		var positions: Array[Vector3] = []
+		var mount_y := Pods.ROOM_CEILING_HEIGHT - 0.08
+		for x: float in [24.0, ShipLayout.POWER_CENTER_X, 30.0]:
+			for z: float in [-3.7, -7.7]:
+				positions.append(Vector3(x, mount_y - ShipLayout.EMERGENCY_FILL_CEILING_DROP, z))
+		return positions
 	func data() -> Dictionary:
 		var result := super.data()
 		result["section_id"] = _section_id
@@ -491,7 +736,7 @@ static func try_new(specs: Array[Spec]) -> Result:
 	for id: StringName in expected_cranks + [BAY_DOOR_ID, POWER_DOOR_ID]:
 		if not id in door_ids:
 			return _failure(LayoutError.Kind.OPENABILITY, id)
-	layout._anchors[&"D14-HALL-SWITCH"] = Transform3D(Basis(Vector3.UP, PI), Vector3(16.2, 1.25, 1.45))
+	layout._anchors[&"D14-HALL-SWITCH"] = authored_hall_switch_frame()
 	layout._anchors[&"D14-BAY-ROD"] = layout.bay_to_world() * layout.bay().rod_local()
 	layout._anchors[&"D14-POWER-CONSOLE"] = Transform3D(Basis(), Vector3(22.05, 0, -7.5))
 	var result := Result.new()
@@ -598,6 +843,49 @@ func bay() -> BaySpec:
 func power_room() -> PowerRoomSpec:
 	return _lookup(POWER_ID, PowerRoomSpec)
 
+func architectural_light_role(space_id: StringName) -> ArchitecturalLightRole:
+	assert(has_space(space_id), "architectural lighting requires a space")
+	return _records[space_id].architectural_light_role()
+
+func visual_floor_patches(space: Spec) -> Array[AABB]:
+	var patches: Array[AABB] = [_floor_bounds(space)]
+	if space is ConnectorSpec:
+		# Sections own their wall-band bridges; collision slabs may still overlap.
+		for id: StringName in space.hatch_ids():
+			for neighbor_id: StringName in door(id).spaces():
+				var neighbor: Spec = _records[neighbor_id]
+				if not neighbor is SectionSpec or not neighbor.is_built(): continue
+				var remaining: Array[AABB] = []
+				for patch: AABB in patches:
+					remaining.append_array(_subtract_floor(patch, _floor_bounds(neighbor)))
+				patches = remaining
+	return patches
+
+func _floor_bounds(space: Spec) -> AABB:
+	var solids := ShipGeometry.section_solids(self, space) if space is SectionSpec else ShipGeometry.connector_solids(self, space)
+	var box := ShipGeometry.box_aabb(solids[0])
+	return AABB(box.min_corner(), box.max_corner() - box.min_corner())
+
+static func _subtract_floor(patch: AABB, owned: AABB) -> Array[AABB]:
+	var start := patch.position.max(owned.position)
+	var end := patch.end.min(owned.end)
+	if end.x <= start.x or end.z <= start.z: return [patch]
+	var result: Array[AABB] = []
+	for rect: Rect2 in [
+		Rect2(patch.position.x, patch.position.z, start.x - patch.position.x, patch.size.z),
+		Rect2(end.x, patch.position.z, patch.end.x - end.x, patch.size.z),
+		Rect2(start.x, patch.position.z, end.x - start.x, start.z - patch.position.z),
+		Rect2(start.x, end.z, end.x - start.x, patch.end.z - end.z),
+	]:
+		if rect.size.x > 0 and rect.size.y > 0:
+			result.append(AABB(Vector3(rect.position.x, patch.position.y, rect.position.y), Vector3(rect.size.x, patch.size.y, rect.size.y)))
+	return result
+
+func dressing(space_id: StringName) -> DressingSpec:
+	var space: Spec = _records[space_id]
+	assert((space is SectionSpec or space is ConnectorSpec) and space.is_built(), "dressing requires a built corridor space: %s" % space_id)
+	return ShipDressing.build(self, space)
+
 func anchor(id: StringName) -> Transform3D:
 	assert(_anchors.has(id), "layout anchor exists: %s" % id)
 	return _anchors[id]
@@ -652,14 +940,14 @@ func serialize() -> String:
 static func _frame_x(position: Vector3) -> Transform3D:
 	return Transform3D(Basis(Vector3(0, 0, -1), Vector3.UP, Vector3.RIGHT), position)
 
-static func _add_door(specs: Array[Spec], id: StringName, deck: int, kind: int, policy: int, frame: Transform3D, aperture: Vector2, spaces: Array[StringName], owner: StringName, destinations: Vector2i, suffixes: Array[StringName]) -> void:
+static func _add_door(specs: Array[Spec], id: StringName, deck: int, kind: int, policy: int, frame: Transform3D, aperture: Vector2, spaces: Array[StringName], owner: StringName, destinations: Vector2i, suffixes: Array[StringName], slide_sign: int = 0) -> void:
 	var faces: Array[StringName] = [StringName("%s/%s" % [id, suffixes[0]]), StringName("%s/%s" % [id, suffixes[1]])]
 	var animation := AnimationRecipe.HINGE if kind == DoorKind.HATCH else AnimationRecipe.FIXED
 	if kind == DoorKind.BAY:
-		animation = AnimationRecipe.RETRACT_SLIDE
+		animation = AnimationRecipe.HINGE
 	elif kind == DoorKind.POWER:
 		animation = AnimationRecipe.SLIDE
-	specs.append(DoorSpec.new(id, deck, kind, policy, frame, aperture, spaces, faces, owner, animation, kind in [DoorKind.HATCH, DoorKind.BAY]))
+	specs.append(DoorSpec.new(id, deck, kind, policy, frame, aperture, spaces, faces, owner, animation, kind in [DoorKind.HATCH, DoorKind.BAY], slide_sign))
 	for index: int in range(2):
 		var local := Transform3D(Basis(Vector3(-1, 0, 0), Vector3.UP, Vector3(0, 0, -1)), Vector3.ZERO)
 		if index == 1:
@@ -667,6 +955,22 @@ static func _add_door(specs: Array[Spec], id: StringName, deck: int, kind: int, 
 		var interaction := local
 		interaction.origin += Vector3(0, 1.2, 0)
 		specs.append(FaceSpec.new(faces[index], deck, id, spaces[index], destinations[index], local, interaction))
+
+func door_bay_number(id: StringName) -> int:
+	var spec := door(id)
+	assert(spec.kind() in [DoorKind.POWER, DoorKind.SIDE], "bay numbers identify ordinary side openings")
+	var section_spec := section(section_id(spec.deck_number(), face(spec.face_ids()[0]).destination_section()))
+	var bounds := section_spec.bounds()
+	var stations: Array[float] = []
+	for fixture: Transform3D in section_spec.emergency_fixture_frames():
+		if not stations.has(fixture.origin.x): stations.append(fixture.origin.x)
+	var pitch := bounds.size.x / stations.size()
+	var station := floori((spec.frame().origin.x - bounds.position.x) / pitch)
+	var starboard := int(spec.frame().origin.z > bounds.get_center().z)
+	return station * 2 + starboard + 1
+
+static func authored_hall_switch_frame() -> Transform3D:
+	return Transform3D(Basis(Vector3.UP, PI), Vector3(16.2, 1.25, 1.45))
 
 static func _authored_records() -> Array[Spec]:
 	var specs: Array[Spec] = []
@@ -693,7 +997,7 @@ static func _authored_records() -> Array[Spec]:
 						# The outer side is an unbuilt space, not a playable room.
 						var outside := StringName("%s/UNBUILT" % side_id)
 						specs.append(SectionSpec.new(outside, d, number, AABB(Vector3(start + offset - 0.5, y, -2 if side == "PORT" else 1.7), Vector3(1, CLEAR_HEIGHT, 0.3)), [], [], &"emergency", false))
-						_add_door(specs, side_id, d, DoorKind.SIDE, Policy.NEVER_OPENS, frame, Vector2(1, 2.2), [id, outside], id, Vector2i(number, number), [&"HALL", &"OUTER"])
+						_add_door(specs, side_id, d, DoorKind.SIDE, Policy.NEVER_OPENS, frame, Vector2(1, 2.2), [id, outside], id, Vector2i(number, number), [&"HALL", &"OUTER"], (1 if number == 41 and offset == 15 else -1) if side == "PORT" else 1)
 				var fore_hatch := StringName("%s-H-AFT" % connector_id(d, number - 41))
 				var aft_hatch := StringName("%s-H-FORE" % connector_id(d, number - 40))
 				openings.append(fore_hatch)
@@ -701,7 +1005,13 @@ static func _authored_records() -> Array[Spec]:
 				openings.append(aft_hatch)
 				if number == 41:
 					openings.append_array([BAY_DOOR_ID, POWER_DOOR_ID])
-			specs.append(SectionSpec.new(id, d, number, AABB(Vector3(start, y, -1.5), Vector3(24, CLEAR_HEIGHT, 3)), openings, side_ids, &"opening" if number == 41 else &"emergency", d == 14))
+			var services := SectionServices.new()
+			if d == 14 and number == 41:
+				services.switch_frames = [authored_hall_switch_frame()]
+				services.regular_strips = true
+				services.ceiling_damage = true
+				services.light_role = ArchitecturalLightRole.HALL_FILL
+			specs.append(SectionSpec.new(id, d, number, AABB(Vector3(start, y, -1.5), Vector3(24, CLEAR_HEIGHT, 3)), openings, side_ids, &"opening" if number == 41 else &"emergency", d == 14, services))
 		for n: int in range(2):
 			var id := connector_id(d, n)
 			var start: float = 30 * n
@@ -743,7 +1053,7 @@ static func _authored_records() -> Array[Spec]:
 		consoles.append(Transform3D(Basis(Vector3.UP, yaws[index]), positions[index]))
 	specs.append(PowerRoomSpec.new(POWER_ID, 14, &"D14-S-041", AABB(Vector3(POWER_MIN_X, 0, POWER_FAR_Z), Vector3(Pods.ROOM_LENGTH, CLEAR_HEIGHT, Pods.ROOM_WIDTH)), POWER_DOOR_ID, consoles, Transform3D(Basis(), POWER_GENERATOR_CENTER)))
 	_add_door(specs, BAY_DOOR_ID, 14, DoorKind.BAY, Policy.ROD_PRY, Transform3D(Basis(), Vector3(15, 0, 1.5)), Vector2(HATCH_WIDTH, HATCH_HEIGHT), [&"D14-S-041", BAY_ID], BAY_ID, Vector2i(41, 41), [&"HALL", &"BAY"])
-	_add_door(specs, POWER_DOOR_ID, 14, DoorKind.POWER, Policy.PRESS_SLIDE, Transform3D(Basis(Vector3(-1, 0, 0), Vector3.UP, Vector3(0, 0, -1)), Vector3(POWER_CENTER_X, 0, -1.5)), Vector2(1, 2.2), [&"D14-S-041", POWER_ID], POWER_ID, Vector2i(41, 41), [&"HALL", &"POWER"])
+	_add_door(specs, POWER_DOOR_ID, 14, DoorKind.POWER, Policy.PRESS_SLIDE, Transform3D(Basis(Vector3(-1, 0, 0), Vector3.UP, Vector3(0, 0, -1)), Vector3(POWER_CENTER_X, 0, -1.5)), Vector2(1, 2.2), [&"D14-S-041", POWER_ID], POWER_ID, Vector2i(41, 41), [&"HALL", &"POWER"], 1)
 	return specs
 
 static func power_console_positions() -> Array[Vector3]:

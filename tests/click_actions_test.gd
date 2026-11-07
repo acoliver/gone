@@ -58,10 +58,10 @@ func test_opening_actions_share_space_dispatch_and_fire_once() -> void:
 				assert_true(player.game.power_door_open, "click opens power door")
 			&"D14-POWER-CONSOLE":
 				assert_int_equal(player.motion.console_presses, 1, "one console press, no automatic second action")
-				assert_false(player.game.power_active, "first click leaves console inactive")
+				assert_true(player.game.power_active, "first click activates power")
 				_act(player, fixture[0], 60)
-				assert_int_equal(player.motion.console_presses, 2, "second click acts again in reach")
-				assert_true(player.game.power_active, "second click starts power")
+				assert_int_equal(player.motion.console_presses, 1, "active console ignores second click")
+				assert_true(player.game.power_active, "active console stays on")
 		player.free()
 
 func test_hatch_crank_is_one_attempt_per_click_with_auto_yaw() -> void:
@@ -169,10 +169,12 @@ func test_scenario_objectives_validate_and_offer_one_tick() -> void:
 
 func test_blocked_floor_objective_slides_then_stops_without_repeating() -> void:
 	var player := _player(Vector3(18, 0.305, 0))
-	player.adapter.objective(ClickObjective.floor_point(Vector3(22, 0, 4), 14))
+	# The old proud leaf stopped this slide early. Aim just beyond the now
+	# flat wall so the unchanged blocked-progress gate expires within 600 ticks.
+	player.adapter.objective(ClickObjective.floor_point(Vector3(22, 0, 2), 14))
 	_ticks(player, 600)
 	assert_true(player.motion.objectives.current == null, "wall-blocked floor objective expires")
-	assert_true(player.motion.capsule().foot.x > 20.0, "resolver slides along the wall before the next door frame: %s" % player.motion.capsule().foot)
+	assert_true(player.motion.capsule().foot.x > 20.0, "resolver slides along the wall past the flush side door: %s" % player.motion.capsule().foot)
 	assert_true(player.motion.capsule().foot.z < 1.5, "no tunnelling through wall")
 	var stopped := player.motion.capsule().foot
 	_ticks(player, 60)
@@ -208,7 +210,7 @@ func test_click_route_uses_only_objectives_after_get_up_and_replays_deterministi
 			else:
 				assert_true(recorded[tick] == pose, "same objective input has identical accepted pose/state at tick %d" % tick)
 		assert_true(player.motion.rod_carried and player.game.door_open and player.game.hallway_lit and player.game.power_door_open and player.game.power_active, "click route completes opening")
-		assert_int_equal(player.motion.console_presses, 2, "exactly two console clicks")
+		assert_int_equal(player.motion.console_presses, 1, "exactly one console click")
 		player.free()
 
 func test_picker_resolves_layout_targets_and_stops_at_shared_solids() -> void:

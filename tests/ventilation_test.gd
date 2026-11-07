@@ -6,9 +6,8 @@ func test_secondary_power_clears_density_in_480_ticks_without_respawn() -> void:
 	for _tick in range(600):
 		step.advance()
 	assert_float_equal(game.ventilation.density(), 1.0, "unpowered bay keeps its smoke")
-	game.press_console()
 	step.advance()
-	assert_float_equal(game.ventilation.density(), 1.0, "reading the console does not ventilate")
+	assert_float_equal(game.ventilation.density(), 1.0, "reading the inactive console does not ventilate")
 	game.press_console()
 	step.advance(true)
 	assert_float_equal(game.ventilation.density(), 1.0, "paused clock cannot clear smoke")

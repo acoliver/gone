@@ -27,7 +27,7 @@ var exit_path: Exit.ExitPath
 ## room behind the corridor's last port (-Z) door walking aft (+X): its doorway opens
 ## on act (no rod gate — it is a crew door, not a pry-bar hatch), and
 ## its working console walks the secondary power's state machine — one
-## press reads the label, a second activates the generator, and the
+## press activates the generator, and the
 ## hallway, power room and bay hand their emergency red over to regular
 ## white, and secondary-powered ventilation clears the bay.
 var door_open: bool:
@@ -35,20 +35,19 @@ var door_open: bool:
 var hallway_lit: bool = false
 var power_door_open: bool:
 	get: return doors.snapshot(ShipLayout.POWER_DOOR_ID).state == Doors.State.OPEN
-var console_state: int = ConsoleState.STANDBY
+var console_state: int = ConsoleState.INACTIVE
 var power_active: bool = false
 var writing_memory := DisplayPerception.Memory.new()
 var label_attention := LabelAttention.new(writing_memory)
 
-## The working console's label state machine: standby glow
-## (no text), first press shows palo / INACTIVO, second press activates.
-enum ConsoleState { STANDBY, INACTIVE, ACTIVE }
+## The working console starts labeled inactive; one press activates power.
+enum ConsoleState { INACTIVE, ACTIVE }
 
 func _init(seed: int) -> void:
 	run_seed = seed
 	layout = ShipLayout.authored().layout
 	doors = Doors.Store.new(layout, seed)
-	collision = ShipCollision.new(layout)
+	collision = ShipCollision.new(layout, seed)
 	registry = layout.bay().template()
 	colliders = collision.deck_set(14)
 	phase = Phase.Machine.new()
@@ -72,14 +71,11 @@ func light_hallway() -> void:
 	hallway_lit = true
 
 ## Advance the working console's state machine exactly one step:
-## standby → inactive (the label), inactive → active (the generator
+## inactive → active (the generator
 ## lights, the corridor and the power room go regular white). Returns
 ## true when a step landed — the caller consumes a press only then.
 func press_console() -> bool:
 	match console_state:
-		ConsoleState.STANDBY:
-			console_state = ConsoleState.INACTIVE
-			return true
 		ConsoleState.INACTIVE:
 			console_state = ConsoleState.ACTIVE
 			power_active = true

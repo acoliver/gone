@@ -1,6 +1,20 @@
 extends SimTestCase
 # New pod #88: pins follow the fitted asset, row centers and eight-piece topology.
 
+func test_power_room_binds_shell_and_sliding_leaf_without_replacing_console_materials() -> void:
+	var game := Game.new(0)
+	var room := PowerRoom.build(game)
+	assert_true(room.get_node("PowerFloor").material_override == Surfaces.material(&"floor"), "power floor shares architectural material")
+	assert_true(room.get_node("PowerWallNorth").get_meta(&"surface_frame").key == &"D14-POWER/PORT", "power wall has layout identity")
+	var leaf: GeometryInstance3D = room.get_node("PowerDoorLeaf")
+	var material := leaf.material_override
+	var local := Vector3(0.2, 0.4, 0.01)
+	var before := Surfaces.sample_position(leaf, Surfaces.world_frame(leaf) * local)
+	room.set_door_offset(Vector3(0.75, 0, 0))
+	assert_true(Surfaces.sample_position(leaf, Surfaces.world_frame(leaf) * local).is_equal_approx(before), "power leaf scan follows offset")
+	assert_true(leaf.material_override == material and material == Surfaces.material(&"hatch_leaf"), "slide never allocates a material")
+	room.free()
+
 var _bay_frame := ShipLayout.authored().layout.bay_to_world()
 ## The emergency power room (issue #59): the room's envelope mirrors
 ## the stasis room's footprint behind the corridor's pierced north
@@ -75,10 +89,11 @@ func test_the_south_face_tiles_the_band_minus_the_aperture() -> void:
 	var aperture: float = Hallway.SIDE_DOOR_WIDTH * Hallway.SIDE_DOOR_HEIGHT * Placement.WALL_THICKNESS
 	assert_float_in_range(volume + aperture, band_volume - 1e-4, band_volume + 1e-4, "the pierce pieces plus the gap band tile the south face's envelope minus exactly the power aperture")
 
-func test_power_door_leaf_mounts_proud_of_the_corridor() -> void:
+func test_power_door_leaf_sits_inside_the_wall() -> void:
 	var leaf := PowerRoom.door_leaf()
-	assert_vec3_equal(leaf.center, Vector3(27.0, 1.1, -1.47), "the closed leaf centers in the power aperture")
-	assert_vec3_equal(leaf.size, Vector3(1.0, 2.2, 0.06), "the leaf carries the side doors' dimensions")
+	# Pocket-door design replaces the old proud-mounted 1.0 x 2.2 x 0.06 m slab.
+	assert_vec3_equal(leaf.center, Vector3(27.0, 1.1, -1.6), "the closed leaf sits halfway through the wall")
+	assert_vec3_equal(leaf.size, Vector3(1.28, 2.2, 0.054), "50 mm steel and raised borders overlap the unchanged 1 m aperture")
 	assert_float_in_range(PowerRoom.door_act_center().x, 27.0 - 1e-4, 27.0 + 1e-4, "the power door's act volume centers under the aperture")
 	assert_float_in_range(PowerRoom.door_act_center().z, -0.9 - 1e-4, -0.9 + 1e-4, "the act volume stands on the corridor side")
 
@@ -93,7 +108,6 @@ func test_console_census_reads_exactly_one_working_screen() -> void:
 	assert_int_equal(stations[1].health, PowerRoom.CONSOLE_HEALTHS["active"], "the working console is the west wall's deep station")
 	# Every station's panel faces into the room, off its own wall.
 	assert_vec3_equal(PowerRoom.console_act_center(), Vector3(22.05, 0.0, -7.5), "the working console's act volume is pinned in front of its screen")
-	assert_true(PowerRoom.console_labels(Game.ConsoleState.STANDBY) == {"native": "", "perceived_es": ""}, "the standby screen carries no text in either layer")
 	assert_true(PowerRoom.console_labels(Game.ConsoleState.INACTIVE) == {
 		"native": "te mu nawa lina palo",
 		"perceived_es": "SISTEMA DE ENERGÍA SECUNDARIO INACTIVO",
@@ -115,15 +129,18 @@ func test_collider_sets_extend_the_hallways_both_doors() -> void:
 	var shut := PowerRoom.scene_collider_set(registry, false, false)
 	var hall_open := PowerRoom.scene_collider_set(registry, true, false)
 	var both_open := PowerRoom.scene_collider_set(registry, true, true)
-	assert_int_equal(shut.size(), 205, "the shut set's box count is pinned")
-	assert_int_equal(hall_open.size(), 203, "opening the stasis doorway drops its block and slab")
-	assert_int_equal(both_open.size(), 202, "opening the power door drops its leaf")
+	# #88 adds eleven pod solids (45 -> 56); the door/hatch collision
+	# reservations remain unchanged. Recompute the combined exact pins.
+	assert_int_equal(shut.size(), 1024, "fitted pods plus unchanged wall, frame and stop reservations")
+	assert_int_equal(hall_open.size(), 1023, "opening the stasis doorway replaces its block and swing reservation with the parked leaf")
+	assert_int_equal(both_open.size(), 1022, "opening the power door drops its leaf")
 	var game := _awake_game()
 	assert_int_equal(game.colliders.size(), shut.size(), "the game boots on the shut set")
 	# The power aperture is solid while shut and clear once the leaf
 	# slides aside, riding the same difference the walk sim crosses on.
-	assert_true(_probe(shut, Vector3(26.6, 0.4, -1.5), Vector3(27.4, 2.0, -1.44)) >= 1, "the shut leaf collides inside the power aperture")
-	assert_int_equal(_probe(both_open, Vector3(26.6, 0.4, -1.5), Vector3(27.4, 2.0, -1.44)), 0, "the open power doorway is clear through the aperture")
+	# The pocket leaf now occupies the wall centre, not the old corridor face.
+	assert_true(_probe(shut, Vector3(26.6, 0.4, -1.627), Vector3(27.4, 2.0, -1.573)) >= 1, "the shut leaf collides inside the power aperture")
+	assert_int_equal(_probe(both_open, Vector3(26.6, 0.4, -1.627), Vector3(27.4, 2.0, -1.573)), 0, "the open power doorway is clear through the aperture")
 	# The room's own furniture collides in every set.
 	assert_true(_probe(both_open, Vector3(26.9, 1.0, -5.9), Vector3(27.1, 2.0, -5.5)) >= 1, "the generator's hull collides")
 	assert_true(_probe(both_open, Vector3(21.05, 0.5, -7.6), Vector3(21.5, 1.7, -7.4)) >= 1, "the working console's hull collides")
@@ -137,13 +154,10 @@ func test_collider_sets_extend_the_hallways_both_doors() -> void:
 
 func test_game_console_state_machine_activates_the_power() -> void:
 	var game := _awake_game()
-	assert_int_equal(game.console_state, Game.ConsoleState.STANDBY, "the console starts at its standby glow")
+	assert_int_equal(game.console_state, Game.ConsoleState.INACTIVE, "the console starts labeled inactive")
 	assert_false(game.power_active, "the secondary power starts down")
 	assert_false(game.power_door_open, "the power doorway starts shut")
-	assert_true(game.press_console(), "the first press lands: standby to inactive")
-	assert_int_equal(game.console_state, Game.ConsoleState.INACTIVE, "the console shows palo / INACTIVO")
-	assert_false(game.power_active, "the first press does not activate")
-	assert_true(game.press_console(), "the second press lands: inactive to active")
+	assert_true(game.press_console(), "one press activates")
 	assert_int_equal(game.console_state, Game.ConsoleState.ACTIVE, "the console shows shenu / EN FUNCIONAMIENTO")
 	assert_true(game.power_active, "the activation lights the secondary power")
 	assert_false(game.press_console(), "a third press never lands")
@@ -156,7 +170,7 @@ func test_power_door_opens_on_an_ungated_press() -> void:
 	_stand(motion, game, plane)
 	assert_false(motion.rod_carried, "this lane never touches the rod")
 	var adapter := InputPlane.ScriptedAdapter.new()
-	assert_true(_walk_to(motion, game, plane, adapter, _bay(Vector2(5.5, 0.6)), 0.3), "the walk reached the stasis door")
+	assert_true(_walk_to(motion, game, plane, adapter, _bay(Vector2(4.3, 0.0)), 0.3), "the walk reached the stasis door")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
 	assert_false(Interactions.new(game.layout).process_id(ShipLayout.POWER_DOOR_ID, plane, game, motion), "the shut stasis door is not the power door")
 	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the refused press stays on the channel")
@@ -214,7 +228,7 @@ func test_console_presses_consume_only_when_they_act() -> void:
 	plane.end_frame()
 	var adapter := InputPlane.ScriptedAdapter.new()
 	motion.rod_carried = true
-	assert_true(_walk_to(motion, game, plane, adapter, _bay(Vector2(5.5, 0.6)), 0.3), "the walk reached the stasis door")
+	assert_true(_walk_to(motion, game, plane, adapter, _bay(Vector2(4.3, 0.0)), 0.3), "the walk reached the stasis door")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
 	assert_true(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, plane, game, motion), "the door press landed")
 	for _tick: int in range(60):
@@ -243,14 +257,10 @@ func test_console_presses_consume_only_when_they_act() -> void:
 	assert_float_in_range(reach.length(), 0.0, Interactions.CONSOLE_ACT_REACH, "the stand holds the working console in reach")
 	# A stand at a dead console owns no press: the far wall's busted one.
 	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(Interactions.new(game.layout).process_id(&"D14-POWER-CONSOLE", plane, game, motion), "the first press at the working console shows the label")
-	assert_int_equal(game.console_state, Game.ConsoleState.INACTIVE, "the console reads palo / INACTIVO")
-	assert_int_equal(motion.console_presses, 1, "one press consumed")
-	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(Interactions.new(game.layout).process_id(&"D14-POWER-CONSOLE", plane, game, motion), "the second press activates")
+	assert_true(Interactions.new(game.layout).process_id(&"D14-POWER-CONSOLE", plane, game, motion), "the first press activates")
 	assert_int_equal(game.console_state, Game.ConsoleState.ACTIVE, "the console reads shenu / EN FUNCIONAMIENTO")
 	assert_true(game.power_active, "the secondary power lit")
-	assert_int_equal(motion.console_presses, 2, "two presses consumed, exactly")
+	assert_int_equal(motion.console_presses, 1, "one activation press consumed, exactly")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
 	assert_false(Interactions.new(game.layout).process_id(&"D14-POWER-CONSOLE", plane, game, motion), "a press at the active console owns nothing")
 	assert_true(plane.take_press(InputPlane.Buttons.INTERACT), "the surplus press stays on the channel")
@@ -272,7 +282,6 @@ func test_activation_hands_both_rooms_to_regular_white() -> void:
 	assert_float_in_range(hallway.level(), 0.999, 1.001, "the corridor's red settles after the flip")
 	assert_float_in_range(room.level(), 0.999, 1.001, "the power room's red settles with the corridor")
 	# The activation walk: both presses at the state machine.
-	assert_true(game.press_console(), "the label press lands")
 	assert_true(game.press_console(), "the activation press lands")
 	for _tick: int in range(Lighting.FIXTURE_SETTLE_TICKS):
 		hallway.process_frame(Sim.LOGICAL_TICK_SECS)
@@ -289,15 +298,13 @@ func test_activation_hands_both_rooms_to_regular_white() -> void:
 	assert_true(room.perceived_state_text() == "EN FUNCIONAMIENTO", "the perception layer carries the active label")
 	assert_true(room.rendered_console_state() == "active", "the room renders the active state")
 
-func test_label_appears_after_the_first_press() -> void:
+func test_label_is_present_on_arrival() -> void:
 	var game := _awake_game()
 	var room := PowerRoom.build(game)
-	assert_true(room.native_state_text() == "" and room.perceived_state_text() == "", "the standby screen renders no text in either layer")
-	game.press_console()
-	room.process_frame(Sim.LOGICAL_TICK_SECS)
-	assert_true(room.native_state_text() == "palo", "the screen renders palo on the label press")
-	assert_true(room.perceived_state_text() == "INACTIVO", "the perception layer carries INACTIVO on the label press")
-	assert_true(room.rendered_console_state() == "inactive", "the room renders the inactive state")
+	assert_true(room.native_state_text() == "palo", "the arrival screen renders palo")
+	assert_true(room.perceived_state_text() == "INACTIVO", "arrival perception layer carries INACTIVO")
+	assert_true(room.rendered_console_state() == "inactive", "arrival state is inactive")
+	room.free()
 
 func test_surfaces_wear_the_stasis_rooms_material_instances() -> void:
 	var game := _awake_game()
@@ -331,7 +338,7 @@ func test_full_route_lights_the_power() -> void:
 	_stand(motion, game, plane)
 	var adapter := InputPlane.ScriptedAdapter.new()
 	motion.rod_carried = true
-	assert_true(_walk_to(motion, game, plane, adapter, _bay(Vector2(5.5, 0.6)), 0.3), "the walk reached the stasis door")
+	assert_true(_walk_to(motion, game, plane, adapter, _bay(Vector2(4.3, 0.0)), 0.3), "the walk reached the stasis door")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
 	assert_true(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, plane, game, motion), "the door press landed")
 	for _tick: int in range(60):
@@ -354,9 +361,6 @@ func test_full_route_lights_the_power() -> void:
 	assert_true(_walk_to(motion, game, plane, adapter, Vector2(27.0, -3.0), 0.3), "the walk crossed the power aperture")
 	assert_true(_walk_to(motion, game, plane, adapter, Vector2(24.5, -4.5), 0.3), "the walk crossed to the room's center line west of the generator")
 	assert_true(_walk_to(motion, game, plane, adapter, Vector2(22.4, -7.5), 0.2), "the walk reached the working console")
-	plane.offer_press(InputPlane.Buttons.INTERACT)
-	assert_true(Interactions.new(game.layout).process_id(&"D14-POWER-CONSOLE", plane, game, motion), "the label press landed")
-	assert_int_equal(game.console_state, Game.ConsoleState.INACTIVE, "the console shows palo / INACTIVO")
 	plane.offer_press(InputPlane.Buttons.INTERACT)
 	assert_true(Interactions.new(game.layout).process_id(&"D14-POWER-CONSOLE", plane, game, motion), "the activation press landed")
 	assert_true(game.power_active, "the secondary power is on")

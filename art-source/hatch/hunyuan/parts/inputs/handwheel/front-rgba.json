@@ -1,0 +1,18 @@
+{
+  "source": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/inputs/handwheel/isolated.png",
+  "output": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/parts-proto/inputs/handwheel/front-rgba.png",
+  "method": "rembg U2-Net CPU, default parameters, no manual cleanup",
+  "model": "/Users/acoliver/.u2net/u2net.onnx",
+  "size": [
+    768,
+    768
+  ],
+  "alpha_bbox_xyxy": [
+    48,
+    38,
+    716,
+    732
+  ],
+  "foreground_fraction": 0.3468441433376736,
+  "opaque_fraction": 0.010092841254340278
+}

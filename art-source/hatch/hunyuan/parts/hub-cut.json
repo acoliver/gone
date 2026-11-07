@@ -1,0 +1,99 @@
+{
+  "source": "tmp/hunyuan-hatch/parts-proto/meshes/handwheel-s600.glb",
+  "source_sha256": "e5c8d5983e44e00c09834a659bd579ca480df641247623418d5f40e8704144db",
+  "wheel_scale": 0.3233824063811834,
+  "scaled_hub_radius_m": 0.097014721914355,
+  "source_outward_tip_z_m": 0.10632936649568318,
+  "section_points": 1476,
+  "section_definition": "maximum chord of the exact hub triangle/plane intersection",
+  "rows": [
+    {
+      "door": "D14-C-001-H-FORE",
+      "path": "Wheel",
+      "across_corners_m": 0.13762646013033442,
+      "cut_plane_z_m": 0.021993325053356966,
+      "cut_depth_m": 0.08433604144232622,
+      "section_diameter_m": 0.13762646013033444,
+      "outward_section_diameter_m": 0.13761956266036215,
+      "section_xy_spans_m": [
+        0.13668371761531775,
+        0.1344041679140509
+      ],
+      "retained_front_z_m": 0.021993325053356966,
+      "nut_back_z_m": 0.021993325053356966,
+      "nut_front_z_m": 0.02923431723123887,
+      "nut_thickness_m": 0.007240992177881904,
+      "chamfer_m": 0.001448198,
+      "front_corner_directions": 6,
+      "axial_stations": 4,
+      "shoulder_front_outward_z_m": 0.014796409843211003,
+      "nut_relief_m": 0.014437907388027868
+    },
+    {
+      "door": "D14-C-001-H-FORE",
+      "path": "ReverseWheel",
+      "across_corners_m": 0.13762646013033442,
+      "cut_plane_z_m": 0.021993325053356966,
+      "cut_depth_m": 0.08433604144232622,
+      "section_diameter_m": 0.13762646013033444,
+      "outward_section_diameter_m": 0.13761956266036215,
+      "section_xy_spans_m": [
+        0.13668371761531775,
+        0.1344041679140509
+      ],
+      "retained_front_z_m": 0.021993325053356966,
+      "nut_back_z_m": 0.021993325053356966,
+      "nut_front_z_m": 0.02923431723123887,
+      "nut_thickness_m": 0.007240992177881904,
+      "chamfer_m": 0.001448198,
+      "front_corner_directions": 6,
+      "axial_stations": 4,
+      "shoulder_front_outward_z_m": 0.014796409843211003,
+      "nut_relief_m": 0.014437907388027868
+    },
+    {
+      "door": "D14-C-001-H-AFT",
+      "path": "Wheel",
+      "across_corners_m": 0.13762646013033442,
+      "cut_plane_z_m": 0.021993325053356966,
+      "cut_depth_m": 0.08433604144232622,
+      "section_diameter_m": 0.13762646013033444,
+      "outward_section_diameter_m": 0.13761956266036215,
+      "section_xy_spans_m": [
+        0.13668371761531775,
+        0.1344041679140509
+      ],
+      "retained_front_z_m": 0.021993325053356966,
+      "nut_back_z_m": 0.021993325053356966,
+      "nut_front_z_m": 0.02923431723123887,
+      "nut_thickness_m": 0.007240992177881904,
+      "chamfer_m": 0.001448198,
+      "front_corner_directions": 6,
+      "axial_stations": 4,
+      "shoulder_front_outward_z_m": 0.014796409843211003,
+      "nut_relief_m": 0.014437907388027868
+    },
+    {
+      "door": "D14-C-001-H-AFT",
+      "path": "ReverseWheel",
+      "across_corners_m": 0.13762646013033442,
+      "cut_plane_z_m": 0.021993325053356966,
+      "cut_depth_m": 0.08433604144232622,
+      "section_diameter_m": 0.13762646013033444,
+      "outward_section_diameter_m": 0.13761956266036215,
+      "section_xy_spans_m": [
+        0.13668371761531775,
+        0.1344041679140509
+      ],
+      "retained_front_z_m": 0.021993325053356966,
+      "nut_back_z_m": 0.021993325053356966,
+      "nut_front_z_m": 0.02923431723123887,
+      "nut_thickness_m": 0.007240992177881904,
+      "chamfer_m": 0.001448198,
+      "front_corner_directions": 6,
+      "axial_stations": 4,
+      "shoulder_front_outward_z_m": 0.014796409843211003,
+      "nut_relief_m": 0.014437907388027868
+    }
+  ]
+}

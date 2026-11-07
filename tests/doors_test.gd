@@ -29,7 +29,7 @@ func test_two_faces_share_attempts_six_tick_interpolation_and_release_once() -> 
 	assert_int_equal(store.snapshot(HATCH).state, Doors.State.OPENING, "passage stays blocked for 47 ticks")
 	store.tick()
 	assert_int_equal(store.snapshot(HATCH).state, Doors.State.OPEN, "new hatch swings for exactly 48 ticks")
-	assert_float_equal(store.snapshot(HATCH).leaf_fraction, 1, "hinge parks at ninety degrees")
+	assert_float_equal(store.snapshot(HATCH).leaf_fraction, 1, "hinge reaches seeded rest fraction")
 	assert_int_equal(store.press(HATCH, _context(layout, HATCH)).outcome, Doors.Outcome.NOT_APPLICABLE, "open hatch never reopens")
 	assert_int_equal(store.snapshot(HATCH).releases, 1, "release never repeats")
 
@@ -72,11 +72,11 @@ func test_old_policies_exact_offsets_and_completion_ticks() -> void:
 	var bay := _context(layout, ShipLayout.BAY_DOOR_ID)
 	assert_int_equal(store.press(ShipLayout.BAY_DOOR_ID, bay).outcome, Doors.Outcome.NOT_APPLICABLE, "rodless press falls through")
 	bay.rod_carried = true
-	assert_int_equal(store.press(ShipLayout.BAY_DOOR_ID, bay).outcome, Doors.Outcome.RELEASED, "rod releases bay")
+	assert_int_equal(store.press(ShipLayout.BAY_DOOR_ID, bay).outcome, Doors.Outcome.RELEASED, "rod releases hinged bay hatch")
 	store.press(ShipLayout.POWER_DOOR_ID, _context(layout, ShipLayout.POWER_DOOR_ID))
 	for _tick: int in range(6):
 		store.tick()
-	assert_vec3_equal(store.snapshot(ShipLayout.BAY_DOOR_ID).offset, Vector3(0.085, 0, 0), "old half-retract")
+	assert_float_equal(store.snapshot(ShipLayout.BAY_DOOR_ID).leaf_fraction, 0.04296875, "bay smoothstep at tick six")
 	for _tick: int in range(18):
 		store.tick()
 	assert_vec3_equal(store.snapshot(ShipLayout.POWER_DOOR_ID).offset, Vector3(-0.575, 0, 0), "old half-slide")
@@ -87,7 +87,7 @@ func test_old_policies_exact_offsets_and_completion_ticks() -> void:
 	store.tick()
 	assert_int_equal(store.snapshot(ShipLayout.BAY_DOOR_ID).state, Doors.State.OPEN, "bay12+36")
 	assert_int_equal(store.snapshot(ShipLayout.POWER_DOOR_ID).state, Doors.State.OPEN, "power48")
-	assert_vec3_equal(store.snapshot(ShipLayout.BAY_DOOR_ID).offset, Vector3(0.17, 0, -1.2), "old final bay offset")
+	assert_float_equal(store.snapshot(ShipLayout.BAY_DOOR_ID).leaf_fraction, 1.0, "bay reaches seeded rest angle")
 
 func test_event_fanout_sequences_ticks_and_snapshot_reconstruction() -> void:
 	var layout := ShipLayout.authored().layout
@@ -154,7 +154,7 @@ func test_all_crank_faces_are_reachable_outside_reserved_swing_and_clear_ladder_
 			var face := layout.face(face_id)
 			var frame := spec.frame() * face.surface_frame()
 			var capsule := Resolve.Capsule.new()
-			capsule.foot = frame * Vector3(0, 0.305, 1.8)
+			capsule.foot = frame * Vector3(0, 0.305, 1.95)
 			capsule.head = capsule.foot + Vector3.UP * 1.15
 			assert_true(Resolve.resolve_motion(capsule, frame.basis.z * 0.02, set).is_ok(), "wheel approach starts outside all reserved collision")
 			var target := Interactions.Target.new()
@@ -168,7 +168,7 @@ func test_all_crank_faces_are_reachable_outside_reserved_swing_and_clear_ladder_
 			context.foot = capsule.foot
 			context.eye = capsule.foot + Vector3.UP * 1.295
 			context.forward = -frame.basis.z
-			assert_true(absf(Interactions.hit_distance(target, context, []) - 1.8) < 1e-5, "both faces reachable within 2.2m")
+			assert_true(absf(Interactions.hit_distance(target, context, []) - 1.95) < 1e-5, "both faces reachable within 2.2m")
 		var connector := layout.connector(spec.owner_id())
 		var transfer := layout.well(connector.well_id()).transfer_path(14)
 		var capsule := Resolve.Capsule.new()
@@ -194,9 +194,10 @@ func test_parked_leaf_blocks_and_opening_keeps_original_blockers() -> void:
 	var set := ColliderSet.new()
 	set.insert(ShipGeometry.box_aabb(leaf))
 	var capsule := Resolve.Capsule.new()
-	capsule.foot = spec.frame() * Vector3(-1.4, 0.305, 0.7)
+	var parked_box := ShipGeometry.box_aabb(leaf)
+	capsule.foot = Vector3(parked_box.min_corner().x - 0.5, 0.305, parked_box.center().z)
 	capsule.head = capsule.foot + Vector3.UP * 1.15
-	var delta := spec.frame().basis * Vector3(1.8, 0, 0)
+	var delta := Vector3(parked_box.max_corner().x - capsule.foot.x + 0.5, 0, 0)
 	var result := Resolve.resolve_motion(capsule, delta, set)
 	assert_true(result.is_ok(), "parked leaf collision resolves")
 	assert_true(result.motion.displacement.length() < delta.length(), "parked leaf cannot be walked through")

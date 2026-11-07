@@ -205,7 +205,7 @@ func test_door_opens_only_in_reach_and_standing() -> void:
 	# Walk the aisle to the hatch, re-aiming at the door as the sway of the
 	# ramp settles; the swept resolver carries the capsule the whole way.
 	assert_true(_walk_to(motion, game, plane, hatch,
-		Interactions.HATCH_INTERACT_REACH * 0.9), "the walk arrived at the door")
+		Interactions.HATCH_INTERACT_REACH - 0.1), "the walk arrived at the door")
 	assert_true(motion.failure().is_empty(), motion.failure())
 	plane.offer_press(InputPlane.Buttons.INTERACT)
 	assert_false(Interactions.new(game.layout).process_id(ShipLayout.BAY_DOOR_ID, plane, game, motion), "interact at the door without the rod starts nothing")
@@ -227,8 +227,8 @@ func test_door_opens_only_in_reach_and_standing() -> void:
 		game.advance_doors()
 		motion.advance(plane, game, 0.0, DT)
 		plane.end_frame()
-	assert_vec3_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).offset, Vector3(Doors.BAY_RETRACT * 0.5, 0.0, 0.0), "the retract phase is half done at half its ticks")
-	for _tick: int in range(Doors.BAY_RETRACT_TICKS + Doors.BAY_SLIDE_TICKS - 6):
+	assert_float_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).leaf_fraction, 0.04296875, "the hinged bay progresses at six ticks")
+	for _tick: int in range(Doors.SWING_TICKS - 6):
 		game.advance_doors()
 		motion.advance(plane, game, 0.0, DT)
 		plane.end_frame()
@@ -236,7 +236,7 @@ func test_door_opens_only_in_reach_and_standing() -> void:
 	assert_true(game.door_open, "the doorway opened with the collider rebuild")
 	assert_int_equal(game.colliders.size(), PowerRoom.scene_collider_set(game.registry, true, game.power_door_open).size(), "the open doorway carries the open collider set")
 	assert_true(game.colliders.size() != colliders_closed, "the collider set changed when the doorway opened")
-	assert_vec3_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).offset, Vector3(Doors.BAY_RETRACT, 0.0, -Doors.BAY_SLIDE), "the slid-aside slab pose is pinned")
+	assert_float_equal(game.doors.snapshot(ShipLayout.BAY_DOOR_ID).leaf_fraction, 1.0, "bay reaches the seeded rest angle")
 	assert_int_equal(motion.state(), PlayerMotion.BodyState.WALK, "the body still owns a standing capsule")
 	assert_int_equal(game.phase.current(), Phase.Wake.STANDING, "the phase machine never left Standing")
 

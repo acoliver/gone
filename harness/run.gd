@@ -20,12 +20,10 @@ const PERF_POLICY_PATH: String = "res://harness/perf-policy.json"
 const DARK_MAX_LUMA: float = 0.06
 const LIT_MIN_LUMA: float = 0.008
 const LIT_MIN_RED: float = 0.02
-## Beats framed under the activated secondary power's regular white
-## light: nonblack like every lit beat, but NOT red-dominant — red
-## exceeding both other channels by this margin reads as still
-## emergency-lit.
+## Secondary-power beats keep the nonblack gate and sample the visible
+## regular and emergency lenses independently of surface colour.
 const WHITE_LIGHT_BEATS: Array[String] = ["power-active", "hall-white"]
-const WHITE_MAX_RED_ADVANCE: float = 0.02
+const LampSamples := preload("res://harness/lamp_samples.gd")
 const BEAT_TICK_HEADROOM: int = 40
 const WAKE_PROGRESSION: Array[String] = ["waking", "awake_in_pod", "exiting_pod", "standing"]
 
@@ -320,8 +318,7 @@ func measure_mean_linear(image: Image) -> float:
 ## hall-dark beat is dark (the hallway is unlit until its switch flips),
 ## every other lit beat is nonblack and red-dominant (the rooms'
 ## emergency lighting), and the power-active/hall-white beats are
-## nonblack but NOT red-dominant (the activated secondary power's
-## regular white light).
+## nonblack with a lit white strip and every visible emergency lens dark.
 func verify_beat_stats(name: String, image: Image, entry: Dictionary) -> void:
 	var chip: Vector2i = Protocol.chip_size()
 	var samples: int = 0
@@ -354,9 +351,11 @@ func verify_beat_stats(name: String, image: Image, entry: Dictionary) -> void:
 		failures.append("beat `%s` is black: luma %.4f" % [name, luma])
 	var declared_white: bool = scenario.beats.any(func(beat: Dictionary) -> bool: return beat.name == name and beat.get("light", "red") == "white")
 	if WHITE_LIGHT_BEATS.has(name) or declared_white:
-		if red >= green + WHITE_MAX_RED_ADVANCE and red >= blue + WHITE_MAX_RED_ADVANCE:
-			failures.append("beat `%s` still red-dominant: r/g/b %.4f/%.4f/%.4f" % [
-				name, red, green, blue])
+		var lamps := LampSamples.evaluate(image, entry.get("lamps", []))
+		for failure: String in lamps.failures:
+			failures.append("beat `%s` %s" % [name, failure])
+		for line: String in lamps.lines:
+			beat_lines.append("beat `%s` %s" % [name, line])
 		return
 	if red < LIT_MIN_RED or red < green or red < blue:
 		failures.append("beat `%s` not red-dominant: r/g/b %.4f/%.4f/%.4f" % [name, red, green, blue])
@@ -444,14 +443,18 @@ func verify_power(report) -> void:
 	if report.beats.has("console-inactive"):
 		var inactive_tick: int = report.beats["console-inactive"].tick
 		var inactive_ok := false
+		var pressed_before_capture := false
 		for event: Dictionary in report.events:
-			if event.kind == "console" and String(event.state) == "inactive" \
+			if event.kind != "console":
+				continue
+			if int(event.presses) > 0 and int(event.tick) <= inactive_tick:
+				pressed_before_capture = true
+			if int(event.presses) == 0 and String(event.state) == "inactive" \
 					and String(event.native_label) == "te mu nawa lina palo" \
 					and String(event.perceived_label) == "SISTEMA DE ENERGÍA SECUNDARIO INACTIVO" \
 					and int(event.tick) <= inactive_tick + BEAT_TICK_HEADROOM:
 				inactive_ok = true
-				break
-		if not inactive_ok:
+		if not inactive_ok or pressed_before_capture:
 			failures.append("console-inactive beat has no palo / INACTIVO-label evidence at or before tick %d" % inactive_tick)
 	if report.beats.has("power-active"):
 		var active_tick: int = report.beats["power-active"].tick
@@ -460,7 +463,7 @@ func verify_power(report) -> void:
 		for event: Dictionary in report.events:
 			if not event.has("tick") or int(event.tick) > active_tick + BEAT_TICK_HEADROOM:
 				continue
-			if event.kind == "console" and String(event.state) == "active" \
+			if event.kind == "console" and int(event.presses) == 1 and String(event.state) == "active" \
 					and String(event.native_label) == "te mu nawa lina shenu" \
 					and String(event.perceived_label) == "SISTEMA DE ENERGÍA SECUNDARIO EN FUNCIONAMIENTO":
 				console_ok = true

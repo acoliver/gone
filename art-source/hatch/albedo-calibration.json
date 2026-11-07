@@ -1,0 +1,63 @@
+{
+  "method": "linear_rgb_factor = (concept - zero_paint_render) / (unit_paint_render - zero_paint_render)",
+  "light": "unchanged round8 neutral lookdev; white key energy 2.6, ambient 0.13",
+  "reason": "The 0.643 m whole generated wheel exposes more painted leaf inside the fixed leaf rectangle than the previous 0.888 m wheel. Native zero/unit captures from tools/capture_hatch_lookdev.gd determine fresh leaf factors by the existing response method. Frame factors retain their measured flush-leaf calibration. Source PNGs, alpha relief, comparison rectangles, capture settings and all tolerances are unchanged.",
+  "regions": {
+    "leaf": {
+      "box": [
+        420,
+        560,
+        560,
+        900
+      ],
+      "concept_linear_rgb": [
+        0.066239588457777,
+        0.03267963159595736,
+        0.018296037076154043
+      ],
+      "unit_linear_rgb": [
+        0.05378228236593341,
+        0.029830750260877212,
+        0.021718109461844208
+      ],
+      "zero_linear_rgb": [
+        0.01604476412288168,
+        0.010836819071815065,
+        0.008343769058556508
+      ],
+      "linear_rgb_factor": [
+        1.3301040097976564,
+        1.149989031060653,
+        0.744131502376824
+      ]
+    },
+    "frame": {
+      "box": [
+        300,
+        300,
+        340,
+        700
+      ],
+      "concept_linear_rgb": [
+        0.05814466033218542,
+        0.023193615342998245,
+        0.013708638923653623
+      ],
+      "unit_linear_rgb": [
+        0.09631085664991418,
+        0.04508969483658456,
+        0.03654383827165823
+      ],
+      "zero_linear_rgb": [
+        0.006740866558506916,
+        0.006740866558506916,
+        0.006740866558506916
+      ],
+      "linear_rgb_factor": [
+        0.5738952714097691,
+        0.4290287219517643,
+        0.23379455016131834
+      ]
+    }
+  }
+}

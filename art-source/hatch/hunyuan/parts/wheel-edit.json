@@ -1,0 +1,30 @@
+{
+  "triangles": 958222,
+  "vertices": 479033,
+  "bounds": [
+    [
+      -0.3214273452758789,
+      -0.3186988830566406,
+      -0.10389827936887741
+    ],
+    [
+      0.3214273452758789,
+      0.3186988830566406,
+      0.021993324160575867
+    ]
+  ],
+  "radial_bound_m": 0.32150001021434993,
+  "volume_m3": 0.008049998103622743,
+  "connected_components": 22,
+  "removed_zero_area_faces": 16,
+  "cut_plane_z_m": 0.021993325053356966,
+  "cut_depth_each_face_m": 0.08433604144232622,
+  "hub_cylinder_segments": 192,
+  "hub_radius_m": 0.097014721914355,
+  "operations": [
+    "Preserve the central source hub within radius 0.30 source units.",
+    "Retain 7.5..67.5 degree outer spoke/rim sector; repeat six times at 60 degrees.",
+    "Boolean-weld touching sector seams and hub attachment without vertex displacement.",
+    "Remove the central dome beyond the approved face-normal plane, closing that plane."
+  ]
+}

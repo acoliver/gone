@@ -107,7 +107,8 @@ func check_hatch() -> void:
 	checks.assert_true(label.global_basis.z.dot(closed.basis.z) < 0.01, "writing turns ninety degrees with leaf")
 	var face: LabelAttention.Face = game.label_attention._faces[id]
 	checks.assert_true(face.frame.is_equal_approx(label.global_transform), "attention uses the swung face, never the old bulkhead anchor")
-	checks.assert_int_equal(scene.labels.size(), 9, "eight reachable hatch/bay faces and one aft lift, one label per face")
+	# Preparing the aft section now also builds its six regular-door plates.
+	checks.assert_int_equal(scene.labels.size(), 15, "nine hatch/lift faces plus six regular-door plates")
 
 func check_lift() -> void:
 	await _stand(Vector3(33, 0, 0), PI)

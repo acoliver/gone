@@ -68,6 +68,11 @@ static func parse(text: String) -> Dictionary:
 					"error": "report parse error: beat `%s` entry missing `%s`" % [name, key]}
 		report.beats[name] = {"file": String(entry.file), "tick": int(entry.tick),
 			"frame": int(entry.frame), "request_id": int(entry.request_id)}
+		if entry.has("lamps"):
+			var lamp_error: String = preload("res://harness/lamp_samples.gd").validate(entry.lamps)
+			if not lamp_error.is_empty():
+				return {"report": null, "error": "report parse error: beat `%s`: %s" % [name, lamp_error]}
+			report.beats[name].lamps = entry.lamps
 	var identity: Dictionary = data.identity
 	for key: String in ["app_hash", "scenario_hash", "config_hash"]:
 		if not identity.has(key):
