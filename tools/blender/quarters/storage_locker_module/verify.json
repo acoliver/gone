@@ -94,18 +94,18 @@
   },
   "door_pivot": {
     "world_position_m": [
-      -0.23999999463558197,
-      -0.257999986410141,
+      -0.25999999046325684,
+      -0.3009999990463257,
       0.11000002175569534
     ],
     "expected_m": [
-      -0.24,
-      -0.258,
+      -0.26,
+      -0.301,
       0.11
     ],
     "error_m": [
-      5.364418020903372e-09,
-      1.358985901589449e-08,
+      9.536743172944284e-09,
+      9.536743061921982e-10,
       2.1755695342462467e-08
     ],
     "pass": true
@@ -127,15 +127,15 @@
         "object_pairs": [],
         "door_bounds_m": [
           [
-            -0.23999999463558197,
-            0.23999999463558197
+            -0.25699999928474426,
+            0.25700002908706665
           ],
           [
             -0.2700006663799286,
-            -0.2459999918937683
+            -0.2460000067949295
           ],
           [
-            0.11000000685453415,
+            0.11000001430511475,
             2.330000162124634
           ]
         ]
@@ -146,15 +146,15 @@
         "object_pairs": [],
         "door_bounds_m": [
           [
-            -0.2417365312576294,
-            0.23444414138793945
+            -0.25131523609161377,
+            0.25834891200065613
           ],
           [
-            -0.3529227674007416,
-            -0.24652959406375885
+            -0.35997331142425537,
+            -0.24770380556583405
           ],
           [
-            0.11000000685453415,
+            0.11000001430511475,
             2.330000400543213
           ]
         ]
@@ -165,15 +165,15 @@
         "object_pairs": [],
         "door_bounds_m": [
           [
-            -0.2478128969669342,
-            0.10706799477338791
+            -0.2352643758058548,
+            0.14363665878772736
           ],
           [
-            -0.6051883697509766,
-            -0.2503431439399719
+            -0.6439123153686523,
+            -0.26505887508392334
           ],
           [
-            0.11000000685453415,
+            0.11000001430511475,
             2.330000638961792
           ]
         ]
@@ -184,12 +184,12 @@
         "object_pairs": [],
         "door_bounds_m": [
           [
-            -0.2520001232624054,
-            -0.2279999852180481
+            -0.22900012135505676,
+            -0.20499998331069946
           ],
           [
-            -0.7380002737045288,
-            -0.257999986410141
+            -0.818000316619873,
+            -0.30399999022483826
           ],
           [
             0.10999997705221176,
@@ -203,15 +203,15 @@
         "object_pairs": [],
         "door_bounds_m": [
           [
-            -0.33492279052734375,
-            -0.22852960228919983
+            -0.3189733326435089,
+            -0.2067037969827652
           ],
           [
-            -0.7324443459510803,
-            -0.25626352429389954
+            -0.8193491697311401,
+            -0.30968478322029114
           ],
           [
-            0.10999996960163116,
+            0.10999997705221176,
             2.330000400543213
           ]
         ]
@@ -220,7 +220,7 @@
     "pass": true
   },
   "topology": {
-    "triangle_count": 5092,
+    "triangle_count": 5416,
     "triangle_limit": 6000,
     "nonmanifold_edges": 0,
     "degenerate_faces": 0,
@@ -242,49 +242,49 @@
         "triangles": 108,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 0.026890095156791933
+        "signed_volume_m3": 0.028051438499971937
       },
       "BottomPanel": {
         "triangles": 108,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 0.003540959839663552
+        "signed_volume_m3": 0.007086116131176823
       },
       "Door": {
         "triangles": 556,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 0.025218590427699767
+        "signed_volume_m3": 0.027029571761178824
       },
       "DoorReturn_B": {
         "triangles": 108,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 6.510470574635127e-05
+        "signed_volume_m3": 6.984137090023287e-05
       },
       "DoorReturn_L": {
         "triangles": 108,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 0.0003075105525547351
+        "signed_volume_m3": 0.00020154530706854412
       },
       "DoorReturn_R": {
         "triangles": 108,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 0.0003075105525547351
+        "signed_volume_m3": 0.00020154530706854412
       },
       "DoorReturn_T": {
         "triangles": 108,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 6.510470574635127e-05
+        "signed_volume_m3": 6.984137090023287e-05
       },
       "DoorVents": {
-        "triangles": 324,
+        "triangles": 648,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 0.00026882233948229595
+        "signed_volume_m3": 0.0005238023465687498
       },
       "Handle": {
         "triangles": 108,
@@ -302,7 +302,7 @@
         "triangles": 180,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 5.207555685160511e-05
+        "signed_volume_m3": 7.347522101023665e-05
       },
       "KickPlate": {
         "triangles": 108,
@@ -320,13 +320,13 @@
         "triangles": 108,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 0.02707472965850381
+        "signed_volume_m3": 0.02824412733673398
       },
       "SidePanel_R": {
         "triangles": 108,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 0.02707472965850381
+        "signed_volume_m3": 0.02824412733673398
       },
       "SurroundHead": {
         "triangles": 108,
@@ -356,7 +356,7 @@
         "triangles": 108,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 0.003540959839663552
+        "signed_volume_m3": 0.007086116131176823
       }
     },
     "pass": true
@@ -372,7 +372,7 @@
       ],
       "max": [
         0.3001961410045624,
-        2.399999976158142,
+        2.4000000953674316,
         0.30000000819563866
       ],
       "expected_min": [
@@ -396,7 +396,8 @@
       "DoorReturn_L",
       "DoorReturn_R",
       "DoorReturn_T",
-      "DoorVents",
+      "DoorVents_c31885",
+      "DoorVents_c6865f",
       "Handle",
       "HandlePocket",
       "Hinges",
@@ -430,6 +431,17 @@
       "right_m": 0.04019615054130554
     },
     "kick_plate_setback_pass": true,
+    "closed_carcass": {
+      "missed_rays": 0,
+      "sample_count": 2352,
+      "pass": true
+    },
+    "front_visibility_fraction": {
+      "Hinges": 1.0,
+      "Handle": 1.0,
+      "DoorVents": 0.8958333333333334
+    },
+    "front_visibility_pass": true,
     "pass": true
   }
 }

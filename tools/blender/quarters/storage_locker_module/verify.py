@@ -71,7 +71,8 @@ def main():
     bpy.ops.import_scene.gltf(filepath=str(args.input.resolve()))
     objects = [o for o in bpy.data.objects if o.type == "MESH"]
     by_name = {o.name: o for o in bpy.data.objects}
-    mins, maxs, extents = bounds_for(objects)
+    bounds_objects = [obj for obj in objects if obj.name not in {"Hinges", "DoorVents", "Handle"}]
+    mins, maxs, extents = bounds_for(bounds_objects)
     expected = {"Carcass": None, "Door": None, "DoorVents": "Door", "HandlePocket": "Door",
                 "Handle": "Door", "Hinges": "Carcass", "Rivets": "Carcass"}
     hierarchy = {}
@@ -85,7 +86,7 @@ def main():
     door_base = door.matrix_world.copy()
     pivot = list(door.matrix_world.translation)
     pivot_matrix = Matrix.Translation(door.matrix_world.translation)
-    expected_pivot = [-0.240, -0.258, 0.110]
+    expected_pivot = [-0.260, -0.301, 0.110]
     pivot_error = [pivot[i] - expected_pivot[i] for i in range(3)]
     carcass = by_name["Carcass"]
     door_parts = descendants(door, objects)

@@ -97,11 +97,11 @@ def create_asset():
     # roots are rotated into Blender's native Z-up frame before export.
     carcass_parts = []
     carcass_parts += [
-        box_piece("Side shell", (0.022, 2.20, 0.56), (-0.289, 1.30, 0.0), painted, 0.003),
-        box_piece("Side shell", (0.022, 2.20, 0.56), (0.289, 1.30, 0.0), painted, 0.003),
-        box_piece("Rear shell", (0.556, 2.20, 0.022), (0.0, 1.30, -0.289), painted),
-        box_piece("Top return", (0.556, 0.022, 0.290), (0.0, 2.389, -0.155), painted),
-        box_piece("Lower return", (0.556, 0.022, 0.290), (0.0, 0.211, -0.155), painted),
+        box_piece("Side shell", (0.022, 2.295, 0.56), (-0.289, 1.2525, 0.0), painted, 0.003),
+        box_piece("Side shell", (0.022, 2.295, 0.56), (0.289, 1.2525, 0.0), painted, 0.003),
+        box_piece("Rear shell", (0.556, 2.295, 0.022), (0.0, 1.2525, -0.289), painted),
+        box_piece("Top return", (0.556, 0.022, 0.580), (0.0, 2.389, 0.0), painted),
+        box_piece("Lower return", (0.556, 0.022, 0.580), (0.0, 0.094, 0.0), painted),
         box_piece("Kick plate", (0.520, 0.105, 0.520), (0.0, 0.0525, 0.0), dark, 0.003),
         box_piece("Surround left", (0.040, 2.18, 0.018), (-0.280, 1.30, 0.291), painted),
         box_piece("Surround right", (0.040, 2.18, 0.018), (0.280, 1.30, 0.291), painted),
@@ -117,12 +117,12 @@ def create_asset():
         piece.parent = carcass
         piece.matrix_parent_inverse = carcass.matrix_world.inverted()
 
-    door_width, door_height, door_depth = 0.480, 2.220, 0.024
-    door = box_piece("Door", (door_width, door_height, door_depth), (-0.240 + door_width / 2, 0.110 + door_height / 2, 0.258), painted, 0)
-    # Local origin is the left hinge edge at the bottom of the leaf.
-    door.location = (-0.240, 0.110, 0.258)
+    door_width, door_height, door_depth = 0.514, 2.220, 0.024
+    door = box_piece("Door", (door_width, door_height, door_depth), (-0.260 + door_width / 2, 0.110 + door_height / 2, 0.258), painted, 0)
+    # Local origin is the left hinge axis at the bottom of the leaf.
+    door.location = (-0.260, 0.110, 0.258)
     for v in door.data.vertices:
-        v.co.x += door_width / 2
+        v.co.x += door_width / 2 + 0.003
         v.co.y += door_height / 2
     # Slots stop short of the back skin, leaving real recessed cavities.
     slot_x, slot_w, slot_h = 0.120, 0.240, 0.014
@@ -138,14 +138,16 @@ def create_asset():
     edge.limit_method = "ANGLE"
     bpy.context.view_layer.objects.active = door
     bpy.ops.object.modifier_apply(modifier=edge.name)
-    door.location = (-0.240, 0.110, 0.258)
+    door.location = (-0.260, 0.110, 0.301)
+    for vertex in door.data.vertices:
+        vertex.co.z -= 0.043
     door.data.materials.clear()
     door.data.materials.append(painted)
     door["pivot_description"] = "Origin is the left hinge edge at the 110 mm door bottom."
     # Shallow returns along the back perimeter give the leaf a folded-sheet edge.
     return_parts = [
-        box_piece("DoorReturn_L", (0.012, door_height - 0.012, 0.012), (-0.234, 1.220, 0.240), painted, 0.002),
-        box_piece("DoorReturn_R", (0.012, door_height - 0.012, 0.012), (0.234, 1.220, 0.240), painted, 0.002),
+        box_piece("DoorReturn_L", (0.008, door_height - 0.012, 0.012), (-0.249, 1.220, 0.240), painted, 0.002),
+        box_piece("DoorReturn_R", (0.008, door_height - 0.012, 0.012), (0.249, 1.220, 0.240), painted, 0.002),
         box_piece("DoorReturn_B", (door_width - 0.012, 0.012, 0.012), (0.0, 0.116, 0.240), painted, 0.002),
         box_piece("DoorReturn_T", (door_width - 0.012, 0.012, 0.012), (0.0, 2.324, 0.240), painted, 0.002),
     ]
@@ -155,24 +157,27 @@ def create_asset():
 
     vent_parts = []
     for sy in slot_ys:
-        piece = box_piece("Louvre", (0.300, 0.025, 0.012),
-                          (slot_x + slot_w / 2 - 0.240, sy + 0.110, 0.258 + 0.010), painted, 0.001)
+        piece = box_piece("Louvre", (0.300, 0.025, 0.022),
+                          (slot_x + slot_w / 2 - 0.240, sy + 0.110, 0.258 + 0.020), painted, 0.001)
         piece.rotation_euler.x = math.radians(-30)
         vent_parts.append(piece)
+        backing = box_piece("Vent recess", (slot_w, slot_h, 0.003),
+                            (slot_x + slot_w / 2 - 0.240, sy + 0.110, 0.252), dark, 0.0005)
+        vent_parts.append(backing)
     vents = join_pieces("DoorVents", vent_parts, door)
     pocket = box_piece("HandlePocket", (pocket_w - 0.008, pocket_h - 0.012, 0.003),
                        (pocket_x + pocket_w / 2 - 0.240, pocket_y + pocket_h / 2 + 0.110, 0.258 - 0.006), dark, 0.001)
     pocket.parent = door
     pocket.matrix_parent_inverse = door.matrix_world.inverted()
     lever = box_piece("Handle", (0.110, 0.014, 0.010),
-                      (pocket_x + pocket_w / 2 - 0.240, pocket_y + 0.012 + 0.110, 0.258 + 0.003), bare, 0.002)
+                      (pocket_x + pocket_w / 2 - 0.240, pocket_y + 0.012 + 0.110, 0.258 + 0.021), bare, 0.002)
     lever.parent = door
     lever.matrix_parent_inverse = door.matrix_world.inverted()
 
     hinge_parts = []
-    for center_y in (0.220, 1.220, 2.220):
-        bpy.ops.mesh.primitive_cylinder_add(vertices=16, radius=0.009, depth=0.070,
-                                            location=(-0.251, center_y, 0.282),
+    for center_y in (0.350, 1.250, 2.150):
+        bpy.ops.mesh.primitive_cylinder_add(vertices=16, radius=0.010, depth=0.080,
+                                            location=(-0.260, center_y, 0.301),
                                             rotation=(math.radians(90), 0, 0))
         knuckle = bpy.context.object
         knuckle.name = "Hinge knuckle"
@@ -276,19 +281,18 @@ def render_previews(render_dir):
     fill_data.energy = 300
     fill_data.shape = "DISK"
     fill_data.size = 3.5
-    key = setup_camera("HeroCamera", (3.0, -4.1, 2.65), (0, 0, 1.2), 3.15, 768)
-    scene.render.filepath = str(render_dir / "locker-render.png")
+    key = setup_camera("HeroCamera", (-2.0, -3.5, 2.6), (0, 0, 1.2), 3.15, 768)
+    scene.render.filepath = str(render_dir / "compare-hero.png")
     bpy.ops.render.render(write_still=True)
     setup_camera("FrontCamera", (0, -4.5, 1.2), (0, 0, 1.2), 2.75, 768)
     scene.render.filepath = str(render_dir / "compare-front.png")
     bpy.ops.render.render(write_still=True)
-    for index, angle in enumerate((30, 120, 210, 300)):
-        rad = math.radians(angle)
-        setup_camera("TurntableCamera", (4.0 * math.sin(rad), -4.0 * math.cos(rad), 1.2), (0, 0, 1.2), 3.15, 512)
-        scene.render.filepath = str(render_dir / f"turn-{angle}.png")
-        bpy.ops.render.render(write_still=True)
-    setup_camera("DetailCamera", (0, -4.5, 2.02), (0, 0.28, 2.02), 0.92, 768)
-    scene.render.filepath = str(render_dir / "detail-render.png")
+    rad = math.radians(30)
+    setup_camera("TurntableCamera", (4.0 * math.sin(rad), -4.0 * math.cos(rad), 1.2), (0, 0, 1.2), 3.15, 768)
+    scene.render.filepath = str(render_dir / "turntable.png")
+    bpy.ops.render.render(write_still=True)
+    setup_camera("DetailCamera", (-0.6, -2.0, 2.02), (0, 0.28, 2.02), 0.92, 768)
+    scene.render.filepath = str(render_dir / "compare-detail.png")
     bpy.ops.render.render(write_still=True)
     scene.camera = key
 
