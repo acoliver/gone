@@ -90,6 +90,7 @@ func prepare_near(foot: Vector3) -> void:
 	if not _initial_labels:
 		_initial_labels = true
 		_sync_labels()
+		_sync_sliding_labels()
 	for id: StringName in _game.layout.deck(14).connector_ids():
 		var spec := _game.layout.connector(id)
 		var hall := _game.layout.section(&"D14-S-041").bounds()
@@ -126,6 +127,7 @@ func _prepare_connector(spec: ShipLayout.ConnectorSpec) -> void:
 	_spaces[spec.id()] = true
 	_spaces[section_spec.id()] = true
 	_sync_labels()
+	_sync_sliding_labels()
 	_add_lift_label(spec, connector.lift_leaf)
 
 func _sync_labels() -> void:
@@ -145,6 +147,17 @@ func _add_hatch_label(door: ShipLayout.DoorSpec, face: ShipLayout.FaceSpec) -> v
 	var leaf: Node3D = hatch.door_piece() if door.kind() == ShipLayout.DoorKind.BAY else _hatches[door.id()].label_leaf()
 	var local := face.leaf_label_frame(door)
 	_add_label(face.id(), door.deck_number(), face.source_space(), door.frame() * face.label_frame(), face.label_size(), ShipText.hatch_label(door.deck_number(), face.destination_section()), leaf, local)
+
+func _sync_sliding_labels() -> void:
+	for view: DoorView in door_views:
+		var door := _game.layout.door(view.door_id())
+		if not SlidingDoorParts.applies(door): continue
+		var leaf := power_room._door_leaf if door.kind() == ShipLayout.DoorKind.POWER else view.label_leaf()
+		for side: int in range(door.face_ids().size()):
+			var face := _game.layout.face(door.face_ids()[side])
+			if not _spaces.has(face.source_space()): continue
+			var local := SlidingDoorParts.label_frame(door, side)
+			_add_label(face.id(), door.deck_number(), face.source_space(), _world_frame(leaf) * local, SlidingDoorParts.LABEL_SIZE, ShipText.hatch_label(door.deck_number(), face.destination_section()), leaf, local)
 
 func _add_lift_label(spec: ShipLayout.ConnectorSpec, leaf: Node3D) -> void:
 	var lift := _game.layout.lift(spec.lift_id())
@@ -176,8 +189,20 @@ func tick_attention(eye: Vector3, forward: Vector3, deck: int = 14) -> void:
 		_sight_solids.clear()
 		var ids := _game.collision.solid_ids(deck)
 		var boxes := _sight_set.boxes()
+		var wall_returns: Dictionary = {}
+		for solid: ShipGeometry.SolidSpec in ShipGeometry.deck_static_solids(_game.layout, deck):
+			if solid.material_role != &"wall": continue
+			var drawn := SlidingDoorParts.wall_boxes(_game.layout, solid)
+			if drawn.size() == 1 and drawn[0] == AABB(-solid.size / 2, solid.size): continue
+			var bounds: Array[AABB] = []
+			for box: AABB in drawn: bounds.append(solid.transform * box)
+			var key := solid.id if ShipGeometry.collision_boxes(solid).size() == 1 else StringName("%s/CELL/0000" % solid.id)
+			wall_returns[key] = bounds
 		for index: int in range(boxes.size()):
 			var id := String(ids[index])
+			if wall_returns.has(ids[index]):
+				_sight_solids.append_array(wall_returns[ids[index]])
+				continue
 			if id.ends_with("/SWING"):
 				continue
 			if id.ends_with("/BLOCKER") or id.ends_with("/PARKED"):

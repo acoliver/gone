@@ -329,9 +329,12 @@ func test_rendered_shell_uses_pure_collision_recipe() -> void:
 		assert_vec3_equal(mesh.position, solid.center, "rendered hall center is collider input")
 		var rendered := _expanded_faces(mesh.mesh)
 		if solid.hatch_profile == null:
-			assert_true(mesh.mesh is BoxMesh, "unprofiled hall solid renders as an exact box")
-			if mesh.mesh is BoxMesh:
-				assert_vec3_equal(mesh.mesh.size, solid.size, "rendered hall box size is collider input")
+			# Pocket and side-door mouths are drawn cutouts; collision stays solid.
+			var expected := PackedVector3Array()
+			for box: AABB in SlidingDoorParts.wall_boxes(ShipLayout.authored().layout, solid):
+				for vertex: Vector3 in _expanded_faces(HatchModel.box_mesh(box.size)):
+					expected.append(vertex + box.get_center())
+			assert_true(_same_triangles(rendered, expected), "drawn wall returns match the sim recipe and winding within 1e-6")
 		else:
 			var expected := _profile_faces(solid)
 			assert_true(_same_triangles(rendered, expected), "rendered hall triangles match the shared wall profile and winding within 1e-6")
@@ -433,7 +436,12 @@ func _profile_faces(solid: ShipGeometry.SolidSpec) -> PackedVector3Array:
 			var normal := (body_faces[triangle + 2] - body_faces[triangle]).cross(body_faces[triangle + 1] - body_faces[triangle]).normalized()
 			if absf(normal.z) > 0.5: continue
 			for corner: int in range(3): faces.append(body_faces[triangle + corner])
-		return faces
+		# Regular side mouths now interrupt the straight band, while the round
+		# hatch profile above is unchanged. Apply only those sim-owned cutouts.
+		var expected: Mesh = _mesh_from_faces(faces)
+		for cut: AABB in SlidingDoorParts.wall_cuts(ShipLayout.authored().layout, solid):
+			if expected.get_aabb().intersection(cut).has_volume(): expected = SlidingDoorModel.cut_mesh(expected, cut)
+		return _expanded_faces(expected)
 	var source := BoxMesh.new()
 	source.size = solid.size
 	var faces := _expanded_faces(source)
@@ -471,6 +479,8 @@ func _mesh_from_faces(faces: PackedVector3Array) -> ArrayMesh:
 	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for vertex: Vector3 in faces:
 		tool.add_vertex(vertex)
+	tool.generate_normals()
+	tool.index()
 	return tool.commit()
 
 func _bay(local: Vector2) -> Vector2:

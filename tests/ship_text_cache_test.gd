@@ -76,10 +76,11 @@ func test_built_d14_faces_generate_labels_without_remote_or_startup_jobs() -> vo
 	var scene := ShipScene.build_into(parent, game, false)
 	assert_int_equal(scene.text_cache.pending_count(), 1, "arrival console queues its inactive text")
 	scene.prepare_near(Vector3(18, 0, 0))
-	assert_int_equal(scene.labels.size(), 4, "both bay faces and two hall-facing hatches")
+	# The regular-door design adds five side plates and both power-door faces.
+	assert_int_equal(scene.labels.size(), 11, "four hatch faces plus seven regular-door plates")
 	scene.prepare_near(Vector3(28, 0, 0))
 	scene.prepare_near(Vector3(8, 0, 0))
-	assert_int_equal(scene.labels.size(), 14, "ten reachable hatch faces, two bay faces, two lifts")
+	assert_int_equal(scene.labels.size(), 33, "fourteen hatch/lift faces plus seventeen side and two power plates")
 	assert_int_equal(scene.text_cache.pending_count(), 7, "six navigation pairs plus arrival console text")
 	assert_int_equal(scene.text_cache.raster_viewport_count(), 0, "pure scene tests do not await GPU")
 	assert_true(scene.labels[&"D14-C-001-H-FORE/FORE"].pair.native == "lometa [16]\nshelani paki [52]", "corridor face points to section forty-two")

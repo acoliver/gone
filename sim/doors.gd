@@ -245,5 +245,5 @@ class Store:
 		result.leaf_fraction = progress * progress * (3.0 - 2.0 * progress)
 		match record.spec.animation():
 			ShipLayout.AnimationRecipe.SLIDE:
-				result.offset = Vector3(-POWER_SLIDE * progress, 0, 0)
+				result.offset = record.spec.frame().basis.x * record.spec.slide_sign() * POWER_SLIDE * progress
 		return result

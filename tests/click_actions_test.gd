@@ -168,10 +168,12 @@ func test_scenario_objectives_validate_and_offer_one_tick() -> void:
 
 func test_blocked_floor_objective_slides_then_stops_without_repeating() -> void:
 	var player := _player(Vector3(18, 0.305, 0))
-	player.adapter.objective(ClickObjective.floor_point(Vector3(22, 0, 4), 14))
+	# The old proud leaf stopped this slide early. Aim just beyond the now
+	# flat wall so the unchanged blocked-progress gate expires within 600 ticks.
+	player.adapter.objective(ClickObjective.floor_point(Vector3(22, 0, 2), 14))
 	_ticks(player, 600)
 	assert_true(player.motion.objectives.current == null, "wall-blocked floor objective expires")
-	assert_true(player.motion.capsule().foot.x > 20.0, "resolver slides along the wall before the next door frame: %s" % player.motion.capsule().foot)
+	assert_true(player.motion.capsule().foot.x > 20.0, "resolver slides along the wall past the flush side door: %s" % player.motion.capsule().foot)
 	assert_true(player.motion.capsule().foot.z < 1.5, "no tunnelling through wall")
 	var stopped := player.motion.capsule().foot
 	_ticks(player, 60)

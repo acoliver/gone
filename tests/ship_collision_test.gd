@@ -186,7 +186,9 @@ func test_opening_counts_and_every_box_keep_original_insertion_order() -> void:
 	assert_vec3_equal(closed.boxes()[0].center(), Vector3(15, -0.1, 7.7), "first bay floor")
 	assert_vec3_equal(closed.boxes()[5].center(), Vector3(15, 1.2, 1.6), "pierce replaces east wall at same index")
 	assert_vec3_equal(closed.boxes()[8].center(), Vector3(11.03, 0.45, 12.5), "closed bay blocker index")
-	assert_vec3_equal(closed.boxes()[198].center(), Vector3(27, 1.1, -1.47), "power leaf follows the bay frame and four new wall-pocket corner skins")
+	# The power leaf moved into the wall. Compare the native AABB midpoint
+	# exactly; its float32 min/max average differs from the authored centre.
+	assert_vec3_equal(closed.boxes()[198].center(), ShipGeometry.box_aabb(ShipGeometry.power_door_leaf()).center(), "power leaf keeps its insertion slot with the new pocket dimensions")
 
 func test_approved_layout_cache_and_blocker_revisions_are_deck_local() -> void:
 	var collision := ShipCollision.new(ShipLayout.authored().layout)

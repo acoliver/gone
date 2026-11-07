@@ -28,9 +28,7 @@ const ROOM_START_X = ShipGeometry.ROOM_START_X
 const ROOM_END_X = ShipGeometry.ROOM_END_X
 const ROOM_CEILING = ShipGeometry.ROOM_CEILING
 
-## The power door's leaf: the side doors' exact dimensions, proud of
-## the corridor side of the wall band, sliding aside along the wall
-## when it opens (the animation contract lives in PlayerMotion).
+## Regular steel is inset into the wall and slides into its drawn pocket.
 const DOOR_WIDTH: float = Hallway.SIDE_DOOR_WIDTH
 const DOOR_HEIGHT: float = Hallway.SIDE_DOOR_HEIGHT
 const DOOR_THICKNESS: float = Hallway.SIDE_DOOR_THICKNESS
@@ -150,10 +148,7 @@ var _palette_cache: Dictionary = {}
 static func room_solids() -> Array[Placement.SolidPlacement]:
 	return ShipGeometry.power_room_solids()
 
-## The power door's closed leaf: the side doors' exact proud-mount
-## placement on the corridor side of the north wall band, at the power
-## door station. Slides into the wall band when it opens; the collider
-## rides only while shut, exactly like the stasis hatch's slab.
+## Closed collider and rendered leaf share the sim-owned in-wall dimensions.
 static func door_leaf() -> Placement.SolidPlacement:
 	return ShipGeometry.power_door_leaf()
 
@@ -249,15 +244,12 @@ static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 		piece.name = surface_names[index]
 		room.add_child(piece)
 
-	var leaf_solid := door_leaf()
-	leaf_solid.material_role = &"door"
-	leaf_solid.surface_identity(ShipLayout.POWER_DOOR_ID, &"LEAF")
-	room._door_leaf = _box_instance(leaf_solid, Surfaces.material(&"hatch_leaf"))
-	Surfaces.bind_solid(room._door_leaf, game.layout, leaf_solid)
+	room._door_leaf = SlidingDoorModel.leaf(game.layout.door(ShipLayout.POWER_DOOR_ID), 1, game.layout)
+	room.add_child(SlidingDoorModel.frame(game.layout.door(ShipLayout.POWER_DOOR_ID)))
 	room._door_binding = Surfaces.MotionBinding.new(room._door_leaf)
 	room._door_binding.pieces.append(room._door_leaf)
 	room._door_leaf.name = "PowerDoorLeaf"
-	room._door_leaf_base = door_leaf().center
+	room._door_leaf_base = room._door_leaf.position
 	room.add_child(room._door_leaf)
 
 	for station: ConsoleStation in console_stations():

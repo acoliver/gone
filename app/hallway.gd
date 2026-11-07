@@ -191,13 +191,13 @@ static func build(game: Game) -> Hallway:
 
 	var doors := Node3D.new()
 	doors.name = "HallSideDoors"
-	var door_material := Surfaces.material(&"hatch_leaf")
 	var by_solid_id: Dictionary = {}
 	for id: StringName in game.layout.section(&"D14-S-041").side_door_ids():
 		by_solid_id[StringName("%s/LEAF" % id)] = id
 	for solid: ShipGeometry.SolidSpec in ShipGeometry.side_door_solids(game.layout):
-		var leaf := _box_instance(solid, door_material)
-		Surfaces.bind_solid(leaf, game.layout, solid)
+		var spec := game.layout.door(by_solid_id[solid.id])
+		var leaf := SlidingDoorModel.leaf(spec, 1, game.layout)
+		doors.add_child(SlidingDoorModel.frame(spec))
 		leaf.set_meta(&"solid_id", solid.id)
 		hallway.side_leaves[by_solid_id[solid.id]] = leaf
 		doors.add_child(leaf)
@@ -444,13 +444,13 @@ func white_lens_material() -> StandardMaterial3D:
 ## for its role — the same resource instance, never a copy.
 static func _surface_instance(role: String, placement: Placement.SolidPlacement, layout: ShipLayout = ShipLayout.authored().layout) -> MeshInstance3D:
 	assert(StringName(role) == placement.material_role, "surface role agrees with pure recipe")
-	var piece := _box_instance(placement, Surfaces.material(placement.material_role))
+	var piece := _box_instance(placement, Surfaces.material(placement.material_role), layout)
 	Surfaces.bind_solid(piece, layout, placement)
 	return piece
 
-static func _box_instance(placement: Placement.SolidPlacement, material: Material) -> MeshInstance3D:
+static func _box_instance(placement: Placement.SolidPlacement, material: Material, layout: ShipLayout = ShipLayout.authored().layout) -> MeshInstance3D:
 	var instance := MeshInstance3D.new()
-	instance.mesh = HatchModel.solid_mesh(placement)
+	instance.mesh = SlidingDoorModel.wall_mesh(layout, placement) if placement.material_role == &"wall" else HatchModel.solid_mesh(placement)
 	instance.material_override = material
 	instance.position = placement.center
 	instance.quaternion = placement.rotation

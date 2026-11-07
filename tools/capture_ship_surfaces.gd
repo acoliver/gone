@@ -97,6 +97,7 @@ func _run() -> void:
 		var bay_frame := game.layout.bay_to_world()
 		await _shot(circuit, "bay", ShipLayout.BAY_ID, bay_frame * Vector3(-0.4, 1.6, 1.49), bay_frame * Vector3(5.8, 1.5, 0))
 		await _shot(circuit, "power-doorway", ShipLayout.POWER_ID, Vector3(25.5, 1.6, -0.1), Vector3(27, 1.4, -1.6))
+		await _sliding_views(circuit)
 		await _shot(circuit, "connector-aft", &"D14-C-001", Vector3(32.8, 1.6, 0), Vector3(30, 1.4, 0))
 		await _shot(circuit, "connector-fore", &"D14-C-000", Vector3(3.5, 1.6, 0), Vector3(6, 1.4, 0))
 		await _shot(circuit, "section40", &"D14-S-040", Vector3(-12, 1.6, 0.25), Vector3(-0.2, 1.5, 0))
@@ -139,6 +140,20 @@ func _run() -> void:
 	FileAccess.open(output_dir.path_join("captures.json"), FileAccess.WRITE).store_string(JSON.stringify(identity, "\t") + "\n")
 	print("SHIP SURFACES COMPLETE captures=", records.size())
 	quit(0)
+
+func _sliding_views(circuit: String) -> void:
+	var spec := game.layout.door(ShipLayout.POWER_DOOR_ID)
+	var context := Doors.Context.new()
+	context.face_id = spec.face_ids()[0]
+	for state: String in ["closed", "half-open", "open"]:
+		if state == "half-open": game.doors.press(spec.id(), context)
+		if state != "closed":
+			for tick: int in range(Doors.SWING_TICKS / 2): game.advance_doors()
+		_present()
+		for side: int in [-1, 1]:
+			await _shot(circuit, "power-door-%s-%s" % ["hall" if side < 0 else "room", state], spec.id(), spec.frame() * Vector3(0.35, 1.55, side * 1.50), spec.frame() * Vector3(0.15, 1.10, ShipLayout.WALL / 2))
+	var side_door := game.layout.door(&"D14-S-041-SIDE-015-PORT")
+	await _shot(circuit, "side-door-close", side_door.id(), side_door.frame() * Vector3(-0.15, 1.55, -1.25), side_door.frame() * Vector3(0, 1.15, 0))
 
 func _open_rest_views(circuit: String, id: StringName) -> void:
 	var spec := game.layout.door(id)

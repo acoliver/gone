@@ -88,10 +88,11 @@ func test_the_south_face_tiles_the_band_minus_the_aperture() -> void:
 	var aperture: float = Hallway.SIDE_DOOR_WIDTH * Hallway.SIDE_DOOR_HEIGHT * Placement.WALL_THICKNESS
 	assert_float_in_range(volume + aperture, band_volume - 1e-4, band_volume + 1e-4, "the pierce pieces plus the gap band tile the south face's envelope minus exactly the power aperture")
 
-func test_power_door_leaf_mounts_proud_of_the_corridor() -> void:
+func test_power_door_leaf_sits_inside_the_wall() -> void:
 	var leaf := PowerRoom.door_leaf()
-	assert_vec3_equal(leaf.center, Vector3(27.0, 1.1, -1.47), "the closed leaf centers in the power aperture")
-	assert_vec3_equal(leaf.size, Vector3(1.0, 2.2, 0.06), "the leaf carries the side doors' dimensions")
+	# Pocket-door design replaces the old proud-mounted 1.0 x 2.2 x 0.06 m slab.
+	assert_vec3_equal(leaf.center, Vector3(27.0, 1.1, -1.6), "the closed leaf sits halfway through the wall")
+	assert_vec3_equal(leaf.size, Vector3(1.28, 2.2, 0.054), "50 mm steel and raised borders overlap the unchanged 1 m aperture")
 	assert_float_in_range(PowerRoom.door_act_center().x, 27.0 - 1e-4, 27.0 + 1e-4, "the power door's act volume centers under the aperture")
 	assert_float_in_range(PowerRoom.door_act_center().z, -0.9 - 1e-4, -0.9 + 1e-4, "the act volume stands on the corridor side")
 
@@ -135,8 +136,9 @@ func test_collider_sets_extend_the_hallways_both_doors() -> void:
 	assert_int_equal(game.colliders.size(), shut.size(), "the game boots on the shut set")
 	# The power aperture is solid while shut and clear once the leaf
 	# slides aside, riding the same difference the walk sim crosses on.
-	assert_true(_probe(shut, Vector3(26.6, 0.4, -1.5), Vector3(27.4, 2.0, -1.44)) >= 1, "the shut leaf collides inside the power aperture")
-	assert_int_equal(_probe(both_open, Vector3(26.6, 0.4, -1.5), Vector3(27.4, 2.0, -1.44)), 0, "the open power doorway is clear through the aperture")
+	# The pocket leaf now occupies the wall centre, not the old corridor face.
+	assert_true(_probe(shut, Vector3(26.6, 0.4, -1.627), Vector3(27.4, 2.0, -1.573)) >= 1, "the shut leaf collides inside the power aperture")
+	assert_int_equal(_probe(both_open, Vector3(26.6, 0.4, -1.627), Vector3(27.4, 2.0, -1.573)), 0, "the open power doorway is clear through the aperture")
 	# The room's own furniture collides in every set.
 	assert_true(_probe(both_open, Vector3(26.9, 1.0, -5.9), Vector3(27.1, 2.0, -5.5)) >= 1, "the generator's hull collides")
 	assert_true(_probe(both_open, Vector3(21.05, 0.5, -7.6), Vector3(21.5, 1.7, -7.4)) >= 1, "the working console's hull collides")

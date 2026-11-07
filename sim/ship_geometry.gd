@@ -265,14 +265,7 @@ static func power_room_solids() -> Array[ShipGeometry.SolidSpec]:
 	], ShipLayout.POWER_ID, [&"FORE", &"AFT", &"PORT"])
 
 static func power_door_leaf() -> ShipGeometry.SolidSpec:
-	return ShipGeometry.SolidSpec.new(
-		Vector3(
-			ShipGeometry.POWER_DOOR_X,
-			SIDE_DOOR_HEIGHT / 2.0,
-			-(ShipGeometry.HALL_WIDTH / 2.0 - SIDE_DOOR_THICKNESS / 2.0)
-		),
-		Vector3(SIDE_DOOR_WIDTH, SIDE_DOOR_HEIGHT, SIDE_DOOR_THICKNESS)
-	)
+	return SlidingDoorParts.leaf_solid(ShipLayout.authored().layout.door(ShipLayout.POWER_DOOR_ID))
 
 static func console_stations() -> Array[ConsoleStation]:
 	var positions := ShipLayout.power_console_positions()
@@ -485,7 +478,7 @@ static func _section_side_leaves(layout: ShipLayout, section: ShipLayout.Section
 	return solids
 
 static func side_door_leaf(door: ShipLayout.DoorSpec) -> SolidSpec:
-	return transformed(SolidSpec.new(Vector3(0, door.aperture().y / 2, -SIDE_DOOR_THICKNESS / 2), Vector3(door.aperture().x, door.aperture().y, SIDE_DOOR_THICKNESS), Quaternion.IDENTITY, StringName("%s/LEAF" % door.id()), &"door"), door.frame())
+	return SlidingDoorParts.leaf_solid(door)
 
 static func connector_solids(layout: ShipLayout, connector: ShipLayout.ConnectorSpec) -> Array[SolidSpec]:
 	var solids: Array[SolidSpec] = []

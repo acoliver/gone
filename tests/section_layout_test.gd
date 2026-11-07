@@ -52,7 +52,11 @@ func test_moved_side_door_frame_moves_mesh_collider_and_interaction_together() -
 	var old_box := ShipGeometry.box_aabb(old_solids[-5])
 	var new_box := ShipGeometry.box_aabb(new_solids[-5])
 	assert_vec3_equal(new_box.center() - old_box.center(), Vector3.RIGHT, "ordered collider follows the same door frame")
-	assert_vec3_equal(new_box.center(), new_leaf.position, "mesh and collider coincide")
+	# The 54 mm hull midpoint and authored centre round differently.
+	# Check both consumers against the shared solid with exact equality.
+	var shared := SlidingDoorParts.leaf_solid(result.layout.door(id))
+	assert_vec3_equal(new_leaf.position, shared.center, "mesh uses the shared leaf centre")
+	assert_true(new_box.equals(ShipGeometry.box_aabb(shared)), "collider uses the shared leaf bounds")
 	assert_vec3_equal(new_box.half_extents(), old_box.half_extents(), "move preserves collider dimensions")
 	var colliders := ShipCollision.opening_set(result.layout.bay().template(), true, true, result.layout)
 	var leaf_index := 0

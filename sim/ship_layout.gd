@@ -338,7 +338,8 @@ class DoorSpec:
 	var _owner_id: StringName
 	var _animation: int
 	var _has_wheel: bool
-	func _init(p_id: StringName, p_deck: int, p_kind: int, p_policy: int, p_frame: Transform3D, p_aperture: Vector2, p_spaces: Array[StringName], p_face_ids: Array[StringName], p_owner_id: StringName, p_animation: int, p_has_wheel: bool) -> void:
+	var _slide_sign: int
+	func _init(p_id: StringName, p_deck: int, p_kind: int, p_policy: int, p_frame: Transform3D, p_aperture: Vector2, p_spaces: Array[StringName], p_face_ids: Array[StringName], p_owner_id: StringName, p_animation: int, p_has_wheel: bool, p_slide_sign: int = 0) -> void:
 		_id = p_id
 		_deck = p_deck
 		_kind = p_kind
@@ -350,6 +351,7 @@ class DoorSpec:
 		_owner_id = p_owner_id
 		_animation = p_animation
 		_has_wheel = p_has_wheel
+		_slide_sign = p_slide_sign
 	func kind() -> int:
 		return _kind
 	func policy() -> int:
@@ -366,6 +368,8 @@ class DoorSpec:
 		return _owner_id
 	func animation() -> int:
 		return _animation
+	func slide_sign() -> int:
+		return _slide_sign
 	func has_wheel() -> bool:
 		return _has_wheel
 	func data() -> Dictionary:
@@ -379,6 +383,7 @@ class DoorSpec:
 		result["owner_id"] = _owner_id
 		result["animation"] = _animation
 		result["has_wheel"] = _has_wheel
+		result["slide_sign"] = _slide_sign
 		return result
 	func leaf_aperture() -> Vector2:
 		# Andrew's flush-leaf design leaves 15 mm to the ring's inner curve.
@@ -929,14 +934,14 @@ func serialize() -> String:
 static func _frame_x(position: Vector3) -> Transform3D:
 	return Transform3D(Basis(Vector3(0, 0, -1), Vector3.UP, Vector3.RIGHT), position)
 
-static func _add_door(specs: Array[Spec], id: StringName, deck: int, kind: int, policy: int, frame: Transform3D, aperture: Vector2, spaces: Array[StringName], owner: StringName, destinations: Vector2i, suffixes: Array[StringName]) -> void:
+static func _add_door(specs: Array[Spec], id: StringName, deck: int, kind: int, policy: int, frame: Transform3D, aperture: Vector2, spaces: Array[StringName], owner: StringName, destinations: Vector2i, suffixes: Array[StringName], slide_sign: int = 0) -> void:
 	var faces: Array[StringName] = [StringName("%s/%s" % [id, suffixes[0]]), StringName("%s/%s" % [id, suffixes[1]])]
 	var animation := AnimationRecipe.HINGE if kind == DoorKind.HATCH else AnimationRecipe.FIXED
 	if kind == DoorKind.BAY:
 		animation = AnimationRecipe.HINGE
 	elif kind == DoorKind.POWER:
 		animation = AnimationRecipe.SLIDE
-	specs.append(DoorSpec.new(id, deck, kind, policy, frame, aperture, spaces, faces, owner, animation, kind in [DoorKind.HATCH, DoorKind.BAY]))
+	specs.append(DoorSpec.new(id, deck, kind, policy, frame, aperture, spaces, faces, owner, animation, kind in [DoorKind.HATCH, DoorKind.BAY], slide_sign))
 	for index: int in range(2):
 		var local := Transform3D(Basis(Vector3(-1, 0, 0), Vector3.UP, Vector3(0, 0, -1)), Vector3.ZERO)
 		if index == 1:
@@ -973,7 +978,7 @@ static func _authored_records() -> Array[Spec]:
 						# The outer side is an unbuilt space, not a playable room.
 						var outside := StringName("%s/UNBUILT" % side_id)
 						specs.append(SectionSpec.new(outside, d, number, AABB(Vector3(start + offset - 0.5, y, -2 if side == "PORT" else 1.7), Vector3(1, CLEAR_HEIGHT, 0.3)), [], [], &"emergency", false))
-						_add_door(specs, side_id, d, DoorKind.SIDE, Policy.NEVER_OPENS, frame, Vector2(1, 2.2), [id, outside], id, Vector2i(number, number), [&"HALL", &"OUTER"])
+						_add_door(specs, side_id, d, DoorKind.SIDE, Policy.NEVER_OPENS, frame, Vector2(1, 2.2), [id, outside], id, Vector2i(number, number), [&"HALL", &"OUTER"], (1 if number == 41 and offset == 15 else -1) if side == "PORT" else 1)
 				var fore_hatch := StringName("%s-H-AFT" % connector_id(d, number - 41))
 				var aft_hatch := StringName("%s-H-FORE" % connector_id(d, number - 40))
 				openings.append(fore_hatch)
@@ -1029,7 +1034,7 @@ static func _authored_records() -> Array[Spec]:
 		consoles.append(Transform3D(Basis(Vector3.UP, yaws[index]), positions[index]))
 	specs.append(PowerRoomSpec.new(POWER_ID, 14, &"D14-S-041", AABB(Vector3(POWER_MIN_X, 0, POWER_FAR_Z), Vector3(Pods.ROOM_LENGTH, CLEAR_HEIGHT, Pods.ROOM_WIDTH)), POWER_DOOR_ID, consoles, Transform3D(Basis(), POWER_GENERATOR_CENTER)))
 	_add_door(specs, BAY_DOOR_ID, 14, DoorKind.BAY, Policy.ROD_PRY, Transform3D(Basis(), Vector3(15, 0, 1.5)), Vector2(HATCH_WIDTH, HATCH_HEIGHT), [&"D14-S-041", BAY_ID], BAY_ID, Vector2i(41, 41), [&"HALL", &"BAY"])
-	_add_door(specs, POWER_DOOR_ID, 14, DoorKind.POWER, Policy.PRESS_SLIDE, Transform3D(Basis(Vector3(-1, 0, 0), Vector3.UP, Vector3(0, 0, -1)), Vector3(POWER_CENTER_X, 0, -1.5)), Vector2(1, 2.2), [&"D14-S-041", POWER_ID], POWER_ID, Vector2i(41, 41), [&"HALL", &"POWER"])
+	_add_door(specs, POWER_DOOR_ID, 14, DoorKind.POWER, Policy.PRESS_SLIDE, Transform3D(Basis(Vector3(-1, 0, 0), Vector3.UP, Vector3(0, 0, -1)), Vector3(POWER_CENTER_X, 0, -1.5)), Vector2(1, 2.2), [&"D14-S-041", POWER_ID], POWER_ID, Vector2i(41, 41), [&"HALL", &"POWER"], 1)
 	return specs
 
 static func power_console_positions() -> Array[Vector3]:

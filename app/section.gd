@@ -9,7 +9,9 @@ static func build(layout: ShipLayout, spec: ShipLayout.SectionSpec) -> ShipSecti
 	section.name = String(spec.id())
 	var mask := Lighting.space_mask(layout, spec.id())
 	for solid: ShipGeometry.SolidSpec in ShipGeometry.section_solids(layout, spec):
-		var piece := surface(solid, mask, layout)
+		var regular := solid.material_role == &"door"
+		var piece := SlidingDoorModel.leaf(layout.door(solid.surface_owner), mask, layout) if regular else surface(solid, mask, layout)
+		if regular: section.add_child(SlidingDoorModel.frame(layout.door(solid.surface_owner), mask))
 		if solid.material_role == &"floor": piece.visible = false
 		section.add_child(piece)
 		for id: StringName in spec.side_door_ids():
@@ -22,7 +24,8 @@ static func build(layout: ShipLayout, spec: ShipLayout.SectionSpec) -> ShipSecti
 	return section
 
 static func surface(solid: ShipGeometry.SolidSpec, mask: int, layout: ShipLayout = ShipLayout.authored().layout) -> MeshInstance3D:
-	var piece := HatchModel.mesh_piece(Hallway._box_mesh(solid.size), solid.transform, mask, Surfaces.material(Surfaces.role_for_solid(solid)))
+	var mesh := SlidingDoorModel.wall_mesh(layout, solid) if solid.material_role == &"wall" and solid.hatch_profile == null else Hallway._box_mesh(solid.size)
+	var piece := HatchModel.mesh_piece(mesh, solid.transform, mask, Surfaces.material(Surfaces.role_for_solid(solid)))
 	Surfaces.bind_solid(piece, layout, solid)
 	piece.name = String(solid.id).replace("/", "_")
 	piece.set_meta(&"solid_id", solid.id)
