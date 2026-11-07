@@ -155,17 +155,43 @@ func _capture(label: String) -> Image:
 	await _settle(4)
 	var image := root.get_texture().get_image()
 	image.save_png(output.path_join(label+".png"))
+	if label == "sealed-close-red":
+		await _red_headroom()
 	if not results.has("views"):
 		results.views = {}
 	var frame := camera.global_transform
 	results.views[label] = {"eye":[frame.origin.x,frame.origin.y,frame.origin.z],"basis":[frame.basis.x.x,frame.basis.x.y,frame.basis.x.z,frame.basis.y.x,frame.basis.y.y,frame.basis.y.z,frame.basis.z.x,frame.basis.z.y,frame.basis.z.z],"fov":camera.fov,"near":camera.near,"far":camera.far}
 	return image
 
+func _red_headroom() -> void:
+	# Eight-bit PNG rounds near-white highlights to 255. Measure linear half-floats instead.
+	root.use_hdr_2d = true
+	await _settle(8)
+	var image := root.get_texture().get_image()
+	assert(image.get_format() == Image.FORMAT_RGBH, "headroom requires a linear half-float target")
+	image.save_exr(output.path_join("sealed-close-red.exr"))
+	var maximum := 0.0
+	var clipped := 0
+	for y: int in range(image.get_height()):
+		for x: int in range(image.get_width()):
+			var red := image.get_pixel(x,y).r
+			maximum = maxf(maximum,red)
+			clipped += int(red >= 1.0)
+	var world: WorldEnvironment = stage.find_children("*", "WorldEnvironment", true, false)[0]
+	results.red_headroom = {"max_linear_red":maximum,"pixels_at_or_above_one":clipped,"exposure":world.camera_attributes.exposure_multiplier,"tonemap":world.environment.tonemap_mode,"white":world.environment.tonemap_white}
+	_gate("red_headroom",maximum<1.0,results.red_headroom,1.0)
+	root.use_hdr_2d = false
+	await _settle(8)
+
 func _set_panes(visible: bool) -> void:
 	for pane: MeshInstance3D in panes:
 		pane.visible = visible
 
 func _mask(selected: MeshInstance3D,label: String) -> Image:
+	# Geometry IDs must not pass through the production highlight shoulder.
+	var world: WorldEnvironment = stage.find_children("*", "WorldEnvironment", true, false)[0]
+	var tonemap := world.environment.tonemap_mode
+	world.environment.tonemap_mode = Environment.TONE_MAPPER_LINEAR
 	var old: Array[Material] = []
 	var black := StandardMaterial3D.new()
 	black.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -185,6 +211,7 @@ func _mask(selected: MeshInstance3D,label: String) -> Image:
 	ship.hazards._smoke_field.visible = smoke_visible
 	for i: int in range(meshes.size()):
 		meshes[i].material_override = old[i]
+	world.environment.tonemap_mode = tonemap
 	return image
 
 func _checker_transfer(reference: Image,candidate: Image,mask: Image,aperture: Image) -> Dictionary:

@@ -128,12 +128,24 @@ certify the unimplemented parts of the advice plan.
 
 ## Production visibility checks (#88)
 
-Padding now uses linear reflectance `(0.10, 0.23, 0.26)` for the couch and
-`(0.13, 0.40, 0.45)` for the pillow. The lower red reflectance preserves
-shape under emergency light instead of clipping the cushion to solid red.
-The cloth remains rough and non-emissive. `Lighting` adds short-range red
-belt-spill and head-wall-bounce proxies because emissive belts alone do not
-light nearby geometry without GI. Room ambient and collision remain unchanged.
+Padding uses light neutral medical cloth: linear reflectance
+`(0.50, 0.51, 0.52)` for the couch and `(0.70, 0.71, 0.72)` for the pillow,
+both at roughness 0.9. The saved source, GLB and runtime material pins agree.
+The cloth remains non-emissive. The production environment uses a Reinhard
+highlight shoulder at white 4096, retaining exposure 2.0 and the existing
+light intensities. Linear output previously clipped red-lit padding even at
+its darker reflectance. The high white point keeps reflected fixture peaks
+below one without reducing the padding's albedo or adding ambient light.
+`pod_captures.gd` saves a linear half-float `sealed-close-red.exr` and gates
+the full-frame red maximum below one after exposure and tone mapping; PNG
+rounding alone cannot distinguish near-white values from clipping. Geometry
+ID masks bypass tone mapping so their white/black classification stays exact.
+The flat and curved optical fixtures retain their original linear environment
+for radiometric transmission measurements; production captures exercise the
+highlight shoulder separately. No optical threshold changes.
+`Lighting` adds short-range red belt-spill and head-wall-bounce proxies because
+emissive belts alone do not light nearby geometry without GI. Room ambient
+and collision remain unchanged.
 The head pivot still has 0.322 mm source contact clearance; its dark wedge
 was the unlit head-facing shell, not a wall intersection or a hole at the axis.
 

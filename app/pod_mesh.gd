@@ -9,6 +9,9 @@ const SHELL_ROUGHNESS: float = 0.12
 const SHELL_METALLIC: float = 0.0
 const SHELL_CLEARCOAT: float = 1.0
 const SHELL_CLEARCOAT_ROUGHNESS: float = 0.08
+const COUCH_ALBEDO := Color(.50, .51, .52)
+const PILLOW_ALBEDO := Color(.70, .71, .72)
+const FABRIC_ROUGHNESS: float = .9
 
 static var _scene: PackedScene
 static var _materials: Dictionary[String, Material] = {}
@@ -98,6 +101,9 @@ static func _prepare(node: Node3D) -> void:
 						shared.clearcoat_enabled = true
 						shared.clearcoat = SHELL_CLEARCOAT
 						shared.clearcoat_roughness = SHELL_CLEARCOAT_ROUGHNESS
+					elif material_name in ["CouchFabric", "PillowFabric"]:
+						shared.albedo_color = (COUCH_ALBEDO if material_name == "CouchFabric" else PILLOW_ALBEDO).linear_to_srgb()
+						shared.roughness = FABRIC_ROUGHNESS
 					_materials[material_name] = shared
 			var arrays := source.surface_get_arrays(surface)
 			if material_name == "WindowTint":

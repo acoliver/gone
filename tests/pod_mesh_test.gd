@@ -24,10 +24,24 @@ var _tri_max: Array[Vector3] = []
 func test_fabric_reflectance_keeps_the_padding_distinct() -> void:
 	var couch := PodMesh.couch_material()
 	var pillow: StandardMaterial3D = PodMesh._materials["PillowFabric"]
-	assert_true(couch.albedo_color == Color(.10,.23,.26).linear_to_srgb(), "couch uses medium blue-grey padding rather than near-black fabric")
-	assert_true(pillow.albedo_color == Color(.13,.40,.45).linear_to_srgb(), "the lighter pillow stays distinct from the couch")
+	assert_true(couch.albedo_color == Color(.50,.51,.52).linear_to_srgb(), "light neutral medical padding remains visible through the glass")
+	assert_true(pillow.albedo_color == Color(.70,.71,.72).linear_to_srgb(), "the near-white pillow stays distinct from the couch")
+	assert_true(absf(couch.roughness - .9) < 1e-4, "medical padding has a rough cloth finish")
+	assert_true(absf(pillow.roughness - .9) < 1e-4, "the pillow has the same rough cloth finish")
 	assert_false(couch.emission_enabled, "the padding is lit fabric, not a luminous panel")
 	assert_false(pillow.emission_enabled, "the pillow reflects the pod and room lights")
+
+func test_exported_padding_matches_the_runtime_material_pins() -> void:
+	var source: PackedScene = load(PodMesh.POD_PATH)
+	var shell: Node3D = source.instantiate()
+	for entry: Array in [["Couch", PodMesh.COUCH_ALBEDO], ["Pillow", PodMesh.PILLOW_ALBEDO]]:
+		var mesh: MeshInstance3D = shell.get_node("PodBase/" + entry[0])
+		var material: StandardMaterial3D = mesh.mesh.surface_get_material(0)
+		assert_true(material.albedo_color.is_equal_approx(entry[1].linear_to_srgb()), "exported %s preserves its authored linear reflectance" % entry[0])
+		assert_true(absf(material.roughness - PodMesh.FABRIC_ROUGHNESS) < 1e-4, "exported cloth preserves its authored roughness")
+		assert_float_equal(material.metallic, 0.0, "padding is dielectric")
+		assert_false(material.emission_enabled, "exported padding remains non-emissive")
+	shell.free()
 
 func test_all_seven_pods_share_the_one_shell_mesh() -> void:
 	var pods := StasisPods.build(Pods.PodRegistry.frozen())
@@ -121,8 +135,8 @@ func test_shell_resource_loads_and_stays_cheap() -> void:
 			# #88: replace the opaque color pin with the tested thin-glass contract.
 			assert_true(material == PodMesh.canopy_material() and material is ShaderMaterial, "only glazing uses a shader")
 			assert_true(material.shader.get_shader_uniform_list().is_empty(), "glass needs no texture bindings")
-	assert_true(PodMesh.couch_material().albedo_color == Color(.10, .23, .26).linear_to_srgb(), "couch is medium blue-grey fabric")
-	assert_true(absf(PodMesh.couch_material().roughness - 0.95) < 1e-4, "fabric stays rough")
+	assert_true(PodMesh.couch_material().albedo_color == Color(.50, .51, .52).linear_to_srgb(), "couch is light neutral medical padding")
+	assert_true(absf(PodMesh.couch_material().roughness - 0.9) < 1e-4, "fabric stays rough")
 	assert_true(triangles > 0, "the pod mesh is not empty")
 	assert_true(triangles <= 20000, "the entire pod stays cheap: %d tris must be <= 20000" % triangles)
 
