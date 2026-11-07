@@ -128,12 +128,15 @@ def main():
     construction = json.loads(pane['glass_construction'])
     assert abs(construction['bevel_radius'] - .0005) <= .00005
     assert construction['bevel_segments'] == 3
+    assert abs(construction['interface_separation'] - .00005) < .000001, 'seat separation must be 0.05 mm'
     assert abs(construction['reveal'] - .001) <= .0001
     assert abs(construction['gasket_recess'] - .0015) <= .0001
     # Nearest opaque surface behind every broad triangle centroid, preserving
     # real node/triangle identities instead of exempting all shell plastic.
     lid = bpy.data.objects['PodLid']
     seat_vertices = [lid.matrix_world @ v.co for v in lid.data.vertices]
+    seat_topology = topology(lid.data, [list(p.vertices) for p in lid.data.polygons if p.material_index == 1])
+    assert seat_topology['boundary_edges'] == seat_topology['nonmanifold'] == 0, 'gasket seat must be closed'
     seat = BVHTree.FromPolygons(seat_vertices, [list(p.vertices) for p in lid.data.polygons if p.material_index == 1], all_triangles=True)
     render_bvh = BVHTree.FromPolygons(vertices, [f for f, r in zip(faces, regions) if r != 1], all_triangles=True)
     assert not render_bvh.overlap(seat), 'pane skirt intersects its gasket'
@@ -163,9 +166,15 @@ def main():
             forbidden += 1
         rays.append(dict(origin=point[:], direction=(-n)[:], pane_triangle=p.index, opaque_node=name, opaque_triangle=triangle, hit=hit, distance=distance))
     assert forbidden == 0, forbidden
+    sys.path.insert(0, str(ROOT))
+    from build import render_pane
+    inherited_normals = [mesh.corner_normals[l].vector.copy() for p, region in zip(mesh.polygons, regions) if region != 1 for l in p.loop_indices]
+    render_pane(pane)
+    render_normal_error = max(a.angle(b.vector, 0) for a, b in zip(inherited_normals, pane.data.corner_normals))
+    assert render_normal_error <= math.radians(.1), ('export derivative changed inherited normals', math.degrees(render_normal_error))
     (args.output / 'source-rays.json').write_text(json.dumps(rays))
     (args.output / 'thickness.json').write_text(json.dumps(correspondence))
-    result = dict(solid=solid, render=render, degenerate=degenerate, broad_normal_dot=minimum_dot, retained_broad_position_error=worst_position, thickness_change=worst_thickness, construction=construction, measured_bevel_radius_range=[min(measured_radii), max(measured_radii)], measured_reveal_range=[min(measured_reveals), max(measured_reveals)], pane_gasket_intersections=0, broad_centroid_rays=len(rays), forbidden_hits=forbidden, minimum_backing_distance=minimum)
+    result = dict(render_normal_error_degrees=math.degrees(render_normal_error), solid=solid, render=render, seat=seat_topology, degenerate=degenerate, broad_normal_dot=minimum_dot, retained_broad_position_error=worst_position, thickness_change=worst_thickness, construction=construction, measured_bevel_radius_range=[min(measured_radii), max(measured_radii)], measured_reveal_range=[min(measured_reveals), max(measured_reveals)], pane_gasket_intersections=0, broad_centroid_rays=len(rays), forbidden_hits=forbidden, minimum_backing_distance=minimum)
     (args.output / 'geometry.json').write_text(json.dumps(result, indent=2))
     print(json.dumps(result, indent=2), flush=True)
 

@@ -107,8 +107,8 @@ static func _prepare(node: Node3D) -> void:
 				node.sorting_use_aabb_center = true
 				node.sorting_offset = 0.0
 			elif material_name == "ShellPlastic":
-				# First Godot LOD has <1 mm measured error on these three
-				# surfaces and retains the existing 20k per-pod budget (#88).
+				# #88: keep the glazing bevel and facet-matched seat unsimplified;
+				# only the original shell surfaces use their bounded first LOD.
 				assert(importer.get_surface_lod_count(surface) > 0, "smooth shell needs its first LOD")
 				assert(importer.get_surface_lod_size(surface, 0) < 0.001, "pod LOD error exceeds 1 mm")
 				arrays[Mesh.ARRAY_INDEX] = importer.get_surface_lod_indices(surface, 0)

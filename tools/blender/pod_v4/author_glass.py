@@ -18,8 +18,7 @@ PIVOT = Vector((0.0, 0.437, -1.1725093126296997))
 RADIUS = .0005
 REVEAL = .001
 RECESS = .0015
-# Offset covers the retained tapered edge's finite-triangle chord deviation.
-SEAT_GAP = .00025
+SEAT_GAP = .00005
 
 
 def mesh_object(obj, vertices, faces, normals, regions=None, materials=None):
@@ -39,6 +38,106 @@ def mesh_object(obj, vertices, faces, normals, regions=None, materials=None):
     obj.data = mesh
     bpy.data.meshes.remove(old)
     return mesh
+
+
+def clipped_seat(vertices, faces, regions, tangents, depths, stations):
+    """Follow the actual skirt triangles, including their diagonal crease.
+
+    Interpolating whole perimeter quads cuts across the retained skirt's
+    nonplanar facets. Clipping each facet preserves its plane at the seat.
+    """
+    def clip(polygon, limit, above):
+        result = []
+        for a, b in zip(polygon, polygon[1:] + polygon[:1]):
+            a_inside = a['depth'] >= limit if above else a['depth'] <= limit
+            b_inside = b['depth'] >= limit if above else b['depth'] <= limit
+            if a_inside != b_inside:
+                weight = (limit - a['depth']) / (b['depth'] - a['depth'])
+                support = a['support'] | b['support']
+                assert len(support) == 2, 'seat clipping must stay on a source edge'
+                result.append(dict(point=a['point'].lerp(b['point'], weight), tangent=a['tangent'].lerp(b['tangent'], weight), depth=limit, support=support))
+            if b_inside:
+                result.append(b)
+        return result
+
+    points = []
+    front = []
+    lookup = {}
+    for face, region in zip(faces, regions):
+        if region != 2:
+            continue
+        polygon = [dict(point=vertices[i], tangent=tangents[i], depth=depths[i], support=frozenset([i])) for i in face]
+        polygon = clip(clip(polygon, RECESS, True), .007, False)
+        indices = []
+        for point in polygon:
+            key = (tuple(sorted(point['support'])), round(point['depth'], 9))
+            if key not in lookup:
+                lookup[key] = len(points)
+                points.append(point)
+            indices.append(lookup[key])
+        for i in range(1, len(indices) - 1):
+            front.append([indices[0], indices[i + 1], indices[i]])
+    count = len(points)
+    perimeter = len(stations) // 2
+    seat_vertices = [p['point'] - p['tangent'] * SEAT_GAP for p in points]
+    seat_vertices += [p['point'] - p['tangent'] * (REVEAL - SEAT_GAP) for p in points]
+    top, bottom, back_top = [], [], []
+    for i, point in enumerate(points):
+        support = {stations[j] for j in point['support']}
+        station = next(iter(support)) if len(support) == 1 else (perimeter - .5 if support == {0, perimeter - 1} else min(support) + .5)
+        if abs(point['depth'] - RECESS) < 1e-9:
+            top.append((station, i))
+            if len(support) == 1:
+                back_top.append((station, i + count))
+        else:
+            assert len(support) == 1, 'seat bottom must meet the retained inner edge'
+            bottom.append((station, i))
+    top.sort()
+    bottom.sort()
+    back_top.sort()
+    back_bottom = [(station, i + count) for station, i in bottom]
+    original_bottom = list(back_bottom)
+
+    def segment_distance(point, a, b):
+        weight = max(0, min(1, (point-a).dot(b-a)/(b-a).length_squared))
+        return (point - a.lerp(b, weight)).length
+
+    # The lower frame-facing contour is hidden inside the seat. Reduce only
+    # that new contour, not the pane-facing facets, exposed top or old gasket.
+    while len(back_bottom) > 3:
+        candidates = []
+        for i in range(1, len(back_bottom)):
+            previous = back_bottom[i-1]
+            following = back_bottom[(i+1) % len(back_bottom)]
+            span = (following[0] - previous[0]) % perimeter
+            samples = [seat_vertices[j] for station, j in original_bottom if (station-previous[0]) % perimeter <= span]
+            error = max(segment_distance(p, seat_vertices[previous[1]], seat_vertices[following[1]]) for p in samples)
+            if error <= .0004:
+                candidates.append((error, i))
+        if not candidates:
+            break
+        del back_bottom[min(candidates)[1]]
+
+    seat_faces = list(front)
+    def join(a, b):
+        ia = ib = 0
+        while ia < len(a) or ib < len(b):
+            next_a = a[ia+1][0] if ia+1 < len(a) else perimeter if ia < len(a) else math.inf
+            next_b = b[ib+1][0] if ib+1 < len(b) else perimeter if ib < len(b) else math.inf
+            current_a = a[ia % len(a)][1]
+            current_b = b[ib % len(b)][1]
+            if next_a <= next_b:
+                seat_faces.append([current_a, current_b, a[(ia+1) % len(a)][1]])
+                ia += 1
+            else:
+                seat_faces.append([current_a, current_b, b[(ib+1) % len(b)][1]])
+                ib += 1
+    join(top, back_top)
+    join(back_top, back_bottom)
+    join(back_bottom, bottom)
+    used = sorted({i for face in seat_faces for i in face})
+    remap = {old: new for new, old in enumerate(used)}
+    return [seat_vertices[i] for i in used], [[remap[i] for i in face] for face in seat_faces]
 
 
 def main():
@@ -130,29 +229,24 @@ def main():
     ln = [tuple(n.vector) for n in lid.data.corner_normals]
     material_ids = [p.material_index for p in lid.data.polygons]
     materials = list(lid.data.materials) + [bpy.data.materials['Gasket']]
-    seat_rings = []
-    for offset, depth in [(REVEAL-SEAT_GAP,RECESS),(.00005,RECESS),(.00005,.007),(REVEAL-SEAT_GAP,.007)]:
-        ids = []
-        for i in ring:
-            ids.append(len(lv))
-            # The retained paired solid has a tapered cut. Follow its actual
-            # generatrix rather than pushing a vertical seat through that edge.
-            cut = vertices[rings[-1][ring.index(i)]]
-            bottom = vertices[i + 2025]
-            lower_depth = (original[i] - bottom).dot(inherited[i])
-            fraction = (depth - RADIUS) / (lower_depth - RADIUS)
-            edge_at_depth = cut.lerp(bottom, fraction)
-            lv.append(edge_at_depth + tangent[i] * (offset - REVEAL))
-        seat_rings.append(ids)
-    for side in range(4):
-        a, b = seat_rings[side], seat_rings[(side+1)%4]
-        for k in range(len(ring)):
-            j = (k+1)%len(ring)
-            for f in [[a[k],b[j],a[j]],[a[k],b[k],b[j]]]:
-                n = (lv[f[1]]-lv[f[0]]).cross(lv[f[2]]-lv[f[0]]).normalized()
-                lf.append(f)
-                ln.extend([tuple(n)]*3)
-                material_ids.append(1)
+    edge_tangents = {}
+    edge_depths = {}
+    edge_stations = {}
+    for k, i in enumerate(ring):
+        cut, bottom = rings[-1][k], i + 2025
+        edge_tangents[cut] = edge_tangents[bottom] = tangent[i]
+        edge_stations[cut] = edge_stations[bottom] = k
+        edge_depths[cut] = RADIUS
+        edge_depths[bottom] = (original[i] - vertices[bottom]).dot(inherited[i])
+    seat_vertices, seat_faces = clipped_seat(vertices, faces, regions, edge_tangents, edge_depths, edge_stations)
+    start = len(lv)
+    lv.extend(seat_vertices)
+    for face in seat_faces:
+        face = [i + start for i in face]
+        normal = (lv[face[1]]-lv[face[0]]).cross(lv[face[2]]-lv[face[0]]).normalized()
+        lf.append(face)
+        ln.extend([tuple(normal)]*3)
+        material_ids.append(1)
     lm = mesh_object(lid,lv,lf,ln,materials=materials)
     for poly, index in zip(lm.polygons,material_ids):
         poly.material_index = index

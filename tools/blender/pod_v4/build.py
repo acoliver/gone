@@ -26,10 +26,12 @@ def render_pane(obj):
     mesh.from_pydata([source.vertices[i].co[:] for i in used], [], [[mapping[i] for i in p.vertices] for p in selected])
     mesh.update()
     normals = [source.corner_normals[l].vector[:] for p in selected for l in p.loop_indices]
+    # Custom normals are encoded in the smoothing basis; establish it first.
+    for poly in mesh.polygons:
+        poly.use_smooth = True
     mesh.normals_split_custom_set(normals)
     colors = mesh.color_attributes.new(name='PaneRegion', type='FLOAT_COLOR', domain='CORNER')
     for poly, original in zip(mesh.polygons, selected):
-        poly.use_smooth = True
         color = (1.0 if regions[original.index] == 2 else 0.0, 0.0, 0.0, 1.0)
         for loop in poly.loop_indices:
             colors.data[loop].color = color
