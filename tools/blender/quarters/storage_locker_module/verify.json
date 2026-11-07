@@ -1,0 +1,322 @@
+{
+  "bounds_m": {
+    "min": [
+      -0.30000001192092896,
+      0.0,
+      -0.30000001192092896
+    ],
+    "max": [
+      0.30000001192092896,
+      2.4000000953674316,
+      0.30000001192092896
+    ],
+    "extents_xyz": [
+      0.6000000238418579,
+      2.4000000953674316,
+      0.6000000238418579
+    ],
+    "target_xyz": [
+      0.6,
+      2.4,
+      0.6
+    ],
+    "tolerance_m": 0.002,
+    "pass": true
+  },
+  "hierarchy": {
+    "Carcass": {
+      "present": true,
+      "parent": null,
+      "expected_parent": null,
+      "pass": true
+    },
+    "Door": {
+      "present": true,
+      "parent": null,
+      "expected_parent": null,
+      "pass": true
+    },
+    "DoorVents": {
+      "present": true,
+      "parent": "Door",
+      "expected_parent": "Door",
+      "pass": true
+    },
+    "HandlePocket": {
+      "present": true,
+      "parent": "Door",
+      "expected_parent": "Door",
+      "pass": true
+    },
+    "Handle": {
+      "present": true,
+      "parent": "Door",
+      "expected_parent": "Door",
+      "pass": true
+    },
+    "Hinges": {
+      "present": true,
+      "parent": "Carcass",
+      "expected_parent": "Carcass",
+      "pass": true
+    },
+    "Rivets": {
+      "present": true,
+      "parent": "Carcass",
+      "expected_parent": "Carcass",
+      "pass": true
+    }
+  },
+  "door_pivot": {
+    "world_position_m": [
+      -0.23999999463558197,
+      0.20999999344348907,
+      0.257999986410141
+    ],
+    "expected_m": [
+      -0.24,
+      0.21,
+      0.258
+    ],
+    "error_m": [
+      5.364418020903372e-09,
+      -6.5565109175214076e-09,
+      -1.358985901589449e-08
+    ],
+    "pass": true
+  },
+  "door_sweep": {
+    "sample_count": 101,
+    "range_degrees": [
+      0,
+      100
+    ],
+    "direction": "outward, negative local Y rotation",
+    "hinge_edge_clearance_m": 0.015,
+    "hinges_excluded_as_mating_hardware": true,
+    "intersections": [],
+    "diagnostic_samples": [
+      {
+        "angle_degrees_outward": 0,
+        "surface_intersection_pairs": 0,
+        "object_pairs": [],
+        "door_bounds_m": [
+          [
+            -0.23999999463558197,
+            0.23999999463558197
+          ],
+          [
+            0.21000005304813385,
+            2.3299999237060547
+          ],
+          [
+            0.2459999918937683,
+            0.26999998092651367
+          ]
+        ]
+      },
+      {
+        "angle_degrees_outward": 10,
+        "surface_intersection_pairs": 0,
+        "object_pairs": [],
+        "door_bounds_m": [
+          [
+            -0.24173647165298462,
+            0.23444417119026184
+          ],
+          [
+            0.21000005304813385,
+            2.3299999237060547
+          ],
+          [
+            0.24652959406375885,
+            0.35288360714912415
+          ]
+        ]
+      },
+      {
+        "angle_degrees_outward": 45,
+        "surface_intersection_pairs": 0,
+        "object_pairs": [],
+        "door_bounds_m": [
+          [
+            -0.24778930842876434,
+            0.10706810653209686
+          ],
+          [
+            0.21000005304813385,
+            2.3299999237060547
+          ],
+          [
+            0.2503431439399719,
+            0.6051414608955383
+          ]
+        ]
+      },
+      {
+        "angle_degrees_outward": 90,
+        "surface_intersection_pairs": 0,
+        "object_pairs": [],
+        "door_bounds_m": [
+          [
+            -0.2520000636577606,
+            -0.2280000001192093
+          ],
+          [
+            0.21000005304813385,
+            2.3299999237060547
+          ],
+          [
+            0.257999986410141,
+            0.7380000352859497
+          ]
+        ]
+      },
+      {
+        "angle_degrees_outward": 100,
+        "surface_intersection_pairs": 0,
+        "object_pairs": [],
+        "door_bounds_m": [
+          [
+            -0.3348836302757263,
+            -0.22852960228919983
+          ],
+          [
+            0.21000005304813385,
+            2.3299999237060547
+          ],
+          [
+            0.25626352429389954,
+            0.732444167137146
+          ]
+        ]
+      }
+    ],
+    "pass": true
+  },
+  "topology": {
+    "triangle_count": 4156,
+    "triangle_limit": 6000,
+    "nonmanifold_edges": 0,
+    "degenerate_faces": 0,
+    "invalid_normals": 0,
+    "missing_uv_meshes": [],
+    "materials": [
+      "BareSteel",
+      "DarkSteel",
+      "PaintedSteel"
+    ],
+    "required_materials": [
+      "BareSteel",
+      "DarkSteel",
+      "PaintedSteel"
+    ],
+    "missing_materials": [],
+    "meshes": {
+      "CarcassPart_01": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 0.027083666264350843
+      },
+      "CarcassPart_02": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 0.027083666264350843
+      },
+      "CarcassPart_03": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 0.026890095156791933
+      },
+      "CarcassPart_04": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 0.003051972898627279
+      },
+      "CarcassPart_05": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 0.003051972898627279
+      },
+      "CarcassPart_06": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 0.07198530685521595
+      },
+      "CarcassPart_07": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 0.0015532484072610466
+      },
+      "CarcassPart_08": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 0.0015532484072610466
+      },
+      "CarcassPart_09": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 0.000510493669924396
+      },
+      "CarcassPart_10": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 0.00037020351777258045
+      },
+      "CarcassPart_11": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 0.0008802891210564212
+      },
+      "Door": {
+        "triangles": 556,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 0.02401797668584493
+      },
+      "DoorVents": {
+        "triangles": 324,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 4.182708060595248e-05
+      },
+      "Handle": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 2.3159312720949876e-06
+      },
+      "HandlePocket": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 2.440075288123379e-05
+      },
+      "Hinges": {
+        "triangles": 432,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 2.1812691885462863e-05
+      },
+      "Rivets": {
+        "triangles": 1440,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 4.886761832079148e-06
+      }
+    },
+    "pass": true
+  },
+  "pass": true
+}
