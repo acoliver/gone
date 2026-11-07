@@ -253,6 +253,7 @@ func _fixture(fixture_transform: Transform3D, level: float) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "HallFixture"
 	fixture.transform = fixture_transform
+	DressingMounts.ceiling_stem(fixture, _game.layout.section(&"D14-S-041").bounds().end.y)
 	var light := Lighting.switched_key(_game.layout.section(&"D14-S-041").emergency_light_role(), level)
 	fixture.add_child(light)
 	var lens := MeshInstance3D.new()
@@ -271,6 +272,7 @@ func _white_fixture(station_x: float, level: float) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "HallRegularStrip"
 	fixture.position = Vector3(station_x, REGULAR_MOUNT_Y, 0.0)
+	DressingMounts.ceiling_stem(fixture, HALL_CEILING_HEIGHT)
 	var light := OmniLight3D.new()
 	light.light_color = Lighting.REGULAR_WHITE
 	light.light_energy = Lighting.regular_energy() * level
@@ -338,19 +340,10 @@ static func _build_ceiling_damage(spec: ShipLayout.SectionSpec) -> Node3D:
 	var damage := Node3D.new()
 	damage.name = "HallCeilingDamage"
 	var tray_material := _flat_grey(RoomGeometry.TRAY_SHADE)
-	var wire_material := _flat_grey(RoomGeometry.WIRE_SHADE)
 	for placement: ShipGeometry.SolidSpec in spec.ceiling_trays():
 		damage.add_child(_box_instance(placement, tray_material))
-	for loop: Placement.WireLoop in spec.ceiling_loops():
-		var mesh := TorusMesh.new()
-		mesh.inner_radius = Placement.WIRE_INNER_RADIUS
-		mesh.outer_radius = Placement.WIRE_OUTER_RADIUS
-		var wire := MeshInstance3D.new()
-		wire.mesh = mesh
-		wire.material_override = wire_material
-		wire.position = loop.center
-		wire.quaternion = loop.rotation
-		damage.add_child(wire)
+		for hanger: ShipGeometry.SolidSpec in DressingMounts.tray_hangers(placement, spec.bounds().end.y):
+			damage.add_child(_box_instance(hanger, tray_material))
 	return damage
 
 ## One long tray run down the corridor and one torn cross stub, tipped

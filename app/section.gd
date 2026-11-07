@@ -20,7 +20,7 @@ static func build(layout: ShipLayout, spec: ShipLayout.SectionSpec) -> ShipSecti
 	section.add_child(CorridorDressing.build(layout, spec.id()))
 	var pitch := spec.bounds().size.x / 4
 	for frame: Transform3D in spec.emergency_fixture_frames():
-		section.add_child(Lighting.steady_fixture(frame.origin, mask, minf(Lighting.FIXTURE_RANGE, pitch)))
+		section.add_child(Lighting.steady_fixture(frame.origin, mask, minf(Lighting.FIXTURE_RANGE, pitch), spec.bounds().end.y))
 	return section
 
 static func surface(solid: ShipGeometry.SolidSpec, mask: int, layout: ShipLayout = ShipLayout.authored().layout) -> MeshInstance3D:

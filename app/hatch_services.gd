@@ -126,6 +126,7 @@ static func seat_fixture(view: DoorView, side: int, fixture: Node3D) -> void:
 	world.origin += world.basis.z * -0.20
 	fixture.transform = Surfaces.world_frame(fixture.get_parent()).affine_inverse() * world
 	fixture.get_node("Lens").visible = false
+	if fixture.has_node("CeilingMount"): fixture.get_node("CeilingMount").visible = false
 	fixture.set_meta(&"hatch_lamp", true)
 
 static func seat_nearest(view: DoorView, side: int, lights: Array[OmniLight3D]) -> void:

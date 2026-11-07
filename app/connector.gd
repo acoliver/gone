@@ -25,10 +25,10 @@ static func build(layout: ShipLayout, spec: ShipLayout.ConnectorSpec) -> ShipCon
 		connector.lift_leaf.add_child(piece)
 	var panel := HatchModel.control_panel()
 	panel.name = "LiftCallPanel"
-	panel.transform = lift.frame() * Transform3D(Basis(Vector3.UP, PI), Vector3(lift.aperture().x / 2 + 0.25, 1.25, -0.06))
+	panel.transform = lift.frame() * Transform3D(Basis(Vector3.UP, PI), Vector3(lift.aperture().x / 2 + 0.25, 1.25, -HatchModel.CONTROL_SIZE.z / 2))
 	Lighting.mesh_layers(panel, mask)
 	connector.add_child(panel)
 	var bounds := spec.bounds()
 	for frame: Transform3D in spec.emergency_fixture_frames():
-		connector.add_child(Lighting.steady_fixture(frame.origin, mask, minf(Lighting.FIXTURE_RANGE, bounds.size.x / 2), FIXTURE_ATTENUATION))
+		connector.add_child(Lighting.steady_fixture(frame.origin, mask, minf(Lighting.FIXTURE_RANGE, bounds.size.x / 2), bounds.position.y if frame.origin == spec.landing_key_position() else bounds.end.y, FIXTURE_ATTENUATION))
 	return connector

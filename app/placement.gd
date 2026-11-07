@@ -114,24 +114,8 @@ static func cable_trays() -> Array[Placement.SolidPlacement]:
 		),
 	]
 
-## The five hanging wire loops over the room center.
 static func wire_loops() -> Array[Placement.WireLoop]:
-	var loops: Array[Placement.WireLoop] = []
-	var authored: Array[Vector4] = [
-		Vector4(-1.3, 2.7, 0.5, 0.4),
-		Vector4(-0.4, 2.55, 0.2, 1.3),
-		Vector4(0.3, 2.78, -0.5, 2.2),
-		Vector4(1.1, 2.62, 0.8, 0.9),
-		Vector4(2.0, 2.5, -0.2, 2.9),
-	]
-	for entry: Vector4 in authored:
-		loops.append(
-			Placement.WireLoop.new(
-				Vector3(entry.x, entry.y, entry.z),
-				Quaternion(Vector3.RIGHT, PI / 2.0) * Quaternion(Vector3.UP, entry.w)
-			)
-		)
-	return loops
+	return []
 
 ## The authored hanging wires under the torn ceiling, in fixed order:
 ## five looped bundles (both ends anchored, sagging on parabolic

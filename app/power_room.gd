@@ -435,6 +435,7 @@ func _fixture(position: Vector3, level: float) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "PowerFixture"
 	fixture.position = position
+	DressingMounts.ceiling_stem(fixture, ROOM_CEILING)
 	var light := Lighting.switched_key(_game.layout.power_room().emergency_light_role(), level)
 	fixture.add_child(light)
 	var lens := MeshInstance3D.new()
@@ -451,6 +452,7 @@ func _white_fixture(station_x: float, station_z: float, level: float) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "PowerRegularStrip"
 	fixture.position = Vector3(station_x, REGULAR_MOUNT_Y, station_z)
+	DressingMounts.ceiling_stem(fixture, ROOM_CEILING)
 	var light := OmniLight3D.new()
 	light.light_color = Lighting.REGULAR_WHITE
 	light.light_energy = Lighting.regular_energy() * level

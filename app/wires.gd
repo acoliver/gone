@@ -21,11 +21,20 @@ static func build() -> Wires:
 	var tool := SurfaceTool.new()
 	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var vertex_cursor := 0
+	var segment_bounds: Array[AABB] = []
 	for wire: Placement.HangingWire in Placement.hanging_wires():
 		vertex_cursor = _append_tube(tool, wire.points, wire.radius, vertex_cursor)
+		for index: int in range(wire.points.size() - 1):
+			segment_bounds.append(AABB(wire.points[index], Vector3.ZERO).expand(wire.points[index + 1]).grow(wire.radius))
+		var anchor := wire.points[0]
+		if anchor.y < 2.9: continue
+		var ceiling := Vector3(anchor.x, Pods.ROOM_CEILING_HEIGHT, anchor.z)
+		vertex_cursor = _append_tube(tool, [anchor, ceiling], wire.radius, vertex_cursor)
+		segment_bounds.append(AABB(anchor, Vector3.ZERO).expand(ceiling).grow(wire.radius))
 	var surface := MeshInstance3D.new()
 	surface.name = "WireSurface"
 	surface.mesh = tool.commit()
+	surface.mesh.set_meta(&"service_bounds", segment_bounds)
 	surface.material_override = _wire_material()
 	wires.add_child(surface)
 	return wires
