@@ -55,9 +55,13 @@ checks that conversion directly.
 source correspondence, welded topology, masks, normals and aperture rays.
 It retains individual ray records, including first opaque material/triangle
 and the triangulated source witness. The closed case includes a 5 mm grid
-with an exact 10 mm distance to the three-dimensional aperture boundary.
-The open cases use both directions at every broad triangle centroid. This
-local-pod check does not establish full-room or perimeter-band acceptance.
+with a 10 mm inset. Local-normal rays measure the three-dimensional broad-face
+boundary; downward rays use the projected lower skirt loop, which defines
+where those rays can exit the clear opening. A surface-distance inset on the
+steep flank incorrectly included the seated rim. The verifier also exports
+`pane-regions-<state>.json` for rendered source-region masks. The open cases
+use both directions at every broad triangle centroid. This local-pod check
+does not establish full-room or perimeter-band acceptance.
 
 Materials remain ShellPlastic, WindowTint, CouchFabric, PillowFabric and
 Gasket. Blender's closed-solid preview uses Principled transmission 1,
@@ -66,21 +70,82 @@ Godot replaces WindowTint with `app/pod_glass.gdshader`. COLOR_0 selects
 the seated cut edge without tinting the broad viewing surface. PodMesh
 also restores the shell clearcoat that Godot drops during glTF import.
 
-Full glass acceptance is still open. With the required ambient-disabled
-probe, the installed Metal renderer produces zero card signal on both glass
-and its metallic mirror control. A test-local environment-ambient probe
-produces reflections, but also adds diffuse fill and fails the no-fill gate.
-Production retains its ambient-disabled probe rather than adding that fill.
-The reflection capture origin is outside the coupon, avoiding self-capture
-at its plane. The analytic coupon uses parallel rays to fix view incidence.
+Full glass acceptance is still open. Godot 4.7's ambient-luminance specular
+occlusion erased valid probe reflections in this black-ambient room. The
+shader disables that heuristic without changing the probe or adding diffuse
+fill. The mirror control disables it too. The project now sets the engine
+default clear color to black because interior probes omit Environment
+backgrounds. Flat optics measure normalized reflection 0.03981 at normal
+incidence and 0.39638 at 80 degrees, with zero measured diffuse fill. Windowed
+diagnostics request draws explicitly so covered windows do not reuse captures.
 
-The runtime 5 mm grid also reports 170 downward seat hits within 20 mm and
-202 tub-hit deviations beyond 2 mm from the triangulated source. Normal rays
-and open-pose centroid rays remain clear. The central couch distance remains
-655.995 mm. Those grid failures are retained rather than widening the margin
-or exempting gasket/shell hits. Full perimeter sampling, smoke/depth ordering,
-edge-card response and the production power-transition gates remain open.
-The numerical tools exit nonzero when their implemented gates fail.
+The corrected projected aperture has zero near-seat hits. The sealed runtime
+mesh still has 84 tub-hit deviations beyond 2 mm, maximum 3.116 mm, from its
+first shell LOD. The LOD's submillimetre simplification metric does not bound
+ray-witness displacement at oblique incidence. Normal rays and open-pose
+centroid rays remain clear; central couch distance remains 655.995 mm.
+The 20,000-triangle and 2 mm gates remain unchanged. Asset geometry is not
+accepted while that witness failure remains.
+
+`tools/glass_curved_validation.gd` checks both sides of the prepared pane
+with seven pods present, including all three production states and diagnostic
+70/78-degree poses. Its ten cases measure median transfer 0.94994 against
+0.88–1.03, tenth percentile 0.91926 against 0.82, and correlation above 0.99999
+against 0.98. `tools/pod_captures.gd -- --out <directory>` captures red, fade
+and white production views. Their checker modulation transfers are
+0.93650/0.94898/0.94901 against 0.80. The calculation separates the reference's
+two measured cell levels: a fixed 0.15 split could leave the bright class
+empty. Synthetic 0.90 transmission and opaque-black controls measure 0.90485
+and 0 respectively; the transmission gate is unchanged.
+
+The isolated `tools/glass_smoke_validation.gd` checks analytic compositing and
+reversed-order controls on both sides at 0, 67.7295, 70 and 78 degrees.
+`tools/glass_smoke_sweep.gd -- --regions <pane-regions-2.json> --out <directory>`
+uses the production 144-particle field and broad-face source masks. It subtracts
+same-view smoke-free pairs and gates the worst individual two-degree step,
+not the aggregate percentage. Peak fractions above 0.08 linear RGB are
+0.00373 SEALED, 0.02284 EMPTY_OPEN and 0.01869 PLAYER against the 0.01 limit.
+The two open arcs fail. This diagnostic does not establish that its residual
+fully separates legitimate front-smoke attenuation of reflections from a
+sorting defect, or that its camera arc reproduces the actual player path.
+
+`tools/glass_edge_validation.gd` also requires `--regions`. Its card footprint
+uses the source normals and the selected 0.3 m boundary patch. The probe origin
+is the selected patch: the earlier displaced origin introduced 14/27-degree
+parallax errors, larger than the narrow card's four-degree half-angle. The
+latest flank signal is 0.06480 against 0.005 with projected contiguous span
+1.0 against 0.75, but its flattened control loses -0.00133 against the required
+0.50. The rounded-end footprint has only 31.58 pixel area against 100, so that
+view is invalid despite measurable response. These results do not certify
+polished-edge response under production fixtures, all poses or both sides.
+
+Clean alternating performance trials have not run: the bounded idle check
+found other Godot, Blender and MLX workloads. Diagnostic GPU timestamps are
+zero on this renderer, so they cannot establish GPU cost. Full smoke, edge,
+performance and final visual acceptance remain open. Numerical tools exit
+nonzero when their implemented gates fail; a passing diagnostic does not
+certify the unimplemented parts of the advice plan.
+
+## Production visibility checks (#88)
+
+Padding now uses linear reflectance `(0.10, 0.23, 0.26)` for the couch and
+`(0.13, 0.40, 0.45)` for the pillow. The lower red reflectance preserves
+shape under emergency light instead of clipping the cushion to solid red.
+The cloth remains rough and non-emissive. `Lighting` adds short-range red
+belt-spill and head-wall-bounce proxies because emissive belts alone do not
+light nearby geometry without GI. Room ambient and collision remain unchanged.
+The head pivot still has 0.322 mm source contact clearance; its dark wedge
+was the unlit head-facing shell, not a wall intersection or a hole at the axis.
+
+`pod_captures.gd` retains the production cameras and adds white-fabric/lid-hidden
+controls plus an isolated same-pod mirrored pair with symmetric white lights.
+`tools/pod_diagnostic_export.gd` writes their prepared world-space surfaces;
+`diagnose_views.py -- --captures <directory>` raycasts those surfaces with
+render-face culling. `tools/pod_pixel_measurements.py --captures <directory>`
+uses NumPy/Pillow to report linear Rec.709 luminance, paired edge contrast,
+first-hit dark-region counts and mirrored strip rows. It makes no visual
+acceptance claim. The curved, smoke, sweep and edge tools above are retained
+as reusable diagnostics, including their documented failing cases.
 
 The source originated in the local reconstruction and clean-cage fitting
 pipeline. Scratch fitting scripts and external weights are not export

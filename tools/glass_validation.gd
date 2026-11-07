@@ -148,6 +148,7 @@ func _pose(angle: float) -> void:
 func _capture(label: String) -> Image:
 	for frame: int in range(4):
 		await process_frame
+		RenderingServer.call_deferred("force_draw", false)
 		await RenderingServer.frame_post_draw
 	var image := root.get_texture().get_image()
 	image.save_png(output.path_join(label + ".png"))

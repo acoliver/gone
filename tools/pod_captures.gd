@@ -11,6 +11,10 @@ var panes: Array[MeshInstance3D] = []
 var meshes: Array[MeshInstance3D] = []
 
 func _initialize() -> void:
+	var args := OS.get_cmdline_user_args()
+	for i: int in range(args.size()-1):
+		if args[i] == "--out":
+			output = args[i+1]
 	_run.call_deferred()
 
 func _run() -> void:
@@ -36,13 +40,15 @@ func _run() -> void:
 	await _settle(30)
 	ship.hazards._smoke_field.speed_scale = 0.0
 	Engine.time_scale = 0.0 # Freeze shader TIME as well as the particle transforms for paired captures.
-	for power: String in ["red","white"]:
-		if power == "white":
+	for power: String in ["red","fade","white"]:
+		if power == "fade":
 			game.press_console()
 			game.press_console()
-			ship.lighting.process_frame(1.0)
-			ship.hallway.process_frame(1.0)
-			ship.power_room.process_frame(1.0)
+		if power != "red":
+			var elapsed := .25 if power == "fade" else 1.0
+			ship.lighting.process_frame(elapsed)
+			ship.hallway.process_frame(elapsed)
+			ship.power_room.process_frame(elapsed)
 			await _settle(30)
 		_pose(Vector3(5.2,2.2,3.2),Vector3(-2.8,.95,0))
 		await _capture("bay-wide-"+power)
@@ -79,7 +85,20 @@ func _run() -> void:
 		var witness_hidden := await _capture("checker-"+power+"-pane-hidden")
 		results["checker_"+power] = _interior(witness_hidden,witness,couch_mask,power=="red")
 		_gate("checker_"+power+"_brightness",results["checker_"+power].median_ratio>=.85,results["checker_"+power].median_ratio,.85)
+		var transfer := _checker_transfer(witness_hidden,witness,couch_mask,aperture)
+		_gate("checker_"+power+"_transfer",transfer.transfer>=.80,transfer,.80)
+		var diffuse := StandardMaterial3D.new()
+		diffuse.albedo_color = Color.WHITE
+		diffuse.roughness = 1.0
+		couch.material_override = diffuse
+		pillow.material_override = diffuse
+		await _capture("white-fabric-"+power+"-pane-hidden")
+		var lid: MeshInstance3D = ship.pods_node.get_node("Pod0/PodShell/PodLid")
+		lid.visible = false
+		await _capture("white-fabric-"+power+"-lid-hidden")
+		lid.visible = true
 		couch.material_override = null
+		pillow.material_override = null
 		_set_panes(true)
 	var a := Vector3(-3.4,0,Pods.ROW_A_Z)
 	_pose(a+Vector3(.9,1.7,2.0),a+Vector3(0,1.0,-.4))
@@ -90,6 +109,8 @@ func _run() -> void:
 		for side: float in [-1.0,1.0]:
 			_pose(entry[1]+Vector3(side*.7,.48,.05),entry[1]+Vector3(0,.28,0))
 			await _capture("flank-%s-%s"%[entry[0],"left" if side<0 else "right"])
+	preload("res://tools/pod_diagnostic_export.gd").save_scene(meshes,output.path_join("scene-geometry.json"))
+	await _mirrored_flanks()
 	results.metadata = {"engine":Engine.get_version_info(),"renderer":RenderingServer.get_current_rendering_method(),"device":RenderingServer.get_video_adapter_name(),"exposure":2.0,"size":[1152,648],"smoke_seed":88,"sparks":false,"shader_time_frozen":true,"asset_sha256":FileAccess.get_sha256(PodMesh.POD_PATH),"shader_sha256":FileAccess.get_sha256("res://app/pod_glass.gdshader"),"failures":failures}
 	FileAccess.open(output.path_join("measurements.json"),FileAccess.WRITE).store_string(JSON.stringify(results,"\t"))
 	print("PRODUCTION CAPTURES ",results)
@@ -102,9 +123,32 @@ func _pose(eye: Vector3, target: Vector3) -> void:
 	camera.look_at(frame*target)
 	camera.force_update_transform()
 
+func _mirrored_flanks() -> void:
+	results.mirror_setup = {"pod":0,"camera_distance":.9,"camera_height":.6,"target_height":.28,"lights_x":[-1.4,1.4],"lights_height":1.4,"light_energy":Lighting.regular_energy()*.08,"light_range":3.0,"room_and_status_lights":false,"smoke":false}
+	var pod: Node3D = ship.pods_node.get_node("Pod0")
+	for mesh: MeshInstance3D in meshes:
+		mesh.visible = pod.is_ancestor_of(mesh)
+	ship.hazards._smoke_field.visible = false
+	for light: Node in stage.find_children("*","Light3D",true,false):
+		light.visible = false
+	for side: float in [-1.0,1.0]:
+		var light := OmniLight3D.new()
+		light.light_color = Lighting.REGULAR_WHITE
+		light.light_energy = Lighting.regular_energy() * .08
+		light.omni_range = 3.0
+		pod.add_child(light)
+		light.position = Vector3(side*1.4,1.4,0)
+	for side: float in [-1.0,1.0]:
+		camera.global_position = pod.global_transform * Vector3(side*.9,.6,0)
+		camera.look_at(pod.global_transform * Vector3(0,.28,0))
+		camera.force_update_transform()
+		await _capture("flank-mirror-"+("left" if side<0 else "right"))
+	preload("res://tools/pod_diagnostic_export.gd").save_scene(meshes,output.path_join("mirror-geometry.json"))
+
 func _settle(frames: int) -> void:
 	for i: int in range(frames):
 		await process_frame
+		RenderingServer.call_deferred("force_draw", false)
 		await RenderingServer.frame_post_draw
 
 func _capture(label: String) -> Image:
@@ -142,6 +186,39 @@ func _mask(selected: MeshInstance3D,label: String) -> Image:
 	for i: int in range(meshes.size()):
 		meshes[i].material_override = old[i]
 	return image
+
+func _checker_transfer(reference: Image,candidate: Image,mask: Image,aperture: Image) -> Dictionary:
+	var low := Vector2.ZERO
+	var high := Vector2.ZERO
+	var nl := 0
+	var nh := 0
+	var samples: Array[Vector2] = []
+	var minimum := INF
+	var maximum := -INF
+	for y: int in range(5,643):
+		for x: int in range(5,1147):
+			if mask.get_pixel(x,y).r<.95 or not _inside_aperture(aperture,x,y):
+				continue
+			var r := _channel(reference,x,y,false)
+			if absf(r-_channel(reference,x+2,y,false))>.005 or absf(r-_channel(reference,x,y+2,false))>.005:
+				continue
+			samples.append(Vector2(r,_channel(candidate,x,y,false)))
+			minimum=minf(minimum,r)
+			maximum=maxf(maximum,r)
+	assert(not samples.is_empty() and maximum-minimum>.01,"checker reference must resolve two levels")
+	# Classify the reference's two measured levels, not an assumed exposure.
+	var split := (minimum+maximum)*.5
+	for pair: Vector2 in samples:
+		if pair.x>split:
+			high+=pair
+			nh+=1
+		else:
+			low+=pair
+			nl+=1
+	assert(nh>0 and nl>0,"checker reference requires both cell classes")
+	var modulation := high/nh-low/nl
+	assert(modulation.x>.01,"checker reference modulation must be measurable")
+	return {"transfer":modulation.y/modulation.x,"reference":modulation.x,"glass":modulation.y,"pixels":nh+nl,"split":split,"bright_pixels":nh,"dark_pixels":nl}
 
 func _channel(image: Image,x: int,y: int,red: bool) -> float:
 	var color := image.get_pixel(x,y).srgb_to_linear()

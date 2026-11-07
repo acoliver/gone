@@ -44,6 +44,13 @@ def interior_grid(vertices, normals, faces, roles, tree):
         for face, role in zip(faces, roles) if role == 0
         for a, b in zip(face, face[1:] + face[:1]))
     segments = [(Vector(a), Vector(b)) for (a, b), count in uses.items() if count == 1]
+    # Downward rays need the projected clear opening at the skirt's lower
+    # boundary. A 3D distance on the steep crown includes its seated rim.
+    all_uses = Counter(tuple(sorted((tuple(vertices[a]), tuple(vertices[b]))))
+        for face in faces for a, b in zip(face, face[1:] + face[:1]))
+    aperture = [(Vector((a[0], 0, a[2])), Vector((b[0], 0, b[2])))
+        for (a, b), count in all_uses.items() if count == 1]
+    assert aperture, 'render sheet must retain its authored skirt boundary'
     xmin, xmax = min(v.x for v in vertices), max(v.x for v in vertices)
     zmin, zmax = min(v.z for v in vertices), max(v.z for v in vertices)
     top = max(v.y for v in vertices) + .1
@@ -59,7 +66,14 @@ def interior_grid(vertices, normals, faces, roles, tree):
             face = faces[triangle]
             normal = barycentric_transform(point, *(vertices[i] for i in face), *(normals[i] for i in face)).normalized()
             yield 'grid-normal', triangle, point, normal
-            yield 'grid-down', triangle, point, Vector((0,1,0))
+            projected = Vector((point.x, 0, point.z))
+            crossings = sum((a.z > projected.z) != (b.z > projected.z)
+                and projected.x < a.x + (b.x-a.x)*(projected.z-a.z)/(b.z-a.z)
+                for a, b in aperture)
+            clearance = min((projected-a.lerp(b, max(0., min(1.,
+                (projected-a).dot(b-a)/(b-a).length_squared)))).length for a, b in aperture)
+            if crossings % 2 and clearance >= .01:
+                yield 'grid-down', triangle, point, Vector((0,1,0))
 
 
 def main():
@@ -119,6 +133,7 @@ def main():
                 source_indices.append(source_index)
                 row['source_error'] = max(row['source_error'], error)
             roles = [source_roles[tuple(sorted(source_indices[i] for i in face))] for face in faces]
+            (args.output / ('pane-regions-%s.json' % case['state'])).write_text(json.dumps(roles))
             samples = []
             for triangle, face in enumerate(faces):
                 point = sum((vv[i] for i in face), Vector()) / 3
