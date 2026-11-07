@@ -66,3 +66,16 @@ Each of the three seat cushions measures 0.66 × 0.70 × 0.15 m, with 10 mm gaps
 The source and exporter are `tools/blender/quarters/sofa/sofa-working.blend` and `build.py`. `verify.py` loads the exported GLB through trimesh and writes its report. It checks the exported extrema against x [-1.1, 1.1], y [0, 0.85], z [-0.475, 0.475] m with a 5 mm tolerance, checks upward-facing seat-top normals, exact node names and duplicate geometry. The measured bounds are x [-1.1000, 1.1020], y [0, 0.8500], z [-0.4750, 0.4750] m. The seat top faces point +Y. The GLB has exactly ten named nodes and 12,664 triangles, below the 15,000 limit. Re-exporting from the saved Blender source produces a byte-identical GLB.
 
 The pass-two render files are in gitignored `tmp/fit/sofa/pass2/`. `compare-hero.png` places the design beside the rendered model. `compare-detail.png` shows the arm and hardware close-up. `turntable.png` contains the 30°, 120°, 210° and 300° views.
+
+
+## Tunic
+
+The input guide is `tmp/hy/tunic-hero.glb`. It is a filled torso about 0.70 m deep, with a rounded back, pinched waist and fused armpits. I used its front silhouette and the placement of the collar, boards, button row, pockets and sleeves. I did not shrinkwrap the fitted mesh to the guide because its depth and fused underarms do not describe a hanging garment. The front design reference is `docs/art/quarters/sheets/dress_uniform/hero.png`.
+
+The fitted tunic is 0.574 m wide, 0.9502 m tall and 0.1786 m deep in the exported GLB. Its origin is at the hook's top centre. The vertical bounds are -0.9502 to -0.00002 m, so the garment hangs below the origin. The GLB has +Y up and its front details face +Z. The fitting uses a 4 mm nested cloth shell for the body, a straight hanging back, a small front drape and a neck opening. Separate tubular sleeves begin below the body edge. Their measured armpit gaps are 14.7 mm on each side. The collar and shoulder boards sit as separate cloth parts. Five brass buttons form one row. The medal and ribbon bar sit on the wearer's left breast, which is image-right.
+
+The named parts are `TunicBody`, `Sleeve_L`, `Sleeve_R`, `Collar`, `ShoulderBoard_L`, `ShoulderBoard_R`, `Buttons`, `CollarInsignia_L`, `CollarInsignia_R`, `RibbonBar`, `Medal` and `Hanger`. They use `NaturalFabric`, `Brass`, `RibbonFabric` and `BareSteel`. The Blender source and build and verify scripts are in `tools/blender/quarters/dress_uniform/`. The exported asset is `assets/props/quarters/dress_uniform.glb`.
+
+The trimesh report confirms all named part meshes are closed and manifold after welding duplicated UV-seam vertices. Blender's exported-mesh BVH check finds no intersecting part pairs. The brass front-detail normals have maximum +Z components from 0.978 to 0.985. The asset has 4,108 triangles against the 12,000 limit. Re-exporting the saved Blender source produces a byte-identical GLB. `verify.py` writes `verify.json`.
+
+The neutral comparison images are in `tmp/fit/tunic/`. `compare-hero.png` puts the design beside the fitted model from the front. `turntable.png` shows 30°, 120°, 210° and 300° views. `compare-detail.png` places a crop of the design's collar and breast insignia beside the rendered detail.

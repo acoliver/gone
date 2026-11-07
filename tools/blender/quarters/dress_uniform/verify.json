@@ -1,0 +1,141 @@
+{
+  "bounds": {
+    "min_xyz": [
+      -0.287,
+      -0.9502,
+      -0.0036141
+    ],
+    "max_xyz": [
+      0.287,
+      -1.76e-05,
+      0.175
+    ],
+    "extents_xyz": [
+      0.574,
+      0.9501824000000001,
+      0.1786141
+    ],
+    "target_extents_xyz": [
+      0.55,
+      0.95,
+      0.25
+    ],
+    "tolerance_m": [
+      0.04,
+      0.04,
+      0.04
+    ],
+    "pass": true
+  },
+  "orientation": {
+    "up_axis": "+Y",
+    "front_axis": "+Z",
+    "front_normal_z_max": {
+      "Buttons": 0.9784624390447543,
+      "CollarInsignia_L": 0.9846346772223727,
+      "CollarInsignia_R": 0.984634677222373,
+      "Medal": 0.9781891524258072
+    },
+    "front_normals_positive": true
+  },
+  "parts": {
+    "TunicBody": {
+      "mesh_count": 1,
+      "closed_manifold": true,
+      "triangles": 1280
+    },
+    "Sleeve_L": {
+      "mesh_count": 1,
+      "closed_manifold": true,
+      "triangles": 276
+    },
+    "Sleeve_R": {
+      "mesh_count": 1,
+      "closed_manifold": true,
+      "triangles": 276
+    },
+    "Collar": {
+      "mesh_count": 1,
+      "closed_manifold": true,
+      "triangles": 124
+    },
+    "ShoulderBoard_L": {
+      "mesh_count": 1,
+      "closed_manifold": true,
+      "triangles": 12
+    },
+    "ShoulderBoard_R": {
+      "mesh_count": 1,
+      "closed_manifold": true,
+      "triangles": 12
+    },
+    "Buttons": {
+      "mesh_count": 5,
+      "closed_manifold": true,
+      "triangles": 1120
+    },
+    "CollarInsignia_L": {
+      "mesh_count": 1,
+      "closed_manifold": true,
+      "triangles": 120
+    },
+    "CollarInsignia_R": {
+      "mesh_count": 1,
+      "closed_manifold": true,
+      "triangles": 120
+    },
+    "RibbonBar": {
+      "mesh_count": 9,
+      "closed_manifold": true,
+      "triangles": 108
+    },
+    "Medal": {
+      "mesh_count": 1,
+      "closed_manifold": true,
+      "triangles": 120
+    },
+    "Hanger": {
+      "mesh_count": 1,
+      "closed_manifold": true,
+      "triangles": 540
+    }
+  },
+  "materials": [
+    "BareSteel",
+    "Brass",
+    "NaturalFabric",
+    "RibbonFabric",
+    "RibbonStripe_01",
+    "RibbonStripe_02",
+    "RibbonStripe_03",
+    "RibbonStripe_04",
+    "RibbonStripe_05",
+    "RibbonStripe_06",
+    "RibbonStripe_07",
+    "RibbonStripe_08"
+  ],
+  "required_materials": [
+    "NaturalFabric",
+    "Brass",
+    "RibbonFabric",
+    "BareSteel"
+  ],
+  "required_materials_present": true,
+  "armpit_gaps": {
+    "Sleeve_L": {
+      "minimum_armpit_gap_m": 0.01472914045202073,
+      "required_m": 0.005,
+      "pass": true
+    },
+    "Sleeve_R": {
+      "minimum_armpit_gap_m": 0.014788593945454467,
+      "required_m": 0.005,
+      "pass": true
+    }
+  },
+  "intersections_over_1mm": [],
+  "triangle_count": 4108,
+  "triangle_limit": 12000,
+  "byte_identical_reexport": true,
+  "pass": true
+}
