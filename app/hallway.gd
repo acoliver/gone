@@ -253,9 +253,9 @@ func _fixture(fixture_transform: Transform3D, level: float) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "HallFixture"
 	fixture.transform = fixture_transform
-	DressingMounts.ceiling_stem(fixture, _game.layout.section(&"D14-S-041").bounds().end.y)
 	var light := Lighting.switched_key(_game.layout.section(&"D14-S-041").emergency_light_role(), level)
 	fixture.add_child(light)
+	DressingMounts.ceiling_stem(fixture, _game.layout.section(&"D14-S-041").bounds().end.y, Surfaces.surface_frame(_game.layout, &"D14-S-041", &"CEILING"))
 	var lens := MeshInstance3D.new()
 	lens.name = "Lens"
 	lens.set_meta(&"lamp_circuit", "emergency")
@@ -272,7 +272,6 @@ func _white_fixture(station_x: float, level: float) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "HallRegularStrip"
 	fixture.position = Vector3(station_x, REGULAR_MOUNT_Y, 0.0)
-	DressingMounts.ceiling_stem(fixture, HALL_CEILING_HEIGHT)
 	var light := OmniLight3D.new()
 	light.light_color = Lighting.REGULAR_WHITE
 	light.light_energy = Lighting.regular_energy() * level
@@ -281,6 +280,7 @@ func _white_fixture(station_x: float, level: float) -> Node3D:
 	light.shadow_enabled = false
 	light.position = Vector3(0.0, -0.12, 0.0)
 	fixture.add_child(light)
+	DressingMounts.ceiling_stem(fixture, HALL_CEILING_HEIGHT, Surfaces.surface_frame(_game.layout, &"D14-S-041", &"CEILING"))
 	var lens := MeshInstance3D.new()
 	lens.name = "Lens"
 	lens.set_meta(&"lamp_circuit", "white")
