@@ -1,17 +1,17 @@
 {
   "bounds_m": {
     "min": [
-      -0.30000001192092896,
+      -0.3001961410045624,
       0.0,
       -0.30000001192092896
     ],
     "max": [
-      0.30000001192092896,
+      0.3001961410045624,
       2.4000000953674316,
       0.30000001192092896
     ],
     "extents_xyz": [
-      0.6000000238418579,
+      0.6003922820091248,
       2.4000000953674316,
       0.6000000238418579
     ],
@@ -67,20 +67,45 @@
       "pass": true
     }
   },
+  "kick_plate": {
+    "present": true,
+    "bounds_min_m": [
+      -0.25999999046325684,
+      0.0,
+      -0.25999999046325684
+    ],
+    "bounds_max_m": [
+      0.25999999046325684,
+      0.10499999672174454,
+      0.25999999046325684
+    ],
+    "extents_xyz_m": [
+      0.5199999809265137,
+      0.10499999672174454,
+      0.5199999809265137
+    ],
+    "target_extents_xyz_m": [
+      0.52,
+      0.105,
+      0.52
+    ],
+    "recess_m": 0.04,
+    "pass": true
+  },
   "door_pivot": {
     "world_position_m": [
       -0.23999999463558197,
-      0.20999999344348907,
+      0.10999999940395355,
       0.257999986410141
     ],
     "expected_m": [
       -0.24,
-      0.21,
+      0.11,
       0.258
     ],
     "error_m": [
       5.364418020903372e-09,
-      -6.5565109175214076e-09,
+      -5.960464483090178e-10,
       -1.358985901589449e-08
     ],
     "pass": true
@@ -106,7 +131,7 @@
             0.23999999463558197
           ],
           [
-            0.21000005304813385,
+            0.10999998450279236,
             2.3299999237060547
           ],
           [
@@ -125,12 +150,12 @@
             0.23444417119026184
           ],
           [
-            0.21000005304813385,
+            0.10999998450279236,
             2.3299999237060547
           ],
           [
             0.24652959406375885,
-            0.35288360714912415
+            0.35292232036590576
           ]
         ]
       },
@@ -140,16 +165,16 @@
         "object_pairs": [],
         "door_bounds_m": [
           [
-            -0.24778930842876434,
+            -0.2478128969669342,
             0.10706810653209686
           ],
           [
-            0.21000005304813385,
+            0.10999998450279236,
             2.3299999237060547
           ],
           [
             0.2503431439399719,
-            0.6051414608955383
+            0.6051880717277527
           ]
         ]
       },
@@ -163,7 +188,7 @@
             -0.2280000001192093
           ],
           [
-            0.21000005304813385,
+            0.10999998450279236,
             2.3299999237060547
           ],
           [
@@ -178,11 +203,11 @@
         "object_pairs": [],
         "door_bounds_m": [
           [
-            -0.3348836302757263,
+            -0.33492234349250793,
             -0.22852960228919983
           ],
           [
-            0.21000005304813385,
+            0.10999998450279236,
             2.3299999237060547
           ],
           [
@@ -195,7 +220,7 @@
     "pass": true
   },
   "topology": {
-    "triangle_count": 4156,
+    "triangle_count": 5176,
     "triangle_limit": 6000,
     "nonmanifold_edges": 0,
     "degenerate_faces": 0,
@@ -217,13 +242,13 @@
         "triangles": 108,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 0.027083666264350843
+        "signed_volume_m3": 0.02707472965850381
       },
       "CarcassPart_02": {
         "triangles": 108,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 0.027083666264350843
+        "signed_volume_m3": 0.02707472965850381
       },
       "CarcassPart_03": {
         "triangles": 108,
@@ -235,19 +260,13 @@
         "triangles": 108,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 0.003051972898627279
+        "signed_volume_m3": 0.003540959839663552
       },
       "CarcassPart_05": {
         "triangles": 108,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 0.003051972898627279
-      },
-      "CarcassPart_06": {
-        "triangles": 108,
-        "nonmanifold_edges": 0,
-        "degenerate_faces": 0,
-        "signed_volume_m3": 0.07198530685521595
+        "signed_volume_m3": 0.003540959839663552
       },
       "CarcassPart_07": {
         "triangles": 108,
@@ -271,25 +290,43 @@
         "triangles": 108,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 0.00037020351777258045
-      },
-      "CarcassPart_11": {
-        "triangles": 108,
-        "nonmanifold_edges": 0,
-        "degenerate_faces": 0,
-        "signed_volume_m3": 0.0008802891210564212
+        "signed_volume_m3": 0.00016444462752675785
       },
       "Door": {
         "triangles": 556,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 0.02401797668584493
+        "signed_volume_m3": 0.025218590427699767
+      },
+      "Door return": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 0.00013870872215885713
+      },
+      "Door return.001": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 0.00013870872215885713
+      },
+      "Door return.002": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 2.9387255767288067e-05
+      },
+      "Door return.003": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 2.9387255767288067e-05
       },
       "DoorVents": {
         "triangles": 324,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 4.182708060595248e-05
+        "signed_volume_m3": 4.2925319416816286e-05
       },
       "Handle": {
         "triangles": 108,
@@ -304,16 +341,22 @@
         "signed_volume_m3": 2.440075288123379e-05
       },
       "Hinges": {
-        "triangles": 432,
+        "triangles": 264,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 2.1812691885462863e-05
+        "signed_volume_m3": 4.6656063470941646e-05
+      },
+      "Kick plate": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 0.028379984800645616
       },
       "Rivets": {
-        "triangles": 1440,
+        "triangles": 2304,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 4.886761832079148e-06
+        "signed_volume_m3": 2.5659522477461394e-05
       }
     },
     "pass": true

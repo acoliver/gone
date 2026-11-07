@@ -98,93 +98,105 @@ def create_asset():
     # clean cage is proportionally fitted to the fixed 600 mm envelope.
     carcass_parts = []
     carcass_parts += [
-        box_piece("Side shell", (0.022, 2.20, 0.56), (-0.289, 1.30, 0.0), painted),
-        box_piece("Side shell", (0.022, 2.20, 0.56), (0.289, 1.30, 0.0), painted),
-        box_piece("Rear shell", (0.556, 2.20, 0.022), (0.0, 1.30, -0.269), painted),
-        box_piece("Top return", (0.556, 0.022, 0.250), (0.0, 2.389, -0.145), painted),
-        box_piece("Lower return", (0.556, 0.022, 0.250), (0.0, 0.211, -0.145), painted),
-        box_piece("Plinth", (0.600, 0.200, 0.600), (0.0, 0.100, 0.0), painted, 0.003),
+        box_piece("Side shell", (0.022, 2.20, 0.56), (-0.289, 1.30, 0.0), painted, 0.003),
+        box_piece("Side shell", (0.022, 2.20, 0.56), (0.289, 1.30, 0.0), painted, 0.003),
+        box_piece("Rear shell", (0.556, 2.20, 0.022), (0.0, 1.30, -0.289), painted),
+        box_piece("Top return", (0.556, 0.022, 0.290), (0.0, 2.389, -0.155), painted),
+        box_piece("Lower return", (0.556, 0.022, 0.290), (0.0, 0.211, -0.155), painted),
+        box_piece("Kick plate", (0.520, 0.105, 0.520), (0.0, 0.0525, 0.0), dark, 0.003),
         box_piece("Surround left", (0.040, 2.18, 0.018), (-0.280, 1.30, 0.291), painted),
         box_piece("Surround right", (0.040, 2.18, 0.018), (0.280, 1.30, 0.291), painted),
         box_piece("Surround top", (0.520, 0.055, 0.018), (0.0, 2.3625, 0.291), painted),
-        box_piece("Surround bottom", (0.520, 0.040, 0.018), (0.0, 0.180, 0.291), painted),
-        # The kick plate front face sits 40 mm behind the cabinet front.
-        box_piece("Kick plate", (0.490, 0.150, 0.012), (0.0, 0.110, 0.254), dark, 0.0015),
+        box_piece("Surround bottom", (0.520, 0.018, 0.018), (0.0, 0.100, 0.291), painted),
     ]
     carcass = bpy.data.objects.new("Carcass", None)
     bpy.context.scene.collection.objects.link(carcass)
     for index, piece in enumerate(carcass_parts, start=1):
-        piece.name = f"CarcassPart_{index:02d}"
+        piece.name = "Kick plate" if index == 6 else f"CarcassPart_{index:02d}"
         piece.parent = carcass
         piece.matrix_parent_inverse = carcass.matrix_world.inverted()
 
-    door_width, door_height, door_depth = 0.480, 2.120, 0.024
-    door = box_piece("Door", (door_width, door_height, door_depth), (-0.240 + door_width / 2, 0.210 + door_height / 2, 0.258), painted, 0)
+    door_width, door_height, door_depth = 0.480, 2.220, 0.024
+    door = box_piece("Door", (door_width, door_height, door_depth), (-0.240 + door_width / 2, 0.110 + door_height / 2, 0.258), painted, 0)
     # Local origin is the left hinge edge at the bottom of the leaf.
-    door.location = (-0.240, 0.210, 0.258)
+    door.location = (-0.240, 0.110, 0.258)
     for v in door.data.vertices:
         v.co.x += door_width / 2
         v.co.y += door_height / 2
     # Slots stop short of the back skin, leaving real recessed cavities.
-    slot_x, slot_w, slot_h = 0.142, 0.196, 0.022
-    slot_ys = (1.890, 1.940, 1.990)
+    slot_x, slot_w, slot_h = 0.120, 0.240, 0.014
+    slot_ys = (1.990, 2.045, 2.100)
     for sy in slot_ys:
-        cut_box(door, (slot_x + slot_w / 2 - 0.240, sy + 0.210, 0.258 + 0.004), (slot_w, slot_h, 0.018))
+        cut_box(door, (slot_x + slot_w / 2 - 0.240, sy + 0.110, 0.258 + 0.004), (slot_w, slot_h, 0.018))
     # The handle pocket is below waist level, on the right door edge.
     pocket_x, pocket_y, pocket_w, pocket_h = 0.405, 0.770, 0.060, 0.170
-    cut_box(door, (pocket_x + pocket_w / 2 - 0.240, pocket_y + pocket_h / 2 + 0.210, 0.258 + 0.004), (pocket_w, pocket_h, 0.018))
+    cut_box(door, (pocket_x + pocket_w / 2 - 0.240, pocket_y + pocket_h / 2 + 0.110, 0.258 + 0.004), (pocket_w, pocket_h, 0.018))
     edge = door.modifiers.new("Door edge bevel", "BEVEL")
     edge.width = 0.002
     edge.segments = 2
     edge.limit_method = "ANGLE"
     bpy.context.view_layer.objects.active = door
     bpy.ops.object.modifier_apply(modifier=edge.name)
-    door.location = (-0.240, 0.210, 0.258)
+    door.location = (-0.240, 0.110, 0.258)
     door.data.materials.clear()
     door.data.materials.append(painted)
-    door["pivot_description"] = "Origin is the left hinge edge at floor-level door bottom."
+    door["pivot_description"] = "Origin is the left hinge edge at the 110 mm door bottom."
+    # Shallow returns along the back perimeter give the leaf a folded-sheet edge.
+    return_parts = [
+        box_piece("Door return", (0.008, door_height - 0.012, 0.008), (-0.235, 1.220, 0.244), painted, 0.001),
+        box_piece("Door return", (0.008, door_height - 0.012, 0.008), (0.235, 1.220, 0.244), painted, 0.001),
+        box_piece("Door return", (door_width - 0.012, 0.008, 0.008), (0.0, 0.116, 0.244), painted, 0.001),
+        box_piece("Door return", (door_width - 0.012, 0.008, 0.008), (0.0, 2.324, 0.244), painted, 0.001),
+    ]
+    for part in return_parts:
+        part.parent = door
+        part.matrix_parent_inverse = door.matrix_world.inverted()
 
     vent_parts = []
     for sy in slot_ys:
-        # Louvers sit inside the cut slots, 7 mm behind the outer door face.
-        piece = box_piece("Louvre", (slot_w - 0.010, 0.010, 0.008),
-                          (slot_x + slot_w / 2 - 0.240, sy + 0.210, 0.258 + 0.001), painted, 0.002)
+        piece = box_piece("Louvre", (slot_w - 0.012, 0.008, 0.008),
+                          (slot_x + slot_w / 2 - 0.240, sy + 0.110, 0.258 + 0.001), painted, 0.001)
+        piece.rotation_euler.x = math.radians(-18)
         vent_parts.append(piece)
     vents = join_pieces("DoorVents", vent_parts, door)
     pocket = box_piece("HandlePocket", (pocket_w - 0.008, pocket_h - 0.012, 0.003),
-                       (pocket_x + pocket_w / 2 - 0.240, pocket_y + pocket_h / 2 + 0.210, 0.258 - 0.006), dark, 0.001)
+                       (pocket_x + pocket_w / 2 - 0.240, pocket_y + pocket_h / 2 + 0.110, 0.258 - 0.006), dark, 0.001)
     pocket.parent = door
     pocket.matrix_parent_inverse = door.matrix_world.inverted()
     lever = box_piece("Handle", (0.040, 0.008, 0.008),
-                      (pocket_x + pocket_w / 2 - 0.240, pocket_y + 0.012 + 0.210, 0.258 + 0.002), bare, 0.002)
+                      (pocket_x + pocket_w / 2 - 0.240, pocket_y + 0.012 + 0.110, 0.258 + 0.002), bare, 0.002)
     lever.parent = door
     lever.matrix_parent_inverse = door.matrix_world.inverted()
 
     hinge_parts = []
-    for y in (0.355, 2.085):
-        hinge_parts.append(box_piece("Hinge knuckle", (0.010, 0.085, 0.012), (-0.251, y, 0.282), bare, 0.002))
-        hinge_parts.append(box_piece("Hinge pin", (0.004, 0.090, 0.004), (-0.251, y, 0.282), bare, 0.0015))
+    for center_y in (0.220, 1.220, 2.220):
+        for offset in (-0.019, 0.019):
+            bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius=0.009, depth=0.032,
+                                                location=(-0.251, center_y + offset, 0.282),
+                                                rotation=(math.radians(90), 0, 0))
+            knuckle = bpy.context.object
+            knuckle.name = "Hinge knuckle"
+            knuckle.data.materials.append(bare)
+            hinge_parts.append(knuckle)
     hinges = join_pieces("Hinges", hinge_parts, carcass)
 
     rivet_parts = []
-    for y in [0.290 + i * 0.182 for i in range(12)]:
-        for x in (-0.295, 0.295):
-            bpy.ops.mesh.primitive_uv_sphere_add(segments=8, ring_count=4, radius=1, location=(x, y, 0.282))
-            r = bpy.context.object
-            r.name = "Rivet"
-            r.scale = (0.0045, 0.0045, 0.0025)
-            bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-            r.data.materials.append(bare)
-            rivet_parts.append(r)
-    for x in (-0.212, 0.0, 0.212):
-        for y in (0.180, 2.389):
-            bpy.ops.mesh.primitive_uv_sphere_add(segments=8, ring_count=4, radius=1, location=(x, y, 0.2975))
-            r = bpy.context.object
-            r.name = "Rivet"
-            r.scale = (0.0045, 0.0045, 0.0025)
-            bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-            r.data.materials.append(bare)
-            rivet_parts.append(r)
+    rivet_locations = []
+    for y in [0.260 + i * 0.135 for i in range(16)]:
+        rivet_locations.extend(((-0.295, y, 0.2965), (0.295, y, 0.2965)))
+    for x in [(-0.2025 + i * 0.135) for i in range(4)]:
+        rivet_locations.extend(((x, 0.100, 0.2965), (x, 2.390, 0.2965)))
+    for x in (-0.286, 0.286):
+        for y in [0.260 + i * 0.135 for i in range(16)]:
+            rivet_locations.append((x, y, 0.2825))
+    for location in rivet_locations:
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=8, ring_count=3, radius=1, location=location)
+        r = bpy.context.object
+        r.name = "Rivet"
+        r.scale = (0.006, 0.006, 0.0035)
+        bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+        r.data.materials.append(bare)
+        rivet_parts.append(r)
     rivets = join_pieces("Rivets", rivet_parts, carcass)
 
     for obj in (carcass, door, vents, pocket, lever, hinges, rivets):
@@ -230,6 +242,13 @@ def render_previews(render_dir):
     light_data.energy = 450
     light_data.shape = "DISK"
     light_data.size = 4
+    fill_data = bpy.data.lights.new("StudioFill", "AREA")
+    fill = bpy.data.objects.new("StudioFill", fill_data)
+    scene.collection.objects.link(fill)
+    fill.location = (-3.0, 2.8, -3.5)
+    fill_data.energy = 300
+    fill_data.shape = "DISK"
+    fill_data.size = 3.5
     key = setup_camera("HeroCamera", (3.0, 2.65, 4.1), (0, 1.2, 0), 3.15, 768)
     scene.render.filepath = str(render_dir / "locker-render.png")
     bpy.ops.render.render(write_still=True)
@@ -241,6 +260,9 @@ def render_previews(render_dir):
         setup_camera("TurntableCamera", (4.0 * math.sin(rad), 1.2, 4.0 * math.cos(rad)), (0, 1.2, 0), 3.15, 512)
         scene.render.filepath = str(render_dir / f"turn-{angle}.png")
         bpy.ops.render.render(write_still=True)
+    setup_camera("DetailCamera", (0, 2.02, 4.5), (0, 2.02, 0.28), 0.92, 768)
+    scene.render.filepath = str(render_dir / "detail-render.png")
+    bpy.ops.render.render(write_still=True)
     scene.camera = key
 
 
