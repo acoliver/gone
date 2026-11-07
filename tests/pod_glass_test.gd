@@ -46,6 +46,7 @@ func test_pane_has_one_broad_sheet_and_explicit_edge_mask() -> void:
 	shell.free()
 
 func test_glass_scene_contract_has_no_global_fog() -> void:
+	assert_true(ProjectSettings.get_setting("rendering/environment/defaults/default_clear_color") == Color.BLACK, "interior probes omit the Environment background; uncovered directions must stay black")
 	var world := Lighting._world_environment()
 	assert_false(world.environment.fog_enabled, "thin glass has no depth-fog compositor")
 	assert_false(world.environment.volumetric_fog_enabled, "thin glass has no volumetric-fog compositor")
