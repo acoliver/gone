@@ -12,10 +12,34 @@ const ACTION_LABELS := {
 	&"help": "Abrir / cerrar esta ayuda",
 }
 
+const KEY_NAMES := {
+	KEY_SPACE: "Espacio", KEY_COMMA: ",", KEY_PERIOD: ".",
+	KEY_UP: "Flecha arriba", KEY_DOWN: "Flecha abajo",
+	KEY_LEFT: "Flecha izquierda", KEY_RIGHT: "Flecha derecha",
+	KEY_TAB: "Tab", KEY_ESCAPE: "Esc",
+}
+const MOUSE_NAMES := {
+	MOUSE_BUTTON_LEFT: "Clic izquierdo", MOUSE_BUTTON_RIGHT: "Clic derecho",
+	MOUSE_BUTTON_MIDDLE: "Clic central", MOUSE_BUTTON_WHEEL_UP: "Rueda arriba",
+	MOUSE_BUTTON_WHEEL_DOWN: "Rueda abajo",
+}
+
 var player: Player
 var close_button: Button
 var _overlay: Control
 var _opened := false
+
+static func key_name(code: Key) -> String:
+	return KEY_NAMES.get(code, OS.get_keycode_string(code))
+
+static func binding_name(event: InputEvent) -> String:
+	if event is InputEventKey:
+		return key_name(event.physical_keycode if event.physical_keycode != KEY_NONE else event.keycode)
+	if event is InputEventMouseButton:
+		assert(MOUSE_NAMES.has(event.button_index), "mouse binding needs a Spanish display name")
+		return MOUSE_NAMES[event.button_index]
+	assert(false, "gameplay binding needs a display-name mapping")
+	return ""
 
 static func build(rig: Player) -> HelpPanel:
 	var help := HelpPanel.new()
@@ -30,13 +54,13 @@ static func controls() -> Dictionary:
 	for action: StringName in InputMap.get_actions():
 		if String(action).begins_with("ui_"): continue
 		var bindings: PackedStringArray = []
-		for event: InputEvent in InputMap.action_get_events(action): bindings.append(event.as_text())
+		for event: InputEvent in InputMap.action_get_events(action): bindings.append(binding_name(event))
 		rows[action] = "%s: %s" % [ACTION_LABELS.get(action, String(action).capitalize()), " / ".join(bindings)]
 	rows[&"mouse_look"] = "Mover el ratón: mirar alrededor"
 	var click := InputEventMouseButton.new()
 	click.button_index = Player.PICK_BUTTON
-	rows[&"mouse_pick"] = "%s: caminar al punto elegido o usar el objeto" % click.as_text()
-	rows[&"escape"] = "%s: liberar el cursor / cerrar esta ayuda" % OS.get_keycode_string(Player.RELEASE_KEY)
+	rows[&"mouse_pick"] = "%s: caminar al punto elegido o usar el objeto" % binding_name(click)
+	rows[&"escape"] = "%s: liberar el cursor / cerrar esta ayuda" % key_name(Player.RELEASE_KEY)
 	return rows
 
 func _ready() -> void:
