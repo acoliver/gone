@@ -1,0 +1,10 @@
+{
+  "command": "env HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 /Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit --base-model flux2-klein-4b --model black-forest-labs/FLUX.2-klein-4B --quantize 8 --image-paths tmp/contact/storage_locker_module/hero-chosen.png --seed 1 --steps 4 --output tmp/contact/locker2/storage_locker_module/view-front.png --prompt-file tmp/contact/locker2/storage_locker_module/view-front.prompt.txt",
+  "prompt": "The exact same object, unchanged in shape, colour and every detail, seen straight from the front at eye level, orthographic, same plain light grey background and soft even lighting.",
+  "seed": 1,
+  "model_id": "black-forest-labs/FLUX.2-klein-4B",
+  "source_image": "tmp/contact/storage_locker_module/hero-chosen.png",
+  "source_sha256": "6c16a53eace593a1d44f9c28ec1739f523b4161bf564209d8dbdeff69aee7c2b",
+  "sha256": "a92cb5e253069f659fb34069996bd6f90143f9b7b1d10fa1f14c411f5f388048",
+  "elapsed_seconds": 135.802
+}
