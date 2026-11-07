@@ -87,7 +87,7 @@ func test_fixture_inventory_places_eight_red_lights_from_registry() -> void:
 		)
 	for fixture: Node3D in fixtures:
 		assert_true(fixture.position.y > 2.4, "fixtures sit outside the walking envelope")
-	assert_int_equal(_count_class(lighting, "OmniLight3D"), 14, "eight emergency fixtures plus six regular strips")
+	assert_int_equal(_count_class(lighting, "OmniLight3D"), 14 + 6 * Pods.POD_COUNT, "eight emergency fixtures, six regular strips and six local status spill samples per pod")
 	for light: OmniLight3D in lighting.white_lights():
 		assert_float_equal(light.light_energy, 0.0, "regular strips start dark")
 	assert_int_equal(_count_class(lighting, "DirectionalLight3D"), 0, "no directional light is authored")
@@ -271,7 +271,7 @@ func test_bay_reflections_cover_the_room_without_adding_light() -> void:
 	assert_int_equal(probe.cull_mask, 1, "probe captures only the bay lighting layer")
 	assert_false(probe.enable_shadows, "reflection capture needs no shadow pass")
 	assert_int_equal(probe.ambient_mode, ReflectionProbe.AMBIENT_DISABLED, "probe adds no ambient fill")
-	assert_int_equal(_count_class(lighting, "OmniLight3D"), 14, "reflections add no lights")
+	assert_int_equal(_count_class(lighting, "OmniLight3D"), 14 + 6 * Pods.POD_COUNT, "reflections add no lights beyond fixtures and local status spill")
 	assert_int_equal(_count_class(lighting, "CollisionShape3D"), 0, "reflections add no colliders")
 	lighting.free()
 

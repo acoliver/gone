@@ -68,6 +68,8 @@ static func build(game: Game) -> Lighting:
 	lighting._fade = held.fade
 	for fixture_transform: Transform3D in fixture_transforms(game.registry):
 		lighting.add_child(lighting._fixture(fixture_transform, level))
+	for pod: Pods.Pod in game.registry.pods():
+		lighting.add_child(_pod_status_spill(pod))
 	var white_level := 1.0 if game.power_active else 0.0
 	lighting._white_fade = Intensity.FixtureFade.holding(white_level).fade
 	lighting._white_lens_material = StandardMaterial3D.new()
@@ -85,6 +87,35 @@ static func build(game: Game) -> Lighting:
 	lighting._reflected_levels = Vector2(level, white_level)
 	lighting.add_child(_world_environment())
 	return lighting
+
+## Emissive meshes do not illuminate their surroundings without GI. These
+## short-range red proxies supply belt spill and its head-wall bounce, keeping
+## the underside of the attached head roll readable without room ambient.
+static func _pod_status_spill(pod: Pods.Pod) -> Node3D:
+	var spill := Node3D.new()
+	spill.name = "PodStatusSpill%d" % pod.id().index()
+	var frame := Placement.pod_world_transform(pod.placement())
+	spill.transform = Transform3D(Basis(frame[0]), frame[1])
+	for side: float in [-1.0,1.0]:
+		for station: float in [-.45,.45]:
+			var light := OmniLight3D.new()
+			light.name = "BeltSpill"
+			light.position = Vector3(side*.52,.28,station)
+			light.light_color = EMERGENCY_RED
+			light.light_energy = .12
+			light.omni_range = 1.1
+			light.shadow_enabled = false
+			spill.add_child(light)
+	for side: float in [-1.0,1.0]:
+		var head := OmniLight3D.new()
+		head.name = "HeadStatusBounceLeft" if side < 0 else "HeadStatusBounceRight"
+		head.position = Vector3(side*.38,.42,-1.30)
+		head.light_color = EMERGENCY_RED
+		head.light_energy = .12
+		head.omni_range = 1.1
+		head.shadow_enabled = false
+		spill.add_child(head)
+	return spill
 
 ## One room-sized specular capture, without ambient fill or shadow work.
 ## UPDATE_ONCE spreads the six faces across frames instead of redrawing
