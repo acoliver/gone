@@ -35,7 +35,11 @@ var _device_released_at: Dictionary = {}
 var click_navigation := ClickNavigation.new()
 var _tab_released_cursor: bool = false
 var indicators: ClickIndicators
+var _get_up_look_tick := -1
+var _get_up_look_start := Vector2.ZERO
+var _get_up_look_target := 0.0
 
+const GET_UP_LOOK_TICKS := 30
 const DEVICE_RELEASE_GRACE_USEC := 60000
 const DEVICE_HELD_ACTIONS := ["move_forward", "move_back", "move_left", "move_right",
 	"look_left", "look_right", "look_up", "look_down", "climb_up", "climb_down"]
@@ -152,12 +156,21 @@ func step() -> void:
 	_collect_device_input(Sim.LOGICAL_TICK_SECS)
 	if scripted and adapter != null:
 		adapter.offer_tick(plane)
+	var aligning := _get_up_look_tick >= 0
 	_integrate_look()
-	var objective_look := click_navigation.prepare(plane, game, motion, interactions, look_angles())
-	_look_yaw = objective_look.x
-	_look_pitch = objective_look.y
+	if not aligning:
+		var objective_look := click_navigation.prepare(plane, game, motion, interactions, look_angles())
+		_look_yaw = objective_look.x
+		_look_pitch = objective_look.y
 	var facing := sim_forward()
+	var before := motion.state()
 	motion.advance(plane, game, _look_yaw, Sim.LOGICAL_TICK_SECS, facing)
+	if before == PlayerMotion.BodyState.GET_UP and motion.state() == PlayerMotion.BodyState.WALK:
+		_get_up_look_tick = 0
+		_get_up_look_start = look_angles()
+		var poses := game.exit_path.poses()
+		var direction := poses[3].foot() - poses[2].foot()
+		_get_up_look_target = atan2(-direction.x, -direction.z)
 	var context := Interactions.context_for(game, motion, facing)
 	var selected := interactions.process(plane, context, click_navigation.interaction_id)
 	if selected == &"D14-BAY-ROD" and rod != null:
@@ -225,6 +238,17 @@ func _collect_device_input(delta: float) -> void:
 ## The phase gates all look. Capture gates mouse pixels at their producer,
 ## leaving keyboard look available with a released cursor.
 func _integrate_look() -> void:
+	if _get_up_look_tick >= 0:
+		plane.take_look()
+		_get_up_look_tick += 1
+		var t := float(_get_up_look_tick) / GET_UP_LOOK_TICKS
+		var eased := t * t * (3 - 2 * t)
+		_look_yaw = lerp_angle(_get_up_look_start.x, _get_up_look_target, eased)
+		_look_pitch = lerpf(_get_up_look_start.y, 0, eased)
+		_presented_look = look_angles()
+		_project_rotation(Vector2.ZERO)
+		if _get_up_look_tick == GET_UP_LOOK_TICKS: _get_up_look_tick = -1
+		return
 	if not game.phase.look_allowed():
 		return
 	var delta := plane.take_look()

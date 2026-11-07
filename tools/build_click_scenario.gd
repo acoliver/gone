@@ -38,7 +38,7 @@ func build() -> void:
 	route.beat("first-blink")
 	route.hold(200)
 	route.step([{"type": "press", "button": "activate"}])
-	route.hold(8)
+	route.hold(8 + Player.GET_UP_LOOK_TICKS)
 	route.look_at(game.layout.anchor(&"D14-BAY-ROD").origin, -12)
 	route.beat("standing")
 	route.floor_click(Vector3(15, 0, 11.5))
