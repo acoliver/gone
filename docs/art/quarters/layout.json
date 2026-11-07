@@ -244,9 +244,9 @@
       "id": "dining_table",
       "zone": "centre",
       "box": [
-        4.95,
+        4.7,
         1.25,
-        5.85,
+        5.6,
         2.15
       ],
       "h": 0.75,
@@ -261,9 +261,9 @@
       "id": "dining_chair_1",
       "zone": "centre",
       "box": [
-        5.15,
+        4.9,
         0.8,
-        5.65,
+        5.4,
         1.25
       ],
       "h": 0.9,
@@ -278,9 +278,9 @@
       "id": "dining_chair_2",
       "zone": "centre",
       "box": [
-        5.15,
+        4.9,
         2.15,
-        5.65,
+        5.4,
         2.6
       ],
       "h": 0.9,
@@ -505,7 +505,7 @@
     {
       "id": "dining_table",
       "point": [
-        4.6,
+        4.35,
         1.7
       ]
     },
@@ -525,5 +525,5 @@
     }
   ],
   "walkway_min_m": 0.9,
-  "revision_note": "Rev 2: moved the dining set into the open floor right of the door path and the sofa toward the entrance so the bed has a walkable aisle on both sides; reach targets moved to standing positions."
+  "revision_note": "Rev 2: moved the dining set into the open floor right of the door path and the sofa toward the entrance so the bed has a walkable aisle on both sides; reach targets moved to standing positions. Rev 3: dining set moved 0.25 m left to leave 0.95 m between the table and the desk chair."
 }
