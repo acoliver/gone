@@ -10,7 +10,7 @@ from pathlib import Path
 import sys
 
 import bpy
-from mathutils import Vector
+from mathutils import Matrix, Vector
 
 ROOT = Path(__file__).resolve().parents[4]
 OUT = ROOT / "assets/props/quarters/storage_locker_module.glb"
@@ -93,9 +93,8 @@ def create_asset():
     bare = material("BareSteel", (0.34, 0.39, 0.37, 1.0), 0.82, 0.3)
     dark = material("DarkSteel", (0.045, 0.060, 0.058, 1.0), 0.76, 0.48)
 
-    # The measured hero guide is upright on Y, with its visible front on +Z.
-    # Its cross-sections are wider than the 600 mm inventory module, so the
-    # clean cage is proportionally fitted to the fixed 600 mm envelope.
+    # Geometry is laid out in the former fitting frame, then the two asset
+    # roots are rotated into Blender's native Z-up frame before export.
     carcass_parts = []
     carcass_parts += [
         box_piece("Side shell", (0.022, 2.20, 0.56), (-0.289, 1.30, 0.0), painted, 0.003),
@@ -112,7 +111,9 @@ def create_asset():
     carcass = bpy.data.objects.new("Carcass", None)
     bpy.context.scene.collection.objects.link(carcass)
     for index, piece in enumerate(carcass_parts, start=1):
-        piece.name = "Kick plate" if index == 6 else f"CarcassPart_{index:02d}"
+        piece.name = ["SidePanel_L", "SidePanel_R", "BackPanel", "TopPanel",
+                      "BottomPanel", "KickPlate", "SurroundStile_L",
+                      "SurroundStile_R", "SurroundHead", "SurroundSill"][index - 1]
         piece.parent = carcass
         piece.matrix_parent_inverse = carcass.matrix_world.inverted()
 
@@ -143,10 +144,10 @@ def create_asset():
     door["pivot_description"] = "Origin is the left hinge edge at the 110 mm door bottom."
     # Shallow returns along the back perimeter give the leaf a folded-sheet edge.
     return_parts = [
-        box_piece("Door return", (0.008, door_height - 0.012, 0.008), (-0.235, 1.220, 0.244), painted, 0.001),
-        box_piece("Door return", (0.008, door_height - 0.012, 0.008), (0.235, 1.220, 0.244), painted, 0.001),
-        box_piece("Door return", (door_width - 0.012, 0.008, 0.008), (0.0, 0.116, 0.244), painted, 0.001),
-        box_piece("Door return", (door_width - 0.012, 0.008, 0.008), (0.0, 2.324, 0.244), painted, 0.001),
+        box_piece("DoorReturn_L", (0.012, door_height - 0.012, 0.012), (-0.234, 1.220, 0.240), painted, 0.002),
+        box_piece("DoorReturn_R", (0.012, door_height - 0.012, 0.012), (0.234, 1.220, 0.240), painted, 0.002),
+        box_piece("DoorReturn_B", (door_width - 0.012, 0.012, 0.012), (0.0, 0.116, 0.240), painted, 0.002),
+        box_piece("DoorReturn_T", (door_width - 0.012, 0.012, 0.012), (0.0, 2.324, 0.240), painted, 0.002),
     ]
     for part in return_parts:
         part.parent = door
@@ -154,31 +155,37 @@ def create_asset():
 
     vent_parts = []
     for sy in slot_ys:
-        piece = box_piece("Louvre", (slot_w - 0.012, 0.008, 0.008),
-                          (slot_x + slot_w / 2 - 0.240, sy + 0.110, 0.258 + 0.001), painted, 0.001)
-        piece.rotation_euler.x = math.radians(-18)
+        piece = box_piece("Louvre", (0.300, 0.025, 0.012),
+                          (slot_x + slot_w / 2 - 0.240, sy + 0.110, 0.258 + 0.010), painted, 0.001)
+        piece.rotation_euler.x = math.radians(-30)
         vent_parts.append(piece)
     vents = join_pieces("DoorVents", vent_parts, door)
     pocket = box_piece("HandlePocket", (pocket_w - 0.008, pocket_h - 0.012, 0.003),
                        (pocket_x + pocket_w / 2 - 0.240, pocket_y + pocket_h / 2 + 0.110, 0.258 - 0.006), dark, 0.001)
     pocket.parent = door
     pocket.matrix_parent_inverse = door.matrix_world.inverted()
-    lever = box_piece("Handle", (0.040, 0.008, 0.008),
-                      (pocket_x + pocket_w / 2 - 0.240, pocket_y + 0.012 + 0.110, 0.258 + 0.002), bare, 0.002)
+    lever = box_piece("Handle", (0.110, 0.014, 0.010),
+                      (pocket_x + pocket_w / 2 - 0.240, pocket_y + 0.012 + 0.110, 0.258 + 0.003), bare, 0.002)
     lever.parent = door
     lever.matrix_parent_inverse = door.matrix_world.inverted()
 
     hinge_parts = []
     for center_y in (0.220, 1.220, 2.220):
-        for offset in (-0.019, 0.019):
-            bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius=0.009, depth=0.032,
-                                                location=(-0.251, center_y + offset, 0.282),
-                                                rotation=(math.radians(90), 0, 0))
-            knuckle = bpy.context.object
-            knuckle.name = "Hinge knuckle"
-            knuckle.data.materials.append(bare)
-            hinge_parts.append(knuckle)
+        bpy.ops.mesh.primitive_cylinder_add(vertices=16, radius=0.009, depth=0.070,
+                                            location=(-0.251, center_y, 0.282),
+                                            rotation=(math.radians(90), 0, 0))
+        knuckle = bpy.context.object
+        knuckle.name = "Hinge knuckle"
+        knuckle.data.materials.append(bare)
+        hinge_parts.append(knuckle)
     hinges = join_pieces("Hinges", hinge_parts, carcass)
+    bpy.ops.object.select_all(action="DESELECT")
+    hinges.select_set(True)
+    bpy.context.view_layer.objects.active = hinges
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.mesh.remove_doubles(threshold=0.0001)
+    bpy.ops.object.mode_set(mode="OBJECT")
 
     rivet_parts = []
     rivet_locations = []
@@ -199,6 +206,26 @@ def create_asset():
         rivet_parts.append(r)
     rivets = join_pieces("Rivets", rivet_parts, carcass)
 
+    # Rotate every world transform, then restore parenting without changing
+    # the transformed world matrices. Parenting inverses otherwise cancel a
+    # root-only rotation in the glTF exporter.
+    carcass.rotation_euler = (0, 0, 0)
+    door.rotation_euler = (0, 0, 0)
+    bpy.context.view_layer.update()
+    frame = Matrix.Rotation(math.radians(90), 4, "X")
+    objects = [obj for obj in bpy.context.scene.objects if obj.type in {"MESH", "EMPTY"}]
+    parent_by_object = {obj: obj.parent for obj in objects}
+    world_by_object = {obj: frame @ obj.matrix_world.copy() for obj in objects}
+    for obj in objects:
+        obj.parent = None
+        obj.matrix_world = world_by_object[obj]
+    for obj in objects:
+        parent = parent_by_object[obj]
+        if parent:
+            obj.parent = parent
+            obj.matrix_parent_inverse = parent.matrix_world.inverted()
+            obj.matrix_world = world_by_object[obj]
+    bpy.context.view_layer.update()
     for obj in (carcass, door, vents, pocket, lever, hinges, rivets):
         uv_unwrap(obj)
     bpy.context.view_layer.update()
@@ -238,29 +265,29 @@ def render_previews(render_dir):
     light_data = bpy.data.lights.new("Studio", "AREA")
     light = bpy.data.objects.new("Studio", light_data)
     scene.collection.objects.link(light)
-    light.location = (2.8, 4.0, 4.2)
+    light.location = (2.8, -4.2, 4.0)
     light_data.energy = 450
     light_data.shape = "DISK"
     light_data.size = 4
     fill_data = bpy.data.lights.new("StudioFill", "AREA")
     fill = bpy.data.objects.new("StudioFill", fill_data)
     scene.collection.objects.link(fill)
-    fill.location = (-3.0, 2.8, -3.5)
+    fill.location = (-3.0, 3.5, 2.8)
     fill_data.energy = 300
     fill_data.shape = "DISK"
     fill_data.size = 3.5
-    key = setup_camera("HeroCamera", (3.0, 2.65, 4.1), (0, 1.2, 0), 3.15, 768)
+    key = setup_camera("HeroCamera", (3.0, -4.1, 2.65), (0, 0, 1.2), 3.15, 768)
     scene.render.filepath = str(render_dir / "locker-render.png")
     bpy.ops.render.render(write_still=True)
-    setup_camera("FrontCamera", (0, 1.2, 4.5), (0, 1.2, 0), 2.75, 768)
+    setup_camera("FrontCamera", (0, -4.5, 1.2), (0, 0, 1.2), 2.75, 768)
     scene.render.filepath = str(render_dir / "compare-front.png")
     bpy.ops.render.render(write_still=True)
     for index, angle in enumerate((30, 120, 210, 300)):
         rad = math.radians(angle)
-        setup_camera("TurntableCamera", (4.0 * math.sin(rad), 1.2, 4.0 * math.cos(rad)), (0, 1.2, 0), 3.15, 512)
+        setup_camera("TurntableCamera", (4.0 * math.sin(rad), -4.0 * math.cos(rad), 1.2), (0, 0, 1.2), 3.15, 512)
         scene.render.filepath = str(render_dir / f"turn-{angle}.png")
         bpy.ops.render.render(write_still=True)
-    setup_camera("DetailCamera", (0, 2.02, 4.5), (0, 2.02, 0.28), 0.92, 768)
+    setup_camera("DetailCamera", (0, -4.5, 2.02), (0, 0.28, 2.02), 0.92, 768)
     scene.render.filepath = str(render_dir / "detail-render.png")
     bpy.ops.render.render(write_still=True)
     scene.camera = key

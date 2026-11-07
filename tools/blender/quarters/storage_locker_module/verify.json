@@ -2,23 +2,23 @@
   "bounds_m": {
     "min": [
       -0.3001961410045624,
-      0.0,
-      -0.30000001192092896
+      -0.3000003695487976,
+      -3.4530227566165195e-08
     ],
     "max": [
       0.3001961410045624,
-      2.4000000953674316,
-      0.30000001192092896
+      0.30000001192092896,
+      2.4000003337860107
     ],
     "extents_xyz": [
       0.6003922820091248,
-      2.4000000953674316,
-      0.6000000238418579
+      0.6000003814697266,
+      2.4000003683162383
     ],
     "target_xyz": [
       0.6,
-      2.4,
-      0.6
+      0.6,
+      2.4
     ],
     "tolerance_m": 0.002,
     "pass": true
@@ -71,23 +71,23 @@
     "present": true,
     "bounds_min_m": [
       -0.25999999046325684,
-      0.0,
-      -0.25999999046325684
+      -0.2600000202655792,
+      -3.4530227566165195e-08
     ],
     "bounds_max_m": [
       0.25999999046325684,
-      0.10499999672174454,
-      0.25999999046325684
+      0.2600000202655792,
+      0.10500004887580872
     ],
     "extents_xyz_m": [
       0.5199999809265137,
-      0.10499999672174454,
-      0.5199999809265137
+      0.5200000405311584,
+      0.10500008340603628
     ],
     "target_extents_xyz_m": [
       0.52,
-      0.105,
-      0.52
+      0.52,
+      0.105
     ],
     "recess_m": 0.04,
     "pass": true
@@ -95,18 +95,18 @@
   "door_pivot": {
     "world_position_m": [
       -0.23999999463558197,
-      0.10999999940395355,
-      0.257999986410141
+      -0.257999986410141,
+      0.11000002175569534
     ],
     "expected_m": [
       -0.24,
-      0.11,
-      0.258
+      -0.258,
+      0.11
     ],
     "error_m": [
       5.364418020903372e-09,
-      -5.960464483090178e-10,
-      -1.358985901589449e-08
+      1.358985901589449e-08,
+      2.1755695342462467e-08
     ],
     "pass": true
   },
@@ -131,12 +131,12 @@
             0.23999999463558197
           ],
           [
-            0.10999998450279236,
-            2.3299999237060547
+            -0.2700006663799286,
+            -0.2459999918937683
           ],
           [
-            0.2459999918937683,
-            0.26999998092651367
+            0.11000000685453415,
+            2.330000162124634
           ]
         ]
       },
@@ -146,16 +146,16 @@
         "object_pairs": [],
         "door_bounds_m": [
           [
-            -0.24173647165298462,
-            0.23444417119026184
+            -0.2417365312576294,
+            0.23444414138793945
           ],
           [
-            0.10999998450279236,
-            2.3299999237060547
+            -0.3529227674007416,
+            -0.24652959406375885
           ],
           [
-            0.24652959406375885,
-            0.35292232036590576
+            0.11000000685453415,
+            2.330000400543213
           ]
         ]
       },
@@ -166,15 +166,15 @@
         "door_bounds_m": [
           [
             -0.2478128969669342,
-            0.10706810653209686
+            0.10706799477338791
           ],
           [
-            0.10999998450279236,
-            2.3299999237060547
+            -0.6051883697509766,
+            -0.2503431439399719
           ],
           [
-            0.2503431439399719,
-            0.6051880717277527
+            0.11000000685453415,
+            2.330000638961792
           ]
         ]
       },
@@ -184,16 +184,16 @@
         "object_pairs": [],
         "door_bounds_m": [
           [
-            -0.2520000636577606,
-            -0.2280000001192093
+            -0.2520001232624054,
+            -0.2279999852180481
           ],
           [
-            0.10999998450279236,
-            2.3299999237060547
+            -0.7380002737045288,
+            -0.257999986410141
           ],
           [
-            0.257999986410141,
-            0.7380000352859497
+            0.10999997705221176,
+            2.330000638961792
           ]
         ]
       },
@@ -203,16 +203,16 @@
         "object_pairs": [],
         "door_bounds_m": [
           [
-            -0.33492234349250793,
+            -0.33492279052734375,
             -0.22852960228919983
           ],
           [
-            0.10999998450279236,
-            2.3299999237060547
+            -0.7324443459510803,
+            -0.25626352429389954
           ],
           [
-            0.25626352429389954,
-            0.732444167137146
+            0.10999996960163116,
+            2.330000400543213
           ]
         ]
       }
@@ -220,7 +220,7 @@
     "pass": true
   },
   "topology": {
-    "triangle_count": 5176,
+    "triangle_count": 5092,
     "triangle_limit": 6000,
     "nonmanifold_edges": 0,
     "degenerate_faces": 0,
@@ -238,59 +238,17 @@
     ],
     "missing_materials": [],
     "meshes": {
-      "CarcassPart_01": {
-        "triangles": 108,
-        "nonmanifold_edges": 0,
-        "degenerate_faces": 0,
-        "signed_volume_m3": 0.02707472965850381
-      },
-      "CarcassPart_02": {
-        "triangles": 108,
-        "nonmanifold_edges": 0,
-        "degenerate_faces": 0,
-        "signed_volume_m3": 0.02707472965850381
-      },
-      "CarcassPart_03": {
+      "BackPanel": {
         "triangles": 108,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
         "signed_volume_m3": 0.026890095156791933
       },
-      "CarcassPart_04": {
+      "BottomPanel": {
         "triangles": 108,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
         "signed_volume_m3": 0.003540959839663552
-      },
-      "CarcassPart_05": {
-        "triangles": 108,
-        "nonmanifold_edges": 0,
-        "degenerate_faces": 0,
-        "signed_volume_m3": 0.003540959839663552
-      },
-      "CarcassPart_07": {
-        "triangles": 108,
-        "nonmanifold_edges": 0,
-        "degenerate_faces": 0,
-        "signed_volume_m3": 0.0015532484072610466
-      },
-      "CarcassPart_08": {
-        "triangles": 108,
-        "nonmanifold_edges": 0,
-        "degenerate_faces": 0,
-        "signed_volume_m3": 0.0015532484072610466
-      },
-      "CarcassPart_09": {
-        "triangles": 108,
-        "nonmanifold_edges": 0,
-        "degenerate_faces": 0,
-        "signed_volume_m3": 0.000510493669924396
-      },
-      "CarcassPart_10": {
-        "triangles": 108,
-        "nonmanifold_edges": 0,
-        "degenerate_faces": 0,
-        "signed_volume_m3": 0.00016444462752675785
       },
       "Door": {
         "triangles": 556,
@@ -298,41 +256,41 @@
         "degenerate_faces": 0,
         "signed_volume_m3": 0.025218590427699767
       },
-      "Door return": {
+      "DoorReturn_B": {
         "triangles": 108,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 0.00013870872215885713
+        "signed_volume_m3": 6.510470574635127e-05
       },
-      "Door return.001": {
+      "DoorReturn_L": {
         "triangles": 108,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 0.00013870872215885713
+        "signed_volume_m3": 0.0003075105525547351
       },
-      "Door return.002": {
+      "DoorReturn_R": {
         "triangles": 108,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 2.9387255767288067e-05
+        "signed_volume_m3": 0.0003075105525547351
       },
-      "Door return.003": {
+      "DoorReturn_T": {
         "triangles": 108,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 2.9387255767288067e-05
+        "signed_volume_m3": 6.510470574635127e-05
       },
       "DoorVents": {
         "triangles": 324,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 4.2925319416816286e-05
+        "signed_volume_m3": 0.00026882233948229595
       },
       "Handle": {
         "triangles": 108,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 2.3159312720949876e-06
+        "signed_volume_m3": 1.4790400288628555e-05
       },
       "HandlePocket": {
         "triangles": 108,
@@ -341,12 +299,12 @@
         "signed_volume_m3": 2.440075288123379e-05
       },
       "Hinges": {
-        "triangles": 264,
+        "triangles": 180,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
-        "signed_volume_m3": 4.6656063470941646e-05
+        "signed_volume_m3": 5.207555685160511e-05
       },
-      "Kick plate": {
+      "KickPlate": {
         "triangles": 108,
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
@@ -357,9 +315,121 @@
         "nonmanifold_edges": 0,
         "degenerate_faces": 0,
         "signed_volume_m3": 2.5659522477461394e-05
+      },
+      "SidePanel_L": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 0.02707472965850381
+      },
+      "SidePanel_R": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 0.02707472965850381
+      },
+      "SurroundHead": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 0.000510493669924396
+      },
+      "SurroundSill": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 0.00016444462752675785
+      },
+      "SurroundStile_L": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 0.0015532484072610466
+      },
+      "SurroundStile_R": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 0.0015532484072610466
+      },
+      "TopPanel": {
+        "triangles": 108,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "signed_volume_m3": 0.003540959839663552
       }
     },
     "pass": true
   },
-  "pass": true
+  "pass": true,
+  "trimesh_export": {
+    "bounds_source": "trimesh exported GLB, primary bounds check",
+    "bounds_m": {
+      "min": [
+        -0.30019613867625594,
+        0.0,
+        -0.30000000447034836
+      ],
+      "max": [
+        0.3001961410045624,
+        2.399999976158142,
+        0.30000000819563866
+      ],
+      "expected_min": [
+        -0.3,
+        0.0,
+        -0.3
+      ],
+      "expected_max": [
+        0.3,
+        2.4,
+        0.3
+      ],
+      "tolerance_m": 0.002,
+      "pass": true
+    },
+    "node_names": [
+      "BackPanel",
+      "BottomPanel",
+      "Door",
+      "DoorReturn_B",
+      "DoorReturn_L",
+      "DoorReturn_R",
+      "DoorReturn_T",
+      "DoorVents",
+      "Handle",
+      "HandlePocket",
+      "Hinges",
+      "KickPlate",
+      "Rivets",
+      "SidePanel_L",
+      "SidePanel_R",
+      "SurroundHead",
+      "SurroundSill",
+      "SurroundStile_L",
+      "SurroundStile_R",
+      "TopPanel"
+    ],
+    "required_named_nodes_present": true,
+    "door_front_normal": [
+      -0.0,
+      0.0,
+      1.0
+    ],
+    "door_front_normal_points_plus_z": true,
+    "door_opening_axis_local_plus_y": [
+      -0.0,
+      1.0,
+      -0.0
+    ],
+    "door_opening_axis_pass": true,
+    "hinge_connected_components_after_merge": 3,
+    "kick_plate_setback_m": {
+      "front_m": 0.04000001773238182,
+      "left_m": 0.040196148212999105,
+      "right_m": 0.04019615054130554
+    },
+    "kick_plate_setback_pass": true,
+    "pass": true
+  }
 }

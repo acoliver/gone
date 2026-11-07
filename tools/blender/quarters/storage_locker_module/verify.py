@@ -3,6 +3,7 @@ import argparse
 import json
 import math
 from pathlib import Path
+import subprocess
 import sys
 
 import bpy
@@ -84,7 +85,7 @@ def main():
     door_base = door.matrix_world.copy()
     pivot = list(door.matrix_world.translation)
     pivot_matrix = Matrix.Translation(door.matrix_world.translation)
-    expected_pivot = [-0.240, 0.110, 0.258]
+    expected_pivot = [-0.240, -0.258, 0.110]
     pivot_error = [pivot[i] - expected_pivot[i] for i in range(3)]
     carcass = by_name["Carcass"]
     door_parts = descendants(door, objects)
@@ -94,7 +95,7 @@ def main():
     carcass_tree = bvh_for(fixed_parts)
     sweep = []
     for deg in range(101):
-        rotation = Matrix.Rotation(math.radians(-deg), 4, "Y")
+        rotation = Matrix.Rotation(math.radians(-deg), 4, "Z")
         door.matrix_world = pivot_matrix @ rotation @ pivot_matrix.inverted() @ door_base
         bpy.context.view_layer.update()
         bpy.context.evaluated_depsgraph_get().update()
@@ -155,21 +156,21 @@ def main():
                                   "signed_volume_m3": signed_volume}
 
     tolerance = 0.002
-    dimension_pass = all(abs(extents[i] - (0.6, 2.4, 0.6)[i]) <= tolerance for i in range(3))
-    kick_plate = by_name.get("Kick plate")
+    dimension_pass = all(abs(extents[i] - (0.6, 0.6, 2.4)[i]) <= tolerance for i in range(3))
+    kick_plate = by_name.get("KickPlate")
     kick_min, kick_max, kick_extents = bounds_for([kick_plate]) if kick_plate else ([], [], [])
-    kick_plate_pass = bool(kick_plate and max(abs(kick_extents[i] - (0.520, 0.105, 0.520)[i]) for i in range(3)) <= tolerance
-                          and abs(kick_min[1]) <= tolerance and abs(kick_max[1] - 0.105) <= tolerance)
+    kick_plate_pass = bool(kick_plate and max(abs(kick_extents[i] - (0.520, 0.520, 0.105)[i]) for i in range(3)) <= tolerance
+                          and abs(kick_min[2]) <= tolerance and abs(kick_max[2] - 0.105) <= tolerance)
     swing_hits = [v for v in sweep if v["surface_intersection_pairs"] > 0]
     required_materials = {"PaintedSteel", "BareSteel", "DarkSteel"}
     exported_materials = sorted({material.name for obj in objects for material in obj.data.materials if material})
     report = {
         "bounds_m": {"min": mins, "max": maxs, "extents_xyz": extents,
-                     "target_xyz": [0.6, 2.4, 0.6], "tolerance_m": tolerance, "pass": dimension_pass},
+                     "target_xyz": [0.6, 0.6, 2.4], "tolerance_m": tolerance, "pass": dimension_pass},
         "hierarchy": hierarchy,
         "kick_plate": {"present": kick_plate is not None, "bounds_min_m": kick_min,
                        "bounds_max_m": kick_max, "extents_xyz_m": kick_extents,
-                       "target_extents_xyz_m": [0.520, 0.105, 0.520],
+                       "target_extents_xyz_m": [0.520, 0.520, 0.105],
                        "recess_m": 0.040, "pass": kick_plate_pass},
         "door_pivot": {"world_position_m": pivot, "expected_m": expected_pivot,
                        "error_m": pivot_error, "pass": max(abs(v) for v in pivot_error) <= 0.002},
@@ -190,6 +191,12 @@ def main():
     }
     report["pass"] = (dimension_pass and kick_plate_pass and all(v["pass"] for v in hierarchy.values()) and
                       report["door_pivot"]["pass"] and report["door_sweep"]["pass"] and report["topology"]["pass"])
+    trimesh_python = "/Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python"
+    trimesh_script = Path(__file__).with_name("trimesh_verify.py")
+    trimesh_result = subprocess.run([trimesh_python, str(trimesh_script), str(args.input.resolve())],
+                                    capture_output=True, text=True, check=True)
+    report["trimesh_export"] = json.loads(trimesh_result.stdout)
+    report["pass"] = report["pass"] and report["trimesh_export"]["pass"]
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2) + "\n")
     print(json.dumps(report, indent=2))
