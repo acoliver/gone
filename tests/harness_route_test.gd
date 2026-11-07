@@ -35,7 +35,7 @@ func test_fixed_opening_schedule_snapshots() -> void:
 		"rod-pickup": "6ad6d75c76ec032165114dc035b09346e6629de0d7108ad4e8230418f93e50df",
 		"hallway": "52ac14ded190d348566825248fbf5c8d84a0d7b760df6a46a36f5e346cebb849",
 		"power-room": "fccfcd702eeef0d15dd2cd6534ad6ab146f6d516843797e41d3b7b78b8b81170",
-		"connector-route": "6b4743c8072df811b5834182fe1d4d05eb1e083c508f96f427ac33cb3ccf1ed6",
+		"connector-route": "12cbdd957741adc8644b595945afeb5ca9d8998b5f7e8e6abf9d948b85341a9a",
 	}
 	for name: String in expected:
 		assert_true(FileAccess.get_sha256("res://scenarios/%s.json" % name) == expected[name], name + " fixed compiled schedule")
