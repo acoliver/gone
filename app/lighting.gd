@@ -25,6 +25,10 @@ const REGULAR_RANGE: float = 7.0
 ## once lit: the "dim but regular" brief.
 const REGULAR_DIM_SHARE: float = 0.55
 
+## Extra receiver layer on bay pods, not on the nearby walls or floor.
+const POD_STATUS_MASK: int = 1 << 19
+const POD_STATUS_ENERGY: float = 0.14
+
 ## A lit regular strip's omni energy, one definition for every module.
 static func regular_energy() -> float:
 	return FIXTURE_ENERGY * REGULAR_DIM_SHARE
@@ -47,6 +51,8 @@ var _lenses: Array[MeshInstance3D] = []
 var _lens_mesh: BoxMesh = null
 var _lens_material: StandardMaterial3D = null
 var _remainder: float = 0.0
+var _reflection_probe: ReflectionProbe
+var _reflected_levels: Vector2
 
 static func build(game: Game) -> Lighting:
 	var lighting := Lighting.new()
@@ -57,6 +63,7 @@ static func build(game: Game) -> Lighting:
 	lighting._lens_mesh.size = LENS_SIZE
 	lighting._lens_material = StandardMaterial3D.new()
 	lighting._lens_material.albedo_color = LENS_BASE_COLOR
+	lighting._lens_material.emission_enabled = true
 	lighting._lens_material.emission = Color(FIXTURE_EMISSIVE * level, 0.0, 0.0)
 	lighting._lens_material.roughness = 0.8
 	lighting._lens_mesh.material = lighting._lens_material
@@ -65,6 +72,8 @@ static func build(game: Game) -> Lighting:
 	lighting._fade = held.fade
 	for fixture_transform: Transform3D in fixture_transforms(game.registry):
 		lighting.add_child(lighting._fixture(fixture_transform, level))
+	for pod: Pods.Pod in game.registry.pods():
+		lighting.add_child(_pod_status_spill(pod))
 	var white_level := 1.0 if game.power_active else 0.0
 	lighting._white_fade = Intensity.FixtureFade.holding(white_level).fade
 	lighting._white_lens_material = StandardMaterial3D.new()
@@ -77,8 +86,61 @@ static func build(game: Game) -> Lighting:
 	for frame: Transform3D in game.layout.bay().regular_light_frames():
 		lighting.add_child(lighting._white_fixture(frame, white_mesh))
 	lighting._apply_white_level(white_level)
+	lighting._reflection_probe = bay_reflection_probe()
+	lighting.add_child(lighting._reflection_probe)
+	lighting._reflected_levels = Vector2(level, white_level)
 	lighting.add_child(_world_environment())
 	return lighting
+
+## Emissive meshes do not illuminate their surroundings without GI. These
+## diffuse-only proxies supply the belt and head-seam fill without reflecting
+## point sources in the clearcoat. Pod-only receivers prevent red pools on the
+## room shell while the always-on status belts retain their local contribution.
+static func _pod_status_spill(pod: Pods.Pod) -> Node3D:
+	var spill := Node3D.new()
+	spill.name = "PodStatusSpill%d" % pod.id().index()
+	var frame := Placement.pod_world_transform(pod.placement())
+	spill.transform = Transform3D(Basis(frame[0]), frame[1])
+	for side: float in [-1.0,1.0]:
+		for station: float in [-.45,.45]:
+			var light := OmniLight3D.new()
+			light.name = "BeltSpill"
+			light.position = Vector3(side*.52,.28,station)
+			light.light_color = EMERGENCY_RED
+			light.light_energy = POD_STATUS_ENERGY
+			light.light_specular = 0.0
+			light.light_cull_mask = POD_STATUS_MASK
+			light.omni_range = 1.1
+			light.shadow_enabled = false
+			spill.add_child(light)
+	for side: float in [-1.0,1.0]:
+		var head := OmniLight3D.new()
+		head.name = "HeadStatusBounceLeft" if side < 0 else "HeadStatusBounceRight"
+		head.position = Vector3(side*.38,.42,-1.30)
+		head.light_color = EMERGENCY_RED
+		head.light_energy = POD_STATUS_ENERGY
+		head.light_specular = 0.0
+		head.light_cull_mask = POD_STATUS_MASK
+		head.omni_range = 1.1
+		head.shadow_enabled = false
+		spill.add_child(head)
+	return spill
+
+## One room-sized specular capture, without ambient fill or shadow work.
+## UPDATE_ONCE spreads the six faces across frames instead of redrawing
+## the bay every frame. The bridge replaces it only at a settled light change.
+static func bay_reflection_probe() -> ReflectionProbe:
+	var probe := ReflectionProbe.new()
+	probe.name = "BayReflections"
+	probe.position = Vector3(0.0, Pods.ROOM_CEILING_HEIGHT / 2.0, 0.0)
+	probe.size = Vector3(Pods.ROOM_LENGTH, Pods.ROOM_CEILING_HEIGHT, Pods.ROOM_WIDTH)
+	probe.interior = true
+	probe.box_projection = true
+	probe.ambient_mode = ReflectionProbe.AMBIENT_DISABLED
+	probe.enable_shadows = false
+	probe.cull_mask = 1
+	probe.update_mode = ReflectionProbe.UPDATE_ONCE
+	return probe
 
 ## One wall fixture above each registry pod and one above the existing
 ## hatch lintel. All sit outside the standing envelope; route solids are
@@ -94,7 +156,7 @@ static func fixture_transforms(registry: Pods.PodRegistry) -> Array[Transform3D]
 				Vector3(
 					placement.center.x,
 					WALL_MOUNT_HEIGHT,
-					side * (Pods.ROOM_WIDTH / 2.0 - WALL_STANDOFF)
+					side * (Pods.ROOM_WIDTH / 2.0 - WALL_STANDOFF - Pods.ROW_WALL_OFFSET)
 				)
 			)
 		)
@@ -167,6 +229,15 @@ func process_frame(delta_secs: float) -> void:
 		_white_fade.tick()
 	_apply_level(_fade.intensity())
 	_apply_white_level(_white_fade.intensity())
+	var levels := Vector2(level(), white_level())
+	if is_settled() and levels != _reflected_levels:
+		# UPDATE_ONCE keeps its captured lighting until invalidated. Replace
+		# the probe once after a fade so red reflections do not survive the
+		# switch to secondary white power (or an emergency blackout).
+		_reflection_probe.free()
+		_reflection_probe = bay_reflection_probe()
+		add_child(_reflection_probe)
+		_reflected_levels = levels
 
 func _circuit_target() -> float:
 	return 0.0 if _game.power_active else _game.emergency_circuit_target()
@@ -255,7 +326,7 @@ static func mesh_layers(node: Node, mask: int) -> void:
 		mesh_layers(child, mask)
 
 static func isolate_lights(node: Node, mask: int) -> void:
-	if node is Light3D:
+	if node is Light3D and node.light_cull_mask != POD_STATUS_MASK:
 		node.light_cull_mask = mask
 	for child: Node in node.get_children():
 		isolate_lights(child, mask)

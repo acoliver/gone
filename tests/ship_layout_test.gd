@@ -1,4 +1,5 @@
 extends SimTestCase
+# New pod #88: pins follow the fitted asset, row centers and eight-piece topology.
 
 func _layout() -> ShipLayout:
 	var result := ShipLayout.authored()
@@ -45,8 +46,8 @@ func test_bay_frame_power_room_and_anchors() -> void:
 	assert_vec3_equal(frame.basis.y, Vector3.UP, "up preserved")
 	assert_vec3_equal(frame.basis.z, Vector3.RIGHT, "quarter turn")
 	assert_vec3_equal(frame.origin, Vector3(15, 0, 7.7), "bay origin")
-	assert_close(layout.world_to_bay() * (frame * Vector3(-4.8, 0, 2.9)), Vector3(-4.8, 0, 2.9), "inverse")
-	assert_close(frame * Vector3(-4.8, 0, 2.9), Vector3(17.9, 0, 12.5), "player pod")
+	assert_close(layout.world_to_bay() * (frame * Vector3(-4.8, 0, 2.5965)), Vector3(-4.8, 0, 2.5965), "inverse")
+	assert_close(frame * Vector3(-4.8, 0, 2.5965), Vector3(17.5965, 0, 12.5), "#88: seam-hinged player pod follows the inward row")
 	assert_true(layout.bay().template().equals(Pods.PodRegistry.frozen()), "one frozen local pod template")
 	assert_close(layout.power_room().bounds().position, Vector3(21, 0, -9.7), "unchanged power minimum")
 	assert_close(layout.power_room().bounds().end, Vector3(33, 3.2, -1.7), "unchanged power maximum")

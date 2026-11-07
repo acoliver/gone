@@ -1,4 +1,5 @@
 extends SimTestCase
+# New pod #88: pins follow the fitted asset, row centers and eight-piece topology.
 
 var _bay_frame := ShipLayout.authored().layout.bay_to_world()
 ## The emergency power room (issue #59): the room's envelope mirrors
@@ -114,9 +115,9 @@ func test_collider_sets_extend_the_hallways_both_doors() -> void:
 	var shut := PowerRoom.scene_collider_set(registry, false, false)
 	var hall_open := PowerRoom.scene_collider_set(registry, true, false)
 	var both_open := PowerRoom.scene_collider_set(registry, true, true)
-	assert_int_equal(shut.size(), 194, "the shut set's box count is pinned")
-	assert_int_equal(hall_open.size(), 192, "opening the stasis doorway drops its block and slab")
-	assert_int_equal(both_open.size(), 191, "opening the power door drops its leaf")
+	assert_int_equal(shut.size(), 205, "the shut set's box count is pinned")
+	assert_int_equal(hall_open.size(), 203, "opening the stasis doorway drops its block and slab")
+	assert_int_equal(both_open.size(), 202, "opening the power door drops its leaf")
 	var game := _awake_game()
 	assert_int_equal(game.colliders.size(), shut.size(), "the game boots on the shut set")
 	# The power aperture is solid while shut and clear once the leaf

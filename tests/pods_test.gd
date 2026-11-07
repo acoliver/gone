@@ -182,3 +182,15 @@ func test_pod_ids_cover_the_bay_range_only() -> void:
 	for id: Pods.PodId in Pods.PodId.all():
 		assert_int_equal(id.index(), position, "ALL lists ids in order")
 		position += 1
+
+func test_new_pod_dimensions_keep_the_approved_bay_and_aisle() -> void:
+	# New pod #88: the asset is already authored in pod-local metres.
+	assert_float_equal(Pods.POD_LENGTH, 2.393, "length")
+	assert_float_equal(Pods.POD_WIDTH, 0.9, "width")
+	assert_float_equal(Pods.POD_HEIGHT, 0.896, "height")
+	assert_float_equal(Pods.ROOM_WIDTH, 8.0, "bay remains 8 m")
+	assert_float_equal(Pods.AISLE_HALF_WIDTH, 1.25, "#88: agreed 2.5 m walkway allows the seam-hinged lids")
+	assert_float_equal(ShipLayout.CORRIDOR_WIDTH, 3.0, "ship corridor is independent")
+	assert_float_equal(Controller.CAPSULE_RADIUS, 0.30, "capsule radius is unchanged")
+	assert_close(Vector3(0, 0, Pods.ROW_A_Z), Vector3(0, 0, -2.5965), "row A")
+	assert_close(Vector3(0, 0, Pods.ROW_B_Z), Vector3(0, 0, 2.5965), "row B")

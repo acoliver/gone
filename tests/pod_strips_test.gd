@@ -1,4 +1,5 @@
 extends SimTestCase
+# New pod #88: pins follow the fitted asset, row centers and eight-piece topology.
 ## Pins for the PodStrips emissive flank belts: every pod group carries
 ## exactly one "PodStrips" child instancing the one shared merged mesh
 ## (one surface, one material, exactly 576 triangles), the build is
@@ -8,15 +9,22 @@ extends SimTestCase
 ## authored dressing solid by the measured margins, and nothing in the
 ## strip pass adds a light or a collider.
 
-const BELT_DOME_Y: float = 0.58
-const BELT_TRAY_Y: float = 0.31
-const SKIN_WINDOW_Y: float = 0.03
-const SKIN_WINDOW_Z: float = 0.05
+const BELT_DOME_Y: float = 0.28
+const BELT_TRAY_Y: float = 0.28 # #88: both flanks share the mid-height belt.
 const CONTACT_TOLERANCE: float = 0.011
-const HOLE_TOLERANCE: float = 0.016
 const GAP_EPSILON: float = 1e-4
 
-var _pod_verts: PackedVector3Array = PackedVector3Array()
+var _skin_triangles: Array[PackedVector3Array] = []
+
+func test_both_flanks_have_the_same_world_height_in_both_rows() -> void:
+	# #88: yaw preserves Y; the authored 120 mm tray table caused the low belt.
+	for pod: Pods.Pod in Pods.PodRegistry.frozen().pods():
+		var placement := pod.placement()
+		var frame := Transform3D(Basis(Vector3.UP, placement.yaw_radians), Vector3(placement.center.x, 0, placement.center.y))
+		for plus: Vector3 in PodStrips.FLANK_DOME:
+			for minus: Vector3 in PodStrips.FLANK_TRAY:
+				assert_true(absf((frame * plus).y - (frame * minus).y) < 1e-5,
+					"pod %d has matching world-space flank heights" % pod.id().index())
 
 func test_every_pod_carries_the_one_shared_strip_mesh() -> void:
 	var pods := StasisPods.build(Pods.PodRegistry.frozen())
@@ -83,13 +91,14 @@ func test_strip_material_follows_the_lens_convention() -> void:
 	assert_true(strip == PodStrips._strip_material(), "the one material in play is the cached shared strip material")
 
 func test_strip_geometry_stays_within_the_pinned_bounds() -> void:
+	# New pod #88: outward-offset base belts, measured from the mesh.
 	var bounds: AABB = PodStrips.strips_mesh().get_aabb()
-	assert_true(bounds.position.x >= -0.102 - 1e-4 and bounds.end.x <= 0.698 + 1e-4,
-		"strip x within [-0.102, 0.698], got %s" % str(bounds))
-	assert_true(bounds.position.y >= 0.298 - 1e-4 and bounds.end.y <= 0.592 + 1e-4,
-		"strip y within [0.298, 0.592], got %s" % str(bounds))
-	assert_true(bounds.position.z >= -0.862 - 1e-4 and bounds.end.z <= 0.912 + 1e-4,
-		"strip z within [-0.862, 0.912], got %s" % str(bounds))
+	assert_true(bounds.position.x >= -0.4856 - 1e-4 and bounds.end.x <= 0.4853 + 1e-4,
+		"strip x within [-0.4856, 0.4853], got %s" % str(bounds))
+	assert_true(bounds.position.y >= 0.268 - 1e-4 and bounds.end.y <= 0.292 + 1e-4,
+		"strip y within [0.268, 0.292], got %s" % str(bounds))
+	assert_true(bounds.position.z >= -0.8534 - 1e-4 and bounds.end.z <= 0.9037 + 1e-4,
+		"strip z within [-0.8534, 0.9037], got %s" % str(bounds))
 	assert_true(bounds.end.y <= 0.692, "the strip top stays under the 0.692 m pin")
 	assert_true(bounds.end.y < Placement.HANGING_WIRE_CLEARANCE,
 		"the strips stay far under the overhead clearance floor")
@@ -97,24 +106,28 @@ func test_strip_geometry_stays_within_the_pinned_bounds() -> void:
 		"the tube radius covers the contact tolerance, so skin contact is guaranteed")
 
 func test_every_waypoint_sits_against_the_shell_skin() -> void:
-	_ensure_pod_verts()
-	for waypoint: Vector3 in PodStrips.FLANK_DOME:
-		var skin := _skin_max_x(BELT_DOME_Y, waypoint.z)
-		var deviation := waypoint.x + 0.006 - skin
-		assert_true(absf(deviation) <= CONTACT_TOLERANCE,
-			"+X waypoint at z %.2f sits within %.3f of the skin, got %.4f (skin %.4f)" % [
-				waypoint.z, CONTACT_TOLERANCE, deviation, skin])
-	for waypoint: Vector3 in PodStrips.FLANK_TRAY:
-		# The two hole stations carry the wider tolerance and a window
-		# widened onto their neighbors, per numbers.json's note: hole
-		# stations sit within 0.016 of their neighbors' skin.
-		var hole := _is_sampling_hole(waypoint.z)
-		var skin := _skin_max_abs_x(BELT_TRAY_Y, waypoint.z, 0.15 if hole else SKIN_WINDOW_Z)
-		var deviation := absf(waypoint.x) + 0.006 - skin
-		var tolerance := HOLE_TOLERANCE if hole else CONTACT_TOLERANCE
-		assert_true(absf(deviation) <= tolerance,
-			"-X waypoint at z %.2f sits within %.3f of the skin, got %.4f (skin %.4f)" % [
-				waypoint.z, tolerance, deviation, skin])
+	_ensure_skin_triangles()
+	_assert_skin_contact(PodStrips.FLANK_DOME, true)
+	_assert_skin_contact(PodStrips.FLANK_TRAY, false)
+
+## Triangle intersections replace the scan's coarse vertex windows and
+## sampling-hole exceptions. The same 0.011 m contact tolerance now also
+## holds between stations, not just at the authored waypoints.
+func _assert_skin_contact(points: Array[Vector3], positive_x: bool) -> void:
+	for index: int in range(points.size()):
+		_assert_point_contact(points[index], positive_x)
+		if index + 1 < points.size():
+			for fraction: float in [0.25, 0.5, 0.75]:
+				_assert_point_contact(points[index].lerp(points[index + 1], fraction), positive_x)
+
+func _assert_point_contact(point: Vector3, positive_x: bool) -> void:
+	var skin := _skin_x(point, positive_x)
+	# New pod #88: tubes sit outside, rather than embedded in, the tub.
+	var deviation := absf(point.x) - 0.024 - skin
+	assert_true(absf(point.x) - skin >= 0.012, "the tube radius stays outside the shell")
+	assert_true(absf(deviation) <= CONTACT_TOLERANCE,
+		"belt at %s sits within %.3f of the skin, got %.4f (skin %.4f)" % [
+			str(point), CONTACT_TOLERANCE, deviation, skin])
 
 func test_strips_clear_the_authored_dressing() -> void:
 	_assert_clearance("sealed lid", _solid_bounds(PodBody.sealed_lid()), 0.208, 0.478)
@@ -127,8 +140,8 @@ func test_strips_add_no_lights_and_no_colliders() -> void:
 	assert_int_equal(_count_type(pods, "Light3D"), 0, "the pod tree adds no Light3D")
 	assert_int_equal(_count_type(pods, "CollisionShape3D"), 0, "the pod tree adds no CollisionShape3D")
 	var colliders := Placement.scene_collider_set(Pods.PodRegistry.frozen())
-	assert_int_equal(colliders.size(), 56,
-		"the scene collider set stays the 56 authored boxes: strips add no solids")
+	assert_int_equal(colliders.size(), 67,
+		"the scene collider set stays the 67 authored boxes: strips add no solids")
 
 ## The pod group's strip instance, or null when the group lacks one.
 func _strips_of(group: Node) -> MeshInstance3D:
@@ -137,46 +150,29 @@ func _strips_of(group: Node) -> MeshInstance3D:
 			return child as MeshInstance3D
 	return null
 
-## Load the shell's vertices into the pod frame once: the test instance
-## survives the whole file, so the contact test reuses the same array.
-func _ensure_pod_verts() -> void:
-	if not _pod_verts.is_empty():
+## All rendered surfaces participate, including the raised glass shoulder.
+func _ensure_skin_triangles() -> void:
+	if not _skin_triangles.is_empty():
 		return
-	var arrays: Array = PodMesh.shell_mesh().surface_get_arrays(0)
-	var raw: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
-	var to_pod := PodMesh.shell_transform()
-	_pod_verts.resize(raw.size())
-	for index: int in range(raw.size()):
-		_pod_verts[index] = to_pod * raw[index]
+	var mesh := PodMesh.shell_mesh(Pods.PodState.SEALED)
+	for surface: int in range(mesh.get_surface_count()):
+		var arrays := mesh.surface_get_arrays(surface)
+		var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+		var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+		for index: int in range(0, indices.size(), 3):
+			_skin_triangles.append(PackedVector3Array([
+				vertices[indices[index]], vertices[indices[index + 1]], vertices[indices[index + 2]]]))
 
-## The spec's skin measurement, +X side: max x over verts within the
-## belt-y and station-z windows (wide bins average out vertex-sampling
-## holes).
-func _skin_max_x(belt_y: float, station_z: float) -> float:
+func _skin_x(point: Vector3, positive_x: bool) -> float:
+	var origin := Vector3(2 if positive_x else -2, point.y, point.z)
+	var direction := Vector3.LEFT if positive_x else Vector3.RIGHT
 	var best := -INF
-	var sampled := false
-	for vert: Vector3 in _pod_verts:
-		if absf(vert.y - belt_y) <= SKIN_WINDOW_Y and absf(vert.z - station_z) <= SKIN_WINDOW_Z:
-			best = maxf(best, vert.x)
-			sampled = true
-	assert_true(sampled, "the shell skin samples station z %.2f at belt y %.2f" % [station_z, belt_y])
+	for triangle: PackedVector3Array in _skin_triangles:
+		var hit: Variant = Geometry3D.ray_intersects_triangle(origin, direction, triangle[0], triangle[1], triangle[2])
+		if hit != null:
+			best = maxf(best, hit.x if positive_x else -hit.x)
+	assert_true(is_finite(best), "shell skin intersects the belt station %s" % str(point))
 	return best
-
-## The spec's skin measurement, -X side: max -x over the same windows.
-func _skin_max_abs_x(belt_y: float, station_z: float, window_z: float) -> float:
-	var best := -INF
-	var sampled := false
-	for vert: Vector3 in _pod_verts:
-		if absf(vert.y - belt_y) <= SKIN_WINDOW_Y and absf(vert.z - station_z) <= window_z:
-			best = maxf(best, -vert.x)
-			sampled = true
-	assert_true(sampled, "the shell skin samples station z %.2f at belt y %.2f" % [station_z, belt_y])
-	return best
-
-## The two -X stations the numbers flag as vertex-sampling holes; their
-## bins under-read the wall, so they carry the wider tolerance.
-func _is_sampling_hole(station_z: float) -> bool:
-	return is_equal_approx(station_z, -0.4) or is_equal_approx(station_z, 0.1)
 
 ## The conservative pod-local AABB [lo, hi] of one authored solid, hull
 ## of its roll-rotated corners (exact for the flat lid and blanket).

@@ -3,12 +3,32 @@
 Direction (Andrew, 2026-09-17): the ship reads as an old, broken-down
 colonial warship in the Battlestar Galactica / Stargate Universe
 tradition. Walls are paneled, ribbed, piped structure, not flat cubes.
-The stasis pods read as rounded, smooth, and newer than the ship around
-them: the pods are recent hardware installed in a worn hull. The pods
-are OPEN: the crew came out of stasis and left, so most canopies stand
-raised with empty couches and hanging occupancy blankets; a few pods
-remain sealed. These images are the visual target for the wall and pod
-work.
+The stasis pods are rounded capsules with smooth, shiny white molded
+plastic shells. The plastic never corroded, and the maintenance robot
+keeps the pods clean. The metal hull corrodes in the ship's oxygenated
+atmosphere. This material contrast makes the pods look brand-new beside
+the worn compartment without implying that they were recently installed.
+Shells use neutral near-white dielectric plastic with low roughness and
+no textures or grunge. Raised canopies use dark tinted glossy glass;
+the padded couch and pillow use darker rough fabric. Sealed pods have
+closed lids, empty pods open 70 degrees, and the player pod opens 78 degrees
+for ceiling clearance (#88).
+These images guide the capsule form and worn-ship contrast; the current
+material direction supersedes the older off-white wording in the prompts.
+
+## Production pod (#88)
+
+`assets/props/pod/pod-v4.glb` is the Hunyuan-derived clean-cage pass-13
+model, not the original parametric probe. It has a glossy white tub,
+a separate pivoted white lid with an opaque dark pane, a couch and a
+pillow. Its nominal size is 2393 × 900 × 896 mm, with a 240 mm couch
+plateau. The player lid opens 78 degrees and reaches 3.145976 m, leaving
+54.024 mm below the 3.2 m ceiling (#88). This is the largest whole-degree
+opening with at least 50 mm clearance; 79 degrees leaves only 37.684 mm.
+Empty-open pods retain their 70-degree pose.
+The retained editable source and export instructions are in
+[`tools/blender/pod_v4/`](../../tools/blender/pod_v4/README.md); material and
+coordinate details are in [the asset pipeline](../dev/asset-pipeline.md).
 
 ## Pieces
 

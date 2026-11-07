@@ -17,16 +17,10 @@ extends Node3D
 const ROD_LENGTH: float = 1.0
 const ROD_RADIUS: float = 0.022
 
-## The authored floor-plan center (x, z), in meters: on the open floor
-## in front of the empty row-A pod's mouth at the room's mid-station,
-## past the aisle's far edge. The aisle runs |z| <= 1.5 with the
-## scripted lane out of the pod at z = 1.49 and the row's solids start
-## at z = -1.8; at z = -1.55 the bar sits outside the pickup reach of
-## every walking line (the lane center sits 3.04 m away, the aisle
-## centerline 1.55 m, both beyond the 1.3 m reach) while a deliberate
-## stand at the row's mouth brings it in reach with the capsule sweep
-## still clear of the pod solids.
-
+## The floor-plan center comes from ShipLayout. New pod #88 moves it
+## to bay (-0.6, -1.40), clear of the longer pod row. It remains beyond
+## the 1.3 m pickup reach from the aisle center and the exit walking line;
+## a deliberate approach to the row mouth puts it in reach.
 
 ## The rod's yaw about +Z: near-along the pod row, skewed like it was
 ## dropped, not squared up with the room.
