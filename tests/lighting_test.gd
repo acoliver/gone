@@ -224,14 +224,6 @@ func test_authored_environment_contributes_no_light() -> void:
 	assert_false(environment.fog_enabled, "fog stays off")
 	assert_true(environment.background_color == Color(0.0, 0.0, 0.0), "the background is black")
 
-func test_exposure_preserves_padding_highlights() -> void:
-	var lighting := Lighting.build(Game.new(0))
-	var world := _find_world_environment(lighting)
-	assert_int_equal(world.environment.tonemap_mode, Environment.TONE_MAPPER_REINHARDT, "#88: compress exposed red highlights rather than clipping neutral padding")
-	assert_float_equal(world.environment.tonemap_white, 4096.0, "the highlight shoulder retains headroom for reflected fixtures")
-	assert_float_equal(world.camera_attributes.exposure_multiplier, 2.0, "padding visibility does not change the authored exposure")
-	lighting.free()
-
 ## The bridge's projected output at one fade level: every light energy
 ## and the shared lens emission, matching assert_output in the Rust
 ## tests.

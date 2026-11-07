@@ -89,11 +89,7 @@ static func build(game: Game) -> Lighting:
 	lighting._reflection_probe = bay_reflection_probe()
 	lighting.add_child(lighting._reflection_probe)
 	lighting._reflected_levels = Vector2(level, white_level)
-	var world := _world_environment()
-	# #88: exposed neutral padding and reflected red fixtures need a highlight shoulder.
-	world.environment.tonemap_mode = Environment.TONE_MAPPER_REINHARDT
-	world.environment.tonemap_white = 4096.0
-	lighting.add_child(world)
+	lighting.add_child(_world_environment())
 	return lighting
 
 ## Emissive meshes do not illuminate their surroundings without GI. These

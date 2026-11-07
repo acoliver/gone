@@ -9,7 +9,7 @@ const SHELL_ROUGHNESS: float = 0.12
 const SHELL_METALLIC: float = 0.0
 const SHELL_CLEARCOAT: float = 1.0
 const SHELL_CLEARCOAT_ROUGHNESS: float = 0.08
-const COUCH_ALBEDO := Color(.50, .51, .52)
+const COUCH_ALBEDO := Color(.35, .36, .37)
 const PILLOW_ALBEDO := Color(.70, .71, .72)
 const FABRIC_ROUGHNESS: float = .9
 
