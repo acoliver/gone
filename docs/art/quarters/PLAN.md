@@ -268,3 +268,24 @@ Each step gets its own issue under #95 and goes to PRs on issue branches.
 ## Open questions for Andrew
 
 1. **Location:** D16, or another deck once the deck plan is set?
+
+## Pilot decision: soft props use Blender cloth simulation (2026-11-07)
+
+**What happened.** Hand-shaped cloth in the first pilot passes didn't converge:
+- the tunic rated 2/10 and read as a rigid shell with post-like sleeves;
+- the sofa throw read as a flat sheet;
+- the cushions read as hard slabs.
+
+**Why.** Modelling soft fabric piece by piece produces hard forms.
+
+**Decision.** Soft props are made with Blender's cloth simulator. It is part of the installed Blender and runs headless.
+- **Garments:** flat pattern panels are sewn together and settled on the hanger, using a thin shoulder-form collider that isn't exported.
+- **Throws and bedding:** a sheet is dropped and settled over the furniture's collision shape.
+- **Cushions:** a closed cloth shell with internal pressure, settled on the frame.
+
+**How the Hunyuan guide is still used.** It sets the silhouette and proportions, and the simulation result is checked against it. The baked result is the exported mesh.
+
+**Aging.** The same simulator produces the aged state:
+- lower the pressure to collapse foam;
+- weaken the cloth and release the pins so it slumps;
+- delete faces along stress lines to tear it.
