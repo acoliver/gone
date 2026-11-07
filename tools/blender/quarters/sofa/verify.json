@@ -1,0 +1,134 @@
+{
+  "bounds_m": {
+    "min": [
+      -1.0460000038146973,
+      0.0,
+      -0.4750000238418579
+    ],
+    "max": [
+      1.1540000438690186,
+      0.8500000238418579,
+      0.4775000214576721
+    ],
+    "extents_xyz": [
+      2.200000047683716,
+      0.8500000238418579,
+      0.95250004529953
+    ],
+    "target_xyz": [
+      2.2,
+      0.85,
+      0.95
+    ],
+    "error_xyz": [
+      4.7683715642676816e-08,
+      2.384185793236071e-08,
+      0.0025000452995300737
+    ],
+    "pass": true
+  },
+  "required_names": {
+    "Frame": true,
+    "Feet": true,
+    "Rivets": true,
+    "SeatCushion_L": true,
+    "SeatCushion_C": true,
+    "SeatCushion_R": true,
+    "BackCushion_L": true,
+    "BackCushion_C": true,
+    "BackCushion_R": true,
+    "Throw": true
+  },
+  "topology": {
+    "BackCushion_C": {
+      "closed_manifold": true,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "uv": true,
+      "triangles": 832,
+      "flipped_normals": false
+    },
+    "BackCushion_L": {
+      "closed_manifold": true,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "uv": true,
+      "triangles": 832,
+      "flipped_normals": false
+    },
+    "BackCushion_R": {
+      "closed_manifold": true,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "uv": true,
+      "triangles": 832,
+      "flipped_normals": false
+    },
+    "Feet": {
+      "closed_manifold": true,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "uv": true,
+      "triangles": 752,
+      "flipped_normals": false
+    },
+    "Frame": {
+      "closed_manifold": true,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "uv": true,
+      "triangles": 2632,
+      "flipped_normals": false
+    },
+    "Rivets": {
+      "closed_manifold": true,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "uv": true,
+      "triangles": 2688,
+      "flipped_normals": false
+    },
+    "SeatCushion_C": {
+      "closed_manifold": true,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "uv": true,
+      "triangles": 832,
+      "flipped_normals": false
+    },
+    "SeatCushion_L": {
+      "closed_manifold": true,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "uv": true,
+      "triangles": 832,
+      "flipped_normals": false
+    },
+    "SeatCushion_R": {
+      "closed_manifold": true,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "uv": true,
+      "triangles": 832,
+      "flipped_normals": false
+    },
+    "Throw": {
+      "closed_manifold": true,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "uv": true,
+      "triangles": 1424,
+      "flipped_normals": false
+    }
+  },
+  "triangles": 12488,
+  "triangle_limit": 15000,
+  "seat_top_m": 0.469000004529953,
+  "seat_height_pass": true,
+  "seat_support_gap_m": 0.0015,
+  "seat_support_gap_pass": true,
+  "cushion_intersections": [],
+  "frame_overlap_pairs": [],
+  "all_meshes_uv_manifold": true,
+  "pass": true
+}
