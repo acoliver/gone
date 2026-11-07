@@ -44,6 +44,30 @@ func test_hall_ceiling_damage_connects_to_structure() -> void:
 	_check_graph(structure, pieces)
 	hall.free()
 
+func test_hall_tray_hangers_reach_ceiling_and_enter_the_rotated_trays() -> void:
+	var game := Game.new(91)
+	var hall := Hallway.build(game)
+	var spec := game.layout.section(&"D14-S-041")
+	var damage := hall.get_node("HallCeilingDamage")
+	var trays := spec.ceiling_trays()
+	assert_int_equal(trays.size(), 2, "long cable tray and transverse stub remain covered")
+	assert_int_equal(damage.get_child_count(), trays.size() * 3, "each rendered tray has two rendered hangers")
+	for index: int in range(trays.size()):
+		var tray := trays[index]
+		var mounts := DressingMounts.tray_hangers(tray, spec.bounds().end.y)
+		assert_int_equal(mounts.size(), 2, "both ends have a ceiling hanger")
+		for station: int in range(mounts.size()):
+			var hanger := damage.get_child(index * 3 + station + 1) as MeshInstance3D
+			var bounds := Surfaces.world_frame(hanger) * hanger.mesh.get_aabb()
+			var expected := ShipGeometry.box_aabb(mounts[station])
+			assert_close(bounds.position, expected.min_corner(), "rendered hanger follows its attachment recipe")
+			assert_close(bounds.end, expected.max_corner(), "rendered hanger bounds follow the recipe")
+			assert_true(absf(bounds.end.y - spec.bounds().end.y) <= CONTACT, "hanger top touches the actual ceiling")
+			var bottom := Vector3(bounds.get_center().x, bounds.position.y, bounds.get_center().z)
+			var local := tray.transform.affine_inverse() * bottom
+			assert_true(AABB(-tray.size / 2, tray.size).has_point(local), "hanger bottom enters the rotated tray, not just its world AABB")
+	hall.free()
+
 func test_bay_and_power_dressing_connects_to_structure() -> void:
 	var game := Game.new(91)
 	var world := Node3D.new()
