@@ -20,8 +20,15 @@ const DOG_HEIGHTS: Array[float] = [0.40, 1.17, 1.496046]
 const KEEPER_HEIGHTS: Array[float] = [0.40, 1.17, 2.24]
 const DOG_INSET: float = 0.193619
 const WHEEL_SCALE: float = 0.643 / 0.888
+# Concept hinges span 112-127 px at 1.949 mm/px. Lengthen the axial
+# segments independently: the jamb gap cannot accept a wider barrel.
+const HINGE_LEAF_SIZE := Vector3(0.22, 0.22, 0.012)
 const BARREL_RADIUS: float = 0.028
-const BARREL_LENGTH: float = 0.06
+const BARREL_LENGTH: float = 0.14
+const BARREL_OFFSET: float = -0.02
+const FIXED_KNUCKLE_BOTTOM: float = 0.05
+const FIXED_KNUCKLE_LENGTH: float = 0.06
+const FIXED_KNUCKLE_RADIUS: float = 0.01
 
 static var _leaves: Dictionary = {}
 
@@ -100,13 +107,13 @@ static func evenly_spaced(loop: PackedVector2Array, count: int) -> PackedVector2
 
 static func _hinge_return(group: Group, size: Vector3, center: Vector3) -> void:
 	var bottom := center.y - size.y / 2
-	for top: float in [HINGE_HEIGHTS[0] + BARREL_LENGTH / 2, HINGE_HEIGHTS[1] + BARREL_LENGTH / 2, center.y + size.y / 2]:
+	for top: float in [HINGE_HEIGHTS[0] + FIXED_KNUCKLE_BOTTOM, HINGE_HEIGHTS[1] + FIXED_KNUCKLE_BOTTOM, center.y + size.y / 2]:
 		var segment := size
 		segment.y = top - bottom
 		var point := center
 		point.y = (bottom + top) / 2
 		group.add("return-%d" % group.parts.size(), &"box", segment, Transform3D(Basis(), point))
-		bottom = top + 0.04
+		bottom = top + FIXED_KNUCKLE_LENGTH
 
 static func leaf(door: ShipLayout.DoorSpec) -> Array[Group]:
 	var aperture := door.leaf_aperture()
@@ -131,22 +138,26 @@ static func leaf(door: ShipLayout.DoorSpec) -> Array[Group]:
 		groups.append(plate)
 		var hardware_face := face
 		hardware_face.origin.z = (-1 if side == 0 else 1) * (depth - HARDWARE_FACE_DEPTH)
-		var straps := Group.new(NodePath("StrapHinges/" + prefix + "Steel"), hardware_face, side)
-		for index: int in range(2):
-			var y := HINGE_HEIGHTS[index]
-			var strap_x := 0.230 if index == 0 else 0.40
-			straps.add("strap-%d" % index, &"rounded", Vector3(0.40, 0.21, 0.055), Transform3D(Basis(), Vector3(strap_x, y, -0.125)), 0.035)
-			var axis := hardware_face.affine_inverse() * Vector3(-HINGE_OUTSET, y, 0)
-			var elbow := axis + Vector3.RIGHT * (0.15 if index == 0 else 0.30)
-			var join := Vector3(elbow.x, y, -0.125)
-			_pin(straps, "neck-axis-%d" % index, 0.018, axis.distance_to(elbow), (axis + elbow) / 2, Vector3.RIGHT)
-			_pin(straps, "neck-face-%d" % index, 0.018, elbow.distance_to(join), (elbow + join) / 2, (join - elbow).normalized())
-			if approach:
-				_pin(straps, "barrel-%d" % index, BARREL_RADIUS, BARREL_LENGTH, axis, Vector3.UP)
-				_pin(straps, "cap-%d" % index, BARREL_RADIUS, 0.01, axis - Vector3.UP * 0.035, Vector3.UP)
-			for x: float in [strap_x - 0.08, strap_x + 0.08]:
-				_pin(straps, "bolt-%d-%s" % [index, x], 0.021, 0.014, Vector3(x, y, -0.159))
-		groups.append(straps)
+		# Only the connector-facing swing side has hinge straps. The push-side
+		# duplicates had no working joint and read as wrong-edge hardware.
+		if not approach:
+			var straps := Group.new(NodePath("StrapHinges/" + prefix + "Steel"), hardware_face, side)
+			for index: int in range(2):
+				var y := HINGE_HEIGHTS[index]
+				var strap_x := 0.12
+				var plate_z := -HARDWARE_FACE_DEPTH - HINGE_LEAF_SIZE.z / 2
+				straps.add("strap-%d" % index, &"rounded", HINGE_LEAF_SIZE, Transform3D(Basis(), Vector3(strap_x, y, plate_z)), 0.012)
+				var axis := hardware_face.affine_inverse() * Vector3(-HINGE_OUTSET, y, 0)
+				var elbow := axis + Vector3.RIGHT * 0.10
+				var join := Vector3(elbow.x, y, plate_z)
+				_pin(straps, "neck-axis-%d" % index, 0.006, axis.distance_to(elbow), (axis + elbow) / 2, Vector3.RIGHT)
+				_pin(straps, "neck-face-%d" % index, 0.006, elbow.distance_to(join), (elbow + join) / 2, (join - elbow).normalized())
+				_pin(straps, "barrel-%d" % index, BARREL_RADIUS, BARREL_LENGTH, axis + Vector3.UP * BARREL_OFFSET, Vector3.UP)
+				_pin(straps, "cap-%d" % index, BARREL_RADIUS, 0.02, axis - Vector3.UP * 0.10, Vector3.UP)
+				for x_offset: float in [-0.065, 0.065]:
+					for y_offset: float in [-0.065, 0.065]:
+						_pin(straps, "bolt-%d-%s-%s" % [index, x_offset, y_offset], 0.016, 0.008, Vector3(strap_x + x_offset, y + y_offset, plate_z - HINGE_LEAF_SIZE.z / 2 - 0.004))
+			groups.append(straps)
 		var lugs := Group.new(NodePath("Lugs/" + prefix + "Steel"), hardware_face, side)
 		for index: int in range(3):
 			var pivot := Vector3(aperture.x - DOG_INSET, DOG_HEIGHTS[index], -HARDWARE_FACE_DEPTH)

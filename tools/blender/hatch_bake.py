@@ -58,6 +58,35 @@ def painted_coordinates(objects, nodes, document):
         obj.data.uv_layers.active_index = 0
 
 
+def _project_edge_on_triangles(obj, resolution):
+    uv = obj.data.uv_layers.active.data
+    for polygon in obj.data.polygons:
+        indices = list(polygon.loop_indices)
+        values = np.array([uv[i].uv[:] for i in indices])
+        determinant = abs(np.linalg.det((values[1:] - values[0]).T))
+        edges = np.roll(values, -1, axis=0) - values
+        longest_squared = np.max(np.sum(edges * edges, axis=1))
+        points = np.array([obj.data.vertices[obj.data.loops[i].vertex_index].co[:] for i in indices])
+        geometry_edges = np.roll(points, -1, axis=0) - points
+        geometry_area = np.linalg.norm(np.cross(geometry_edges[0], geometry_edges[1]))
+        geometry_quality = geometry_area / np.max(np.sum(geometry_edges * geometry_edges, axis=1))
+        # Compare with the triangle's intrinsic aspect ratio: a thin source
+        # triangle is valid, but an edge-on projection loses additional area.
+        if determinant > 1e-12 and determinant > longest_squared * geometry_quality * math.sqrt(np.finfo(np.float32).eps):
+            continue
+        edges = geometry_edges
+        tangent = edges[np.argmax(np.linalg.norm(edges, axis=1))]
+        tangent /= np.linalg.norm(tangent)
+        normal = np.cross(edges[0], edges[1])
+        normal /= np.linalg.norm(normal)
+        projected = (points - points.mean(axis=0)) @ np.stack((tangent, np.cross(normal, tangent)), axis=1)
+        projected *= np.maximum(1, 2 / resolution / np.ptp(projected, axis=0))
+        # Separate islands without large integer offsets that erase texel-
+        # sized differences when Blender stores the coordinates as float32.
+        for i, point in zip(indices, projected + 10 + polygon.index * 4 / resolution):
+            uv[i].uv = point
+
+
 def atlas(objects, resolution):
     bpy.ops.object.select_all(action="DESELECT")
     for obj in objects:
@@ -100,25 +129,7 @@ def atlas(objects, resolution):
             scale = np.maximum(1, 2 / resolution / span)
             for i, point in zip(indices, (projected * scale) @ axes.T):
                 uv[i].uv = point
-        # Curved islands can contain a triangle edge-on to their dominant
-        # projection. Give those triangles their own geometric plane, rather
-        # than exporting zero tangent bases or discarding source geometry.
-        for polygon in obj.data.polygons:
-            indices = list(polygon.loop_indices)
-            values = np.array([uv[i].uv[:] for i in indices])
-            determinant = abs(np.linalg.det((values[1:] - values[0]).T))
-            if determinant > 1e-12:
-                continue
-            points = np.array([obj.data.vertices[obj.data.loops[i].vertex_index].co[:] for i in indices])
-            edges = np.roll(points, -1, axis=0) - points
-            tangent = edges[np.argmax(np.linalg.norm(edges, axis=1))]
-            tangent /= np.linalg.norm(tangent)
-            normal = np.cross(edges[0], edges[1])
-            normal /= np.linalg.norm(normal)
-            projected = (points - points.mean(axis=0)) @ np.stack((tangent, np.cross(normal, tangent)), axis=1)
-            projected *= np.maximum(1, 2 / resolution / np.ptp(projected, axis=0))
-            for i, point in zip(indices, projected + 10 + polygon.index):
-                uv[i].uv = point
+        _project_edge_on_triangles(obj, resolution)
     bpy.ops.object.mode_set(mode="EDIT")
     bpy.ops.uv.pack_islands(rotate=True, scale=True, margin=2 / resolution)
     bpy.ops.object.mode_set(mode="OBJECT")
@@ -126,6 +137,9 @@ def atlas(objects, resolution):
     # Reserve area, restore each island's final texel width, then repack at
     # fixed scale. This keeps narrow contour strips sampleable after packing.
     for obj in objects:
+        # The first pack rescales into float32 UVs. Reproject triangles whose
+        # small area vanished there before restoring final island footprints.
+        _project_edge_on_triangles(obj, resolution)
         uv = obj.data.uv_layers.active.data
         for island in mesh_linked_uv_islands(obj.data):
             indices = [i for face in island for i in obj.data.polygons[face].loop_indices]

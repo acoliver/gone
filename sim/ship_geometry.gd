@@ -580,12 +580,16 @@ static func hatch_fixed_hardware(door: ShipLayout.DoorSpec) -> Array[SolidSpec]:
 	var solids: Array[SolidSpec] = []
 	for index: int in range(HatchParts.HINGE_HEIGHTS.size()):
 		var y := HatchParts.HINGE_HEIGHTS[index]
-		# The fixed plate bridges the bead and the pin at a separate axial station.
-		var seat := hinge.z - into * 0.01
-		var minimum := Vector3(hinge.x - 0.075, y + HatchParts.BARREL_LENGTH / 2, minf(front, seat))
-		var maximum := Vector3(hinge.x, y + HatchParts.BARREL_LENGTH / 2 + 0.04, maxf(front, seat))
-		solids.append(SolidSpec.new((minimum + maximum) / 2, maximum - minimum, Quaternion.IDENTITY, StringName("%s/HINGE/PLATE-%d" % [door.id(), index]), &"frame", &"frame_detail"))
-		solids.append(SolidSpec.new(Vector3(hinge.x, y + HatchParts.BARREL_LENGTH / 2 + 0.02, hinge.z), Vector3(0.02, 0.04, 0.02), Quaternion.IDENTITY, StringName("%s/HINGE/KNUCKLE-%d" % [door.id(), index]), &"frame", &"frame_detail"))
+		# Keep the leaf full height on the bead. Only its upper bridge reaches
+		# the pin, at the fixed knuckle's separate axial station.
+		var plate_width := 0.075
+		solids.append(SolidSpec.new(Vector3(hinge.x - plate_width / 2, y, front - into * 0.006), Vector3(plate_width, HatchParts.HINGE_LEAF_SIZE.y, 0.012), Quaternion.IDENTITY, StringName("%s/HINGE/PLATE-%d" % [door.id(), index]), &"frame", &"frame_detail"))
+		var seat := hinge.z - into * HatchParts.FIXED_KNUCKLE_RADIUS
+		var bottom := y + HatchParts.FIXED_KNUCKLE_BOTTOM
+		var minimum := Vector3(hinge.x - plate_width, bottom, minf(front, seat))
+		var maximum := Vector3(hinge.x, bottom + HatchParts.FIXED_KNUCKLE_LENGTH, maxf(front, seat))
+		solids.append(SolidSpec.new((minimum + maximum) / 2, maximum - minimum, Quaternion.IDENTITY, StringName("%s/HINGE/BRIDGE-%d" % [door.id(), index]), &"frame", &"frame_detail"))
+		solids.append(SolidSpec.new(Vector3(hinge.x, bottom + HatchParts.FIXED_KNUCKLE_LENGTH / 2, hinge.z), Vector3(HatchParts.FIXED_KNUCKLE_RADIUS * 2, HatchParts.FIXED_KNUCKLE_LENGTH, HatchParts.FIXED_KNUCKLE_RADIUS * 2), Quaternion.IDENTITY, StringName("%s/HINGE/KNUCKLE-%d" % [door.id(), index]), &"frame", &"frame_detail"))
 	var edge := hinge.x + HatchParts.HINGE_OUTSET + door.leaf_aperture().x
 	for index: int in range(HatchParts.KEEPER_HEIGHTS.size()):
 		solids.append(SolidSpec.new(Vector3(edge + 0.04, HatchParts.KEEPER_HEIGHTS[index], front - into * 0.02), Vector3(0.08, 0.16, 0.04), Quaternion.IDENTITY, StringName("%s/KEEPER/%d" % [door.id(), index]), &"frame", &"frame_detail"))

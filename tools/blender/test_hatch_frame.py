@@ -127,8 +127,13 @@ class FrameFitTest(unittest.TestCase):
         # Fitting the whole mounting plate into its barrel box leaves this
         # delivered grazing ray between them, despite matching the AABB.
         for variant, result in zip(self.contract["variants"], self.hatch):
-            eye = np.array([-.4, .6, -1.9])
-            target = np.array([-.6, .52, .1])
+            # The 220 mm segmented hinge moves the fixed knuckle upward.
+            # Preserve the grazing ray's offsets from its exported lower seam,
+            # rather than sampling the obsolete 520 mm world-height station.
+            solid = next(row for row in variant["frame_solids"] if row["id"] == "HINGE/KNUCKLE-0")
+            bottom = solid["transform"]["origin"][1] - solid["size"][1] / 2
+            eye = np.array([-.4, bottom + .09, -1.9])
+            target = np.array([-.6, bottom + .01, .1])
             if variant["hinge_sign"] < 0:
                 eye[2], target[2] = .2-eye[2], .2-target[2]
             direction = target-eye

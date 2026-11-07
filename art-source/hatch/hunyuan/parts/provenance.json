@@ -1,5 +1,10 @@
 {
   "schema_version": 1,
+  "recipe_normalization": {
+    "file": "generation/parts-proto/recipe.md",
+    "original_sha256": "15863d295fbee375011f6fbd0ff391caf9f5048306b8ad88c2a5980f4e6514cb",
+    "reason": "The committed recipe omits the scratch original's final blank line. Record its exact committed bytes; no recipe content or generated input changed."
+  },
   "files": {
     "edits/edit_wheel.py": "6b57dd3d1e7e49ea61f582a195e8fcf71e92da27167d4383a7b3dbad8f1e2f59",
     "edits/measure_hub_cut.py": "c3ecc4f2431806608a734031be63f2ab613fee998059254bc293a44247c622fa",
@@ -9,7 +14,7 @@
     "generation/leaf3/run.py": "d70f5f05782d1b4cf6036eb1472f3f9428da39a5b40a2415f0cf991c29043dbf",
     "generation/leaf3/stats.json": "acdab0a195ebc6570f3fac014a7d938f80d5ce613a1055b322b20667116c3e5e",
     "generation/parts-proto/matte.py": "54de3d7d56c0c6710d548c8e396a8730a574db465201cca0cd6a0abf007f13db",
-    "generation/parts-proto/recipe.md": "15863d295fbee375011f6fbd0ff391caf9f5048306b8ad88c2a5980f4e6514cb",
+    "generation/parts-proto/recipe.md": "54ad64d4f4c1294b82a32a72be3d736ab2bffe8f1d4cc72a09db912aa7749685",
     "generation/parts-proto/run.py": "6ff050b54c982d17637eccada8b396235f16f671c09993551b3ef79829dcd079",
     "generation/parts-proto/stats.json": "5bc712e7a824ad11b632d8097ed994e2db5cd07aae790b74424be9af6513cc76",
     "handwheel-s600.glb": "e5c8d5983e44e00c09834a659bd579ca480df641247623418d5f40e8704144db",

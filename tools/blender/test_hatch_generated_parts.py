@@ -31,6 +31,15 @@ def rim_radii(points, faces):
 
 
 class GeneratedPartsTest(unittest.TestCase):
+    def test_committed_recipe_differs_only_by_its_final_blank_line(self):
+        import hashlib
+        root = ROOT / 'art-source/hatch/hunyuan/parts'
+        manifest = json.loads((root / 'provenance.json').read_text())
+        row = manifest['recipe_normalization']
+        content = (root / row['file']).read_bytes()
+        self.assertEqual(hashlib.sha256(content).hexdigest(), manifest['files'][row['file']])
+        self.assertEqual(hashlib.sha256(content + bytes([10])).hexdigest(), row['original_sha256'])
+
     def test_delivered_wheel_rim_stays_within_two_mm_over_full_rotation(self):
         from hatch_bake import CINV
         document = json.loads((ROOT / 'assets/props/hatch/parts.json').read_text())

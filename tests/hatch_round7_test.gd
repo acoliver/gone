@@ -10,7 +10,9 @@ func test_round7_leaf_is_one_physical_description() -> void:
 	# whole latches replace their plate/arm/grip/pivot/bolt reservations.
 	assert_true(found.has("Wheel/hub"), "whole generated wheel is a physical leaf part")
 	assert_true(found.has("Wheel/hazard-band"), "hazard band belongs to the rotating physical wheel")
-	assert_true(found.has("StrapHinges/ForeSteel/barrel-0"), "hinge barrel is a physical part")
+	# Andrew 2026-11-06: working hinges stay only on this door's swing face.
+	assert_true(found.has("StrapHinges/AftSteel/barrel-0"), "swing-side hinge barrel is a physical part")
+	assert_false(found.has("StrapHinges/ForeSteel/strap-0"), "push-side duplicate is removed")
 	assert_true(found.has("Lugs/ForeSteel/whole-2"), "all three latch dogs are physical parts")
 	if not found.has("Wheel/hub"): return
 	assert_float_equal(found["Wheel/hub"].radius, 0.3215, "driver-approved 643 mm wheel outside diameter")

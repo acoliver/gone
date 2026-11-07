@@ -71,6 +71,32 @@ class HatchFinishConstructionTest(unittest.TestCase):
             self.assertGreater(actual.dot(value.vector), .999999,
                                "mirrored bake geometry faces into the steel instead of out of it")
 
+    def test_long_hinge_barrel_keeps_finite_nondegenerate_atlas_uvs(self):
+        vertices, faces = build.radial((.056, .14, .056), .028, "StrapHinges/AftSteel/barrel-0")
+        obj = build.mesh_object("LongHingeBarrel", vertices, faces, None, build.Matrix.Identity(4), build.material())
+        # A shared door-sized atlas shrinks edge-on triangles that survived
+        # projection only through float32 rounding noise.
+        vertices, faces = build.extrusion([(-3, -3), (3, -3), (3, 3), (-3, 3)], .1)
+        surround = build.mesh_object("AtlasArea", vertices, faces, None, build.Matrix.Identity(4), build.material())
+        from hatch_generated_parts import GeneratedParts
+        source = GeneratedParts(self.document)
+        part = next(part for group in self.document['variants'][0]['groups'] for part in group['parts']
+                    if part['shape'] == 'generated_rib')
+        vertices, faces, _, _ = source.geometry(part, None, build.mesh_object, build.material())
+        rib = build.mesh_object("PackedRib", vertices, faces, None, build.Matrix.Identity(4), build.material())
+        for face in rib.data.polygons:
+            face.use_smooth = True
+        build.atlas([obj, surround, rib], 2048)
+        for probe in [obj, rib]:
+            uv = probe.data.uv_layers.active.data
+            for polygon in probe.data.polygons:
+                points = np.array([uv[index].uv[:] for index in polygon.loop_indices])
+                self.assertTrue(np.isfinite(points).all(), "edge-on projection must not poison the shared atlas")
+                self.assertGreater(abs(np.linalg.det((points[1:] - points[0]).T)), 0, "packed triangle retains area")
+            probe.data.calc_tangents()
+            for loop in probe.data.loops:
+                self.assertAlmostEqual(loop.tangent.length, 1, delta=1e-4)
+
     def test_production_atlas_has_unit_tangents_on_every_constructed_triangle(self):
         objects, _, _ = build.construct(self.document, build.material(), self.frames)
         for resolution in (2048, 4096):

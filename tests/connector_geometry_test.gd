@@ -69,15 +69,17 @@ func test_hatch_meshes_have_rounded_frame_braces_large_wheel_and_instanced_rivet
 		else:
 			assert_true(piece.mesh == other.mesh, "all decks share generated geometry")
 		assert_true(piece.material_override == other.material_override, "all decks share steel materials")
-	for path: String in ["StrapHinges", "Lugs"]:
-		var fore: MeshInstance3D = first.get_node("Hinge/Leaf/ForeSteel")
-		var aft: MeshInstance3D = first.get_node("Hinge/Leaf/AftSteel")
-		# Round 11 shares one real-axis barrel, rather than duplicating face-offset
-		# pins. Compare the straps/links here; the attachment test pins barrel axes.
-		var fore_bounds := _group_bounds(fore.mesh, path + "/ForeSteel/", path == "StrapHinges")
-		var aft_bounds := _group_bounds(aft.mesh, path + "/AftSteel/", path == "StrapHinges")
-		assert_float_equal(fore_bounds.position.x, aft_bounds.position.x, "both faces keep the same physical hinge/latch edge: " + path)
-		assert_float_equal(fore_bounds.end.x, aft_bounds.end.x, "reverse-face hardware is not moved to the opposite jamb: " + path)
+	var fore: MeshInstance3D = first.get_node("Hinge/Leaf/ForeSteel")
+	var aft: MeshInstance3D = first.get_node("Hinge/Leaf/AftSteel")
+	var fore_bounds := _group_bounds(fore.mesh, "Lugs/ForeSteel/")
+	var aft_bounds := _group_bounds(aft.mesh, "Lugs/AftSteel/")
+	assert_float_equal(fore_bounds.position.x, aft_bounds.position.x, "both faces keep the same physical latch edge")
+	assert_float_equal(fore_bounds.end.x, aft_bounds.end.x, "reverse-face latches are not moved to the opposite jamb")
+	# Andrew 2026-11-06 removed the non-working push-side hinges. The
+	# connector-facing pair remains in the submitted buffer, not both faces.
+	assert_true(_group_bounds(aft.mesh, "StrapHinges/AftSteel/").has_volume(), "working swing-side hinges remain rendered")
+	for id: StringName in preload("res://tests/hatch_mesh_ranges.gd").parts(fore.mesh):
+		assert_false(String(id).begins_with("StrapHinges/"), "removed push-side hardware is absent from the submitted buffer")
 	var leaf_mesh: Mesh = first.get_node("Hinge/Leaf/ForeSteel").mesh
 	var plate_bounds := _group_bounds(leaf_mesh, "ForeSteel/plate")
 	# Andrew's 2026-11-05 flush-leaf design closes the old 60 mm side recesses.
@@ -256,8 +258,14 @@ func test_real_scene_has_shared_hatch_details_and_lazy_red_rooms() -> void:
 			assert_true(view.has_node(NodePath(path)), "shared hatch detail: " + path)
 		var fixed: Dictionary = preload("res://tests/hatch_mesh_ranges.gd").parts(view.get_node("Frame/ForeSteel").mesh, &"hatch_reservations")
 		assert_true(fixed.has(&"COAMING"), "coaming is present in the submitted fixed buffer")
-		for group: String in ["StrapHinges/ForeSteel/", "Lugs/ForeSteel/"]:
-			assert_true(_group_bounds(view.get_node("Hinge/Leaf/ForeSteel").mesh, group).has_volume(), "shared hatch hardware remains rendered: " + group)
+		assert_true(_group_bounds(view.get_node("Hinge/Leaf/ForeSteel").mesh, "Lugs/ForeSteel/").has_volume(), "shared hatch latches remain rendered")
+		# Hinges now exist only on the working swing face for either sign.
+		var spec := game.layout.door(view.door_id())
+		var swing := "AftSteel" if spec.hinge_frame().origin.z > ShipLayout.WALL / 2 else "ForeSteel"
+		var push := "ForeSteel" if swing == "AftSteel" else "AftSteel"
+		assert_true(_group_bounds(view.get_node("Hinge/Leaf/" + swing).mesh, "StrapHinges/" + swing + "/").has_volume(), "working hinge pair remains rendered")
+		for id: StringName in preload("res://tests/hatch_mesh_ranges.gd").parts(view.get_node("Hinge/Leaf/" + push).mesh):
+			assert_false(String(id).begins_with("StrapHinges/"), "wrong-side hinge parts stay removed")
 	root.free()
 
 func test_four_open_hatches_allow_both_directions_and_locked_faces_contain() -> void:

@@ -38,7 +38,7 @@ func test_fitting_records_are_derived_in_an_identity_portal_frame() -> void:
 		assert_true(not expected.fit.required_seal_ids.is_empty(), "explicit seal-removal regions")
 		index += 1
 
-func test_physical_records_change_only_at_the_approved_ring_depth_planes() -> void:
+func test_physical_records_change_only_at_approved_fittings_and_ring_planes() -> void:
 	assert_true(FileAccess.file_exists(BASELINE), "independent pre-migration baseline exists")
 	if not FileAccess.file_exists(BASELINE): return
 	var baseline: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(BASELINE))
@@ -50,13 +50,19 @@ func test_physical_records_change_only_at_the_approved_ring_depth_planes() -> vo
 		# The driver explicitly changed bead depth, its fixed mount reach and
 		# rivet seating. Check those new planes independently before comparing
 		# every other byte against the untouched pre-fit physical fixture.
-		for si: int in range(actual.frame_solids.size()):
-			var row: Dictionary = actual.frame_solids[si]
-			var old: Dictionary = expected.frame_solids[si]
-			if "/RING/" in row.id or String(row.id).begins_with("HINGE/PLATE-"):
-				var ring: bool = "/RING/" in row.id
-				var depth := 0.022 if ring else 0.238
-				var center := -0.017 if ring else 0.091
+		var original_solids: Dictionary = {}
+		for row: Dictionary in expected.frame_solids: original_solids[row.id] = row
+		var kept_solids: Array = []
+		for row: Dictionary in actual.frame_solids:
+			# Andrew 2026-11-06: taller leaves need separate upper bridges.
+			# The hinge suite pins these reservations and their full swing.
+			if String(row.id).begins_with("HINGE/"): continue
+			var old: Dictionary = original_solids[row.id]
+			row.index = old.index
+			kept_solids.append(row)
+			if "/RING/" in row.id:
+				var depth := 0.022
+				var center := -0.017
 				if index == 1: center = 0.2 - center
 				assert_true(absf(row.size[2] - depth) < 0.000001, "approved ring/mount depth, no other extent change")
 				assert_true(absf(row.transform.origin[2] - center) < 0.000001, "approved ring/mount depth center")
@@ -68,6 +74,11 @@ func test_physical_records_change_only_at_the_approved_ring_depth_planes() -> vo
 			elif String(row.id).begins_with("KEEPER/"):
 				assert_true(absf(row.transform.origin[2] - (-0.048 if index == 0 else 0.248)) < 0.000001, "keeper remains seated on approved bead front")
 				row.transform.origin[2] = old.transform.origin[2]
+		actual.frame_solids = kept_solids
+		var original_kept_solids: Array = []
+		for row: Dictionary in expected.frame_solids:
+			if not String(row.id).begins_with("HINGE/"): original_kept_solids.append(row)
+		expected.frame_solids = original_kept_solids
 		for ri: int in range(actual.frame_rivets.size()):
 			var row: Dictionary = actual.frame_rivets[ri]
 			var front_back: Array = [-0.026, -0.008] if index == 0 else [0.208, 0.226]
@@ -78,18 +89,28 @@ func test_physical_records_change_only_at_the_approved_ring_depth_planes() -> vo
 		# other fixture bytes, including every keeper and the wheel roots.
 		var kept_actual: Array = []
 		var kept_expected: Array = []
+		var original_groups: Dictionary = {}
+		for group: Dictionary in expected.groups: original_groups[group.path] = group
 		for group: Dictionary in actual.groups:
-			if String(group.path).begins_with("Rib/"): continue
+			if String(group.path).begins_with("Rib/") or String(group.path).begins_with("StrapHinges/"): continue
+			var old: Dictionary = original_groups[group.path]
+			# Removing the opposite-face hinges shifts array indices only.
+			group.index = old.index
 			if String(group.path).begins_with("Lugs/") or group.path in ["Wheel", "ReverseWheel"]:
-				var old: Dictionary = expected.groups[int(group.index)]
 				# Fixture decimal parsing leaves float64 tails around 1e-17 m.
-				# Both records describe native float32 poses, so compare those
-				# Transform3D values exactly, without introducing a tolerance.
+				# Compare the same native poses exactly, without a tolerance.
 				assert_true(HatchAsset.pose(group.transform) == HatchAsset.pose(old.transform), "whole-object replacement preserves group roots")
 				continue
+			if group.path == "BackingLapHinge" or "PivotSeal" in group.path or "HingeSeal" in group.path:
+				# Enlarged knuckles need longer axial cutouts, not thinner seals.
+				# Keep every strip's transverse footprint and the group's pose.
+				for pi: int in range(group.parts.size()):
+					var part: Dictionary = group.parts[pi]
+					part.size[1] = old.parts[pi].size[1]
+					part.transform.origin[1] = old.parts[pi].transform.origin[1]
 			kept_actual.append(group)
 		for group: Dictionary in expected.groups:
-			if String(group.path).begins_with("Lugs/") or group.path in ["Wheel", "ReverseWheel"]: continue
+			if String(group.path).begins_with("Lugs/") or String(group.path).begins_with("StrapHinges/") or group.path in ["Wheel", "ReverseWheel"]: continue
 			kept_expected.append(group)
 		actual.groups = kept_actual
 		expected.groups = kept_expected

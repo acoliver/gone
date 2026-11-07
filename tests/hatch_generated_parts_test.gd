@@ -23,7 +23,9 @@ func test_whole_latches_and_wheels_replace_primitive_subparts() -> void:
 		if String(group.path).begins_with("Rib/"): ribs += group.parts.size()
 	# Six whole dogs replace 36 subparts; two whole wheels replace 22
 	# subparts; the two retained nuts and two collider-free ribs add four parts.
-	assert_int_equal(count, 233, "whole-object physical description with source-owned rib")
+	# Andrew 2026-11-06: remove ten duplicate push-side strap/neck/bolt parts,
+	# move the barrels/caps to the swing face, and add four working-leaf bolts.
+	assert_int_equal(count, 227, "whole-object description with only working four-bolt hinges")
 	assert_int_equal(dogs, 6, "three whole latches on both faces")
 	assert_int_equal(wheels, 2, "both wheels use generated geometry")
 	assert_int_equal(ribs, 2, "rib split around wheel and label")

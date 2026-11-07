@@ -261,7 +261,9 @@ func _extension_ids() -> Array[StringName]:
 
 func _fixed_detail_ids(hatch: String) -> Array[StringName]:
 	var ids: Array[StringName] = []
-	for piece: String in ["HINGE/PLATE-0", "HINGE/KNUCKLE-0", "HINGE/PLATE-1", "HINGE/KNUCKLE-1", "KEEPER/0", "KEEPER/1", "KEEPER/2"]:
+	# Andrew's 2026-11-06 full-height hinge leaves use separate upper bridges.
+	# Name both new reservations in order; they add no collision boxes.
+	for piece: String in ["HINGE/PLATE-0", "HINGE/BRIDGE-0", "HINGE/KNUCKLE-0", "HINGE/PLATE-1", "HINGE/BRIDGE-1", "HINGE/KNUCKLE-1", "KEEPER/0", "KEEPER/1", "KEEPER/2"]:
 		ids.append(StringName("%s/%s" % [hatch, piece]))
 	return ids
 
