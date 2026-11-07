@@ -124,7 +124,7 @@ func _check_level_gaze_at_console_stand() -> void:
 	tree.root.add_child(scene)
 	scene.process_mode = Node.PROCESS_MODE_DISABLED
 	player.adapter.press(InputPlane.Buttons.ACTIVATE)
-	for _tick: int in range(Exit.EXIT_POSE_COUNT):
+	for _tick: int in range(Exit.EXIT_POSE_COUNT + Player.GET_UP_LOOK_TICKS):
 		GameStep.new(game, player).advance()
 	assert_int_equal(player.motion.state(), PlayerMotion.BodyState.WALK, "real rig reaches standing")
 	var capsule := player.motion.capsule()

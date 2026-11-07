@@ -98,7 +98,8 @@ func _build_connector() -> void:
 		if beat.name in route.white_beats:
 			beat.light = "white"
 			if beat.name not in ["power-active", "hall-white"]:
-				beat.camera_back = 3.0
+				# Keep the nearest regular strip below the top edge of the player lens.
+				beat.camera_back = 4.5
 	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://scenarios/connector-route.json"))
 	assert(route.tick < int(data.max_frames), "connector route preserves its scenario budget")
 	data.actions = route.actions

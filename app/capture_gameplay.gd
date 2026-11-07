@@ -26,6 +26,8 @@ func _run() -> void:
 	route.stepper.fixtures.assign([ship.lighting, ship.hallway, ship.power_room])
 	var scenario: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://scenarios/gameplay-full.json"))
 	var observer := Camera3D.new()
+	observer.keep_aspect = Camera3D.KEEP_HEIGHT
+	observer.fov = Player.VIEW_FOV_DEGREES
 	scene.add_child(observer)
 	var index := 0
 	var shots := [{"name": "standing", "tick": 290}, {"name": "mid-room", "tick": 612}, {"name": "at-door", "tick": 1150}, {"name": "door-opened", "tick": 1215}]

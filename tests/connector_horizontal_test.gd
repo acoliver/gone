@@ -2,14 +2,14 @@ extends SimTestCase
 const Route := preload("res://harness/route.gd")
 
 func test_first_space_at_x30_cranks_facing_hatch_not_closed_power_door() -> void:
-	var game := Game.new(0)
+	var opening: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://scenarios/hallway.json"))
+	var game := Game.new(int(opening.seed))
 	var player := Player.build(game, null)
 	player.scripted = true
 	player.adapter = InputPlane.ScriptedAdapter.new()
 	player._ready()
 	game.wake_state.mark_ready()
 	var route := Route.new(player, 10000)
-	var opening: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://scenarios/hallway.json"))
 	route.replay_prefix(opening.actions, int(opening.beats.back().tick) + 2)
 	assert_true(game.bay_exited and game.hallway_lit, "real input reaches lit section 41")
 	var hatch := game.layout.door(&"D14-C-001-H-FORE")
@@ -29,14 +29,14 @@ func test_first_space_at_x30_cranks_facing_hatch_not_closed_power_door() -> void
 	player.free()
 
 func test_real_player_cranks_both_directions_and_locked_doors_refuse() -> void:
-	var game := Game.new(0)
+	var opening: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://scenarios/power-room.json"))
+	var game := Game.new(int(opening.seed))
 	var player := Player.build(game, null)
 	player.scripted = true
 	player.adapter = InputPlane.ScriptedAdapter.new()
 	player._ready()
 	game.wake_state.mark_ready()
 	var route := Route.new(player, 18000)
-	var opening: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://scenarios/power-room.json"))
 	route.replay_prefix(opening.actions, int(opening.beats.back().tick) + 2)
 	assert_true(game.bay_exited and game.hallway_lit and game.power_active and game.power_door_open, "opening through real input remains intact")
 	for n: int in [1, 0]:

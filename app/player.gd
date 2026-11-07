@@ -39,6 +39,7 @@ var _get_up_look_tick := -1
 var _get_up_look_start := Vector2.ZERO
 var _get_up_look_target := 0.0
 
+const VIEW_FOV_DEGREES := rad_to_deg(2.0 * atan(9.0 / 16.0))
 const GET_UP_LOOK_TICKS := 30
 const PICK_BUTTON := MOUSE_BUTTON_LEFT
 const RELEASE_KEY := KEY_ESCAPE
@@ -64,6 +65,8 @@ func _ready() -> void:
 	_look_pitch = InputPlane.PITCH_LIMIT
 	camera = Camera3D.new()
 	camera.name = "PlayerPitch"
+	camera.keep_aspect = Camera3D.KEEP_HEIGHT
+	camera.fov = VIEW_FOV_DEGREES
 	add_child(camera)
 	camera.make_current()
 	position = spawn.head()

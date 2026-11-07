@@ -68,7 +68,7 @@ func test_spark_strobe_positions_carry_wire_anchor_clusters() -> void:
 
 ## The lying wake view: the exit path's first pose head (the spawn eye),
 ## at the player pod's yaw and the authored look pitch one stop short of
-## vertical, carrying the Camera3D default vertical fov. The authored
+## vertical, carrying the player vertical fov. The authored
 ## pod-area wires must cross inside that cone so the up-facing beats
 ## read wires from the first opening blink.
 func test_pod_view_cone_carries_three_wire_crossings() -> void:
@@ -76,7 +76,7 @@ func test_pod_view_cone_carries_three_wire_crossings() -> void:
 	var yaw: float = Pods.PodRegistry.frozen().player_pod().placement().yaw_radians
 	var forward: Vector3 = (Basis(Vector3.UP, yaw) * Basis(Vector3.RIGHT, InputPlane.PITCH_LIMIT)) \
 		* Vector3.FORWARD
-	var threshold: float = cos(deg_to_rad(Camera3D.new().fov * 0.5))
+	var threshold: float = cos(deg_to_rad(Player.VIEW_FOV_DEGREES * 0.5))
 	var crossings := 0
 	var crossing_loops := 0
 	var crossing_strands := 0
