@@ -20,14 +20,21 @@ def painted_coordinates(objects, nodes, document):
                   and nodes[obj.name]["variant"] == variant["index"] for vertex in obj.data.vertices]
         frame_bounds[variant["index"]] = (min(p.x for p in points), max(p.x for p in points),
                                            min(p.y for p in points), max(p.y for p in points))
+    plates = {(nodes[obj.name]["variant"], nodes[obj.name]["side"]): obj for obj in objects
+              if nodes[obj.name]["kind"] == "leaf" and nodes[obj.name]["id"].endswith("Steel/plate")}
     for obj in objects:
         row = nodes[obj.name]
-        leaf = row["kind"] == "leaf" and row["id"].endswith("Steel/plate")
+        backing = row["kind"] == "leaf" and row["id"].startswith("BackingLap")
+        leaf = row["kind"] == "leaf" and (row["id"].endswith("Steel/plate") or backing)
         frame = row["kind"] == "frame"
+        side = (1 if document["variants"][row["variant"]]["hinge_sign"] > 0 else 0) if backing else row["side"]
+        projection = plates[(row["variant"], side)] if leaf else obj
+        projection_row = nodes[projection.name]
+        relative = projection.matrix_world.inverted() @ obj.matrix_world
         colour = obj.data.color_attributes.new(name="PaintOwnership", type="BYTE_COLOR", domain="CORNER")
         uv = obj.data.uv_layers.new(name="PaintProjection")
         if leaf:
-            part = document["variants"][row["variant"]]["groups"][row["group"]]["parts"][row["part"]]
+            part = document["variants"][row["variant"]]["groups"][projection_row["group"]]["parts"][projection_row["part"]]
         for polygon in obj.data.polygons:
             normal = polygon.normal if leaf else obj.matrix_world.to_3x3().inverted().transposed() @ polygon.normal
             normal = CINV.to_3x3() @ normal
@@ -35,11 +42,13 @@ def painted_coordinates(objects, nodes, document):
             for index in polygon.loop_indices:
                 loop = obj.data.loops[index]
                 # The solid slab's edge is machined steel; only its broad caps carry paint.
-                colour.data[index].color = (float(leaf and axis == 2), float(row["side"]), float(frame), 1)
+                colour.data[index].color = (float(leaf and axis == 2), float(side), float(frame), 1)
                 if not (leaf or frame):
                     continue
                 point = obj.data.vertices[loop.vertex_index].co
-                point = CINV @ (point.to_4d() if leaf else (obj.matrix_world @ point).to_4d())
+                # The backing covers the reverse slab. Project in that slab's
+                # frame so its visible cap shares the full mirrored paint image.
+                point = CINV @ ((relative @ point).to_4d() if leaf else (obj.matrix_world @ point).to_4d())
                 if leaf:
                     xspan, yspan = part["size"][:2]
                     u, v = point.x / xspan + .5, point.y / yspan + .5

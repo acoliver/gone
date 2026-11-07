@@ -2,14 +2,14 @@
   "asset": "hatch.glb",
   "build_dependencies": {
     "build_hatch.py": "bca733c7566bc4c85701e7b4688d2dbcb02e6a10e50399be36abaccda3aee1ec",
-    "hatch_bake.py": "957b70fc2c50c28bef7b563360a940cf8e0cfd1bf4f4d6c945e05635d7cb90b5",
+    "hatch_bake.py": "4c429d7220a983c253baddf6216f95aeeff9f6105fe8d4d0963fd2c4966e7679",
     "hatch_fit.py": "7aa31b757f3f72bf21bc03bdb6167a882a0dc54056cf329f699d7b05ca0db030",
     "hatch_generated_frame.py": "0f69ac526937b8daa12fb3afb3c4ee9e7871a6019dce7750b66f78384e55392c",
     "hatch_generated_parts.py": "fb3d5f2b176a73f386eb6ad2cc2302ad154eed57fb47e636d1d60aabd6aa7e1e",
     "hatch_interfaces.py": "ac7fb4d49f1ef333d6826772fc325c7bb34ac2755b28e40ffd74f655e318543f",
     "hatch_leaf_surface.py": "f6728290ed4a69ed78004f867f63fbb16c65c12d2d9a359d3e65475f2ca470fd"
   },
-  "build_recipe_sha256": "2340786aa18b84abec4906117305406e443c1e20ee24e8fdcb892400c3c97634",
+  "build_recipe_sha256": "7c5b5c10500dfc854e4da5d7ccaf2b0f03118bc6ff52c8ec5c8b10a4ed353434",
   "coordinate_system": "godot_y_up",
   "finish_recipe_sha256": "162900a766d93d54b102128c465682488483bc66f8bff46ffe15b641aa38cc3b",
   "fit_recipe": {
