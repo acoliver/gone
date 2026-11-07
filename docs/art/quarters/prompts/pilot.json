@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "issue": 95,
+  "note": "Stage 1 pilot props. The style prefix and tail are shared. Each prompt describes the object directly; negatives are kept to people/text/background because naming unwanted objects tended to add them. Each prop is shown brand new (the remembered state); its aged state is derived later from the model.",
+  "style": "Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish.",
+  "tail": "Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.",
+  "views": {
+    "front": "The exact same object, unchanged in shape, colour and every detail, seen straight from the front at eye level, orthographic, same plain light grey background and soft even lighting.",
+    "left": "The exact same object, unchanged in shape, colour and every detail, seen straight from its left side at eye level, orthographic, same plain light grey background and soft even lighting.",
+    "right": "The exact same object, unchanged in shape, colour and every detail, seen straight from its right side at eye level, orthographic, same plain light grey background and soft even lighting.",
+    "back": "The exact same object, unchanged in shape, colour and every detail, seen straight from behind at eye level, orthographic, same plain light grey background and soft even lighting."
+  },
+  "props": [
+    {
+      "id": "storage_locker_module",
+      "size_m": [0.6, 2.4, 0.6],
+      "materials": ["PaintedSteel", "BareSteel"],
+      "prompt": "A tall freestanding steel storage locker module for a warship cabin, 0.6 metres wide, 0.6 metres deep and 2.4 metres tall, a narrow upright cabinet. Grey-green painted steel with crisp riveted seams along its edges, a recessed steel kick plate at the bottom, one full-height hinged door with a rugged recessed latch handle and three small louvred vent slots near the top, and a fixed steel frame around the door. Fresh, even, slightly satin grey-green paint.",
+      "seeds": [101, 102, 103, 104]
+    },
+    {
+      "id": "sofa",
+      "size_m": [2.2, 0.85, 0.95],
+      "materials": ["PaintedSteel", "Foam", "SyntheticFabric", "NaturalFabric"],
+      "prompt": "A three-seat sofa for officers' quarters on a military starship, 2.2 metres long. A sturdy low frame of grey-green painted steel with riveted corner plates and short steel feet, holding three plump separate seat cushions and three separate back cushions upholstered in warm charcoal-grey woven fabric with neat welted seams, and a folded oatmeal-coloured wool throw blanket draped over the right arm.",
+      "seeds": [111, 112, 113, 114]
+    },
+    {
+      "id": "dress_uniform",
+      "size_m": [0.55, 1.3, 0.25],
+      "materials": ["NaturalFabric", "Brass", "BareSteel"],
+      "prompt": "A men's military dress uniform hanging on a plain steel coat hanger: a dark navy-blue wool tunic with a high standing collar, a single row of polished brass buttons, two small brass collar insignia, a short row of coloured ribbon bars and one brass medal on the left breast, shoulder boards, and matching dark navy trousers folded over the hanger's crossbar. Crisp, pressed, brand new cloth.",
+      "seeds": [121, 122, 123, 124]
+    }
+  ]
+}
