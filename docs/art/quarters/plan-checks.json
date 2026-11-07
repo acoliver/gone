@@ -1,0 +1,127 @@
+{
+  "checks": [
+    {
+      "name": "footprints_inside_room",
+      "pass": true,
+      "measured": [],
+      "threshold": {
+        "outside_tolerance_m": 0.001
+      },
+      "detail": "Every footprint must remain within the interior bounds."
+    },
+    {
+      "name": "floor_footprint_overlaps",
+      "pass": true,
+      "measured": [],
+      "threshold": "No intersecting floor-standing footprints except parent parts or vertically stacked props.",
+      "detail": "Each reported pair has intersecting footprints and overlapping height ranges."
+    },
+    {
+      "name": "player_reachability",
+      "pass": false,
+      "measured": {
+        "targets": [
+          {
+            "id": "bed_foot",
+            "point": [
+              4.0,
+              3.45
+            ],
+            "reachable": true,
+            "path_length_m": 3.1
+          },
+          {
+            "id": "bed_left_side",
+            "point": [
+              2.95,
+              4.9
+            ],
+            "reachable": false,
+            "path_length_m": null
+          },
+          {
+            "id": "bed_right_side",
+            "point": [
+              5.05,
+              4.9
+            ],
+            "reachable": false,
+            "path_length_m": null
+          },
+          {
+            "id": "console",
+            "point": [
+              6.5,
+              2.0
+            ],
+            "reachable": false,
+            "path_length_m": null
+          },
+          {
+            "id": "wardrobe_front",
+            "point": [
+              6.5,
+              3.6
+            ],
+            "reachable": false,
+            "path_length_m": null
+          },
+          {
+            "id": "sofa_front",
+            "point": [
+              1.15,
+              3.1
+            ],
+            "reachable": true,
+            "path_length_m": 8.42
+          },
+          {
+            "id": "dining_table",
+            "point": [
+              2.4,
+              1.85
+            ],
+            "reachable": false,
+            "path_length_m": null
+          },
+          {
+            "id": "storage_far_l",
+            "point": [
+              1.3,
+              4.95
+            ],
+            "reachable": true,
+            "path_length_m": 7.3
+          },
+          {
+            "id": "storage_far_r",
+            "point": [
+              6.7,
+              4.95
+            ],
+            "reachable": true,
+            "path_length_m": 7.3
+          }
+        ],
+        "narrowest_clearance_m": 0.12,
+        "grid_m": 0.02
+      },
+      "threshold": "All reach_targets reachable on a 0.02 m grid with capsule inflation.",
+      "detail": "Flood fill starts at the door centre, z=0.35 m."
+    },
+    {
+      "name": "no_entrance_storage",
+      "pass": true,
+      "measured": [],
+      "threshold": "Storage prop z0 >= 0.2 m.",
+      "detail": "Storage is identified by its id or zone containing 'storage'."
+    },
+    {
+      "name": "door_opening_clear",
+      "pass": true,
+      "measured": [],
+      "threshold": "No floor-standing footprint in the opening for the first 1.0 m.",
+      "detail": "The sliding opening spans the specified x interval."
+    }
+  ]
+}
