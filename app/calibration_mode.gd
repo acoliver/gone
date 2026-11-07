@@ -348,19 +348,12 @@ func _level_material(level: float) -> StandardMaterial3D:
 	material.emission = Color(level, level, level)
 	return material
 
-## The per-tick driver, mirroring the capture lane's: physics ticks run
-## the scenario clock (the input adapter drains any authored waits),
-## process frames paint the chip and pin due beats.
+## Advance the calibration clock once per rendered meter sample, independently
+## of wall-clock physics catch-up. Each step still represents one logical tick.
 class CalibrationDriver:
 	extends Node
 
 	var mode
-
-	func _physics_process(_delta: float) -> void:
-		var harness = mode
-		if not harness.ready or harness.failed or harness.busy_capturing:
-			return
-		harness.drive_tick()
 
 	func _process(_delta: float) -> void:
 		var harness = mode
@@ -372,6 +365,10 @@ class CalibrationDriver:
 		if harness.frame > harness.scenario.max_frames + 900:
 			harness._fail("hard frame budget exhausted")
 			return
-		if not harness.ready or harness.busy_capturing or harness.pending_captures.is_empty():
+		if not harness.ready or harness.busy_capturing:
 			return
-		harness.capture_next_beat()
+		# A meter sample belongs to one rendered frame. Catch-up physics ticks
+		# would integrate the same stale measurement repeatedly under GPU load.
+		harness.drive_tick()
+		if not harness.pending_captures.is_empty():
+			harness.capture_next_beat()
