@@ -49,7 +49,7 @@
             ],
             "reachable": true,
             "path_length_m": 5.76,
-            "widest_path_bottleneck_width_m": 1.253
+            "widest_path_bottleneck_width_m": 1.206
           },
           {
             "id": "console",
@@ -59,7 +59,7 @@
             ],
             "reachable": true,
             "path_length_m": 3.86,
-            "widest_path_bottleneck_width_m": 0.786
+            "widest_path_bottleneck_width_m": 0.988
           },
           {
             "id": "wardrobe_front",
@@ -69,7 +69,7 @@
             ],
             "reachable": true,
             "path_length_m": 5.96,
-            "widest_path_bottleneck_width_m": 1.253
+            "widest_path_bottleneck_width_m": 1.206
           },
           {
             "id": "sofa_front",
@@ -84,11 +84,11 @@
           {
             "id": "dining_table",
             "point": [
-              4.6,
+              4.35,
               1.7
             ],
             "reachable": true,
-            "path_length_m": 1.94,
+            "path_length_m": 1.7,
             "widest_path_bottleneck_width_m": 1.379
           },
           {
@@ -140,10 +140,10 @@
           {
             "target": "bed_right_side",
             "point": [
-              4.97,
+              4.85,
               3.19
             ],
-            "width_m": 1.253,
+            "width_m": 1.206,
             "bounded_by": [
               "dining_chair_2",
               "bed"
@@ -152,10 +152,10 @@
           {
             "target": "console",
             "point": [
-              6.17,
-              2.35
+              6.05,
+              2.33
             ],
-            "width_m": 0.786,
+            "width_m": 0.988,
             "bounded_by": [
               "dining_table",
               "desk_chair"
@@ -164,10 +164,10 @@
           {
             "target": "wardrobe_front",
             "point": [
-              4.97,
+              4.85,
               3.19
             ],
-            "width_m": 1.253,
+            "width_m": 1.206,
             "bounded_by": [
               "dining_chair_2",
               "bed"
@@ -229,21 +229,8 @@
     },
     {
       "name": "walkway_widths",
-      "pass": false,
-      "measured": [
-        {
-          "target": "console",
-          "point": [
-            6.17,
-            2.35
-          ],
-          "width_m": 0.786,
-          "bounded_by": [
-            "dining_table",
-            "desk_chair"
-          ]
-        }
-      ],
+      "pass": true,
+      "measured": [],
       "threshold": {
         "minimum_width_m": 0.9
       },

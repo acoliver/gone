@@ -23,6 +23,7 @@ RASTER_STEP = 0.02
 
 def font(size):
     try:
+        from PIL import ImageFont
         return ImageFont.load_default(size=size)
     except TypeError:
         return ImageFont.load_default()
@@ -338,130 +339,259 @@ def checks(layout, reach_info):
 
 
 def render(layout, reachable, reach_info, output):
-    from PIL import Image, ImageDraw, ImageFont
+    from PIL import Image, ImageDraw
     room, door = layout["room"], layout["door"]
-    s, margin = PIXELS_PER_METRE, 180
+    s, margin, top, footer = PIXELS_PER_METRE, 210, 150, 620
     width, depth = room["width_x"], room["depth_z"]
     wall = room["wall_thickness"]
-    image = Image.new("RGB", (round((width + 2 * wall) * s + margin * 2), round((depth + 2 * wall) * s + margin * 2)), (250, 249, 245))
+    image = Image.new("RGB", (round((width + 2 * wall) * s + margin * 2),
+                               round((depth + 2 * wall) * s + margin * 2 + top + footer)), (250, 249, 245))
     draw = ImageDraw.Draw(image)
+
     def pt(x, z):
-        return (round(margin + (x + wall) * s), round(margin + (depth + wall - z) * s))
+        return round(margin + (x + wall) * s), round(top + margin + (depth + wall - z) * s)
+
     def rect(box):
         x0, z0, x1, z1 = box
-        return (pt(x0, z1)[0], pt(x0, z1)[1], pt(x1, z0)[0], pt(x1, z0)[1])
-    # Reachable tint underneath all plan symbols.
+        return (*pt(x0, z1), *pt(x1, z0))
+
     for ix, col in enumerate(reachable):
         for iz, value in enumerate(col):
             if value:
-                x0, z0 = pt(ix * RASTER_STEP, (iz + 1) * RASTER_STEP)
-                x1, z1 = pt((ix + 1) * RASTER_STEP, iz * RASTER_STEP)
-                draw.rectangle((x0, z0, x1, z1), fill=(234, 245, 231))
-    # Half-metre grid, with metre lines slightly stronger.
+                draw.rectangle((*pt(ix * RASTER_STEP, (iz + 1) * RASTER_STEP),
+                                *pt((ix + 1) * RASTER_STEP, iz * RASTER_STEP)), fill=(234, 245, 231))
     for i in range(round(width * 2) + 1):
         x = i * 0.5
-        a, b = pt(x, 0), pt(x, depth)
-        color, line = ((215, 218, 214), 2) if i % 2 == 0 else ((233, 234, 231), 1)
-        draw.line((a, b), fill=color, width=line)
+        draw.line((*pt(x, 0), *pt(x, depth)), fill=(215, 218, 214) if i % 2 == 0 else (233, 234, 231),
+                  width=2 if i % 2 == 0 else 1)
     for i in range(round(depth * 2) + 1):
         z = i * 0.5
-        draw.line((*pt(0, z), *pt(width, z)), fill=((215, 218, 214) if i % 2 == 0 else (233, 234, 231)), width=2 if i % 2 == 0 else 1)
-    # Walls surround the interior; leave the entrance aperture open.
-    x0, z0, x1, z1 = -wall, -wall, width + wall, depth + wall
+        draw.line((*pt(0, z), *pt(width, z)), fill=(215, 218, 214) if i % 2 == 0 else (233, 234, 231),
+                  width=2 if i % 2 == 0 else 1)
+
     def world_rect(x0, z0, x1, z1, fill):
-        draw.rectangle((pt(x0, z1), pt(x1, z0)), fill=fill, outline=(48, 57, 61), width=3)
-    world_rect(x0, -wall, door["x0"], 0, (75, 83, 88))
-    world_rect(door["x1"], -wall, x1, 0, (75, 83, 88))
+        draw.rectangle((*pt(x0, z1), *pt(x1, z0)), fill=fill, outline=(48, 57, 61), width=3)
+
+    world_rect(-wall, -wall, door["x0"], 0, (75, 83, 88))
+    world_rect(door["x1"], -wall, width + wall, 0, (75, 83, 88))
     world_rect(-wall, 0, 0, depth, (75, 83, 88))
     world_rect(width, 0, width + wall, depth, (75, 83, 88))
     world_rect(-wall, depth, width + wall, depth + wall, (75, 83, 88))
-    small = font(15)
-    draw.text(pt((door["x0"] + door["x1"]) / 2, -0.34), "DOOR", fill=(37, 44, 47), font=font(20), anchor="mm")
-    # Props and faces.
-    label_font = font(15)
+    labels = {"bed": "Double bed", "bedside_l": "Bedside", "bedside_r": "Bedside",
+              "headboard": "Double bed", "lockers_over_bed": "Lockers above bed",
+              "wardrobe_door": "Wardrobe door (open)",
+              "storage_far_l": "Storage", "storage_far_r": "Storage", "storage_left_near": "Storage",
+              "storage_left_far": "Storage", "storage_right_near": "Storage", "storage_right_far": "Storage",
+              "view_screen": "View screen (wall)", "media_cabinet": "Media cabinet", "sofa": "Sofa",
+              "dining_table": "Table", "dining_chair_1": "Chair", "dining_chair_2": "Chair",
+              "desk": "Desk", "console": "Console", "desk_chair": "Desk chair", "wardrobe": "Wardrobe"}
+    title_font, label_font = font(40), font(36)
+    draw.text((margin, 25), "Protagonist's quarters, plan view (8.0 x 6.0 m, 3.2 m ceiling). Entrance at bottom.",
+              fill=(31, 38, 40), font=title_font)
+    narrowest = min((item["widest_path_bottleneck_width_m"], item["id"]) for item in reach_info["targets"]
+                    if item["widest_path_bottleneck_width_m"] is not None)
+    draw.text((margin, 80), f"Narrowest walkway {narrowest[0]:.2f} m (to the {narrowest[1]})",
+              fill=(67, 75, 77), font=font(30))
+
+    prop_pixels = {prop["id"]: rect(prop["box"]) for prop in layout["props"]}
+    door_shape = door_geometry(layout)
+    label_props = list(layout["props"])
+    if door_shape and door_shape["parked"]:
+        hx, hz = door_shape["hinge"]
+        ex, ez = door_shape["leaf_end"]
+        label_props.append({"id": "wardrobe_door", "box": [min(hx, ex), min(hz, ez), max(hx, ex), max(hz, ez)]})
+        prop_pixels["wardrobe_door"] = rect(label_props[-1]["box"])
     for prop in layout["props"]:
         box = prop["box"]
         color = ZONE_COLORS.get(prop.get("zone"), (177, 175, 163))
         outline = tuple(max(0, c - 65) for c in color)
-        bounds = rect(box)
+        bounds = prop_pixels[prop["id"]]
         if prop.get("h_from", 0) >= 1.5:
             x0, y0, x1, y1 = bounds
-            dash = 12
-            for x in range(x0, x1, dash * 2):
-                draw.line((x, y0, min(x + dash, x1), y0), fill=outline, width=3)
-                draw.line((x, y1, min(x + dash, x1), y1), fill=outline, width=3)
-            for y in range(y0, y1, dash * 2):
-                draw.line((x0, y, x0, min(y + dash, y1)), fill=outline, width=3)
-                draw.line((x1, y, x1, min(y + dash, y1)), fill=outline, width=3)
+            for x in range(x0, x1, 24):
+                draw.line((x, y0, min(x + 12, x1), y0), fill=outline, width=3)
+                draw.line((x, y1, min(x + 12, x1), y1), fill=outline, width=3)
+            for y in range(y0, y1, 24):
+                draw.line((x0, y, x0, min(y + 12, y1)), fill=outline, width=3)
+                draw.line((x1, y, x1, min(y + 12, y1)), fill=outline, width=3)
+        elif prop.get("shape") == "round":
+            draw.ellipse(bounds, fill=color, outline=outline, width=3)
         else:
-            if prop.get("shape") == "round":
-                draw.ellipse(bounds, fill=color, outline=outline, width=3)
-            else:
-                draw.rectangle(bounds, fill=color, outline=outline, width=3)
+            draw.rectangle(bounds, fill=color, outline=outline, width=3)
         cx, cz = (box[0] + box[2]) / 2, (box[1] + box[3]) / 2
-        draw.text(pt(cx, cz), prop["id"], fill=(31, 38, 40), font=label_font, anchor="mm")
         face = prop.get("faces")
         if face:
-            vectors = {"-x": (-0.22, 0), "+x": (0.22, 0), "-z": (0, -0.22), "+z": (0, 0.22)}
-            dx, dz = vectors[face]
+            dx, dz = {"-x": (-0.22, 0), "+x": (0.22, 0), "-z": (0, -0.22), "+z": (0, 0.22)}[face]
             start, end = pt(cx, cz), pt(cx + dx, cz + dz)
             draw.line((*start, *end), fill=(35, 45, 48), width=3)
-            angle = math.atan2(end[1] - start[1], end[0] - start[0])
-            for offset in (-2.5, 2.5):
-                draw.line((*end, end[0] - 9 * math.cos(angle + offset), end[1] - 9 * math.sin(angle + offset)), fill=(35, 45, 48), width=2)
+
+    occupied = []
+    label_bounds = []
+    for prop in label_props:
+        name = labels[prop["id"]]
+        box = prop_pixels[prop["id"]]
+        bbox = draw.textbbox((0, 0), name, font=label_font, stroke_width=5)
+        tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+        assert th >= 28, f"Label font is too small for {prop['id']}: {th}px"
+        x0, y0, x1, y1 = box
+        cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+        candidates = []
+        if x1 - x0 >= tw + 16 and y1 - y0 >= th + 16:
+            candidates.append((cx, cy, True))
+        for d in range(8, 601, 24):
+            for offset in (0, -80, 80, -160, 160, -240, 240):
+                candidates.extend(((cx + offset, y0 - d - th / 2, False),
+                                   (cx + offset, y1 + d + th / 2, False),
+                                   (x0 - d - tw / 2, cy + offset, False),
+                                   (x1 + d + tw / 2, cy + offset, False)))
+        chosen = None
+        for lx, ly, inside in candidates:
+            bound = (round(lx - tw / 2 - 5), round(ly - th / 2 - 5),
+                     round(lx + tw / 2 + 5), round(ly + th / 2 + 5))
+            if not inside and not (margin < bound[0] and bound[2] < margin + width * s and
+                                   top + margin < bound[1] and bound[3] < top + margin + depth * s):
+                continue
+            if any(overlaps(bound, other) for other in occupied):
+                continue
+            if not inside:
+                if abs(ly - cy) > abs(lx - cx):
+                    anchor = (min(max(lx, x0), x1), y0 if ly < y0 else y1)
+                else:
+                    anchor = (x0 if lx < x0 else x1, min(max(ly, y0), y1))
+                blocked = False
+                for step_index in range(1, 10):
+                    t = step_index / 10
+                    sx, sy = anchor[0] + (lx - anchor[0]) * t, anchor[1] + (ly - anchor[1]) * t
+                    if any(other_id != prop["id"] and
+                           not (prop["id"] == "view_screen" and other_id == "media_cabinet") and
+                           other[0] <= sx <= other[2] and other[1] <= sy <= other[3]
+                           for other_id, other in prop_pixels.items()):
+                        blocked = True
+                        break
+                    if any(other[0] <= sx <= other[2] and other[1] <= sy <= other[3] for other in occupied):
+                        blocked = True
+                        break
+                if blocked:
+                    continue
+            chosen = lx, ly, bound, inside
+            break
+        assert chosen is not None, f"No clear label location for {prop['id']} ({name})"
+        lx, ly, bound, inside = chosen
+        if not inside:
+            if abs(ly - cy) > abs(lx - cx):
+                anchor = (min(max(lx, x0), x1), y0 if ly < y0 else y1)
+            else:
+                anchor = (x0 if lx < x0 else x1, min(max(ly, y0), y1))
+            draw.line((*anchor, lx, ly), fill=(55, 63, 65), width=2)
+        draw.text((lx, ly), name, fill=(31, 38, 40), font=label_font, anchor="mm",
+                  stroke_width=5, stroke_fill=(255, 255, 252))
+        occupied.append(bound)
+        label_bounds.append((prop["id"], bound))
+    assert all(not overlaps(a[1], b[1]) for i, a in enumerate(label_bounds) for b in label_bounds[i + 1:]), \
+        "Object label bounding boxes overlap"
+
     door_shape = door_geometry(layout)
     if door_shape:
         (hx, hz), r = door_shape["hinge"], door_shape["radius"]
-        start, end = door_shape["start"], door_shape["end"]
         if door_shape["parked"]:
-            leaf_end = door_shape["leaf_end"]
-            dx, dz = leaf_end[0] - hx, leaf_end[1] - hz
+            ex, ez = door_shape["leaf_end"]
+            dx, dz = ex - hx, ez - hz
             length = math.hypot(dx, dz)
             nx, nz = -dz / length * 0.02, dx / length * 0.02
-            polygon = [pt(hx + nx, hz + nz), pt(leaf_end[0] + nx, leaf_end[1] + nz),
-                       pt(leaf_end[0] - nx, leaf_end[1] - nz), pt(hx - nx, hz - nz)]
-            draw.polygon(polygon, fill=(157, 76, 61), outline=(105, 47, 40))
-        steps = max(1, round(abs(end - start) * r * s / 12))
-        for index in range(0, steps, 2):
-            a0 = start + (end - start) * index / steps
-            a1 = start + (end - start) * min(index + 1, steps) / steps
+            draw.polygon([pt(hx + nx, hz + nz), pt(ex + nx, ez + nz), pt(ex - nx, ez - nz), pt(hx - nx, hz - nz)],
+                         fill=(157, 76, 61), outline=(105, 47, 40))
+        for i in range(max(1, round(abs(door_shape["end"] - door_shape["start"]) * r * s / 12))):
+            if i % 2:
+                continue
+            a0 = door_shape["start"] + (door_shape["end"] - door_shape["start"]) * i / max(1, round(abs(door_shape["end"] - door_shape["start"]) * r * s / 12))
+            a1 = door_shape["start"] + (door_shape["end"] - door_shape["start"]) * (i + 1) / max(1, round(abs(door_shape["end"] - door_shape["start"]) * r * s / 12))
             draw.line((*pt(hx + r * math.cos(a0), hz + r * math.sin(a0)),
                        *pt(hx + r * math.cos(a1), hz + r * math.sin(a1))), fill=(157, 76, 61), width=3)
+
+    distinct = {}
+    for point in reach_info["bottleneck_points"]:
+        distinct.setdefault(tuple(point["point"]), point)
+    paths = {}
     for route in reach_info["widest_paths"]:
+        marker = next((item for item in reach_info["bottleneck_points"] if item["target"] == route["target"]), None)
+        if marker:
+            paths.setdefault(tuple(marker["point"]), route)
+    for route in paths.values():
         points = [pt(*point) for point in route["points"]]
         if len(points) > 1:
             draw.line(points, fill=(44, 110, 194), width=5)
-    for bottleneck in reach_info["bottleneck_points"]:
-        px, pz = pt(*bottleneck["point"])
-        draw.ellipse((px - 9, pz - 9, px + 9, pz + 9), fill=(215, 55, 45), outline=(255, 255, 255), width=3)
-        draw.line((px - 13, pz, px + 13, pz), fill=(255, 255, 255), width=2)
-        draw.line((px, pz - 13, px, pz + 13), fill=(255, 255, 255), width=2)
-    # Camera rays at the floor projection of the doorway camera.
+    for bottleneck in distinct.values():
+        px, py = pt(*bottleneck["point"])
+        draw.ellipse((px - 9, py - 9, px + 9, py + 9), fill=(215, 55, 45), outline=(255, 255, 255), width=3)
+        draw.text((px + 18, py - 20), f"{bottleneck['width_m']:.2f} m", fill=(31, 38, 40), font=font(26),
+                  stroke_width=5, stroke_fill=(255, 255, 252))
+
     camera = layout["camera"]
     cx, cz = camera["position"][0], camera["position"][2]
     yaw = math.atan2(camera["look_at"][0] - cx, camera["look_at"][2] - cz)
     half = math.radians(camera["horizontal_fov_deg"]) / 2
     for direction in (yaw - half, yaw + half):
-        draw.line((*pt(cx, cz), *pt(cx + 8 * math.sin(direction), cz + 8 * math.cos(direction))), fill=(90, 111, 150), width=2)
+        dx, dz = math.sin(direction), math.cos(direction)
+        scale = min((width - cx) / dx if dx > 0 else -cx / dx if dx < 0 else float("inf"),
+                    (depth - cz) / dz if dz > 0 else -cz / dz if dz < 0 else float("inf"))
+        draw.line((*pt(cx, cz), *pt(cx + scale * dx, cz + scale * dz)), fill=(90, 111, 150), width=3)
     draw.ellipse((pt(cx, cz)[0] - 7, pt(cx, cz)[1] - 7, pt(cx, cz)[0] + 7, pt(cx, cz)[1] + 7), fill=(64, 86, 132))
-    # Scale bar and metre labels.
-    for i in range(9):
-        x = i
-        draw.text(pt(x, -0.62), str(x), fill=(55, 61, 64), font=small, anchor="mm")
-    scale_y = -0.88
-    draw.line((*pt(0, scale_y), *pt(1, scale_y)), fill=(35, 41, 43), width=6)
-    draw.line((*pt(0, scale_y - 0.05), *pt(0, scale_y + 0.05)), fill=(35, 41, 43), width=3)
-    draw.line((*pt(1, scale_y - 0.05), *pt(1, scale_y + 0.05)), fill=(35, 41, 43), width=3)
-    draw.text(pt(0.5, scale_y - 0.12), "1 m", fill=(35, 41, 43), font=small, anchor="mm")
-    # Zone legend.
-    lx, ly = margin + 20, image.height - 115
-    draw.rounded_rectangle((lx - 10, ly - 12, lx + 740, ly + 92), radius=8, fill=(255, 255, 252), outline=(180, 184, 179), width=2)
-    for index, (zone, color) in enumerate(ZONE_COLORS.items()):
-        x = lx + index * 145
-        draw.rectangle((x, ly, x + 20, ly + 20), fill=color, outline=tuple(max(0, c - 65) for c in color))
-        draw.text((x + 27, ly + 2), zone, fill=(40, 46, 48), font=small)
-    image.save(output, format="PNG", optimize=True)
 
+    def dimension(start, end, label, text_font):
+        draw.line((*start, *end), fill=(43, 51, 54), width=3)
+        angle = math.atan2(end[1] - start[1], end[0] - start[0])
+        for point, direction in ((start, angle), (end, angle + math.pi)):
+            for side in (-0.55, 0.55):
+                draw.line((*point, point[0] + 14 * math.cos(direction + side),
+                           point[1] + 14 * math.sin(direction + side)), fill=(43, 51, 54), width=3)
+        if label:
+            draw.text(((start[0] + end[0]) / 2, (start[1] + end[1]) / 2 - 20), label,
+                      fill=(31, 38, 40), font=text_font, anchor="mm", stroke_width=5, stroke_fill=(255, 255, 252))
+
+    left, right = pt(-wall, 0), pt(width + wall, 0)
+    dimension((left[0], left[1] + 100), (right[0], right[1] + 100), "8.0 m", font(28))
+    top_left, bottom_left = pt(0, depth + wall), pt(0, -wall)
+    dimension((top_left[0] - 105, top_left[1]), (bottom_left[0] - 105, bottom_left[1]), "6.0 m", font(28))
+    door_y = pt(0, -wall)[1] + 35
+    dimension((pt(door["x0"], 0)[0], door_y), (pt(door["x1"], 0)[0], door_y), "1.2 m door", font(24))
+
+    sx, sy = margin + 35, image.height - footer + 40
+    step = round(0.5 * s)
+    for i in range(4):
+        x = sx + i * step
+        draw.line((x, sy, x + step, sy), fill=(35, 41, 43), width=7)
+        draw.line((x, sy - 11, x, sy + 11), fill=(35, 41, 43), width=3)
+    for x, text in ((sx, "0"), (sx + 2 * step, "1 m"), (sx + 4 * step, "2 m")):
+        draw.line((x, sy - 11, x, sy + 11), fill=(35, 41, 43), width=3)
+        draw.text((x, sy + 18), text, fill=(35, 41, 43), font=font(26), anchor="mt")
+    lx, ly = margin + 700, image.height - footer + 20
+    legend = [(f"zone_{zone}", zone) for zone in ZONE_COLORS]
+    legend.extend((("dash", "Dashed outline: wall-mounted, floor free below"),
+                   ("floor", "Walkable floor (player 0.6 m wide)"),
+                   ("route", "Widest route from door"),
+                   ("bottle", "Narrowest point on route, with width"),
+                   ("camera", "Doorway camera view (100°)")))
+    draw.rounded_rectangle((lx - 15, ly - 10, image.width - margin + 5, image.height - 15), radius=8,
+                           fill=(255, 255, 252), outline=(180, 184, 179), width=2)
+    for index, (kind, text) in enumerate(legend):
+        x, y = lx + (index % 2) * 1010, ly + (index // 2) * 78
+        if kind.startswith("zone_"):
+            color = ZONE_COLORS[text]
+            draw.rectangle((x, y + 3, x + 22, y + 25), fill=color,
+                           outline=tuple(max(0, channel - 65) for channel in color))
+        elif kind == "dash":
+            for dx in range(0, 56, 18):
+                draw.line((x + dx, y + 12, x + dx + 10, y + 12), fill=(55, 63, 65), width=3)
+        elif kind == "floor":
+            draw.rectangle((x, y + 2, x + 38, y + 26), fill=(234, 245, 231), outline=(140, 160, 138))
+        elif kind == "route":
+            draw.line((x, y + 14, x + 45, y + 14), fill=(44, 110, 194), width=5)
+        elif kind == "bottle":
+            draw.ellipse((x + 10, y + 5, x + 26, y + 21), fill=(215, 55, 45))
+        elif kind == "camera":
+            draw.line((x, y + 23, x + 19, y + 2, x + 38, y + 23), fill=(90, 111, 150), width=3)
+        draw.text((x + 65, y), text, fill=(40, 46, 48), font=font(26))
+    image.save(output, format="PNG", optimize=True)
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
