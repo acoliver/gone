@@ -245,7 +245,8 @@ static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 		room.add_child(piece)
 
 	room._door_leaf = SlidingDoorModel.leaf(game.layout.door(ShipLayout.POWER_DOOR_ID), 1, game.layout)
-	room.add_child(SlidingDoorModel.frame(game.layout.door(ShipLayout.POWER_DOOR_ID)))
+	var door_frame := SlidingDoorModel.frame(game.layout.door(ShipLayout.POWER_DOOR_ID))
+	room.add_child(door_frame)
 	room._door_binding = Surfaces.MotionBinding.new(room._door_leaf)
 	room._door_binding.pieces.append(room._door_leaf)
 	room._door_leaf.name = "PowerDoorLeaf"
@@ -288,6 +289,10 @@ static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 
 	room._apply_console_state(game.console_state)
 	Lighting.mesh_layers(room, 1 | Lighting.POWER_FILL_MASK)
+	# This steel borders both rooms; the room-wide pass must not exclude hall fill.
+	var door_mask := 1 | Lighting.HALL_FILL_MASK | Lighting.POWER_FILL_MASK
+	room._door_leaf.layers = door_mask
+	Lighting.mesh_layers(door_frame, door_mask)
 	return room
 
 ## One console station: spine, screen, shelf, and the blank colored

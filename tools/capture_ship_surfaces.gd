@@ -145,6 +145,7 @@ func _sliding_views(circuit: String) -> void:
 	var spec := game.layout.door(ShipLayout.POWER_DOOR_ID)
 	var context := Doors.Context.new()
 	context.face_id = spec.face_ids()[0]
+	await _label_views(circuit, spec)
 	for state: String in ["closed", "half-open", "open"]:
 		if state == "half-open": game.doors.press(spec.id(), context)
 		if state != "closed":
@@ -154,6 +155,19 @@ func _sliding_views(circuit: String) -> void:
 			await _shot(circuit, "power-door-%s-%s" % ["hall" if side < 0 else "room", state], spec.id(), spec.frame() * Vector3(0.35, 1.55, side * 1.50), spec.frame() * Vector3(0.15, 1.10, ShipLayout.WALL / 2))
 	var side_door := game.layout.door(&"D14-S-041-SIDE-015-PORT")
 	await _shot(circuit, "side-door-close", side_door.id(), side_door.frame() * Vector3(-0.15, 1.55, -1.25), side_door.frame() * Vector3(0, 1.15, 0))
+	await _label_views(circuit, side_door)
+
+func _label_views(circuit: String, spec: ShipLayout.DoorSpec) -> void:
+	while scene.text_cache.pending_count() > 0: await process_frame
+	var label: ShipLabel = scene.labels[spec.face_ids()[0]]
+	var frame := Surfaces.world_frame(label)
+	var prefix := "power" if spec.kind() == ShipLayout.DoorKind.POWER else "side"
+	for resolved: bool in [false, true]:
+		label.perception.perceive = 1.0 if resolved else 0.0
+		label.present()
+		await _shot(circuit, "%s-door-label-%s" % [prefix, "spanish" if resolved else "native"], spec.id(), frame.origin + frame.basis.z * 0.90, frame.origin)
+	label.perception.perceive = 0.0
+	label.present()
 
 func _open_rest_views(circuit: String, id: StringName) -> void:
 	var spec := game.layout.door(id)

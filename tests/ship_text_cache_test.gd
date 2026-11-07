@@ -81,7 +81,16 @@ func test_built_d14_faces_generate_labels_without_remote_or_startup_jobs() -> vo
 	scene.prepare_near(Vector3(28, 0, 0))
 	scene.prepare_near(Vector3(8, 0, 0))
 	assert_int_equal(scene.labels.size(), 33, "fourteen hatch/lift faces plus seventeen side and two power plates")
-	assert_int_equal(scene.text_cache.pending_count(), 7, "six navigation pairs plus arrival console text")
+	assert_int_equal(scene.text_cache.pending_count(), 25, "six navigation pairs, eighteen distinct bay labels and arrival console text")
+	for id: StringName in game.layout.door_ids():
+		var spec := game.layout.door(id)
+		if not SlidingDoorParts.applies(spec): continue
+		var expected := ShipText.sliding_label(game.layout, spec)
+		for face_id: StringName in spec.face_ids():
+			if not scene.labels.has(face_id): continue
+			var pair: ShipTextCache.Pair = scene.labels[face_id].pair
+			assert_true(pair.native == expected.native and pair.perceived_es == expected.perceived_es, "production plates retain all location fields and room name")
+			assert_true(pair.style == &"door", "location labels use the readable multi-line raster")
 	assert_int_equal(scene.text_cache.raster_viewport_count(), 0, "pure scene tests do not await GPU")
 	assert_true(scene.labels[&"D14-C-001-H-FORE/FORE"].pair.native == "lometa [16]\nshelani paki [52]", "corridor face points to section forty-two")
 	assert_true(scene.labels[&"D14-C-001-H-FORE/AFT"].pair.native == "lometa [16]\nshelani paki [51]", "connector face points back to forty-one")

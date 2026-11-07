@@ -157,7 +157,7 @@ func _sync_sliding_labels() -> void:
 			var face := _game.layout.face(door.face_ids()[side])
 			if not _spaces.has(face.source_space()): continue
 			var local := SlidingDoorParts.label_frame(door, side)
-			_add_label(face.id(), door.deck_number(), face.source_space(), _world_frame(leaf) * local, SlidingDoorParts.LABEL_SIZE, ShipText.hatch_label(door.deck_number(), face.destination_section()), leaf, local)
+			_add_label(face.id(), door.deck_number(), face.source_space(), _world_frame(leaf) * local, SlidingDoorParts.LABEL_SIZE, ShipText.sliding_label(_game.layout, door), leaf, local)
 
 func _add_lift_label(spec: ShipLayout.ConnectorSpec, leaf: Node3D) -> void:
 	var lift := _game.layout.lift(spec.lift_id())

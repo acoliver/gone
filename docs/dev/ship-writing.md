@@ -112,6 +112,38 @@ The cache contains no perception state. All labels and the console share
 `Game.writing_memory`, so a completed hatch reading establishes later timing
 for the console too.
 
+## Sliding-door locations
+
+Every ordinary sliding leaf carries `ShipText.sliding_label(layout, door)` on
+both faces. Its three location lines are level, section and bay. Named rooms
+add a fourth line. For the power door, native source is `lometa [16]`,
+`shelani paki [51]`, `pama [7]`, then `te mu nawa lina`; perception resolves
+these to `NIVEL 14`, `SECCIÓN 41`, `COMPARTIMENTO 7`, then `ENERGÍA SECUNDARIA`.
+The side door at X=21 on the port wall has the same first two lines and
+`pama [5]` / `COMPARTIMENTO 5`, without a room name. Physical ink is Naleya,
+including boxed octal identifiers; Spanish quantities remain decimal.
+
+`ShipLayout.door_bay_number` derives a stable slot from the section bounds and
+its existing fixture stations. Divide the longitudinal section span by the
+number of emergency fixture stations (24 / 4 = 6 m in this layout). The
+zero-based station containing the door center supplies two bay slots: port
+is `2 * station + 1`, starboard is `2 * station + 2`. Numbering restarts in
+each section. Empty slots remain unused, so removing a door or changing record
+order cannot renumber its neighbors. Section 41 has bays 1, 2, 3, 5, 6 and 7;
+its absent bay 4 is not reassigned. The power room occupies the fourth port
+station and therefore bay 7. Both faces identify the same bay.
+
+The existing lexicon supplies `lometa` (104, deck/floor level), `pama` (103,
+room/bay), and the established `shelani paki` navigation compound. There are no
+new roots. There is no separate compartment term; `pama` supplies that meaning
+on numbered doors. The short Spanish room name uses the same native phrase as
+the console heading, with its system meaning understood from the doorway.
+
+Sliding signs use 1024 by 768 rasters on 0.80 by 0.60 m plates, centered at
+1.75 m. Three or four equally spaced lines retain the same ink scale. The
+plate clears the recessed pull by 190 mm and stays inside the riveted border.
+Hatch and lift text, dimensions and reading timings remain unchanged.
+
 ## Adding a string
 
 Add a semantic id and both authored strings to `ShipText.MESSAGES`. Validate

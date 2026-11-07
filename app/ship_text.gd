@@ -7,6 +7,9 @@ const MESSAGES: Dictionary = {
 	"navigation.section": {"native": "shelani paki", "perceived_es": "SECCIÓN"},
 	"navigation.lift": {"native": "kotewa", "perceived_es": "ASCENSOR"},
 	"navigation.hatch": {"native": "pana", "perceived_es": "ESCOTILLA"},
+	"navigation.level": {"native": "lometa", "perceived_es": "NIVEL"},
+	"navigation.bay": {"native": "pama", "perceived_es": "COMPARTIMENTO"},
+	"secondary_power.room": {"native": "te mu nawa lina", "perceived_es": "ENERGÍA SECUNDARIA"},
 	"secondary_power.heading": {
 		"native": "te mu nawa lina",
 		"perceived_es": "SISTEMA DE ENERGÍA SECUNDARIO",
@@ -39,6 +42,22 @@ static func hatch_label(deck: int, section: int) -> LabelText:
 	var result := deck_label(deck)
 	var term := message("navigation.section")
 	return LabelText.new(result.native + "\n%s [%s]" % [term.native, Writing.octal(section)], result.perceived_es + "\n%s %d" % [term.perceived_es, section])
+
+static func sliding_label(layout: ShipLayout, door: ShipLayout.DoorSpec) -> LabelText:
+	var section := layout.face(door.face_ids()[0]).destination_section()
+	var bay := layout.door_bay_number(door.id())
+	var native: PackedStringArray = []
+	var perceived: PackedStringArray = []
+	var terms := ["navigation.level", "navigation.section", "navigation.bay"]
+	var values := [door.deck_number(), section, bay]
+	for index: int in range(terms.size()):
+		var term := message(terms[index])
+		native.append("%s [%s]" % [term.native, Writing.octal(values[index])])
+		perceived.append("%s %d" % [term.perceived_es, values[index]])
+	if door.kind() == ShipLayout.DoorKind.POWER:
+		native.append(message("secondary_power.room").native)
+		perceived.append(message("secondary_power.room").perceived_es)
+	return LabelText.new("\n".join(native), "\n".join(perceived))
 
 static var VALID: bool = _validate()
 

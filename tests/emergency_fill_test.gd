@@ -89,7 +89,11 @@ func test_real_scene_fills_only_reach_their_own_room_layers() -> void:
 				var meshes := surfaces[target].find_children("*", "GeometryInstance3D", true, false)
 				assert_true(not meshes.is_empty(), "real room geometry is tested")
 				for mesh: GeometryInstance3D in meshes:
-					assert_true(((mesh.layers & fill.light_cull_mask) != 0) == (source == target), "fill lights its own room and cannot light either other room: %s" % mesh.name)
+					# The power doorway's shared steel borders the hallway and room.
+					var portal := mesh.has_meta(&"surface_frame") and String(mesh.get_meta(&"surface_frame").key).begins_with(String(ShipLayout.POWER_DOOR_ID) + "/")
+					if portal: assert_int_equal(mesh.layers, 1 | Lighting.HALL_FILL_MASK | Lighting.POWER_FILL_MASK, "only the shared power doorway receives both adjacent fills")
+					var receives := (source in [1, 2]) if portal else source == target
+					assert_true(((mesh.layers & fill.light_cull_mask) != 0) == receives, "fill stays in its room except shared doorway steel: %s" % mesh.name)
 	var hatch := scene.hatch.view
 	for side: String in ["ForeSteel", "AftSteel"]:
 		var mesh: GeometryInstance3D = hatch.get_node("Frame/" + side)

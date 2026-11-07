@@ -9,8 +9,8 @@ const FRAME_PROUD := 0.012
 const POCKET_DEPTH := 0.08
 const POCKET_CLEARANCE := 0.02
 const PULL_DEPTH := 0.008
-const LABEL_SIZE := Vector2(0.56, 0.24)
-const LABEL_HEIGHT := 1.82
+const LABEL_SIZE := Vector2(0.80, 0.60)
+const LABEL_HEIGHT := 1.75
 
 static func applies(door: ShipLayout.DoorSpec) -> bool:
 	return door.kind() in [ShipLayout.DoorKind.POWER, ShipLayout.DoorKind.SIDE]

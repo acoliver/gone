@@ -2,6 +2,56 @@ extends SimTestCase
 
 const QUERY := preload("res://tests/hatch_render_faces.gd")
 
+func test_power_door_receives_the_same_hall_finish_and_fill_as_side_doors() -> void:
+	var game := Game.new(91)
+	var room := PowerRoom.build(game)
+	var hall := Hallway.build(game)
+	var side: MeshInstance3D = hall.side_leaves[&"D14-S-041-SIDE-015-PORT"]
+	assert_true(room._door_leaf.material_override == side.material_override, "one shared rusted leaf finish")
+	assert_true(room._door_leaf.mesh == side.mesh, "same leaf, border, pull and rivets")
+	assert_true((room._door_leaf.layers & Lighting.HALL_FILL_MASK) == (side.layers & Lighting.HALL_FILL_MASK), "hall-facing power steel must receive hallway fill, not only room fill")
+	var bound: Array[GeometryInstance3D] = []
+	DoorView._collect_bound(room, bound)
+	var portal_parts := 0
+	for piece: GeometryInstance3D in bound:
+		if String(piece.get_meta(&"surface_frame").key).begins_with(String(ShipLayout.POWER_DOOR_ID) + "/"):
+			portal_parts += 1
+			assert_true(piece.material_override == side.material_override, "power trim, track and leaf share the side-door finish")
+			assert_int_equal(piece.layers, 1 | Lighting.HALL_FILL_MASK | Lighting.POWER_FILL_MASK, "power trim and track receive both adjacent fills")
+	assert_int_equal(portal_parts, 9, "leaf, six trim pieces, threshold and track")
+	room.free()
+	hall.free()
+
+func test_every_sliding_label_has_a_layout_location_and_power_room_name() -> void:
+	var layout := ShipLayout.authored().layout
+	var catalog: GDScript = load("res://app/ship_text.gd")
+	assert_true(catalog.has_method("sliding_label"), "catalog needs full sliding-door location labels")
+	assert_true(layout.has_method("door_bay_number"), "layout owns station-derived bay numbering")
+	if not catalog.has_method("sliding_label") or not layout.has_method("door_bay_number"): return
+	var seen := {}
+	for id: StringName in _ids(layout):
+		var spec := layout.door(id)
+		var section := layout.face(spec.face_ids()[0]).destination_section()
+		var bay: int = layout.call("door_bay_number", id)
+		var key := Vector2i(section, bay)
+		assert_false(seen.has(key), "each sliding door has a unique bay within its section")
+		seen[key] = true
+		var text: ShipText.LabelText = catalog.call("sliding_label", layout, spec)
+		assert_true(text.native.begins_with("lometa [16]\nshelani paki [%s]\npama [%s]" % [Naleya.octal(section), Naleya.octal(bay)]), "native location uses existing terms and octal identifiers")
+		assert_true(text.perceived_es.begins_with("NIVEL 14\nSECCIÓN %d\nCOMPARTIMENTO %d" % [section, bay]), "all three location quantities")
+		if id == ShipLayout.POWER_DOOR_ID:
+			assert_true(text.native.ends_with("\nte mu nawa lina"), "existing secondary-power name")
+			assert_true(text.perceived_es.ends_with("\nENERGÍA SECUNDARIA"), "short room name")
+		var canvas := ShipTextCanvas.new()
+		canvas.set_lines(text.native, &"door")
+		for quad: PackedVector2Array in canvas.stroke_quads:
+			for pixel: Vector2 in quad:
+				assert_float_in_range(pixel.x, 0, canvas.texture_size.x, "readable label width")
+				assert_float_in_range(pixel.y, 0, canvas.texture_size.y, "all label lines fit")
+		canvas.free()
+	assert_int_equal(layout.call("door_bay_number", ShipLayout.POWER_DOOR_ID), 7, "fourth port station retains bay seven")
+	assert_int_equal(layout.call("door_bay_number", &"D14-S-041-SIDE-015-PORT"), 5, "third port station is bay five")
+
 func _ids(layout: ShipLayout) -> Array[StringName]:
 	var ids: Array[StringName] = [ShipLayout.POWER_DOOR_ID]
 	for number: int in [40, 41, 42]: ids.append_array(layout.section(ShipLayout.section_id(14, number)).side_door_ids())
@@ -80,6 +130,12 @@ func test_frame_track_label_and_pull_are_light_and_separate() -> void:
 		var pull: Rect2 = recipe.pull_rect(spec)
 		var label: Rect2 = recipe.label_rect()
 		assert_true(label.position.y - pull.end.y >= 0.03, "level-gaze glyph plate clears pull by at least 30 mm")
+		assert_true(label.position.x > -0.34 and label.end.x < 0.55 and label.end.y < spec.aperture().y - 0.11, "all lines stay inside the raised border")
+		for side: int in range(2):
+			var leaf_pose: Transform3D = recipe.leaf_solid(spec).transform
+			var frame: Transform3D = leaf_pose * recipe.label_frame(spec, side)
+			var eye: Vector3 = spec.frame() * Vector3(0, 1.605, -1.25 if side == 0 else ShipLayout.WALL + 1.25)
+			assert_true(DisplayPerception.attends(eye, -frame.basis.z, frame.origin, frame.basis.x * recipe.LABEL_SIZE.x / 2, frame.basis.y * recipe.LABEL_SIZE.y / 2, frame.basis.z), "standing level gaze reaches the complete label on either face")
 		for solid: ShipGeometry.SolidSpec in recipe.fixed_solids(spec):
 			assert_true(ShipGeometry.collision_boxes(solid).is_empty(), "trim/flush track do not add colliders")
 			var bounds := spec.frame().affine_inverse() * solid.transform * AABB(-solid.size / 2, solid.size)

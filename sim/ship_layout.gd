@@ -950,6 +950,19 @@ static func _add_door(specs: Array[Spec], id: StringName, deck: int, kind: int, 
 		interaction.origin += Vector3(0, 1.2, 0)
 		specs.append(FaceSpec.new(faces[index], deck, id, spaces[index], destinations[index], local, interaction))
 
+func door_bay_number(id: StringName) -> int:
+	var spec := door(id)
+	assert(spec.kind() in [DoorKind.POWER, DoorKind.SIDE], "bay numbers identify ordinary side openings")
+	var section_spec := section(section_id(spec.deck_number(), face(spec.face_ids()[0]).destination_section()))
+	var bounds := section_spec.bounds()
+	var stations: Array[float] = []
+	for fixture: Transform3D in section_spec.emergency_fixture_frames():
+		if not stations.has(fixture.origin.x): stations.append(fixture.origin.x)
+	var pitch := bounds.size.x / stations.size()
+	var station := floori((spec.frame().origin.x - bounds.position.x) / pitch)
+	var starboard := int(spec.frame().origin.z > bounds.get_center().z)
+	return station * 2 + starboard + 1
+
 static func authored_hall_switch_frame() -> Transform3D:
 	return Transform3D(Basis(Vector3.UP, PI), Vector3(16.2, 1.25, 1.45))
 
