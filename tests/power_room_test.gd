@@ -127,8 +127,8 @@ func test_collider_sets_extend_the_hallways_both_doors() -> void:
 	var shut := PowerRoom.scene_collider_set(registry, false, false)
 	var hall_open := PowerRoom.scene_collider_set(registry, true, false)
 	var both_open := PowerRoom.scene_collider_set(registry, true, true)
-	# Four wall-pocket corner skins on the bay hatch and six D14 hatches.
-	assert_int_equal(shut.size(), 1013, "frame reservations and stops plus twenty-eight wall-pocket corner skins")
+	# Removing drawn fillers retains their existing collision reservations.
+	assert_int_equal(shut.size(), 1013, "unchanged wall, frame and stop collision reservations")
 	assert_int_equal(hall_open.size(), 1012, "opening the stasis doorway replaces its block and swing reservation with the parked leaf")
 	assert_int_equal(both_open.size(), 1011, "opening the power door drops its leaf")
 	var game := _awake_game()

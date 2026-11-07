@@ -19,13 +19,15 @@ static func box_mesh(size: Vector3) -> BoxMesh:
 	return _boxes[size]
 
 static func solid_mesh(solid: ShipGeometry.SolidSpec) -> Mesh:
+	if solid.hatch_profile != null and not solid.section.is_empty(): return _wall_mesh(solid)
 	if not solid.section.is_empty():
 		var tool := SurfaceTool.new()
 		tool.begin(Mesh.PRIMITIVE_TRIANGLES)
 		var polygon := solid.section.duplicate()
 		if Geometry2D.is_polygon_clockwise(polygon): polygon.reverse()
 		var half := solid.size.z / 2
-		# Wall-pocket corners have a concave arc; a fan would fill across it.
+		# Concave opening edges need polygon triangulation, not a fan.
+		tool.set_smooth_group(-1)
 		var triangles := Geometry2D.triangulate_polygon(polygon)
 		for index: int in range(0, triangles.size(), 3):
 			var a := polygon[triangles[index]]
@@ -67,6 +69,33 @@ static func cylinder(radius: float, height: float) -> CylinderMesh:
 		mesh.height = height
 		_cylinders[key] = mesh
 	return _cylinders[key]
+
+static func _wall_mesh(solid: ShipGeometry.SolidSpec) -> Mesh:
+	var tool := SurfaceTool.new()
+	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var depth := -ShipGeometry.HATCH_RING_REAR
+	var face := ShipGeometry.SolidSpec.new(Vector3.ZERO, Vector3(solid.size.x, solid.size.y, depth))
+	var into := signf(solid.hatch_profile.hinge_frame().origin.z - ShipLayout.WALL / 2)
+	for side: int in [-1, 1]:
+		face.section = solid.wall_seat_section if side * into > 0 else solid.section
+		_append(tool, solid_mesh(face), Transform3D(Basis(), Vector3(0, 0, side * (ShipLayout.WALL + depth) / 2)))
+	# Both wall mouths follow the ring. The hidden rectangular cavity between
+	# them still clears the moving seals and retains its sloping lintel.
+	var arrays := box_mesh(solid.size).surface_get_arrays(0)
+	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+	for index: int in range(vertices.size()): vertices[index] = ShipGeometry.hatch_wall_vertex(solid, vertices[index])
+	for triangle: int in range(0, indices.size(), 3):
+		var a := vertices[indices[triangle]]
+		var b := vertices[indices[triangle + 1]]
+		var c := vertices[indices[triangle + 2]]
+		var normal := (c - a).cross(b - a).normalized()
+		if absf(normal.z) > 0.5: continue
+		for vertex: Vector3 in [a, b, c]:
+			tool.set_normal(normal)
+			tool.add_vertex(vertex)
+	tool.index()
+	return tool.commit()
 
 static func flat_grey(shade: float) -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()

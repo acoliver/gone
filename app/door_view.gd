@@ -57,7 +57,7 @@ static func build(spec: ShipLayout.DoorSpec, fore_mask: int = 1, aft_mask: int =
 
 static func collar_surface(solid: ShipGeometry.SolidSpec, spec: ShipLayout.DoorSpec, fore_mask: int, aft_mask: int, material: Material = null, surface_frame: Surfaces.SurfaceFrame = null) -> Node3D:
 	var group := Node3D.new()
-	var arrays := (HatchModel.box_mesh(solid.size) if solid.section.is_empty() else HatchModel.solid_mesh(solid)).surface_get_arrays(0)
+	var arrays := HatchModel.solid_mesh(solid).surface_get_arrays(0)
 	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
 	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
 	var faces: Array[SurfaceTool] = [SurfaceTool.new(), SurfaceTool.new()]
@@ -66,8 +66,8 @@ static func collar_surface(solid: ShipGeometry.SolidSpec, spec: ShipLayout.DoorS
 	# The sleeve between the wall and setback leaf is in the approach room.
 	# Only its far end cap faces the other room, not half of every side wall.
 	var approach := 0 if spec.hinge_frame().origin.z > ShipLayout.WALL / 2 else 1
-	for index: int in range(vertices.size()):
-		vertices[index] = ShipGeometry.hatch_wall_vertex(solid, vertices[index]) if solid.hatch_profile != null else ShipGeometry.hatch_frame_vertex(spec, solid, vertices[index])
+	if solid.hatch_profile == null:
+		for index: int in range(vertices.size()): vertices[index] = ShipGeometry.hatch_frame_vertex(spec, solid, vertices[index])
 	for triangle: int in range(0, indices.size(), 3):
 		var a := vertices[indices[triangle]]
 		var b := vertices[indices[triangle + 1]]

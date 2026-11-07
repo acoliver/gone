@@ -38,6 +38,15 @@ func run() -> void:
 		if OS.has_environment("GONE_SEAL_NEGATIVE_CONTROL"):
 			preload("res://tests/hatch_mesh_ranges.gd").remove_seals(view)
 		scene.add_child(view)
+		var walls := Node3D.new()
+		walls.transform = spec.frame()
+		scene.add_child(walls)
+		var solids := ShipGeometry.doorway_wall_solids(layout) if id == ShipLayout.BAY_DOOR_ID else ShipGeometry.hatch_wall_solids(spec)
+		for solid: ShipGeometry.SolidSpec in solids: walls.add_child(DoorView.split_surface(solid, spec.frame(), 1, 1))
+		# The expanded corner check reaches the floor line. Include the floor
+		# at its production datum so oblique rays cannot pass below the room.
+		var floor_piece := HatchModel.mesh_piece(HatchModel.box_mesh(Vector3(8, ShipLayout.WALL, 8)), spec.frame() * Transform3D(Basis(), Vector3(0, -ShipLayout.WALL / 2, 0)), 1, HatchModel.flat_grey(0.2))
+		scene.add_child(floor_piece)
 		var inverse := spec.frame().affine_inverse()
 		var aperture := spec.aperture()
 		for side: int in [-1, 1]:
@@ -46,12 +55,16 @@ func run() -> void:
 				camera.position = spec.frame() * Vector3(eye.x, eye.y, ShipLayout.WALL / 2 + side * 2.0)
 				camera.look_at(spec.frame() * Vector3(0, aperture.y / 2, ShipLayout.WALL / 2))
 				view.visible = false
+				walls.visible = false
+				floor_piece.visible = false
 				await process_frame
 				await RenderingServer.frame_post_draw
 				var control := root.get_texture().get_image()
 				var control_color := control.get_pixelv(camera.unproject_position(spec.frame() * Vector3(0, aperture.y / 2, ShipLayout.WALL / 2)))
 				assert(control_color.g > 0.9 and control_color.r < 0.1 and control_color.b < 0.1, "uncovered aperture must see the green backdrop: %s" % control_color)
 				view.visible = true
+				walls.visible = true
+				floor_piece.visible = true
 				await process_frame
 				await RenderingServer.frame_post_draw
 				var image := root.get_texture().get_image()
@@ -65,7 +78,9 @@ func run() -> void:
 						var direction := inverse.basis * camera.project_ray_normal(pixel)
 						var distance := (ShipLayout.WALL / 2 - origin.z) / direction.z
 						var hit := origin + direction * distance
-						if absf(hit.x) >= aperture.x / 2 or hit.y <= ShipGeometry.SILL_HEIGHT or hit.y >= aperture.y: continue
+						# Include the whole former square pocket and the outer crown,
+						# so rounded wall corners cannot escape the green check.
+						if absf(hit.x) >= aperture.x / 2 + ShipGeometry.HATCH_RING_WIDTH or hit.y <= 0 or hit.y >= aperture.y + ShipGeometry.HATCH_RING_WIDTH: continue
 						covered += 1
 						var color := image.get_pixel(x, y)
 						if color.g > 0.9 and color.r < 0.1 and color.b < 0.1: green_pixels += 1
@@ -80,5 +95,7 @@ func run() -> void:
 					DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(out))
 					if hatches <= 3: image.save_png(out + "%s-%d-%d.png" % [id, side, EYES.find(eye)])
 		view.free()
+		walls.free()
+		floor_piece.free()
 	print("RENDER_SEAL COMPLETE hatches=%d faces=%d checks=%d samples=%d green=%d" % [hatches, hatches * 2, checks, samples, total_green])
 	quit(1 if total_green > 0 else 0)

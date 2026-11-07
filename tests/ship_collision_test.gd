@@ -154,7 +154,7 @@ func test_opening_manifest_has_exact_owners_order_and_door_differentials() -> vo
 		expected.append_array(_fixed_detail_ids("D14-BAY-DOOR"))
 		expected.append(&"D14-BAY-DOOR/SWING" if flags.x == 0 else &"D14-BAY-DOOR/PARKED")
 		for owner: String in ["D14-S-041/SHELL", "D14-S-041/SIDE-LEAF", "D14-POWER/SHELL", "D14-POWER/CONSOLE"]:
-			var count: int = {"D14-S-041/SHELL": 12, "D14-S-041/SIDE-LEAF": 5, "D14-POWER/SHELL": 5, "D14-POWER/CONSOLE": 6}[owner]
+			var count: int = {"D14-S-041/SHELL": 8, "D14-S-041/SIDE-LEAF": 5, "D14-POWER/SHELL": 5, "D14-POWER/CONSOLE": 6}[owner]
 			for index: int in range(count):
 				expected.append(StringName("%s/%03d" % [owner, index]))
 		expected.append(&"D14-POWER/GENERATOR")
@@ -249,7 +249,7 @@ func _extension_ids() -> Array[StringName]:
 			ids.append(StringName("%s-LIFT/%s" % [connector, surface]))
 	var hatches: Array[String] = ["D14-C-000-H-AFT", "D14-C-000-H-FORE", "D14-C-001-H-AFT", "D14-C-001-H-FORE", "D14-C-002-H-FORE", "D14-C-M001-H-AFT"]
 	for hatch: String in hatches:
-		for surface: String in ["WALL/000", "WALL/001", "WALL/002", "WALL/POCKET/000", "WALL/POCKET/001", "WALL/POCKET/002", "WALL/POCKET/003", "FRAME/LEFT", "FRAME/RIGHT", "FRAME/TOP", "COAMING", "FRAME/STOP-LEFT", "FRAME/STOP-RIGHT", "FRAME/STOP-TOP", "FRAME/STOP-BOTTOM"]:
+		for surface: String in ["WALL/000", "WALL/001", "WALL/002", "FRAME/LEFT", "FRAME/RIGHT", "FRAME/TOP", "COAMING", "FRAME/STOP-LEFT", "FRAME/STOP-RIGHT", "FRAME/STOP-TOP", "FRAME/STOP-BOTTOM"]:
 			ids.append(StringName("%s/%s" % [hatch, surface]))
 		ids.append_array(_surround_ids(hatch, "FORE" if hatch.ends_with("FORE") else "AFT"))
 		ids.append_array(_fixed_detail_ids(hatch))

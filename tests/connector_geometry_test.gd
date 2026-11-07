@@ -134,7 +134,7 @@ func test_all_hatch_bulkheads_share_plated_wall_material_and_mapping() -> void:
 			assert_true(piece.material_override == RoomGeometry.wall_material(), "hatch bulkhead shares exact plated wall material resource")
 			assert_true(piece.has_meta(&"surface_frame"), "hatch bulkhead uses explicit surface-local mapping")
 			assert_true(piece.material_override.get_shader_parameter(&"panel_pitch") == Surfaces.PANEL_PITCH, "same wall panel density")
-	assert_int_equal(count, 42, "three wall slabs and four pocket corner skins around each of six hatches")
+	assert_int_equal(count, 18, "three continuously profiled wall pieces around each of six hatches, without corner filler solids")
 	root.free()
 
 func test_connector_lights_reach_hatches_floor_ladder_and_lift_inside_falloff() -> void:
