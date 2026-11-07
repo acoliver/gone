@@ -108,7 +108,7 @@ arrive piecemeal as repairs land.
 
 | Source | What it fixes |
 | --- | --- |
-| `docs/design/biblia.md` | Story facts: the adrift damaged colonial military ship, more than a hundred years abandoned, quarters and astrometry as story locations, the irradiated armory, escape craft, generation separated from distribution. |
+| `docs/design/biblia.md` | Story facts: the adrift damaged colonial military ship, about a thousand years abandoned, quarters and astrometry as story locations, the irradiated armory, escape craft, generation separated from distribution. |
 | `docs/design/concept.md` | Setting and pillars: Battlestar Galactica tradition, industrial lived-in military ship, compartments as a graph of hatches and crawlways, the seven-pod opening. |
 | `docs/art/README.md` | Visual language: worn riveted plated ship; stasis pods as pale rounded hardware that reads newer than the hull around it. |
 | `sim/pods.gd`, `app/rod.gd`, `app/hallway.gd`, `app/power_room.gd` | The built playable slice: frozen coordinates, colliders, and interactables. |
@@ -119,7 +119,7 @@ arrive piecemeal as repairs land.
 ### Story and tone
 
 - The ship is a huge damaged colonial military vessel, adrift and abandoned
-  for more than a hundred years (`docs/design/biblia.md`, Parte I and
+  for about a thousand years (`docs/design/biblia.md`, Parte I and
   Parte V). The bible fixes neither exterior dimensions nor crew count.
 - Primary generation is separate from distribution; repairing buses,
   breakers, and controllers is its own problem
