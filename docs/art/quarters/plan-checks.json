@@ -29,7 +29,7 @@
             ],
             "reachable": true,
             "path_length_m": 3.1,
-            "minimum_corridor_width_m": 0.72
+            "widest_path_bottleneck_width_m": 1.379
           },
           {
             "id": "bed_left_side",
@@ -39,7 +39,7 @@
             ],
             "reachable": true,
             "path_length_m": 5.76,
-            "minimum_corridor_width_m": 0.64
+            "widest_path_bottleneck_width_m": 1.05
           },
           {
             "id": "bed_right_side",
@@ -49,7 +49,7 @@
             ],
             "reachable": true,
             "path_length_m": 5.76,
-            "minimum_corridor_width_m": 0.64
+            "widest_path_bottleneck_width_m": 1.253
           },
           {
             "id": "console",
@@ -59,7 +59,7 @@
             ],
             "reachable": true,
             "path_length_m": 3.86,
-            "minimum_corridor_width_m": 0.64
+            "widest_path_bottleneck_width_m": 0.786
           },
           {
             "id": "wardrobe_front",
@@ -69,7 +69,7 @@
             ],
             "reachable": true,
             "path_length_m": 5.96,
-            "minimum_corridor_width_m": 0.64
+            "widest_path_bottleneck_width_m": 1.253
           },
           {
             "id": "sofa_front",
@@ -79,7 +79,7 @@
             ],
             "reachable": true,
             "path_length_m": 5.22,
-            "minimum_corridor_width_m": 0.68
+            "widest_path_bottleneck_width_m": 1.05
           },
           {
             "id": "dining_table",
@@ -89,7 +89,7 @@
             ],
             "reachable": true,
             "path_length_m": 1.94,
-            "minimum_corridor_width_m": 0.72
+            "widest_path_bottleneck_width_m": 1.379
           },
           {
             "id": "storage_far_l",
@@ -99,7 +99,7 @@
             ],
             "reachable": true,
             "path_length_m": 7.3,
-            "minimum_corridor_width_m": 0.64
+            "widest_path_bottleneck_width_m": 1.05
           },
           {
             "id": "storage_far_r",
@@ -109,53 +109,53 @@
             ],
             "reachable": true,
             "path_length_m": 7.3,
-            "minimum_corridor_width_m": 0.64
+            "widest_path_bottleneck_width_m": 1.12
           }
         ],
-        "pinch_points": [
+        "bottleneck_points": [
           {
             "target": "bed_foot",
             "point": [
               4.01,
-              3.45
+              0.35
             ],
-            "width_m": 0.72,
+            "width_m": 1.379,
             "bounded_by": [
-              "bed",
-              "dining_chair_2"
+              "entrance_wall",
+              "dining_table"
             ]
           },
           {
             "target": "bed_left_side",
             "point": [
-              2.85,
-              3.69
+              1.11,
+              1.35
             ],
-            "width_m": 0.64,
+            "width_m": 1.05,
             "bounded_by": [
               "sofa",
-              "bed"
+              "storage_left_near"
             ]
           },
           {
             "target": "bed_right_side",
             "point": [
-              5.11,
-              4.81
+              4.97,
+              3.19
             ],
-            "width_m": 0.64,
+            "width_m": 1.253,
             "bounded_by": [
-              "bed",
-              "storage_right_far"
+              "dining_chair_2",
+              "bed"
             ]
           },
           {
             "target": "console",
             "point": [
-              6.15,
-              2.01
+              6.17,
+              2.35
             ],
-            "width_m": 0.64,
+            "width_m": 0.786,
             "bounded_by": [
               "dining_table",
               "desk_chair"
@@ -164,61 +164,61 @@
           {
             "target": "wardrobe_front",
             "point": [
-              4.79,
-              3.49
+              4.97,
+              3.19
             ],
-            "width_m": 0.64,
+            "width_m": 1.253,
             "bounded_by": [
-              "bed",
-              "dining_chair_2"
+              "dining_chair_2",
+              "bed"
             ]
           },
           {
             "target": "sofa_front",
             "point": [
-              1.05,
-              0.35
+              1.11,
+              1.35
             ],
-            "width_m": 0.68,
+            "width_m": 1.05,
             "bounded_by": [
-              "entrance_wall",
-              "sofa"
+              "sofa",
+              "storage_left_near"
             ]
           },
           {
             "target": "dining_table",
             "point": [
-              4.59,
-              1.71
+              4.01,
+              0.35
             ],
-            "width_m": 0.72,
+            "width_m": 1.379,
             "bounded_by": [
-              "dining_table",
-              "sofa"
+              "entrance_wall",
+              "dining_table"
             ]
           },
           {
             "target": "storage_far_l",
             "point": [
-              1.61,
-              4.01
+              1.11,
+              1.35
             ],
-            "width_m": 0.64,
+            "width_m": 1.05,
             "bounded_by": [
               "sofa",
-              "storage_far_l"
+              "storage_left_near"
             ]
           },
           {
             "target": "storage_far_r",
             "point": [
-              5.11,
-              4.95
+              6.21,
+              4.85
             ],
-            "width_m": 0.64,
+            "width_m": 1.12,
             "bounded_by": [
-              "bed",
-              "storage_far_r"
+              "storage_far_r",
+              "wardrobe"
             ]
           }
         ],
@@ -232,118 +232,22 @@
       "pass": false,
       "measured": [
         {
-          "target": "bed_foot",
-          "point": [
-            4.01,
-            3.45
-          ],
-          "width_m": 0.72,
-          "bounded_by": [
-            "bed",
-            "dining_chair_2"
-          ]
-        },
-        {
-          "target": "bed_left_side",
-          "point": [
-            2.85,
-            3.69
-          ],
-          "width_m": 0.64,
-          "bounded_by": [
-            "sofa",
-            "bed"
-          ]
-        },
-        {
-          "target": "bed_right_side",
-          "point": [
-            5.11,
-            4.81
-          ],
-          "width_m": 0.64,
-          "bounded_by": [
-            "bed",
-            "storage_right_far"
-          ]
-        },
-        {
           "target": "console",
           "point": [
-            6.15,
-            2.01
+            6.17,
+            2.35
           ],
-          "width_m": 0.64,
+          "width_m": 0.786,
           "bounded_by": [
             "dining_table",
             "desk_chair"
-          ]
-        },
-        {
-          "target": "wardrobe_front",
-          "point": [
-            4.79,
-            3.49
-          ],
-          "width_m": 0.64,
-          "bounded_by": [
-            "bed",
-            "dining_chair_2"
-          ]
-        },
-        {
-          "target": "sofa_front",
-          "point": [
-            1.05,
-            0.35
-          ],
-          "width_m": 0.68,
-          "bounded_by": [
-            "entrance_wall",
-            "sofa"
-          ]
-        },
-        {
-          "target": "dining_table",
-          "point": [
-            4.59,
-            1.71
-          ],
-          "width_m": 0.72,
-          "bounded_by": [
-            "dining_table",
-            "sofa"
-          ]
-        },
-        {
-          "target": "storage_far_l",
-          "point": [
-            1.61,
-            4.01
-          ],
-          "width_m": 0.64,
-          "bounded_by": [
-            "sofa",
-            "storage_far_l"
-          ]
-        },
-        {
-          "target": "storage_far_r",
-          "point": [
-            5.11,
-            4.95
-          ],
-          "width_m": 0.64,
-          "bounded_by": [
-            "bed",
-            "storage_far_r"
           ]
         }
       ],
       "threshold": {
         "minimum_width_m": 0.9
       },
-      "detail": "Minimum free-floor width sampled along each target's shortest path."
+      "detail": "Widest-path bottleneck width from the uninflated obstacle map, excluding the final 0.35 m at each target."
     },
     {
       "name": "no_entrance_storage",

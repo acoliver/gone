@@ -2,12 +2,12 @@
 """Render and validate a top-down quarters layout plan."""
 
 import argparse
+import heapq
 import json
 import math
 from collections import deque
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFont
 
 
 ZONE_COLORS = {
@@ -116,6 +116,68 @@ def distance_transform(free):
 
 
 
+def widest_path(free, clearance, start, target, target_point):
+    """Return the maximin path, ignoring the final 0.35 m at the target."""
+    nx, nz = len(free), len(free[0])
+    capacity = [[-1.0] * nz for _ in range(nx)]
+    previous = {}
+    start_x, start_z = (start[0] + 0.5) * RASTER_STEP, (start[1] + 0.5) * RASTER_STEP
+    start_capacity = (float("inf") if math.hypot(start_x - target_point[0], start_z - target_point[1]) <= 0.35
+                      else 2 * clearance[start[0]][start[1]])
+    capacity[start[0]][start[1]] = start_capacity
+    queue = [(-start_capacity, start)]
+    while queue:
+        negative, (x, z) = heapq.heappop(queue)
+        score = -negative
+        if score < capacity[x][z]:
+            continue
+        if (x, z) == target:
+            break
+        for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            xx, zz = x + dx, z + dz
+            if not (0 <= xx < nx and 0 <= zz < nz and free[xx][zz]):
+                continue
+            wx, wz = (xx + 0.5) * RASTER_STEP, (zz + 0.5) * RASTER_STEP
+            cell_capacity = (float("inf") if math.hypot(wx - target_point[0], wz - target_point[1]) <= 0.35
+                             else 2 * clearance[xx][zz])
+            candidate = min(score, cell_capacity)
+            if candidate > capacity[xx][zz]:
+                capacity[xx][zz] = candidate
+                previous[(xx, zz)] = (x, z)
+                heapq.heappush(queue, (-candidate, (xx, zz)))
+    if capacity[target[0]][target[1]] < 0:
+        return [], None
+    path = [target]
+    while path[-1] != start:
+        path.append(previous[path[-1]])
+    path.reverse()
+    measured = [(point, 2 * clearance[point[0]][point[1]]) for point in path
+                if math.hypot((point[0] + 0.5) * RASTER_STEP - target_point[0],
+                              (point[1] + 0.5) * RASTER_STEP - target_point[1]) > 0.35]
+    bottleneck = min(measured, key=lambda item: item[1]) if measured else (path[-1], None)
+    return path, bottleneck
+
+
+def self_test():
+    size = round(4 / RASTER_STEP)
+    free = [[True] * size for _ in range(size)]
+    for i in range(size):
+        free[0][i] = free[-1][i] = False
+        free[i][0] = free[i][-1] = False
+    for ix in range(round(0.5 / RASTER_STEP), round(3.5 / RASTER_STEP)):
+        free[ix][0] = True
+    for ix in range(round(1.5 / RASTER_STEP), round(2.5 / RASTER_STEP)):
+        for iz in range(round(1.5 / RASTER_STEP), round(2.5 / RASTER_STEP)):
+            free[ix][iz] = False
+    clearance = distance_transform(free)
+    _, bottleneck = widest_path(free, clearance, (size // 2, 5),
+                                (size // 2, round(3.5 / RASTER_STEP)), (2.0, 3.5))
+    width = bottleneck[1]
+    passed = abs(width - 1.5) <= 0.05
+    print(f"{'PASS' if passed else 'FAIL'} self-test: bottleneck_width_m={width:.3f}, expected=1.500±0.050")
+    return passed
+
+
 def reachability(layout):
     room = layout["room"]
     width, depth = room["width_x"], room["depth_z"]
@@ -183,7 +245,8 @@ def reachability(layout):
     free = [[not raw_blocked[ix][iz] for iz in range(nz)] for ix in range(nx)]
     clearance = distance_transform(free)
     target_results = []
-    pinch_points = []
+    widest_paths = []
+    bottleneck_points = []
     for target in layout["reach_targets"]:
         x, z = target["point"]
         ix, iz = min(nx - 1, int(x / RASTER_STEP)), min(nz - 1, int(z / RASTER_STEP))
@@ -197,13 +260,14 @@ def reachability(layout):
             if not candidates:
                 break
             path.append(min(candidates)[1])
-        minimum = min((2 * clearance[px][pz] for px, pz in path), default=None)
-        pinch = min(path, key=lambda point: clearance[point[0]][point[1]]) if path else None
+        widest, bottleneck = widest_path(free, clearance, start, (ix, iz), (x, z)) if ok else ([], None)
+        minimum = bottleneck[1] if bottleneck else None
         target_results.append({"id": target["id"], "point": target["point"], "reachable": ok,
                                "path_length_m": round(distances[ix][iz] * RASTER_STEP, 3) if ok else None,
-                               "minimum_corridor_width_m": round(minimum, 3) if minimum is not None else None})
-        if pinch:
-            px, pz = (pinch[0] + 0.5) * RASTER_STEP, (pinch[1] + 0.5) * RASTER_STEP
+                               "widest_path_bottleneck_width_m": round(minimum, 3) if minimum is not None else None})
+        if bottleneck:
+            (bx, bz), _ = bottleneck
+            px, pz = (bx + 0.5) * RASTER_STEP, (bz + 0.5) * RASTER_STEP
             nearby = []
             for prop in props:
                 x0, z0, x1, z1 = prop["box"]
@@ -221,9 +285,16 @@ def reachability(layout):
             nearest = min(nearby)
             opposing = [entry for entry in nearby if entry[3] != nearest[3] and nearest[1] * entry[1] + nearest[2] * entry[2] < -0.5]
             pair = [nearest[3], min(opposing)[3] if opposing else min((entry for entry in nearby if entry[3] != nearest[3]), default=nearest)[3]]
-            pinch_points.append({"target": target["id"], "point": [round(px, 3), round(pz, 3)],
-                                 "width_m": round(minimum, 3), "bounded_by": pair})
-    return reachable, {"targets": target_results, "pinch_points": pinch_points, "grid_m": RASTER_STEP}
+            bottleneck_points.append({"target": target["id"], "point": [round(px, 3), round(pz, 3)],
+                                      "width_m": round(minimum, 3), "bounded_by": pair})
+            sampled_path = widest[::10]
+            if sampled_path[-1] != widest[-1]:
+                sampled_path.append(widest[-1])
+            widest_paths.append({"target": target["id"], "points": [[round((a + 0.5) * RASTER_STEP, 3),
+                                                                         round((b + 0.5) * RASTER_STEP, 3)]
+                                                                        for a, b in sampled_path]})
+    return reachable, {"targets": target_results, "bottleneck_points": bottleneck_points,
+                       "widest_paths": widest_paths, "grid_m": RASTER_STEP}
 
 
 def checks(layout, reach_info):
@@ -248,16 +319,17 @@ def checks(layout, reach_info):
     door_blockers = [p["id"] for p in standing if overlaps(p["box"], [door["x0"], 0, door["x1"], 1.0])]
     targets_ok = all(t["reachable"] for t in reach_info["targets"])
     walkway_min = layout["walkway_min_m"]
-    narrow_walkways = [point for point in reach_info["pinch_points"] if point["width_m"] < walkway_min]
+    narrow_walkways = [point for point in reach_info["bottleneck_points"] if point["width_m"] < walkway_min]
     return [
         {"name": "footprints_inside_room", "pass": not outside, "measured": outside,
          "threshold": {"outside_tolerance_m": tolerance}, "detail": "Every footprint must remain within the interior bounds."},
         {"name": "floor_footprint_overlaps", "pass": not overlaps_found, "measured": overlaps_found,
          "threshold": "No intersecting floor-standing footprints except parent parts or vertically stacked props.", "detail": "Each reported pair has intersecting footprints and overlapping height ranges."},
-        {"name": "player_reachability", "pass": targets_ok, "measured": reach_info,
+        {"name": "player_reachability", "pass": targets_ok,
+         "measured": {key: value for key, value in reach_info.items() if key != "widest_paths"},
          "threshold": "All reach_targets reachable on a 0.02 m grid with capsule inflation.", "detail": "Flood fill starts at the door centre, z=0.35 m."},
         {"name": "walkway_widths", "pass": not narrow_walkways, "measured": narrow_walkways,
-         "threshold": {"minimum_width_m": walkway_min}, "detail": "Minimum free-floor width sampled along each target's shortest path."},
+         "threshold": {"minimum_width_m": walkway_min}, "detail": "Widest-path bottleneck width from the uninflated obstacle map, excluding the final 0.35 m at each target."},
         {"name": "no_entrance_storage", "pass": not storage, "measured": storage,
          "threshold": "Storage prop z0 >= 0.2 m.", "detail": "Storage is identified by its id or zone containing 'storage'."},
         {"name": "door_opening_clear", "pass": not door_blockers, "measured": door_blockers,
@@ -266,6 +338,7 @@ def checks(layout, reach_info):
 
 
 def render(layout, reachable, reach_info, output):
+    from PIL import Image, ImageDraw, ImageFont
     room, door = layout["room"], layout["door"]
     s, margin = PIXELS_PER_METRE, 180
     width, depth = room["width_x"], room["depth_z"]
@@ -354,8 +427,12 @@ def render(layout, reachable, reach_info, output):
             a1 = start + (end - start) * min(index + 1, steps) / steps
             draw.line((*pt(hx + r * math.cos(a0), hz + r * math.sin(a0)),
                        *pt(hx + r * math.cos(a1), hz + r * math.sin(a1))), fill=(157, 76, 61), width=3)
-    for pinch in reach_info["pinch_points"]:
-        px, pz = pt(*pinch["point"])
+    for route in reach_info["widest_paths"]:
+        points = [pt(*point) for point in route["points"]]
+        if len(points) > 1:
+            draw.line(points, fill=(44, 110, 194), width=5)
+    for bottleneck in reach_info["bottleneck_points"]:
+        px, pz = pt(*bottleneck["point"])
         draw.ellipse((px - 9, pz - 9, px + 9, pz + 9), fill=(215, 55, 45), outline=(255, 255, 255), width=3)
         draw.line((px - 13, pz, px + 13, pz), fill=(255, 255, 255), width=2)
         draw.line((px, pz - 13, px, pz + 13), fill=(255, 255, 255), width=2)
@@ -388,10 +465,15 @@ def render(layout, reachable, reach_info, output):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--layout", required=True)
-    parser.add_argument("--out", required=True)
-    parser.add_argument("--report", required=True)
+    parser.add_argument("--layout")
+    parser.add_argument("--out")
+    parser.add_argument("--report")
+    parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args()
+    if args.self_test:
+        return 0 if self_test() else 1
+    if not args.layout or not args.out or not args.report:
+        parser.error("--layout, --out, and --report are required unless --self-test is used")
     layout = json.loads(Path(args.layout).read_text())
     reachable, reach_info = reachability(layout)
     results = checks(layout, reach_info)
