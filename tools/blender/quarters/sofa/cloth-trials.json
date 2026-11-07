@@ -1,0 +1,1012 @@
+{
+  "cushion_trials": [
+    {
+      "settings": {
+        "name": "seat-a",
+        "pressure": 0.001,
+        "scale": 0.001,
+        "bending": 0.2,
+        "stiffness": 100,
+        "mass": 0.015,
+        "frames": 24,
+        "pin": false,
+        "quality": 12,
+        "shear_stiffness": 70.0,
+        "self_collision": true,
+        "collision_distance_m": 0.001,
+        "self_distance_m": 0.002
+      },
+      "measurements": {
+        "bounds_blender_m": [
+          [
+            -0.33809855580329895,
+            -0.36795252561569214,
+            -0.07693208009004593
+          ],
+          [
+            0.32974985241889954,
+            0.36164388060569763,
+            0.08630702644586563
+          ]
+        ],
+        "extents_m": [
+          0.6678484082221985,
+          0.7295964062213898,
+          0.16323910653591156
+        ],
+        "top_center_m": 0.04611659049987793,
+        "top_edge_20mm_m": [
+          0.035245418548583984,
+          0.03755772113800049,
+          0.029183030128479004,
+          0.01661050319671631
+        ],
+        "crown_m": 0.016467422246932983,
+        "side_bulges_m": [
+          0.046045660972595215,
+          0.02836132049560547,
+          null,
+          null
+        ],
+        "quads": 616,
+        "triangles": 1232
+      },
+      "change_and_result": "Low uniform pressure and pressure scale. Footprint depth exceeds the band and side rays miss the folded shell."
+    },
+    {
+      "settings": {
+        "name": "seat-b",
+        "pressure": 0.01,
+        "scale": 1.0,
+        "bending": 0.2,
+        "stiffness": 100,
+        "mass": 0.015,
+        "frames": 24,
+        "pin": false,
+        "quality": 12,
+        "shear_stiffness": 70.0,
+        "self_collision": true,
+        "collision_distance_m": 0.001,
+        "self_distance_m": 0.002
+      },
+      "measurements": {
+        "bounds_blender_m": [
+          [
+            -0.3307957947254181,
+            -0.35141584277153015,
+            -0.07510112226009369
+          ],
+          [
+            0.3295018672943115,
+            0.35623082518577576,
+            0.0848316177725792
+          ]
+        ],
+        "extents_m": [
+          0.6602976620197296,
+          0.7076466679573059,
+          0.15993274003267288
+        ],
+        "top_center_m": 0.070151686668396,
+        "top_edge_20mm_m": [
+          0.06162285804748535,
+          0.061019301414489746,
+          0.06290161609649658,
+          0.06115436553955078
+        ],
+        "crown_m": 0.00847715139389038,
+        "side_bulges_m": [
+          0.010727167129516602,
+          0.002416253089904785,
+          0.0085219144821167,
+          0.009138941764831543
+        ],
+        "quads": 616,
+        "triangles": 1232
+      },
+      "change_and_result": "Pressure scale 1 stabilizes the shell, but crown and one side bulge are too small."
+    },
+    {
+      "settings": {
+        "name": "seat-c",
+        "pressure": 0.02,
+        "scale": 1,
+        "mass": 0.005,
+        "bending": 0.1,
+        "stiffness": 100,
+        "frames": 20,
+        "pin": true,
+        "quality": 12,
+        "shear_stiffness": 70.0,
+        "self_collision": true,
+        "collision_distance_m": 0.001,
+        "self_distance_m": 0.002
+      },
+      "measurements": null,
+      "change_and_result": "Bottom anchors and reduced mass. Run ended at frame 19 without a completed saved result."
+    },
+    {
+      "settings": {
+        "name": "seat-d",
+        "pressure": 0.04,
+        "scale": 1.0,
+        "bending": 0.1,
+        "stiffness": 100,
+        "mass": 0.005,
+        "frames": 20,
+        "pin": true,
+        "quality": 12,
+        "shear_stiffness": 70.0,
+        "self_collision": true,
+        "collision_distance_m": 0.001,
+        "self_distance_m": 0.002
+      },
+      "measurements": {
+        "bounds_blender_m": [
+          [
+            -0.3356514275074005,
+            -0.3556186258792877,
+            -0.07500000298023224
+          ],
+          [
+            0.33558881282806396,
+            0.36234623193740845,
+            0.08661928027868271
+          ]
+        ],
+        "extents_m": [
+          0.6712402403354645,
+          0.7179648578166962,
+          0.16161928325891495
+        ],
+        "top_center_m": 0.06499695777893066,
+        "top_edge_20mm_m": [
+          0.03576231002807617,
+          0.035047292709350586,
+          0.038825273513793945,
+          0.028119802474975586
+        ],
+        "crown_m": 0.030558288097381592,
+        "side_bulges_m": [
+          0.051568031311035156,
+          0.054549336433410645,
+          0.039579153060913086,
+          0.13846123218536377
+        ],
+        "quads": 616,
+        "triangles": 1232
+      },
+      "change_and_result": "Pressure 0.04 with bottom anchors. Excess depth, crown and side folding."
+    },
+    {
+      "settings": {
+        "name": "seat-e",
+        "pressure": 0.2,
+        "scale": 0.1,
+        "bending": 0.5,
+        "stiffness": 200.0,
+        "mass": 0.001,
+        "frames": 20,
+        "pin": true,
+        "quality": 12,
+        "shear_stiffness": 140.0,
+        "self_collision": true,
+        "collision_distance_m": 0.001,
+        "self_distance_m": 0.002
+      },
+      "measurements": {
+        "bounds_blender_m": [
+          [
+            -0.3482707440853119,
+            -0.3501071631908417,
+            -0.07500000298023224
+          ],
+          [
+            0.3441981077194214,
+            0.34955307841300964,
+            0.07899569720029831
+          ]
+        ],
+        "extents_m": [
+          0.6924688518047333,
+          0.6996602416038513,
+          0.15399570018053055
+        ],
+        "top_center_m": 0.06954622268676758,
+        "top_edge_20mm_m": [
+          0.03967845439910889,
+          0.0386500358581543,
+          0.07016754150390625,
+          0.06889629364013672
+        ],
+        "crown_m": 0.01519814133644104,
+        "side_bulges_m": [
+          0.12301814556121826,
+          0.03469979763031006,
+          -0.004186749458312988,
+          -0.0034346580505371094
+        ],
+        "quads": 616,
+        "triangles": 1232
+      },
+      "change_and_result": "Stiffness 200, mass 0.001, pressure scale 0.1. Width and side bulges fail."
+    },
+    {
+      "settings": {
+        "name": "seat-f",
+        "pressure": 1.0,
+        "scale": 0.1,
+        "bending": 0.5,
+        "stiffness": 200.0,
+        "mass": 0.001,
+        "frames": 20,
+        "pin": true,
+        "quality": 12,
+        "shear_stiffness": 140.0,
+        "self_collision": true,
+        "collision_distance_m": 0.001,
+        "self_distance_m": 0.002
+      },
+      "measurements": {
+        "bounds_blender_m": [
+          [
+            -0.33172300457954407,
+            -0.3497880697250366,
+            -0.07500000298023224
+          ],
+          [
+            0.33109667897224426,
+            0.35105279088020325,
+            0.07984303683042526
+          ]
+        ],
+        "extents_m": [
+          0.6628196835517883,
+          0.7008408606052399,
+          0.1548430398106575
+        ],
+        "top_center_m": 0.07069575786590576,
+        "top_edge_20mm_m": [
+          0.06603813171386719,
+          0.0626528263092041,
+          0.06744170188903809,
+          0.06698763370513916
+        ],
+        "crown_m": 0.004915684461593628,
+        "side_bulges_m": [
+          0.004558682441711426,
+          0.006114602088928223,
+          -0.0023775100708007812,
+          0.00553131103515625
+        ],
+        "quads": 616,
+        "triangles": 1232
+      },
+      "change_and_result": "Uniform pressure 1 at scale 0.1. Crown is too shallow."
+    },
+    {
+      "settings": {
+        "name": "seat-g",
+        "pressure": 5,
+        "scale": 1,
+        "mass": 0.015,
+        "bending": 0.2,
+        "stiffness": 100,
+        "frames": 12,
+        "pin": false,
+        "quality": 12,
+        "shear_stiffness": 70.0,
+        "self_collision": true,
+        "collision_distance_m": 0.001,
+        "self_distance_m": 0.002
+      },
+      "measurements": null,
+      "change_and_result": "Uniform pressure 5 with the lower-stiffness shell. Run ended at frame 10 without a completed saved result."
+    },
+    {
+      "settings": {
+        "name": "seat-h",
+        "pressure": 10,
+        "scale": 1,
+        "mass": 0.015,
+        "bending": 0.2,
+        "stiffness": 100,
+        "frames": 12,
+        "pin": false,
+        "quality": 12,
+        "shear_stiffness": 70.0,
+        "self_collision": true,
+        "collision_distance_m": 0.001,
+        "self_distance_m": 0.002
+      },
+      "measurements": null,
+      "change_and_result": "Uniform pressure 10. Edge-measurement ray missed the distorted shell after frame 12."
+    },
+    {
+      "settings": {
+        "name": "seat-i",
+        "pressure": 0.25,
+        "scale": 1.0,
+        "bending": 0.2,
+        "stiffness": 100,
+        "mass": 0.015,
+        "frames": 20,
+        "pin": false,
+        "quality": 12,
+        "shear_stiffness": 70.0,
+        "self_collision": true,
+        "collision_distance_m": 0.001,
+        "self_distance_m": 0.002
+      },
+      "measurements": {
+        "bounds_blender_m": [
+          [
+            -0.3463347554206848,
+            -0.36696869134902954,
+            -0.0753394141793251
+          ],
+          [
+            0.34437552094459534,
+            0.3666013181209564,
+            0.09252528101205826
+          ]
+        ],
+        "extents_m": [
+          0.6907102763652802,
+          0.733570009469986,
+          0.16786469519138336
+        ],
+        "top_center_m": 0.08527970314025879,
+        "top_edge_20mm_m": [
+          0.04093337059020996,
+          0.03885376453399658,
+          0.040880441665649414,
+          0.039206504821777344
+        ],
+        "crown_m": 0.045311182737350464,
+        "side_bulges_m": [
+          0.16865158081054688,
+          0.08821821212768555,
+          0.181502103805542,
+          0.11276900768280029
+        ],
+        "quads": 616,
+        "triangles": 1232
+      },
+      "change_and_result": "Uniform pressure 0.25. Width, depth, crown and side bulges fail."
+    },
+    {
+      "settings": {
+        "name": "seat-j",
+        "pressure": 0.5,
+        "scale": 1.0,
+        "bending": 0.2,
+        "stiffness": 100,
+        "mass": 0.015,
+        "frames": 20,
+        "pin": false,
+        "quality": 12,
+        "shear_stiffness": 70.0,
+        "self_collision": true,
+        "collision_distance_m": 0.001,
+        "self_distance_m": 0.002
+      },
+      "measurements": {
+        "bounds_blender_m": [
+          [
+            -0.3431762158870697,
+            -0.3515896499156952,
+            -0.07491899281740189
+          ],
+          [
+            0.3443678319454193,
+            0.354565292596817,
+            0.10406077653169632
+          ]
+        ],
+        "extents_m": [
+          0.687544047832489,
+          0.7061549425125122,
+          0.1789797693490982
+        ],
+        "top_center_m": 0.09281337261199951,
+        "top_edge_20mm_m": [
+          0.015404701232910156,
+          0.039598941802978516,
+          0.0750046968460083,
+          0.07489347457885742
+        ],
+        "crown_m": 0.04158791899681091,
+        "side_bulges_m": [
+          0.16886770725250244,
+          0.1649169921875,
+          0.054422974586486816,
+          0.016037702560424805
+        ],
+        "quads": 616,
+        "triangles": 1232
+      },
+      "change_and_result": "Uniform pressure 0.5. Width, height, crown and side bulges fail."
+    },
+    {
+      "settings": {
+        "name": "seat-k",
+        "pressure": 1.0,
+        "scale": 1.0,
+        "bending": 5.0,
+        "stiffness": 500.0,
+        "mass": 0.015,
+        "frames": 12,
+        "pin": true,
+        "quality": 20,
+        "shear_stiffness": 350.0,
+        "self_collision": true,
+        "collision_distance_m": 0.001,
+        "self_distance_m": 0.002
+      },
+      "measurements": {
+        "bounds_blender_m": [
+          [
+            -0.3339139223098755,
+            -0.35301393270492554,
+            -0.07500000298023224
+          ],
+          [
+            0.3332683742046356,
+            0.3526098430156708,
+            0.09163650125265121
+          ]
+        ],
+        "extents_m": [
+          0.6671822965145111,
+          0.7056237757205963,
+          0.16663650423288345
+        ],
+        "top_center_m": 0.08942139148712158,
+        "top_edge_20mm_m": [
+          0.06922805309295654,
+          0.06902718544006348,
+          0.07100868225097656,
+          0.06979680061340332
+        ],
+        "crown_m": 0.019656211137771606,
+        "side_bulges_m": [
+          0.009945154190063477,
+          0.009727954864501953,
+          0.008263349533081055,
+          0.006132841110229492
+        ],
+        "quads": 616,
+        "triangles": 1232
+      },
+      "change_and_result": "Quality 20, stiffness 500/500/350 and bending 5. Selected; then fitted to nominal seat dimensions."
+    },
+    {
+      "settings": {
+        "name": "seat-l",
+        "pressure": 3.0,
+        "scale": 1.0,
+        "bending": 5.0,
+        "stiffness": 500.0,
+        "mass": 0.015,
+        "frames": 12,
+        "pin": true,
+        "quality": 20,
+        "shear_stiffness": 350.0,
+        "self_collision": true,
+        "collision_distance_m": 0.001,
+        "self_distance_m": 0.002
+      },
+      "measurements": {
+        "bounds_blender_m": [
+          [
+            -0.33594030141830444,
+            -0.3564649224281311,
+            -0.07500000298023224
+          ],
+          [
+            0.33450448513031006,
+            0.3571336269378662,
+            0.10499093681573868
+          ]
+        ],
+        "extents_m": [
+          0.6704447865486145,
+          0.7135985493659973,
+          0.17999093979597092
+        ],
+        "top_center_m": 0.10387015342712402,
+        "top_edge_20mm_m": [
+          0.0708763599395752,
+          0.07132208347320557,
+          0.06988000869750977,
+          0.06954097747802734
+        ],
+        "crown_m": 0.033465296030044556,
+        "side_bulges_m": [
+          0.041623711585998535,
+          0.03908097743988037,
+          0.07048821449279785,
+          0.07394289970397949
+        ],
+        "quads": 616,
+        "triangles": 1232
+      },
+      "change_and_result": "Pressure 3 with the stiff shell. Height, crown, depth and side bulges exceed their limits."
+    }
+  ],
+  "welt_trials": [
+    {
+      "seat_rings": 44,
+      "back_rings": 44,
+      "tube_diameter_m": 0.008,
+      "centerline_normal_offset_m": 0.004,
+      "seat_max_surface_gap_m": 4.2402651e-05,
+      "seat_max_penetration_m": 0.000555362754,
+      "back_max_surface_gap_m": 7.1336749e-05,
+      "back_max_penetration_m": 0.003231280387,
+      "result": "Back pipe chords cut into the compressed return."
+    },
+    {
+      "seat_rings": 44,
+      "back_rings": 76,
+      "centerline_normal_offset_m": 0.0044,
+      "back_max_surface_gap_m": 0.000569380141,
+      "back_max_penetration_m": 0.001339580703,
+      "result": "Denser vertical samples reduce the back pipe penetration; it remains 0.340 mm over the limit."
+    },
+    {
+      "seat_rings": 44,
+      "back_rings": 76,
+      "seat_centerline_normal_offset_m": 0.0044,
+      "back_centerline_normal_offset_m": 0.00478,
+      "back_max_surface_gap_m": 0.000950122784,
+      "back_max_penetration_m": 0.000969396433,
+      "result": "All six welts pass the 1 mm surface band and 8 mm diameter gate."
+    }
+  ],
+  "assembly": {
+    "seat_fit_dimensions_blender_m": [
+      0.66,
+      0.7,
+      0.15
+    ],
+    "seat_center_x_m": [
+      -0.67,
+      0,
+      0.67
+    ],
+    "seat_center_yz_m": [
+      -0.035,
+      0.465
+    ],
+    "back_fit_dimensions_game_xyz_m": [
+      0.66,
+      0.42,
+      0.2
+    ],
+    "back_lower_return_depth_m": 0.04,
+    "back_depth_transition_normalized_height": [
+      0.32,
+      0.64
+    ],
+    "decimate_ratios": {
+      "frame": 0.52,
+      "feet": 0.35,
+      "rivets": 0.32,
+      "back_bodies": 0.88
+    },
+    "reason": "Original cheeks overlapped the seats; original back pads occupied the rear seats. Interior fit surfaces were adjusted to produce nonintersecting cloth parts."
+  },
+  "throw_trials": [
+    {
+      "settings": {
+        "name": "throw-a",
+        "frames": 50,
+        "bending": 0.3,
+        "friction": 20
+      },
+      "sheet_m": [
+        1.3,
+        1.5
+      ],
+      "fold_radius_m": 0.008,
+      "quality": 18,
+      "stiffness": [
+        35,
+        35,
+        20
+      ],
+      "mass": 0.003,
+      "thickness_m": 0.006,
+      "self_distance_m": 0.008,
+      "collision_distance_m": 0.0035,
+      "bounds_blender_m": [
+        [
+          -1.0135250091552734,
+          -0.5322209596633911,
+          -0.6758331060409546
+        ],
+        [
+          1.8267567157745361,
+          0.7679855823516846,
+          2.0629196166992188
+        ]
+      ],
+      "triangles": 3096,
+      "last_five_frames_max_displacement_m": 0.2008230662111304,
+      "change_and_result": "Connected fold, vertical layer offset. Plies overlapped on the vertical hang and expanded outside the envelope.",
+      "derived_gates": {
+        "outward_extension_m": 0.726756715774536,
+        "outward_limit_m": 0.06,
+        "outward_pass": false,
+        "triangle_limit": 4000,
+        "triangles_pass": true
+      },
+      "initialization_defect": "Vertical offset is not a normal offset on the hanging section."
+    },
+    {
+      "settings": {
+        "name": "throw-b",
+        "frames": 60,
+        "bending": 0.3,
+        "friction": 20
+      },
+      "sheet_m": [
+        1.3,
+        1.5
+      ],
+      "fold_radius_m": 0.008,
+      "quality": 24,
+      "stiffness": [
+        35,
+        35,
+        20
+      ],
+      "mass": 0.15,
+      "thickness_m": 0.006,
+      "self_distance_m": 0.004,
+      "collision_distance_m": 0.0035,
+      "bounds_blender_m": [
+        [
+          0.04537606239318848,
+          -0.2666366398334503,
+          -0.20533454418182373
+        ],
+        [
+          1.3105196952819824,
+          0.5818248391151428,
+          1.3092527389526367
+        ]
+      ],
+      "triangles": 3096,
+      "last_five_frames_max_displacement_m": 0.09822676226088767,
+      "change_and_result": "Normal-directed layer offset, mass 0.15 and quality 24. Initial back-cushion collision caused displacement.",
+      "derived_gates": {
+        "outward_extension_m": 0.21051969528198233,
+        "outward_limit_m": 0.06,
+        "outward_pass": false,
+        "triangle_limit": 4000,
+        "triangles_pass": true
+      },
+      "initial_back_cushion_triangle_crossings": 200
+    },
+    {
+      "settings": {
+        "name": "throw-c",
+        "frames": 60,
+        "bending": 0.3,
+        "friction": 20
+      },
+      "sheet_m": [
+        1.3,
+        1.5
+      ],
+      "fold_radius_m": 0.008,
+      "quality": 24,
+      "stiffness": [
+        35,
+        35,
+        20
+      ],
+      "mass": 0.15,
+      "thickness_m": 0.006,
+      "self_distance_m": 0.004,
+      "collision_distance_m": 0.0035,
+      "bounds_blender_m": [
+        [
+          0.23568573594093323,
+          -0.5305678844451904,
+          0.3262113928794861
+        ],
+        [
+          1.206078290939331,
+          0.7178122401237488,
+          0.8924294114112854
+        ]
+      ],
+      "triangles": 3096,
+      "last_five_frames_max_displacement_m": 0.022761556880637242,
+      "change_and_result": "Moved the sheet forward; initial BVH checks found zero crossings. Coupled tight fold still failed bounds and settling.",
+      "derived_gates": {
+        "outward_extension_m": 0.10607829093933097,
+        "outward_limit_m": 0.06,
+        "outward_pass": false,
+        "triangle_limit": 4000,
+        "triangles_pass": true
+      },
+      "initial_triangle_crossings": {
+        "self": 0,
+        "frame": 0,
+        "right_seat": 0,
+        "center_seat": 0,
+        "back": 0
+      }
+    },
+    {
+      "settings": {
+        "name": "throw-d",
+        "frames": 120,
+        "bending": 0.005,
+        "friction": 40.0,
+        "pin_cap": true
+      },
+      "sheet_m": [
+        1.3,
+        1.5
+      ],
+      "fold_radius_m": 0.008,
+      "quality": 24,
+      "stiffness": [
+        35,
+        35,
+        20
+      ],
+      "mass": 0.15,
+      "thickness_m": 0.006,
+      "self_distance_m": 0.004,
+      "collision_distance_m": 0.0035,
+      "bounds_blender_m": [
+        [
+          0.21569788455963135,
+          -0.4855799973011017,
+          0.3478702902793884
+        ],
+        [
+          1.1654473543167114,
+          0.18953129649162292,
+          0.8470993638038635
+        ]
+      ],
+      "triangles": 3096,
+      "last_five_frames_max_displacement_m": 0.08488123681189555,
+      "change_and_result": "Bending 0.005, cap contact pinned, 120 frames. Outside extension 65.447 mm and furniture intersections remain.",
+      "derived_gates": {
+        "outward_extension_m": 0.06544735431671134,
+        "outward_limit_m": 0.06,
+        "outward_pass": false,
+        "triangle_limit": 4000,
+        "triangles_pass": true
+      }
+    },
+    {
+      "settings": {
+        "name": "throw-e",
+        "frames": 120,
+        "bending": 0.005,
+        "friction": 40.0,
+        "pin_cap": false
+      },
+      "sheet_m": [
+        1.3,
+        1.5
+      ],
+      "fold_radius_m": 0.008,
+      "quality": 24,
+      "stiffness": [
+        35,
+        35,
+        20
+      ],
+      "mass": 0.15,
+      "thickness_m": 0.006,
+      "self_distance_m": 0.004,
+      "collision_distance_m": 0.0035,
+      "bounds_blender_m": [
+        [
+          0.2105429470539093,
+          -0.5393875241279602,
+          0.32425856590270996
+        ],
+        [
+          1.2052679061889648,
+          0.20294390618801117,
+          0.8522301912307739
+        ]
+      ],
+      "triangles": 3096,
+      "last_five_frames_max_displacement_m": 0.15317565126394606,
+      "change_and_result": "Bending 0.005 without pins, 120 frames. Outside extension 105.268 mm and furniture intersections remain.",
+      "derived_gates": {
+        "outward_extension_m": 0.10526790618896475,
+        "outward_limit_m": 0.06,
+        "outward_pass": false,
+        "triangle_limit": 4000,
+        "triangles_pass": true
+      }
+    },
+    {
+      "settings": {
+        "name": "throw-f",
+        "frames": 180,
+        "bending": 0.05,
+        "friction": 20.0,
+        "pin_cap": true
+      },
+      "sheet_m": [
+        1.3,
+        1.5
+      ],
+      "fold_radius_m": 0.008,
+      "quality": 30,
+      "time_scale": 0.5,
+      "stiffness": [
+        100,
+        100,
+        50
+      ],
+      "mass": 0.03,
+      "thickness_m": 0.006,
+      "self_distance_m": 0.004,
+      "collision_distance_m": 0.004,
+      "self_impulse_clamp": 0.05,
+      "impulse_clamp": 0.1,
+      "bounds_blender_m": [
+        [
+          0.3057849407196045,
+          -0.5838819146156311,
+          0.4555976092815399
+        ],
+        [
+          1.4722939729690552,
+          0.1714007705450058,
+          0.8808902502059937
+        ]
+      ],
+      "triangles": 3096,
+      "last_five_frames_max_displacement_m": 0.1311756315483009,
+      "change_and_result": "Quality 30, half-speed integration and collision impulse clamps. Coupled connected fold still expands outside the envelope.",
+      "derived_gates": {
+        "outward_extension_m": 0.3722939729690551,
+        "outward_limit_m": 0.06,
+        "outward_pass": false,
+        "triangle_limit": 4000,
+        "triangles_pass": true
+      }
+    },
+    {
+      "settings": {
+        "name": "throw-g",
+        "frames": 180,
+        "bending": 0.1,
+        "friction": 20.0,
+        "pin_cap": true
+      },
+      "sheet_m": [
+        1.3,
+        1.5
+      ],
+      "fold_method": "two 0.65 x 1.5 m plies",
+      "quality": 30,
+      "time_scale": 0.5,
+      "stiffness": [
+        100,
+        100,
+        50
+      ],
+      "mass": 0.15,
+      "thickness_m": 0.006,
+      "self_distance_m": 0.004,
+      "collision_distance_m": 0.004,
+      "bounds_blender_m": [
+        [
+          0.22398528456687927,
+          -0.4779600203037262,
+          0.3612622916698456
+        ],
+        [
+          1.1382908821105957,
+          0.17490123212337494,
+          0.8335152864456177
+        ]
+      ],
+      "triangles": 2592,
+      "last_five_frames_max_displacement_m": 0.0004951851163944544,
+      "change_and_result": "Two separate 0.65 x 1.5 m plies with self-collision and a pinned cap contact strip. Selected. A 2 mm post-thickness lift clears cap-edge triangle crossings.",
+      "derived_gates": {
+        "outward_extension_m": 0.038290882110595614,
+        "outward_limit_m": 0.06,
+        "outward_pass": true,
+        "triangle_limit": 4000,
+        "triangles_pass": true
+      }
+    },
+    {
+      "settings": {
+        "name": "throw-h",
+        "source": "tmp/fit/sofa/cloth/assembly-v2.blend",
+        "frames": 100
+      },
+      "sheet_m": [
+        1.3,
+        1.5
+      ],
+      "method": "two 0.65 x 1.5 metre plies, lower then upper",
+      "quality": 24,
+      "mass": 0.15,
+      "stiffness": [
+        100,
+        100,
+        50
+      ],
+      "bending": 0.1,
+      "thickness_m": 0.006,
+      "collision_distance_m": 0.0045,
+      "self_distance_m": 0.004,
+      "cap_contact_pin": true,
+      "triangles": 3052,
+      "last_five_frames_displacement_m": {
+        "lower": 0.008087437926074668,
+        "upper": 0.24483574487824508
+      },
+      "bounds_blender_m": [
+        [
+          0.3301883935928345,
+          -0.4774128198623657,
+          0.36480486392974854
+        ],
+        [
+          1.2461671829223633,
+          0.19224458932876587,
+          0.8342732191085815
+        ]
+      ],
+      "change_and_result": "Sequential high-resolution plies with 60 percent final decimation. Lower ply settles closer, but upper ply expands outside the envelope.",
+      "derived_gates": {
+        "outward_extension_m": 0.1461671829223632,
+        "outward_limit_m": 0.06,
+        "outward_pass": false,
+        "triangle_limit": 4000,
+        "triangles_pass": true
+      }
+    }
+  ],
+  "throw_bake_clearance_trials": [
+    {
+      "lift_m": 0,
+      "sampled_max_frame_penetration_m": 5.1654404e-05,
+      "throw_frame_triangle_crossings": 26,
+      "pass": false
+    },
+    {
+      "lift_m": 0.0003,
+      "sampled_max_frame_penetration_m": 0,
+      "throw_frame_triangle_crossings": 20,
+      "pass": false
+    },
+    {
+      "lift_m": 0.002,
+      "sampled_max_frame_penetration_m": 0,
+      "throw_frame_triangle_crossings": 0,
+      "cap_gap_m": 0.001988143539,
+      "pass": true
+    }
+  ],
+  "selected": {
+    "cushion": "seat-k",
+    "throw": "throw-g",
+    "throw_bake_lift_m": 0.002,
+    "baked_source": "sofa-working.blend",
+    "export_checks": "verify.json"
+  }
+}
