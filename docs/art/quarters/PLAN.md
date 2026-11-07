@@ -1,6 +1,6 @@
 # Protagonist's quarters: plan (#95)
 
-Status: proposal, 2026-11-07. Nothing here is built yet.
+Status: in progress. Layout approved 2026-11-07; stage 1 (contact sheets) is next.
 
 ## What Andrew decided
 
@@ -105,7 +105,7 @@ That is about 25 distinct props, a few of them repeated.
 **Plan view.** Draw a top-down plan from concept B and place each prop with its footprint and its clearance to walk past.
 - Room: 8.0 m along the hall by 6.0 m deep, with the ship's 3.2 m clear height. Andrew found 5.6 × 5.0 m too small. The quarters are on a deck that isn't built yet, so the 6 m spacing between D14's side doors doesn't constrain them.
 - Entrance in the near wall. Bed centred on the far wall. Living area and screen on the left. Desk, console and wardrobe on the right. Table in the middle-left.
-- Andrew approves the plan view before any prop is generated.
+- Andrew approved the 8 × 6 m plan view on 2026-11-07 (`plan.png`, `layout.json` rev 3).
 
 **Camera.** Record the doorway camera that matches the concept, for later comparison captures.
 
