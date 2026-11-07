@@ -23,6 +23,23 @@ Status: proposal, 2026-11-07. Nothing here is built yet.
   - Every prop starts as a contact sheet of generated images. The local Hunyuan3D install turns it into a mesh, and the mesh is then fitted and adjusted, following the `concept-to-3d-asset` skill.
   - Build the unaged props first, then build tools that derive the aged versions from them.
 
+## Methods this reuses
+
+These have already been proven in this project, and the plan builds on them rather than inventing new ones.
+
+- **The round hatch** (branch-1, `issue-sliding-doors`, not yet on `main`):
+  - **Geometry:** generated images of the frame and leaf (`art-source/hatch/`) went through Hunyuan into parts, which were fitted and repaired (`tools/blender/hatch_fit.py`, `hatch_generated_*.py`).
+  - **Paint colour:** generated, shadowless images of the concept paint, packed into an atlas (`tools/prepare_hatch_paint.py`).
+  - **Masks:** baked per model in Blender: ambient occlusion, curvature, coverage and weather (`tools/blender/hatch_bake.py`).
+  - **Material:** the shared, approved `app/shaders/weathered_steel.gdshader` layers paint, bare steel and oxide over the CC0 Poly Haven steel scans already in `art-source/steel` and `assets/surfaces/steel`. The ship's shells and doors use the same shader.
+- **The stasis pods** (#88, on `main`):
+  - **Geometry:** clean-cage fitting.
+  - **Glass:** the thin-glass shader `app/pod_glass.gdshader`. It needs a real opening, a reflection probe and `specular_occlusion_disabled`.
+  - **Plastic:** glossy plastic with its clearcoat restored in code.
+  - **Verification:** the glass gates and the capture and raycast diagnostics.
+
+The quarters props use the hatch's texture and weathering method for everything metal, and the pod glass for every pane: the view screen, the console screen cover and the photo-frame glass. Quarters implementation depends on the branch-1 steel and hatch work reaching `main`, so stage 2 starts after it merges.
+
 ## Decisions I made, and why
 
 1. **Room shell versus props.**
@@ -30,14 +47,25 @@ Status: proposal, 2026-11-07. Nothing here is built yet.
    - **Why:** the rest of the ship already builds rooms this way, and its colliders, streaming and lighting depend on it.
    - **What's new:** a clean "as built" surface set for the remembered state. The existing worn surfaces in `assets/surfaces/` are already aged.
 2. **One base asset per prop; the aged state is derived from it.**
-   - **Decision:** each prop has one unaged GLB, and its aged GLB is produced from it by the aging toolkit. The two keep the same origin, pivots, part names and footprint.
-   - **Why:** the memory transition swaps states in place, so the two must line up exactly, and a second, independent generation would not.
-   - **Asset count:** two per prop, unaged and aged.
-3. **Bake the aging into assets rather than doing it in a runtime shader.**
-   - **Decision:** bake it.
-   - **Why:** the decay changes geometry (collapsed foam, torn cloth, curled boots, dust heaps). A shader can blend colour but cannot do that.
-   - **Later option:** a runtime cross-fade between the two baked states, as a visual effect for the transition.
-4. **Pilot before mass production.**
+   - **Decision:** each prop has one unaged model. Its aged state comes from that model, never from a second, independent generation. Both states keep the same origin, pivots, part names and footprint.
+   - **Why:** the memory transition swaps states in place, so the two must line up exactly.
+3. **How each prop gets its aged state depends on whether its shape changes.**
+   - **Hard props whose shape stays put** (lockers, desk, console, wardrobe, table, chairs, bed frame, screen housing, frame):
+     - one mesh, with the weathered-steel masks baked once;
+     - two material settings: "as built" (paint intact, no oxide, no dust) and "after a thousand years" (paint flaked, oxide, streaks, dust).
+     - The transition swaps the material settings. This is the hatch method plus a clean end of its range.
+   - **Props whose shape changes** (mattress, quilt, pillows, cushions, throw, garments, jacket, boots, and the dust and debris heaps):
+     - a second mesh produced by the aging toolkit's geometry transforms, baked as its own asset.
+     - A shader can blend colour but cannot collapse foam or tear cloth.
+4. **The photo ages like everything else.** Andrew: the photo doesn't change except for what a thousand years would do.
+   - **Decision:** a printed photo on a durable polymer plate, behind pod-style glass, in a metal frame.
+   - **After a thousand years:**
+     - the dyes have faded and shifted in colour;
+     - the glass is hazed with dust;
+     - the frame has corroded;
+     - the couple are still faintly recognisable.
+   - **Why a print:** a digital frame would simply go dark, which isn't what he described. A single keepsake print fits his "no paper books" rule better than a screen does.
+5. **Pilot before mass production.**
    - **Decision:** take three props through every stage first:
      - a wall locker module (painted steel);
      - the sofa (foam and fabric);
@@ -66,7 +94,7 @@ Every prop's parts are split along the lines the aging toolkit needs (stage 3). 
 | His dress uniform on hanger | hanger, jacket, insignia | | Pilot prop; insignia separate (metal) |
 | Her dresses × 2 on hangers | hanger, garment | | |
 | His boots | pair | | |
-| Digital photo frame | housing, display | | Dead or still on in the present is an open question |
+| Photo frame | frame, glass, photo plate | | Ages physically: faded dyes, hazed glass, corroded frame |
 | Mugs × 2, plates × 2 | each | | Ceramic |
 | Hairbrush, jewellery box, medal case, data tablets × 2 | each | | Small; one contact sheet can hold several |
 
@@ -123,10 +151,12 @@ This stage follows the skill's stages 3 to 8 for each prop:
 5. **UV-unwrap and set materials.**
    - Every surface gets a UV layout at a consistent texel density, because the aging masks live in UV space.
    - Every surface gets a named material class from this list: PaintedSteel, BareSteel, Aluminium, Brass, HardPlastic, Ceramic, Glass, Display, Foam, NaturalFabric, SyntheticFabric, Leather, Rubber.
-6. **Textures.**
-   - **Colour from the sheet:** project it with the local Hunyuan3D-Paint port (`paint.py`, with delighting on; never run two paint jobs at once).
-   - **Authored materials:** tileable, per material class.
-   - **Choosing between them:** test both on the pilot props and keep whichever the reviewer and the measurements favour. The README there says paint is out of scope, but `paint.py` and painted ship artifacts exist, so measure rather than assume.
+6. **Textures.** Use the hatch method.
+   - **Metal:** bake ambient occlusion, curvature, coverage and weather masks into a per-prop atlas, then shade with `weathered_steel.gdshader` over the existing steel scans.
+   - **Concept colour:** where a prop needs concept colour (painted panels, the console face), generate shadowless paint images and pack them the way `prepare_hatch_paint.py` does.
+   - **Non-metal classes:** fabric, leather, ceramic, plastic and the photo get the same mask atlas and their own small shaders or materials.
+   - **Glass:** every pane uses the pod glass shader.
+   - **Hunyuan's texture painter** (`paint.py`) is a fallback only, if a prop's colour can't be covered this way.
 7. **Export.** Export with a build script and the editable `.blend` in `tools/blender/quarters/<prop>/`. The export must be byte-reproducible.
 8. **Check.** Run the skill's geometry checks: winding, manifoldness, self-intersection, triangle count. Render from fixed cameras, and have the reviewer compare against the contact sheet and concept B.
 
@@ -146,7 +176,7 @@ These are reusable tools, not one-off edits. They run headless (Blender `bpy` pl
 | Gravity streak fields | Below fasteners, edges and holes | Rust runs down from them |
 | Contact | Where parts touch | Staining and corrosion at joints |
 
-**Material transforms**, one function per material class, all driven by the masks and the age (ruling 25):
+**Material transforms**, one per material class, driven by the masks and the age (ruling 25). For metal this is not new work: `weathered_steel.gdshader` already does the flaking, oxide and streaks. The toolkit adds the "as built" end of its range, and the remembered state uses it.
 
 | Material class | Change after 1000 years |
 | --- | --- |
@@ -177,7 +207,7 @@ All of these also get matching roughness and normal changes.
 - **Debris.** Fibre and dust heaps go under garments and paint flakes under rusted surfaces. They are scattered as instances of a few generated debris pieces.
 - **Dust.** Dust is mostly texture, plus a thin shell only where heaps need volume.
 
-**The room shell** gets the same material transforms, so the clean "as built" wall set and its aged version agree. Ideally the existing worn surfaces could be reproduced by aging the clean set, which would make the toolkit's look consistent with the corridors.
+**The room shell** uses the same shader as every other ship shell. For the remembered state, its "as built" setting is the shader with paint intact and no oxide. That gives one shared look with the corridors and needs no separate clean wall set.
 
 **Checks for each aged prop:**
 - Measured numbers:
@@ -213,23 +243,22 @@ Each step gets its own issue under #95 and goes to PRs on issue branches.
 
 1. Stage 0 layout and plan view. Andrew approves.
 2. Contact-sheet tool, plus pilot sheets for the locker module, sofa and uniform.
-3. Pilot meshes through stage 2, including the paint-versus-authored texture test.
+3. Pilot meshes through stage 2, with hatch-method masks and the "as built" end of the weathered-steel range. This step waits for the branch-1 steel and hatch work to merge.
 4. Aging toolkit v1 on the three pilot props.
 5. Pilot review with Andrew: unaged and aged, side by side in the doorway capture.
 6. Remaining inventory in batches, by material class: hard steel, then soft goods, then garments and small items.
 7. Room shell, clean and aged surface sets, and assembly in both states.
 8. Gameplay slice (entry, console video, badge) with the puzzle-progression work.
-9. Update the `concept-to-3d-asset` skill with the contact-sheet and aging lessons.
+9. Update the `concept-to-3d-asset` skill with the hatch texture method, contact sheets and aging lessons.
 
 ## Risks
 
 - **Views that disagree.** Multi-view sheets that disagree can damage meshes; the Battlestar ships melted this way. The single hero view is the fallback, and the reviewer checks agreement before Hunyuan runs.
 - **Thin and soft shapes.** Hunyuan does worst on thin and soft things: garments, quilts, plates. Generating each in its final pose and fitting it as its own closed volume keeps it usable, and cloth simulation does the rest.
-- **Texture painting.** It is the least proven step locally. The pilot measures it before anything depends on it.
+- **"As built" steel.** The weathered-steel shader was tuned for old, worn surfaces. Its clean end is new territory, and the pilot checks it against the remembered concept.
 - **GPU contention.** Other sessions share the GPU, so long jobs queue one at a time, and performance runs wait for an idle machine.
 
 ## Open questions for Andrew
 
-1. **Photo frame in the present:** still faintly showing the two of them, or dead?
-2. **Room size:** is about 5.6 × 5.0 m right, or should the plan view try something else?
-3. **Location:** D16, or another deck once the deck plan is set?
+1. **Room size:** is about 5.6 × 5.0 m right, or should the plan view try something else?
+2. **Location:** D16, or another deck once the deck plan is set?
