@@ -527,11 +527,12 @@ def fit_frame(contract, vertices, faces, recipe):
         reflection = np.array([-1, 1, -variant["hinge_sign"]])
         hardware = {}
         for name, row in solids.items():
-            if not name.startswith("HINGE/"):
+            if not name.startswith("HINGE/KNUCKLE-"):
                 continue
-            hv, hf, hs = (barrel_v, barrel_f, barrel_source) if name.startswith("HINGE/KNUCKLE-") else (hinge_v, hinge_f, hinge_source)
-            reflected_faces = hf[:, ::-1] if np.prod(reflection) < 0 else hf
-            hardware[name] = _local_fit(hv * reflection, reflected_faces, hs, row)
+            # The machined frame leaves, bridges, pin caps and bolt heads use
+            # their exported geometry, not a compressed copy of the old mount.
+            reflected_faces = barrel_f[:, ::-1] if np.prod(reflection) < 0 else barrel_f
+            hardware[name] = _local_fit(barrel_v * reflection, reflected_faces, barrel_source, row)
         hinges = [hardware[row["reservation_id"]] for row in variant["fit"]["hinge_stations"]]
         rivets = []
         for row in variant["frame_rivets"]:

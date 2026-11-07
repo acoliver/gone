@@ -18,16 +18,21 @@ static func polygon(value: PackedVector2Array) -> Array:
 static func frame_geometry(door: ShipLayout.DoorSpec, solid: ShipGeometry.SolidSpec) -> Dictionary:
 	var vertices: Array = []
 	var faces: Array = []
-	if "/HINGE/KNUCKLE-" in String(solid.id):
-		for y: int in [-1, 1]:
+	if "/HINGE/KNUCKLE-" in String(solid.id) or "/HINGE/CAP-" in String(solid.id) or "/HINGE/BOLT-" in String(solid.id):
+		var profile: Array[Vector2] = [Vector2(-0.5, 0.86), Vector2(-0.4, 1), Vector2(0.4, 1), Vector2(0.5, 0.86)]
+		if "/HINGE/CAP-" in String(solid.id):
+			profile = [Vector2(-0.5, 0.5), Vector2(-0.34, 0.5), Vector2(-0.30, 1), Vector2(0.20, 1), Vector2(0.36, 0.84), Vector2(0.5, 0.42)]
+		for ring: Vector2 in profile:
 			for index: int in range(8):
 				var angle := index * TAU / 8
-				vertices.append(vector3(Vector3(cos(angle) * solid.size.x / 2, y * solid.size.y / 2, sin(angle) * solid.size.z / 2)))
+				vertices.append(vector3(Vector3(cos(angle) * solid.size.x * ring.y / 2, ring.x * solid.size.y, sin(angle) * solid.size.z * ring.y / 2)))
 		faces.append([7, 6, 5, 4, 3, 2, 1, 0])
-		faces.append([8, 9, 10, 11, 12, 13, 14, 15])
-		for index: int in range(8):
-			var next := (index + 1) % 8
-			faces.append([index, next, next + 8, index + 8])
+		var last := (profile.size() - 1) * 8
+		faces.append([last, last + 1, last + 2, last + 3, last + 4, last + 5, last + 6, last + 7])
+		for ring: int in range(profile.size() - 1):
+			for index: int in range(8):
+				var next := (index + 1) % 8
+				faces.append([ring * 8 + index, ring * 8 + next, (ring + 1) * 8 + next, (ring + 1) * 8 + index])
 		return {"vertices": vertices, "faces": faces}
 	if solid.section.is_empty():
 		for z: int in [-1, 1]:

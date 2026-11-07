@@ -261,10 +261,16 @@ func _extension_ids() -> Array[StringName]:
 
 func _fixed_detail_ids(hatch: String) -> Array[StringName]:
 	var ids: Array[StringName] = []
-	# Andrew's 2026-11-06 full-height hinge leaves use separate upper bridges.
-	# Name both new reservations in order; they add no collision boxes.
-	for piece: String in ["HINGE/PLATE-0", "HINGE/BRIDGE-0", "HINGE/KNUCKLE-0", "HINGE/PLATE-1", "HINGE/BRIDGE-1", "HINGE/KNUCKLE-1", "KEEPER/0", "KEEPER/1", "KEEPER/2"]:
-		ids.append(StringName("%s/%s" % [hatch, piece]))
+	# Each heavy hinge now has two fixed knuckles, caps and six frame bolts.
+	# These ordered presentation reservations still add no collision boxes.
+	for station: int in range(2):
+		ids.append(StringName("%s/HINGE/PLATE-%d" % [hatch, station]))
+		for zone: String in ["LOWER", "UPPER"]:
+			for piece: String in ["BRIDGE", "KNUCKLE", "CAP"]:
+				ids.append(StringName("%s/HINGE/%s-%s-%d" % [hatch, piece, zone, station]))
+			for bolt: int in range(3):
+				ids.append(StringName("%s/HINGE/BOLT-%s-%d-%d" % [hatch, zone, bolt, station]))
+	for station: int in range(3): ids.append(StringName("%s/KEEPER/%d" % [hatch, station]))
 	return ids
 
 func _surround_ids(hatch: String, side: String) -> Array[StringName]:

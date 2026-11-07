@@ -123,33 +123,31 @@ class FrameFitTest(unittest.TestCase):
                 self.assertTrue((distances >= -.001).all() or (distances <= .001).all(), solid["id"] + " cannot use its unclipped AABB")
 
     def test_source_barrel_seals_the_existing_hinge_return_gap(self):
-        # The return steel deliberately stops across this stationary barrel.
-        # Fitting the whole mounting plate into its barrel box leaves this
-        # delivered grazing ray between them, despite matching the AABB.
+        # The return now stops at four fixed knuckles. Keep the grazing ray's
+        # original offsets from each exported seam and test every knuckle.
         for variant, result in zip(self.contract["variants"], self.hatch):
-            # The 220 mm segmented hinge moves the fixed knuckle upward.
-            # Preserve the grazing ray's offsets from its exported lower seam,
-            # rather than sampling the obsolete 520 mm world-height station.
-            solid = next(row for row in variant["frame_solids"] if row["id"] == "HINGE/KNUCKLE-0")
-            bottom = solid["transform"]["origin"][1] - solid["size"][1] / 2
-            eye = np.array([-.4, bottom + .09, -1.9])
-            target = np.array([-.6, bottom + .01, .1])
-            if variant["hinge_sign"] < 0:
-                eye[2], target[2] = .2-eye[2], .2-target[2]
-            direction = target-eye
-            region = result.hardware["HINGE/KNUCKLE-0"]
-            tri = region.vertices[region.faces]
-            e1, e2 = tri[:, 1]-tri[:, 0], tri[:, 2]-tri[:, 0]
-            p = np.cross(direction, e2)
-            det = np.einsum("ij,ij->i", e1, p)
-            live = abs(det) > 1e-15
-            e1, e2, p, det, tri = e1[live], e2[live], p[live], det[live], tri[live]
-            off = eye-tri[:, 0]
-            q = np.cross(off,e1)
-            u = np.einsum("ij,ij->i",off,p)/det
-            v = q@direction/det
-            t = np.einsum("ij,ij->i",e2,q)/det
-            self.assertTrue(((u>=0)&(v>=0)&(u+v<=1)&(t>=0)&(t<=2)).any(), "source barrel must fill the reserved hinge gap")
+            for solid in variant["frame_solids"]:
+                if not solid["id"].startswith("HINGE/KNUCKLE-"):
+                    continue
+                bottom = solid["transform"]["origin"][1] - solid["size"][1] / 2
+                eye = np.array([-.4, bottom + .09, -1.9])
+                target = np.array([-.6, bottom + .01, .1])
+                if variant["hinge_sign"] < 0:
+                    eye[2], target[2] = .2-eye[2], .2-target[2]
+                direction = target-eye
+                region = result.hardware[solid["id"]]
+                tri = region.vertices[region.faces]
+                e1, e2 = tri[:, 1]-tri[:, 0], tri[:, 2]-tri[:, 0]
+                p = np.cross(direction, e2)
+                det = np.einsum("ij,ij->i", e1, p)
+                live = abs(det) > 1e-15
+                e1, e2, p, det, tri = e1[live], e2[live], p[live], det[live], tri[live]
+                off = eye-tri[:, 0]
+                q = np.cross(off,e1)
+                u = np.einsum("ij,ij->i",off,p)/det
+                v = q@direction/det
+                t = np.einsum("ij,ij->i",e2,q)/det
+                self.assertTrue(((u>=0)&(v>=0)&(u+v<=1)&(t>=0)&(t<=2)).any(), "source barrel must fill the reserved hinge gap: " + solid["id"])
 
     def test_original_hinge_attachment_is_not_left_in_the_ring(self):
         hinge = next(row for row in self.recipe["regions"] if row["role"] == "hinge_mount")
@@ -163,9 +161,9 @@ class FrameFitTest(unittest.TestCase):
                 original_mount = ((centres[:, 0] > tangent) & (centres[:, 1] > lower) & (centres[:, 1] < upper))
                 self.assertFalse(original_mount.any(), "relocating two stations must also remove the original central mount from the generated ring")
 
-    def test_two_hinge_stations_and_all_rivets_are_source_derived(self):
+    def test_four_fixed_knuckles_and_all_rivets_are_source_derived(self):
         for variant, result in zip(self.contract["variants"], self.hatch):
-            self.assertEqual(len(result.hinges), 2)
+            self.assertEqual(len(result.hinges), 4)
             self.assertEqual(len(result.rivets), 108)
             for station, region in zip(variant["fit"]["hinge_stations"], result.hinges):
                 self.assertEqual(region.id, station["reservation_id"])

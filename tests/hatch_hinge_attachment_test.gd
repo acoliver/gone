@@ -18,42 +18,92 @@ func test_only_the_swing_face_carries_two_door_sized_working_hinges() -> void:
 				if "/strap-" in String(part.id):
 					straps += 1
 					assert_true(part.size.is_equal_approx(Vector3(0.22, 0.22, 0.012)), "Andrew 2026-11-06: concept-proportioned 220 mm leaf, not uniform scaling")
+					var station := String(part.id).get_file().get_slice("-", 1).to_int()
+					var height: float = [0.48, 2.24][station]
+					assert_true(absf(part.transform.origin.y - height) < 0.000001, "upper stack shift does not move the door-side leaf")
 				if "/bolt-" in String(part.id):
 					bolts += 1
 					assert_true(part.size.is_equal_approx(Vector3(0.032, 0.008, 0.032)), "four 32 mm bolt heads seat on each 12 mm leaf")
 				if "/barrel-" in String(part.id):
 					barrels += 1
-					# The jamb limits diameter, not height. A 140 mm moving
-					# knuckle, 60 mm fixed knuckle and 20 mm cap span 220 mm.
+					# The moving barrel retains its existing diameter and height.
 					assert_true(part.size.is_equal_approx(Vector3(0.056, 0.14, 0.056)), "original 56 mm diameter clears FRAME/LEFT without relaxing the swing gate")
 					assert_float_equal(part.radius, 0.028, "barrel diameter stays at the size that clears")
+					var station := String(part.id).get_file().get_slice("-", 1).to_int()
+					var height: float = [0.46, 2.18][station]
+					assert_true(absf(part.transform.origin.y - height) < 0.000001, "only the upper knuckle stack shifts, 40 mm below its previous center")
 		assert_int_equal(straps, 2, "only two working straps, no opposite-face duplicates")
 		assert_int_equal(barrels, 2, "both working straps carry a coaxial barrel")
 		assert_int_equal(bolts, 8, "four seated bolts per working strap, no push-side duplicates")
 
-func test_enlarged_fixed_knuckles_and_seal_cutouts_share_axial_stations() -> void:
+func test_each_moving_barrel_hangs_between_two_bolted_frame_knuckles() -> void:
+	var layout := ShipLayout.authored().layout
+	for id: StringName in IDS:
+		var spec := layout.door(id)
+		var fixed: Dictionary = {}
+		var rings: Array[AABB] = []
+		for solid: ShipGeometry.SolidSpec in ShipGeometry.hatch_frame_solids(spec):
+			var box := spec.frame().affine_inverse() * solid.transform * AABB(-solid.size / 2, solid.size)
+			if "/RING/" in String(solid.id): rings.append(box)
+			fixed[String(solid.id).trim_prefix(String(id) + "/")] = solid
+		for station: int in range(2):
+			var plate_id := "HINGE/PLATE-%d" % station
+			var plate: ShipGeometry.SolidSpec = fixed[plate_id]
+			# The crown clips the outer plate corner; integer-grid clipping
+			# trims micrometres from its bounds, retaining the 1 um pins.
+			var plate_height: float = [0.31899920105934, 0.31899976730347][station]
+			assert_true(absf(plate.size.x - 0.07499694824219) < 0.000001 and absf(plate.size.y - plate_height) < 0.000001 and absf(plate.size.z - 0.014) < 0.000001, "75 x 319 x 14 mm frame leaf spans both knuckles and caps inside the crown")
+			var plate_box := spec.frame().affine_inverse() * plate.transform * AABB(-plate.size / 2, plate.size)
+			var overlaps := false
+			for ring: AABB in rings:
+				if ring.intersects(plate_box): overlaps = true
+			assert_true(overlaps, "frame leaf is seated on the existing frame ring")
+			var bolts := 0
+			for zone: String in ["LOWER", "UPPER"]:
+				var knuckle_id := "HINGE/KNUCKLE-%s-%d" % [zone, station]
+				var cap_id := "HINGE/CAP-%s-%d" % [zone, station]
+				assert_true(fixed.has(knuckle_id), "frame supports the moving barrel at " + knuckle_id)
+				assert_true(fixed.has(cap_id), "pin head terminates " + cap_id)
+				if not fixed.has(knuckle_id) or not fixed.has(cap_id): continue
+				var knuckle: ShipGeometry.SolidSpec = fixed[knuckle_id]
+				assert_true(knuckle.size.is_equal_approx(Vector3(0.0438, 0.075, 0.0438)), "75 mm fixed knuckle uses the largest diameter that clears the unchanged swing gate")
+				var pose := spec.frame().affine_inverse() * knuckle.transform
+				var axis := spec.hinge_frame().origin
+				assert_true(Vector2(pose.origin.x - axis.x, pose.origin.z - axis.z).length() <= 0.000001, "fixed and moving knuckles share the existing pivot")
+				var moving_center := HatchParts.HINGE_HEIGHTS[station] + HatchParts.HINGE_STACK_SHIFTS[station] + HatchParts.BARREL_OFFSET
+				var gap := pose.origin.y - knuckle.size.y / 2 - moving_center - 0.07 if zone == "UPPER" else moving_center - 0.07 - pose.origin.y - knuckle.size.y / 2
+				assert_true(absf(gap - 0.0025) < 0.000001, "2.5 mm axial gap separates each fixed knuckle from the moving barrel")
+				var cap: ShipGeometry.SolidSpec = fixed[cap_id]
+				assert_true(cap.size.is_equal_approx(Vector3(0.0438, 0.012, 0.0438)), "43.8 x 12 mm pin caps seat above and below the stack")
+				var cap_pose := spec.frame().affine_inverse() * cap.transform
+				var direction := 1.0 if zone == "UPPER" else -1.0
+				assert_true(absf(cap_pose.origin.y - pose.origin.y - direction * 0.0435) < 0.000001, "pin cap seats on the outer end of its knuckle")
+				for bolt: int in range(3):
+					var bolt_id := "HINGE/BOLT-%s-%d-%d" % [zone, bolt, station]
+					assert_true(fixed.has(bolt_id), "three bolt heads anchor each knuckle zone: " + bolt_id)
+					if not fixed.has(bolt_id): continue
+					var head: ShipGeometry.SolidSpec = fixed[bolt_id]
+					var head_box := spec.frame().affine_inverse() * head.transform * AABB(-head.size / 2, head.size)
+					assert_true(head.size.is_equal_approx(Vector3(0.018, 0.008, 0.018)), "18 mm frame bolt heads")
+					assert_true(head_box.position.x >= plate_box.position.x and head_box.end.x <= plate_box.end.x and head_box.position.y >= plate_box.position.y and head_box.end.y <= plate_box.end.y, "bolt head seats inside its frame leaf")
+					bolts += 1
+			assert_int_equal(bolts, 6, "six frame bolts per heavy hinge")
+
+func test_frame_knuckle_cutouts_preserve_five_sealing_strips() -> void:
 	var spec := ShipLayout.authored().layout.door(ShipLayout.BAY_DOOR_ID)
-	var length := 0.06
-	for solid: ShipGeometry.SolidSpec in ShipGeometry.hatch_fixed_hardware(spec):
-		# Pin the ring-clipped heights, retaining the original 1 um tolerance.
-		# The integer-grid clip trims a few micrometres, not leaf width/height.
-		var station := 0 if String(solid.id).ends_with("-0") else 1
-		if "/HINGE/PLATE-" in String(solid.id):
-			var height: float = [0.21999359130859, 0.21999835968018][station]
-			assert_true(absf(solid.size.y - height) < 0.000001, "fixed leaf keeps the concept's full 220 mm authored height")
-		if not "/HINGE/KNUCKLE-" in String(solid.id): continue
-		var height: float = [0.05999630689621, 0.05999755859375][station]
-		assert_true(absf(solid.size.y - height) < 0.000001, "fixed axial segment's delivered height")
 	for group: HatchParts.Group in HatchParts.leaf(spec):
 		if not (String(group.path) == "BackingLapHinge" or "PivotSeal" in String(group.path) or "HingeSeal" in String(group.path)): continue
-		assert_int_equal(group.parts.size(), 3, "two axial interruptions preserve three sealing strips")
-		for index: int in range(2):
+		assert_int_equal(group.parts.size(), 5, "four fixed knuckle and cap interruptions leave five strips")
+		if group.parts.size() != 5: continue
+		for index: int in range(4):
 			var lower := group.parts[index]
 			var upper := group.parts[index + 1]
 			var bottom := lower.transform.origin.y + lower.size.y / 2
 			var top := upper.transform.origin.y - upper.size.y / 2
-			assert_true(absf(bottom - (HatchParts.HINGE_HEIGHTS[index] + 0.05)) < 0.000001, "cutout starts exactly above the moving barrel")
-			assert_true(absf(top - bottom - length) < 0.000001, "cutout equals the enlarged fixed knuckle length")
+			var station := index / 2
+			var offset := -0.1795 if index % 2 == 0 else 0.0525
+			assert_true(absf(bottom - (HatchParts.HINGE_HEIGHTS[station] + HatchParts.HINGE_STACK_SHIFTS[station] + offset)) < 0.000001, "cutout starts at the fixed hardware boundary")
+			assert_true(absf(top - bottom - 0.087) < 0.000001, "cutout equals the 75 mm knuckle and 12 mm cap")
 
 func test_barrel_axes_coincide_with_the_real_swing_axis_on_both_signs() -> void:
 	var layout := ShipLayout.authored().layout
@@ -179,9 +229,8 @@ func test_leaf_reservations_clear_every_fixed_detail_through_the_full_swing() ->
 		if solid.collision_role == &"frame_detail": all_details.append(solid)
 	for id: StringName in IDS:
 		var spec := layout.door(id)
-		# Full-height leaves stay on the bead; separate upper bridges meet the
-		# fixed knuckles without placing a full-height web in the moving barrel.
-		assert_int_equal(ShipGeometry.hatch_fixed_hardware(spec).size(), 9, "two plates, two axial bridges, two fixed knuckles and three station-aligned keepers")
+		# Each frame leaf now supports both ends of the moving barrel.
+		assert_int_equal(ShipGeometry.hatch_fixed_hardware(spec).size(), 29, "two plates, four bridges, four knuckles, four caps, twelve bolts and three keepers")
 		var envelope := ShipGeometry.box_aabb(ShipGeometry.door_blockers(spec)[1])
 		var swept := AABB(envelope.min_corner(), envelope.max_corner() - envelope.min_corner())
 		var details: Array[ShipGeometry.SolidSpec] = []
@@ -247,7 +296,8 @@ func test_fixed_and_moving_hinge_parts_meet_at_the_closed_seam() -> void:
 					var stationary := spec.frame().affine_inverse() * solid.transform * AABB(-solid.size / 2, solid.size)
 					var delta := (stationary.position - moving.end).max(moving.position - stationary.end).max(Vector3.ZERO)
 					gap = minf(gap, delta.length())
-				assert_true(gap <= 0.001, "fixed mount meets moving barrel within 1 mm: %s %s gap=%.6f" % [id, part.id, gap])
+				# Round 3 deliberately separates the knuckles instead of overlapping them.
+				assert_true(absf(gap - 0.0025) < 0.000001, "fixed knuckle leaves the authored 2.5 mm axial gap: %s %s gap=%.6f" % [id, part.id, gap])
 
 func test_strap_fasteners_are_seated_inside_their_own_straps() -> void:
 	var spec := ShipLayout.authored().layout.door(ShipLayout.BAY_DOOR_ID)

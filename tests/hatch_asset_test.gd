@@ -103,6 +103,17 @@ func test_fixed_source_corrections_and_seal_normals_are_preserved() -> void:
 			assert_true(solid.size.distance_to(_v3(row.size)) < 1e-8, "fixed size is source owned")
 			assert_true((door.frame().affine_inverse() * solid.transform).is_equal_approx(_pose(row.transform)), "fixed pose is portal-relative")
 			if not solid.section.is_empty(): continue
+			if "/HINGE/KNUCKLE-" in String(solid.id) or "/HINGE/CAP-" in String(solid.id) or "/HINGE/BOLT-" in String(solid.id):
+				# Circular fixed hardware no longer exports box corners. Its
+				# actual vertices must fill the exact cylindrical reservation.
+				var bounds := AABB(_v3(row.vertices[0]), Vector3.ZERO)
+				for vertex: Array in row.vertices:
+					var point := _v3(vertex)
+					bounds = bounds.expand(point)
+					var radial := Vector2(point.x / (solid.size.x / 2), point.z / (solid.size.z / 2))
+					assert_true(radial.length_squared() <= 1.000001, "fixed hardware remains inside its cylinder")
+				assert_true(bounds.position.distance_to(-solid.size / 2) < 1e-8 and bounds.size.distance_to(solid.size) < 1e-8, "fixed cylinder fills its source-owned axial and diameter bounds")
+				continue
 			var corner := 0
 			for z: int in [-1, 1]:
 				for y: int in [-1, 1]:

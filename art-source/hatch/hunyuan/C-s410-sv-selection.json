@@ -278253,8 +278253,10 @@
       },
       "role": "hinge_mount",
       "target_reservations": [
-        "HINGE/KNUCKLE-0",
-        "HINGE/KNUCKLE-1",
+        "HINGE/KNUCKLE-LOWER-0",
+        "HINGE/KNUCKLE-UPPER-0",
+        "HINGE/KNUCKLE-LOWER-1",
+        "HINGE/KNUCKLE-UPPER-1",
         "HINGE/PLATE-0",
         "HINGE/PLATE-1"
       ]

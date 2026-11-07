@@ -19,7 +19,7 @@ func test_fitting_records_are_derived_in_an_identity_portal_frame() -> void:
 		assert_int_equal(expected.fit.schema_version, 1, "explicit fit schema")
 		assert_int_equal(expected.fit.ring.inner.size(), 36, "every inner station")
 		assert_int_equal(expected.fit.ring.outer.size(), 36, "every outer station")
-		assert_int_equal(expected.fit.hinge_stations.size(), 2, "two source-owned hinge stations")
+		assert_int_equal(expected.fit.hinge_stations.size(), 4, "two source-owned fixed knuckles at each hinge")
 		assert_int_equal(expected.fit.wheel_axes.size(), 2, "both wheel-local frames")
 		assert_int_equal(expected.fit.leaf_faces.size(), 2, "independent asymmetric slab faces")
 		assert_int_equal(expected.fit.labels.size(), 2, "both independent labels")
@@ -112,12 +112,19 @@ func test_physical_records_change_only_at_approved_fittings_and_ring_planes() ->
 				assert_true(HatchAsset.pose(group.transform) == HatchAsset.pose(old.transform), "whole-object replacement preserves group roots")
 				continue
 			if group.path == "BackingLapHinge" or "PivotSeal" in group.path or "HingeSeal" in group.path:
-				# Enlarged knuckles need longer axial cutouts, not thinner seals.
-				# Keep every strip's transverse footprint and the group's pose.
-				for pi: int in range(group.parts.size()):
-					var part: Dictionary = group.parts[pi]
-					part.size[1] = old.parts[pi].size[1]
-					part.transform.origin[1] = old.parts[pi].transform.origin[1]
+				# Four fixed knuckles and their caps now interrupt five strips.
+				# Check every strip's unchanged transverse footprint and pose
+				# before normalizing only its identity and axial segmentation.
+				assert_int_equal(group.parts.size(), 5, "upper and lower fixed hardware at both hinges")
+				for part: Dictionary in group.parts:
+					var reference: Dictionary = old.parts[0]
+					part.size[1] = reference.size[1]
+					part.transform.origin[1] = reference.transform.origin[1]
+					part.index = reference.index
+					part.id = reference.id
+					var normalized: Dictionary = JSON.parse_string(JSON.stringify(part, "", false, true))
+					assert_true(normalized == reference, "each hinge return retains every non-axial field")
+				group.parts = old.parts
 			kept_actual.append(group)
 		for group: Dictionary in expected.groups:
 			if String(group.path).begins_with("Lugs/") or String(group.path).begins_with("StrapHinges/") or group.path in ["Wheel", "ReverseWheel"]: continue
@@ -144,5 +151,7 @@ func test_delivered_frame_records_frozen_source_and_build_dependencies() -> void
 	assert_true(document.measurements.normal_method == "cycles_selected_to_active_part_isolated_fitted_source", "normal transfer from matching high-poly parts")
 	for name: String in document.nodes:
 		var row: Dictionary = document.nodes[name]
-		if row.kind == "rivet" or (row.kind == "frame" and ("/RING/" in row.id or String(row.id).begins_with("HINGE/"))):
+		# Frame leaves, bridges, caps and bolts are now machined reservations;
+		# the four knuckles retain the fitted source barrel and its ancestry.
+		if row.kind == "rivet" or (row.kind == "frame" and ("/RING/" in row.id or String(row.id).begins_with("HINGE/KNUCKLE-"))):
 			assert_true(row.get("generated_source", "") == document.generated_sources.source_sha256, "source-derived frame region: " + name)

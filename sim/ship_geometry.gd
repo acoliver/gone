@@ -579,23 +579,39 @@ static func hatch_fixed_hardware(door: ShipLayout.DoorSpec) -> Array[SolidSpec]:
 	var front := HATCH_RING_FRONT if into > 0 else WALL - HATCH_RING_FRONT
 	var solids: Array[SolidSpec] = []
 	for index: int in range(HatchParts.HINGE_HEIGHTS.size()):
-		var y := HatchParts.HINGE_HEIGHTS[index]
-		# Keep the leaf full height on the bead. Only its upper bridge reaches
-		# the pin, at the fixed knuckle's separate axial station.
-		var plate_width := 0.075
-		solids.append(SolidSpec.new(Vector3(hinge.x - plate_width / 2, y, front - into * 0.006), Vector3(plate_width, HatchParts.HINGE_LEAF_SIZE.y, 0.012), Quaternion.IDENTITY, StringName("%s/HINGE/PLATE-%d" % [door.id(), index]), &"frame", &"frame_detail"))
-		var seat := hinge.z - into * HatchParts.FIXED_KNUCKLE_RADIUS
-		var bottom := y + HatchParts.FIXED_KNUCKLE_BOTTOM
-		var minimum := Vector3(hinge.x - plate_width, bottom, minf(front, seat))
-		var maximum := Vector3(hinge.x, bottom + HatchParts.FIXED_KNUCKLE_LENGTH, maxf(front, seat))
-		solids.append(SolidSpec.new((minimum + maximum) / 2, maximum - minimum, Quaternion.IDENTITY, StringName("%s/HINGE/BRIDGE-%d" % [door.id(), index]), &"frame", &"frame_detail"))
-		solids.append(SolidSpec.new(Vector3(hinge.x, bottom + HatchParts.FIXED_KNUCKLE_LENGTH / 2, hinge.z), Vector3(HatchParts.FIXED_KNUCKLE_RADIUS * 2, HatchParts.FIXED_KNUCKLE_LENGTH, HatchParts.FIXED_KNUCKLE_RADIUS * 2), Quaternion.IDENTITY, StringName("%s/HINGE/KNUCKLE-%d" % [door.id(), index]), &"frame", &"frame_detail"))
+		var y := HatchParts.HINGE_HEIGHTS[index] + HatchParts.HINGE_STACK_SHIFTS[index]
+		# Both stationary knuckles carry the barrel into one bolted frame leaf.
+		# Only their bridges cross the depth gap; the moving barrel stays free.
+		var plate := HatchParts.FRAME_LEAF_SIZE
+		var plate_center := Vector3(hinge.x - plate.x / 2, y + HatchParts.BARREL_OFFSET, front - into * (plate.z / 2 - 0.002))
+		solids.append(SolidSpec.new(plate_center, plate, Quaternion.IDENTITY, StringName("%s/HINGE/PLATE-%d" % [door.id(), index]), &"frame", &"frame_detail"))
+		for upper: bool in [false, true]:
+			var zone := "UPPER" if upper else "LOWER"
+			var center := Vector3(hinge.x, y + HatchParts.fixed_knuckle_offset(upper), hinge.z)
+			var length := HatchParts.FIXED_KNUCKLE_LENGTH
+			var diameter := HatchParts.FIXED_KNUCKLE_RADIUS * 2
+			var seat := hinge.z - into * HatchParts.FIXED_KNUCKLE_RADIUS / 2
+			var minimum := Vector3(hinge.x - plate.x, center.y - length / 2, minf(front, seat))
+			var maximum := Vector3(hinge.x, center.y + length / 2, maxf(front, seat))
+			solids.append(SolidSpec.new((minimum + maximum) / 2, maximum - minimum, Quaternion.IDENTITY, StringName("%s/HINGE/BRIDGE-%s-%d" % [door.id(), zone, index]), &"frame", &"frame_detail"))
+			solids.append(SolidSpec.new(center, Vector3(diameter, length, diameter), Quaternion.IDENTITY, StringName("%s/HINGE/KNUCKLE-%s-%d" % [door.id(), zone, index]), &"frame", &"frame_detail"))
+			var cap := center + Vector3.UP * (1 if upper else -1) * (length + HatchParts.PIN_CAP_LENGTH) / 2
+			solids.append(SolidSpec.new(cap, Vector3(diameter, HatchParts.PIN_CAP_LENGTH, diameter), Quaternion.IDENTITY, StringName("%s/HINGE/CAP-%s-%d" % [door.id(), zone, index]), &"frame", &"frame_detail"))
+			for bolt: int in range(3):
+				# The upper crown tapers the leaf; seat its bolt heads in the
+				# remaining ring width, without moving or widening that ring.
+				var bolt_x := hinge.x - 0.014 if index == 1 else plate_center.x
+				var point := Vector3(bolt_x, center.y + (bolt - 1) * 0.025, front - into * (plate.z - 0.002 + 0.004))
+				solids.append(SolidSpec.new(point, Vector3(0.018, 0.008, 0.018), Quaternion(Vector3.UP, Vector3(0, 0, -into)), StringName("%s/HINGE/BOLT-%s-%d-%d" % [door.id(), zone, bolt, index]), &"frame", &"frame_detail"))
 	var edge := hinge.x + HatchParts.HINGE_OUTSET + door.leaf_aperture().x
 	for index: int in range(HatchParts.DOG_HEIGHTS.size()):
 		solids.append(SolidSpec.new(Vector3(edge + 0.04, HatchParts.DOG_HEIGHTS[index], front - into * 0.02), Vector3(0.08, 0.16, 0.04), Quaternion.IDENTITY, StringName("%s/KEEPER/%d" % [door.id(), index]), &"frame", &"frame_detail"))
 	var placed: Array[SolidSpec] = []
 	for solid: SolidSpec in solids:
-		_clip_hatch_frame(door, solid)
+		# Plates and bridges follow the ring silhouette. Keep the circular
+		# hardware's exact axial bounds and its coaxial pivot registration.
+		var circular := "/HINGE/KNUCKLE-" in String(solid.id) or "/HINGE/CAP-" in String(solid.id) or "/HINGE/BOLT-" in String(solid.id)
+		if not circular: _clip_hatch_frame(door, solid)
 		solid.surface_identity(door.id(), &"FRAME")
 		placed.append(transformed(solid, door.frame()))
 	return placed

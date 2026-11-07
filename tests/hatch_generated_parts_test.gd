@@ -25,7 +25,8 @@ func test_whole_latches_and_wheels_replace_primitive_subparts() -> void:
 	# subparts; the two retained nuts and two collider-free ribs add four parts.
 	# Andrew 2026-11-06: remove ten duplicate push-side strap/neck/bolt parts,
 	# move the barrels/caps to the swing face, and add four working-leaf bolts.
-	assert_int_equal(count, 227, "whole-object description with only working four-bolt hinges")
+	# Four knuckle/cap cutouts add ten return strips; two moving caps become fixed.
+	assert_int_equal(count, 235, "whole-object description with five sealing strips around the fixed hinge hardware")
 	assert_int_equal(dogs, 6, "three whole latches on both faces")
 	assert_int_equal(wheels, 2, "both wheels use generated geometry")
 	assert_int_equal(ribs, 2, "rib split around wheel and label")

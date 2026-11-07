@@ -135,7 +135,8 @@ class HatchRound3Test(unittest.TestCase):
     def test_hinge_caps_are_seated_with_a_neck(self):
         checked = 0
         for name, row in self.nodes.items():
-            if row["kind"] != "leaf" or "StrapHinges" not in row["id"] or "/cap-" not in row["id"]:
+            # Pin heads now terminate the fixed stack above and below each barrel.
+            if row["kind"] != "frame" or not row["id"].startswith("HINGE/CAP-"):
                 continue
             checked += 1
             points = source_points(self.by_name[name])

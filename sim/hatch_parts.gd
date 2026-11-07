@@ -16,6 +16,8 @@ const SLAB_EDGE_BEVEL: float = 0.004
 const PAINT_LAYER_DEPTH: float = 0.002
 # Round 11: real pivot knuckles and upper fittings clear the level-gaze label.
 const HINGE_HEIGHTS: Array[float] = [0.48, 2.24]
+# The upper stack clears the crown without moving its bolted door-side leaf.
+const HINGE_STACK_SHIFTS: Array[float] = [0.0, -0.04]
 const DOG_HEIGHTS: Array[float] = [0.40, 1.17, 1.496046]
 const DOG_INSET: float = 0.193619
 const WHEEL_SCALE: float = 0.643 / 0.888
@@ -25,9 +27,24 @@ const HINGE_LEAF_SIZE := Vector3(0.22, 0.22, 0.012)
 const BARREL_RADIUS: float = 0.028
 const BARREL_LENGTH: float = 0.14
 const BARREL_OFFSET: float = -0.02
-const FIXED_KNUCKLE_BOTTOM: float = 0.05
-const FIXED_KNUCKLE_LENGTH: float = 0.06
-const FIXED_KNUCKLE_RADIUS: float = 0.01
+const FIXED_KNUCKLE_LENGTH: float = 0.075
+# 56 mm fixed bounds hit the slab at 7 degrees. 43.8 mm is the largest
+# tenth-millimetre diameter step that clears the unchanged oriented-box gate.
+const FIXED_KNUCKLE_RADIUS: float = 0.0219
+const KNUCKLE_GAP: float = 0.0025
+const PIN_CAP_LENGTH: float = 0.012
+const FRAME_LEAF_SIZE := Vector3(0.075, 0.319, 0.014)
+
+static func fixed_knuckle_offset(upper: bool) -> float:
+	return BARREL_OFFSET + (1 if upper else -1) * (BARREL_LENGTH / 2 + KNUCKLE_GAP + FIXED_KNUCKLE_LENGTH / 2)
+
+static func fixed_knuckle_cutouts() -> Array[Vector2]:
+	var intervals: Array[Vector2] = []
+	for index: int in range(HINGE_HEIGHTS.size()):
+		for upper: bool in [false, true]:
+			var center := HINGE_HEIGHTS[index] + HINGE_STACK_SHIFTS[index] + fixed_knuckle_offset(upper)
+			intervals.append(Vector2(center - FIXED_KNUCKLE_LENGTH / 2 - (0.0 if upper else PIN_CAP_LENGTH), center + FIXED_KNUCKLE_LENGTH / 2 + (PIN_CAP_LENGTH if upper else 0.0)))
+	return intervals
 
 static var _leaves: Dictionary = {}
 
@@ -102,13 +119,15 @@ static func evenly_spaced(loop: PackedVector2Array, count: int) -> PackedVector2
 
 static func _hinge_return(group: Group, size: Vector3, center: Vector3) -> void:
 	var bottom := center.y - size.y / 2
-	for top: float in [HINGE_HEIGHTS[0] + FIXED_KNUCKLE_BOTTOM, HINGE_HEIGHTS[1] + FIXED_KNUCKLE_BOTTOM, center.y + size.y / 2]:
+	var cutouts := fixed_knuckle_cutouts()
+	cutouts.append(Vector2(center.y + size.y / 2, center.y + size.y / 2))
+	for interval: Vector2 in cutouts:
 		var segment := size
-		segment.y = top - bottom
+		segment.y = interval.x - bottom
 		var point := center
-		point.y = (bottom + top) / 2
+		point.y = (bottom + interval.x) / 2
 		group.add("return-%d" % group.parts.size(), &"box", segment, Transform3D(Basis(), point))
-		bottom = top + FIXED_KNUCKLE_LENGTH
+		bottom = interval.y
 
 static func leaf(door: ShipLayout.DoorSpec) -> Array[Group]:
 	var aperture := door.leaf_aperture()
@@ -147,8 +166,7 @@ static func leaf(door: ShipLayout.DoorSpec) -> Array[Group]:
 				var join := Vector3(elbow.x, y, plate_z)
 				_pin(straps, "neck-axis-%d" % index, 0.006, axis.distance_to(elbow), (axis + elbow) / 2, Vector3.RIGHT)
 				_pin(straps, "neck-face-%d" % index, 0.006, elbow.distance_to(join), (elbow + join) / 2, (join - elbow).normalized())
-				_pin(straps, "barrel-%d" % index, BARREL_RADIUS, BARREL_LENGTH, axis + Vector3.UP * BARREL_OFFSET, Vector3.UP)
-				_pin(straps, "cap-%d" % index, BARREL_RADIUS, 0.02, axis - Vector3.UP * 0.10, Vector3.UP)
+				_pin(straps, "barrel-%d" % index, BARREL_RADIUS, BARREL_LENGTH, axis + Vector3.UP * (BARREL_OFFSET + HINGE_STACK_SHIFTS[index]), Vector3.UP)
 				for x_offset: float in [-0.065, 0.065]:
 					for y_offset: float in [-0.065, 0.065]:
 						_pin(straps, "bolt-%d-%s-%s" % [index, x_offset, y_offset], 0.016, 0.008, Vector3(strap_x + x_offset, y + y_offset, plate_z - HINGE_LEAF_SIZE.z / 2 - 0.004))
