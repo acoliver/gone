@@ -1,3 +1,5 @@
+> **Superseded duration note (2026-11-07):** This source guide describes the story duration as a century. That duration is superseded by [docs/design/decisions.md](../decisions.md), ruling 25: about a thousand Earth years. The source text below is retained unchanged.
+
 # Gone: Naleya glyph and language implementation guide
 
 Use this file with the three supplied PDFs. Implement the established writing system and language; preserve the shapes and meanings rather than inventing a new alien font or translating English letter by letter.
