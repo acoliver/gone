@@ -16,6 +16,8 @@ static func _pod_group(pod: Pods.Pod) -> Node3D:
 	group.name = "Pod%d" % pod.id().index()
 	group.position = frame[1]
 	group.quaternion = frame[0]
-	group.add_child(PodMesh.make_shell(pod.state()))
+	var shell := PodMesh.make_shell(pod.state())
+	Lighting.mesh_layers(shell, 1 | Lighting.POD_STATUS_MASK)
+	group.add_child(shell)
 	group.add_child(PodStrips.make())
 	return group

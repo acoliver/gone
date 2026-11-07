@@ -25,6 +25,10 @@ const REGULAR_RANGE: float = 7.0
 ## once lit: the "dim but regular" brief.
 const REGULAR_DIM_SHARE: float = 0.55
 
+## Extra receiver layer on bay pods, not on the nearby walls or floor.
+const POD_STATUS_MASK: int = 1 << 19
+const POD_STATUS_ENERGY: float = 0.14
+
 ## A lit regular strip's omni energy, one definition for every module.
 static func regular_energy() -> float:
 	return FIXTURE_ENERGY * REGULAR_DIM_SHARE
@@ -89,8 +93,9 @@ static func build(game: Game) -> Lighting:
 	return lighting
 
 ## Emissive meshes do not illuminate their surroundings without GI. These
-## short-range red proxies supply belt spill and its head-wall bounce, keeping
-## the underside of the attached head roll readable without room ambient.
+## diffuse-only proxies supply the belt and head-seam fill without reflecting
+## point sources in the clearcoat. Pod-only receivers prevent red pools on the
+## room shell while the always-on status belts retain their local contribution.
 static func _pod_status_spill(pod: Pods.Pod) -> Node3D:
 	var spill := Node3D.new()
 	spill.name = "PodStatusSpill%d" % pod.id().index()
@@ -102,7 +107,9 @@ static func _pod_status_spill(pod: Pods.Pod) -> Node3D:
 			light.name = "BeltSpill"
 			light.position = Vector3(side*.52,.28,station)
 			light.light_color = EMERGENCY_RED
-			light.light_energy = .12
+			light.light_energy = POD_STATUS_ENERGY
+			light.light_specular = 0.0
+			light.light_cull_mask = POD_STATUS_MASK
 			light.omni_range = 1.1
 			light.shadow_enabled = false
 			spill.add_child(light)
@@ -111,7 +118,9 @@ static func _pod_status_spill(pod: Pods.Pod) -> Node3D:
 		head.name = "HeadStatusBounceLeft" if side < 0 else "HeadStatusBounceRight"
 		head.position = Vector3(side*.38,.42,-1.30)
 		head.light_color = EMERGENCY_RED
-		head.light_energy = .12
+		head.light_energy = POD_STATUS_ENERGY
+		head.light_specular = 0.0
+		head.light_cull_mask = POD_STATUS_MASK
 		head.omni_range = 1.1
 		head.shadow_enabled = false
 		spill.add_child(head)
@@ -317,7 +326,7 @@ static func mesh_layers(node: Node, mask: int) -> void:
 		mesh_layers(child, mask)
 
 static func isolate_lights(node: Node, mask: int) -> void:
-	if node is Light3D:
+	if node is Light3D and node.light_cull_mask != POD_STATUS_MASK:
 		node.light_cull_mask = mask
 	for child: Node in node.get_children():
 		isolate_lights(child, mask)
