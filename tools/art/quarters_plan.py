@@ -408,12 +408,13 @@ def render(layout, reachable, reach_info, output):
         bounds = prop_pixels[prop["id"]]
         if prop.get("h_from", 0) >= 1.5:
             x0, y0, x1, y1 = bounds
+            outline = tuple(max(0, c - 90) for c in color)
             for x in range(x0, x1, 24):
-                draw.line((x, y0, min(x + 12, x1), y0), fill=outline, width=3)
-                draw.line((x, y1, min(x + 12, x1), y1), fill=outline, width=3)
+                draw.line((x, y0, min(x + 12, x1), y0), fill=outline, width=6)
+                draw.line((x, y1, min(x + 12, x1), y1), fill=outline, width=6)
             for y in range(y0, y1, 24):
-                draw.line((x0, y, x0, min(y + 12, y1)), fill=outline, width=3)
-                draw.line((x1, y, x1, min(y + 12, y1)), fill=outline, width=3)
+                draw.line((x0, y, x0, min(y + 12, y1)), fill=outline, width=6)
+                draw.line((x1, y, x1, min(y + 12, y1)), fill=outline, width=6)
         elif prop.get("shape") == "round":
             draw.ellipse(bounds, fill=color, outline=outline, width=3)
         else:
@@ -427,6 +428,15 @@ def render(layout, reachable, reach_info, output):
 
     occupied = []
     label_bounds = []
+    route_segments = []
+    for route in reach_info["widest_paths"]:
+        marker = next((item for item in reach_info["bottleneck_points"] if item["target"] == route["target"]), None)
+        if marker:
+            points = [pt(*point) for point in route["points"]]
+            route_segments.extend(zip(points, points[1:]))
+    for start, end in route_segments:
+        occupied.append((min(start[0], end[0]) - 10, min(start[1], end[1]) - 10,
+                         max(start[0], end[0]) + 10, max(start[1], end[1]) + 10))
     for prop in label_props:
         name = labels[prop["id"]]
         box = prop_pixels[prop["id"]]
@@ -436,6 +446,12 @@ def render(layout, reachable, reach_info, output):
         x0, y0, x1, y1 = box
         cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
         candidates = []
+        if prop["id"] == "view_screen":
+            candidates.extend(((x1 + tw / 2 + 24, cy, False), (x1 + tw / 2 + 24, cy - 90, False)))
+        elif prop["id"] == "media_cabinet":
+            candidates.extend(((cx + 120, y1 + th / 2 + 15, False), (cx + 120, y0 - th / 2 - 15, False)))
+        elif prop["id"] == "wardrobe_door":
+            candidates.extend(((x0 - tw / 2 - 20, cy - th - 20, False), (x0 - tw / 2 - 20, cy + th + 20, False)))
         if x1 - x0 >= tw + 16 and y1 - y0 >= th + 16:
             candidates.append((cx, cy, True))
         for d in range(8, 601, 24):
@@ -523,7 +539,10 @@ def render(layout, reachable, reach_info, output):
     for bottleneck in distinct.values():
         px, py = pt(*bottleneck["point"])
         draw.ellipse((px - 9, py - 9, px + 9, py + 9), fill=(215, 55, 45), outline=(255, 255, 255), width=3)
-        draw.text((px + 18, py - 20), f"{bottleneck['width_m']:.2f} m", fill=(31, 38, 40), font=font(26),
+        nearest = min(route_segments, key=lambda segment: point_segment_distance(px, py, segment[0], segment[1]))
+        dx, dy = nearest[1][0] - nearest[0][0], nearest[1][1] - nearest[0][1]
+        label_x, label_y = (px - 80, py - 45) if abs(dx) >= abs(dy) else (px + 35, py - 55)
+        draw.text((label_x, label_y), f"{bottleneck['width_m']:.2f} m", fill=(31, 38, 40), font=font(34),
                   stroke_width=5, stroke_fill=(255, 255, 252))
 
     camera = layout["camera"]
@@ -563,7 +582,7 @@ def render(layout, reachable, reach_info, output):
         draw.line((x, sy - 11, x, sy + 11), fill=(35, 41, 43), width=3)
     for x, text in ((sx, "0"), (sx + 2 * step, "1 m"), (sx + 4 * step, "2 m")):
         draw.line((x, sy - 11, x, sy + 11), fill=(35, 41, 43), width=3)
-        draw.text((x, sy + 18), text, fill=(35, 41, 43), font=font(26), anchor="mt")
+        draw.text((x, sy + 18), text, fill=(35, 41, 43), font=font(34), anchor="mt")
     lx, ly = margin + 700, image.height - footer + 20
     legend = [(f"zone_{zone}", zone) for zone in ZONE_COLORS]
     legend.extend((("dash", "Dashed outline: wall-mounted, floor free below"),
@@ -577,20 +596,21 @@ def render(layout, reachable, reach_info, output):
         x, y = lx + (index % 2) * 1010, ly + (index // 2) * 78
         if kind.startswith("zone_"):
             color = ZONE_COLORS[text]
-            draw.rectangle((x, y + 3, x + 22, y + 25), fill=color,
+            draw.rectangle((x, y + 3, x + 40, y + 35), fill=color,
                            outline=tuple(max(0, channel - 65) for channel in color))
         elif kind == "dash":
-            for dx in range(0, 56, 18):
-                draw.line((x + dx, y + 12, x + dx + 10, y + 12), fill=(55, 63, 65), width=3)
+            for dx in range(0, 48, 16):
+                draw.line((x + dx, y + 18, x + dx + 12, y + 18), fill=(38, 45, 47), width=6)
         elif kind == "floor":
-            draw.rectangle((x, y + 2, x + 38, y + 26), fill=(234, 245, 231), outline=(140, 160, 138))
+            draw.rectangle((x, y + 2, x + 40, y + 34), fill=(234, 245, 231), outline=(140, 160, 138))
         elif kind == "route":
-            draw.line((x, y + 14, x + 45, y + 14), fill=(44, 110, 194), width=5)
+            draw.line((x, y + 18, x + 48, y + 18), fill=(44, 110, 194), width=6)
         elif kind == "bottle":
             draw.ellipse((x + 10, y + 5, x + 26, y + 21), fill=(215, 55, 45))
         elif kind == "camera":
-            draw.line((x, y + 23, x + 19, y + 2, x + 38, y + 23), fill=(90, 111, 150), width=3)
-        draw.text((x + 65, y), text, fill=(40, 46, 48), font=font(26))
+            draw.line((x + 4, y + 32, x + 25, y + 3), fill=(90, 111, 150), width=4)
+            draw.line((x + 4, y + 32, x + 48, y + 30), fill=(90, 111, 150), width=4)
+        draw.text((x + 65, y), text, fill=(31, 38, 40), font=font(34))
     image.save(output, format="PNG", optimize=True)
 
 def main():
