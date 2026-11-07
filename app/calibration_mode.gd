@@ -354,8 +354,9 @@ class CalibrationDriver:
 	extends Node
 
 	var mode
+	var _elapsed := 0.0
 
-	func _process(_delta: float) -> void:
+	func _process(delta: float) -> void:
 		var harness = mode
 		if harness.failed:
 			return
@@ -367,8 +368,16 @@ class CalibrationDriver:
 			return
 		if not harness.ready or harness.busy_capturing:
 			return
-		# A meter sample belongs to one rendered frame. Catch-up physics ticks
-		# would integrate the same stale measurement repeatedly under GPU load.
+		# Bound feedback by both the logical cadence and fresh rendered samples.
+		# Never integrate catch-up ticks against one stale GPU meter reading.
+		_elapsed += delta
+		var interval := 1.0 / float(harness.scenario.ticks_per_second)
+		if _elapsed < interval:
+			return
+		_elapsed = fmod(_elapsed, interval)
 		harness.drive_tick()
+		# macOS can stop automatic rendering for an occluded harness window.
+		# The meter still needs the new emissions before the next feedback step.
+		RenderingServer.call_deferred("force_draw", false)
 		if not harness.pending_captures.is_empty():
 			harness.capture_next_beat()

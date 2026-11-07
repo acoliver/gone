@@ -21,6 +21,11 @@ func test_meter_feedback_advances_once_per_rendered_frame() -> void:
 	harness.busy_capturing = false
 	driver._process(1.0 / 60.0)
 	assert_int_equal(harness.tick, 2, "the next rendered sample advances exactly once")
+	for i: int in range(3):
+		driver._process(1.0 / 240.0)
+	assert_int_equal(harness.tick, 2, "fast render frames must not accelerate logical feedback")
+	driver._process(1.0 / 240.0)
+	assert_int_equal(harness.tick, 3, "four fast frames supply one logical interval")
 	driver.free()
 
 class MeterHarness:
@@ -30,7 +35,7 @@ class MeterHarness:
 	var busy_capturing := false
 	var frame := 0
 	var tick := 0
-	var scenario := {"max_frames": 100}
+	var scenario := {"max_frames": 100, "ticks_per_second": 60}
 	var pending_captures: Array = []
 	var chip := MeterChip.new()
 	func drive_tick() -> void:
