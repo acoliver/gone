@@ -21,6 +21,14 @@ var _tri_c: Array[Vector3] = []
 var _tri_min: Array[Vector3] = []
 var _tri_max: Array[Vector3] = []
 
+func test_fabric_reflectance_keeps_the_padding_distinct() -> void:
+	var couch := PodMesh.couch_material()
+	var pillow: StandardMaterial3D = PodMesh._materials["PillowFabric"]
+	assert_true(couch.albedo_color == Color(.10,.23,.26).linear_to_srgb(), "couch uses medium blue-grey padding rather than near-black fabric")
+	assert_true(pillow.albedo_color == Color(.13,.40,.45).linear_to_srgb(), "the lighter pillow stays distinct from the couch")
+	assert_false(couch.emission_enabled, "the padding is lit fabric, not a luminous panel")
+	assert_false(pillow.emission_enabled, "the pillow reflects the pod and room lights")
+
 func test_all_seven_pods_share_the_one_shell_mesh() -> void:
 	var pods := StasisPods.build(Pods.PodRegistry.frozen())
 	var groups: Array[Node] = pods.get_children()
@@ -113,7 +121,7 @@ func test_shell_resource_loads_and_stays_cheap() -> void:
 			# #88: replace the opaque color pin with the tested thin-glass contract.
 			assert_true(material == PodMesh.canopy_material() and material is ShaderMaterial, "only glazing uses a shader")
 			assert_true(material.shader.get_shader_uniform_list().is_empty(), "glass needs no texture bindings")
-	assert_true(PodMesh.couch_material().albedo_color == Color(0.045, 0.065, 0.085).linear_to_srgb(), "couch is darker fabric")
+	assert_true(PodMesh.couch_material().albedo_color == Color(.10, .23, .26).linear_to_srgb(), "couch is medium blue-grey fabric")
 	assert_true(absf(PodMesh.couch_material().roughness - 0.95) < 1e-4, "fabric stays rough")
 	assert_true(triangles > 0, "the pod mesh is not empty")
 	assert_true(triangles <= 20000, "the entire pod stays cheap: %d tris must be <= 20000" % triangles)
