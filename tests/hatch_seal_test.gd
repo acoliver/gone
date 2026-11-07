@@ -45,8 +45,15 @@ func _append_mesh_vertices(mesh: Mesh, pose: Transform3D, faces: PackedVector3Ar
 			for index: int in indices: faces.append(pose * vertices[index])
 
 func _sealed(id: StringName, side: float) -> void:
-	var spec := ShipLayout.authored().layout.door(id)
+	var layout := ShipLayout.authored().layout
+	var spec := layout.door(id)
 	var view := DoorView.build(spec)
+	# Rounded leaf corners expose the wall outside the ring. Keep the same
+	# rectangular ray grid and query the production wall/frame/leaf union.
+	var walls := Node3D.new()
+	walls.transform = spec.frame()
+	var wall_solids := ShipGeometry.doorway_wall_solids(layout) if id == ShipLayout.BAY_DOOR_ID else ShipGeometry.hatch_wall_solids(spec)
+	for solid: ShipGeometry.SolidSpec in wall_solids: walls.add_child(DoorView.split_surface(solid, spec.frame(), 1, 1))
 	if OS.has_environment("GONE_SEAL_NEGATIVE_CONTROL"):
 		preload("res://tests/hatch_mesh_ranges.gd").remove_seals(view)
 	var misses := 0
@@ -58,6 +65,7 @@ func _sealed(id: StringName, side: float) -> void:
 			var eye := spec.frame() * Vector3(eye_x, eye_y, ShipLayout.WALL / 2 + side * 2.0)
 			var faces := PackedVector3Array()
 			preload("res://tests/hatch_render_faces.gd").collect(view, eye, 1, faces)
+			preload("res://tests/hatch_render_faces.gd").collect(walls, eye, 1, faces)
 			var triangles := TriangleMesh.new()
 			assert_true(triangles.create_from_faces(faces), "eye-facing rendered hatch triangles form a ray-query mesh")
 			for column: int in range(121):
@@ -68,6 +76,7 @@ func _sealed(id: StringName, side: float) -> void:
 						misses += 1
 						if first == "": first = "eye=%s aperture=(%d,%d)" % [eye, column, row]
 	view.free()
+	walls.free()
 	print("SEAL %s face=%+d rays=%d misses=%d %s" % [id, int(side), rays, misses, first])
 	assert_int_equal(misses, 0, "%s face=%+d rendered leaf/frame leaks: %s" % [id, int(side), first])
 
@@ -94,13 +103,20 @@ func test_leaf_perimeter_is_steel_at_the_face_not_a_recessed_backing() -> void:
 			preload("res://tests/hatch_render_faces.gd").collect(view.label_leaf(), eye, 1, faces)
 			var triangles := TriangleMesh.new()
 			assert_true(triangles.create_from_faces(faces), "leaf has visible steel")
-			for x: float in [-HatchParts.HINGE_RETURN_WIDTH + 0.001, 0.001, spec.leaf_aperture().x / 2, spec.leaf_aperture().x - 0.001]:
-				for y: float in [ShipGeometry.SILL_HEIGHT + 0.001, spec.aperture().y - 0.001]:
-					# Andrew's flush slab replaces the old symmetric 100 mm face depth.
+			var seal: HatchParts.Part
+			for group: HatchParts.Group in HatchParts.leaf(spec):
+				if String(group.path) == ("ForeFaceSealSteel" if side < 0 else "AftFaceSealSteel"): seal = group.parts[0]
+			# Square AABB corners no longer belong to the leaf. Every actual
+			# corner station and edge midpoint retains the same face-depth gate.
+			for index: int in range(seal.contour.size()):
+				var a := seal.contour[index]
+				var b := seal.contour[(index + 1) % seal.contour.size()]
+				for point: Vector2 in [a, (a + b) / 2]:
+					var xy := point - point.normalized() * 0.001 + Vector2(seal.transform.origin.x + HatchParts.HINGE_OUTSET, seal.transform.origin.y)
 					var depth := spec.leaf_face_depth(0 if side < 0 else 1)
-					var target := pose * Vector3(x + HatchParts.HINGE_OUTSET, y, side * depth)
+					var target := pose * Vector3(xy.x, xy.y, side * depth)
 					var hit := triangles.intersect_segment(eye, eye + (target - eye) * 2)
-					assert_true(not hit.is_empty() and hit.position.distance_to(eye) <= target.distance_to(eye) + 0.001, "leaf perimeter meets its face without a dark recess: %s face=%+d" % [id, side])
+					assert_true(not hit.is_empty() and hit.position.distance_to(eye) <= target.distance_to(eye) + 0.001, "rounded leaf perimeter meets its face without a dark recess: %s face=%+d" % [id, side])
 		view.free()
 
 func test_render_queries_respect_visibility_layers_and_material_culling() -> void:
@@ -245,7 +261,7 @@ func test_wall_returns_use_the_approach_mask_and_stops_have_no_horizontal_slot()
 		assert_true(bevel, "top stop must face the approach light rather than form a black horizontal slot: " + id)
 		view.free()
 
-func test_seal_box_faces_keep_flat_normals() -> void:
+func test_seal_faces_keep_flat_normals() -> void:
 	var spec := ShipLayout.authored().layout.door(ShipLayout.BAY_DOOR_ID)
 	var view := DoorView.build(spec)
 	for side: String in ["ForeSteel", "AftSteel"]:
@@ -264,7 +280,7 @@ func test_seal_box_faces_keep_flat_normals() -> void:
 				var c := vertices[indices[triangle + 2]]
 				var normal := (c - a).cross(b - a).normalized()
 				for corner: int in range(3):
-					assert_true(normals[indices[triangle + corner]].dot(normal) > 0.999999, "flat seal faces must not smooth across their square edges: " + piece.name)
+					assert_true(normals[indices[triangle + corner]].dot(normal) > 0.999999, "flat seal faces must not smooth across their edges: " + piece.name)
 	view.free()
 
 func test_rounded_leaf_faces_do_not_bend_their_normals_into_the_bevel() -> void:

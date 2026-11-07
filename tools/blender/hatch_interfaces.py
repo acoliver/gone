@@ -48,22 +48,12 @@ def rounded_outline(size, radius, segments=8):
     return result
 
 
-def seal_pocket(size, radius, recess, side):
-    inner = rounded_outline(size, radius)
-    inner = [(x * .98, y * .99) for x, y in inner]
-    outer = []
-    for corner in range(4):
-        base = corner * 9
-        tip = Vector((size[0] / 2 * (1 if corner in (0, 3) else -1),
-                      size[1] / 2 * (1 if corner < 2 else -1)))
-        start = Vector((tip.x, inner[base][1]) if corner % 2 == 0 else (inner[base][0], tip.y))
-        end = Vector((inner[base+8][0], tip.y) if corner % 2 == 0 else (tip.x, inner[base+8][1]))
-        for step in range(9):
-            point = start.lerp(tip, step / 4) if step <= 4 else tip.lerp(end, (step-4) / 4)
-            outer.append(tuple(point))
+def seal_pocket(size, contour, recess, side):
+    outer = contour
+    inner = [(x * .98, y * .99) for x, y in outer]
     # Meter-long wall triangles against a millimetre recess lose their tangent
     # basis through cancellation. Split corresponding runs before making rings,
-    # retaining the same curves and exact square perimeter.
+    # retaining the shared rounded perimeter.
     inner_run, outer_run = [], []
     for index in range(len(inner)):
         following = (index + 1) % len(inner)
@@ -78,7 +68,7 @@ def seal_pocket(size, radius, recess, side):
     front = sign * size[2] / 2
     count = len(inner)
     rings = [(outer, -front), (outer, front), (inner, front)]
-    # Roll the pocket mouth instead of dropping directly from the square
+    # Roll the pocket mouth instead of dropping directly from the rounded
     # flange to the recessed plate. One cove spans the source recess: stacking
     # two small fillets here produces subpixel slivers with undefined tangents.
     roll = min(recess, min(size[:2]) * .006)

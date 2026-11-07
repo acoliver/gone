@@ -7,13 +7,15 @@ func test_throat_visible_depth_is_at_most_eighty_millimetres() -> void:
 			if "/THROAT/" in String(solid.id):
 				assert_true(solid.size.z <= 0.08 + 0.000001, "visible sleeve is shallow, with sealing returns owned by the collar")
 
-func test_imported_inner_reveal_has_one_continuous_depth_run_without_steps() -> void:
+func test_imported_rear_seating_lip_and_throat_keep_continuous_depth_runs() -> void:
 	var packed: PackedScene = load(HatchAsset.SOURCE)
 	var root := packed.instantiate()
 	var meshes: Dictionary = {}
 	_collect(root, meshes)
 	var document: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(HatchAsset.MANIFEST))
 	for variant: Dictionary in document.variants:
+		var door := ShipLayout.authored().layout.door(StringName(variant.door_id))
+		var seating := ShipGeometry.hatch_seating_outline(door)
 		var ring: Dictionary = {}
 		var runs: Dictionary = {}
 		for solid: Dictionary in variant.frame_solids:
@@ -25,8 +27,14 @@ func test_imported_inner_reveal_has_one_continuous_depth_run_without_steps() -> 
 			var pose := HatchAsset.pose(solid.transform)
 			for endpoint: int in [0, 1]:
 				var expected := ring_pose * Vector3(ring[station].section[endpoint][0], ring[station].section[endpoint][1], 0)
+				# The rear lip deliberately laps the rounded upper leaf. The
+				# lower seat keeps its walk height; the throat stays on the ring.
+				var corner := (station + endpoint) % seating.size()
+				if "/LIP/" in solid.id:
+					expected.x = seating[corner].x
+					expected.y = seating[corner].y + (door.aperture().y + ShipGeometry.SILL_HEIGHT) / 2
 				var actual := pose * Vector3(solid.section[endpoint][0], solid.section[endpoint][1], 0)
-				assert_true(Vector2(actual.x, actual.y).distance_to(Vector2(expected.x, expected.y)) < 0.000001, "lip/throat share the ring's exact inner curve, no nested stepped arches")
+				assert_true(Vector2(actual.x, actual.y).distance_to(Vector2(expected.x, expected.y)) < 0.000001, "rear lip meets its rounded seat; throat stays on the ring")
 			var wall_normals: Array[Vector3] = []
 			var wall_points: Array[Vector3] = []
 			for name: String in document.nodes:

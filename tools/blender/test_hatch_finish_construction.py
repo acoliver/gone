@@ -152,19 +152,19 @@ class HatchFinishConstructionTest(unittest.TestCase):
                         self.assertGreater(min((p.to_3d() - build.Vector(corner)).length for p in points), .0001,
                                            solid["id"] + " subdivides a square corner without rounding it")
 
-    def test_square_seal_pocket_has_a_rolled_reveal_not_a_vertical_cut(self):
+    def test_rounded_seal_pocket_has_a_rolled_reveal_not_a_vertical_cut(self):
         part = self.document["variants"][0]["groups"][0]["parts"][0]
         size = [part["size"][0], part["size"][1], .010]
         for side in (0, 1):
-            vertices, faces = build.seal_pocket(size, part["radius"], .047, side)
+            vertices, faces = build.seal_pocket(size, part["contour"], .047, side)
             sign = -1 if side == 0 else 1
             front = sign * size[2] / 2
             depths = sorted({round(sign * (front - v[2]), 7) for v in vertices
                              if sign * (front - v[2]) > .000001})
-            # Exclude the back of the square backing shell. The pocket itself
+            # Exclude the back of the rounded backing shell. The pocket itself
             # needs intermediate rings, including a radial as well as axial roll.
             self.assertGreaterEqual(len(depths), 5, "single hard-edged pocket wall")
-            count = len(build.rounded_outline(size, part["radius"]))
+            count = (len(vertices) - 2) // 8
             front_inner = vertices[2*count:3*count]
             floor = [v for v in vertices if abs(v[2] - (front - sign * .047)) < 1e-7]
             self.assertGreater(max(v[0] for v in front_inner) - max(v[0] for v in floor), .001)

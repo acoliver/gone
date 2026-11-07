@@ -129,6 +129,48 @@ static func _hinge_return(group: Group, size: Vector3, center: Vector3) -> void:
 		group.add("return-%d" % group.parts.size(), &"box", segment, Transform3D(Basis(), point))
 		bottom = interval.y
 
+static func _round_backing(group: Group, boundary: PackedVector2Array, center: Vector2) -> void:
+	for part: Part in group.parts:
+		var polygon := part.contour
+		if polygon.is_empty():
+			polygon = outline(Vector2(part.size.x, part.size.y), part.radius) if part.shape == &"rounded" else PackedVector2Array([-Vector2(part.size.x, part.size.y) / 2, Vector2(part.size.x, -part.size.y) / 2, Vector2(part.size.x, part.size.y) / 2, Vector2(-part.size.x, part.size.y) / 2])
+		var origin := Vector2(part.transform.origin.x, part.transform.origin.y)
+		for index: int in range(polygon.size()): polygon[index] += origin
+		for edge: int in range(boundary.size()):
+			var a := boundary[edge] + center
+			var delta := boundary[(edge + 1) % boundary.size()] - boundary[edge]
+			# Keep the straight jamb laps and fixed-knuckle cutouts. Only the
+			# corners made the seal read as a second square door.
+			if absf(delta.x) < 1e-6 or absf(delta.y) < 1e-6: continue
+			var clipped := PackedVector2Array()
+			var previous := polygon[-1]
+			var before := delta.cross(previous - a)
+			for current: Vector2 in polygon:
+				var after := delta.cross(current - a)
+				if (before < 0) != (after < 0): clipped.append(previous.lerp(current, before / (before - after)))
+				if after >= 0: clipped.append(current)
+				previous = current
+				before = after
+			polygon = clipped
+			if polygon.is_empty(): break
+		if polygon.size() < 3:
+			part.contour.clear()
+			continue
+		var lo := polygon[0]
+		var hi := lo
+		for point: Vector2 in polygon:
+			lo = lo.min(point)
+			hi = hi.max(point)
+		var midpoint := (lo + hi) / 2
+		part.transform.origin.x = midpoint.x
+		part.transform.origin.y = midpoint.y
+		part.size.x = hi.x - lo.x
+		part.size.y = hi.y - lo.y
+		part.shape = &"section"
+		part.contour = PackedVector2Array()
+		for point: Vector2 in polygon: part.contour.append(point - midpoint)
+	group.parts = group.parts.filter(func(part: Part) -> bool: return not part.contour.is_empty())
+
 static func leaf(door: ShipLayout.DoorSpec) -> Array[Group]:
 	var aperture := door.leaf_aperture()
 	var into := signf(door.hinge_frame().origin.z - ShipLayout.WALL / 2)
@@ -261,7 +303,11 @@ static func leaf(door: ShipLayout.DoorSpec) -> Array[Group]:
 		var size := Vector3(HatchGeneratedParts.RIB_WIDTH, interval.y - interval.x, HatchGeneratedParts.RIB_DEPTH)
 		rib.add("segment-%d" % index, &"generated_rib", size, Transform3D(Basis(), Vector3(aperture.x / 2, (interval.x + interval.y) / 2, -APPROACH_SLAB_DEPTH - size.z / 2)))
 	groups.append(rib)
-	for group: Group in groups: group.transform.origin.x += HINGE_OUTSET
+	var slab := groups[0].parts[0]
+	for group: Group in groups:
+		if group.steel and group.path not in [NodePath("ForeSteel"), NodePath("AftSteel")]:
+			_round_backing(group, slab.contour, Vector2(aperture.x / 2, center_y))
+		group.transform.origin.x += HINGE_OUTSET
 	_leaves[key] = groups
 	return groups
 

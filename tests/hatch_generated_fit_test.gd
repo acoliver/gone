@@ -71,6 +71,15 @@ func test_physical_records_change_only_at_approved_fittings_and_ring_planes() ->
 					row.vertices[vi][2] = old.vertices[vi][2]
 				row.size[2] = old.size[2]
 				row.transform.origin[2] = old.transform.origin[2]
+			elif "/LIP/" in row.id:
+				# The aft seat now overlaps the rounded leaf by the existing lap.
+				# Its unchanged depth and outer two corners still meet the same ring.
+				assert_true(HatchAsset.vector(row.size).z == HatchAsset.vector(old.size).z and HatchAsset.pose(row.transform).origin.z == HatchAsset.pose(old.transform).origin.z, "rear lip depth unchanged")
+				for endpoint: int in [2, 3]:
+					var point := HatchAsset.pose(row.transform) * Vector3(row.section[endpoint][0], row.section[endpoint][1], 0)
+					var before := HatchAsset.pose(old.transform) * Vector3(old.section[endpoint][0], old.section[endpoint][1], 0)
+					assert_true(point.distance_to(before) < 0.000001, "rear lip still seats on the same outer loop")
+				for field: String in ["size", "transform", "section", "vertices", "faces"]: row[field] = old[field]
 			elif String(row.id).begins_with("KEEPER/"):
 				assert_true(absf(row.transform.origin[2] - (-0.048 if index == 0 else 0.248)) < 0.000001, "keeper remains seated on approved bead front")
 				row.transform.origin[2] = old.transform.origin[2]
@@ -111,19 +120,19 @@ func test_physical_records_change_only_at_approved_fittings_and_ring_planes() ->
 				# Compare the same native poses exactly, without a tolerance.
 				assert_true(HatchAsset.pose(group.transform) == HatchAsset.pose(old.transform), "whole-object replacement preserves group roots")
 				continue
-			if group.path == "BackingLapHinge" or "PivotSeal" in group.path or "HingeSeal" in group.path:
-				# Four fixed knuckles and their caps now interrupt five strips.
-				# Check every strip's unchanged transverse footprint and pose
-				# before normalizing only its identity and axial segmentation.
-				assert_int_equal(group.parts.size(), 5, "upper and lower fixed hardware at both hinges")
+			if String(group.path).begins_with("BackingLap") or "SealSteel" in String(group.path):
+				# The shared corner regression pins these sections. Preserve depth,
+				# ownership and group roots while replacing only the trimmed XY skin.
+				var segmented: bool = group.path == "BackingLapHinge" or "PivotSeal" in group.path or "HingeSeal" in group.path
+				assert_int_equal(group.parts.size(), 4 if segmented else 1, "rounded corners remove only the uppermost hinge strip")
 				for part: Dictionary in group.parts:
 					var reference: Dictionary = old.parts[0]
-					part.size[1] = reference.size[1]
-					part.transform.origin[1] = reference.transform.origin[1]
-					part.index = reference.index
-					part.id = reference.id
+					assert_true(part.shape == "section" and part.contour.size() >= 3, "backing has an explicit trimmed perimeter")
+					assert_true(HatchAsset.vector(part.size).z == HatchAsset.vector(reference.size).z and HatchAsset.pose(part.transform).origin.z == HatchAsset.pose(reference.transform).origin.z, "backing and seal depth stay unchanged")
+					assert_true(part.transform.basis == reference.transform.basis, "backing axes stay unchanged")
+					for field: String in ["size", "transform", "shape", "contour", "index", "id"]: part[field] = reference[field]
 					var normalized: Dictionary = JSON.parse_string(JSON.stringify(part, "", false, true))
-					assert_true(normalized == reference, "each hinge return retains every non-axial field")
+					assert_true(normalized == reference, "every non-perimeter backing field stays unchanged")
 				group.parts = old.parts
 			kept_actual.append(group)
 		for group: Dictionary in expected.groups:

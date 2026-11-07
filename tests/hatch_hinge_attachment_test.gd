@@ -89,13 +89,13 @@ func test_each_moving_barrel_hangs_between_two_bolted_frame_knuckles() -> void:
 					bolts += 1
 			assert_int_equal(bolts, 6, "six frame bolts per heavy hinge")
 
-func test_frame_knuckle_cutouts_preserve_five_sealing_strips() -> void:
+func test_frame_knuckle_cutouts_preserve_the_four_remaining_rounded_sealing_strips() -> void:
 	var spec := ShipLayout.authored().layout.door(ShipLayout.BAY_DOOR_ID)
 	for group: HatchParts.Group in HatchParts.leaf(spec):
 		if not (String(group.path) == "BackingLapHinge" or "PivotSeal" in String(group.path) or "HingeSeal" in String(group.path)): continue
-		assert_int_equal(group.parts.size(), 5, "four fixed knuckle and cap interruptions leave five strips")
-		if group.parts.size() != 5: continue
-		for index: int in range(4):
+		assert_int_equal(group.parts.size(), 4, "rounding removes the fifth strip above the upper knuckle")
+		if group.parts.size() != 4: continue
+		for index: int in range(3):
 			var lower := group.parts[index]
 			var upper := group.parts[index + 1]
 			var bottom := lower.transform.origin.y + lower.size.y / 2

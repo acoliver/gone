@@ -1004,6 +1004,18 @@ static func hatch_frame_rivet_stations(aperture: Vector2) -> Array[Transform3D]:
 		stations.append(Transform3D(Basis(Vector3.RIGHT, PI / 2), Vector3(point.x, point.y + center_y, 0)))
 	return stations
 
+static func hatch_seating_outline(door: ShipLayout.DoorSpec) -> PackedVector2Array:
+	var opening := hatch_ring_outline(door)
+	var seating := _hatch_offset_outline(opening, -HatchParts.SEAL_LAP)
+	var walk_edge := SILL_WALK_WIDTH / 2 + 0.005
+	var lower_radius := (door.aperture().x + 0.01) / 2 - walk_edge
+	# Inset the lower flanks horizontally, tapering to zero at the walk
+	# tangencies. A normal offset here would raise the 80 mm threshold.
+	for index: int in range(opening.size() / 2, opening.size()):
+		var fraction := clampf((absf(opening[index].x) - walk_edge) / lower_radius, 0, 1)
+		seating[index] = Vector2(opening[index].x - signf(opening[index].x) * HatchParts.SEAL_LAP * fraction, opening[index].y)
+	return seating
+
 static func hatch_surround_solids(door: ShipLayout.DoorSpec) -> Array[SolidSpec]:
 	var solids: Array[SolidSpec] = []
 	var aperture := door.aperture()
@@ -1014,8 +1026,10 @@ static func hatch_surround_solids(door: ShipLayout.DoorSpec) -> Array[SolidSpec]
 		var owner := "%s/SURROUND/%s" % [door.id(), "FORE" if side == 0 else "AFT"]
 		var ring := hatch_ring_outline(door)
 		var opening := ring
+		var seating := hatch_seating_outline(door)
 		_annulus(solids, owner + "/RING", door.frame() * face, ring, hatch_ring_outline(door, HATCH_RING_WIDTH), center_y, HATCH_RING_FRONT, HATCH_RING_REAR)
-		_annulus(solids, owner + "/LIP", door.frame() * face, opening, _hatch_offset_outline(opening, 0.035), center_y, HATCH_RING_REAR, -0.004)
+		# The stationary rear lip laps the rounded leaf, including its corners.
+		_annulus(solids, owner + "/LIP", door.frame() * face, seating, _hatch_offset_outline(opening, 0.035), center_y, HATCH_RING_REAR, -0.004)
 		if (side == 0 and into > 0) or (side == 1 and into < 0):
 			_annulus(solids, owner + "/THROAT", door.frame() * face, opening, _hatch_offset_outline(opening, 0.05), center_y, -0.004, -0.002, WALL / 2 + absf(door.hinge_frame().origin.z - WALL / 2) - Vector2(HatchParts.HINGE_RETURN_WIDTH, WALL / 2).length() - 0.001)
 		var bridge_rear := WALL + absf(door.hinge_frame().origin.z - WALL / 2) + HatchParts.SEAL_LAP

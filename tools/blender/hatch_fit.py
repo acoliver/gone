@@ -586,12 +586,19 @@ def fit_interfaces(variant):
         for part in group["parts"]:
             if part["id"] not in required:
                 continue
-            if part["shape"] != "box":
-                raise FitError(f"interface {part['id']}: expected exported square seal")
-            points = np.asarray([[x, y, z] for z in [-.5, .5] for y in [-.5, .5] for x in [-.5, .5]]) * part["size"]
+            if part["shape"] == "section":
+                contour = part["contour"]
+                count = len(contour)
+                points = np.asarray([[x, y, z] for z in [-part["size"][2] / 2, part["size"][2] / 2] for x, y in contour])
+                polygons = [list(reversed(range(count))), list(range(count, count * 2))]
+                polygons.extend([i, (i + 1) % count, (i + 1) % count + count, i + count] for i in range(count))
+            elif part["shape"] == "box":
+                points = np.asarray([[x, y, z] for z in [-.5, .5] for y in [-.5, .5] for x in [-.5, .5]]) * part["size"]
+                polygons = [[0, 2, 3, 1], [4, 5, 7, 6], [0, 1, 5, 4], [2, 6, 7, 3], [0, 4, 6, 2], [1, 3, 7, 5]]
+            else:
+                raise FitError(f"interface {part['id']}: expected exported sealing section")
             for pose in (part["transform"], group["transform"], variant["hinge_transform"]):
                 points = np.einsum("ij,jk->ik", points, np.asarray(pose["basis"])) + pose["origin"]
-            polygons = [[0, 2, 3, 1], [4, 5, 7, 6], [0, 1, 5, 4], [2, 6, 7, 3], [0, 4, 6, 2], [1, 3, 7, 5]]
             triangles = _triangles(polygons)
             result[part["id"]] = FittedRegion(part["id"], points, triangles, np.full(len(triangles), -1))
     if set(result) != required:
@@ -654,7 +661,10 @@ def validate_fit(frame, variant):
             raise FitError(f"fit part {solid['id']}: reservation exceeded by {excess.max():.9f} m")
     if set(frame.interfaces) != set(variant["fit"]["required_seal_ids"]):
         raise FitError("interfaces: missing required sealing region")
-    triangles = np.concatenate([region.vertices[region.faces] for region in frame.interfaces.values()])
+    # Rounded leaf corners expose the stationary ring. Query the complete
+    # sealing union at the same rectangular sample grid, including that steel.
+    triangles = np.concatenate([region.vertices[region.faces]
+                                for region in [*frame.interfaces.values(), *frame.ring.values()]])
     a = triangles[:, 1, :2] - triangles[:, 0, :2]
     b = triangles[:, 2, :2] - triangles[:, 0, :2]
     area = a[:, 0] * b[:, 1] - a[:, 1] * b[:, 0]

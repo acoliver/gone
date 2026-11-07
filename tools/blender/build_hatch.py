@@ -155,10 +155,10 @@ def layered_plate(size, radius):
 def geometry(part, steel=False):
     shape, size = part["shape"], part["size"]
     if "visual_recess" in part:
-        return seal_pocket(size, part["visual_radius"], part["visual_recess"], part["visual_side"])
+        return seal_pocket(size, part["contour"], part["visual_recess"], part["visual_side"])
     if shape == "cylinder":
         return radial(size, part["radius"], part["id"])
-    if shape == "band":
+    if shape in ("band", "section"):
         return extrusion(part["contour"], size[2])
     if shape == "box":
         contour = [(-size[0]/2, -size[1]/2), (size[0]/2, -size[1]/2),
@@ -320,7 +320,7 @@ def construct(document, mat, frames=None, high_sources=None, parts_source=None):
                     plate_face = abs(plate["transform"]["origin"][2]) + plate["size"][2] / 2
                     seal_face = abs(group["transform"]["origin"][2]) + part["size"][2] / 2
                     visual = dict(part, visual_recess=seal_face - plate_face + layer * 1.1,
-                                  visual_radius=plate["radius"], visual_side=group["side"])
+                                  visual_side=group["side"])
                 high = None
                 paint_end = None
                 source_digest = None

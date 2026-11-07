@@ -126,7 +126,7 @@ func test_fixed_source_corrections_and_seal_normals_are_preserved() -> void:
 		if row.kind != "leaf": continue
 		var group: Dictionary = manifest.variants[row.variant].groups[row.group]
 		var part: Dictionary = group.parts[row.part]
-		if not group.steel or part.shape != "box": continue
+		if not group.steel or part.shape not in ["box", "section"]: continue
 		var mesh: Mesh = found[name].mesh
 		var arrays := mesh.surface_get_arrays(0)
 		var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
@@ -134,7 +134,7 @@ func test_fixed_source_corrections_and_seal_normals_are_preserved() -> void:
 		var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
 		for i: int in range(0, indices.size(), 3):
 			var normal := (vertices[indices[i + 2]] - vertices[indices[i]]).cross(vertices[indices[i + 1]] - vertices[indices[i]]).normalized()
-			for j: int in range(3): assert_true(normal.dot(normals[indices[i + j]]) > 0.999999, "flat imported square seal: " + name)
+			for j: int in range(3): assert_true(normal.dot(normals[indices[i + j]]) > 0.999999, "flat imported seal: " + name)
 	root.free()
 
 func _pose(row: Dictionary) -> Transform3D:

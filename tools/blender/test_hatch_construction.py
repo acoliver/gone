@@ -170,7 +170,7 @@ class HatchConstructionTest(unittest.TestCase):
                 for loop in polygon.loop_indices:
                     self.assertGreater(normal.dot(obj.data.corner_normals[loop].vector), .999999, name)
 
-    def test_square_seal_front_perimeter_faces_outward(self):
+    def test_rounded_seal_front_perimeter_faces_outward(self):
         from mathutils.bvhtree import BVHTree
         for name, row in self.nodes.items():
             if row["kind"] != "leaf" or not row["id"].endswith("/face-return"):
@@ -181,17 +181,19 @@ class HatchConstructionTest(unittest.TestCase):
             tree = BVHTree.FromPolygons(vertices, [tuple(p.vertices) for p in obj.data.polygons], all_triangles=True)
             sign = -1 if row["side"] == 0 else 1
             origin = Vector((0, 0, sign * 2))
-            for x in (-part["size"][0] / 2 + .001, 0, part["size"][0] / 2 - .001):
-                for y in (-part["size"][1] / 2 + .001, part["size"][1] / 2 - .001):
-                    target = Vector((x, y, sign * (part["size"][2] / 2 + .0005)))
+            # The square corner points were deliberately removed. Sample every
+            # real contour station and edge midpoint at the same 1 mm inset.
+            contour = [Vector(point) for point in part["contour"]]
+            for a, b in zip(contour, contour[1:] + contour[:1]):
+                for point in (a, (a + b) / 2):
+                    inset = point - point.normalized() * .001
+                    target = Vector((inset.x, inset.y, sign * (part["size"][2] / 2 + .0005)))
                     direction = (target-origin).normalized()
                     hit = tree.ray_cast(origin, direction)
                     self.assertIsNotNone(hit[0], name)
                     self.assertLess(hit[1].dot(direction), 0, name + " inward perimeter")
                     self.assertLessEqual(hit[3], (target-origin).length + .001, name + " recessed perimeter")
-            for x in (-part["size"][0]/2, part["size"][0]/2):
-                for y in (-part["size"][1]/2, part["size"][1]/2):
-                    self.assertTrue(any((v-Vector((x, y, sign*part["size"][2]/2))).length < 1e-7 for v in vertices), name + " exact square corner")
+                self.assertTrue(any((v-Vector((a.x, a.y, sign*part["size"][2]/2))).length < 1e-7 for v in vertices), name + " exact rounded contour")
 
     def test_paint_edges_substrate_and_consistent_rivet_finish_are_attributes(self):
         plate = self.by_name["v0_g00_p000"]

@@ -184,7 +184,7 @@ static func _part_mesh(part: HatchParts.Part) -> Mesh:
 	match part.shape:
 		&"box": return box_mesh(part.size)
 		&"cylinder": return cylinder(part.radius, part.size.y)
-		&"band":
+		&"band", &"section":
 			var tool := SurfaceTool.new()
 			tool.begin(Mesh.PRIMITIVE_TRIANGLES)
 			var polygon := part.contour.duplicate()
