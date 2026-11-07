@@ -40,6 +40,8 @@ var _get_up_look_start := Vector2.ZERO
 var _get_up_look_target := 0.0
 
 const GET_UP_LOOK_TICKS := 30
+const PICK_BUTTON := MOUSE_BUTTON_LEFT
+const RELEASE_KEY := KEY_ESCAPE
 const DEVICE_RELEASE_GRACE_USEC := 60000
 const DEVICE_HELD_ACTIONS := ["move_forward", "move_back", "move_left", "move_right",
 	"look_left", "look_right", "look_up", "look_down", "climb_up", "climb_down"]
@@ -100,7 +102,7 @@ func _input(event: InputEvent) -> void:
 			elif _tab_released_cursor:
 				_tab_released_cursor = false
 				_set_mouse_capture(true)
-		if event.physical_keycode == KEY_ESCAPE and event.is_pressed():
+		if event.physical_keycode == RELEASE_KEY and event.is_pressed():
 			_tab_released_cursor = false
 			_set_mouse_capture(false)
 		for action: String in DEVICE_HELD_ACTIONS:
@@ -117,6 +119,14 @@ func _notification(what: int) -> void:
 		_tab_released_cursor = false
 		if not scripted:
 			_set_mouse_capture(false)
+
+func clear_device_input(captured: bool) -> void:
+	_device_released_at.clear()
+	_tab_released_cursor = false
+	plane.end_frame()
+	# Space can dismiss the focused Close button; that edge belongs to the UI.
+	for action: String in ["activate", "interact"]: Input.action_release(action)
+	_set_mouse_capture(captured)
 
 func _set_mouse_capture(captured: bool) -> void:
 	_mouse_pixels = Vector2.ZERO
@@ -142,7 +152,7 @@ func _device_axis(negative: String, positive: String, now_usec: int) -> float:
 func _unhandled_input(event: InputEvent) -> void:
 	if scripted:
 		return
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed and not event.canceled:
+	if event is InputEventMouseButton and event.button_index == PICK_BUTTON and event.pressed and not event.canceled:
 		var pixel: Vector2 = get_viewport().get_visible_rect().size * 0.5 if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED else event.position
 		var objective := ClickPicker.pick(camera.project_ray_origin(pixel), camera.project_ray_normal(pixel), game, motion, interactions)
 		if objective != null:

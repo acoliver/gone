@@ -84,6 +84,11 @@ release_cursor={
 "events": [Object(InputEventKey,"physical_keycode":4194306)]
 }
 
+help={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":4194332)]
+}
+
 [rendering]
 
 renderer/rendering_method="forward_plus"
