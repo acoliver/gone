@@ -8,7 +8,7 @@ func test_canopy_uses_the_shared_lit_thin_glass_shader() -> void:
 		return
 	assert_true(material.resource_name == "WindowTint", "surface identity survives replacement")
 	var code: String = material.shader.code
-	for setting: String in ["blend_premul_alpha", "depth_draw_never", "cull_disabled", "specular_schlick_ggx", "fog_disabled", "PREMUL_ALPHA_FACTOR = 1.0", "SPECULAR = 0.5", "ROUGHNESS = 0.07"]:
+	for setting: String in ["blend_premul_alpha", "depth_draw_never", "cull_disabled", "specular_schlick_ggx", "fog_disabled", "specular_occlusion_disabled", "PREMUL_ALPHA_FACTOR = 1.0", "SPECULAR = 0.5", "ROUGHNESS = 0.07"]:
 		assert_true(setting in code, "glass contract includes " + setting)
 	for forbidden: String in ["hint_screen_texture", "hint_depth_texture", "unshaded", "ambient_light_disabled", "depth_prepass_alpha"]:
 		assert_false(forbidden in code, "glass does not use " + forbidden)

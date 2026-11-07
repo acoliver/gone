@@ -1,6 +1,6 @@
 shader_type spatial;
 render_mode blend_premul_alpha, depth_draw_never, cull_disabled,
-            specular_schlick_ggx, fog_disabled;
+            specular_schlick_ggx, fog_disabled, specular_occlusion_disabled;
 
 void fragment() {
     vec3 n = normalize(NORMAL);

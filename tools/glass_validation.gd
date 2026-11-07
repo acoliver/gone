@@ -25,6 +25,8 @@ func _initialize() -> void:
 
 func _run() -> void:
 	root.size = Vector2i(1152, 648)
+	# Interior probes omit the Environment, including its background color.
+	RenderingServer.set_default_clear_color(Color.BLACK)
 	root.always_on_top = true
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 	stage = Node3D.new()
@@ -51,6 +53,8 @@ func _run() -> void:
 	mirror = StandardMaterial3D.new()
 	mirror.albedo_color = Color.WHITE
 	mirror.metallic = 1.0
+	# Godot's ambient-luminance occlusion otherwise zeros a valid probe capture.
+	mirror.disable_specular_occlusion = true
 	mirror.roughness = 0.07
 	mirror.cull_mode = BaseMaterial3D.CULL_DISABLED
 	checker = MeshInstance3D.new()
