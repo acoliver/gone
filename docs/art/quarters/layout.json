@@ -1,0 +1,529 @@
+{
+  "version": 1,
+  "issue": 95,
+  "status": "proposal for Andrew's approval",
+  "frame": "Room-local metres. Floor at y=0. X runs along the entrance wall, 0 at the left as seen from the doorway, 8 at the right. Z runs into the room, 0 at the entrance wall, 6 at the far wall. Boxes are axis-aligned footprints [x0, z0, x1, z1] with a height h. 'faces' is the direction the front of the prop points: -x, +x, -z or +z.",
+  "room": {
+    "width_x": 8.0,
+    "depth_z": 6.0,
+    "clear_height": 3.2,
+    "wall_thickness": 0.2,
+    "note": "Enlarged from 5.6 x 5.0 after Andrew said it sounded a bit small (2026-11-07). 48 m2 of floor. Deck and exact ship position are open; Andrew is thinking about D16."
+  },
+  "door": {
+    "wall": "entrance",
+    "x0": 3.4,
+    "x1": 4.6,
+    "height": 2.4,
+    "kind": "sliding leaf into the wall, matching the ship's regular doors",
+    "note": "1.2 m clear opening, the ship's standard aperture. No storage on this wall."
+  },
+  "player": {
+    "capsule_radius": 0.3,
+    "standing_height": 1.75,
+    "source": "sim/controller.gd"
+  },
+  "camera": {
+    "name": "doorway",
+    "position": [
+      4.0,
+      1.65,
+      0.15
+    ],
+    "look_at": [
+      4.0,
+      1.25,
+      6.0
+    ],
+    "horizontal_fov_deg": 100,
+    "note": "Matches the concept's ultra-wide doorway view, used for comparison captures. The in-game camera field of view is narrower, so the game view will show less of the side walls."
+  },
+  "props": [
+    {
+      "id": "bed",
+      "zone": "far wall",
+      "box": [
+        3.2,
+        3.8,
+        4.8,
+        6.0
+      ],
+      "h": 0.55,
+      "faces": "-z",
+      "parts": [
+        "frame",
+        "headboard_pad",
+        "mattress",
+        "quilt",
+        "pillow_l",
+        "pillow_r"
+      ],
+      "note": "Double bed 1.6 x 2.2 m, headboard on the far wall. Long enough for the 2.03 m occupant used for the pods."
+    },
+    {
+      "id": "headboard",
+      "zone": "far wall",
+      "box": [
+        3.2,
+        5.9,
+        4.8,
+        6.0
+      ],
+      "h": 1.1,
+      "faces": "-z",
+      "part_of": "bed"
+    },
+    {
+      "id": "bedside_l",
+      "zone": "far wall",
+      "box": [
+        2.65,
+        5.55,
+        3.15,
+        6.0
+      ],
+      "h": 0.6,
+      "faces": "-z",
+      "parts": [
+        "carcass",
+        "drawer",
+        "lamp"
+      ],
+      "note": "Her side. Hairbrush and jewellery box on top."
+    },
+    {
+      "id": "bedside_r",
+      "zone": "far wall",
+      "box": [
+        4.85,
+        5.55,
+        5.35,
+        6.0
+      ],
+      "h": 0.6,
+      "faces": "-z",
+      "parts": [
+        "carcass",
+        "drawer",
+        "lamp"
+      ],
+      "note": "His side. Photo frame on top, boots on the floor in front."
+    },
+    {
+      "id": "lockers_over_bed",
+      "zone": "far wall",
+      "box": [
+        2.65,
+        5.6,
+        5.35,
+        6.0
+      ],
+      "h_from": 1.9,
+      "h": 2.5,
+      "faces": "-z",
+      "parts": [
+        "carcass",
+        "doors"
+      ],
+      "note": "Wall-hung, above head height."
+    },
+    {
+      "id": "storage_far_l",
+      "zone": "far wall",
+      "box": [
+        0.0,
+        5.4,
+        2.6,
+        6.0
+      ],
+      "h": 2.4,
+      "faces": "-z",
+      "module": "0.6 grid: tall locker, drawer bank, tall locker, open shelves",
+      "parts": [
+        "modules"
+      ]
+    },
+    {
+      "id": "storage_far_r",
+      "zone": "far wall",
+      "box": [
+        5.4,
+        5.4,
+        8.0,
+        6.0
+      ],
+      "h": 2.4,
+      "faces": "-z",
+      "module": "0.6 grid: open shelves, drawer bank, tall locker, tall locker",
+      "parts": [
+        "modules"
+      ]
+    },
+    {
+      "id": "view_screen",
+      "zone": "left wall",
+      "box": [
+        0.0,
+        1.7,
+        0.08,
+        3.5
+      ],
+      "h_from": 1.0,
+      "h": 2.05,
+      "faces": "+x",
+      "parts": [
+        "housing",
+        "glass",
+        "display"
+      ],
+      "note": "1.8 m wide, wall-mounted, faces the sofa."
+    },
+    {
+      "id": "media_cabinet",
+      "zone": "left wall",
+      "box": [
+        0.0,
+        1.5,
+        0.45,
+        3.7
+      ],
+      "h": 0.6,
+      "faces": "+x",
+      "parts": [
+        "carcass",
+        "doors"
+      ],
+      "note": "Low storage under the screen."
+    },
+    {
+      "id": "storage_left_near",
+      "zone": "left wall",
+      "box": [
+        0.0,
+        0.2,
+        0.6,
+        1.2
+      ],
+      "h": 2.4,
+      "faces": "+x",
+      "module": "0.6 grid: tall locker, tall locker"
+    },
+    {
+      "id": "storage_left_far",
+      "zone": "left wall",
+      "box": [
+        0.0,
+        4.5,
+        0.6,
+        5.4
+      ],
+      "h": 2.4,
+      "faces": "+x",
+      "module": "0.6 grid: drawer bank over cabinet"
+    },
+    {
+      "id": "sofa",
+      "zone": "living",
+      "box": [
+        1.6,
+        1.5,
+        2.55,
+        3.7
+      ],
+      "h": 0.85,
+      "faces": "-x",
+      "parts": [
+        "frame",
+        "seat_cushions",
+        "back_cushions",
+        "throw"
+      ],
+      "note": "Three-seat, 2.2 m long, front 1.6 m from the screen wall. Data tablets on the seat."
+    },
+    {
+      "id": "dining_table",
+      "zone": "centre",
+      "box": [
+        4.95,
+        1.25,
+        5.85,
+        2.15
+      ],
+      "h": 0.75,
+      "shape": "round",
+      "parts": [
+        "top",
+        "base"
+      ],
+      "note": "0.9 m round, in the open floor right of the door path. Two mugs, two plates."
+    },
+    {
+      "id": "dining_chair_1",
+      "zone": "centre",
+      "box": [
+        5.15,
+        0.8,
+        5.65,
+        1.25
+      ],
+      "h": 0.9,
+      "faces": "+z",
+      "parts": [
+        "frame",
+        "seat_pad"
+      ],
+      "note": "Her uniform jacket hangs over this chair."
+    },
+    {
+      "id": "dining_chair_2",
+      "zone": "centre",
+      "box": [
+        5.15,
+        2.15,
+        5.65,
+        2.6
+      ],
+      "h": 0.9,
+      "faces": "-z",
+      "parts": [
+        "frame",
+        "seat_pad"
+      ],
+      "note": "Matches chair 1."
+    },
+    {
+      "id": "desk",
+      "zone": "right wall",
+      "box": [
+        7.3,
+        1.2,
+        8.0,
+        2.8
+      ],
+      "h": 0.76,
+      "faces": "-x",
+      "parts": [
+        "body",
+        "drawers"
+      ],
+      "note": "Built into the right wall."
+    },
+    {
+      "id": "console",
+      "zone": "right wall",
+      "box": [
+        7.45,
+        1.45,
+        8.0,
+        2.55
+      ],
+      "h_from": 0.76,
+      "h": 1.45,
+      "faces": "-x",
+      "parts": [
+        "armoured_housing",
+        "bezel",
+        "display",
+        "control_panel"
+      ],
+      "note": "Military console on the desk. Its display works in both states. The video message plays here."
+    },
+    {
+      "id": "desk_chair",
+      "zone": "right wall",
+      "box": [
+        6.55,
+        1.75,
+        7.05,
+        2.25
+      ],
+      "h": 0.95,
+      "faces": "+x",
+      "parts": [
+        "frame",
+        "seat_pad"
+      ]
+    },
+    {
+      "id": "wardrobe",
+      "zone": "right wall",
+      "box": [
+        7.35,
+        3.1,
+        8.0,
+        4.1
+      ],
+      "h": 2.2,
+      "faces": "-x",
+      "parts": [
+        "carcass",
+        "door",
+        "rail",
+        "hangers"
+      ],
+      "door": {
+        "hinge": [
+          7.35,
+          4.1
+        ],
+        "width": 1.0,
+        "open_deg": 100,
+        "note": "Open in both states, so the leaf is parked at its open angle rather than swinging.",
+        "closed_toward": "-z",
+        "parked": true
+      },
+      "contents": [
+        "his_dress_uniform",
+        "her_dress_1",
+        "her_dress_2"
+      ]
+    },
+    {
+      "id": "storage_right_near",
+      "zone": "right wall",
+      "box": [
+        7.4,
+        0.2,
+        8.0,
+        1.0
+      ],
+      "h": 2.4,
+      "faces": "-x",
+      "module": "0.6 grid: tall locker"
+    },
+    {
+      "id": "storage_right_far",
+      "zone": "right wall",
+      "box": [
+        7.4,
+        4.3,
+        8.0,
+        5.4
+      ],
+      "h": 2.4,
+      "faces": "-x",
+      "module": "0.6 grid: drawer bank, tall locker"
+    }
+  ],
+  "small_items": [
+    {
+      "id": "photo_frame",
+      "on": "bedside_r"
+    },
+    {
+      "id": "boots",
+      "at": [
+        5.0,
+        5.3
+      ],
+      "on": "floor"
+    },
+    {
+      "id": "hairbrush",
+      "on": "bedside_l"
+    },
+    {
+      "id": "jewellery_box",
+      "on": "bedside_l"
+    },
+    {
+      "id": "medal_case",
+      "on": "desk"
+    },
+    {
+      "id": "data_tablet_1",
+      "on": "sofa"
+    },
+    {
+      "id": "data_tablet_2",
+      "on": "desk"
+    },
+    {
+      "id": "mug_1",
+      "on": "dining_table"
+    },
+    {
+      "id": "mug_2",
+      "on": "dining_table"
+    },
+    {
+      "id": "plate_1",
+      "on": "dining_table"
+    },
+    {
+      "id": "plate_2",
+      "on": "dining_table"
+    },
+    {
+      "id": "her_jacket",
+      "on": "dining_chair_1"
+    }
+  ],
+  "reach_targets": [
+    {
+      "id": "bed_foot",
+      "point": [
+        4.0,
+        3.45
+      ]
+    },
+    {
+      "id": "bed_left_side",
+      "point": [
+        2.7,
+        4.8
+      ]
+    },
+    {
+      "id": "bed_right_side",
+      "point": [
+        5.3,
+        4.8
+      ]
+    },
+    {
+      "id": "console",
+      "point": [
+        6.2,
+        2.0
+      ]
+    },
+    {
+      "id": "wardrobe_front",
+      "point": [
+        6.8,
+        3.5
+      ]
+    },
+    {
+      "id": "sofa_front",
+      "point": [
+        1.05,
+        2.6
+      ]
+    },
+    {
+      "id": "dining_table",
+      "point": [
+        4.6,
+        1.7
+      ]
+    },
+    {
+      "id": "storage_far_l",
+      "point": [
+        1.3,
+        4.95
+      ]
+    },
+    {
+      "id": "storage_far_r",
+      "point": [
+        6.7,
+        4.95
+      ]
+    }
+  ],
+  "walkway_min_m": 0.9,
+  "revision_note": "Rev 2: moved the dining set into the open floor right of the door path and the sofa toward the entrance so the bed has a walkable aisle on both sides; reach targets moved to standing positions."
+}
