@@ -124,7 +124,7 @@ The proposed early cabin visit offers a badge, personal effects, a photograph an
 
 Astrometrics can bring together the partner's badge, the missing S-drive component and a later memory. The player can find the component before understanding why it matters. The badge pickup memory shows her body and the protagonist's “No!” without establishing the cause of death. The updated story direction says she died accidentally while he tried to restrain her, and he remains responsible; exact staging must follow the bible and decisions ledger. Do not use a puzzle to settle choreography. (Sources: story summary §§11, 26, 38; decisions brief §1; reconciliation §§1.8, 1.13, 3.16.)
 
-The reveal order is emotional guidance, not an enforced movement sequence. Evidence should converge, and optional logs or memories should not gate movement. The final fate of Earth, the century's records, and the ending remain within the limits set by the bible and decisions ledger. (Sources: story summary §§30-33, 38; reconciliation §§1.10, 3.12, 4.8.)
+The reveal order is emotional guidance, not an enforced movement sequence. Evidence should converge, and optional logs or memories should not gate movement. The final fate of Earth, the thousand-year-old records, and the ending remain within the limits set by the bible and decisions ledger. (Sources: story summary §§30-33, 38; reconciliation §§1.10, 3.12, 4.8.)
 
 ## 9. Power, atmosphere and doors
 

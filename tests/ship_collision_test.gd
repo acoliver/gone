@@ -1,4 +1,5 @@
 extends SimTestCase
+# New pod #88: pins follow the fitted asset, row centers and eight-piece topology.
 
 class CountedCollision:
 	extends ShipCollision
@@ -143,7 +144,7 @@ func test_opening_manifest_has_exact_owners_order_and_door_differentials() -> vo
 			expected.append(StringName("D14-BAY/SHELL/%03d" % index))
 		if flags.x == 0:
 			expected.append(&"D14-BAY-DOOR/BLOCKER")
-		var pod_counts := [6, 7, 6, 7, 6, 7, 6]
+		var pod_counts := [8, 8, 8, 8, 8, 8, 8]
 		for pod: int in range(7):
 			for piece: int in range(pod_counts[pod]):
 				expected.append(StringName("D14-BAY/POD-%03d/%03d" % [pod, piece]))
@@ -177,18 +178,19 @@ func test_opening_counts_and_every_box_keep_original_insertion_order() -> void:
 	for flags: Vector2i in [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1)]:
 		var pure := ShipCollision.opening_set(registry, bool(flags.x), bool(flags.y))
 		var adapter := PowerRoom.scene_collider_set(registry, bool(flags.x), bool(flags.y))
-		# Four corner infills on each of the seven D14 hinged hatches.
-		var expected := 1013 if flags.x == 0 else (1012 if flags.y == 0 else 1011)
+		# #88 adds eleven pod solids; the stack's hatch reservations are unchanged.
+		var expected := 1024 if flags.x == 0 else (1023 if flags.y == 0 else 1022)
 		assert_int_equal(pure.size(), expected, "full scene count")
 		for index: int in range(pure.size()):
 			assert_true(pure.boxes()[index].equals(adapter.boxes()[index]), "same ordered collider")
 	var closed := ShipCollision.opening_set(registry, false, false)
 	assert_vec3_equal(closed.boxes()[0].center(), Vector3(15, -0.1, 7.7), "first bay floor")
 	assert_vec3_equal(closed.boxes()[5].center(), Vector3(15, 1.2, 1.6), "pierce replaces east wall at same index")
-	assert_vec3_equal(closed.boxes()[8].center(), Vector3(11.03, 0.45, 12.5), "closed bay blocker index")
-	# The power leaf moved into the wall. Compare the native AABB midpoint
+	assert_vec3_equal(closed.boxes()[8].center(), Vector3(11.373499, 0.275, 12.5), "#88 fitted head wall retains the first pod slot")
+	# Eleven additional pod solids move the power leaf from slot 198 to 209.
+	# Compare the native AABB midpoint
 	# exactly; its float32 min/max average differs from the authored centre.
-	assert_vec3_equal(closed.boxes()[198].center(), ShipGeometry.box_aabb(ShipGeometry.power_door_leaf()).center(), "power leaf keeps its insertion slot with the new pocket dimensions")
+	assert_vec3_equal(closed.boxes()[209].center(), ShipGeometry.box_aabb(ShipGeometry.power_door_leaf()).center(), "power leaf follows the fitted pod solids with unchanged pocket dimensions")
 
 func test_approved_layout_cache_and_blocker_revisions_are_deck_local() -> void:
 	var collision := ShipCollision.new(ShipLayout.authored().layout)

@@ -108,7 +108,7 @@ arrive piecemeal as repairs land.
 
 | Source | What it fixes |
 | --- | --- |
-| `docs/design/biblia.md` | Story facts: the adrift damaged colonial military ship, more than a hundred years abandoned, quarters and astrometry as story locations, the irradiated armory, escape craft, generation separated from distribution. |
+| `docs/design/biblia.md` | Story facts: the adrift damaged colonial military ship, about a thousand years abandoned, quarters and astrometry as story locations, the irradiated armory, escape craft, generation separated from distribution. |
 | `docs/design/concept.md` | Setting and pillars: Battlestar Galactica tradition, industrial lived-in military ship, compartments as a graph of hatches and crawlways, the seven-pod opening. |
 | `docs/art/README.md` | Visual language: worn riveted plated ship; stasis pods as pale rounded hardware that reads newer than the hull around it. |
 | `sim/pods.gd`, `app/rod.gd`, `app/hallway.gd`, `app/power_room.gd` | The built playable slice: frozen coordinates, colliders, and interactables. |
@@ -119,7 +119,7 @@ arrive piecemeal as repairs land.
 ### Story and tone
 
 - The ship is a huge damaged colonial military vessel, adrift and abandoned
-  for more than a hundred years (`docs/design/biblia.md`, Parte I and
+  for about a thousand years (`docs/design/biblia.md`, Parte I and
   Parte V). The bible fixes neither exterior dimensions nor crew count.
 - Primary generation is separate from distribution; repairing buses,
   breakers, and controllers is its own problem
@@ -140,9 +140,9 @@ number to the opening is a planning decision, not a new game level.
 | Feature | Coordinates | Source |
 | --- | --- | --- |
 | Stasis bay envelope | X=-6..6, Z=-4..4, ceiling 3.2 m | `sim/pods.gd` ROOM_LENGTH, ROOM_WIDTH, ROOM_CEILING_HEIGHT |
-| Player pod (id 6, the seventh pod) | (-4.8, +2.9) | `sim/pods.gd` _frozen_pods, ROW_B_Z |
-| Six other pods | four at z=-2.9 (x=-4.8, -3.4, -2.0, -0.6); two at z=+2.9 (x=-3.4, -2.0) | `sim/pods.gd` _frozen_pods, ROW_A_Z, ROW_B_Z |
-| Rod on the floor (the hatch's pry bar) | (-0.6, -1.55), a deliberate step off the aisle | `app/rod.gd` FLOOR_CENTER |
+| Player pod (id 6, the seventh pod) | (-4.8, +2.8035) | `sim/pods.gd` _frozen_pods, ROW_B_Z |
+| Six other pods | four at z=-2.8035 (x=-4.8, -3.4, -2.0, -0.6); two at z=+2.8035 (x=-3.4, -2.0) | `sim/pods.gd` _frozen_pods, ROW_A_Z, ROW_B_Z |
+| Rod on the floor (the hatch's pry bar) | (-0.6, -1.40), a deliberate step off the aisle | `app/rod.gd` FLOOR_CENTER |
 | Rod pickup reach | 1.3 m | `app/motion.gd` ROD_PICKUP_REACH |
 | Jammed hatch | (6, 0), pry open with the rod within 2.2 m | `sim/pods.gd` _hatch_placement, `app/motion.gd` HATCH_INTERACT_REACH |
 | Hall switch (hall face of the doorway wall) | (6.22, +0.85) | `app/hallway.gd` SWITCH_PLATE_CENTER |
@@ -261,8 +261,8 @@ Follow the visual language in `docs/art/README.md`.
 
 ## The opening route (established, walkable today)
 
-1. Wake in pod id 6 at (-4.8, +2.9) (`sim/pods.gd`).
-2. Cross the aisle and step off it to the rod at (-0.6, -1.55); the
+1. Wake in pod id 6 at (-4.8, +2.8035) (`sim/pods.gd`).
+2. Cross the aisle and step off it to the rod at (-0.6, -1.40); the
    pickup is deliberate, outside every walking line's 1.3 m reach
    (`app/rod.gd`, `app/motion.gd`).
 3. Carry the rod to the jammed hatch at (6, 0) and pry it open from

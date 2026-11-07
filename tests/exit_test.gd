@@ -1,12 +1,12 @@
 extends SimTestCase
 ## Port of the exit/mod.rs inline test module.
 
-## Test-scene tray build mirroring the app-side pod cavity: 0.06 m shell
-## walls, a 0.1 m base slab, and a 0.012 m plate on top, so the plate
+## New pod #88: the fixture retains its enclosing wall cases, with a
+## 0.228 m support and 0.012 m plate, so the plate
 ## top (the tray floor the path is authored against) is real geometry,
 ## not an assumption.
 const CAVITY_WALL: float = 0.06
-const CAVITY_BASE: float = 0.1
+const CAVITY_BASE: float = 0.228
 const CAVITY_PLATE: float = 0.012
 const TRAY_FLOOR: float = CAVITY_BASE + CAVITY_PLATE
 
@@ -122,7 +122,7 @@ func test_happy_path_visits_every_pose_and_completes_standing_at_the_waypoint() 
 func test_waypoint_room_position_is_the_placement_transform_not_a_hard_code() -> void:
 	var standing_y: float = Controller.CAPSULE_RADIUS + Controller.PENETRATION_TOLERANCE
 	var waypoint_z: float = Pods.POD_LENGTH / 2.0 + Controller.CAPSULE_RADIUS + 2.0 * Controller.PENETRATION_TOLERANCE
-	var row_a: Pods.PodPlacement = placement(0.0, Vector2(-3.0, -2.9))
+	var row_a: Pods.PodPlacement = placement(0.0, Vector2(-3.0, -2.8035))
 	var path_a := Exit.ExitPath.try_new(row_a, TRAY_FLOOR)
 	assert_true(path_a.is_ok(), "authored floor is valid")
 	# Godot's Vector2/Vector3 hold 32-bit components, so the exact-arithmetic
@@ -130,7 +130,7 @@ func test_waypoint_room_position_is_the_placement_transform_not_a_hard_code() ->
 	# transform uses (the Rust original was f32 end to end).
 	var sin_yaw: float = sin(0.0)
 	var cos_yaw: float = cos(0.0)
-	var center := Vector2(-3.0, -2.9)
+	var center := Vector2(-3.0, -2.8035)
 	var local := Vector3(0.0, standing_y, waypoint_z)
 	var expected := Vector3(
 		center.x + local.x * cos_yaw + local.z * sin_yaw,
@@ -236,3 +236,23 @@ func test_path_construction_validates_its_inputs() -> void:
 	assert_true(Exit.ExitPath.try_new(player, TRAY_FLOOR).is_ok(), "the authored tray floor is inside both bounds")
 	assert_true(Exit.ExitPath.try_new(player, 0.0).is_ok(), "the room floor boundary is accepted")
 	assert_true(Exit.ExitPath.try_new(player, max_floor).is_ok(), "the ceiling boundary is accepted")
+
+func test_new_pod_get_up_completes_against_actual_ship_colliders() -> void:
+	# New pod #88: retain the synthetic collision cases above and also
+	# exercise the fitted tray and all three player-lid slabs in situ.
+	var layout := ShipLayout.authored().layout
+	var path := PlacementTruth.player_exit_path(layout)
+	var collision := ShipCollision.opening_set(layout.bay().template(), false, false, layout)
+	var phase := Phase.Machine.new()
+	phase.wake_complete()
+	var started := Exit.GetUpController.start(phase, path)
+	assert_true(started.is_ok(), "get-up starts in the actual player pod")
+	if not started.is_ok():
+		return
+	for step: int in range(4):
+		var result := started.controller.tick(phase, collision)
+		assert_true(result.is_ok(), "real get-up segment %d clears the ship solids" % step)
+		if not result.is_ok():
+			return
+	assert_int_equal(phase.current(), Phase.Wake.STANDING, "the real get-up reaches standing")
+	assert_close(started.controller.capsule().foot, path.waypoint().foot(), "actual exit waypoint")

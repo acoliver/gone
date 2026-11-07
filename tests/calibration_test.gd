@@ -9,6 +9,43 @@ const Calibration := preload("res://harness/calibration.gd")
 const Assertions := preload("res://harness/calibration_assertions.gd")
 const Protocol := preload("res://harness/protocol.gd")
 
+func test_meter_feedback_advances_once_per_rendered_frame() -> void:
+	var driver = preload("res://app/calibration_mode.gd").CalibrationDriver.new()
+	var harness := MeterHarness.new()
+	driver.mode = harness
+	driver._process(1.0 / 20.0)
+	assert_int_equal(harness.tick, 1, "a slow frame must not reuse its meter sample for three physics ticks")
+	harness.busy_capturing = true
+	driver._process(1.0 / 20.0)
+	assert_int_equal(harness.tick, 1, "a pinned capture must not advance exposure")
+	harness.busy_capturing = false
+	driver._process(1.0 / 60.0)
+	assert_int_equal(harness.tick, 2, "the next rendered sample advances exactly once")
+	for i: int in range(3):
+		driver._process(1.0 / 240.0)
+	assert_int_equal(harness.tick, 2, "fast render frames must not accelerate logical feedback")
+	driver._process(1.0 / 240.0)
+	assert_int_equal(harness.tick, 3, "four fast frames supply one logical interval")
+	driver.free()
+
+class MeterHarness:
+	extends RefCounted
+	var failed := false
+	var ready := true
+	var busy_capturing := false
+	var frame := 0
+	var tick := 0
+	var scenario := {"max_frames": 100, "ticks_per_second": 60}
+	var pending_captures: Array = []
+	var chip := MeterChip.new()
+	func drive_tick() -> void:
+		tick += 1
+
+class MeterChip:
+	extends RefCounted
+	func set_code(_tick: int, _frame: int) -> void:
+		pass
+
 func assert_str(actual: String, expected: String, message: String) -> void:
 	if actual != expected:
 		_fail("%s: expected `%s`, got `%s`" % [message, expected, actual])

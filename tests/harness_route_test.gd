@@ -1,4 +1,5 @@
 extends SimTestCase
+# New pod #88: regenerated ordinary-input routes retain exact schedule/digest checks.
 const Route := preload("res://harness/route.gd")
 
 func test_all_opening_schedules_replay_through_actual_player() -> void:
@@ -26,41 +27,15 @@ func test_all_opening_schedules_replay_through_actual_player() -> void:
 		player.free()
 
 func test_fixed_opening_schedule_snapshots() -> void:
-	# Slice 3 v2 compilers re-plan walks around the new parked hardware.
-	# Driver accepted shifted arrival ticks, conditional on all seven native
-	# lanes passing with unchanged beat names, order, checks and budgets.
-	# SHA-256 before -> after (clean 436071a -> regenerated):
-	# hallway: de483f1247c8f5119582b551a3f7ae4ca1c915d6fb85a0b4a726d7a27b71e1fb
-	#       -> 4fd9fd7f7f14af18b6ba67ea74cd221d744793761779cd0b6801065e9563d6be
-	# power-room: aae6c93908cf41bc70177305d466b98fa24d7b530de4b33a70f7a68ec1984cad
-	#          -> f81a883793a6420f26daf83ba15fcddbb1daae55650f2d643554dd12ac800ba3
-	# connector-route: 7ef725c65420e8bf33660016cdc593a44346ab9eed511af042f1b83d5cf24529
-	#               -> fdc1e44858f5e4761d58c2baadaa6e8a02411eb8e9a952994128fedd70e852d5
-	# Changed beat ticks before -> after; all unlisted ticks are unchanged:
-	# hallway: hall-dark 1781->1778, hall-lit 2214->2211, hall-corridor 2466->2463.
-	# power-room (also connector-route): hall-lit 1577->1580,
-	# power-door-opened 2366->2369, console-inactive 3003->3006,
-	# power-active 3057->3060, hall-white 3660->3663.
-	# Remaining connector-route: fore-inner-closed 4943->4946,
-	# fore-inner-mid-crank 4980->4983, fore-inner-open 5380->5383,
-	# fore-outer-closed 5443->5446, fore-outer-mid-crank 5473->5476,
-	# fore-outer-open 5537->5540, d14-label-native 7851->7854,
-	# d14-label-partial 7971->7974, d14-label-resolved 8141->8144,
-	# x30-closed 8144->8147, x30-mid-crank 8174->8177, x30-open 8556->8559,
-	# aft-connector 8559->8562, x36-closed 8623->8626,
-	# x36-mid-crank 8646->8649, x36-open 8710->8713,
-	# section42-refusal 9065->9068, mid-shaft 11185->11188,
-	# d01-connector-native 13031->13034, d01-connector-partial 13070->13073,
-	# d01-connector-resolved 13240->13243, d30-connector-native 20590->20593,
-	# d30-connector-partial 20629->20632, d30-connector-resolved 20799->20802,
-	# back-d14 25157->25160; connector route_ticks 25162->25165.
+	# Main's fitted pod rows and the stack's parked hatches jointly determine
+	# arrival ticks. Regenerate schedules with unchanged beats, checks and budgets.
 	var expected := {
 		"gameplay-full": "31a542d425080d8148b18b87e80767a5746461fd7b660a59f024245a8eb9211d",
 		"gameplay-keyboard-turn": "b3f83b97da223ee17b547866edf75039d8366493efa5965d80bdbbaa2d3758c9",
 		"rod-pickup": "d95d2693a787ee073b842574406e6199d8fa06771c058b222a22f2cdd0fbc372",
-		"hallway": "4fd9fd7f7f14af18b6ba67ea74cd221d744793761779cd0b6801065e9563d6be",
-		"power-room": "f81a883793a6420f26daf83ba15fcddbb1daae55650f2d643554dd12ac800ba3",
-		"connector-route": "fdc1e44858f5e4761d58c2baadaa6e8a02411eb8e9a952994128fedd70e852d5",
+		"hallway": "bc970fd032cc8de07b77325ffd6e1b48a8e5a2deb0eed83f72fac051763f1e44",
+		"power-room": "0b6b3874266687ca36a728f7569403abac802c110c8b019ec9c3f0173e73f339",
+		"connector-route": "3d92c1b461456c6fca61194cf6e56b04cdefd67d77c812f69f6cc559b49abb0b",
 	}
 	for name: String in expected:
 		assert_true(FileAccess.get_sha256("res://scenarios/%s.json" % name) == expected[name], name + " fixed compiled schedule")

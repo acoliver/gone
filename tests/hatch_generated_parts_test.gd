@@ -31,7 +31,8 @@ func test_whole_latches_and_wheels_replace_primitive_subparts() -> void:
 	assert_int_equal(wheels, 2, "both wheels use generated geometry")
 	assert_int_equal(ribs, 2, "rib split around wheel and label")
 	var layout := ShipLayout.authored().layout
-	assert_int_equal(ShipCollision.opening_set(layout.bay().template(), false, false, layout).size(), 1013, "no new colliders")
+	# #88 adds eleven pod solids; generated hatch hardware still adds none.
+	assert_int_equal(ShipCollision.opening_set(layout.bay().template(), false, false, layout).size(), 1024, "no new colliders")
 
 func test_generated_parts_have_frozen_source_provenance() -> void:
 	var document := HatchAsset.document()

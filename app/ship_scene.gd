@@ -49,6 +49,9 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 	scene.rod = Rod.build()
 	scene.bay_root.add_child(scene.rod)
 	Lighting.mesh_layers(scene.bay_root, 1 | Lighting.BAY_FILL_MASK)
+	# Pod lighting keeps main's pure-red, long-throw look; architectural fills
+	# and short orange keys remain on the bay walls and hatch.
+	Lighting.mesh_layers(scene.pods_node, Lighting.POD_STATUS_MASK)
 	# The shared hatch is split by visible room, including its collar returns.
 	scene.hatch = Hatch.build(game.layout, 1 | Lighting.HALL_FILL_MASK, 1 | Lighting.BAY_FILL_MASK)
 	scene.hatch.name = "Hatch"

@@ -204,7 +204,15 @@ func test_closed_scene_preserves_round11_collider_ceiling() -> void:
 	var layout := ShipLayout.authored().layout
 	var count := ShipCollision.opening_set(layout.bay().template(), false, false, layout).size()
 	print("ROUND11_CLOSED_COLLIDERS ", count)
-	assert_true(count <= 1013, "Round 11 stop rule: never exceed the existing 1013 closed-door colliders")
+	# Main's articulated lids replace 45 pod solids with 56. Pin that delta
+	# separately so the historical ceiling still rejects extra hatch colliders.
+	var pod_count := 0
+	for pod: Pods.Pod in layout.bay().template().pods():
+		pod_count += PodGeometry.pod_solids(pod.state()).size()
+	assert_int_equal(pod_count, 56, "seven fitted pods retain eight solids each")
+	assert_int_equal(count, 1024, "combined exact count: 968 architectural plus 56 pod solids")
+	assert_int_equal(count - pod_count, 968, "hatch and architectural collision is unchanged")
+	assert_true(count - pod_count + 45 <= 1013, "Round 11 ceiling with its original pod contribution")
 func test_detail_clearance_query_detects_penetration_without_aabb_false_positives() -> void:
 	var query := preload("res://tests/hatch_detail_clearance.gd")
 	assert_true(query.penetrates(Transform3D.IDENTITY, Vector3.ONE, Transform3D.IDENTITY, Vector3.ONE), "coincident boxes penetrate")

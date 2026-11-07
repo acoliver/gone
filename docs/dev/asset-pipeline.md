@@ -7,7 +7,66 @@ hinged open 55 degrees, padded couch inside) that exercises every hop a
 real asset will take: authored build, GLB export, Khronos validation,
 Godot import, render, machine pixel gates, and visual review.
 
-## The chain
+## Production pod (#88)
+
+The seven pods use `assets/props/pod/pod-v4.glb`, copied from the
+Hunyuan-derived clean-cage pass-13 delivery. The editable source and
+self-contained export script live in [`tools/blender/pod_v4/`](../../tools/blender/pod_v4/README.md).
+This replaces the parametric v3 production pod. `build_pod_probe.py` is
+retained for the original #45 probe commands below, not as a production
+pod builder.
+
+Rebuild from the repository root using the commands in that README,
+then import twice and commit the GLB and its `.glb.import` sidecar.
+The five-node hierarchy preserves PodLid's hidden pivot and its WindowPane
+child. Closed size is 2.392917 × 0.899940 × 0.895995 m (length, width,
+height), with the couch plateau at Y=0.240 m. Coordinates are pod-local
+metres: +Y up, +Z foot, -Z head, floor at zero. No mesh fitting transform
+is applied. The source has 28,566 triangles. To preserve the existing 20,000-triangle
+runtime budget, PodMesh uses the first generated Godot LOD on the two
+ShellPlastic surfaces and WindowTint, leaving upholstery and gasket
+unchanged. Runtime total is 17,062 triangles. The importer reports maximum
+errors of 0.923 mm (base), 0.729 mm (lid), and 0.657 mm (pane); code rejects
+an error of 1 mm or more. The full-resolution GLB is retained unchanged.
+
+ShellPlastic is glossy white dielectric plastic, roughness 0.12,
+clearcoat 1 and coat roughness 0.08. PodMesh restores clearcoat in code
+because Godot drops the glTF extension. WindowTint stays dark and opaque;
+CouchFabric, PillowFabric and Gasket retain their source material values.
+Sealed lids are closed, empty-open lids rotate -70° about local X, and
+the player lid rotates -78° for ceiling clearance (#88). Meshes and
+materials are shared across pods.
+
+The 8 m bay retains its reflection probe. Only the bay aisle narrows to
+2.9 m; the hallway and ship layout retain their independent 3.0 m width.
+The couch height drives the get-up path. The foot wall has no collider,
+as before; passing the body capsule through that visible tub wall is an
+accepted limitation. At the 78-degree player pose, the three lid proxies
+cover the upper panels, leaving the lower lid outside collision so its
+AABBs do not block the conservative get-up sweep (#88). Body-to-mesh
+collision remains approximate; sealed and empty-open proxies are unchanged.
+The eye trajectory is checked separately against
+the actual asset. Dense nearest-surface sampling finds a 237.140 mm
+minimum on the live rig's straight eye interpolation, at the pillow.
+The independent capsule quarter-circle eye arc approaches the raised lid
+to 91.897 mm; this arc is not the live camera interpolation. The runtime
+mesh test checks the live eye against the unchanged 130 mm requirement.
+
+The player lid opens 78 degrees, reaching Y=3.145976 m with 54.024 mm
+clearance below the 3.2 m ceiling (#88). This is the largest whole-degree
+opening that retains at least 50 mm clearance: 79 degrees leaves only
+37.684 mm. Measurements use the actual pod-v4 lid and pane vertices about
+the exported pivot, without changing the room height, pod scale or hinge.
+Empty-open remains at 70 degrees and reaches 2.997186 m.
+
+Both red flank tubes remain on the stationary base in every state.
+Waypoints are measured at Y=0.280 m (+X) and 0.120 m (-X), 24 mm outward
+from the horizontal skin intersection, with a 12 mm tube radius. Full
+strip/source triangle checks find no intersections in any state, with a
+minimum sampled base gap of 9.362 mm. Existing skin-contact tolerance,
+dressing clearance checks and 576-triangle strip budget are retained.
+
+## Original probe chain
 
 All commands run from the repo root. Scratch output lives under
 `tmp/pipeline/` (gitignored). Blender 4.5.11 LTS is borrowed from the
@@ -28,7 +87,7 @@ BLENDER=/Volumes/XS1000/acoliver/projects/threedee/branch-1/.tools/Blender-4.5.1
        [--lid-angle 55.0] [--rim-angle 55.0]
    ```
 
-   The script prints `MESH` stats per object and a `RISE` line (canopy
+   The script prints `TOTAL` mesh stats and a `RISE` line (canopy
    far rim above the shell rim) and exits nonzero if the rise collapses
    below 80 percent of the expected open angle, so a lost transform
    fails the build instead of shipping silently.
@@ -112,9 +171,9 @@ BLENDER=/Volumes/XS1000/acoliver/projects/threedee/branch-1/.tools/Blender-4.5.1
 
 ## Next
 
-- #37 grows `build_pod_probe.py` into the real pod set (open and sealed
-  states, occupancy blankets). Placement and clearance pins must keep
-  holding.
+- The production mesh currently uses the same open canopy on all seven
+  pods. Rendered state variants and occupancy blankets remain separate
+  work. Placement and clearance pins must keep holding.
 - #35 wall textures ride the same validator and import gates: geometry
   first, then PBR from ambientCG CC0 bases plus locally generated
   decals.

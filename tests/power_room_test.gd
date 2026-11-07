@@ -1,4 +1,5 @@
 extends SimTestCase
+# New pod #88: pins follow the fitted asset, row centers and eight-piece topology.
 
 func test_power_room_binds_shell_and_sliding_leaf_without_replacing_console_materials() -> void:
 	var game := Game.new(0)
@@ -128,10 +129,11 @@ func test_collider_sets_extend_the_hallways_both_doors() -> void:
 	var shut := PowerRoom.scene_collider_set(registry, false, false)
 	var hall_open := PowerRoom.scene_collider_set(registry, true, false)
 	var both_open := PowerRoom.scene_collider_set(registry, true, true)
-	# Removing drawn fillers retains their existing collision reservations.
-	assert_int_equal(shut.size(), 1013, "unchanged wall, frame and stop collision reservations")
-	assert_int_equal(hall_open.size(), 1012, "opening the stasis doorway replaces its block and swing reservation with the parked leaf")
-	assert_int_equal(both_open.size(), 1011, "opening the power door drops its leaf")
+	# #88 adds eleven pod solids (45 -> 56); the door/hatch collision
+	# reservations remain unchanged. Recompute the combined exact pins.
+	assert_int_equal(shut.size(), 1024, "fitted pods plus unchanged wall, frame and stop reservations")
+	assert_int_equal(hall_open.size(), 1023, "opening the stasis doorway replaces its block and swing reservation with the parked leaf")
+	assert_int_equal(both_open.size(), 1022, "opening the power door drops its leaf")
 	var game := _awake_game()
 	assert_int_equal(game.colliders.size(), shut.size(), "the game boots on the shut set")
 	# The power aperture is solid while shut and clear once the leaf

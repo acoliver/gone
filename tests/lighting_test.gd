@@ -69,7 +69,7 @@ func test_fixture_inventory_places_eight_red_lights_from_registry() -> void:
 		assert_vec3_equal(
 			fixtures[index].position,
 			expected,
-			"wall fixture %d uses its registry pod's X and wall side" % index
+			"architectural fixture %d stays on the wall; separate pod keys follow #88's inset" % index
 		)
 	var lintel: Placement.SolidPlacement = Placement.hatch_solids()[2]
 	assert_vec3_equal(
@@ -87,7 +87,7 @@ func test_fixture_inventory_places_eight_red_lights_from_registry() -> void:
 		)
 	for fixture: Node3D in fixtures:
 		assert_true(fixture.position.y > 2.4, "fixtures sit outside the walking envelope")
-	assert_int_equal(_count_class(lighting, "OmniLight3D"), 20, "eight emergency fixtures plus six regular strips plus six warm fills")
+	assert_int_equal(_count_class(lighting, "OmniLight3D"), 28 + 6 * Pods.POD_COUNT, "eight architectural keys, eight pod-only keys, six regular strips, six warm fills and six status spill samples per pod")
 	for light: OmniLight3D in lighting.white_lights():
 		assert_float_equal(light.light_energy, 0.0, "regular strips start dark")
 	assert_int_equal(_count_class(lighting, "DirectionalLight3D"), 0, "no directional light is authored")
@@ -261,3 +261,44 @@ func _find_world_environment(node: Node) -> WorldEnvironment:
 		if child is WorldEnvironment:
 			return child
 	return null
+
+func test_bay_reflections_cover_the_room_without_adding_light() -> void:
+	var game := Game.new(71)
+	var lighting := Lighting.build(game)
+	var probe := lighting.get_node("BayReflections") as ReflectionProbe
+	assert_true(probe != null, "one reflection probe is built with bay lighting")
+	assert_vec3_equal(probe.position, Vector3(0, 1.6, 0), "probe is centered in bay-local space")
+	assert_vec3_equal(probe.size, Vector3(12, 3.2, 8), "probe covers the stasis room")
+	assert_true(probe.box_projection and probe.interior, "room reflections use interior box projection")
+	assert_int_equal(probe.update_mode, ReflectionProbe.UPDATE_ONCE, "steady lighting does not recapture every frame")
+	assert_int_equal(probe.cull_mask, 1 | Lighting.POD_STATUS_MASK, "probe captures bay architecture and the isolated pod receivers")
+	assert_false(probe.enable_shadows, "reflection capture needs no shadow pass")
+	assert_int_equal(probe.ambient_mode, ReflectionProbe.AMBIENT_DISABLED, "probe adds no ambient fill")
+	assert_int_equal(_count_class(lighting, "OmniLight3D"), 28 + 6 * Pods.POD_COUNT, "reflections add no lights beyond architectural keys, isolated pod keys, regular strips, fills and status spill")
+	assert_int_equal(_count_class(lighting, "CollisionShape3D"), 0, "reflections add no colliders")
+	lighting.free()
+
+func test_reflections_refresh_once_after_power_handoff_or_blackout() -> void:
+	for activate_secondary: bool in [true, false]:
+		var game := Game.new(71)
+		var lighting := Lighting.build(game)
+		var initial_id := lighting.get_node("BayReflections").get_instance_id()
+		if activate_secondary:
+			game.press_console()
+			game.press_console()
+		else:
+			game.power.cut_emergency_power()
+		for _tick: int in range(Lighting.FIXTURE_SETTLE_TICKS - 1):
+			lighting.process_frame(Sim.LOGICAL_TICK_SECS)
+			assert_int_equal(lighting.get_node("BayReflections").get_instance_id(), initial_id,
+				"fading lights do not schedule repeated reflection captures")
+		lighting.process_frame(Sim.LOGICAL_TICK_SECS)
+		var settled_id := lighting.get_node("BayReflections").get_instance_id()
+		assert_true(settled_id != initial_id, "settled power state gets a fresh reflection capture")
+		assert_int_equal(lighting.get_node("BayReflections").update_mode, ReflectionProbe.UPDATE_ONCE,
+			"refreshed capture is still once-only")
+		for _tick: int in range(60):
+			lighting.process_frame(Sim.LOGICAL_TICK_SECS)
+			assert_int_equal(lighting.get_node("BayReflections").get_instance_id(), settled_id,
+				"steady lighting retains its reflection capture")
+		lighting.free()

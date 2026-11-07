@@ -1,3 +1,5 @@
+> **Superseded duration note (2026-11-07):** This intake document says the ship has been adrift for more than a century. That duration is superseded by [docs/design/decisions.md](../decisions.md), ruling 25: about a thousand Earth years. The source text below is retained unchanged.
+
 # GONE — Story / Narrative / Gameplay Summary
 
 ## Purpose

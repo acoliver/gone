@@ -83,7 +83,8 @@ func test_drawn_pocket_preserves_exactly_the_existing_wall_colliders() -> void:
 	var total := 0
 	for solid: ShipGeometry.SolidSpec in ShipCollision.opening_solids(layout.bay().template(), false, false, layout):
 		total += ShipGeometry.collision_boxes(solid).size()
-	assert_int_equal(total, 1013, "drawn cavity only: original solid wall collision stays intact")
+	# #88 adds eleven pod solids; the drawn pockets add no collision.
+	assert_int_equal(total, 1024, "drawn cavity only: original solid wall collision stays intact")
 	for id: StringName in _ids(layout):
 		assert_true(recipe.has_pocket(layout.door(id)) == (id == ShipLayout.POWER_DOOR_ID), "only the opening power door has a pocket")
 

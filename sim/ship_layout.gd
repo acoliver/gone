@@ -26,7 +26,7 @@ const BAY_HATCH_KEY_ID: StringName = &"D14-BAY-HATCH-KEY"
 const EMERGENCY_FILL_CEILING_DROP: float = 0.77
 const POWER_DOOR_ID: StringName = &"D14-POWER-DOOR"
 const POWER_CENTER_X: float = 27.0
-const POWER_NEAR_Z: float = -(Pods.AISLE_HALF_WIDTH + WALL)
+const POWER_NEAR_Z: float = -(CORRIDOR_WIDTH / 2.0 + WALL)
 const POWER_FAR_Z: float = POWER_NEAR_Z - Pods.ROOM_WIDTH
 const POWER_MIN_X: float = POWER_CENTER_X - Pods.ROOM_LENGTH / 2.0
 const POWER_MAX_X: float = POWER_CENTER_X + Pods.ROOM_LENGTH / 2.0
@@ -573,7 +573,8 @@ class BaySpec:
 	func regular_light_frames() -> Array[Transform3D]:
 		var frames: Array[Transform3D] = []
 		for x: float in [-4.0, 0.0, 4.0]:
-			for z: float in [-1.6, 1.6]:
+			# #88: the ceiling strips retain their offset from the shifted pod rows.
+			for z: float in [-1.6 + Pods.ROW_WALL_OFFSET, 1.6 - Pods.ROW_WALL_OFFSET]:
 				frames.append(Transform3D(Basis(), Vector3(x, Pods.ROOM_CEILING_HEIGHT - 0.08, z)))
 		return frames
 	func emergency_fixtures(registry: Pods.PodRegistry) -> Array[EmergencyFixtureSpec]:
@@ -588,15 +589,20 @@ class BaySpec:
 		return fixtures
 	func emergency_fill_positions() -> Array[Vector3]:
 		var positions: Array[Vector3] = []
-		for frame: Transform3D in regular_light_frames():
-			positions.append(frame.origin - Vector3.UP * ShipLayout.EMERGENCY_FILL_CEILING_DROP)
+		# The architectural fill stays at its authored stations while #88's
+		# regular strips move inward with the pod rows.
+		for x: float in [-4.0, 0.0, 4.0]:
+			for z: float in [-1.6, 1.6]:
+				positions.append(Vector3(x, Pods.ROOM_CEILING_HEIGHT - 0.08 - ShipLayout.EMERGENCY_FILL_CEILING_DROP, z))
 		return positions
 	func ceiling_vent_frames() -> Array[Transform3D]:
 		return [Transform3D(Basis(), Vector3(-3, 3.05, 0)), Transform3D(Basis(), Vector3(3, 3.05, 0))]
 	func local_bounds() -> AABB:
 		return AABB(Vector3(-Pods.ROOM_LENGTH / 2, 0, -Pods.ROOM_WIDTH / 2), Vector3(Pods.ROOM_LENGTH, Pods.ROOM_CEILING_HEIGHT, Pods.ROOM_WIDTH))
 	func rod_local() -> Transform3D:
-		return Transform3D(Basis(), Vector3(-0.6, 0, -1.55))
+		# #88: keep the floor-level rod outside the 1.3 m centerline pickup
+		# reach. The curved tub's foot clears it after the row moves inward.
+		return Transform3D(Basis(), Vector3(-0.6, 0, -1.4))
 	func template() -> Pods.PodRegistry:
 		return Pods.PodRegistry.frozen()
 

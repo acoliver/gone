@@ -303,6 +303,9 @@ func capture_next_beat() -> void:
 	var pinned_tick: int = tick
 	var pinned_frame: int = frame
 	chip.set_code(pinned_tick, pinned_frame)
+	# Flush scene transforms before explicitly drawing a motionless capture.
+	await process_frame
+	RenderingServer.call_deferred("force_draw", false)
 	await RenderingServer.frame_post_draw
 	var image := root.get_texture().get_image()
 	var file := "beats/%s.png" % beat.name
@@ -345,29 +348,36 @@ func _level_material(level: float) -> StandardMaterial3D:
 	material.emission = Color(level, level, level)
 	return material
 
-## The per-tick driver, mirroring the capture lane's: physics ticks run
-## the scenario clock (the input adapter drains any authored waits),
-## process frames paint the chip and pin due beats.
+## Advance the calibration clock once per rendered meter sample, independently
+## of wall-clock physics catch-up. Each step still represents one logical tick.
 class CalibrationDriver:
 	extends Node
 
 	var mode
+	var _elapsed := 0.0
 
-	func _physics_process(_delta: float) -> void:
-		var harness = mode
-		if not harness.ready or harness.failed or harness.busy_capturing:
-			return
-		harness.drive_tick()
-
-	func _process(_delta: float) -> void:
+	func _process(delta: float) -> void:
 		var harness = mode
 		if harness.failed:
 			return
 		harness.frame += 1
-		harness.chip.set_code(harness.tick, harness.frame)
+		if not harness.busy_capturing:
+			harness.chip.set_code(harness.tick, harness.frame)
 		if harness.frame > harness.scenario.max_frames + 900:
 			harness._fail("hard frame budget exhausted")
 			return
-		if not harness.ready or harness.busy_capturing or harness.pending_captures.is_empty():
+		if not harness.ready or harness.busy_capturing:
 			return
-		harness.capture_next_beat()
+		# Bound feedback by both the logical cadence and fresh rendered samples.
+		# Never integrate catch-up ticks against one stale GPU meter reading.
+		_elapsed += delta
+		var interval := 1.0 / float(harness.scenario.ticks_per_second)
+		if _elapsed < interval:
+			return
+		_elapsed = fmod(_elapsed, interval)
+		harness.drive_tick()
+		# macOS can stop automatic rendering for an occluded harness window.
+		# The meter still needs the new emissions before the next feedback step.
+		RenderingServer.call_deferred("force_draw", false)
+		if not harness.pending_captures.is_empty():
+			harness.capture_next_beat()

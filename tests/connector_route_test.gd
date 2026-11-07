@@ -1,4 +1,5 @@
 extends SimTestCase
+# New pod #88: regenerated ordinary-input routes retain exact schedule/digest checks.
 
 const Driver := preload("res://tests/connector_route_driver.gd")
 

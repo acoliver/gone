@@ -20,20 +20,22 @@ const ROOM_WIDTH: float = 8.0
 const ROOM_CEILING_HEIGHT: float = 3.2
 
 ## Pod length along the pod's local Z (out from its wall), in meters.
-const POD_LENGTH: float = 2.2
+const POD_LENGTH: float = 2.393
 
 ## Pod width along the pod's local X (along its wall), in meters.
 const POD_WIDTH: float = 0.9
 
 ## Pod height from floor to the top of the body, in meters.
-const POD_HEIGHT: float = 0.8
+const POD_HEIGHT: float = 0.896
 
-## Half-width of the central aisle: the frozen 3 m walk corridor between
-## the two pod rows.
-const AISLE_HALF_WIDTH: float = 1.5
+## #88: reserve a 2.5 m walkway plus the unchanged 150 mm exit margin.
+const AISLE_HALF_WIDTH: float = 1.25
+
+## #88: seam-hinged lids sweep 187 mm behind the body, with 20 mm wall margin.
+const ROW_WALL_OFFSET: float = 0.206999 # Float32 row centers retain the full exit reserve.
 
 ## Distance from a long wall to the center line of its pod row.
-const ROW_CENTER_FROM_WALL: float = POD_LENGTH / 2.0
+const ROW_CENTER_FROM_WALL: float = POD_LENGTH / 2.0 + ROW_WALL_OFFSET
 
 ## Floor-plan Z of the -Z wall row's pod centers (openings face +Z).
 const ROW_A_Z: float = -(ROOM_WIDTH / 2.0 - ROW_CENTER_FROM_WALL)

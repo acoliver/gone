@@ -309,8 +309,10 @@ func test_prefetch_and_independent_red_light_masks() -> void:
 	var lights: Array[OmniLight3D] = []
 	_collect_lights(root.get_node("D14-C-001"), lights)
 	assert_int_equal(lights.size(), 3, "connector and landing have three steady fixtures")
+	# D14 now uses the shared five-deck connector allocation, leaving layer four
+	# exclusively for pod receivers instead of overlapping the power-room fill.
 	for light: OmniLight3D in lights:
-		assert_int_equal(light.light_cull_mask, 16, "isolated aft connector mask")
+		assert_int_equal(light.light_cull_mask, 1 << 13, "isolated D14 aft connector mask")
 		assert_float_in_range(light.light_energy, Lighting.FIXTURE_ENERGY * Lighting.EMERGENCY_NO_FILL_KEY_MULTIPLIER - 1e-5, Lighting.FIXTURE_ENERGY * Lighting.EMERGENCY_NO_FILL_KEY_MULTIPLIER + 1e-5, "red independent of power activation")
 		assert_true(light.light_color == Lighting.EMERGENCY_RED, "steady emergency red")
 		assert_true(light.omni_range <= 3, "local fixture range")
