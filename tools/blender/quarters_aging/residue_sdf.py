@@ -1,0 +1,140 @@
+"""Closed powder/crust isosurfaces and fragments cut from the same height-field SDF.
+
+Run with the Hunyuan Python, not Blender's bundled Python. NPZ is the boundary
+between scipy/skimage construction and Blender simulation/baking.
+"""
+import argparse
+import json
+from pathlib import Path
+
+import numpy as np
+from scipy.ndimage import gaussian_filter, map_coordinates
+from scipy.spatial import cKDTree
+from skimage.measure import marching_cubes
+
+
+def height_field(x, y, seed):
+    rng = np.random.default_rng(seed)
+    xx, yy = np.meshgrid(x, y, indexing='ij')
+    h = np.full(xx.shape, .006)
+    for _ in range(24):
+        cx = rng.uniform(x[0]+.02, x[-1]-.02)
+        cy = rng.uniform(y[0], y[-1]) if rng.random() < .4 else rng.uniform(y[-1]-.20, y[-1])
+        radius = rng.uniform(.015, .045)
+        h += rng.uniform(.008, .025)*np.exp(-((xx-cx)**2+(yy-cy)**2)/(2*radius**2))
+    h = .004+.016*(1-np.exp(-np.maximum(h-.004, 0)/.016))
+    spacing = x[1]-x[0]
+    for wavelength, amplitude in [(.040, .005), (.012, .002), (.004, .0008)]:
+        noise = gaussian_filter(rng.normal(size=h.shape), wavelength/spacing/4)
+        h += noise/max(float(noise.std()), 1e-8)*amplitude
+    sites = rng.uniform([x[0], y[0]], [x[-1], y[-1]], (50, 2))
+    distances = cKDTree(sites).query(np.c_[xx.ravel(), yy.ravel()], k=2)[0]
+    crack = (distances[:, 1]-distances[:, 0]).reshape(h.shape)
+    h -= rng.uniform(.003, .008)*np.exp(-(crack/.002)**2)
+    # Taper to zero at the footprint so the residue has no vertical box walls.
+    border = np.minimum.reduce([xx-x[0], x[-1]-xx, yy-y[0], y[-1]-yy])
+    h = .006+.020*np.tanh(np.logaddexp(0, (h-.006)/.002)*.002/.020)
+    h *= np.clip(border/.018, 0, 1)
+    return h, sites
+
+
+def field(width=.66, depth=.70, voxel=.002, seed=9501):
+    x = np.arange(-width/2-.01, width/2+.01+voxel/2, voxel, dtype=np.float32)
+    y = np.arange(-depth/2-.01, depth/2+.01+voxel/2, voxel, dtype=np.float32)
+    z = np.arange(-.004, .085, voxel, dtype=np.float32)
+    h, sites = height_field(x, y, seed)
+    xx, yy = np.meshgrid(x, y, indexing='ij')
+    zz = z[None, None, :]
+    sdf = np.maximum(zz-h[:, :, None], -zz+.001)
+    sdf = np.maximum(sdf, np.minimum.reduce([xx-x[0], x[-1]-xx, yy-y[0], y[-1]-yy])[:, :, None]*-1+.002)
+    rng = np.random.default_rng(seed+1)
+    distances, nearest = cKDTree(sites).query(np.c_[xx.ravel(), yy.ravel()], k=2)
+    chosen = rng.choice(len(sites), 8, replace=False)
+    for cell in chosen:
+        mask = nearest[:, 0].reshape(xx.shape) == cell
+        tilt = rng.uniform(np.radians(5), np.radians(35))
+        yaw = rng.uniform(0, 2*np.pi)
+        plane = h+np.tan(tilt)*((xx-sites[cell, 0])*np.cos(yaw)+(yy-sites[cell, 1])*np.sin(yaw))
+        half = rng.uniform(.0015, .003)
+        slab = np.abs(zz-plane[:, :, None])-half
+        slab = np.maximum(slab, zz-h[:, :, None]-.008)
+        outline = np.where(mask, -(distances[:, 1]-distances[:, 0]).reshape(xx.shape)/2, .01)
+        slab = np.maximum(slab, outline[:, :, None]+.001+.0004*np.sin(xx[:, :, None]*700))
+        sdf = np.minimum(sdf, slab)
+    # Close plate tips at the same domain bounds and floor as the powder.
+    sdf = np.maximum(sdf, -zz+.001)
+    sdf[[0, -1], :, :] = .01
+    sdf[:, [0, -1], :] = .01
+    sdf[:, :, [0, -1]] = .01
+    return sdf.astype(np.float32), np.array([x[0], y[0], z[0]]), voxel
+
+
+def mesh_sdf(sdf, origin, voxel):
+    vertices, faces, normals, _ = marching_cubes(sdf, .000013, spacing=(voxel,)*3, allow_degenerate=False)
+    return vertices+origin, faces, normals
+
+
+def filled_proxy(sdf, origin, voxel):
+    """Fill sub-surface pore tunnels for the low-poly collision/bake target."""
+    filled = np.minimum.accumulate(sdf[:, :, ::-1], axis=2)[:, :, ::-1].copy()
+    z = origin[2]+np.arange(sdf.shape[2])*voxel
+    filled = np.maximum(filled, .001-z[None, None, :])
+    filled[:, :, 0] = .01
+    return mesh_sdf(filled, origin, voxel)
+
+
+def fragments(sdf, origin, voxel, seed=9501, count=12):
+    """Intersect one 60 mm residue patch with Voronoi columns and thin skin slabs."""
+    rng = np.random.default_rng(seed)
+    patch = np.array([.0, .18])
+    sites = patch+rng.uniform(-.027, .027, (count, 2))
+    fine = .0006
+    x = np.arange(patch[0]-.03, patch[0]+.03, fine)
+    y = np.arange(patch[1]-.03, patch[1]+.03, fine)
+    z = np.arange(.001, .080, fine)
+    xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
+    coordinates = np.array([(xx-origin[0])/voxel, (yy-origin[1])/voxel, (zz-origin[2])/voxel])
+    residue = map_coordinates(sdf, coordinates, order=1, mode='constant', cval=.1)
+    result = []
+    for i, site in enumerate(sites):
+        cell = np.full(residue.shape, -1.)
+        for j, other in enumerate(sites):
+            if i == j:
+                continue
+            direction = other-site
+            normal = direction/np.linalg.norm(direction)
+            cell = np.maximum(cell, (xx-(site[0]+other[0])/2)*normal[0]+(yy-(site[1]+other[1])/2)*normal[1])
+        # Retain a skin layer from the actual residue, not an invented sphere.
+        top = np.max(np.where((cell < 0) & (residue < 0), zz, 0))
+        fragment = np.maximum.reduce([residue, cell, top-.008-zz])
+        fragment[[0, -1], :, :] = .01
+        fragment[:, [0, -1], :] = .01
+        fragment[:, :, [0, -1]] = .01
+        if fragment.min() < 0:
+            vertices, faces, normals = mesh_sdf(fragment, np.array([x[0], y[0], z[0]]), fine)
+            centre = vertices.mean(0)
+            result.append((vertices-centre, faces, normals))
+    return result
+
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--out', type=Path, required=True)
+    p.add_argument('--seed', type=int, default=9501)
+    a = p.parse_args()
+    a.out.mkdir(parents=True, exist_ok=True)
+    sdf, origin, voxel = field(seed=a.seed)
+    vertices, faces, normals = mesh_sdf(sdf, origin, voxel)
+    gv, gf, _ = filled_proxy(sdf, origin, voxel)
+    np.savez_compressed(a.out/'seat-residue.npz', vertices=vertices, faces=faces, normals=normals,
+                        game_vertices=gv, game_faces=gf)
+    library = fragments(sdf, origin, voxel, a.seed)
+    for i, (v, f, n) in enumerate(library):
+        np.savez_compressed(a.out/f'fragment-{i:02d}.npz', vertices=v, faces=f, normals=n)
+    (a.out/'residue.json').write_text(json.dumps({'seed': a.seed, 'voxel_m': voxel,
+        'dense_triangles': len(faces), 'templates': len(library),
+        'bounds_m': [vertices.min(0).tolist(), vertices.max(0).tolist()]}, indent=2)+'\n')
+
+
+if __name__ == '__main__':
+    main()

@@ -1,5 +1,21 @@
 # Quarters geometry aging
 
+## Reusable soft-prop stages
+
+`densify.py` subdivides working surfaces and optionally refines projected bands. `tear_paths.py` snaps paths with Dijkstra and splits edges without removing area. `grain_paths.py` derives physical warp/weft directions from the pattern UV gradient. `cloth_stage.py` preserves explicit lip, welt and collision groups, scales per-vertex mass and records every frame's elapsed compute time.
+
+`bake_down.py` protects a 6 mm **surface-distance** band around open boundaries, then reduces the interior. Euclidean distance incorrectly protected nearby folds in the centre-seat test, freezing reduction at 4,886 triangles. Blender decimates weighted vertices, so the `Keep` group must be inverted. A conservative sampled Hausdorff upper bound includes half the sampling interval; the control and centre-seat result are both 0.125 mm against a 1.5 mm limit. The stage creates `BakeUV` and selected-to-active Cycles tangent normal and AO maps, with 4 mm cage extrusion, 12 mm ray range and an 8 px margin.
+
+`residue_sdf.py` builds a continuous powder base, noisy lumps, Voronoi cracks and tilted skin slabs, then extracts the dense surface with marching cubes. Overlapping lumps initially exceeded 80 mm; bounded lump heights and an unbroken powder base bring the current source below 35 mm. A 13 micrometre isovalue offset avoids grid-aligned zero-thickness contacts. The pore-rich source contains hundreds of small handles, which cannot survive a 700-triangle budget. A vertically filled height-field proxy carries the outer envelope into the collider/game mesh; the detailed pore surface remains the normal/AO bake source. This is an explicit LOD construction, not a claim that collapse alone can remove that topology.
+
+`fragment_library.py` takes connected skin pieces cut from 12 Voronoi cells in that same SDF. An 8 mm skin depth produced nine accepted templates at 24 triangles each; three thinner pieces remain rejected in the measurement record and are not exported. Deposition onto final sofa surfaces has not been implemented.
+
+`fringe_cards.py` generates eight 1024 by 256 strand variants in numpy, their normal map and boundary cards. `opacity_bake.py` rasterizes 0.5 to 2 mm lip breakup into the game's `BakeUV`. `powder_cards.py` provides an irregular 48-triangle floor deposit with alpha coverage and a normal map from a 0.5 to 2 mm height field. The Blender control exports cloth opacity, fringe and powder as glTF `alphaMode: MASK`, and checks byte-identical re-export from a saved blend. This control does not certify card collision clearance or appearance.
+
+The single-seat pilot currently uses a 4096-square normal/AO/opacity set for that seat and 2048-square residue maps. Packing all six covers into the shared 4096-square atlas remains unfinished. Coverage-preserving alpha mip generation and a Godot back-face-normal check also remain unfinished.
+
+Run the Python tests with the Hunyuan environment. `test_bake_masks.py` requires Blender's `bpy`, so it cannot run under ordinary Python. Run `blender_soft_controls.py` in background Blender for integration coverage. Logs, fixtures, maps and experimental blends stay under `tmp/age/pass4/`.
+
 ## Sofa pass 4: dense simulation and bake-down
 
 The pass-3 sofa trials `sofa-a` through `sofa-k`, including the failed `sofa-e`, are retained in `sofa/cloth-trials.json`. They are comparison inputs, not accepted pass-4 results. The fitted source and shipped GLB remain untouched until a new bake passes.
