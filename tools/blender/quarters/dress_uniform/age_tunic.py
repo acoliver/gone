@@ -110,13 +110,15 @@ def bake_simulation(obj, mod, frames, settle=False):
     for frame in range(1, frames+1):
         start = time.perf_counter()
         if settle and frame == 601:
-            # The swatch fit controls opening transients. Finish at rest with
-            # the source wool's damping; static springs and contacts are unchanged.
+            # Free swatches do not exercise stiff detail patches against colliders.
+            # Use the source garment solver for contact settling after opening.
             reference = json.loads((HERE / 'aging-calibration.json').read_text())['reference_settings']
             mod.settings.tension_damping = mod.settings.compression_damping = mod.settings.shear_damping = reference['structural_damping']
             mod.settings.bending_damping = reference['bending_damping']
             mod.settings.air_damping = reference['air_damping']
-            print('SOURCE DAMPING SETTLE', frame, reference, flush=True)
+            mod.settings.quality = 30
+            mod.collision_settings.collision_quality = 6
+            print('SOURCE SOLVER SETTLE', frame, reference, flush=True)
         bpy.context.scene.frame_set(frame)
         deps = bpy.context.evaluated_depsgraph_get()
         evaluated = obj.evaluated_get(deps)
@@ -124,16 +126,20 @@ def bake_simulation(obj, mod, frames, settle=False):
         durations.append(time.perf_counter()-start)
         window.append(positions.copy())
         if len(window) == 6:
-            motion = float(np.linalg.norm(positions-window[0], axis=1).max())
+            displacement = np.linalg.norm(positions-window[0], axis=1)
+            maximum_vertex = int(displacement.argmax())
+            motion = float(displacement[maximum_vertex])
         if frame % 10 == 0:
             print(obj.name, 'frame', frame, 'seconds', durations[-1],
                   'bounds', positions.min(0), positions.max(0), flush=True)
         if frame % 25 == 0:
             samples.append(dict(frame=frame, bounds=[positions.min(0).tolist(), positions.max(0).tolist()],
-                                last_five_frames_motion_m=motion))
+                                last_five_frames_motion_m=motion, maximum_motion_vertex=maximum_vertex,
+                                maximum_motion_position_m=positions[maximum_vertex].tolist()))
             print('SETTLING', frame, motion, flush=True)
             if settle and frame >= 600 and all(s['last_five_frames_motion_m'] < .001 for s in samples[-3:]):
                 break
+    final_solver = dict(quality=mod.settings.quality, collision_quality=mod.collision_settings.collision_quality)
     frozen = bpy.data.meshes.new_from_object(evaluated, depsgraph=deps)
     for modifier in list(obj.modifiers):
         if modifier == mod or modifier.type == 'SUBSURF':
@@ -143,7 +149,7 @@ def bake_simulation(obj, mod, frames, settle=False):
     return dict(frames=frame, maximum_frames=frames, seconds_per_frame=float(np.mean(durations[1:])),
                 last_five_frames_motion_m=motion,
                 source_damping_settle_from_frame=601 if settle and frame > 600 else None,
-                samples=samples)
+                final_solver=final_solver, samples=samples)
 
 
 def simulate(out, frames):

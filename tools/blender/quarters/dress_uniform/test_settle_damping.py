@@ -17,6 +17,8 @@ heights = {}
 for frame in range(1, 31):
     if frame == 21:
         mod.settings.air_damping = 10.
+        mod.settings.quality = 30
+        mod.collision_settings.collision_quality = 6
     bpy.context.scene.frame_set(frame)
     evaluated = obj.evaluated_get(bpy.context.evaluated_depsgraph_get())
     heights[frame] = sum(v.co.z for v in evaluated.data.vertices)/4

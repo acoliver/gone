@@ -30,6 +30,16 @@ that this transition continues physics rather than freezing or resetting the
 mesh. The final dense control still requires fewer than 50 self contacts and
 less than 1 mm motion; the exported changed-part contact requirement is zero.
 
+The source-damped trial reached 2400 frames with zero dense self contacts and
+zero exclusions, but its final-five-frame motion was still 9.286 mm. Source
+settings alone therefore do not establish settling. The next controlled solve
+also restores the source solver's 30 substeps and 6 collision iterations after
+frame 600. The falling-plane regression passes with that transition and
+continues to fall after the change. Each settling sample now records the
+maximum-motion vertex and position so remaining motion can be traced rather
+than attributed to the entire garment. This trial is still in progress; the
+delivery remains unchanged.
+
 ## Tunic7 tear and deposit construction
 
 The old hanger tear followed nearly constant pattern V with only ±0.0006
