@@ -26,12 +26,6 @@ var duct_collars: Array[Transform3D] = []
 var duct_flanges: Array[Transform3D] = []
 var fittings: Array[Dictionary] = []
 
-static func fixture_offset(space: ShipLayout.Spec, light_position: Vector3) -> Vector3:
-	# Move the visible housing only; the circuit's light anchor stays authored.
-	var side := signf(light_position.z - space.bounds().get_center().z)
-	if space is ShipLayout.SectionSpec: return Vector3(0, 0, -side * 0.10)
-	return Vector3(0, 0, -0.80) if side > 0 else Vector3.ZERO
-
 static func build(bounds: AABB) -> SpineServices:
 	var result := SpineServices.new()
 	var start := bounds.position.x + ShipLayout.WALL / 2

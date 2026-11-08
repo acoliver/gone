@@ -17,6 +17,27 @@ func test_runtime_glass_preserves_texture_variation_without_a_second_warm_tint()
 			maximum = maxf(maximum, pixel.r)
 	assert_true(maximum - minimum > 0.1, "keep the authored dirt and failing-section intensity variation")
 
+func test_every_built_spine_fixture_keeps_its_light_at_the_visible_lens() -> void:
+	var game := Game.new(91)
+	var checked := 0
+	for space: ShipLayout.Spec in game.layout.records():
+		if not (space is ShipLayout.SectionSpec or space is ShipLayout.ConnectorSpec) or not space.is_built(): continue
+		var node: Node3D = Hallway.build(game) if space.id() == &"D14-S-041" else (ShipSection.build(game.layout, space) if space is ShipLayout.SectionSpec else ShipConnector.build(game.layout, space))
+		var lights := node.find_children("*", "OmniLight3D", true, false)
+		var fixtures := 0
+		for light: OmniLight3D in lights:
+			if light.light_color != Lighting.EMERGENCY_RED: continue
+			var lens: MeshInstance3D = light.get_parent().get_node("Lens")
+			var light_position := Surfaces.world_frame(light).origin
+			var lens_position := Surfaces.world_frame(lens) * lens.mesh.get_aabb().get_center()
+			var separation := light_position.distance_to(lens_position)
+			assert_true(separation <= 0.01, "%s %s light is within 1 cm of its visible lens: %.5f m" % [space.id(), light.get_parent().name, separation])
+			fixtures += 1
+		assert_int_equal(fixtures, space.emergency_fixture_frames().size(), "every authored emergency fixture is checked: %s" % space.id())
+		checked += fixtures
+		node.free()
+	assert_int_equal(checked, 204, "all section fixtures and connector fixtures, including remote decks and landing keys")
+
 func test_spine_fixture_housings_and_mounts_clear_every_service() -> void:
 	var game := Game.new(91)
 	for space: ShipLayout.Spec in game.layout.records():

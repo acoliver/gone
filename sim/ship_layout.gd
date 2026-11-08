@@ -169,7 +169,8 @@ class SectionSpec:
 		var pitch := _bounds.size.x / 4
 		for station: int in range(4):
 			for side: int in [-1, 1]:
-				frames.append(Transform3D(Basis(), Vector3(_bounds.position.x + (station + 0.5) * pitch, _bounds.position.y + 2.65, _bounds.get_center().z + side * (_bounds.size.z / 2 - 0.10))))
+				# Seat the entire fixture inward of the continuous wall-top services.
+				frames.append(Transform3D(Basis(), Vector3(_bounds.position.x + (station + 0.5) * pitch, _bounds.position.y + 2.65, _bounds.get_center().z + side * (_bounds.size.z / 2 - 0.20))))
 		return frames
 	func regular_light_frames() -> Array[Transform3D]:
 		var frames: Array[Transform3D] = []
@@ -264,7 +265,9 @@ class ConnectorSpec:
 	func emergency_fixture_frames() -> Array[Transform3D]:
 		var frames: Array[Transform3D] = []
 		for side: int in [-1, 1]:
-			frames.append(Transform3D(Basis(), Vector3(_bounds.get_center().x + side * _bounds.size.x / 4, _bounds.position.y + 1.75, side * (_bounds.size.z / 2 - 0.30))))
+			# The positive-side duct requires the complete fixture, including its stem, farther inboard.
+			var z := side * (_bounds.size.z / 2 - 0.30) - (0.80 if side > 0 else 0.0)
+			frames.append(Transform3D(Basis(), Vector3(_bounds.get_center().x + side * _bounds.size.x / 4, _bounds.position.y + 1.75, z)))
 		frames.append(Transform3D(Basis(), landing_key_position()))
 		return frames
 	func service_reservations() -> Array[ServiceReservation]:
