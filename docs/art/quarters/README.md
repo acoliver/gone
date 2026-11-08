@@ -297,7 +297,48 @@ Seat tears now bound the actual snapped cut length, rather than only the authore
 
 A same-mesh shrink control found that a 3% minimum shrink also contracts vertices outside the lip group. At frame 20 it produced 30.726% sharp dihedrals; changing only that minimum to zero reduced the share to 2.044%. Production keeps zero minimum shrink and 5% maximum shrink in the authored lip group. This preserves local lip curl without contracting the whole panel.
 
-All six final covers completed: seats centre/left/right took 456.500/196.325/285.175 seconds; backs took 724.758/543.668/366.601 seconds. The backs no longer retain their fitted boxes, but they over-collapse: height retention is 28.053/39.047/33.517%, below G15's 40–65%. G17 finds 2/2/1 front folds, against at least two each. Seat centre retention is 58.463/63.084/58.513%, above G14's 10–25%. The stable residue mesh reduces G7 to 4.486/6.846/5.678% on seats and 1.620/2.919/2.750% on backs; the remaining above-limit patches are on the roof, not the corrected underside or rim. These failed source measurements block publication. The throw, captures and final exported measurements remain pending at this checkpoint. The Blender regression suite passes 27 tests. No pass-7 candidate has replaced the shipped sofa or its textures.
+All six final covers completed: seats centre/left/right took 456.500/196.325/285.175 seconds; backs took 724.758/543.668/366.601 seconds. The backs no longer retain their fitted boxes, but they over-collapse: height retention is 28.053/39.047/33.517%, below G15's 40–65%. G17 finds 2/2/1 front folds, against at least two each. Seat centre retention is 58.463/63.084/58.513%, above G14's 10–25%. The stable residue mesh reduces G7 to 4.486/6.846/5.678% on seats and 1.620/2.919/2.750% on backs; the remaining above-limit patches are on the roof, not the corrected underside or rim. These failed source measurements block publication. The Blender regression suite passes 27 tests. No pass-7 candidate has replaced the shipped sofa or its textures.
+
+#### Pass-7 final acceptance: rejected, shipped asset unchanged
+
+All G1–G19 and G30–G32 are measured on the final preview, dense sources and alpha-aware captures. Eight of the 22 gates pass. `tmp/age/pass7/final/gates.json` contains the per-opening values; `collisions.json` contains the SAT contacts. Geometry bytes for Frame, Feet and Rivets, object pivots, all-six-simulated status and byte-identical re-export all pass. The candidate stays at `tmp/age/pass7/final/sofa-preview.glb`. Neither `assets/props/quarters/sofa_aged.glb` nor its textures was replaced.
+
+The final throw is one connected sheet, but no part remains at the arm. Its fallen centroid is 430.163 mm from the arm footprint, and it has 394 self-crossings. Four folds meet the 10 mm requirement. Contact starts at frame 226; afterwards its lowest vertex stays below 9.310 mm, rather than the old run's 396.954 mm upward ejection. Correcting the floor representation did not solve arm retention, faceting or self-contact. The high-friction arm control retained the throw above 351.774 mm without reaching the floor, so it is also rejected. The remaining drape cannot be accepted by choosing either failed control.
+
+Deposition places 20 crumbs inside or under openings and 12 along the front lip of each seat, with six per seat on the floor: 114 fragments total, of which 18 are on the floor. Three supported powder drifts lie on the deck. The exported crumb node has zero self-crossings, fixing the former 13 instance crossings. G9–G11 pass, but no visual rating has been obtained for these captures.
+
+In the table, seat and back triplets are centre/left/right. Missing visible openings are measured failures, not omitted tests. G6 lists only contours large enough for its 64 px extent requirement; smaller contours remain in the full report.
+
+| Gate | Final value | Threshold | Result |
+| --- | --- | --- | --- |
+| G1 | Visible sharp adjacencies: seats 10.467/11.585/8.666%; backs 52.174/25.000/56.757%; throw 39.412% | Covers ≤8%; throw ≤9% | Fail |
+| G2 | Normal jumps: seats 0.156/0.169/0.181%; backs 23.317/32.740/49.814%; throw 3.543% | ≤2% each | Fail |
+| G3 | Longest alpha-aware straight runs: seats 32.249/28.000/52.038 px; backs absent/64.382/absent; throw 21.506 px | ≤12 px, about 4.5 mm | Fail |
+| G4 | Minimum opening-width CV: seats 0.5323/0.3457/0.3355; backs absent/0.6158/absent; throw 0.4191 | ≥0.35 each | Fail |
+| G5 | Lip length lifted over 3 mm: seats 23.716/20.492/15.836%; backs 30.675/53.539/43.849% | ≥30% each | Fail |
+| G6 | Resolved contour dimensions: centre 1.1493–1.2608; left 1.1278; right 1.1597–1.2989; backs absent/1.2631/absent; throw unresolved | 1.15–1.40 each resolved contour, with a measured contour per part | Fail |
+| G7 | Planar residue area: seats 4.486/6.846/5.678%; backs 1.620/2.919/2.750% | ≤5% each | Fail |
+| G8 | Dense plane-fit RMS: seats 1.712 mm each; backs 2.494/2.478/2.478 mm; all normal maps present | ≥1.5 mm and map | Pass |
+| G9 | 8 templates, 24 triangles each, thickness/width 0.2663–0.4592 | ≥8 templates; 14–40 triangles; ratio 0.25–0.70 | Pass |
+| G10 | Clark-Evans R 1.118321; largest cluster 0%; 18 floor crumbs | R 0.8–1.4; cluster ≤20% | Pass |
+| G11 | Spill radial-density rho -1.000/-0.800/-1.000; powder present for each | ≤-0.6 per source, with powder | Pass |
+| G12 | Seat vertical-wall area 50.677/52.284/63.033% of fitted | ≤25% each | Fail |
+| G13 | Exported rounded-box RMS 15.863/13.725/11.613 mm | ≥12 mm each seat | Fail |
+| G14 | Seat centre-height retention 58.463/63.084/58.513% | 10–25% each | Fail |
+| G15 | Back height retention 28.053/39.047/33.517% | 40–65% each | Fail |
+| G16 | Back residue volume in lower third 100% each | ≥60% each | Pass |
+| G17 | Front folds at ≥8 mm prominence: 2/2/1 | ≥2 each back | Fail |
+| G18 | Arm-crest split 79.947% | 60–90% | Pass |
+| G19 | Distance 430.163 mm; 4 folds ≥10 mm; 1 component, 0 arm-to-floor components | ≤250 mm; ≥3 folds; 1 continuous arm-to-floor component, ≤1 detached remnant | Fail |
+| G30 | 10,917 changed contacts; rigid baseline exact | Zero changed contacts; exact rigid baseline | Fail |
+| G31 | 29,253 triangles, 1.496317 times fitted | ≤29,325 and ≤1.5 times fitted | Pass |
+| G32 | Dense/game boundary bound 0.125 mm for all covers and throw | ≤1.5 mm | Pass |
+
+G30 comprises 9,198 back self-crossings, six seat self-crossings, 394 throw self-crossings and 1,319 changed-part pair crossings. The rigid counts remain 522 Frame self-crossings and 272 Frame/Rivets crossings, with the other four rigid self/pair counts zero. The partition control proves initialization clearance, not final contact acceptance. The backs' remaining instability is unresolved: a fresh-modifier fitted-rest control still has 39.079% sharp adjacencies at frame 40, so the corrected rest-depth discontinuity is not its sole cause. No solver thresholds or SAT checks were relaxed.
+
+The six cover solves took 2,573.027 seconds in total; the throw's 480-frame solve took 165.258 seconds. Measured finishing stages took 76.285 seconds for cushion detail, 13.925 for throw detail, 26.910 for deposition, 13.002 for atlas/export, 19.473 for rendering, 0.826 for composition, 2.355 for SAT and 8.589 for acceptance. Acceptance exited 1 because the candidate fails. The software verification passes 46 Python tests and 27 Blender tests. Review skipped per Andrew 2026-10-09.
+
+The provisional-material captures are `tmp/age/pass7/sofa-before-after.png`, `tmp/age/pass7/sofa-turntable.png` and `tmp/age/pass7/sofa-closeup.png`. The closeup is at 0.6 m. These are rejected-candidate diagnostics, without visual sign-off.
 
 ### Dense aging pilot, not shipped
 
