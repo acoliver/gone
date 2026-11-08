@@ -1,5 +1,5 @@
 {
-  "method": "generated FLUX.2-klein swatches, hatch linear albedo calibration and chroma-derived edge loss; procedural relief only",
+  "method": "generated FLUX.2-klein class-conditioned pigment layers; physical broken edge loss and small blisters; derivative-sharpened coverage and hatch detail scans",
   "colour_source": "art-source/quarters/locker/albedo-calibration.json",
   "swatches": {
     "panel": "panel-95031.png",
@@ -38,9 +38,11 @@
     "*_albedo.png": "RGB sRGB undusted reflectance, A oxide coverage",
     "*_normal.png": "RGB OpenGL tangent normal, A=1",
     "*_orm.png": "R AO, G undusted roughness, B undusted metallic, A dust",
-    "aged_dust.png": "RGB calibrated generated dust swatch, physical 300 px/m projection",
+    "aged_paint.png": "RGB class-conditioned panel pigment; grey steel on hardware",
+    "aged_oxide.png": "RGB class-conditioned oxide pigment; no baked paint boundary",
+    "aged_dust.png": "RGB calibrated generated dust, smoothed over 80 mm before physical projection",
     "aged_rust.png": "RGB calibrated heavy-loss swatch for translucent runoff colour",
     "region_masks.png": "R edge/fixture band <=25 mm, G broad >=60 mm, B BareSteel, A coverage"
   },
-  "detail_scans": "shared CC0 hatch steel/paint/oxide relief at 0.20 m pitch; clean finish also uses scan colour grain"
+  "detail_scans": "shared CC0 hatch steel/paint/oxide albedo grain, normals and ORM at 0.20 m pitch; clean finish unchanged"
 }

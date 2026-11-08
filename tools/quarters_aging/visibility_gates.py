@@ -11,6 +11,90 @@ def dust_visibility(aged, disabled, up):
     if not up.any():
         raise ValueError('no up-facing receiver in dust control')
     return float(np.mean(luminance(aged)[up] - luminance(disabled)[up]))
+def trail_metrics(colour, receiver, cx, source_y, pixels_per_metre, control=None):
+    """Contiguous narrow rust runs, contrasted against paint on both sides."""
+    from locker_gates import hsv
+    hue, saturation, value = hsv(colour)
+    # Translucent oxide has lower saturation than opaque substrate. Contrast
+    # against both paint shoulders is still required on every row of the run.
+    rust = (hue >= 5) & (hue <= 50) & (saturation >= .18) & (value > .10)
+    if control is not None:
+        rust &= control >= .15
+    from locker_swatches import paint_field
+    paint = paint_field(colour) >= .5
+    lum = luminance(colour)
+    height, width = receiver.shape
+    radius = max(1, int(np.floor(.004 * pixels_per_metre)))
+    centre = int(round(cx))
+    qualifying = []
+    widths, contrasts = [], []
+    for y in range(max(0, int(np.ceil(source_y))), min(height, int(source_y + .205 * pixels_per_metre))):
+        best = None
+        for x in range(max(0, centre-radius), min(width, centre+radius+1)):
+            if not (receiver[y, x] and rust[y, x]):
+                continue
+            left = right = x
+            while left > 0 and rust[y, left-1] and receiver[y, left-1]: left -= 1
+            while right < width-1 and rust[y, right+1] and receiver[y, right+1]: right += 1
+            physical_width = (right-left+1) / pixels_per_metre
+            if not .001 <= physical_width <= .015:
+                continue
+            flank_width = max(1, int(np.ceil(.004 * pixels_per_metre)))
+            a = slice(max(0, left-flank_width), left)
+            b = slice(right+1, min(width, right+1+flank_width))
+            flank_a = receiver[y, a] & paint[y, a] & ~rust[y, a]
+            flank_b = receiver[y, b] & paint[y, b] & ~rust[y, b]
+            if not flank_a.any() or not flank_b.any():
+                continue
+            contrast = min(float(lum[y, a][flank_a].mean()), float(lum[y, b][flank_b].mean())) - float(lum[y, left:right+1].mean())
+            if contrast >= .03:
+                best = (physical_width, contrast, left, right)
+                break
+        qualifying.append((y, best))
+    longest = 0
+    run_start = None
+    best_start = None
+    previous = None
+    for y, row in qualifying:
+        if row is None:
+            run_start, previous = None, None
+            continue
+        widths.append(row[0])
+        contrasts.append(row[1])
+        connected = previous is not None and row[2] <= previous[3]+1 and row[3] >= previous[2]-1
+        if run_start is None or not connected:
+            run_start = y
+        previous = row
+        length = y-run_start+1
+        if (run_start-source_y) / pixels_per_metre <= .010 and length > longest:
+            longest, best_start = length, run_start
+    return dict(length_m=longest / pixels_per_metre,
+                onset_m=None if best_start is None else (best_start-source_y) / pixels_per_metre,
+                width_m=float(np.median(widths)) if widths else 0.,
+                linear_contrast=float(np.median(contrasts)) if contrasts else 0.,
+                passed=longest / pixels_per_metre >= .040)
+
+
+def boundary_orientation(field, valid):
+    """Gradient orientations on a lightly filtered material boundary, 10° bins.
+
+    One capture pixel of smoothing removes raster quantisation, while preserving
+    the much larger atlas-texel stair runs visible at the close-up camera.
+    """
+    from scipy.ndimage import gaussian_filter
+    smooth = gaussian_filter(field.astype(float), 1.)
+    gy, gx = np.gradient(smooth)
+    gradient = np.hypot(gx, gy)
+    boundary = binary_erosion(valid, iterations=3) & (smooth > .12) & (smooth < .88) & (gradient > .025)
+    if boundary.sum() < 50:
+        raise ValueError('insufficient close-up paint/rust boundary')
+    angle = (np.degrees(np.arctan2(gy[boundary], gx[boundary])) + 5) % 180
+    histogram, _ = np.histogram(angle, bins=18, range=(0, 180), weights=gradient[boundary])
+    median = float(np.median(histogram))
+    ratio = float(max(histogram[0], histogram[9]) / max(median, 1e-8))
+    return ratio, histogram.tolist(), int(boundary.sum())
+
+
 
 
 def strip_metrics(colour, receiver, cx, rows, pixels_per_metre, rust_classifier):

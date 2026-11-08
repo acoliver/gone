@@ -68,6 +68,26 @@ def measure_swatches(directory, atlas, fields, masks, preview):
     control = linear(control)
     camera = preview['cameras']['front']
     ppm = camera['image_size'][1] / camera['size']
+    from scipy.ndimage import label, find_objects
+    from scipy.spatial.distance import pdist
+    islands, _ = label(rust & broad & (control < .01), np.ones((3, 3)))
+    diameters = []
+    for index, bounds in enumerate(find_objects(islands), 1):
+        points = np.argwhere(islands[bounds] == index)
+        diameter = float(pdist(points).max()) if len(points) > 1 else 0.
+        diameters.append((diameter + 1) / ppm)
+    largest = max(diameters)
+    record('broad_face_island_max_m', largest, '<=0.060 max Feret diameter; broad front receivers, analytic runoff excluded', largest <= .060)
+    yy, xx = np.indices(control.shape)
+    allowed = np.zeros_like(control, bool)
+    for origin, shape in zip(widths, parameters):
+        cx, top = project(origin[:3], camera)
+        _, bottom = project(origin[:3] - [0, shape[0], 0], camera)
+        radius = (origin[3] * .5 + shape[2] * 3.2) * ppm + 2
+        allowed |= (abs(xx - cx) <= radius) & (yy >= top - 1) & (yy <= bottom + 1)
+    flat_door = rgb(directory / 'aged-doorface-front.png')[..., 0] > .95
+    unattached = float(control[flat_door & ~allowed].max())
+    record('unattached_runoff_max', unattached, '<=0.01 linear coverage outside outlet envelopes on the flat door plane', unattached <= .01)
     measured = []
     for origin, shape in zip(widths, parameters):
         cx, cy = project(origin[:3] - np.array([0, shape[0] * .30, 0]), camera)

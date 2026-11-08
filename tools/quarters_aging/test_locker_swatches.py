@@ -23,7 +23,7 @@ class LockerSwatchTests(unittest.TestCase):
         points, shapes = source_rows(sources, 9501)
         self.assertTrue(((points[:, 3] >= .004) & (points[:, 3] <= .012)).all())
         self.assertTrue(((shapes[:, 0] >= .060) & (shapes[:, 0] <= .200)).all())
-        self.assertLess(float(shapes[:, 1].max()), .7)
+        self.assertLess(float(shapes[:, 1].max()), 1.)
         np.testing.assert_array_equal(source_rows(sources, 9501), [points, shapes])
 
     def test_projection_keeps_300_pixels_per_metre_on_each_plane(self):
@@ -67,8 +67,8 @@ class LockerSwatchTests(unittest.TestCase):
         reference = np.repeat(np.linspace(.2, .5, 100).reshape(10, 10, 1), 3, axis=2)
         samples = np.array([[.2, .1, .08], [.35, .15, .1], [.5, .2, .1]])
         reach = edge_reach(samples, reference)
-        self.assertGreater(float(np.ptp(reach)), .04)
-        self.assertTrue(((reach >= .025) & (reach <= .080)).all())
+        self.assertGreater(float(np.ptp(reach)), .015)
+        self.assertTrue(((reach >= .005) & (reach <= .025001)).all())
 
     def test_continuous_edge_outline_has_zero_variation(self):
         self.assertEqual(edge_variation(np.ones(20)), 0)

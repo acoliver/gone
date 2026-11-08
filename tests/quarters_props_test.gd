@@ -96,6 +96,15 @@ func _compare_parts(a: Node, b: Node) -> void:
 	for index: int in range(a.get_child_count()):
 		_compare_parts(a.get_child(index), b.get_child(index))
 
+func test_aged_colour_layers_are_separate_from_the_coverage_atlas() -> void:
+	var factory := _factory()
+	if factory == null: return
+	var material: ShaderMaterial = factory.material(&"storage_locker_module", &"aged")
+	for parameter: StringName in [&"aged_paint", &"aged_oxide"]:
+		var layer: Texture2D = material.get_shader_parameter(parameter)
+		assert_true(layer != null and layer.get_width() == 2048, "separate class-conditioned colour layer")
+		assert_true(layer != material.get_shader_parameter(&"baked_albedo"), "coverage must not carry the colour boundary")
+
 func test_material_reuses_hatch_detail_scans_without_changing_hatch() -> void:
 	var factory := _factory()
 	if factory == null: return

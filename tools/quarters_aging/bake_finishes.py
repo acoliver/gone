@@ -9,7 +9,7 @@ from scipy.ndimage import distance_transform_edt
 
 from colour import linear, srgb
 from finish_fields import noise
-from locker_swatches import aged_colour, load_swatches, paint_field
+from locker_swatches import aged_colour, load_swatches, paint_field, material_colours
 from streak_sources import write_sources
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -45,9 +45,12 @@ def bake(directory, fields):
     distance = np.minimum(edge, fixture)
     flakes = noise(p, 84, seed + 1)
     grain = noise(p, 430, seed + 2)
-    aged, corrosion, dust_colour, calibration = aged_colour(p, n, distance, geometry[..., 1][occupied], hardware)
+    aged, corrosion, dust_colour, calibration = aged_colour(p, n, distance, geometry[..., 1][occupied], hardware, metadata['sources'], seed, edge)
     source_count = write_sources(directory / 'streak_sources.tres', metadata['sources'], seed)
-    dust = np.clip(weather[..., 0][occupied] * 3, 0, .96)
+    up = np.clip(n[:, 2], 0, 1)
+    density = .80 + noise(p, 6, seed + 33) * .15 + np.exp(-edge / .035) * .14
+    # AO cavities and the perimeter lip retain powder; raised bevels shed it.
+    dust = np.clip(up ** 8 * (density + geometry[..., 1][occupied] * .12), 0, .97)
     paint = design_paint()
     steel = np.array([.72, .75, .77], np.float32)
     dark = np.array([.23, .265, .26], np.float32)
@@ -61,6 +64,12 @@ def bake(directory, fields):
     dust_atlas[occupied] = dust_colour
     write_atlas(directory / 'aged_dust.png', dust_atlas, nearest)
     images, _ = load_swatches()
+    paint_layer, oxide_layer = material_colours(p, n, images)
+    paint_layer[hardware] = [.49, .52, .54]
+    for name, layer in [('aged_paint.png', paint_layer), ('aged_oxide.png', oxide_layer)]:
+        atlas = np.zeros((*occupied.shape, 3), np.float32)
+        atlas[occupied] = layer
+        write_atlas(directory / name, atlas, nearest)
     nearest_rust = distance_transform_edt(paint_field(images['loss']) >= .15, return_distances=False, return_indices=True)
     runoff = images['loss'][tuple(nearest_rust)]
     Image.fromarray(np.uint8(np.round(np.clip(runoff, 0, 1) * 255))).save(directory / 'aged_rust.png')
@@ -92,7 +101,7 @@ def bake(directory, fields):
         write_atlas(directory / f'{state}_albedo.png', albedo, nearest)
         write_atlas(directory / f'{state}_normal.png', np.dstack([normals * .5 + .5, np.ones_like(dx)]), nearest)
         write_atlas(directory / f'{state}_orm.png', orm, nearest)
-    document = {'method': 'generated FLUX.2-klein swatches, hatch linear albedo calibration and chroma-derived edge loss; procedural relief only',
+    document = {'method': 'generated FLUX.2-klein class-conditioned pigment layers; physical broken edge loss and small blisters; derivative-sharpened coverage and hatch detail scans',
                 'colour_source': 'art-source/quarters/locker/albedo-calibration.json',
                 'swatches': {name: row['candidate'] for name, row in calibration['regions'].items()},
                 'swatch_pixels_per_metre': 300, 'gravity_direction_prop': [0, -1, 0], 'gravity_source_count': source_count,
@@ -102,10 +111,12 @@ def bake(directory, fields):
                 'channels': {'*_albedo.png': 'RGB sRGB undusted reflectance, A oxide coverage',
                              '*_normal.png': 'RGB OpenGL tangent normal, A=1',
                              '*_orm.png': 'R AO, G undusted roughness, B undusted metallic, A dust',
-                             'aged_dust.png': 'RGB calibrated generated dust swatch, physical 300 px/m projection',
+                             'aged_paint.png': 'RGB class-conditioned panel pigment; grey steel on hardware',
+                             'aged_oxide.png': 'RGB class-conditioned oxide pigment; no baked paint boundary',
+                             'aged_dust.png': 'RGB calibrated generated dust, smoothed over 80 mm before physical projection',
                              'aged_rust.png': 'RGB calibrated heavy-loss swatch for translucent runoff colour',
                              'region_masks.png': 'R edge/fixture band <=25 mm, G broad >=60 mm, B BareSteel, A coverage'},
-                'detail_scans': 'shared CC0 hatch steel/paint/oxide relief at 0.20 m pitch; clean finish also uses scan colour grain'}
+                'detail_scans': 'shared CC0 hatch steel/paint/oxide albedo grain, normals and ORM at 0.20 m pitch; clean finish unchanged'}
     (directory / 'finishes.json').write_text(json.dumps(document, indent=2) + '\n')
     print('Baked both steel finishes; design median', paint.tolist(), flush=True)
 

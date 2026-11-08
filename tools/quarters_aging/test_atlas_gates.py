@@ -7,7 +7,7 @@ from atlas_gates import uv_metrics
 from streak_sources import write_sources
 
 ROOT = Path(__file__).resolve().parents[2]
-SCRATCH = ROOT / 'tmp/mat/locker/pass2'
+SCRATCH = ROOT / 'tmp/mat/locker/pass4'
 
 
 class AtlasGateTests(unittest.TestCase):

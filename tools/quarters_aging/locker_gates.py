@@ -174,9 +174,21 @@ def main():
     for name in ('values', 'gates', 'thresholds'):
         result[name].update(extra[name])
         result[name].update(swatches[name])
+    result['legacy_rust_row_sampling'] = {
+        'fraction': result['values']['fasteners_with_streaks'], 'fasteners': result.pop('fasteners'),
+        'reason': 'Historical rust-row occupancy is retained as a diagnostic, not a physical trail visibility gate.'}
+    result['values']['fasteners_with_streaks'] = extra['values']['visible_fastener_streaks_albedo']
+    result['gates']['fasteners_with_streaks'] = extra['gates']['visible_fastener_streaks_albedo']
+    result['thresholds']['fasteners_with_streaks'] = '>=0.50; same attached-run definition as visible_fastener_streaks_albedo'
     result['panel_edges'] = swatches['panel_edges']
     result['measured_streak_widths_m'] = swatches['measured_streak_widths_m']
     result['visibility_fasteners'] = extra['visibility_fasteners']
+    result['design_gate_change'] = {
+        'requested_by': 'Andrew, locker pass 4',
+        'reason': 'The fixed 110 mm strip rejected real tapered short runoff and conflated panel rust with a trail. Measure an attached visible run instead; low fasteners may have only a stain ring.',
+        'replaced': 'fasteners_with_streaks and visible_fastener_streaks_{albedo,neutral,present}',
+        'definition': 'At least 50% of door and upper-side fasteners: rust-coloured continuous run >=40 mm, starts <=10 mm below outlet, contrasts >=0.03 linear with paint on both sides, narrow <=15 mm. Full distribution includes lower sources.'}
+
     result['passed'] = all(result['gates'].values())
     (args.captures / "gates.json").write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps({name: value for name, value in result.items() if name not in ("fasteners", "visibility_fasteners")}, indent=2))

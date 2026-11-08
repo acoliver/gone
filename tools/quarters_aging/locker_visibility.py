@@ -4,7 +4,7 @@ import numpy as np
 from scipy.ndimage import binary_erosion
 
 from colour import linear, lab, luminance, delta_e_2000
-from visibility_gates import dust_visibility, strip_metrics, longest_straight_boundary, secondary_correlation
+from visibility_gates import dust_visibility, trail_metrics, boundary_orientation, longest_straight_boundary, secondary_correlation
 
 
 def measure_visibility(directory, masks, preview, finish_file):
@@ -33,6 +33,7 @@ def measure_visibility(directory, masks, preview, finish_file):
     camera = preview['cameras']['front']
     ppm = camera['image_size'][1] / camera['size']
     fasteners = []
+    runoff_control = linear(rgb(directory / 'aged-streakmask-front.png'))[..., 0]
     sources = [source for source in masks['sources'] if source['part'] in ('Rivets', 'Hinges')]
     for lane in ('albedo', 'neutral', 'present'):
         image = rgb(directory / f'aged-{lane}-front.png')
@@ -43,18 +44,34 @@ def measure_visibility(directory, masks, preview, finish_file):
         record(f'broad_face_rust_{lane}', broad_fraction, '[0.08,0.25]', .08 <= broad_fraction <= .25)
         lane_results = []
         for source in sources:
-            x, y, z = source['position_blender']
-            cx, top = project([x, z - .010, -y], camera)
-            _, bottom = project([x, z - .120, -y], camera)
-            rows = (np.arange(image.shape[0]) >= top) & (np.arange(image.shape[0]) < bottom)
-            result = strip_metrics(image, painted, cx, rows, ppm, rust_pixels)
-            if result is not None:
-                result['source'] = source
-                lane_results.append(result)
-        if not lane_results: raise ValueError('no fastener receiver strips')
-        fraction = sum(row['passed'] for row in lane_results) / len(lane_results)
-        record(f'visible_fastener_streaks_{lane}', fraction, '>=0.80; per strip rust>=0.35, contrast>=0.04, width 4..15mm', fraction >= .8)
-        fasteners.append(dict(lane=lane, eligible=len(lane_results), excluded=len(sources)-len(lane_results), measurements=lane_results))
+            from streak_sources import outlet_position
+            x, y, z = outlet_position(source)
+            cx, top = project([x, z, -y], camera)
+            result = trail_metrics(image, painted, cx, top, ppm, runoff_control)
+            result['source'] = source
+            # Rivets belong to the carcass, not the door leaf. Include
+            # its upper half plus all three door hinges, including the low one.
+            result['eligible'] = bool(source['part'] == 'Hinges' or z >= 1.2)
+            lane_results.append(result)
+        eligible = [row for row in lane_results if row['eligible']]
+        if not eligible: raise ValueError('no door/upper-side fasteners')
+        fraction = sum(row['passed'] for row in eligible) / len(eligible)
+        record(f'visible_fastener_streaks_{lane}', fraction, '>=0.50 of door/upper-side fasteners; contiguous rust run>=40mm, onset<=10mm, both-flank linear contrast>=0.03, width<=15mm', fraction >= .5)
+        fasteners.append(dict(lane=lane, eligible=len(eligible), excluded=len(sources)-len(eligible), measurements=lane_results))
+
+    from locker_swatches import paint_field
+    closeup = rgb(directory / 'streaks-closeup.png')[:, 1024:]
+    close_ids = rgb(directory / 'aged-ids-streaks.png')
+    close_valid = (close_ids[..., 0] > .95) & (close_ids[..., 2] > .95)
+    # Analytic vertical runoff is not atlas-sampled and naturally has a 0-degree
+    # gradient peak. Its isolated control keeps it out of the texel-step test.
+    runoff = linear(rgb(directory / 'aged-streakmask-streaks.png'))[..., 0]
+    from scipy.ndimage import maximum_filter
+    close_valid &= maximum_filter(runoff, size=9) < .01
+    ratio, histogram, samples = boundary_orientation(1 - paint_field(closeup), close_valid)
+    record('closeup_atlas_axis_peak_ratio', ratio, '<=2.0 at 0 and 90 degrees relative to median, 10-degree bins', ratio <= 2.)
+    values['closeup_boundary_orientation_histogram'] = histogram
+    values['closeup_boundary_samples'] = samples
 
     # Door interior only: no silhouette, surround, recess or hardware boundaries.
     a = project([-.245, 2.29, .274], camera)

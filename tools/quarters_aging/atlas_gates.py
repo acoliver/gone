@@ -6,7 +6,8 @@ import trimesh
 
 def repeat_metrics(directory, repeat):
     names = ['geometry_masks.png', 'weather_masks.png', 'region_masks.png',
-             'masks.json', 'finishes.json', 'streak_sources.tres', 'aged_dust.png', 'aged_rust.png']
+             'masks.json', 'finishes.json', 'streak_sources.tres', 'aged_dust.png', 'aged_rust.png',
+             'aged_paint.png', 'aged_oxide.png']
     names += [f'{state}_{kind}.png' for state in ('as_built', 'aged') for kind in ('albedo', 'normal', 'orm')]
     matches = [name for name in names if (directory / name).read_bytes() == (repeat / name).read_bytes()]
     exported = directory.with_suffix('.glb').read_bytes() == (repeat / 'storage_locker_module.glb').read_bytes()

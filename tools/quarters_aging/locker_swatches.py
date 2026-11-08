@@ -5,7 +5,10 @@ import sys
 
 import numpy as np
 from PIL import Image
-from scipy.ndimage import map_coordinates
+from scipy.ndimage import map_coordinates, distance_transform_edt, gaussian_filter
+
+from finish_fields import noise
+from locker_blisters import blister_field
 
 from colour import linear, srgb, lab
 
@@ -99,25 +102,78 @@ def load_swatches():
 def edge_reach(loss, source):
     lo, hi = np.quantile(source[..., 0], [.05, .95])
     pigment = np.clip((loss[:, 0] - lo) / (hi - lo), 0, 1)
-    return .031 + .049 * pigment
+    return .005 + .020 * pigment ** .08
 
 
-def aged_colour(points, normals, distance, cavity, hardware):
+def aged_colour(points, normals, distance, cavity, hardware, sources, seed, edge_distance):
     images, calibration = load_swatches()
-    panel = project_swatch(images['panel'], points, normals, offset=PANEL_OFFSET)
     loss = project_swatch(images['loss'], points, normals, offset=LOSS_OFFSET)
     horizontal = abs(normals).argmax(-1) == 2
     loss[horizontal] = project_swatch(images['loss'], points[horizontal], normals[horizontal], offset=HORIZONTAL_LOSS_OFFSET)
-    # The heavy-loss image's paint islands decide the irregular edge-band
-    # boundary. Geometry supplies exposure, never an independent noise pattern.
-    panel_paint = paint_field(panel[None])[0]
-    loss_paint = paint_field(loss[None])[0]
+    paint, oxide = material_colours(points, normals, images)
     reach = edge_reach(loss, images['loss'])
-    intensity = np.clip((reach - distance) / .010 + cavity * .20, 0, 1)
-    boundary = np.clip(((1 - loss_paint) - .35) / .20, 0, 1)
-    blend = intensity * boundary
-    blend[hardware | (normals[:, 2] > .7)] = 1
-    colour = panel * (1 - blend[:, None]) + loss * blend[:, None]
-    rust = 1 - (panel_paint * (1 - blend) + loss_paint * blend)
-    dust = project_swatch(images['dust'], points, normals)
+    # Millimetre breakup leaves intact gaps even directly on an exposed edge.
+    physical = points @ np.array([[.36, -.48, .8], [.8, .60, 0], [-.48, .64, .6]])
+    breakup = noise(physical, 43, 9511) * .65 + noise(physical, 173, 9512) * .35
+    reach = np.clip(reach + (noise(physical, 131, 9536) - .5) * .010, .005, .025)
+    corner = np.clip((cavity - .72) * 5, 0, 1)
+    reach += corner * np.clip((noise(physical, 31, 9533) - .65) * 4, 0, 1) * .025
+    edge = np.clip((reach - distance) / .004 + .5, 0, 1)
+    edge *= np.clip((breakup - .26) / .12, 0, 1)
+    phase = points.sum(-1) * 35 + noise(physical, 19, 9530) * 3
+    gaps = np.clip((np.sin(phase) + .60) / .25, 0, 1)
+    edge *= gaps
+    # Explicit separation prevents neighbouring blisters from forming large
+    # islands, which a thresholded continuous noise field cannot guarantee.
+    broad = blister_field(points, normals, seed)
+    rust = np.maximum(edge, broad)
+    rust = np.maximum(rust, cavity * np.clip((breakup - .40) * 4, 0, 1) * gaps)
+    # Unprotected hardware retains both oxide patches and polished grey edges.
+    patches = noise(points, 83, 9515)
+    wear = (edge_distance < .0035) & (patches > .59)
+    hardware_rust = np.where(patches > .25, .96, .05)
+    rust[hardware] = np.where(wear, .02, hardware_rust)[hardware]
+    roof = (normals[:, 2] > .7) & ~hardware
+    roof_loss = np.clip((noise(points[roof], 18, 9518) - .45) / .06 + .5, 0, 1)
+    rust[roof] = np.maximum(rust[roof], roof_loss * gaps[roof])
+    # Sparse blisters leave paint shoulders beside the attached runoff. Without
+    # them a run disappears into the fixture's broader oxide halo.
+    if sources:
+        from streak_sources import source_rows
+        origins, shapes = source_rows(sources, seed)
+        for origin, shape in zip(origins, shapes):
+            if shape[1] < .5:
+                continue
+            x, z, minus_y = origin[:3]
+            drop = z - points[:, 2]
+            receiver = (drop >= 0) & (drop < shape[0]) & ~hardware
+            front = (abs(points[:, 1] + minus_y) < .035) & (abs(normals[:, 1]) > .6)
+            side = (abs(points[:, 0] - x) < .035) & (abs(normals[:, 0]) > .6)
+            lateral = np.where(front, abs(points[:, 0] - x), abs(points[:, 1] + minus_y))
+            receiver &= (front | side) & (lateral < .015) & (drop < .090)
+            ragged = noise(physical[receiver], 173, 9522)
+            shoulders = np.clip((.012 + .003 * ragged - lateral[receiver]) / .004, 0, 1)
+            shoulders *= np.clip((.090 - drop[receiver]) / .018, 0, 1)
+            rust[receiver] *= 1 - .94 * shoulders
+    colour = paint * (1 - rust[:, None]) + oxide * rust[:, None]
+    steel = np.array([.49, .52, .54])
+    colour[hardware] = steel * (1 - rust[hardware, None]) + oxide[hardware] * rust[hardware, None]
+    smooth_dust = linear(gaussian_filter(images['dust'], sigma=(24, 24, 0)))
+    mean_dust = smooth_dust.mean((0, 1), keepdims=True)
+    smooth_dust = srgb(mean_dust + (smooth_dust - mean_dust) * .05)
+    dust = project_swatch(smooth_dust, points, normals)
     return colour, rust, dust, calibration
+
+
+def material_colours(points, normals, images=None):
+    """Class-conditioned source colours keep the low-resolution field out of RGB."""
+    if images is None:
+        images, _ = load_swatches()
+    colours = []
+    for name, want_paint, offset in [('panel', True, PANEL_OFFSET), ('loss', False, LOSS_OFFSET)]:
+        image = images[name]
+        is_paint = paint_field(image) >= .5
+        nearest = distance_transform_edt(is_paint != want_paint, return_distances=False, return_indices=True)
+        separated = gaussian_filter(image[tuple(nearest)], sigma=(1.2, 1.2, 0))
+        colours.append(project_swatch(separated, points, normals, offset=offset))
+    return colours
