@@ -203,6 +203,7 @@ func _fixture_views(circuit: String) -> void:
 	await _shot(circuit, "bay-ceiling", ShipLayout.BAY_ID, bay_frame * Vector3(-1.2, 1.5, 0), bay_frame * Vector3(0, Pods.ROOM_CEILING_HEIGHT - 0.05, -1.6 + Pods.ROW_WALL_OFFSET))
 	await _shot(circuit, "power-ceiling", ShipLayout.POWER_ID, Vector3(22.7, 1.6, -2.7), Vector3(24, PowerRoom.ROOM_CEILING - 0.05, -3.7))
 	camera.fov = 76
+	await _shot(circuit, "hall-fixture-services", &"D14-S-041", Vector3(18.8, hall.position.y + 1.5, 0), Vector3(21, hall.end.y - 0.20, 0))
 	await _shot(circuit, "fixture-corridor", &"D14-S-041", Vector3(8, hall.position.y + 1.3, 0.3), Vector3(29, hall.end.y - 0.35, 0))
 	camera.fov = previous_fov
 

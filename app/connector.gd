@@ -34,5 +34,5 @@ static func build(layout: ShipLayout, spec: ShipLayout.ConnectorSpec) -> ShipCon
 	connector.add_child(panel)
 	var bounds := spec.bounds()
 	for frame: Transform3D in spec.emergency_fixture_frames():
-		connector.add_child(Lighting.steady_fixture(frame.origin, mask, minf(Lighting.FIXTURE_RANGE, bounds.size.x / 2), bounds.position.y if frame.origin == spec.landing_key_position() else bounds.end.y, Surfaces.surface_frame(layout, spec.id(), &"CEILING"), FIXTURE_ATTENUATION))
+		connector.add_child(Lighting.steady_fixture(frame.origin, mask, minf(Lighting.FIXTURE_RANGE, bounds.size.x / 2), bounds.position.y if frame.origin == spec.landing_key_position() else bounds.end.y, Surfaces.surface_frame(layout, spec.id(), &"CEILING"), FIXTURE_ATTENUATION, SpineServices.fixture_offset(spec, frame.origin)))
 	return connector

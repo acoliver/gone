@@ -2,6 +2,34 @@ extends SimTestCase
 
 const ASSET := "res://assets/props/ceiling/fixture.glb"
 
+func test_runtime_glass_preserves_texture_variation_without_a_second_warm_tint() -> void:
+	var material := CeilingFixture.glass_material(1.0)
+	var image := material.emission_texture.get_image()
+	assert_true(image.has_mipmaps(), "retain the authored distant filtering")
+	var minimum := 1.0
+	var maximum := 0.0
+	for y: int in range(0, image.get_height(), 16):
+		for x: int in range(0, image.get_width(), 16):
+			var pixel := image.get_pixel(x, y)
+			assert_int_equal(roundi(pixel.r * 255), roundi(pixel.g * 255 * Lighting.REGULAR_WHITE.g / Lighting.REGULAR_WHITE.r), "balance the circuit's red/green bias in the intensity map")
+			assert_float_equal(pixel.g, pixel.b, "the emission map contributes intensity, not another warm tint")
+			minimum = minf(minimum, pixel.r)
+			maximum = maxf(maximum, pixel.r)
+	assert_true(maximum - minimum > 0.1, "keep the authored dirt and failing-section intensity variation")
+
+func test_spine_fixture_housings_and_mounts_clear_every_service() -> void:
+	var game := Game.new(91)
+	for space: ShipLayout.Spec in game.layout.records():
+		if not (space is ShipLayout.SectionSpec or space is ShipLayout.ConnectorSpec) or not space.is_built(): continue
+		var services := game.layout.ceiling_services(space.id())
+		var node: Node3D = Hallway.build(game) if space.id() == &"D14-S-041" else (ShipSection.build(game.layout, space) if space is ShipLayout.SectionSpec else ShipConnector.build(game.layout, space))
+		for mesh: MeshInstance3D in node.find_children("*", "MeshInstance3D", true, false):
+			if mesh.name != "CeilingMount" and mesh.get_meta(&"lamp_circuit", "") == "" and mesh.get_parent().name != "CeilingFixture": continue
+			var box := Surfaces.world_frame(mesh) * mesh.mesh.get_aabb()
+			for obstacle: ShipLayout.DressingClearance in services.reservations():
+				assert_false(box.intersects(obstacle.bounds), "%s %s clears %s: %s versus %s" % [space.id(), mesh.name, obstacle.id, box, obstacle.bounds])
+		node.free()
+
 func test_generated_fixture_keeps_metric_bounds_budget_and_separate_glass() -> void:
 	assert_true(ResourceLoader.exists(ASSET), "selected round-6 fixture must be installed")
 	if not ResourceLoader.exists(ASSET): return
@@ -60,7 +88,7 @@ func test_imported_glass_tracks_each_room_circuit_without_material_churn() -> vo
 				var material := glass.get_active_material(0) as StandardMaterial3D
 				assert_true(materials.has(material), "fade reuses the circuit material")
 				assert_true(material.emission == Lighting.REGULAR_WHITE * Lighting.REGULAR_EMISSIVE * node.white_level(), "actual imported glass follows the same fade as the light")
-				assert_float_equal(material.emission_energy_multiplier, 3.0, "circuit control preserves the imported glass emission strength")
+				assert_float_equal(material.emission_energy_multiplier, Vector3(0.30, 0, 0).x, "circuit control preserves the production glass response")
 				assert_int_equal(material.emission_operator, BaseMaterial3D.EMISSION_OP_MULTIPLY, "zero circuit level extinguishes the textured emission")
 	for node: Node3D in nodes:
 		assert_float_equal(node.white_level(), 1.0, "regular circuit settles lit")

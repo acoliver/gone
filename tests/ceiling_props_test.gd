@@ -7,8 +7,8 @@ func test_detector_faces_are_inward_and_visible_from_room_centre() -> void:
 		if not _built(space): continue
 		var spec := layout.ceiling_services(space.id())
 		var eye := spec.bounds.get_center()
-		# The power room's centre contains the generator; inspect above its crown.
-		if space is ShipLayout.PowerRoomSpec: eye.y = spec.bounds.end.y - 0.3
+		# The full-height generator occupies the centre, so inspect beside its hull.
+		if space is ShipLayout.PowerRoomSpec: eye.x += 1.2
 		var to_local := layout.world_to_bay() if space is ShipLayout.BaySpec else Transform3D.IDENTITY
 		var deck := space.deck_number()
 		if not deck_solids.has(deck):
@@ -26,10 +26,13 @@ func test_detector_faces_are_inward_and_visible_from_room_centre() -> void:
 					assert_true(obstacle.intersects_segment(eye, front) == null, "centre sight to detector clears structure in %s" % space.id())
 		for head: Transform3D in spec.heads:
 			var front := head * Vector3(0, 0, 0.5)
+			var head_eye := eye
+			# Inspect along each aisle beside the full-height central generator.
+			if space is ShipLayout.PowerRoomSpec: head_eye.x = head.origin.x
 			assert_true(spec.bounds.has_point(front), "sprinkler projects into room")
-			assert_true(head.basis.z.dot(eye - front) > 0, "sprinkler faces room centre")
+			assert_true(head.basis.z.dot(head_eye - front) > 0, "sprinkler faces room centre")
 			for box: AABB in deck_solids[deck]:
-				assert_true((to_local * box).intersects_segment(eye, front) == null, "room centre sees sprinkler in %s" % space.id())
+				assert_true((to_local * box).intersects_segment(head_eye, front) == null, "room aisle sees sprinkler in %s" % space.id())
 
 func test_fire_service_captures_frame_each_room_detector_and_sprinkler() -> void:
 	var capture := FileAccess.get_file_as_string("res://tools/capture_ship_surfaces.gd")
@@ -63,14 +66,17 @@ func test_every_built_space_has_two_wall_detectors_and_sprinklers() -> void:
 		for pose: Transform3D in spec.heads + spec.ducts:
 			for obstacle: AABB in spec.detector_exclusions:
 				assert_false((pose * ShipDressing.UNIT).intersects(obstacle), "overhead props clear doors, ladder mouths and existing wall services: %s" % space.id())
-		assert_int_equal(spec.ducts.size(), ceili(spec.bounds.size.x / 0.8) if space is ShipLayout.SectionSpec else 0, "one tiled duct run per hall section")
-		var last: float = spec.bounds.position.x
+		var on_spine := space is ShipLayout.SectionSpec or space is ShipLayout.ConnectorSpec
+		# One ship-wide 0.8 m grid replaces section-only tiling; bulkhead-end tiles are cut.
+		var expected := ceili(spec.bounds.end.x / 0.8) - floori(spec.bounds.position.x / 0.8) if on_spine else 0
+		assert_int_equal(spec.ducts.size(), expected, "same tiled duct continues through hall and hatch bay")
+		var last: float = spec.bounds.position.x + ShipLayout.WALL / 2
 		for duct: Transform3D in spec.ducts:
 			var bounds: AABB = duct * ShipDressing.UNIT
 			assert_true(absf(bounds.position.x - last) <= 0.002, "duct ends meet")
-			assert_true(absf(bounds.end.y - spec.bounds.end.y) <= 0.002, "duct hanger reaches ceiling")
+			assert_true(absf(bounds.end.y - spec.bounds.end.y - SpineServices.DUCT_RISE) <= 0.002, "raised duct hanger seats inside ceiling")
 			last = bounds.end.x
-		if not spec.ducts.is_empty(): assert_true(absf(last - spec.bounds.end.x) <= 0.002, "run reaches section end wall")
+		if not spec.ducts.is_empty(): assert_true(absf(last - spec.bounds.end.x - ShipLayout.WALL / 2) <= 0.002, "run reaches the bulkhead centre")
 
 func test_fire_props_have_shared_surface_roles_and_no_colliders() -> void:
 	var script: GDScript = load("res://app/ceiling_props.gd") if FileAccess.file_exists("res://app/ceiling_props.gd") else null
@@ -130,6 +136,7 @@ func test_each_service_mount_touches_structure_and_stays_above_walk_band() -> vo
 		var pieces: Dictionary = {}
 		for index: int in range(spec.detectors.size()): pieces["detector/%d" % index] = spec.detectors[index].bounds
 		var poses: Array[Transform3D] = spec.heads + spec.pipes + spec.tees + spec.clips + spec.ducts
+		if spec.spine != null: poses.append_array(spec.spine.pipes + spec.spine.pipe_collars + spec.spine.side_conduits + spec.spine.service_collars + spec.spine.bolts + spec.spine.brackets + spec.spine.duct_collars + spec.spine.duct_flanges)
 		for index: int in range(poses.size()):
 			var box: AABB = poses[index] * ShipDressing.UNIT
 			assert_true(box.position.y > b.position.y + 2.2, "overhead services stay outside walking envelope")

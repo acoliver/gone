@@ -245,7 +245,10 @@ func _fixture(fixture_transform: Transform3D, level: float) -> Node3D:
 	var light := Lighting.switched_key(_game.layout.section(&"D14-S-041").emergency_light_role(), level)
 	fixture.add_child(light)
 	DressingMounts.ceiling_stem(fixture, _game.layout.section(&"D14-S-041").bounds().end.y, Surfaces.surface_frame(_game.layout, &"D14-S-041", &"CEILING"))
+	var offset := SpineServices.fixture_offset(_game.layout.section(&"D14-S-041"), fixture_transform.origin)
+	fixture.get_node("CeilingMount").position += offset
 	var lens := MeshInstance3D.new()
+	lens.position = offset
 	lens.name = "Lens"
 	lens.set_meta(&"lamp_circuit", "emergency")
 	lens.mesh = _lens_mesh
