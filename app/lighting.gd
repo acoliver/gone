@@ -167,10 +167,8 @@ static func build(game: Game) -> Lighting:
 		lighting._pod_keys.append(key)
 	var white_level := 1.0 if game.power_active else 0.0
 	lighting._white_fade = Intensity.FixtureFade.holding(white_level).fade
-	lighting._white_lens_material = StandardMaterial3D.new()
-	lighting._white_lens_material.albedo_color = Hallway.REGULAR_LENS_BASE_COLOR
+	lighting._white_lens_material = Surfaces.light_glass_material()
 	lighting._white_lens_material.emission_enabled = true
-	lighting._white_lens_material.roughness = 0.8
 	var white_mesh := BoxMesh.new()
 	white_mesh.size = Hallway.REGULAR_LENS_SIZE
 	white_mesh.material = lighting._white_lens_material
@@ -376,7 +374,9 @@ func _white_fixture(frame: Transform3D, mesh: BoxMesh) -> Node3D:
 	lens.name = "Lens"
 	lens.set_meta(&"lamp_circuit", "white")
 	lens.mesh = mesh
+	lens.position.y = 0.012
 	fixture.add_child(lens)
+	CeilingProps.armour(fixture, _game.layout, ShipLayout.BAY_ID)
 	_white_lights.append(light)
 	return fixture
 
