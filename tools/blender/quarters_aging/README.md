@@ -18,6 +18,8 @@ The pass-6 collapse milestone failed. The ordered centre and left seats complete
 
 The throw has three zero-area crest split runs, leaving two 18/19 mm bridges and end corners. G18 passes at 78.556% split against 60% to 90%. Its unpinned 480-frame solve took 776.333 s. It reached the floor, then its collision response ejected it upward and away; the final reduced surface has no area below 0.30 m, so G19 fails with no fallen centroid and zero measurable floor folds. Its all-sheet sharp-adjacency share is 58.835%. The solver cause is unresolved; the failed result is retained without a manual pose correction.
 
+The crumb/powder milestone passes G9 to G11. Nine cut-residue templates use 24 triangles each, with thickness/width 0.2663 to 0.4592. Deposition places 90 floor crumbs, 24 crumbs under actual tear lips, and three powder cards. G10 measures Clark-Evans R 1.162946 and largest DBSCAN cluster 0%. G11 radial-density correlations are -1.000000, -0.900000 and -0.974679, each below -0.6. The initial uniform-width strip failed the centre source at -0.2 because lateral sampling did not decline radially. The final half-disc fans stratify decreasing area densities while retaining the 24 mm minimum spacing and contact rejection. The exported components match the placement record.
+
 ## Pass 5 calibration and contact policy
 
 The 200 mm cantilever now compares 21 width-averaged material stations in 3D, rather than only the free-tip height. At 150 frames and 24 fps, the maximum dense/reference profile difference is 1.926 mm for upholstery and 4.409 mm for wool, against a 10 mm limit. Both fits retain total swatch mass. The requested 6 mm grid is actually 5.882 mm (34 cells); the reference is 22.222 mm (9 cells).
