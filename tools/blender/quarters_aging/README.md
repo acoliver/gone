@@ -12,6 +12,8 @@ The fitted back's front bulge has downward normals as high as 650 mm. Removing e
 
 The pass-6 controls, checkpoints and captures stay under `tmp/age/pass6/`. Missing or failed gates block publication. The game asset is not replaced by a preview.
 
+`sofa_decay_finish.py --stage detail` bakes each reduced cover and residue from its dense source, applies the original upholstery albedo `(0.055, 0.060, 0.066)`, and adds collision-tested fringe at the authored lips. The rendered round-trip material control differs from the same constant reference by at most 0.000638 per linear RGB channel, below one 8-bit step. The texture contains AO rather than relying on colour-math nodes that glTF cannot export. A completed one-seat material integration does not certify the six-cover tear or residue gates.
+
 ## Pass 5 calibration and contact policy
 
 The 200 mm cantilever now compares 21 width-averaged material stations in 3D, rather than only the free-tip height. At 150 frames and 24 fps, the maximum dense/reference profile difference is 1.926 mm for upholstery and 4.409 mm for wool, against a 10 mm limit. Both fits retain total swatch mass. The requested 6 mm grid is actually 5.882 mm (34 cells); the reference is 22.222 mm (9 cells).
