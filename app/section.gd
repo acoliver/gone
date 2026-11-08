@@ -26,7 +26,6 @@ static func build(layout: ShipLayout, spec: ShipLayout.SectionSpec) -> ShipSecti
 
 static func surface(solid: ShipGeometry.SolidSpec, mask: int, layout: ShipLayout = ShipLayout.authored().layout) -> MeshInstance3D:
 	var mesh := SlidingDoorModel.wall_mesh(layout, solid) if solid.material_role == &"wall" and solid.hatch_profile == null else Hallway._box_mesh(solid.size)
-	if solid.material_role == &"ceiling": mesh = CeilingProps.ceiling_mesh(layout, solid)
 	var piece := HatchModel.mesh_piece(mesh, solid.transform, mask, Surfaces.material(Surfaces.role_for_solid(solid)))
 	Surfaces.bind_solid(piece, layout, solid)
 	piece.name = String(solid.id).replace("/", "_")

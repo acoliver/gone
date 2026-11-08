@@ -2,7 +2,7 @@ extends SimTestCase
 
 const CONTACT := 0.002
 
-func test_duct_frames_expose_fifty_mm_lips_and_flush_terminal_flanges() -> void:
+func test_duct_frames_fit_below_ceiling_with_fifty_mm_side_and_bottom_lips() -> void:
 	var layout := ShipLayout.authored().layout
 	var faces := 0
 	for space: ShipLayout.Spec in layout.records():
@@ -13,7 +13,8 @@ func test_duct_frames_expose_fifty_mm_lips_and_flush_terminal_flanges() -> void:
 			var tile: Transform3D = spine.ducts[0] if side == 0 else spine.ducts[-1]
 			var body := tile * AABB(Vector3(-0.5, -0.5, -0.40 / 0.44 / 2), Vector3(1, 0.30 / 0.35, 0.40 / 0.44))
 			assert_true(body.position.y - frame.position.y >= 0.050 - CONTACT, "duct frame lower lip exposes at least 50 mm: %s/%d" % [space.id(), side])
-			assert_true(frame.end.y - body.end.y >= 0.050 - CONTACT, "duct frame upper lip exposes at least 50 mm")
+			assert_true(absf(frame.end.y - space.bounds().end.y) <= 0.00001, "frame top sits flat under the ceiling with no upper lip")
+			assert_true(absf(body.end.y - frame.end.y) <= 0.00001, "sheet body and frame share the ceiling datum")
 			assert_true(body.position.z - frame.position.z >= 0.050 - CONTACT and frame.end.z - body.end.z >= 0.050 - CONTACT, "duct frame exposes both side lips")
 			assert_true(frame.position.y >= space.bounds().end.y - 0.35 - CONTACT, "frame preserves the previous lowest duct envelope")
 			assert_true(frame.size.x >= 0.035 - CONTACT and frame.size.x <= 0.040 + CONTACT, "duct frame is 35 to 40 mm deep")
@@ -27,10 +28,17 @@ func test_duct_frames_expose_fifty_mm_lips_and_flush_terminal_flanges() -> void:
 				var seat := flange.position.x if side == 0 else flange.end.x
 				assert_true(absf(seat - room_face) <= 0.00001, "terminal flange seats flush with zero gap on either wall face: %s/%d" % [space.id(), side])
 				assert_true(flange.grow(CONTACT).intersects(body), "terminal flange attaches to the actual sheet body")
+				assert_true(flange.end.y <= space.bounds().end.y + 0.00001, "terminal flange never enters the ceiling slab")
 			faces += 1
 		var node := CeilingProps.build(layout, space.id())
 		var drawn: Array = node.get_node("DuctFlanges").get_meta(&"instance_poses")
 		for flange: Transform3D in spine.get("duct_flanges"): assert_true(flange in drawn, "terminal flange is drawn")
+		for family: String in ["DuctFrames", "DuctFlanges"]:
+			assert_true(node.has_node(family), "frame and terminal flange have separate finish batches")
+			if not node.has_node(family): continue
+			var piece: MultiMeshInstance3D = node.get_node(family)
+			assert_true(piece.get_meta(&"role") == &"weathered_red", "duct frame uses the existing contrasting worn red finish")
+			assert_true(piece.material_override != node.get_node("CeilingDucts").material_override, "frame finish differs from the sheet body")
 		node.free()
 	assert_int_equal(faces, 126, "both walls of every built spine space")
 
@@ -49,24 +57,21 @@ func _assert_flush_duct_end(spine: SpineServices, side: int) -> void:
 		var flange := spine.duct_flanges[side * 4 + index] * ShipDressing.UNIT
 		assert_true(absf((flange.position.x if side == 0 else flange.end.x) - plane) <= 0.00001, "terminal flange meets the room face of the frame with zero gap")
 
-func test_upper_duct_frame_lips_have_recessed_ceiling_seats() -> void:
+func test_spine_ceiling_slabs_have_no_openings_or_recesses() -> void:
 	var layout := ShipLayout.authored().layout
+	var checked := 0
 	for space: ShipLayout.Spec in layout.records():
 		if not (space is ShipLayout.SectionSpec or space is ShipLayout.ConnectorSpec) or not space.is_built(): continue
 		var solids := ShipGeometry.section_solids(layout, space) if space is ShipLayout.SectionSpec else ShipGeometry.connector_solids(layout, space)
 		for solid: ShipGeometry.SolidSpec in solids:
-			if solid.material_role != &"ceiling" or not String(solid.id).begins_with(String(space.id()) + "/CEILING/"): continue
+			if solid.material_role != &"ceiling": continue
 			var piece := ShipSection.surface(solid, 1, layout)
 			var triangles := piece.mesh.get_faces()
-			for side: int in range(2):
-				var frame := _duct_frame(layout.ceiling_services(space.id()).spine, side)
-				var start := frame.get_center()
-				start.y = space.bounds().end.y - 0.001
-				var end := start
-				end.y = frame.end.y - 0.001
-				for index: int in range(0, triangles.size(), 3):
-					assert_true(Geometry3D.segment_intersects_triangle(start, end, solid.transform * triangles[index], solid.transform * triangles[index + 1], solid.transform * triangles[index + 2]) == null, "ceiling does not bury the raised top lip: %s/%d" % [space.id(), side])
+			assert_int_equal(triangles.size(), 36, "ceiling remains an uncut six-face slab: %s" % solid.id)
+			assert_true(triangles == HatchModel.box_mesh(solid.size).get_faces(), "all six slab faces retain every vertex and its winding without cuts: %s" % solid.id)
 			piece.free()
+			checked += 1
+	assert_true(checked >= 63, "every built spine ceiling is checked")
 
 func test_all_six_drawn_pipe_and_conduit_runs_reach_bulkhead_centres() -> void:
 	var layout := ShipLayout.authored().layout
@@ -125,7 +130,7 @@ func test_penetration_collars_have_visible_shoulders_and_bolt_rings() -> void:
 				assert_true((bolt * ShipDressing.UNIT).grow(CONTACT).intersects(box), "bolt ring attaches to fitting")
 		var node := CeilingProps.build(layout, space.id())
 		var drawn: Array[Transform3D] = []
-		for family: String in ["OverheadPipes", "SideConduits", "PipeBrackets"]:
+		for family: String in ["OverheadPipes", "SideConduits", "PipeBrackets", "DuctFrames"]:
 			drawn.append_array(node.get_node(family).get_meta(&"instance_poses"))
 		for fitting: Dictionary in fittings:
 			if fitting.kind == &"pipe": assert_true(fitting.body in drawn, "pipe collar is drawn, not metadata only")

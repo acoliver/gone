@@ -334,11 +334,10 @@ func test_rendered_shell_uses_pure_collision_recipe() -> void:
 			var expected := PackedVector3Array()
 			var layout := ShipLayout.authored().layout
 			var boxes := SlidingDoorParts.wall_boxes(layout, solid)
-			if solid.material_role == &"ceiling": boxes = layout.ceiling_services(&"D14-S-041").spine.ceiling_boxes(solid)
 			for box: AABB in boxes:
 				for vertex: Vector3 in _expanded_faces(HatchModel.box_mesh(box.size)):
 					expected.append(vertex + box.get_center())
-			assert_true(_same_triangles(rendered, expected), "drawn wall returns and ceiling seats match the sim recipe and winding within 1e-6")
+			assert_true(_same_triangles(rendered, expected), "drawn wall returns and uncut ceiling match the sim recipe and winding within 1e-6")
 		else:
 			var expected := _profile_faces(solid)
 			assert_true(_same_triangles(rendered, expected), "rendered hall triangles match the shared wall profile and winding within 1e-6")
