@@ -78,7 +78,7 @@ def run(source, out, frames=480):
     assert_surface_clear(obj)
     assert_collision_clear(obj)
     config = calibrated_config('wool', .006, .022222222, frames)
-    config.update(stiffness=200, bending=.9, shrink_min=.03, quality=16, time_scale=.6,
+    config.update(stiffness=200, bending=.9, shrink_min=0., quality=16, time_scale=.6,
                   self_collision=True, self_distance=.001, distance=.0015, collision_quality=6)
     mod = configure(obj, config, reference)
     actual_self_distance = float(mod.collision_settings.self_distance_min)

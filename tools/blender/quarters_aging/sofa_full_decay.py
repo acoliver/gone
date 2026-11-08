@@ -311,7 +311,8 @@ def simulate_cushions(out, residue_source, resume=None, only=None, rest_mode='fi
         assert_collision_clear(evaluated)
         evaluated_count = len(evaluated.data.vertices)
         config = calibrated_config('upholstery', .2/34, .2/9, plan['frames'])
-        config.update(self_collision=True, shrink_min=.03, shrink=.05, quality=16, collision_quality=4,
+        # Nonzero minimum shrink contracts even zero-weight panel vertices.
+        config.update(self_collision=True, shrink_min=0., shrink=.05, quality=16, collision_quality=4,
                       distance=.0015, time_scale=.5, welt_bending=3.2, self_distance=.001)
         if settings:
             config.update({k: v for k, v in settings.items() if k not in {'collapse_frames', 'residue_height_scale', 'residue_warp'}})

@@ -283,6 +283,20 @@ Generated-face inspection found no apparent hardware, perspective objects or rep
 
 The fitted source is `tools/blender/quarters/sofa/sofa-working.blend`, and the game asset is `assets/props/quarters/sofa.glb`. The cushions and throw are baked Blender cloth meshes with no live modifiers. Authoring uses Blender Z up and front -Y. Export uses `export_yup=True`, giving the game +Y up and front +Z.
 
+### Pass 7: partitioned aging controls
+
+Pass 7 uses invisible seam and arm partitions, fitted back-contact helpers for seat solves, then each predecessor's final reduced surface. None of the helpers exports. The centre-settled/right-fitted control reports zero initial SAT crossings. The final six-cover solve starts from the fitted source; controls and checkpoints stay under `tmp/age/pass7/`.
+
+The throw's floor-contact controls isolate the response before tuning it. Both a plane and a solid floor settle the same 200 mm swatch: final clearances are 2.320 and 2.336 mm, with maximum speeds 5.960 and 6.490 mm/s. Disabling throw self-collision removes its ejection, but permits crossings. Resolving narrow elements against Blender's actual 1 mm minimum self-distance does not fully cure the falling throw: its reduced mesh still crosses itself, and halving the time step leaves 153 self-crossings. These are failed controls, not accepted substitutes. The production contact pool now includes only the final mechanical surfaces, excluding duplicate dense covers and alpha cards.
+
+The old floor patches came from placing most foam on the floor. Deposition now places six floor crumbs per leaking seat, up to twenty inside or under its openings and twelve along its front lip. The powder cards follow the deck instead of forming three floor discs. The template library's `fragment-05` contains a self-crossing triangle pair, so it is rejected before instancing; eight qualifying templates remain.
+
+Seat tears now bound the actual snapped cut length, rather than only the authored walk, and conserve a long tapered fallen island as the third opening. An under-resolved tip detached a three-vertex sliver and shortened the centre island to 111.9 mm. Resolving that tip and allowing for mesh snapping makes all three seats pass the 120–250 mm opening regression. Alpha-aware contour acceptance remains separate. The G7 failure included the residue's planar underside and side caps. The balanced low mesh now samples the stable roof and an irregular underside separately, retaining relief on the lower rim.
+
+A same-mesh shrink control found that a 3% minimum shrink also contracts vertices outside the lip group. At frame 20 it produced 30.726% sharp dihedrals; changing only that minimum to zero reduced the share to 2.044%. Production keeps zero minimum shrink and 5% maximum shrink in the authored lip group. This preserves local lip curl without contracting the whole panel.
+
+The Blender regression suite passes 25 tests. The final six-cover, throw, render and export acceptance milestones remain pending at this checkpoint. No pass-7 candidate has replaced the shipped sofa or its textures.
+
 ### Dense aging pilot, not shipped
 
 Pass 4 has reusable dense-mesh, zero-area split, residue SDF, bake-down, fringe, opacity and powder stages under `tools/blender/quarters_aging/`. The centre seat has an experimental baked source at `tmp/age/pass4/seat-proxy/sofa-seat-pilot.blend` and a GLB beside it. The rest of that comparison uses the recorded `sofa-k` geometry. No pass-4 trial is selected, and the shipped asset is unchanged.
