@@ -112,12 +112,44 @@ The lit captures are `tmp/fit/sofa/cloth2/compare-hero.png`, `compare-detail.png
 
 ## Tunic
 
-The input guide is `tmp/hy/tunic-hero.glb`. It is a filled torso about 0.70 m deep, with a rounded back, pinched waist and fused armpits. I used its front silhouette and the placement of the collar, boards, button row, pockets and sleeves. I did not shrinkwrap the fitted mesh to the guide because its depth and fused underarms do not describe a hanging garment. The front design reference is `docs/art/quarters/sheets/dress_uniform/hero.png`.
+The tunic now comes from Blender cloth simulation. The hand-modelled pilot rated 2/10: its waist was pinched, its sleeves were detached cylinders, and its collar and shoulders had visible voids. A sewn pattern lets gravity and fabric strain produce the hanging shape. The design remains `docs/art/quarters/sheets/dress_uniform/hero.png`; the filled Hunyuan torso is only a silhouette reference.
 
-The fitted tunic is 0.574 m wide, 0.9502 m tall and 0.1786 m deep in the exported GLB. Its origin is at the hook's top centre. The vertical bounds are -0.9502 to -0.00002 m, so the garment hangs below the origin. The GLB has +Y up and its front details face +Z. The fitting uses a 4 mm nested cloth shell for the body, a straight hanging back, a small front drape and a neck opening. Separate tubular sleeves begin below the body edge. Their measured armpit gaps are 14.7 mm on each side. The collar and shoulder boards sit as separate cloth parts. Five brass buttons form one row. The medal and ribbon bar sit on the wearer's left breast, which is image-right.
+### Pattern and simulation
 
-The named parts are `TunicBody`, `Sleeve_L`, `Sleeve_R`, `Collar`, `ShoulderBoard_L`, `ShoulderBoard_R`, `Buttons`, `CollarInsignia_L`, `CollarInsignia_R`, `RibbonBar`, `Medal` and `Hanger`. They use `NaturalFabric`, `Brass`, `RibbonFabric` and `BareSteel`. The Blender source and build and verify scripts are in `tools/blender/quarters/dress_uniform/`. The exported asset is `assets/props/quarters/dress_uniform.glb`.
+The front and back are flat panels, each cut on a 28 by 30 quad grid with UVs assigned before assembly. The pattern is 0.55 m across the shoulders, 0.48 m across each chest panel and about 0.75 m from shoulder to hem. Loose edges pair the side and shoulder seams for Blender sewing springs. The neck and armholes remain open during the torso simulation.
 
-The trimesh report confirms all named part meshes are closed and manifold after welding duplicated UV-seam vertices. Blender's exported-mesh BVH check finds no intersecting part pairs. The brass front-detail normals have maximum +Z components from 0.978 to 0.985. The asset has 4,108 triangles against the 12,000 limit. Re-exporting the saved Blender source produces a byte-identical GLB. `verify.py` writes `verify.json`.
+A 0.50 m steel hanger and a smooth 0.448 by 0.100 by 0.250 m upper-chest form support the cloth. The form stops at mid-chest and is excluded from export. Pins cover the 20 mm shoulder binding strip, with no pins or support at the waist or hem. The selected torso trial is `body-p`: 600 frames, quality 30, time scale 0.25, mass setting 0.22, tension/compression/shear stiffness 500/500/350, bending 0.3, structural damping 5, bending damping 0.5 and air damping 10. Placket interfacing raises local bending stiffness to 5. Sewing force is capped at 10. Collision and self-collision distances are both 4 mm. Stitch-adjacent faces are excluded from self-collision so paired edges can close. The largest spring gap before joining the stitches is 1.00 mm.
 
-The neutral comparison images are in `tmp/fit/tunic/`. `compare-hero.png` puts the design beside the fitted model from the front. `turntable.png` shows 30°, 120°, 210° and 300° views. `compare-detail.png` places a crop of the design's collar and breast insignia beside the rendered detail.
+The two tapered sleeve tubes are placed within 2 mm of their armholes and joined into shared stitches before gravity settling. The torso is held in its baked pose. Trial `sleeve-h` uses 480 frames, quality 30, time scale 0.25 and bending 5, with the same stretch, damping and collision settings. The sleeves hang slightly forward and remain part of the continuous `TunicBody` mesh. Twelve local smoothing passes at factor 0.35 round the stitched armhole returns before applying 3.5 mm cloth thickness. This removes thickness crossings without replacing the simulated drape.
+
+### Details and measured gates
+
+The 43 mm standing collar has a recessed fabric facing around the hook, with at most 0.504 mm radial clearance around the steel wire. The shoulder boards follow the shoulder surface. The placket, six 14 mm brass domes, two 20 mm collar emblems, ribbon bar and 32 mm medal remain separate meshes. Rigid buttons and the medal are fitted to sampled cloth planes rather than warped onto individual triangles. The medal hangs from a short ribbon below the bar on the wearer's left breast, which is image-right.
+
+`verify.py` measures the exported GLB with trimesh and writes `verify.json`. The final report passes every implemented gate:
+
+| Measurement | Result | Limit |
+| --- | --- | --- |
+| Body width | 553.878 mm | 500 to 580 mm |
+| Body depth | 184.205 mm | At most 220 mm |
+| Hem height variation | 8.374 mm | At most 30 mm |
+| Waist/chest width ratio | 0.9642 | At least 0.85 |
+| Joined side, shoulder and armhole gaps | 0 mm | 2 mm body, 3 mm armhole |
+| Underarm clearance below Y = -0.48 m, left/right | 48.119 / 49.043 mm | At least 10 mm |
+| Cloth thickness | 3.49988 to 3.50012 mm | 3 to 4 mm |
+| Cloth self-crossings and collider crossings | 0 | 0 |
+| Largest detail attachment gap | 1.971 mm, medal | At most 2 mm |
+| Shoulder-board attachment gaps | 0.900 mm | At most 1.5 mm |
+| Largest inward detail penetration | 0.921 mm, medal | At most 1 mm |
+
+The collar attachment gap is 1.714 mm, the button gap is 1.318 mm, and the emblem and ribbon-bar gaps are about 0.700 mm. The measured brass diameters are 14.009 mm for the buttons, 20.005 to 20.122 mm for the emblems and 32.004 mm for the medal. Motion over the last five simulation frames is 0.368 mm for the torso and 0.000924 mm for the sleeves, below the 1 mm settling limit. These motion measurements come from the simulation record, since a static GLB cannot measure settling.
+
+### Export and trials
+
+The baked source is `tools/blender/quarters/dress_uniform/tunic-working.blend`. Running `build.py` in Blender re-exports it byte-identically without rerunning physics. `simulate.py`, `sleeves.py` and `build.py --assemble` regenerate the selected stages; `settle_body.py` retains the joined-stitch experiment used in rejected trials. `construction.json` retains the collision geometry and attachment footprints needed for verification. `cloth-trials.json` records 16 torso trials, eight sleeve trials and ten detail/export trials, including failures. The selected combination is `body-p`, `sleeve-h` and `details-j`.
+
+The exported asset is `assets/props/quarters/dress_uniform.glb`. It has 13,768 triangles against the 15,000 exclusive limit. The cloth is watertight with consistent winding. Authoring uses Blender Z-up and front -Y; export uses +Y up and front +Z. The origin is exactly at the hook top. Overall bounds, including sleeves, are 0.77110 m wide, 0.87889 m tall and 0.18420 m deep.
+
+Node and mesh names are `TunicBody`, `Collar`, `ShoulderBoard_L`, `ShoulderBoard_R`, `Placket`, `Buttons`, `CollarInsignia_L`, `CollarInsignia_R`, `RibbonBar`, `Medal` and `Hanger`. Materials are `NaturalFabric`, `Brass`, `RibbonFabric` and `BareSteel`.
+
+The neutral, light-grey comparison sheets are in `tmp/fit/tunic/sim/`: `compare-hero.png`, `turntable.png` and `compare-detail.png`. The hero uses a front-left orthographic view, and the turntable shows 30°, 120°, 210° and 300°. Four area lights illuminate the navy cloth, brass and steel from both sides. The PNG files were rendered and validated, but visual sign-off remains unavailable: the configured Qwen image endpoint refused connections, and the installed local alternative returned HTTP 500.

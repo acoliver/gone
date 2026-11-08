@@ -1,141 +1,184 @@
 {
-  "bounds": {
-    "min_xyz": [
-      -0.287,
-      -0.9502,
-      -0.0036141
-    ],
-    "max_xyz": [
-      0.287,
-      -1.76e-05,
-      0.175
-    ],
-    "extents_xyz": [
-      0.574,
-      0.9501824000000001,
-      0.1786141
-    ],
-    "target_extents_xyz": [
-      0.55,
-      0.95,
-      0.25
-    ],
-    "tolerance_m": [
-      0.04,
-      0.04,
-      0.04
-    ],
+  "step1": {
+    "body_width_m": 0.5538782179355621,
+    "body_depth_m": 0.1842048019170761,
+    "hem_level_range_m": 0.00837397575378418,
+    "waist_chest_width_ratio": 0.9642287012697192,
+    "stitched_seam_gap_m": 0.0,
     "pass": true
   },
-  "orientation": {
-    "up_axis": "+Y",
-    "front_axis": "+Z",
-    "front_normal_z_max": {
-      "Buttons": 0.9784624390447543,
-      "CollarInsignia_L": 0.9846346772223727,
-      "CollarInsignia_R": 0.984634677222373,
-      "Medal": 0.9781891524258072
-    },
-    "front_normals_positive": true
-  },
-  "parts": {
-    "TunicBody": {
-      "mesh_count": 1,
-      "closed_manifold": true,
-      "triangles": 1280
-    },
+  "step2": {
     "Sleeve_L": {
-      "mesh_count": 1,
-      "closed_manifold": true,
-      "triangles": 276
+      "underarm_gap_below_y_minus_0_48_m": 0.04811919047575067,
+      "armhole_seam_gap_m": 0.0,
+      "body_triangle_crossings_below_armpit": 0,
+      "pass": true
     },
     "Sleeve_R": {
-      "mesh_count": 1,
-      "closed_manifold": true,
-      "triangles": 276
-    },
-    "Collar": {
-      "mesh_count": 1,
-      "closed_manifold": true,
-      "triangles": 124
-    },
-    "ShoulderBoard_L": {
-      "mesh_count": 1,
-      "closed_manifold": true,
-      "triangles": 12
-    },
-    "ShoulderBoard_R": {
-      "mesh_count": 1,
-      "closed_manifold": true,
-      "triangles": 12
-    },
-    "Buttons": {
-      "mesh_count": 5,
-      "closed_manifold": true,
-      "triangles": 1120
-    },
-    "CollarInsignia_L": {
-      "mesh_count": 1,
-      "closed_manifold": true,
-      "triangles": 120
-    },
-    "CollarInsignia_R": {
-      "mesh_count": 1,
-      "closed_manifold": true,
-      "triangles": 120
-    },
-    "RibbonBar": {
-      "mesh_count": 9,
-      "closed_manifold": true,
-      "triangles": 108
-    },
-    "Medal": {
-      "mesh_count": 1,
-      "closed_manifold": true,
-      "triangles": 120
-    },
-    "Hanger": {
-      "mesh_count": 1,
-      "closed_manifold": true,
-      "triangles": 540
+      "underarm_gap_below_y_minus_0_48_m": 0.049043318562784065,
+      "armhole_seam_gap_m": 0.0,
+      "body_triangle_crossings_below_armpit": 0,
+      "pass": true
     }
   },
+  "step3": {
+    "thickness": {
+      "median_m": 0.003500002447856301,
+      "min_m": 0.003499878363600663,
+      "max_m": 0.0035001164380631827,
+      "sample_pairs": 2458,
+      "nonadjacent_edge_crossings": 0
+    },
+    "details": {
+      "Collar": {
+        "attachment_gap_max_m": 0.001714280519172984,
+        "inward_penetration_max_m": 0.0,
+        "pass": true
+      },
+      "ShoulderBoard_L": {
+        "attachment_gap_max_m": 0.0009000220430178699,
+        "inward_penetration_max_m": 0.0003021922020529761,
+        "pass": true
+      },
+      "ShoulderBoard_R": {
+        "attachment_gap_max_m": 0.0009000149104573392,
+        "inward_penetration_max_m": 0.00027187808150286216,
+        "pass": true
+      },
+      "Placket": {
+        "attachment_gap_max_m": 0.0009001523752592942,
+        "inward_penetration_max_m": 0.0,
+        "pass": true
+      },
+      "Buttons": {
+        "attachment_gap_max_m": 0.0013181797916967703,
+        "inward_penetration_max_m": 0.0,
+        "pass": true
+      },
+      "CollarInsignia_L": {
+        "attachment_gap_max_m": 0.0007001312098860299,
+        "inward_penetration_max_m": 0.0,
+        "pass": true
+      },
+      "CollarInsignia_R": {
+        "attachment_gap_max_m": 0.0007000992351735003,
+        "inward_penetration_max_m": 0.0,
+        "pass": true
+      },
+      "RibbonBar": {
+        "attachment_gap_max_m": 0.0007001193846030363,
+        "inward_penetration_max_m": 0.0,
+        "pass": true
+      },
+      "Medal": {
+        "attachment_gap_max_m": 0.0019706959493428176,
+        "inward_penetration_max_m": 0.0009212129171995777,
+        "pass": true
+      }
+    },
+    "dimensions": {
+      "collar_band_height_min_max_m": [
+        0.0429999977350235,
+        0.0429999977350235
+      ],
+      "button_count": 6,
+      "button_diameters_m": [
+        0.014008955805397554,
+        0.014008949512626984,
+        0.014008956311627624,
+        0.014008980647299602,
+        0.01400897662218586,
+        0.014008976703157107
+      ],
+      "emblem_circumscribed_diameters_m": {
+        "CollarInsignia_L": 0.020121577059058877,
+        "CollarInsignia_R": 0.02000541634936162
+      },
+      "medal_diameter_m": 0.03200393084032435,
+      "collar_facing_slot_radii_min_max_m": [
+        0.0037965247344989832,
+        0.00400354589791753
+      ],
+      "facing_to_hook_radial_clearance_max_m": 0.00050354589791753,
+      "pass": true
+    }
+  },
+  "settling_simulation_record_m": {
+    "body": 0.00036762266395508754,
+    "sleeves": 9.243525516552224e-07,
+    "last_five_frames_limit_m": 0.001,
+    "pass": true
+  },
+  "colliders": {
+    "ShoulderChestForm": {
+      "inside_cloth_samples": 0,
+      "edge_crossings": 0
+    },
+    "Hanger": {
+      "inside_cloth_samples": 0,
+      "edge_crossings": 0
+    }
+  },
+  "orientation": {
+    "up": "+Y",
+    "front": "+Z",
+    "origin_at_hook_top_error_m": 0.0,
+    "front_detail_centroids_z_m": {
+      "Buttons": 0.07595341508700089,
+      "RibbonBar": 0.05225122301942772,
+      "Medal": 0.0508116196584085
+    },
+    "pass": true
+  },
+  "bounds_game_xyz_m": [
+    [
+      -0.3855709433555603,
+      -0.8788914084434509,
+      -0.07571793347597122
+    ],
+    [
+      0.385525643825531,
+      0.0,
+      0.10848686844110489
+    ]
+  ],
+  "node_names": [
+    "Buttons",
+    "Collar",
+    "CollarInsignia_L",
+    "CollarInsignia_R",
+    "Hanger",
+    "Medal",
+    "Placket",
+    "RibbonBar",
+    "ShoulderBoard_L",
+    "ShoulderBoard_R",
+    "TunicBody"
+  ],
+  "mesh_names": [
+    "Buttons",
+    "Collar",
+    "CollarInsignia_L",
+    "CollarInsignia_R",
+    "Hanger",
+    "Medal",
+    "Placket",
+    "RibbonBar",
+    "ShoulderBoard_L",
+    "ShoulderBoard_R",
+    "TunicBody"
+  ],
+  "names_pass": true,
   "materials": [
     "BareSteel",
     "Brass",
     "NaturalFabric",
-    "RibbonFabric",
-    "RibbonStripe_01",
-    "RibbonStripe_02",
-    "RibbonStripe_03",
-    "RibbonStripe_04",
-    "RibbonStripe_05",
-    "RibbonStripe_06",
-    "RibbonStripe_07",
-    "RibbonStripe_08"
+    "RibbonFabric"
   ],
-  "required_materials": [
-    "NaturalFabric",
-    "Brass",
-    "RibbonFabric",
-    "BareSteel"
-  ],
-  "required_materials_present": true,
-  "armpit_gaps": {
-    "Sleeve_L": {
-      "minimum_armpit_gap_m": 0.01472914045202073,
-      "required_m": 0.005,
-      "pass": true
-    },
-    "Sleeve_R": {
-      "minimum_armpit_gap_m": 0.014788593945454467,
-      "required_m": 0.005,
-      "pass": true
-    }
-  },
-  "intersections_over_1mm": [],
-  "triangle_count": 4108,
-  "triangle_limit": 12000,
+  "triangles": 13768,
+  "triangle_limit_exclusive": 15000,
   "byte_identical_reexport": true,
+  "garment_watertight": true,
+  "garment_winding_consistent": true,
   "pass": true
 }

@@ -1,0 +1,2436 @@
+{
+  "body": [
+    {
+      "trial": "body-a",
+      "pattern": {
+        "shoulder_m": 0.55,
+        "chest_half_circumference_m": 0.48,
+        "shoulder_to_hem_m": 0.75,
+        "grid_each_panel": [
+          28,
+          30
+        ]
+      },
+      "settings": {
+        "trial": "body-a",
+        "frames": 120,
+        "quality": 20,
+        "bending": 5,
+        "sewing": 10,
+        "time_scale": 0.5,
+        "stiffness": [
+          500,
+          500,
+          350
+        ],
+        "structural_damping": 25,
+        "bending_damping": 10,
+        "air_damping": 8,
+        "self_distance_m": 0.001,
+        "collision_distance_m": 0.002,
+        "self_collision": true,
+        "stitch_neighbor_self_collision_exclusion": false,
+        "mass_setting": 0.22,
+        "shoulder_pin_strip_m": 0,
+        "hanger_centerline_span_m": 0.55,
+        "neck_cut_z_m": -0.205
+      },
+      "metrics": {
+        "extents_blender_m": [
+          0.550000011920929,
+          0.11465205997228622,
+          0.7237154096364975
+        ],
+        "bounds_blender_m": [
+          [
+            -0.2750000059604645,
+            -0.057441480457782745,
+            -0.87660151720047
+          ],
+          [
+            0.2750000059604645,
+            0.05721057951450348,
+            -0.15288610756397247
+          ]
+        ],
+        "hem_level_range_m": 0.009593844413757324,
+        "waist_chest_width_ratio": 1.0097218826041927,
+        "sewing_spring_gap_max_m": 0.00599999725818634,
+        "last_five_frames_displacement_m": 0.00918014333954088
+      },
+      "method": "Flat front/back XZ patterns, sewing loose edges at sides and shoulders, animated shoulder placement pins; no waist support."
+    },
+    {
+      "trial": "body-b",
+      "pattern": {
+        "shoulder_m": 0.55,
+        "chest_half_circumference_m": 0.48,
+        "shoulder_to_hem_m": 0.75,
+        "grid_each_panel": [
+          28,
+          30
+        ]
+      },
+      "settings": {
+        "trial": "body-b",
+        "frames": 240,
+        "quality": 20,
+        "bending": 5,
+        "sewing": 10,
+        "time_scale": 0.5,
+        "stiffness": [
+          500,
+          500,
+          350
+        ],
+        "structural_damping": 25,
+        "bending_damping": 10,
+        "air_damping": 8,
+        "self_distance_m": 0.001,
+        "collision_distance_m": 0.002,
+        "self_collision": true,
+        "stitch_neighbor_self_collision_exclusion": false,
+        "mass_setting": 0.22,
+        "shoulder_pin_strip_m": 0,
+        "hanger_centerline_span_m": 0.55,
+        "neck_cut_z_m": -0.205
+      },
+      "metrics": {
+        "extents_blender_m": [
+          0.550000011920929,
+          0.12175704166293144,
+          0.7359621077775955
+        ],
+        "bounds_blender_m": [
+          [
+            -0.2750000059604645,
+            -0.05921008810400963,
+            -0.8818482160568237
+          ],
+          [
+            0.2750000059604645,
+            0.06254695355892181,
+            -0.1458861082792282
+          ]
+        ],
+        "hem_level_range_m": 0.03136718273162842,
+        "waist_chest_width_ratio": 1.0125728213660237,
+        "sewing_spring_gap_max_m": 0.0010000020265579224,
+        "last_five_frames_displacement_m": 0.004292871014611455
+      },
+      "method": "Flat front/back XZ patterns, sewing loose edges at sides and shoulders, animated shoulder placement pins; no waist support."
+    },
+    {
+      "trial": "body-c",
+      "pattern": {
+        "shoulder_m": 0.55,
+        "chest_half_circumference_m": 0.48,
+        "shoulder_to_hem_m": 0.75,
+        "grid_each_panel": [
+          28,
+          30
+        ]
+      },
+      "settings": {
+        "trial": "body-c",
+        "frames": 360,
+        "quality": 25,
+        "bending": 15.0,
+        "sewing": 10,
+        "time_scale": 0.5,
+        "stiffness": [
+          500,
+          500,
+          350
+        ],
+        "structural_damping": 25,
+        "bending_damping": 10,
+        "air_damping": 8,
+        "self_distance_m": 0.001,
+        "collision_distance_m": 0.002,
+        "self_collision": true,
+        "stitch_neighbor_self_collision_exclusion": false,
+        "mass_setting": 0.22,
+        "shoulder_pin_strip_m": 0,
+        "hanger_centerline_span_m": 0.55,
+        "neck_cut_z_m": -0.205
+      },
+      "metrics": {
+        "extents_blender_m": [
+          0.550000011920929,
+          0.12228809669613838,
+          0.7386597543954849
+        ],
+        "bounds_blender_m": [
+          [
+            -0.2750000059604645,
+            -0.05824815109372139,
+            -0.8845458626747131
+          ],
+          [
+            0.2750000059604645,
+            0.06403994560241699,
+            -0.1458861082792282
+          ]
+        ],
+        "hem_level_range_m": 0.03741490840911865,
+        "waist_chest_width_ratio": 1.0127309498632089,
+        "sewing_spring_gap_max_m": 0.0010000020265579224,
+        "last_five_frames_displacement_m": 0.005474208545990723
+      },
+      "method": "Flat front/back XZ patterns, sewing loose edges at sides and shoulders, animated shoulder placement pins; no waist support."
+    },
+    {
+      "trial": "body-d",
+      "settings": {
+        "frames": 240,
+        "quality": 25,
+        "bending": 5,
+        "sewing_force_max": 2,
+        "structural_damping": 50,
+        "bending_damping": 100,
+        "air_damping": 10,
+        "mass_setting": 0.22,
+        "stiffness": [
+          500,
+          500,
+          350
+        ],
+        "shoulder_pin_strip_m": 0,
+        "hanger_centerline_span_m": 0.55,
+        "neck_cut_z_m": -0.205
+      },
+      "result": "Solver instability displaced cloth out of waist/chest measurement bands. No usable bake."
+    },
+    {
+      "trial": "body-e",
+      "pattern": {
+        "shoulder_m": 0.55,
+        "chest_half_circumference_m": 0.48,
+        "shoulder_to_hem_m": 0.75,
+        "grid_each_panel": [
+          28,
+          30
+        ]
+      },
+      "settings": {
+        "trial": "body-e",
+        "frames": 240,
+        "quality": 25,
+        "bending": 5.0,
+        "sewing": 10.0,
+        "time_scale": 0.5,
+        "stiffness": [
+          500,
+          500,
+          350
+        ],
+        "structural_damping": 25,
+        "bending_damping": 10,
+        "air_damping": 10,
+        "self_distance_m": 0.001,
+        "collision_distance_m": 0.002,
+        "self_collision": true,
+        "stitch_neighbor_self_collision_exclusion": true,
+        "mass_setting": 0.22,
+        "shoulder_pin_strip_m": 0,
+        "hanger_centerline_span_m": 0.55,
+        "neck_cut_z_m": -0.205
+      },
+      "metrics": {
+        "extents_blender_m": [
+          0.550000011920929,
+          0.11569599062204361,
+          0.7341963797807693
+        ],
+        "bounds_blender_m": [
+          [
+            -0.2750000059604645,
+            -0.05544425919651985,
+            -0.8800824880599976
+          ],
+          [
+            0.2750000059604645,
+            0.06025173142552376,
+            -0.1458861082792282
+          ]
+        ],
+        "hem_level_range_m": 0.010632216930389404,
+        "waist_chest_width_ratio": 0.9883747889658567,
+        "sewing_spring_gap_max_m": 0.0010000020265579224,
+        "last_five_frames_displacement_m": 0.006802172917649945
+      },
+      "method": "Flat front/back XZ patterns, sewing loose edges at sides and shoulders, animated shoulder placement pins; no waist support.",
+      "collision_group_defect": "Blender defines this group as excluded faces, not included faces. These trials assigned the free-cloth vertices to the exclusion group. Fixed in body-i."
+    },
+    {
+      "trial": "body-f",
+      "settings": {
+        "source": "body-b",
+        "trial": "body-f",
+        "frames": 240,
+        "quality": 25,
+        "bending": 5,
+        "sewing": 10,
+        "mass_setting": 0.22,
+        "stiffness": [
+          500,
+          500,
+          350
+        ],
+        "shoulder_pin_strip_m": 0,
+        "hanger_centerline_span_m": 0.55,
+        "neck_cut_z_m": -0.205,
+        "time_scale": 0.5,
+        "structural_damping": 25,
+        "bending_damping": 10,
+        "air_damping": 10,
+        "self_collision": true,
+        "collision_distance_m": 0.002,
+        "self_distance_m": 0.001
+      },
+      "metrics": {
+        "extents_blender_m": [
+          0.550000011920929,
+          0.17399324476718903,
+          0.6829030066728592
+        ],
+        "bounds_blender_m": [
+          [
+            -0.2750000059604645,
+            -0.0765170305967331,
+            -0.8287891149520874
+          ],
+          [
+            0.2750000059604645,
+            0.09747621417045593,
+            -0.1458861082792282
+          ]
+        ],
+        "hem_level_range_m": 0.025999903678894043,
+        "waist_chest_width_ratio": 0.9651312374809279,
+        "sewing_spring_gap_max_m": 0.0,
+        "last_five_frames_displacement_m": 0.048046199535312854
+      },
+      "method": "Sewing springs from source trial joined into shared stitches before a second gravity settling pass; shoulder pins only, self-collision enabled.",
+      "collision_group_defect": "Blender defines this group as excluded faces, not included faces. These trials assigned the free-cloth vertices to the exclusion group. Fixed in body-i."
+    },
+    {
+      "trial": "body-g",
+      "settings": {
+        "source": "body-e",
+        "trial": "body-g",
+        "frames": 300,
+        "quality": 25,
+        "bending": 5,
+        "sewing": 10,
+        "mass_setting": 0.22,
+        "stiffness": [
+          500,
+          500,
+          350
+        ],
+        "shoulder_pin_strip_m": 0,
+        "hanger_centerline_span_m": 0.55,
+        "neck_cut_z_m": -0.205,
+        "time_scale": 0.5,
+        "structural_damping": 25,
+        "bending_damping": 10,
+        "air_damping": 10,
+        "self_collision": true,
+        "collision_distance_m": 0.002,
+        "self_distance_m": 0.001
+      },
+      "metrics": {
+        "extents_blender_m": [
+          0.550000011920929,
+          0.17707526683807373,
+          0.6766997575759888
+        ],
+        "bounds_blender_m": [
+          [
+            -0.2750000059604645,
+            -0.08524398505687714,
+            -0.820006251335144
+          ],
+          [
+            0.2750000059604645,
+            0.0918312817811966,
+            -0.14330649375915527
+          ]
+        ],
+        "hem_level_range_m": 0.03130161762237549,
+        "waist_chest_width_ratio": 0.9858574170957277,
+        "sewing_spring_gap_max_m": 0.0,
+        "last_five_frames_displacement_m": 0.021483690763424754
+      },
+      "method": "Sewing springs from source trial joined into shared stitches before a second gravity settling pass; shoulder pins only, self-collision enabled.",
+      "collision_group_defect": "Blender defines this group as excluded faces, not included faces. These trials assigned the free-cloth vertices to the exclusion group. Fixed in body-i."
+    },
+    {
+      "trial": "body-h",
+      "pattern": {
+        "shoulder_m": 0.55,
+        "chest_half_circumference_m": 0.48,
+        "shoulder_to_hem_m": 0.75,
+        "grid_each_panel": [
+          28,
+          30
+        ]
+      },
+      "settings": {
+        "trial": "body-h",
+        "frames": 300,
+        "quality": 30,
+        "bending": 5.0,
+        "sewing": 10,
+        "mass_setting": 0.22,
+        "stiffness": [
+          500,
+          500,
+          350
+        ],
+        "shoulder_pin_strip_m": 0,
+        "hanger_centerline_span_m": 0.55,
+        "neck_cut_z_m": -0.205
+      },
+      "metrics": {
+        "extents_blender_m": [
+          0.5647363364696503,
+          0.16518889367580414,
+          0.7260275632143021
+        ],
+        "bounds_blender_m": [
+          [
+            -0.2750000059604645,
+            -0.09587561339139938,
+            -0.8669136762619019
+          ],
+          [
+            0.2897363305091858,
+            0.06931328028440475,
+            -0.1408861130475998
+          ]
+        ],
+        "hem_level_range_m": 0.05492138862609863,
+        "waist_chest_width_ratio": 1.0190171439669262,
+        "sewing_spring_gap_max_m": 0.01108235398931335,
+        "last_five_frames_displacement_m": 0.023855659598046544
+      },
+      "method": "Flat front/back XZ patterns, sewing loose edges at sides and shoulders, animated shoulder placement pins; no waist support.",
+      "collision_group_defect": "Blender defines this group as excluded faces, not included faces. These trials assigned the free-cloth vertices to the exclusion group. Fixed in body-i."
+    },
+    {
+      "trial": "body-i",
+      "pattern": {
+        "shoulder_m": 0.55,
+        "chest_half_circumference_m": 0.48,
+        "shoulder_to_hem_m": 0.75,
+        "grid_each_panel": [
+          28,
+          30
+        ]
+      },
+      "settings": {
+        "trial": "body-i",
+        "frames": 300,
+        "quality": 30,
+        "bending": 5.0,
+        "sewing": 10,
+        "mass_setting": 0.22,
+        "stiffness": [
+          500,
+          500,
+          350
+        ],
+        "shoulder_pin_strip_m": 0,
+        "hanger_centerline_span_m": 0.55,
+        "neck_cut_z_m": -0.205
+      },
+      "metrics": {
+        "extents_blender_m": [
+          0.550000011920929,
+          0.20731396973133087,
+          0.717468336224556
+        ],
+        "bounds_blender_m": [
+          [
+            -0.2750000059604645,
+            -0.13970716297626495,
+            -0.8583544492721558
+          ],
+          [
+            0.2750000059604645,
+            0.06760680675506592,
+            -0.1408861130475998
+          ]
+        ],
+        "hem_level_range_m": 0.05639910697937012,
+        "waist_chest_width_ratio": 0.9066512860043914,
+        "sewing_spring_gap_max_m": 0.004581276225142704,
+        "last_five_frames_displacement_m": 0.027732657234017726
+      },
+      "method": "Flat front/back XZ patterns, sewing loose edges at sides and shoulders, animated shoulder placement pins; no waist support."
+    },
+    {
+      "trial": "body-j",
+      "pattern": {
+        "shoulder_m": 0.55,
+        "chest_half_circumference_m": 0.48,
+        "shoulder_to_hem_m": 0.75,
+        "grid_each_panel": [
+          28,
+          30
+        ]
+      },
+      "settings": {
+        "trial": "body-j",
+        "frames": 360,
+        "quality": 30,
+        "bending": 5.0,
+        "sewing": 10,
+        "time_scale": 0.25,
+        "tension_compression_shear": [
+          500.0,
+          500.0,
+          350.0
+        ],
+        "structural_damping": 5.0,
+        "bending_damping": 0.5,
+        "air_damping": 5.0,
+        "sewing_force_max": 10.0,
+        "self_collision": true,
+        "collision_distance_m": 0.004000000189989805,
+        "self_distance_m": 0.004000000189989805,
+        "mass_setting": 0.2199999988079071,
+        "stiffness": [
+          500,
+          500,
+          350
+        ],
+        "shoulder_pin_strip_m": 0,
+        "hanger_centerline_span_m": 0.55,
+        "neck_cut_z_m": -0.205
+      },
+      "metrics": {
+        "extents_blender_m": [
+          0.550000011920929,
+          0.18825380504131317,
+          0.738705649971962
+        ],
+        "bounds_blender_m": [
+          [
+            -0.2750000059604645,
+            -0.08881692588329315,
+            -0.8795917630195618
+          ],
+          [
+            0.2750000059604645,
+            0.09943687915802002,
+            -0.1408861130475998
+          ]
+        ],
+        "hem_level_range_m": 0.015573680400848389,
+        "waist_chest_width_ratio": 0.9783666944087626,
+        "sewing_spring_gap_max_m": 0.0010000020265579224,
+        "last_five_frames_displacement_m": 0.03315271172512613
+      },
+      "method": "Flat front/back XZ patterns, sewing loose edges at sides and shoulders, animated shoulder placement pins; no waist support."
+    },
+    {
+      "trial": "body-k",
+      "pattern": {
+        "shoulder_m": 0.55,
+        "chest_half_circumference_m": 0.48,
+        "shoulder_to_hem_m": 0.75,
+        "grid_each_panel": [
+          28,
+          30
+        ]
+      },
+      "settings": {
+        "trial": "body-k",
+        "frames": 1200,
+        "quality": 30,
+        "bending": 5.0,
+        "sewing": 10,
+        "time_scale": 0.25,
+        "tension_compression_shear": [
+          500.0,
+          500.0,
+          350.0
+        ],
+        "structural_damping": 5.0,
+        "bending_damping": 0.5,
+        "air_damping": 10.0,
+        "sewing_force_max": 10.0,
+        "self_collision": true,
+        "collision_distance_m": 0.004000000189989805,
+        "self_distance_m": 0.004000000189989805,
+        "mass_setting": 0.2199999988079071,
+        "stiffness": [
+          500,
+          500,
+          350
+        ],
+        "shoulder_pin_strip_m": 0,
+        "hanger_centerline_span_m": 0.55,
+        "neck_cut_z_m": -0.205
+      },
+      "metrics": {
+        "extents_blender_m": [
+          0.5520067512989044,
+          0.33276835083961487,
+          0.6695791333913803
+        ],
+        "bounds_blender_m": [
+          [
+            -0.2750000059604645,
+            -0.27234992384910583,
+            -0.7952750325202942
+          ],
+          [
+            0.27700674533843994,
+            0.06041842699050903,
+            -0.12569589912891388
+          ]
+        ],
+        "hem_level_range_m": 0.10526031255722046,
+        "waist_chest_width_ratio": 0.7771407810456076,
+        "sewing_spring_gap_max_m": 0.060524411885409135,
+        "last_five_frames_displacement_m": 0.03013905937275525
+      },
+      "method": "Flat front/back XZ patterns, sewing loose edges at sides and shoulders, animated shoulder placement pins; no waist support."
+    },
+    {
+      "trial": "body-l",
+      "pattern": {
+        "shoulder_m": 0.55,
+        "chest_half_circumference_m": 0.48,
+        "shoulder_to_hem_m": 0.75,
+        "grid_each_panel": [
+          28,
+          30
+        ]
+      },
+      "settings": {
+        "trial": "body-l",
+        "frames": 600,
+        "quality": 30,
+        "bending": 5.0,
+        "sewing": 10,
+        "time_scale": 0.25,
+        "tension_compression_shear": [
+          500.0,
+          500.0,
+          350.0
+        ],
+        "structural_damping": 5.0,
+        "bending_damping": 0.5,
+        "air_damping": 10.0,
+        "sewing_force_max": 10.0,
+        "self_collision": true,
+        "collision_distance_m": 0.004000000189989805,
+        "self_distance_m": 0.004000000189989805,
+        "mass_setting": 0.2199999988079071,
+        "stiffness": [
+          500,
+          500,
+          350
+        ],
+        "shoulder_pin_strip_m": 0.02,
+        "hanger_centerline_span_m": 0.55,
+        "neck_cut_z_m": -0.205
+      },
+      "metrics": {
+        "extents_blender_m": [
+          0.550000011920929,
+          0.2593548893928528,
+          0.7364869862794876
+        ],
+        "bounds_blender_m": [
+          [
+            -0.2750000059604645,
+            -0.126260444521904,
+            -0.8773730993270874
+          ],
+          [
+            0.2750000059604645,
+            0.1330944448709488,
+            -0.1408861130475998
+          ]
+        ],
+        "hem_level_range_m": 0.015043795108795166,
+        "waist_chest_width_ratio": 0.9271669125663686,
+        "sewing_spring_gap_max_m": 0.0010000020265579224,
+        "last_five_frames_displacement_m": 0.0015593569458365697
+      },
+      "method": "Flat front/back XZ patterns, sewing loose edges at sides and shoulders, animated shoulder placement pins; no waist support."
+    },
+    {
+      "trial": "body-m",
+      "pattern": {
+        "shoulder_m": 0.55,
+        "chest_half_circumference_m": 0.48,
+        "shoulder_to_hem_m": 0.75,
+        "grid_each_panel": [
+          28,
+          30
+        ]
+      },
+      "settings": {
+        "trial": "body-m",
+        "frames": 600,
+        "quality": 30,
+        "bending": 0.5,
+        "sewing": 10,
+        "time_scale": 0.25,
+        "tension_compression_shear": [
+          500.0,
+          500.0,
+          350.0
+        ],
+        "structural_damping": 5.0,
+        "bending_damping": 0.5,
+        "air_damping": 10.0,
+        "sewing_force_max": 10.0,
+        "self_collision": true,
+        "collision_distance_m": 0.004000000189989805,
+        "self_distance_m": 0.004000000189989805,
+        "mass_setting": 0.2199999988079071,
+        "stiffness": [
+          500,
+          500,
+          350
+        ],
+        "shoulder_pin_strip_m": 0.02,
+        "hanger_centerline_span_m": 0.55,
+        "neck_cut_z_m": -0.205
+      },
+      "metrics": {
+        "extents_blender_m": [
+          0.550000011920929,
+          0.22123292833566666,
+          0.7366838604211807
+        ],
+        "bounds_blender_m": [
+          [
+            -0.2750000059604645,
+            -0.12002813071012497,
+            -0.8775699734687805
+          ],
+          [
+            0.2750000059604645,
+            0.10120479762554169,
+            -0.1408861130475998
+          ]
+        ],
+        "hem_level_range_m": 0.01704227924346924,
+        "waist_chest_width_ratio": 0.9464991647020118,
+        "sewing_spring_gap_max_m": 0.0010000020265579224,
+        "last_five_frames_displacement_m": 0.00030696361470337435
+      },
+      "method": "Flat front/back XZ patterns, sewing loose edges at sides and shoulders, animated shoulder placement pins; no waist support."
+    },
+    {
+      "trial": "body-n",
+      "pattern": {
+        "shoulder_m": 0.55,
+        "chest_half_circumference_m": 0.48,
+        "shoulder_to_hem_m": 0.75,
+        "grid_each_panel": [
+          28,
+          30
+        ]
+      },
+      "settings": {
+        "trial": "body-n",
+        "frames": 600,
+        "quality": 30,
+        "bending": 0.30000001192092896,
+        "sewing": 10,
+        "time_scale": 0.25,
+        "tension_compression_shear": [
+          500.0,
+          500.0,
+          350.0
+        ],
+        "structural_damping": 5.0,
+        "bending_damping": 0.5,
+        "air_damping": 10.0,
+        "sewing_force_max": 10.0,
+        "self_collision": true,
+        "collision_distance_m": 0.004000000189989805,
+        "self_distance_m": 0.004000000189989805,
+        "mass_setting": 0.2199999988079071,
+        "stiffness": [
+          500,
+          500,
+          350
+        ],
+        "shoulder_pin_strip_m": 0.02,
+        "hanger_centerline_span_m": 0.55,
+        "neck_cut_z_m": -0.178
+      },
+      "metrics": {
+        "extents_blender_m": [
+          0.550000011920929,
+          0.1746034175157547,
+          0.7381262332201004
+        ],
+        "bounds_blender_m": [
+          [
+            -0.2750000059604645,
+            -0.08243373781442642,
+            -0.8790123462677002
+          ],
+          [
+            0.2750000059604645,
+            0.09216967970132828,
+            -0.1408861130475998
+          ]
+        ],
+        "hem_level_range_m": 0.007796108722686768,
+        "waist_chest_width_ratio": 0.9635071261505157,
+        "sewing_spring_gap_max_m": 0.0010000020265579224,
+        "last_five_frames_displacement_m": 8.891299082021857e-05
+      },
+      "method": "Flat front/back XZ patterns, sewing loose edges at sides and shoulders, animated shoulder placement pins; no waist support."
+    },
+    {
+      "trial": "body-o",
+      "pattern": {
+        "shoulder_m": 0.55,
+        "chest_half_circumference_m": 0.48,
+        "shoulder_to_hem_m": 0.75,
+        "grid_each_panel": [
+          28,
+          30
+        ]
+      },
+      "settings": {
+        "trial": "body-o",
+        "frames": 600,
+        "quality": 30,
+        "bending": 0.30000001192092896,
+        "sewing": 10,
+        "time_scale": 0.25,
+        "tension_compression_shear": [
+          500.0,
+          500.0,
+          350.0
+        ],
+        "structural_damping": 5.0,
+        "bending_damping": 0.5,
+        "air_damping": 10.0,
+        "sewing_force_max": 10.0,
+        "self_collision": true,
+        "collision_distance_m": 0.004000000189989805,
+        "self_distance_m": 0.004000000189989805,
+        "mass_setting": 0.2199999988079071,
+        "stiffness": [
+          500,
+          500,
+          350
+        ],
+        "shoulder_pin_strip_m": 0.02,
+        "hanger_centerline_span_m": 0.5,
+        "neck_cut_z_m": -0.178
+      },
+      "metrics": {
+        "extents_blender_m": [
+          0.550000011920929,
+          0.17452865839004517,
+          0.7381307035684586
+        ],
+        "bounds_blender_m": [
+          [
+            -0.2750000059604645,
+            -0.0809951201081276,
+            -0.8790168166160583
+          ],
+          [
+            0.2750000059604645,
+            0.09353353828191757,
+            -0.1408861130475998
+          ]
+        ],
+        "hem_level_range_m": 0.007966458797454834,
+        "waist_chest_width_ratio": 0.962979007188933,
+        "sewing_spring_gap_max_m": 0.0010000020265579224,
+        "last_five_frames_displacement_m": 0.00016966331856192837
+      },
+      "method": "Flat front/back XZ patterns, sewing loose edges at sides and shoulders, animated shoulder placement pins; no waist support."
+    },
+    {
+      "trial": "body-p",
+      "pattern": {
+        "shoulder_m": 0.55,
+        "chest_half_circumference_m": 0.48,
+        "shoulder_to_hem_m": 0.75,
+        "grid_each_panel": [
+          28,
+          30
+        ]
+      },
+      "settings": {
+        "trial": "body-p",
+        "frames": 600,
+        "quality": 30,
+        "bending": 0.30000001192092896,
+        "sewing": 10,
+        "time_scale": 0.25,
+        "tension_compression_shear": [
+          500.0,
+          500.0,
+          350.0
+        ],
+        "interfacing_bending_max": 5.0,
+        "bending_group": "InterfacedPlacket",
+        "structural_damping": 5.0,
+        "bending_damping": 0.5,
+        "air_damping": 10.0,
+        "sewing_force_max": 10.0,
+        "self_collision": true,
+        "collision_distance_m": 0.004000000189989805,
+        "self_distance_m": 0.004000000189989805,
+        "mass_setting": 0.2199999988079071,
+        "stiffness": [
+          500,
+          500,
+          350
+        ],
+        "shoulder_pin_strip_m": 0.02,
+        "hanger_centerline_span_m": 0.5,
+        "neck_cut_z_m": -0.178
+      },
+      "metrics": {
+        "extents_blender_m": [
+          0.550000011920929,
+          0.1808248981833458,
+          0.7379699498414993
+        ],
+        "bounds_blender_m": [
+          [
+            -0.2750000059604645,
+            -0.10677705705165863,
+            -0.8788560628890991
+          ],
+          [
+            0.2750000059604645,
+            0.07404784113168716,
+            -0.1408861130475998
+          ]
+        ],
+        "hem_level_range_m": 0.008194983005523682,
+        "waist_chest_width_ratio": 0.9615069897943535,
+        "sewing_spring_gap_max_m": 0.0010000020265579224,
+        "last_five_frames_displacement_m": 0.00036762266395508754
+      },
+      "method": "Flat front/back XZ patterns, sewing loose edges at sides and shoulders, animated shoulder placement pins; no waist support."
+    }
+  ],
+  "sleeves": [
+    {
+      "trial": "sleeve-a",
+      "settings": {
+        "body": "body-b",
+        "trial": "sleeve-a",
+        "frames": 150,
+        "quality": 20,
+        "bending": 2.0,
+        "sewing": 10,
+        "mass_setting": 0.22,
+        "stiffness": [
+          500,
+          500,
+          350
+        ],
+        "time_scale": 0.5,
+        "structural_damping": 50,
+        "bending_damping": 100,
+        "air_damping": 10,
+        "self_collision": true,
+        "collision_distance_m": 0.002,
+        "self_distance_m": 0.001
+      },
+      "metrics": {
+        "cap_spring_gap_max_m": 0.22281086653727167,
+        "last_five_frames_displacement_m": 0.28896914723743033
+      },
+      "method": "Paired sleeve-cap sewing edges, settled tapered tubes, body surface pinned; stitched vertices joined after baking."
+    },
+    {
+      "trial": "sleeve-b",
+      "settings": {
+        "body": "body-b",
+        "trial": "sleeve-b",
+        "frames": 180,
+        "quality": 25,
+        "bending": 2.0,
+        "sewing": 10,
+        "mass_setting": 0.22,
+        "stiffness": [
+          500,
+          500,
+          350
+        ],
+        "time_scale": 0.5,
+        "structural_damping": 25,
+        "bending_damping": 10,
+        "air_damping": 10,
+        "self_collision": true,
+        "collision_distance_m": 0.002,
+        "self_distance_m": 0.001
+      },
+      "metrics": {
+        "cap_spring_gap_max_m": 0.049232063292007244,
+        "last_five_frames_displacement_m": 0.030445105456613376
+      },
+      "method": "Paired sleeve-cap sewing edges, settled tapered tubes, body surface pinned; stitched vertices joined after baking.",
+      "collision_group_defect": "The free-cloth group was incorrectly assigned to Blender self-collision exclusions."
+    },
+    {
+      "trial": "sleeve-c",
+      "settings": {
+        "body": "body-b",
+        "trial": "sleeve-c",
+        "frames": 180,
+        "quality": 25,
+        "bending": 2.0,
+        "sewing": 10,
+        "mass_setting": 0.22,
+        "stiffness": [
+          500,
+          500,
+          350
+        ],
+        "time_scale": 0.5,
+        "structural_damping": 25,
+        "bending_damping": 10,
+        "air_damping": 10,
+        "self_collision": true,
+        "collision_distance_m": 0.002,
+        "self_distance_m": 0.001
+      },
+      "metrics": {
+        "cap_spring_gap_max_m": 0.031192137502117162,
+        "stitched_cap_gap_m": 0.0,
+        "last_five_frames_displacement_m": 0.002457219381271986
+      },
+      "method": "20 zero-gravity sewing frames, then joined stitches and 180 gravity frames. The 31.192 mm pre-join gap failed the cap closure target.",
+      "collision_group_defect": "The free-cloth group was incorrectly assigned to Blender self-collision exclusions."
+    },
+    {
+      "trial": "sleeve-d",
+      "settings": {
+        "body": "body-j",
+        "trial": "sleeve-d",
+        "frames": 360,
+        "quality": 30,
+        "bending": 5.0,
+        "sewing": 10,
+        "time_scale": 0.25,
+        "tension_compression_shear": [
+          500.0,
+          500.0,
+          350.0
+        ],
+        "structural_damping": 5.0,
+        "bending_damping": 0.5,
+        "air_damping": 10.0,
+        "sewing_force_max": 10.0,
+        "self_collision": true,
+        "collision_distance_m": 0.004000000189989805,
+        "self_distance_m": 0.004000000189989805,
+        "mass_setting": 0.2199999988079071,
+        "stiffness": [
+          500,
+          500,
+          350
+        ]
+      },
+      "metrics": {
+        "pre_stitch_cap_placement_gap_m": 0.0020000000000000018,
+        "stitched_cap_gap_m": 0.0,
+        "last_five_frames_displacement_m": 0.00046249177793887823
+      },
+      "method": "Sleeve cap placement within 2 mm, joined into shared armhole stitches before gravity settling. Body surface pinned, sleeves free with self-collision."
+    },
+    {
+      "trial": "sleeve-e",
+      "settings": {
+        "body": "body-m",
+        "trial": "sleeve-e",
+        "frames": 360,
+        "quality": 30,
+        "bending": 5.0,
+        "sewing": 10,
+        "time_scale": 0.25,
+        "tension_compression_shear": [
+          500.0,
+          500.0,
+          350.0
+        ],
+        "structural_damping": 5.0,
+        "bending_damping": 0.5,
+        "air_damping": 10.0,
+        "sewing_force_max": 10.0,
+        "self_collision": true,
+        "collision_distance_m": 0.004000000189989805,
+        "self_distance_m": 0.004000000189989805,
+        "mass_setting": 0.2199999988079071,
+        "stiffness": [
+          500,
+          500,
+          350
+        ]
+      },
+      "metrics": {
+        "pre_stitch_cap_placement_gap_m": 0.0020000000000000018,
+        "stitched_cap_gap_m": 0.0,
+        "last_five_frames_displacement_m": 0.0004855553839807162
+      },
+      "method": "Sleeve cap placement within 2 mm, joined into shared armhole stitches before gravity settling. Body surface pinned, sleeves free with self-collision."
+    },
+    {
+      "trial": "sleeve-f",
+      "settings": {
+        "body": "body-n",
+        "trial": "sleeve-f",
+        "frames": 360,
+        "quality": 30,
+        "bending": 5.0,
+        "sewing": 10,
+        "time_scale": 0.25,
+        "tension_compression_shear": [
+          500.0,
+          500.0,
+          350.0
+        ],
+        "structural_damping": 5.0,
+        "bending_damping": 0.5,
+        "air_damping": 10.0,
+        "sewing_force_max": 10.0,
+        "self_collision": true,
+        "collision_distance_m": 0.004000000189989805,
+        "self_distance_m": 0.004000000189989805,
+        "mass_setting": 0.2199999988079071,
+        "stiffness": [
+          500,
+          500,
+          350
+        ]
+      },
+      "metrics": {
+        "pre_stitch_cap_placement_gap_m": 0.0020000000000000018,
+        "stitched_cap_gap_m": 0.0,
+        "last_five_frames_displacement_m": 0.0009965434970446803
+      },
+      "method": "Sleeve cap placement within 2 mm, joined into shared armhole stitches before gravity settling. Body surface pinned, sleeves free with self-collision."
+    },
+    {
+      "trial": "sleeve-g",
+      "settings": {
+        "body": "body-o",
+        "trial": "sleeve-g",
+        "frames": 480,
+        "quality": 30,
+        "bending": 5.0,
+        "sewing": 10,
+        "time_scale": 0.25,
+        "tension_compression_shear": [
+          500.0,
+          500.0,
+          350.0
+        ],
+        "structural_damping": 5.0,
+        "bending_damping": 0.5,
+        "air_damping": 10.0,
+        "sewing_force_max": 10.0,
+        "self_collision": true,
+        "collision_distance_m": 0.004000000189989805,
+        "self_distance_m": 0.004000000189989805,
+        "mass_setting": 0.2199999988079071,
+        "stiffness": [
+          500,
+          500,
+          350
+        ]
+      },
+      "metrics": {
+        "pre_stitch_cap_placement_gap_m": 0.0020000000000000018,
+        "stitched_cap_gap_m": 0.0,
+        "last_five_frames_displacement_m": 3.653147441412351e-06
+      },
+      "method": "Sleeve cap placement within 2 mm, joined into shared armhole stitches before gravity settling. Body surface pinned, sleeves free with self-collision."
+    },
+    {
+      "trial": "sleeve-h",
+      "settings": {
+        "body": "body-p",
+        "trial": "sleeve-h",
+        "frames": 480,
+        "quality": 30,
+        "bending": 5.0,
+        "sewing": 10,
+        "time_scale": 0.25,
+        "tension_compression_shear": [
+          500.0,
+          500.0,
+          350.0
+        ],
+        "interfacing_bending_max": 5.0,
+        "bending_group": "",
+        "structural_damping": 5.0,
+        "bending_damping": 0.5,
+        "air_damping": 10.0,
+        "sewing_force_max": 10.0,
+        "self_collision": true,
+        "collision_distance_m": 0.004000000189989805,
+        "self_distance_m": 0.004000000189989805,
+        "mass_setting": 0.2199999988079071,
+        "stiffness": [
+          500,
+          500,
+          350
+        ]
+      },
+      "metrics": {
+        "pre_stitch_cap_placement_gap_m": 0.0020000000000000018,
+        "stitched_cap_gap_m": 0.0,
+        "last_five_frames_displacement_m": 9.243525516552224e-07
+      },
+      "method": "Sleeve cap placement within 2 mm, joined into shared armhole stitches before gravity settling. Body surface pinned, sleeves free with self-collision."
+    }
+  ],
+  "details": [
+    {
+      "trial": "details-a",
+      "source": "sleeve-c",
+      "metrics": {
+        "step1": {
+          "body_width_m": 0.5830173790454865,
+          "body_depth_m": 0.12517963349819183,
+          "hem_level_range_m": 0.03213757276535034,
+          "waist_chest_width_ratio": 1.023761255011301,
+          "stitched_seam_gap_m": null,
+          "pass": false
+        },
+        "step2": {
+          "Sleeve_L": {
+            "underarm_gap_below_y_minus_0_48_m": 2.096017536255774e-06,
+            "armhole_seam_gap_m": null,
+            "body_triangle_crossings_below_armpit": 94,
+            "pass": false
+          },
+          "Sleeve_R": {
+            "underarm_gap_below_y_minus_0_48_m": 0.051892508436193197,
+            "armhole_seam_gap_m": null,
+            "body_triangle_crossings_below_armpit": 0,
+            "pass": false
+          }
+        },
+        "step3": {
+          "thickness": {
+            "median_m": 0.0035919078342852876,
+            "min_m": 0.003499909794551857,
+            "max_m": 0.005935750845512304,
+            "sample_pairs": 2293,
+            "nonadjacent_edge_crossings": 1068
+          },
+          "details": {
+            "Collar": {
+              "attachment_gap_max_m": null,
+              "inward_penetration_max_m": 0.0018428086155582815,
+              "pass": false
+            },
+            "ShoulderBoard_L": {
+              "attachment_gap_max_m": 0.000700017846211091,
+              "inward_penetration_max_m": 0.000775116358539359,
+              "pass": true
+            },
+            "ShoulderBoard_R": {
+              "attachment_gap_max_m": 0.0007000215624595548,
+              "inward_penetration_max_m": 0.0008185966212031348,
+              "pass": true
+            },
+            "Placket": {
+              "attachment_gap_max_m": 0.0006001298561323452,
+              "inward_penetration_max_m": 0.0014180089081603467,
+              "pass": false
+            },
+            "Buttons": {
+              "attachment_gap_max_m": 0.0014998079531544728,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "CollarInsignia_L": {
+              "attachment_gap_max_m": 0.000700039841897119,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "CollarInsignia_R": {
+              "attachment_gap_max_m": 0.0007000508985034969,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "RibbonBar": {
+              "attachment_gap_max_m": 0.0007000761370803959,
+              "inward_penetration_max_m": 0.00012958131264068432,
+              "pass": true
+            },
+            "Medal": {
+              "attachment_gap_max_m": 0.0007001106738083463,
+              "inward_penetration_max_m": 0.00032663097787418967,
+              "pass": true
+            }
+          }
+        },
+        "colliders": {
+          "ShoulderChestForm": {
+            "inside_cloth_samples": 0,
+            "edge_crossings": 0
+          },
+          "Hanger": {
+            "inside_cloth_samples": 41,
+            "edge_crossings": 117
+          }
+        },
+        "orientation": {
+          "up": "+Y",
+          "front": "+Z",
+          "origin_at_hook_top_error_m": 4.042848013341427e-05,
+          "front_detail_centroids_z_m": {
+            "Buttons": 0.03440224024175544,
+            "RibbonBar": 0.05344150500992934,
+            "Medal": 0.03778492055784959
+          },
+          "pass": true
+        },
+        "bounds_game_xyz_m": [
+          [
+            -0.38183051347732544,
+            -0.882121205329895,
+            -0.09244440495967865
+          ],
+          [
+            0.34178778529167175,
+            -4.042848013341427e-05,
+            0.061690554022789
+          ]
+        ],
+        "node_names": [
+          "Buttons",
+          "Collar",
+          "CollarInsignia_L",
+          "CollarInsignia_R",
+          "Hanger",
+          "Medal",
+          "Placket",
+          "RibbonBar",
+          "ShoulderBoard_L",
+          "ShoulderBoard_R",
+          "TunicBody"
+        ],
+        "mesh_names": [
+          "Buttons",
+          "Collar",
+          "CollarInsignia_L",
+          "CollarInsignia_R",
+          "Hanger",
+          "Medal",
+          "Placket",
+          "RibbonBar",
+          "ShoulderBoard_L",
+          "ShoulderBoard_R",
+          "TunicBody"
+        ],
+        "names_pass": true,
+        "materials": [
+          "BareSteel",
+          "Brass",
+          "NaturalFabric",
+          "RibbonFabric"
+        ],
+        "triangles": 12408,
+        "triangle_limit_exclusive": 15000,
+        "byte_identical_reexport": true,
+        "garment_watertight": false,
+        "garment_winding_consistent": true,
+        "pass": false
+      },
+      "result": "Exposed thin-ply intersections, shoulder wire contact, insufficient collar clearance and coarse placket tessellation. UV-aware welding in the verifier also needed correction."
+    },
+    {
+      "trial": "details-b",
+      "source": "sleeve-d",
+      "result": "Fixed-height emblem projection missed the shifted collar by several millimetres. Switched to neckline-derived emblem centres."
+    },
+    {
+      "trial": "details-c",
+      "source": "sleeve-d",
+      "metrics": {
+        "step1": {
+          "body_width_m": 0.5542782247066498,
+          "body_depth_m": 0.1917419359087944,
+          "hem_level_range_m": 0.015759527683258057,
+          "waist_chest_width_ratio": 0.9784767752222794,
+          "stitched_seam_gap_m": 0.0,
+          "pass": true
+        },
+        "step2": {
+          "Sleeve_L": {
+            "underarm_gap_below_y_minus_0_48_m": 0.0120818898273236,
+            "armhole_seam_gap_m": 0.0,
+            "body_triangle_crossings_below_armpit": 0,
+            "pass": true
+          },
+          "Sleeve_R": {
+            "underarm_gap_below_y_minus_0_48_m": 0.05654749787148651,
+            "armhole_seam_gap_m": 0.0,
+            "body_triangle_crossings_below_armpit": 0,
+            "pass": true
+          }
+        },
+        "step3": {
+          "thickness": {
+            "median_m": 0.003500001034285558,
+            "min_m": 0.003499881255128505,
+            "max_m": 0.0035001063255278328,
+            "sample_pairs": 2458,
+            "nonadjacent_edge_crossings": 57
+          },
+          "details": {
+            "Collar": {
+              "attachment_gap_max_m": 0.0034729112672061734,
+              "inward_penetration_max_m": 0.0,
+              "pass": false
+            },
+            "ShoulderBoard_L": {
+              "attachment_gap_max_m": 0.0007000198510508903,
+              "inward_penetration_max_m": 0.0012029881622194205,
+              "pass": false
+            },
+            "ShoulderBoard_R": {
+              "attachment_gap_max_m": 0.0007000187202198473,
+              "inward_penetration_max_m": 0.0009601176507269458,
+              "pass": true
+            },
+            "Placket": {
+              "attachment_gap_max_m": 0.0009001131599284598,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "Buttons": {
+              "attachment_gap_max_m": 0.0014991871547417332,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "CollarInsignia_L": {
+              "attachment_gap_max_m": 0.0007000981414455623,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "CollarInsignia_R": {
+              "attachment_gap_max_m": 0.0007000723265083067,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "RibbonBar": {
+              "attachment_gap_max_m": 0.0007043348037267697,
+              "inward_penetration_max_m": 0.0009170099369134771,
+              "pass": true
+            },
+            "Medal": {
+              "attachment_gap_max_m": 0.000700090686473475,
+              "inward_penetration_max_m": 0.0002675687531130724,
+              "pass": true
+            }
+          }
+        },
+        "colliders": {
+          "ShoulderChestForm": {
+            "inside_cloth_samples": 0,
+            "edge_crossings": 0
+          },
+          "Hanger": {
+            "inside_cloth_samples": 23,
+            "edge_crossings": 120
+          }
+        },
+        "orientation": {
+          "up": "+Y",
+          "front": "+Z",
+          "origin_at_hook_top_error_m": 4.042848013341427e-05,
+          "front_detail_centroids_z_m": {
+            "Buttons": 0.07195334651065294,
+            "RibbonBar": 0.05111938648753696,
+            "Medal": 0.04866596112971182
+          },
+          "pass": true
+        },
+        "bounds_game_xyz_m": [
+          [
+            -0.3861035406589508,
+            -0.8796828389167786,
+            -0.1011815145611763
+          ],
+          [
+            0.33585241436958313,
+            -4.042848013341427e-05,
+            0.09716987609863281
+          ]
+        ],
+        "node_names": [
+          "Buttons",
+          "Collar",
+          "CollarInsignia_L",
+          "CollarInsignia_R",
+          "Hanger",
+          "Medal",
+          "Placket",
+          "RibbonBar",
+          "ShoulderBoard_L",
+          "ShoulderBoard_R",
+          "TunicBody"
+        ],
+        "mesh_names": [
+          "Buttons",
+          "Collar",
+          "CollarInsignia_L",
+          "CollarInsignia_R",
+          "Hanger",
+          "Medal",
+          "Placket",
+          "RibbonBar",
+          "ShoulderBoard_L",
+          "ShoulderBoard_R",
+          "TunicBody"
+        ],
+        "names_pass": true,
+        "materials": [
+          "BareSteel",
+          "Brass",
+          "NaturalFabric",
+          "RibbonFabric"
+        ],
+        "triangles": 13312,
+        "triangle_limit_exclusive": 15000,
+        "byte_identical_reexport": true,
+        "garment_watertight": true,
+        "garment_winding_consistent": true,
+        "pass": false
+      },
+      "result": "Body, sleeves, thickness and names pass. Remaining armhole thickness crossings, wire face crossings, collar attachment gap 3.473 mm and left board penetration 1.203 mm."
+    },
+    {
+      "trial": "details-d",
+      "source": "sleeve-d",
+      "settings": {
+        "armhole_fairing_factor": 0.35,
+        "fairing_iterations": 6,
+        "board_y_samples": 9,
+        "collar_thickness_m": 0.003,
+        "collar_offset_m": 0.0007
+      },
+      "metrics": {
+        "step1": {
+          "body_width_m": 0.5455784797668457,
+          "body_depth_m": 0.1917419359087944,
+          "hem_level_range_m": 0.015759527683258057,
+          "waist_chest_width_ratio": 0.9879965765401053,
+          "stitched_seam_gap_m": 0.0,
+          "pass": true
+        },
+        "step2": {
+          "Sleeve_L": {
+            "underarm_gap_below_y_minus_0_48_m": 0.0120818898273236,
+            "armhole_seam_gap_m": 0.0,
+            "body_triangle_crossings_below_armpit": 0,
+            "pass": true
+          },
+          "Sleeve_R": {
+            "underarm_gap_below_y_minus_0_48_m": 0.05654749787148651,
+            "armhole_seam_gap_m": 0.0,
+            "body_triangle_crossings_below_armpit": 0,
+            "pass": true
+          }
+        },
+        "step3": {
+          "thickness": {
+            "median_m": 0.003500000871428463,
+            "min_m": 0.003499881255128505,
+            "max_m": 0.0035001063255278328,
+            "sample_pairs": 2458,
+            "nonadjacent_edge_crossings": 20
+          },
+          "details": {
+            "Collar": {
+              "attachment_gap_max_m": 0.0020888204382243664,
+              "inward_penetration_max_m": 0.0,
+              "pass": false
+            },
+            "ShoulderBoard_L": {
+              "attachment_gap_max_m": 0.0007000264804965604,
+              "inward_penetration_max_m": 0.0011657832734289645,
+              "pass": false
+            },
+            "ShoulderBoard_R": {
+              "attachment_gap_max_m": 0.0007000326565951898,
+              "inward_penetration_max_m": 0.0003626537926488046,
+              "pass": true
+            },
+            "Placket": {
+              "attachment_gap_max_m": 0.0009001131599284598,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "Buttons": {
+              "attachment_gap_max_m": 0.0014991871547417332,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "CollarInsignia_L": {
+              "attachment_gap_max_m": 0.0006999986895557741,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "CollarInsignia_R": {
+              "attachment_gap_max_m": 0.0007000407120749244,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "RibbonBar": {
+              "attachment_gap_max_m": 0.0007043348037267697,
+              "inward_penetration_max_m": 0.0009170099369134771,
+              "pass": true
+            },
+            "Medal": {
+              "attachment_gap_max_m": 0.000700090686473475,
+              "inward_penetration_max_m": 0.0002675687531130724,
+              "pass": true
+            }
+          }
+        },
+        "colliders": {
+          "ShoulderChestForm": {
+            "inside_cloth_samples": 0,
+            "edge_crossings": 0
+          },
+          "Hanger": {
+            "inside_cloth_samples": 25,
+            "edge_crossings": 147
+          }
+        }
+      }
+    },
+    {
+      "trial": "details-e",
+      "source": "sleeve-e",
+      "metrics": {
+        "step1": {
+          "body_width_m": 0.5539628565311432,
+          "body_depth_m": 0.2245970144867897,
+          "hem_level_range_m": 0.01738870143890381,
+          "waist_chest_width_ratio": 0.949963962486459,
+          "stitched_seam_gap_m": 0.0,
+          "pass": false
+        },
+        "step2": {
+          "Sleeve_L": {
+            "underarm_gap_below_y_minus_0_48_m": 0.05077550677626117,
+            "armhole_seam_gap_m": 0.0,
+            "body_triangle_crossings_below_armpit": 0,
+            "pass": true
+          },
+          "Sleeve_R": {
+            "underarm_gap_below_y_minus_0_48_m": 0.05607576294730583,
+            "armhole_seam_gap_m": 0.0,
+            "body_triangle_crossings_below_armpit": 0,
+            "pass": true
+          }
+        },
+        "step3": {
+          "thickness": {
+            "median_m": 0.003499999797142851,
+            "min_m": 0.003499885442410953,
+            "max_m": 0.0035001207722020287,
+            "sample_pairs": 2458,
+            "nonadjacent_edge_crossings": 0
+          },
+          "details": {
+            "Collar": {
+              "attachment_gap_max_m": 0.001849605690255127,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "ShoulderBoard_L": {
+              "attachment_gap_max_m": 0.0009000224729241957,
+              "inward_penetration_max_m": 0.0002837836272590351,
+              "pass": true
+            },
+            "ShoulderBoard_R": {
+              "attachment_gap_max_m": 0.0009000354662426577,
+              "inward_penetration_max_m": 0.00026801433763992477,
+              "pass": true
+            },
+            "Placket": {
+              "attachment_gap_max_m": 0.0009001727978388392,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "Buttons": {
+              "attachment_gap_max_m": 0.001497230432229522,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "CollarInsignia_L": {
+              "attachment_gap_max_m": 0.0007000110799445514,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "CollarInsignia_R": {
+              "attachment_gap_max_m": 0.0007000657630425716,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "RibbonBar": {
+              "attachment_gap_max_m": 0.0007001142571734097,
+              "inward_penetration_max_m": 0.0002525562786445892,
+              "pass": true
+            },
+            "Medal": {
+              "attachment_gap_max_m": 0.0007001710056946139,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            }
+          },
+          "dimensions": {
+            "collar_band_height_min_max_m": [
+              0.0429999977350235,
+              0.0429999977350235
+            ],
+            "button_count": 6,
+            "button_diameters_m": [
+              0.014014118816703558,
+              0.014383802190423012,
+              0.014494614209979773,
+              0.013836998958140612,
+              0.013762746471911669,
+              0.013979577925056219
+            ],
+            "emblem_circumscribed_diameters_m": {
+              "CollarInsignia_L": 0.020047902417569836,
+              "CollarInsignia_R": 0.02005849883433459
+            },
+            "medal_diameter_m": 0.03220434486865997,
+            "collar_facing_slot_radii_min_max_m": [
+              0.0037032345994356636,
+              0.004096767324196699
+            ],
+            "facing_to_hook_radial_clearance_max_m": 0.0005967673241966992,
+            "pass": false
+          }
+        },
+        "colliders": {
+          "ShoulderChestForm": {
+            "inside_cloth_samples": 0,
+            "edge_crossings": 0
+          },
+          "Hanger": {
+            "inside_cloth_samples": 0,
+            "edge_crossings": 22
+          }
+        },
+        "settling_simulation_record_m": {
+          "body": 0.00030696361470337435,
+          "sleeves": 0.0004855553839807162,
+          "last_five_frames_limit_m": 0.001,
+          "pass": true
+        }
+      }
+    },
+    {
+      "trial": "details-f",
+      "source": "sleeve-f",
+      "metrics": {
+        "step1": {
+          "body_width_m": 0.553940087556839,
+          "body_depth_m": 0.17795372009277344,
+          "hem_level_range_m": 0.007918477058410645,
+          "waist_chest_width_ratio": 0.9656561398232697,
+          "stitched_seam_gap_m": 0.0,
+          "pass": true
+        },
+        "step2": {
+          "Sleeve_L": {
+            "underarm_gap_below_y_minus_0_48_m": 0.04830173049238126,
+            "armhole_seam_gap_m": 0.0,
+            "body_triangle_crossings_below_armpit": 0,
+            "pass": true
+          },
+          "Sleeve_R": {
+            "underarm_gap_below_y_minus_0_48_m": 0.04853360912922653,
+            "armhole_seam_gap_m": 0.0,
+            "body_triangle_crossings_below_armpit": 0,
+            "pass": true
+          }
+        },
+        "step3": {
+          "thickness": {
+            "median_m": 0.0034999995307142713,
+            "min_m": 0.0034998892939634594,
+            "max_m": 0.003500123376396899,
+            "sample_pairs": 2458,
+            "nonadjacent_edge_crossings": 4
+          },
+          "details": {
+            "Collar": {
+              "attachment_gap_max_m": 0.0017148345615017975,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "ShoulderBoard_L": {
+              "attachment_gap_max_m": 0.0009001875870407166,
+              "inward_penetration_max_m": 0.00027995741872141155,
+              "pass": true
+            },
+            "ShoulderBoard_R": {
+              "attachment_gap_max_m": 0.0009000182798270765,
+              "inward_penetration_max_m": 0.0002663793082670098,
+              "pass": true
+            },
+            "Placket": {
+              "attachment_gap_max_m": 0.0009039171175457002,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "Buttons": {
+              "attachment_gap_max_m": 0.002131360350630022,
+              "inward_penetration_max_m": 0.001693229475593315,
+              "pass": false
+            },
+            "CollarInsignia_L": {
+              "attachment_gap_max_m": 0.0007000706080492105,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "CollarInsignia_R": {
+              "attachment_gap_max_m": 0.000700024109310861,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "RibbonBar": {
+              "attachment_gap_max_m": 0.00070290440880589,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "Medal": {
+              "attachment_gap_max_m": 0.002518226936942099,
+              "inward_penetration_max_m": 0.0,
+              "pass": false
+            }
+          },
+          "dimensions": {
+            "collar_band_height_min_max_m": [
+              0.0429999977350235,
+              0.0429999977350235
+            ],
+            "button_count": 6,
+            "button_diameters_m": [
+              0.014008962415302069,
+              0.014008959616539276,
+              0.014008953790603452,
+              0.01400897489325591,
+              0.014008963054093437,
+              0.014008967718622402
+            ],
+            "emblem_circumscribed_diameters_m": {
+              "CollarInsignia_L": 0.020117133475536213,
+              "CollarInsignia_R": 0.020051841125911688
+            },
+            "medal_diameter_m": 0.03200394168200992,
+            "collar_facing_slot_radii_min_max_m": [
+              0.0037967896758496857,
+              0.004003289367773576
+            ],
+            "facing_to_hook_radial_clearance_max_m": 0.0005032893677735756,
+            "pass": true
+          }
+        },
+        "colliders": {
+          "ShoulderChestForm": {
+            "inside_cloth_samples": 0,
+            "edge_crossings": 0
+          },
+          "Hanger": {
+            "inside_cloth_samples": 0,
+            "edge_crossings": 22
+          }
+        },
+        "settling_simulation_record_m": {
+          "body": 8.891299082021857e-05,
+          "sleeves": 0.0009965434970446803,
+          "last_five_frames_limit_m": 0.001,
+          "pass": true
+        }
+      },
+      "result": "Four armhole-return crossings; hanger-tip crossings only; single-triangle tangent planes put button and medal rims outside their attachment band. Fit rigid discs to a sampled least-squares cloth plane."
+    },
+    {
+      "trial": "details-g",
+      "source": "sleeve-f",
+      "settings": {
+        "armhole_fairing_iterations": 12,
+        "button_plane": "least squares over centre and two sample rings",
+        "button_lift_m": 0.0004
+      },
+      "metrics": {
+        "step1": {
+          "body_width_m": 0.5536335706710815,
+          "body_depth_m": 0.17795372009277344,
+          "hem_level_range_m": 0.007918477058410645,
+          "waist_chest_width_ratio": 0.9656496998861497,
+          "stitched_seam_gap_m": 0.0,
+          "pass": true
+        },
+        "step2": {
+          "Sleeve_L": {
+            "underarm_gap_below_y_minus_0_48_m": 0.04830173049238126,
+            "armhole_seam_gap_m": 0.0,
+            "body_triangle_crossings_below_armpit": 0,
+            "pass": true
+          },
+          "Sleeve_R": {
+            "underarm_gap_below_y_minus_0_48_m": 0.04853360912922653,
+            "armhole_seam_gap_m": 0.0,
+            "body_triangle_crossings_below_armpit": 0,
+            "pass": true
+          }
+        },
+        "step3": {
+          "thickness": {
+            "median_m": 0.003499998771428351,
+            "min_m": 0.0034998913897434014,
+            "max_m": 0.003500123376396899,
+            "sample_pairs": 2458,
+            "nonadjacent_edge_crossings": 0
+          },
+          "details": {
+            "Collar": {
+              "attachment_gap_max_m": 0.0017148345615017975,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "ShoulderBoard_L": {
+              "attachment_gap_max_m": 0.0009000176339463704,
+              "inward_penetration_max_m": 0.0003031605578317171,
+              "pass": true
+            },
+            "ShoulderBoard_R": {
+              "attachment_gap_max_m": 0.0009000165210611682,
+              "inward_penetration_max_m": 0.00027253989290492776,
+              "pass": true
+            },
+            "Placket": {
+              "attachment_gap_max_m": 0.0009039171175457002,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "Buttons": {
+              "attachment_gap_max_m": 0.0027868206578849698,
+              "inward_penetration_max_m": 0.0013542083508154739,
+              "pass": false
+            },
+            "CollarInsignia_L": {
+              "attachment_gap_max_m": 0.0007000430998979761,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "CollarInsignia_R": {
+              "attachment_gap_max_m": 0.000700024109310861,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "RibbonBar": {
+              "attachment_gap_max_m": 0.00070290440880589,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "Medal": {
+              "attachment_gap_max_m": 0.0017500617490336706,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            }
+          },
+          "dimensions": {
+            "collar_band_height_min_max_m": [
+              0.0429999977350235,
+              0.0429999977350235
+            ],
+            "button_count": 6,
+            "button_diameters_m": [
+              0.014008959562119961,
+              0.014008966272312951,
+              0.01400895418862951,
+              0.0140089725189929,
+              0.01400900359734811,
+              0.014009000592278926
+            ],
+            "emblem_circumscribed_diameters_m": {
+              "CollarInsignia_L": 0.020117119295008257,
+              "CollarInsignia_R": 0.020051841125911688
+            },
+            "medal_diameter_m": 0.03200393442102316,
+            "collar_facing_slot_radii_min_max_m": [
+              0.0037968639157336423,
+              0.004003215203277459
+            ],
+            "facing_to_hook_radial_clearance_max_m": 0.0005032152032774591,
+            "pass": true
+          }
+        },
+        "colliders": {
+          "ShoulderChestForm": {
+            "inside_cloth_samples": 0,
+            "edge_crossings": 0
+          },
+          "Hanger": {
+            "inside_cloth_samples": 0,
+            "edge_crossings": 20
+          }
+        },
+        "settling_simulation_record_m": {
+          "body": 8.891299082021857e-05,
+          "sleeves": 0.0009965434970446803,
+          "last_five_frames_limit_m": 0.001,
+          "pass": true
+        }
+      }
+    },
+    {
+      "trial": "details-h",
+      "source": "sleeve-g",
+      "metrics": {
+        "step1": {
+          "body_width_m": 0.5538582801818848,
+          "body_depth_m": 0.177854485809803,
+          "hem_level_range_m": 0.008096039295196533,
+          "waist_chest_width_ratio": 0.9653402494503607,
+          "stitched_seam_gap_m": 0.0,
+          "pass": true
+        },
+        "step2": {
+          "Sleeve_L": {
+            "underarm_gap_below_y_minus_0_48_m": 0.04835664510892572,
+            "armhole_seam_gap_m": 0.0,
+            "body_triangle_crossings_below_armpit": 0,
+            "pass": true
+          },
+          "Sleeve_R": {
+            "underarm_gap_below_y_minus_0_48_m": 0.048535269030320315,
+            "armhole_seam_gap_m": 0.0,
+            "body_triangle_crossings_below_armpit": 0,
+            "pass": true
+          }
+        },
+        "step3": {
+          "thickness": {
+            "median_m": 0.003499999925,
+            "min_m": 0.0034998890453841604,
+            "max_m": 0.0035001189436931926,
+            "sample_pairs": 2458,
+            "nonadjacent_edge_crossings": 0
+          },
+          "details": {
+            "Collar": {
+              "attachment_gap_max_m": 0.0017157807730399154,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "ShoulderBoard_L": {
+              "attachment_gap_max_m": 0.0009000270091803153,
+              "inward_penetration_max_m": 0.000303046862961402,
+              "pass": true
+            },
+            "ShoulderBoard_R": {
+              "attachment_gap_max_m": 0.0009000247593240568,
+              "inward_penetration_max_m": 0.00027352617937114387,
+              "pass": true
+            },
+            "Placket": {
+              "attachment_gap_max_m": 0.0009001495811289408,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "Buttons": {
+              "attachment_gap_max_m": 0.0025859063937253533,
+              "inward_penetration_max_m": 0.0012545500504922635,
+              "pass": false
+            },
+            "CollarInsignia_L": {
+              "attachment_gap_max_m": 0.0007001327690839611,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "CollarInsignia_R": {
+              "attachment_gap_max_m": 0.0007000575162141654,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "RibbonBar": {
+              "attachment_gap_max_m": 0.0007001250950548424,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "Medal": {
+              "attachment_gap_max_m": 0.0019118498844016738,
+              "inward_penetration_max_m": 4.2656310759693944e-05,
+              "pass": true
+            }
+          },
+          "dimensions": {
+            "collar_band_height_min_max_m": [
+              0.0429999977350235,
+              0.0429999977350235
+            ],
+            "button_count": 6,
+            "button_diameters_m": [
+              0.014008949094979507,
+              0.014008947095052862,
+              0.014008961615978898,
+              0.014008975127091304,
+              0.01400897593780058,
+              0.014008980271009157
+            ],
+            "emblem_circumscribed_diameters_m": {
+              "CollarInsignia_L": 0.02012620007535599,
+              "CollarInsignia_R": 0.02005150300697477
+            },
+            "medal_diameter_m": 0.032003944949519254,
+            "collar_facing_slot_radii_min_max_m": [
+              0.0037965638340012064,
+              0.004003564973847945
+            ],
+            "facing_to_hook_radial_clearance_max_m": 0.0005035649738479452,
+            "pass": true
+          }
+        },
+        "colliders": {
+          "ShoulderChestForm": {
+            "inside_cloth_samples": 0,
+            "edge_crossings": 0
+          },
+          "Hanger": {
+            "inside_cloth_samples": 0,
+            "edge_crossings": 0
+          }
+        },
+        "settling_simulation_record_m": {
+          "body": 0.00016966331856192837,
+          "sleeves": 3.653147441412351e-06,
+          "last_five_frames_limit_m": 0.001,
+          "pass": true
+        }
+      }
+    },
+    {
+      "trial": "details-i",
+      "source": "sleeve-h",
+      "metrics": {
+        "step1": {
+          "body_width_m": 0.5538782179355621,
+          "body_depth_m": 0.1842048019170761,
+          "hem_level_range_m": 0.00837397575378418,
+          "waist_chest_width_ratio": 0.9642287012697192,
+          "stitched_seam_gap_m": 0.0,
+          "pass": true
+        },
+        "step2": {
+          "Sleeve_L": {
+            "underarm_gap_below_y_minus_0_48_m": 0.04811919047575067,
+            "armhole_seam_gap_m": 0.0,
+            "body_triangle_crossings_below_armpit": 0,
+            "pass": true
+          },
+          "Sleeve_R": {
+            "underarm_gap_below_y_minus_0_48_m": 0.049043318562784065,
+            "armhole_seam_gap_m": 0.0,
+            "body_triangle_crossings_below_armpit": 0,
+            "pass": true
+          }
+        },
+        "step3": {
+          "thickness": {
+            "median_m": 0.003500002447856301,
+            "min_m": 0.003499878363600663,
+            "max_m": 0.0035001164380631827,
+            "sample_pairs": 2458,
+            "nonadjacent_edge_crossings": 0
+          },
+          "details": {
+            "Collar": {
+              "attachment_gap_max_m": 0.001714280519172984,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "ShoulderBoard_L": {
+              "attachment_gap_max_m": 0.0009000220430178699,
+              "inward_penetration_max_m": 0.0003021922020529761,
+              "pass": true
+            },
+            "ShoulderBoard_R": {
+              "attachment_gap_max_m": 0.0009000149104573392,
+              "inward_penetration_max_m": 0.00027187808150286216,
+              "pass": true
+            },
+            "Placket": {
+              "attachment_gap_max_m": 0.0009001523752592942,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "Buttons": {
+              "attachment_gap_max_m": 0.0013181797916967703,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "CollarInsignia_L": {
+              "attachment_gap_max_m": 0.0007001312098860299,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "CollarInsignia_R": {
+              "attachment_gap_max_m": 0.0007000992351735003,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "RibbonBar": {
+              "attachment_gap_max_m": 0.0007001193846030363,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "Medal": {
+              "attachment_gap_max_m": 0.002169083478059282,
+              "inward_penetration_max_m": 0.0007270662377887274,
+              "pass": false
+            }
+          },
+          "dimensions": {
+            "collar_band_height_min_max_m": [
+              0.0429999977350235,
+              0.0429999977350235
+            ],
+            "button_count": 6,
+            "button_diameters_m": [
+              0.014008955805397554,
+              0.014008949512626984,
+              0.014008956311627624,
+              0.014008980647299602,
+              0.01400897662218586,
+              0.014008976703157107
+            ],
+            "emblem_circumscribed_diameters_m": {
+              "CollarInsignia_L": 0.020121577059058877,
+              "CollarInsignia_R": 0.02000541634936162
+            },
+            "medal_diameter_m": 0.03200393084032435,
+            "collar_facing_slot_radii_min_max_m": [
+              0.0037965247344989832,
+              0.00400354589791753
+            ],
+            "facing_to_hook_radial_clearance_max_m": 0.00050354589791753,
+            "pass": true
+          }
+        },
+        "colliders": {
+          "ShoulderChestForm": {
+            "inside_cloth_samples": 0,
+            "edge_crossings": 0
+          },
+          "Hanger": {
+            "inside_cloth_samples": 0,
+            "edge_crossings": 0
+          }
+        },
+        "settling_simulation_record_m": {
+          "body": 0.00036762266395508754,
+          "sleeves": 9.243525516552224e-07,
+          "last_five_frames_limit_m": 0.001,
+          "pass": true
+        }
+      },
+      "result": "All but the medal attachment pass. Medal gap 2.169 mm and penetration 0.727 mm. Reduce its nominal seating offset from 0.7 to 0.5 mm."
+    },
+    {
+      "trial": "details-j",
+      "source": "sleeve-h",
+      "settings": {
+        "cloth_thickness_m": 0.0035,
+        "armhole_fairing_iterations": 12,
+        "armhole_fairing_factor": 0.35,
+        "board_base_offset_m": 0.0009,
+        "collar_base_offset_m": 0.0005,
+        "button_base_nominal_offset_m": 0.0011,
+        "medal_base_offset_m": 0.0005
+      },
+      "metrics": {
+        "step1": {
+          "body_width_m": 0.5538782179355621,
+          "body_depth_m": 0.1842048019170761,
+          "hem_level_range_m": 0.00837397575378418,
+          "waist_chest_width_ratio": 0.9642287012697192,
+          "stitched_seam_gap_m": 0.0,
+          "pass": true
+        },
+        "step2": {
+          "Sleeve_L": {
+            "underarm_gap_below_y_minus_0_48_m": 0.04811919047575067,
+            "armhole_seam_gap_m": 0.0,
+            "body_triangle_crossings_below_armpit": 0,
+            "pass": true
+          },
+          "Sleeve_R": {
+            "underarm_gap_below_y_minus_0_48_m": 0.049043318562784065,
+            "armhole_seam_gap_m": 0.0,
+            "body_triangle_crossings_below_armpit": 0,
+            "pass": true
+          }
+        },
+        "step3": {
+          "thickness": {
+            "median_m": 0.003500002447856301,
+            "min_m": 0.003499878363600663,
+            "max_m": 0.0035001164380631827,
+            "sample_pairs": 2458,
+            "nonadjacent_edge_crossings": 0
+          },
+          "details": {
+            "Collar": {
+              "attachment_gap_max_m": 0.001714280519172984,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "ShoulderBoard_L": {
+              "attachment_gap_max_m": 0.0009000220430178699,
+              "inward_penetration_max_m": 0.0003021922020529761,
+              "pass": true
+            },
+            "ShoulderBoard_R": {
+              "attachment_gap_max_m": 0.0009000149104573392,
+              "inward_penetration_max_m": 0.00027187808150286216,
+              "pass": true
+            },
+            "Placket": {
+              "attachment_gap_max_m": 0.0009001523752592942,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "Buttons": {
+              "attachment_gap_max_m": 0.0013181797916967703,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "CollarInsignia_L": {
+              "attachment_gap_max_m": 0.0007001312098860299,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "CollarInsignia_R": {
+              "attachment_gap_max_m": 0.0007000992351735003,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "RibbonBar": {
+              "attachment_gap_max_m": 0.0007001193846030363,
+              "inward_penetration_max_m": 0.0,
+              "pass": true
+            },
+            "Medal": {
+              "attachment_gap_max_m": 0.0019706959493428176,
+              "inward_penetration_max_m": 0.0009212129171995777,
+              "pass": true
+            }
+          },
+          "dimensions": {
+            "collar_band_height_min_max_m": [
+              0.0429999977350235,
+              0.0429999977350235
+            ],
+            "button_count": 6,
+            "button_diameters_m": [
+              0.014008955805397554,
+              0.014008949512626984,
+              0.014008956311627624,
+              0.014008980647299602,
+              0.01400897662218586,
+              0.014008976703157107
+            ],
+            "emblem_circumscribed_diameters_m": {
+              "CollarInsignia_L": 0.020121577059058877,
+              "CollarInsignia_R": 0.02000541634936162
+            },
+            "medal_diameter_m": 0.03200393084032435,
+            "collar_facing_slot_radii_min_max_m": [
+              0.0037965247344989832,
+              0.00400354589791753
+            ],
+            "facing_to_hook_radial_clearance_max_m": 0.00050354589791753,
+            "pass": true
+          }
+        },
+        "colliders": {
+          "ShoulderChestForm": {
+            "inside_cloth_samples": 0,
+            "edge_crossings": 0
+          },
+          "Hanger": {
+            "inside_cloth_samples": 0,
+            "edge_crossings": 0
+          }
+        },
+        "settling_simulation_record_m": {
+          "body": 0.00036762266395508754,
+          "sleeves": 9.243525516552224e-07,
+          "last_five_frames_limit_m": 0.001,
+          "pass": true
+        },
+        "triangles": 13768,
+        "byte_identical_reexport": true,
+        "pass": true
+      },
+      "result": "All measured gates pass."
+    }
+  ],
+  "tooling_trials": [
+    {
+      "trial": "sleeve-a launch",
+      "result": "Initial launch failed to resolve the local simulate module. Explicit script-directory module path fixed the launch."
+    },
+    {
+      "trial": "body-e launch",
+      "result": "A shared managed shell ended while the other Blender job was still running. Repeated as an independent nohup job."
+    },
+    {
+      "trial": "image inspection",
+      "profile": "qwen38-llamacpp",
+      "result": "Configured image endpoint at localhost:8308 refused connection. No visual judgment claimed."
+    },
+    {
+      "trial": "image-comparer local alternative",
+      "endpoint": "http://127.0.0.1:1234/v1",
+      "model": "qwen/qwen3.8-27b",
+      "result": "Model listing responds, but both image and text completion requests return HTTP 500. Visual inspection remains unavailable."
+    }
+  ],
+  "selected": {
+    "body": "body-p",
+    "sleeves": "sleeve-h",
+    "details": "details-j",
+    "body_tries": 16,
+    "sleeve_tries": 8,
+    "detail_tries": 10,
+    "verify_pass": true,
+    "visual_review": "Unavailable: local image-model endpoints refused connection or returned HTTP 500."
+  }
+}
