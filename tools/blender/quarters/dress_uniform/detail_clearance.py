@@ -110,6 +110,8 @@ def seat_sewn(body, bindings):
     tree = surface_tree(body)
     report = {}
     for name in ('ShoulderBoard_L', 'ShoulderBoard_R', 'Placket', 'RibbonBar'):
+        if bindings[name].get('rigid', False):
+            continue
         obj = bpy.data.objects[name]
         original = np.asarray(bindings[name]['original'])
         count = len(original)//2
@@ -133,4 +135,101 @@ def seat_sewn(body, bindings):
         recalc(obj)
         report[name] = dict(base_clearance_m=.0005, maximum_before_distance_m=maximum,
                             method='paired sewn facing columns follow actual reduced cloth normals')
+    return report
+
+
+def seat_medal(body, binding):
+    from attachment_metrics import base_indices
+    from common import surface_tree
+    import json
+
+    obj = bpy.data.objects['Medal']
+    original = np.asarray(binding['original'])
+    indices = base_indices(original, json.loads(obj['attachment'])['base_blender_m'])
+    points = np.array([obj.matrix_world @ v.co for v in obj.data.vertices])
+    tree = surface_tree(body)
+    support = np.concatenate([triangles(body), triangles(bpy.data.objects['RibbonBar'])])
+    obj.data.calc_loop_triangles()
+    reports = []
+    for ids in binding['groups']:
+        base = np.intersect1d(indices, ids)
+        hits = [tree.find_nearest(Vector(points[i])) for i in base]
+        target = np.array([hit[0][:] for hit in hits])
+        src = original[base]
+        u, _, vt = np.linalg.svd((src-src.mean(0)).T@(target-target.mean(0)))
+        if np.linalg.det(u@vt) < 0:
+            u[:, -1] *= -1
+        rotation = u@vt
+        points[ids] = (original[ids]-src.mean(0))@rotation+target.mean(0)
+        normal = np.array([0., -1., 0.])@rotation
+        group = set(ids)
+        faces = np.array([t.vertices[:] for t in obj.data.loop_triangles if set(t.vertices) <= group])
+        gap = continuous_gap(points[faces], support, normal)
+        points[ids] += normal*(.00025-gap)
+        distances = [tree.find_nearest(Vector(points[i]))[3] for i in base]
+        reports.append(dict(minimum_base_distance_m=min(distances), maximum_base_distance_m=max(distances),
+                            within_2mm=max(distances) <= .002))
+    inverse = obj.matrix_world.inverted()
+    for vertex, point in zip(obj.data.vertices, points):
+        vertex.co = inverse @ Vector(point)
+    recalc(obj)
+    return reports
+
+
+def press_medal_support(body, binding):
+    """Keep the reinforced wool under rigid medal bases locally planar."""
+    from attachment_metrics import base_indices, rigid_normal
+    import json
+
+    obj = bpy.data.objects['Medal']
+    original = np.asarray(binding['original'])
+    bases = base_indices(original, json.loads(obj['attachment'])['base_blender_m'])
+    points = np.array([obj.matrix_world @ v.co for v in obj.data.vertices])
+    vertices = np.array([body.matrix_world @ v.co for v in body.data.vertices])
+    initial = vertices.copy()
+    for ids in binding['groups']:
+        base = np.intersect1d(bases, ids)
+        local = np.flatnonzero(np.isin(ids, base))
+        normal = rigid_normal(original[ids], points[ids], local, np.array([0., -1., 0.]))
+        transverse = np.linalg.svd(np.array([normal]))[2][1:]
+        footprint = np.einsum('ij,kj->ik', points[base], transverse)
+        xy = np.einsum('ij,kj->ik', vertices, transverse)
+        outside = np.maximum(footprint.min(0)-xy, xy-footprint.max(0)).clip(0).max(1)
+        weight = np.clip(1-outside/.010, 0, 1)
+        level = float(np.mean(np.einsum('ij,j->i', points[base], normal)))
+        depth = np.einsum('ij,j->i', vertices, normal)-level
+        weight[np.abs(depth) > .012] = 0.
+        delta = np.clip(-.0008-depth, -.0015, .0015)*weight
+        vertices += normal*delta[:, None]
+    inverse = body.matrix_world.inverted()
+    for vertex, point in zip(body.data.vertices, vertices):
+        vertex.co = inverse @ Vector(point)
+    recalc(body)
+    return dict(maximum_motion_m=float(np.linalg.norm(vertices-initial, axis=1).max()),
+                falloff_m=.010, support_gap_m=.0008)
+
+
+def fit_boards(body, bindings):
+    """Interfacing keeps a shoulder board coherent across a failed wool seam."""
+    from aging_support import follow_points
+
+    report = {}
+    for name in ('ShoulderBoard_L', 'ShoulderBoard_R'):
+        binding = bindings[name]
+        original = np.asarray(binding['original'])
+        destination = follow_points(body, binding['entries'])
+        a, b = original.mean(0), destination.mean(0)
+        u, _, vt = np.linalg.svd((original-a).T@(destination-b))
+        if np.linalg.det(u@vt) < 0:
+            u[:, -1] *= -1
+        rotation = u@vt
+        points = (original-a)@rotation+b
+        obj = bpy.data.objects[name]
+        inverse = obj.matrix_world.inverted()
+        for vertex, point in zip(obj.data.vertices, points):
+            vertex.co = inverse @ Vector(point)
+        recalc(obj)
+        binding['rigid'] = True
+        report[name] = dict(method='coherent source interfacing fitted to its front sewn ply',
+                            original_curvature_preserved=True)
     return report

@@ -105,6 +105,8 @@ def measure(out, images):
     if data_path.exists():
         data = np.load(data_path)
         v, f, face_uv = sheet_regions(data)
+        from opening_audit import armhole_gap
+        gates['armhole_opening'] = armhole_gap(v, f, data['uv'])
         body = trimesh.Trimesh(v, f, process=False)
         body.merge_vertices(digits_vertex=7)
         distances = trimesh.proximity.closest_point(meshes(ROOT / 'assets/props/quarters/dress_uniform.glb')['Hanger'],

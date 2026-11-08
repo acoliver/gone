@@ -4,11 +4,10 @@ import sys
 
 import bmesh
 import bpy
-import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from aging_support import load_source
-from aging_geometry import seam_edges, split_seam
+from aging_geometry import seam_edges, cut_tunic
 
 body = load_source()
 bm = bmesh.new()
@@ -16,7 +15,7 @@ bm.from_mesh(body.data)
 edges = seam_edges(bm, 'armhole')
 top = max((v.co.z for e in edges for v in e.verts))
 bm.free()
-report = split_seam(body, 'armhole', .65)
+report = cut_tunic(body)['armhole']
 bm = bmesh.new()
 bm.from_mesh(body.data)
 retained = seam_edges(bm, 'armhole')

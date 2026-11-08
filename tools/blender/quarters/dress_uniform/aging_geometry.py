@@ -7,7 +7,6 @@ import numpy as np
 from mathutils import Vector
 
 from aging_support import ROOT
-from densify import triangulate
 from tear_paths import lift_pattern_path, split_polyline
 from common import recalc
 

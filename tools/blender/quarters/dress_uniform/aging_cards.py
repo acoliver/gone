@@ -267,8 +267,12 @@ def finish_cards(out, record):
         obj['aged_export'] = True
         objects.append(obj)
         record['fallen_fringe'][sheet.name] = measured
+    from reduced_clearance import compress_rim
+    record['rim_contacts'] = {}
     for sheet in sheets:
+        count = len(sheet.data.vertices)
         apply(sheet, rim_modifier(sheet, [o for o in rim_blockers if o != sheet]))
+        record['rim_contacts'][sheet.name] = compress_rim(sheet, count)
     for proxy in rim_proxies:
         objects.remove(proxy)
         bpy.data.objects.remove(proxy, do_unlink=True)

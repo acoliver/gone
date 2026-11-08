@@ -1,6 +1,5 @@
 """Co-scaled wool dynamics and a gradual release of the damaged shoulder."""
 import bpy
-import numpy as np
 
 
 MASS_SCALE = .05

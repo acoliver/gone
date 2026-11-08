@@ -218,6 +218,8 @@ def reduce_and_bake(out):
     record = json.loads(bpy.context.scene['tunic5_record'])
     body = bpy.data.objects['TunicBody']
     record['details_fit'] = fit_details(body, record['bindings'])
+    from detail_clearance import fit_boards
+    record['board_interfacing'] = fit_boards(body, record['bindings'])
     record['reduction'] = {}
     record['bakes'] = {}
     names = ['TunicBody']+[p['name'] for p in record['fallen']]
@@ -226,6 +228,16 @@ def reduce_and_bake(out):
         low, report = reduce_game(dense, 10800 if name == 'TunicBody' else 250)
         if not report['pass']:
             raise ValueError(f'{name}: boundary fidelity failed: {report}')
+        if name == 'TunicBody':
+            from reduced_clearance import push_out
+            from bake_down import boundary_hausdorff
+            report['hanger_clearance'] = push_out(low, bpy.data.objects['Hanger'], clearance=.001)
+            from detail_clearance import seat_medal, press_medal_support
+            seat_medal(low, record['bindings']['Medal'])
+            record['medal_support'] = press_medal_support(low, record['bindings']['Medal'])
+            report['boundary_hausdorff_upper_m'] = boundary_hausdorff(dense, low)
+            if report['boundary_hausdorff_upper_m'] > .0015:
+                raise ValueError('Hanger clearance moved the reduced boundary beyond 1.5 mm')
         mat, paths = bake(dense, low, out / 'textures', size=2048 if name == 'TunicBody' else 512)
         material_maps(mat, (.025, .043, .08))
         dense['aged_export'] = False
@@ -248,7 +260,14 @@ def reduce_and_bake(out):
     dense_heap.hide_set(True)
     from detail_clearance import seat_details, seat_sewn
     record['reduced_sewn_clearance'] = seat_sewn(bpy.data.objects['TunicBody'], record['bindings'])
+    from reduced_clearance import clear_reduced
+    from detail_clearance import seat_medal
     record['reduced_detail_clearance'] = seat_details(bpy.data.objects['TunicBody'], record['bindings'])
+    record['reduced_contacts'] = clear_reduced(bpy.data.objects['TunicBody'])
+    insignia = {name: binding for name, binding in record['bindings'].items() if name.startswith('CollarInsignia')}
+    record['cleared_insignia_fit'] = fit_details(bpy.data.objects['TunicBody'], insignia)
+    record['cleared_insignia_seating'] = seat_details(bpy.data.objects['TunicBody'], insignia)
+    record['medal_seating'] = seat_medal(bpy.data.objects['TunicBody'], record['bindings']['Medal'])
     save_checkpoint(out, 'baked', record)
     return record
 

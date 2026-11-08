@@ -24,7 +24,7 @@ def build(lost_area, out):
     envelope = np.exp(-((xx/.085)**2+(yy/.042)**2)*1.8)
     h = np.maximum(h, 0)*envelope
     # Concentrate the same lost wool into a soft central deposit.
-    h *= np.exp(-((xx/.070)**2+(yy/.034)**2)*.65)
+    h *= np.exp(-((xx/.070)**2+(yy/.034)**2)*.50)
     target_volume = lost_area*.0035/.05
     h *= target_volume/(h.sum()*voxel**2)
     sdf = np.maximum(z[None, None, :]-h[:, :, None], -z[None, None, :])
