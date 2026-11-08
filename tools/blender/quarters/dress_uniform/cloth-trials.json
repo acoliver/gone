@@ -12860,7 +12860,7 @@
   "dense_aging": [
     {
       "trial": "tunic6-main",
-      "status": "dense stages and finishing complete; exported candidate fails acceptance",
+      "status": "rejected: 13 of 19 gates pass; no delivered asset replacement",
       "source": "tunic-working.blend",
       "seed": 9521,
       "scratch": "tmp/age/tunic6/main",
@@ -13019,7 +13019,9 @@
         "Local controls do not certify exported geometry or appearance.",
         "Fallen fringe coverage is 64.25% and 58.36% on two pieces, below the local 70% control.",
         "Card contact avoidance requires root normal offsets up to 3.98 mm, above the 0.2 mm recipe.",
-        "Rim floor clearance passes a plane control but the folded export has three strip/skirt contacts."
+        "Rim floor clearance passes a plane control but the folded export has three strip/skirt contacts.",
+        "Exported-body topology reports three nonmanifold edges.",
+        "G1, G3, G6, G20, G21 and G30 fail their unchanged thresholds."
       ],
       "delivered_asset_replaced": false,
       "cards": {
@@ -13171,7 +13173,171 @@
         "reason": "Offset zero moves the already baked and validated sheet by 1.5 mm; offset -1 retains it and extends inward.",
         "support_limited_thickness": true,
         "control": "test_wool_rim.py"
-      }
+      },
+      "gates": {
+        "G1": {
+          "value": 0.27403414195867026,
+          "threshold": "<= 0.06 visible sharp adjacency",
+          "status": "fail"
+        },
+        "G2": {
+          "value": 0.008308915457648931,
+          "threshold": "<= 0.02 normal-jump pixels",
+          "status": "pass"
+        },
+        "G3": {
+          "value": [
+            270.60118255469615
+          ],
+          "threshold": "<= 12 px longest straight opening contour",
+          "status": "fail"
+        },
+        "G4": {
+          "value": [
+            0.5595447970707095
+          ],
+          "threshold": ">= 0.35 opening width CV",
+          "status": "pass"
+        },
+        "G5": {
+          "value": 0.4639562047933108,
+          "threshold": ">= 0.30 lip length lifted >3 mm",
+          "status": "pass"
+        },
+        "G6": {
+          "value": [
+            1.1104581232742816
+          ],
+          "threshold": "1.15..1.40 contour dimension",
+          "status": "fail"
+        },
+        "G20": {
+          "value": 0.2723779023218575,
+          "threshold": "<= 0.10 sharp adjacency within 120 mm of hanger",
+          "status": "fail"
+        },
+        "G21": {
+          "value": 2,
+          "threshold": "0 hanger pixels outside split hull inside unaged cloth mask",
+          "status": "fail"
+        },
+        "G22": {
+          "value": 0.27076644085875995,
+          "threshold": "<= 0.45 sleeve cross-section minor/major",
+          "status": "pass"
+        },
+        "G23": {
+          "value": {
+            "retained_arc": 0.41067884780511044,
+            "fringe_coverage": 0.8478625593428957
+          },
+          "threshold": ">= 0.35 retained arc and >= 0.70 released-edge fringe coverage",
+          "status": "pass"
+        },
+        "G24": {
+          "value": 0.9995612040764248,
+          "threshold": "0.92..1.08 chest width / unaged",
+          "status": "pass"
+        },
+        "G25": {
+          "value": 0.7037623371368196,
+          "threshold": ">= 0.70 open-hem fringe coverage",
+          "status": "pass"
+        },
+        "G26": {
+          "value": 0.0,
+          "threshold": "< 0.30 hem-height autocorrelation peak, 20..120 mm lags",
+          "status": "pass"
+        },
+        "G27": {
+          "value": 0.02244578935205932,
+          "threshold": "0.015..0.035 m heap height",
+          "status": "pass"
+        },
+        "G28": {
+          "value": 3,
+          "threshold": ">= 2 fallen cloth pieces",
+          "status": "pass"
+        },
+        "G29": {
+          "value": {
+            "volume_m3": 0.00010503687650545924,
+            "lost_wool_m3": 5.456654670979333e-06,
+            "inferred_packing": 0.05194989467052293
+          },
+          "threshold": "0.5..2 mound volume / lost wool at packing 0.05..0.15",
+          "status": "pass"
+        },
+        "G30": {
+          "value": {
+            "changed_intersections": 1878,
+            "hanger": 28,
+            "unaged_hanger": 28,
+            "hanger_geometry_exact": true,
+            "pass": false
+          },
+          "threshold": "0 changed/new-part SAT crossings; exact unchanged hanger baseline",
+          "status": "fail"
+        },
+        "G31": {
+          "value": {
+            "triangles": 18219,
+            "unaged_triangles": 13768,
+            "ratio": 1.3232858803021499
+          },
+          "threshold": "<= 1.5 x unaged triangles",
+          "status": "pass"
+        },
+        "G32": {
+          "value": 0.0006386535037308931,
+          "threshold": "<= 0.0015 m boundary Hausdorff",
+          "status": "pass"
+        }
+      },
+      "final_contacts": {
+        "self": {
+          "Hanger": 28,
+          "TunicBody": 1805,
+          "FallenHem_1": 1,
+          "FallenHem_2": 26,
+          "FallenHem_3": 3
+        },
+        "pairs": {
+          "Collar/Hanger": 8,
+          "Collar/TunicBody": 32,
+          "FallenHem_1/FloorDustSkirt": 3
+        }
+      },
+      "dense_contacts": {
+        "self": 4326,
+        "touching_excluded_rest_face": 4171,
+        "both_faces_excluded": 2644,
+        "evaluated_excluded_vertices": 9303,
+        "evaluated_vertices": 15781
+      },
+      "original_nodes_and_pivots_preserved": true,
+      "local_controls": {
+        "scripts": 13,
+        "result": "pass",
+        "strict_contact_unit_tests": 6
+      },
+      "renders": [
+        "tmp/age/tunic6/tunic-before-after.png",
+        "tmp/age/tunic6/tunic-turntable.png",
+        "tmp/age/tunic6/tunic-closeup.png"
+      ],
+      "close_camera_distance_m": 0.5,
+      "independent_visual_review": {
+        "status": "blocked",
+        "configured_image_comparer": "connection refused",
+        "installed_local_service": "HTTP 500 on minimal completion probe",
+        "approved": false
+      },
+      "next_work": [
+        "Repair rest tessellation so fine self-contact faces do not require broad exclusion.",
+        "Refit the collar and inward rim against contact-safe cloth.",
+        "Rebuild readable irregular openings and anchored fringe, then measure all gates and obtain independent visual review."
+      ]
     }
   ]
 }

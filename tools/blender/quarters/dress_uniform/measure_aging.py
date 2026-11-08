@@ -187,9 +187,11 @@ def measure(out, images):
         gates['opening_measurements'] = measures['openings']
     if (images / 'visible-faces.npz').exists() and (images / 'tunic-faces.png').exists():
         source = np.load(images / 'visible-faces.npz')
+        views = [images / 'tunic-faces.png']+sorted(images.glob('tunic-faces-*.png'))
         item = visible_dihedrals(source['vertices'], source['faces'], source['ids'],
-                                 [np.array(Image.open(images / 'tunic-faces.png').convert('RGB'))])
-        put('G1', item['fraction'], item['fraction'] <= .06, visible_pairs=item['visible_pairs'])
+                                 [np.array(Image.open(path).convert('RGB')) for path in views])
+        put('G1', item['fraction'], item['fraction'] <= .06, visible_pairs=item['visible_pairs'],
+            views=[path.name for path in views])
     if (images / 'tunic-hero-labels.png').exists():
         after = np.array(Image.open(images / 'tunic-hero-labels.png').convert('RGB'))
         before = np.array(Image.open(images / 'tunic-hero-before.png').convert('RGB'))

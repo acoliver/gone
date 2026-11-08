@@ -400,19 +400,32 @@ The lit captures are `tmp/fit/sofa/cloth2/compare-hero.png`, `compare-detail.png
 
 The tunic now comes from Blender cloth simulation. The hand-modelled pilot rated 2/10: its waist was pinched, its sleeves were detached cylinders, and its collar and shoulders had visible voids. A sewn pattern lets gravity and fabric strain produce the hanging shape. The design remains `docs/art/quarters/sheets/dress_uniform/hero.png`; the filled Hunyuan torso is only a silhouette reference.
 
-### Dense-cloth candidate
+### Dense-cloth candidate: rejected
 
-The pass-5 candidate is built by `dress_uniform/age_tunic.py` in headless Blender. It remains under `tmp/age/tunic5/stable/`; it has not replaced the shipped aged asset. Run `-- --out tmp/age/tunic5/stable --frames 600` to prepare, simulate and bake, or select `--stage prepare`, `simulate` or `bake` individually.
+The `tunic6-main` candidate passes 13 of 19 gates and has not replaced the shipped aged tunic. Its source stages and scratch GLB are under `tmp/age/tunic6/main/`. The full measurements, commands and remaining failures are in `tools/blender/quarters/dress_uniform/README.md`; `cloth-trials.json` records the trial separately under `dense_aging`.
 
-The 200 mm wool cantilevers use the fitted `body-p` springs (500/500/350) and bending 0.3. At 6 mm and 3 mm requested spacing, their maximum profile errors are 4.11 mm and 5.59 mm against a 10 mm limit. `aging-calibration.json` records the actual spacing and resolution-dependent damping. Mass is scaled by the unaged/dense vertex-count ratio. Brittle wool is not assigned softer springs.
+The new trial completed 600 frames on 30,000 working cloth triangles with the chest form. Shoulder release is 60.56%; armhole release is 58.93%, leaving a 41.07% back arc. The structural starting sleeve and bending rest both retain 40% depth. The collar follows its sewn columns with 2 mm of support-normal layering clearance. The 200 mm wool calibration retains the `body-p` springs (500/500/350) and bending 0.3, with profile errors of 4.11 and 5.59 mm against a 10 mm limit.
 
-The dense surface has shoulder, armhole, hem and cuff bands. Tears split edges without deleting their incident faces. The released armhole retains 40.8% of its seam, and the shoulder split releases 59.4%. The chest form remains an invisible collider. A rest-shape key presses the freed sleeve; lip shrink curls the split edges. Closed details follow reinforced patches rigidly, and the collar follows its sewn neckline without an added lift.
+Protected reduction preserves the support crest and sampled silhouette. It produces 10,799 body sheet triangles and 249, 249 and 59 triangles for the three fallen pieces. Boundary error is at most 0.639 mm against 1.5 mm allowed. Normal/AO bakes, stitch opacity, fringe, a 22.45 mm mass-balanced mound, a dust skirt and 65 fibre cards are present. The scratch export has 18,219 triangles against 20,652 allowed and re-exports byte-identically. Original part names, transforms and pivots are retained.
 
-Blender 4.5 clamps self-distance to 1 mm. Fine triangles whose rest altitude is below the resulting 2 mm contact diameter, and faces incident to coincident split tips, are placed in its self-contact exclusion group. Self-contact remains enabled elsewhere. `test_cloth_contacts.py` compares this policy with a matched no-self-contact control. Final triangle-intersection checks still apply to every exported part.
+The remaining failures prevent delivery:
 
-Protected reduction retains 9,799 body triangles and 303–349 per fallen strip, with normals and AO baked from the dense simulation. The strips exceed the plan's 150–250-triangle estimate to keep the 6 mm boundary band. Their measured boundary errors are 0.52–0.63 mm; the limit remains 1.5 mm. Cards, render gates and export acceptance are separate stages and are not yet verified.
+| Gate | Measured | Requirement |
+| --- | --- | --- |
+| G1 visible sharp adjacency | 27.4034% | At most 6% |
+| G3 longest straight opening contour | 270.601 px | At most 12 px |
+| G6 contour dimension | 1.110458 | 1.15 to 1.40 |
+| G20 near-hanger sharp adjacency | 27.2378% | At most 10% |
+| G21 hanger pixels outside split hull | 2 | Zero |
+| G30 changed-part contacts | 1,878 | Zero |
 
-### Aged state
+The unchanged hanger matches its exact geometry and 28-contact baseline. Changed contacts include 1,805 body self contacts, 30 fallen-piece self contacts, 40 collar contacts and three strip/skirt contacts. The dense simulation still moves 15.05 mm over its final five frames. Of 4,326 dense self contacts, 4,171 touch a face excluded from Blender contact because its rest tessellation cannot resolve the minimum contact radius. That mesh needs repair before another settling attempt. Two fallen pieces also miss the local 70% fringe-coverage control, and some card roots exceed the prescribed normal offset.
+
+A plane control showed that centered rim-only Solidify shifts the already baked sheet by 1.5 mm. The local rim uses offset -1 instead of the plan's zero offset, preserving the sheet and extending the nominal 3 mm edge inward. Support-limited thickness passes a plane-floor control but does not eliminate the folded candidate's contacts. Final SAT checks still apply to all changed and new parts without exemptions.
+
+All 13 local test scripts pass. The lit navy-wool renders are `tmp/age/tunic6/tunic-before-after.png`, `tunic-turntable.png` and `tunic-closeup.png`; the shoulder/armhole close camera is 0.5 m away. Face-ID visibility uses close and four turntable views with output dithering disabled. The image-comparer endpoint is unavailable, and the installed local model service returns HTTP 500, so no independent visual approval exists.
+
+### Previously delivered aged state
 
 `tools/blender/quarters/dress_uniform/tunic-aged.blend` contains the baked aged cloth, exported as `assets/props/quarters/dress_uniform_aged.glb`. `cloth-trials.json` records the second-pass attempts and selected `pass2-n` bake alongside the earlier simulations. The age remains 1000 years in dry, sterile, oxygenated air, without biological or water damage.
 

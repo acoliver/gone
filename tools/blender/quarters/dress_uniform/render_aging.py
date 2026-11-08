@@ -17,7 +17,8 @@ from seat_render import diagnostic_material
 
 def diagnostics(asset, out):
     record = {}
-    for mode in ['labels', 'normals', 'faces', 'hero-labels', 'hero-before']:
+    for mode in ['labels', 'normals', 'faces', 'faces-30', 'faces-120', 'faces-210',
+                 'faces-300', 'hero-labels', 'hero-before']:
         bpy.ops.wm.read_factory_settings(use_empty=True)
         path = ROOT / 'assets/props/quarters/dress_uniform.glb' if mode == 'hero-before' else asset
         bpy.ops.import_scene.gltf(filepath=str(path.resolve()))
@@ -29,6 +30,7 @@ def diagnostics(asset, out):
         scene.render.image_settings.file_format = 'PNG'
         scene.render.image_settings.color_mode = 'RGB'
         scene.view_settings.view_transform = 'Raw'
+        scene.render.dither_intensity = 0.
         world = bpy.data.worlds.new('Black diagnostics')
         world.use_nodes = True
         world.node_tree.nodes['Background'].inputs[0].default_value = (0, 0, 0, 1)
@@ -37,7 +39,7 @@ def diagnostics(asset, out):
         for obj in scene.objects:
             if obj.type != 'MESH':
                 continue
-            if mode == 'faces' and obj.name == 'TunicBody':
+            if mode.startswith('faces') and obj.name == 'TunicBody':
                 attribute = obj.data.color_attributes.new(name='GateFace', type='FLOAT_COLOR', domain='CORNER')
                 for face in obj.data.polygons:
                     if obj.data.materials[face.material_index].name.startswith('WoolCutEdge'):
@@ -54,13 +56,14 @@ def diagnostics(asset, out):
                 category = ('cover' if obj.name == 'TunicBody' else
                             'fringe' if 'Fringe' in source.name else
                             'residue' if obj.name == 'Hanger' else 'other')
-                obj.data.materials[i] = diagnostic_material(source, category, mode == 'normals', mode == 'faces')
+                obj.data.materials[i] = diagnostic_material(source, category, mode == 'normals', mode.startswith('faces'))
         data = bpy.data.cameras.new('Tunic acceptance camera')
         camera = bpy.data.objects.new(data.name, data)
         scene.collection.objects.link(camera)
         scene.camera = camera
-        if mode.startswith('hero'):
-            camera.location = (1.720729309, -2.457456133, .08)
+        if mode.startswith('hero') or mode.startswith('faces-'):
+            angle = np.radians(float(mode.split('-')[1])) if mode.startswith('faces-') else np.radians(35.)
+            camera.location = (3*np.sin(angle), -3*np.cos(angle), .08)
             target = Vector((0, 0, -.44))
             data.type = 'ORTHO'
             data.ortho_scale = 1.30

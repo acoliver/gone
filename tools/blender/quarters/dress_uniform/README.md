@@ -106,6 +106,66 @@ contacts, including three fallen-strip/skirt contacts.
 The scratch export has 18,219 triangles against 20,652 allowed, and reopening
 `finished.blend` re-exports byte-identically. No delivered file was replaced.
 
+## Final measurements: rejected candidate
+
+`tunic6-main` passes 13 of 19 gates. It must not replace the delivered tunic.
+All values below come from `tmp/age/tunic6/main/gates.json` and the actual
+scratch GLB. G1 uses the close camera plus four turntable face-ID views, with
+output dithering disabled. The 6% threshold is unchanged.
+
+| Gate | Measured | Requirement | Result |
+| --- | --- | --- | --- |
+| G1 | 27.4034% visible sharp adjacency | At most 6% | Fail |
+| G2 | 0.830892% normal-jump pixels | At most 2% | Pass |
+| G3 | 270.601 px longest straight contour | At most 12 px | Fail |
+| G4 | 0.559545 opening-width CV | At least 0.35 | Pass |
+| G5 | 46.3956% lip length lifted over 3 mm | At least 30% | Pass |
+| G6 | 1.110458 contour dimension | 1.15 to 1.40 | Fail |
+| G20 | 27.2378% near-hanger sharp adjacency | At most 10% | Fail |
+| G21 | 2 hanger pixels outside split hull | Zero | Fail |
+| G22 | 0.270766 transverse sleeve axis ratio | At most 0.45 | Pass |
+| G23 | 41.0679% retained arc; 84.7863% fringe | At least 35%; at least 70% | Pass |
+| G24 | 99.9561% of unaged chest width | 92% to 108% | Pass |
+| G25 | 70.3762% open-hem fringe coverage | At least 70% | Pass |
+| G26 | 0.0 hem-height autocorrelation peak | Below 0.30 | Pass |
+| G27 | 22.4458 mm heap height | 15 to 35 mm | Pass |
+| G28 | 3 fallen cloth pieces | At least 2 | Pass |
+| G29 | 0.9625 times expected mound volume; 5.195% inferred packing | Volume within factor 2 at 5% to 15% packing | Pass |
+| G30 | 1,878 changed-part contacts; hanger 28/28, geometry exact | Zero changed contacts; exact hanger baseline | Fail |
+| G31 | 18,219 / 13,768 triangles, ratio 1.323286 | At most 20,652, ratio 1.5 | Pass |
+| G32 | 0.638654 mm boundary Hausdorff upper bound | At most 1.5 mm | Pass |
+
+The final contacts are 1,805 body self contacts, 30 fallen-piece self contacts,
+32 collar/body contacts, 8 collar/hanger contacts and 3 strip/skirt contacts.
+Body/hanger crossings are zero. The fresh dense simulation has 4,326 self
+contacts before reduction; 4,171 touch excluded rest faces. Repairing that
+rest tessellation is necessary before another settling attempt. The long,
+insufficiently irregular opening also fails G3 and G6. The export checker
+additionally reports three nonmanifold body edges. No threshold or contact
+exemption was added to accept this candidate.
+
+All 13 local test scripts pass, including six strict-contact unit tests.
+The original part names, node transforms and pivots are retained. Re-export
+from the saved candidate is byte-identical. Lit navy-wool captures use the
+baked normal/AO maps:
+
+- `tmp/age/tunic6/tunic-before-after.png` (3200 by 1422).
+- `tmp/age/tunic6/tunic-turntable.png` (3200 by 2844).
+- `tmp/age/tunic6/tunic-closeup.png` (1600 by 1422, camera at 0.5 m).
+
+Independent visual review is unavailable: the configured image-comparer
+endpoint refuses connections, and the installed local model service returns
+HTTP 500 even for a minimal text request. These files have no visual sign-off.
+The delivered GLB, aged blend and textures remain unchanged.
+
+Shared modules were not edited. Their reusable renderer should disable output
+dithering for face-ID diagnostics. The shared topology policy also needs
+explicit intended-boundary rules for fallen cloth, fringe cards and the dust
+skirt; it currently marks those intentionally open surfaces as failures. That
+policy change must retain all SAT checks and must not exempt the body's three
+reported nonmanifold edges. The remaining rest-mesh and collar/rim clearance
+work belongs in the tunic-local pipeline.
+
 ## Attachment constraints
 
 The collar follows neckline edges without a vertical lift. Closed fittings
@@ -130,7 +190,7 @@ floor contact inject persistent lateral motion.
 
 Run Blender with `--background --factory-startup --python-exit-code 1` and
 `--python <script> -- <arguments>`. Long stages use `nohup` and separate logs
-under `tmp/age/tunic5/`.
+under `tmp/age/tunic6/`.
 
 1. `age_tunic.py --stage prepare --out <scratch>` refines the stress bands,
    splits the shoulder, armhole and three hem runs without deleting their area,
@@ -162,7 +222,7 @@ under `tmp/age/tunic5/`.
 The game asset and `tunic-aged.blend` must not be replaced until all nineteen
 G-gates pass and the concept comparison has been visually reviewed. Scratch
 exports are candidates, not approved delivery assets. The unchanged hanger's
-SAT count must match `tmp/age/tunic5/unaged-sat.json` exactly; no changed or new
+SAT count must match `tmp/age/tunic6/unaged-sat.json` exactly; no changed or new
 part is exempt from the zero-intersection rule.
 
 ## Local controls and shared code
@@ -171,9 +231,10 @@ The Blender `test_*.py` controls cover source preservation, collar stations,
 continuous fitting clearance, structural sleeve pressing, actual rest-angle
 transfer, sub-contact rest faces, physical fringe coverage, winding-independent
 root UVs, persisted stitch opacity and repeatable PBR export.
-`test_hem_metrics.py` and `test_diagnostic_labels.py` run with the supplied Python
-environment. Hem samples follow the actual boundary graph; G26 measures local
-autocorrelation peaks after removing garment-scale slope. Render labels decode
+`test_hem_metrics.py`, `test_diagnostic_labels.py` and `test_tunic_contacts.py`
+run with the supplied Python environment. Hem samples follow the actual
+boundary graph; G26 measures local autocorrelation peaks after removing
+garment-scale slope. Render labels decode
 R+G coverage before material IDs, so antialiased wool/fringe/fitting boundaries
 do not become synthetic holes. A negative control retains real constant-width
 slots and rejects their straight contours at the unchanged 12 px threshold.
