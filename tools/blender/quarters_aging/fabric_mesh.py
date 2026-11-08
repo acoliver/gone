@@ -160,6 +160,7 @@ def fray(obj, seed, probability=.55, length=(.002, .009), max_edge=.04, region=l
     rng = np.random.default_rng(seed)
     bm = bmesh.new()
     bm.from_mesh(obj.data)
+    bmesh.ops.triangulate(bm, faces=list(bm.faces))
     bm.normal_update()
     flags = bm.verts.layers.int.new('ThinFibre')
     labels = bm.verts.layers.int.new('FrayID')
@@ -175,7 +176,9 @@ def fray(obj, seed, probability=.55, length=(.002, .009), max_edge=.04, region=l
         centre = (a.co + b.co) / 2
         if not region(obj.matrix_world @ centre):
             continue
-        outward = (centre - edge.link_faces[0].calc_center_median()).normalized()
+        source_face = edge.link_faces[0]
+        apex = next(v for v in source_face.verts if v not in {a,b})
+        outward = (centre - source_face.calc_center_median()).normalized()
         tip = centre + outward * rng.uniform(*length)
         _, left = bmesh.utils.edge_split(edge, a, .46)
         narrow, right = bmesh.utils.edge_split(edge, left, .08)
@@ -187,8 +190,22 @@ def fray(obj, seed, probability=.55, length=(.002, .009), max_edge=.04, region=l
             fibre[labels] = count + 1
         vertex[tips] = 1
         pattern = bm.loops.layers.uv.active
-        coordinates = {corner.vert: corner[pattern].uv.copy() for corner in narrow.link_faces[0].loops}
-        face = bm.faces.new((loop.link_loop_next.vert, loop.vert, vertex))
+        coordinates = {corner.vert: corner[pattern].uv.copy() for corner in source_face.loops}
+        fibre_corners = (loop.link_loop_next.vert, loop.vert, vertex)
+        corners = list(source_face.verts)
+        start = corners.index(apex)
+        boundary = corners[start+1:] + corners[:start]
+        material_index = source_face.material_index
+        bm.faces.remove(source_face)
+        # Fan from the original opposite corner. Ear clipping can emit slivers
+        # along the three collinear points introduced by a split fray base.
+        for first, second in zip(boundary,boundary[1:]):
+            face = bm.faces.new((apex,first,second))
+            face.material_index = material_index
+            for corner in face.loops:
+                corner[pattern].uv = coordinates[corner.vert]
+        face = bm.faces.new(fibre_corners)
+        face.material_index = material_index
         tip_uv = (coordinates[left] + coordinates[right]) / 2
         for corner in face.loops:
             corner[pattern].uv = coordinates.get(corner.vert, tip_uv)
@@ -207,6 +224,22 @@ def join(target, others):
     bpy.ops.object.join()
     target.data.name = target.name
     return target
+
+
+def remove_surface_frays(obj):
+    """Recover the unchanged simulated surface before rebuilding thread bases."""
+    bm=bmesh.new();bm.from_mesh(obj.data)
+    labels=bm.verts.layers.int['FrayID']
+    tips=bm.verts.layers.int['FrayTip']
+    bmesh.ops.delete(bm,geom=[v for v in bm.verts if v[tips]],context='VERTS')
+    bases=[v for v in bm.verts if v[labels]]
+    bmesh.ops.dissolve_verts(bm,verts=bases,use_face_split=False,use_boundary_tear=False)
+    for name in ['ThinFibre','FrayID','FrayTip']:
+        bm.verts.layers.int.remove(bm.verts.layers.int[name])
+    bm.verts.layers.float_vector.remove(bm.verts.layers.float_vector['SectionNormal'])
+    bmesh.ops.triangulate(bm,faces=list(bm.faces))
+    bm.to_mesh(obj.data);bm.free();recalc(obj)
+
 
 
 def grid(nx, ny, point, cut=lambda i, j: False):

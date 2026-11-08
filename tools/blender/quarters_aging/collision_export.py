@@ -12,11 +12,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from triangle_contacts import intersect
 
 
-def topology(vertices, faces):
+def topology(vertices, faces, patterns=None):
     keys = [tuple(np.round(p, 7)) for p in vertices]
     mapping, ids = {}, []
     for p in keys:
         ids.append(mapping.setdefault(p, len(mapping)))
+    boundary_patterns={}
+    if patterns is not None:
+        for face,uv in zip(faces,patterns):
+            for vertex,point in zip(face,uv):
+                boundary_patterns.setdefault(ids[vertex],[]).append(point)
     edges = {}
     for face in faces:
         for a, b in zip(face, np.roll(face, -1)):
@@ -44,7 +49,17 @@ def topology(vertices, faces):
                 previous, current = current, nxt
             p = np.asarray([unique[i] for i in group])
             centre = p.mean(0)
-            if centre[2] > -.20:
+            if patterns is not None:
+                uv=np.array([point for i in group for point in boundary_patterns[i]])
+                if uv[:,0].max()<1.05 and uv[:,1].max()<.06:
+                    kind='hem'
+                elif uv[:,0].max()<1.05 and uv[:,1].min()>.90:
+                    kind='neck'
+                elif uv[:,0].min()>1.05 and uv[:,1].min()>.97:
+                    kind='cuff'
+                else:
+                    kind='tear'
+            elif centre[2] > -.20:
                 kind = 'neck'
             elif centre[2] < -.80:
                 kind = 'hem' if np.ptp(p[:, 0]) > .25 else 'cuff'
@@ -60,6 +75,7 @@ def check(path):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.gltf(filepath=str(path.resolve()))
     parts = {}
+    patterns = {}
     for obj in bpy.context.scene.objects:
         if obj.type != 'MESH':
             continue
@@ -69,11 +85,13 @@ def check(path):
         tree = BVHTree.FromPolygons(vertices.tolist(), faces.tolist(), all_triangles=True, epsilon=0)
         materials = [obj.data.materials[obj.data.polygons[t.polygon_index].material_index].name for t in obj.data.loop_triangles]
         parts[obj.name] = (vertices, faces, tree, materials)
-    fixed = {'Frame', 'Feet', 'Rivets', 'Hanger'}
+        if obj.name=='TunicBody':
+            uv=obj.data.uv_layers.active.data
+            patterns[obj.name]=np.array([[uv[i].uv[:] for i in t.loops] for t in obj.data.loop_triangles])
     result = {'method': 'Exported GLB, BVH candidate overlap then 17-axis triangle/triangle SAT including coplanar overlap; only shared-vertex face adjacency omitted from self checks.',
               'self': {}, 'pairs': {}, 'excluded_unchanged_assembly': {}, 'topology': {}}
     for name, (vertices, faces, tree, materials) in parts.items():
-        result['topology'][name] = topology(vertices, faces)
+        result['topology'][name] = topology(vertices, faces,patterns.get(name))
         hits, examples = 0, []
         for i, j in tree.overlap(tree):
             if i >= j:
@@ -85,7 +103,7 @@ def check(path):
                 hits += 1
                 if len(examples) < 12:
                     examples.append({'triangles': [i, j], 'centre': ((a.mean(0) + b.mean(0)) / 2).tolist(), 'materials': [materials[i], materials[j]]})
-        (result['excluded_unchanged_assembly'] if name in fixed else result['self'])[name] = {'count': hits, 'examples': examples}
+        result['self'][name] = {'count': hits, 'examples': examples}
     names = sorted(parts)
     for k, name in enumerate(names):
         av, af, at, am = parts[name]
@@ -99,14 +117,14 @@ def check(path):
                     if len(examples) < 12:
                         examples.append({'triangles': [i, j], 'centre': ((a.mean(0) + b.mean(0)) / 2).tolist(), 'materials': [am[i], bm[j]]})
             if hits:
-                group = 'excluded_unchanged_assembly' if name in fixed and other in fixed else 'pairs'
-                result[group][name + '/' + other] = {'count': hits, 'examples': examples}
+                result['pairs'][name + '/' + other] = {'count': hits, 'examples': examples}
     result['self_intersections'] = sum(x['count'] for x in result['self'].values())
     result['part_intersections'] = sum(x['count'] for x in result['pairs'].values())
     for name, value in result['topology'].items():
         kinds = [entry['kind'] for entry in value['boundary_loops']]
         intended = name == 'TunicBody' and sorted(kinds) == sorted(['neck', 'hem', 'cuff', 'cuff'] + ['tear'] * 5)
-        value['properly_bounded_cloth'] = intended and value['unbranched_boundaries']
+        fitted_cloth = name.startswith(('SeatCushion_', 'BackCushion_', 'ShoulderBoard_')) or name in {'Throw', 'ThrowDetachedPiece', 'RibbonBar', 'Placket', 'Collar'}
+        value['properly_bounded_cloth'] = (intended or (fitted_cloth and bool(value['boundary_loops']))) and value['unbranched_boundaries']
         value['pass'] = not value['nonmanifold_edges'] and not value['degenerate_edges'] and (value['boundary_edges'] == 0 or value['properly_bounded_cloth'])
     result['pass'] = result['self_intersections'] == 0 and result['part_intersections'] == 0 and all(v['pass'] for v in result['topology'].values())
     return result

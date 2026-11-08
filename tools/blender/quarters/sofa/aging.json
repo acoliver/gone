@@ -15,7 +15,9 @@
   ],
   "asset": "assets/props/quarters/sofa_aged.glb",
   "colliders": [
-    "Frame"
+    "Frame",
+    "Feet",
+    "Rivets"
   ],
   "floor_z_m": 0,
   "foam": {
@@ -102,6 +104,7 @@
       },
       "fray_obstacles": [
         "Frame",
+        "Feet",
         "SeatCushion_R",
         "BackCushion_R",
         "AgingFloorCollider"

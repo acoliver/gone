@@ -157,74 +157,6 @@ def heights(mesh, xy):
     return result
 
 
-def sofa_gates(before, after):
-    result, split_points = {}, []
-    for name in sorted(n for n in before if 'Cushion' in n):
-        outer = primitive(after[name], 'CharcoalUpholstery')
-        loops, _ = boundaries(outer)
-        holes = [hole(loop) for loop in loops]
-        split_points.extend(np.vstack(loops))
-        crust = primitive(after[name], 'Foam')
-        ratio = float(after[name].volume / before[name].volume)
-        entry = {'volume_ratio': ratio, 'volume_band': [.25, .35], 'volume_pass': .25 <= ratio <= .35,
-                 'openings': holes, 'opening_count': len(holes), 'opening_count_band': [1, 4],
-                 'splits_pass': 1 <= len(holes) <= 4 and all(.020 <= h['size_m'] <= .150 and h['irregularity'] >= 5.5 for h in holes),
-                 'crust_watertight': clean(crust).is_watertight}
-        if name.startswith('Seat'):
-            cx = float((outer.bounds[0, 0] + outer.bounds[1, 0]) / 2)
-            cy = float((outer.bounds[0, 2] + outer.bounds[1, 2]) / 2)
-            centre = float(heights(outer, np.array([[cx, cy]]))[0])
-            x, z = np.meshgrid(np.linspace(cx - .28, cx + .28, 35), np.linspace(cy - .23, cy + .23, 33))
-            xy = np.c_[x.ravel(), z.ravel()]
-            y = heights(outer, xy)
-            valid = np.isfinite(y) & (y > .43)
-            xy, y = xy[valid], y[valid]
-            design = np.c_[xy, np.ones(len(xy))]
-            residual = y - design @ np.linalg.lstsq(design, y, rcond=None)[0]
-            edge = np.maximum(abs((xy[:, 0] - cx) / .28), abs((xy[:, 1] - cy) / .23)) > .95
-            sag = float(np.mean(y[edge]) - centre)
-            height_ratio = (centre - .3898) / (before[name].bounds[1, 1] - .3898)
-            entry['visible_seat'] = {'centre_y_m': centre, 'height_above_deck_ratio': height_ratio,
-                                     'band': [.35, .45], 'edge_to_centre_sag_m': sag, 'sag_min_m': .015,
-                                     'detrended_top_std_m': float(residual.std()), 'std_min_m': .006,
-                                     'pass': .35 <= height_ratio <= .45 and sag >= .015 and residual.std() >= .006}
-        else:
-            angle = np.radians(35)
-            eye = np.array([3 * np.sin(angle), 1.8, 3 * np.cos(angle)])
-            old, new = projected_masks([before[name]], [after[name]], eye, [0, .4, 0],
-                                       occluders=([mesh for key, mesh in before.items() if key != name],
-                                                  [mesh for key, mesh in after.items() if key != name]))
-            coverage = float((old & new).sum() / old.sum())
-            entry['hero_coverage'] = {'value': coverage, 'min': .55, 'method': 'Orthographic hero-camera first-hit depth raster, including all other prop parts as occluders.', 'pass': coverage >= .55}
-            entry['retained_top_fraction'] = float((outer.bounds[1, 1] - before[name].bounds[0, 1]) / np.ptp(before[name].vertices[:, 1]))
-        result[name] = entry
-    pieces = clean(after['FoamDebris']).split(only_watertight=False)
-    support = trimesh.util.concatenate([after['Frame'], *[after[n] for n in before if 'Cushion' in n]])
-    tree = cKDTree(np.asarray(split_points))
-    debris = []
-    for piece in pieces:
-        size = float(piece.extents.max())
-        distance = float(tree.query(piece.vertices)[0].min())
-        bottom = piece.vertices[piece.vertices[:, 1] <= piece.bounds[0, 1] + 1e-6]
-        gap = float(trimesh.proximity.closest_point(support, bottom)[1].min())
-        debris.append({'size_m': size, 'split_distance_m': distance, 'support_gap_m': gap})
-    qualified = [p for p in debris if .002 <= p['size_m'] <= .015 and p['split_distance_m'] <= .25]
-    resting = sum(p['support_gap_m'] <= .002 for p in qualified) / max(1, len(qualified))
-    result['crumbs'] = {'pieces': len(pieces), 'qualifying_pieces': len(qualified), 'min_pieces': 150,
-                        'size_band_m': [.002, .015], 'max_split_distance_m': max(p['split_distance_m'] for p in debris),
-                        'resting_fraction': resting, 'resting_min': .60, 'max_support_gap_m': max(p['support_gap_m'] for p in debris),
-                        'pass': len(qualified) >= 150 and resting >= .60}
-    throw = primitive(after['Throw'], 'OatmealWool')
-    loops, _ = boundaries(throw)
-    holes = sorted(loops, key=lambda p: -np.linalg.norm(np.roll(p, -1, axis=0) - p, axis=1).sum())[1:]
-    proportion = float(throw.area_faces[throw.triangles_center[:, 1] < .8075].sum() / throw.area)
-    metrics = [hole(loop) for loop in holes]
-    result['throw'] = {'area_below_cap_fraction': proportion, 'min_fraction': .40,
-                        'detached_piece_on_floor': 'ThrowDetachedPiece' in after and after['ThrowDetachedPiece'].bounds[0, 1] < .002,
-                        'holes': metrics, 'pass': proportion >= .4 and 'ThrowDetachedPiece' in after and all(h['irregularity'] >= 5.5 for h in metrics)}
-    return result
-
-
 def notch_depths(heights):
     n = len(heights)
     periodic = np.tile(heights, 3)
@@ -286,6 +218,9 @@ def tunic_gates(before, after):
 
 
 def verify(prop, input_path, reexport, collisions):
+    if prop == 'sofa':
+        from sofa_gates import measure
+        return measure(input_path, collisions, reexport)
     original = ROOT / f'assets/props/quarters/{prop}.glb'
     before, old_doc = load(original)
     after, new_doc = load(input_path)

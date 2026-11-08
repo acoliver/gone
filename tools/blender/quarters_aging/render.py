@@ -18,7 +18,7 @@ def render(prop, out, aged_path=None):
     out.mkdir(parents=True, exist_ok=True)
     sofa = prop == 'sofa'
     target = (0, 0, .40 if sofa else -.44)
-    scale = 2.85 if sofa else 1.15
+    scale = 2.85 if sofa else 1.30
     floor = 0 if sofa else -.95
     for state in ['before', 'after']:
         bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -30,8 +30,8 @@ def render(prop, out, aged_path=None):
         scene.render.engine = 'BLENDER_EEVEE_NEXT'
         scene.render.image_settings.file_format = 'PNG'
         scene.render.resolution_percentage = 100
-        scene.render.resolution_x = 900
-        scene.render.resolution_y = 800
+        scene.render.resolution_x = 1600
+        scene.render.resolution_y = 1422
         scene.view_settings.view_transform = 'AgX'
         for mat in bpy.data.materials:
             if not mat.use_nodes:
@@ -96,6 +96,14 @@ def render(prop, out, aged_path=None):
                 scene.render.resolution_x = 1100
                 scene.render.resolution_y = 1000
                 scene.render.filepath = str(out / 'sofa-closeup.png')
+                bpy.ops.render.render(write_still=True)
+            else:
+                close_target = Vector((.235, -.01, -.285))
+                camera.location = close_target + Vector((.3, -.9, .22)).normalized() * .5
+                aim(camera, close_target)
+                data.type = 'PERSP'
+                data.lens = 40
+                scene.render.filepath = str(out / 'tunic-closeup.png')
                 bpy.ops.render.render(write_still=True)
 
 
