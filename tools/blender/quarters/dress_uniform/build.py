@@ -448,10 +448,23 @@ def render(args):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--assemble', action='store_true')
+    parser.add_argument('--aged', action='store_true')
     parser.add_argument('--sleeves', default='sleeve-h')
     parser.add_argument('--render', action='store_true')
-    parser.add_argument('--output', type=Path, default=OUT)
+    parser.add_argument('--output', type=Path)
     args = parser.parse_args(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else [])
+    if args.aged:
+        if args.assemble:
+            parser.error('--aged exports the baked source; use quarters_aging/build.py to regenerate it')
+        sys.path.insert(0, str(ROOT / 'tools/blender/quarters_aging'))
+        from common import export as export_aged
+        bpy.ops.wm.open_mainfile(filepath=str(SOURCE.with_name('tunic-aged.blend')))
+        export_aged(args.output or OUT.with_name('dress_uniform_aged.glb'))
+        if args.render:
+            import render as aged_render
+            aged_render.render('dress_uniform', ROOT / 'tmp/age')
+        return
+    args.output = args.output or OUT
     SCRATCH.mkdir(parents=True, exist_ok=True)
     if args.assemble:
         assemble(args)

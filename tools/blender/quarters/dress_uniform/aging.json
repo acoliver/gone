@@ -1,0 +1,156 @@
+{
+  "trial": "age-e",
+  "seed": 9521,
+  "parts": [
+    "TunicBody",
+    "Collar",
+    "ShoulderBoard_L",
+    "ShoulderBoard_R",
+    "Placket",
+    "Buttons",
+    "CollarInsignia_L",
+    "CollarInsignia_R",
+    "RibbonBar",
+    "Medal",
+    "Hanger"
+  ],
+  "asset": "assets/props/quarters/dress_uniform_aged.glb",
+  "colliders": [
+    "Hanger"
+  ],
+  "floor_z_m": -0.95,
+  "cloth": {
+    "TunicBody": {
+      "kind": "tunic",
+      "protected_details": [
+        "Collar",
+        "ShoulderBoard_L",
+        "ShoulderBoard_R",
+        "Placket",
+        "Buttons",
+        "RibbonBar",
+        "Medal"
+      ],
+      "stress_slits_xz_m": [
+        [
+          -0.15,
+          -0.31,
+          0.025,
+          0.115,
+          -0.25
+        ],
+        [
+          0.17,
+          -0.28,
+          0.02,
+          0.075,
+          0.3
+        ],
+        [
+          -0.26,
+          -0.29,
+          0.024,
+          0.08,
+          -0.3
+        ],
+        [
+          -0.12,
+          -0.63,
+          0.027,
+          0.14,
+          0.07
+        ],
+        [
+          0.14,
+          -0.64,
+          0.026,
+          0.135,
+          -0.09
+        ],
+        [
+          -0.34,
+          -0.6,
+          0.021,
+          0.105,
+          0.08
+        ],
+        [
+          0.34,
+          -0.66,
+          0.016,
+          0.12,
+          -0.1
+        ]
+      ],
+      "stress_jitter_m": 0.007,
+      "detail_protection_m": 0.013,
+      "detail_pin_radius_m": 0.02,
+      "hem_z_m": -0.88,
+      "hem_loss_m": 0.032,
+      "lateral_shrink": 0.12,
+      "thickness_m": 0.0035,
+      "fray_probability": 0.35,
+      "cloth": {
+        "quality": 30,
+        "frames": 320,
+        "time_scale": 0.25,
+        "mass": 0.18,
+        "stiffness": 150,
+        "bending": 0.08,
+        "self_collision": true,
+        "self_distance_m": 0.004,
+        "collision_distance_m": 0.002
+      },
+      "fray_obstacles": [
+        "Hanger",
+        "AgingFloorCollider"
+      ],
+      "retained_seam_boxes_xz_m": [
+        [
+          -0.31,
+          -0.22,
+          -0.25,
+          -0.195
+        ]
+      ],
+      "retained_seam_boxes_xyz_m": [
+        [
+          -0.39,
+          -0.2,
+          0,
+          0.1,
+          -0.5,
+          -0.22
+        ]
+      ]
+    }
+  },
+  "debris": {
+    "source": "TunicBody",
+    "name": "FibreDust",
+    "material": "FibreDust",
+    "color": [
+      0.31,
+      0.27,
+      0.21
+    ],
+    "center_blender_m": [
+      0,
+      0,
+      -0.95
+    ],
+    "drop_height_m": 0.95,
+    "radius_xy_m": [
+      0.22,
+      0.07
+    ],
+    "count": 190,
+    "piece_size_m": [
+      0.0015,
+      0.005
+    ],
+    "piece_thickness_m": 0.00025,
+    "heap_height_m": 0.005,
+    "floor_gap_m": 0.0002
+  }
+}

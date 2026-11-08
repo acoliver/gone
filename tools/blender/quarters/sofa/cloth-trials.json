@@ -7914,5 +7914,2083 @@
       },
       "byte_identical_reexport": true
     }
-  }
+  },
+  "aging": [
+    {
+      "trial": "age-a",
+      "seed": 9501,
+      "parameters": {
+        "trial": "age-a",
+        "seed": 9501,
+        "parts": [
+          "Frame",
+          "Feet",
+          "Rivets",
+          "SeatCushion_L",
+          "SeatCushion_C",
+          "SeatCushion_R",
+          "BackCushion_L",
+          "BackCushion_C",
+          "BackCushion_R",
+          "Throw"
+        ],
+        "asset": "assets/props/quarters/sofa_aged.glb",
+        "colliders": [
+          "Frame"
+        ],
+        "floor_z_m": 0,
+        "foam": {
+          "names": [
+            "SeatCushion_L",
+            "SeatCushion_C",
+            "SeatCushion_R",
+            "BackCushion_L",
+            "BackCushion_C",
+            "BackCushion_R"
+          ],
+          "support_z_m": 0.3898,
+          "support_gap_m": 0.0006,
+          "height_ratio": 0.31,
+          "core_reduction": 0.48,
+          "voronoi_cells": 12,
+          "crack_width_m": 0.0025,
+          "cover_lift_m": 0.004,
+          "pin_height_m": 0.01,
+          "cover_loss_fraction": 0.14,
+          "cover_thickness_m": 0.0007,
+          "cloth": {
+            "quality": 16,
+            "frames": 65,
+            "time_scale": 0.35,
+            "mass": 0.025,
+            "stiffness": 120,
+            "bending": 0.08,
+            "self_collision": false,
+            "collision_distance_m": 0.0008
+          }
+        },
+        "cloth": {
+          "Throw": {
+            "kind": "throw",
+            "stress_slits_xz_m": [
+              [
+                1.13,
+                0.53,
+                0.025,
+                0.15,
+                0.05
+              ],
+              [
+                0.94,
+                0.62,
+                0.02,
+                0.14,
+                -0.05
+              ],
+              [
+                1.09,
+                0.71,
+                0.027,
+                0.085,
+                0.15
+              ]
+            ],
+            "stress_jitter_m": 0.006,
+            "detail_protection_m": 0.012,
+            "detail_pin_radius_m": 0.02,
+            "hem_z_m": 0.375,
+            "hem_loss_m": 0.012,
+            "retained_corner_z_m": 0.79,
+            "retained_corner_y_m": -0.36,
+            "thickness_m": 0.0018,
+            "fray_probability": 0.3,
+            "cloth": {
+              "quality": 24,
+              "frames": 200,
+              "time_scale": 0.5,
+              "mass": 0.15,
+              "stiffness": 45,
+              "bending": 0.09,
+              "self_collision": true,
+              "self_distance_m": 0.004,
+              "collision_distance_m": 0.003
+            }
+          }
+        },
+        "debris": {
+          "source": "SeatCushion_C",
+          "name": "FoamDebris",
+          "material": "Foam",
+          "color": [
+            0.2,
+            0.09,
+            0.035
+          ],
+          "center_blender_m": [
+            0.15,
+            -0.55,
+            0
+          ],
+          "radius_xy_m": [
+            0.94,
+            0.12
+          ],
+          "count": 140,
+          "piece_size_m": [
+            0.003,
+            0.01
+          ],
+          "piece_thickness_m": 0.0006,
+          "heap_height_m": 0.005,
+          "floor_gap_m": 0.0002
+        }
+      },
+      "foam": {
+        "SeatCushion_L": {
+          "frames": 65,
+          "retained_pins": 0,
+          "last_five_frames_motion_m": 0.028557689545895826,
+          "seed": 9501,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "SeatCushion_C": {
+          "frames": 65,
+          "retained_pins": 0,
+          "last_five_frames_motion_m": 0.05566718129106625,
+          "seed": 9602,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "SeatCushion_R": {
+          "frames": 65,
+          "retained_pins": 0,
+          "last_five_frames_motion_m": 0.008755944974645517,
+          "seed": 9703,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "BackCushion_L": {
+          "frames": 65,
+          "retained_pins": 3,
+          "last_five_frames_motion_m": 0.1048080293265053,
+          "seed": 9804,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "BackCushion_C": {
+          "frames": 65,
+          "retained_pins": 3,
+          "last_five_frames_motion_m": 0.08411435692725572,
+          "seed": 9905,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "BackCushion_R": {
+          "frames": 65,
+          "retained_pins": 3,
+          "last_five_frames_motion_m": 0.08137801654415273,
+          "seed": 10006,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        }
+      },
+      "cloth": {
+        "Throw": {
+          "frames": 200,
+          "retained_pins": 45,
+          "last_five_frames_motion_m": 0.0010928185536497764,
+          "seed": 10501,
+          "removed_reference_area_m2": 0.23639366564748343,
+          "original_midsurface_area_m2": 0.5340428584022447,
+          "removed_reference_fraction": 0.442649240464948,
+          "fray_triangles": 83,
+          "thickness_m": 0.0018
+        }
+      },
+      "debris": {
+        "pieces": 114,
+        "seed": 11501,
+        "floor_z_m": 0.0,
+        "templates": 3
+      },
+      "gates": {
+        "pass": false,
+        "triangles": {
+          "unaged": 19550,
+          "aged": 31013,
+          "ratio": 1.5863427109974424,
+          "limit_ratio": 1.5,
+          "pass": false
+        },
+        "pivots_and_origin_unchanged": true,
+        "preserved_names": true,
+        "byte_identical_reexport": true,
+        "unchanged_geometry": {
+          "Frame": true,
+          "Feet": true,
+          "Rivets": true
+        },
+        "throw_tear": {
+          "reference_surface_loss_fraction": 0.43910735845565796,
+          "band": [
+            0.1,
+            0.3
+          ],
+          "pass": false
+        },
+        "cushions": {
+          "BackCushion_R": {
+            "volume_ratio": 0.29600422328046466,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.14019917566168175,
+            "support_limit_m": 0.003,
+            "watertight": false,
+            "pass": false
+          },
+          "BackCushion_C": {
+            "volume_ratio": 0.2983320886027292,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.06409270139282909,
+            "support_limit_m": 0.003,
+            "watertight": false,
+            "pass": false
+          },
+          "BackCushion_L": {
+            "volume_ratio": 0.2987295013806978,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.07051556411331338,
+            "support_limit_m": 0.003,
+            "watertight": false,
+            "pass": false
+          },
+          "SeatCushion_R": {
+            "volume_ratio": 0.3041506917497482,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.19821906871815193,
+            "support_limit_m": 0.003,
+            "watertight": false,
+            "pass": false
+          },
+          "SeatCushion_C": {
+            "volume_ratio": 0.30442855699655613,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.0016455892798892967,
+            "support_limit_m": 0.003,
+            "watertight": false,
+            "pass": false
+          },
+          "SeatCushion_L": {
+            "volume_ratio": 0.30394617170232274,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.12351265899275649,
+            "support_limit_m": 0.003,
+            "watertight": false,
+            "pass": false
+          }
+        },
+        "intersections": {
+          "pass": false,
+          "sampled_inward_depth_max_m": 0.037271857261657715,
+          "limit_m": 0.001
+        }
+      },
+      "result": "Free cover edges slipped off the crust. The throw lost 43.91 percent of reference area and the mesh exceeded the triangle cap."
+    },
+    {
+      "trial": "age-b",
+      "seed": 9501,
+      "parameters": {
+        "trial": "age-b",
+        "seed": 9501,
+        "parts": [
+          "Frame",
+          "Feet",
+          "Rivets",
+          "SeatCushion_L",
+          "SeatCushion_C",
+          "SeatCushion_R",
+          "BackCushion_L",
+          "BackCushion_C",
+          "BackCushion_R",
+          "Throw"
+        ],
+        "asset": "assets/props/quarters/sofa_aged.glb",
+        "colliders": [
+          "Frame"
+        ],
+        "floor_z_m": 0,
+        "foam": {
+          "names": [
+            "SeatCushion_L",
+            "SeatCushion_C",
+            "SeatCushion_R",
+            "BackCushion_L",
+            "BackCushion_C",
+            "BackCushion_R"
+          ],
+          "support_z_m": 0.3898,
+          "support_gap_m": 0.0006,
+          "height_ratio": 0.31,
+          "core_reduction": 0.3,
+          "voronoi_cells": 12,
+          "crack_width_m": 0.0025,
+          "cover_lift_m": 0.0015,
+          "pin_height_m": 0.01,
+          "cover_loss_fraction": 0.1,
+          "cover_thickness_m": 0.0007,
+          "cloth": {
+            "quality": 16,
+            "frames": 100,
+            "time_scale": 0.35,
+            "mass": 0.025,
+            "stiffness": 180,
+            "bending": 0.2,
+            "self_collision": false,
+            "collision_distance_m": 0.0008
+          },
+          "cover_reduction": 0.66
+        },
+        "cloth": {
+          "Throw": {
+            "kind": "throw",
+            "stress_slits_xz_m": [
+              [
+                1.13,
+                0.53,
+                0.012,
+                0.15,
+                0.05
+              ],
+              [
+                0.94,
+                0.62,
+                0.0096,
+                0.14,
+                -0.05
+              ],
+              [
+                1.09,
+                0.71,
+                0.01296,
+                0.085,
+                0.15
+              ]
+            ],
+            "stress_jitter_m": 0.006,
+            "detail_protection_m": 0.012,
+            "detail_pin_radius_m": 0.02,
+            "hem_z_m": 0.375,
+            "hem_loss_m": 0.012,
+            "retained_corner_z_m": 0.79,
+            "retained_corner_y_m": -0.36,
+            "thickness_m": 0.0018,
+            "fray_probability": 0.3,
+            "cloth": {
+              "quality": 24,
+              "frames": 260,
+              "time_scale": 0.5,
+              "mass": 0.15,
+              "stiffness": 45,
+              "bending": 0.09,
+              "self_collision": true,
+              "self_distance_m": 0.004,
+              "collision_distance_m": 0.003
+            }
+          }
+        },
+        "debris": {
+          "source": "SeatCushion_C",
+          "name": "FoamDebris",
+          "material": "Foam",
+          "color": [
+            0.2,
+            0.09,
+            0.035
+          ],
+          "center_blender_m": [
+            0.15,
+            -0.55,
+            0
+          ],
+          "radius_xy_m": [
+            0.94,
+            0.12
+          ],
+          "count": 140,
+          "piece_size_m": [
+            0.003,
+            0.01
+          ],
+          "piece_thickness_m": 0.0006,
+          "heap_height_m": 0.005,
+          "floor_gap_m": 0.0002
+        }
+      },
+      "foam": {
+        "SeatCushion_L": {
+          "frames": 100,
+          "retained_pins": 122,
+          "last_five_frames_motion_m": 0.024666952268223713,
+          "seed": 9501,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "SeatCushion_C": {
+          "frames": 100,
+          "retained_pins": 122,
+          "last_five_frames_motion_m": 0.0279327969640528,
+          "seed": 9602,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "SeatCushion_R": {
+          "frames": 100,
+          "retained_pins": 122,
+          "last_five_frames_motion_m": 0.026225993174710322,
+          "seed": 9703,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "BackCushion_L": {
+          "frames": 100,
+          "retained_pins": 239,
+          "last_five_frames_motion_m": 0.007567628418593153,
+          "seed": 9804,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "BackCushion_C": {
+          "frames": 100,
+          "retained_pins": 239,
+          "last_five_frames_motion_m": 0.0076820905104262914,
+          "seed": 9905,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "BackCushion_R": {
+          "frames": 100,
+          "retained_pins": 239,
+          "last_five_frames_motion_m": 0.0063217274475211365,
+          "seed": 10006,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        }
+      },
+      "cloth": {
+        "Throw": {
+          "frames": 260,
+          "retained_pins": 45,
+          "last_five_frames_motion_m": 0.0010639520810332718,
+          "seed": 10501,
+          "removed_reference_area_m2": 0.12132311103050597,
+          "original_midsurface_area_m2": 0.5340428584022447,
+          "removed_reference_fraction": 0.22717860396725795,
+          "fray_triangles": 92,
+          "thickness_m": 0.0018
+        }
+      },
+      "debris": {
+        "pieces": 114,
+        "seed": 11501,
+        "floor_z_m": 0.0,
+        "templates": 3
+      },
+      "gates": {
+        "pass": false,
+        "triangles": {
+          "unaged": 19550,
+          "aged": 25856,
+          "ratio": 1.3225575447570332,
+          "limit_ratio": 1.5,
+          "pass": true
+        },
+        "pivots_and_origin_unchanged": true,
+        "preserved_names": true,
+        "byte_identical_reexport": true,
+        "unchanged_geometry": {
+          "Frame": true,
+          "Feet": true,
+          "Rivets": true
+        },
+        "throw_tear": {
+          "reference_surface_loss_fraction": 0.22288878262043,
+          "band": [
+            0.1,
+            0.3
+          ],
+          "pass": true
+        },
+        "cushions": {
+          "BackCushion_R": {
+            "volume_ratio": 0.2984570148523967,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.00886046923555339,
+            "support_limit_m": 0.003,
+            "watertight": false,
+            "pass": false
+          },
+          "BackCushion_C": {
+            "volume_ratio": 0.29831221888118237,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.00883926324933134,
+            "support_limit_m": 0.003,
+            "watertight": false,
+            "pass": false
+          },
+          "BackCushion_L": {
+            "volume_ratio": 0.29915412055663854,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.008839263249331339,
+            "support_limit_m": 0.003,
+            "watertight": false,
+            "pass": false
+          },
+          "SeatCushion_R": {
+            "volume_ratio": 0.3050222181778379,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.001095097902435097,
+            "support_limit_m": 0.003,
+            "watertight": false,
+            "pass": false
+          },
+          "SeatCushion_C": {
+            "volume_ratio": 0.3054919699248299,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.001093493761655455,
+            "support_limit_m": 0.003,
+            "watertight": false,
+            "pass": false
+          },
+          "SeatCushion_L": {
+            "volume_ratio": 0.304897919822409,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.0010906466397021266,
+            "support_limit_m": 0.003,
+            "watertight": false,
+            "pass": false
+          }
+        },
+        "intersections": {
+          "pass": false,
+          "sampled_inward_depth_max_m": 0.037271857261657715,
+          "limit_m": 0.001
+        }
+      },
+      "result": "Pinned the cover rims, aligned cover splits with Voronoi cells and reduced the core. Throw loss and triangle count entered their bands; back supports and collisions still failed."
+    },
+    {
+      "trial": "age-c",
+      "seed": 9501,
+      "parameters": {
+        "trial": "age-c",
+        "seed": 9501,
+        "parts": [
+          "Frame",
+          "Feet",
+          "Rivets",
+          "SeatCushion_L",
+          "SeatCushion_C",
+          "SeatCushion_R",
+          "BackCushion_L",
+          "BackCushion_C",
+          "BackCushion_R",
+          "Throw"
+        ],
+        "asset": "assets/props/quarters/sofa_aged.glb",
+        "colliders": [
+          "Frame"
+        ],
+        "floor_z_m": 0,
+        "foam": {
+          "names": [
+            "SeatCushion_L",
+            "SeatCushion_C",
+            "SeatCushion_R",
+            "BackCushion_L",
+            "BackCushion_C",
+            "BackCushion_R"
+          ],
+          "support_z_m": 0.3898,
+          "support_gap_m": 0.0006,
+          "height_ratio": 0.31,
+          "core_reduction": 0.3,
+          "voronoi_cells": 12,
+          "crack_width_m": 0.0025,
+          "cover_lift_m": 0.0015,
+          "pin_height_m": 0.01,
+          "cover_loss_fraction": 0.1,
+          "cover_thickness_m": 0.0007,
+          "cloth": {
+            "quality": 16,
+            "frames": 100,
+            "time_scale": 0.35,
+            "mass": 0.025,
+            "stiffness": 180,
+            "bending": 0.2,
+            "self_collision": true,
+            "collision_distance_m": 0.0008
+          },
+          "cover_reduction": 0.66,
+          "back_support_y_shift_m": -0.012,
+          "contact_clearance_m": 0.0012
+        },
+        "cloth": {
+          "Throw": {
+            "kind": "throw",
+            "stress_slits_xz_m": [
+              [
+                1.13,
+                0.53,
+                0.012,
+                0.15,
+                0.05
+              ],
+              [
+                0.94,
+                0.62,
+                0.0096,
+                0.14,
+                -0.05
+              ],
+              [
+                1.09,
+                0.71,
+                0.01296,
+                0.085,
+                0.15
+              ]
+            ],
+            "stress_jitter_m": 0.006,
+            "detail_protection_m": 0.012,
+            "detail_pin_radius_m": 0.02,
+            "hem_z_m": 0.375,
+            "hem_loss_m": 0.012,
+            "retained_corner_z_m": 0.79,
+            "retained_corner_y_m": -0.36,
+            "thickness_m": 0.0018,
+            "fray_probability": 0.3,
+            "cloth": {
+              "quality": 24,
+              "frames": 260,
+              "time_scale": 0.5,
+              "mass": 0.15,
+              "stiffness": 45,
+              "bending": 0.09,
+              "self_collision": true,
+              "self_distance_m": 0.004,
+              "collision_distance_m": 0.003
+            },
+            "fray_obstacles": [
+              "Frame",
+              "SeatCushion_R",
+              "BackCushion_R"
+            ]
+          }
+        },
+        "debris": {
+          "source": "SeatCushion_C",
+          "name": "FoamDebris",
+          "material": "Foam",
+          "color": [
+            0.2,
+            0.09,
+            0.035
+          ],
+          "center_blender_m": [
+            0.15,
+            -0.55,
+            0
+          ],
+          "radius_xy_m": [
+            0.94,
+            0.12
+          ],
+          "count": 140,
+          "piece_size_m": [
+            0.003,
+            0.01
+          ],
+          "piece_thickness_m": 0.0006,
+          "heap_height_m": 0.005,
+          "floor_gap_m": 0.0002
+        }
+      },
+      "foam": {
+        "SeatCushion_L": {
+          "frames": 100,
+          "retained_pins": 122,
+          "last_five_frames_motion_m": 0.007032802112235517,
+          "post_reduction_clearance_fit_max_m": 0.0032176468949299307,
+          "seed": 9501,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "SeatCushion_C": {
+          "frames": 100,
+          "retained_pins": 122,
+          "last_five_frames_motion_m": 0.007634786576758742,
+          "post_reduction_clearance_fit_max_m": 0.0032177068356329984,
+          "seed": 9602,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "SeatCushion_R": {
+          "frames": 100,
+          "retained_pins": 122,
+          "last_five_frames_motion_m": 0.008298098663222108,
+          "post_reduction_clearance_fit_max_m": 0.0032177068356329984,
+          "seed": 9703,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "BackCushion_L": {
+          "frames": 100,
+          "retained_pins": 239,
+          "last_five_frames_motion_m": 0.005986282820919318,
+          "post_reduction_clearance_fit_max_m": 0.0032817803442438164,
+          "seed": 9804,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "BackCushion_C": {
+          "frames": 100,
+          "retained_pins": 239,
+          "last_five_frames_motion_m": 0.006812964330642097,
+          "post_reduction_clearance_fit_max_m": 0.003757936890272322,
+          "seed": 9905,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "BackCushion_R": {
+          "frames": 100,
+          "retained_pins": 239,
+          "last_five_frames_motion_m": 0.00569535944887923,
+          "post_reduction_clearance_fit_max_m": 0.0032817803442438164,
+          "seed": 10006,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        }
+      },
+      "cloth": {
+        "Throw": {
+          "frames": 260,
+          "retained_pins": 45,
+          "last_five_frames_motion_m": 0.0010639520810332718,
+          "seed": 10501,
+          "removed_reference_area_m2": 0.12132311103050597,
+          "original_midsurface_area_m2": 0.5340428584022447,
+          "removed_reference_fraction": 0.22717860396725795,
+          "fray_triangles": 82,
+          "thickness_m": 0.0018
+        }
+      },
+      "debris": {
+        "pieces": 114,
+        "seed": 11501,
+        "floor_z_m": 0.0,
+        "templates": 3
+      },
+      "gates": {
+        "pass": false,
+        "triangles": {
+          "unaged": 19550,
+          "aged": 26692,
+          "ratio": 1.3653196930946292,
+          "limit_ratio": 1.5,
+          "pass": true
+        },
+        "pivots_and_origin_unchanged": true,
+        "preserved_names": true,
+        "byte_identical_reexport": true,
+        "unchanged_geometry": {
+          "Frame": true,
+          "Feet": true,
+          "Rivets": true
+        },
+        "throw_tear": {
+          "reference_surface_loss_fraction": 0.22275178134441376,
+          "band": [
+            0.1,
+            0.3
+          ],
+          "pass": true
+        },
+        "cushions": {
+          "BackCushion_R": {
+            "volume_ratio": 0.29844281311983256,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.006028245213253198,
+            "support_limit_m": 0.003,
+            "crust_watertight": true,
+            "combined_cover_and_crust_watertight": false,
+            "pass": false
+          },
+          "BackCushion_C": {
+            "volume_ratio": 0.2981432618094739,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.006028245213253198,
+            "support_limit_m": 0.003,
+            "crust_watertight": true,
+            "combined_cover_and_crust_watertight": false,
+            "pass": false
+          },
+          "BackCushion_L": {
+            "volume_ratio": 0.29911184181745093,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.006069728760688422,
+            "support_limit_m": 0.003,
+            "crust_watertight": true,
+            "combined_cover_and_crust_watertight": false,
+            "pass": false
+          },
+          "SeatCushion_R": {
+            "volume_ratio": 0.30502578150518667,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.001095097902435097,
+            "support_limit_m": 0.003,
+            "crust_watertight": true,
+            "combined_cover_and_crust_watertight": false,
+            "pass": true
+          },
+          "SeatCushion_C": {
+            "volume_ratio": 0.3054706596699727,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.001093493761655455,
+            "support_limit_m": 0.003,
+            "crust_watertight": true,
+            "combined_cover_and_crust_watertight": false,
+            "pass": true
+          },
+          "SeatCushion_L": {
+            "volume_ratio": 0.304862240050405,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.0010906466397021266,
+            "support_limit_m": 0.003,
+            "crust_watertight": true,
+            "combined_cover_and_crust_watertight": false,
+            "pass": true
+          }
+        },
+        "intersections": {
+          "pass": false,
+          "sampled_inward_depth_max_m": 0.037271857261657715,
+          "limit_m": 0.001,
+          "unchanged_assembly_depth_max_m": 0.037271857261657715,
+          "changed_geometry_depth_max_m": 0.0013230866785853023,
+          "self_intersection_free": false,
+          "self_edge_hits": {
+            "Throw": 221,
+            "BackCushion_R": 0,
+            "BackCushion_C": 0,
+            "BackCushion_L": 0,
+            "SeatCushion_R": 7,
+            "SeatCushion_C": 0,
+            "SeatCushion_L": 0
+          }
+        }
+      },
+      "result": "Used a continuous core contact envelope and clearance fitting after simplification. Frays were added before thickness. Back supports and cloth crossings remained."
+    },
+    {
+      "trial": "age-d",
+      "seed": 9501,
+      "parameters": {
+        "trial": "age-d",
+        "seed": 9501,
+        "parts": [
+          "Frame",
+          "Feet",
+          "Rivets",
+          "SeatCushion_L",
+          "SeatCushion_C",
+          "SeatCushion_R",
+          "BackCushion_L",
+          "BackCushion_C",
+          "BackCushion_R",
+          "Throw"
+        ],
+        "asset": "assets/props/quarters/sofa_aged.glb",
+        "colliders": [
+          "Frame"
+        ],
+        "floor_z_m": 0,
+        "foam": {
+          "names": [
+            "SeatCushion_L",
+            "SeatCushion_C",
+            "SeatCushion_R",
+            "BackCushion_L",
+            "BackCushion_C",
+            "BackCushion_R"
+          ],
+          "support_z_m": 0.3898,
+          "support_gap_m": 0.0006,
+          "height_ratio": 0.31,
+          "core_reduction": 0.3,
+          "voronoi_cells": 12,
+          "crack_width_m": 0.0025,
+          "cover_lift_m": 0.0015,
+          "pin_height_m": 0.01,
+          "cover_loss_fraction": 0.1,
+          "cover_thickness_m": 0.0004,
+          "cloth": {
+            "quality": 16,
+            "frames": 100,
+            "time_scale": 0.35,
+            "mass": 0.025,
+            "stiffness": 180,
+            "bending": 0.2,
+            "self_collision": true,
+            "collision_distance_m": 0.0008
+          },
+          "cover_reduction": 0.66,
+          "back_support_y_shift_m": -0.045,
+          "contact_clearance_m": 0.0012,
+          "back_depth_ratio": 0.7
+        },
+        "cloth": {
+          "Throw": {
+            "kind": "throw",
+            "stress_slits_xz_m": [
+              [
+                1.13,
+                0.53,
+                0.012,
+                0.15,
+                0.05
+              ],
+              [
+                0.94,
+                0.62,
+                0.0096,
+                0.14,
+                -0.05
+              ],
+              [
+                1.09,
+                0.71,
+                0.01296,
+                0.085,
+                0.15
+              ]
+            ],
+            "stress_jitter_m": 0.006,
+            "detail_protection_m": 0.012,
+            "detail_pin_radius_m": 0.02,
+            "hem_z_m": 0.375,
+            "hem_loss_m": 0.012,
+            "retained_corner_z_m": 0.79,
+            "retained_corner_y_m": -0.36,
+            "thickness_m": 0.0018,
+            "fray_probability": 0.3,
+            "cloth": {
+              "quality": 30,
+              "frames": 400,
+              "time_scale": 0.35,
+              "mass": 0.15,
+              "stiffness": 80,
+              "bending": 0.25,
+              "self_collision": true,
+              "self_distance_m": 0.005,
+              "collision_distance_m": 0.003
+            },
+            "fray_obstacles": [
+              "Frame",
+              "SeatCushion_R",
+              "BackCushion_R",
+              "AgingFloorCollider"
+            ]
+          }
+        },
+        "debris": {
+          "source": "SeatCushion_C",
+          "name": "FoamDebris",
+          "material": "Foam",
+          "color": [
+            0.2,
+            0.09,
+            0.035
+          ],
+          "center_blender_m": [
+            0.15,
+            -0.55,
+            0
+          ],
+          "radius_xy_m": [
+            0.94,
+            0.12
+          ],
+          "count": 140,
+          "piece_size_m": [
+            0.003,
+            0.01
+          ],
+          "piece_thickness_m": 0.0006,
+          "heap_height_m": 0.005,
+          "floor_gap_m": 0.0002
+        }
+      },
+      "foam": {
+        "SeatCushion_L": {
+          "frames": 100,
+          "retained_pins": 122,
+          "last_five_frames_motion_m": 0.007933629693775458,
+          "post_reduction_clearance_fit_max_m": 0.0030676468949299308,
+          "seed": 9501,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "SeatCushion_C": {
+          "frames": 100,
+          "retained_pins": 122,
+          "last_five_frames_motion_m": 0.007634786576758742,
+          "post_reduction_clearance_fit_max_m": 0.0030677068356329985,
+          "seed": 9602,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "SeatCushion_R": {
+          "frames": 100,
+          "retained_pins": 122,
+          "last_five_frames_motion_m": 0.007039118835466146,
+          "post_reduction_clearance_fit_max_m": 0.0030677068356329985,
+          "seed": 9703,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "BackCushion_L": {
+          "frames": 100,
+          "retained_pins": 198,
+          "last_five_frames_motion_m": 0.004368050941939644,
+          "post_reduction_clearance_fit_max_m": 0.0028973527377151188,
+          "seed": 9804,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "BackCushion_C": {
+          "frames": 100,
+          "retained_pins": 198,
+          "last_five_frames_motion_m": 0.004949921015518848,
+          "post_reduction_clearance_fit_max_m": 0.0028973527377151188,
+          "seed": 9905,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "BackCushion_R": {
+          "frames": 100,
+          "retained_pins": 198,
+          "last_five_frames_motion_m": 0.004921371966382651,
+          "post_reduction_clearance_fit_max_m": 0.0028973527377151188,
+          "seed": 10006,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        }
+      },
+      "cloth": {
+        "Throw": {
+          "frames": 400,
+          "retained_pins": 45,
+          "last_five_frames_motion_m": 0.07264950213793583,
+          "seed": 10501,
+          "removed_reference_area_m2": 0.12132311103050597,
+          "original_midsurface_area_m2": 0.5340428584022447,
+          "removed_reference_fraction": 0.22717860396725795,
+          "fray_triangles": 81,
+          "thickness_m": 0.0018,
+          "cut_surface_component_areas_m2": [
+            0.22259586810832843,
+            0.1768425985937938,
+            0.008044422545935959,
+            0.005236845347099006
+          ]
+        }
+      },
+      "debris": {
+        "pieces": 114,
+        "seed": 11501,
+        "floor_z_m": 0.0,
+        "templates": 3
+      },
+      "gates": {
+        "pass": false,
+        "triangles": {
+          "unaged": 19550,
+          "aged": 26750,
+          "ratio": 1.3682864450127876,
+          "limit_ratio": 1.5,
+          "pass": true
+        },
+        "pivots_and_origin_unchanged": true,
+        "preserved_names": true,
+        "byte_identical_reexport": true,
+        "unchanged_geometry": {
+          "Frame": true,
+          "Feet": true,
+          "Rivets": true
+        },
+        "unchanged_geometry_bytes": {
+          "Frame": true,
+          "Feet": true,
+          "Rivets": true
+        },
+        "throw_tear": {
+          "reference_surface_loss_fraction": 0.2227550894021988,
+          "band": [
+            0.1,
+            0.3
+          ],
+          "pass": true
+        },
+        "cushions": {
+          "BackCushion_R": {
+            "volume_ratio": 0.2956151002761803,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.004418176344324936,
+            "support_limit_m": 0.003,
+            "crust_watertight": true,
+            "combined_cover_and_crust_watertight": false,
+            "pass": false
+          },
+          "BackCushion_C": {
+            "volume_ratio": 0.2957318320174492,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.004420145633366487,
+            "support_limit_m": 0.003,
+            "crust_watertight": true,
+            "combined_cover_and_crust_watertight": false,
+            "pass": false
+          },
+          "BackCushion_L": {
+            "volume_ratio": 0.2959368676890672,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.004441291330924168,
+            "support_limit_m": 0.003,
+            "crust_watertight": true,
+            "combined_cover_and_crust_watertight": false,
+            "pass": false
+          },
+          "SeatCushion_R": {
+            "volume_ratio": 0.30327204897657223,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.001095097902435097,
+            "support_limit_m": 0.003,
+            "crust_watertight": true,
+            "combined_cover_and_crust_watertight": false,
+            "pass": true
+          },
+          "SeatCushion_C": {
+            "volume_ratio": 0.30371289471175716,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.001093493761655455,
+            "support_limit_m": 0.003,
+            "crust_watertight": true,
+            "combined_cover_and_crust_watertight": false,
+            "pass": true
+          },
+          "SeatCushion_L": {
+            "volume_ratio": 0.30306373867402364,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.0010906466397021266,
+            "support_limit_m": 0.003,
+            "crust_watertight": true,
+            "combined_cover_and_crust_watertight": false,
+            "pass": true
+          }
+        },
+        "intersections": {
+          "pass": false,
+          "sampled_inward_depth_max_m": 0.037271857261657715,
+          "limit_m": 0.001,
+          "unchanged_assembly_depth_max_m": 0.037271857261657715,
+          "changed_geometry_depth_max_m": 0.0035573889357451024,
+          "self_intersection_free": false,
+          "self_edge_hits": {
+            "Throw": 882,
+            "BackCushion_R": 0,
+            "BackCushion_C": 0,
+            "BackCushion_L": 0,
+            "SeatCushion_R": 0,
+            "SeatCushion_C": 0,
+            "SeatCushion_L": 4
+          }
+        }
+      },
+      "result": "Reduced back-pad depth with inverse height compensation and gave fibres a thinner section. Longer cloth settling and more self-separation did not remove crossings."
+    },
+    {
+      "trial": "age-e",
+      "seed": 9501,
+      "parameters": {
+        "trial": "age-e",
+        "seed": 9501,
+        "parts": [
+          "Frame",
+          "Feet",
+          "Rivets",
+          "SeatCushion_L",
+          "SeatCushion_C",
+          "SeatCushion_R",
+          "BackCushion_L",
+          "BackCushion_C",
+          "BackCushion_R",
+          "Throw"
+        ],
+        "asset": "assets/props/quarters/sofa_aged.glb",
+        "colliders": [
+          "Frame"
+        ],
+        "floor_z_m": 0,
+        "foam": {
+          "names": [
+            "SeatCushion_L",
+            "SeatCushion_C",
+            "SeatCushion_R",
+            "BackCushion_L",
+            "BackCushion_C",
+            "BackCushion_R"
+          ],
+          "support_z_m": 0.3898,
+          "support_gap_m": 0.0006,
+          "height_ratio": 0.31,
+          "core_reduction": 0.3,
+          "voronoi_cells": 12,
+          "crack_width_m": 0.0025,
+          "cover_lift_m": 0.0015,
+          "pin_height_m": 0.01,
+          "cover_loss_fraction": 0.1,
+          "cover_thickness_m": 0.0004,
+          "cloth": {
+            "quality": 16,
+            "frames": 100,
+            "time_scale": 0.35,
+            "mass": 0.025,
+            "stiffness": 180,
+            "bending": 0.2,
+            "self_collision": true,
+            "collision_distance_m": 0.0008
+          },
+          "cover_reduction": 0.8,
+          "back_support_y_shift_m": -0.045,
+          "contact_clearance_m": 0.0025,
+          "back_depth_ratio": 0.7
+        },
+        "cloth": {
+          "Throw": {
+            "kind": "throw",
+            "stress_slits_xz_m": [
+              [
+                1.13,
+                0.53,
+                0.012,
+                0.15,
+                0.05
+              ],
+              [
+                0.94,
+                0.62,
+                0.0096,
+                0.14,
+                -0.05
+              ],
+              [
+                1.09,
+                0.71,
+                0.01296,
+                0.085,
+                0.15
+              ]
+            ],
+            "stress_jitter_m": 0.006,
+            "detail_protection_m": 0.012,
+            "detail_pin_radius_m": 0.02,
+            "hem_z_m": 0.375,
+            "hem_loss_m": 0.012,
+            "retained_corner_z_m": 0.79,
+            "retained_corner_y_m": -0.26,
+            "thickness_m": 0.0018,
+            "fray_probability": 0.3,
+            "cloth": {
+              "quality": 30,
+              "frames": 400,
+              "time_scale": 0.35,
+              "mass": 0.15,
+              "stiffness": 80,
+              "bending": 0.25,
+              "self_collision": true,
+              "self_distance_m": 0.005,
+              "collision_distance_m": 0.0045,
+              "collision_quality": 16
+            },
+            "fray_obstacles": [
+              "Frame",
+              "SeatCushion_R",
+              "BackCushion_R",
+              "AgingFloorCollider"
+            ]
+          }
+        },
+        "debris": {
+          "source": "SeatCushion_C",
+          "name": "FoamDebris",
+          "material": "Foam",
+          "color": [
+            0.2,
+            0.09,
+            0.035
+          ],
+          "center_blender_m": [
+            0.15,
+            -0.55,
+            0
+          ],
+          "radius_xy_m": [
+            0.94,
+            0.12
+          ],
+          "count": 140,
+          "piece_size_m": [
+            0.003,
+            0.01
+          ],
+          "piece_thickness_m": 0.0006,
+          "heap_height_m": 0.005,
+          "floor_gap_m": 0.0002
+        }
+      },
+      "foam": {
+        "SeatCushion_L": {
+          "frames": 100,
+          "retained_pins": 122,
+          "last_five_frames_motion_m": 0.010240116603350271,
+          "post_reduction_clearance_fit_max_m": 0.004338710013880385,
+          "decimation_support_fit_z_m": -0.0004504099488258362,
+          "seed": 9501,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "SeatCushion_C": {
+          "frames": 100,
+          "retained_pins": 122,
+          "last_five_frames_motion_m": 0.007471794620297816,
+          "post_reduction_clearance_fit_max_m": 0.004338710013535771,
+          "decimation_support_fit_z_m": -0.0004504099488258362,
+          "seed": 9602,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "SeatCushion_R": {
+          "frames": 100,
+          "retained_pins": 122,
+          "last_five_frames_motion_m": 0.008658564701055688,
+          "post_reduction_clearance_fit_max_m": 0.004338709719953724,
+          "decimation_support_fit_z_m": -0.0004504099488258362,
+          "seed": 9703,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "BackCushion_L": {
+          "frames": 100,
+          "retained_pins": 198,
+          "last_five_frames_motion_m": 0.0037143236947446727,
+          "post_reduction_clearance_fit_max_m": 0.004197352737715119,
+          "decimation_support_fit_z_m": -0.000336378812789917,
+          "seed": 9804,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "BackCushion_C": {
+          "frames": 100,
+          "retained_pins": 198,
+          "last_five_frames_motion_m": 0.0041198226732261185,
+          "post_reduction_clearance_fit_max_m": 0.004197352737715119,
+          "decimation_support_fit_z_m": -0.000336378812789917,
+          "seed": 9905,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "BackCushion_R": {
+          "frames": 100,
+          "retained_pins": 198,
+          "last_five_frames_motion_m": 0.0051925336417837495,
+          "post_reduction_clearance_fit_max_m": 0.004197352737715119,
+          "decimation_support_fit_z_m": -0.000336378812789917,
+          "seed": 10006,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        }
+      },
+      "cloth": {
+        "Throw": {
+          "frames": 400,
+          "retained_pins": 90,
+          "last_five_frames_motion_m": 0.0815293007159505,
+          "seed": 10501,
+          "removed_reference_area_m2": 0.12132311103050597,
+          "original_midsurface_area_m2": 0.5340428584022447,
+          "removed_reference_fraction": 0.22717860396725795,
+          "fray_triangles": 82,
+          "thickness_m": 0.0018,
+          "cut_surface_component_areas_m2": [
+            0.1768425985937938,
+            0.22259586810832843,
+            0.005236845347099006,
+            0.008044422545935959
+          ]
+        }
+      },
+      "debris": {
+        "pieces": 114,
+        "seed": 11501,
+        "floor_z_m": 0.0,
+        "templates": 3
+      },
+      "gates": {
+        "pass": false,
+        "triangles": {
+          "unaged": 19550,
+          "aged": 28050,
+          "ratio": 1.434782608695652,
+          "limit_ratio": 1.5,
+          "pass": true
+        },
+        "pivots_and_origin_unchanged": true,
+        "preserved_names": true,
+        "byte_identical_reexport": true,
+        "unchanged_geometry": {
+          "Frame": true,
+          "Feet": true,
+          "Rivets": true
+        },
+        "unchanged_geometry_bytes": {
+          "Frame": true,
+          "Feet": true,
+          "Rivets": true
+        },
+        "throw_tear": {
+          "reference_surface_loss_fraction": 0.22277086973190308,
+          "band": [
+            0.1,
+            0.3
+          ],
+          "pass": true
+        },
+        "cushions": {
+          "BackCushion_R": {
+            "volume_ratio": 0.29562753594694463,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.004082521148834952,
+            "support_limit_m": 0.003,
+            "crust_watertight": true,
+            "combined_cover_and_crust_watertight": false,
+            "pass": false
+          },
+          "BackCushion_C": {
+            "volume_ratio": 0.29574252585942074,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.004084453776503962,
+            "support_limit_m": 0.003,
+            "crust_watertight": true,
+            "combined_cover_and_crust_watertight": false,
+            "pass": false
+          },
+          "BackCushion_L": {
+            "volume_ratio": 0.2959465044002167,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.004105599474061639,
+            "support_limit_m": 0.003,
+            "crust_watertight": true,
+            "combined_cover_and_crust_watertight": false,
+            "pass": false
+          },
+          "SeatCushion_R": {
+            "volume_ratio": 0.3032735355300333,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.000644688080974471,
+            "support_limit_m": 0.003,
+            "crust_watertight": true,
+            "combined_cover_and_crust_watertight": false,
+            "pass": true
+          },
+          "SeatCushion_C": {
+            "volume_ratio": 0.30371445469293584,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.0006430839401947261,
+            "support_limit_m": 0.003,
+            "crust_watertight": true,
+            "combined_cover_and_crust_watertight": false,
+            "pass": true
+          },
+          "SeatCushion_L": {
+            "volume_ratio": 0.30306142257601904,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.0006402368182413979,
+            "support_limit_m": 0.003,
+            "crust_watertight": true,
+            "combined_cover_and_crust_watertight": false,
+            "pass": true
+          }
+        },
+        "intersections": {
+          "pass": false,
+          "sampled_inward_depth_max_m": 0.037271857261657715,
+          "limit_m": 0.001,
+          "unchanged_assembly_depth_max_m": 0.037271857261657715,
+          "changed_geometry_depth_max_m": 0.0,
+          "self_intersection_free": false,
+          "self_edge_hits": {
+            "Throw": 453,
+            "BackCushion_R": 0,
+            "BackCushion_C": 0,
+            "BackCushion_L": 0,
+            "SeatCushion_R": 7,
+            "SeatCushion_C": 0,
+            "SeatCushion_L": 6
+          }
+        }
+      },
+      "result": "Increased cover resolution and contact clearance, retained more throw cap stitches and raised collision quality to 16. All volume, tear and triangle bands passed. The back pads still floated above the curved deck."
+    },
+    {
+      "trial": "age-f-support-fit",
+      "seed": 9501,
+      "parameters": {
+        "trial": "age-f-support-fit",
+        "seed": 9501,
+        "parts": [
+          "Frame",
+          "Feet",
+          "Rivets",
+          "SeatCushion_L",
+          "SeatCushion_C",
+          "SeatCushion_R",
+          "BackCushion_L",
+          "BackCushion_C",
+          "BackCushion_R",
+          "Throw"
+        ],
+        "asset": "assets/props/quarters/sofa_aged.glb",
+        "colliders": [
+          "Frame"
+        ],
+        "floor_z_m": 0,
+        "foam": {
+          "names": [
+            "SeatCushion_L",
+            "SeatCushion_C",
+            "SeatCushion_R",
+            "BackCushion_L",
+            "BackCushion_C",
+            "BackCushion_R"
+          ],
+          "support_z_m": 0.3898,
+          "support_gap_m": 0.0006,
+          "height_ratio": 0.31,
+          "core_reduction": 0.3,
+          "voronoi_cells": 12,
+          "crack_width_m": 0.0025,
+          "cover_lift_m": 0.0015,
+          "pin_height_m": 0.01,
+          "cover_loss_fraction": 0.1,
+          "cover_thickness_m": 0.0004,
+          "cloth": {
+            "quality": 16,
+            "frames": 100,
+            "time_scale": 0.35,
+            "mass": 0.025,
+            "stiffness": 180,
+            "bending": 0.2,
+            "self_collision": true,
+            "collision_distance_m": 0.0008
+          },
+          "cover_reduction": 0.8,
+          "back_support_y_shift_m": -0.045,
+          "contact_clearance_m": 0.0025,
+          "back_depth_ratio": 0.7,
+          "support": "Frame"
+        },
+        "cloth": {
+          "Throw": {
+            "kind": "throw",
+            "stress_slits_xz_m": [
+              [
+                1.13,
+                0.53,
+                0.012,
+                0.15,
+                0.05
+              ],
+              [
+                0.94,
+                0.62,
+                0.0096,
+                0.14,
+                -0.05
+              ],
+              [
+                1.09,
+                0.71,
+                0.01296,
+                0.085,
+                0.15
+              ]
+            ],
+            "stress_jitter_m": 0.006,
+            "detail_protection_m": 0.012,
+            "detail_pin_radius_m": 0.02,
+            "hem_z_m": 0.375,
+            "hem_loss_m": 0.012,
+            "retained_corner_z_m": 0.79,
+            "retained_corner_y_m": -0.26,
+            "thickness_m": 0.0018,
+            "fray_probability": 0.3,
+            "cloth": {
+              "quality": 30,
+              "frames": 400,
+              "time_scale": 0.35,
+              "mass": 0.15,
+              "stiffness": 80,
+              "bending": 0.25,
+              "self_collision": true,
+              "self_distance_m": 0.005,
+              "collision_distance_m": 0.0045,
+              "collision_quality": 16
+            },
+            "fray_obstacles": [
+              "Frame",
+              "SeatCushion_R",
+              "BackCushion_R",
+              "AgingFloorCollider"
+            ]
+          }
+        },
+        "debris": {
+          "source": "SeatCushion_C",
+          "name": "FoamDebris",
+          "material": "Foam",
+          "color": [
+            0.2,
+            0.09,
+            0.035
+          ],
+          "center_blender_m": [
+            0.15,
+            -0.55,
+            0
+          ],
+          "radius_xy_m": [
+            0.94,
+            0.12
+          ],
+          "count": 140,
+          "piece_size_m": [
+            0.003,
+            0.01
+          ],
+          "piece_thickness_m": 0.0006,
+          "heap_height_m": 0.005,
+          "floor_gap_m": 0.0002
+        }
+      },
+      "foam": {
+        "SeatCushion_L": {
+          "frames": 100,
+          "retained_pins": 122,
+          "last_five_frames_motion_m": 0.010240116603350271,
+          "post_reduction_clearance_fit_max_m": 0.004338710013880385,
+          "decimation_support_fit_z_m": -0.0004504099488258362,
+          "seed": 9501,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "SeatCushion_C": {
+          "frames": 100,
+          "retained_pins": 122,
+          "last_five_frames_motion_m": 0.007471794620297816,
+          "post_reduction_clearance_fit_max_m": 0.004338710013535771,
+          "decimation_support_fit_z_m": -0.0004504099488258362,
+          "seed": 9602,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "SeatCushion_R": {
+          "frames": 100,
+          "retained_pins": 122,
+          "last_five_frames_motion_m": 0.008658564701055688,
+          "post_reduction_clearance_fit_max_m": 0.004338709719953724,
+          "decimation_support_fit_z_m": -0.0004504099488258362,
+          "seed": 9703,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "BackCushion_L": {
+          "frames": 100,
+          "retained_pins": 198,
+          "last_five_frames_motion_m": 0.0037143236947446727,
+          "post_reduction_clearance_fit_max_m": 0.004197352737715119,
+          "decimation_support_fit_z_m": -0.000336378812789917,
+          "seed": 9804,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "BackCushion_C": {
+          "frames": 100,
+          "retained_pins": 198,
+          "last_five_frames_motion_m": 0.0041198226732261185,
+          "post_reduction_clearance_fit_max_m": 0.004197352737715119,
+          "decimation_support_fit_z_m": -0.000336378812789917,
+          "seed": 9905,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        },
+        "BackCushion_R": {
+          "frames": 100,
+          "retained_pins": 198,
+          "last_five_frames_motion_m": 0.0051925336417837495,
+          "post_reduction_clearance_fit_max_m": 0.004197352737715119,
+          "decimation_support_fit_z_m": -0.000336378812789917,
+          "seed": 10006,
+          "voronoi_plates": 12,
+          "height_ratio": 0.31,
+          "pressure": 0,
+          "crack_width_m": 0.0025
+        }
+      },
+      "cloth": {
+        "Throw": {
+          "frames": 400,
+          "retained_pins": 90,
+          "last_five_frames_motion_m": 0.0815293007159505,
+          "seed": 10501,
+          "removed_reference_area_m2": 0.12132311103050597,
+          "original_midsurface_area_m2": 0.5340428584022447,
+          "removed_reference_fraction": 0.22717860396725795,
+          "fray_triangles": 82,
+          "thickness_m": 0.0018,
+          "cut_surface_component_areas_m2": [
+            0.1768425985937938,
+            0.22259586810832843,
+            0.005236845347099006,
+            0.008044422545935959
+          ]
+        }
+      },
+      "debris": {
+        "pieces": 114,
+        "seed": 11501,
+        "floor_z_m": 0.0,
+        "templates": 3
+      },
+      "inherits_cloth_trial": "age-e",
+      "support_fit": {
+        "SeatCushion_L": {
+          "vertical_translation_m": -4.88263607025147e-05,
+          "target_gap_m": 0.0006
+        },
+        "SeatCushion_C": {
+          "vertical_translation_m": -4.4415616989135795e-05,
+          "target_gap_m": 0.0006
+        },
+        "SeatCushion_R": {
+          "vertical_translation_m": -4.748525619506841e-05,
+          "target_gap_m": 0.0006
+        },
+        "BackCushion_L": {
+          "vertical_translation_m": -0.003514001989364624,
+          "target_gap_m": 0.0006
+        },
+        "BackCushion_C": {
+          "vertical_translation_m": -0.003492812538146973,
+          "target_gap_m": 0.0006
+        },
+        "BackCushion_R": {
+          "vertical_translation_m": -0.003491322422027588,
+          "target_gap_m": 0.0006
+        }
+      },
+      "gates": {
+        "pass": false,
+        "triangles": {
+          "unaged": 19550,
+          "aged": 28050,
+          "ratio": 1.434782608695652,
+          "limit_ratio": 1.5,
+          "pass": true
+        },
+        "pivots_and_origin_unchanged": true,
+        "preserved_names": true,
+        "byte_identical_reexport": true,
+        "unchanged_geometry": {
+          "Frame": true,
+          "Feet": true,
+          "Rivets": true
+        },
+        "unchanged_geometry_bytes": {
+          "Frame": true,
+          "Feet": true,
+          "Rivets": true
+        },
+        "throw_tear": {
+          "reference_surface_loss_fraction": 0.22277086973190308,
+          "band": [
+            0.1,
+            0.3
+          ],
+          "pass": true
+        },
+        "cushions": {
+          "BackCushion_R": {
+            "volume_ratio": 0.2956274528959364,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.0005987193860587849,
+            "support_limit_m": 0.003,
+            "crust_watertight": true,
+            "combined_cover_and_crust_watertight": false,
+            "pass": true
+          },
+          "BackCushion_C": {
+            "volume_ratio": 0.29574244568721464,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.0005987844283658586,
+            "support_limit_m": 0.003,
+            "crust_watertight": true,
+            "combined_cover_and_crust_watertight": false,
+            "pass": true
+          },
+          "BackCushion_L": {
+            "volume_ratio": 0.29594650612136153,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.0005987839478231534,
+            "support_limit_m": 0.003,
+            "crust_watertight": true,
+            "combined_cover_and_crust_watertight": false,
+            "pass": true
+          },
+          "SeatCushion_R": {
+            "volume_ratio": 0.30327352886599457,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.0005972105094966532,
+            "support_limit_m": 0.003,
+            "crust_watertight": true,
+            "combined_cover_and_crust_watertight": false,
+            "pass": true
+          },
+          "SeatCushion_C": {
+            "volume_ratio": 0.303714459399138,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.0005986760088676458,
+            "support_limit_m": 0.003,
+            "crust_watertight": true,
+            "combined_cover_and_crust_watertight": false,
+            "pass": true
+          },
+          "SeatCushion_L": {
+            "volume_ratio": 0.303061416299032,
+            "volume_ratio_band": [
+              0.25,
+              0.35
+            ],
+            "support_gap_m": 0.0005914280787794714,
+            "support_limit_m": 0.003,
+            "crust_watertight": true,
+            "combined_cover_and_crust_watertight": false,
+            "pass": true
+          }
+        },
+        "intersections": {
+          "pass": false,
+          "sampled_inward_depth_max_m": 0.037271857261657715,
+          "limit_m": 0.001,
+          "unchanged_assembly_depth_max_m": 0.037271857261657715,
+          "changed_geometry_depth_max_m": 0.0,
+          "self_intersection_free": false,
+          "self_edge_hits": {
+            "Throw": 453,
+            "BackCushion_R": 0,
+            "BackCushion_C": 0,
+            "BackCushion_L": 0,
+            "SeatCushion_R": 7,
+            "SeatCushion_C": 0,
+            "SeatCushion_L": 6
+          }
+        }
+      },
+      "result": "Reused the age-e cloth bake and raycast the actual frame beneath each crust. Back pads moved down 3.491 to 3.514 mm and seats by 0.044 to 0.049 mm. All six support gaps passed. Cloth self-crossings remain."
+    }
+  ]
 }

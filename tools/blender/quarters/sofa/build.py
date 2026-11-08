@@ -40,14 +40,26 @@ def export(path):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--output', type=Path, default=OUT)
+    ap.add_argument('--output', type=Path)
+    ap.add_argument('--aged', action='store_true')
     ap.add_argument('--render-dir', type=Path)
     args = ap.parse_args(sys.argv[sys.argv.index('--') + 1:])
-    out = args.output if args.output.is_absolute() else ROOT / args.output
+    target = args.output or (OUT.with_name('sofa_aged.glb') if args.aged else OUT)
+    out = target if target.is_absolute() else ROOT / target
     out.parent.mkdir(parents=True, exist_ok=True)
-    bpy.ops.wm.open_mainfile(filepath=str(SOURCE))
-    export(out)
-    if args.render_dir:
+    if args.aged:
+        sys.path.insert(0, str(ROOT / 'tools/blender/quarters_aging'))
+        from common import export as export_aged
+        bpy.ops.wm.open_mainfile(filepath=str(SOURCE.with_name('sofa-aged.blend')))
+        export_aged(out)
+    else:
+        bpy.ops.wm.open_mainfile(filepath=str(SOURCE))
+        export(out)
+    if args.render_dir and args.aged:
+        sys.path.insert(0, str(ROOT / 'tools/blender/quarters_aging'))
+        import render
+        render.render('sofa', args.render_dir.resolve())
+    elif args.render_dir:
         sys.path.insert(0, str(Path(__file__).resolve().parent))
         import render
         render.render(args.render_dir if args.render_dir.is_absolute() else ROOT / args.render_dir)

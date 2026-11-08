@@ -2432,5 +2432,1136 @@
     "detail_tries": 10,
     "verify_pass": true,
     "visual_review": "Unavailable: local image-model endpoints refused connection or returned HTTP 500."
-  }
+  },
+  "aging": [
+    {
+      "trial": "age-a",
+      "seed": 9521,
+      "parameters": {
+        "trial": "age-a",
+        "seed": 9521,
+        "parts": [
+          "TunicBody",
+          "Collar",
+          "ShoulderBoard_L",
+          "ShoulderBoard_R",
+          "Placket",
+          "Buttons",
+          "CollarInsignia_L",
+          "CollarInsignia_R",
+          "RibbonBar",
+          "Medal",
+          "Hanger"
+        ],
+        "asset": "assets/props/quarters/dress_uniform_aged.glb",
+        "colliders": [
+          "Hanger"
+        ],
+        "floor_z_m": -0.95,
+        "cloth": {
+          "TunicBody": {
+            "kind": "tunic",
+            "protected_details": [
+              "Collar",
+              "ShoulderBoard_L",
+              "ShoulderBoard_R",
+              "Placket",
+              "Buttons",
+              "RibbonBar",
+              "Medal"
+            ],
+            "stress_slits_xz_m": [
+              [
+                -0.15,
+                -0.31,
+                0.025,
+                0.115,
+                -0.25
+              ],
+              [
+                0.17,
+                -0.28,
+                0.02,
+                0.075,
+                0.3
+              ],
+              [
+                -0.26,
+                -0.29,
+                0.024,
+                0.08,
+                -0.3
+              ],
+              [
+                -0.12,
+                -0.63,
+                0.027,
+                0.14,
+                0.07
+              ],
+              [
+                0.14,
+                -0.64,
+                0.026,
+                0.135,
+                -0.09
+              ],
+              [
+                -0.34,
+                -0.6,
+                0.021,
+                0.105,
+                0.08
+              ],
+              [
+                0.34,
+                -0.66,
+                0.016,
+                0.12,
+                -0.1
+              ]
+            ],
+            "stress_jitter_m": 0.007,
+            "detail_protection_m": 0.013,
+            "detail_pin_radius_m": 0.02,
+            "hem_z_m": -0.88,
+            "hem_loss_m": 0.032,
+            "lateral_shrink": 0.12,
+            "thickness_m": 0.0016,
+            "fray_probability": 0.35,
+            "cloth": {
+              "quality": 24,
+              "frames": 200,
+              "time_scale": 0.25,
+              "mass": 0.18,
+              "stiffness": 150,
+              "bending": 0.08,
+              "self_collision": true,
+              "self_distance_m": 0.003,
+              "collision_distance_m": 0.002
+            }
+          }
+        },
+        "debris": {
+          "source": "TunicBody",
+          "name": "FibreDust",
+          "material": "FibreDust",
+          "color": [
+            0.31,
+            0.27,
+            0.21
+          ],
+          "center_blender_m": [
+            0,
+            0,
+            -0.95
+          ],
+          "drop_height_m": 0.95,
+          "radius_xy_m": [
+            0.22,
+            0.07
+          ],
+          "count": 190,
+          "piece_size_m": [
+            0.0015,
+            0.005
+          ],
+          "piece_thickness_m": 0.00025,
+          "heap_height_m": 0.005,
+          "floor_gap_m": 0.0002
+        }
+      },
+      "foam": {},
+      "cloth": {
+        "TunicBody": {
+          "frames": 200,
+          "retained_pins": 225,
+          "last_five_frames_motion_m": 0.004652855451344584,
+          "seed": 10521,
+          "removed_reference_area_m2": 0.1384766450501047,
+          "original_midsurface_area_m2": 1.0418417344044428,
+          "removed_reference_fraction": 0.13291524084439113,
+          "fray_triangles": 159,
+          "thickness_m": 0.0016
+        }
+      },
+      "debris": {
+        "pieces": 156,
+        "seed": 11521,
+        "floor_z_m": -0.95,
+        "templates": 3
+      },
+      "gates": {
+        "pass": false,
+        "triangles": {
+          "unaged": 13768,
+          "aged": 14707,
+          "ratio": 1.0682016269610692,
+          "limit_ratio": 1.5,
+          "pass": true
+        },
+        "pivots_and_origin_unchanged": true,
+        "preserved_names": true,
+        "byte_identical_reexport": true,
+        "unchanged_geometry": {
+          "Hanger": true
+        },
+        "cloth_holes": {
+          "reference_surface_loss_fraction": 0.1235138326883316,
+          "band": [
+            0.08,
+            0.25
+          ],
+          "pass": true
+        },
+        "front_silhouette": {
+          "iou": 0.6429892194240141,
+          "band": [
+            0.6,
+            0.85
+          ],
+          "pass": true
+        },
+        "fibre_dust": {
+          "nominal_floor_y_m": -0.95,
+          "bottom_y_m": -0.9498000144958496,
+          "pass": true
+        },
+        "detail_attachment_gaps_m": {
+          "Medal": 0.0029049696933615117,
+          "RibbonBar": 0.0018505182317135299,
+          "CollarInsignia_R": 0.0007000992351735003,
+          "CollarInsignia_L": 0.0007001312098860299,
+          "Buttons": 0.0022654938778119325,
+          "Placket": 0.0018503396916656413,
+          "ShoulderBoard_R": 0.0018501209936366686,
+          "ShoulderBoard_L": 0.001846135476733912,
+          "Collar": 0.002665217010220351
+        },
+        "intersections": {
+          "pass": false,
+          "sampled_inward_depth_max_m": 0.003233578451733173,
+          "limit_m": 0.001
+        }
+      },
+      "result": "Uniform 1.6 mm thickness opened medal, collar and button attachment gaps beyond 2 mm. Hole area and silhouette passed."
+    },
+    {
+      "trial": "age-b",
+      "seed": 9521,
+      "parameters": {
+        "trial": "age-b",
+        "seed": 9521,
+        "parts": [
+          "TunicBody",
+          "Collar",
+          "ShoulderBoard_L",
+          "ShoulderBoard_R",
+          "Placket",
+          "Buttons",
+          "CollarInsignia_L",
+          "CollarInsignia_R",
+          "RibbonBar",
+          "Medal",
+          "Hanger"
+        ],
+        "asset": "assets/props/quarters/dress_uniform_aged.glb",
+        "colliders": [
+          "Hanger"
+        ],
+        "floor_z_m": -0.95,
+        "cloth": {
+          "TunicBody": {
+            "kind": "tunic",
+            "protected_details": [
+              "Collar",
+              "ShoulderBoard_L",
+              "ShoulderBoard_R",
+              "Placket",
+              "Buttons",
+              "RibbonBar",
+              "Medal"
+            ],
+            "stress_slits_xz_m": [
+              [
+                -0.15,
+                -0.31,
+                0.025,
+                0.115,
+                -0.25
+              ],
+              [
+                0.17,
+                -0.28,
+                0.02,
+                0.075,
+                0.3
+              ],
+              [
+                -0.26,
+                -0.29,
+                0.024,
+                0.08,
+                -0.3
+              ],
+              [
+                -0.12,
+                -0.63,
+                0.027,
+                0.14,
+                0.07
+              ],
+              [
+                0.14,
+                -0.64,
+                0.026,
+                0.135,
+                -0.09
+              ],
+              [
+                -0.34,
+                -0.6,
+                0.021,
+                0.105,
+                0.08
+              ],
+              [
+                0.34,
+                -0.66,
+                0.016,
+                0.12,
+                -0.1
+              ]
+            ],
+            "stress_jitter_m": 0.007,
+            "detail_protection_m": 0.013,
+            "detail_pin_radius_m": 0.02,
+            "hem_z_m": -0.88,
+            "hem_loss_m": 0.032,
+            "lateral_shrink": 0.12,
+            "thickness_m": 0.0035,
+            "fray_probability": 0.35,
+            "cloth": {
+              "quality": 24,
+              "frames": 280,
+              "time_scale": 0.25,
+              "mass": 0.18,
+              "stiffness": 150,
+              "bending": 0.08,
+              "self_collision": true,
+              "self_distance_m": 0.003,
+              "collision_distance_m": 0.002
+            }
+          }
+        },
+        "debris": {
+          "source": "TunicBody",
+          "name": "FibreDust",
+          "material": "FibreDust",
+          "color": [
+            0.31,
+            0.27,
+            0.21
+          ],
+          "center_blender_m": [
+            0,
+            0,
+            -0.95
+          ],
+          "drop_height_m": 0.95,
+          "radius_xy_m": [
+            0.22,
+            0.07
+          ],
+          "count": 190,
+          "piece_size_m": [
+            0.0015,
+            0.005
+          ],
+          "piece_thickness_m": 0.00025,
+          "heap_height_m": 0.005,
+          "floor_gap_m": 0.0002
+        }
+      },
+      "foam": {},
+      "cloth": {
+        "TunicBody": {
+          "frames": 280,
+          "retained_pins": 225,
+          "last_five_frames_motion_m": 0.0018885382031344385,
+          "seed": 10521,
+          "removed_reference_area_m2": 0.1384766450501047,
+          "original_midsurface_area_m2": 1.0418417344044428,
+          "removed_reference_fraction": 0.13291524084439113,
+          "fray_triangles": 0,
+          "thickness_m": 0.0035
+        }
+      },
+      "debris": {
+        "pieces": 156,
+        "seed": 11521,
+        "floor_z_m": -0.95,
+        "templates": 3
+      },
+      "gates": {
+        "pass": false,
+        "triangles": {
+          "unaged": 13768,
+          "aged": 14548,
+          "ratio": 1.056653108657757,
+          "limit_ratio": 1.5,
+          "pass": true
+        },
+        "pivots_and_origin_unchanged": true,
+        "preserved_names": true,
+        "byte_identical_reexport": true,
+        "unchanged_geometry": {
+          "Hanger": true
+        },
+        "cloth_holes": {
+          "reference_surface_loss_fraction": 0.1235138326883316,
+          "band": [
+            0.08,
+            0.25
+          ],
+          "pass": true
+        },
+        "front_silhouette": {
+          "iou": 0.643375860837689,
+          "band": [
+            0.6,
+            0.85
+          ],
+          "pass": true
+        },
+        "fibre_dust": {
+          "nominal_floor_y_m": -0.95,
+          "bottom_y_m": -0.9498000144958496,
+          "pass": true
+        },
+        "detail_attachment_gaps_m": {
+          "Medal": 0.00196882754669914,
+          "RibbonBar": 0.001273526907223725,
+          "CollarInsignia_R": 0.0007000992351735003,
+          "CollarInsignia_L": 0.0007001312098860299,
+          "Buttons": 0.0013181797916967703,
+          "Placket": 0.001073454002659288,
+          "ShoulderBoard_R": 0.0009427727394925507,
+          "ShoulderBoard_L": 0.0009306223743734095,
+          "Collar": 0.0017492715928989215
+        },
+        "intersections": {
+          "pass": false,
+          "sampled_inward_depth_max_m": 0.003233578451733173,
+          "limit_m": 0.001
+        }
+      },
+      "result": "Retained 3.5 mm thickness at protected attachment patches and thinned hanging wool. Every attachment gap passed."
+    },
+    {
+      "trial": "age-c",
+      "seed": 9521,
+      "parameters": {
+        "trial": "age-c",
+        "seed": 9521,
+        "parts": [
+          "TunicBody",
+          "Collar",
+          "ShoulderBoard_L",
+          "ShoulderBoard_R",
+          "Placket",
+          "Buttons",
+          "CollarInsignia_L",
+          "CollarInsignia_R",
+          "RibbonBar",
+          "Medal",
+          "Hanger"
+        ],
+        "asset": "assets/props/quarters/dress_uniform_aged.glb",
+        "colliders": [
+          "Hanger"
+        ],
+        "floor_z_m": -0.95,
+        "cloth": {
+          "TunicBody": {
+            "kind": "tunic",
+            "protected_details": [
+              "Collar",
+              "ShoulderBoard_L",
+              "ShoulderBoard_R",
+              "Placket",
+              "Buttons",
+              "RibbonBar",
+              "Medal"
+            ],
+            "stress_slits_xz_m": [
+              [
+                -0.15,
+                -0.31,
+                0.025,
+                0.115,
+                -0.25
+              ],
+              [
+                0.17,
+                -0.28,
+                0.02,
+                0.075,
+                0.3
+              ],
+              [
+                -0.26,
+                -0.29,
+                0.024,
+                0.08,
+                -0.3
+              ],
+              [
+                -0.12,
+                -0.63,
+                0.027,
+                0.14,
+                0.07
+              ],
+              [
+                0.14,
+                -0.64,
+                0.026,
+                0.135,
+                -0.09
+              ],
+              [
+                -0.34,
+                -0.6,
+                0.021,
+                0.105,
+                0.08
+              ],
+              [
+                0.34,
+                -0.66,
+                0.016,
+                0.12,
+                -0.1
+              ]
+            ],
+            "stress_jitter_m": 0.007,
+            "detail_protection_m": 0.013,
+            "detail_pin_radius_m": 0.02,
+            "hem_z_m": -0.88,
+            "hem_loss_m": 0.032,
+            "lateral_shrink": 0.12,
+            "thickness_m": 0.0035,
+            "fray_probability": 0.35,
+            "cloth": {
+              "quality": 24,
+              "frames": 280,
+              "time_scale": 0.25,
+              "mass": 0.18,
+              "stiffness": 150,
+              "bending": 0.08,
+              "self_collision": true,
+              "self_distance_m": 0.003,
+              "collision_distance_m": 0.002
+            },
+            "fray_obstacles": [
+              "Hanger"
+            ]
+          }
+        },
+        "debris": {
+          "source": "TunicBody",
+          "name": "FibreDust",
+          "material": "FibreDust",
+          "color": [
+            0.31,
+            0.27,
+            0.21
+          ],
+          "center_blender_m": [
+            0,
+            0,
+            -0.95
+          ],
+          "drop_height_m": 0.95,
+          "radius_xy_m": [
+            0.22,
+            0.07
+          ],
+          "count": 190,
+          "piece_size_m": [
+            0.0015,
+            0.005
+          ],
+          "piece_thickness_m": 0.00025,
+          "heap_height_m": 0.005,
+          "floor_gap_m": 0.0002
+        }
+      },
+      "foam": {},
+      "cloth": {
+        "TunicBody": {
+          "frames": 280,
+          "retained_pins": 225,
+          "last_five_frames_motion_m": 0.0018885382031344385,
+          "seed": 10521,
+          "removed_reference_area_m2": 0.1384766450501047,
+          "original_midsurface_area_m2": 1.0418417344044428,
+          "removed_reference_fraction": 0.13291524084439113,
+          "fray_triangles": 167,
+          "thickness_m": 0.0035
+        }
+      },
+      "debris": {
+        "pieces": 156,
+        "seed": 11521,
+        "floor_z_m": -0.95,
+        "templates": 3
+      },
+      "gates": {
+        "pass": false,
+        "triangles": {
+          "unaged": 13768,
+          "aged": 16552,
+          "ratio": 1.2022080185938409,
+          "limit_ratio": 1.5,
+          "pass": true
+        },
+        "pivots_and_origin_unchanged": true,
+        "preserved_names": true,
+        "byte_identical_reexport": true,
+        "unchanged_geometry": {
+          "Hanger": true
+        },
+        "cloth_holes": {
+          "reference_surface_loss_fraction": 0.1235138326883316,
+          "band": [
+            0.08,
+            0.25
+          ],
+          "pass": true
+        },
+        "front_silhouette": {
+          "iou": 0.6438551298236037,
+          "band": [
+            0.6,
+            0.85
+          ],
+          "pass": true
+        },
+        "fibre_dust": {
+          "nominal_floor_y_m": -0.95,
+          "bottom_y_m": -0.9498000144958496,
+          "pass": true
+        },
+        "detail_attachment_gaps_m": {
+          "Medal": 0.00196882754669914,
+          "RibbonBar": 0.0010341173232933612,
+          "CollarInsignia_R": 0.0007000992351735003,
+          "CollarInsignia_L": 0.0007001312098860299,
+          "Buttons": 0.0013181797916967703,
+          "Placket": 0.001073454002659288,
+          "ShoulderBoard_R": 0.0009427727394925507,
+          "ShoulderBoard_L": 0.0009306223743734095,
+          "Collar": 0.0017492715928989215
+        },
+        "intersections": {
+          "pass": false,
+          "sampled_inward_depth_max_m": 0.003233578451733173,
+          "limit_m": 0.001,
+          "unchanged_assembly_depth_max_m": 0.003233578451733173,
+          "changed_geometry_depth_max_m": 0.00025644471545526083,
+          "self_intersection_free": false,
+          "self_edge_hits": {
+            "TunicBody": 289
+          }
+        }
+      },
+      "result": "Extended frays from narrow boundary splits before applying thickness. The cloth still had self-crossings."
+    },
+    {
+      "trial": "age-d",
+      "seed": 9521,
+      "parameters": {
+        "trial": "age-d",
+        "seed": 9521,
+        "parts": [
+          "TunicBody",
+          "Collar",
+          "ShoulderBoard_L",
+          "ShoulderBoard_R",
+          "Placket",
+          "Buttons",
+          "CollarInsignia_L",
+          "CollarInsignia_R",
+          "RibbonBar",
+          "Medal",
+          "Hanger"
+        ],
+        "asset": "assets/props/quarters/dress_uniform_aged.glb",
+        "colliders": [
+          "Hanger"
+        ],
+        "floor_z_m": -0.95,
+        "cloth": {
+          "TunicBody": {
+            "kind": "tunic",
+            "protected_details": [
+              "Collar",
+              "ShoulderBoard_L",
+              "ShoulderBoard_R",
+              "Placket",
+              "Buttons",
+              "RibbonBar",
+              "Medal"
+            ],
+            "stress_slits_xz_m": [
+              [
+                -0.15,
+                -0.31,
+                0.025,
+                0.115,
+                -0.25
+              ],
+              [
+                0.17,
+                -0.28,
+                0.02,
+                0.075,
+                0.3
+              ],
+              [
+                -0.26,
+                -0.29,
+                0.024,
+                0.08,
+                -0.3
+              ],
+              [
+                -0.12,
+                -0.63,
+                0.027,
+                0.14,
+                0.07
+              ],
+              [
+                0.14,
+                -0.64,
+                0.026,
+                0.135,
+                -0.09
+              ],
+              [
+                -0.34,
+                -0.6,
+                0.021,
+                0.105,
+                0.08
+              ],
+              [
+                0.34,
+                -0.66,
+                0.016,
+                0.12,
+                -0.1
+              ]
+            ],
+            "stress_jitter_m": 0.007,
+            "detail_protection_m": 0.013,
+            "detail_pin_radius_m": 0.02,
+            "hem_z_m": -0.88,
+            "hem_loss_m": 0.032,
+            "lateral_shrink": 0.12,
+            "thickness_m": 0.0035,
+            "fray_probability": 0.35,
+            "cloth": {
+              "quality": 30,
+              "frames": 320,
+              "time_scale": 0.25,
+              "mass": 0.18,
+              "stiffness": 150,
+              "bending": 0.08,
+              "self_collision": true,
+              "self_distance_m": 0.004,
+              "collision_distance_m": 0.002
+            },
+            "fray_obstacles": [
+              "Hanger",
+              "AgingFloorCollider"
+            ],
+            "retained_seam_boxes_xz_m": [
+              [
+                -0.31,
+                -0.22,
+                -0.25,
+                -0.195
+              ]
+            ]
+          }
+        },
+        "debris": {
+          "source": "TunicBody",
+          "name": "FibreDust",
+          "material": "FibreDust",
+          "color": [
+            0.31,
+            0.27,
+            0.21
+          ],
+          "center_blender_m": [
+            0,
+            0,
+            -0.95
+          ],
+          "drop_height_m": 0.95,
+          "radius_xy_m": [
+            0.22,
+            0.07
+          ],
+          "count": 190,
+          "piece_size_m": [
+            0.0015,
+            0.005
+          ],
+          "piece_thickness_m": 0.00025,
+          "heap_height_m": 0.005,
+          "floor_gap_m": 0.0002
+        }
+      },
+      "foam": {},
+      "cloth": {
+        "TunicBody": {
+          "frames": 320,
+          "retained_pins": 225,
+          "last_five_frames_motion_m": 0.0027144146422751966,
+          "seed": 10521,
+          "removed_reference_area_m2": 0.13623536424711347,
+          "original_midsurface_area_m2": 1.0418417344044428,
+          "removed_reference_fraction": 0.13076397282643978,
+          "fray_triangles": 168,
+          "thickness_m": 0.0035,
+          "cut_surface_component_areas_m2": [
+            0.1415827275486663,
+            0.7640236436855048
+          ]
+        }
+      },
+      "debris": {
+        "pieces": 156,
+        "seed": 11521,
+        "floor_z_m": -0.95,
+        "templates": 3
+      },
+      "gates": {
+        "pass": false,
+        "triangles": {
+          "unaged": 13768,
+          "aged": 16584,
+          "ratio": 1.2045322486926207,
+          "limit_ratio": 1.5,
+          "pass": true
+        },
+        "pivots_and_origin_unchanged": true,
+        "preserved_names": true,
+        "byte_identical_reexport": true,
+        "unchanged_geometry": {
+          "Hanger": true
+        },
+        "unchanged_geometry_bytes": {
+          "Hanger": true
+        },
+        "cloth_holes": {
+          "reference_surface_loss_fraction": 0.12146440148353577,
+          "band": [
+            0.08,
+            0.25
+          ],
+          "pass": true
+        },
+        "front_silhouette": {
+          "iou": 0.6476393286852253,
+          "band": [
+            0.6,
+            0.85
+          ],
+          "pass": true
+        },
+        "fibre_dust": {
+          "nominal_floor_y_m": -0.95,
+          "bottom_y_m": -0.9498000144958496,
+          "pass": true
+        },
+        "detail_attachment_gaps_m": {
+          "Medal": 0.0019688062497227226,
+          "RibbonBar": 0.001594977661922998,
+          "CollarInsignia_R": 0.0007000992351735003,
+          "CollarInsignia_L": 0.0007001312098860299,
+          "Buttons": 0.0013181797916967703,
+          "Placket": 0.0010734522012976057,
+          "ShoulderBoard_R": 0.0009419728895994169,
+          "ShoulderBoard_L": 0.0009195930367120558,
+          "Collar": 0.0017492971479221597
+        },
+        "intersections": {
+          "pass": false,
+          "sampled_inward_depth_max_m": 0.003233578451733173,
+          "limit_m": 0.001,
+          "unchanged_assembly_depth_max_m": 0.003233578451733173,
+          "changed_geometry_depth_max_m": 0.00025642956045582733,
+          "self_intersection_free": false,
+          "self_edge_hits": {
+            "TunicBody": 194
+          }
+        }
+      },
+      "result": "Thinned fibre sections. A retained top seam box did not stop the sleeve being completely severed lower in its cap."
+    },
+    {
+      "trial": "age-e",
+      "seed": 9521,
+      "parameters": {
+        "trial": "age-e",
+        "seed": 9521,
+        "parts": [
+          "TunicBody",
+          "Collar",
+          "ShoulderBoard_L",
+          "ShoulderBoard_R",
+          "Placket",
+          "Buttons",
+          "CollarInsignia_L",
+          "CollarInsignia_R",
+          "RibbonBar",
+          "Medal",
+          "Hanger"
+        ],
+        "asset": "assets/props/quarters/dress_uniform_aged.glb",
+        "colliders": [
+          "Hanger"
+        ],
+        "floor_z_m": -0.95,
+        "cloth": {
+          "TunicBody": {
+            "kind": "tunic",
+            "protected_details": [
+              "Collar",
+              "ShoulderBoard_L",
+              "ShoulderBoard_R",
+              "Placket",
+              "Buttons",
+              "RibbonBar",
+              "Medal"
+            ],
+            "stress_slits_xz_m": [
+              [
+                -0.15,
+                -0.31,
+                0.025,
+                0.115,
+                -0.25
+              ],
+              [
+                0.17,
+                -0.28,
+                0.02,
+                0.075,
+                0.3
+              ],
+              [
+                -0.26,
+                -0.29,
+                0.024,
+                0.08,
+                -0.3
+              ],
+              [
+                -0.12,
+                -0.63,
+                0.027,
+                0.14,
+                0.07
+              ],
+              [
+                0.14,
+                -0.64,
+                0.026,
+                0.135,
+                -0.09
+              ],
+              [
+                -0.34,
+                -0.6,
+                0.021,
+                0.105,
+                0.08
+              ],
+              [
+                0.34,
+                -0.66,
+                0.016,
+                0.12,
+                -0.1
+              ]
+            ],
+            "stress_jitter_m": 0.007,
+            "detail_protection_m": 0.013,
+            "detail_pin_radius_m": 0.02,
+            "hem_z_m": -0.88,
+            "hem_loss_m": 0.032,
+            "lateral_shrink": 0.12,
+            "thickness_m": 0.0035,
+            "fray_probability": 0.35,
+            "cloth": {
+              "quality": 30,
+              "frames": 320,
+              "time_scale": 0.25,
+              "mass": 0.18,
+              "stiffness": 150,
+              "bending": 0.08,
+              "self_collision": true,
+              "self_distance_m": 0.004,
+              "collision_distance_m": 0.002
+            },
+            "fray_obstacles": [
+              "Hanger",
+              "AgingFloorCollider"
+            ],
+            "retained_seam_boxes_xz_m": [
+              [
+                -0.31,
+                -0.22,
+                -0.25,
+                -0.195
+              ]
+            ],
+            "retained_seam_boxes_xyz_m": [
+              [
+                -0.39,
+                -0.2,
+                0,
+                0.1,
+                -0.5,
+                -0.22
+              ]
+            ]
+          }
+        },
+        "debris": {
+          "source": "TunicBody",
+          "name": "FibreDust",
+          "material": "FibreDust",
+          "color": [
+            0.31,
+            0.27,
+            0.21
+          ],
+          "center_blender_m": [
+            0,
+            0,
+            -0.95
+          ],
+          "drop_height_m": 0.95,
+          "radius_xy_m": [
+            0.22,
+            0.07
+          ],
+          "count": 190,
+          "piece_size_m": [
+            0.0015,
+            0.005
+          ],
+          "piece_thickness_m": 0.00025,
+          "heap_height_m": 0.005,
+          "floor_gap_m": 0.0002
+        }
+      },
+      "foam": {},
+      "cloth": {
+        "TunicBody": {
+          "frames": 320,
+          "retained_pins": 225,
+          "last_five_frames_motion_m": 0.001466302464476135,
+          "seed": 10521,
+          "removed_reference_area_m2": 0.13006656436482444,
+          "original_midsurface_area_m2": 1.0418417344044428,
+          "removed_reference_fraction": 0.12484292006134266,
+          "fray_triangles": 171,
+          "thickness_m": 0.0035,
+          "cut_surface_component_areas_m2": [
+            0.9117751711164601
+          ]
+        }
+      },
+      "debris": {
+        "pieces": 156,
+        "seed": 11521,
+        "floor_z_m": -0.95,
+        "templates": 3
+      },
+      "gates": {
+        "pass": false,
+        "triangles": {
+          "unaged": 13768,
+          "aged": 16640,
+          "ratio": 1.208599651365485,
+          "limit_ratio": 1.5,
+          "pass": true
+        },
+        "pivots_and_origin_unchanged": true,
+        "preserved_names": true,
+        "byte_identical_reexport": true,
+        "unchanged_geometry": {
+          "Hanger": true
+        },
+        "unchanged_geometry_bytes": {
+          "Hanger": true
+        },
+        "cloth_holes": {
+          "reference_surface_loss_fraction": 0.11576161533594131,
+          "band": [
+            0.08,
+            0.25
+          ],
+          "pass": true
+        },
+        "front_silhouette": {
+          "iou": 0.7023153699852284,
+          "band": [
+            0.6,
+            0.85
+          ],
+          "pass": true
+        },
+        "fibre_dust": {
+          "nominal_floor_y_m": -0.95,
+          "bottom_y_m": -0.9498000144958496,
+          "pass": true
+        },
+        "cloth_connected_components": 1,
+        "detail_attachment_gaps_m": {
+          "Medal": 0.0019687572364740598,
+          "RibbonBar": 0.0009671989649831368,
+          "CollarInsignia_R": 0.0007000992351735003,
+          "CollarInsignia_L": 0.0007001312098860299,
+          "Buttons": 0.0013181797916967703,
+          "Placket": 0.001073451121712801,
+          "ShoulderBoard_R": 0.0009393461759838623,
+          "ShoulderBoard_L": 0.0009201508185025832,
+          "Collar": 0.0017492807801823083
+        },
+        "intersections": {
+          "pass": false,
+          "sampled_inward_depth_max_m": 0.003233578451733173,
+          "limit_m": 0.001,
+          "unchanged_assembly_depth_max_m": 0.003233578451733173,
+          "changed_geometry_depth_max_m": 0.00025642918862138714,
+          "self_intersection_free": false,
+          "self_edge_hits": {
+            "TunicBody": 180
+          }
+        }
+      },
+      "result": "Retained the back half of the sleeve cap across the full stress region. The garment is one connected piece; hole area, silhouette, details, triangle count and re-export pass. Cloth self-crossings remain."
+    }
+  ]
 }

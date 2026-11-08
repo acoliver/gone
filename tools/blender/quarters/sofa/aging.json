@@ -1,0 +1,138 @@
+{
+  "trial": "age-f-support-fit",
+  "seed": 9501,
+  "parts": [
+    "Frame",
+    "Feet",
+    "Rivets",
+    "SeatCushion_L",
+    "SeatCushion_C",
+    "SeatCushion_R",
+    "BackCushion_L",
+    "BackCushion_C",
+    "BackCushion_R",
+    "Throw"
+  ],
+  "asset": "assets/props/quarters/sofa_aged.glb",
+  "colliders": [
+    "Frame"
+  ],
+  "floor_z_m": 0,
+  "foam": {
+    "names": [
+      "SeatCushion_L",
+      "SeatCushion_C",
+      "SeatCushion_R",
+      "BackCushion_L",
+      "BackCushion_C",
+      "BackCushion_R"
+    ],
+    "support_z_m": 0.3898,
+    "support_gap_m": 0.0006,
+    "height_ratio": 0.31,
+    "core_reduction": 0.3,
+    "voronoi_cells": 12,
+    "crack_width_m": 0.0025,
+    "cover_lift_m": 0.0015,
+    "pin_height_m": 0.01,
+    "cover_loss_fraction": 0.1,
+    "cover_thickness_m": 0.0004,
+    "cloth": {
+      "quality": 16,
+      "frames": 100,
+      "time_scale": 0.35,
+      "mass": 0.025,
+      "stiffness": 180,
+      "bending": 0.2,
+      "self_collision": true,
+      "collision_distance_m": 0.0008
+    },
+    "cover_reduction": 0.8,
+    "back_support_y_shift_m": -0.045,
+    "contact_clearance_m": 0.0025,
+    "back_depth_ratio": 0.7,
+    "support": "Frame"
+  },
+  "cloth": {
+    "Throw": {
+      "kind": "throw",
+      "stress_slits_xz_m": [
+        [
+          1.13,
+          0.53,
+          0.012,
+          0.15,
+          0.05
+        ],
+        [
+          0.94,
+          0.62,
+          0.0096,
+          0.14,
+          -0.05
+        ],
+        [
+          1.09,
+          0.71,
+          0.01296,
+          0.085,
+          0.15
+        ]
+      ],
+      "stress_jitter_m": 0.006,
+      "detail_protection_m": 0.012,
+      "detail_pin_radius_m": 0.02,
+      "hem_z_m": 0.375,
+      "hem_loss_m": 0.012,
+      "retained_corner_z_m": 0.79,
+      "retained_corner_y_m": -0.26,
+      "thickness_m": 0.0018,
+      "fray_probability": 0.3,
+      "cloth": {
+        "quality": 30,
+        "frames": 400,
+        "time_scale": 0.35,
+        "mass": 0.15,
+        "stiffness": 80,
+        "bending": 0.25,
+        "self_collision": true,
+        "self_distance_m": 0.005,
+        "collision_distance_m": 0.0045,
+        "collision_quality": 16
+      },
+      "fray_obstacles": [
+        "Frame",
+        "SeatCushion_R",
+        "BackCushion_R",
+        "AgingFloorCollider"
+      ]
+    }
+  },
+  "debris": {
+    "source": "SeatCushion_C",
+    "name": "FoamDebris",
+    "material": "Foam",
+    "color": [
+      0.2,
+      0.09,
+      0.035
+    ],
+    "center_blender_m": [
+      0.15,
+      -0.55,
+      0
+    ],
+    "radius_xy_m": [
+      0.94,
+      0.12
+    ],
+    "count": 140,
+    "piece_size_m": [
+      0.003,
+      0.01
+    ],
+    "piece_thickness_m": 0.0006,
+    "heap_height_m": 0.005,
+    "floor_gap_m": 0.0002
+  }
+}

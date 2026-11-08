@@ -1,0 +1,174 @@
+{
+  "prop": "dress_uniform",
+  "unchanged_geometry": {
+    "Hanger": true
+  },
+  "unchanged_geometry_bytes": {
+    "Hanger": true
+  },
+  "pivots_and_origin_unchanged": true,
+  "preserved_names": true,
+  "triangles": {
+    "unaged": 13768,
+    "aged": 16640,
+    "ratio": 1.208599651365485,
+    "limit_ratio": 1.5,
+    "pass": true
+  },
+  "byte_identical_reexport": true,
+  "cloth_holes": {
+    "reference_surface_loss_fraction": 0.11576161533594131,
+    "band": [
+      0.08,
+      0.25
+    ],
+    "pass": true
+  },
+  "cloth_connected_components": 1,
+  "front_silhouette": {
+    "iou": 0.7023153699852284,
+    "band": [
+      0.6,
+      0.85
+    ],
+    "pass": true
+  },
+  "details": {
+    "Medal": {
+      "max_attachment_gap_m": 0.0019687572364740598,
+      "limit_m": 0.002,
+      "rigid_geometry_unchanged": true,
+      "pass": true
+    },
+    "RibbonBar": {
+      "max_attachment_gap_m": 0.0009671989649831368,
+      "limit_m": 0.002,
+      "rigid_geometry_unchanged": true,
+      "pass": true
+    },
+    "CollarInsignia_R": {
+      "max_attachment_gap_m": 0.0007000992351735003,
+      "limit_m": 0.002,
+      "rigid_geometry_unchanged": true,
+      "pass": true
+    },
+    "CollarInsignia_L": {
+      "max_attachment_gap_m": 0.0007001312098860299,
+      "limit_m": 0.002,
+      "rigid_geometry_unchanged": true,
+      "pass": true
+    },
+    "Buttons": {
+      "max_attachment_gap_m": 0.0013181797916967703,
+      "limit_m": 0.002,
+      "rigid_geometry_unchanged": true,
+      "pass": true
+    },
+    "Placket": {
+      "max_attachment_gap_m": 0.001073451121712801,
+      "limit_m": 0.002,
+      "rigid_geometry_unchanged": true,
+      "pass": true
+    },
+    "ShoulderBoard_R": {
+      "max_attachment_gap_m": 0.0009393461759838623,
+      "limit_m": 0.002,
+      "rigid_geometry_unchanged": true,
+      "pass": true
+    },
+    "ShoulderBoard_L": {
+      "max_attachment_gap_m": 0.0009201508185025832,
+      "limit_m": 0.002,
+      "rigid_geometry_unchanged": true,
+      "pass": true
+    },
+    "Collar": {
+      "max_attachment_gap_m": 0.0017492807801823083,
+      "limit_m": 0.002,
+      "rigid_geometry_unchanged": true,
+      "pass": true
+    }
+  },
+  "intersections": {
+    "sampled_inward_depth_max_m": 0.003233578451733173,
+    "limit_m": 0.001,
+    "pairs_m": {
+      "Collar:0/1": 0.0014999982476339082,
+      "Hanger:0/1": 0.003233578451733173,
+      "Medal/RibbonBar": 0.0004395115524687413,
+      "Medal/CollarInsignia_R": 0.0,
+      "Medal/CollarInsignia_L": 0.0,
+      "Medal/Buttons": 0.0,
+      "Medal/Placket": 0.0,
+      "Medal/ShoulderBoard_R": 0.0,
+      "Medal/ShoulderBoard_L": 0.0,
+      "Medal/Collar": 0.0,
+      "Medal/TunicBody": 0.00025642918862138714,
+      "Medal/Hanger": 0.0,
+      "RibbonBar/CollarInsignia_R": 0.0,
+      "RibbonBar/CollarInsignia_L": 0.0,
+      "RibbonBar/Buttons": 0.0,
+      "RibbonBar/Placket": 0.0,
+      "RibbonBar/ShoulderBoard_R": 0.0,
+      "RibbonBar/ShoulderBoard_L": 0.0,
+      "RibbonBar/Collar": 0.0,
+      "RibbonBar/TunicBody": 0.00010619883429836816,
+      "RibbonBar/Hanger": 0.0,
+      "CollarInsignia_R/CollarInsignia_L": 0.0,
+      "CollarInsignia_R/Buttons": 0.0,
+      "CollarInsignia_R/Placket": 0.0,
+      "CollarInsignia_R/ShoulderBoard_R": 0.0,
+      "CollarInsignia_R/ShoulderBoard_L": 0.0,
+      "CollarInsignia_R/Collar": 0.0,
+      "CollarInsignia_R/TunicBody": 0.0,
+      "CollarInsignia_R/Hanger": 0.0,
+      "CollarInsignia_L/Buttons": 0.0,
+      "CollarInsignia_L/Placket": 0.0,
+      "CollarInsignia_L/ShoulderBoard_R": 0.0,
+      "CollarInsignia_L/ShoulderBoard_L": 0.0,
+      "CollarInsignia_L/Collar": 0.0,
+      "CollarInsignia_L/TunicBody": 0.0,
+      "CollarInsignia_L/Hanger": 0.0,
+      "Buttons/Placket": 0.0003184794554403048,
+      "Buttons/ShoulderBoard_R": 0.0,
+      "Buttons/ShoulderBoard_L": 0.0,
+      "Buttons/Collar": 0.0,
+      "Buttons/TunicBody": 0.0,
+      "Buttons/Hanger": 0.0,
+      "Placket/ShoulderBoard_R": 0.0,
+      "Placket/ShoulderBoard_L": 0.0,
+      "Placket/Collar": 0.0,
+      "Placket/TunicBody": 0.0,
+      "Placket/Hanger": 0.0,
+      "ShoulderBoard_R/ShoulderBoard_L": 0.0,
+      "ShoulderBoard_R/Collar": 0.0,
+      "ShoulderBoard_R/TunicBody": 7.136619909918014e-05,
+      "ShoulderBoard_R/Hanger": 0.0,
+      "ShoulderBoard_L/Collar": 0.0,
+      "ShoulderBoard_L/TunicBody": 0.0001767681993431412,
+      "ShoulderBoard_L/Hanger": 0.0,
+      "Collar/TunicBody": 0.00019943088401465342,
+      "Collar/Hanger": 0.0,
+      "TunicBody/Hanger": 0.0
+    },
+    "open_components": [
+      "TunicBody:0"
+    ],
+    "method": "Bidirectional vertices, edge midpoints and triangle centres inside closed meshes. Open fray cards do not enclose volume. This is sampled penetration, not a continuous self-intersection proof.",
+    "pass": false,
+    "unchanged_assembly_depth_max_m": 0.003233578451733173,
+    "changed_geometry_depth_max_m": 0.00025642918862138714,
+    "nonadjacent_self_edge_crossings_by_component": {
+      "TunicBody": [
+        180
+      ]
+    },
+    "self_intersection_free": false
+  },
+  "fibre_dust": {
+    "nominal_floor_y_m": -0.95,
+    "bottom_y_m": -0.9498000144958496,
+    "pass": true
+  },
+  "pass": false
+}
