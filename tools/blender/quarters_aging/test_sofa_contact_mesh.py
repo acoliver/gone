@@ -48,16 +48,19 @@ class ContactMesh(unittest.TestCase):
 
 
 class TearRelaxation(unittest.TestCase):
-    def test_wide_relaxation_does_not_widen_lip_collision_exclusion(self):
+    def setUp(self):
         from fabric_mesh import material, new_object
-        from split_contacts import exclude_split_contacts
-        from tear_paths import split_polyline
         bpy.ops.wm.read_factory_settings(use_empty=True)
         n = 20
         points = [(i*.01, j*.01, 0) for j in range(n+1) for i in range(n+1)]
         faces = [(j*(n+1)+i, j*(n+1)+i+1, (j+1)*(n+1)+i+1, (j+1)*(n+1)+i)
                  for j in range(n) for i in range(n)]
-        obj = new_object('Relaxation control', points, faces, material('Control', (.1, .1, .1)))
+        self.obj = new_object('Relaxation control', points, faces, material('Control', (.1, .1, .1)))
+
+    def test_wide_relaxation_does_not_widen_lip_collision_exclusion(self):
+        from split_contacts import exclude_split_contacts
+        from tear_paths import split_polyline
+        obj = self.obj
         result = split_polyline(obj, [(.04, .10, 0), (.16, .10, 0)], shrink_band=.06)
         self.assertAlmostEqual(result['area_before_m2'], result['area_after_m2'])
         exclude_split_contacts(obj)
@@ -66,6 +69,43 @@ class TearRelaxation(unittest.TestCase):
         self.assertGreater(weights[obj.vertex_groups['Lip relaxation'].index], .4)
         self.assertNotIn(obj.vertex_groups['Lip shrink'].index, weights)
         self.assertNotIn(obj.vertex_groups['Self collision exclusion'].index, weights)
+
+    def test_length_limit_truncates_the_physical_cut_and_its_shrink_field(self):
+        from tear_paths import split_polyline
+        obj = self.obj
+        value = split_polyline(obj, [(.01, .10, 0), (.19, .10, 0)], max_length=.12)
+        self.assertGreater(value['split_length_m'], .11)
+        self.assertLessEqual(value['split_length_m'], .12)
+        self.assertAlmostEqual(value['area_before_m2'], value['area_after_m2'])
+        group = obj.vertex_groups['Lip shrink'].index
+        self.assertFalse(any(v.co.x > .15 and any(g.group == group for g in v.groups) for v in obj.data.vertices))
+
+
+class SeatOpeningContract(unittest.TestCase):
+    def test_three_seats_have_two_length_limited_splits_and_a_long_opening(self):
+        from foam_collapse import largest_shell
+        from seat_tears import author
+        from sofa_full_decay import open_cover_bottom
+        from sofa_decay_policy import cushion_plan
+        for name in ['SeatCushion_C', 'SeatCushion_L', 'SeatCushion_R']:
+            with self.subTest(part=name):
+                bpy.ops.wm.open_mainfile(filepath=str(SOURCE))
+                obj = bpy.data.objects[name]
+                obj.modifiers.clear()
+                largest_shell(obj)
+                open_cover_bottom(obj, False)
+                densify(obj, 2)
+                resolve_elements(obj)
+                value = author(obj, obj.matrix_world.translation.x, cushion_plan(name)['seed'])
+                self.assertEqual(len(value['paths']), 3)
+                for path in value['paths'][:2]:
+                    self.assertGreaterEqual(path['split_length_m'], .120)
+                    self.assertLessEqual(path['split_length_m'], .250)
+                self.assertGreaterEqual(value['fallen_island_reference_size_m'], .120)
+                self.assertLessEqual(value['fallen_island_reference_size_m'], .250)
+                self.assertTrue(all(path['removed_area_m2'] == 0 for path in value['paths']))
+
+
 
 
 class DebrisTemplates(unittest.TestCase):

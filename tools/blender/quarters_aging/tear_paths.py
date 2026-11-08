@@ -24,8 +24,10 @@ def grain_walk(start, length, seed, step=.004, angle=0.):
     return np.asarray(points)
 
 
-def split_polyline(obj, points, shrink_band=.008):
+def split_polyline(obj, points, shrink_band=.008, max_length=None):
     """Points are in local 3D space, normally lifted from the pattern UVs."""
+    if shrink_band <= 0 or (max_length is not None and max_length <= 0):
+        raise ValueError('Tear relaxation band and length limit must be positive')
     bm = bmesh.new()
     bm.from_mesh(obj.data)
     bm.verts.ensure_lookup_table()
@@ -46,6 +48,7 @@ def split_polyline(obj, points, shrink_band=.008):
         return np.linalg.norm(point-starts-t[:, None]*delta, axis=1).min()
     penalties = [distance(np.asarray(e.verts[0].co+e.verts[1].co)/2) for e in bm.edges]
     path = set()
+    path_length, stopped = 0., False
     for source, target in zip(targets, targets[1:]):
         if source == target:
             continue
@@ -67,10 +70,30 @@ def split_polyline(obj, points, shrink_band=.008):
             bm.free()
             raise ValueError('Tear crosses disconnected pattern islands')
         current = target
+        chain = []
         while current != source:
             current, edge_index = parents[current]
+            chain.append(edge_index)
+        for edge_index in reversed(chain):
+            if edge_index in path:
+                continue
+            edge = bm.edges[edge_index]
+            added_length = edge.calc_length() if len(edge.link_faces) == 2 else 0.
+            if max_length is not None and path_length+added_length > max_length:
+                stopped = True
+                break
             path.add(edge_index)
+            path_length += added_length
+        if stopped:
+            break
     edges = [bm.edges[i] for i in sorted(path) if len(bm.edges[i].link_faces) == 2]
+    if max_length is not None:
+        if not edges:
+            bm.free()
+            raise ValueError('Length-limited tear has no interior mesh edges')
+        starts = np.array([e.verts[0].co[:] for e in edges])
+        delta = np.array([e.verts[1].co[:] for e in edges])-starts
+        lengths2 = (delta*delta).sum(1)
     area = sum(f.calc_area() for f in bm.faces)
     split_length = sum(e.calc_length() for e in edges)
     bmesh.ops.split_edges(bm, edges=edges)
@@ -80,9 +103,6 @@ def split_polyline(obj, points, shrink_band=.008):
     lip = obj.vertex_groups.get('Lip shrink') or obj.vertex_groups.new(name='Lip shrink')
     relaxation = None
     if shrink_band != .008:
-        if shrink_band <= 0:
-            bm.free()
-            raise ValueError('Tear relaxation band must be positive')
         relaxation = obj.vertex_groups.get('Lip relaxation') or obj.vertex_groups.new(name='Lip relaxation')
     layer = bm.verts.layers.deform.verify()
     boundary_points = np.array([bm.verts[i].co[:] for i in sorted(lip_ids)]) if lip_ids else np.empty((0, 3))

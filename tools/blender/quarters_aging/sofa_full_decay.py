@@ -185,13 +185,10 @@ def prepare_cover(obj, plan, source):
         from seat_tears import author
         tears = author(obj, obj.matrix_world.translation.x, plan['seed'])
     welt = obj.vertex_groups.new(name='Welt')
-    exclusion = obj.vertex_groups.new(name='Self collision exclusion')
     for vertex in obj.data.vertices:
         p = obj.matrix_world@vertex.co
         wall = abs(vertex.normal.z) < .5
         welt.add([vertex.index], 1. if wall and p.z > (.80 if plan['back'] else .555) else .02 if wall else .5, 'REPLACE')
-        if not wall and not plan['back'] and not plan.get('joint'):
-            exclusion.add([vertex.index], 1., 'REPLACE')
     from split_contacts import exclude_split_contacts
     split_report = exclude_split_contacts(obj)
     rest = empty_rest(obj, plan)
@@ -225,17 +222,34 @@ def empty_rest(obj, plan):
     return rest
 
 
-def freeze_simulation(obj, mod, frames):
+def freeze_simulation(obj, mod, frames, trace_path=None):
     durations, samples = [], {}
     start = time.perf_counter()
     previous = None
+    contact_trace, previous_world = [], None
+    dt = mod.settings.time_scale*bpy.context.scene.render.fps_base/bpy.context.scene.render.fps
     for frame in range(1, frames+1):
         tick = time.perf_counter()
         bpy.context.scene.frame_set(frame)
         deps = bpy.context.evaluated_depsgraph_get()
         evaluated = obj.evaluated_get(deps)
         positions = np.array([v.co[:] for v in evaluated.data.vertices])
+        if not np.isfinite(positions).all():
+            raise ValueError(f'{obj.name} has non-finite vertices at frame {frame}')
         durations.append(time.perf_counter()-tick)
+        if trace_path is not None:
+            transform = np.array(evaluated.matrix_world)
+            world = positions @ transform[:3, :3].T+transform[:3, 3]
+            velocity = np.zeros_like(world) if previous_world is None else (world-previous_world)/dt
+            lowest = int(world[:, 2].argmin())
+            contact_trace.append({'frame': frame, 'floor_distance_min_m': float(world[lowest, 2]),
+                                  'centroid_m': world.mean(axis=0).tolist(),
+                                  'max_speed_m_s': float(np.linalg.norm(velocity, axis=1).max()),
+                                  'mean_velocity_m_s': velocity.mean(axis=0).tolist(),
+                                  'lowest_vertex_velocity_m_s': velocity[lowest].tolist()})
+            previous_world = world
+            if frame % 20 == 0 or frame == frames:
+                Path(trace_path).write_text(json.dumps(contact_trace, indent=2)+chr(10))
         if frame == frames-5:
             previous = positions.copy()
         if frame == 1 or frame % 20 == 0 or frame == frames:
@@ -297,13 +311,11 @@ def simulate_cushions(out, residue_source, resume=None, only=None, rest_mode='fi
         assert_collision_clear(evaluated)
         evaluated_count = len(evaluated.data.vertices)
         config = calibrated_config('upholstery', .2/34, .2/9, plan['frames'])
-        config.update(self_collision=True, shrink=.05, quality=16, collision_quality=4,
+        config.update(self_collision=True, shrink_min=.03, shrink=.05, quality=16, collision_quality=4,
                       distance=.0015, time_scale=.5, welt_bending=3.2, self_distance=.001)
         if settings:
             config.update({k: v for k, v in settings.items() if k not in {'collapse_frames', 'residue_height_scale', 'residue_warp'}})
         mod = configure(obj, config, detail['reference_vertices'], rest_shape=rest)
-        if obj.vertex_groups.get('Lip relaxation'):
-            mod.settings.vertex_group_shrink = 'Lip relaxation'
         mod.settings.mass = config['mass']*detail['reference_vertices']/evaluated_count
         checkpoint(out, record, name+'-prepared.blend')
         result = freeze_simulation(obj, mod, plan['frames'])

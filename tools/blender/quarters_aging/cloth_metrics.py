@@ -37,7 +37,7 @@ def lip_lift(obj):
     for i, point in enumerate(points):
         tree.insert(point, i)
     tree.balance()
-    total, lifted = 0., 0.
+    total, lifted, unmeasurable = 0., 0., 0.
     samples = []
     for edge in bm.edges:
         if not edge.is_boundary or max(v[layer].get(group, 0.) for v in edge.verts) < .5:
@@ -45,19 +45,24 @@ def lip_lift(obj):
         a, b = [v.index for v in edge.verts]
         middle = (points[a]+points[b])/2
         neighbours = np.array([points[i] for _, i, d in tree.find_range(middle, .020) if d >= .009])
-        if len(neighbours) < 3:
-            raise ValueError('Tear lip has insufficient local plane samples')
-        centre = neighbours.mean(0)
-        normal = np.linalg.svd(neighbours-centre)[2][-1]
-        height = abs(float((middle-centre)@normal))
         length = float(np.linalg.norm(points[a]-points[b]))
         total += length
-        lifted += length*(height > .003)
-        samples.append({'length_m': length, 'lift_m': height})
+        height = None
+        if len(neighbours) >= 3:
+            centre = neighbours.mean(0)
+            normal = np.linalg.svd(neighbours-centre)[2][-1]
+            height = abs(float((middle-centre)@normal))
+            lifted += length*(height > .003)
+        else:
+            # A short fractured strand has no panel plane and proves no lift.
+            unmeasurable += length
+        samples.append({'length_m': length, 'lift_m': height, 'plane_samples': len(neighbours),
+                        'midpoint_blender_m': middle.tolist()})
     bm.free()
     if total == 0:
         raise ValueError('No authored tear lips to measure')
-    return {'lip_length_m': total, 'lifted_length_m': lifted, 'fraction': lifted/total,
+    return {'lip_length_m': total, 'lifted_length_m': lifted, 'unmeasurable_length_m': unmeasurable,
+            'fraction': lifted/total,
             'threshold': .30, 'pass': lifted/total >= .30, 'samples': samples}
 
 

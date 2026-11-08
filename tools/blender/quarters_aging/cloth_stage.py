@@ -59,7 +59,7 @@ def configure(obj, config, reference_vertices, pins=None, rest_shape=None):
         s.vertex_group_mass = group.name
     if obj.vertex_groups.get('Lip shrink'):
         s.vertex_group_shrink = 'Lip shrink'
-        s.shrink_min = 0.
+        s.shrink_min = config.get('shrink_min', 0.)
         s.shrink_max = config.get('shrink', .04)
     if obj.vertex_groups.get('Welt'):
         s.vertex_group_bending = 'Welt'

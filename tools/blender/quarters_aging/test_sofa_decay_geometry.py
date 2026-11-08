@@ -82,6 +82,26 @@ class RestCarrier(unittest.TestCase):
         self.assertGreater(spans[1], .02)
         self.assertGreater(spans[2], .02)
 
+    def test_trace_records_world_floor_distance_and_each_frame_velocity(self):
+        import json
+        import tempfile
+        from cloth_stage import configure
+        from fabric_mesh import material, new_object
+        from sofa_full_decay import freeze_simulation
+        bpy.ops.wm.read_factory_settings(use_empty=True)
+        bpy.context.scene.gravity = (0, 0, 0)
+        obj = new_object('Trace control', [(0, 0, 0), (.1, 0, 0), (.1, .1, 0), (0, .1, 0)],
+                         [(0, 1, 2), (0, 2, 3)], material('Control', (.1, .1, .1)))
+        obj.location.z = .25
+        mod = configure(obj, dict(frames=10, quality=4, mass=.01, stiffness=100, bending=.25), 4)
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory)/'contact.json'
+            freeze_simulation(obj, mod, 10, trace_path=path)
+            rows = json.loads(path.read_text())
+        self.assertEqual([r['frame'] for r in rows], list(range(1, 11)))
+        self.assertTrue(all(abs(r['floor_distance_min_m']-.25) < .000001 for r in rows), rows)
+        self.assertTrue(all(r['max_speed_m_s'] == 0 for r in rows), rows)
+
     def test_part_groups_survive_subdivision_and_restore_original_pivots(self):
         from fabric_mesh import material, new_object
         from sofa_decay_joint import restore_part

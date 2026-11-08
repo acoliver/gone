@@ -1,4 +1,4 @@
-"""Grain-gradient seat splits, short branches, and a conserved fallen island."""
+"""Length-limited grain splits and a conserved narrow fallen island."""
 import bmesh
 import numpy as np
 from mathutils import Vector
@@ -14,10 +14,8 @@ def author(obj, centre_x=0., seed=9501):
         point = (start[0]+centre_x, start[1], start[2])
         path = surface_walk(obj, point, length, seed+i*11, step=.004, direction=(1, 0, 0))
         paths.append(path)
-        root = obj.matrix_world@Vector(path[len(path)//2])
-        paths.append(surface_walk(obj, root, .027, seed+i*11+1, direction=(0, 1, 0)))
-    # Two stepped lips enclose a 50 mm island. The local frame is taken from
-    # the fitted UV-gradient walk rather than a world-axis grain assumption.
+    # A tapered opening exposes the fallen island without a uniform-width slot.
+    # Its frame follows the fitted UV gradient, not an assumed world-axis grain.
     centre = Vector((centre_x+.075, -.15, .6))
     axis_path = surface_walk(obj, centre, .012, seed+50)
     tree = surface_tree(obj)
@@ -30,13 +28,16 @@ def author(obj, centre_x=0., seed=9501):
     inverse = obj.matrix_world.inverted()
     loop = []
     for u, v in outline:
-        point, _, _, _ = tree.find_nearest(centre+warp*u+weft*v)
+        taper = .8+1.6*max(1-abs(u)/.028, 0)
+        point, _, _, _ = tree.find_nearest(centre+warp*(u*2.6)+weft*(v*.4*taper))
         loop.append(tuple(inverse@point))
     # Snap and split in one operation so the closed edge chain separates the
     # island, while keeping its faces in the same physical simulation.
     paths.append(loop)
-    for path in paths:
-        records.append(split_polyline(obj, path, shrink_band=.060))
+    for index, path in enumerate(paths):
+        records.append(split_polyline(obj, path, max_length=.240 if index < 2 else None))
+    if any(not .120 <= record['split_length_m'] <= .250 for record in records[:2]):
+        raise ValueError('Seat main splits must have 120 to 250 mm of actual cut edges')
     bm = bmesh.new()
     bm.from_mesh(obj.data)
     bm.verts.ensure_lookup_table()
@@ -61,7 +62,13 @@ def author(obj, centre_x=0., seed=9501):
     for vertex in island:
         vertex[layer][group.index] = 1.
     island_area = sum(f.calc_area() for f in bm.faces if all(v in island for v in f.verts))
+    island_points = np.array([obj.matrix_world@v.co for v in island])
+    island_size = float(np.linalg.norm(island_points[:, None]-island_points[None, :], axis=2).max())
+    if not .120 <= island_size <= .250:
+        bm.free()
+        raise ValueError(f'Seat fallen slit is outside 120 to 250 mm: {island_size}')
     bm.to_mesh(obj.data)
     bm.free()
-    return {'method': 'fitted UV-gradient physical walks with two 27 mm branches and a closed stepped island',
-            'paths': records, 'fallen_island_vertices': len(island), 'fallen_island_reference_area_m2': island_area}
+    return {'method': 'two length-limited UV-gradient splits and a long narrow conserved fallen island',
+            'paths': records, 'fallen_island_vertices': len(island),
+            'fallen_island_reference_size_m': island_size, 'fallen_island_reference_area_m2': island_area}

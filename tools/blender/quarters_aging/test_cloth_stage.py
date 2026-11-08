@@ -36,6 +36,16 @@ class ClothGroups(unittest.TestCase):
         self.assertIn('not used', bpy.types.ClothCollisionSettings.bl_rna.properties[
             'vertex_group_self_collisions'].description)
 
+    def test_explicit_bulk_shrink_minimum_is_not_discarded(self):
+        bpy.ops.wm.read_factory_settings(use_empty=True)
+        bpy.ops.mesh.primitive_plane_add()
+        obj = bpy.context.object
+        obj.vertex_groups.new(name='Lip shrink')
+        mod = configure(obj, {'mass': .015, 'stiffness': 180, 'bending': .2,
+                              'frames': 20, 'shrink_min': .03, 'shrink': .05}, 4)
+        self.assertAlmostEqual(mod.settings.shrink_min, .03)
+        self.assertAlmostEqual(mod.settings.shrink_max, .05)
+
 
 if __name__ == '__main__':
     unittest.main(argv=[sys.argv[0]])

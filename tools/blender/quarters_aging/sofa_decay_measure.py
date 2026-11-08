@@ -51,10 +51,24 @@ def front_folds(mesh):
             'minimum_prominence_m': .008}
 
 
+def throw_connectivity(mesh):
+    parts = mesh.split(only_watertight=False)
+    bridges = 0
+    for part in parts:
+        p = part.vertices
+        arm = ((p[:, 0] >= .93) & (p[:, 0] <= 1.12) &
+               (p[:, 1] >= -.46) & (p[:, 1] <= .22) & (p[:, 2] >= .76))
+        if arm.any() and p[:, 2].min() <= .015:
+            bridges += 1
+    return {'components': len(parts), 'arm_to_floor_components': bridges,
+            'continuous_arm_to_floor': bridges == 1 and len(parts) <= 2}
+
+
 def throw_fall(mesh):
+    continuity = throw_connectivity(mesh)
     selected = mesh.triangles_center[:, 2] < .30
     if not selected.any():
-        return {'distance_m': None, 'folds': 0, 'pass': False}
+        return {**continuity, 'distance_m': None, 'folds': 0, 'pass': False}
     centre = np.average(mesh.triangles_center[selected], weights=mesh.area_faces[selected], axis=0)
     nearest = np.clip(centre[:2], [.95, -.44], [1.11, .20])
     distance = float(np.linalg.norm(centre[:2]-nearest))
@@ -80,8 +94,9 @@ def throw_fall(mesh):
         profiles.append({'axis': axis, 'fold_positions_m': along[peaks].tolist(),
                          'prominences_m': properties['prominences'].tolist()})
     folds = max(counts, default=0)
-    return {'distance_m': distance, 'folds': folds, 'profiles': profiles,
-            'fallen_centroid_blender_m': centre.tolist(), 'pass': distance <= .25 and folds >= 3}
+    return {**continuity, 'distance_m': distance, 'folds': folds, 'profiles': profiles,
+            'fallen_centroid_blender_m': centre.tolist(),
+            'pass': distance <= .25 and folds >= 3 and continuity['continuous_arm_to_floor']}
 
 
 def measure(out):

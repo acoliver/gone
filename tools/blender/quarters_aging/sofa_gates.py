@@ -26,7 +26,7 @@ SPECS = {
     'G16': ('back residue volume in lowest third', '>=0.60 each back'),
     'G17': ('back horizontal front folds with >=8 mm prominence', '>=2 each back'),
     'G18': ('arm-cap crest split share', '0.60..0.90'),
-    'G19': ('fallen throw distance and folds', '<=0.250 m from arm footprint; >=3 folds >=0.010 m'),
+    'G19': ('fallen throw distance, folds and continuity', '<=0.250 m from arm footprint; >=3 folds >=0.010 m; one arm-to-floor component and <=1 detached remnant'),
     'G30': ('changed-part triangle SAT and unchanged rigid baseline', '0 changed intersections; rigid counts exactly equal unaged'),
     'G31': ('export triangle count', '<=29325 and <=1.5x unaged'),
     'G32': ('decimated/dense open-boundary Hausdorff distance', '<=0.0015 m'),
