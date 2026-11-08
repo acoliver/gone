@@ -30,6 +30,17 @@ class ThrowContacts(unittest.TestCase):
             collisions = [m for m in obj.modifiers if m.type == 'COLLISION']
             self.assertEqual(len(collisions), int(obj.name in self.required))
 
+    def test_floor_is_a_closed_unexported_slab_with_unchanged_contact_height(self):
+        install_contacts()
+        floor = bpy.data.objects['DecayFloor']
+        self.assertEqual(len(floor.data.polygons), 6)
+        self.assertEqual(len(floor.data.vertices), 8)
+        self.assertAlmostEqual(max(v.co.z for v in floor.data.vertices), 0.)
+        self.assertAlmostEqual(min(v.co.z for v in floor.data.vertices), -.1)
+        self.assertFalse(floor['aged_export'])
+        self.assertTrue(floor.hide_render)
+        self.assertEqual(floor.collision.cloth_friction, 8.)
+
     def test_missing_settled_surface_fails_before_starting_the_solve(self):
         bpy.data.objects.remove(bpy.data.objects['BackCushion_R_Residue'], do_unlink=True)
         with self.assertRaisesRegex(ValueError, 'BackCushion_R_Residue'):

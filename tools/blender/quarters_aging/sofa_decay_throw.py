@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import sys
 
+import bmesh
 import bpy
 import numpy as np
 from mathutils import Vector
@@ -49,6 +50,17 @@ def install_contacts():
     missing = names-set(bpy.context.scene.objects.keys())
     if missing:
         raise ValueError(f'Throw needs all settled mechanical contacts: {sorted(missing)}')
+    floor = bpy.data.objects['DecayFloor']
+    bm = bmesh.new()
+    bmesh.ops.create_cube(bm, size=1.)
+    for vertex in bm.verts:
+        vertex.co.x *= 8
+        vertex.co.y *= 8
+        vertex.co.z = vertex.co.z*.1-.05
+    bm.to_mesh(floor.data)
+    bm.free()
+    floor['aged_export'] = False
+    floor.hide_render = True
     contacts = {}
     for obj in bpy.context.scene.objects:
         for mod in list(obj.modifiers):
