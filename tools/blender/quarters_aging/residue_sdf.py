@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 
 import numpy as np
-from scipy.ndimage import gaussian_filter, map_coordinates
+from scipy.ndimage import binary_fill_holes, distance_transform_edt, gaussian_filter, label, map_coordinates
 from scipy.spatial import cKDTree
 from skimage.measure import marching_cubes
 
@@ -24,7 +24,7 @@ def height_field(x, y, seed):
         h += rng.uniform(.008, .025)*np.exp(-((xx-cx)**2+(yy-cy)**2)/(2*radius**2))
     h = .004+.016*(1-np.exp(-np.maximum(h-.004, 0)/.016))
     spacing = x[1]-x[0]
-    for wavelength, amplitude in [(.040, .005), (.012, .002), (.004, .0008)]:
+    for wavelength, amplitude in [(.040, .005), (.012, .004), (.004, .0014)]:
         noise = gaussian_filter(rng.normal(size=h.shape), wavelength/spacing/4)
         h += noise/max(float(noise.std()), 1e-8)*amplitude
     sites = rng.uniform([x[0], y[0]], [x[-1], y[-1]], (50, 2))
@@ -38,6 +38,14 @@ def height_field(x, y, seed):
     return h, sites
 
 
+def underside(x, y):
+    x, y = np.broadcast_arrays(x, y)
+    # Broad curvature must survive the 700-triangle target, including underneath.
+    variation = .004*(.5+.25*np.sin(x*95)+.25*np.sin(y*110+x*47))
+    variation += .0005*np.sin(y*310)*np.sin(x*270)
+    return .0005+variation
+
+
 def field(width=.66, depth=.70, voxel=.002, seed=9501):
     x = np.arange(-width/2-.01, width/2+.01+voxel/2, voxel, dtype=np.float32)
     y = np.arange(-depth/2-.01, depth/2+.01+voxel/2, voxel, dtype=np.float32)
@@ -45,7 +53,8 @@ def field(width=.66, depth=.70, voxel=.002, seed=9501):
     h, sites = height_field(x, y, seed)
     xx, yy = np.meshgrid(x, y, indexing='ij')
     zz = z[None, None, :]
-    sdf = np.maximum(zz-h[:, :, None], -zz+.001)
+    floor = underside(xx, yy)[:, :, None]
+    sdf = np.maximum(zz-h[:, :, None], -zz+floor)
     sdf = np.maximum(sdf, np.minimum.reduce([xx-x[0], x[-1]-xx, yy-y[0], y[-1]-yy])[:, :, None]*-1+.002)
     rng = np.random.default_rng(seed+1)
     distances, nearest = cKDTree(sites).query(np.c_[xx.ravel(), yy.ravel()], k=2)
@@ -62,7 +71,10 @@ def field(width=.66, depth=.70, voxel=.002, seed=9501):
         slab = np.maximum(slab, outline[:, :, None]+.001+.0004*np.sin(xx[:, :, None]*700))
         sdf = np.minimum(sdf, slab)
     # Close plate tips at the same domain bounds and floor as the powder.
-    sdf = np.maximum(sdf, -zz+.001)
+    rear = np.clip((yy-.18)/.07, 0, 1)
+    rear_ceiling = .011+.002*np.sin(xx*600)*np.sin(yy*700)
+    sdf = np.maximum(sdf, zz-(.040*(1-rear)+rear_ceiling*rear)[:, :, None])
+    sdf = np.maximum(sdf, -zz+floor)
     sdf[[0, -1], :, :] = .01
     sdf[:, [0, -1], :] = .01
     sdf[:, :, [0, -1]] = .01
@@ -78,7 +90,18 @@ def filled_proxy(sdf, origin, voxel):
     """Fill sub-surface pore tunnels for the low-poly collision/bake target."""
     filled = np.minimum.accumulate(sdf[:, :, ::-1], axis=2)[:, :, ::-1].copy()
     z = origin[2]+np.arange(sdf.shape[2])*voxel
-    filled = np.maximum(filled, .001-z[None, None, :])
+    x = origin[0]+np.arange(sdf.shape[0])*voxel
+    y = origin[1]+np.arange(sdf.shape[1])*voxel
+    filled = np.maximum(filled, underside(x[:, None], y[None, :])[:, :, None]-z[None, None, :])
+    footprint = np.any(sdf < .000013, axis=2)
+    holes = binary_fill_holes(footprint) & ~footprint
+    # Thin powder can fall between Z samples. Fill those interior columns in
+    # the collision proxy, as well as the sub-surface pore tunnels.
+    nearest = distance_transform_edt(~footprint, return_distances=False, return_indices=True)
+    filled[holes] = filled[nearest[0][holes], nearest[1][holes]]
+    regions, _ = label(filled < .000013)
+    largest = np.argmax(np.bincount(regions.ravel())[1:])+1
+    filled[(regions != 0) & (regions != largest)] = .01
     filled[:, :, 0] = .01
     return mesh_sdf(filled, origin, voxel)
 

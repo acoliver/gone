@@ -78,15 +78,20 @@ def fringe_material(out, seed, wool=False):
     return mat
 
 
-def cards(obj, mat, seed, wool=False, spacing=.01):
+def cards(obj, mat, seed, wool=False, spacing=.01, boundary_group=None, blockers=None):
+    from card_contacts import CardContacts
+    contacts = CardContacts(blockers) if blockers is not None else None
     rng = np.random.default_rng(seed)
     bm = bmesh.new()
     bm.from_mesh(obj.data)
     bm.normal_update()
+    deform = bm.verts.layers.deform.active
+    group = obj.vertex_groups[boundary_group].index if boundary_group else None
     vertices, faces, patterns = [], [], []
-    covered, total = 0., 0.
+    covered, total, omitted = 0., 0., 0
+    offsets = []
     for edge in bm.edges:
-        if not edge.is_boundary:
+        if not edge.is_boundary or (group is not None and max(v[deform].get(group, 0.) for v in edge.verts) < .5):
             continue
         a, b = [obj.matrix_world@v.co for v in edge.verts]
         length = (b-a).length
@@ -98,25 +103,45 @@ def cards(obj, mat, seed, wool=False, spacing=.01):
         outward = middle-(obj.matrix_world@edge.link_faces[0].calc_center_median())
         outward = (outward-tangent*outward.dot(tangent)).normalized()
         for i in range(count):
-            root = a+(b-a)*(i+.5)/count-outward*.001+normal*.0002
-            width = min(rng.uniform(.008, .012), length/count)
-            extent = float(np.clip(rng.lognormal(np.log(.009 if wool else .004), .45), .003, .018))
+            width = min(rng.uniform(.008, .012), .8*length/count)
+            extent = float(np.clip(rng.lognormal(np.log(.009 if wool else .004), .45), .002, .018 if wool else .009))
             droop = float(rng.uniform(0, np.radians(35)))
             direction = (outward*np.cos(droop)+Vector((0, 0, -1))*np.sin(droop)).normalized()
             twist = float(rng.uniform(-.26, .26))
             sideways = tangent*np.cos(twist)+normal*np.sin(twist)
+            placement = None
+            for extra in [0, .0005, .001, .002]:
+                offset = abs(np.sin(twist))*width/2+.0003+extra
+                root = a+(b-a)*(i+.5)/count-outward*.0004+normal*offset
+                for factor in [1., .75, .5]:
+                    tip = root+direction*max(.002, extent*factor)
+                    quad = [root-sideways*width/2, root+sideways*width/2,
+                            tip+sideways*width/2, tip-sideways*width/2]
+                    if contacts is None or contacts.clear(quad):
+                        placement = quad
+                        break
+                if placement is not None:
+                    break
+            if placement is None:
+                omitted += 1
+                continue
+            if contacts is not None:
+                contacts.add(placement)
+            offsets.append(offset)
             base = len(vertices)
-            vertices.extend([root-sideways*width/2, root+sideways*width/2,
-                             root+direction*extent+sideways*width/2, root+direction*extent-sideways*width/2])
+            vertices.extend(placement)
             faces.append((base, base+1, base+2, base+3))
+            covered += width
             variant = int(rng.integers(8))
             patterns.append([(0, variant/8), (1, variant/8), (1, (variant+1)/8), (0, (variant+1)/8)])
-        covered += length
     bm.free()
+    if not total:
+        raise ValueError('No tear boundary to fringe')
     obj_cards = new_object(obj.name+'_Fringe', vertices, faces, mat)
     for face, uv in zip(obj_cards.data.polygons, patterns):
         for index, point in zip(face.loop_indices, uv):
             obj_cards.data.uv_layers.active.data[index].uv = point
     return obj_cards, {'cards': len(faces), 'triangles': len(faces)*2,
-                       'boundary_length_m': total, 'authored_coverage': covered/total if total else 1.,
-                       'sat_checked': False}
+                       'boundary_length_m': total, 'authored_coverage': covered/total,
+                       'coverage_pass': covered/total >= .5, 'omitted_contacts': omitted,
+                       'maximum_root_offset_m': max(offsets, default=0.), 'sat_checked': contacts is not None}

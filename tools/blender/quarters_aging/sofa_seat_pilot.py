@@ -27,7 +27,7 @@ ROOT = Path(__file__).resolve().parents[3]
 NAME = 'SeatCushion_C'
 
 
-def prepare(out, residue_path, collapse_frames=100, cuts=True):
+def prepare(out, residue_path, collapse_frames=100, cuts=True, contact_mode='fitted', full_self=False):
     bpy.ops.wm.open_mainfile(filepath=str(ROOT/'tmp/age/pass3/sofa-k/sofa-aged.blend'))
     bpy.data.objects.remove(bpy.data.objects[NAME], do_unlink=True)
     with bpy.data.libraries.load(str(ROOT/'tools/blender/quarters/sofa/sofa-working.blend'), link=False) as (_, target):
@@ -51,7 +51,10 @@ def prepare(out, residue_path, collapse_frames=100, cuts=True):
     residue['aged_export'] = False
     proxy = new_object('ResiduePoreProxy', dense_npz['game_vertices']+np.array([0, -.035, .391]),
                        dense_npz['game_faces'], residue.data.materials[0])
+    proxy_source_vertices = len(proxy.data.vertices)
+    largest_shell(proxy)
     low_residue, residue_report = decimate(proxy, 700)
+    residue_report['removed_disconnected_proxy_vertices'] = proxy_source_vertices-len(proxy.data.vertices)
     bpy.data.objects.remove(proxy, do_unlink=True)
     low_residue.name = 'PilotResidue'
     low_residue['aged_export'] = False
@@ -95,15 +98,18 @@ def prepare(out, residue_path, collapse_frames=100, cuts=True):
     for vertex in obj.data.vertices:
         p = obj.matrix_world@vertex.co
         wall = abs(vertex.normal.z) < .5
-        welt.add([vertex.index], 1. if wall and p.z > .51 else .2 if wall else .4, 'REPLACE')
-        if not wall:
+        weight = (1. if wall and p.z > .555 else .02 if wall else .5) if cuts else (1. if wall and p.z > .51 else .2 if wall else .4)
+        welt.add([vertex.index], weight, 'REPLACE')
+        if not wall and not full_self:
             fold.add([vertex.index], 1., 'REPLACE')
+    from split_contacts import exclude_split_contacts
+    split_contacts = exclude_split_contacts(obj)
     for other in bpy.context.scene.objects:
         if other.type == 'MESH' and other.get('aged_export') and other != obj:
             other.modifiers.clear()
             collision(other, .001)
     from neighbour_colliders import fitted_backs
-    neighbours = fitted_backs()
+    neighbours = fitted_backs(collapse_frames, mode=contact_mode if cuts else 'fitted')
     bpy.ops.mesh.primitive_plane_add(size=8)
     floor = bpy.context.object
     floor.name = 'PilotFloor'
@@ -114,7 +120,7 @@ def prepare(out, residue_path, collapse_frames=100, cuts=True):
                  'residue_decimation': residue_report, 'residue_source': str(residue_path), 'status': 'prepared',
                  'tear_method': tears['method'],
                  'production_calibrated': True, 'neighbour_contacts': neighbours,
-                 'cuts': cuts}
+                 'cuts': cuts, 'full_self_collision': full_self, 'split_contacts': split_contacts}
 
 
 def finish(out, obj, record, size):
@@ -122,8 +128,13 @@ def finish(out, obj, record, size):
         for mod in list(other.modifiers):
             if mod.type == 'COLLISION':
                 other.modifiers.remove(mod)
-    low, report = decimate(obj, 2400)
+    low, report = decimate(obj, 2700)
     record['cover_decimation'] = report
+    from cloth_metrics import lip_lift, save_surface, surface_metrics
+    record['game_metrics'] = surface_metrics(low)
+    record['G5'] = lip_lift(obj)
+    save_surface(obj, out/'dense-cover.npz')
+    save_surface(low, out/'game-cover.npz')
     mat, paths = bake(obj, low, out/'textures', size=size)
     mat.name = 'CharcoalUpholstery_Pass5'
     opacity, opacity_report = opacity_bake(low, out/'textures/seat_opacity.png', size=size)
@@ -131,6 +142,7 @@ def finish(out, obj, record, size):
     material_maps(mat, (.10, .12, .10), opacity_image=opacity)
     record['cover_maps'] = paths
     residue = bpy.data.objects['PilotDenseResidue']
+    save_surface(residue, out/'dense-residue.npz')
     residue.hide_render = False
     game_residue = bpy.data.objects['PilotResidue']
     game_residue.hide_render = False
@@ -138,7 +150,9 @@ def finish(out, obj, record, size):
     material_maps(mat_residue, (.28, .19, .10))
     mat_residue.name = 'Foam_Pass5'
     record['residue_maps'] = paths
-    fringe, fringe_report = cards(low, fringe_material(out/'textures', 9501), 9501)
+    blockers = [low, game_residue]+[o for o in bpy.context.scene.objects if o.type == 'MESH' and o.get('aged_export') and o not in {obj, low, game_residue}]
+    fringe, fringe_report = cards(low, fringe_material(out/'textures', 9501), 9501,
+                                  boundary_group='Lip shrink', blockers=blockers)
     record['fringe'] = fringe_report
     # Keep original node, pivot and transform. Helpers and bake sources are removed.
     obj.data = low.data.copy()
@@ -168,6 +182,8 @@ def main():
     p.add_argument('--collapse-frames', type=int, default=240)
     p.add_argument('--simulate-only', action='store_true')
     p.add_argument('--uncut-control', action='store_true')
+    p.add_argument('--contact-mode', choices=['fitted', 'retreat', 'staged', 'morph', 'rear'], default='fitted')
+    p.add_argument('--self-collision-mode', choices=['folds', 'all'], default='folds')
     a = p.parse_args(sys.argv[sys.argv.index('--')+1:])
     a.out.mkdir(parents=True, exist_ok=True)
     if a.finish:
@@ -176,13 +192,16 @@ def main():
         record = json.loads(bpy.context.scene['pilot_record'])
     else:
         from cloth_metrics import surface_metrics, within_frame
-        obj, record = prepare(a.out, a.residue, a.collapse_frames, not a.uncut_control)
+        contact_end = a.collapse_frames*(3 if a.contact_mode == 'rear' else 2)+60
+        if not a.uncut_control and a.contact_mode in {'staged', 'rear'} and a.frames < contact_end:
+            raise ValueError('Staged neighbour contacts must reach their actual exported pose before simulation ends')
+        obj, record = prepare(a.out, a.residue, a.collapse_frames, not a.uncut_control, a.contact_mode, a.self_collision_mode == 'all')
         bpy.context.scene.render.fps = 24
         bpy.context.scene.frame_set(1)
         config = calibrated_config('upholstery', .2/34, .2/9, a.frames)
         config.update(self_collision=True, shrink=.04, quality=16,
                       collision_quality=4, distance=.0015, time_scale=.5,
-                      welt_bending=3.2)
+                      welt_bending=3.2, self_distance=.0002)
         from common import assert_collision_clear
         if a.settings:
             config.update(json.loads(a.settings.read_text()))
@@ -193,7 +212,7 @@ def main():
         record['simulation'] = simulate(obj, mod, a.frames, sample=surface_metrics)
         record['dense_metrics'] = surface_metrics(obj)
         record['frame_bounds'] = within_frame(obj, bpy.data.objects['Frame'])
-        low, report = decimate(obj, 2400)
+        low, report = decimate(obj, 2400 if a.uncut_control else 2700)
         record['game_metrics'] = surface_metrics(low)
         record['cover_decimation'] = report
         bpy.data.objects.remove(low, do_unlink=True)
