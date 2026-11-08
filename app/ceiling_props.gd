@@ -25,8 +25,18 @@ static func build(layout: ShipLayout, id: StringName) -> Node3D:
 	var root := Node3D.new()
 	root.name = "CeilingProps"
 	root.set_meta(&"space_id", id)
+	_add(root, layout, id, &"Sprinklers", mesh(&"sprinkler"), spec.heads, &"corroded_brass", &"WALL")
+	_add(root, layout, id, &"SprinklerPipes", _pipe_mesh(), spec.pipes, &"pipe", &"WALL")
+	_add(root, layout, id, &"PipeClips", CorridorDressing._mesh(&"box"), spec.clips, &"pipe", &"WALL")
 	if not spec.ducts.is_empty(): _add(root, layout, id, &"CeilingDucts", mesh(&"duct"), spec.ducts, &"wall", &"CEILING")
 	return root
+
+static func _pipe_mesh() -> Mesh:
+	var cylinder := CorridorDressing._mesh(&"cylinder")
+	var tool := SurfaceTool.new()
+	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	tool.append_from(cylinder, 0, Transform3D(Basis(Vector3.BACK, -PI / 2), Vector3.ZERO))
+	return tool.commit()
 
 static func _add(root: Node3D, layout: ShipLayout, id: StringName, family: StringName, source: Mesh, poses: Array[Transform3D], role: StringName, part: StringName) -> void:
 	assert(not poses.is_empty(), "service family has placements")
