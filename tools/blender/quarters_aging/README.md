@@ -12,7 +12,11 @@ The fitted back's front bulge has downward normals as high as 650 mm. Removing e
 
 The pass-6 controls, checkpoints and captures stay under `tmp/age/pass6/`. Missing or failed gates block publication. The game asset is not replaced by a preview.
 
+The pass-6 collapse milestone failed. The ordered centre and left seats completed 360 frames in 220.251 s and 281.616 s. Their centre-height ratios are 21.727% and 14.732%, inside G14's 10% to 25%, but wall-area ratios remain 38.831% and 33.168%, above G12's 25%. The next fitted right seat crosses the settled centre mesh at initial triangle pair 5165/418, so the initial-contact check stops it. The other four diagnostic covers are explicitly recorded as unsimulated fitted poses. The flat-rest joint trial reached 51.459% sharp adjacencies at frame 60; both joint trials were stopped and retained when the ordered fallback advanced faster. These failed trials do not replace the game asset.
+
 `sofa_decay_finish.py --stage detail` bakes each reduced cover and residue from its dense source, applies the original upholstery albedo `(0.055, 0.060, 0.066)`, and adds collision-tested fringe at the authored lips. The rendered round-trip material control differs from the same constant reference by at most 0.000638 per linear RGB channel, below one 8-bit step. The texture contains AO rather than relying on colour-math nodes that glTF cannot export. A completed one-seat material integration does not certify the six-cover tear or residue gates.
+
+The throw has three zero-area crest split runs, leaving two 18/19 mm bridges and end corners. G18 passes at 78.556% split against 60% to 90%. Its unpinned 480-frame solve took 776.333 s. It reached the floor, then its collision response ejected it upward and away; the final reduced surface has no area below 0.30 m, so G19 fails with no fallen centroid and zero measurable floor folds. Its all-sheet sharp-adjacency share is 58.835%. The solver cause is unresolved; the failed result is retained without a manual pose correction.
 
 ## Pass 5 calibration and contact policy
 
