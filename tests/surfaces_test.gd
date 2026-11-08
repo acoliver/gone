@@ -63,8 +63,8 @@ func test_room_shell_swaps_textured_materials_in_place() -> void:
 	)
 	assert_int_equal(
 		_count_instances(room, MeshInstance3D),
-		shell.size() + Placement.cable_trays().size() + Placement.wire_loops().size(),
-		"the pass swaps materials in place; no meshes are added"
+		shell.size() + Placement.cable_trays().size() * 3,
+		"each retained tray now has two ceiling hangers; unattached tori are removed"
 	)
 	var damage := room.get_child(shell.size())
 	for child: Node in damage.get_children():

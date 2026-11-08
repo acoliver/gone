@@ -187,7 +187,7 @@ static func _spark_process() -> ParticleProcessMaterial:
 
 static func _spark_draw_pass(spark_material: StandardMaterial3D) -> QuadMesh:
 	var quad := QuadMesh.new()
-	quad.size = Vector2(0.05, 0.05)
+	quad.size = Vector2(0.006, 0.035)
 	quad.material = spark_material
 	return quad
 
@@ -196,6 +196,7 @@ static func _spark_draw_pass(spark_material: StandardMaterial3D) -> QuadMesh:
 static func _spark_material() -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
 	material.emission_enabled = true
+	material.albedo_color = Color(1.0, 0.22, 0.05)
 	material.emission = Color(2.0, 0.55, 0.2)
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	material.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES

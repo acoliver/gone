@@ -11,7 +11,7 @@ func _player() -> Player:
 
 func _stand(player: Player, step: GameStep) -> void:
 	player.adapter.press(InputPlane.Buttons.ACTIVATE)
-	for _tick: int in range(Exit.EXIT_POSE_COUNT):
+	for _tick: int in range(Exit.EXIT_POSE_COUNT + Player.GET_UP_LOOK_TICKS):
 		step.advance()
 	player.adapter.look(-player.look_angles().x, -player.look_angles().y)
 	step.advance()

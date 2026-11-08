@@ -6,7 +6,7 @@ const Driver := preload("res://tests/connector_route_driver.gd")
 func test_both_wells_full_real_player_journey_and_replay_digest() -> void:
 	var digests: Array[String] = []
 	for _replay: int in range(2):
-		var game := Game.new(0)
+		var game := Game.new(int(JSON.parse_string(FileAccess.get_file_as_string("res://scenarios/power-room.json")).seed))
 		var player := Player.build(game, null)
 		player.scripted = true
 		player.adapter = InputPlane.ScriptedAdapter.new()
@@ -27,9 +27,9 @@ func test_both_wells_full_real_player_journey_and_replay_digest() -> void:
 		digests.append("\n".join(route.digest_lines).sha256_text())
 		player.free()
 	assert_true(digests[0] == digests[1], "fixed seed/input event digest repeats")
-	# Whole generated hardware changes parked collision and journey timing.
-	# Both complete real-input replays must match the newly compiled digest.
-	assert_true(digests[0] == "46cdf6adef8be9376f4168dc9e5f02e4945613c1333b3ef4ad9cb2b18d475266", "pinned full journey event digest")
+	# The post-exit view adds 30 ticks. Replays use the schedule's actual
+	# seed, so the seeded hatch releases and journey event ticks change too.
+	assert_true(digests[0] == "bec10e8940beb8a526139adbef9c81475114e2905e1df277208d6fe7dbdb7e97", "pinned full journey event digest")
 	print("connector route digest: ", digests[0])
 
 func test_climb_channel_is_single_consumption_and_scenario_validated() -> void:
@@ -56,7 +56,7 @@ func test_dedicated_actions_keep_on_foot_pitch_bindings() -> void:
 		assert_true(InputMap.event_is_action(event, fixture[2]), "on-foot pitch retained")
 
 func test_real_device_climbing_suppresses_letter_pitch_but_keeps_mouse() -> void:
-	var game := Game.new(0)
+	var game := Game.new(int(JSON.parse_string(FileAccess.get_file_as_string("res://scenarios/power-room.json")).seed))
 	var player := Player.build(game, null)
 	player.scripted = true
 	player.adapter = InputPlane.ScriptedAdapter.new()

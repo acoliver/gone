@@ -188,12 +188,7 @@ class SectionSpec:
 			ShipGeometry.SolidSpec.new(datum + Vector3(17, -0.04, -0.55), Vector3(3.2, ShipGeometry.TRAY_HEIGHT, ShipGeometry.TRAY_WIDTH), Quaternion(Vector3.UP, PI / 2) * Quaternion(Vector3.RIGHT, -0.06)),
 		]
 	func ceiling_loops() -> Array[ShipGeometry.WireLoop]:
-		if not _services.ceiling_damage: return []
-		var datum := Vector3(_bounds.position.x, _bounds.position.y, _bounds.get_center().z)
-		return [
-			ShipGeometry.WireLoop.new(datum + Vector3(7.6, 2.72, 0.42), Quaternion(Vector3.RIGHT, PI / 2) * Quaternion(Vector3.UP, 0.8)),
-			ShipGeometry.WireLoop.new(datum + Vector3(15.4, 2.66, -0.48), Quaternion(Vector3.RIGHT, PI / 2) * Quaternion(Vector3.UP, 2.1)),
-		]
+		return []
 	func ceiling_damage_bounds() -> Array[AABB]:
 		var boxes: Array[AABB] = []
 		for solid: ShipGeometry.SolidSpec in ceiling_trays():

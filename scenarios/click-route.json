@@ -6,10 +6,10 @@
 			"type": "press"
 		},
 		{
-			"pitch_deg": -101.000001338286,
-			"tick": 303,
+			"pitch_deg": -12.0,
+			"tick": 333,
 			"type": "look",
-			"yaw_deg": 120.661886163946
+			"yaw_deg": -59.3381188450101
 		},
 		{
 			"deck": 14,
@@ -19,7 +19,7 @@
 				0.0,
 				11.5
 			],
-			"tick": 306,
+			"tick": 336,
 			"type": "objective"
 		},
 		{
@@ -30,14 +30,14 @@
 				0.0,
 				8.30000019073486
 			],
-			"tick": 463,
+			"tick": 481,
 			"type": "objective"
 		},
 		{
 			"deck": 14,
 			"kind": "act",
 			"target": "D14-BAY-ROD",
-			"tick": 711,
+			"tick": 727,
 			"type": "objective"
 		},
 		{
@@ -48,21 +48,21 @@
 				0.0,
 				4.0
 			],
-			"tick": 756,
+			"tick": 772,
 			"type": "objective"
 		},
 		{
 			"deck": 14,
 			"kind": "act",
 			"target": "D14-BAY-DOOR",
-			"tick": 1074,
+			"tick": 1090,
 			"type": "objective"
 		},
 		{
 			"pitch_deg": 2.00000033393042,
-			"tick": 1198,
+			"tick": 1214,
 			"type": "look",
-			"yaw_deg": -0.00000121662605915189
+			"yaw_deg": -0.00000762630736637674
 		},
 		{
 			"deck": 14,
@@ -72,7 +72,7 @@
 				0.0,
 				0.5
 			],
-			"tick": 1201,
+			"tick": 1217,
 			"type": "objective"
 		},
 		{
@@ -83,21 +83,21 @@
 				0.0,
 				0.0
 			],
-			"tick": 1434,
+			"tick": 1451,
 			"type": "objective"
 		},
 		{
 			"deck": 14,
 			"kind": "act",
 			"target": "D14-HALL-SWITCH",
-			"tick": 1662,
+			"tick": 1679,
 			"type": "objective"
 		},
 		{
 			"pitch_deg": 7.99999970909292,
-			"tick": 1694,
+			"tick": 1712,
 			"type": "look",
-			"yaw_deg": 149.202596745434
+			"yaw_deg": 149.259268539946
 		},
 		{
 			"deck": 14,
@@ -107,21 +107,21 @@
 				0.0,
 				0.0
 			],
-			"tick": 1742,
+			"tick": 1760,
 			"type": "objective"
 		},
 		{
 			"deck": 14,
 			"kind": "act",
 			"target": "D14-POWER-DOOR",
-			"tick": 2241,
+			"tick": 2260,
 			"type": "objective"
 		},
 		{
 			"pitch_deg": -7.00000022893614,
-			"tick": 2364,
+			"tick": 2382,
 			"type": "look",
-			"yaw_deg": -0.0000767187758439954
+			"yaw_deg": -0.000116034432787424
 		},
 		{
 			"deck": 14,
@@ -131,7 +131,7 @@
 				0.0,
 				-0.200000002980232
 			],
-			"tick": 2367,
+			"tick": 2385,
 			"type": "objective"
 		},
 		{
@@ -142,7 +142,7 @@
 				0.0,
 				-3.0
 			],
-			"tick": 2508,
+			"tick": 2526,
 			"type": "objective"
 		},
 		{
@@ -153,7 +153,7 @@
 				0.0,
 				-4.5
 			],
-			"tick": 2719,
+			"tick": 2737,
 			"type": "objective"
 		},
 		{
@@ -164,27 +164,27 @@
 				0.0,
 				-7.5
 			],
-			"tick": 2941,
+			"tick": 2959,
 			"type": "objective"
 		},
 		{
 			"pitch_deg": -10.9999997495522,
-			"tick": 3217,
+			"tick": 3235,
 			"type": "look",
-			"yaw_deg": 141.036416074046
+			"yaw_deg": 140.936235658541
 		},
 		{
 			"deck": 14,
 			"kind": "act",
 			"target": "D14-POWER-CONSOLE",
-			"tick": 3220,
+			"tick": 3238,
 			"type": "objective"
 		},
 		{
 			"pitch_deg": 7.99999941818584,
-			"tick": 3311,
+			"tick": 3329,
 			"type": "look",
-			"yaw_deg": 171.938867841217
+			"yaw_deg": 171.952036084128
 		}
 	],
 	"beats": [
@@ -198,31 +198,31 @@
 		},
 		{
 			"name": "standing",
-			"tick": 304
+			"tick": 334
 		},
 		{
 			"name": "rod-picked-up",
-			"tick": 754
+			"tick": 770
 		},
 		{
 			"name": "door-opened",
-			"tick": 1199
+			"tick": 1215
 		},
 		{
 			"name": "hall-lit",
-			"tick": 1740
+			"tick": 1758
 		},
 		{
 			"name": "power-door-opened",
-			"tick": 2365
+			"tick": 2383
 		},
 		{
 			"name": "console-inactive",
-			"tick": 3218
+			"tick": 3236
 		},
 		{
 			"name": "power-active",
-			"tick": 3312
+			"tick": 3330
 		}
 	],
 	"content": "gameplay",

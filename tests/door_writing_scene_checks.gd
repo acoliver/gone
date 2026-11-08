@@ -45,7 +45,7 @@ func _run() -> void:
 	step.ship_scene = scene
 	step.door_views = scene.door_views
 	player.adapter.press(InputPlane.Buttons.ACTIVATE)
-	for _tick: int in range(Exit.EXIT_POSE_COUNT): step.advance()
+	for _tick: int in range(Exit.EXIT_POSE_COUNT + Player.GET_UP_LOOK_TICKS): step.advance()
 	checks.assert_int_equal(player.motion.state(), PlayerMotion.BodyState.WALK, "real Player stands")
 	await call(OS.get_cmdline_user_args()[0])
 	world.queue_free()

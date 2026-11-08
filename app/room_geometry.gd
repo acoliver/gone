@@ -49,19 +49,10 @@ static func _build_ceiling_damage() -> Node3D:
 	var damage := Node3D.new()
 	damage.name = "CeilingDamage"
 	var tray_material := _flat_grey(TRAY_SHADE)
-	var wire_material := _flat_grey(WIRE_SHADE)
 	for placement: Placement.SolidPlacement in Placement.cable_trays():
 		damage.add_child(_box_instance(placement, tray_material))
-	for loop: Placement.WireLoop in Placement.wire_loops():
-		var mesh := TorusMesh.new()
-		mesh.inner_radius = Placement.WIRE_INNER_RADIUS
-		mesh.outer_radius = Placement.WIRE_OUTER_RADIUS
-		var wire := MeshInstance3D.new()
-		wire.mesh = mesh
-		wire.material_override = wire_material
-		wire.position = loop.center
-		wire.quaternion = loop.rotation
-		damage.add_child(wire)
+		for hanger: ShipGeometry.SolidSpec in DressingMounts.tray_hangers(placement, Pods.ROOM_CEILING_HEIGHT):
+			damage.add_child(_box_instance(hanger, tray_material))
 	return damage
 
 static func _box_instance(placement: Placement.SolidPlacement, material: Material) -> MeshInstance3D:

@@ -74,6 +74,8 @@ func _run() -> void:
 		world = Node3D.new()
 		root.add_child(world)
 		scene = ShipScene.build_into(world, game, false)
+		# Compare settled circuits, never an unscheduled spark flash lighting the haze.
+		scene.hazards.auto_bursts = false
 		scene.prepare_near(Vector3(10, 0, 0))
 		scene.prepare_near(Vector3(26, 0, 0))
 		camera = Camera3D.new()

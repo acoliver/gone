@@ -50,17 +50,6 @@ static func _mesh(shape: StringName) -> Mesh:
 			cylinder.height = 1.0
 			cylinder.radial_segments = 12
 			mesh = cylinder
-		&"ring":
-			var ring := TorusMesh.new()
-			ring.inner_radius = 0.36
-			ring.outer_radius = 0.5
-			ring.rings = 12
-			ring.ring_segments = 6
-			# Normalize the axial thickness to the unit bounds used by layout.
-			var tool := SurfaceTool.new()
-			tool.begin(Mesh.PRIMITIVE_TRIANGLES)
-			tool.append_from(ring, 0, Transform3D(Basis.from_scale(Vector3(1, 1 / 0.14, 1)), Vector3.ZERO))
-			mesh = tool.commit()
 		_:
 			assert(false, "unknown dressing primitive: %s" % shape)
 	_meshes[shape] = mesh

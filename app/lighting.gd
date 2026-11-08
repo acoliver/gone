@@ -299,6 +299,7 @@ func _fixture(spec: ShipLayout.EmergencyFixtureSpec, level: float) -> Node3D:
 	_fixtures_by_id[spec.id] = fixture
 	var light := switched_key(spec.role, level)
 	fixture.add_child(light)
+	DressingMounts.ceiling_stem(fixture, Pods.ROOM_CEILING_HEIGHT, Surfaces.surface_frame(_game.layout, ShipLayout.BAY_ID, &"CEILING"))
 	var lens := MeshInstance3D.new()
 	lens.name = "Lens"
 	lens.set_meta(&"lamp_circuit", "emergency")
@@ -363,6 +364,7 @@ func _white_fixture(frame: Transform3D, mesh: BoxMesh) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "BayRegularStrip"
 	fixture.transform = frame
+	DressingMounts.ceiling_stem(fixture, Pods.ROOM_CEILING_HEIGHT, Surfaces.surface_frame(_game.layout, ShipLayout.BAY_ID, &"CEILING"))
 	var light := OmniLight3D.new()
 	light.light_color = REGULAR_WHITE
 	light.omni_range = REGULAR_RANGE
@@ -463,7 +465,7 @@ static func isolate_lights(node: Node, mask: int) -> void:
 	for child: Node in node.get_children():
 		isolate_lights(child, mask)
 
-static func steady_fixture(origin: Vector3, mask: int, radius: float, attenuation: float = 1.0) -> Node3D:
+static func steady_fixture(origin: Vector3, mask: int, radius: float, support_y: float, surface: Surfaces.SurfaceFrame, attenuation: float = 1.0) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "EmergencyFixture"
 	fixture.position = origin
@@ -475,6 +477,7 @@ static func steady_fixture(origin: Vector3, mask: int, radius: float, attenuatio
 	light.light_cull_mask = mask
 	light.shadow_enabled = false
 	fixture.add_child(light)
+	DressingMounts.vertical_stem(fixture, support_y, surface)
 	var material := emergency_lens_material(1.0)
 	var lens := HatchModel.mesh_piece(Hallway._box_mesh(LENS_SIZE), Transform3D.IDENTITY, mask, material)
 	lens.name = "Lens"
