@@ -28,6 +28,45 @@ relax contact checks, geometry invariants, or the other thresholds.
 - **G30:** zero changed contacts after clearance push-out, with no exclusions.
   Frame, Feet and Rivets must match the rigid baseline exactly. The rigid
   geometry bytes, object origins and pivots also remain unchanged.
+### Early controls
+
+All early controls were exercised before production. The final complete set
+finished at 23:05:05 UTC on 2026-11-08, within 21 minutes of the first
+worktree inspection at 22:45:04 UTC. Its measured runtime was 27.55 s.
+
+| Control | Result | Limit |
+| --- | --- | --- |
+| C1, centre back with corrected contact drivers | 3.440% sharp dihedrals at frame 20 | ≤5% |
+| C1b, Frame only | 0.932% at frame 20 | ≤5% |
+| C2, free fall | 0.300000 m/s, relative error 0.000102% | within 20% of measured drag relation |
+| C2, 200 mm cantilever, 1× versus co-scaled | 0.000 mm maximum profile difference | ≤3 mm |
+| C3, frame 1/20/40 area | 100.000–100.174% of fitted area | 97–103% |
+| C4, largest sampled substep motion | 0.909 mm | ≤1.5 mm |
+| C5, initial triangle SAT | zero; both the BVH check and AABB/SAT check | zero |
+
+The clean back has 1,987 vertices and 3,944 triangles. Its minimum triangle
+altitude is 6.101 mm, its first percentile is 6.335 mm, and its median edge
+is 18.004 mm. There is no self-collision exclusion group.
+
+The first pass through the controls failed. Contact-free probes isolated
+bending damping: a value of 5 made angular bending buckle even without
+colliders. Structural damping remains 5; bending damping is 0.3. Linear
+bending was rejected because it lost more than 3% area. The final setup
+retains angular bending and the source quad layout where cleanup permits it.
+
+The proposed `100*m*g/air` terminal-speed formula did not match Blender's
+RNA air setting in the fixture. The measured relation at 24 fps and
+`time_scale=0.5` was `2.4*m*g/air`; air values 0.24, 0.5 and 1.0 produced
+0.58859, 0.28253 and 0.14126 m/s for a 0.006 kg vertex. Production uses
+that measured coefficient to target 0.3 m/s. The centre-back vertex mass
+is 0.004582 kg and its air setting is 0.359618, below the RNA maximum.
+
+A regression fixture also exposed a BVH broad-phase miss for a crossing
+triangle against a planar support. The clearance pass uses triangle AABBs
+followed by SAT. Its regression proves a crossing exists before repair,
+checks zero afterward, bounds movement to 3 mm, and checks unchanged rigid
+vertices. This changes no rigid-baseline allowance.
+
 
 # Quarters geometry aging
 

@@ -112,7 +112,7 @@ def clearance(objects, movable, maximum=.003, clearance=.001, iterations=12):
         data, pairs = crossings(objects, movable)
         counts.append(len(pairs))
         print('CLEARANCE', iteration, len(pairs), flush=True)
-        if not pairs or iteration == iterations:
+        if not pairs or iteration == iterations or (len(counts) > 1 and counts[-1] >= counts[-2]):
             break
         corrections = {n: np.zeros_like(p) for n, p in original.items()}
         weights = {n: np.zeros(len(p)) for n, p in original.items()}

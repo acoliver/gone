@@ -43,6 +43,20 @@ class Pass8Tests(unittest.TestCase):
         np.testing.assert_array_equal(fixed, [v.co[:] for v in rigid.data.vertices])
         self.assertLessEqual(np.linalg.norm(np.array([v.co[:] for v in cloth.data.vertices])-original, axis=1).max(), .003001)
 
+    def test_wall_and_top_weights_have_different_bending_limits(self):
+        from sofa_pass8_solver import cloth
+        obj = new_object('Weighted cloth', [(0, 0, .2), (.02, 0, .2), (.02, .02, .2), (0, .02, .2)],
+                         [(0, 1, 2, 3)], material('Control', (.3, .3, .3)))
+        group = obj.vertex_groups.new(name='Welt')
+        group.add([0, 1], .1, 'REPLACE')
+        group.add([2, 3], 1., 'REPLACE')
+        mod, config = cloth(obj, 4, frames=2)
+        self.assertEqual(mod.settings.bending_stiffness, 0.)
+        self.assertAlmostEqual(mod.settings.bending_stiffness_max, config['bending'], places=5)
+        self.assertEqual(mod.settings.vertex_group_bending, 'Welt')
+        self.assertEqual(mod.settings.tension_damping, 5.)
+        self.assertAlmostEqual(mod.settings.bending_damping, .3)
+
     def test_quality_rejects_sliver_without_excluding_it(self):
         obj = new_object('Sliver', [(0, 0, 0), (.1, 0, 0), (.05, .00001, 0)],
                          [(0, 1, 2)], material('Control', (.3, .3, .3)))
