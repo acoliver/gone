@@ -37,7 +37,21 @@ static func build(layout: ShipLayout, id: StringName) -> Node3D:
 		_add(root, layout, id, &"SideConduits", CorridorDressing._mesh(&"cylinder"), spec.spine.side_conduits + spec.spine.service_collars, &"collar_steel", &"WALL")
 		_add(root, layout, id, &"PipeBrackets", CorridorDressing._mesh(&"box"), spec.spine.brackets + spec.spine.duct_collars + spec.spine.bolts, &"collar_steel", &"CEILING")
 		_add(root, layout, id, &"CeilingDucts", mesh(&"duct"), spec.ducts, &"wall", &"CEILING")
+		_add(root, layout, id, &"DuctFlanges", CorridorDressing._mesh(&"box"), spec.spine.duct_flanges, &"wall", &"CEILING")
 	return root
+
+static func ceiling_mesh(layout: ShipLayout, solid: ShipGeometry.SolidSpec) -> Mesh:
+	var source: Mesh = HatchModel.solid_mesh(solid)
+	var owner := StringName(String(solid.id).get_slice("/", 0))
+	if not layout.has_space(owner): return source
+	var spec := layout.ceiling_services(owner)
+	if spec.spine == null: return source
+	var tool := SurfaceTool.new()
+	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for box: AABB in spec.spine.ceiling_boxes(solid):
+		HatchModel._append(tool, HatchModel.box_mesh(box.size), Transform3D(Basis(), box.get_center()))
+	tool.index()
+	return tool.commit()
 
 static func _pipe_mesh() -> Mesh:
 	var cylinder := CorridorDressing._mesh(&"cylinder")

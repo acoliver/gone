@@ -2,6 +2,72 @@ extends SimTestCase
 
 const CONTACT := 0.002
 
+func test_duct_frames_expose_fifty_mm_lips_and_flush_terminal_flanges() -> void:
+	var layout := ShipLayout.authored().layout
+	var faces := 0
+	for space: ShipLayout.Spec in layout.records():
+		if not (space is ShipLayout.SectionSpec or space is ShipLayout.ConnectorSpec) or not space.is_built(): continue
+		var spine := layout.ceiling_services(space.id()).spine
+		for side: int in range(2):
+			var frame := _duct_frame(spine, side)
+			var tile: Transform3D = spine.ducts[0] if side == 0 else spine.ducts[-1]
+			var body := tile * AABB(Vector3(-0.5, -0.5, -0.40 / 0.44 / 2), Vector3(1, 0.30 / 0.35, 0.40 / 0.44))
+			assert_true(body.position.y - frame.position.y >= 0.050 - CONTACT, "duct frame lower lip exposes at least 50 mm: %s/%d" % [space.id(), side])
+			assert_true(frame.end.y - body.end.y >= 0.050 - CONTACT, "duct frame upper lip exposes at least 50 mm")
+			assert_true(body.position.z - frame.position.z >= 0.050 - CONTACT and frame.end.z - body.end.z >= 0.050 - CONTACT, "duct frame exposes both side lips")
+			assert_true(frame.position.y >= space.bounds().end.y - 0.35 - CONTACT, "frame preserves the previous lowest duct envelope")
+			assert_true(frame.size.x >= 0.035 - CONTACT and frame.size.x <= 0.040 + CONTACT, "duct frame is 35 to 40 mm deep")
+			var room_face := frame.end.x if side == 0 else frame.position.x
+			assert_true(body.position.x <= frame.position.x and body.end.x >= frame.end.x, "closed sheet body crosses the complete frame depth without a gap")
+			var flanges: Variant = spine.get("duct_flanges")
+			assert_true(flanges != null and flanges.size() == 8, "both terminal tiles have a four-sided flange against the frame")
+			if flanges == null or flanges.size() != 8: return
+			for index: int in range(4):
+				var flange: AABB = flanges[side * 4 + index] * ShipDressing.UNIT
+				var seat := flange.position.x if side == 0 else flange.end.x
+				assert_true(absf(seat - room_face) <= 0.00001, "terminal flange seats flush with zero gap on either wall face: %s/%d" % [space.id(), side])
+				assert_true(flange.grow(CONTACT).intersects(body), "terminal flange attaches to the actual sheet body")
+			faces += 1
+		var node := CeilingProps.build(layout, space.id())
+		var drawn: Array = node.get_node("DuctFlanges").get_meta(&"instance_poses")
+		for flange: Transform3D in spine.get("duct_flanges"): assert_true(flange in drawn, "terminal flange is drawn")
+		node.free()
+	assert_int_equal(faces, 126, "both walls of every built spine space")
+
+func _duct_frame(spine: SpineServices, side: int) -> AABB:
+	var result := spine.duct_collars[side * 4] * ShipDressing.UNIT
+	for index: int in range(1, 4): result = result.merge(spine.duct_collars[side * 4 + index] * ShipDressing.UNIT)
+	return result
+
+func _assert_flush_duct_end(spine: SpineServices, side: int) -> void:
+	var frame := _duct_frame(spine, side)
+	var tile: Transform3D = spine.ducts[0] if side == 0 else spine.ducts[-1]
+	var body := tile * CeilingProps.mesh(&"duct").get_aabb()
+	assert_true(body.position.x <= frame.position.x and body.end.x >= frame.end.x, "duct crosses the entire wall frame without an axial gap")
+	var plane := frame.end.x if side == 0 else frame.position.x
+	for index: int in range(4):
+		var flange := spine.duct_flanges[side * 4 + index] * ShipDressing.UNIT
+		assert_true(absf((flange.position.x if side == 0 else flange.end.x) - plane) <= 0.00001, "terminal flange meets the room face of the frame with zero gap")
+
+func test_upper_duct_frame_lips_have_recessed_ceiling_seats() -> void:
+	var layout := ShipLayout.authored().layout
+	for space: ShipLayout.Spec in layout.records():
+		if not (space is ShipLayout.SectionSpec or space is ShipLayout.ConnectorSpec) or not space.is_built(): continue
+		var solids := ShipGeometry.section_solids(layout, space) if space is ShipLayout.SectionSpec else ShipGeometry.connector_solids(layout, space)
+		for solid: ShipGeometry.SolidSpec in solids:
+			if solid.material_role != &"ceiling" or not String(solid.id).begins_with(String(space.id()) + "/CEILING/"): continue
+			var piece := ShipSection.surface(solid, 1, layout)
+			var triangles := piece.mesh.get_faces()
+			for side: int in range(2):
+				var frame := _duct_frame(layout.ceiling_services(space.id()).spine, side)
+				var start := frame.get_center()
+				start.y = space.bounds().end.y - 0.001
+				var end := start
+				end.y = frame.end.y - 0.001
+				for index: int in range(0, triangles.size(), 3):
+					assert_true(Geometry3D.segment_intersects_triangle(start, end, solid.transform * triangles[index], solid.transform * triangles[index + 1], solid.transform * triangles[index + 2]) == null, "ceiling does not bury the raised top lip: %s/%d" % [space.id(), side])
+			piece.free()
+
 func test_all_six_drawn_pipe_and_conduit_runs_reach_bulkhead_centres() -> void:
 	var layout := ShipLayout.authored().layout
 	for space: ShipLayout.Spec in layout.records():
@@ -74,7 +140,7 @@ func test_added_services_clear_hatch_frames_and_complete_swings_without_lowering
 	for space: ShipLayout.Spec in layout.records():
 		if not (space is ShipLayout.SectionSpec or space is ShipLayout.ConnectorSpec) or not space.is_built(): continue
 		var spine := layout.ceiling_services(space.id()).spine
-		for pose: Transform3D in spine.side_conduits + spine.service_collars + spine.bolts:
+		for pose: Transform3D in spine.side_conduits + spine.service_collars + spine.bolts + spine.duct_collars + spine.duct_flanges:
 			var box := pose * ShipDressing.UNIT
 			assert_true(box.position.y >= space.bounds().end.y - 0.658 - CONTACT, "side fittings stay above the former side-conduit bottom")
 			for door_id: StringName in layout.door_ids():
@@ -113,7 +179,7 @@ func test_spine_runs_reach_both_bulkheads_in_every_built_space() -> void:
 		var last := b.position.x + ShipLayout.WALL / 2
 		for duct: AABB in ducts:
 			assert_true(absf(duct.position.x - last) <= CONTACT, "duct tiles have no gaps: %s" % space.id())
-			assert_true(absf(duct.end.y - b.end.y) <= CONTACT, "duct remains ceiling-mounted")
+			assert_true(absf(duct.end.y - b.end.y - SpineServices.DUCT_RISE) <= CONTACT, "raised duct remains ceiling-mounted")
 			last = duct.end.x
 		assert_true(absf(last - b.end.x - ShipLayout.WALL / 2) <= CONTACT, "duct ends inside the end wall: %s" % space.id())
 		for root: Node3D in roots:
@@ -158,6 +224,7 @@ func test_extreme_runs_terminate_inside_the_actual_ship_end_walls() -> void:
 			assert_true(spine != null, "outer section has terminating spine services")
 			if spine == null: return
 			var fore := door.frame().origin.x == section.bounds().position.x
+			_assert_flush_duct_end(spine, 0 if fore else 1)
 			var runs: Array[Transform3D] = spine.pipes + spine.side_conduits + layout.ceiling_services(space_id).pipes
 			runs.append(spine.ducts[0] if fore else spine.ducts[-1])
 			for pose: Transform3D in runs:
@@ -192,6 +259,8 @@ func test_each_bulkhead_joins_matching_runs_and_has_two_face_collars() -> void:
 		var right: Variant = layout.ceiling_services(spaces[1]).get("spine")
 		assert_true(left != null and right != null, "both bulkhead faces own spine services: %s" % id)
 		if left == null or right == null: return
+		_assert_flush_duct_end(left, 1)
+		_assert_flush_duct_end(right, 0)
 		for index: int in range(3):
 			var a: AABB = left.pipes[index] * ShipDressing.UNIT
 			var b: AABB = right.pipes[index] * ShipDressing.UNIT
@@ -213,7 +282,7 @@ func test_each_bulkhead_joins_matching_runs_and_has_two_face_collars() -> void:
 		for spine: Variant in [left, right]:
 			assert_int_equal(spine.duct_collars.size(), 8, "four-sided duct collar at both walls")
 			for pose: Transform3D in spine.duct_collars:
-				assert_true(pose.origin.y >= a.position.y, "collar never hangs below the duct")
+				assert_true((pose * ShipDressing.UNIT).position.y >= a.position.y - SpineServices.DUCT_RISE - CONTACT, "collar lower edge preserves the previous duct envelope")
 		joins += 1
 	assert_int_equal(joins, 120, "four bulkhead joins on each of thirty decks")
 
@@ -225,7 +294,7 @@ func test_spine_services_clear_hatch_openings_sweeps_and_existing_services() -> 
 		var spine: Variant = services.get("spine")
 		assert_true(spine != null, "spine recipe exists")
 		if spine == null: return
-		for pose: Transform3D in spine.pipes + spine.pipe_collars + spine.brackets + spine.ducts + spine.duct_collars:
+		for pose: Transform3D in spine.pipes + spine.pipe_collars + spine.brackets + spine.ducts + spine.duct_collars + spine.duct_flanges:
 			var box: AABB = pose * ShipDressing.UNIT
 			assert_true(box.position.y >= space.bounds().end.y - 0.365, "no service hangs below the existing overhead pipes")
 			for obstacle: AABB in services.detector_exclusions:

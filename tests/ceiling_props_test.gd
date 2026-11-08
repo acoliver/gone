@@ -74,7 +74,7 @@ func test_every_built_space_has_two_wall_detectors_and_sprinklers() -> void:
 		for duct: Transform3D in spec.ducts:
 			var bounds: AABB = duct * ShipDressing.UNIT
 			assert_true(absf(bounds.position.x - last) <= 0.002, "duct ends meet")
-			assert_true(absf(bounds.end.y - spec.bounds.end.y) <= 0.002, "duct hanger reaches ceiling")
+			assert_true(absf(bounds.end.y - spec.bounds.end.y - SpineServices.DUCT_RISE) <= 0.002, "raised duct hanger seats inside ceiling")
 			last = bounds.end.x
 		if not spec.ducts.is_empty(): assert_true(absf(last - spec.bounds.end.x - ShipLayout.WALL / 2) <= 0.002, "run reaches the bulkhead centre")
 
@@ -137,7 +137,7 @@ func test_each_service_mount_touches_structure_and_stays_above_walk_band() -> vo
 		var pieces: Dictionary = {}
 		for index: int in range(spec.detectors.size()): pieces["detector/%d" % index] = spec.detectors[index].bounds
 		var poses: Array[Transform3D] = spec.heads + spec.pipes + spec.tees + spec.clips + spec.ducts
-		if spec.spine != null: poses.append_array(spec.spine.pipes + spec.spine.pipe_collars + spec.spine.side_conduits + spec.spine.service_collars + spec.spine.bolts + spec.spine.brackets + spec.spine.duct_collars)
+		if spec.spine != null: poses.append_array(spec.spine.pipes + spec.spine.pipe_collars + spec.spine.side_conduits + spec.spine.service_collars + spec.spine.bolts + spec.spine.brackets + spec.spine.duct_collars + spec.spine.duct_flanges)
 		for index: int in range(poses.size()):
 			var box: AABB = poses[index] * ShipDressing.UNIT
 			assert_true(box.position.y > b.position.y + 2.2, "overhead services stay outside walking envelope")

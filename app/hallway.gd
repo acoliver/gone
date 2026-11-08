@@ -421,6 +421,7 @@ static func _surface_instance(role: String, placement: Placement.SolidPlacement,
 static func _box_instance(placement: Placement.SolidPlacement, material: Material, layout: ShipLayout = ShipLayout.authored().layout) -> MeshInstance3D:
 	var instance := MeshInstance3D.new()
 	instance.mesh = SlidingDoorModel.wall_mesh(layout, placement) if placement.material_role == &"wall" else HatchModel.solid_mesh(placement)
+	if placement.material_role == &"ceiling": instance.mesh = CeilingProps.ceiling_mesh(layout, placement)
 	instance.material_override = material
 	instance.position = placement.center
 	instance.quaternion = placement.rotation
