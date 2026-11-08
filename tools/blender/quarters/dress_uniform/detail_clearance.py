@@ -122,7 +122,8 @@ def seat_sewn(body, bindings):
             hit, normal, _, distance = tree.find_nearest(Vector(middle))
             maximum = max(maximum, distance)
             thickness = float(np.linalg.norm(original[i+count]-original[i]))
-            sign = float(np.dot(points[i+count]-points[i], normal))
+            source_normal = np.asarray(bindings[name]['entries'][i]['offset_frame'])[2]
+            sign = float(np.dot(original[i+count]-original[i], source_normal))
             lower, upper = (i, i+count) if sign >= 0 else (i+count, i)
             points[lower] = np.asarray(hit)+np.asarray(normal)*.0005
             points[upper] = np.asarray(hit)+np.asarray(normal)*(.0005+thickness)

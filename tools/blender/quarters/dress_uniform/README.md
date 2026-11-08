@@ -9,6 +9,84 @@ buttons and medal must remain recognizable. The source is `tunic-working.blend`,
 with `body-p` as the wool reference. `ShoulderChestForm` remains an invisible,
 unexported collider.
 
+## Tunic7 capsule export: rejected
+
+The completed capsule candidate passes 14 of 19 gates. It is saved at
+`tmp/age/tunic7/capsule/candidate.glb`; it has not replaced the game asset,
+textures or delivered blend. Saved-blend re-export is byte-identical.
+The dense preparation control passes at frame 875 with one self contact,
+zero exclusions and 0.6629 mm final-five-frame motion. G24 retains 97.6960%
+of chest width. This does not establish that the torso looks like wool.
+
+| Gate | Measured | Requirement | Result |
+| --- | --- | --- | --- |
+| G1 | 2.856531% visible sharp adjacency | At most 6% | Pass |
+| G2 | 0.124145% normal-jump pixels | At most 2% | Pass |
+| G3 | No eligible closed opening contour | At most 12 px; opening required | Fail |
+| G4 | No eligible opening width sample | At least 0.35; opening required | Fail |
+| G5 | 59.375389% lifted lip length | At least 30% over 3 mm | Pass |
+| G6 | No resolved opening contour | 1.15 to 1.40; resolved contour required | Fail |
+| G20 | 8.424989% near-hanger sharp adjacency | At most 10% | Pass |
+| G21 | 0 hanger pixels outside split hull | Zero | Pass |
+| G22 | 0.629927 maximum camera depth/width | At most 0.45 | Fail |
+| G23 | 44.261131% retained arc; 84.076161% fringe | At least 35%; at least 70% | Pass |
+| G24 | 97.696022% chest width | 92% to 108% | Pass |
+| G25 | 86.000571% open-hem fringe | At least 70% | Pass |
+| G26 | 0.0 hem autocorrelation peak | Below 0.30 | Pass |
+| G27 | 18.470741 mm mound height | 15 to 35 mm | Pass |
+| G28 | 3 fallen pieces | 2 minimum; requested 1 to 3 | Pass |
+| G29 | 84.065166 cm³ mound; 5.213167% inferred packing | Factor 2 at 5% to 15% packing | Pass |
+| G30 | 832 changed contacts; hanger 28/28, geometry exact | Zero; exact hanger baseline | Fail |
+| G31 | 17,004 / 13,768 triangles, ratio 1.235038 | At most 20,652, ratio 1.5 | Pass |
+| G32 | 0.631450 mm boundary error | At most 1.5 mm | Pass |
+
+The 832 contacts comprise 36 left-board self contacts, 10 right-board self
+contacts, 5 body/rim self contacts, 65 collar/body contacts, 537 left-board/body
+contacts and 179 right-board/body contacts. Collar self and collar/hanger
+contacts are zero. Fallen strips, fibre cards, medal, insignia and buttons
+have zero reported contacts. The body's nonmanifold-edge count is zero.
+
+The corrected G22 sections are 0.629927, 0.568693 and 0.493813 at quarter,
+half and three-quarter length. The prepared 12 mm capsule does not remain
+pressed in the coupled garment solve. An isolated capsule with bending 5
+retains a 0.09438 depth/width ratio through 300 frames, while bending 15 also
+stays near 0.09438. The coupled cap/body attachment must be isolated next;
+raising bending alone is not justified by this control. No higher sleeve
+stiffness has been adopted. The alpha-aware contour
+extractor finds no eligible enclosed opening in this candidate. It fails
+closed; empty G3/G4/G6 lists are not passing measurements. The physical lips,
+branches and fringe therefore still lack accepted tear measurements.
+
+The attachment-base audit passes the 2 mm limit for both boards, placket,
+buttons, ribbon bar and collar stars. Medal metal and ribbon reach 2.773 and
+2.901 mm, respectively, and fail. The stars' mean normal errors are 0.0224°
+and 0.0050°. Board vertex gaps alone miss the crossings: refining both paired
+facings once reduces body crossings from 469/179 to 407/72, but increases self
+contacts from 36/10 to 72/24. A second refinement still has 238/38 body
+crossings and exceeds the final budget if retained. That experiment was not
+adopted. A source-layer identity regression also catches a vertex swap caused
+by inferring inner/outer identity from distorted poses; no such swaps were
+found in the capsule boards, so it does not explain their remaining contacts.
+
+Comparison images use the tunic6 cameras and the same recorded distance,
+lens, projection and resolution. The new camera record adds position and aim
+metadata; the shared recorded fields match tunic6 exactly.
+
+- `tmp/age/tunic7/tunic-before-after.png`, 3200 by 1422.
+- `tmp/age/tunic7/tunic-turntable.png`, 3200 by 2844.
+- `tmp/age/tunic7/tunic-closeup.png`, 1600 by 1422 at 0.5 m.
+
+These are unapproved scratch renders. G21's zero count does not establish that
+the visible wire inside the split looks acceptable. The mound and curled
+fallen strips pass their numeric gates but have no new visual review.
+
+`audit_attachments.py -- --out <scratch>` independently matches authored bases
+and exits nonzero when any exceeds 2 mm. Its rejection of this candidate is
+expected. All 26 local test scripts pass. The first test runner incorrectly
+sent `test_wool_sampling.py` to standalone Python; its Blender rerun passes.
+The local controls are recorded in `tmp/age/tunic7/verify-*.log`. The final
+export gate command exits nonzero because the five gates fail.
+
 ## Tunic7 resolved dense control and attachment supports
 
 The capsule trial settles at frame 875. Its strict dense SAT control finds one
