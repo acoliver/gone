@@ -25,6 +25,10 @@ static func build(layout: ShipLayout, id: StringName) -> Node3D:
 	var root := Node3D.new()
 	root.name = "CeilingProps"
 	root.set_meta(&"space_id", id)
+	var detectors: Array[Transform3D] = []
+	for row: Dictionary in spec.detectors:
+		detectors.append(row.frame * Transform3D(Basis.from_scale(CeilingServices.DETECTOR_SIZE), Vector3.ZERO))
+	_add(root, layout, id, &"FireDetectors", mesh(&"detector"), detectors, &"weathered_red", &"WALL")
 	_add(root, layout, id, &"Sprinklers", mesh(&"sprinkler"), spec.heads, &"corroded_brass", &"WALL")
 	_add(root, layout, id, &"SprinklerPipes", _pipe_mesh(), spec.pipes, &"pipe", &"WALL")
 	_add(root, layout, id, &"PipeClips", CorridorDressing._mesh(&"box"), spec.clips, &"pipe", &"WALL")
