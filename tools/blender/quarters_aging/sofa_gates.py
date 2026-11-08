@@ -105,7 +105,7 @@ def cluster_fraction(points, eps=.030, minimum=4):
 
 
 def measure(path, collisions=None, reexport=None, baseline_collisions=None):
-    from visible_gates import load, primitive, heights
+    from visible_gates import load, heights
     from verify import clean, geometry_buffers, pivots
     from scipy.spatial import ConvexHull
     before, old_doc = load(ROOT / 'assets/props/quarters/sofa.glb')
@@ -142,7 +142,7 @@ def measure(path, collisions=None, reexport=None, baseline_collisions=None):
             base = before[name].bounds[0, 1]
             backs[name] = float((cover.bounds[1, 1]-base)/(before[name].bounds[1, 1]-base))
             bottom_volume[name] = volume_below(residue, base+before[name].extents[1]/3)/abs(residue.volume)
-    cloth['Throw'] = dihedral_share(clean(primitive(after['Throw'], 'OatmealWool')))
+    cloth['Throw'] = dihedral_share(clean(surface(after['Throw'], 'OatmealWool')))
     measured('G1', cloth, all(v <= (.09 if n == 'Throw' else .08) for n, v in cloth.items()))
     gates['G1']['method'] = 'All-sheet adjacency diagnostic; visible-face measurement remains pending'
     gates['G1']['status'] = 'partial'

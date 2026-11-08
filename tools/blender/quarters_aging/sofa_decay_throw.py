@@ -70,7 +70,7 @@ def run(source, out, frames=480):
     checkpoint(out, record, 'throw-prepared.blend')
     simulation = freeze_simulation(obj, mod, frames)
     save_surface(obj, out/'throw-dense.npz')
-    low, reduction = decimate(obj, 3400)
+    low, reduction = decimate(obj, 3200)
     low.name = 'Throw_GameContact'
     low['aged_export'] = False
     low.hide_render = True

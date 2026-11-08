@@ -16,9 +16,46 @@ The pass-6 collapse milestone failed. The ordered centre and left seats complete
 
 `sofa_decay_finish.py --stage detail` bakes each reduced cover and residue from its dense source, applies the original upholstery albedo `(0.055, 0.060, 0.066)`, and adds collision-tested fringe at the authored lips. The rendered round-trip material control differs from the same constant reference by at most 0.000638 per linear RGB channel, below one 8-bit step. The texture contains AO rather than relying on colour-math nodes that glTF cannot export. A completed one-seat material integration does not certify the six-cover tear or residue gates.
 
-The throw has three zero-area crest split runs, leaving two 18/19 mm bridges and end corners. G18 passes at 78.556% split against 60% to 90%. Its unpinned 480-frame solve took 776.333 s. It reached the floor, then its collision response ejected it upward and away; the final reduced surface has no area below 0.30 m, so G19 fails with no fallen centroid and zero measurable floor folds. Its all-sheet sharp-adjacency share is 58.835%. The solver cause is unresolved; the failed result is retained without a manual pose correction.
+The throw has three zero-area crest split runs, leaving two 18/19 mm bridges and end corners. G18 passes at 78.556% split against 60% to 90%. Its unpinned 480-frame solve took 776.333 s. It reached the floor, then its collision response ejected it upward and away; the final reduced surface has no area below 0.30 m, so G19 fails with no fallen centroid and zero measurable floor folds. Its final 3,200-triangle surface has 58.918% all-sheet sharp adjacencies and 50.891% visible sharp adjacencies. The solver cause is unresolved; the failed result is retained without a manual pose correction.
 
 The crumb/powder milestone passes G9 to G11. Nine cut-residue templates use 24 triangles each, with thickness/width 0.2663 to 0.4592. Deposition places 90 floor crumbs, 24 crumbs under actual tear lips, and three powder cards. G10 measures Clark-Evans R 1.162946 and largest DBSCAN cluster 0%. G11 radial-density correlations are -1.000000, -0.900000 and -0.974679, each below -0.6. The initial uniform-width strip failed the centre source at -0.2 because lateral sampling did not decline radially. The final half-disc fans stratify decreasing area densities while retaining the 24 mm minimum spacing and contact rejection. The exported components match the placement record.
+
+### Pass-6 final acceptance: rejected, game asset unchanged
+
+The 4096-square albedo/normal atlas is packed, and the diagnostic GLB passes geometry-byte, pivot and byte-identical re-export checks. It has 29,272 triangles. Publication is blocked by the failed gates and by the explicit requirement that all six covers were simulated. No pass-6 GLB or textures were copied into the game's asset paths.
+
+In the table, seat triplets are centre/left/right; back triplets use the same order. The four fitted diagnostic covers have no simulated aging. Full per-opening values, face counts and collision details are in `tmp/age/pass6/ordered/gates.json` and `collisions.json`.
+
+| Gate | Measured value | Threshold | Result |
+| --- | --- | --- | --- |
+| G1 | Visible sharp adjacencies: seats 9.667/7.170/0%; backs 0/0/0%; throw 50.891% | Covers ≤8%; throw ≤9% | Fail |
+| G2 | Cover normal jumps 0.0993% to 0.2422%; throw 6.4609% | ≤2% | Fail |
+| G3 | Longest alpha-aware straight runs: seats 34.300/79.765/31.780 px; no resolved back or throw openings | ≤12 px | Fail |
+| G4 | Minimum opening width CV: seats 0.3627/0.4306/0.2974; no back or throw openings | ≥0.35 each | Fail |
+| G5 | Lifted lip length: seats 38.340/44.777/0%; backs 0/0/0% | ≥30% | Fail |
+| G6 | Resolved contour dimensions: centre 1.1043–1.2938, left 1.0221–1.2543, right 1.2542; none for backs or throw | 1.15–1.40 each | Fail |
+| G7 | Planar residue area: seats 33.876/29.858/30.221%; backs 7.847/4.202/4.983% | ≤5% each | Fail |
+| G8 | Dense plane-fit RMS: seats 1.712/1.712/1.712 mm; backs 2.494/2.478/2.478 mm; all normal maps present | ≥1.5 mm and map | Pass |
+| G9 | 9 templates; 24 triangles each; thickness/width 0.2663–0.4592 | ≥8; 14–40 triangles; ratio 0.25–0.70 | Pass |
+| G10 | R 1.162946; largest cluster 0%; 90 floor crumbs | R 0.8–1.4; cluster ≤20% | Pass |
+| G11 | Radial density rho -1.000000/-0.900000/-0.974679; 3 powder cards | ≤-0.6 per source, with powder | Pass |
+| G12 | Seat vertical-wall area 38.831/33.168/89.132% of fitted | ≤25% each | Fail |
+| G13 | Exported rounded-box RMS 18.187/16.361/7.367 mm | ≥12 mm each seat | Fail |
+| G14 | Seat centre-height retention 21.727/14.732/99.938% | 10%–25% each | Fail |
+| G15 | Back height retention 99.883% each | 40%–65% each | Fail |
+| G16 | Back residue volume in lower third 100% each | ≥60% each | Pass |
+| G17 | 1 front fold per back at ≥8 mm prominence | ≥2 per back | Fail |
+| G18 | Crest split 78.556% | 60%–90% | Pass |
+| G19 | No final throw area below 0.30 m; no fallen centroid; 0 floor folds | Distance ≤0.25 m; ≥3 folds | Fail |
+| G30 | 1,490 changed contacts; exact rigid baseline retained: 522 frame self and 272 frame/rivets, other rigid counts zero | Zero changed contacts; exact rigid baseline | Fail |
+| G31 | 29,272 triangles; 1.497289 times fitted | ≤29,325 and ≤1.5 times fitted | Pass |
+| G32 | Dense/game boundary bound 0.125 mm for all covers and throw | ≤1.5 mm | Pass |
+
+G20 to G29 are tunic-only. Of the changed contacts, 549 are throw self-contacts, 46 are in the two settled seat nodes, 4 are in the fitted left-back node and 13 are within crumb templates. Pair contacts include the retained fitted neighbours and 12 frame/settled-seat crossings. The residue's remaining large planar underside facets still fail G7 despite its dense roughness and baked normal maps. Fringe covers about 76% to 79% of the authored lip length, but its alpha-aware contours still fail G3 and G6. Presence and coverage do not establish a convincing torn edge.
+
+Captures of this rejected preview are `tmp/age/pass6/sofa-before-after.png`, `sofa-turntable.png` and `sofa-closeup.png`. The closeup is at 0.6 m. The throw diagnostics follow its actual failed position, rather than rendering the empty fitted arm location. These are diagnostic images, not an accepted art replacement.
+
+Verification: 39 Python tests, 12 Blender tests, the rendered albedo/keyed-cloth integration control, the one-seat material integration and the final export acceptance runner completed. Acceptance exits 1 because the measured asset fails; the software tests pass. No OCR review was run, per the standing instruction.
 
 ## Pass 5 calibration and contact policy
 
