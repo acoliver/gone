@@ -48,7 +48,19 @@ def simplify_boundary(bm):
 
 def reduce_game(dense, target):
     if dense.name == 'TunicBody':
-        return decimate(dense, target)
+        low, report = decimate(dense, target)
+        bm = bmesh.new()
+        bm.from_mesh(low.data)
+        interior = [v for v in bm.verts if not v.is_boundary]
+        for _ in range(4):
+            bmesh.ops.smooth_vert(bm, verts=interior, factor=.3,
+                                  use_axis_x=True, use_axis_y=True, use_axis_z=True)
+        bm.to_mesh(low.data)
+        bm.free()
+        report['interior_relaxation'] = {'passes': 4, 'factor': .3, 'boundary_fixed': True}
+        report['boundary_hausdorff_upper_m'] = boundary_hausdorff(dense, low)
+        report['pass'] = report['triangles'] <= target and report['boundary_hausdorff_upper_m'] <= .0015
+        return low, report
     working = dense.copy()
     working.data = dense.data.copy()
     bpy.context.collection.objects.link(working)

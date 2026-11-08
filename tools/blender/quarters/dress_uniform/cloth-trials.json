@@ -8885,5 +8885,3976 @@
     ],
     "verification": "verify-aged.json",
     "visual_review": "Unavailable: configured image-comparer endpoint at 127.0.0.1:8308 refused connections. No visual sign-off claimed."
-  }
+  },
+  "pass3": [
+    {
+      "trial": "tunic-a",
+      "seed": 9521,
+      "prop": "dress_uniform",
+      "frames": 240,
+      "status": "baked",
+      "construction": {
+        "method": "Blender cloth simulation after armhole stitch release and stress cuts; no post-simulation body deformation",
+        "settings": {
+          "quality": 25,
+          "frames": 240,
+          "time_scale": 0.5,
+          "mass": 0.18,
+          "stiffness": 80,
+          "bending": 0.025,
+          "self_collision": true,
+          "self_distance_m": 0.004,
+          "collision_distance_m": 0.002,
+          "collision_quality": 12
+        },
+        "armhole": {
+          "released_fraction": 0.6399225570803897,
+          "released_vertices": 8,
+          "cap_vertices": 14
+        },
+        "tears": {
+          "removed_faces": 102,
+          "removed_area_m2": 0.043037228810135275,
+          "boundary_noise_amplitude_m": 0.006,
+          "octaves": 4
+        },
+        "simulation": {
+          "frames": 240,
+          "retained_pins": 18,
+          "last_five_frames_motion_m": 0.13561172333173208
+        },
+        "frays": 270,
+        "heap": {
+          "method": "Constructed seeded radial fibre/dust heap, not simulated",
+          "centre_blender_m": [
+            0.11,
+            -0.19
+          ],
+          "floor_m": -0.95
+        }
+      }
+    },
+    {
+      "trial": "tunic-b",
+      "seed": 9521,
+      "prop": "dress_uniform",
+      "frames": 400,
+      "status": "baked",
+      "construction": {
+        "method": "Blender cloth simulation after armhole stitch release and stress cuts; no post-simulation body deformation",
+        "settings": {
+          "quality": 30,
+          "frames": 400,
+          "time_scale": 0.25,
+          "mass": 0.18,
+          "stiffness": 250,
+          "bending": 0.06,
+          "self_collision": true,
+          "self_distance_m": 0.0006,
+          "collision_distance_m": 0.001,
+          "collision_quality": 12
+        },
+        "armhole": {
+          "released_fraction": 0.6399225570803897,
+          "released_vertices": 8,
+          "cap_vertices": 14
+        },
+        "tears": {
+          "removed_faces": 102,
+          "removed_area_m2": 0.043037228810135275,
+          "boundary_noise_amplitude_m": 0.006,
+          "octaves": 4
+        },
+        "simulation": {
+          "frames": 400,
+          "retained_pins": 42,
+          "last_five_frames_motion_m": 0.021401593894949947
+        },
+        "frays": 294,
+        "heap": {
+          "method": "Constructed seeded radial fibre/dust heap, not simulated",
+          "centre_blender_m": [
+            0.11,
+            -0.19
+          ],
+          "floor_m": -0.95
+        }
+      }
+    },
+    {
+      "trial": "tunic-c",
+      "seed": 9521,
+      "prop": "dress_uniform",
+      "frames": 800,
+      "status": "baked",
+      "construction": {
+        "method": "Blender cloth simulation after armhole stitch release and stress cuts; no post-simulation body deformation",
+        "settings": {
+          "quality": 30,
+          "frames": 800,
+          "time_scale": 0.25,
+          "mass": 0.18,
+          "stiffness": 350,
+          "bending": 0.06,
+          "self_collision": true,
+          "self_distance_m": 0.0006,
+          "collision_distance_m": 0.001,
+          "collision_quality": 12
+        },
+        "armhole": {
+          "released_fraction": 0.6399225570803897,
+          "released_vertices": 8,
+          "cap_vertices": 14
+        },
+        "tears": {
+          "removed_faces": 102,
+          "removed_area_m2": 0.043037228810135275,
+          "boundary_noise_amplitude_m": 0.006,
+          "octaves": 4
+        },
+        "simulation": {
+          "frames": 800,
+          "retained_pins": 50,
+          "last_five_frames_motion_m": 0.0003147384551026319
+        },
+        "frays": 290,
+        "heap": {
+          "method": "Constructed seeded radial fibre/dust heap, not simulated",
+          "centre_blender_m": [
+            0.11,
+            -0.19
+          ],
+          "floor_m": -0.95
+        }
+      }
+    },
+    {
+      "trial": "tunic-d",
+      "seed": 9521,
+      "prop": "dress_uniform",
+      "frames": 800,
+      "status": "baked",
+      "construction": {
+        "method": "Blender cloth simulation after armhole stitch release and stress cuts; no post-simulation body deformation",
+        "settings": {
+          "quality": 30,
+          "frames": 800,
+          "time_scale": 0.25,
+          "mass": 0.18,
+          "stiffness": 80,
+          "max_stiffness": 300,
+          "bending": 0.06,
+          "self_collision": true,
+          "self_distance_m": 0.0006,
+          "collision_distance_m": 0.001,
+          "collision_quality": 12
+        },
+        "armhole": {
+          "released_fraction": 0.6399225570803897,
+          "released_vertices": 8,
+          "cap_vertices": 14
+        },
+        "tears": {
+          "removed_faces": 102,
+          "removed_area_m2": 0.043037228810135275,
+          "boundary_noise_amplitude_m": 0.006,
+          "octaves": 4
+        },
+        "simulation": {
+          "frames": 800,
+          "retained_pins": 50,
+          "last_five_frames_motion_m": 0.0009952306955294725
+        },
+        "frays": 293,
+        "heap": {
+          "method": "Constructed seeded radial fibre/dust heap, not simulated",
+          "centre_blender_m": [
+            0.11,
+            -0.19
+          ],
+          "floor_m": -0.95
+        }
+      }
+    },
+    {
+      "trial": "tunic-e",
+      "seed": 9521,
+      "prop": "dress_uniform",
+      "frames": 800,
+      "status": "failed",
+      "error": "ShoulderBoard_L: attachment ray misses simulated cloth"
+    },
+    {
+      "trial": "tunic-f",
+      "seed": 9521,
+      "prop": "dress_uniform",
+      "frames": 800,
+      "status": "baked",
+      "construction": {
+        "method": "Blender cloth simulation after armhole stitch release and stress cuts; no post-simulation body deformation",
+        "settings": {
+          "quality": 30,
+          "frames": 800,
+          "time_scale": 0.25,
+          "mass": 0.18,
+          "stiffness": 80,
+          "max_stiffness": 300,
+          "bending": 0.06,
+          "self_collision": true,
+          "self_distance_m": 0.0006,
+          "collision_distance_m": 0.001,
+          "collision_quality": 12
+        },
+        "armhole": {
+          "released_fraction": 0.6399225570803897,
+          "released_vertices": 8,
+          "cap_vertices": 14
+        },
+        "tears": {
+          "removed_faces": 102,
+          "removed_area_m2": 0.043037228810135275,
+          "boundary_noise_amplitude_m": 0.006,
+          "octaves": 4
+        },
+        "simulation": {
+          "frames": 800,
+          "retained_pins": 37,
+          "last_five_frames_motion_m": 0.06293535592757823
+        },
+        "frays": 249,
+        "detail_fits": {
+          "ShoulderBoard_L": {
+            "method": "Visible simulated support triangles clipped to original detail footprint, lifted 3 mm; not separately simulated",
+            "triangles": 67
+          },
+          "ShoulderBoard_R": {
+            "method": "Visible simulated support triangles clipped to original detail footprint, lifted 3 mm; not separately simulated",
+            "triangles": 70
+          },
+          "RibbonBar": {
+            "method": "Visible simulated support triangles clipped to original detail footprint, lifted 3 mm; not separately simulated",
+            "triangles": 60
+          }
+        },
+        "heap": {
+          "method": "Constructed seeded radial fibre/dust heap, not simulated",
+          "centre_blender_m": [
+            0.11,
+            -0.19
+          ],
+          "floor_m": -0.95
+        }
+      }
+    },
+    {
+      "trial": "tunic-g",
+      "seed": 9521,
+      "prop": "dress_uniform",
+      "frames": 800,
+      "status": "baked",
+      "construction": {
+        "method": "Blender cloth simulation after armhole stitch release and stress cuts; no post-simulation body deformation",
+        "settings": {
+          "quality": 30,
+          "frames": 800,
+          "time_scale": 0.25,
+          "mass": 0.18,
+          "stiffness": 80,
+          "max_stiffness": 300,
+          "bending": 0.06,
+          "self_collision": true,
+          "self_distance_m": 0.0006,
+          "collision_distance_m": 0.001,
+          "collision_quality": 12
+        },
+        "armhole": {
+          "released_fraction": 0.6399225570803897,
+          "released_vertices": 8,
+          "cap_vertices": 14
+        },
+        "tears": {
+          "removed_faces": 101,
+          "removed_area_m2": 0.042579956992994994,
+          "boundary_noise_amplitude_m": 0.006,
+          "octaves": 4
+        },
+        "simulation": {
+          "frames": 800,
+          "retained_pins": 37,
+          "last_five_frames_motion_m": 0.09543137358812068
+        },
+        "frays": 221,
+        "detail_fits": {
+          "ShoulderBoard_L": {
+            "method": "Visible simulated support triangles clipped to original detail footprint, lifted 3 mm; not separately simulated",
+            "triangles": 90
+          },
+          "ShoulderBoard_R": {
+            "method": "Visible simulated support triangles clipped to original detail footprint, lifted 3 mm; not separately simulated",
+            "triangles": 89
+          },
+          "RibbonBar": {
+            "method": "Visible simulated support triangles clipped to original detail footprint, lifted 3 mm; not separately simulated",
+            "triangles": 102
+          }
+        },
+        "heap": {
+          "method": "Constructed seeded radial fibre/dust heap, not simulated",
+          "centre_blender_m": [
+            0.11,
+            -0.19
+          ],
+          "floor_m": -0.95
+        }
+      }
+    },
+    {
+      "trial": "tunic-h",
+      "seed": 9521,
+      "prop": "dress_uniform",
+      "frames": 1200,
+      "status": "baked",
+      "construction": {
+        "method": "Blender cloth simulation after armhole stitch release and stress cuts; no post-simulation body deformation",
+        "settings": {
+          "quality": 60,
+          "frames": 1200,
+          "time_scale": 0.15,
+          "mass": 0.18,
+          "stiffness": 80,
+          "max_stiffness": 300,
+          "bending": 0.06,
+          "self_collision": true,
+          "self_distance_m": 0.0006,
+          "collision_distance_m": 0.001,
+          "collision_quality": 12
+        },
+        "armhole": {
+          "released_fraction": 0.6374427260466817,
+          "released_vertices": 8,
+          "cap_vertices": 14
+        },
+        "tears": {
+          "removed_faces": 101,
+          "removed_area_m2": 0.042579956992994994,
+          "boundary_noise_amplitude_m": 0.006,
+          "octaves": 4
+        },
+        "simulation": {
+          "frames": 1200,
+          "retained_pins": 16,
+          "last_five_frames_motion_m": 0.037768770101282025
+        },
+        "frays": 287,
+        "detail_fits": {
+          "ShoulderBoard_L": {
+            "method": "Visible simulated support triangles clipped to the followed detail footprint, lifted 3 mm; planar pattern UVs; not separately simulated",
+            "triangles": 92
+          },
+          "ShoulderBoard_R": {
+            "method": "Visible simulated support triangles clipped to the followed detail footprint, lifted 3 mm; planar pattern UVs; not separately simulated",
+            "triangles": 92
+          },
+          "RibbonBar": {
+            "method": "Visible simulated support triangles clipped to the followed detail footprint, lifted 3 mm; planar pattern UVs; not separately simulated",
+            "triangles": 63
+          }
+        },
+        "heap": {
+          "method": "Constructed seeded radial fibre/dust heap, not simulated",
+          "centre_blender_m": [
+            0.11,
+            -0.19
+          ],
+          "floor_m": -0.95
+        }
+      }
+    },
+    {
+      "trial": "tunic-i",
+      "seed": 9521,
+      "prop": "dress_uniform",
+      "frames": 1200,
+      "status": "cancelled",
+      "error": "Stopped at frame 260 after cloth bounds rose into the hanger; the pin offset equalled the combined collision margin, leaving no solver clearance. Replaced by a trial with explicit clearance between pinned cloth and the collision shell.",
+      "completed_frames": 260,
+      "settings": {
+        "quality": 60,
+        "frames": 1200,
+        "time_scale": 0.15,
+        "mass": 0.18,
+        "stiffness": 80,
+        "max_stiffness": 300,
+        "bending": 0.06,
+        "self_collision": true,
+        "self_distance_m": 0.0006,
+        "collision_distance_m": 0.001,
+        "collision_quality": 12,
+        "air_damping": 10
+      }
+    },
+    {
+      "trial": "tunic-h-fit",
+      "seed": 9521,
+      "prop": "dress_uniform",
+      "frames": 1200,
+      "status": "baked",
+      "reused_simulation": "tmp/age/pass3/tunic-h/simulated.blend",
+      "construction": {
+        "method": "Blender cloth simulation after armhole stitch release and stress cuts; no post-simulation body deformation",
+        "settings": {
+          "quality": 60,
+          "frames": 1200,
+          "time_scale": 0.15,
+          "mass": 0.18,
+          "stiffness": 80,
+          "max_stiffness": 300,
+          "bending": 0.06,
+          "self_collision": true,
+          "self_distance_m": 0.0006,
+          "collision_distance_m": 0.001,
+          "collision_quality": 12
+        },
+        "armhole": {
+          "released_fraction": 0.6374427260466817,
+          "released_vertices": 8,
+          "cap_vertices": 14
+        },
+        "tears": {
+          "removed_faces": 101,
+          "removed_area_m2": 0.042579956992994994,
+          "boundary_noise_amplitude_m": 0.006,
+          "octaves": 4
+        },
+        "simulation": {
+          "frames": 1200,
+          "retained_pins": 16,
+          "last_five_frames_motion_m": 0.037768770101282025
+        },
+        "frays": 287,
+        "detail_fits": {
+          "ShoulderBoard_L": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 76,
+            "fold_trim": {
+              "removed_contact_triangles": 16,
+              "removed_area_m2": 0.0018405815244477708,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "ShoulderBoard_R": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 81,
+            "fold_trim": {
+              "removed_contact_triangles": 11,
+              "removed_area_m2": 0.0013325576196621114,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "RibbonBar": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 63,
+            "fold_trim": {
+              "removed_contact_triangles": 0,
+              "removed_area_m2": 0,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "Placket": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 298,
+            "fold_trim": {
+              "removed_contact_triangles": 0,
+              "removed_area_m2": 0,
+              "point_fan_clearance_m": 0.0002
+            }
+          }
+        },
+        "heap": {
+          "method": "Constructed seeded radial fibre/dust heap, not simulated",
+          "centre_blender_m": [
+            0.11,
+            -0.19
+          ],
+          "floor_m": -0.95
+        }
+      }
+    },
+    {
+      "trial": "tunic-k",
+      "seed": 9521,
+      "prop": "dress_uniform",
+      "frames": 800,
+      "status": "baked",
+      "construction": {
+        "method": "Blender cloth simulation after armhole stitch release and stress cuts; no post-simulation body deformation",
+        "settings": {
+          "quality": 40,
+          "frames": 800,
+          "time_scale": 0.15,
+          "mass": 0.18,
+          "stiffness": 40,
+          "max_stiffness": 300,
+          "bending": 0.06,
+          "self_collision": true,
+          "self_distance_m": 0.0008,
+          "collision_distance_m": 0.002,
+          "collision_quality": 12,
+          "air_damping": 10
+        },
+        "initial_contact": {
+          "pin_clearance_m": 0.006,
+          "lift_m": 0.012,
+          "hanger_outer_m": 0.002,
+          "hanger_inner_m": 0.002,
+          "two_sided": true
+        },
+        "armhole": {
+          "released_fraction": 0.6374427260466817,
+          "released_vertices": 8,
+          "cap_vertices": 14
+        },
+        "tears": {
+          "removed_faces": 101,
+          "removed_area_m2": 0.042579956992994994,
+          "boundary_noise_amplitude_m": 0.006,
+          "octaves": 4,
+          "point_fan_clearance_m": 0.002
+        },
+        "simulation": {
+          "frames": 800,
+          "retained_pins": 50,
+          "last_five_frames_motion_m": 0.023480374518816443,
+          "trace": [
+            {
+              "frame": 50,
+              "bounds_blender_m": [
+                [
+                  -0.38341274857521057,
+                  -0.10284502059221268,
+                  -0.8833199143409729
+                ],
+                [
+                  0.3716166913509369,
+                  0.060872141271829605,
+                  -0.13302306830883026
+                ]
+              ]
+            },
+            {
+              "frame": 100,
+              "bounds_blender_m": [
+                [
+                  -0.38081637024879456,
+                  -0.09261908382177353,
+                  -0.8836005330085754
+                ],
+                [
+                  0.3551192283630371,
+                  0.06229458376765251,
+                  -0.13449521362781525
+                ]
+              ]
+            },
+            {
+              "frame": 150,
+              "bounds_blender_m": [
+                [
+                  -0.37684890627861023,
+                  -0.09272118657827377,
+                  -0.8806184530258179
+                ],
+                [
+                  0.3344435691833496,
+                  0.05226347967982292,
+                  -0.13496516644954681
+                ]
+              ]
+            },
+            {
+              "frame": 200,
+              "bounds_blender_m": [
+                [
+                  -0.3755480945110321,
+                  -0.07704371958971024,
+                  -0.8805938959121704
+                ],
+                [
+                  0.3203170895576477,
+                  0.04966435953974724,
+                  -0.13441668450832367
+                ]
+              ]
+            },
+            {
+              "frame": 250,
+              "bounds_blender_m": [
+                [
+                  -0.37482255697250366,
+                  -0.08085917681455612,
+                  -0.8800216317176819
+                ],
+                [
+                  0.3152245879173279,
+                  0.053497813642024994,
+                  -0.13490165770053864
+                ]
+              ]
+            },
+            {
+              "frame": 300,
+              "bounds_blender_m": [
+                [
+                  -0.37413331866264343,
+                  -0.07442070543766022,
+                  -0.8797524571418762
+                ],
+                [
+                  0.3142738938331604,
+                  0.0573563277721405,
+                  -0.1347942054271698
+                ]
+              ]
+            },
+            {
+              "frame": 350,
+              "bounds_blender_m": [
+                [
+                  -0.3727591037750244,
+                  -0.07341447472572327,
+                  -0.8792006373405457
+                ],
+                [
+                  0.3058342933654785,
+                  0.061518218368291855,
+                  -0.13482119143009186
+                ]
+              ]
+            },
+            {
+              "frame": 400,
+              "bounds_blender_m": [
+                [
+                  -0.3719921410083771,
+                  -0.07410712540149689,
+                  -0.8789899349212646
+                ],
+                [
+                  0.304932177066803,
+                  0.057619739323854446,
+                  -0.1347515732049942
+                ]
+              ]
+            },
+            {
+              "frame": 450,
+              "bounds_blender_m": [
+                [
+                  -0.37108689546585083,
+                  -0.1360272467136383,
+                  -0.878995954990387
+                ],
+                [
+                  0.3032534122467041,
+                  0.0536891333758831,
+                  -0.13441970944404602
+                ]
+              ]
+            },
+            {
+              "frame": 500,
+              "bounds_blender_m": [
+                [
+                  -0.37034380435943604,
+                  -0.07959172874689102,
+                  -0.8784184455871582
+                ],
+                [
+                  0.30305638909339905,
+                  0.05376127362251282,
+                  -0.10653609037399292
+                ]
+              ]
+            },
+            {
+              "frame": 550,
+              "bounds_blender_m": [
+                [
+                  -0.3712145984172821,
+                  -0.08556634187698364,
+                  -0.8778988122940063
+                ],
+                [
+                  0.30318185687065125,
+                  0.05255426838994026,
+                  -0.08370157331228256
+                ]
+              ]
+            },
+            {
+              "frame": 600,
+              "bounds_blender_m": [
+                [
+                  -0.37150269746780396,
+                  -0.09115701168775558,
+                  -0.8787676692008972
+                ],
+                [
+                  0.3017553687095642,
+                  0.052193962037563324,
+                  -0.1344514787197113
+                ]
+              ]
+            },
+            {
+              "frame": 650,
+              "bounds_blender_m": [
+                [
+                  -0.37113267183303833,
+                  -0.0948108434677124,
+                  -0.877813458442688
+                ],
+                [
+                  0.3028680086135864,
+                  0.053159311413764954,
+                  -0.13445283472537994
+                ]
+              ]
+            },
+            {
+              "frame": 700,
+              "bounds_blender_m": [
+                [
+                  -0.3718365728855133,
+                  -0.09931055456399918,
+                  -0.8795529007911682
+                ],
+                [
+                  0.30769166350364685,
+                  0.052562519907951355,
+                  -0.13418586552143097
+                ]
+              ]
+            },
+            {
+              "frame": 750,
+              "bounds_blender_m": [
+                [
+                  -0.37198713421821594,
+                  -0.0854465439915657,
+                  -0.8791617751121521
+                ],
+                [
+                  0.30391302704811096,
+                  0.055912863463163376,
+                  -0.1341768205165863
+                ]
+              ]
+            },
+            {
+              "frame": 800,
+              "bounds_blender_m": [
+                [
+                  -0.3727545440196991,
+                  -0.0842670351266861,
+                  -0.8792517185211182
+                ],
+                [
+                  0.305469810962677,
+                  0.05630858242511749,
+                  -0.13472570478916168
+                ]
+              ]
+            }
+          ]
+        },
+        "frays": 311,
+        "detail_fits": {
+          "ShoulderBoard_L": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 445,
+            "fold_trim": {
+              "removed_contact_triangles": 35,
+              "removed_area_m2": 0.0008466926244636852,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "ShoulderBoard_R": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 399,
+            "fold_trim": {
+              "removed_contact_triangles": 6,
+              "removed_area_m2": 0.0001193737030007469,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "RibbonBar": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 187,
+            "fold_trim": {
+              "removed_contact_triangles": 0,
+              "removed_area_m2": 0,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "Placket": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 506,
+            "fold_trim": {
+              "removed_contact_triangles": 12,
+              "removed_area_m2": 0.00026995298867404927,
+              "point_fan_clearance_m": 0.0002
+            }
+          }
+        },
+        "heap": {
+          "method": "Constructed seeded radial fibre/dust heap, not simulated",
+          "centre_blender_m": [
+            0.11,
+            -0.19
+          ],
+          "floor_m": -0.95
+        }
+      }
+    },
+    {
+      "trial": "tunic-l",
+      "seed": 9521,
+      "prop": "dress_uniform",
+      "frames": 1200,
+      "status": "baked",
+      "construction": {
+        "method": "Blender cloth simulation after armhole stitch release and stress cuts; no post-simulation body deformation",
+        "settings": {
+          "quality": 50,
+          "frames": 1200,
+          "time_scale": 0.15,
+          "mass": 0.18,
+          "stiffness": 40,
+          "max_stiffness": 220,
+          "bending": 0.06,
+          "self_collision": true,
+          "self_distance_m": 0.0015,
+          "collision_distance_m": 0.002,
+          "collision_quality": 12,
+          "air_damping": 10,
+          "structural_damping": 25,
+          "bending_damping": 8
+        },
+        "initial_contact": {
+          "pin_clearance_m": 0.006,
+          "lift_m": 0.012,
+          "hanger_outer_m": 0.002,
+          "hanger_inner_m": 0.002,
+          "two_sided": true
+        },
+        "armhole": {
+          "released_fraction": 0.6374427260466817,
+          "released_vertices": 8,
+          "cap_vertices": 14
+        },
+        "tears": {
+          "removed_faces": 101,
+          "removed_area_m2": 0.042579956992994994,
+          "boundary_noise_amplitude_m": 0.006,
+          "octaves": 4,
+          "point_fan_clearance_m": 0.002
+        },
+        "simulation": {
+          "frames": 1200,
+          "retained_pins": 50,
+          "pressure": {
+            "enabled": false,
+            "uniform_force": 0.0,
+            "scale": 1.0
+          },
+          "last_five_frames_motion_m": 0.04266877991553316,
+          "trace": [
+            {
+              "frame": 50,
+              "bounds_blender_m": [
+                [
+                  -0.3458003103733063,
+                  -0.14029842615127563,
+                  -0.8725699186325073
+                ],
+                [
+                  0.3432675898075104,
+                  0.057778213173151016,
+                  -0.08913151919841766
+                ]
+              ]
+            },
+            {
+              "frame": 100,
+              "bounds_blender_m": [
+                [
+                  -0.330194890499115,
+                  -0.14382247626781464,
+                  -0.8785536885261536
+                ],
+                [
+                  0.32906201481819153,
+                  0.08430113643407822,
+                  -0.12771554291248322
+                ]
+              ]
+            },
+            {
+              "frame": 150,
+              "bounds_blender_m": [
+                [
+                  -0.3317459523677826,
+                  -0.1485086977481842,
+                  -0.8764020204544067
+                ],
+                [
+                  0.32237014174461365,
+                  0.0806557759642601,
+                  -0.13309817016124725
+                ]
+              ]
+            },
+            {
+              "frame": 200,
+              "bounds_blender_m": [
+                [
+                  -0.3291900157928467,
+                  -0.17458608746528625,
+                  -0.8759615421295166
+                ],
+                [
+                  0.32186034321784973,
+                  0.06369579583406448,
+                  -0.12957066297531128
+                ]
+              ]
+            },
+            {
+              "frame": 250,
+              "bounds_blender_m": [
+                [
+                  -0.31145596504211426,
+                  -0.16192014515399933,
+                  -0.8766359090805054
+                ],
+                [
+                  0.31143978238105774,
+                  0.08020342141389847,
+                  -0.11902139335870743
+                ]
+              ]
+            },
+            {
+              "frame": 300,
+              "bounds_blender_m": [
+                [
+                  -0.2992134094238281,
+                  -0.16625894606113434,
+                  -0.8709068894386292
+                ],
+                [
+                  0.3047458827495575,
+                  0.08109516650438309,
+                  -0.12677216529846191
+                ]
+              ]
+            },
+            {
+              "frame": 350,
+              "bounds_blender_m": [
+                [
+                  -0.31814268231391907,
+                  -0.17174206674098969,
+                  -0.8725019693374634
+                ],
+                [
+                  0.3107758164405823,
+                  0.0782146155834198,
+                  -0.13453668355941772
+                ]
+              ]
+            },
+            {
+              "frame": 400,
+              "bounds_blender_m": [
+                [
+                  -0.31357336044311523,
+                  -0.18286235630512238,
+                  -0.8676714301109314
+                ],
+                [
+                  0.31072330474853516,
+                  0.07233311980962753,
+                  -0.04420182853937149
+                ]
+              ]
+            },
+            {
+              "frame": 450,
+              "bounds_blender_m": [
+                [
+                  -0.2901657223701477,
+                  -0.22897712886333466,
+                  -0.8564848303794861
+                ],
+                [
+                  0.3029971420764923,
+                  0.07164644449949265,
+                  -0.08714249730110168
+                ]
+              ]
+            },
+            {
+              "frame": 500,
+              "bounds_blender_m": [
+                [
+                  -0.2830144762992859,
+                  -0.26145657896995544,
+                  -0.8621991872787476
+                ],
+                [
+                  0.31035637855529785,
+                  0.0657123327255249,
+                  -0.08761948347091675
+                ]
+              ]
+            },
+            {
+              "frame": 550,
+              "bounds_blender_m": [
+                [
+                  -0.2742038369178772,
+                  -0.24130353331565857,
+                  -0.8673636317253113
+                ],
+                [
+                  0.3123859167098999,
+                  0.07584338635206223,
+                  -0.020361941307783127
+                ]
+              ]
+            },
+            {
+              "frame": 600,
+              "bounds_blender_m": [
+                [
+                  -0.26837700605392456,
+                  -0.26643818616867065,
+                  -0.8714302778244019
+                ],
+                [
+                  0.3164336085319519,
+                  0.0668627917766571,
+                  -0.11894237250089645
+                ]
+              ]
+            },
+            {
+              "frame": 650,
+              "bounds_blender_m": [
+                [
+                  -0.2776320278644562,
+                  -0.25687623023986816,
+                  -0.8639912605285645
+                ],
+                [
+                  0.31520190834999084,
+                  0.07179147005081177,
+                  -0.1339886486530304
+                ]
+              ]
+            },
+            {
+              "frame": 700,
+              "bounds_blender_m": [
+                [
+                  -0.30101853609085083,
+                  -0.23120826482772827,
+                  -0.8674072027206421
+                ],
+                [
+                  0.31829747557640076,
+                  0.07626859843730927,
+                  -0.13414499163627625
+                ]
+              ]
+            },
+            {
+              "frame": 750,
+              "bounds_blender_m": [
+                [
+                  -0.3070099651813507,
+                  -0.1988609880208969,
+                  -0.8509228825569153
+                ],
+                [
+                  0.30526962876319885,
+                  0.07983656227588654,
+                  -0.12890522181987762
+                ]
+              ]
+            },
+            {
+              "frame": 800,
+              "bounds_blender_m": [
+                [
+                  -0.29930827021598816,
+                  -0.20306852459907532,
+                  -0.8451746106147766
+                ],
+                [
+                  0.30753380060195923,
+                  0.08201824128627777,
+                  -0.13575725257396698
+                ]
+              ]
+            },
+            {
+              "frame": 850,
+              "bounds_blender_m": [
+                [
+                  -0.3007832169532776,
+                  -0.2281862199306488,
+                  -0.8460872769355774
+                ],
+                [
+                  0.2915955185890198,
+                  0.08526692539453506,
+                  -0.13026973605155945
+                ]
+              ]
+            },
+            {
+              "frame": 900,
+              "bounds_blender_m": [
+                [
+                  -0.31593388319015503,
+                  -0.21773526072502136,
+                  -0.8497984409332275
+                ],
+                [
+                  0.32880863547325134,
+                  0.05851385369896889,
+                  -0.1107284352183342
+                ]
+              ]
+            },
+            {
+              "frame": 950,
+              "bounds_blender_m": [
+                [
+                  -0.31750473380088806,
+                  -0.21135622262954712,
+                  -0.8570964932441711
+                ],
+                [
+                  0.31296879053115845,
+                  0.06216892972588539,
+                  -0.06520333886146545
+                ]
+              ]
+            },
+            {
+              "frame": 1000,
+              "bounds_blender_m": [
+                [
+                  -0.3088873326778412,
+                  -0.21368609368801117,
+                  -0.8579695224761963
+                ],
+                [
+                  0.3254045844078064,
+                  0.05465313047170639,
+                  -0.09325941652059555
+                ]
+              ]
+            },
+            {
+              "frame": 1050,
+              "bounds_blender_m": [
+                [
+                  -0.29926955699920654,
+                  -0.20376113057136536,
+                  -0.869312047958374
+                ],
+                [
+                  0.3188512623310089,
+                  0.05849206820130348,
+                  -0.13359743356704712
+                ]
+              ]
+            },
+            {
+              "frame": 1100,
+              "bounds_blender_m": [
+                [
+                  -0.3010585904121399,
+                  -0.20456185936927795,
+                  -0.8723944425582886
+                ],
+                [
+                  0.32616060972213745,
+                  0.04771061986684799,
+                  -0.07170164585113525
+                ]
+              ]
+            },
+            {
+              "frame": 1150,
+              "bounds_blender_m": [
+                [
+                  -0.30146458745002747,
+                  -0.19916142523288727,
+                  -0.8729861378669739
+                ],
+                [
+                  0.31832095980644226,
+                  0.06364676356315613,
+                  -0.12992163002490997
+                ]
+              ]
+            },
+            {
+              "frame": 1200,
+              "bounds_blender_m": [
+                [
+                  -0.3015386164188385,
+                  -0.2031155377626419,
+                  -0.8757012486457825
+                ],
+                [
+                  0.3200051486492157,
+                  0.0576007179915905,
+                  -0.12037479132413864
+                ]
+              ]
+            }
+          ]
+        },
+        "frays": 286,
+        "detail_fits": {
+          "ShoulderBoard_L": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 435,
+            "fold_trim": {
+              "removed_contact_triangles": 33,
+              "removed_area_m2": 0.0006529523022322792,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "ShoulderBoard_R": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 482,
+            "fold_trim": {
+              "removed_contact_triangles": 22,
+              "removed_area_m2": 0.0004325908674331913,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "RibbonBar": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 450,
+            "fold_trim": {
+              "removed_contact_triangles": 46,
+              "removed_area_m2": 0.001311311110839597,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "Placket": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 714,
+            "fold_trim": {
+              "removed_contact_triangles": 12,
+              "removed_area_m2": 0.000693700847477885,
+              "point_fan_clearance_m": 0.0002
+            }
+          }
+        },
+        "heap": {
+          "method": "Constructed seeded radial fibre/dust heap, not simulated",
+          "centre_blender_m": [
+            0.11,
+            -0.19
+          ],
+          "floor_m": -0.95
+        }
+      }
+    },
+    {
+      "trial": "tunic-k-fit",
+      "seed": 9521,
+      "prop": "dress_uniform",
+      "frames": 800,
+      "status": "baked",
+      "reused_simulation": "tmp/age/pass3/tunic-k/simulated.blend",
+      "construction": {
+        "method": "Blender cloth simulation after armhole stitch release and stress cuts; no post-simulation body deformation",
+        "settings": {
+          "quality": 40,
+          "frames": 800,
+          "time_scale": 0.15,
+          "mass": 0.18,
+          "stiffness": 40,
+          "max_stiffness": 300,
+          "bending": 0.06,
+          "self_collision": true,
+          "self_distance_m": 0.0008,
+          "collision_distance_m": 0.002,
+          "collision_quality": 12,
+          "air_damping": 10
+        },
+        "initial_contact": {
+          "pin_clearance_m": 0.006,
+          "lift_m": 0.012,
+          "hanger_outer_m": 0.002,
+          "hanger_inner_m": 0.002,
+          "two_sided": true
+        },
+        "armhole": {
+          "released_fraction": 0.6374427260466817,
+          "released_vertices": 8,
+          "cap_vertices": 14
+        },
+        "tears": {
+          "removed_faces": 101,
+          "removed_area_m2": 0.042579956992994994,
+          "boundary_noise_amplitude_m": 0.006,
+          "octaves": 4,
+          "point_fan_clearance_m": 0.002
+        },
+        "simulation": {
+          "frames": 800,
+          "retained_pins": 50,
+          "last_five_frames_motion_m": 0.023480374518816443,
+          "trace": [
+            {
+              "frame": 50,
+              "bounds_blender_m": [
+                [
+                  -0.38341274857521057,
+                  -0.10284502059221268,
+                  -0.8833199143409729
+                ],
+                [
+                  0.3716166913509369,
+                  0.060872141271829605,
+                  -0.13302306830883026
+                ]
+              ]
+            },
+            {
+              "frame": 100,
+              "bounds_blender_m": [
+                [
+                  -0.38081637024879456,
+                  -0.09261908382177353,
+                  -0.8836005330085754
+                ],
+                [
+                  0.3551192283630371,
+                  0.06229458376765251,
+                  -0.13449521362781525
+                ]
+              ]
+            },
+            {
+              "frame": 150,
+              "bounds_blender_m": [
+                [
+                  -0.37684890627861023,
+                  -0.09272118657827377,
+                  -0.8806184530258179
+                ],
+                [
+                  0.3344435691833496,
+                  0.05226347967982292,
+                  -0.13496516644954681
+                ]
+              ]
+            },
+            {
+              "frame": 200,
+              "bounds_blender_m": [
+                [
+                  -0.3755480945110321,
+                  -0.07704371958971024,
+                  -0.8805938959121704
+                ],
+                [
+                  0.3203170895576477,
+                  0.04966435953974724,
+                  -0.13441668450832367
+                ]
+              ]
+            },
+            {
+              "frame": 250,
+              "bounds_blender_m": [
+                [
+                  -0.37482255697250366,
+                  -0.08085917681455612,
+                  -0.8800216317176819
+                ],
+                [
+                  0.3152245879173279,
+                  0.053497813642024994,
+                  -0.13490165770053864
+                ]
+              ]
+            },
+            {
+              "frame": 300,
+              "bounds_blender_m": [
+                [
+                  -0.37413331866264343,
+                  -0.07442070543766022,
+                  -0.8797524571418762
+                ],
+                [
+                  0.3142738938331604,
+                  0.0573563277721405,
+                  -0.1347942054271698
+                ]
+              ]
+            },
+            {
+              "frame": 350,
+              "bounds_blender_m": [
+                [
+                  -0.3727591037750244,
+                  -0.07341447472572327,
+                  -0.8792006373405457
+                ],
+                [
+                  0.3058342933654785,
+                  0.061518218368291855,
+                  -0.13482119143009186
+                ]
+              ]
+            },
+            {
+              "frame": 400,
+              "bounds_blender_m": [
+                [
+                  -0.3719921410083771,
+                  -0.07410712540149689,
+                  -0.8789899349212646
+                ],
+                [
+                  0.304932177066803,
+                  0.057619739323854446,
+                  -0.1347515732049942
+                ]
+              ]
+            },
+            {
+              "frame": 450,
+              "bounds_blender_m": [
+                [
+                  -0.37108689546585083,
+                  -0.1360272467136383,
+                  -0.878995954990387
+                ],
+                [
+                  0.3032534122467041,
+                  0.0536891333758831,
+                  -0.13441970944404602
+                ]
+              ]
+            },
+            {
+              "frame": 500,
+              "bounds_blender_m": [
+                [
+                  -0.37034380435943604,
+                  -0.07959172874689102,
+                  -0.8784184455871582
+                ],
+                [
+                  0.30305638909339905,
+                  0.05376127362251282,
+                  -0.10653609037399292
+                ]
+              ]
+            },
+            {
+              "frame": 550,
+              "bounds_blender_m": [
+                [
+                  -0.3712145984172821,
+                  -0.08556634187698364,
+                  -0.8778988122940063
+                ],
+                [
+                  0.30318185687065125,
+                  0.05255426838994026,
+                  -0.08370157331228256
+                ]
+              ]
+            },
+            {
+              "frame": 600,
+              "bounds_blender_m": [
+                [
+                  -0.37150269746780396,
+                  -0.09115701168775558,
+                  -0.8787676692008972
+                ],
+                [
+                  0.3017553687095642,
+                  0.052193962037563324,
+                  -0.1344514787197113
+                ]
+              ]
+            },
+            {
+              "frame": 650,
+              "bounds_blender_m": [
+                [
+                  -0.37113267183303833,
+                  -0.0948108434677124,
+                  -0.877813458442688
+                ],
+                [
+                  0.3028680086135864,
+                  0.053159311413764954,
+                  -0.13445283472537994
+                ]
+              ]
+            },
+            {
+              "frame": 700,
+              "bounds_blender_m": [
+                [
+                  -0.3718365728855133,
+                  -0.09931055456399918,
+                  -0.8795529007911682
+                ],
+                [
+                  0.30769166350364685,
+                  0.052562519907951355,
+                  -0.13418586552143097
+                ]
+              ]
+            },
+            {
+              "frame": 750,
+              "bounds_blender_m": [
+                [
+                  -0.37198713421821594,
+                  -0.0854465439915657,
+                  -0.8791617751121521
+                ],
+                [
+                  0.30391302704811096,
+                  0.055912863463163376,
+                  -0.1341768205165863
+                ]
+              ]
+            },
+            {
+              "frame": 800,
+              "bounds_blender_m": [
+                [
+                  -0.3727545440196991,
+                  -0.0842670351266861,
+                  -0.8792517185211182
+                ],
+                [
+                  0.305469810962677,
+                  0.05630858242511749,
+                  -0.13472570478916168
+                ]
+              ]
+            }
+          ]
+        },
+        "frays": 311,
+        "detail_fits": {
+          "ShoulderBoard_L": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 445,
+            "fold_trim": {
+              "removed_contact_triangles": 35,
+              "removed_area_m2": 0.0008466926244636852,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "ShoulderBoard_R": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 399,
+            "fold_trim": {
+              "removed_contact_triangles": 6,
+              "removed_area_m2": 0.0001193737030007469,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "RibbonBar": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 187,
+            "fold_trim": {
+              "removed_contact_triangles": 0,
+              "removed_area_m2": 0,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "Placket": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 506,
+            "fold_trim": {
+              "removed_contact_triangles": 12,
+              "removed_area_m2": 0.00026995298867404927,
+              "point_fan_clearance_m": 0.0002
+            }
+          }
+        },
+        "heap": {
+          "method": "Constructed seeded radial fibre/dust heap, not simulated",
+          "centre_blender_m": [
+            0.11,
+            -0.19
+          ],
+          "floor_m": -0.95
+        }
+      }
+    },
+    {
+      "trial": "tunic-k-collar",
+      "seed": 9521,
+      "prop": "dress_uniform",
+      "frames": 800,
+      "status": "baked",
+      "reused_simulation": "tmp/age/pass3/tunic-k/simulated.blend",
+      "construction": {
+        "method": "Blender cloth simulation after armhole stitch release and stress cuts; no post-simulation body deformation",
+        "settings": {
+          "quality": 40,
+          "frames": 800,
+          "time_scale": 0.15,
+          "mass": 0.18,
+          "stiffness": 40,
+          "max_stiffness": 300,
+          "bending": 0.06,
+          "self_collision": true,
+          "self_distance_m": 0.0008,
+          "collision_distance_m": 0.002,
+          "collision_quality": 12,
+          "air_damping": 10
+        },
+        "initial_contact": {
+          "pin_clearance_m": 0.006,
+          "lift_m": 0.012,
+          "hanger_outer_m": 0.002,
+          "hanger_inner_m": 0.002,
+          "two_sided": true
+        },
+        "armhole": {
+          "released_fraction": 0.6374427260466817,
+          "released_vertices": 8,
+          "cap_vertices": 14
+        },
+        "tears": {
+          "removed_faces": 101,
+          "removed_area_m2": 0.042579956992994994,
+          "boundary_noise_amplitude_m": 0.006,
+          "octaves": 4,
+          "point_fan_clearance_m": 0.002
+        },
+        "simulation": {
+          "frames": 800,
+          "retained_pins": 50,
+          "last_five_frames_motion_m": 0.023480374518816443,
+          "trace": [
+            {
+              "frame": 50,
+              "bounds_blender_m": [
+                [
+                  -0.38341274857521057,
+                  -0.10284502059221268,
+                  -0.8833199143409729
+                ],
+                [
+                  0.3716166913509369,
+                  0.060872141271829605,
+                  -0.13302306830883026
+                ]
+              ]
+            },
+            {
+              "frame": 100,
+              "bounds_blender_m": [
+                [
+                  -0.38081637024879456,
+                  -0.09261908382177353,
+                  -0.8836005330085754
+                ],
+                [
+                  0.3551192283630371,
+                  0.06229458376765251,
+                  -0.13449521362781525
+                ]
+              ]
+            },
+            {
+              "frame": 150,
+              "bounds_blender_m": [
+                [
+                  -0.37684890627861023,
+                  -0.09272118657827377,
+                  -0.8806184530258179
+                ],
+                [
+                  0.3344435691833496,
+                  0.05226347967982292,
+                  -0.13496516644954681
+                ]
+              ]
+            },
+            {
+              "frame": 200,
+              "bounds_blender_m": [
+                [
+                  -0.3755480945110321,
+                  -0.07704371958971024,
+                  -0.8805938959121704
+                ],
+                [
+                  0.3203170895576477,
+                  0.04966435953974724,
+                  -0.13441668450832367
+                ]
+              ]
+            },
+            {
+              "frame": 250,
+              "bounds_blender_m": [
+                [
+                  -0.37482255697250366,
+                  -0.08085917681455612,
+                  -0.8800216317176819
+                ],
+                [
+                  0.3152245879173279,
+                  0.053497813642024994,
+                  -0.13490165770053864
+                ]
+              ]
+            },
+            {
+              "frame": 300,
+              "bounds_blender_m": [
+                [
+                  -0.37413331866264343,
+                  -0.07442070543766022,
+                  -0.8797524571418762
+                ],
+                [
+                  0.3142738938331604,
+                  0.0573563277721405,
+                  -0.1347942054271698
+                ]
+              ]
+            },
+            {
+              "frame": 350,
+              "bounds_blender_m": [
+                [
+                  -0.3727591037750244,
+                  -0.07341447472572327,
+                  -0.8792006373405457
+                ],
+                [
+                  0.3058342933654785,
+                  0.061518218368291855,
+                  -0.13482119143009186
+                ]
+              ]
+            },
+            {
+              "frame": 400,
+              "bounds_blender_m": [
+                [
+                  -0.3719921410083771,
+                  -0.07410712540149689,
+                  -0.8789899349212646
+                ],
+                [
+                  0.304932177066803,
+                  0.057619739323854446,
+                  -0.1347515732049942
+                ]
+              ]
+            },
+            {
+              "frame": 450,
+              "bounds_blender_m": [
+                [
+                  -0.37108689546585083,
+                  -0.1360272467136383,
+                  -0.878995954990387
+                ],
+                [
+                  0.3032534122467041,
+                  0.0536891333758831,
+                  -0.13441970944404602
+                ]
+              ]
+            },
+            {
+              "frame": 500,
+              "bounds_blender_m": [
+                [
+                  -0.37034380435943604,
+                  -0.07959172874689102,
+                  -0.8784184455871582
+                ],
+                [
+                  0.30305638909339905,
+                  0.05376127362251282,
+                  -0.10653609037399292
+                ]
+              ]
+            },
+            {
+              "frame": 550,
+              "bounds_blender_m": [
+                [
+                  -0.3712145984172821,
+                  -0.08556634187698364,
+                  -0.8778988122940063
+                ],
+                [
+                  0.30318185687065125,
+                  0.05255426838994026,
+                  -0.08370157331228256
+                ]
+              ]
+            },
+            {
+              "frame": 600,
+              "bounds_blender_m": [
+                [
+                  -0.37150269746780396,
+                  -0.09115701168775558,
+                  -0.8787676692008972
+                ],
+                [
+                  0.3017553687095642,
+                  0.052193962037563324,
+                  -0.1344514787197113
+                ]
+              ]
+            },
+            {
+              "frame": 650,
+              "bounds_blender_m": [
+                [
+                  -0.37113267183303833,
+                  -0.0948108434677124,
+                  -0.877813458442688
+                ],
+                [
+                  0.3028680086135864,
+                  0.053159311413764954,
+                  -0.13445283472537994
+                ]
+              ]
+            },
+            {
+              "frame": 700,
+              "bounds_blender_m": [
+                [
+                  -0.3718365728855133,
+                  -0.09931055456399918,
+                  -0.8795529007911682
+                ],
+                [
+                  0.30769166350364685,
+                  0.052562519907951355,
+                  -0.13418586552143097
+                ]
+              ]
+            },
+            {
+              "frame": 750,
+              "bounds_blender_m": [
+                [
+                  -0.37198713421821594,
+                  -0.0854465439915657,
+                  -0.8791617751121521
+                ],
+                [
+                  0.30391302704811096,
+                  0.055912863463163376,
+                  -0.1341768205165863
+                ]
+              ]
+            },
+            {
+              "frame": 800,
+              "bounds_blender_m": [
+                [
+                  -0.3727545440196991,
+                  -0.0842670351266861,
+                  -0.8792517185211182
+                ],
+                [
+                  0.305469810962677,
+                  0.05630858242511749,
+                  -0.13472570478916168
+                ]
+              ]
+            }
+          ]
+        },
+        "frays": 311,
+        "detail_fits": {
+          "ShoulderBoard_L": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 445,
+            "fold_trim": {
+              "removed_contact_triangles": 35,
+              "removed_area_m2": 0.0008466926244636852,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "ShoulderBoard_R": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 399,
+            "fold_trim": {
+              "removed_contact_triangles": 6,
+              "removed_area_m2": 0.0001193737030007469,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "RibbonBar": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 187,
+            "fold_trim": {
+              "removed_contact_triangles": 0,
+              "removed_area_m2": 0,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "Placket": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 506,
+            "fold_trim": {
+              "removed_contact_triangles": 12,
+              "removed_area_m2": 0.00026995298867404927,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "Collar": {
+            "method": "Source neck band lifted 10 mm; midsurface trimmed against simulated neck folds; not simulated",
+            "fold_trim": {
+              "removed_contact_triangles": 0,
+              "removed_area_m2": 0,
+              "point_fan_clearance_m": 0.0002
+            }
+          }
+        },
+        "heap": {
+          "method": "Constructed seeded radial fibre/dust heap, not simulated",
+          "centre_blender_m": [
+            0.11,
+            -0.19
+          ],
+          "floor_m": -0.95
+        }
+      }
+    },
+    {
+      "trial": "tunic-l-collar",
+      "seed": 9521,
+      "prop": "dress_uniform",
+      "frames": 1200,
+      "status": "baked",
+      "reused_simulation": "tmp/age/pass3/tunic-l/simulated.blend",
+      "construction": {
+        "method": "Blender cloth simulation after armhole stitch release and stress cuts; no post-simulation body deformation",
+        "settings": {
+          "quality": 50,
+          "frames": 1200,
+          "time_scale": 0.15,
+          "mass": 0.18,
+          "stiffness": 40,
+          "max_stiffness": 220,
+          "bending": 0.06,
+          "self_collision": true,
+          "self_distance_m": 0.0015,
+          "collision_distance_m": 0.002,
+          "collision_quality": 12,
+          "air_damping": 10,
+          "structural_damping": 25,
+          "bending_damping": 8
+        },
+        "initial_contact": {
+          "pin_clearance_m": 0.006,
+          "lift_m": 0.012,
+          "hanger_outer_m": 0.002,
+          "hanger_inner_m": 0.002,
+          "two_sided": true
+        },
+        "armhole": {
+          "released_fraction": 0.6374427260466817,
+          "released_vertices": 8,
+          "cap_vertices": 14
+        },
+        "tears": {
+          "removed_faces": 101,
+          "removed_area_m2": 0.042579956992994994,
+          "boundary_noise_amplitude_m": 0.006,
+          "octaves": 4,
+          "point_fan_clearance_m": 0.002
+        },
+        "simulation": {
+          "frames": 1200,
+          "retained_pins": 50,
+          "pressure": {
+            "enabled": false,
+            "uniform_force": 0.0,
+            "scale": 1.0
+          },
+          "last_five_frames_motion_m": 0.04266877991553316,
+          "trace": [
+            {
+              "frame": 50,
+              "bounds_blender_m": [
+                [
+                  -0.3458003103733063,
+                  -0.14029842615127563,
+                  -0.8725699186325073
+                ],
+                [
+                  0.3432675898075104,
+                  0.057778213173151016,
+                  -0.08913151919841766
+                ]
+              ]
+            },
+            {
+              "frame": 100,
+              "bounds_blender_m": [
+                [
+                  -0.330194890499115,
+                  -0.14382247626781464,
+                  -0.8785536885261536
+                ],
+                [
+                  0.32906201481819153,
+                  0.08430113643407822,
+                  -0.12771554291248322
+                ]
+              ]
+            },
+            {
+              "frame": 150,
+              "bounds_blender_m": [
+                [
+                  -0.3317459523677826,
+                  -0.1485086977481842,
+                  -0.8764020204544067
+                ],
+                [
+                  0.32237014174461365,
+                  0.0806557759642601,
+                  -0.13309817016124725
+                ]
+              ]
+            },
+            {
+              "frame": 200,
+              "bounds_blender_m": [
+                [
+                  -0.3291900157928467,
+                  -0.17458608746528625,
+                  -0.8759615421295166
+                ],
+                [
+                  0.32186034321784973,
+                  0.06369579583406448,
+                  -0.12957066297531128
+                ]
+              ]
+            },
+            {
+              "frame": 250,
+              "bounds_blender_m": [
+                [
+                  -0.31145596504211426,
+                  -0.16192014515399933,
+                  -0.8766359090805054
+                ],
+                [
+                  0.31143978238105774,
+                  0.08020342141389847,
+                  -0.11902139335870743
+                ]
+              ]
+            },
+            {
+              "frame": 300,
+              "bounds_blender_m": [
+                [
+                  -0.2992134094238281,
+                  -0.16625894606113434,
+                  -0.8709068894386292
+                ],
+                [
+                  0.3047458827495575,
+                  0.08109516650438309,
+                  -0.12677216529846191
+                ]
+              ]
+            },
+            {
+              "frame": 350,
+              "bounds_blender_m": [
+                [
+                  -0.31814268231391907,
+                  -0.17174206674098969,
+                  -0.8725019693374634
+                ],
+                [
+                  0.3107758164405823,
+                  0.0782146155834198,
+                  -0.13453668355941772
+                ]
+              ]
+            },
+            {
+              "frame": 400,
+              "bounds_blender_m": [
+                [
+                  -0.31357336044311523,
+                  -0.18286235630512238,
+                  -0.8676714301109314
+                ],
+                [
+                  0.31072330474853516,
+                  0.07233311980962753,
+                  -0.04420182853937149
+                ]
+              ]
+            },
+            {
+              "frame": 450,
+              "bounds_blender_m": [
+                [
+                  -0.2901657223701477,
+                  -0.22897712886333466,
+                  -0.8564848303794861
+                ],
+                [
+                  0.3029971420764923,
+                  0.07164644449949265,
+                  -0.08714249730110168
+                ]
+              ]
+            },
+            {
+              "frame": 500,
+              "bounds_blender_m": [
+                [
+                  -0.2830144762992859,
+                  -0.26145657896995544,
+                  -0.8621991872787476
+                ],
+                [
+                  0.31035637855529785,
+                  0.0657123327255249,
+                  -0.08761948347091675
+                ]
+              ]
+            },
+            {
+              "frame": 550,
+              "bounds_blender_m": [
+                [
+                  -0.2742038369178772,
+                  -0.24130353331565857,
+                  -0.8673636317253113
+                ],
+                [
+                  0.3123859167098999,
+                  0.07584338635206223,
+                  -0.020361941307783127
+                ]
+              ]
+            },
+            {
+              "frame": 600,
+              "bounds_blender_m": [
+                [
+                  -0.26837700605392456,
+                  -0.26643818616867065,
+                  -0.8714302778244019
+                ],
+                [
+                  0.3164336085319519,
+                  0.0668627917766571,
+                  -0.11894237250089645
+                ]
+              ]
+            },
+            {
+              "frame": 650,
+              "bounds_blender_m": [
+                [
+                  -0.2776320278644562,
+                  -0.25687623023986816,
+                  -0.8639912605285645
+                ],
+                [
+                  0.31520190834999084,
+                  0.07179147005081177,
+                  -0.1339886486530304
+                ]
+              ]
+            },
+            {
+              "frame": 700,
+              "bounds_blender_m": [
+                [
+                  -0.30101853609085083,
+                  -0.23120826482772827,
+                  -0.8674072027206421
+                ],
+                [
+                  0.31829747557640076,
+                  0.07626859843730927,
+                  -0.13414499163627625
+                ]
+              ]
+            },
+            {
+              "frame": 750,
+              "bounds_blender_m": [
+                [
+                  -0.3070099651813507,
+                  -0.1988609880208969,
+                  -0.8509228825569153
+                ],
+                [
+                  0.30526962876319885,
+                  0.07983656227588654,
+                  -0.12890522181987762
+                ]
+              ]
+            },
+            {
+              "frame": 800,
+              "bounds_blender_m": [
+                [
+                  -0.29930827021598816,
+                  -0.20306852459907532,
+                  -0.8451746106147766
+                ],
+                [
+                  0.30753380060195923,
+                  0.08201824128627777,
+                  -0.13575725257396698
+                ]
+              ]
+            },
+            {
+              "frame": 850,
+              "bounds_blender_m": [
+                [
+                  -0.3007832169532776,
+                  -0.2281862199306488,
+                  -0.8460872769355774
+                ],
+                [
+                  0.2915955185890198,
+                  0.08526692539453506,
+                  -0.13026973605155945
+                ]
+              ]
+            },
+            {
+              "frame": 900,
+              "bounds_blender_m": [
+                [
+                  -0.31593388319015503,
+                  -0.21773526072502136,
+                  -0.8497984409332275
+                ],
+                [
+                  0.32880863547325134,
+                  0.05851385369896889,
+                  -0.1107284352183342
+                ]
+              ]
+            },
+            {
+              "frame": 950,
+              "bounds_blender_m": [
+                [
+                  -0.31750473380088806,
+                  -0.21135622262954712,
+                  -0.8570964932441711
+                ],
+                [
+                  0.31296879053115845,
+                  0.06216892972588539,
+                  -0.06520333886146545
+                ]
+              ]
+            },
+            {
+              "frame": 1000,
+              "bounds_blender_m": [
+                [
+                  -0.3088873326778412,
+                  -0.21368609368801117,
+                  -0.8579695224761963
+                ],
+                [
+                  0.3254045844078064,
+                  0.05465313047170639,
+                  -0.09325941652059555
+                ]
+              ]
+            },
+            {
+              "frame": 1050,
+              "bounds_blender_m": [
+                [
+                  -0.29926955699920654,
+                  -0.20376113057136536,
+                  -0.869312047958374
+                ],
+                [
+                  0.3188512623310089,
+                  0.05849206820130348,
+                  -0.13359743356704712
+                ]
+              ]
+            },
+            {
+              "frame": 1100,
+              "bounds_blender_m": [
+                [
+                  -0.3010585904121399,
+                  -0.20456185936927795,
+                  -0.8723944425582886
+                ],
+                [
+                  0.32616060972213745,
+                  0.04771061986684799,
+                  -0.07170164585113525
+                ]
+              ]
+            },
+            {
+              "frame": 1150,
+              "bounds_blender_m": [
+                [
+                  -0.30146458745002747,
+                  -0.19916142523288727,
+                  -0.8729861378669739
+                ],
+                [
+                  0.31832095980644226,
+                  0.06364676356315613,
+                  -0.12992163002490997
+                ]
+              ]
+            },
+            {
+              "frame": 1200,
+              "bounds_blender_m": [
+                [
+                  -0.3015386164188385,
+                  -0.2031155377626419,
+                  -0.8757012486457825
+                ],
+                [
+                  0.3200051486492157,
+                  0.0576007179915905,
+                  -0.12037479132413864
+                ]
+              ]
+            }
+          ]
+        },
+        "frays": 286,
+        "detail_fits": {
+          "ShoulderBoard_L": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 435,
+            "fold_trim": {
+              "removed_contact_triangles": 33,
+              "removed_area_m2": 0.0006529523022322792,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "ShoulderBoard_R": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 482,
+            "fold_trim": {
+              "removed_contact_triangles": 22,
+              "removed_area_m2": 0.0004325908674331913,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "RibbonBar": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 450,
+            "fold_trim": {
+              "removed_contact_triangles": 46,
+              "removed_area_m2": 0.001311311110839597,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "Placket": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 714,
+            "fold_trim": {
+              "removed_contact_triangles": 12,
+              "removed_area_m2": 0.000693700847477885,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "Collar": {
+            "method": "Source neck band lifted 10 mm; midsurface trimmed against simulated neck folds; not simulated",
+            "fold_trim": {
+              "removed_contact_triangles": 0,
+              "removed_area_m2": 0,
+              "point_fan_clearance_m": 0.0002
+            }
+          }
+        },
+        "heap": {
+          "method": "Constructed seeded radial fibre/dust heap, not simulated",
+          "centre_blender_m": [
+            0.11,
+            -0.19
+          ],
+          "floor_m": -0.95
+        }
+      }
+    },
+    {
+      "trial": "tunic-m",
+      "seed": 9521,
+      "prop": "dress_uniform",
+      "frames": 1200,
+      "status": "baked",
+      "construction": {
+        "method": "Blender cloth simulation after armhole stitch release and stress cuts; no post-simulation body deformation",
+        "settings": {
+          "quality": 50,
+          "frames": 1200,
+          "time_scale": 0.15,
+          "mass": 0.18,
+          "stiffness": 40,
+          "max_stiffness": 220,
+          "bending": 0.06,
+          "self_collision": true,
+          "self_distance_m": 0.0015,
+          "collision_distance_m": 0.002,
+          "collision_quality": 12,
+          "air_damping": 10,
+          "structural_damping": 25,
+          "bending_damping": 8
+        },
+        "initial_contact": {
+          "pin_clearance_m": 0.006,
+          "lift_m": 0.012,
+          "hanger_outer_m": 0.002,
+          "hanger_inner_m": 0.002,
+          "two_sided": true
+        },
+        "armhole": {
+          "released_fraction": 0.6374427260466817,
+          "released_vertices": 8,
+          "cap_vertices": 14
+        },
+        "tears": {
+          "removed_faces": 101,
+          "removed_area_m2": 0.042579956992994994,
+          "boundary_noise_amplitude_m": 0.006,
+          "octaves": 4,
+          "point_fan_clearance_m": 0.002
+        },
+        "simulation": {
+          "frames": 1200,
+          "retained_pins": 50,
+          "pressure": {
+            "enabled": false,
+            "uniform_force": 0.0,
+            "scale": 1.0
+          },
+          "last_five_frames_motion_m": 0.0218845106434064,
+          "trace": [
+            {
+              "frame": 50,
+              "bounds_blender_m": [
+                [
+                  -0.3577287495136261,
+                  -0.17503446340560913,
+                  -0.8682764768600464
+                ],
+                [
+                  0.34988826513290405,
+                  0.06987206637859344,
+                  -0.13391463458538055
+                ]
+              ]
+            },
+            {
+              "frame": 100,
+              "bounds_blender_m": [
+                [
+                  -0.3520629405975342,
+                  -0.10333245247602463,
+                  -0.8709063529968262
+                ],
+                [
+                  0.3402310609817505,
+                  0.10718066990375519,
+                  -0.12447885423898697
+                ]
+              ]
+            },
+            {
+              "frame": 150,
+              "bounds_blender_m": [
+                [
+                  -0.3380200266838074,
+                  -0.11420346796512604,
+                  -0.8731223344802856
+                ],
+                [
+                  0.3268989026546478,
+                  0.08272706717252731,
+                  -0.12300977855920792
+                ]
+              ]
+            },
+            {
+              "frame": 200,
+              "bounds_blender_m": [
+                [
+                  -0.33837398886680603,
+                  -0.11362814903259277,
+                  -0.8726273775100708
+                ],
+                [
+                  0.3163363039493561,
+                  0.08274459838867188,
+                  -0.11897875368595123
+                ]
+              ]
+            },
+            {
+              "frame": 250,
+              "bounds_blender_m": [
+                [
+                  -0.34565988183021545,
+                  -0.11162029206752777,
+                  -0.8722869753837585
+                ],
+                [
+                  0.31888115406036377,
+                  0.08482363075017929,
+                  -0.13392257690429688
+                ]
+              ]
+            },
+            {
+              "frame": 300,
+              "bounds_blender_m": [
+                [
+                  -0.34519314765930176,
+                  -0.12298206239938736,
+                  -0.873444676399231
+                ],
+                [
+                  0.32015541195869446,
+                  0.08989986777305603,
+                  -0.11937522888183594
+                ]
+              ]
+            },
+            {
+              "frame": 350,
+              "bounds_blender_m": [
+                [
+                  -0.31845203042030334,
+                  -0.15203218162059784,
+                  -0.8683278560638428
+                ],
+                [
+                  0.30841493606567383,
+                  0.0844375342130661,
+                  -0.08205798268318176
+                ]
+              ]
+            },
+            {
+              "frame": 400,
+              "bounds_blender_m": [
+                [
+                  -0.3113377094268799,
+                  -0.18148069083690643,
+                  -0.8730465769767761
+                ],
+                [
+                  0.2985873222351074,
+                  0.06917324662208557,
+                  -0.12577350437641144
+                ]
+              ]
+            },
+            {
+              "frame": 450,
+              "bounds_blender_m": [
+                [
+                  -0.3232191205024719,
+                  -0.14517144858837128,
+                  -0.8710724115371704
+                ],
+                [
+                  0.302396297454834,
+                  0.0705152228474617,
+                  -0.1306653767824173
+                ]
+              ]
+            },
+            {
+              "frame": 500,
+              "bounds_blender_m": [
+                [
+                  -0.3156670928001404,
+                  -0.12394378334283829,
+                  -0.868871808052063
+                ],
+                [
+                  0.30381467938423157,
+                  0.0830838605761528,
+                  -0.12432939559221268
+                ]
+              ]
+            },
+            {
+              "frame": 550,
+              "bounds_blender_m": [
+                [
+                  -0.3086957335472107,
+                  -0.16456922888755798,
+                  -0.8677383661270142
+                ],
+                [
+                  0.31248319149017334,
+                  0.08429668843746185,
+                  -0.1309254914522171
+                ]
+              ]
+            },
+            {
+              "frame": 600,
+              "bounds_blender_m": [
+                [
+                  -0.2994394600391388,
+                  -0.22219319641590118,
+                  -0.8692976236343384
+                ],
+                [
+                  0.31324946880340576,
+                  0.07714228332042694,
+                  -0.1210329532623291
+                ]
+              ]
+            },
+            {
+              "frame": 650,
+              "bounds_blender_m": [
+                [
+                  -0.2900579571723938,
+                  -0.22548004984855652,
+                  -0.8676024675369263
+                ],
+                [
+                  0.310899943113327,
+                  0.08460508286952972,
+                  -0.12079661339521408
+                ]
+              ]
+            },
+            {
+              "frame": 700,
+              "bounds_blender_m": [
+                [
+                  -0.29121267795562744,
+                  -0.2596043646335602,
+                  -0.8680538535118103
+                ],
+                [
+                  0.31146931648254395,
+                  0.08864535391330719,
+                  -0.126148521900177
+                ]
+              ]
+            },
+            {
+              "frame": 750,
+              "bounds_blender_m": [
+                [
+                  -0.2929970920085907,
+                  -0.2937818169593811,
+                  -0.8696186542510986
+                ],
+                [
+                  0.33557671308517456,
+                  0.0630541443824768,
+                  -0.12591974437236786
+                ]
+              ]
+            },
+            {
+              "frame": 800,
+              "bounds_blender_m": [
+                [
+                  -0.29664596915245056,
+                  -0.24931982159614563,
+                  -0.8713595867156982
+                ],
+                [
+                  0.34506064653396606,
+                  0.07741552591323853,
+                  -0.12358072400093079
+                ]
+              ]
+            },
+            {
+              "frame": 850,
+              "bounds_blender_m": [
+                [
+                  -0.316629022359848,
+                  -0.2348867505788803,
+                  -0.866163432598114
+                ],
+                [
+                  0.30980753898620605,
+                  0.06779085099697113,
+                  -0.12348649650812149
+                ]
+              ]
+            },
+            {
+              "frame": 900,
+              "bounds_blender_m": [
+                [
+                  -0.3323689103126526,
+                  -0.19881834089756012,
+                  -0.8667511343955994
+                ],
+                [
+                  0.2832244038581848,
+                  0.07553497701883316,
+                  -0.12681016325950623
+                ]
+              ]
+            },
+            {
+              "frame": 950,
+              "bounds_blender_m": [
+                [
+                  -0.330762654542923,
+                  -0.16574475169181824,
+                  -0.8665741086006165
+                ],
+                [
+                  0.2810080051422119,
+                  0.08199013024568558,
+                  -0.1274242103099823
+                ]
+              ]
+            },
+            {
+              "frame": 1000,
+              "bounds_blender_m": [
+                [
+                  -0.3427731692790985,
+                  -0.17068836092948914,
+                  -0.8654958605766296
+                ],
+                [
+                  0.2897953987121582,
+                  0.08012580871582031,
+                  -0.08305087685585022
+                ]
+              ]
+            },
+            {
+              "frame": 1050,
+              "bounds_blender_m": [
+                [
+                  -0.3460186719894409,
+                  -0.15959322452545166,
+                  -0.8694162964820862
+                ],
+                [
+                  0.2853280305862427,
+                  0.08123423904180527,
+                  -0.13395030796527863
+                ]
+              ]
+            },
+            {
+              "frame": 1100,
+              "bounds_blender_m": [
+                [
+                  -0.3315856456756592,
+                  -0.14014512300491333,
+                  -0.8714815974235535
+                ],
+                [
+                  0.304496169090271,
+                  0.08907651901245117,
+                  -0.13396641612052917
+                ]
+              ]
+            },
+            {
+              "frame": 1150,
+              "bounds_blender_m": [
+                [
+                  -0.3363820016384125,
+                  -0.14881764352321625,
+                  -0.8705729246139526
+                ],
+                [
+                  0.27874141931533813,
+                  0.0837850421667099,
+                  -0.10964598506689072
+                ]
+              ]
+            },
+            {
+              "frame": 1200,
+              "bounds_blender_m": [
+                [
+                  -0.33910077810287476,
+                  -0.14260202646255493,
+                  -0.8705573678016663
+                ],
+                [
+                  0.27250024676322937,
+                  0.0978221669793129,
+                  -0.1300542801618576
+                ]
+              ]
+            }
+          ]
+        },
+        "frays": 280,
+        "detail_fits": {
+          "ShoulderBoard_L": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 348,
+            "fold_trim": {
+              "removed_contact_triangles": 34,
+              "removed_area_m2": 0.0006384699213981548,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "ShoulderBoard_R": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 444,
+            "fold_trim": {
+              "removed_contact_triangles": 18,
+              "removed_area_m2": 0.0006993113402131712,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "RibbonBar": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 89,
+            "fold_trim": {
+              "removed_contact_triangles": 6,
+              "removed_area_m2": 0.00018718739329415257,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "Placket": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 608,
+            "fold_trim": {
+              "removed_contact_triangles": 49,
+              "removed_area_m2": 0.00534464541590296,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "Collar": {
+            "method": "Source neck band lifted 10 mm; midsurface trimmed against simulated neck folds; not simulated",
+            "fold_trim": {
+              "removed_contact_triangles": 5,
+              "removed_area_m2": 0.0022329854546114802,
+              "point_fan_clearance_m": 0.0002
+            }
+          }
+        },
+        "heap": {
+          "method": "Constructed seeded radial fibre/dust heap, not simulated",
+          "centre_blender_m": [
+            0.11,
+            -0.19
+          ],
+          "floor_m": -0.95
+        }
+      }
+    },
+    {
+      "trial": "tunic-n",
+      "seed": 9521,
+      "prop": "dress_uniform",
+      "frames": 1500,
+      "status": "baked",
+      "construction": {
+        "method": "Blender cloth simulation after armhole stitch release and stress cuts; no post-simulation body deformation",
+        "settings": {
+          "quality": 60,
+          "frames": 1500,
+          "time_scale": 0.12,
+          "mass": 0.18,
+          "stiffness": 40,
+          "max_stiffness": 300,
+          "bending": 0.06,
+          "self_collision": true,
+          "self_distance_m": 0.002,
+          "collision_distance_m": 0.003,
+          "collision_quality": 15,
+          "air_damping": 10,
+          "structural_damping": 25,
+          "bending_damping": 8
+        },
+        "initial_contact": {
+          "pin_clearance_m": 0.006,
+          "lift_m": 0.012,
+          "hanger_outer_m": 0.002,
+          "hanger_inner_m": 0.002,
+          "two_sided": true
+        },
+        "armhole": {
+          "released_fraction": 0.6374427260466817,
+          "released_vertices": 8,
+          "cap_vertices": 14
+        },
+        "tears": {
+          "removed_faces": 101,
+          "removed_area_m2": 0.042579956992994994,
+          "boundary_noise_amplitude_m": 0.006,
+          "octaves": 4,
+          "point_fan_clearance_m": 0.002
+        },
+        "simulation": {
+          "frames": 1500,
+          "retained_pins": 50,
+          "pressure": {
+            "enabled": false,
+            "uniform_force": 0.0,
+            "scale": 1.0
+          },
+          "strength_groups": {
+            "structural": "Remaining fabric strength",
+            "shear": "Remaining fabric strength"
+          },
+          "last_five_frames_motion_m": 0.13488607051385246,
+          "trace": [
+            {
+              "frame": 50,
+              "bounds_blender_m": [
+                [
+                  -0.2666226029396057,
+                  -0.16226135194301605,
+                  -0.8176141381263733
+                ],
+                [
+                  0.34232380986213684,
+                  0.11194499582052231,
+                  -0.08087389171123505
+                ]
+              ]
+            },
+            {
+              "frame": 100,
+              "bounds_blender_m": [
+                [
+                  -0.26593872904777527,
+                  -0.1405130922794342,
+                  -0.803183376789093
+                ],
+                [
+                  0.32449427247047424,
+                  0.13634559512138367,
+                  -0.08562413603067398
+                ]
+              ]
+            },
+            {
+              "frame": 150,
+              "bounds_blender_m": [
+                [
+                  -0.26209062337875366,
+                  -0.1389903873205185,
+                  -0.7881370186805725
+                ],
+                [
+                  0.33516499400138855,
+                  0.2090330868959427,
+                  -0.09684956818819046
+                ]
+              ]
+            },
+            {
+              "frame": 200,
+              "bounds_blender_m": [
+                [
+                  -0.26024329662323,
+                  -0.1640525460243225,
+                  -0.7915882468223572
+                ],
+                [
+                  0.34545594453811646,
+                  0.2130957543849945,
+                  -0.07653400301933289
+                ]
+              ]
+            },
+            {
+              "frame": 250,
+              "bounds_blender_m": [
+                [
+                  -0.2646705210208893,
+                  -0.22318342328071594,
+                  -0.8010947108268738
+                ],
+                [
+                  0.3605509400367737,
+                  0.23453688621520996,
+                  -0.09524793177843094
+                ]
+              ]
+            },
+            {
+              "frame": 300,
+              "bounds_blender_m": [
+                [
+                  -0.2639862298965454,
+                  -0.14526821672916412,
+                  -0.7863419055938721
+                ],
+                [
+                  0.3587430715560913,
+                  0.23307015001773834,
+                  -0.08027724176645279
+                ]
+              ]
+            },
+            {
+              "frame": 350,
+              "bounds_blender_m": [
+                [
+                  -0.25836458802223206,
+                  -0.16840161383152008,
+                  -0.7675278186798096
+                ],
+                [
+                  0.35330551862716675,
+                  0.21515041589736938,
+                  -0.08698919415473938
+                ]
+              ]
+            },
+            {
+              "frame": 400,
+              "bounds_blender_m": [
+                [
+                  -0.26458048820495605,
+                  -0.13811491429805756,
+                  -0.7584903836250305
+                ],
+                [
+                  0.3109129071235657,
+                  0.19357703626155853,
+                  -0.08719460666179657
+                ]
+              ]
+            },
+            {
+              "frame": 450,
+              "bounds_blender_m": [
+                [
+                  -0.26470035314559937,
+                  -0.18452277779579163,
+                  -0.770463764667511
+                ],
+                [
+                  0.3046048581600189,
+                  0.17103947699069977,
+                  -0.0973583534359932
+                ]
+              ]
+            },
+            {
+              "frame": 500,
+              "bounds_blender_m": [
+                [
+                  -0.26339665055274963,
+                  -0.1272253543138504,
+                  -0.7843412756919861
+                ],
+                [
+                  0.34094488620758057,
+                  0.16886155307292938,
+                  -0.08421826362609863
+                ]
+              ]
+            },
+            {
+              "frame": 550,
+              "bounds_blender_m": [
+                [
+                  -0.2611859440803528,
+                  -0.10723242908716202,
+                  -0.7591999769210815
+                ],
+                [
+                  0.2992445230484009,
+                  0.22446338832378387,
+                  -0.0831059142947197
+                ]
+              ]
+            },
+            {
+              "frame": 600,
+              "bounds_blender_m": [
+                [
+                  -0.2624604403972626,
+                  -0.11125405132770538,
+                  -0.7332260012626648
+                ],
+                [
+                  0.2779943346977234,
+                  0.25873538851737976,
+                  -0.07123155891895294
+                ]
+              ]
+            },
+            {
+              "frame": 650,
+              "bounds_blender_m": [
+                [
+                  -0.26898065209388733,
+                  -0.10059767216444016,
+                  -0.7267400622367859
+                ],
+                [
+                  0.27263808250427246,
+                  0.2911403179168701,
+                  -0.07900437712669373
+                ]
+              ]
+            },
+            {
+              "frame": 700,
+              "bounds_blender_m": [
+                [
+                  -0.262164443731308,
+                  -0.20654377341270447,
+                  -0.7453114986419678
+                ],
+                [
+                  0.26994767785072327,
+                  0.30350789427757263,
+                  -0.07434698194265366
+                ]
+              ]
+            },
+            {
+              "frame": 750,
+              "bounds_blender_m": [
+                [
+                  -0.26264452934265137,
+                  -0.11055715382099152,
+                  -0.7692027688026428
+                ],
+                [
+                  0.28301551938056946,
+                  0.30707138776779175,
+                  -0.07901396602392197
+                ]
+              ]
+            },
+            {
+              "frame": 800,
+              "bounds_blender_m": [
+                [
+                  -0.2639707326889038,
+                  -0.1280771940946579,
+                  -0.7512602210044861
+                ],
+                [
+                  0.2758924663066864,
+                  0.2947462499141693,
+                  -0.07967405021190643
+                ]
+              ]
+            },
+            {
+              "frame": 850,
+              "bounds_blender_m": [
+                [
+                  -0.2630355954170227,
+                  -0.15270517766475677,
+                  -0.7263621687889099
+                ],
+                [
+                  0.28190651535987854,
+                  0.2829110622406006,
+                  -0.08679627627134323
+                ]
+              ]
+            },
+            {
+              "frame": 900,
+              "bounds_blender_m": [
+                [
+                  -0.26125550270080566,
+                  -0.24655283987522125,
+                  -0.7053559422492981
+                ],
+                [
+                  0.30254390835762024,
+                  0.2097955346107483,
+                  -0.058958668261766434
+                ]
+              ]
+            },
+            {
+              "frame": 950,
+              "bounds_blender_m": [
+                [
+                  -0.266333669424057,
+                  -0.29693764448165894,
+                  -0.7141615152359009
+                ],
+                [
+                  0.26338401436805725,
+                  0.13625551760196686,
+                  -0.06663784384727478
+                ]
+              ]
+            },
+            {
+              "frame": 1000,
+              "bounds_blender_m": [
+                [
+                  -0.272863507270813,
+                  -0.3064882159233093,
+                  -0.7525444030761719
+                ],
+                [
+                  0.26574960350990295,
+                  0.09084299206733704,
+                  -0.09455320239067078
+                ]
+              ]
+            },
+            {
+              "frame": 1050,
+              "bounds_blender_m": [
+                [
+                  -0.2684251666069031,
+                  -0.34580567479133606,
+                  -0.784892201423645
+                ],
+                [
+                  0.271773099899292,
+                  0.07595372200012207,
+                  -0.0857183113694191
+                ]
+              ]
+            },
+            {
+              "frame": 1100,
+              "bounds_blender_m": [
+                [
+                  -0.2700173854827881,
+                  -0.3970135748386383,
+                  -0.7468016147613525
+                ],
+                [
+                  0.2662048935890198,
+                  0.059794940054416656,
+                  -0.07405820488929749
+                ]
+              ]
+            },
+            {
+              "frame": 1150,
+              "bounds_blender_m": [
+                [
+                  -0.268250435590744,
+                  -0.3781433701515198,
+                  -0.7091391086578369
+                ],
+                [
+                  0.2650589644908905,
+                  0.06024874746799469,
+                  -0.09221488237380981
+                ]
+              ]
+            },
+            {
+              "frame": 1200,
+              "bounds_blender_m": [
+                [
+                  -0.2636587619781494,
+                  -0.3556525409221649,
+                  -0.71435546875
+                ],
+                [
+                  0.27860787510871887,
+                  0.062424950301647186,
+                  -0.0931742936372757
+                ]
+              ]
+            },
+            {
+              "frame": 1250,
+              "bounds_blender_m": [
+                [
+                  -0.2769501507282257,
+                  -0.3977178633213043,
+                  -0.7380866408348083
+                ],
+                [
+                  0.2648542821407318,
+                  0.0705685243010521,
+                  -0.012959890067577362
+                ]
+              ]
+            },
+            {
+              "frame": 1300,
+              "bounds_blender_m": [
+                [
+                  -0.27824005484580994,
+                  -0.35714322328567505,
+                  -0.7491195797920227
+                ],
+                [
+                  0.26099884510040283,
+                  0.05010306462645531,
+                  -0.09431937336921692
+                ]
+              ]
+            },
+            {
+              "frame": 1350,
+              "bounds_blender_m": [
+                [
+                  -0.29082515835762024,
+                  -0.35198283195495605,
+                  -0.7882357239723206
+                ],
+                [
+                  0.2630254328250885,
+                  0.06186072528362274,
+                  -0.09639712423086166
+                ]
+              ]
+            },
+            {
+              "frame": 1400,
+              "bounds_blender_m": [
+                [
+                  -0.2993703782558441,
+                  -0.3260669708251953,
+                  -0.7780010104179382
+                ],
+                [
+                  0.26976239681243896,
+                  0.08187232166528702,
+                  -0.08827109634876251
+                ]
+              ]
+            },
+            {
+              "frame": 1450,
+              "bounds_blender_m": [
+                [
+                  -0.32975733280181885,
+                  -0.3252149224281311,
+                  -0.8000802993774414
+                ],
+                [
+                  0.2582922577857971,
+                  0.12607842683792114,
+                  -0.09182031452655792
+                ]
+              ]
+            },
+            {
+              "frame": 1500,
+              "bounds_blender_m": [
+                [
+                  -0.3101937472820282,
+                  -0.2709924876689911,
+                  -0.8125580549240112
+                ],
+                [
+                  0.25735148787498474,
+                  0.15741579234600067,
+                  -0.0863020271062851
+                ]
+              ]
+            }
+          ]
+        },
+        "frays": 261,
+        "detail_fits": {
+          "ShoulderBoard_L": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 412,
+            "fold_trim": {
+              "removed_contact_triangles": 21,
+              "removed_area_m2": 0.00044008363579450815,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "ShoulderBoard_R": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 377,
+            "fold_trim": {
+              "removed_contact_triangles": 26,
+              "removed_area_m2": 0.000765179052905296,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "RibbonBar": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 154,
+            "fold_trim": {
+              "removed_contact_triangles": 4,
+              "removed_area_m2": 4.0706060531192634e-05,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "Placket": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 465,
+            "fold_trim": {
+              "removed_contact_triangles": 32,
+              "removed_area_m2": 0.004061890503180621,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "Collar": {
+            "method": "Source neck band lifted 10 mm; midsurface trimmed against simulated neck folds; not simulated",
+            "fold_trim": {
+              "removed_contact_triangles": 27,
+              "removed_area_m2": 0.012398629653034732,
+              "point_fan_clearance_m": 0.0002
+            }
+          }
+        },
+        "heap": {
+          "method": "Constructed seeded radial fibre/dust heap, not simulated",
+          "centre_blender_m": [
+            0.11,
+            -0.19
+          ],
+          "floor_m": -0.95
+        }
+      }
+    },
+    {
+      "trial": "tunic-o",
+      "seed": 9521,
+      "prop": "dress_uniform",
+      "frames": 1200,
+      "status": "baked",
+      "construction": {
+        "method": "Blender cloth simulation after armhole stitch release and stress cuts; no post-simulation body deformation",
+        "settings": {
+          "quality": 60,
+          "frames": 1200,
+          "time_scale": 0.12,
+          "mass": 0.18,
+          "stiffness": 40,
+          "max_stiffness": 300,
+          "bending": 0.06,
+          "self_collision": true,
+          "self_distance_m": 0.002,
+          "collision_distance_m": 0.003,
+          "collision_quality": 15,
+          "air_damping": 10,
+          "structural_damping": 25,
+          "bending_damping": 8,
+          "max_bending": 1.0,
+          "body_bending_weight": 0.15,
+          "retained_sleeve_bending_weight": 1.0
+        },
+        "initial_contact": {
+          "pin_clearance_m": 0.006,
+          "lift_m": 0.012,
+          "hanger_outer_m": 0.002,
+          "hanger_inner_m": 0.002,
+          "two_sided": true
+        },
+        "armhole": {
+          "released_fraction": 0.6374427260466817,
+          "released_vertices": 8,
+          "cap_vertices": 14
+        },
+        "tears": {
+          "removed_faces": 101,
+          "removed_area_m2": 0.042579956992994994,
+          "boundary_noise_amplitude_m": 0.006,
+          "octaves": 4,
+          "point_fan_clearance_m": 0.002
+        },
+        "simulation": {
+          "frames": 1200,
+          "retained_pins": 50,
+          "pressure": {
+            "enabled": false,
+            "uniform_force": 0.0,
+            "scale": 1.0
+          },
+          "strength_groups": {
+            "structural": "Remaining fabric strength",
+            "shear": "Remaining fabric strength",
+            "bending": "Remaining sleeve interfacing"
+          },
+          "last_five_frames_motion_m": 0.12386477531925341,
+          "trace": [
+            {
+              "frame": 50,
+              "bounds_blender_m": [
+                [
+                  -0.25862735509872437,
+                  -0.11001131683588028,
+                  -0.8010509014129639
+                ],
+                [
+                  0.3635607361793518,
+                  0.0902794674038887,
+                  -0.094573974609375
+                ]
+              ]
+            },
+            {
+              "frame": 100,
+              "bounds_blender_m": [
+                [
+                  -0.2590186893939972,
+                  -0.2259342223405838,
+                  -0.7721877098083496
+                ],
+                [
+                  0.3538769781589508,
+                  0.07387802004814148,
+                  -0.09692497551441193
+                ]
+              ]
+            },
+            {
+              "frame": 150,
+              "bounds_blender_m": [
+                [
+                  -0.2742112874984741,
+                  -0.20253844559192657,
+                  -0.8108484148979187
+                ],
+                [
+                  0.33537107706069946,
+                  0.08170197904109955,
+                  -0.07346685230731964
+                ]
+              ]
+            },
+            {
+              "frame": 200,
+              "bounds_blender_m": [
+                [
+                  -0.28274720907211304,
+                  -0.20296762883663177,
+                  -0.80924391746521
+                ],
+                [
+                  0.34468570351600647,
+                  0.1245541125535965,
+                  -0.09223221987485886
+                ]
+              ]
+            },
+            {
+              "frame": 250,
+              "bounds_blender_m": [
+                [
+                  -0.2792700529098511,
+                  -0.2186235636472702,
+                  -0.8073301911354065
+                ],
+                [
+                  0.31864216923713684,
+                  0.07575098425149918,
+                  -0.09403044730424881
+                ]
+              ]
+            },
+            {
+              "frame": 300,
+              "bounds_blender_m": [
+                [
+                  -0.2697983980178833,
+                  -0.24925895035266876,
+                  -0.8009726405143738
+                ],
+                [
+                  0.32815271615982056,
+                  0.09004314243793488,
+                  -0.10354235023260117
+                ]
+              ]
+            },
+            {
+              "frame": 350,
+              "bounds_blender_m": [
+                [
+                  -0.26859086751937866,
+                  -0.2934083044528961,
+                  -0.7624803781509399
+                ],
+                [
+                  0.3301141858100891,
+                  0.12662339210510254,
+                  -0.0921802893280983
+                ]
+              ]
+            },
+            {
+              "frame": 400,
+              "bounds_blender_m": [
+                [
+                  -0.2663939893245697,
+                  -0.29041603207588196,
+                  -0.7722869515419006
+                ],
+                [
+                  0.3260303735733032,
+                  0.12486658245325089,
+                  -0.09344236552715302
+                ]
+              ]
+            },
+            {
+              "frame": 450,
+              "bounds_blender_m": [
+                [
+                  -0.2966417074203491,
+                  -0.2581949234008789,
+                  -0.7935361862182617
+                ],
+                [
+                  0.32562172412872314,
+                  0.14140358567237854,
+                  -0.09317754209041595
+                ]
+              ]
+            },
+            {
+              "frame": 500,
+              "bounds_blender_m": [
+                [
+                  -0.26341530680656433,
+                  -0.2743229866027832,
+                  -0.7785794734954834
+                ],
+                [
+                  0.3279877305030823,
+                  0.11747607588768005,
+                  -0.09209467470645905
+                ]
+              ]
+            },
+            {
+              "frame": 550,
+              "bounds_blender_m": [
+                [
+                  -0.26475873589515686,
+                  -0.2840118110179901,
+                  -0.7872605919837952
+                ],
+                [
+                  0.33732423186302185,
+                  0.0951729267835617,
+                  -0.10141997039318085
+                ]
+              ]
+            },
+            {
+              "frame": 600,
+              "bounds_blender_m": [
+                [
+                  -0.26261889934539795,
+                  -0.2546060085296631,
+                  -0.7707312107086182
+                ],
+                [
+                  0.37369266152381897,
+                  0.08990835398435593,
+                  -0.09759965538978577
+                ]
+              ]
+            },
+            {
+              "frame": 650,
+              "bounds_blender_m": [
+                [
+                  -0.2644779086112976,
+                  -0.2643681764602661,
+                  -0.775400698184967
+                ],
+                [
+                  0.3584495782852173,
+                  0.14715023338794708,
+                  -0.07791344076395035
+                ]
+              ]
+            },
+            {
+              "frame": 700,
+              "bounds_blender_m": [
+                [
+                  -0.2618127763271332,
+                  -0.26401445269584656,
+                  -0.7723795175552368
+                ],
+                [
+                  0.29605215787887573,
+                  0.12670567631721497,
+                  -0.08849234879016876
+                ]
+              ]
+            },
+            {
+              "frame": 750,
+              "bounds_blender_m": [
+                [
+                  -0.2644057869911194,
+                  -0.32186031341552734,
+                  -0.7756186723709106
+                ],
+                [
+                  0.27166128158569336,
+                  0.14341163635253906,
+                  -0.07982756942510605
+                ]
+              ]
+            },
+            {
+              "frame": 800,
+              "bounds_blender_m": [
+                [
+                  -0.26354095339775085,
+                  -0.3159078061580658,
+                  -0.7767756581306458
+                ],
+                [
+                  0.2993246018886566,
+                  0.14035829901695251,
+                  -0.0864148736000061
+                ]
+              ]
+            },
+            {
+              "frame": 850,
+              "bounds_blender_m": [
+                [
+                  -0.2597048878669739,
+                  -0.2663513422012329,
+                  -0.7729646563529968
+                ],
+                [
+                  0.30538785457611084,
+                  0.1384296417236328,
+                  -0.09531943500041962
+                ]
+              ]
+            },
+            {
+              "frame": 900,
+              "bounds_blender_m": [
+                [
+                  -0.2611461877822876,
+                  -0.18889658153057098,
+                  -0.7669185400009155
+                ],
+                [
+                  0.3267640173435211,
+                  0.12612472474575043,
+                  -0.08429379016160965
+                ]
+              ]
+            },
+            {
+              "frame": 950,
+              "bounds_blender_m": [
+                [
+                  -0.2633887827396393,
+                  -0.15689480304718018,
+                  -0.7684275507926941
+                ],
+                [
+                  0.34798476099967957,
+                  0.15720480680465698,
+                  -0.08186068385839462
+                ]
+              ]
+            },
+            {
+              "frame": 1000,
+              "bounds_blender_m": [
+                [
+                  -0.26791951060295105,
+                  -0.15528878569602966,
+                  -0.7861170172691345
+                ],
+                [
+                  0.3744859993457794,
+                  0.08098343759775162,
+                  -0.0842769518494606
+                ]
+              ]
+            },
+            {
+              "frame": 1050,
+              "bounds_blender_m": [
+                [
+                  -0.26696836948394775,
+                  -0.1965998411178589,
+                  -0.7905423641204834
+                ],
+                [
+                  0.331309050321579,
+                  0.0708257183432579,
+                  -0.08027597516775131
+                ]
+              ]
+            },
+            {
+              "frame": 1100,
+              "bounds_blender_m": [
+                [
+                  -0.27732834219932556,
+                  -0.18705518543720245,
+                  -0.7911550998687744
+                ],
+                [
+                  0.3262077271938324,
+                  0.08565177768468857,
+                  -0.07915342599153519
+                ]
+              ]
+            },
+            {
+              "frame": 1150,
+              "bounds_blender_m": [
+                [
+                  -0.2675398588180542,
+                  -0.20694731175899506,
+                  -0.7957158088684082
+                ],
+                [
+                  0.32555609941482544,
+                  0.0662599727511406,
+                  -0.08328543603420258
+                ]
+              ]
+            },
+            {
+              "frame": 1200,
+              "bounds_blender_m": [
+                [
+                  -0.26011136174201965,
+                  -0.18620586395263672,
+                  -0.7582768201828003
+                ],
+                [
+                  0.27017202973365784,
+                  0.1915537267923355,
+                  -0.08479487895965576
+                ]
+              ]
+            }
+          ]
+        },
+        "frays": 233,
+        "detail_fits": {
+          "ShoulderBoard_L": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 439,
+            "fold_trim": {
+              "removed_contact_triangles": 30,
+              "removed_area_m2": 0.0007723403746240365,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "ShoulderBoard_R": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 289,
+            "fold_trim": {
+              "removed_contact_triangles": 22,
+              "removed_area_m2": 0.0006651962794421706,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "RibbonBar": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 83,
+            "fold_trim": {
+              "removed_contact_triangles": 0,
+              "removed_area_m2": 0,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "Placket": {
+            "method": "Visible support triangles clipped to the followed detail footprint and lifted 3 mm; crossing facets trimmed; planar UVs; not separately simulated",
+            "triangles": 715,
+            "fold_trim": {
+              "removed_contact_triangles": 52,
+              "removed_area_m2": 0.006389080237568123,
+              "point_fan_clearance_m": 0.0002
+            }
+          },
+          "Collar": {
+            "method": "Source neck band lifted 10 mm; midsurface trimmed against simulated neck folds; not simulated",
+            "fold_trim": {
+              "removed_contact_triangles": 38,
+              "removed_area_m2": 0.017104367550928146,
+              "point_fan_clearance_m": 0.0002
+            }
+          }
+        },
+        "heap": {
+          "method": "Constructed seeded radial fibre/dust heap, not simulated",
+          "centre_blender_m": [
+            0.11,
+            -0.19
+          ],
+          "floor_m": -0.95
+        }
+      }
+    }
+  ]
 }

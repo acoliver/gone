@@ -12,7 +12,7 @@ from mathutils.bvhtree import BVHTree
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[3]
 sys.path.insert(0, str(ROOT / 'tools/blender/quarters_aging'))
-from common import collision, midsurface, recalc
+from common import collision, midsurface, recalc, surface_tree
 
 DETAILS = ('ShoulderBoard_L', 'ShoulderBoard_R', 'Placket', 'Buttons',
            'RibbonBar', 'Medal', 'CollarInsignia_L', 'CollarInsignia_R')
@@ -88,6 +88,53 @@ def bind_points(body, points):
     return result
 
 
+def bind_neckline(body, points):
+    bm = bmesh.new()
+    bm.from_mesh(body.data)
+    bm.verts.index_update()
+    remaining = {edge for edge in bm.edges if edge.is_boundary}
+    necklines = []
+    while remaining:
+        first = remaining.pop()
+        component = {first}
+        pending = list(first.verts)
+        visited = set(pending)
+        while pending:
+            vertex = pending.pop()
+            for edge in vertex.link_edges:
+                if edge in remaining:
+                    remaining.remove(edge)
+                    component.add(edge)
+                    other = edge.other_vert(vertex)
+                    if other not in visited:
+                        visited.add(other)
+                        pending.append(other)
+        boundary_points = np.array([vertex.co[:] for vertex in visited])
+        if (boundary_points[:, 0].min() < -.03 and boundary_points[:, 0].max() > .03 and
+                boundary_points[:, 2].min() > -.25):
+            necklines.append(component)
+    if len(necklines) != 1:
+        raise ValueError(f'Expected one neckline crossing garment centre, found {len(necklines)}')
+    edges = sorted(necklines[0], key=lambda edge: edge.index)
+    body.data.calc_loop_triangles()
+    triangles = [tuple(t.vertices) for t in body.data.loop_triangles]
+    result = []
+    for p in points:
+        candidates = []
+        for edge in edges:
+            a, b = [np.array(body.matrix_world @ v.co) for v in edge.verts]
+            t = float(np.clip((p-a)@(b-a)/((b-a)@(b-a)), 0, 1))
+            q = a+t*(b-a)
+            candidates.append((float(np.linalg.norm(p-q)), edge, t, q))
+        _, edge, t, q = min(candidates, key=lambda item: item[0])
+        ids = [v.index for v in edge.verts]
+        triangle = next(f for f in triangles if all(i in f for i in ids))
+        weights = [1-t if i == ids[0] else t if i == ids[1] else 0. for i in triangle]
+        result.append({'triangle': triangle, 'weights': weights, 'offset': (p-q).tolist()})
+    bm.free()
+    return result
+
+
 def follow_points(body, entries):
     vertices = np.array([body.matrix_world @ v.co for v in body.data.vertices])
     return np.array([np.array(e['weights'])@vertices[list(e['triangle'])]+e['offset'] for e in entries])
@@ -103,11 +150,18 @@ def reinforce_and_bind(body):
     # Bind the whole collar to its sewn lower ring, not the nearby shoulder tops.
     attachment = json.loads(collar['attachment'])
     bases = np.asarray(attachment['base_blender_m'])
-    nearest = np.linalg.norm(collar_points[:, None]-bases[None, :], axis=2).argmin(1)
+    columns = np.asarray(attachment['top_blender_m'])-bases
+    fraction = np.clip(np.einsum('ijk,jk->ij', collar_points[:, None]-bases, columns)/
+                       np.sum(columns**2, axis=1), 0, 1)
+    nearest = np.linalg.norm(collar_points[:, None]-bases-columns*fraction[:, :, None], axis=2).argmin(1)
     sewn = bases[nearest]
-    entries = bind_points(body, sewn)
-    for e, offset in zip(entries, collar_points-sewn):
-        e['offset'] = (np.asarray(e['offset'])+offset).tolist()
+    entries = bind_neckline(body, sewn)
+    for e, base, offset in zip(entries, sewn, collar_points-sewn):
+        # Seat the 3 mm collar just inside the actual neckline. Keeping the
+        # old coarse-mesh base offset puts its lower edge through the new ply.
+        radial = np.array([base[0], base[1], 0.])
+        radial /= np.linalg.norm(radial)
+        e['offset'] = (offset-radial*.002).tolist()
     bindings['Collar'] = {'entries': entries, 'original': collar_points.tolist(), 'rigid': False}
     coverage = {}
     for name in DETAILS:
@@ -163,26 +217,26 @@ def fit_details(body, bindings):
                 # Seat the uncut solid above its support without clipping its faces.
                 axis = np.array([0., 0., 1.]) if name.startswith('ShoulderBoard') else np.array([0., -1., 0.])
                 normal = axis@rotation
-                surface = np.array([body.matrix_world @ body.data.vertices[i].co
-                                    for i in binding['patch_vertices']])
-                if name == 'Buttons':
-                    # Each button has its own planar seat along the sewn placket.
-                    center = destination[ids].mean(0)
-                    surface = surface[np.abs(surface[:, 2]-center[2]) < .020]
                 support_names = (['Collar'] if name.startswith('CollarInsignia') else
                                  ['Placket'] if name == 'Buttons' else
                                  ['RibbonBar'] if name == 'Medal' else [])
-                for support_name in support_names:
-                    support = bpy.data.objects[support_name]
-                    points = np.array([support.matrix_world @ v.co for v in support.data.vertices])
-                    lo, hi = destination[ids].min(0)-.005, destination[ids].max(0)+.005
-                    axis_index = 2 if name.startswith('ShoulderBoard') else 1
-                    lo[axis_index], hi[axis_index] = -np.inf, np.inf
-                    selected = points[np.all((points >= lo) & (points <= hi), axis=1)]
-                    surface = np.concatenate([surface, selected])
-                clearance = float(np.min(np.einsum('ij,j->i', destination[ids], normal))
-                                  - np.max(np.einsum('ij,j->i', surface, normal)))
-                destination[ids] += normal*max(0., .0005-clearance)
+                supports = [body]+[bpy.data.objects[n] for n in support_names]
+                obj.data.calc_loop_triangles()
+                group_ids = set(ids)
+                triangles = [t.vertices[:] for t in obj.data.loop_triangles
+                             if all(i in group_ids for i in t.vertices)]
+                samples = np.vstack([destination[ids], destination[triangles].mean(1)])
+                direction = Vector(normal)
+                gaps = []
+                for support in supports:
+                    tree = surface_tree(support)
+                    for point in samples:
+                        hit, _, _, _ = tree.ray_cast(Vector(point)+direction*.25, -direction, .5)
+                        if hit is not None:
+                            gaps.append(float((Vector(point)-hit).dot(direction)))
+                if not gaps:
+                    raise ValueError(f'{name}: rigid detail has no support beneath its footprint')
+                destination[ids] += normal*max(0., .0005-min(gaps))
         inverse = obj.matrix_world.inverted()
         for vertex, point in zip(obj.data.vertices, destination):
             vertex.co = inverse @ Vector(point)

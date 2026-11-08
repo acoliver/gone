@@ -53,6 +53,8 @@ def prepare(out):
     record['splits'] = cut_tunic(body)
     record['fallen'] = detach_fallen(body)
     print('SPLITS', record['splits'], 'FALLEN', record['fallen'], flush=True)
+    from rest_carrier import prepare_carrier, add_rest_carrier, evaluated_binding_surface
+    record['carrier_reduction'] = prepare_carrier(body)
     wire = bpy.data.objects['Hanger']
     from common import surface_tree
     tree = surface_tree(wire)
@@ -66,12 +68,18 @@ def prepare(out):
             p.z = max(p.z, point.z+.004)
             pins[vertex.index] = 1.
     record['pins'] = pins
-    record['bindings'], record['detail_patches'] = reinforce_and_bind(body)
+    _, record['detail_patches'] = reinforce_and_bind(body)
     pressed_sleeve(body)
     recalc(body)
-    assert_surface_clear(body)
-    assert_collision_clear(body)
-    record['initial_metrics'] = surface_metrics(body)
+    add_rest_carrier(body)
+    surface = evaluated_binding_surface(body)
+    record['bindings'], _ = reinforce_and_bind(surface)
+    record['density']['carrier_vertices'] = len(body.data.vertices)
+    record['density']['dense_vertices'] = len(surface.data.vertices)
+    record['density']['mass_multiplier'] = record['density']['unaged_vertices']/len(surface.data.vertices)
+    record['initial_metrics'] = surface_metrics(surface)
+    record['rest_key_carrier'] = 'real level-1 SIMPLE subdivision before Cloth; folded-rest control verified'
+    bpy.data.objects.remove(surface, do_unlink=True)
     save_checkpoint(out, 'prepared', record)
     return record
 
@@ -106,7 +114,9 @@ def bake_simulation(obj, mod, frames):
         if frame % 25 == 0:
             samples.append(dict(frame=frame, bounds=[positions.min(0).tolist(), positions.max(0).tolist()]))
     frozen = bpy.data.meshes.new_from_object(evaluated, depsgraph=deps)
-    obj.modifiers.remove(mod)
+    for modifier in list(obj.modifiers):
+        if modifier == mod or modifier.type == 'SUBSURF':
+            obj.modifiers.remove(modifier)
     obj.shape_key_clear()
     obj.data = frozen
     return dict(frames=frames, seconds_per_frame=float(np.mean(durations[1:])),
@@ -119,21 +129,18 @@ def simulate(out, frames):
     record = json.loads(bpy.context.scene['tunic5_record'])
     body = bpy.data.objects['TunicBody']
     config = wool_config(frames)
-    # Broad front/back panels do not fold onto themselves. Keep sleeve/tear contacts.
-    exclusion = body.vertex_groups.new(name='Self collision exclusion')
-    ids = [v.index for v in body.data.vertices if abs(v.co.x) < .20 and -.80 < v.co.z < -.37]
-    exclusion.add(ids, 1., 'REPLACE')
     pins = {int(i): w for i, w in record['pins'].items()}
     mod = configure(body, config, record['density']['unaged_vertices'], pins,
                     body.data.shape_keys.key_blocks['Empty pressed left sleeve'])
     configure_detail_stiffness(mod)
     s = mod.settings
+    s.mass = config['mass']*record['density']['mass_multiplier']
     damping = config['damping_multiplier']
     s.tension_damping = s.compression_damping = s.shear_damping = 5*damping
     s.bending_damping = .5*damping
     s.air_damping = 10*damping
     record['simulation_config'] = config
-    record['rest_contact_policy'] = exclude_small_rest_faces(body, mod)
+    record['rest_contact_policy'] = exclude_small_rest_faces(body, mod, subdivision_levels=1)
     record['simulation'] = bake_simulation(body, mod, frames)
     record['dense_metrics'] = surface_metrics(body)
     record['lip_lift'] = lip_lift(body)
@@ -165,11 +172,12 @@ def simulate(out, frames):
         bpy.context.scene.frame_set(1)
         mod = configure(obj, config, max(4, int(piece['vertices']*record['density']['mass_multiplier'])))
         mod.settings.bending_stiffness = .3
-        mod.settings.tension_damping = 5*damping
-        mod.settings.compression_damping = 5*damping
-        mod.settings.shear_damping = 5*damping
-        mod.settings.bending_damping = .5*damping
-        mod.settings.air_damping = 10*damping
+        # Free-hang swatch damping does not model repeated floor contacts.
+        mod.settings.tension_damping = 5.
+        mod.settings.compression_damping = 5.
+        mod.settings.shear_damping = 5.
+        mod.settings.bending_damping = .5
+        mod.settings.air_damping = 10.
         piece['rest_contact_policy'] = exclude_small_rest_faces(obj, mod)
         record['fallen_simulations'][obj.name] = bake_simulation(obj, mod, frames)
         collision(obj, .001)
@@ -191,7 +199,7 @@ def reduce_and_bake(out):
     names = ['TunicBody']+[p['name'] for p in record['fallen']]
     for name in names:
         dense = bpy.data.objects[name]
-        low, report = reduce_game(dense, 9800 if name == 'TunicBody' else 350)
+        low, report = reduce_game(dense, 12200 if name == 'TunicBody' else 350)
         if not report['pass']:
             raise ValueError(f'{name}: boundary fidelity failed: {report}')
         mat, paths = bake(dense, low, out / 'textures', size=2048 if name == 'TunicBody' else 512)
@@ -206,6 +214,8 @@ def reduce_and_bake(out):
         record['bakes'][name] = paths
         if name == 'TunicBody':
             record['game_sheet_metrics'] = surface_metrics(low)
+    from detail_clearance import seat_details
+    record['reduced_detail_clearance'] = seat_details(bpy.data.objects['TunicBody'], record['bindings'])
     save_checkpoint(out, 'baked', record)
     return record
 

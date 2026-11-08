@@ -41,7 +41,20 @@ def refine(body):
         cuffs = abs(p.z+.865) < width and abs(p.x) > .27
         return shoulder or armhole or hem or cuffs
     from common import surface_tree
-    report = densify(body, levels=1, bands=[lambda p: band(p, .05), lambda p: band(p, .015)])
+    report = densify(body, levels=1)
+    bm = bmesh.new()
+    bm.from_mesh(body.data)
+    edges = [e for e in bm.edges if band((e.verts[0].co+e.verts[1].co)/2, .025)]
+    bmesh.ops.subdivide_edges(bm, edges=edges, cuts=2, use_grid_fill=True)
+    bm.to_mesh(body.data)
+    bm.free()
+    from mesh_quality import resolve_short_edges
+    report['rest_quality'] = resolve_short_edges(body)
+    report['dense_vertices'] = len(body.data.vertices)
+    report['mass_multiplier'] = report['unaged_vertices']/len(body.data.vertices)
+    lengths = np.array([(body.data.vertices[e.vertices[0]].co-body.data.vertices[e.vertices[1]].co).length
+                        for e in body.data.edges])
+    report['edge_quantiles_m'] = np.quantile(lengths, [.1, .5, .9]).tolist()
     # Catmull-Clark rounds the sewn contact crest down into the wire. Raise
     # the narrow contact band vertically, keeping front/back pattern order.
     wire = surface_tree(bpy.data.objects['Hanger'])
@@ -129,8 +142,88 @@ def pressed_sleeve(body):
         p = rest.data[index].co
         t = float(np.clip((-.33-p.z)/.14, 0, 1))
         center_y = -.008-.027*float(np.clip((-.425-p.z)/.44, 0, 1))
-        p.y = center_y+(p.y-center_y)*(1-.6*t)
+        p.y = center_y+(p.y-center_y)*(1-.60*t)
+    offsets = open_lip_rest(body, rest)
+    # Structural springs take their lengths from the starting mesh, whereas
+    # rest_shape_key supplies bending angles. Both must describe empty wool.
+    basis = body.data.shape_keys.key_blocks[0]
+    for index, offset in offsets.items():
+        if basis.data[index].co.z < -.22:
+            basis.data[index].co += offset*.5
+            body.data.vertices[index].co = basis.data[index].co
+    for index in sleeve:
+        original = basis.data[index].co.copy()
+        t = float(np.clip((-.33-original.z)/.14, 0, 1))
+        center_y = -.008-.027*float(np.clip((-.425-original.z)/.44, 0, 1))
+        original.y = center_y+(original.y-center_y)*(1-.90*t)
+        basis.data[index].co = original
+        body.data.vertices[index].co = original
+    body.data.update()
     return rest
+
+
+def open_lip_rest(body, rest):
+    """Rest contraction pulls split lips apart, fading into each retained ply."""
+    import heapq
+    bm = bmesh.new()
+    bm.from_mesh(body.data)
+    bm.verts.ensure_lookup_table()
+    deform = bm.verts.layers.deform.active
+    group = body.vertex_groups['Lip shrink'].index
+    vectors = {}
+    for edge in bm.edges:
+        if (not edge.is_boundary or max(v.co.z for v in edge.verts) < -.80 or
+                not all(v[deform].get(group, 0.) >= .5 for v in edge.verts)):
+            continue
+        a, b = edge.verts
+        tangent = (b.co-a.co).normalized()
+        inward = edge.link_faces[0].calc_center_median()-(a.co+b.co)/2
+        inward = (inward-tangent*inward.dot(tangent)).normalized()
+        for vertex in edge.verts:
+            vectors[vertex.index] = vectors.get(vertex.index, Vector())+inward*edge.calc_length()
+    distances = {i: 0. for i in vectors}
+    origin = {i: i for i in vectors}
+    queue = [(0., i) for i in sorted(vectors)]
+    heapq.heapify(queue)
+    while queue:
+        distance, index = heapq.heappop(queue)
+        if distance != distances[index]:
+            continue
+        for edge in bm.verts[index].link_edges:
+            j = edge.other_vert(bm.verts[index]).index
+            candidate = distance+edge.calc_length()
+            if candidate < .025 and candidate < distances.get(j, float('inf')):
+                distances[j], origin[j] = candidate, origin[index]
+                heapq.heappush(queue, (candidate, j))
+    rng = np.random.default_rng(9521)
+    indices = sorted(vectors)
+    points = np.array([bm.verts[i].co[:] for i in indices])
+    weights = np.exp(-np.sum((points[:, None]-points[None, :])**2, axis=2)/(2*.012**2))
+    variation = weights@rng.normal(size=len(indices))/np.sqrt(np.sum(weights**2, axis=1))
+    width = {i: float(np.clip(.85+.25*w, .3, 1.5)) for i, w in zip(indices, variation)}
+    directions = np.array([vectors[i].normalized()[:] for i in indices])
+    uv = bm.loops.layers.uv.active
+    panels = [face_panel(bm.verts[i].link_faces[0], uv) for i in indices]
+    for k, i in enumerate(indices):
+        delta = points-points[k]
+        along = delta@directions[k]
+        lateral = np.linalg.norm(delta-along[:, None]*directions[k], axis=1)
+        opposing = ((directions@directions[k] < -.5) & (along > 1e-5) &
+                    (along < .02) & (lateral < .004) &
+                    (np.array(panels) == panels[k]))
+        if opposing.any():
+            # A strip between two nearby splits cannot contract past itself.
+            width[i] = min(width[i], .3*float(along[opposing].min())/.007)
+    offsets = {}
+    for i, distance in distances.items():
+        vector = vectors[origin[i]]
+        if vector.length:
+            contraction = .001 if bm.verts[origin[i]].co.z > -.22 else .007
+            offset = vector.normalized()*(contraction*width[origin[i]]*(1-distance/.025))
+            rest.data[i].co += offset
+            offsets[i] = offset
+    bm.free()
+    return offsets
 
 
 def detach_fallen(body):
