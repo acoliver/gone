@@ -881,6 +881,10 @@ func dressing(space_id: StringName) -> DressingSpec:
 	assert((space is SectionSpec or space is ConnectorSpec) and space.is_built(), "dressing requires a built corridor space: %s" % space_id)
 	return ShipDressing.build(self, space)
 
+func ceiling_services(space_id: StringName) -> CeilingServices:
+	assert(has_space(space_id), "ceiling services require a space")
+	return CeilingServices.build(self, _records[space_id])
+
 func anchor(id: StringName) -> Transform3D:
 	assert(_anchors.has(id), "layout anchor exists: %s" % id)
 	return _anchors[id]
