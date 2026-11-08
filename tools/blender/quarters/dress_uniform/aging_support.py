@@ -37,6 +37,15 @@ def load_source():
     form.hide_render = True
     wire = bpy.data.objects['Hanger']
     collision(wire, .0015)
+    collar = bpy.data.objects['Collar']
+    sections = components(collar)
+    band = max(sections, key=lambda ids: max(collar.data.vertices[i].co.z for i in ids))
+    bm = bmesh.new()
+    bm.from_mesh(collar.data)
+    bm.verts.ensure_lookup_table()
+    bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.index not in set(band)], context='VERTS')
+    bm.to_mesh(collar.data)
+    bm.free()
     body = bpy.data.objects['TunicBody']
     midsurface(body)
     recalc(body)
@@ -109,9 +118,9 @@ def reinforce_and_bind(body):
         for group in groups:
             region = original[group]
             lo, hi = region.min(0)-.005, region.max(0)+.005
-            # Detail thickness does not limit the footprint's depth onto its support.
+            # Reach the support ply, without reinforcing the far side or hem.
             axis = 2 if name.startswith('ShoulderBoard') else 1
-            lo[axis], hi[axis] = -np.inf, np.inf
+            lo[axis], hi[axis] = region[:, axis].min()-.020, region[:, axis].max()+.020
             selected = np.flatnonzero(np.all((points >= lo) & (points <= hi), axis=1))
             if not len(selected):
                 center = region.mean(0)
@@ -154,8 +163,23 @@ def fit_details(body, bindings):
                 # Seat the uncut solid above its support without clipping its faces.
                 axis = np.array([0., 0., 1.]) if name.startswith('ShoulderBoard') else np.array([0., -1., 0.])
                 normal = axis@rotation
-                surface = follow_points(body, [dict(e, offset=[0., 0., 0.])
-                                              for e in (binding['entries'][i] for i in ids)])
+                surface = np.array([body.matrix_world @ body.data.vertices[i].co
+                                    for i in binding['patch_vertices']])
+                if name == 'Buttons':
+                    # Each button has its own planar seat along the sewn placket.
+                    center = destination[ids].mean(0)
+                    surface = surface[np.abs(surface[:, 2]-center[2]) < .020]
+                support_names = (['Collar'] if name.startswith('CollarInsignia') else
+                                 ['Placket'] if name == 'Buttons' else
+                                 ['RibbonBar'] if name == 'Medal' else [])
+                for support_name in support_names:
+                    support = bpy.data.objects[support_name]
+                    points = np.array([support.matrix_world @ v.co for v in support.data.vertices])
+                    lo, hi = destination[ids].min(0)-.005, destination[ids].max(0)+.005
+                    axis_index = 2 if name.startswith('ShoulderBoard') else 1
+                    lo[axis_index], hi[axis_index] = -np.inf, np.inf
+                    selected = points[np.all((points >= lo) & (points <= hi), axis=1)]
+                    surface = np.concatenate([surface, selected])
                 clearance = float(np.min(np.einsum('ij,j->i', destination[ids], normal))
                                   - np.max(np.einsum('ij,j->i', surface, normal)))
                 destination[ids] += normal*max(0., .0005-clearance)

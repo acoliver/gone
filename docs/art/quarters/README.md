@@ -400,6 +400,18 @@ The lit captures are `tmp/fit/sofa/cloth2/compare-hero.png`, `compare-detail.png
 
 The tunic now comes from Blender cloth simulation. The hand-modelled pilot rated 2/10: its waist was pinched, its sleeves were detached cylinders, and its collar and shoulders had visible voids. A sewn pattern lets gravity and fabric strain produce the hanging shape. The design remains `docs/art/quarters/sheets/dress_uniform/hero.png`; the filled Hunyuan torso is only a silhouette reference.
 
+### Dense-cloth candidate
+
+The pass-5 candidate is built by `dress_uniform/age_tunic.py` in headless Blender. It remains under `tmp/age/tunic5/stable/`; it has not replaced the shipped aged asset. Run `-- --out tmp/age/tunic5/stable --frames 600` to prepare, simulate and bake, or select `--stage prepare`, `simulate` or `bake` individually.
+
+The 200 mm wool cantilevers use the fitted `body-p` springs (500/500/350) and bending 0.3. At 6 mm and 3 mm requested spacing, their maximum profile errors are 4.11 mm and 5.59 mm against a 10 mm limit. `aging-calibration.json` records the actual spacing and resolution-dependent damping. Mass is scaled by the unaged/dense vertex-count ratio. Brittle wool is not assigned softer springs.
+
+The dense surface has shoulder, armhole, hem and cuff bands. Tears split edges without deleting their incident faces. The released armhole retains 40.8% of its seam, and the shoulder split releases 59.4%. The chest form remains an invisible collider. A rest-shape key presses the freed sleeve; lip shrink curls the split edges. Closed details follow reinforced patches rigidly, and the collar follows its sewn neckline without an added lift.
+
+Blender 4.5 clamps self-distance to 1 mm. Fine triangles whose rest altitude is below the resulting 2 mm contact diameter, and faces incident to coincident split tips, are placed in its self-contact exclusion group. Self-contact remains enabled elsewhere. `test_cloth_contacts.py` compares this policy with a matched no-self-contact control. Final triangle-intersection checks still apply to every exported part.
+
+Protected reduction retains 9,799 body triangles and 303–349 per fallen strip, with normals and AO baked from the dense simulation. The strips exceed the plan's 150–250-triangle estimate to keep the 6 mm boundary band. Their measured boundary errors are 0.52–0.63 mm; the limit remains 1.5 mm. Cards, render gates and export acceptance are separate stages and are not yet verified.
+
 ### Aged state
 
 `tools/blender/quarters/dress_uniform/tunic-aged.blend` contains the baked aged cloth, exported as `assets/props/quarters/dress_uniform_aged.glb`. `cloth-trials.json` records the second-pass attempts and selected `pass2-n` bake alongside the earlier simulations. The age remains 1000 years in dry, sterile, oxygenated air, without biological or water damage.

@@ -1,0 +1,187 @@
+"""Dense tunic bands and seam failures, with zero-area splits before gravity."""
+import json
+
+import bmesh
+import bpy
+import numpy as np
+from mathutils import Vector
+
+from aging_support import ROOT
+from densify import densify, triangulate
+from grain_paths import surface_walk
+from tear_paths import lift_pattern_path, split_polyline
+from common import recalc
+
+
+def face_panel(face, uv):
+    u = np.mean([loop[uv].uv.x for loop in face.loops])
+    return 'front' if u < .48 else 'back' if u < 1. else 'left' if u < 1.6 else 'right'
+
+
+def seam_edges(bm, kind):
+    uv = bm.loops.layers.uv.active
+    result = []
+    for edge in bm.edges:
+        labels = {face_panel(f, uv) for f in edge.link_faces}
+        middle = (edge.verts[0].co+edge.verts[1].co)/2
+        if kind == 'shoulder':
+            chosen = labels == {'front', 'back'} and middle.x > .09 and middle.z > -.22
+        else:
+            chosen = 'left' in labels and bool(labels & {'front', 'back'})
+        if chosen:
+            result.append(edge)
+    return result
+
+
+def refine(body):
+    def band(p, width):
+        shoulder = p.x > .08 and p.z > -.24 and abs(p.y) < width
+        armhole = .21 < p.x < .30 and -.36 < p.z < -.22
+        hem = abs(p.z+.852) < width
+        cuffs = abs(p.z+.865) < width and abs(p.x) > .27
+        return shoulder or armhole or hem or cuffs
+    from common import surface_tree
+    report = densify(body, levels=1, bands=[lambda p: band(p, .05), lambda p: band(p, .015)])
+    # Catmull-Clark rounds the sewn contact crest down into the wire. Raise
+    # the narrow contact band vertically, keeping front/back pattern order.
+    wire = surface_tree(bpy.data.objects['Hanger'])
+    adjusted = 0
+    for vertex in body.data.vertices:
+        p = vertex.co
+        if .085 < abs(p.x) < .27 and abs(p.y) < .010 and p.z > -.24:
+            contact, _, _, _ = wire.ray_cast(Vector((p.x, 0, .1)), Vector((0, 0, -1)))
+            if contact is not None and p.z > contact.z-.020:
+                clearance = .004*float(np.clip((.010-abs(p.y))/.004, 0, 1))
+                target = contact.z+clearance
+                if p.z < target:
+                    p.z = target
+                    adjusted += 1
+    report['wire_clearance_m'] = .004
+    report['contact_vertices_adjusted'] = adjusted
+    return report
+
+
+def split_seam(body, kind, fraction):
+    bm = bmesh.new()
+    bm.from_mesh(body.data)
+    edges = seam_edges(bm, kind)
+    total = sum(e.calc_length() for e in edges)
+    if not total:
+        raise ValueError(f'Missing {kind} seam in pattern UVs')
+    if kind == 'shoulder':
+        edges.sort(key=lambda e: abs(sum(v.co.x for v in e.verts)/2-.19))
+    else:
+        # Front arc first, then the cap's back quadrant. Underarm/back remain sewn.
+        edges.sort(key=lambda e: (sum(v.co.y for v in e.verts) > 0,
+                                  -sum(v.co.z for v in e.verts)))
+    chosen, length = [], 0.
+    for edge in edges:
+        if length+edge.calc_length()/2 > total*fraction:
+            break
+        chosen.append(edge)
+        length += edge.calc_length()
+    deform = bm.verts.layers.deform.verify()
+    group = body.vertex_groups.get('Lip shrink') or body.vertex_groups.new(name='Lip shrink')
+    allowance = (body.vertex_groups.get('Seam allowance') or body.vertex_groups.new(name='Seam allowance')) if kind == 'armhole' else None
+    for edge in chosen:
+        for vertex in edge.verts:
+            vertex[deform][group.index] = 1.
+            if allowance is not None:
+                vertex[deform][allowance.index] = 1.
+    bmesh.ops.split_edges(bm, edges=chosen)
+    bm.to_mesh(body.data)
+    bm.free()
+    return dict(seam_length_m=total, split_length_m=length, released_fraction=length/total,
+                retained_fraction=1-length/total, method='split shared seam edges; no deleted area')
+
+
+def cut_tunic(body):
+    record = {'armhole': split_seam(body, 'armhole', .59),
+              'shoulder': split_seam(body, 'shoulder', .60)}
+    # The wire wear line lies just forward of the shoulder seam in the front pattern.
+    u = np.linspace(.315, .435, 35)
+    v = .929+np.random.default_rng(9521).uniform(-.0006, .0006, len(u))
+    wire_path = lift_pattern_path(body, np.c_[u, v])
+    record['hanger'] = split_polyline(body, wire_path)
+    record['hanger']['path_local_m'] = wire_path
+    hems = []
+    for lo, hi in [(.035, .145), (.29, .395), (.58, .70)]:
+        # End cuts detach an allowance; their vertices remain in the cloth model.
+        path_uv = [(lo, 0.), (lo, .038)]
+        path_uv += [(u, .038) for u in np.linspace(lo, hi, 30)[1:]]
+        path_uv += [(hi, 0.)]
+        path = lift_pattern_path(body, np.array(path_uv))
+        hems.append(split_polyline(body, path))
+    record['hem_runs'] = hems
+    record['hem_runs_count'] = len(hems)
+    record['hem_released_pattern_fraction'] = sum(hi-lo for lo, hi in [(.035, .145), (.29, .395), (.58, .70)])/.92
+    triangulate(body)
+    recalc(body)
+    return record
+
+
+def pressed_sleeve(body):
+    body.shape_key_add(name='Aged basis')
+    rest = body.shape_key_add(name='Empty pressed left sleeve')
+    uv = body.data.uv_layers[0].data
+    sleeve = {loop.vertex_index for loop in body.data.loops if 1.099 < uv[loop.index].uv.x < 1.551}
+    for index in sleeve:
+        p = rest.data[index].co
+        t = float(np.clip((-.33-p.z)/.14, 0, 1))
+        center_y = -.008-.027*float(np.clip((-.425-p.z)/.44, 0, 1))
+        p.y = center_y+(p.y-center_y)*(1-.6*t)
+    return rest
+
+
+def detach_fallen(body):
+    """Separate only disconnected hem islands; retain the body/sleeve bridges."""
+    bm = bmesh.new()
+    bm.from_mesh(body.data)
+    bm.verts.ensure_lookup_table()
+    uv = bm.loops.layers.uv.active
+    remaining = set(bm.verts)
+    groups = []
+    while remaining:
+        frontier = {remaining.pop()}
+        group = set(frontier)
+        while frontier:
+            following = {e.other_vert(v) for v in frontier for e in v.link_edges} & remaining
+            remaining -= following
+            group |= following
+            frontier = following
+        groups.append(group)
+    islands = sorted((g for g in groups if max(v.co.z for v in g) < -.80),
+                     key=lambda g: min(v.co.x for v in g))
+    reports = []
+    for number, group in enumerate(islands):
+        faces = sorted({f for v in group for f in v.link_faces}, key=lambda f: f.index)
+        indices = {v: i for i, v in enumerate(sorted(group, key=lambda v: v.index))}
+        data = bpy.data.meshes.new(f'FallenHem_{number+1}')
+        data.from_pydata([tuple(v.co) for v in indices], [],
+                         [tuple(indices[v] for v in f.verts) for f in faces])
+        layer = data.uv_layers.new(name='FlatPattern')
+        for polygon, source in zip(data.polygons, faces):
+            for index, loop in zip(polygon.loop_indices, source.loops):
+                layer.data[index].uv = loop[uv].uv
+        data.materials.append(body.data.materials[0])
+        obj = bpy.data.objects.new(data.name, data)
+        bpy.context.collection.objects.link(obj)
+        obj['aged_export'] = True
+        initial_area = sum(f.calc_area() for f in faces)
+        lost_area = 0.
+        if number == 2:
+            loose = bmesh.new()
+            loose.from_mesh(data)
+            midpoint = (min(v.co.x for v in loose.verts)+max(v.co.x for v in loose.verts))/2
+            dust_faces = [f for f in loose.faces if f.calc_center_median().x > midpoint]
+            lost_area = sum(f.calc_area() for f in dust_faces)
+            bmesh.ops.delete(loose, geom=dust_faces, context='FACES')
+            bmesh.ops.delete(loose, geom=[v for v in loose.verts if not v.link_faces], context='VERTS')
+            loose.to_mesh(data)
+            loose.free()
+        reports.append(dict(name=obj.name, area_m2=initial_area-lost_area,
+                            lost_area_m2=lost_area, vertices=len(data.vertices)))
+        bmesh.ops.delete(bm, geom=list(group), context='VERTS')
+    bm.to_mesh(body.data)
+    bm.free()
+    return reports
