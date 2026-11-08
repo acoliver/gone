@@ -102,40 +102,40 @@ The fitted source is `tools/blender/quarters/sofa/sofa-working.blend`, and the g
 
 ### Aged state
 
-`tools/blender/quarters/sofa/sofa-aged.blend` holds the applied aged geometry. The game export is `assets/props/quarters/sofa_aged.glb`. Settings are in `aging.json`, with trials `age-a` through `age-e` and the final `age-f-support-fit` placement pass in `cloth-trials.json`. The frame, feet and rivets retain their original geometry attribute and index bytes. Their rust belongs to the material pipeline.
+`tools/blender/quarters/sofa/sofa-aged.blend` holds the baked aged geometry, exported as `assets/props/quarters/sofa_aged.glb`. The selected construction is `pass2-o`; `cloth-trials.json` retains the earlier simulations and the second-pass attempts. The frame, feet and rivets keep their geometry bytes. The age remains 1000 years in dry, sterile, oxygenated air.
 
-The shared `tools/blender/quarters_aging/foam_collapse.py` compresses the six original cushion shells, splits them into 12 seeded Voronoi plates apiece and caps every cut. The seed starts at 9501 and advances by 101 per cushion. Cracks are 2.5 mm wide. The nominal volume factor is 0.31. Back pads reduce their depth to 0.70 with compensating height, then move 45 mm forward onto the frame deck. Each original cushion name and pivot is retained, with crust and cover in that node. FoamDebris is a separate mesh of oxidised brown fragments derived from the source geometry.
+`quarters_aging/sofa_pass2.py` constructs slack covers with lowered centres, raised seam edges and asymmetric wrinkles. The visible seat centre is measured independently of the filling volume. Each cushion has two actual openings with ragged boundary fibres, thin closed cloth sections and a separate closed inner crust in the same named node. The earlier polygon patches are absent. The back sacks retain their bottoms and height, with most filling in the lower half and the thin upper cover leaning forward. These are directly constructed gravity-shaped surfaces, without a new cloth simulation.
 
-The covers settle with pressure zero, mass 0.025, stiffness 180, bending 0.2, quality 16 and time scale 0.35 for 100 frames. Rim stitches remain pinned, while the interior settles onto a continuous shrunken-core collider. That temporary collider bridges the narrow cracks and is not exported. Core reduction is 0.30 and cover reduction 0.80. A measured clearance fit after reduction keeps vertices outside the core envelope, with 2.5 mm nominal clearance and 0.4 mm cover thickness. The final support stage raycasts the actual curved frame beneath each crust and translates the baked cushion to a 0.6 mm gap. It preserves the object's pivot and leaves the frame untouched.
+The continuous oatmeal throw runs across the arm cap, around its outside edge and down toward the floor. It has two irregular holes, frayed boundaries and a detached floor remnant. The deck carries 192 closed foam crumbs; 36 smaller solids form the floor spill. Thread tips that cross the cloth are removed before rebuilding the thin section. No cloth or cushion faces are excluded from the final collision check.
 
-`cloth_decay.py` weakens the throw, releases most arm-cap pins and removes elongated fold splits with seed 10501. Part of the blanket falls onto the floor. The final settle uses quality 30, 400 frames, time scale 0.35, mass 0.15, stiffness 80 and bending 0.25. Self-distance is 5 mm, object distance 4.5 mm and collision quality 16. Narrow fibres extend from torn boundaries before thickness is applied. These are dry, brittle splits and foam oxidation after 1000 years in sterile, oxygenated air, without biological or water damage.
+All following measurements come from the exported GLB in `verify-aged.json`. Seat values are ordered L / C / R.
 
-The exported measurements in `verify-aged.json` are:
-
-| Cushion | Aged/unaged volume | Frame gap | Requirements |
-| --- | --- | --- | --- |
-| Seat L | 0.303061 | 0.591 mm | Volume 0.25 to 0.35, gap at most 3 mm |
-| Seat C | 0.303714 | 0.599 mm | Volume 0.25 to 0.35, gap at most 3 mm |
-| Seat R | 0.303274 | 0.597 mm | Volume 0.25 to 0.35, gap at most 3 mm |
-| Back L | 0.295947 | 0.599 mm | Volume 0.25 to 0.35, gap at most 3 mm |
-| Back C | 0.295742 | 0.599 mm | Volume 0.25 to 0.35, gap at most 3 mm |
-| Back R | 0.295627 | 0.599 mm | Volume 0.25 to 0.35, gap at most 3 mm |
-
-| Other aged gate | Result | Requirement |
+| Gate | Measured | Requirement |
 | --- | --- | --- |
-| Closed crust plates | All six cushion crusts closed | Closed |
-| Missing reference throw surface | 22.277% | 10% to 30% |
-| Triangles | 28,050, 1.43478 times unaged | At most 29,325, 1.5 times unaged |
-| Frame, feet and rivet geometry bytes | Identical | Identical |
-| Original names, pivots and origin | Unchanged | Unchanged |
-| Re-export from the baked source | Byte-identical | Byte-identical |
-| Sampled penetration involving changed geometry | 0 mm at tested closed surfaces | At most 1 mm |
-| Absolute sampled depth, including retained frame joints | 37.272 mm | At most 1 mm, fails by 36.272 mm |
-| Nonadjacent self-edge hits | Throw 453, seat L 6, seat R 7 | Zero for an intersection-free result |
+| Cover centre height above deck, relative to unaged | 39.293% / 39.193% / 39.296% | 35% to 45% |
+| Edge-to-centre sag | 19.107 / 19.261 / 19.160 mm | At least 15 mm |
+| Top height standard deviation after plane removal | 8.445 / 8.500 / 8.526 mm | At least 6 mm |
+| Back-cushion first-hit hero coverage, L / C / R | 76.499% / 76.793% / 65.135% | At least 55% |
+| Back top height retained | 99.544% on each | At least about 65% |
+| Cover openings | Two per cushion, 123.815 to 136.802 mm | One to four per cushion, 20 to 150 mm |
+| Opening perimeter divided by square root of area | 5.563 to 6.960 | At least 5.5 |
+| Seat volume ratios, crust plus cover | 0.254962 / 0.254961 / 0.254987 | 0.25 to 0.35 |
+| Back volume ratios, crust plus cover, L / C / R | 0.255009 / 0.254972 / 0.255001 | 0.25 to 0.35 |
+| Qualifying foam crumbs | 170 of 192 deck pieces | At least 150, 2 to 15 mm, within 250 mm of a split |
+| Qualifying crumbs resting on a surface | 100%; largest measured deck gap 0.343 mm | At least 60% within 2 mm |
+| Throw area below arm cap | 85.509% | At least 40% |
+| Detached throw piece | On floor | Floor or seat |
+| Throw hole irregularity | 6.882 / 5.837 | At least 5.5 |
+| Changed-part self-intersections / part-to-part intersections | 0 / 0 | 0 / 0 |
+| Cushion and throw topology | Closed, zero nonmanifold edges | Closed or properly bounded |
+| Closed crust | All six | All six |
+| Triangles | 28,788 / 19,550 unaged, ratio 1.472532 | At most 29,325, ratio 1.5 |
+| Fixed geometry bytes, original pivots and origins | Unchanged | Unchanged |
+| Re-export from saved source | Byte-identical | Byte-identical |
 
-The collision gate remains failed. The 37.272 mm frame-joint overlap is inherited from untouched geometry. The cloth edge hits prevent certification of the 1 mm self-penetration limit. The crust is closed, but the combined cover meshes still have open or nonmanifold components, so sampled volume penetration does not certify those covers. Trials record free covers that slipped off their cores, a throw with 44 percent loss, rim anchoring, thinner fibres, increased collision resolution and the support correction from a global frame height to the actual curved support surface.
+The triangle test uses BVH candidates followed by triangle-triangle separating-axis tests, including coplanar overlap. It omits only shared-vertex adjacency from self checks. Unchanged frame joints are reported separately: 522 frame self-crossings and 272 frame/rivet crossings. Feet and rivets have zero self-crossings. The fixed geometry bytes are checked against the unaged export.
 
-Re-export with the existing Blender command for `sofa/build.py`, adding `-- --aged --output <file.glb>`. Regenerate the aged source with `quarters_aging/build.py` and this prop's unaged blend and `aging.json`. The lit neutral sheets are `tmp/age/sofa-before-after.png` and `tmp/age/sofa-turntable.png`, with the unaged sofa on the left of the comparison. The configured image-review endpoint refused connections, so these images have no visual sign-off.
+Re-export with Blender using `sofa/build.py -- --aged --output <file.glb>`. `quarters_aging/pass2.py -- --prop sofa --trial <name>` constructs a fresh trial from the unchanged fitted source. The final lit captures are `tmp/age/pass2/sofa-before-after.png`, `sofa-turntable.png` and `sofa-closeup.png`; the closeup camera is 0.6 m from the split-seat target. Unaged is left in the comparison. The image-comparer endpoint at `127.0.0.1:8308` refused connections, so appearance has no visual sign-off despite passing geometry gates.
 
 ### Why the shape gates changed
 
@@ -194,30 +194,38 @@ The tunic now comes from Blender cloth simulation. The hand-modelled pilot rated
 
 ### Aged state
 
-`tools/blender/quarters/dress_uniform/tunic-aged.blend` contains the baked aged cloth. `assets/props/quarters/dress_uniform_aged.glb` is its game export. The settings are in `aging.json`, and trials `age-a` through `age-e` are appended to `cloth-trials.json`. The age is 1000 years in dry, sealed, sterile, oxygenated air. The damage consists of brittle wool splits and fallen fibres, without biological growth or water damage.
+`tools/blender/quarters/dress_uniform/tunic-aged.blend` contains the baked aged cloth, exported as `assets/props/quarters/dress_uniform_aged.glb`. `cloth-trials.json` records the second-pass attempts and selected `pass2-n` bake alongside the earlier simulations. The age remains 1000 years in dry, sterile, oxygenated air, without biological or water damage.
 
-The shared `tools/blender/quarters_aging/cloth_decay.py` removes elongated, seeded stress splits from the original pattern surface, releases the outer shoulder stitches and settles the weakened body and sleeves under gravity. The final seed is 9521, with cloth mask seed 10521. Tension, compression and shear are 150, 150 and 105, bending is 0.08, mass is 0.18, quality is 30 and time scale is 0.25 over 320 frames. Object distance is 2 mm and self-distance is 4 mm. The lower side panels contract by 12 percent before settling. The back of the wearer's right sleeve cap retains a fabric bridge while its front seam tears. The exported cloth remains one connected piece.
+`quarters_aging/tunic_pass2.py` releases a contiguous arc of one armhole, then lowers and twists that sleeve while retaining the back seam bridge. The original sewn pattern supplies the body; its shoulders drop and its waist contracts asymmetrically into folds. Four stress tears plus the open armhole have refined, displaced boundaries and short attached thread tips. Hem losses have varying lengths. This pass uses constrained geometric deformation, without a new cloth simulation.
 
-The collar, shoulder boards, placket, brass, insignia and ribbon keep their original geometry. Their attachment patches retain the original 3.5 mm wool thickness. Hanging wool thins to 1.575 mm and the narrow edge fibres to 0.14 mm. The fibre tips extend 2 to 5 mm into the torn boundaries. `debris.py` scatters fragments derived from three source triangles into the separate FibreDust node. Its nominal floor is 0.95 m below the hook top, set by `drop_height_m`. The heap's radii are 0.22 and 0.07 m, with 5 mm central height and a 0.2 mm floor gap.
+The body is a double-sided, zero-thickness cloth midsurface with explicit neck, hem, cuff and tear boundary loops. The thick-shell trials crossed themselves around narrow folds. Before moving an edge vertex, the final construction checks that its incident triangles keep their orientation and at least 20% of their previous projected area. Thread tips crossing the body are removed. The garment has zero remaining non-adjacent triangle crossings. Verification still tests every remaining cloth face.
 
-The exported measurements in `verify-aged.json` are:
+Brass details follow the cloth by rigid translation, while shoulder boards are fitted to the lowered shoulder surface. The placket, ribbon and medal remain separate named parts. The original collar facing crossed the collar band, so the aged source retains the band and insignia and removes the overlapping facing. The hanger geometry remains byte-identical. A closed FibreDust heap sits directly below the hem.
 
-| Aged gate | Result | Requirement |
+All following measurements come from the exported GLB in `verify-aged.json`:
+
+| Gate | Measured | Requirement |
 | --- | --- | --- |
-| Missing reference cloth surface | 11.576% | 8% to 25% |
-| Front silhouette IoU | 0.702315 | 0.60 to 0.85 |
-| Largest detail attachment gap | 1.969 mm | At most 2 mm |
-| Triangles | 16,640, 1.20860 times unaged | At most 20,652, 1.5 times unaged |
-| Hanger geometry attribute and index bytes | Identical | Identical |
-| Original names, pivots and origin | Unchanged | Unchanged |
-| Re-export from the baked source | Byte-identical | Byte-identical |
-| Sampled penetration involving changed cloth | 0.256 mm | At most 1 mm |
-| Absolute sampled depth, including the unchanged hanger joint | 3.234 mm | At most 1 mm, fails by 2.234 mm |
-| Nonadjacent self-edge hits in the cloth | 180 | Zero for an intersection-free result |
+| Tear boundaries | Five openings, irregularity 5.975 to 10.675 | At least 5.5 |
+| Longest straight boundary run within 1 mm | 25.049 mm | At most 30 mm |
+| Hem notch lengths, mean / standard deviation | 7.663 / 11.684 mm | Standard deviation at least 40% of mean |
+| Hem standard deviation divided by mean | 1.52473 | At least 0.40 |
+| Open armhole reference seam length | 62.213% | 50% to 70% |
+| Mean shoulder drop | 15.680 mm | At least 15 mm |
+| Front silhouette IoU | 0.740480 | 0.55 to 0.80 |
+| Fibre heap height | 10.800 mm | At least 6 mm |
+| Fibre heap diameter | 144.000 mm | 80 to 200 mm |
+| Heap offset from point beneath hem centre | Less than 0.001 mm | At most 50 mm |
+| Changed-part self-intersections / part-to-part intersections | 0 / 0 | 0 / 0 |
+| Body topology | Nine unbranched boundary loops, zero nonmanifold edges | Only intended openings |
+| Other changed-part topology | Closed, zero nonmanifold edges | Closed or properly bounded |
+| Triangles | 9,901 / 13,768 unaged, ratio 0.719131 | At most 20,652, ratio 1.5 |
+| Hanger geometry bytes, original pivots and origins | Unchanged | Unchanged |
+| Re-export from saved source | Byte-identical | Byte-identical |
 
-The collision gate remains failed. The 3.234 mm hanger joint and 1.500 mm collar-facing overlap are inherited from untouched geometry. The 180 cloth edge hits prevent certification of the 1 mm self-penetration limit; their continuous depth is not measured. The trial record includes uniform thinning that opened the detail gaps, retained-thickness patches that restored them, narrower fibre sections and a retained back seam that stopped the sleeve falling completely free.
+The collision test imports the exported GLB and uses BVH candidates plus triangle-triangle separating-axis tests, including coplanar overlap. The unchanged hanger has 28 self-crossing triangle pairs, reported separately. No garment or attachment pair is excluded.
 
-Re-export with the existing Blender command for `dress_uniform/build.py`, adding `-- --aged --output <file.glb>`. Regenerate the aged source with `quarters_aging/build.py` and this prop's unaged blend and `aging.json`. The lit neutral sheets are `tmp/age/tunic-before-after.png` and `tmp/age/tunic-turntable.png`. The former places unaged left and aged right under the same camera. The configured image-review endpoint refused connections, so these images have no visual sign-off.
+Re-export with Blender using `dress_uniform/build.py -- --aged --output <file.glb>`. `quarters_aging/pass2.py -- --prop dress_uniform --trial <name>` constructs a fresh trial from the unchanged fitted source. Lit neutral sheets are `tmp/age/pass2/tunic-before-after.png` and `tunic-turntable.png`, with unaged left and aged right. The configured image-comparer endpoint at `127.0.0.1:8308` refused connections, so appearance has no visual sign-off despite passing geometry gates.
 
 ### Pattern and simulation
 

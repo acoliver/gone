@@ -1,268 +1,118 @@
 {
-  "trial": "age-f-support-fit",
+  "trial": "pass2-o",
   "seed": 9501,
-  "parameters": {
-    "trial": "age-f-support-fit",
-    "seed": 9501,
-    "parts": [
-      "Frame",
-      "Feet",
-      "Rivets",
-      "SeatCushion_L",
-      "SeatCushion_C",
-      "SeatCushion_R",
-      "BackCushion_L",
-      "BackCushion_C",
-      "BackCushion_R",
-      "Throw"
-    ],
-    "asset": "assets/props/quarters/sofa_aged.glb",
-    "colliders": [
-      "Frame"
-    ],
-    "floor_z_m": 0,
-    "foam": {
-      "names": [
-        "SeatCushion_L",
-        "SeatCushion_C",
-        "SeatCushion_R",
-        "BackCushion_L",
-        "BackCushion_C",
-        "BackCushion_R"
-      ],
-      "support_z_m": 0.3898,
-      "support_gap_m": 0.0006,
-      "height_ratio": 0.31,
-      "core_reduction": 0.3,
-      "voronoi_cells": 12,
-      "crack_width_m": 0.0025,
-      "cover_lift_m": 0.0015,
-      "pin_height_m": 0.01,
-      "cover_loss_fraction": 0.1,
-      "cover_thickness_m": 0.0004,
-      "cloth": {
-        "quality": 16,
-        "frames": 100,
-        "time_scale": 0.35,
-        "mass": 0.025,
-        "stiffness": 180,
-        "bending": 0.2,
-        "self_collision": true,
-        "collision_distance_m": 0.0008
-      },
-      "cover_reduction": 0.8,
-      "back_support_y_shift_m": -0.045,
-      "contact_clearance_m": 0.0025,
-      "back_depth_ratio": 0.7,
-      "support": "Frame"
-    },
-    "cloth": {
-      "Throw": {
-        "kind": "throw",
-        "stress_slits_xz_m": [
-          [
-            1.13,
-            0.53,
-            0.012,
-            0.15,
-            0.05
-          ],
-          [
-            0.94,
-            0.62,
-            0.0096,
-            0.14,
-            -0.05
-          ],
-          [
-            1.09,
-            0.71,
-            0.01296,
-            0.085,
-            0.15
-          ]
+  "prop": "sofa",
+  "construction": {
+    "SeatCushion_L": {
+      "method": "Zero-pressure height-field drape with retained seam edges, settled inner crust and bounded tears; no cloth simulation claimed.",
+      "original_volume_m3": 0.0751378667946169,
+      "target_volume_ratio": 0.255,
+      "cover_volume_m3": 9.291171807130135e-05,
+      "frays": 6,
+      "split_cells": [
+        [
+          5,
+          8,
+          3
         ],
-        "stress_jitter_m": 0.006,
-        "detail_protection_m": 0.012,
-        "detail_pin_radius_m": 0.02,
-        "hem_z_m": 0.375,
-        "hem_loss_m": 0.012,
-        "retained_corner_z_m": 0.79,
-        "retained_corner_y_m": -0.26,
-        "thickness_m": 0.0018,
-        "fray_probability": 0.3,
-        "cloth": {
-          "quality": 30,
-          "frames": 400,
-          "time_scale": 0.35,
-          "mass": 0.15,
-          "stiffness": 80,
-          "bending": 0.25,
-          "self_collision": true,
-          "self_distance_m": 0.005,
-          "collision_distance_m": 0.0045,
-          "collision_quality": 16
-        },
-        "fray_obstacles": [
-          "Frame",
-          "SeatCushion_R",
-          "BackCushion_R",
-          "AgingFloorCollider"
+        [
+          12,
+          15,
+          12
         ]
-      }
+      ],
+      "crust_width_fit": 1.0432017260680289
     },
-    "debris": {
-      "source": "SeatCushion_C",
-      "name": "FoamDebris",
-      "material": "Foam",
-      "color": [
-        0.2,
-        0.09,
-        0.035
+    "BackCushion_L": {
+      "method": "Settled lower filling; upper empty sack folds forward without lowering its bottom.",
+      "original_volume_m3": 0.030947778946806597,
+      "target_volume_ratio": 0.255,
+      "cover_volume_m3": 5.865719205038682e-05,
+      "frays": 12,
+      "crust_width_fit": 1.0822731139715325,
+      "crust_top_m": 0.604
+    },
+    "SeatCushion_C": {
+      "method": "Zero-pressure height-field drape with retained seam edges, settled inner crust and bounded tears; no cloth simulation claimed.",
+      "original_volume_m3": 0.0751378667946169,
+      "target_volume_ratio": 0.255,
+      "cover_volume_m3": 9.300893270936513e-05,
+      "frays": 5,
+      "split_cells": [
+        [
+          5,
+          8,
+          3
+        ],
+        [
+          12,
+          15,
+          12
+        ]
       ],
-      "center_blender_m": [
-        0.15,
-        -0.55,
-        0
+      "crust_width_fit": 1.0431821387742188
+    },
+    "BackCushion_C": {
+      "method": "Settled lower filling; upper empty sack folds forward without lowering its bottom.",
+      "original_volume_m3": 0.030947778946806597,
+      "target_volume_ratio": 0.255,
+      "cover_volume_m3": 5.862635422865509e-05,
+      "frays": 10,
+      "crust_width_fit": 1.080080151148641,
+      "crust_top_m": 0.604
+    },
+    "SeatCushion_R": {
+      "method": "Zero-pressure height-field drape with retained seam edges, settled inner crust and bounded tears; no cloth simulation claimed.",
+      "original_volume_m3": 0.0751378667946169,
+      "target_volume_ratio": 0.255,
+      "cover_volume_m3": 9.293659884889183e-05,
+      "frays": 6,
+      "split_cells": [
+        [
+          5,
+          8,
+          3
+        ],
+        [
+          12,
+          15,
+          12
+        ]
       ],
-      "radius_xy_m": [
-        0.94,
-        0.12
-      ],
-      "count": 140,
-      "piece_size_m": [
-        0.003,
-        0.01
-      ],
-      "piece_thickness_m": 0.0006,
-      "heap_height_m": 0.005,
+      "crust_width_fit": 1.0435371582230704
+    },
+    "BackCushion_R": {
+      "method": "Settled lower filling; upper empty sack folds forward without lowering its bottom.",
+      "original_volume_m3": 0.030947778946806597,
+      "target_volume_ratio": 0.255,
+      "cover_volume_m3": 5.864351940336917e-05,
+      "frays": 10,
+      "crust_width_fit": 1.0809328743323439,
+      "crust_top_m": 0.604
+    },
+    "Throw": {
+      "method": "Continuous cap-to-floor gravity drape, outside the arm collision envelope, with a separate torn floor remnant.",
+      "frays": 79,
+      "arm_cap_z_m": 0.8075
+    },
+    "floor_spill": {
+      "pieces": 36,
       "floor_gap_m": 0.0002
     }
   },
-  "foam": {
-    "SeatCushion_L": {
-      "frames": 100,
-      "retained_pins": 122,
-      "last_five_frames_motion_m": 0.010240116603350271,
-      "post_reduction_clearance_fit_max_m": 0.004338710013880385,
-      "decimation_support_fit_z_m": -0.0004504099488258362,
-      "seed": 9501,
-      "voronoi_plates": 12,
-      "height_ratio": 0.31,
-      "pressure": 0,
-      "crack_width_m": 0.0025
-    },
-    "SeatCushion_C": {
-      "frames": 100,
-      "retained_pins": 122,
-      "last_five_frames_motion_m": 0.007471794620297816,
-      "post_reduction_clearance_fit_max_m": 0.004338710013535771,
-      "decimation_support_fit_z_m": -0.0004504099488258362,
-      "seed": 9602,
-      "voronoi_plates": 12,
-      "height_ratio": 0.31,
-      "pressure": 0,
-      "crack_width_m": 0.0025
-    },
-    "SeatCushion_R": {
-      "frames": 100,
-      "retained_pins": 122,
-      "last_five_frames_motion_m": 0.008658564701055688,
-      "post_reduction_clearance_fit_max_m": 0.004338709719953724,
-      "decimation_support_fit_z_m": -0.0004504099488258362,
-      "seed": 9703,
-      "voronoi_plates": 12,
-      "height_ratio": 0.31,
-      "pressure": 0,
-      "crack_width_m": 0.0025
-    },
-    "BackCushion_L": {
-      "frames": 100,
-      "retained_pins": 198,
-      "last_five_frames_motion_m": 0.0037143236947446727,
-      "post_reduction_clearance_fit_max_m": 0.004197352737715119,
-      "decimation_support_fit_z_m": -0.000336378812789917,
-      "seed": 9804,
-      "voronoi_plates": 12,
-      "height_ratio": 0.31,
-      "pressure": 0,
-      "crack_width_m": 0.0025
-    },
-    "BackCushion_C": {
-      "frames": 100,
-      "retained_pins": 198,
-      "last_five_frames_motion_m": 0.0041198226732261185,
-      "post_reduction_clearance_fit_max_m": 0.004197352737715119,
-      "decimation_support_fit_z_m": -0.000336378812789917,
-      "seed": 9905,
-      "voronoi_plates": 12,
-      "height_ratio": 0.31,
-      "pressure": 0,
-      "crack_width_m": 0.0025
-    },
-    "BackCushion_R": {
-      "frames": 100,
-      "retained_pins": 198,
-      "last_five_frames_motion_m": 0.0051925336417837495,
-      "post_reduction_clearance_fit_max_m": 0.004197352737715119,
-      "decimation_support_fit_z_m": -0.000336378812789917,
-      "seed": 10006,
-      "voronoi_plates": 12,
-      "height_ratio": 0.31,
-      "pressure": 0,
-      "crack_width_m": 0.0025
-    }
-  },
-  "cloth": {
-    "Throw": {
-      "frames": 400,
-      "retained_pins": 90,
-      "last_five_frames_motion_m": 0.0815293007159505,
-      "seed": 10501,
-      "removed_reference_area_m2": 0.12132311103050597,
-      "original_midsurface_area_m2": 0.5340428584022447,
-      "removed_reference_fraction": 0.22717860396725795,
-      "fray_triangles": 82,
-      "thickness_m": 0.0018,
-      "cut_surface_component_areas_m2": [
-        0.1768425985937938,
-        0.22259586810832843,
-        0.005236845347099006,
-        0.008044422545935959
-      ]
-    }
-  },
-  "debris": {
-    "pieces": 114,
-    "seed": 11501,
-    "floor_z_m": 0.0,
-    "templates": 3
-  },
-  "inherits_cloth_trial": "age-e",
-  "support_fit": {
-    "SeatCushion_L": {
-      "vertical_translation_m": -4.88263607025147e-05,
-      "target_gap_m": 0.0006
-    },
-    "SeatCushion_C": {
-      "vertical_translation_m": -4.4415616989135795e-05,
-      "target_gap_m": 0.0006
-    },
-    "SeatCushion_R": {
-      "vertical_translation_m": -4.748525619506841e-05,
-      "target_gap_m": 0.0006
-    },
-    "BackCushion_L": {
-      "vertical_translation_m": -0.003514001989364624,
-      "target_gap_m": 0.0006
-    },
-    "BackCushion_C": {
-      "vertical_translation_m": -0.003492812538146973,
-      "target_gap_m": 0.0006
-    },
-    "BackCushion_R": {
-      "vertical_translation_m": -0.003491322422027588,
-      "target_gap_m": 0.0006
-    }
+  "section_repairs": {
+    "Frame": 0,
+    "Feet": 0,
+    "SeatCushion_L": 0,
+    "SeatCushion_C": 0,
+    "SeatCushion_R": 0,
+    "BackCushion_L": 0,
+    "BackCushion_C": 0,
+    "BackCushion_R": 0,
+    "Rivets": 0,
+    "Throw": 0,
+    "ThrowDetachedPiece": 0,
+    "FoamDebris": 0,
+    "FoamFloorDebris": 0
   }
 }

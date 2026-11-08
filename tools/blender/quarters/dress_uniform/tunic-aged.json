@@ -1,183 +1,42 @@
 {
-  "trial": "age-e",
+  "trial": "pass2-n",
   "seed": 9521,
-  "parameters": {
-    "trial": "age-e",
-    "seed": 9521,
-    "parts": [
-      "TunicBody",
-      "Collar",
-      "ShoulderBoard_L",
-      "ShoulderBoard_R",
-      "Placket",
-      "Buttons",
-      "CollarInsignia_L",
-      "CollarInsignia_R",
-      "RibbonBar",
-      "Medal",
-      "Hanger"
-    ],
-    "asset": "assets/props/quarters/dress_uniform_aged.glb",
-    "colliders": [
-      "Hanger"
-    ],
-    "floor_z_m": -0.95,
-    "cloth": {
-      "TunicBody": {
-        "kind": "tunic",
-        "protected_details": [
-          "Collar",
-          "ShoulderBoard_L",
-          "ShoulderBoard_R",
-          "Placket",
-          "Buttons",
-          "RibbonBar",
-          "Medal"
-        ],
-        "stress_slits_xz_m": [
-          [
-            -0.15,
-            -0.31,
-            0.025,
-            0.115,
-            -0.25
-          ],
-          [
-            0.17,
-            -0.28,
-            0.02,
-            0.075,
-            0.3
-          ],
-          [
-            -0.26,
-            -0.29,
-            0.024,
-            0.08,
-            -0.3
-          ],
-          [
-            -0.12,
-            -0.63,
-            0.027,
-            0.14,
-            0.07
-          ],
-          [
-            0.14,
-            -0.64,
-            0.026,
-            0.135,
-            -0.09
-          ],
-          [
-            -0.34,
-            -0.6,
-            0.021,
-            0.105,
-            0.08
-          ],
-          [
-            0.34,
-            -0.66,
-            0.016,
-            0.12,
-            -0.1
-          ]
-        ],
-        "stress_jitter_m": 0.007,
-        "detail_protection_m": 0.013,
-        "detail_pin_radius_m": 0.02,
-        "hem_z_m": -0.88,
-        "hem_loss_m": 0.032,
-        "lateral_shrink": 0.12,
-        "thickness_m": 0.0035,
-        "fray_probability": 0.35,
-        "cloth": {
-          "quality": 30,
-          "frames": 320,
-          "time_scale": 0.25,
-          "mass": 0.18,
-          "stiffness": 150,
-          "bending": 0.08,
-          "self_collision": true,
-          "self_distance_m": 0.004,
-          "collision_distance_m": 0.002
-        },
-        "fray_obstacles": [
-          "Hanger",
-          "AgingFloorCollider"
-        ],
-        "retained_seam_boxes_xz_m": [
-          [
-            -0.31,
-            -0.22,
-            -0.25,
-            -0.195
-          ]
-        ],
-        "retained_seam_boxes_xyz_m": [
-          [
-            -0.39,
-            -0.2,
-            0,
-            0.1,
-            -0.5,
-            -0.22
-          ]
-        ]
-      }
+  "prop": "dress_uniform",
+  "construction": {
+    "method": "Released contiguous armhole stitches, gravity-aligned sleeve displacement and asymmetric sewn-pattern slump, followed by refined ragged boundaries. No cloth simulation claimed.",
+    "seam": {
+      "cap_vertices": 14,
+      "released_vertices": 8,
+      "released_reference_length_fraction": 0.6218813285273809,
+      "retained_reference_length_m": 0.10161610966887641,
+      "reference_seam_length_m": 0.26874131677529384
     },
-    "debris": {
-      "source": "TunicBody",
-      "name": "FibreDust",
-      "material": "FibreDust",
-      "color": [
-        0.31,
-        0.27,
-        0.21
+    "removed_faces": 93,
+    "boundary_loops_before_fray": 9,
+    "frays": 110,
+    "section": "Double-sided bounded cloth midsurface; neck, hem, cuffs and actual tears remain explicit boundary loops.",
+    "heap": {
+      "centre_blender_m": [
+        0.01797940582036972,
+        -0.014308054000139236
       ],
-      "center_blender_m": [
-        0,
-        0,
-        -0.95
-      ],
-      "drop_height_m": 0.95,
-      "radius_xy_m": [
-        0.22,
-        0.07
-      ],
-      "count": 190,
-      "piece_size_m": [
-        0.0015,
-        0.005
-      ],
-      "piece_thickness_m": 0.00025,
-      "heap_height_m": 0.005,
-      "floor_gap_m": 0.0002
+      "height_m": 0.0108,
+      "diameter_m": 0.144,
+      "seed": 9721
     }
   },
-  "foam": {},
-  "cloth": {
-    "TunicBody": {
-      "frames": 320,
-      "retained_pins": 225,
-      "last_five_frames_motion_m": 0.001466302464476135,
-      "seed": 10521,
-      "removed_reference_area_m2": 0.13006656436482444,
-      "original_midsurface_area_m2": 1.0418417344044428,
-      "removed_reference_fraction": 0.12484292006134266,
-      "fray_triangles": 171,
-      "thickness_m": 0.0035,
-      "cut_surface_component_areas_m2": [
-        0.9117751711164601
-      ]
-    }
-  },
-  "debris": {
-    "pieces": 156,
-    "seed": 11521,
-    "floor_z_m": -0.95,
-    "templates": 3
+  "section_repairs": {
+    "Hanger": 0,
+    "TunicBody": 7,
+    "Collar": 0,
+    "ShoulderBoard_L": 0,
+    "ShoulderBoard_R": 0,
+    "Placket": 0,
+    "Buttons": 0,
+    "CollarInsignia_L": 0,
+    "CollarInsignia_R": 0,
+    "RibbonBar": 0,
+    "Medal": 0,
+    "FibreDust": 0
   }
 }

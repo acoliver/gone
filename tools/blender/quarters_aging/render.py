@@ -14,7 +14,7 @@ def aim(obj, target):
     obj.rotation_euler = (Vector(target) - obj.location).to_track_quat('-Z', 'Y').to_euler()
 
 
-def render(prop, out):
+def render(prop, out, aged_path=None):
     out.mkdir(parents=True, exist_ok=True)
     sofa = prop == 'sofa'
     target = (0, 0, .40 if sofa else -.44)
@@ -23,6 +23,8 @@ def render(prop, out):
     for state in ['before', 'after']:
         bpy.ops.wm.read_factory_settings(use_empty=True)
         asset = ROOT / f'assets/props/quarters/{prop}{"_aged" if state == "after" else ""}.glb'
+        if state == 'after' and aged_path is not None:
+            asset = aged_path
         bpy.ops.import_scene.gltf(filepath=str(asset))
         scene = bpy.context.scene
         scene.render.engine = 'BLENDER_EEVEE_NEXT'
@@ -37,8 +39,13 @@ def render(prop, out):
             shader = mat.node_tree.nodes.get('Principled BSDF')
             if shader is None:
                 continue
-            colors = {'Foam': (.23, .11, .045, 1), 'FibreDust': (.36, .30, .23, 1),
-                      'NaturalFabric': (.40, .36, .28, 1) if sofa else (.15, .21, .29, 1),
+            colors = {'Foam': (.16, .065, .022, 1), 'FibreDust': (.27, .24, .19, 1),
+                      'CharcoalUpholstery': (.055, .060, .066, 1), 'CoverInside': (.04, .045, .05, 1),
+                      'CoverSplitSection': (.07, .065, .06, 1),
+                      'OatmealWool': (.56, .48, .35, 1), 'ThrowInside': (.45, .38, .27, 1),
+                      'ThrowFraySection': (.50, .43, .32, 1),
+                      'TunicInside': (.019, .032, .060, 1), 'TunicFraySection': (.04, .055, .085, 1),
+                      'NaturalFabric': (.40, .36, .28, 1) if sofa else (.025, .043, .080, 1),
                       'PaintedSteel': (.36, .38, .39, 1), 'BareSteel': (.5, .52, .54, 1),
                       'Brass': (.57, .41, .18, 1)}
             shader.inputs['Base Color'].default_value = colors.get(mat.name, (.4, .4, .4, 1))
@@ -79,11 +86,23 @@ def render(prop, out):
         if state == 'after':
             for angle in [30, 120, 210, 300]:
                 shot(f'{prop}-turn-{angle}.png', angle, 1.5 if sofa else .08)
+            if sofa:
+                close_target = Vector((-.10, -.29, .46))
+                direction = Vector((-.18, -.50, .28)).normalized()
+                camera.location = close_target + direction * .6
+                aim(camera, close_target)
+                data.type = 'PERSP'
+                data.lens = 45
+                scene.render.resolution_x = 1100
+                scene.render.resolution_y = 1000
+                scene.render.filepath = str(out / 'sofa-closeup.png')
+                bpy.ops.render.render(write_still=True)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--prop', choices=['sofa', 'dress_uniform'], required=True)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--aged-input', type=Path)
     args = parser.parse_args(sys.argv[sys.argv.index('--') + 1:])
-    render(args.prop, args.out)
+    render(args.prop, args.out, args.aged_input)

@@ -1,174 +1,547 @@
 {
   "prop": "dress_uniform",
-  "unchanged_geometry": {
-    "Hanger": true
-  },
-  "unchanged_geometry_bytes": {
-    "Hanger": true
-  },
-  "pivots_and_origin_unchanged": true,
-  "preserved_names": true,
-  "triangles": {
-    "unaged": 13768,
-    "aged": 16640,
-    "ratio": 1.208599651365485,
-    "limit_ratio": 1.5,
-    "pass": true
-  },
-  "byte_identical_reexport": true,
-  "cloth_holes": {
-    "reference_surface_loss_fraction": 0.11576161533594131,
-    "band": [
-      0.08,
-      0.25
-    ],
-    "pass": true
-  },
-  "cloth_connected_components": 1,
-  "front_silhouette": {
-    "iou": 0.7023153699852284,
-    "band": [
-      0.6,
-      0.85
-    ],
-    "pass": true
-  },
-  "details": {
-    "Medal": {
-      "max_attachment_gap_m": 0.0019687572364740598,
-      "limit_m": 0.002,
-      "rigid_geometry_unchanged": true,
+  "shared": {
+    "triangles": {
+      "unaged": 13768,
+      "aged": 9901,
+      "ratio": 0.719131319000581,
+      "limit_ratio": 1.5,
       "pass": true
     },
-    "RibbonBar": {
-      "max_attachment_gap_m": 0.0009671989649831368,
-      "limit_m": 0.002,
-      "rigid_geometry_unchanged": true,
-      "pass": true
+    "unchanged_fixed_geometry_bytes": {
+      "Hanger": true
     },
-    "CollarInsignia_R": {
-      "max_attachment_gap_m": 0.0007000992351735003,
-      "limit_m": 0.002,
-      "rigid_geometry_unchanged": true,
-      "pass": true
+    "origins_and_pivots": {
+      "unchanged": true
     },
-    "CollarInsignia_L": {
-      "max_attachment_gap_m": 0.0007001312098860299,
-      "limit_m": 0.002,
-      "rigid_geometry_unchanged": true,
-      "pass": true
-    },
-    "Buttons": {
-      "max_attachment_gap_m": 0.0013181797916967703,
-      "limit_m": 0.002,
-      "rigid_geometry_unchanged": true,
-      "pass": true
-    },
-    "Placket": {
-      "max_attachment_gap_m": 0.001073451121712801,
-      "limit_m": 0.002,
-      "rigid_geometry_unchanged": true,
-      "pass": true
-    },
-    "ShoulderBoard_R": {
-      "max_attachment_gap_m": 0.0009393461759838623,
-      "limit_m": 0.002,
-      "rigid_geometry_unchanged": true,
-      "pass": true
-    },
-    "ShoulderBoard_L": {
-      "max_attachment_gap_m": 0.0009201508185025832,
-      "limit_m": 0.002,
-      "rigid_geometry_unchanged": true,
-      "pass": true
-    },
-    "Collar": {
-      "max_attachment_gap_m": 0.0017492807801823083,
-      "limit_m": 0.002,
-      "rigid_geometry_unchanged": true,
+    "byte_identical_reexport": true,
+    "collision": {
+      "method": "Exported GLB, BVH candidate overlap then 17-axis triangle/triangle SAT including coplanar overlap; only shared-vertex face adjacency omitted from self checks.",
+      "self": {
+        "TunicBody": {
+          "count": 0,
+          "examples": []
+        },
+        "Collar": {
+          "count": 0,
+          "examples": []
+        },
+        "ShoulderBoard_L": {
+          "count": 0,
+          "examples": []
+        },
+        "ShoulderBoard_R": {
+          "count": 0,
+          "examples": []
+        },
+        "Placket": {
+          "count": 0,
+          "examples": []
+        },
+        "Buttons": {
+          "count": 0,
+          "examples": []
+        },
+        "CollarInsignia_L": {
+          "count": 0,
+          "examples": []
+        },
+        "CollarInsignia_R": {
+          "count": 0,
+          "examples": []
+        },
+        "RibbonBar": {
+          "count": 0,
+          "examples": []
+        },
+        "Medal": {
+          "count": 0,
+          "examples": []
+        },
+        "FibreDust": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "pairs": {},
+      "excluded_unchanged_assembly": {
+        "Hanger": {
+          "count": 28,
+          "examples": [
+            {
+              "triangles": [
+                62,
+                165
+              ],
+              "centre": [
+                0.018376565305516124,
+                0.0008249579307933648,
+                -0.11739526937405267
+              ],
+              "materials": [
+                "BareSteel",
+                "BareSteel"
+              ]
+            },
+            {
+              "triangles": [
+                62,
+                164
+              ],
+              "centre": [
+                0.018205710919573903,
+                0.0012374368961900473,
+                -0.1287286033233007
+              ],
+              "materials": [
+                "BareSteel",
+                "BareSteel"
+              ]
+            },
+            {
+              "triangles": [
+                63,
+                164
+              ],
+              "centre": [
+                0.03496483457274735,
+                0.0016499158615867298,
+                -0.130576620499293
+              ],
+              "materials": [
+                "BareSteel",
+                "BareSteel"
+              ]
+            },
+            {
+              "triangles": [
+                49,
+                162
+              ],
+              "centre": [
+                0.03513568895868957,
+                -0.000824957930793365,
+                -0.13040576626857123
+              ],
+              "materials": [
+                "BareSteel",
+                "BareSteel"
+              ]
+            },
+            {
+              "triangles": [
+                51,
+                160
+              ],
+              "centre": [
+                0.03425074849898617,
+                -0.002816582564264536,
+                -0.13114511221647263
+              ],
+              "materials": [
+                "BareSteel",
+                "BareSteel"
+              ]
+            },
+            {
+              "triangles": [
+                48,
+                163
+              ],
+              "centre": [
+                0.018167414935305715,
+                -0.0016499158615867298,
+                -0.11756177743275961
+              ],
+              "materials": [
+                "BareSteel",
+                "BareSteel"
+              ]
+            },
+            {
+              "triangles": [
+                48,
+                162
+              ],
+              "centre": [
+                0.018338269321247935,
+                -0.0012374368961900475,
+                -0.1288951113820076
+              ],
+              "materials": [
+                "BareSteel",
+                "BareSteel"
+              ]
+            },
+            {
+              "triangles": [
+                48,
+                160
+              ],
+              "centre": [
+                0.01758408158396681,
+                -0.002233249212925633,
+                -0.1288951113820076
+              ],
+              "materials": [
+                "BareSteel",
+                "BareSteel"
+              ]
+            },
+            {
+              "triangles": [
+                60,
+                167
+              ],
+              "centre": [
+                0.01758408158396681,
+                0.002816582564264536,
+                -0.11814511070648828
+              ],
+              "materials": [
+                "BareSteel",
+                "BareSteel"
+              ]
+            },
+            {
+              "triangles": [
+                33,
+                157
+              ],
+              "centre": [
+                -0.018376565305516124,
+                -0.0008249579307933649,
+                -0.11739526937405267
+              ],
+              "materials": [
+                "BareSteel",
+                "BareSteel"
+              ]
+            },
+            {
+              "triangles": [
+                33,
+                156
+              ],
+              "centre": [
+                -0.018205710919573903,
+                -0.0012374368961900473,
+                -0.1287286033233007
+              ],
+              "materials": [
+                "BareSteel",
+                "BareSteel"
+              ]
+            },
+            {
+              "triangles": [
+                46,
+                170
+              ],
+              "centre": [
+                -0.03513568895868957,
+                0.0008249579307933649,
+                -0.13040576626857123
+              ],
+              "materials": [
+                "BareSteel",
+                "BareSteel"
+              ]
+            }
+          ]
+        }
+      },
+      "topology": {
+        "Hanger": {
+          "boundary_edges": 0,
+          "boundary_loops": [],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": false,
+          "pass": true
+        },
+        "TunicBody": {
+          "boundary_edges": 1051,
+          "boundary_loops": [
+            {
+              "kind": "hem",
+              "vertices": 414,
+              "centre_blender_m": [
+                0.015898996357890244,
+                -0.010615927201261572,
+                -0.8821957573510598
+              ]
+            },
+            {
+              "kind": "tear",
+              "vertices": 75,
+              "centre_blender_m": [
+                0.1351787813504537,
+                -0.028036313131451607,
+                -0.6877108176549276
+              ]
+            },
+            {
+              "kind": "tear",
+              "vertices": 102,
+              "centre_blender_m": [
+                -0.09938061967784283,
+                -0.0415348129931326,
+                -0.6387931622710883
+              ]
+            },
+            {
+              "kind": "tear",
+              "vertices": 120,
+              "centre_blender_m": [
+                -0.1366255265350143,
+                -0.040865722686673205,
+                -0.2906435371687015
+              ]
+            },
+            {
+              "kind": "tear",
+              "vertices": 105,
+              "centre_blender_m": [
+                -0.255807673789206,
+                -0.01008430938790774,
+                -0.29840319951375327
+              ]
+            },
+            {
+              "kind": "tear",
+              "vertices": 87,
+              "centre_blender_m": [
+                0.1751035338845746,
+                -0.03293753280464945,
+                -0.28305376449535635
+              ]
+            },
+            {
+              "kind": "neck",
+              "vertices": 108,
+              "centre_blender_m": [
+                -0.004806997422781057,
+                0.0010277739406942769,
+                -0.1584759349072421
+              ]
+            },
+            {
+              "kind": "cuff",
+              "vertices": 18,
+              "centre_blender_m": [
+                0.2683912416299184,
+                -0.0391658240955116,
+                -0.9034384058581458
+              ]
+            },
+            {
+              "kind": "cuff",
+              "vertices": 22,
+              "centre_blender_m": [
+                -0.2518049410798333,
+                -0.07733824874528429,
+                -0.908024094321511
+              ]
+            }
+          ],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": true,
+          "pass": true
+        },
+        "Collar": {
+          "boundary_edges": 0,
+          "boundary_loops": [],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": false,
+          "pass": true
+        },
+        "ShoulderBoard_L": {
+          "boundary_edges": 0,
+          "boundary_loops": [],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": false,
+          "pass": true
+        },
+        "ShoulderBoard_R": {
+          "boundary_edges": 0,
+          "boundary_loops": [],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": false,
+          "pass": true
+        },
+        "Placket": {
+          "boundary_edges": 0,
+          "boundary_loops": [],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": false,
+          "pass": true
+        },
+        "Buttons": {
+          "boundary_edges": 0,
+          "boundary_loops": [],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": false,
+          "pass": true
+        },
+        "CollarInsignia_L": {
+          "boundary_edges": 0,
+          "boundary_loops": [],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": false,
+          "pass": true
+        },
+        "CollarInsignia_R": {
+          "boundary_edges": 0,
+          "boundary_loops": [],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": false,
+          "pass": true
+        },
+        "RibbonBar": {
+          "boundary_edges": 0,
+          "boundary_loops": [],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": false,
+          "pass": true
+        },
+        "Medal": {
+          "boundary_edges": 0,
+          "boundary_loops": [],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": false,
+          "pass": true
+        },
+        "FibreDust": {
+          "boundary_edges": 0,
+          "boundary_loops": [],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": false,
+          "pass": true
+        }
+      },
+      "self_intersections": 0,
+      "part_intersections": 0,
       "pass": true
     }
   },
-  "intersections": {
-    "sampled_inward_depth_max_m": 0.003233578451733173,
-    "limit_m": 0.001,
-    "pairs_m": {
-      "Collar:0/1": 0.0014999982476339082,
-      "Hanger:0/1": 0.003233578451733173,
-      "Medal/RibbonBar": 0.0004395115524687413,
-      "Medal/CollarInsignia_R": 0.0,
-      "Medal/CollarInsignia_L": 0.0,
-      "Medal/Buttons": 0.0,
-      "Medal/Placket": 0.0,
-      "Medal/ShoulderBoard_R": 0.0,
-      "Medal/ShoulderBoard_L": 0.0,
-      "Medal/Collar": 0.0,
-      "Medal/TunicBody": 0.00025642918862138714,
-      "Medal/Hanger": 0.0,
-      "RibbonBar/CollarInsignia_R": 0.0,
-      "RibbonBar/CollarInsignia_L": 0.0,
-      "RibbonBar/Buttons": 0.0,
-      "RibbonBar/Placket": 0.0,
-      "RibbonBar/ShoulderBoard_R": 0.0,
-      "RibbonBar/ShoulderBoard_L": 0.0,
-      "RibbonBar/Collar": 0.0,
-      "RibbonBar/TunicBody": 0.00010619883429836816,
-      "RibbonBar/Hanger": 0.0,
-      "CollarInsignia_R/CollarInsignia_L": 0.0,
-      "CollarInsignia_R/Buttons": 0.0,
-      "CollarInsignia_R/Placket": 0.0,
-      "CollarInsignia_R/ShoulderBoard_R": 0.0,
-      "CollarInsignia_R/ShoulderBoard_L": 0.0,
-      "CollarInsignia_R/Collar": 0.0,
-      "CollarInsignia_R/TunicBody": 0.0,
-      "CollarInsignia_R/Hanger": 0.0,
-      "CollarInsignia_L/Buttons": 0.0,
-      "CollarInsignia_L/Placket": 0.0,
-      "CollarInsignia_L/ShoulderBoard_R": 0.0,
-      "CollarInsignia_L/ShoulderBoard_L": 0.0,
-      "CollarInsignia_L/Collar": 0.0,
-      "CollarInsignia_L/TunicBody": 0.0,
-      "CollarInsignia_L/Hanger": 0.0,
-      "Buttons/Placket": 0.0003184794554403048,
-      "Buttons/ShoulderBoard_R": 0.0,
-      "Buttons/ShoulderBoard_L": 0.0,
-      "Buttons/Collar": 0.0,
-      "Buttons/TunicBody": 0.0,
-      "Buttons/Hanger": 0.0,
-      "Placket/ShoulderBoard_R": 0.0,
-      "Placket/ShoulderBoard_L": 0.0,
-      "Placket/Collar": 0.0,
-      "Placket/TunicBody": 0.0,
-      "Placket/Hanger": 0.0,
-      "ShoulderBoard_R/ShoulderBoard_L": 0.0,
-      "ShoulderBoard_R/Collar": 0.0,
-      "ShoulderBoard_R/TunicBody": 7.136619909918014e-05,
-      "ShoulderBoard_R/Hanger": 0.0,
-      "ShoulderBoard_L/Collar": 0.0,
-      "ShoulderBoard_L/TunicBody": 0.0001767681993431412,
-      "ShoulderBoard_L/Hanger": 0.0,
-      "Collar/TunicBody": 0.00019943088401465342,
-      "Collar/Hanger": 0.0,
-      "TunicBody/Hanger": 0.0
+  "visible": {
+    "tears": {
+      "holes": [
+        {
+          "size_m": 0.12500511185701466,
+          "perimeter_m": 0.3916655403396157,
+          "projected_area_m2": 0.004296338696855707,
+          "irregularity": 5.97538795616478,
+          "irregularity_min": 5.5,
+          "max_straight_run_m": 0.023650823804899045
+        },
+        {
+          "size_m": 0.1611600639037885,
+          "perimeter_m": 0.4901076136639717,
+          "projected_area_m2": 0.005271100879435438,
+          "irregularity": 6.750575287901568,
+          "irregularity_min": 5.5,
+          "max_straight_run_m": 0.025048927171585866
+        },
+        {
+          "size_m": 0.1474202276275203,
+          "perimeter_m": 0.5298389419215002,
+          "projected_area_m2": 0.005603242694222098,
+          "irregularity": 7.078221647046485,
+          "irregularity_min": 5.5,
+          "max_straight_run_m": 0.024779127817438427
+        },
+        {
+          "size_m": 0.13219192440334132,
+          "perimeter_m": 0.4404377866009861,
+          "projected_area_m2": 0.0017022977957131926,
+          "irregularity": 10.674973437697956,
+          "irregularity_min": 5.5,
+          "max_straight_run_m": 0.021215863085030966
+        },
+        {
+          "size_m": 0.10299328134775562,
+          "perimeter_m": 0.3387418090776852,
+          "projected_area_m2": 0.002683469970197867,
+          "irregularity": 6.539136947505717,
+          "irregularity_min": 5.5,
+          "max_straight_run_m": 0.01984535181886385
+        }
+      ],
+      "straight_run_max_m": 0.03,
+      "pass": true
     },
-    "open_components": [
-      "TunicBody:0"
-    ],
-    "method": "Bidirectional vertices, edge midpoints and triangle centres inside closed meshes. Open fray cards do not enclose volume. This is sampled penetration, not a continuous self-intersection proof.",
-    "pass": false,
-    "unchanged_assembly_depth_max_m": 0.003233578451733173,
-    "changed_geometry_depth_max_m": 0.00025642918862138714,
-    "nonadjacent_self_edge_crossings_by_component": {
-      "TunicBody": [
-        180
-      ]
+    "hem": {
+      "notch_mean_m": 0.007663022868240936,
+      "notch_std_m": 0.011684026809432263,
+      "std_over_mean": 1.52472816672076,
+      "min": 0.4,
+      "pass": true
     },
-    "self_intersection_free": false
+    "sleeve": {
+      "open_reference_seam_length_fraction": 0.6221337591916075,
+      "band": [
+        0.5,
+        0.7
+      ],
+      "intervals": [
+        [
+          1.7000000476837158,
+          1.9571428298950195
+        ],
+        [
+          2.1178572177886963,
+          2.1500000953674316
+        ]
+      ],
+      "pass": true
+    },
+    "slump": {
+      "shoulder_mean_drop_m": 0.015680474716992604,
+      "drop_min_m": 0.015,
+      "silhouette_iou": 0.7404802252288601,
+      "iou_band": [
+        0.55,
+        0.8
+      ],
+      "pass": true
+    },
+    "fibre_heap": {
+      "height_m": 0.010800004005432129,
+      "height_min_m": 0.006,
+      "diameter_m": 0.14399999752640724,
+      "diameter_band_m": [
+        0.08,
+        0.2
+      ],
+      "under_hem_offset_m": 1.862645149230957e-09,
+      "offset_max_m": 0.05,
+      "pass": true
+    }
   },
-  "fibre_dust": {
-    "nominal_floor_y_m": -0.95,
-    "bottom_y_m": -0.9498000144958496,
-    "pass": true
-  },
-  "pass": false
+  "pass": true
 }

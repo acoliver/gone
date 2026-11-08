@@ -1,342 +1,854 @@
 {
   "prop": "sofa",
-  "unchanged_geometry": {
-    "Frame": true,
-    "Feet": true,
-    "Rivets": true
-  },
-  "unchanged_geometry_bytes": {
-    "Frame": true,
-    "Feet": true,
-    "Rivets": true
-  },
-  "pivots_and_origin_unchanged": true,
-  "preserved_names": true,
-  "triangles": {
-    "unaged": 19550,
-    "aged": 28050,
-    "ratio": 1.434782608695652,
-    "limit_ratio": 1.5,
-    "pass": true
-  },
-  "byte_identical_reexport": true,
-  "cushions": {
-    "BackCushion_R": {
-      "volume_ratio": 0.2956274528959364,
-      "volume_ratio_band": [
-        0.25,
-        0.35
-      ],
-      "support_gap_m": 0.0005987193860587849,
-      "support_limit_m": 0.003,
-      "crust_watertight": true,
-      "combined_cover_and_crust_watertight": false,
+  "shared": {
+    "triangles": {
+      "unaged": 19550,
+      "aged": 28788,
+      "ratio": 1.472531969309463,
+      "limit_ratio": 1.5,
       "pass": true
     },
-    "BackCushion_C": {
-      "volume_ratio": 0.29574244568721464,
-      "volume_ratio_band": [
-        0.25,
-        0.35
-      ],
-      "support_gap_m": 0.0005987844283658586,
-      "support_limit_m": 0.003,
-      "crust_watertight": true,
-      "combined_cover_and_crust_watertight": false,
-      "pass": true
+    "unchanged_fixed_geometry_bytes": {
+      "Frame": true,
+      "Feet": true,
+      "Rivets": true
     },
-    "BackCushion_L": {
-      "volume_ratio": 0.29594650612136153,
-      "volume_ratio_band": [
-        0.25,
-        0.35
-      ],
-      "support_gap_m": 0.0005987839478231534,
-      "support_limit_m": 0.003,
-      "crust_watertight": true,
-      "combined_cover_and_crust_watertight": false,
-      "pass": true
+    "origins_and_pivots": {
+      "unchanged": true
     },
-    "SeatCushion_R": {
-      "volume_ratio": 0.30327352886599457,
-      "volume_ratio_band": [
-        0.25,
-        0.35
-      ],
-      "support_gap_m": 0.0005972105094966532,
-      "support_limit_m": 0.003,
-      "crust_watertight": true,
-      "combined_cover_and_crust_watertight": false,
-      "pass": true
-    },
-    "SeatCushion_C": {
-      "volume_ratio": 0.303714459399138,
-      "volume_ratio_band": [
-        0.25,
-        0.35
-      ],
-      "support_gap_m": 0.0005986760088676458,
-      "support_limit_m": 0.003,
-      "crust_watertight": true,
-      "combined_cover_and_crust_watertight": false,
-      "pass": true
-    },
-    "SeatCushion_L": {
-      "volume_ratio": 0.303061416299032,
-      "volume_ratio_band": [
-        0.25,
-        0.35
-      ],
-      "support_gap_m": 0.0005914280787794714,
-      "support_limit_m": 0.003,
-      "crust_watertight": true,
-      "combined_cover_and_crust_watertight": false,
+    "byte_identical_reexport": true,
+    "collision": {
+      "method": "Exported GLB, BVH candidate overlap then 17-axis triangle/triangle SAT including coplanar overlap; only shared-vertex face adjacency omitted from self checks.",
+      "self": {
+        "SeatCushion_L": {
+          "count": 0,
+          "examples": []
+        },
+        "SeatCushion_C": {
+          "count": 0,
+          "examples": []
+        },
+        "SeatCushion_R": {
+          "count": 0,
+          "examples": []
+        },
+        "BackCushion_L": {
+          "count": 0,
+          "examples": []
+        },
+        "BackCushion_C": {
+          "count": 0,
+          "examples": []
+        },
+        "BackCushion_R": {
+          "count": 0,
+          "examples": []
+        },
+        "Throw": {
+          "count": 0,
+          "examples": []
+        },
+        "ThrowDetachedPiece": {
+          "count": 0,
+          "examples": []
+        },
+        "FoamDebris": {
+          "count": 0,
+          "examples": []
+        },
+        "FoamFloorDebris": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "pairs": {},
+      "excluded_unchanged_assembly": {
+        "Frame": {
+          "count": 522,
+          "examples": [
+            {
+              "triangles": [
+                707,
+                1878
+              ],
+              "centre": [
+                -1.0219484567642212,
+                0.443077156941096,
+                0.7397961517175038
+              ],
+              "materials": [
+                "PaintedSteel",
+                "PaintedSteel"
+              ]
+            },
+            {
+              "triangles": [
+                708,
+                1878
+              ],
+              "centre": [
+                -1.0215503176053367,
+                0.4455779045820236,
+                0.7377890845139821
+              ],
+              "materials": [
+                "PaintedSteel",
+                "PaintedSteel"
+              ]
+            },
+            {
+              "triangles": [
+                698,
+                1878
+              ],
+              "centre": [
+                -1.0236429572105408,
+                0.4455779045820236,
+                0.7426606118679047
+              ],
+              "materials": [
+                "PaintedSteel",
+                "PaintedSteel"
+              ]
+            },
+            {
+              "triangles": [
+                697,
+                1878
+              ],
+              "centre": [
+                -1.0245149731636047,
+                0.4432040403286616,
+                0.7443667252858479
+              ],
+              "materials": [
+                "PaintedSteel",
+                "PaintedSteel"
+              ]
+            },
+            {
+              "triangles": [
+                696,
+                1878
+              ],
+              "centre": [
+                -1.0267688632011414,
+                0.4456436485052109,
+                0.745748649040858
+              ],
+              "materials": [
+                "PaintedSteel",
+                "PaintedSteel"
+              ]
+            },
+            {
+              "triangles": [
+                695,
+                1878
+              ],
+              "centre": [
+                -1.0280192295710247,
+                0.44314290086428326,
+                0.7468195855617523
+              ],
+              "materials": [
+                "PaintedSteel",
+                "PaintedSteel"
+              ]
+            },
+            {
+              "triangles": [
+                741,
+                1878
+              ],
+              "centre": [
+                -1.0361973643302917,
+                0.4455825090408325,
+                0.7468195855617523
+              ],
+              "materials": [
+                "PaintedSteel",
+                "PaintedSteel"
+              ]
+            },
+            {
+              "triangles": [
+                741,
+                1877
+              ],
+              "centre": [
+                -1.0418442885080972,
+                0.4455825090408325,
+                0.6787393738826115
+              ],
+              "materials": [
+                "PaintedSteel",
+                "PaintedSteel"
+              ]
+            },
+            {
+              "triangles": [
+                741,
+                1830
+              ],
+              "centre": [
+                -1.048080861568451,
+                0.44510997335116065,
+                0.7467862615982692
+              ],
+              "materials": [
+                "PaintedSteel",
+                "PaintedSteel"
+              ]
+            },
+            {
+              "triangles": [
+                741,
+                1832
+              ],
+              "centre": [
+                -1.0493428508440652,
+                0.44399528702100116,
+                0.7468195458253224
+              ],
+              "materials": [
+                "PaintedSteel",
+                "PaintedSteel"
+              ]
+            },
+            {
+              "triangles": [
+                741,
+                1831
+              ],
+              "centre": [
+                -1.0485119422276814,
+                0.4448261857032776,
+                0.6787393639485042
+              ],
+              "materials": [
+                "PaintedSteel",
+                "PaintedSteel"
+              ]
+            },
+            {
+              "triangles": [
+                740,
+                1832
+              ],
+              "centre": [
+                -1.0563011964162192,
+                0.4415556788444519,
+                0.7473048170407612
+              ],
+              "materials": [
+                "PaintedSteel",
+                "PaintedSteel"
+              ]
+            }
+          ]
+        },
+        "Feet": {
+          "count": 0,
+          "examples": []
+        },
+        "Rivets": {
+          "count": 0,
+          "examples": []
+        },
+        "Frame/Rivets": {
+          "count": 272,
+          "examples": [
+            {
+              "triangles": [
+                2076,
+                241
+              ],
+              "centre": [
+                -1.0981333057085672,
+                0.32760189970334375,
+                0.44672083854675293
+              ],
+              "materials": [
+                "PaintedSteel",
+                "BareSteel"
+              ]
+            },
+            {
+              "triangles": [
+                2076,
+                248
+              ],
+              "centre": [
+                -1.0978833039601645,
+                0.3267358740170797,
+                0.4477208356062571
+              ],
+              "materials": [
+                "PaintedSteel",
+                "BareSteel"
+              ]
+            },
+            {
+              "triangles": [
+                2076,
+                242
+              ],
+              "centre": [
+                -1.0978833039601645,
+                0.327989528576533,
+                0.446108470360438
+              ],
+              "materials": [
+                "PaintedSteel",
+                "BareSteel"
+              ]
+            },
+            {
+              "triangles": [
+                2076,
+                247
+              ],
+              "centre": [
+                -1.0981333057085672,
+                0.3260287642478943,
+                0.44787975649038947
+              ],
+              "materials": [
+                "PaintedSteel",
+                "BareSteel"
+              ]
+            },
+            {
+              "triangles": [
+                2076,
+                253
+              ],
+              "centre": [
+                -1.0981333057085672,
+                0.3240969131390254,
+                0.44758686423301697
+              ],
+              "materials": [
+                "PaintedSteel",
+                "BareSteel"
+              ]
+            },
+            {
+              "triangles": [
+                2076,
+                254
+              ],
+              "centre": [
+                -1.0978833039601645,
+                0.32470928629239404,
+                0.44797449310620624
+              ],
+              "materials": [
+                "PaintedSteel",
+                "BareSteel"
+              ]
+            },
+            {
+              "triangles": [
+                2076,
+                338
+              ],
+              "centre": [
+                -1.0978833039601645,
+                0.3829895257949829,
+                0.446108470360438
+              ],
+              "materials": [
+                "PaintedSteel",
+                "BareSteel"
+              ]
+            },
+            {
+              "triangles": [
+                2076,
+                337
+              ],
+              "centre": [
+                -1.0981333057085672,
+                0.38260189692179364,
+                0.44672083854675293
+              ],
+              "materials": [
+                "PaintedSteel",
+                "BareSteel"
+              ]
+            },
+            {
+              "triangles": [
+                2076,
+                343
+              ],
+              "centre": [
+                -1.0981333057085672,
+                0.38102876643339795,
+                0.44787975649038947
+              ],
+              "materials": [
+                "PaintedSteel",
+                "BareSteel"
+              ]
+            },
+            {
+              "triangles": [
+                2076,
+                344
+              ],
+              "centre": [
+                -1.0978833039601645,
+                0.3817358712355296,
+                0.4477208356062571
+              ],
+              "materials": [
+                "PaintedSteel",
+                "BareSteel"
+              ]
+            },
+            {
+              "triangles": [
+                2076,
+                380
+              ],
+              "centre": [
+                -1.0978833039601645,
+                0.3827358682950338,
+                0.4440818826357523
+              ],
+              "materials": [
+                "PaintedSteel",
+                "BareSteel"
+              ]
+            },
+            {
+              "triangles": [
+                2076,
+                379
+              ],
+              "centre": [
+                -1.0981333057085672,
+                0.3828947891791662,
+                0.44478899240493774
+              ],
+              "materials": [
+                "PaintedSteel",
+                "BareSteel"
+              ]
+            }
+          ]
+        }
+      },
+      "topology": {
+        "Frame": {
+          "boundary_edges": 0,
+          "boundary_loops": [],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": false,
+          "pass": true
+        },
+        "Feet": {
+          "boundary_edges": 0,
+          "boundary_loops": [],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": false,
+          "pass": true
+        },
+        "SeatCushion_L": {
+          "boundary_edges": 0,
+          "boundary_loops": [],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": false,
+          "pass": true
+        },
+        "SeatCushion_C": {
+          "boundary_edges": 0,
+          "boundary_loops": [],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": false,
+          "pass": true
+        },
+        "SeatCushion_R": {
+          "boundary_edges": 0,
+          "boundary_loops": [],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": false,
+          "pass": true
+        },
+        "BackCushion_L": {
+          "boundary_edges": 0,
+          "boundary_loops": [],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": false,
+          "pass": true
+        },
+        "BackCushion_C": {
+          "boundary_edges": 0,
+          "boundary_loops": [],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": false,
+          "pass": true
+        },
+        "BackCushion_R": {
+          "boundary_edges": 0,
+          "boundary_loops": [],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": false,
+          "pass": true
+        },
+        "Rivets": {
+          "boundary_edges": 0,
+          "boundary_loops": [],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": false,
+          "pass": true
+        },
+        "Throw": {
+          "boundary_edges": 0,
+          "boundary_loops": [],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": false,
+          "pass": true
+        },
+        "ThrowDetachedPiece": {
+          "boundary_edges": 0,
+          "boundary_loops": [],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": false,
+          "pass": true
+        },
+        "FoamDebris": {
+          "boundary_edges": 0,
+          "boundary_loops": [],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": false,
+          "pass": true
+        },
+        "FoamFloorDebris": {
+          "boundary_edges": 0,
+          "boundary_loops": [],
+          "unbranched_boundaries": true,
+          "nonmanifold_edges": 0,
+          "degenerate_edges": 0,
+          "properly_bounded_cloth": false,
+          "pass": true
+        }
+      },
+      "self_intersections": 0,
+      "part_intersections": 0,
       "pass": true
     }
   },
-  "throw_tear": {
-    "reference_surface_loss_fraction": 0.22277086973190308,
-    "band": [
-      0.1,
-      0.3
-    ],
-    "pass": true
-  },
-  "intersections": {
-    "sampled_inward_depth_max_m": 0.037271857261657715,
-    "limit_m": 0.001,
-    "pairs_m": {
-      "Frame:0/6": 0.00798820023182297,
-      "Frame:0/8": 0.01750004291534424,
-      "Frame:1/7": 0.008017772672264488,
-      "Frame:1/13": 0.01750004291534424,
-      "Frame:6/8": 0.037271857261657715,
-      "Frame:7/13": 0.03700876235961914,
-      "Frame:8/14": 0.0019576755957961566,
-      "Frame:8/15": 0.0019576755957962347,
-      "Frame:13/16": 0.0019576755957962347,
-      "Frame:13/17": 0.0019576755957961566,
-      "Frame/BackCushion_R": 0.0,
-      "Frame/BackCushion_C": 0.0,
-      "Frame/BackCushion_L": 0.0,
-      "Frame/SeatCushion_R": 0.0,
-      "Frame/SeatCushion_C": 0.0,
-      "Frame/SeatCushion_L": 0.0,
-      "Frame/Throw": 0.0,
-      "BackCushion_R/BackCushion_C": 0.0,
-      "BackCushion_R/BackCushion_L": 0.0,
-      "BackCushion_R/SeatCushion_R": 0.0,
-      "BackCushion_R/SeatCushion_C": 0.0,
-      "BackCushion_R/SeatCushion_L": 0.0,
-      "BackCushion_R/Throw": 0.0,
-      "BackCushion_C/BackCushion_L": 0.0,
-      "BackCushion_C/SeatCushion_R": 0.0,
-      "BackCushion_C/SeatCushion_C": 0.0,
-      "BackCushion_C/SeatCushion_L": 0.0,
-      "BackCushion_C/Throw": 0.0,
-      "BackCushion_L/SeatCushion_R": 0.0,
-      "BackCushion_L/SeatCushion_C": 0.0,
-      "BackCushion_L/SeatCushion_L": 0.0,
-      "BackCushion_L/Throw": 0.0,
-      "SeatCushion_R/SeatCushion_C": 0.0,
-      "SeatCushion_R/SeatCushion_L": 0.0,
-      "SeatCushion_R/Throw": 0.0,
-      "SeatCushion_C/SeatCushion_L": 0.0,
-      "SeatCushion_C/Throw": 0.0,
-      "SeatCushion_L/Throw": 0.0
+  "visible": {
+    "BackCushion_C": {
+      "volume_ratio": 0.2549724202258763,
+      "volume_band": [
+        0.25,
+        0.35
+      ],
+      "volume_pass": true,
+      "openings": [
+        {
+          "size_m": 0.1275617704654634,
+          "perimeter_m": 0.3035151145442533,
+          "projected_area_m2": 0.0021590278129767467,
+          "irregularity": 6.532075631651233,
+          "irregularity_min": 5.5
+        },
+        {
+          "size_m": 0.12758799406814939,
+          "perimeter_m": 0.31753480843567605,
+          "projected_area_m2": 0.0024441959464826892,
+          "irregularity": 6.42278419805971,
+          "irregularity_min": 5.5
+        }
+      ],
+      "opening_count": 2,
+      "opening_count_band": [
+        1,
+        4
+      ],
+      "splits_pass": true,
+      "crust_watertight": true,
+      "hero_coverage": {
+        "value": 0.7679327992990177,
+        "min": 0.55,
+        "method": "Orthographic hero-camera first-hit depth raster, including all other prop parts as occluders.",
+        "pass": true
+      },
+      "retained_top_fraction": 0.9954442033038998
     },
-    "open_components": [
-      "BackCushion_R:2",
-      "BackCushion_C:2",
-      "BackCushion_L:2",
-      "SeatCushion_R:0",
-      "SeatCushion_C:0",
-      "SeatCushion_L:0"
-    ],
-    "method": "Bidirectional vertices, edge midpoints and triangle centres inside closed meshes. Open fray cards do not enclose volume. This is sampled penetration, not a continuous self-intersection proof.",
-    "pass": false,
-    "unchanged_assembly_depth_max_m": 0.037271857261657715,
-    "changed_geometry_depth_max_m": 0.0,
-    "nonadjacent_self_edge_crossings_by_component": {
-      "Throw": [
-        274,
-        115,
-        17,
-        47
+    "BackCushion_L": {
+      "volume_ratio": 0.25500927132657314,
+      "volume_band": [
+        0.25,
+        0.35
       ],
-      "BackCushion_R": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
+      "volume_pass": true,
+      "openings": [
+        {
+          "size_m": 0.12720789444303027,
+          "perimeter_m": 0.3033907982589921,
+          "projected_area_m2": 0.0019857479393622715,
+          "irregularity": 6.808326026172472,
+          "irregularity_min": 5.5
+        },
+        {
+          "size_m": 0.1280230305375561,
+          "perimeter_m": 0.3082094266258466,
+          "projected_area_m2": 0.002403174007511163,
+          "irregularity": 6.287142567011544,
+          "irregularity_min": 5.5
+        }
       ],
-      "BackCushion_C": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
+      "opening_count": 2,
+      "opening_count_band": [
+        1,
+        4
       ],
-      "BackCushion_L": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "SeatCushion_R": [
-        7,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "SeatCushion_C": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "SeatCushion_L": [
-        6,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
+      "splits_pass": true,
+      "crust_watertight": true,
+      "hero_coverage": {
+        "value": 0.764991710685499,
+        "min": 0.55,
+        "method": "Orthographic hero-camera first-hit depth raster, including all other prop parts as occluders.",
+        "pass": true
+      },
+      "retained_top_fraction": 0.9954442033038998
     },
-    "self_intersection_free": false
+    "BackCushion_R": {
+      "volume_ratio": 0.25500107829191043,
+      "volume_band": [
+        0.25,
+        0.35
+      ],
+      "volume_pass": true,
+      "openings": [
+        {
+          "size_m": 0.1277252064431494,
+          "perimeter_m": 0.3122854416599395,
+          "projected_area_m2": 0.0021854891696578595,
+          "irregularity": 6.680014560797626,
+          "irregularity_min": 5.5
+        },
+        {
+          "size_m": 0.12744974127645117,
+          "perimeter_m": 0.3079237883895967,
+          "projected_area_m2": 0.00195741965141118,
+          "irregularity": 6.9598722675680875,
+          "irregularity_min": 5.5
+        }
+      ],
+      "opening_count": 2,
+      "opening_count_band": [
+        1,
+        4
+      ],
+      "splits_pass": true,
+      "crust_watertight": true,
+      "hero_coverage": {
+        "value": 0.6513473644538404,
+        "min": 0.55,
+        "method": "Orthographic hero-camera first-hit depth raster, including all other prop parts as occluders.",
+        "pass": true
+      },
+      "retained_top_fraction": 0.9954442033038998
+    },
+    "SeatCushion_C": {
+      "volume_ratio": 0.25496055374799775,
+      "volume_band": [
+        0.25,
+        0.35
+      ],
+      "volume_pass": true,
+      "openings": [
+        {
+          "size_m": 0.12928117158803443,
+          "perimeter_m": 0.32369726674474314,
+          "projected_area_m2": 0.003332879546828588,
+          "irregularity": 5.606982791689346,
+          "irregularity_min": 5.5
+        },
+        {
+          "size_m": 0.13369148876702872,
+          "perimeter_m": 0.3053563301750735,
+          "projected_area_m2": 0.0022112970272046423,
+          "irregularity": 6.493567906265065,
+          "irregularity_min": 5.5
+        }
+      ],
+      "opening_count": 2,
+      "opening_count_band": [
+        1,
+        4
+      ],
+      "splits_pass": true,
+      "crust_watertight": true,
+      "visible_seat": {
+        "centre_y_m": 0.4606033160050369,
+        "height_above_deck_ratio": 0.3919282170810749,
+        "band": [
+          0.35,
+          0.45
+        ],
+        "edge_to_centre_sag_m": 0.019261090603316988,
+        "sag_min_m": 0.015,
+        "detrended_top_std_m": 0.008500015570599479,
+        "std_min_m": 0.006,
+        "pass": true
+      }
+    },
+    "SeatCushion_L": {
+      "volume_ratio": 0.25496162145981194,
+      "volume_band": [
+        0.25,
+        0.35
+      ],
+      "volume_pass": true,
+      "openings": [
+        {
+          "size_m": 0.1259425842759196,
+          "perimeter_m": 0.33525687434964363,
+          "projected_area_m2": 0.0034767453127874247,
+          "irregularity": 5.685795727113159,
+          "irregularity_min": 5.5
+        },
+        {
+          "size_m": 0.13680248653173263,
+          "perimeter_m": 0.31399910114763546,
+          "projected_area_m2": 0.0024393801714214097,
+          "irregularity": 6.357533542560712,
+          "irregularity_min": 5.5
+        }
+      ],
+      "opening_count": 2,
+      "opening_count_band": [
+        1,
+        4
+      ],
+      "splits_pass": true,
+      "crust_watertight": true,
+      "visible_seat": {
+        "centre_y_m": 0.46078456000519696,
+        "height_above_deck_ratio": 0.3929314841856032,
+        "band": [
+          0.35,
+          0.45
+        ],
+        "edge_to_centre_sag_m": 0.01910704680826314,
+        "sag_min_m": 0.015,
+        "detrended_top_std_m": 0.008445432829955196,
+        "std_min_m": 0.006,
+        "pass": true
+      }
+    },
+    "SeatCushion_R": {
+      "volume_ratio": 0.254987383329044,
+      "volume_band": [
+        0.25,
+        0.35
+      ],
+      "volume_pass": true,
+      "openings": [
+        {
+          "size_m": 0.1312425950164666,
+          "perimeter_m": 0.34184968978054386,
+          "projected_area_m2": 0.003775940035610941,
+          "irregularity": 5.563174026846476,
+          "irregularity_min": 5.5
+        },
+        {
+          "size_m": 0.12381496836532173,
+          "perimeter_m": 0.2922943873463912,
+          "projected_area_m2": 0.0026222883478918915,
+          "irregularity": 5.7079512267273484,
+          "irregularity_min": 5.5
+        }
+      ],
+      "opening_count": 2,
+      "opening_count_band": [
+        1,
+        4
+      ],
+      "splits_pass": true,
+      "crust_watertight": true,
+      "visible_seat": {
+        "centre_y_m": 0.4607901027238779,
+        "height_above_deck_ratio": 0.392962165627843,
+        "band": [
+          0.35,
+          0.45
+        ],
+        "edge_to_centre_sag_m": 0.019159889883076875,
+        "sag_min_m": 0.015,
+        "detrended_top_std_m": 0.008526312667647763,
+        "std_min_m": 0.006,
+        "pass": true
+      }
+    },
+    "crumbs": {
+      "pieces": 192,
+      "qualifying_pieces": 170,
+      "min_pieces": 150,
+      "size_band_m": [
+        0.002,
+        0.015
+      ],
+      "max_split_distance_m": 0.2899923912570454,
+      "resting_fraction": 1.0,
+      "resting_min": 0.6,
+      "max_support_gap_m": 0.00034278372586424945,
+      "pass": true
+    },
+    "throw": {
+      "area_below_cap_fraction": 0.8550852366589349,
+      "min_fraction": 0.4,
+      "detached_piece_on_floor": true,
+      "holes": [
+        {
+          "size_m": 0.17304116766157032,
+          "perimeter_m": 0.6400536923082539,
+          "projected_area_m2": 0.008648600813125044,
+          "irregularity": 6.88245659540855,
+          "irregularity_min": 5.5
+        },
+        {
+          "size_m": 0.13162588465657157,
+          "perimeter_m": 0.5103195783809998,
+          "projected_area_m2": 0.00764273865206922,
+          "irregularity": 5.837376775366647,
+          "irregularity_min": 5.5
+        }
+      ],
+      "pass": true
+    }
   },
-  "pass": false
+  "pass": true
 }
