@@ -457,6 +457,14 @@ The lit captures are `tmp/fit/sofa/cloth2/compare-hero.png`, `compare-detail.png
 
 The tunic now comes from Blender cloth simulation. The hand-modelled pilot rated 2/10: its waist was pinched, its sleeves were detached cylinders, and its collar and shoulders had visible voids. A sewn pattern lets gravity and fabric strain produce the hanging shape. The design remains `docs/art/quarters/sheets/dress_uniform/hero.png`; the filled Hunyuan torso is only a silhouette reference.
 
+### Tunic7 continuation: not shipped
+
+The rest carrier now preserves the source grid without contact exclusions. Its 1800-frame source-quality control has zero dense self contacts, but still moves 3.378 mm over its last five frames against a 1 mm limit. The remaining motion is concentrated at the neck and hanger-side shoulder. This is not a settled result.
+
+G22 now measures actual camera-ray depth divided by camera-visible width at quarter, half and three-quarter sleeve length, with the same 0.45 ceiling. The old 0.2708 principal-axis score accepted a sleeve whose camera ratio was 2.300. The latest preparation instead lays the measured sleeve perimeter onto two broad faces with rounded folds: 12 mm rest depth, about 97% perimeter retention and a 3.028 mm minimum evaluated triangle altitude. Its dense solve is running under `tmp/age/tunic7/capsule/`.
+
+The standing collar now follows its complete sewn curve rather than rotating its 43 mm height with individual shoulder triangles. The control removes collar self-contacts, but body and hanger crossings still prevent delivery. Opposing rim edges also share their available clearance instead of each consuming the whole gap. Local controls do not approve the candidate's appearance or replace the exported contact checks. The shipped tunic and textures remain unchanged; age remains 1000 years.
+
 ### Dense-cloth candidate: rejected
 
 The `tunic6-main` candidate passes 13 of 19 gates and has not replaced the shipped aged tunic. Its source stages and scratch GLB are under `tmp/age/tunic6/main/`. The full measurements, commands and remaining failures are in `tools/blender/quarters/dress_uniform/README.md`; `cloth-trials.json` records the trial separately under `dense_aging`.
