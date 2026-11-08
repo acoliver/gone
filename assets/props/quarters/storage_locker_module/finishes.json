@@ -1,19 +1,44 @@
 {
-  "method": "two baked atlas sets; shared geometry and masks; unchanged hatch shader",
+  "method": "two atlas sets for edge/fixture flakes; float source table for subtexel gravity trails; runtime dust with matched disabled control",
+  "gravity_direction_prop": [
+    0,
+    -1,
+    0
+  ],
+  "gravity_source_count": 85,
+  "aged_paint_chalking_linear_gain": 1.6,
+  "aged_paint_chalking_linear_offset": 0.02,
   "age_years": {
     "as_built": 0,
     "aged": 1000
   },
   "seed": 9501,
   "as_built_paint_srgb": [
-    0.4729999899864197,
-    0.574999988079071,
-    0.5559999942779541
+    0.3803921341896057,
+    0.4627450704574585,
+    0.45098036527633667
+  ],
+  "design_roi_xyxy": [
+    460,
+    440,
+    550,
+    600
+  ],
+  "design_median_linear": [
+    0.11953843384981155,
+    0.1811642348766327,
+    0.17144109308719635
+  ],
+  "dust_srgb": [
+    0.6399999856948853,
+    0.6100000143051147,
+    0.550000011920929
   ],
   "channels": {
-    "*_albedo.png": "RGB sRGB reflectance, A oxide coverage",
+    "*_albedo.png": "RGB sRGB undusted reflectance, A oxide coverage",
     "*_normal.png": "RGB OpenGL tangent normal, A=1",
-    "*_orm.png": "R ambient occlusion, G roughness, B metallic, A dust coverage"
+    "*_orm.png": "R AO, G undusted roughness, B undusted metallic, A dust",
+    "region_masks.png": "R edge/fixture band <=25 mm, G broad >=60 mm, B BareSteel, A coverage"
   },
-  "detail_scans": "shared CC0 hatch_detail_steel/paint/oxide scans at 0.20 m pitch"
+  "detail_scans": "shared CC0 hatch steel/paint/oxide at 0.20 m pitch"
 }

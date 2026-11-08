@@ -1,5 +1,39 @@
 extends SimTestCase
 
+func test_physical_trail_sources_keep_subtexel_coordinates() -> void:
+	var factory := _factory()
+	if factory == null: return
+	var aged: ShaderMaterial = factory.material(&"storage_locker_module", &"aged")
+	var clean: ShaderMaterial = factory.material(&"storage_locker_module", &"as_built")
+	var sources: Texture2D = aged.get_shader_parameter(&"streak_sources")
+	var image := sources.get_image()
+	assert_int_equal(image.get_format(), Image.FORMAT_RGBAF, "source positions retain float precision")
+	assert_int_equal(image.get_height(), 2, "positions and trail shape rows")
+	assert_true(image.get_width() > 75 and image.get_width() < 128, "individual fixtures, not duplicated edge sources")
+	assert_true(image.get_pixel(0, 0).r < 0, "signed prop coordinates survive serialization")
+	assert_true(aged.get_shader_parameter(&"aged_finish"), "aged state enables physical trails")
+	assert_false(clean.get_shader_parameter(&"aged_finish"), "as-built state has no trails")
+
+func test_dust_controls_do_not_mutate_cached_materials() -> void:
+	var factory := _factory()
+	if factory == null: return
+	var aged: ShaderMaterial = factory.material(&"storage_locker_module", &"aged")
+	var control := aged.duplicate() as ShaderMaterial
+	control.set_shader_parameter(&"dust_enabled", false)
+	assert_false(control.get_shader_parameter(&"dust_enabled"), "control disables dust")
+	assert_true(aged.get_shader_parameter(&"dust_enabled"), "runtime cache keeps visible dust")
+	assert_true(aged.get_shader_parameter(&"region_masks") is Texture2D, "capture masks are exported dependencies")
+
+func test_diagnostic_copies_do_not_contaminate_runtime_cache() -> void:
+	var factory := _factory()
+	if factory == null: return
+	var clean: ShaderMaterial = factory.material(&"storage_locker_module", &"as_built")
+	var control := clean.duplicate() as ShaderMaterial
+	control.set_shader_parameter(&"diagnostic", 5)
+	control.set_shader_parameter(&"diagnostic_door", true)
+	assert_int_equal(clean.get_shader_parameter(&"diagnostic"), 0, "runtime shader stays lit")
+	assert_false(clean.get_shader_parameter(&"diagnostic_door"), "door ID stays preview-only")
+
 func test_packed_atlases_preserve_colour_independent_of_alpha() -> void:
 	for state: String in ["as_built", "aged"]:
 		for kind: String in ["albedo", "normal", "orm"]:

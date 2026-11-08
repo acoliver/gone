@@ -77,7 +77,7 @@ func _run() -> void:
 	stage.add_child(fill)
 	var initial := _parts(model)
 	var cameras: Dictionary = {}
-	for angle: String in ["hero", "front", "detail", "top"]:
+	for angle: String in ["hero", "front", "detail", "top", "streaks"]:
 		_camera(angle)
 		cameras[angle] = {"position": _vec(camera.position), "target": _vec(_target(angle)), "size": camera.size, "image_size": [1024, 1024]}
 		for state: StringName in [&"as_built", &"aged"]:
@@ -95,9 +95,25 @@ func _run() -> void:
 				await _capture("%s-albedo-%s.png" % [state, angle])
 				_diagnostic(2)
 				await _capture("%s-ids-%s.png" % [state, angle])
+				_diagnostic(3)
+				await _capture("%s-regions-%s.png" % [state, angle])
+				_diagnostic(4)
+				await _capture("%s-orm-%s.png" % [state, angle])
+				_diagnostic(5)
+				await _capture("%s-doorface-%s.png" % [state, angle])
 				_diagnostic(0)
-	for item: Array in [["before-after.png", "as_built-remembered-hero.png", "aged-present-hero.png"], ["neutral-pair.png", "as_built-neutral-hero.png", "aged-neutral-hero.png"], ["details.png", "as_built-neutral-detail.png", "aged-neutral-detail.png"], ["front-pair.png", "as_built-neutral-front.png", "aged-neutral-front.png"]]:
+				if state == &"aged" and angle == "top":
+					_set_dust(false)
+					for light: String in ["neutral", "present"]:
+						_lighting(light)
+						await _capture("aged-nodust-%s-top.png" % light)
+					_diagnostic(1)
+					await _capture("aged-nodust-albedo-top.png")
+					_diagnostic(0)
+					_set_dust(true)
+	for item: Array in [["before-after.png", "as_built-remembered-hero.png", "aged-present-hero.png"], ["neutral-pair.png", "as_built-neutral-hero.png", "aged-neutral-hero.png"], ["details.png", "as_built-neutral-detail.png", "aged-neutral-detail.png"], ["front-pair.png", "as_built-neutral-front.png", "aged-neutral-front.png"], ["streaks-closeup.png", "as_built-neutral-streaks.png", "aged-neutral-streaks.png"]]:
 		_pair(item[0], item[1], item[2])
+	if prop == &"storage_locker_module": _detail_sheet()
 	report = {"prop": prop, "asset": asset, "cameras": cameras, "same_mesh": aged_asset == "", "same_pivots": aged_asset == "", "same_part_names": aged_asset == "", "same_footprint": aged_asset == "", "rigid_geometry_checked": aged_asset == "", "parts": initial, "present_colour": _vec(Vector3(Lighting.REGULAR_WHITE.r, Lighting.REGULAR_WHITE.g, Lighting.REGULAR_WHITE.b)), "present_energy": Lighting.regular_energy(), "diagnostics": "Unlit actual shader albedo for hue gates; IDs R=PaintedSteel G=up face B=prop coverage"}
 	var file := FileAccess.open(output.path_join("preview.json"), FileAccess.WRITE)
 	file.store_string(JSON.stringify(report, "\t") + "\n")
@@ -108,14 +124,14 @@ func _run() -> void:
 
 func _camera(angle: String) -> void:
 	var scale := height / 2.4
-	var positions := {"hero": Vector3(-2.0, 2.6, 3.5), "front": Vector3(0, 1.2, 4.5), "detail": Vector3(-0.6, 2.10, 2.5), "top": Vector3(-0.5, 3.7, 1.7)}
+	var positions := {"hero": Vector3(-2.0, 2.6, 3.5), "front": Vector3(0, 1.2, 4.5), "detail": Vector3(-0.6, 2.10, 2.5), "top": Vector3(-0.5, 3.7, 1.7), "streaks": Vector3(-0.275, 2.15, 0.70)}
 	camera.position = positions[angle] * scale + _camera_offset()
 	camera.look_at(_target(angle), Vector3.UP)
-	camera.size = (1.0 if angle == "detail" else (1.0 if angle == "top" else 2.85)) * scale
+	camera.size = (0.20 if angle == "streaks" else (1.0 if angle in ["detail", "top"] else 2.85)) * scale
 	if not is_nan(frame_size) and angle in ["hero", "front"]: camera.size = frame_size
 
 func _target(angle: String) -> Vector3:
-	return {"hero": Vector3(0, 1.2, 0), "front": Vector3(0, 1.2, 0), "detail": Vector3(0, 2.0, 0.27), "top": Vector3(0, 2.3, 0)}[angle] * (height / 2.4) + _camera_offset()
+	return {"hero": Vector3(0, 1.2, 0), "front": Vector3(0, 1.2, 0), "detail": Vector3(0, 2.0, 0.27), "top": Vector3(0, 2.3, 0), "streaks": Vector3(-0.275, 2.15, 0.30)}[angle] * (height / 2.4) + _camera_offset()
 
 func _camera_offset() -> Vector3:
 	return Vector3.ZERO if is_nan(centre_y) else Vector3(0, centre_y - height / 2, 0)
@@ -141,7 +157,12 @@ func _diagnostic(mode: int) -> bool:
 		var piece := node as MeshInstance3D
 		if mode == 1: piece.material_override = piece.material_override.duplicate()
 		(piece.material_override as ShaderMaterial).set_shader_parameter(&"diagnostic", mode)
+		(piece.material_override as ShaderMaterial).set_shader_parameter(&"diagnostic_door", piece.name == &"Door")
 	return true
+
+func _set_dust(enabled: bool) -> void:
+	for node: Node in model.find_children("*", "MeshInstance3D", true, false):
+		(node.material_override as ShaderMaterial).set_shader_parameter(&"dust_enabled", enabled)
 
 func _capture(name: String) -> void:
 	for index: int in range(3): await process_frame
@@ -158,6 +179,15 @@ func _pair(name: String, left: String, right: String) -> void:
 	sheet.blit_rect(a, Rect2i(Vector2i.ZERO, a.get_size()), Vector2i.ZERO)
 	sheet.blit_rect(b, Rect2i(Vector2i.ZERO, b.get_size()), Vector2i(a.get_width(), 0))
 	assert(sheet.save_png(output.path_join(name)) == OK)
+
+func _detail_sheet() -> void:
+	_pair("top-pair.png", "as_built-neutral-top.png", "aged-neutral-top.png")
+	var upper := Image.load_from_file(output.path_join("details.png"))
+	var top := Image.load_from_file(output.path_join("top-pair.png"))
+	var sheet := Image.create(2048, 2048, false, upper.get_format())
+	sheet.blit_rect(upper, Rect2i(0, 0, 2048, 1024), Vector2i.ZERO)
+	sheet.blit_rect(top, Rect2i(0, 0, 2048, 1024), Vector2i(0, 1024))
+	assert(sheet.save_png(output.path_join("details.png")) == OK)
 
 func _parts(node: Node) -> Dictionary:
 	var result := {}

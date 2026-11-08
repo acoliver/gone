@@ -24,6 +24,9 @@ from mathutils import Vector
 from mathutils.bvhtree import BVHTree
 
 ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / "tools/quarters_aging"))
+from finish_fields import gravity_runs
+
 SPEC = importlib.util.spec_from_file_location("hatch_bake", ROOT / "tools/blender/hatch_bake.py")
 hatch = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(hatch)
@@ -192,7 +195,7 @@ def rasterize(objects, resolution):
             ownership[y, x] = {"PaintedSteel": 1, "BareSteel": 2, "DarkSteel": 3}.get(mat, 4)
             distance = np.full(len(x), 1.0)
             for start, end in edges:
-                if np.any(np.maximum(start, end) < positions.min(0) - .04) or np.any(np.minimum(start, end) > positions.max(0) + .04):
+                if np.any(np.maximum(start, end) < positions.min(0) - .15) or np.any(np.minimum(start, end) > positions.max(0) + .15):
                     continue
                 segment = end - start
                 t = np.clip(np.sum((positions - start) * segment, axis=1) / np.sum(segment * segment), 0, 1)
@@ -204,17 +207,14 @@ def rasterize(objects, resolution):
         if any(token in obj.name.lower() for token in ("rivet", "hinge", "handle", "vent")):
             for lo, hi in connected_sources(obj, points):
                 centre = (lo + hi) / 2
-                sources.append({"part": obj.name, "position_blender": centre.tolist(),
-                                "width_m": float(max(.0045, min(.025, (hi[0] - lo[0]) * .30))),
-                                "length_m": float(.22 if "Rivet" in obj.name else .48)})
-        for start, end in edges:
-            # Horizontal returns include the lips of openings. Sample their
-            # length in world space so the field follows gravity across UV seams.
-            length = np.linalg.norm(end - start)
-            if abs(start[2] - end[2]) < .001 and length > .06:
-                for t in np.linspace(0, 1, max(2, int(length / .04))):
-                    sources.append({"part": obj.name + "/edge", "position_blender": (start + t * (end - start)).tolist(),
-                                    "width_m": .006, "length_m": .12, "strength": .18})
+                centre[2] = lo[2]
+                outlets = [centre]
+                if "vent" in obj.name.lower():
+                    outlets = [np.array([x, centre[1], lo[2]]) for x in np.linspace(lo[0] + .015, hi[0] - .015, 3)]
+                for outlet in outlets:
+                    sources.append({"part": obj.name, "position_blender": outlet.tolist(),
+                                    "width_m": .0075, "length_m": .15,
+                                    "bounds_blender": [lo.tolist(), hi.tolist()]})
         print("RASTER", obj.name, "texels", int(occupied.sum()), flush=True)
     densities = np.asarray(densities)
     if np.ptp(densities) / np.median(densities) > .015:
@@ -294,22 +294,7 @@ def main():
     ao = bake_ao(objects, args.resolution, args.seed)
     streak = np.zeros_like(edge)
     p, n = positions[occupied], normals[occupied]
-    runs = np.zeros(len(p), np.float32)
-    rng = np.random.default_rng(args.seed)
-    for source in sources:
-        origin = np.array(source["position_blender"])
-        width = source["width_m"] * rng.uniform(.8, 1.2)
-        length = source["length_m"] * rng.uniform(.8, 1.2)
-        drop = origin[2] - p[:, 2]
-        for along, across in ((0, 1), (1, 0)):
-            candidates = (drop >= 0) & (drop < length) & (abs(p[:, along] - origin[along]) < width * 3)
-            candidates &= (abs(p[:, across] - origin[across]) < .06) & (abs(n[:, across]) > .6)
-            delta = p[candidates, along] - origin[along] + .001 * np.sin(p[candidates, 2] * 17 + origin[2] * 3)
-            trail = np.exp(-(delta / width) ** 2) * (1 - drop[candidates] / length) ** .65
-            runs[candidates] = np.maximum(runs[candidates], trail * source.get("strength", 1))
-    streak[occupied] = runs
-    # Sharp exposed edges/opening returns also seed downward corrosion.
-    streak = np.maximum(streak, edge * contact * .45)
+    streak[occupied] = gravity_runs(p, n, sources, args.seed)
     cavity = np.clip((1 - ao) * 1.6, 0, 1)
     exposure = np.clip(normals[:, :, 2], 0, 1) * ao
     save_rgba("geometry_masks", np.stack([ao, cavity, edge, occupied], -1), args.output)

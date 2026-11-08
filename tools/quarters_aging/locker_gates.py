@@ -1,8 +1,8 @@
-"""Measure Godot captures, never atlas coverage or lighting-dependent colours.
+"""Measure actual Godot finish visibility, exported UVs and deterministic bakes.
 
-The preview captures the actual shader albedo unlit, plus a material/up-face ID
-pass with the identical camera and mesh. Lit neutral and story pairs accompany
-these diagnostic images. No-green compares aligned clean and aged pixels.
+The original hue/coverage gates remain unchanged. Matched neutral, present and
+unlit controls also measure dust contrast, physical streak strips and edge
+weighting. Atlas-only material and pitting checks are reported separately.
 """
 import argparse
 import json
@@ -138,10 +138,39 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--captures", type=Path, required=True)
     parser.add_argument("--masks", type=Path, required=True)
+    parser.add_argument("--fields", type=Path, required=True)
+    parser.add_argument("--repeat", type=Path, required=True)
     args = parser.parse_args()
     result = measure(args.captures, args.masks)
+    from locker_visibility import measure_visibility
+    extra = measure_visibility(args.captures, json.loads(args.masks.read_text()), json.loads((args.captures / 'preview.json').read_text()), args.masks.with_name('finishes.json'))
+    from atlas_gates import uv_metrics, measure_atlases, repeat_metrics
+    repeated = repeat_metrics(args.masks.parent, args.repeat)
+    extra['values'].update(repeated)
+    for name in ('byte_identical_bakes', 'byte_identical_export'):
+        extra['gates'][name] = repeated[name]
+        extra['thresholds'][name] = True
+    uv = uv_metrics(args.masks.parent.with_suffix('.glb'))
+    atlas = measure_atlases(args.masks.parent, args.fields)
+    extra['values'].update(exported_uv_density_range=[uv['density_min'], uv['density_max']],
+                           exported_uv_max_stretch=uv['max_stretch'], **atlas)
+    extra['gates']['exported_uv_density'] = uv['density_min'] >= 304.6*.85 and uv['density_max'] <= 304.6*1.15
+    extra['gates']['exported_uv_no_stretch'] = uv['max_stretch'] <= 1.015
+    lo, hi = atlas['paint_roughness_range']
+    extra['gates']['paint_roughness_range'] = .34 <= lo and hi <= .56 and hi-lo >= .12
+    extra['gates']['bare_steel_pit_normal_rms'] = atlas['bare_steel_pit_normal_rms'] >= .01
+    extra['gates']['hardware'] = all(row['rust_fraction'] >= .30 and row['pit_normal_rms'] >= .01 for row in atlas['hardware'].values())
+    extra['thresholds']['hardware'] = 'each named hardware part: atlas rust>=0.30, pit normal RMS>=0.01'
+    extra['thresholds'].update(exported_uv_density='304.6 +/-15% px/m, every triangle singular value',
+                               exported_uv_no_stretch='anisotropy <=1.015, every triangle',
+                               paint_roughness_range='about 0.35..0.55, span>=0.12',
+                               bare_steel_pit_normal_rms='>=0.01 tangent-normal deviation')
+    for name in ('values', 'gates', 'thresholds'):
+        result[name].update(extra[name])
+    result['visibility_fasteners'] = extra['visibility_fasteners']
+    result['passed'] = all(result['gates'].values())
     (args.captures / "gates.json").write_text(json.dumps(result, indent=2) + "\n")
-    print(json.dumps({name: value for name, value in result.items() if name != "fasteners"}, indent=2))
+    print(json.dumps({name: value for name, value in result.items() if name not in ("fasteners", "visibility_fasteners")}, indent=2))
     raise SystemExit(0 if result["passed"] else 1)
 
 

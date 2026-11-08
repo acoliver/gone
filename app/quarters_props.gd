@@ -17,6 +17,8 @@ const PROPS := {
 			"orm": preload("res://assets/props/quarters/storage_locker_module/aged_orm.png"),
 		},
 		&"weather_masks": preload("res://assets/props/quarters/storage_locker_module/weather_masks.png"),
+		&"region_masks": preload("res://assets/props/quarters/storage_locker_module/region_masks.png"),
+		&"streak_sources": preload("res://assets/props/quarters/storage_locker_module/streak_sources.tres"),
 	},
 }
 static var _materials: Dictionary = {}
@@ -31,6 +33,12 @@ static func material(prop: StringName, state: StringName) -> ShaderMaterial:
 	for kind: String in ["albedo", "normal", "orm"]:
 		result.set_shader_parameter("baked_" + kind, PROPS[prop][state][kind])
 	result.set_shader_parameter(&"weather_masks", PROPS[prop][&"weather_masks"])
+	result.set_shader_parameter(&"region_masks", PROPS[prop][&"region_masks"])
+	result.set_shader_parameter(&"streak_sources", PROPS[prop][&"streak_sources"])
+	result.set_shader_parameter(&"aged_finish", state == &"aged")
+	result.set_shader_parameter(&"dust_enabled", true)
+	result.set_shader_parameter(&"diagnostic", 0)
+	result.set_shader_parameter(&"diagnostic_door", false)
 	for parameter: String in Surfaces.HATCH_DETAIL_TEXTURES:
 		result.set_shader_parameter(parameter, Surfaces.HATCH_DETAIL_TEXTURES[parameter])
 	_materials[identity] = result
