@@ -108,8 +108,9 @@ def spaced_cards(obj, mat, seed, wool, blockers, group_name=None):
             if obj.name.startswith('FallenHem_') and normal.z < 0:
                 normal.negate()
             width = min(float(rng.uniform(.008, .012)), .9*stride)
-            extent = float(np.clip(rng.lognormal(np.log(.009 if wool else .004), .4),
-                                   .002, .018 if wool else .006))
+            minimum_length = .003 if wool else .002
+            extent = float(np.clip(rng.lognormal(np.log(.007 if wool else .004), .4),
+                                   minimum_length, .018 if wool else .006))
             droop = float(rng.uniform(0, math.radians(35)))
             twist = float(rng.uniform(-.15, .15))
             direction = (outward*math.cos(droop)+Vector((0, 0, -1))*math.sin(droop)).normalized()
@@ -121,7 +122,7 @@ def spaced_cards(obj, mat, seed, wool, blockers, group_name=None):
                     root = point-outward*.0012+side_normal*offset
                     for tail_direction in [direction, (direction+side_normal*.4).normalized()]:
                         for factor in [1., .75, .5]:
-                            length = max(.002, extent*factor)
+                            length = max(minimum_length, extent*factor)
                             tip = root+tail_direction*length
                             quad = [root-sideways*width/2, root+sideways*width/2,
                                     tip+sideways*width/2, tip-sideways*width/2]

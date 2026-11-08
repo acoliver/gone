@@ -8,7 +8,7 @@ from mathutils import Vector
 from mathutils.kdtree import KDTree
 
 from bake_down import material_maps
-from common import apply
+from common import apply, surface_tree
 from fabric_mesh import material, new_object
 from fringe_cards import fringe_material, image_from_array, strand_atlas
 from fringe_boundary import spaced_cards
@@ -156,7 +156,7 @@ def wool_fringe(out):
     return mat
 
 
-def rim_modifier(obj):
+def rim_modifier(obj, blockers):
     # The edge must disappear with the same lip breakup as its parent sheet.
     rim_mat = obj.data.materials[0].copy()
     rim_mat.name = 'WoolCutEdge'
@@ -165,23 +165,26 @@ def rim_modifier(obj):
     rim = obj.modifiers.new('Rim-only 3 mm wool', 'SOLIDIFY')
     rim.use_rim_only = True
     rim.thickness = .003
-    rim.offset = 0.
+    # Offset zero also moves the retained sheet by half the thickness. Keep
+    # the baked/collision-tested surface fixed and put the cut edge inward.
+    rim.offset = -1.
     rim.use_even_offset = False
     rim.use_quality_normals = True
     rim.thickness_clamp = 1.
     rim.use_thickness_angle_clamp = True
-    rim.vertex_group = thickness_weights(obj)
+    rim.vertex_group = thickness_weights(obj, blockers)
     rim.thickness_vertex_group = 0.
     rim.material_offset_rim = len(obj.data.materials)-1
     return rim
 
 
-def thickness_weights(obj):
+def thickness_weights(obj, blockers):
     from mathutils.bvhtree import BVHTree
     obj.data.calc_loop_triangles()
     positions = [obj.matrix_world @ v.co for v in obj.data.vertices]
     faces = [tuple(t.vertices) for t in obj.data.loop_triangles]
     tree = BVHTree.FromPolygons(positions, faces, all_triangles=True)
+    supports = [surface_tree(blocker) for blocker in blockers]
     neighbors = {i: {i} for i in range(len(positions))}
     for edge in obj.data.edges:
         a, b = edge.vertices
@@ -192,6 +195,11 @@ def thickness_weights(obj):
         gaps = [distance for _, _, face, distance in tree.find_nearest_range(point, .0036)
                 if not neighbors[index].intersection(faces[face])]
         weight = min(1., max(.1, min(gaps)/.0036)) if gaps else 1.
+        inward = -(obj.matrix_world.to_3x3() @ obj.data.vertices[index].normal).normalized()
+        for support in supports:
+            hit, _, _, distance = support.ray_cast(point, inward, .0036)
+            if hit is not None:
+                weight = min(weight, max(.1, .9*distance/.003))
         group.add([index], weight, 'REPLACE')
     return group.name
 
@@ -226,12 +234,14 @@ def finish_cards(out, record):
     # Test placements against the actual rim geometry without losing the open
     # midsurface from which the cards and their UV categories are constructed.
     rim_proxies = []
+    rim_blockers = [o for o in bpy.context.scene.objects if o.type == 'MESH' and o.get('aged_export')]
+    rim_blockers.append(bpy.data.objects['AgingFloorCollider'])
     for sheet in sheets:
         proxy = sheet.copy()
         proxy.data = sheet.data.copy()
         bpy.context.collection.objects.link(proxy)
         proxy['aged_export'] = False
-        apply(proxy, rim_modifier(proxy))
+        apply(proxy, rim_modifier(proxy, [o for o in rim_blockers if o != sheet]))
         rim_proxies.append(proxy)
     from detail_clearance import seat_details
     record['rim_detail_clearance'] = seat_details(rim_proxies[0], record['bindings'])
@@ -257,7 +267,7 @@ def finish_cards(out, record):
         objects.append(obj)
         record['fallen_fringe'][sheet.name] = measured
     for sheet in sheets:
-        apply(sheet, rim_modifier(sheet))
+        apply(sheet, rim_modifier(sheet, [o for o in rim_blockers if o != sheet]))
     for proxy in rim_proxies:
         objects.remove(proxy)
         bpy.data.objects.remove(proxy, do_unlink=True)

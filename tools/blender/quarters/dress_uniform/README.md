@@ -82,6 +82,30 @@ Preparation, simulation and bakes are saved under `tmp/age/tunic6/main/`.
 The delivered asset is unchanged. Final geometry, cards and rendered gates
 are measured after the finishing stage.
 
+## Cards and heap milestone
+
+`tunic6-main` now has fringe on the body and all three fallen pieces, a saved
+2048-square opacity map with 197 stitch-hole centers, a mass-balanced mound,
+a 400 by 300 mm floor skirt and 65 heap fibre cards. Body hem, seam allowance
+and long-edge root coverage measure 70.38%, 84.79% and 73.76%. The fallen
+pieces measure 64.25%, 58.36% and 77.24%; the first two miss the local 70%
+coverage control because placements crossing surrounding geometry are rejected.
+Contact avoidance also moves some roots up to 3.98 mm from the sheet, exceeding
+the recipe's 0.2 mm normal offset. This finishing stage is not visually approved.
+Wool lengths now follow the specified 7 mm median recipe and 3 to 18 mm limits.
+
+A plane control showed that centered rim-only Solidify shifts the retained
+sheet by 1.5 mm. The local implementation therefore departs from the plan's
+zero offset: offset -1 preserves the baked, collision-tested surface and puts
+the nominal 3 mm rim inward. Thickness is compressed where an inward ray meets
+another support, including the floor. Tests verify the unchanged sheet, a
+single shell, `WoolCutEdge` assignment and floor clearance on a plane. This
+does not establish clearance on the folded candidate; final SAT still finds
+contacts, including three fallen-strip/skirt contacts.
+
+The scratch export has 18,219 triangles against 20,652 allowed, and reopening
+`finished.blend` re-exports byte-identically. No delivered file was replaced.
+
 ## Attachment constraints
 
 The collar follows neckline edges without a vertical lift. Closed fittings

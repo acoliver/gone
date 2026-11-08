@@ -12860,7 +12860,7 @@
   "dense_aging": [
     {
       "trial": "tunic6-main",
-      "status": "dense simulation and normal/AO bake complete; final acceptance pending",
+      "status": "dense stages and finishing complete; exported candidate fails acceptance",
       "source": "tunic-working.blend",
       "seed": 9521,
       "scratch": "tmp/age/tunic6/main",
@@ -13016,9 +13016,162 @@
       "limitations": [
         "The body still moves 15.05 mm over its final five frames.",
         "Dense sharp-adjacency share is 18.45%; reduced sheet share is 24.40%, before visibility filtering.",
-        "Local controls do not certify exported geometry or appearance."
+        "Local controls do not certify exported geometry or appearance.",
+        "Fallen fringe coverage is 64.25% and 58.36% on two pieces, below the local 70% control.",
+        "Card contact avoidance requires root normal offsets up to 3.98 mm, above the 0.2 mm recipe.",
+        "Rim floor clearance passes a plane control but the folded export has three strip/skirt contacts."
       ],
-      "delivered_asset_replaced": false
+      "delivered_asset_replaced": false,
+      "cards": {
+        "fringe": {
+          "Hem fringe": {
+            "boundary_length_m": 1.1150420737614224,
+            "covered_root_length_m": 0.7847246158362245,
+            "authored_coverage": 0.7037623371368196,
+            "method": "union of card-root projections onto actual lip arclength",
+            "cards": 88,
+            "triangles": 176,
+            "omitted_contacts": 13,
+            "maximum_root_offset_m": 0.003982728129183773,
+            "sat_checked": true,
+            "extent_min_max_m": [
+              0.003,
+              0.017289450632169967
+            ],
+            "coverage_pass": true
+          },
+          "Seam allowance": {
+            "boundary_length_m": 0.39390962054589274,
+            "covered_root_length_m": 0.3339812190258295,
+            "authored_coverage": 0.8478625593428957,
+            "method": "union of card-root projections onto actual lip arclength",
+            "cards": 41,
+            "triangles": 82,
+            "omitted_contacts": 1,
+            "maximum_root_offset_m": 0.003619074321434994,
+            "sat_checked": true,
+            "extent_min_max_m": [
+              0.002,
+              0.006
+            ],
+            "coverage_pass": true
+          },
+          "Long wool fringe": {
+            "boundary_length_m": 1.4046994754019215,
+            "covered_root_length_m": 1.0360698011514669,
+            "authored_coverage": 0.7375739930813457,
+            "method": "union of card-root projections onto actual lip arclength",
+            "cards": 116,
+            "triangles": 232,
+            "omitted_contacts": 11,
+            "maximum_root_offset_m": 0.003938855724825786,
+            "sat_checked": true,
+            "extent_min_max_m": [
+              0.003,
+              0.016086226371633806
+            ],
+            "coverage_pass": true
+          }
+        },
+        "fallen_fringe": {
+          "FallenHem_1": {
+            "boundary_length_m": 0.28832768821720334,
+            "covered_root_length_m": 0.1852457789563481,
+            "authored_coverage": 0.6424834884979849,
+            "method": "union of card-root projections onto actual lip arclength",
+            "cards": 23,
+            "triangles": 46,
+            "omitted_contacts": 3,
+            "maximum_root_offset_m": 0.0038220824783251695,
+            "sat_checked": true,
+            "extent_min_max_m": [
+              0.003,
+              0.016308150046459996
+            ],
+            "coverage_pass": false
+          },
+          "FallenHem_2": {
+            "boundary_length_m": 0.3262426819607784,
+            "covered_root_length_m": 0.19039720690346784,
+            "authored_coverage": 0.5836060620858855,
+            "method": "union of card-root projections onto actual lip arclength",
+            "cards": 23,
+            "triangles": 46,
+            "omitted_contacts": 7,
+            "maximum_root_offset_m": 0.0038949885885286714,
+            "sat_checked": true,
+            "extent_min_max_m": [
+              0.003,
+              0.008028607765011844
+            ],
+            "coverage_pass": false
+          },
+          "FallenHem_3": {
+            "boundary_length_m": 0.17722589171625364,
+            "covered_root_length_m": 0.13689322449489122,
+            "authored_coverage": 0.7724222638646007,
+            "method": "union of card-root projections onto actual lip arclength",
+            "cards": 15,
+            "triangles": 30,
+            "omitted_contacts": 1,
+            "maximum_root_offset_m": 0.0037588972568997326,
+            "sat_checked": true,
+            "extent_min_max_m": [
+              0.003,
+              0.018
+            ],
+            "coverage_pass": true
+          }
+        },
+        "opacity": {
+          "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic6/main/textures/tunic_opacity.png",
+          "size": 2048,
+          "transparent_texels": 8671,
+          "lip_band_m": 0.003,
+          "noise_gain": 3.5,
+          "feature_wavelengths_m": [
+            0.002,
+            0.001,
+            0.0007,
+            0.0005
+          ],
+          "stitch_holes": {
+            "pitch_m": 0.002,
+            "radius_m": 0.00035,
+            "centers": 197,
+            "placement": "physical arclength on each released seam lip",
+            "transparent_stitch_texels": 49
+          }
+        },
+        "floor_skirt": {
+          "size_xy_m": [
+            0.4,
+            0.3
+          ],
+          "floor_height_m": -0.9498,
+          "triangles": 8
+        },
+        "heap_fibre_cards": 65
+      },
+      "heap": {
+        "lost_area_m2": 0.0015590441917083808,
+        "wool_thickness_m": 0.0035,
+        "packing_fraction": 0.05,
+        "expected_volume_m3": 0.00010913309341958664,
+        "measured_volume_m3": 0.00010531193913918517,
+        "ratio": 0.9649862918692299,
+        "height_m": 0.022453581215813756,
+        "source": "shared residue_sdf.height_field and mesh_sdf; tunic-local deposition envelope"
+      },
+      "repeat_export_byte_identical": true,
+      "export_triangles": 18219,
+      "rim": {
+        "nominal_thickness_m": 0.003,
+        "offset": -1.0,
+        "reason": "Offset zero moves the already baked and validated sheet by 1.5 mm; offset -1 retains it and extends inward.",
+        "support_limited_thickness": true,
+        "control": "test_wool_rim.py"
+      }
     }
   ]
 }
