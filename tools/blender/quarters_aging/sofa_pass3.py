@@ -202,7 +202,7 @@ def rigid_crumbs(seed, frames):
     floor=bpy.context.object;floor.name='RigidFloorVolume';floor.dimensions=(8,8,.2)
     bpy.ops.object.transform_apply(location=False,rotation=False,scale=True)
     floor.hide_render=True;floor['aged_export']=False
-    static=[bpy.data.objects['Frame'],floor,*[o for o in scene.objects if o.name in CUSHIONS+['Throw','ThrowDetachedPiece'] and o.get('aged_export')]]
+    static=[*[bpy.data.objects[n] for n in ['Frame', 'Feet', 'Rivets']],floor,*[o for o in scene.objects if o.name in CUSHIONS+['Throw','ThrowDetachedPiece'] and o.get('aged_export')]]
     for obj in static:
         activate(obj);bpy.ops.rigidbody.object_add();obj.rigid_body.type='PASSIVE'
         obj.rigid_body.collision_shape='BOX' if obj==floor else 'MESH';obj.rigid_body.friction=.95

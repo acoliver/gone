@@ -47,6 +47,39 @@ def vertical_area(mesh):
     return float(mesh.area_faces[np.abs(mesh.face_normals[:, 1]) < .35].sum())
 
 
+def rounded_box_rms(points):
+    from scipy.optimize import least_squares
+    points = np.asarray(points)
+    centre = (points.min(0)+points.max(0))/2
+    half = np.maximum(np.ptp(points, axis=0)/2, .002)
+    def residual(parameters):
+        c, s = np.cos(parameters[6]), np.sin(parameters[6])
+        rotation = np.array([[c, 0, -s], [0, 1, 0], [s, 0, c]])
+        radius = parameters[7]*parameters[3:6].min()
+        q = np.abs((points-parameters[:3])@rotation)-parameters[3:6]+radius
+        return np.linalg.norm(np.maximum(q, 0), axis=1)+np.minimum(q.max(1), 0)-radius
+    fit = least_squares(residual, [*centre, *half, 0, .1],
+                        bounds=([*(centre-half), .0001, .0001, .0001, -np.pi/2, 0],
+                                [*(centre+half), *(half*2), np.pi/2, 1]))
+    return float(np.sqrt(np.mean(residual(fit.x)**2)))
+
+
+def volume_below(mesh, height):
+    volume = 0.
+    for triangle in mesh.triangles:
+        polygon = []
+        for a, b in zip(triangle, np.roll(triangle, -1, axis=0)):
+            inside_a, inside_b = a[1] <= height, b[1] <= height
+            if inside_a:
+                polygon.append(a)
+            if inside_a != inside_b:
+                polygon.append(a+(b-a)*(height-a[1])/(b[1]-a[1]))
+        for i in range(1, len(polygon)-1):
+            a, b, c = polygon[0], polygon[i], polygon[i+1]
+            volume += ((a[1]+b[1]+c[1])/3-height)*np.cross(b-a, c-a)[1]/2
+    return abs(float(volume))
+
+
 def cluster_fraction(points, eps=.030, minimum=4):
     """DBSCAN core connectivity with border points, without a sklearn dependency."""
     if not len(points):
@@ -82,14 +115,23 @@ def measure(path, collisions=None, reexport=None):
     def measured(key, value, passed):
         gates[key].update(value=value, status='measured', **{'pass': bool(passed)})
 
+    def surface(part, prefix):
+        import trimesh
+        matches = [m for name, m in part.metadata['raw_primitives'].items() if name.startswith(prefix)]
+        if not matches:
+            raise ValueError(f'No {prefix} surface in exported part')
+        return trimesh.util.concatenate(matches)
+
     cloth, crust, walls, centres, backs = {}, {}, {}, {}, {}
+    box_errors, bottom_volume = {}, {}
     for name in sorted(n for n in before if 'Cushion' in n):
-        cover = primitive(after[name], 'CharcoalUpholstery')
-        residue = primitive(after[name], 'Foam')
+        cover = surface(after[name], 'CharcoalUpholstery')
+        residue = clean(surface(after[name], 'Foam'))
         cloth[name] = dihedral_share(clean(cover))
         crust[name] = float(residue.facets_area[residue.facets_area > .001].sum() / residue.area)
         if name.startswith('Seat'):
             walls[name] = vertical_area(cover) / vertical_area(before[name])
+            box_errors[name] = rounded_box_rms(cover.vertices)
             cx = before[name].centroid[0]
             x, z = np.meshgrid(np.linspace(cx-.08, cx+.08, 7), np.linspace(.02, .17, 7))
             samples = np.c_[x.ravel(), z.ravel()]
@@ -99,12 +141,18 @@ def measure(path, collisions=None, reexport=None):
         else:
             base = before[name].bounds[0, 1]
             backs[name] = float((cover.bounds[1, 1]-base)/(before[name].bounds[1, 1]-base))
+            bottom_volume[name] = volume_below(residue, base+before[name].extents[1]/3)/abs(residue.volume)
     cloth['Throw'] = dihedral_share(clean(primitive(after['Throw'], 'OatmealWool')))
     measured('G1', cloth, all(v <= (.09 if n == 'Throw' else .08) for n, v in cloth.items()))
+    gates['G1']['method'] = 'All-sheet adjacency diagnostic; visible-face measurement remains pending'
+    gates['G1']['status'] = 'partial'
+    gates['G1']['pass'] = False
     measured('G7', crust, all(v <= .05 for v in crust.values()))
     measured('G12', walls, all(v <= .25 for v in walls.values()))
+    measured('G13', box_errors, all(v >= .012 for v in box_errors.values()))
     measured('G14', centres, all(v is not None and .1 <= v <= .25 for v in centres.values()))
     measured('G15', backs, all(.4 <= v <= .65 for v in backs.values()))
+    measured('G16', bottom_volume, all(v >= .6 for v in bottom_volume.values()))
     if 'FoamDebris' in after:
         pieces = clean(after['FoamDebris']).split(only_watertight=False)
         floor = np.array([p.centroid[[0, 2]] for p in pieces if p.bounds[0, 1] < .03])

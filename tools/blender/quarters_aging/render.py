@@ -39,6 +39,8 @@ def render(prop, out, aged_path=None):
             shader = mat.node_tree.nodes.get('Principled BSDF')
             if shader is None:
                 continue
+            if any(node.type == 'TEX_IMAGE' for node in mat.node_tree.nodes):
+                continue
             colors = {'Foam': (.16, .065, .022, 1), 'FibreDust': (.27, .24, .19, 1),
                       'CharcoalUpholstery': (.055, .060, .066, 1), 'CoverInside': (.04, .045, .05, 1),
                       'CoverSplitSection': (.07, .065, .06, 1),

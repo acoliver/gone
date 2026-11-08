@@ -177,7 +177,32 @@ The image-comparer inspection of the profiled finish, before the final coverage 
 
 The fitted source is `tools/blender/quarters/sofa/sofa-working.blend`, and the game asset is `assets/props/quarters/sofa.glb`. The cushions and throw are baked Blender cloth meshes with no live modifiers. Authoring uses Blender Z up and front -Y. Export uses `export_yup=True`, giving the game +Y up and front +Z.
 
-### Aged state
+### Dense aging pilot, not shipped
+
+Pass 4 has reusable dense-mesh, zero-area split, residue SDF, bake-down, fringe, opacity and powder stages under `tools/blender/quarters_aging/`. The centre seat has an experimental baked source at `tmp/age/pass4/seat-proxy/sofa-seat-pilot.blend` and a GLB beside it. The rest of that comparison uses the recorded `sofa-k` geometry. No pass-4 trial is selected, and the shipped asset is unchanged.
+
+The old crumb clustering and spacing-CV gates rewarded compact piles. They are retired in favour of G10's Clark-Evans R and DBSCAN limits and G11's decaying powder spill. Perimeter-only tear scoring and 30 mm straight runs admitted slots; G3 to G6 instead require short alpha-aware contour runs, varying width, lifted lips and contour dimension. The old 35% to 45% seat-height band is replaced by 10% to 25%, with vertical-wall and rounded-box checks. The >=65% retained back-height target is replaced by 40% to 65%, bottom-heavy residue and front folds. `quarters_aging/README.md` records each change and the full threshold list. G2 to G6 and several dense-source/story measurements remain unfinished and fail as unmeasured.
+
+| Centre-seat pilot check | Value | Requirement / state |
+| --- | --- | --- |
+| Simulation and game cover triangles | 22,976 to 2,400 | 2,400 game triangles |
+| Residue game triangles | 700 | 700 |
+| Open-boundary error upper bound | 0.125 mm | <=1.5 mm; centre seat only |
+| Full comparison triangles | 29,096 | <=29,325; passes |
+| Centre height above deck, relative to unaged | 32.69% | 10% to 25%; fails |
+| Remaining vertical-wall area | 28.95% | <=25%; fails |
+| Cloth dihedral >30 degrees | 60.98% | <=8%; fails |
+| All-part SAT intersections | 6,409 | 0; fails |
+| Fixed geometry bytes and original pivots | Unchanged | Passes |
+| Re-export from saved blend | Byte-identical | Passes |
+
+The swatches were simulated at 6 mm and 3 mm for both upholstery and wool. Per-vertex mass scaling did not preserve drape in three of the four uncut fixtures, so the candidate settings are not accepted. The centre-seat run averaged 0.423 seconds per frame. The standalone crumb library exports nine qualifying cut-residue templates at 24 triangles each, but deposition onto final sofa surfaces remains undone.
+
+The no-exclusion collision requirement conflicts with unchanged rigid geometry. The same SAT check on the unaged source finds 522 Frame self-crossings and 272 Frame/Rivets crossings. Those 794 contacts remain in every byte-identical rigid assembly. They are included in the failed total, with no exclusions and no rigid mesh edits.
+
+The provisional centre-seat material includes 4096-square normal, AO and opacity maps and alpha-scissor fringe. Its residue has 2048-square normal and AO maps. The captures are `tmp/age/pass4/sofa-before-after.png`, `sofa-turntable.png` and `sofa-closeup.png`; the closeup remains 0.6 m from the split seat. These captures have no visual sign-off. Calibration, both other seats, all three backs, the throw, deposition, shared-atlas packing, remaining measurements and final publication are still pending. Raw trial and gate values are committed in `sofa/cloth-trials.json`.
+
+### Historical aged state and measurements
 
 `tools/blender/quarters/sofa/sofa-aged.blend` holds the baked aged geometry, exported as `assets/props/quarters/sofa_aged.glb`. The selected construction is `pass2-o`; `cloth-trials.json` retains the earlier simulations and the second-pass attempts. The frame, feet and rivets keep their geometry bytes. The age remains 1000 years in dry, sterile, oxygenated air.
 

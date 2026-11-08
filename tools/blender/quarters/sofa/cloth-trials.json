@@ -29749,5 +29749,968 @@
     ],
     "calibrated": false,
     "reason": "Lip curl and split gape require measurement before production settings are accepted"
-  }
+  },
+  "pass4": [
+    {
+      "dense": {
+        "unaged_vertices": 664,
+        "dense_vertices": 11620,
+        "mass_multiplier": 0.05714285714285714,
+        "edge_quantiles_m": [
+          0.004996018629354043,
+          0.008134848943254874,
+          0.012647706082731948
+        ]
+      },
+      "reference_vertices": 722,
+      "tears": [
+        {
+          "split_length_m": 0.20259435754269361,
+          "area_before_m2": 0.7194614319646462,
+          "area_after_m2": 0.7194614319646462,
+          "removed_area_m2": 0.0,
+          "boundary_vertex_count": 311
+        },
+        {
+          "split_length_m": 0.14036411838606,
+          "area_before_m2": 0.7194614319646462,
+          "area_after_m2": 0.7194614319646462,
+          "removed_area_m2": 0.0,
+          "boundary_vertex_count": 335
+        }
+      ],
+      "residue_decimation": {
+        "source_triangles": 757184,
+        "target_triangles": 700,
+        "triangles": 7660,
+        "boundary_hausdorff_upper_m": 0.0,
+        "pass": false
+      },
+      "status": "rejected",
+      "production_calibrated": false,
+      "settings": {
+        "mass": 0.025,
+        "stiffness": 180,
+        "bending": 0.2,
+        "frames": 150,
+        "self_collision": true,
+        "shrink": 0.04
+      },
+      "simulation": {
+        "frames": 150,
+        "elapsed_s": 73.84586137498263,
+        "seconds_per_frame": 0.49544067225878397,
+        "frame_seconds": [
+          0.023952500079758465,
+          0.42737229098565876,
+          0.3981412500143051,
+          0.43742412503343076,
+          0.40736966708209366,
+          0.42276025004684925,
+          0.4257001250516623,
+          0.40906183305196464,
+          0.4288600840372965,
+          0.43187179102096707,
+          0.42033899994567037,
+          0.39939537504687905,
+          0.4233496659435332,
+          0.41205416701268405,
+          0.43155929108615965,
+          0.4176051670219749,
+          0.4525227079866454,
+          0.4492212920449674,
+          0.4280811669304967,
+          0.4287607920123264,
+          0.4291495830984786,
+          0.42550329107325524,
+          0.4212725419783965,
+          0.43316533300094306,
+          0.4327723339665681,
+          0.4215656250016764,
+          0.4422681669238955,
+          0.4370497079798952,
+          0.4430535420542583,
+          0.4317500420147553,
+          0.4477037501055747,
+          0.44179920793976635,
+          0.4250572499586269,
+          0.4231092920526862,
+          0.42323737498372793,
+          0.4382500840583816,
+          0.4416035000467673,
+          0.4379778750007972,
+          0.4494498330168426,
+          0.43131004099268466,
+          0.4417719580233097,
+          0.44727770902682096,
+          0.42475608305539936,
+          0.4291092499624938,
+          0.4477234170772135,
+          0.44281737494748086,
+          0.42808341595809907,
+          0.4497440829873085,
+          0.44156499998643994,
+          0.46854324999731034,
+          0.48973333300091326,
+          0.48695379099808633,
+          0.45858654205221683,
+          0.45608304103370756,
+          0.4787557499948889,
+          0.4452861660392955,
+          0.46878079196903855,
+          0.42888712498825043,
+          0.45899429195560515,
+          0.43542079196777195,
+          0.44207245798315853,
+          0.4375639579957351,
+          0.44263566692825407,
+          0.44752104103099555,
+          0.4483145830454305,
+          0.4590920000337064,
+          0.4423348749987781,
+          0.4465911249862984,
+          0.4340015829075128,
+          0.43691141600720584,
+          0.43136929196771234,
+          0.4339700420387089,
+          0.44068733393214643,
+          0.4268828328931704,
+          0.4292752080364153,
+          0.43753537500742823,
+          0.42613387503661215,
+          0.43578608403913677,
+          0.4552621670300141,
+          0.4369239170337096,
+          0.44806679198518395,
+          0.46346254204399884,
+          0.4387154170544818,
+          0.44281958299688995,
+          0.4546004170551896,
+          0.46230849996209145,
+          0.44857050001155585,
+          0.4523675829404965,
+          0.445379166980274,
+          0.46938058303203434,
+          0.47739679110236466,
+          0.4887412500102073,
+          0.5285913329571486,
+          0.5505848340690136,
+          0.5592382919276133,
+          0.55779304204043,
+          0.5653038750169799,
+          0.5731263330671936,
+          0.6242066670674831,
+          0.6480387089541182,
+          0.6095694589894265,
+          0.564061583019793,
+          0.5770342500181869,
+          0.5668183749075979,
+          0.5714052499970421,
+          0.5330261660274118,
+          0.5580143749248236,
+          0.5405697079841048,
+          0.5334453750401735,
+          0.5528712500818074,
+          0.5385737089673057,
+          0.5329030409920961,
+          0.5564319170080125,
+          0.5750794170890003,
+          0.5472587080439553,
+          0.5351239170413464,
+          0.5545824159635231,
+          0.5657654999522492,
+          0.5643576249713078,
+          0.5536650839494541,
+          0.5447451249929145,
+          0.5650998749770224,
+          0.5321858339011669,
+          0.5398740409873426,
+          0.5500527919502929,
+          0.5569987089838833,
+          0.5399771659867838,
+          0.5436640830012038,
+          0.5715915409382433,
+          0.55534262501169,
+          0.5519642500439659,
+          0.5828055840684101,
+          0.5853401669301093,
+          0.5550797500181943,
+          0.558411999954842,
+          0.5829310839762911,
+          0.5842897080583498,
+          0.639319833018817,
+          0.6553479590220377,
+          0.686722458107397,
+          0.5727107080165297,
+          1.438827499980107,
+          0.6877887499285862,
+          0.5800289999460801,
+          0.5599144590087235,
+          0.5731055840151384,
+          0.5406494160415605,
+          0.5190554999280721,
+          0.5565824579680339,
+          0.5327664579963312
+        ],
+        "vertex_mass_kg": 0.0015485587064176798,
+        "bounds_local_m": [
+          [
+            -0.288827508687973,
+            -0.29136037826538086,
+            -0.10354292392730713
+          ],
+          [
+            1.0106396675109863,
+            0.35121139883995056,
+            0.15710780024528503
+          ]
+        ]
+      },
+      "cover_decimation": {
+        "source_triangles": 22976,
+        "target_triangles": 2400,
+        "triangles": 19707,
+        "boundary_hausdorff_upper_m": 0.7967412562370301,
+        "pass": false
+      },
+      "cover_maps": {
+        "normal": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/pass4/seat-pilot/textures/seatcushion_c_game_normal.png",
+        "ao": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/pass4/seat-pilot/textures/seatcushion_c_game_ao.png"
+      },
+      "residue_maps": {
+        "normal": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/pass4/seat-pilot/textures/pilotresidue_normal.png",
+        "ao": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/pass4/seat-pilot/textures/pilotresidue_ao.png"
+      },
+      "fringe": {
+        "cards": 324,
+        "triangles": 648,
+        "boundary_length_m": 2.8086987415470803,
+        "authored_coverage": 1.0,
+        "sat_checked": false
+      },
+      "limitations": [
+        "Uncalibrated drape",
+        "Other sofa parts retain pass-3 failures",
+        "Opacity bake not yet implemented",
+        "All-part SAT and alpha-aware render gates must still run"
+      ],
+      "trial": "pass4-seat-initial",
+      "reason": "Cover 19707/2400 triangles; residue 7660/700; boundary error 0.796741 m; superseded by fixed Keep semantics and pore-filled game proxy"
+    },
+    {
+      "trial": "pass4-seat-thin",
+      "status": "failed",
+      "stage": "residue game reduction",
+      "reason": "Pore topology plateau at 6416 triangles, target 700",
+      "log": "tmp/age/pass4/seat-corrected/run.log"
+    },
+    {
+      "dense": {
+        "unaged_vertices": 664,
+        "dense_vertices": 11620,
+        "mass_multiplier": 0.05714285714285714,
+        "edge_quantiles_m": [
+          0.004996018629354043,
+          0.008134848943254874,
+          0.012647706082731948
+        ]
+      },
+      "reference_vertices": 722,
+      "tears": [
+        {
+          "split_length_m": 0.20259435754269361,
+          "area_before_m2": 0.7194614319646462,
+          "area_after_m2": 0.7194614319646462,
+          "removed_area_m2": 0.0,
+          "boundary_vertex_count": 311
+        },
+        {
+          "split_length_m": 0.14036411838606,
+          "area_before_m2": 0.7194614319646462,
+          "area_after_m2": 0.7194614319646462,
+          "removed_area_m2": 0.0,
+          "boundary_vertex_count": 335
+        }
+      ],
+      "residue_decimation": {
+        "source_triangles": 642074,
+        "target_triangles": 700,
+        "triangles": 700,
+        "boundary_hausdorff_upper_m": 0.0,
+        "pass": true
+      },
+      "residue_source": "tmp/age/pass4/residue-proxy/seat-residue.npz",
+      "status": "rejected_by_gates",
+      "production_calibrated": false,
+      "settings": {
+        "mass": 0.025,
+        "stiffness": 180,
+        "bending": 0.2,
+        "frames": 150,
+        "self_collision": true,
+        "shrink": 0.04
+      },
+      "simulation": {
+        "frames": 150,
+        "elapsed_s": 63.041093999985605,
+        "seconds_per_frame": 0.4229006935137593,
+        "frame_seconds": [
+          0.02782691700849682,
+          0.39156941697001457,
+          0.3710266670677811,
+          0.37862429197411984,
+          0.38655208400450647,
+          0.3908171660732478,
+          0.37716145801823586,
+          0.38525104196742177,
+          0.38277383300010115,
+          0.3771066250046715,
+          0.3748702920274809,
+          0.36676483298651874,
+          0.3609161669155583,
+          0.370847332989797,
+          0.3694499999983236,
+          0.3645866670412943,
+          0.38023116695694625,
+          0.3683764160377905,
+          0.3739115829812363,
+          0.3698755420045927,
+          0.38013712503015995,
+          0.37384354206733406,
+          0.3845516250003129,
+          0.40786274999845773,
+          0.37860141694545746,
+          0.3800944579998031,
+          0.3801931249909103,
+          0.38162000000011176,
+          0.3763974590692669,
+          0.37812849995680153,
+          0.3754651249619201,
+          0.3867374591063708,
+          0.380484624998644,
+          0.3805885409237817,
+          0.37104350002482533,
+          0.37693908298388124,
+          0.3754202089039609,
+          0.37301633309107274,
+          0.36998466693330556,
+          0.3848625000100583,
+          0.3912194579606876,
+          0.3884843329433352,
+          0.38660920807160437,
+          0.3786178749287501,
+          0.3739315419225022,
+          0.3763156670611352,
+          0.3806672500213608,
+          0.38448995794169605,
+          0.3816363330697641,
+          0.39188949996605515,
+          0.3838054579682648,
+          0.38732941693160683,
+          0.3801674999995157,
+          0.3725215420126915,
+          0.3758622920140624,
+          0.3816974579822272,
+          0.37068354105576873,
+          0.376084916992113,
+          0.37425587500911206,
+          0.3854958749143407,
+          0.3811857500113547,
+          0.37893037497997284,
+          0.3811150420224294,
+          0.38858537503983825,
+          0.3739328329684213,
+          0.38068233302328736,
+          0.37706891691777855,
+          0.3806785420747474,
+          0.38367783301509917,
+          0.3795345420949161,
+          0.3759120829636231,
+          0.38016800000332296,
+          0.36833316599950194,
+          0.3735874160192907,
+          0.37533787498250604,
+          0.37498491699807346,
+          0.37756787496618927,
+          0.3759552089031786,
+          0.374524874961935,
+          0.38865487498696893,
+          0.38282170810271055,
+          0.37918091705068946,
+          0.3880555829964578,
+          0.3797846670495346,
+          0.37836979096755385,
+          0.3799577499739826,
+          0.3775454160058871,
+          0.39525016595143825,
+          0.39616679202299565,
+          0.3998046660562977,
+          0.4121345829917118,
+          0.4253802909515798,
+          0.4577258749632165,
+          0.4646034589968622,
+          0.49030204210430384,
+          0.4951764999423176,
+          0.5328660410596058,
+          0.5168089169310406,
+          0.5071122499648482,
+          0.4940861250506714,
+          0.4851360829779878,
+          0.48579933296423405,
+          0.4839134169742465,
+          0.49295037507545203,
+          0.4917281660018489,
+          0.49249679199419916,
+          0.49427045905031264,
+          0.48665416601579636,
+          0.48495437495876104,
+          0.4821750830160454,
+          0.4831353339832276,
+          0.4874421670101583,
+          0.5164160000858828,
+          0.4966694168979302,
+          0.4859600419877097,
+          0.4927427499787882,
+          0.49014408292714506,
+          0.4818157919216901,
+          0.49772637500427663,
+          0.48341512493789196,
+          0.4823584579862654,
+          0.48034837504383177,
+          0.4854040420614183,
+          0.4850157090695575,
+          0.5016562920063734,
+          0.49387579190079123,
+          0.4956670419778675,
+          0.4910612909588963,
+          0.48902362503577024,
+          0.49569158302620053,
+          0.4906503329984844,
+          0.49503158405423164,
+          0.49512879201211035,
+          0.4830849169520661,
+          0.47703029203694314,
+          0.48883141693659127,
+          0.4808915000176057,
+          0.4832997500197962,
+          0.4829104170203209,
+          0.4893775830278173,
+          0.475646874983795,
+          0.4847161249490455,
+          0.4862757079536095,
+          0.5083729170728475,
+          0.4906656659441069,
+          0.48562104196753353,
+          0.4922442079987377,
+          0.47430416697170585,
+          0.481343875057064,
+          0.489127624896355
+        ],
+        "vertex_mass_kg": 0.0015485587064176798,
+        "bounds_local_m": [
+          [
+            -0.2673371136188507,
+            -0.29021701216697693,
+            -0.10170304775238037
+          ],
+          [
+            0.6479130387306213,
+            0.3514181971549988,
+            0.6579341888427734
+          ]
+        ]
+      },
+      "cover_decimation": {
+        "source_triangles": 22976,
+        "target_triangles": 2400,
+        "triangles": 2400,
+        "boundary_hausdorff_upper_m": 0.000125,
+        "pass": true
+      },
+      "opacity": {
+        "path": "tmp/age/pass4/seat-proxy/textures/seat_opacity.png",
+        "size": 4096,
+        "transparent_texels": 87231,
+        "lip_band_m": 0.003,
+        "feature_wavelengths_m": [
+          0.002,
+          0.001,
+          0.0007,
+          0.0005
+        ]
+      },
+      "cover_maps": {
+        "normal": "tmp/age/pass4/seat-proxy/textures/seatcushion_c_game_normal.png",
+        "ao": "tmp/age/pass4/seat-proxy/textures/seatcushion_c_game_ao.png"
+      },
+      "residue_maps": {
+        "normal": "tmp/age/pass4/seat-proxy/textures/pilotresidue_normal.png",
+        "ao": "tmp/age/pass4/seat-proxy/textures/pilotresidue_ao.png"
+      },
+      "fringe": {
+        "cards": 522,
+        "triangles": 1044,
+        "boundary_length_m": 3.755056075497452,
+        "authored_coverage": 1.0,
+        "sat_checked": false
+      },
+      "limitations": [
+        "Uncalibrated drape",
+        "Other sofa parts retain pass-3 failures",
+        "All-part SAT and alpha-aware render gates must still run"
+      ],
+      "trial": "pass4-seat-proxy",
+      "scope": "Centre seat only; other sofa parts are the retained sofa-k comparison bake",
+      "tear_method": "Surface-projected plane walk; UV-gradient walking is separately implemented and integration-tested, but was not used in this trial",
+      "gates": {
+        "input": "tmp/age/pass4/seat-proxy/sofa_aged.glb",
+        "gates": {
+          "G1": {
+            "measure": "visible cloth dihedral >30 degrees",
+            "threshold": "covers <=0.08; throw <=0.09",
+            "value": {
+              "BackCushion_C": 0.2104194857916103,
+              "BackCushion_L": 0.19080779944289694,
+              "BackCushion_R": 0.20626276378488767,
+              "SeatCushion_C": 0.6098484848484849,
+              "SeatCushion_L": 0.13060428849902533,
+              "SeatCushion_R": 0.22158273381294963,
+              "Throw": 0.34772344013490725
+            },
+            "status": "partial",
+            "pass": false,
+            "method": "All-sheet adjacency diagnostic; visible-face measurement remains pending"
+          },
+          "G2": {
+            "measure": "normal-pass interior pixels with >10 degree neighbour change",
+            "threshold": "<=0.02",
+            "value": null,
+            "status": "not_measured",
+            "pass": false
+          },
+          "G3": {
+            "measure": "alpha-aware opening longest straight run at 0.6 m",
+            "threshold": "<=12 px / 4.5 mm",
+            "value": null,
+            "status": "not_measured",
+            "pass": false
+          },
+          "G4": {
+            "measure": "opening medial-axis width coefficient of variation",
+            "threshold": ">=0.35 each opening",
+            "value": null,
+            "status": "not_measured",
+            "pass": false
+          },
+          "G5": {
+            "measure": "lip length lifted >3 mm",
+            "threshold": ">=0.30",
+            "value": null,
+            "status": "not_measured",
+            "pass": false
+          },
+          "G6": {
+            "measure": "opening contour box-counting dimension at 1..32 px",
+            "threshold": "1.15..1.40",
+            "value": null,
+            "status": "not_measured",
+            "pass": false
+          },
+          "G7": {
+            "measure": "crust area in coplanar facets >10 cm2",
+            "threshold": "<=0.05 each residue",
+            "value": {
+              "BackCushion_C": 0.7839983092122867,
+              "BackCushion_L": 0.7782619042809363,
+              "BackCushion_R": 0.7701988900665415,
+              "SeatCushion_C": 0.3884825464727833,
+              "SeatCushion_L": 0.7786828845660118,
+              "SeatCushion_R": 0.8089946602907906
+            },
+            "status": "measured",
+            "pass": false
+          },
+          "G8": {
+            "measure": "20 mm dense crust plane-fit RMS and normal map",
+            "threshold": ">=0.0015 m and map present",
+            "value": null,
+            "status": "not_measured",
+            "pass": false
+          },
+          "G9": {
+            "measure": "cut-residue fragment templates",
+            "threshold": ">=8; thickness/width 0.25..0.7; 14..40 triangles; not 20-face icosahedra",
+            "value": null,
+            "status": "not_measured",
+            "pass": false
+          },
+          "G10": {
+            "measure": "floor Clark-Evans R and largest DBSCAN cluster",
+            "threshold": "R 0.8..1.4; cluster <=0.20",
+            "value": {
+              "R": 0.819936831880524,
+              "largest_cluster": 0.13122171945701358,
+              "count": 221
+            },
+            "status": "measured",
+            "pass": true
+          },
+          "G11": {
+            "measure": "five-bin spill radial density Spearman rho",
+            "threshold": "<=-0.6 each source; powder card per spill",
+            "value": null,
+            "status": "not_measured",
+            "pass": false
+          },
+          "G12": {
+            "measure": "seat vertical-wall area relative to unaged",
+            "threshold": "<=0.25 each seat",
+            "value": {
+              "SeatCushion_C": 0.28951302014161623,
+              "SeatCushion_L": 0.5732347008773852,
+              "SeatCushion_R": 0.48836630691228605
+            },
+            "status": "measured",
+            "pass": false
+          },
+          "G13": {
+            "measure": "seat rounded-box fit RMS",
+            "threshold": ">=0.012 m each seat",
+            "value": {
+              "SeatCushion_C": 0.014872034397108895,
+              "SeatCushion_L": 0.017796802268612293,
+              "SeatCushion_R": 0.022523443560634043
+            },
+            "status": "measured",
+            "pass": true
+          },
+          "G14": {
+            "measure": "seat centre height above deck relative to unaged",
+            "threshold": "0.10..0.25 each seat",
+            "value": {
+              "SeatCushion_C": 0.3268579743943624,
+              "SeatCushion_L": 0.44544291562998733,
+              "SeatCushion_R": 0.47291072255867483
+            },
+            "status": "measured",
+            "pass": false
+          },
+          "G15": {
+            "measure": "back top height retained",
+            "threshold": "0.40..0.65 each back",
+            "value": {
+              "BackCushion_C": 0.8044203076854963,
+              "BackCushion_L": 0.7301804751083643,
+              "BackCushion_R": 0.7920816975461845
+            },
+            "status": "measured",
+            "pass": false
+          },
+          "G16": {
+            "measure": "back residue volume in lowest third",
+            "threshold": ">=0.60 each back",
+            "value": {
+              "BackCushion_C": 0.17304332680703458,
+              "BackCushion_L": 0.17320972994268646,
+              "BackCushion_R": 0.17336579851254463
+            },
+            "status": "measured",
+            "pass": false
+          },
+          "G17": {
+            "measure": "back horizontal front folds with >=8 mm prominence",
+            "threshold": ">=2 each back",
+            "value": null,
+            "status": "not_measured",
+            "pass": false
+          },
+          "G18": {
+            "measure": "arm-cap crest split share",
+            "threshold": "0.60..0.90",
+            "value": null,
+            "status": "not_measured",
+            "pass": false
+          },
+          "G19": {
+            "measure": "fallen throw distance and folds",
+            "threshold": "<=0.250 m from arm footprint; >=3 folds >=0.010 m",
+            "value": null,
+            "status": "not_measured",
+            "pass": false
+          },
+          "G30": {
+            "measure": "all-part triangle SAT, no pair exclusions",
+            "threshold": "0",
+            "value": {
+              "intersections": 6409,
+              "excluded": 0
+            },
+            "status": "measured",
+            "pass": false
+          },
+          "G31": {
+            "measure": "export triangle count",
+            "threshold": "<=29325 and <=1.5x unaged",
+            "value": {
+              "aged": 29096,
+              "unaged": 19550,
+              "ratio": 1.4882864450127877
+            },
+            "status": "measured",
+            "pass": true
+          },
+          "G32": {
+            "measure": "decimated/dense open-boundary Hausdorff distance",
+            "threshold": "<=0.0015 m",
+            "value": null,
+            "status": "not_measured",
+            "pass": false
+          }
+        },
+        "invariants": {
+          "fixed_geometry_bytes": true,
+          "origins_and_pivots": true,
+          "byte_identical_reexport": true
+        },
+        "pass": false
+      },
+      "paths": {
+        "blend": "tmp/age/pass4/seat-proxy/sofa-seat-pilot.blend",
+        "export": "tmp/age/pass4/seat-proxy/sofa_aged.glb",
+        "renders": [
+          "tmp/age/pass4/sofa-before-after.png",
+          "tmp/age/pass4/sofa-turntable.png",
+          "tmp/age/pass4/sofa-closeup.png"
+        ]
+      },
+      "finish_attempts": [
+        {
+          "status": "failed",
+          "reason": "Euclidean 6 mm Keep band protected nearby folds, leaving 4886 triangles against target 2400"
+        },
+        {
+          "status": "baked",
+          "method": "6 mm geodesic band; same saved dense simulation"
+        }
+      ],
+      "masked_materials": [
+        "CharcoalUpholstery_Pass4",
+        "UpholsteryFringe"
+      ],
+      "normal_mapped_materials": [
+        "CharcoalUpholstery_Pass4",
+        "Foam_Pass4",
+        "UpholsteryFringe"
+      ]
+    }
+  ],
+  "pass4_shared_controls": {
+    "density": {
+      "unaged_vertices": 81,
+      "dense_vertices": 289,
+      "mass_multiplier": 0.28027681660899656,
+      "edge_quantiles_m": [
+        0.012499988218766099,
+        0.01250002547164648,
+        0.012613015645475265
+      ]
+    },
+    "split": {
+      "split_length_m": 0.10010471008718014,
+      "area_before_m2": 0.039972479942662176,
+      "area_after_m2": 0.039972479942662176,
+      "removed_area_m2": 0.0,
+      "boundary_vertex_count": 80
+    },
+    "decimation": {
+      "source_triangles": 512,
+      "target_triangles": 350,
+      "triangles": 350,
+      "boundary_hausdorff_upper_m": 0.000125,
+      "pass": true
+    },
+    "fringe": {
+      "cards": 152,
+      "triangles": 304,
+      "boundary_length_m": 0.9751918347524723,
+      "authored_coverage": 1.0,
+      "sat_checked": false
+    },
+    "alpha_modes": {
+      "BakeSource_Game_Baked": "MASK",
+      "UpholsteryFringe": "MASK",
+      "FloorDust_PowderControl": "MASK"
+    },
+    "byte_identical_reexport": true,
+    "pass": true
+  },
+  "pass4_fragment_library": {
+    "templates": [
+      {
+        "template": "fragment-00",
+        "source": "tmp/age/pass4/residue-fragments8/fragment-00.npz",
+        "reduction": {
+          "source_triangles": 4976,
+          "target_triangles": 24,
+          "triangles": 24,
+          "boundary_hausdorff_upper_m": 0.0,
+          "pass": true
+        },
+        "thickness_width": 0.30338680028331144,
+        "pass": true
+      },
+      {
+        "template": "fragment-01",
+        "source": "tmp/age/pass4/residue-fragments8/fragment-01.npz",
+        "reduction": {
+          "source_triangles": 3060,
+          "target_triangles": 24,
+          "triangles": 24,
+          "boundary_hausdorff_upper_m": 0.0,
+          "pass": true
+        },
+        "thickness_width": 0.45920134325628253,
+        "pass": true
+      },
+      {
+        "template": "fragment-02",
+        "source": "tmp/age/pass4/residue-fragments8/fragment-02.npz",
+        "reduction": {
+          "source_triangles": 3296,
+          "target_triangles": 24,
+          "triangles": 24,
+          "boundary_hausdorff_upper_m": 0.0,
+          "pass": true
+        },
+        "thickness_width": 0.266295474508952,
+        "pass": true
+      },
+      {
+        "template": "fragment-03",
+        "source": "tmp/age/pass4/residue-fragments8/fragment-03.npz",
+        "reduction": {
+          "source_triangles": 4224,
+          "target_triangles": 24,
+          "triangles": 24,
+          "boundary_hausdorff_upper_m": 0.0,
+          "pass": true
+        },
+        "thickness_width": 0.36118624203314176,
+        "pass": true
+      },
+      {
+        "template": "fragment-04",
+        "source": "tmp/age/pass4/residue-fragments8/fragment-04.npz",
+        "reduction": {
+          "source_triangles": 7312,
+          "target_triangles": 24,
+          "triangles": 24,
+          "boundary_hausdorff_upper_m": 0.0,
+          "pass": true
+        },
+        "thickness_width": 0.29849811084210887,
+        "pass": true
+      },
+      {
+        "template": "fragment-05",
+        "source": "tmp/age/pass4/residue-fragments8/fragment-05.npz",
+        "reduction": {
+          "source_triangles": 5024,
+          "target_triangles": 24,
+          "triangles": 24,
+          "boundary_hausdorff_upper_m": 0.0,
+          "pass": true
+        },
+        "thickness_width": 0.33850218256006986,
+        "pass": true
+      },
+      {
+        "template": "fragment-06",
+        "source": "tmp/age/pass4/residue-fragments8/fragment-06.npz",
+        "reduction": {
+          "source_triangles": 4296,
+          "target_triangles": 24,
+          "triangles": 24,
+          "boundary_hausdorff_upper_m": 0.0,
+          "pass": true
+        },
+        "thickness_width": 0.29187511969989466,
+        "pass": true
+      },
+      {
+        "template": "fragment-07",
+        "source": "tmp/age/pass4/residue-fragments8/fragment-07.npz",
+        "reduction": {
+          "source_triangles": 5768,
+          "target_triangles": 24,
+          "triangles": 24,
+          "boundary_hausdorff_upper_m": 0.0,
+          "pass": true
+        },
+        "thickness_width": 0.38128066884672823,
+        "pass": true
+      },
+      {
+        "template": "fragment-08",
+        "source": "tmp/age/pass4/residue-fragments8/fragment-08.npz",
+        "reduction": {
+          "source_triangles": 3900,
+          "target_triangles": 24,
+          "triangles": 24,
+          "boundary_hausdorff_upper_m": 0.0,
+          "pass": true
+        },
+        "thickness_width": 0.4300242404126863,
+        "pass": true
+      },
+      {
+        "template": "fragment-09",
+        "source": "tmp/age/pass4/residue-fragments8/fragment-09.npz",
+        "reduction": {
+          "source_triangles": 10356,
+          "target_triangles": 24,
+          "triangles": 24,
+          "boundary_hausdorff_upper_m": 0.0,
+          "pass": true
+        },
+        "thickness_width": 0.2377654833614472,
+        "pass": false
+      },
+      {
+        "template": "fragment-10",
+        "source": "tmp/age/pass4/residue-fragments8/fragment-10.npz",
+        "reduction": {
+          "source_triangles": 6172,
+          "target_triangles": 24,
+          "triangles": 24,
+          "boundary_hausdorff_upper_m": 0.0,
+          "pass": true
+        },
+        "thickness_width": 0.21562769967649473,
+        "pass": false
+      },
+      {
+        "template": "fragment-11",
+        "source": "tmp/age/pass4/residue-fragments8/fragment-11.npz",
+        "reduction": {
+          "source_triangles": 10156,
+          "target_triangles": 24,
+          "triangles": 24,
+          "boundary_hausdorff_upper_m": 0.0,
+          "pass": true
+        },
+        "thickness_width": 0.23333209320236886,
+        "pass": false
+      }
+    ],
+    "passing_templates": 9,
+    "pass": true
+  },
+  "pass4_requirements_conflict": {
+    "fixed_source_frame_self_intersections": 522,
+    "fixed_source_frame_rivets_intersections": 272,
+    "method": "All-part triangle SAT, verified on both unaged source and trial export",
+    "consequence": "Zero SAT intersections cannot coexist with byte-identical Frame and Rivets under these requirements. No exclusions added and no rigid geometry changed."
+  },
+  "pass4_selected": null
 }

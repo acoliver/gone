@@ -5,8 +5,9 @@ from pathlib import Path
 from PIL import Image
 
 
-def compose(out):
-    for prop, label in [('sofa', 'sofa'), ('dress_uniform', 'tunic')]:
+def compose(out, props=('sofa', 'dress_uniform')):
+    for prop in props:
+        label = 'sofa' if prop == 'sofa' else 'tunic'
         before = Image.open(out / f'{prop}-before.png').convert('RGB')
         after = Image.open(out / f'{prop}-after.png').convert('RGB')
         if before.size != after.size:
@@ -26,4 +27,6 @@ def compose(out):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--out', type=Path, required=True)
-    compose(parser.parse_args().out)
+    parser.add_argument('--prop', choices=['sofa', 'dress_uniform'], action='append')
+    args = parser.parse_args()
+    compose(args.out, args.prop or ('sofa', 'dress_uniform'))

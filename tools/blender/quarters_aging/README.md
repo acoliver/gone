@@ -6,7 +6,7 @@
 
 `bake_down.py` protects a 6 mm **surface-distance** band around open boundaries, then reduces the interior. Euclidean distance incorrectly protected nearby folds in the centre-seat test, freezing reduction at 4,886 triangles. Blender decimates weighted vertices, so the `Keep` group must be inverted. A conservative sampled Hausdorff upper bound includes half the sampling interval; the control and centre-seat result are both 0.125 mm against a 1.5 mm limit. The stage creates `BakeUV` and selected-to-active Cycles tangent normal and AO maps, with 4 mm cage extrusion, 12 mm ray range and an 8 px margin.
 
-`residue_sdf.py` builds a continuous powder base, noisy lumps, Voronoi cracks and tilted skin slabs, then extracts the dense surface with marching cubes. Overlapping lumps initially exceeded 80 mm; bounded lump heights and an unbroken powder base bring the current source below 35 mm. A 13 micrometre isovalue offset avoids grid-aligned zero-thickness contacts. The pore-rich source contains hundreds of small handles, which cannot survive a 700-triangle budget. A vertically filled height-field proxy carries the outer envelope into the collider/game mesh; the detailed pore surface remains the normal/AO bake source. This is an explicit LOD construction, not a claim that collapse alone can remove that topology.
+`residue_sdf.py` builds a continuous powder base, noisy lumps, Voronoi cracks and tilted skin slabs, then extracts the dense surface with marching cubes. Overlapping lumps initially exceeded 80 mm; bounded lump heights and an unbroken powder base bring the current source below 35 mm. A 13 micrometre isovalue offset avoids grid-aligned zero-thickness contacts. The pore-rich source contains hundreds of small handles, which cannot survive a 700-triangle budget. A vertically filled height-field proxy carries the outer envelope into the collider/game mesh; the detailed pore surface remains the normal/AO bake source. The game mesh uses this filled proxy because collapse alone preserves the pore topology.
 
 `fragment_library.py` takes connected skin pieces cut from 12 Voronoi cells in that same SDF. An 8 mm skin depth produced nine accepted templates at 24 triangles each; three thinner pieces remain rejected in the measurement record and are not exported. Deposition onto final sofa surfaces has not been implemented.
 
@@ -20,7 +20,7 @@ Run the Python tests with the Hunyuan environment. `test_bake_masks.py` requires
 
 The pass-3 sofa trials `sofa-a` through `sofa-k`, including the failed `sofa-e`, are retained in `sofa/cloth-trials.json`. They are comparison inputs, not accepted pass-4 results. The fitted source and shipped GLB remain untouched until a new bake passes.
 
-`sofa_gates.py` replaces sofa acceptance in both old gate entry points. Every G1 to G19 and G30 to G32 has an explicit threshold. Missing measurements are `not_measured` and fail; declaring a threshold does not implement its measurement. The current geometry checks measure G1, G7, G10, G12, G14, G15, G30 and G31. Render, dense-source and story checks remain to be implemented.
+`sofa_gates.py` replaces sofa acceptance in both old gate entry points. Every G1 to G19 and G30 to G32 has an explicit threshold. Missing measurements are `not_measured` and fail; declaring a threshold does not implement its measurement. The current geometry checks measure G1, G7, G10, G12, G13, G14, G15, G16, G30 and G31. G1 currently reports all-sheet adjacency and remains failed until visible-face filtering is implemented. Render, dense-source and story checks remain to be implemented.
 
 Gate changes and reasons:
 
@@ -82,7 +82,7 @@ The normal prop exporters load baked sources: `sofa/build.py -- --aged --output 
 
 ## Export and camera gates
 
-`collision_export.py` imports the actual GLB, builds triangle BVHs, then tests candidates with triangle-triangle SAT, including coplanar overlap. Only shared-vertex adjacency is omitted from self checks. No cloth, cushion or attachment is exempt from intersection tests. Fixed frame and hanger joints are reported separately, with their original geometry bytes checked independently. Cloth boundaries must be unbranched, without nonmanifold or degenerate edges; crust must be closed.
+`collision_export.py` imports the actual GLB, builds triangle BVHs, then tests candidates with triangle-triangle SAT, including coplanar overlap. Only shared-vertex adjacency is omitted from self checks. No cloth, cushion or attachment is exempt from intersection tests. Fixed frame and hanger joints remain in the intersection totals, with their original geometry bytes checked independently. Cloth boundaries must be unbranched, without nonmanifold or degenerate edges; crust must be closed.
 
 Run `pass3_gates.py` with the installed Hunyuan Python:
 

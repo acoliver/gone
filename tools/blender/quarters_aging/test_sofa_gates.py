@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 import trimesh
 
-from sofa_gates import SPECS, cluster_fraction, dihedral_share, missing_gates, vertical_area
+from sofa_gates import SPECS, cluster_fraction, dihedral_share, missing_gates, vertical_area, rounded_box_rms, volume_below
 
 
 class SofaGates(unittest.TestCase):
@@ -20,6 +20,15 @@ class SofaGates(unittest.TestCase):
         cube = trimesh.creation.box()
         self.assertGreater(dihedral_share(cube), .3)
         self.assertGreater(vertical_area(cube), 0)
+
+    def test_box_fit_and_clipped_volume(self):
+        cube = trimesh.creation.box(extents=(2, 2, 2))
+        cube.apply_translation([3, 4, 5])
+        self.assertLess(rounded_box_rms(cube.vertices), 1e-6)
+        self.assertAlmostEqual(volume_below(cube, 4), 4.)
+        self.assertAlmostEqual(volume_below(cube, 3.5), 2.)
+        self.assertAlmostEqual(volume_below(cube, 2), 0.)
+        self.assertAlmostEqual(volume_below(cube, 6), 8.)
 
     def test_cluster_rejects_compact_pile(self):
         rng = np.random.default_rng(95)
