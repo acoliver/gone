@@ -50,7 +50,7 @@ func test_hall_tray_hangers_reach_ceiling_and_enter_the_rotated_trays() -> void:
 	var spec := game.layout.section(&"D14-S-041")
 	var damage := hall.get_node("HallCeilingDamage")
 	var trays := spec.ceiling_trays()
-	assert_int_equal(trays.size(), 2, "long cable tray and transverse stub remain covered")
+	assert_int_equal(trays.size(), 1, "the attached long cable tray remains covered after removing the stub")
 	assert_int_equal(damage.get_child_count(), trays.size() * 3, "each rendered tray has two rendered hangers")
 	for index: int in range(trays.size()):
 		var tray := trays[index]

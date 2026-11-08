@@ -185,7 +185,6 @@ class SectionSpec:
 		var datum := Vector3(_bounds.position.x, _bounds.end.y - ShipGeometry.TRAY_CEILING_DROP, _bounds.get_center().z)
 		return [
 			ShipGeometry.SolidSpec.new(datum + Vector3(10.5, 0, 0.35), Vector3(9, ShipGeometry.TRAY_HEIGHT, ShipGeometry.TRAY_WIDTH), Quaternion(Vector3.RIGHT, 0.05)),
-			ShipGeometry.SolidSpec.new(datum + Vector3(17, -0.04, -0.55), Vector3(3.2, ShipGeometry.TRAY_HEIGHT, ShipGeometry.TRAY_WIDTH), Quaternion(Vector3.UP, PI / 2) * Quaternion(Vector3.RIGHT, -0.06)),
 		]
 	func ceiling_loops() -> Array[ShipGeometry.WireLoop]:
 		return []

@@ -109,6 +109,9 @@ func test_light_cassettes_follow_every_existing_strip_and_use_glass_role() -> vo
 		var finish := Surfaces.material(role)
 		assert_false(finish.shader.code.contains("EMISSION"), "fire-safety finishes have no emission")
 
+func test_tipped_hall_tray_stub_is_removed() -> void:
+	assert_int_equal(ShipLayout.authored().layout.section(&"D14-S-041").ceiling_trays().size(), 1, "keep attached long tray only")
+
 func test_each_service_mount_touches_structure_and_stays_above_walk_band() -> void:
 	var layout := ShipLayout.authored().layout
 	assert_true(layout.has_method(&"ceiling_services"), "service mount recipe exists")
