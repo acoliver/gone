@@ -12,8 +12,8 @@ unexported collider.
 ## Tunic7 settling controls
 
 The source-grid carrier removes the old masked-face workaround. The runtime
-rest check now rejects any evaluated triangle smaller than the contact diameter;
-it never installs an exclusion group. A resolved free-fall control must match
+rest check now rejects any evaluated triangle with altitude below the contact
+diameter; it never installs an exclusion group. A resolved free-fall control must match
 the same mesh without self collision, while a sub-diameter mesh must fail.
 
 At frame 200 the unmasked dense body had two strict self contacts but still
@@ -53,6 +53,14 @@ the mound, body, floor and earlier strips. Their minimum rest altitudes are
 3.002, 2.656 and 3.442 mm; none needs a self-contact exclusion. The mound gets
 normal/AO bakes from its dense SDF source, in addition to its floor skirt and
 contact-tested loose fibre cards. These controls do not establish appearance.
+
+The standalone deposit solve completed all three pieces at frame 600, with
+five-frame maxima of 0.210, 0.392 and 0.048 mm and zero exclusion vertices.
+The allowances have no cloth modifier during the body solve, so the stage
+reuses their untouched source meshes. Reloading them from the still-open
+`prepared.blend` failed with Blender's current-file library-load restriction.
+A `body-settled.blend` checkpoint now preserves the completed body before the
+allowances start. Final exported contacts and lit appearance still need checking.
 
 ## Tunic7 attachment and projection controls
 

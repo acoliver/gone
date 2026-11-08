@@ -1,5 +1,6 @@
 """Settle released allowances on the deposit from a curled, area-preserving rest."""
 import math
+import json
 
 import bmesh
 import bpy
@@ -51,14 +52,11 @@ def curl_strip(obj, number):
 
 
 def settle_fallen(out, record, config, bake_simulation):
-    for piece in record['fallen']:
-        bpy.data.objects.remove(bpy.data.objects[piece['name']], do_unlink=True)
+    # These objects have no cloth modifier during the body solve. Keep their
+    # original allowance meshes rather than reloading the open source blend.
     names = tuple(piece['name'] for piece in record['fallen'])
-    with bpy.data.libraries.load(str(out/'prepared.blend'), link=False) as (source, target):
-        target.objects = list(names)
-    for obj in target.objects:
-        bpy.context.collection.objects.link(obj)
-        obj['aged_export'] = True
+    bpy.context.scene['tunic5_record'] = json.dumps(record)
+    bpy.ops.wm.save_as_mainfile(filepath=str(out/'body-settled.blend'))
     body = bpy.data.objects['TunicBody']
     mound = bpy.data.objects['FibreDust']
     collision(body, .0015)
