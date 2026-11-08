@@ -28,6 +28,7 @@ def carrier_surface(obj, plan):
     bpy.data.objects.remove(carrier, do_unlink=True)
     from sofa_contact_mesh import exclude_small_faces
     report['contact_resolution'] = exclude_small_faces(obj, .008)
+    report['rest_mapping'] = 'continuous upper-panel depth contraction' if plan['back'] else plan.get('rest_mode', 'fitted')
     return empty_rest(obj, plan), report
 
 

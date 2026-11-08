@@ -45,6 +45,32 @@ class BackHem(unittest.TestCase):
                             step=.004, direction=(1, 0, 0))
         self.assertGreater(len(path), 30)
 
+    def test_empty_back_rest_surface_has_no_self_crossings(self):
+        from common import assert_surface_clear
+        from sofa_contact_mesh import resolve_elements
+        from sofa_decay_joint import carrier_surface
+        from sofa_decay_policy import cushion_plan
+        from sofa_full_decay import back_splits
+        for name in ['BackCushion_C', 'BackCushion_L', 'BackCushion_R']:
+            with self.subTest(part=name):
+                bpy.ops.wm.open_mainfile(filepath=str(SOURCE))
+                obj = bpy.data.objects[name]
+                obj.modifiers.clear()
+                largest_shell(obj)
+                open_cover_bottom(obj, True)
+                densify(obj, 2)
+                resolve_elements(obj)
+                plan = cushion_plan(name)
+                back_splits(obj, plan['seed'])
+                rest, _ = carrier_surface(obj, plan)
+                carrier = obj.modifiers.new('Rest control carrier', 'SUBSURF')
+                carrier.levels = 1
+                carrier.subdivision_type = 'SIMPLE'
+                for value in [0., 1.]:
+                    rest.value = value
+                    bpy.context.view_layer.update()
+                    assert_surface_clear(obj.evaluated_get(bpy.context.evaluated_depsgraph_get()))
+
 
 class RestCarrier(unittest.TestCase):
     def test_real_subdivision_carries_rest_angles_and_is_frozen_once(self):

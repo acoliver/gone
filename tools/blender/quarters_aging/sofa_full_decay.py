@@ -200,11 +200,14 @@ def empty_rest(obj, plan):
     obj.shape_key_add(name='Fitted cover')
     rest = obj.shape_key_add(name='Empty cover rest angles')
     inverse = obj.matrix_world.inverted()
+    top = max((obj.matrix_world@vertex.co).z for vertex in rest.data)
     for vertex in rest.data:
         p = obj.matrix_world@vertex.co
         if plan['back']:
             if p.z > .56:
-                p.y = .32+(p.y-.32)*plan['rest_depth_scale']
+                # A step at the lower edge folds the rest surface through itself.
+                blend = (p.z-.56)/(top-.56)
+                p.y += (.32-p.y)*(1-plan['rest_depth_scale'])*blend
         elif plan.get('rest_mode') == 'unroll':
             cx = obj.matrix_world.translation.x
             radial = Vector((p.x-cx, p.y+.035, 0))
