@@ -23,10 +23,17 @@ binding = {'entries': entries+entries, 'original': np.vstack([bases, tops]).toli
 reference = fit_standing_collar(body, collar, binding)
 body.data.vertices[4].co.z = .10
 actual = fit_standing_collar(body, collar, binding)
-np.testing.assert_allclose(actual, reference, atol=1e-7)
+vertices = np.array([vertex.co[:] for vertex in body.data.vertices])
+normals = []
+for entry in entries:
+    triangle = vertices[entry['triangle']]
+    normal = np.cross(triangle[1]-triangle[0], triangle[2]-triangle[0])
+    normals.append(normal/np.linalg.norm(normal))
+expected = reference+np.tile(np.asarray(normals)-[0, 0, 1], (2, 1))*.002
+np.testing.assert_allclose(actual, expected, atol=1e-7)
 np.testing.assert_allclose(actual[4:]-actual[:4], np.tile([0, 0, .043], (4, 1)), atol=1e-7)
 for vertex in body.data.vertices:
     vertex.co.z -= .025
 translated = fit_standing_collar(body, collar, binding)
 np.testing.assert_allclose(translated, actual-[0, 0, .025], atol=1e-7)
-print('PASS: collar follows the sewn curve, preserves upright columns and ignores adjacent-face twisting')
+print('PASS: collar follows its sewn curve and 2 mm support-normal layering while preserving upright columns')

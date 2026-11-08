@@ -109,7 +109,7 @@ def seat_sewn(body, bindings):
     from common import surface_tree
     tree = surface_tree(body)
     report = {}
-    for name in ('ShoulderBoard_L', 'ShoulderBoard_R', 'Placket'):
+    for name in ('ShoulderBoard_L', 'ShoulderBoard_R', 'Placket', 'RibbonBar'):
         obj = bpy.data.objects[name]
         original = np.asarray(bindings[name]['original'])
         count = len(original)//2

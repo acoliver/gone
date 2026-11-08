@@ -190,6 +190,10 @@ def reinforce_and_bind(body):
         obj = bpy.data.objects[name]
         original = np.array([obj.matrix_world @ v.co for v in obj.data.vertices])
         groups = components(obj) if name == 'Buttons' else [list(range(len(original)))]
+        if name == 'Medal':
+            metal = {i for face in obj.data.polygons
+                     if obj.data.materials[face.material_index].name == 'Brass' for i in face.vertices}
+            groups = [sorted(metal), sorted(set(range(len(original)))-metal)]
         indices = set()
         for group in groups:
             region = original[group]
@@ -203,8 +207,9 @@ def reinforce_and_bind(body):
                 selected = np.argsort(np.linalg.norm(points-center, axis=1))[:3]
             indices.update(selected.tolist())
         patch.add(sorted(indices), 1., 'REPLACE')
-        entries = bind_points(body, original)
-        sewn = name.startswith('ShoulderBoard') or name == 'Placket'
+        support = collar if name.startswith('CollarInsignia') else body
+        entries = bind_points(support, original)
+        sewn = name.startswith('ShoulderBoard') or name in ('Placket', 'RibbonBar')
         if sewn:
             for entry in entries:
                 # These fabric facings were authored on the solidified source,
@@ -212,7 +217,8 @@ def reinforce_and_bind(body):
                 normal = np.asarray(entry['offset_frame'])[2]
                 entry['offset'] = (np.asarray(entry['offset'])-normal*.00175).tolist()
         bindings[name] = {'entries': entries, 'original': original.tolist(),
-                          'rigid': not sewn, 'groups': groups, 'patch_vertices': sorted(indices)}
+                          'rigid': not sewn, 'groups': groups, 'patch_vertices': sorted(indices),
+                          'support': 'Collar' if name.startswith('CollarInsignia') else 'TunicBody'}
         coverage[name] = len(indices)
     return bindings, coverage
 
@@ -249,7 +255,8 @@ def fit_details(body, bindings):
             from collar_fit import fit_standing_collar
             destination = fit_standing_collar(body, obj, binding)
         else:
-            destination = follow_points(body, binding['entries'])
+            support = body if binding['support'] == 'TunicBody' else bpy.data.objects[binding['support']]
+            destination = follow_points(support, binding['entries'])
         if binding['rigid']:
             for ids in binding['groups']:
                 src, dst = original[ids], destination[ids]

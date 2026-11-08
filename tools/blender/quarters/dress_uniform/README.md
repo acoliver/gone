@@ -9,6 +9,35 @@ buttons and medal must remain recognizable. The source is `tunic-working.blend`,
 with `body-p` as the wool reference. `ShoulderChestForm` remains an invisible,
 unexported collider.
 
+## Tunic7 resolved dense control and attachment supports
+
+The capsule trial settles at frame 875. Its strict dense SAT control finds one
+self contact, no excluded faces and 0.6629 mm final-five-frame motion, meeting
+the separate fewer-than-50 / under-1-mm preparation control. The remaining
+single contact is not exempt from the exported zero-contact requirement.
+No delivered asset has been replaced. Baking and final export measurement
+remain separate from this control.
+
+An attachment audit now identifies base vertices by matching the authored
+anchors in the original mesh. Guessing the base from the posed object's
+smallest PCA axis selected the wrong vertices on curved fittings. On the
+source-damped candidate, the actual ribbon-bar bases were up to 5.226 mm from
+cloth, and the combined medal bases were up to 9.065 mm away. Insignia were
+bound to torso triangles even though they are mounted on the standing collar.
+They now bind to that collar; a 17 mm collar-only translation control verifies
+that dependency. Ribbon fabric follows its sewn surface, and bonded medal
+metal and its cloth ribbon get separate fits. In a source-damped refit control,
+insignia base gaps fall to at most 0.543 mm, and ribbon-bar gaps to 0.500 mm.
+The medal still reaches 4.981 mm and is not accepted. These are vertex-base
+measurements, not a substitute for continuous clearance or exported SAT.
+
+The collar's 2 mm sewn layering now uses the actual support normal. Its height
+and horizontal shape still follow the sewn curve, avoiding the folded columns
+caused by rotating the full collar with a single shoulder face. The standing,
+translation, support-rotation and source preparation controls pass. Remaining
+collar/body and collar/hanger contacts must still be measured on the capsule
+export.
+
 ## Tunic7 settling controls
 
 The source-grid carrier removes the old masked-face workaround. The runtime
