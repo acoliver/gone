@@ -30,7 +30,7 @@ static func build(layout: ShipLayout, id: StringName) -> Node3D:
 		detectors.append(row.frame * Transform3D(Basis.from_scale(CeilingServices.DETECTOR_SIZE), Vector3.ZERO))
 	_add(root, layout, id, &"FireDetectors", mesh(&"detector"), detectors, &"weathered_red", &"WALL")
 	_add(root, layout, id, &"Sprinklers", mesh(&"sprinkler"), spec.heads, &"corroded_brass", &"WALL")
-	_add(root, layout, id, &"SprinklerPipes", _pipe_mesh(), spec.pipes, &"pipe", &"WALL")
+	_add(root, layout, id, &"SprinklerPipes", _pipe_mesh(), spec.pipes + spec.tees, &"weathered_red", &"WALL")
 	_add(root, layout, id, &"PipeClips", CorridorDressing._mesh(&"box"), spec.clips, &"pipe", &"WALL")
 	if not spec.ducts.is_empty(): _add(root, layout, id, &"CeilingDucts", mesh(&"duct"), spec.ducts, &"wall", &"CEILING")
 	return root
