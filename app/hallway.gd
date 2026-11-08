@@ -12,9 +12,9 @@ extends Node3D
 ## room behind it; when the secondary power activates, the red emergency
 ## fixtures hand the corridor over to the dim regular white strips at
 ## the same stations. Surfaces wear the stasis room's shared surface
-## materials and the ceiling carries the same damage dressing language;
-## no smoke anywhere in this subtree. The hallway's colliders extend the
-## walk sim's set from solids authored here (Placement stays untouched):
+## materials; no suspended cable trays or smoke live in this subtree.
+## The hallway's colliders extend the walk sim's set from solids authored
+## here (Placement stays untouched):
 ## one construction path — the scene spawns these placements verbatim
 ## and the collider set derives from the same data.
 
@@ -188,7 +188,6 @@ static func build(game: Game) -> Hallway:
 
 	hallway.add_child(CorridorDressing.build(game.layout, &"D14-S-041"))
 	hallway.add_child(CeilingProps.build(game.layout, &"D14-S-041"))
-	hallway.add_child(_build_ceiling_damage(game.layout.section(&"D14-S-041")))
 
 	var doors := Node3D.new()
 	doors.name = "HallSideDoors"
@@ -333,29 +332,6 @@ static func _build_switch() -> Node3D:
 	bezel.name = "ButtonBezel"
 	group.add_child(bezel)
 	return group
-
-## The hall's ceiling damage, in the stasis room's language: tray runs
-## tipped off level, hanging wire loops beneath them. Dressing only —
-## outside the walking envelope, deliberately not colliders.
-static func _build_ceiling_damage(spec: ShipLayout.SectionSpec) -> Node3D:
-	var damage := Node3D.new()
-	damage.name = "HallCeilingDamage"
-	var tray_material := _flat_grey(RoomGeometry.TRAY_SHADE)
-	for placement: ShipGeometry.SolidSpec in spec.ceiling_trays():
-		damage.add_child(_box_instance(placement, tray_material))
-		for hanger: ShipGeometry.SolidSpec in DressingMounts.tray_hangers(placement, spec.bounds().end.y):
-			damage.add_child(_box_instance(hanger, tray_material))
-	return damage
-
-## One long tray run down the corridor and one torn cross stub, tipped
-## off level the way the stasis room's trays read.
-static func _ceiling_trays() -> Array[Placement.SolidPlacement]:
-	return ShipLayout.authored().layout.section(&"D14-S-041").ceiling_trays()
-
-## Two hanging wire loops under the tray run, at the stasis room's
-## scale and above the camera-clearance floor.
-static func _ceiling_loops() -> Array[Placement.WireLoop]:
-	return ShipLayout.authored().layout.section(&"D14-S-041").ceiling_loops()
 
 ## One render-bridge frame, mirroring the stasis bay's Lighting bridge:
 ## retarget only on the sim-side target change (the switch flip, the

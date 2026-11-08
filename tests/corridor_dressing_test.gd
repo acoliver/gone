@@ -17,7 +17,8 @@ func test_service_exclusions_follow_inventory_without_room_identity() -> void:
 	var original := ShipDressing.build(layout, section)
 	section._id = &"TEST-SERVICE-BEARING-SPACE"
 	var renamed := ShipDressing.build(layout, section)
-	for prefix: String in ["SWITCH_REACH", "CEILING_DAMAGE/", "FILL/", "LAMP/", "STRIP/"]:
+	assert_int_equal(_reservation_count(original, "CEILING_DAMAGE/"), 0, "removed hall tray must not suppress attached ceiling dressing")
+	for prefix: String in ["SWITCH_REACH", "FILL/", "LAMP/", "STRIP/"]:
 		assert_true(_reservation_count(original, prefix) > 0, "authored service exists: %s" % prefix)
 		assert_int_equal(_reservation_count(renamed, prefix), _reservation_count(original, prefix), "service inventory survives renaming: %s" % prefix)
 	assert_true(_clearance(renamed, &"SWITCH_REACH").is_equal_approx(_clearance(original, &"SWITCH_REACH")), "switch bounds come from the service, not an id")

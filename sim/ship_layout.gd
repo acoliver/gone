@@ -37,7 +37,7 @@ enum DoorKind { HATCH, SIDE, LIFT, BAY, POWER }
 enum AnimationRecipe { HINGE, FIXED, SLIDE }
 enum EmergencyLightRole { BAY_POOL, BAY_HATCH, ROOM_POOL }
 enum ArchitecturalLightRole { LOCAL, HALL_FILL }
-enum ServiceKind { SWITCH, CEILING_DAMAGE, FIXTURE, FILL, REGULAR_STRIP }
+enum ServiceKind { SWITCH, FIXTURE, FILL, REGULAR_STRIP }
 
 class EmergencyFixtureSpec:
 	extends RefCounted
@@ -96,7 +96,6 @@ class SectionServices:
 	extends RefCounted
 	var switch_frames: Array[Transform3D] = []
 	var regular_strips: bool = false
-	var ceiling_damage: bool = false
 	var light_role: ArchitecturalLightRole = ArchitecturalLightRole.LOCAL
 
 class DressingSpec:
@@ -180,23 +179,6 @@ class SectionSpec:
 		for station: int in range(4):
 			frames.append(Transform3D(Basis(), Vector3(_bounds.position.x + (station + 0.5) * pitch, _bounds.end.y - 0.08, _bounds.get_center().z)))
 		return frames
-	func ceiling_trays() -> Array[ShipGeometry.SolidSpec]:
-		if not _services.ceiling_damage: return []
-		var datum := Vector3(_bounds.position.x, _bounds.end.y - ShipGeometry.TRAY_CEILING_DROP, _bounds.get_center().z)
-		return [
-			ShipGeometry.SolidSpec.new(datum + Vector3(10.5, 0, 0.35), Vector3(9, ShipGeometry.TRAY_HEIGHT, ShipGeometry.TRAY_WIDTH), Quaternion(Vector3.RIGHT, 0.05)),
-		]
-	func ceiling_loops() -> Array[ShipGeometry.WireLoop]:
-		return []
-	func ceiling_damage_bounds() -> Array[AABB]:
-		var boxes: Array[AABB] = []
-		for solid: ShipGeometry.SolidSpec in ceiling_trays():
-			var box := ShipGeometry.box_aabb(solid)
-			boxes.append(AABB(box.min_corner(), box.max_corner() - box.min_corner()).grow(0.02))
-		for loop: ShipGeometry.WireLoop in ceiling_loops():
-			var size := Vector3.ONE * ShipGeometry.WIRE_OUTER_RADIUS * 2
-			boxes.append(AABB(loop.center - size / 2, size).grow(0.02))
-		return boxes
 	func emergency_fill_positions() -> Array[Vector3]:
 		var positions: Array[Vector3] = []
 		if _services.light_role == ArchitecturalLightRole.LOCAL: return positions
@@ -220,9 +202,6 @@ class SectionSpec:
 			reservations.append(ServiceReservation.new(StringName("LAMP/%s" % frame.origin), ServiceKind.FIXTURE, AABB(frame.origin - Vector3(0.28, 0.20, 0.20), Vector3(0.56, 0.40, 0.40))))
 		for frame: Transform3D in regular_light_frames():
 			reservations.append(ServiceReservation.new(StringName("STRIP/%s" % frame.origin), ServiceKind.REGULAR_STRIP, AABB(frame.origin - Vector3(0.60, 0.20, 0.12), Vector3(1.20, 0.24, 0.24))))
-		var damage := ceiling_damage_bounds()
-		for index: int in range(damage.size()):
-			reservations.append(ServiceReservation.new(StringName("CEILING_DAMAGE/%d" % index), ServiceKind.CEILING_DAMAGE, damage[index]))
 		var fills := emergency_fill_positions()
 		if _services.light_role != ArchitecturalLightRole.LOCAL: fills.append(emergency_end_fill_position())
 		for point: Vector3 in fills:
@@ -1007,7 +986,6 @@ static func _authored_records() -> Array[Spec]:
 			if d == 14 and number == 41:
 				services.switch_frames = [authored_hall_switch_frame()]
 				services.regular_strips = true
-				services.ceiling_damage = true
 				services.light_role = ArchitecturalLightRole.HALL_FILL
 			specs.append(SectionSpec.new(id, d, number, AABB(Vector3(start, y, -1.5), Vector3(24, CLEAR_HEIGHT, 3)), openings, side_ids, &"opening" if number == 41 else &"emergency", d == 14, services))
 		for n: int in range(2):
