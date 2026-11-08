@@ -7,6 +7,40 @@ from common import collision
 PREFIX = 'CushionPartition_'
 
 
+
+def fitted_back_barriers():
+    from foam_collapse import largest_shell
+    helpers = []
+    for name in ['BackCushion_C', 'BackCushion_L', 'BackCushion_R']:
+        source = bpy.data.objects[name]
+        proxy = source.copy()
+        proxy.data = source.data.copy()
+        proxy.modifiers.clear()
+        proxy.animation_data_clear()
+        bpy.context.collection.objects.link(proxy)
+        proxy.name = PREFIX+'Fitted_'+name
+        proxy['aged_export'] = False
+        proxy.hide_render = True
+        largest_shell(proxy)
+        collision(proxy, .001)
+        helpers.append(proxy.name)
+    return {'helpers': helpers, 'pose': 'fitted',
+            'reason': 'Fitted seat/back AABBs overlap; retain the exact curved seam below the upper planar barrier.'}
+
+
+def pair_crossings(a, b):
+    from mathutils.bvhtree import BVHTree
+    from triangle_contacts import intersect
+    surfaces = []
+    for obj in [a, b]:
+        obj.data.calc_loop_triangles()
+        points = np.array([obj.matrix_world@v.co for v in obj.data.vertices])
+        faces = np.array([t.vertices[:] for t in obj.data.loop_triangles])
+        surfaces.append((points, faces, BVHTree.FromPolygons(points.tolist(), faces.tolist(), all_triangles=True)))
+    p, f, tree = surfaces[0]
+    q, g, other = surfaces[1]
+    return sum(intersect(p[f[i]], q[g[j]]) for i, j in tree.overlap(other))
+
 def clear_partitions():
     for obj in list(bpy.context.scene.objects):
         if obj.name.startswith(PREFIX):

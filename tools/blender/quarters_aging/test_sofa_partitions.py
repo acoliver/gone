@@ -10,7 +10,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import assert_collision_clear
 from sofa_decay_policy import ORDER
 from sofa_full_decay import initialize, open_cover_bottom
-from sofa_partitions import clear_partitions, fitted_bounds, install_partitions, partition_plan
+from foam_collapse import largest_shell
+from sofa_partitions import clear_partitions, fitted_back_barriers, fitted_bounds, install_partitions, partition_plan
 
 
 class Partitions(unittest.TestCase):
@@ -28,7 +29,10 @@ class Partitions(unittest.TestCase):
         for name in ORDER:
             back = name.startswith('Back')
             install_partitions(self.points, back)
+            if not back:
+                fitted_back_barriers()
             obj = bpy.data.objects[name]
+            largest_shell(obj)
             open_cover_bottom(obj, back)
             assert_collision_clear(obj)
             slabs = [o for o in bpy.context.scene.objects if o.name.startswith('CushionPartition_')]

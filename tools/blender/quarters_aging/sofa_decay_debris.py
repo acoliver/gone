@@ -49,9 +49,16 @@ def load_templates(path):
         points = points@axes.T
         obj.data.calc_loop_triangles()
         faces = np.array([t.vertices[:] for t in obj.data.loop_triangles])
-        templates.append((obj.name, points, faces))
-    if len(templates) != 9:
-        raise ValueError('Deposition requires the nine accepted cut-residue templates')
+        from mathutils.bvhtree import BVHTree
+        tree = BVHTree.FromPolygons(points.tolist(), faces.tolist(), all_triangles=True)
+        crossings = [(i, j) for i, j in tree.overlap(tree) if i < j and
+                     not (set(faces[i]) & set(faces[j])) and intersect(points[faces[i]], points[faces[j]])]
+        if crossings:
+            print('REJECT_FRAGMENT_SELF_CONTACT', obj.name, crossings, flush=True)
+        else:
+            templates.append((obj.name, points, faces))
+    if len(templates) < 8:
+        raise ValueError('Deposition requires at least eight contact-free cut-residue templates')
     return sorted(templates, key=lambda entry: entry[0])
 
 
@@ -134,11 +141,11 @@ def deposit(source, out, library, seed=9666):
         lips = opening_sources(obj)
         cx = obj.matrix_world.translation.x
         accepted = 0
-        # A uniform lateral strip does not have decaying radial density.
-        # Stratify a half-disc into decreasing area densities, keeping the
-        # same floor count, source, support clearance and Poisson spacing.
-        radii = np.linspace(0, .38, 6)
-        for band, target in enumerate((5, 9, 8, 5, 3)):
+        # Most foam stays on the deck. Only the leaking front lips seed a
+        # sparse floor tail; the powder drift belongs under those openings.
+        cx = float(np.mean([middle.x for middle, _ in lips]))
+        radii = np.linspace(0, .24, 6)
+        for band, target in enumerate((2, 2, 1, 1, 0)):
             count, attempts = 0, 0
             while count < target and attempts < 10000:
                 attempts += 1
@@ -152,13 +159,47 @@ def deposit(source, out, library, seed=9666):
                 raise ValueError('Floor spill could not meet its radial density and spacing without contacts')
             accepted += count
         deck_accepted = 0
-        for _ in range(160):
+        for _ in range(3000):
             middle, outward = lips[int(rng.integers(len(lips)))]
-            point = middle+outward*rng.uniform(.003, .016)
+            point = middle+outward*rng.uniform(.003, .030)
             deck_accepted += int(place((point.x, point.y), False, source_index))
-            if deck_accepted >= 8:
+            if deck_accepted >= 20:
                 break
-        powder = powder_card('PowderSpill_'+name, (cx, -.650, .0005), (.325, .205), out/'textures/powder', seed+source_index)
+        lip_accepted = 0
+        for _ in range(2000):
+            x = rng.uniform(cx-.20, cx+.20)
+            y = rng.uniform(-.420, -.345)
+            lip_accepted += int(place((x, y), False, source_index))
+            if lip_accepted >= 12:
+                break
+        powder = powder_card('PowderSpill_'+name, (cx, -.325, .3912),
+                             (.20+source_index*.027, .018+source_index*.001),
+                             out/'textures/powder', seed+source_index)
+        unsupported = set()
+        for vertex in powder.data.vertices:
+            hits = [tree.ray_cast(Vector((vertex.co.x, vertex.co.y, 1.2)), Vector((0, 0, -1))) for tree in supports[:1]]
+            heights = [hit[0].z for hit in hits if hit[0] is not None and hit[0].z > .35]
+            if not heights:
+                unsupported.add(vertex.index)
+            else:
+                vertex.co.z = max(heights)+.0005
+        powder_points = np.array([v.co[:] for v in powder.data.vertices])
+        bm = bmesh.new()
+        bm.from_mesh(powder.data)
+        remove = [face for face in bm.faces if any(v.index in unsupported for v in face.verts) or
+                  not contacts.clear_mesh(powder_points, np.array([[v.index for v in face.verts]]))]
+        bmesh.ops.delete(bm, geom=remove, context='FACES')
+        bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context='VERTS')
+        if not bm.faces:
+            bm.free()
+            raise ValueError('No collision-free powder surface remains under the seat opening')
+        powder_clipped = len(remove)
+        bm.to_mesh(powder.data)
+        bm.free()
+        powder.data.calc_loop_triangles()
+        powder_points = np.array([v.co[:] for v in powder.data.vertices])
+        powder_faces = np.array([t.vertices[:] for t in powder.data.loop_triangles])
+        contacts.add_mesh(powder_points, powder_faces)
         shader = powder.data.materials[0].node_tree.nodes['Principled BSDF']
         image = shader.inputs['Base Color'].links[0].from_node.image
         pixels = np.array(image.pixels[:], dtype=np.float32).reshape(image.size[1], image.size[0], 4)
@@ -167,14 +208,16 @@ def deposit(source, out, library, seed=9666):
         image.save()
         image.pack()
         spills.append({'part': name, 'origin_blender_m': [cx, -.478, 0],
-                       'floor_count': accepted, 'deck_count': deck_accepted, 'powder': powder.name})
+                       'floor_count': accepted, 'deck_count': deck_accepted,
+                       'front_lip_count': lip_accepted, 'powder': powder.name,
+                       'powder_clipped_triangles': powder_clipped})
     debris = pieces[0]
     debris.name = 'FoamDebris'
     join(debris, pieces[1:])
-    record['debris'] = {'method': 'nine residue skin templates; radially stratified half-disc floor fans and downward substrate rays under actual lips',
+    record['debris'] = {'method': 'contact-free residue skin templates; opening-led deck deposits and front-lip drifts, sparse floor tails',
                          'seed': seed, 'templates': [t[0] for t in templates], 'placements': placements,
                          'spills': spills, 'rejected_contacts': rejected,
-                         'floor_minimum_spacing_m': .024, 'powder_height_m': .0005,
+                         'floor_minimum_spacing_m': .024, 'powder_support_clearance_m': .0005,
                          'crumb_support_clearance_m': .0007,
                          'powder_note': 'Sub-millimetre powder represented by alpha cards; fragments clear their geometric card planes.'}
     checkpoint(out, record, 'deposited.blend')

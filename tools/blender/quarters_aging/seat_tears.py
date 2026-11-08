@@ -36,7 +36,7 @@ def author(obj, centre_x=0., seed=9501):
     # island, while keeping its faces in the same physical simulation.
     paths.append(loop)
     for path in paths:
-        records.append(split_polyline(obj, path))
+        records.append(split_polyline(obj, path, shrink_band=.060))
     bm = bmesh.new()
     bm.from_mesh(obj.data)
     bm.verts.ensure_lookup_table()

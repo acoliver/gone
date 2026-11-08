@@ -177,6 +177,8 @@ def prepare_cover(obj, plan, source):
     envelope = envelope_for(obj, residue, plan)
     open_cover_bottom(obj, plan['back'])
     dense_report = densify(obj, levels=2)
+    from sofa_contact_mesh import resolve_elements
+    dense_report['contact_resolution'] = resolve_elements(obj)
     if plan['back']:
         tears = back_splits(obj, plan['seed'])
     else:
@@ -278,11 +280,14 @@ def simulate_cushions(out, residue_source, resume=None, only=None, rest_mode='fi
         detail, rest, envelope = prepare_cover(obj, plan, residue_source)
         detail['partitions'] = install_partitions(
             {n: np.array(p) for n, p in record['partition_fitted_bounds'].items()}, plan['back'])
+        if not plan['back']:
+            from sofa_partitions import fitted_back_barriers
+            detail['fitted_back_barriers'] = fitted_back_barriers()
         if plan['back']:
             from sofa_decay_joint import carrier_surface
             rest, carrier_report = carrier_surface(obj, plan)
             detail['rest_carrier'] = carrier_report
-            carrier = obj.modifiers.new('Empty back rest carrier', 'SUBSURF')
+            carrier = obj.modifiers.new('Empty cover rest carrier', 'SUBSURF')
             carrier.levels = carrier.render_levels = 1
             carrier.subdivision_type = 'SIMPLE'
             carrier.uv_smooth = 'PRESERVE_BOUNDARIES'
@@ -293,10 +298,12 @@ def simulate_cushions(out, residue_source, resume=None, only=None, rest_mode='fi
         evaluated_count = len(evaluated.data.vertices)
         config = calibrated_config('upholstery', .2/34, .2/9, plan['frames'])
         config.update(self_collision=True, shrink=.05, quality=16, collision_quality=4,
-                      distance=.0015, time_scale=.5, welt_bending=3.2, self_distance=.0002)
+                      distance=.0015, time_scale=.5, welt_bending=3.2, self_distance=.001)
         if settings:
             config.update({k: v for k, v in settings.items() if k not in {'collapse_frames', 'residue_height_scale', 'residue_warp'}})
         mod = configure(obj, config, detail['reference_vertices'], rest_shape=rest)
+        if obj.vertex_groups.get('Lip relaxation'):
+            mod.settings.vertex_group_shrink = 'Lip relaxation'
         mod.settings.mass = config['mass']*detail['reference_vertices']/evaluated_count
         checkpoint(out, record, name+'-prepared.blend')
         result = freeze_simulation(obj, mod, plan['frames'])
@@ -314,11 +321,12 @@ def simulate_cushions(out, residue_source, resume=None, only=None, rest_mode='fi
         bpy.data.objects.remove(envelope, do_unlink=True)
         record['cushions'][name] = detail
         if name == 'SeatCushion_C':
-            collision(low, .001)
-            bpy.context.view_layer.update()
-            assert_collision_clear(bpy.data.objects['SeatCushion_R'])
+            from sofa_partitions import pair_crossings
+            count = pair_crossings(bpy.data.objects['SeatCushion_R'], low)
+            if count:
+                raise ValueError(f'Partition control: fitted right crosses settled centre {count} times')
             record['partition_control'] = {
-                'centre_settled_right_fitted_initial_SAT_crossings': 0}
+                'centre_settled_right_fitted_initial_SAT_crossings': count}
             print('PARTITION_CONTROL centre settled/right fitted: zero initial SAT crossings', flush=True)
         clear_partitions()
         record['elapsed_s_this_invocation'] = time.perf_counter()-start

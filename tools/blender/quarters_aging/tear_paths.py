@@ -24,7 +24,7 @@ def grain_walk(start, length, seed, step=.004, angle=0.):
     return np.asarray(points)
 
 
-def split_polyline(obj, points):
+def split_polyline(obj, points, shrink_band=.008):
     """Points are in local 3D space, normally lifted from the pattern UVs."""
     bm = bmesh.new()
     bm.from_mesh(obj.data)
@@ -78,6 +78,12 @@ def split_polyline(obj, points):
     bm.verts.ensure_lookup_table()
     lip_ids = {v.index for e in bm.edges if e.is_boundary for v in e.verts}
     lip = obj.vertex_groups.get('Lip shrink') or obj.vertex_groups.new(name='Lip shrink')
+    relaxation = None
+    if shrink_band != .008:
+        if shrink_band <= 0:
+            bm.free()
+            raise ValueError('Tear relaxation band must be positive')
+        relaxation = obj.vertex_groups.get('Lip relaxation') or obj.vertex_groups.new(name='Lip relaxation')
     layer = bm.verts.layers.deform.verify()
     boundary_points = np.array([bm.verts[i].co[:] for i in sorted(lip_ids)]) if lip_ids else np.empty((0, 3))
     # Only the authored split receives shrink, not the original panel perimeter.
@@ -85,6 +91,8 @@ def split_polyline(obj, points):
         d = distance(np.asarray(v.co))
         if d < .008:
             v[layer][lip.index] = 1-float(d/.008)
+        if relaxation is not None and d < shrink_band:
+            v[layer][relaxation.index] = max(v[layer].get(relaxation.index, 0.), 1-float(d/shrink_band))
     final_area = sum(f.calc_area() for f in bm.faces)
     bm.to_mesh(obj.data)
     bm.free()

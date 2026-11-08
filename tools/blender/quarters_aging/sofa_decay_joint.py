@@ -26,6 +26,8 @@ def carrier_surface(obj, plan):
     obj.shape_key_clear()
     obj.data = carrier.data.copy()
     bpy.data.objects.remove(carrier, do_unlink=True)
+    from sofa_contact_mesh import exclude_small_faces
+    report['contact_resolution'] = exclude_small_faces(obj, .008)
     return empty_rest(obj, plan), report
 
 
