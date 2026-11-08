@@ -9,7 +9,7 @@ from mathutils.bvhtree import BVHTree
 
 PYTHON = '/Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python'
 ROOT = Path(__file__).resolve().parents[4]
-SCRATCH = ROOT / 'tmp/fit/sofa/cloth'
+SCRATCH = ROOT / 'tmp/fit/sofa/cloth2'
 
 
 def tree(part):

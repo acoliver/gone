@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import numpy as np
 import trimesh
+from followup_gates import mesh_names, foot_contacts, edge_rounding, back_shape, throw_folds, rivet_shape, arm_roll
 
 NAMES = ['Frame','Feet','Rivets','SeatCushion_L','SeatCushion_C','SeatCushion_R',
          'BackCushion_L','BackCushion_C','BackCushion_R','Throw']
@@ -52,8 +53,8 @@ def seat_shape(mesh):
     return {'extents_xyz_m':extents.tolist(),'top_center_y_m':top,'top_20mm_edge_y_m':edges,
             'crown_m':crown,'side_bulges_m':bulges,
             'pass':bool(abs(extents[0]-.66)<=.010 and abs(extents[2]-.70)<=.010
-                        and .14<=extents[1]<=.17 and .012<=crown<=.030
-                        and all(.005<=x<=.020 for x in bulges))}
+                        and .16<=extents[1]<=.19 and .035<=crown<=.050
+                        and all(.015<=x<=.030 for x in bulges))}
 
 
 def penetration(a,b):
@@ -111,6 +112,13 @@ def measure(path,mesh_data=None):
         'triangles':len(mesh.faces),'components':len(parts[name])} for name,mesh in meshes.items()}
     checks['topology_pass']=all(v['watertight'] and v['winding_consistent'] and v['positive_component_volumes'] for v in checks['topology'].values())
     checks['seats']={name:seat_shape(mesh) for name,mesh in bodies.items() if name.startswith('Seat')}
+    checks['mesh_resource_names']=mesh_names(path)
+    checks['foot_frame_contacts']=foot_contacts(meshes['Feet'],meshes['Frame'])
+    checks['rounded_seat_edges']={name:edge_rounding(mesh) for name,mesh in bodies.items() if name.startswith('Seat')}
+    checks['backs']={name:back_shape(mesh) for name,mesh in bodies.items() if name.startswith('Back')}
+    checks['throw_folds']=throw_folds(meshes['Throw'],bodies['SeatCushion_R'])
+    checks['arm_roll']=arm_roll(meshes['Throw'])
+    checks['rivets']=rivet_shape(meshes['Rivets'])
     normals={}
     for name,body in bodies.items():
         if not name.startswith('Seat'):continue
@@ -162,9 +170,10 @@ def measure(path,mesh_data=None):
                      'pass':bool(.35<=hang<=.5 and extension<=.060 and -.001<=cap_gap<=.003 and max(depths.values())<=.00001 and len(throw.faces)<4000)}
     bounds=scene.bounds
     checks['bounds']={'xyz_m':bounds.tolist(),'pass':bool(bounds[0,0]>=-1.105 and bounds[1,0]<=1.16 and bounds[0,1]>=-.001 and bounds[1,1]<=.855 and np.all(np.abs(bounds[:,2])<=.480))}
-    count=sum(len(m.faces) for m in meshes.values());checks['triangle_budget']={'triangles':count,'limit':18000,'pass':count<18000 and all(len(meshes[n].faces)<2500 for n in bodies)}
+    count=sum(len(m.faces) for m in meshes.values());checks['triangle_budget']={'triangles':count,'limit':20000,'pass':count<20000 and all(len(meshes[n].faces)<2500 for n in bodies)}
     checks['pass']=bool(checks['named_nodes']['pass'] and checks['unique_geometry']['pass'] and checks['topology_pass'] and checks['bounds']['pass'] and checks['triangle_budget']['pass'] and checks['throw']['pass']
-        and all(v['pass'] for group in ['seats','seat_top_normals','welts','neighbour_gaps','cushion_contacts','seat_deck_gaps'] for v in checks[group].values()))
+        and all(checks[key]['pass'] for key in ['mesh_resource_names','foot_frame_contacts','throw_folds','rivets','arm_roll'])
+        and all(v['pass'] for group in ['rounded_seat_edges','backs','seats','seat_top_normals','welts','neighbour_gaps','cushion_contacts','seat_deck_gaps'] for v in checks[group].values()))
     if mesh_data:
         payload={name:[{'vertices':p.vertices.tolist(),'faces':p.faces.tolist()} for p in split] for name,split in parts.items()}
         Path(mesh_data).write_text(json.dumps(payload))

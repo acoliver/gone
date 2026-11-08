@@ -3,7 +3,7 @@ from pathlib import Path
 from PIL import Image, ImageOps
 
 ROOT = Path(__file__).resolve().parents[4]
-OUT = ROOT / 'tmp/fit/sofa/cloth'
+OUT = ROOT / 'tmp/fit/sofa/cloth2'
 DESIGN = ROOT / 'docs/art/quarters/sheets/sofa/hero.png'
 
 

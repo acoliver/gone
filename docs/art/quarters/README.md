@@ -57,37 +57,57 @@ The third-pass neutral renders are in the gitignored `tmp/fit/locker/pass3/` dir
 
 ## Sofa
 
-The cushions and throw now use baked Blender cloth simulations. The shape guide remains `tmp/hy/sofa-hero.glb`, the 391,256-triangle Hunyuan mesh generated from the approved hero. The editable source is `tools/blender/quarters/sofa/sofa-working.blend`. It uses Blender's native Z-up frame, with the front facing -Y. `build.py` opens that saved source and exports with `export_yup=True`, giving the game +Y up and the front toward +Z. There are no live simulation or thickness modifiers in the saved source.
+The fitted source is `tools/blender/quarters/sofa/sofa-working.blend`, and the game asset is `assets/props/quarters/sofa.glb`. The cushions and throw are baked Blender cloth meshes with no live modifiers. Authoring uses Blender Z up and front -Y. Export uses `export_yup=True`, giving the game +Y up and front +Z.
 
-### Cushion method and measurements
+### Why the shape gates changed
 
-`cloth.py` starts with a closed rounded box, divided 14 × 14 × 4 for 616 quads, with a 22 mm corner radius. The selected seat trial, `seat-k`, uses pressure 1, pressure scale 1, quality 20, tension and compression stiffness 500, shear stiffness 350, bending 5 and mass 0.015. Structural damping is 15, bending damping 2 and air damping 5. The underside is pinned during the 12-frame settle against a flat deck. Object collision distance is 1 mm, self-collision distance 2 mm and collision quality 6.
+The previous 12 to 30 mm crown and 5 to 20 mm side-bulge windows admitted cushions that still looked flat against `docs/art/quarters/sheets/sofa/hero.png`. The seat gates now require a 35 to 50 mm crown, 15 to 30 mm side bulges, 160 to 190 mm height and fitted top-edge radii of at least 35 mm. Four diagonal corner sections must rise toward the top without pinching. Back front-face crowns must be 40 to 60 mm, with their existing width and height retained. The piping, neighbour-gap, support, contact, topology, winding, axis and intersection gates remain in place. The total triangle ceiling is 20,000; each cushion remains below 2,500 triangles.
 
-Before fitting, the settled shell measures 667.2 × 705.6 × 166.6 mm. Its crown is 19.66 mm and its four side bulges are 6.13 to 9.95 mm. It is closed and manifold, with zero nonadjacent self-intersections and 1,232 triangles. The baked mesh supplies all six cushions. The seat copies are scaled to 660 × 700 × 150 mm; their measured crowns are 17.68 mm and side bulges 5.41 to 8.94 mm. Their highest points remain at game y=0.540 m.
+These measurements come from the exported GLB, before and after the follow-up to `1547cad`:
 
-The back copies face forward and measure 660 × 420 × 200 mm in game X, Y and Z. Their lower returns compress to 40 mm behind the seats, reaching full depth above the seat backs. This avoids the original pads occupying the same space as the rear seats. The seat centres remain at x=-0.67, 0 and 0.67 m. Both rows have 10.00 mm neighbour gaps. Exported triangle checks find no cushion-cushion or cushion-frame crossings. Seat-to-deck gaps are 0.25 to 0.49 mm.
+| Measurement | Before | After |
+| --- | --- | --- |
+| Seat crown | 17.68 mm | 35.98 mm |
+| Seat side bulges | 5.41 to 8.94 mm | 17.13 to 22.86 mm |
+| Seat height | 150.00 mm | 180.45 mm |
+| Back front crown | 23.90 mm | 41.63 mm |
+| Back top-edge fitted radius | 24.96 mm | 49.41 mm |
+| Foot-top distance to nearest frame surface | 79.23 to 123.10 mm | 0.15 mm on all four feet |
+| Hanging-panel plane deviation | 8.74 mm | 22.05 mm |
+| Hanging-panel fold peaks | 1 | 3 |
+| Right seat top covered by throw | 79.82 percent | 8.56 percent |
+| Throw components | 2 | 1 |
+| Triangles | 17,324 | 19,550 |
 
-Each cushion has a joined 8 mm piping tube around its upper perimeter, including the front and rear edges. Surface rays fit 44 six-sided rings on each seat and 76 on each back. The seat pipe's maximum surface gap is 0.442 mm and maximum embed is 0.159 mm. The back pipe's maximum gap is 0.950 mm and maximum embed 0.969 mm. Both stay within the 1 mm surface band. Seat cushions have 1,760 triangles each including piping; backs have 1,996 each.
+The old global vertical bounds showed a 45 mm foot-to-frame separation. The nearest-surface gaps were larger because the feet also sat inward of the side rails. Four 190 by 110 mm mounting plates now bridge the feet to those rails. Their lower surfaces sit 0.15 mm above each foot, and their tops reach y=0.131 m. The new gate measures each foot's top vertices and top centre against the nearest frame surface above them, with a 0 to 1 mm limit.
 
-The original arm interiors overlapped the seat edges. `assemble.py` preserves the exterior arm and hardware positions while narrowing the cheeks to 75 mm and caps to 80 mm. It lowers the front rail 18 mm, fills the support deck to 700 mm depth with its top at y=0.390 m, and moves the rear rails and uprights clear of the back pads. Final decimation ratios are 0.52 for the frame, 0.35 for the feet, 0.32 for rivets and 0.88 for back cushion bodies. These parts retain closed surfaces and outward winding.
+### Cushion recipe
 
-### Throw method and measurements
+`cloth.py` builds a closed 660 by 700 by 180 mm shell on a 20 by 20 by 8 grid, with a 45 mm rounded-box radius. Its upper shoulders are inset 18 mm from the side-wall belly before simulation. This separates the inflated belly from the rounded upper seam instead of turning the whole upper shell into a narrow dome. The selected `seat-u` trial uses pressure 0.2, pressure scale 1, quality 20, tension and compression stiffness 500, shear 350, bending 10 and mass 0.015. Structural damping is 15, bending damping 2 and air damping 5. The underside is pinned during a 40-frame settle against the deck. Object collision distance is 1 mm, self-separation 2 mm and collision quality 6.
 
-`throw.py` represents a once-folded 1.3 × 1.5 m sheet as two 0.65 × 1.5 m plies. The selected `throw-g` trial uses a 24 × 12 quad grid per ply, wool stiffness 100/100/50, bending 0.1, mass 0.15, quality 30 and half-speed integration. Structural damping is 12, bending damping 3 and air damping 5. Self-collision stays on at 4 mm, object collision distance is 4 mm and collision quality 12. The arm-cap contact strip is pinned; the rest settles under gravity against the arm and seat colliders with friction 20. It runs for 180 frames. Maximum movement over the last five frames is 0.495 mm.
+The settled shell is fitted to the seats and backs by `refit.py` and `assemble.py`. Seat body reduction targets 1,440 triangles, and back body reduction targets 1,210. The seats retain 660 by 700 mm footprints and centres at x=-0.67, 0 and 0.67 m. Back pads retain 660 mm width and 420 mm height. Their lower returns stay 40 mm deep behind the seats, reaching full depth between normalized heights 0.38 and 0.58. Surface-fitted 8 mm piping uses offsets of 4.70 mm on seats and 4.58 mm on backs. Its measured gaps and embeds remain below 1 mm.
 
-Each ply receives 6 mm thickness after simulation. A measured 2 mm upward bake clearance removes the remaining triangle-edge crossings at the rounded cap. A 0.30 mm trial lift still left 20 crossings, so it was not accepted. The final cap gap is 1.988 mm, the outside hang 444.24 mm and outward extension 38.29 mm. There are zero self-intersections, ply-ply crossings or throw-furniture crossings. The throw is a closed manifold mesh with two components and 2,592 triangles. It hangs over the positive-X arm, which is image-right in the fixed hero camera.
+The final seat edge radii are 51.02 to 58.40 mm. All four corner sections pass. Seat neighbour gaps are 10.11 mm, back gaps 10.07 mm and seat-to-deck gaps 0.25 to 0.49 mm. Exported triangle checks find no cushion-cushion or cushion-frame crossings.
 
-### Trials and verification
+Each corner plate has four 12 mm diameter, 3 mm high closed domed rivets. Their `BareSteel` material uses colour (0.48, 0.52, 0.54), metallic 0.85 and roughness 0.32 to contrast with the grey-green frame paint.
 
-Full settings, failed measurements and changes are recorded in `tools/blender/quarters/sofa/cloth-trials.json`. Cushion trials `seat-a` through `seat-j` tested pressure from 0.001 to 10, pressure scales 0.001 to 1, lower fabric stiffness and bottom anchors. They produced excess footprints, shallow or excessive crowns, folded side walls or incomplete runs. Increasing solver quality and upholstery stiffness produced the passing `seat-k`; increasing its pressure to 3 in `seat-l` raised the height to 179.99 mm and crown to 33.47 mm, so it was rejected.
+### Throw recipe
 
-The throw trials exposed two initialization defects: vertical offsets made the hanging plies overlap, and the first placement crossed the back cushion. Offsetting along the cloth normal and moving the sheet forward removed those initial crossings. The connected fold still moved too much. Trial `throw-d` extended 65.45 mm beyond the frame and `throw-e` extended 105.27 mm. Impulse clamps in `throw-f` did not fix it. Separating the two folded plies in `throw-g` produced the settled result. A sequential-ply alternative, `throw-h`, left the upper ply moving 244.84 mm over its last five frames and was rejected.
+The selected `throw-l` is one continuous 4 mm thick wool sheet, 630 mm wide, with a 35 mm rolled turn over the arm. There is no second loose ply. Four initial gathered waves have 22 mm amplitude, fading to zero at the cap. The sheet starts 65 mm farther forward to clear the back cushion. The cap and rolled contact strip are pinned while the inside and outside hangs settle under gravity against the fitted furniture.
 
-`verify.py` measures the exported GLB through `trimesh_verify.py` and uses Blender BVHs on those exported triangles for intersection checks. `verify.json` records all shape, support, piping, manifold, winding, normal, node, geometry and triangle gates. The source exports exactly the ten required nodes with ten distinct mesh resources. Seat-top normals have maximum +Y components of 0.999919. Total cost is 17,324 triangles against the 18,000 limit. The measured game bounds are x [-1.10003, 1.13829], y [0.00030, 0.84966], z [-0.47500, 0.47796] m. The extended X bound includes the throw. Re-export from the saved source is byte-identical.
+The 240-frame simulation uses quality 30, half-speed integration, mass 0.15, tension and compression stiffness 150, shear 80 and bending 0.7. Structural damping is 12, bending damping 3 and air damping 5. Self-separation is 5 mm, object collision distance 3 mm, collision quality 12 and collider friction 30. The initial profile is lowered 1 mm for cap clearance. Thickness is applied after simulation. Maximum movement over the last five frames is 0.0231 mm.
 
-Run `build.py` with Blender's `--background --factory-startup --python-exit-code 1 --python` options, followed by `-- --output assets/props/quarters/sofa.glb`. Repeat with `--output tmp/fit/sofa/cloth/reexport.glb`. Run `verify.py` with the same Blender options and `-- --input assets/props/quarters/sofa.glb --report tools/blender/quarters/sofa/verify.json --reexport tmp/fit/sofa/cloth/reexport.glb`. Long jobs run under `nohup` with logs in the same scratch directory. `assemble.py` accepts an explicit pre-cloth `--frame-source` and the selected cushion trial; routine exports need only the saved source.
+The exported hanging section at y=0.56 m deviates 22.05 mm from its fitted vertical plane and has three peaks with at least 6 mm prominence. Top-down ray sampling measures 8.56 percent right-seat coverage against the 30 percent ceiling. Three arm-roll sections fit radii of 34.88 to 34.92 mm. The circle fit uses geometric residuals so the two skins of the thick sheet do not bias its radius. Cap clearance is 1.95 mm, outside hang 434.00 mm and outward extension 47.82 mm. There are zero self-crossings, furniture crossings or measured furniture penetrations.
 
-The neutral light-grey captures are in gitignored `tmp/fit/sofa/cloth/`, using grey-green steel, charcoal upholstery and oatmeal wool. `cushion-step1.png` is the settled-shell close-up. `compare-hero.png` places the design on the left and the fixed-angle render on the right. `compare-detail.png` compares the image-right arm and throw. `turntable.png` contains 30°, 120°, 210° and 300° views, with fill lighting on every side. The image-comparer review could not run because its local endpoint at `127.0.0.1:8308` returned connection errors. The geometry gates pass; visual agreement with the design remains unreviewed.
+### Trials, export and captures
+
+`cloth-trials.json` retains every earlier trial and records follow-up trials `seat-m` through `seat-u` and `throw-i` through `throw-l`, including failed fits and before/after gates. Increasing pressure alone overinflated the cushions. The denser rounded shell and inset shoulder produced the selected shape. The throw trials identified an inside rear hem initialized against the back cushion. Moving the sheet forward and holding its rolled contact strip removed that source of movement and twisting.
+
+`build.py` clears unused mesh datablocks before assigning each mesh resource its node name. The GLB has ten named nodes with ten distinct, matching mesh resources. `verify.py`, `trimesh_verify.py` and `followup_gates.py` check the exported asset, including Blender BVH triangle crossings. `verify.json` passes every gate and confirms byte-identical re-export from the saved source.
+
+Run `build.py` with Blender's `--background --factory-startup --python-exit-code 1 --python` options, then `-- --output assets/props/quarters/sofa.glb`. Repeat with `--output tmp/fit/sofa/cloth2/reexport.glb`. Run `verify.py` with the same Blender options and `-- --input assets/props/quarters/sofa.glb --report tools/blender/quarters/sofa/verify.json --reexport tmp/fit/sofa/cloth2/reexport.glb`. Long jobs use `nohup` and logs in that scratch directory.
+
+The lit captures are `tmp/fit/sofa/cloth2/compare-hero.png`, `compare-detail.png`, `turntable.png` and `cushion-close.png`. The hero and detail sheets place the design beside the fitted asset. The turntable contains 30, 120, 210 and 300 degree views. Every view uses the same world fill and four area lights. The designated image-comparer endpoint at `127.0.0.1:8308` was unavailable, so these captures have no new visual rating.
 
 
 ## Tunic

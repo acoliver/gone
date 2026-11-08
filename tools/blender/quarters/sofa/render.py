@@ -56,6 +56,7 @@ def render(out):
         bpy.ops.render.render(write_still=True)
 
     shot('fit-hero.png', (3.1, -3.5, 2.2), (0, 0, .43), 3.15, (1000, 800))
+    shot('cushion-close.png', (1.2, -2.4, 1.8), (0, -.10, .53), 1.65, (1100, 850))
     shot('fit-detail.png', (2.25, -2.5, 1.15), (.99, -.15, .52), 1.13, (800, 800))
     for angle in (30, 120, 210, 300):
         r = math.radians(angle)

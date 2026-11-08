@@ -8,7 +8,7 @@ import numpy as np
 from mathutils import Vector
 
 ROOT = Path(__file__).resolve().parents[4]
-SCRATCH = ROOT / 'tmp/fit/sofa/cloth'
+SCRATCH = ROOT / 'tmp/fit/sofa/cloth2'
 
 
 def activate(obj):
@@ -137,8 +137,16 @@ def experiment(args):
     bpy.ops.mesh.primitive_cube_add(size=1, location=(0,0,-.025))
     deck=bpy.context.object; deck.name='Deck'; deck.dimensions=(1,1,.05)
     bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); collider(deck)
-    obj=box_shell('SeatCushion_C',(.66,.70,.15))
-    obj.location.z=.077
+    obj=box_shell('SeatCushion_C',(.66,.70,args.height),tuple(args.divisions),args.radius)
+    # A sewn upper shoulder sits inside the side-wall belly. This gives the
+    # pressure shell a rounded edge without pulling its whole side into a dome.
+    for v in obj.data.vertices:
+        t=np.clip(v.co.z/(args.height/2-args.radius),0,1)
+        t=t*t*(3-2*t)
+        for axis,half in ((0,.33),(1,.35)):
+            weight=max(0,(abs(v.co[axis])-(half-.13))/.13)
+            v.co[axis]-=np.sign(v.co[axis])*args.shoulder_inset*weight*t
+    obj.location.z=args.height/2+.002
     mod=cloth(obj,args.pressure,args.scale,args.bending,args.stiffness,args.mass,args.pin)
     bake(obj,mod,args.frames)
     out=SCRATCH/args.name; out.mkdir(parents=True,exist_ok=True)
@@ -147,7 +155,7 @@ def experiment(args):
     print('RAW_BOUNDS',raw.min(axis=0),raw.max(axis=0),flush=True)
     record={'settings':{**vars(args),'quality':20,'shear_stiffness':args.stiffness*.7,
                         'collision_quality':6,'collision_distance_m':.001,
-                        'self_distance_m':.002,'divisions':[14,14,4],'bevel_radius_m':.022},
+                        'self_distance_m':.002,'bevel_radius_m':args.radius},
             'measurements':measurements(obj)}
     (out/'numbers.json').write_text(json.dumps(record,indent=2)+'\n')
     print(json.dumps(record),flush=True)
@@ -163,4 +171,8 @@ if __name__=='__main__':
     ap.add_argument('--mass',type=float,default=.015)
     ap.add_argument('--frames',type=int,default=20)
     ap.add_argument('--pin',action='store_true')
+    ap.add_argument('--shoulder-inset',type=float,default=0)
+    ap.add_argument('--radius',type=float,default=.055)
+    ap.add_argument('--height',type=float,default=.16)
+    ap.add_argument('--divisions',type=int,nargs=3,default=[14,16,6])
     experiment(ap.parse_args(sys.argv[sys.argv.index('--')+1:]))

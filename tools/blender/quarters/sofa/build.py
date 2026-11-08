@@ -11,7 +11,17 @@ NAMES = ('Frame', 'Feet', 'Rivets', 'SeatCushion_L', 'SeatCushion_C',
          'SeatCushion_R', 'BackCushion_L', 'BackCushion_C', 'BackCushion_R', 'Throw')
 
 
+def name_meshes():
+    for mesh in list(bpy.data.meshes):
+        if mesh.users == 0:
+            bpy.data.meshes.remove(mesh)
+    for obj in bpy.data.objects:
+        if obj.type == 'MESH':
+            obj.data.name = obj.name
+
+
 def export(path):
+    name_meshes()
     meshes = [o for o in bpy.data.objects if o.type == 'MESH']
     if set(o.name for o in meshes) != set(NAMES):
         raise ValueError('Sofa source must contain exactly the ten named baked meshes')

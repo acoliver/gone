@@ -100,7 +100,7 @@ def welt(obj, material, vertical_step=None):
     for px,py in path:
         hit,loc,n,idx=obj.ray_cast(Vector((px,py,hi[2]+1)),Vector((0,0,-1)))
         if not hit:raise ValueError('Welt missed upholstery surface')
-        points.append(loc+n*(.00478 if vertical_step else .0044));normals.append(n)
+        points.append(loc+n*(.00458 if vertical_step else .0047));normals.append(n)
     verts=[]; faces=[]; count=len(points)
     for i,(p,n) in enumerate(zip(points,normals)):
         tangent=(points[(i+1)%count]-points[(i-1)%count]).normalized()
@@ -124,21 +124,24 @@ def setup_cushions(template):
     v=template.copy();lo=v.min(axis=0);hi=v.max(axis=0); normalized=(v-lo)/(hi-lo)
     records={}
     for tag,x in zip('LCR',(-.67,0,.67)):
-        p=normalized*np.array([.66,.70,.15])+np.array([-.33,-.35,-.075])
+        p=normalized*np.array([.66,.70,.18])+np.array([-.33,-.35,-.09])
         mesh=bpy.data.meshes.new('Settled upholstery');mesh.from_pydata(p.tolist(),[],TEMPLATE_FACES);mesh.materials.append(material)
-        o=bpy.data.objects.new('SeatCushion_'+tag,mesh);bpy.context.collection.objects.link(o);o.location=(x,-.035,.465)
+        o=bpy.data.objects.new('SeatCushion_'+tag,mesh);bpy.context.collection.objects.link(o);o.location=(x,-.035,.480)
         for f in mesh.polygons:f.use_smooth=True
+        triangles=sum(len(f.vertices)-2 for f in o.data.polygons)
+        if triangles>1440:decimate(o,1440/triangles)
         records[o.name]=measurements(o);uv(o);collider(o)
     # A back pad's lower return compresses behind the seat rather than occupying it.
     for tag,x in zip('LCR',(-.67,0,.67)):
         h=normalized[:,1]; q=normalized[:,2]
-        t=np.clip((h-.32)/.32,0,1);t=t*t*(3-2*t)
+        t=np.clip((h-.38)/.20,0,1);t=t*t*(3-2*t)
         depth=.04+.16*t; rear=.37+.005*t
         p=np.column_stack(((normalized[:,0]-.5)*.66,rear-q*depth,.415+h*.42))
         mesh=bpy.data.meshes.new('Settled back upholstery');mesh.from_pydata(p.tolist(),[],TEMPLATE_FACES);mesh.materials.append(material)
         o=bpy.data.objects.new('BackCushion_'+tag,mesh);bpy.context.collection.objects.link(o);o.location.x=x
         for f in mesh.polygons:f.use_smooth=True
-        decimate(o,.88)
+        triangles=sum(len(f.vertices)-2 for f in o.data.polygons)
+        decimate(o,min(.88,1210/triangles))
         uv(o)
     (SCRATCH/'cushion-fit.json').write_text(json.dumps(records,indent=2)+'\n')
     # Seam coordinates are found on the simulated shell before orientation.
