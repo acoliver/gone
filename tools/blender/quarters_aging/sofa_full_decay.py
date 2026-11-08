@@ -22,6 +22,7 @@ from common import assert_collision_clear, collision, recalc, surface_tree
 from densify import densify
 from fabric_mesh import material, new_object
 from foam_collapse import largest_shell
+from sofa_partitions import clear_partitions, fitted_bounds, install_partitions
 from sofa_decay_policy import DECK, FOAM, ORDER, UPHOLSTERY, cushion_plan
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -49,7 +50,9 @@ def initialize():
     floor.hide_render = True
     collision(floor, .001)
     floor.collision.cloth_friction = 8
-    return {'method': 'ordered, fitted source only; each cover against final predecessor game meshes',
+    return {'method': 'ordered, partitioned fitted source; each cover against final predecessor game meshes',
+            'partition_fitted_bounds': {n: [p.min(0).tolist(), p.max(0).tolist()]
+                                        for n, p in fitted_bounds().items()},
             'order': list(ORDER), 'cushions': {}, 'source': str(SOURCE),
             'production_calibrated': True, 'upholstery_albedo': UPHOLSTERY}
 
@@ -71,18 +74,25 @@ def residue_pair(obj, plan, source):
                        data['faces'], material('Foam_Decay', FOAM))
     dense['aged_export'] = False
     dense.hide_render = True
+    from residue_grid import balanced_grid
     proxy = new_object(obj.name+'_ResidueProxy', data['game_vertices']*scale+offset,
                        data['game_faces'], dense.data.materials[0])
-    largest_shell(proxy)
-    low, report = decimate(proxy, 400 if plan['back'] else 700)
-    base = np.array([v.co[:] for v in low.data.vertices])
-    # Apply the same smooth height warp after reduction so the underside's
-    # curvature cannot be replaced by a few large planar facets.
-    curved = rippled((base-offset)/scale)
-    for vertex, point in zip(low.data.vertices, curved):
-        vertex.co = point
-    recalc(low)
-    low.name = obj.name+'_Residue'
+    tree = surface_tree(proxy)
+    bounds = np.array([v.co[:] for v in proxy.data.vertices])
+    width, depth = np.ptp(bounds, axis=0)[:2]*.92
+    def height(points):
+        result = []
+        for x, y in points:
+            hit, _, _, _ = tree.ray_cast(Vector((x+offset[0], y+offset[1], 1.2)), Vector((0, 0, -1)))
+            if hit is None:
+                raise ValueError('Stable residue roof does not cover grid sample')
+            result.append(hit.z-offset[2])
+        return np.array(result)
+    vertices, faces = balanced_grid(width, depth, height, plan['seed'], plan['back'])
+    low = new_object(obj.name+'_Residue', vertices+offset, faces, dense.data.materials[0])
+    report = {'method': 'balanced roof and underside sampled from stable residue control',
+              'triangles': len(faces), 'target_triangles': 400 if plan['back'] else 700,
+              'pass': len(faces) <= (400 if plan['back'] else 700)}
     low['aged_export'] = False
     low.hide_render = True
     bpy.data.objects.remove(proxy, do_unlink=True)
@@ -266,15 +276,28 @@ def simulate_cushions(out, residue_source, resume=None, only=None, rest_mode='fi
             collision(bpy.data.objects[previous+'_GameContact'], .001)
         obj = bpy.data.objects[name]
         detail, rest, envelope = prepare_cover(obj, plan, residue_source)
+        detail['partitions'] = install_partitions(
+            {n: np.array(p) for n, p in record['partition_fitted_bounds'].items()}, plan['back'])
+        if plan['back']:
+            from sofa_decay_joint import carrier_surface
+            rest, carrier_report = carrier_surface(obj, plan)
+            detail['rest_carrier'] = carrier_report
+            carrier = obj.modifiers.new('Empty back rest carrier', 'SUBSURF')
+            carrier.levels = carrier.render_levels = 1
+            carrier.subdivision_type = 'SIMPLE'
+            carrier.uv_smooth = 'PRESERVE_BOUNDARIES'
         bpy.context.scene.frame_set(1)
         bpy.context.view_layer.update()
-        assert_collision_clear(obj)
+        evaluated = obj.evaluated_get(bpy.context.evaluated_depsgraph_get())
+        assert_collision_clear(evaluated)
+        evaluated_count = len(evaluated.data.vertices)
         config = calibrated_config('upholstery', .2/34, .2/9, plan['frames'])
         config.update(self_collision=True, shrink=.05, quality=16, collision_quality=4,
                       distance=.0015, time_scale=.5, welt_bending=3.2, self_distance=.0002)
         if settings:
             config.update({k: v for k, v in settings.items() if k not in {'collapse_frames', 'residue_height_scale', 'residue_warp'}})
         mod = configure(obj, config, detail['reference_vertices'], rest_shape=rest)
+        mod.settings.mass = config['mass']*detail['reference_vertices']/evaluated_count
         checkpoint(out, record, name+'-prepared.blend')
         result = freeze_simulation(obj, mod, plan['frames'])
         detail.update(plan=plan, settings=config, simulation=result, dense_metrics=surface_metrics(obj), G5=lip_lift(obj))
@@ -290,6 +313,14 @@ def simulate_cushions(out, residue_source, resume=None, only=None, rest_mode='fi
         save_surface(low, out/(name+'-game.npz'))
         bpy.data.objects.remove(envelope, do_unlink=True)
         record['cushions'][name] = detail
+        if name == 'SeatCushion_C':
+            collision(low, .001)
+            bpy.context.view_layer.update()
+            assert_collision_clear(bpy.data.objects['SeatCushion_R'])
+            record['partition_control'] = {
+                'centre_settled_right_fitted_initial_SAT_crossings': 0}
+            print('PARTITION_CONTROL centre settled/right fitted: zero initial SAT crossings', flush=True)
+        clear_partitions()
         record['elapsed_s_this_invocation'] = time.perf_counter()-start
         checkpoint(out, record, name+'-settled.blend')
         print('CUSHION_COMPLETE', name, result['elapsed_s'], flush=True)
