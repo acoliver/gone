@@ -5,7 +5,7 @@ const CONTACT := 0.002
 func test_no_decorative_ceiling_rings_remain() -> void:
 	var layout := ShipLayout.authored().layout
 	assert_true(Placement.wire_loops().is_empty(), "bay's unattached tori are removed")
-	assert_true(layout.section(&"D14-S-041").ceiling_loops().is_empty(), "hall's unattached tori are removed")
+	assert_false(layout.section(&"D14-S-041").has_method(&"ceiling_loops"), "removed hall damage has no empty wire-loop recipe")
 	for batch: ShipLayout.DressingBatch in layout.dressing(&"D14-S-041").batches:
 		assert_false(batch.shape == &"ring", "pipe tori are replaced by attached solid hangers")
 
@@ -35,38 +35,34 @@ func test_every_corridor_dressing_instance_connects_to_structure() -> void:
 				pieces["%s/%s/%d" % [id, batch.family, index]] = batch.poses[index] * CorridorDressing._mesh(batch.shape).get_aabb()
 		_check_graph(structure, pieces)
 
-func test_hall_ceiling_damage_connects_to_structure() -> void:
+func test_hall_has_no_suspended_tray_or_hangers() -> void:
 	var game := Game.new(91)
 	var hall := Hallway.build(game)
-	var structure := _solid_bounds(ShipGeometry.hallway_solids(game.layout))
-	var pieces: Dictionary = {}
-	_collect(hall.get_node("HallCeilingDamage"), pieces)
-	_check_graph(structure, pieces)
+	assert_false(hall.has_node("HallCeilingDamage"), "remove the long tray and both hangers, not just their visibility")
+	for id: StringName in game.layout.deck(14).section_ids():
+		var spec := game.layout.section(id)
+		assert_false(spec.has_method(&"ceiling_trays"), "sections no longer author suspended trays: %s" % id)
+		assert_false(spec.has_method(&"ceiling_damage_bounds"), "removed trays reserve no dressing envelope: %s" % id)
 	hall.free()
 
-func test_hall_tray_hangers_reach_ceiling_and_enter_the_rotated_trays() -> void:
-	var game := Game.new(91)
-	var hall := Hallway.build(game)
-	var spec := game.layout.section(&"D14-S-041")
-	var damage := hall.get_node("HallCeilingDamage")
-	var trays := spec.ceiling_trays()
-	assert_int_equal(trays.size(), 1, "the attached long cable tray remains covered after removing the stub")
-	assert_int_equal(damage.get_child_count(), trays.size() * 3, "each rendered tray has two rendered hangers")
-	for index: int in range(trays.size()):
-		var tray := trays[index]
-		var mounts := DressingMounts.tray_hangers(tray, spec.bounds().end.y)
-		assert_int_equal(mounts.size(), 2, "both ends have a ceiling hanger")
-		for station: int in range(mounts.size()):
-			var hanger := damage.get_child(index * 3 + station + 1) as MeshInstance3D
-			var bounds := Surfaces.world_frame(hanger) * hanger.mesh.get_aabb()
-			var expected := ShipGeometry.box_aabb(mounts[station])
-			assert_close(bounds.position, expected.min_corner(), "rendered hanger follows its attachment recipe")
-			assert_close(bounds.end, expected.max_corner(), "rendered hanger bounds follow the recipe")
-			assert_true(absf(bounds.end.y - spec.bounds().end.y) <= CONTACT, "hanger top touches the actual ceiling")
-			var bottom := Vector3(bounds.get_center().x, bounds.position.y, bounds.get_center().z)
-			var local := tray.transform.affine_inverse() * bottom
-			assert_true(AABB(-tray.size / 2, tray.size).has_point(local), "hanger bottom enters the rotated tray, not just its world AABB")
-	hall.free()
+func test_bay_has_no_suspended_trays_hangers_or_recipes() -> void:
+	var room := RoomGeometry.build()
+	assert_false(room.has_node("CeilingDamage"), "remove all three bay trays and their hangers, not just their visibility")
+	assert_false(room.has_method(&"_build_ceiling_damage"), "removed bay trays leave no presenter")
+	var placement := Placement.new()
+	assert_false(placement.has_method(&"cable_trays"), "removed bay trays leave no placement recipe")
+	var mounts := DressingMounts.new()
+	assert_false(mounts.has_method(&"tray_hangers"), "removed trays leave no hanger recipe")
+	room.free()
+
+func test_bay_tray_removal_preserves_wire_spark_positions() -> void:
+	var hazards := Hazards.build()
+	var spots: Array[Vector3] = [Vector3(-0.5, 3.2 - 0.15, 0.35), Vector3(0.9, 3.2 - 0.15 - 0.04, -0.7), Vector3(1.6, 3.2 - 0.15 + 0.05, 1.1)]
+	for index: int in range(spots.size()): spots[index] += Vector3(0, -0.2, 0)
+	assert_int_equal(hazards._spark_lights.size(), spots.size(), "all three wire spark clusters remain")
+	for index: int in range(spots.size()):
+		assert_vec3_equal(hazards._spark_lights[index].get_parent().position, spots[index], "tray removal does not move spark cluster %d" % index)
+	hazards.free()
 
 func test_bay_and_power_dressing_connects_to_structure() -> void:
 	var game := Game.new(91)
@@ -74,10 +70,9 @@ func test_bay_and_power_dressing_connects_to_structure() -> void:
 	var scene := ShipScene.build_into(world, game)
 	var structure := _solid_bounds(ShipGeometry.opening_scene_solids(game.registry, false, false, game.layout))
 	var pieces: Dictionary = {}
-	_collect(scene.room.get_node("CeilingDamage"), pieces)
 	_collect(scene.bay_root.get_node("HangingWires"), pieces)
 	_collect(scene.lighting, pieces)
-	_collect(scene.hallway, pieces, ["CorridorDressing", "HallCeilingDamage", "HallSideDoors"])
+	_collect(scene.hallway, pieces, ["CorridorDressing", "HallSideDoors"])
 	_collect(scene.power_room, pieces)
 	_check_graph(structure, pieces)
 	world.free()
