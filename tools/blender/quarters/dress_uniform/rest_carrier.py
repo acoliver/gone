@@ -1,21 +1,13 @@
 """Provide Blender cloth with evaluated rest coordinates at the calibrated density."""
 import bpy
 
-from bake_down import decimate
 from common import assert_collision_clear, assert_surface_clear
 
 
-def prepare_carrier(body, target=5000):
-    carrier, report = decimate(body, target)
-    mesh = carrier.data.copy()
-    names = [group.name for group in carrier.vertex_groups]
-    body.shape_key_clear()
-    body.vertex_groups.clear()
-    body.data = mesh
-    for name in names:
-        body.vertex_groups.new(name=name)
-    bpy.data.objects.remove(carrier, do_unlink=True)
-    return report
+def prepare_carrier(body):
+    body.data.calc_loop_triangles()
+    return {'method': 'preserve source-grid triangles without collapse',
+            'carrier_triangles': len(body.data.loop_triangles)}
 
 
 def add_rest_carrier(body):

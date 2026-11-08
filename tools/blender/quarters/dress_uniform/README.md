@@ -9,6 +9,31 @@ buttons and medal must remain recognizable. The source is `tunic-working.blend`,
 with `body-p` as the wool reference. `ShoulderChestForm` remains an invisible,
 unexported collider.
 
+## Tunic7 rest-grid control
+
+The rest probe isolates the tessellation defect. The source has 2,268 quads
+and no triangle altitude below 2 mm. Graded refinement produces 197 such
+triangles after splitting. Decimation to 5,000 triangles creates a 0.225 mm
+minimum altitude; SIMPLE subdivision then produces 15,247 sub-2 mm triangles
+out of 30,000, with a minimum altitude of 0.0695 mm. The prior contact exclusion
+masked these faces instead of repairing them.
+
+The trial now preserves the source grid and triangulates it without a collapse
+stage before SIMPLE subdivision. The evaluated pressed garment has 26,964
+triangles, no sub-2 mm triangle, and a minimum altitude of 2.0259 mm. The rest
+regression failed on the old carrier (15,248 sub-2 mm faces) and passes on this
+carrier. All body faces participate in self-collision. This is a rest-mesh
+control, not a claim that the dense solve or final export passes.
+
+The shoulder seam and hanger wear line share one released seam. The previous
+second slit sat about 5 mm forward of that seam and created a narrow strip
+between coincident lips. The starting lips now receive the same opening as
+their bending rest, including the shoulder. The pressed sleeve is widened by
+20% while retaining 40% depth, and its broad face is oriented toward the close
+camera. These changes are undergoing a fresh gravity solve. Settling records
+the last-five-frame maximum motion every 25 frames and can stop after frame
+600 only after three successive measurements below 1 mm.
+
 ## Tunic7 sleeve diagnostic correction
 
 The previous G22 accepted a thin cross-section without checking its orientation

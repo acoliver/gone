@@ -25,8 +25,12 @@ bending = np.array([v.co[:] for v in rest.data])
 ids = np.array([i for i in sleeve if -.70 < original[i, 2] < -.60])
 assert np.max(np.abs(actual[ids, 1]-bending[ids, 1])) < 1e-7, 'Structural sleeve over-compressed relative to its 40% bending rest'
 assert len(ids) > 10
-center = -.008-.027*np.clip((-.425-original[ids, 2])/.44, 0, 1)
-assert np.max(np.abs(actual[ids, 1]-center-(original[ids, 1]-center)*.4)) < 1e-7
-assert np.max(np.abs(bending[ids, 1]-center-(original[ids, 1]-center)*.4)) < 1e-7
+progress = np.clip((-.425-original[ids, 2])/.44, 0, 1)
+center = np.c_[.326+.013*progress, -.008-.027*progress]
+angle = np.arctan2(.3, .9)
+rotation = np.array([[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]])
+expected = (original[ids, :2]-center)*[1.2, .4]
+np.testing.assert_allclose((actual[ids, :2]-center)@rotation, expected, atol=1e-7)
+np.testing.assert_allclose((bending[ids, :2]-center)@rotation, expected, atol=1e-7)
 assert np.isfinite(actual).all() and np.isfinite(bending).all()
-print('PASS: structural starting sleeve is pressed; bending rest retains 40% depth', flush=True)
+print('PASS: structural and bending rest agree in the camera-facing pressed frame', flush=True)

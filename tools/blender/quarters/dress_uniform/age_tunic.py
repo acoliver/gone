@@ -94,11 +94,13 @@ def wool_config(frames):
     return config
 
 
-def bake_simulation(obj, mod, frames):
+def bake_simulation(obj, mod, frames, settle=False):
     """Cloth with a rest key must be frozen from evaluated data, not modifier_apply."""
     durations = []
     samples = []
-    previous = None
+    from collections import deque
+    window = deque(maxlen=6)
+    motion = None
     for frame in range(1, frames+1):
         start = time.perf_counter()
         bpy.context.scene.frame_set(frame)
@@ -106,21 +108,26 @@ def bake_simulation(obj, mod, frames):
         evaluated = obj.evaluated_get(deps)
         positions = np.array([v.co[:] for v in evaluated.data.vertices])
         durations.append(time.perf_counter()-start)
-        if frame == frames-5:
-            previous = positions.copy()
+        window.append(positions.copy())
+        if len(window) == 6:
+            motion = float(np.linalg.norm(positions-window[0], axis=1).max())
         if frame % 10 == 0:
             print(obj.name, 'frame', frame, 'seconds', durations[-1],
                   'bounds', positions.min(0), positions.max(0), flush=True)
         if frame % 25 == 0:
-            samples.append(dict(frame=frame, bounds=[positions.min(0).tolist(), positions.max(0).tolist()]))
+            samples.append(dict(frame=frame, bounds=[positions.min(0).tolist(), positions.max(0).tolist()],
+                                last_five_frames_motion_m=motion))
+            print('SETTLING', frame, motion, flush=True)
+            if settle and frame >= 600 and all(s['last_five_frames_motion_m'] < .001 for s in samples[-3:]):
+                break
     frozen = bpy.data.meshes.new_from_object(evaluated, depsgraph=deps)
     for modifier in list(obj.modifiers):
         if modifier == mod or modifier.type == 'SUBSURF':
             obj.modifiers.remove(modifier)
     obj.shape_key_clear()
     obj.data = frozen
-    return dict(frames=frames, seconds_per_frame=float(np.mean(durations[1:])),
-                last_five_frames_motion_m=float(np.linalg.norm(positions-previous, axis=1).max()),
+    return dict(frames=frame, maximum_frames=frames, seconds_per_frame=float(np.mean(durations[1:])),
+                last_five_frames_motion_m=motion,
                 samples=samples)
 
 
@@ -140,8 +147,9 @@ def simulate(out, frames):
     s.bending_damping = .5*damping
     s.air_damping = 10*damping
     record['simulation_config'] = config
-    record['rest_contact_policy'] = exclude_small_rest_faces(body, mod, subdivision_levels=1)
-    record['simulation'] = bake_simulation(body, mod, frames)
+    mod.collision_settings.vertex_group_self_collisions = ''
+    record['rest_contact_policy'] = {'exclusion_vertices': 0, 'policy': 'all dense faces collide'}
+    record['simulation'] = bake_simulation(body, mod, frames, settle=True)
     record['dense_metrics'] = surface_metrics(body)
     record['lip_lift'] = lip_lift(body)
     record['details_fit'] = fit_details(body, record['bindings'])

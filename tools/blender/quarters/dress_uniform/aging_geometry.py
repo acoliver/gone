@@ -7,8 +7,7 @@ import numpy as np
 from mathutils import Vector
 
 from aging_support import ROOT
-from densify import densify, triangulate
-from grain_paths import surface_walk
+from densify import triangulate
 from tear_paths import lift_pattern_path, split_polyline
 from common import recalc
 
@@ -34,24 +33,13 @@ def seam_edges(bm, kind):
 
 
 def refine(body):
-    def band(p, width):
-        shoulder = p.x > .08 and p.z > -.24 and abs(p.y) < width
-        armhole = .21 < p.x < .30 and -.36 < p.z < -.22
-        hem = abs(p.z+.852) < width
-        cuffs = abs(p.z+.865) < width and abs(p.x) > .27
-        return shoulder or armhole or hem or cuffs
     from common import surface_tree
-    report = densify(body, levels=1)
-    bm = bmesh.new()
-    bm.from_mesh(body.data)
-    edges = [e for e in bm.edges if band((e.verts[0].co+e.verts[1].co)/2, .025)]
-    bmesh.ops.subdivide_edges(bm, edges=edges, cuts=2, use_grid_fill=True)
-    bm.to_mesh(body.data)
-    bm.free()
-    from mesh_quality import resolve_short_edges
-    report['rest_quality'] = resolve_short_edges(body)
+    # Keep the sewn pattern grid as the rest carrier. Decimating graded tear
+    # bands before SIMPLE subdivision produced 0.069 mm triangle altitudes.
+    report = {'unaged_vertices': len(body.data.vertices),
+              'rest_quality': {'method': 'source-grid carrier; no pre-simulation collapse'}}
     report['dense_vertices'] = len(body.data.vertices)
-    report['mass_multiplier'] = report['unaged_vertices']/len(body.data.vertices)
+    report['mass_multiplier'] = 1.
     lengths = np.array([(body.data.vertices[e.vertices[0]].co-body.data.vertices[e.vertices[1]].co).length
                         for e in body.data.edges])
     report['edge_quantiles_m'] = np.quantile(lengths, [.1, .5, .9]).tolist()
@@ -111,12 +99,9 @@ def split_seam(body, kind, fraction):
 def cut_tunic(body):
     record = {'armhole': split_seam(body, 'armhole', .59),
               'shoulder': split_seam(body, 'shoulder', .60)}
-    # The wire wear line lies just forward of the shoulder seam in the front pattern.
-    u = np.linspace(.315, .435, 35)
-    v = .929+np.random.default_rng(9521).uniform(-.0006, .0006, len(u))
-    wire_path = lift_pattern_path(body, np.c_[u, v])
-    record['hanger'] = split_polyline(body, wire_path)
-    record['hanger']['path_local_m'] = wire_path
+    # The seam already follows the hanger crest. A second parallel slit only
+    # 5 mm away made an unresolved strip between two coincident split lips.
+    record['hanger'] = dict(record['shoulder'], method='hanger wear follows the released shoulder seam')
     hems = []
     for lo, hi in [(.035, .145), (.29, .395), (.58, .70)]:
         # End cuts detach an allowance; their vertices remain in the cloth model.
@@ -138,24 +123,27 @@ def pressed_sleeve(body):
     rest = body.shape_key_add(name='Empty pressed left sleeve')
     uv = body.data.uv_layers[0].data
     sleeve = {loop.vertex_index for loop in body.data.loops if 1.099 < uv[loop.index].uv.x < 1.551}
+    def press(point):
+        t = float(np.clip((-.33-point.z)/.14, 0, 1))
+        progress = float(np.clip((-.425-point.z)/.44, 0, 1))
+        center = np.array([.326+.013*progress, -.008-.027*progress])
+        radial = np.array(point[:2])-center
+        angle = np.arctan2(.3, .9)*t
+        x, y = radial*np.array([1+.2*t, 1-.6*t])
+        point.x, point.y = center+np.array([np.cos(angle)*x-np.sin(angle)*y,
+                                           np.sin(angle)*x+np.cos(angle)*y])
     for index in sleeve:
-        p = rest.data[index].co
-        t = float(np.clip((-.33-p.z)/.14, 0, 1))
-        center_y = -.008-.027*float(np.clip((-.425-p.z)/.44, 0, 1))
-        p.y = center_y+(p.y-center_y)*(1-.60*t)
+        press(rest.data[index].co)
     offsets = open_lip_rest(body, rest)
     # Structural springs take their lengths from the starting mesh, whereas
     # rest_shape_key supplies bending angles. Both must describe empty wool.
     basis = body.data.shape_keys.key_blocks[0]
     for index, offset in offsets.items():
-        if basis.data[index].co.z < -.22:
-            basis.data[index].co += offset*.5
-            body.data.vertices[index].co = basis.data[index].co
+        basis.data[index].co += offset
+        body.data.vertices[index].co = basis.data[index].co
     for index in sleeve:
         original = basis.data[index].co.copy()
-        t = float(np.clip((-.33-original.z)/.14, 0, 1))
-        center_y = -.008-.027*float(np.clip((-.425-original.z)/.44, 0, 1))
-        original.y = center_y+(original.y-center_y)*(1-.60*t)
+        press(original)
         basis.data[index].co = original
         body.data.vertices[index].co = original
     body.data.update()
@@ -200,7 +188,7 @@ def open_lip_rest(body, rest):
     points = np.array([bm.verts[i].co[:] for i in indices])
     weights = np.exp(-np.sum((points[:, None]-points[None, :])**2, axis=2)/(2*.012**2))
     variation = weights@rng.normal(size=len(indices))/np.sqrt(np.sum(weights**2, axis=1))
-    width = {i: float(np.clip(.85+.25*w, .3, 1.5)) for i, w in zip(indices, variation)}
+    width = {i: float(np.clip(.85+.25*w, .8, 1.5)) for i, w in zip(indices, variation)}
     directions = np.array([vectors[i].normalized()[:] for i in indices])
     uv = bm.loops.layers.uv.active
     panels = [face_panel(bm.verts[i].link_faces[0], uv) for i in indices]
@@ -218,7 +206,7 @@ def open_lip_rest(body, rest):
     for i, distance in distances.items():
         vector = vectors[origin[i]]
         if vector.length:
-            contraction = .001 if bm.verts[origin[i]].co.z > -.22 else .007
+            contraction = .002 if bm.verts[origin[i]].co.z > -.22 else .003
             offset = vector.normalized()*(contraction*width[origin[i]]*(1-distance/.025))
             rest.data[i].co += offset
             offsets[i] = offset
