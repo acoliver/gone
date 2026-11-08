@@ -38,7 +38,7 @@ def back_residue(obj, plan):
         for v in part.data.vertices:
             p = part.matrix_world@v.co
             p.x = obj.matrix_world.translation.x+(p.x-obj.matrix_world.translation.x)/plan['residue_height_scale']
-            p.y = .350+(p.y-.245)*.17/plan['residue_height_scale']
+            p.y = .351+(p.y-.245)*.10/plan['residue_height_scale']
             v.co = inverse@p
         recalc(part)
     report['placement'] = 'lower return at y=0.335..0.365, outside settled seat space'
@@ -66,7 +66,7 @@ def prepare(name, out):
     largest_shell(obj)
     reference = len(obj.data.vertices)
     dense, residue, reduction = back_residue(obj, plan) if plan['back'] else residue_pair(obj, plan, RESIDUE)
-    driver = envelope(obj, residue, plan)
+    driver = None if plan['back'] else envelope(obj, residue, plan)
     open_cover_bottom(obj, plan['back'])
     density = clean_mesh(obj)
     if plan['back']:
@@ -91,7 +91,8 @@ def prepare(name, out):
     detail = dict(reference_vertices=reference, dense=density, tears=tears,
                   residue_decimation=reduction, plan=plan, welt_release=release,
                   tie_patches=patches, mesh_quality=quality,
-                  split_contacts={'exclusions': 0}, partitions=[])
+                  split_contacts={'exclusions': 0}, partitions=[],
+                  filling_driver='static lower-return residue' if plan['back'] else 'collapsing envelope')
     return obj, detail, driver, pins
 
 
@@ -177,7 +178,8 @@ def stage(out, record, back=False):
         low['aged_export'] = False
         low.hide_render = True
         lows.append((obj, low, detail, reduction))
-        bpy.data.objects.remove(driver, do_unlink=True)
+        if driver is not None:
+            bpy.data.objects.remove(driver, do_unlink=True)
     bpy.data.objects.remove(joint, do_unlink=True)
     supports = [o for o in contacts() if not o.name.startswith('CushionPartition_')]
     repair = clearance(supports+[low for _, low, _, _ in lows], {low.name for _, low, _, _ in lows})

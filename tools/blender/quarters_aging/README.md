@@ -88,6 +88,22 @@ post-split throw minimum triangle altitude is 6.163 mm, with no exclusions.
 Back residue is compressed into the lower return without applying its
 height shrinkage a second time to its lateral dimensions.
 
+The right residue initially crossed eight triangles at the return's front
+lip (y 0.333–0.340 m, z 0.428–0.436 m). Its depth was narrowed to
+approximately y 0.343–0.359 m inside the same lower return. C5 then passed
+for all three backs, including residue against the solved seats.
+
+A second controlled comparison isolated a conflict between the back's
+animated envelope and its fixed ties. With both present, frame 40 reached
+107.678% area and 2.231 mm per substep. Uniform bending still failed
+(104.647%, 1.551 mm), and disabling self-collision still failed (103.504%,
+3.605 mm). Removing only the envelope passed (100.039%, 0.187 mm, 2.477%
+sharp dihedrals); removing only pins also passed, but discarded the required
+physical hold. Production therefore retains the ties and the static
+lower-return residue, without an animated back envelope. This is a change
+from the proposed shape driver, based on the controlled result. The seat
+envelopes are unchanged. Failed probes remain under `tmp/age/pass8/`.
+
 
 ## Sofa pass 6: fitted six-cover collapse
 

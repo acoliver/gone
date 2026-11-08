@@ -78,6 +78,18 @@ class Pass8Tests(unittest.TestCase):
         self.assertTrue(all(.60 <= original[i, 2] <= .62 for i in pins))
         self.assertTrue(mesh_quality(obj)['pass'])
 
+    def test_right_back_residue_starts_inside_the_lower_return(self):
+        from sofa_full_decay import initialize
+        from sofa_pass8 import prepare
+        from sofa_pass8_finish import initial_contacts
+        initialize()
+        obj, detail, driver, _ = prepare('BackCushion_R', ROOT/'tmp/age/pass8')
+        result = initial_contacts(obj, [bpy.data.objects['BackCushion_R_Residue']])
+        self.assertTrue(result['pass'])
+        self.assertTrue(detail['mesh_quality']['pass'])
+        self.assertIsNone(driver)
+        self.assertNotIn('BackCushion_R_Envelope', bpy.data.objects)
+
     def test_fitted_throw_has_one_bridge_and_a_pinned_cap(self):
         from sofa_full_decay import initialize
         from sofa_pass8 import prepare_throw
