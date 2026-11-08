@@ -187,6 +187,7 @@ static func build(game: Game) -> Hallway:
 		hallway.add_child(piece)
 
 	hallway.add_child(CorridorDressing.build(game.layout, &"D14-S-041"))
+	hallway.add_child(CeilingProps.build(game.layout, &"D14-S-041"))
 	hallway.add_child(_build_ceiling_damage(game.layout.section(&"D14-S-041")))
 
 	var doors := Node3D.new()

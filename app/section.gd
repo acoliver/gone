@@ -18,6 +18,7 @@ static func build(layout: ShipLayout, spec: ShipLayout.SectionSpec) -> ShipSecti
 			if solid.id == StringName("%s/LEAF" % id):
 				section.side_leaves[id] = piece
 	section.add_child(CorridorDressing.build(layout, spec.id()))
+	section.add_child(CeilingProps.build(layout, spec.id()))
 	var pitch := spec.bounds().size.x / 4
 	for frame: Transform3D in spec.emergency_fixture_frames():
 		section.add_child(Lighting.steady_fixture(frame.origin, mask, minf(Lighting.FIXTURE_RANGE, pitch), spec.bounds().end.y, Surfaces.surface_frame(layout, spec.id(), &"CEILING")))

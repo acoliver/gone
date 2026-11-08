@@ -220,6 +220,7 @@ static func scene_collider_set(
 static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 	var room := PowerRoom.new()
 	room.name = "PowerRoom"
+	room.add_child(CeilingProps.build(game.layout, ShipLayout.POWER_ID))
 	room._game = game
 	room._text_cache = text_cache
 	var level := 1.0 if (game.hallway_lit and not game.power_active) else 0.0

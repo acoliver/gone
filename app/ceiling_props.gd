@@ -20,6 +20,14 @@ static func mesh(shape: StringName) -> Mesh:
 	_meshes[shape] = result
 	return result
 
+static func build(layout: ShipLayout, id: StringName) -> Node3D:
+	var spec := layout.ceiling_services(id)
+	var root := Node3D.new()
+	root.name = "CeilingProps"
+	root.set_meta(&"space_id", id)
+	if not spec.ducts.is_empty(): _add(root, layout, id, &"CeilingDucts", mesh(&"duct"), spec.ducts, &"wall", &"CEILING")
+	return root
+
 static func _add(root: Node3D, layout: ShipLayout, id: StringName, family: StringName, source: Mesh, poses: Array[Transform3D], role: StringName, part: StringName) -> void:
 	assert(not poses.is_empty(), "service family has placements")
 	var batch := MultiMesh.new()
