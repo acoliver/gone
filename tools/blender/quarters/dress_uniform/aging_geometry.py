@@ -155,7 +155,7 @@ def pressed_sleeve(body):
         original = basis.data[index].co.copy()
         t = float(np.clip((-.33-original.z)/.14, 0, 1))
         center_y = -.008-.027*float(np.clip((-.425-original.z)/.44, 0, 1))
-        original.y = center_y+(original.y-center_y)*(1-.90*t)
+        original.y = center_y+(original.y-center_y)*(1-.60*t)
         basis.data[index].co = original
         body.data.vertices[index].co = original
     body.data.update()

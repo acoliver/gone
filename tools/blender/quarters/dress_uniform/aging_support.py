@@ -137,7 +137,16 @@ def bind_neckline(body, points):
 
 def follow_points(body, entries):
     vertices = np.array([body.matrix_world @ v.co for v in body.data.vertices])
-    return np.array([np.array(e['weights'])@vertices[list(e['triangle'])]+e['offset'] for e in entries])
+    result = []
+    for entry in entries:
+        triangle = vertices[list(entry['triangle'])]
+        point = np.array(entry['weights'])@triangle+entry['offset']
+        if 'sewn_clearance_m' in entry:
+            normal = np.cross(triangle[1]-triangle[0], triangle[2]-triangle[0])
+            normal /= np.linalg.norm(normal)
+            point += normal*entry['sewn_clearance_m']
+        result.append(point)
+    return np.array(result)
 
 
 def reinforce_and_bind(body):
@@ -156,12 +165,11 @@ def reinforce_and_bind(body):
     nearest = np.linalg.norm(collar_points[:, None]-bases-columns*fraction[:, :, None], axis=2).argmin(1)
     sewn = bases[nearest]
     entries = bind_neckline(body, sewn)
-    for e, base, offset in zip(entries, sewn, collar_points-sewn):
-        # Seat the 3 mm collar just inside the actual neckline. Keeping the
-        # old coarse-mesh base offset puts its lower edge through the new ply.
-        radial = np.array([base[0], base[1], 0.])
-        radial /= np.linalg.norm(radial)
-        e['offset'] = (offset-radial*.002).tolist()
+    for e, offset in zip(entries, collar_points-sewn):
+        # Layer the 3 mm sewn collar above its support by half its thickness
+        # plus 0.5 mm. A radial inset points into the hanger at the neck sides.
+        e['offset'] = offset.tolist()
+        e['sewn_clearance_m'] = .002
     bindings['Collar'] = {'entries': entries, 'original': collar_points.tolist(), 'rigid': False}
     coverage = {}
     for name in DETAILS:

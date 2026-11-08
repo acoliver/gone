@@ -199,7 +199,7 @@ def reduce_and_bake(out):
     names = ['TunicBody']+[p['name'] for p in record['fallen']]
     for name in names:
         dense = bpy.data.objects[name]
-        low, report = reduce_game(dense, 12200 if name == 'TunicBody' else 350)
+        low, report = reduce_game(dense, 10800 if name == 'TunicBody' else 250)
         if not report['pass']:
             raise ValueError(f'{name}: boundary fidelity failed: {report}')
         mat, paths = bake(dense, low, out / 'textures', size=2048 if name == 'TunicBody' else 512)
@@ -223,7 +223,7 @@ def reduce_and_bake(out):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--stage', choices=['prepare', 'simulate', 'bake', 'all'], default='all')
-    p.add_argument('--out', type=Path, default=ROOT / 'tmp/age/tunic5/main')
+    p.add_argument('--out', type=Path, default=ROOT / 'tmp/age/tunic6/main')
     p.add_argument('--frames', type=int, default=600)
     a = p.parse_args(sys.argv[sys.argv.index('--')+1:])
     a.out = a.out.resolve()

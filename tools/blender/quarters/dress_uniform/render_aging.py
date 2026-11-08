@@ -95,7 +95,7 @@ def diagnostics(asset, out):
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--input', type=Path, required=True)
-    p.add_argument('--out', type=Path, default=ROOT / 'tmp/age/tunic5')
+    p.add_argument('--out', type=Path, default=ROOT / 'tmp/age/tunic6')
     a = p.parse_args(sys.argv[sys.argv.index('--')+1:])
     a.out.mkdir(parents=True, exist_ok=True)
     render('dress_uniform', a.out.resolve(), a.input.resolve())

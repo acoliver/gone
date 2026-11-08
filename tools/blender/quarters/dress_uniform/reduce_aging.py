@@ -48,16 +48,25 @@ def simplify_boundary(bm):
 
 def reduce_game(dense, target):
     if dense.name == 'TunicBody':
-        low, report = decimate(dense, target)
+        from reduction_constraints import protect_outline, relax_interior
+        working = dense.copy()
+        working.data = dense.data.copy()
+        bpy.context.collection.objects.link(working)
+        working['aged_export'] = False
         bm = bmesh.new()
-        bm.from_mesh(low.data)
-        interior = [v for v in bm.verts if not v.is_boundary]
-        for _ in range(4):
-            bmesh.ops.smooth_vert(bm, verts=interior, factor=.3,
-                                  use_axis_x=True, use_axis_y=True, use_axis_z=True)
-        bm.to_mesh(low.data)
+        bm.from_mesh(working.data)
+        bm.verts.index_update()
+        simplify_boundary(bm)
+        bmesh.ops.triangulate(bm, faces=list(bm.faces))
+        bm.to_mesh(working.data)
         bm.free()
-        report['interior_relaxation'] = {'passes': 4, 'factor': .3, 'boundary_fixed': True}
+        protection = protect_outline(working, bpy.data.objects['Hanger'])
+        low, report = decimate(working, target)
+        bpy.data.objects.remove(working, do_unlink=True)
+        low.name = dense.name+'_Game'
+        report['outline_protection'] = protection
+        report['boundary_chord_tolerance_m'] = .0005
+        report['interior_relaxation'] = relax_interior(low)
         report['boundary_hausdorff_upper_m'] = boundary_hausdorff(dense, low)
         report['pass'] = report['triangles'] <= target and report['boundary_hausdorff_upper_m'] <= .0015
         return low, report

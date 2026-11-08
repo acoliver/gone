@@ -171,10 +171,11 @@ def measure(out, images):
     if sat_path.exists():
         sat = json.loads(sat_path.read_text())
         baseline = json.loads((out.parent / 'unaged-sat.json').read_text())
-        current, old = sat['self']['Hanger']['count'], baseline['self']['Hanger']['count']
-        changed = sum(value['count'] for name, value in sat['self'].items() if name != 'Hanger')
-        changed += sum(value['count'] for value in sat['pairs'].values())
-        put('G30', dict(changed_intersections=changed, hanger=current, unaged_hanger=old), changed == 0 and current == old)
+        from tunic_contacts import contact_gate
+        unaged = meshes(ROOT / 'assets/props/quarters/dress_uniform.glb')['Hanger']
+        aged = meshes(candidate)['Hanger']
+        contacts = contact_gate(sat, baseline, unaged.triangles, aged.triangles)
+        put('G30', contacts, contacts['pass'])
     if (images / 'tunic-labels.png').exists() and (images / 'tunic-normals.png').exists():
         rgb = np.array(Image.open(images / 'tunic-labels.png').convert('RGB'))
         from diagnostic_labels import decode_labels
@@ -211,8 +212,8 @@ def measure(out, images):
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--out', type=Path, default=ROOT / 'tmp/age/tunic5/main')
-    p.add_argument('--images', type=Path, default=ROOT / 'tmp/age/tunic5')
+    p.add_argument('--out', type=Path, default=ROOT / 'tmp/age/tunic6/main')
+    p.add_argument('--images', type=Path, default=ROOT / 'tmp/age/tunic6')
     a = p.parse_args()
     r = measure(a.out.resolve(), a.images.resolve())
     raise SystemExit(0 if r['pass'] else 1)

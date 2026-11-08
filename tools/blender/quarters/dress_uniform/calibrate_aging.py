@@ -85,7 +85,7 @@ def calibrate(out, frames):
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--out', type=Path, default=ROOT / 'tmp/age/tunic5/calibration')
+    p.add_argument('--out', type=Path, default=ROOT / 'tmp/age/tunic6/calibration')
     p.add_argument('--frames', type=int, default=600)
     args = p.parse_args(sys.argv[sys.argv.index('--')+1:])
     calibrate(args.out, args.frames)

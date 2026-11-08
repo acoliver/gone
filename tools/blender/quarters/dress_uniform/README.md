@@ -31,6 +31,32 @@ is claimed by this recovery checkpoint. New work uses `tmp/age/tunic6/`.
 
 buttons and medal must remain recognizable. The source is `tunic-working.blend`,
 with `body-p` as the wool reference. `ShoulderChestForm` remains an invisible,
+## Continuation controls
+
+A stage-by-stage SAT probe found zero body/hanger crossings in the inherited
+dense simulation, then 94 after reduction. The old unconstrained interior
+relaxation also reduced the measured chest width from 533.04 to 467.53 mm.
+The local reducer now preserves sampled body outlines and the hanger crest,
+limits relaxation to 1 mm, and keeps `Keep` vertices fixed. Simplifying redundant
+boundary samples at 0.5 mm chord tolerance before decimation makes room for
+these constraints and the rim. On that same dense source, the new reduction
+has 10,799 sheet triangles, 533.04 mm chest width, zero body/hanger crossings,
+and 0.634 mm boundary Hausdorff upper bound. These are pre-rim controls, not
+final candidate gate results.
+
+The sleeve initially retained only 10% of its depth although its bending rest
+retained 40%. A regression control demonstrated that mismatch. Both now retain
+40%, avoiding that extra structural compression. A fresh 600-frame trial is
+being measured separately. Collar layering now uses 2 mm along the sewn
+support normal, comprising half the 3 mm collar thickness and 0.5 mm clearance.
+It has no added world-Z translation. A source-normal probe reduced collar
+contacts but did not eliminate them; zero contacts are still required.
+
+G30 also checks the exported hanger's triangle geometry against the unaged
+export exactly, rather than relying on equal self-contact counts alone.
+Positive and negative controls reject changed cloth, card pairs and a moved
+hanger. Shared modules have not been edited by the tunic continuation.
+
 unexported collider. The collar follows neckline edges without a vertical lift.
 Closed fittings retain their topology and are seated against the reduced sheet
 and its rim, rather than against the dense bake source alone. Clearance uses
@@ -58,8 +84,8 @@ under `tmp/age/tunic5/`.
 1. `age_tunic.py --stage prepare --out <scratch>` refines the stress bands,
    splits the shoulder, armhole and three hem runs without deleting their area,
    separates fallen allowances, adds detail stiffness and initializes the empty
-   sleeve. Its bending rest key retains 40% depth; its structural starting
-   section retains 10%. A 5,000-triangle carrier plus a real level-1 SIMPLE
+   sleeve. Its bending rest key and structural starting section both retain
+   40% depth. A 5,000-triangle carrier plus a real level-1 SIMPLE
    subdivision passes rest coordinates to Cloth at 30,000 working triangles.
    Attachment indices and vertex mass use the evaluated mesh. A stored rest
    key without this modifier does not affect Blender 4.5 cloth bending.
