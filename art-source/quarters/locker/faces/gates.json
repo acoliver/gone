@@ -1,0 +1,3870 @@
+{
+  "passed": true,
+  "values": {
+    "face_door_delta_e": 3.3065979945077353,
+    "face_door_planar_light_gradient": 0.001791399864821936,
+    "face_door_secondary_autocorrelation": 0.32465194925413776,
+    "face_door_edge_rust": 0.4615196931045145,
+    "face_door_broad_rust": 0.16584575838281523,
+    "face_door_edge_broad_ratio": 2.782824822321996,
+    "face_door_paint_mean_delta_e": 4.647622207669877,
+    "face_door_paint_std_delta_e": 1.1093316726344389,
+    "face_door_rust_mean_delta_e": 0.23832598005064373,
+    "face_door_rust_std_delta_e": 0.3293087701901755,
+    "face_door_pixels_per_metre": 996.1089494163424,
+    "face_left_delta_e": 4.754643050085595,
+    "face_left_planar_light_gradient": 0.015129876429983832,
+    "face_left_secondary_autocorrelation": 0.42513364444546525,
+    "face_left_edge_rust": 0.4882779558104233,
+    "face_left_broad_rust": 0.04093735054997609,
+    "face_left_edge_broad_ratio": 11.927443990649476,
+    "face_left_paint_mean_delta_e": 2.944305408151912,
+    "face_left_paint_std_delta_e": 3.31512116657061,
+    "face_left_rust_mean_delta_e": 2.1723946867929294,
+    "face_left_rust_std_delta_e": 1.4102041619695358,
+    "face_left_pixels_per_metre": 334.640522875817,
+    "face_right_delta_e": 4.1121591751504285,
+    "face_right_planar_light_gradient": 0.027217092756207695,
+    "face_right_secondary_autocorrelation": 0.32646085879270065,
+    "face_right_edge_rust": 0.5668934240362812,
+    "face_right_broad_rust": 0.01842818428184282,
+    "face_right_edge_broad_ratio": 30.762304921968784,
+    "face_right_paint_mean_delta_e": 4.084645144692758,
+    "face_right_paint_std_delta_e": 3.757606269096067,
+    "face_right_rust_mean_delta_e": 0.4603179464461188,
+    "face_right_rust_std_delta_e": 1.503564275752936,
+    "face_right_pixels_per_metre": 334.640522875817,
+    "face_top_delta_e": 2.7834283562645568,
+    "face_top_planar_light_gradient": 0.0064907449848857005,
+    "face_top_secondary_autocorrelation": 0.29979627247979157,
+    "face_top_edge_rust": 0.21975291463329788,
+    "face_top_broad_rust": 0.04537560070820335,
+    "face_top_edge_broad_ratio": 4.84297532602294,
+    "face_top_paint_mean_delta_e": 1.1177674991768098,
+    "face_top_paint_std_delta_e": 3.35751216092308,
+    "face_top_rust_mean_delta_e": 1.036111067865798,
+    "face_top_rust_std_delta_e": 0.6214405614649797,
+    "face_top_pixels_per_metre": 920.863309352518,
+    "face_stile-left_delta_e": 7.801055618826127,
+    "face_stile-left_planar_light_gradient": 0.018271577433960406,
+    "face_stile-left_secondary_autocorrelation": 0.2564117282813333,
+    "face_stile-left_edge_rust": 0.34327675513963235,
+    "face_stile-left_broad_rust": 0.16396540701554718,
+    "face_stile-left_edge_broad_ratio": 2.093592553379768,
+    "face_stile-left_paint_mean_delta_e": 4.1494306232610745,
+    "face_stile-left_paint_std_delta_e": 6.760951129432203,
+    "face_stile-left_rust_mean_delta_e": 3.4157966363890653,
+    "face_stile-left_rust_std_delta_e": 0.4529551287394016,
+    "face_stile-left_pixels_per_metre": 1599.9999999999998,
+    "face_stile-right_delta_e": 4.726516785003946,
+    "face_stile-right_planar_light_gradient": 0.004378537114880442,
+    "face_stile-right_secondary_autocorrelation": 0.21411528218997114,
+    "face_stile-right_edge_rust": 0.7144799792313112,
+    "face_stile-right_broad_rust": 0.3585895841675975,
+    "face_stile-right_edge_broad_ratio": 1.9924727621128497,
+    "face_stile-right_paint_mean_delta_e": 7.752381895922709,
+    "face_stile-right_paint_std_delta_e": 7.960829195176914,
+    "face_stile-right_rust_mean_delta_e": 5.660857118676469,
+    "face_stile-right_rust_std_delta_e": 2.3618170688210522,
+    "face_stile-right_pixels_per_metre": 1599.9999999999998,
+    "face_header_delta_e": 6.705902134121016,
+    "face_header_planar_light_gradient": 0.00812118244945658,
+    "face_header_secondary_autocorrelation": 0.22742021802878834,
+    "face_header_edge_rust": 0.5271395016339869,
+    "face_header_broad_rust": 0.27386177434456926,
+    "face_header_edge_broad_ratio": 1.924837823371242,
+    "face_header_paint_mean_delta_e": 7.92417784962842,
+    "face_header_paint_std_delta_e": 6.370244887288262,
+    "face_header_rust_mean_delta_e": 4.746393477028307,
+    "face_header_rust_std_delta_e": 2.8334913762700764,
+    "face_header_pixels_per_metre": 1846.1538461538462,
+    "face_kick_delta_e": 4.796706344361478,
+    "face_kick_planar_light_gradient": 0.01684877330595277,
+    "face_kick_secondary_autocorrelation": 0.21652492106817392,
+    "face_kick_edge_rust": 0.40076754385964913,
+    "face_kick_broad_rust": 0.19561589805825244,
+    "face_kick_edge_broad_ratio": 2.0487473044767794,
+    "face_kick_paint_mean_delta_e": 4.486261831530152,
+    "face_kick_paint_std_delta_e": 3.066661010852247,
+    "face_kick_rust_mean_delta_e": 2.349952615559043,
+    "face_kick_rust_std_delta_e": 1.455520290209364,
+    "face_kick_pixels_per_metre": 1219.047619047619,
+    "face_hardware_delta_e": 1.1579926204246054,
+    "face_hardware_planar_light_gradient": 1.0251041856517357e-06,
+    "face_hardware_secondary_autocorrelation": 0.07312075254537133,
+    "face_hardware_edge_rust": 0.7360930614189485,
+    "face_hardware_broad_rust": 0.7585622896978208,
+    "face_hardware_edge_broad_ratio": 0.9703791915521887,
+    "face_hardware_paint_mean_delta_e": 1.7399938419125858,
+    "face_hardware_paint_std_delta_e": 0.9463323333052871,
+    "face_hardware_rust_mean_delta_e": 0.7177960895252112,
+    "face_hardware_rust_std_delta_e": 0.3316055274321292,
+    "face_hardware_pixels_per_metre": 5120.0,
+    "knuckle_adjacent_face_angle_max_deg": 12.996103990380739,
+    "knuckle_split_normal_jump_max_deg": 6.423121153876672,
+    "byte_identical_bakes": true,
+    "as_built_atlases_unchanged": true,
+    "as_built_exported_uv_density": [
+      304.12750806797874,
+      304.84479021546065
+    ],
+    "as_built_exported_uv_no_stretch": 1.0017873924391592,
+    "paint_roughness_range": [
+      0.3490196168422699,
+      0.5490196347236633
+    ],
+    "as_built_rust": 0.0,
+    "aged_painted_rust": 0.2529224604934814,
+    "no_new_green": 3.56568527122385e-06,
+    "up_face_dust": 0.7973020898207737,
+    "identical_geometry": true,
+    "broad_face_rust_albedo": 0.14970931860696962,
+    "edge_broad_ratio_albedo": 3.2948820082311188,
+    "legacy_visible_fastener_streaks_albedo": 0.02564102564102564,
+    "dust_warm_low_saturation_albedo": 0.8177595847000364,
+    "illustrative_dust_control_difference_albedo": 0.16437806442203062,
+    "broad_face_rust_neutral": 0.1421930482900765,
+    "edge_broad_ratio_neutral": 3.3730295350734565,
+    "legacy_visible_fastener_streaks_neutral": 0.02564102564102564,
+    "dust_warm_low_saturation_neutral": 0.8210218939171712,
+    "illustrative_dust_control_difference_neutral": 0.17491429938998088,
+    "broad_face_rust_present": 0.19141285719086398,
+    "edge_broad_ratio_present": 2.8781835530324393,
+    "legacy_visible_fastener_streaks_present": 0.02564102564102564,
+    "dust_warm_low_saturation_present": 0.7529534120909891,
+    "illustrative_dust_control_difference_present": 0.1254852593043505,
+    "aged_bare_steel_rust": 0.9239567739520959,
+    "as_built_bare_steel_linear_luminance": 0.4762695963609474,
+    "as_built_bare_steel_roughness_max": 0.3915725648403168,
+    "as_built_design_delta_e_2000": 1.5290414986330036,
+    "closeup_atlas_axis_peak_ratio": 1.6198472562194288,
+    "door_secondary_autocorrelation": 0.31029086132001255,
+    "longest_straight_rust_boundary_m": 0.03896484244614842,
+    "hardware": {
+      "Rivets": {
+        "rust_fraction": 0.8784,
+        "chroma_rust_fraction": 0.6568,
+        "pit_normal_rms": 0.0166117893017083
+      },
+      "Hinges": {
+        "rust_fraction": 0.8710711994868505,
+        "chroma_rust_fraction": 0.6132135984605517,
+        "pit_normal_rms": 0.01725495238704982
+      },
+      "DoorVents": {
+        "rust_fraction": 0.9538590604026845,
+        "chroma_rust_fraction": 0.7896159582401193,
+        "pit_normal_rms": 0.01592539196595392
+      },
+      "Handle": {
+        "rust_fraction": 0.936046511627907,
+        "chroma_rust_fraction": 0.7209302325581395,
+        "pit_normal_rms": 0.016207329363459172
+      },
+      "KickPlate": {
+        "rust_fraction": 0.4380986418870622,
+        "chroma_rust_fraction": 0.5610293066476054,
+        "pit_normal_rms": 0.2933155929503741
+      }
+    },
+    "hardware_Rivets_rust": 0.8784,
+    "hardware_Rivets_chroma_rust": 0.6568,
+    "hardware_Rivets_pit_normal_rms": 0.0166117893017083,
+    "hardware_Hinges_rust": 0.8710711994868505,
+    "hardware_Hinges_chroma_rust": 0.6132135984605517,
+    "hardware_Hinges_pit_normal_rms": 0.01725495238704982,
+    "hardware_DoorVents_rust": 0.9538590604026845,
+    "hardware_DoorVents_chroma_rust": 0.7896159582401193,
+    "hardware_DoorVents_pit_normal_rms": 0.01592539196595392,
+    "hardware_Handle_rust": 0.936046511627907,
+    "hardware_Handle_chroma_rust": 0.7209302325581395,
+    "hardware_Handle_pit_normal_rms": 0.016207329363459172,
+    "hardware_KickPlate_rust": 0.4380986418870622,
+    "hardware_KickPlate_chroma_rust": 0.5610293066476054,
+    "hardware_KickPlate_pit_normal_rms": 0.2933155929503741,
+    "hinge_screen_px_per_mm": 6.4,
+    "handle_screen_px_per_mm": 6.4,
+    "supplemental_runoff_max_opacity": 0.3
+  },
+  "gates": {
+    "face_door_delta_e": true,
+    "face_door_planar_light_gradient": true,
+    "face_door_secondary_autocorrelation": true,
+    "face_door_edge_broad_ratio": true,
+    "face_door_paint_mean_delta_e": true,
+    "face_door_paint_std_delta_e": true,
+    "face_door_rust_mean_delta_e": true,
+    "face_door_rust_std_delta_e": true,
+    "face_door_pixels_per_metre": true,
+    "face_left_delta_e": true,
+    "face_left_planar_light_gradient": true,
+    "face_left_secondary_autocorrelation": true,
+    "face_left_edge_broad_ratio": true,
+    "face_left_paint_mean_delta_e": true,
+    "face_left_paint_std_delta_e": true,
+    "face_left_rust_mean_delta_e": true,
+    "face_left_rust_std_delta_e": true,
+    "face_left_pixels_per_metre": true,
+    "face_right_delta_e": true,
+    "face_right_planar_light_gradient": true,
+    "face_right_secondary_autocorrelation": true,
+    "face_right_edge_broad_ratio": true,
+    "face_right_paint_mean_delta_e": true,
+    "face_right_paint_std_delta_e": true,
+    "face_right_rust_mean_delta_e": true,
+    "face_right_rust_std_delta_e": true,
+    "face_right_pixels_per_metre": true,
+    "face_top_delta_e": true,
+    "face_top_planar_light_gradient": true,
+    "face_top_secondary_autocorrelation": true,
+    "face_top_edge_broad_ratio": true,
+    "face_top_paint_mean_delta_e": true,
+    "face_top_paint_std_delta_e": true,
+    "face_top_rust_mean_delta_e": true,
+    "face_top_rust_std_delta_e": true,
+    "face_top_pixels_per_metre": true,
+    "face_stile-left_delta_e": true,
+    "face_stile-left_planar_light_gradient": true,
+    "face_stile-left_secondary_autocorrelation": true,
+    "face_stile-left_edge_broad_ratio": true,
+    "face_stile-left_paint_mean_delta_e": true,
+    "face_stile-left_paint_std_delta_e": true,
+    "face_stile-left_rust_mean_delta_e": true,
+    "face_stile-left_rust_std_delta_e": true,
+    "face_stile-left_pixels_per_metre": true,
+    "face_stile-right_delta_e": true,
+    "face_stile-right_planar_light_gradient": true,
+    "face_stile-right_secondary_autocorrelation": true,
+    "face_stile-right_edge_broad_ratio": true,
+    "face_stile-right_paint_mean_delta_e": true,
+    "face_stile-right_paint_std_delta_e": true,
+    "face_stile-right_rust_mean_delta_e": true,
+    "face_stile-right_rust_std_delta_e": true,
+    "face_stile-right_pixels_per_metre": true,
+    "face_header_delta_e": true,
+    "face_header_planar_light_gradient": true,
+    "face_header_secondary_autocorrelation": true,
+    "face_header_edge_broad_ratio": true,
+    "face_header_paint_mean_delta_e": true,
+    "face_header_paint_std_delta_e": true,
+    "face_header_rust_mean_delta_e": true,
+    "face_header_rust_std_delta_e": true,
+    "face_header_pixels_per_metre": true,
+    "face_kick_delta_e": true,
+    "face_kick_planar_light_gradient": true,
+    "face_kick_secondary_autocorrelation": true,
+    "face_kick_edge_broad_ratio": true,
+    "face_kick_paint_mean_delta_e": true,
+    "face_kick_paint_std_delta_e": true,
+    "face_kick_rust_mean_delta_e": true,
+    "face_kick_rust_std_delta_e": true,
+    "face_kick_pixels_per_metre": true,
+    "face_hardware_delta_e": true,
+    "face_hardware_planar_light_gradient": true,
+    "face_hardware_secondary_autocorrelation": true,
+    "face_hardware_paint_mean_delta_e": true,
+    "face_hardware_paint_std_delta_e": true,
+    "face_hardware_rust_mean_delta_e": true,
+    "face_hardware_rust_std_delta_e": true,
+    "face_hardware_pixels_per_metre": true,
+    "knuckle_adjacent_face_angle_max_deg": true,
+    "knuckle_split_normal_jump_max_deg": true,
+    "byte_identical_bakes": true,
+    "as_built_atlases_unchanged": true,
+    "as_built_exported_uv_density": true,
+    "as_built_exported_uv_no_stretch": true,
+    "paint_roughness_range": true,
+    "as_built_rust": true,
+    "aged_painted_rust": true,
+    "no_new_green": true,
+    "up_face_dust": true,
+    "identical_geometry": true,
+    "broad_face_rust_albedo": true,
+    "edge_broad_ratio_albedo": true,
+    "dust_warm_low_saturation_albedo": true,
+    "broad_face_rust_neutral": true,
+    "edge_broad_ratio_neutral": true,
+    "dust_warm_low_saturation_neutral": true,
+    "broad_face_rust_present": true,
+    "edge_broad_ratio_present": true,
+    "dust_warm_low_saturation_present": true,
+    "aged_bare_steel_rust": true,
+    "as_built_bare_steel_linear_luminance": true,
+    "as_built_bare_steel_roughness_max": true,
+    "as_built_design_delta_e_2000": true,
+    "closeup_atlas_axis_peak_ratio": true,
+    "door_secondary_autocorrelation": true,
+    "longest_straight_rust_boundary_m": true,
+    "hardware_Rivets_rust": true,
+    "hardware_Rivets_chroma_rust": true,
+    "hardware_Rivets_pit_normal_rms": true,
+    "hardware_Hinges_rust": true,
+    "hardware_Hinges_chroma_rust": true,
+    "hardware_Hinges_pit_normal_rms": true,
+    "hardware_DoorVents_rust": true,
+    "hardware_DoorVents_chroma_rust": true,
+    "hardware_DoorVents_pit_normal_rms": true,
+    "hardware_Handle_rust": true,
+    "hardware_Handle_chroma_rust": true,
+    "hardware_Handle_pit_normal_rms": true,
+    "hardware_KickPlate_rust": true,
+    "hardware_KickPlate_chroma_rust": true,
+    "hardware_KickPlate_pit_normal_rms": true,
+    "hinge_screen_px_per_mm": true,
+    "handle_screen_px_per_mm": true,
+    "supplemental_runoff_max_opacity": true
+  },
+  "thresholds": {
+    "face_door_delta_e": "<=8 D65 Lab",
+    "face_door_planar_light_gradient": "<0.06 linear luminance across full image",
+    "face_door_secondary_autocorrelation": "<=0.5 at secondary peaks beyond 50 mm",
+    "face_door_edge_broad_ratio": ">=1.8, outer 10% against broad interior",
+    "face_door_paint_mean_delta_e": "<=8 D65 Lab",
+    "face_door_paint_std_delta_e": "<=8 D65 Lab",
+    "face_door_rust_mean_delta_e": "<=8 D65 Lab",
+    "face_door_rust_std_delta_e": "<=8 D65 Lab",
+    "face_door_pixels_per_metre": ">=600",
+    "face_left_delta_e": "<=8 D65 Lab",
+    "face_left_planar_light_gradient": "<0.06 linear luminance across full image",
+    "face_left_secondary_autocorrelation": "<=0.5 at secondary peaks beyond 50 mm",
+    "face_left_edge_broad_ratio": ">=1.8, outer 10% against broad interior",
+    "face_left_paint_mean_delta_e": "<=8 D65 Lab",
+    "face_left_paint_std_delta_e": "<=8 D65 Lab",
+    "face_left_rust_mean_delta_e": "<=8 D65 Lab",
+    "face_left_rust_std_delta_e": "<=8 D65 Lab",
+    "face_left_pixels_per_metre": ">=300",
+    "face_right_delta_e": "<=8 D65 Lab",
+    "face_right_planar_light_gradient": "<0.06 linear luminance across full image",
+    "face_right_secondary_autocorrelation": "<=0.5 at secondary peaks beyond 50 mm",
+    "face_right_edge_broad_ratio": ">=1.8, outer 10% against broad interior",
+    "face_right_paint_mean_delta_e": "<=8 D65 Lab",
+    "face_right_paint_std_delta_e": "<=8 D65 Lab",
+    "face_right_rust_mean_delta_e": "<=8 D65 Lab",
+    "face_right_rust_std_delta_e": "<=8 D65 Lab",
+    "face_right_pixels_per_metre": ">=300",
+    "face_top_delta_e": "<=8 D65 Lab",
+    "face_top_planar_light_gradient": "<0.06 linear luminance across full image",
+    "face_top_secondary_autocorrelation": "<=0.5 at secondary peaks beyond 50 mm",
+    "face_top_edge_broad_ratio": ">=1.8, outer 10% against broad interior",
+    "face_top_paint_mean_delta_e": "<=8 D65 Lab",
+    "face_top_paint_std_delta_e": "<=8 D65 Lab",
+    "face_top_rust_mean_delta_e": "<=8 D65 Lab",
+    "face_top_rust_std_delta_e": "<=8 D65 Lab",
+    "face_top_pixels_per_metre": ">=300",
+    "face_stile-left_delta_e": "<=8 D65 Lab",
+    "face_stile-left_planar_light_gradient": "<0.06 linear luminance across full image",
+    "face_stile-left_secondary_autocorrelation": "<=0.5 at secondary peaks beyond 50 mm",
+    "face_stile-left_edge_broad_ratio": ">=1.8, outer 10% against broad interior",
+    "face_stile-left_paint_mean_delta_e": "<=8 D65 Lab",
+    "face_stile-left_paint_std_delta_e": "<=8 D65 Lab",
+    "face_stile-left_rust_mean_delta_e": "<=8 D65 Lab",
+    "face_stile-left_rust_std_delta_e": "<=8 D65 Lab",
+    "face_stile-left_pixels_per_metre": ">=300",
+    "face_stile-right_delta_e": "<=8 D65 Lab",
+    "face_stile-right_planar_light_gradient": "<0.06 linear luminance across full image",
+    "face_stile-right_secondary_autocorrelation": "<=0.5 at secondary peaks beyond 50 mm",
+    "face_stile-right_edge_broad_ratio": ">=1.8, outer 10% against broad interior",
+    "face_stile-right_paint_mean_delta_e": "<=8 D65 Lab",
+    "face_stile-right_paint_std_delta_e": "<=8 D65 Lab",
+    "face_stile-right_rust_mean_delta_e": "<=8 D65 Lab",
+    "face_stile-right_rust_std_delta_e": "<=8 D65 Lab",
+    "face_stile-right_pixels_per_metre": ">=300",
+    "face_header_delta_e": "<=8 D65 Lab",
+    "face_header_planar_light_gradient": "<0.06 linear luminance across full image",
+    "face_header_secondary_autocorrelation": "<=0.5 at secondary peaks beyond 50 mm",
+    "face_header_edge_broad_ratio": ">=1.8, outer 10% against broad interior",
+    "face_header_paint_mean_delta_e": "<=8 D65 Lab",
+    "face_header_paint_std_delta_e": "<=8 D65 Lab",
+    "face_header_rust_mean_delta_e": "<=8 D65 Lab",
+    "face_header_rust_std_delta_e": "<=8 D65 Lab",
+    "face_header_pixels_per_metre": ">=300",
+    "face_kick_delta_e": "<=8 D65 Lab",
+    "face_kick_planar_light_gradient": "<0.06 linear luminance across full image",
+    "face_kick_secondary_autocorrelation": "<=0.5 at secondary peaks beyond 50 mm",
+    "face_kick_edge_broad_ratio": ">=1.8, outer 10% against broad interior",
+    "face_kick_paint_mean_delta_e": "<=8 D65 Lab",
+    "face_kick_paint_std_delta_e": "<=8 D65 Lab",
+    "face_kick_rust_mean_delta_e": "<=8 D65 Lab",
+    "face_kick_rust_std_delta_e": "<=8 D65 Lab",
+    "face_kick_pixels_per_metre": ">=300",
+    "face_hardware_delta_e": "<=8 D65 Lab",
+    "face_hardware_planar_light_gradient": "<0.06 linear luminance across full image",
+    "face_hardware_secondary_autocorrelation": "<=0.5 at secondary peaks beyond 50 mm",
+    "face_hardware_paint_mean_delta_e": "<=8 D65 Lab",
+    "face_hardware_paint_std_delta_e": "<=8 D65 Lab",
+    "face_hardware_rust_mean_delta_e": "<=8 D65 Lab",
+    "face_hardware_rust_std_delta_e": "<=8 D65 Lab",
+    "face_hardware_pixels_per_metre": ">=300",
+    "knuckle_adjacent_face_angle_max_deg": "<=15 degrees, all exported knuckle adjacency including rounded end rims",
+    "knuckle_split_normal_jump_max_deg": "<=15 degrees, all exported knuckle adjacency including rounded end rims",
+    "byte_identical_bakes": true,
+    "as_built_atlases_unchanged": true,
+    "as_built_exported_uv_density": "304.6 +/-15% px/m",
+    "as_built_exported_uv_no_stretch": "<=1.015",
+    "paint_roughness_range": ".34 <= minimum; maximum <= .56; span >= .12",
+    "as_built_rust": "<0.01",
+    "aged_painted_rust": "[.25,.60]",
+    "no_new_green": "<0.005",
+    "up_face_dust": ">=0.70",
+    "identical_geometry": true,
+    "broad_face_rust_albedo": "[.08,.25]",
+    "edge_broad_ratio_albedo": ">=1.8, replaces procedural-path >=2.5",
+    "dust_warm_low_saturation_albedo": ">=0.70",
+    "broad_face_rust_neutral": "[.08,.25]",
+    "edge_broad_ratio_neutral": ">=1.8, replaces procedural-path >=2.5",
+    "dust_warm_low_saturation_neutral": ">=0.70",
+    "broad_face_rust_present": "[.08,.25]",
+    "edge_broad_ratio_present": ">=1.8, replaces procedural-path >=2.5",
+    "dust_warm_low_saturation_present": ">=0.70",
+    "aged_bare_steel_rust": ">=0.30",
+    "as_built_bare_steel_linear_luminance": ">=0.35",
+    "as_built_bare_steel_roughness_max": "<=0.45",
+    "as_built_design_delta_e_2000": "<=6",
+    "closeup_atlas_axis_peak_ratio": "<=2.0",
+    "door_secondary_autocorrelation": "<=0.5 beyond 50 mm, actual rendered door",
+    "longest_straight_rust_boundary_m": "<=0.040 at <=1 mm chord deviation",
+    "hardware_Rivets_rust": ">=0.30",
+    "hardware_Rivets_chroma_rust": ">=0.30",
+    "hardware_Rivets_pit_normal_rms": ">=0.01",
+    "hardware_Hinges_rust": ">=0.30",
+    "hardware_Hinges_chroma_rust": ">=0.30",
+    "hardware_Hinges_pit_normal_rms": ">=0.01",
+    "hardware_DoorVents_rust": ">=0.30",
+    "hardware_DoorVents_chroma_rust": ">=0.30",
+    "hardware_DoorVents_pit_normal_rms": ">=0.01",
+    "hardware_Handle_rust": ">=0.30",
+    "hardware_Handle_chroma_rust": ">=0.30",
+    "hardware_Handle_pit_normal_rms": ">=0.01",
+    "hardware_KickPlate_rust": ">=0.30",
+    "hardware_KickPlate_chroma_rust": ">=0.30",
+    "hardware_KickPlate_pit_normal_rms": ">=0.01",
+    "hinge_screen_px_per_mm": ">=5 at 0.3 m, ID-pass horizontal silhouette pixels / physical width in mm",
+    "handle_screen_px_per_mm": ">=5 at 0.3 m, ID-pass horizontal silhouette pixels / physical width in mm",
+    "supplemental_runoff_max_opacity": "<=0.30"
+  },
+  "retired_gates": {
+    "dust_grain_std_ratio": "Compared a procedural dust-density field with its smoothed control. Dust is now in the complete generated top image.",
+    "broad_face_island_max_m": "Measured placed blister instances; there are no placed islands in the image-owned layout.",
+    "unattached_runoff_max": "Measured the removed analytic runoff control texture; new supplementary stains are baked at bounded opacity.",
+    "streak_width_median_m": "Measured half-opacity contours of the removed full-opacity analytic generator.",
+    "streak_source_length_range_m": "Preset source lengths no longer decide the corrosion layout.",
+    "streak_reduced_opacity_max": "Replaced the old less-than-one generator opacity by the explicit <=0.30 limit.",
+    "panel_edge_rust_cv_min": "Measured variability of the old procedural edge band, replaced by independently measured image edge/broad rust ratios.",
+    "fasteners_with_streaks, visible_fastener_streaks_{albedo,neutral,present}": "The old >=50% population of strong 40 mm generated trails required a stamped fixture distribution and >=0.03 contrast. Image-owned trails and optional <=30% stains replace that generator contract; connected-run measurements remain diagnostics, not passes.",
+    "dust_linear_difference_{albedo,neutral,present}": "The old control disabled a separate dust mask while retaining identical substrate. Dust is now part of the top image. A generated dust-removal edit is illustrative and is not a numerically matched effect-disabled control; differences remain diagnostics, not visibility passes."
+  },
+  "fasteners": [
+    {
+      "lane": "albedo",
+      "measurements": [
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Hinges",
+            "position_blender": [
+              -0.25999998301267624,
+              -0.3009999692440033,
+              0.3100000321865082
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.26999998092651367,
+                -0.3109999895095825,
+                0.3100000321865082
+              ],
+              [
+                -0.2499999850988388,
+                -0.2909999489784241,
+                0.39000001549720764
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Hinges",
+            "position_blender": [
+              -0.25999998301267624,
+              -0.30099980533123016,
+              1.209999918937683
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.26999998092651367,
+                -0.3109998106956482,
+                1.209999918937683
+              ],
+              [
+                -0.2499999850988388,
+                -0.29099979996681213,
+                1.290000081062317
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Hinges",
+            "position_blender": [
+              -0.25999998301267624,
+              -0.30099962651729584,
+              2.1100001335144043
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.26999998092651367,
+                -0.31099963188171387,
+                2.1100001335144043
+              ],
+              [
+                -0.2499999850988388,
+                -0.2909996211528778,
+                2.190000057220459
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0055664060637354885,
+          "linear_contrast": 0.032234740827232614,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.29499998688697815,
+              -0.2964998930692673,
+              1.3348039388656616
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.3001961410045624,
+                -0.2999998927116394,
+                1.3348039388656616
+              ],
+              [
+                -0.2898038327693939,
+                -0.29299989342689514,
+                1.3451961278915405
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.29499998688697815,
+              -0.2964998930692673,
+              1.3348039388656616
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2898038327693939,
+                -0.2999998927116394,
+                1.3348039388656616
+              ],
+              [
+                0.3001961410045624,
+                -0.29299989342689514,
+                1.3451961278915405
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.29499998688697815,
+              -0.2964998632669449,
+              1.4698039293289185
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.3001961410045624,
+                -0.299999862909317,
+                1.4698039293289185
+              ],
+              [
+                -0.2898038327693939,
+                -0.29299986362457275,
+                1.4801961183547974
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.29499998688697815,
+              -0.2964998632669449,
+              1.4698039293289185
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2898038327693939,
+                -0.299999862909317,
+                1.4698039293289185
+              ],
+              [
+                0.3001961410045624,
+                -0.29299986362457275,
+                1.4801961183547974
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.29499998688697815,
+              -0.2964998632669449,
+              1.6048039197921753
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.3001961410045624,
+                -0.299999862909317,
+                1.6048039197921753
+              ],
+              [
+                -0.2898038327693939,
+                -0.29299986362457275,
+                1.6151961088180542
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.29499998688697815,
+              -0.2964998632669449,
+              1.6048039197921753
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2898038327693939,
+                -0.299999862909317,
+                1.6048039197921753
+              ],
+              [
+                0.3001961410045624,
+                -0.29299986362457275,
+                1.6151961088180542
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.008349609095603233,
+          "linear_contrast": 0.03538761568094291,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.29499998688697815,
+              -0.2964998632669449,
+              1.7398039102554321
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.3001961410045624,
+                -0.299999862909317,
+                1.7398039102554321
+              ],
+              [
+                -0.2898038327693939,
+                -0.29299986362457275,
+                1.750196099281311
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.29499998688697815,
+              -0.2964998632669449,
+              1.7398039102554321
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2898038327693939,
+                -0.299999862909317,
+                1.7398039102554321
+              ],
+              [
+                0.3001961410045624,
+                -0.29299986362457275,
+                1.750196099281311
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.008349609095603233,
+          "linear_contrast": 0.03538761568094291,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.29499998688697815,
+              -0.2964998334646225,
+              1.874803900718689
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.3001961410045624,
+                -0.29999983310699463,
+                1.874803900718689
+              ],
+              [
+                -0.2898038327693939,
+                -0.29299983382225037,
+                1.8851960897445679
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.29499998688697815,
+              -0.2964998334646225,
+              1.874803900718689
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2898038327693939,
+                -0.29999983310699463,
+                1.874803900718689
+              ],
+              [
+                0.3001961410045624,
+                -0.29299983382225037,
+                1.8851960897445679
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0055664060637354885,
+          "linear_contrast": 0.04570593206100171,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.29499998688697815,
+              -0.2964998334646225,
+              2.0098040103912354
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.3001961410045624,
+                -0.29999983310699463,
+                2.0098040103912354
+              ],
+              [
+                -0.2898038327693939,
+                -0.29299983382225037,
+                2.0201961994171143
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.29499998688697815,
+              -0.2964998334646225,
+              2.0098040103912354
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2898038327693939,
+                -0.29999983310699463,
+                2.0098040103912354
+              ],
+              [
+                0.3001961410045624,
+                -0.29299983382225037,
+                2.0201961994171143
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.29499998688697815,
+              -0.2964998334646225,
+              2.144804000854492
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.3001961410045624,
+                -0.29999983310699463,
+                2.144804000854492
+              ],
+              [
+                -0.2898038327693939,
+                -0.29299983382225037,
+                2.155196189880371
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0027832030318677443,
+          "linear_contrast": 0.03600879823043944,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.29499998688697815,
+              -0.2964998334646225,
+              2.144804000854492
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2898038327693939,
+                -0.29999983310699463,
+                2.144804000854492
+              ],
+              [
+                0.3001961410045624,
+                -0.29299983382225037,
+                2.155196189880371
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.29499998688697815,
+              -0.2964998036623001,
+              2.279803991317749
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.3001961410045624,
+                -0.29999980330467224,
+                2.279803991317749
+              ],
+              [
+                -0.2898038327693939,
+                -0.292999804019928,
+                2.290196180343628
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0027832030318677443,
+          "linear_contrast": 0.03600879823043944,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.29499998688697815,
+              -0.2964998036623001,
+              2.279803991317749
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2898038327693939,
+                -0.29999980330467224,
+                2.279803991317749
+              ],
+              [
+                0.3001961410045624,
+                -0.292999804019928,
+                2.290196180343628
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.016699218191206466,
+          "onset_m": 0.0019426741637239915,
+          "width_m": 0.011132812127470977,
+          "linear_contrast": 0.053661043305322516,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.20250000059604645,
+              -0.2964998036623001,
+              2.3848040103912354
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.20769615471363068,
+                -0.29999980330467224,
+                2.3848040103912354
+              ],
+              [
+                -0.19730384647846222,
+                -0.292999804019928,
+                2.3951961994171143
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.04453124850988391,
+          "onset_m": 0.0019426741637239915,
+          "width_m": 0.008349609095603233,
+          "linear_contrast": 0.05727905383991699,
+          "passed": true,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.06749999523162842,
+              -0.2964998036623001,
+              2.3848040103912354
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.07269614934921265,
+                -0.29999980330467224,
+                2.3848040103912354
+              ],
+              [
+                -0.06230384111404419,
+                -0.292999804019928,
+                2.3951961994171143
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.06749999523162842,
+              -0.2964998036623001,
+              2.3848040103912354
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.06230384111404419,
+                -0.29999980330467224,
+                2.3848040103912354
+              ],
+              [
+                0.07269614934921265,
+                -0.292999804019928,
+                2.3951961994171143
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0055664060637354885,
+          "linear_contrast": 0.04922733902335166,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.20250001549720764,
+              -0.2964998036623001,
+              2.3848040103912354
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.1973038613796234,
+                -0.29999980330467224,
+                2.3848040103912354
+              ],
+              [
+                0.20769616961479187,
+                -0.292999804019928,
+                2.3951961994171143
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0027832030318677443,
+          "onset_m": 0.006776551716025387,
+          "width_m": 0.0055664060637354885,
+          "linear_contrast": 0.04186165815778076,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.28600001335144043,
+              -0.28249989449977875,
+              1.3348039388656616
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.29119616746902466,
+                -0.2859998941421509,
+                1.3348039388656616
+              ],
+              [
+                -0.2808038592338562,
+                -0.2789998948574066,
+                1.3451961278915405
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0027832030318677443,
+          "linear_contrast": 0.03190606606900691,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.28600001335144043,
+              -0.28249986469745636,
+              1.4698039293289185
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.29119616746902466,
+                -0.2859998643398285,
+                1.4698039293289185
+              ],
+              [
+                -0.2808038592338562,
+                -0.27899986505508423,
+                1.4801961183547974
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.28600001335144043,
+              -0.28249986469745636,
+              1.6048039197921753
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.29119616746902466,
+                -0.2859998643398285,
+                1.6048039197921753
+              ],
+              [
+                -0.2808038592338562,
+                -0.27899986505508423,
+                1.6151961088180542
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0027832030318677443,
+          "onset_m": 0.0054288804531051355,
+          "width_m": 0.0027832030318677443,
+          "linear_contrast": 0.04462266365215181,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.28600001335144043,
+              -0.28249986469745636,
+              1.7398039102554321
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.29119616746902466,
+                -0.2859998643398285,
+                1.7398039102554321
+              ],
+              [
+                -0.2808038592338562,
+                -0.27899986505508423,
+                1.750196099281311
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0027832030318677443,
+          "linear_contrast": 0.04216928500533103,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.28600001335144043,
+              -0.28249983489513397,
+              1.874803900718689
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.29119616746902466,
+                -0.2859998345375061,
+                1.874803900718689
+              ],
+              [
+                -0.2808038592338562,
+                -0.27899983525276184,
+                1.8851960897445679
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0055664060637354885,
+          "linear_contrast": 0.04570593206100171,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.28600001335144043,
+              -0.28249983489513397,
+              2.0098040103912354
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.29119616746902466,
+                -0.2859998345375061,
+                2.0098040103912354
+              ],
+              [
+                -0.2808038592338562,
+                -0.27899983525276184,
+                2.0201961994171143
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.28600001335144043,
+              -0.28249983489513397,
+              2.144804000854492
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.29119616746902466,
+                -0.2859998345375061,
+                2.144804000854492
+              ],
+              [
+                -0.2808038592338562,
+                -0.27899983525276184,
+                2.155196189880371
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.28600001335144043,
+              -0.2824998050928116,
+              2.279803991317749
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.29119616746902466,
+                -0.2859998047351837,
+                2.279803991317749
+              ],
+              [
+                -0.2808038592338562,
+                -0.27899980545043945,
+                2.290196180343628
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.28599998354911804,
+              -0.28249989449977875,
+              1.3348039388656616
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2808038294315338,
+                -0.2859998941421509,
+                1.3348039388656616
+              ],
+              [
+                0.29119613766670227,
+                -0.2789998948574066,
+                1.3451961278915405
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.008349609095603233,
+          "linear_contrast": 0.03556010226607323,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.28599998354911804,
+              -0.28249986469745636,
+              1.4698039293289185
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2808038294315338,
+                -0.2859998643398285,
+                1.4698039293289185
+              ],
+              [
+                0.29119613766670227,
+                -0.27899986505508423,
+                1.4801961183547974
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.008349609095603233,
+          "linear_contrast": 0.05024268739074464,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.28599998354911804,
+              -0.28249986469745636,
+              1.6048039197921753
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2808038294315338,
+                -0.2859998643398285,
+                1.6048039197921753
+              ],
+              [
+                0.29119613766670227,
+                -0.27899986505508423,
+                1.6151961088180542
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.013916015159338721,
+          "linear_contrast": 0.04390773667782544,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.28599998354911804,
+              -0.28249986469745636,
+              1.7398039102554321
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2808038294315338,
+                -0.2859998643398285,
+                1.7398039102554321
+              ],
+              [
+                0.29119613766670227,
+                -0.27899986505508423,
+                1.750196099281311
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0027832030318677443,
+          "onset_m": 0.0012687193229747264,
+          "width_m": 0.009741210611537106,
+          "linear_contrast": 0.033262022581758574,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.28599998354911804,
+              -0.28249983489513397,
+              1.874803900718689
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2808038294315338,
+                -0.2859998345375061,
+                1.874803900718689
+              ],
+              [
+                0.29119613766670227,
+                -0.27899983525276184,
+                1.8851960897445679
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.008349609095603233,
+          "onset_m": 0.005458286497737164,
+          "width_m": 0.0055664060637354885,
+          "linear_contrast": 0.03384832829162479,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.28599998354911804,
+              -0.28249983489513397,
+              2.0098040103912354
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2808038294315338,
+                -0.2859998345375061,
+                2.0098040103912354
+              ],
+              [
+                0.29119613766670227,
+                -0.27899983525276184,
+                2.0201961994171143
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.008349609095603233,
+          "onset_m": 0.0012981253676069124,
+          "width_m": 0.0055664060637354885,
+          "linear_contrast": 0.04006649904847143,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.28599998354911804,
+              -0.28249983489513397,
+              2.144804000854492
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2808038294315338,
+                -0.2859998345375061,
+                2.144804000854492
+              ],
+              [
+                0.29119613766670227,
+                -0.27899983525276184,
+                2.155196189880371
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.008349609095603233,
+          "linear_contrast": 0.041141238307207784,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.28599998354911804,
+              -0.2824998050928116,
+              2.279803991317749
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2808038294315338,
+                -0.2859998047351837,
+                2.279803991317749
+              ],
+              [
+                0.29119613766670227,
+                -0.27899980545043945,
+                2.290196180343628
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "lane": "neutral",
+      "measurements": [
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Hinges",
+            "position_blender": [
+              -0.25999998301267624,
+              -0.3009999692440033,
+              0.3100000321865082
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.26999998092651367,
+                -0.3109999895095825,
+                0.3100000321865082
+              ],
+              [
+                -0.2499999850988388,
+                -0.2909999489784241,
+                0.39000001549720764
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.008349609095603233,
+          "linear_contrast": 0.039955514237905554,
+          "passed": false,
+          "source": {
+            "part": "Hinges",
+            "position_blender": [
+              -0.25999998301267624,
+              -0.30099980533123016,
+              1.209999918937683
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.26999998092651367,
+                -0.3109998106956482,
+                1.209999918937683
+              ],
+              [
+                -0.2499999850988388,
+                -0.29099979996681213,
+                1.290000081062317
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Hinges",
+            "position_blender": [
+              -0.25999998301267624,
+              -0.30099962651729584,
+              2.1100001335144043
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.26999998092651367,
+                -0.31099963188171387,
+                2.1100001335144043
+              ],
+              [
+                -0.2499999850988388,
+                -0.2909996211528778,
+                2.190000057220459
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0027832030318677443,
+          "linear_contrast": 0.03418289458751678,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.29499998688697815,
+              -0.2964998930692673,
+              1.3348039388656616
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.3001961410045624,
+                -0.2999998927116394,
+                1.3348039388656616
+              ],
+              [
+                -0.2898038327693939,
+                -0.29299989342689514,
+                1.3451961278915405
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.29499998688697815,
+              -0.2964998930692673,
+              1.3348039388656616
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2898038327693939,
+                -0.2999998927116394,
+                1.3348039388656616
+              ],
+              [
+                0.3001961410045624,
+                -0.29299989342689514,
+                1.3451961278915405
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.29499998688697815,
+              -0.2964998632669449,
+              1.4698039293289185
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.3001961410045624,
+                -0.299999862909317,
+                1.4698039293289185
+              ],
+              [
+                -0.2898038327693939,
+                -0.29299986362457275,
+                1.4801961183547974
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.29499998688697815,
+              -0.2964998632669449,
+              1.4698039293289185
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2898038327693939,
+                -0.299999862909317,
+                1.4698039293289185
+              ],
+              [
+                0.3001961410045624,
+                -0.29299986362457275,
+                1.4801961183547974
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.29499998688697815,
+              -0.2964998632669449,
+              1.6048039197921753
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.3001961410045624,
+                -0.299999862909317,
+                1.6048039197921753
+              ],
+              [
+                -0.2898038327693939,
+                -0.29299986362457275,
+                1.6151961088180542
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.29499998688697815,
+              -0.2964998632669449,
+              1.6048039197921753
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2898038327693939,
+                -0.299999862909317,
+                1.6048039197921753
+              ],
+              [
+                0.3001961410045624,
+                -0.29299986362457275,
+                1.6151961088180542
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.008349609095603233,
+          "linear_contrast": 0.05018790440460047,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.29499998688697815,
+              -0.2964998632669449,
+              1.7398039102554321
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.3001961410045624,
+                -0.299999862909317,
+                1.7398039102554321
+              ],
+              [
+                -0.2898038327693939,
+                -0.29299986362457275,
+                1.750196099281311
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.29499998688697815,
+              -0.2964998632669449,
+              1.7398039102554321
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2898038327693939,
+                -0.299999862909317,
+                1.7398039102554321
+              ],
+              [
+                0.3001961410045624,
+                -0.29299986362457275,
+                1.750196099281311
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.008349609095603233,
+          "linear_contrast": 0.05018790440460047,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.29499998688697815,
+              -0.2964998334646225,
+              1.874803900718689
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.3001961410045624,
+                -0.29999983310699463,
+                1.874803900718689
+              ],
+              [
+                -0.2898038327693939,
+                -0.29299983382225037,
+                1.8851960897445679
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.29499998688697815,
+              -0.2964998334646225,
+              1.874803900718689
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2898038327693939,
+                -0.29999983310699463,
+                1.874803900718689
+              ],
+              [
+                0.3001961410045624,
+                -0.29299983382225037,
+                1.8851960897445679
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.008349609095603233,
+          "linear_contrast": 0.07236131392726675,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.29499998688697815,
+              -0.2964998334646225,
+              2.0098040103912354
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.3001961410045624,
+                -0.29999983310699463,
+                2.0098040103912354
+              ],
+              [
+                -0.2898038327693939,
+                -0.29299983382225037,
+                2.0201961994171143
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.29499998688697815,
+              -0.2964998334646225,
+              2.0098040103912354
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2898038327693939,
+                -0.29999983310699463,
+                2.0098040103912354
+              ],
+              [
+                0.3001961410045624,
+                -0.29299983382225037,
+                2.0201961994171143
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0027832030318677443,
+          "onset_m": 0.006864531431342401,
+          "width_m": 0.0027832030318677443,
+          "linear_contrast": 0.04087741491496563,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.29499998688697815,
+              -0.2964998334646225,
+              2.144804000854492
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.3001961410045624,
+                -0.29999983310699463,
+                2.144804000854492
+              ],
+              [
+                -0.2898038327693939,
+                -0.29299983382225037,
+                2.155196189880371
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0027832030318677443,
+          "linear_contrast": 0.04026933556199069,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.29499998688697815,
+              -0.2964998334646225,
+              2.144804000854492
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2898038327693939,
+                -0.29999983310699463,
+                2.144804000854492
+              ],
+              [
+                0.3001961410045624,
+                -0.29299983382225037,
+                2.155196189880371
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0027832030318677443,
+          "linear_contrast": 0.04087741491496563,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.29499998688697815,
+              -0.2964998036623001,
+              2.279803991317749
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.3001961410045624,
+                -0.29999980330467224,
+                2.279803991317749
+              ],
+              [
+                -0.2898038327693939,
+                -0.292999804019928,
+                2.290196180343628
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0027832030318677443,
+          "linear_contrast": 0.04026933556199069,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.29499998688697815,
+              -0.2964998036623001,
+              2.279803991317749
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2898038327693939,
+                -0.29999980330467224,
+                2.279803991317749
+              ],
+              [
+                0.3001961410045624,
+                -0.292999804019928,
+                2.290196180343628
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.016699218191206466,
+          "onset_m": 0.0019426741637239915,
+          "width_m": 0.011132812127470977,
+          "linear_contrast": 0.07527908358611166,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.20250000059604645,
+              -0.2964998036623001,
+              2.3848040103912354
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.20769615471363068,
+                -0.29999980330467224,
+                2.3848040103912354
+              ],
+              [
+                -0.19730384647846222,
+                -0.292999804019928,
+                2.3951961994171143
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.04453124850988391,
+          "onset_m": 0.0019426741637239915,
+          "width_m": 0.008349609095603233,
+          "linear_contrast": 0.1109159619955967,
+          "passed": true,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.06749999523162842,
+              -0.2964998036623001,
+              2.3848040103912354
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.07269614934921265,
+                -0.29999980330467224,
+                2.3848040103912354
+              ],
+              [
+                -0.06230384111404419,
+                -0.292999804019928,
+                2.3951961994171143
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.06749999523162842,
+              -0.2964998036623001,
+              2.3848040103912354
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.06230384111404419,
+                -0.29999980330467224,
+                2.3848040103912354
+              ],
+              [
+                0.07269614934921265,
+                -0.292999804019928,
+                2.3951961994171143
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0055664060637354885,
+          "linear_contrast": 0.0656822619516402,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.20250001549720764,
+              -0.2964998036623001,
+              2.3848040103912354
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.1973038613796234,
+                -0.29999980330467224,
+                2.3848040103912354
+              ],
+              [
+                0.20769616961479187,
+                -0.292999804019928,
+                2.3951961994171143
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0055664060637354885,
+          "onset_m": 0.003993348684157643,
+          "width_m": 0.0055664060637354885,
+          "linear_contrast": 0.0497231102976948,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.28600001335144043,
+              -0.28249989449977875,
+              1.3348039388656616
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.29119616746902466,
+                -0.2859998941421509,
+                1.3348039388656616
+              ],
+              [
+                -0.2808038592338562,
+                -0.2789998948574066,
+                1.3451961278915405
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0027832030318677443,
+          "linear_contrast": 0.03544058734551071,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.28600001335144043,
+              -0.28249986469745636,
+              1.4698039293289185
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.29119616746902466,
+                -0.2859998643398285,
+                1.4698039293289185
+              ],
+              [
+                -0.2808038592338562,
+                -0.27899986505508423,
+                1.4801961183547974
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.28600001335144043,
+              -0.28249986469745636,
+              1.6048039197921753
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.29119616746902466,
+                -0.2859998643398285,
+                1.6048039197921753
+              ],
+              [
+                -0.2808038592338562,
+                -0.27899986505508423,
+                1.6151961088180542
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.01948242122307421,
+          "onset_m": 0.0026456774212373917,
+          "width_m": 0.0027832030318677443,
+          "linear_contrast": 0.05105496092736719,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.28600001335144043,
+              -0.28249986469745636,
+              1.7398039102554321
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.29119616746902466,
+                -0.2859998643398285,
+                1.7398039102554321
+              ],
+              [
+                -0.2808038592338562,
+                -0.27899986505508423,
+                1.750196099281311
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0027832030318677443,
+          "linear_contrast": 0.050460350595414635,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.28600001335144043,
+              -0.28249983489513397,
+              1.874803900718689
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.29119616746902466,
+                -0.2859998345375061,
+                1.874803900718689
+              ],
+              [
+                -0.2808038592338562,
+                -0.27899983525276184,
+                1.8851960897445679
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.004174804547801616,
+          "linear_contrast": 0.059528310313168915,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.28600001335144043,
+              -0.28249983489513397,
+              2.0098040103912354
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.29119616746902466,
+                -0.2859998345375061,
+                2.0098040103912354
+              ],
+              [
+                -0.2808038592338562,
+                -0.27899983525276184,
+                2.0201961994171143
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.28600001335144043,
+              -0.28249983489513397,
+              2.144804000854492
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.29119616746902466,
+                -0.2859998345375061,
+                2.144804000854492
+              ],
+              [
+                -0.2808038592338562,
+                -0.27899983525276184,
+                2.155196189880371
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.28600001335144043,
+              -0.2824998050928116,
+              2.279803991317749
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.29119616746902466,
+                -0.2859998047351837,
+                2.279803991317749
+              ],
+              [
+                -0.2808038592338562,
+                -0.27899980545043945,
+                2.290196180343628
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0027832030318677443,
+          "onset_m": 0.003993348684157643,
+          "width_m": 0.0027832030318677443,
+          "linear_contrast": 0.03898493832796812,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.28599998354911804,
+              -0.28249989449977875,
+              1.3348039388656616
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2808038294315338,
+                -0.2859998941421509,
+                1.3348039388656616
+              ],
+              [
+                0.29119613766670227,
+                -0.2789998948574066,
+                1.3451961278915405
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0027832030318677443,
+          "onset_m": 0.008182796649630467,
+          "width_m": 0.008349609095603233,
+          "linear_contrast": 0.0404448482486109,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.28599998354911804,
+              -0.28249986469745636,
+              1.4698039293289185
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2808038294315338,
+                -0.2859998643398285,
+                1.4698039293289185
+              ],
+              [
+                0.29119613766670227,
+                -0.27899986505508423,
+                1.4801961183547974
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0055664060637354885,
+          "linear_contrast": 0.03562288285344839,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.28599998354911804,
+              -0.28249986469745636,
+              1.6048039197921753
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2808038294315338,
+                -0.2859998643398285,
+                1.6048039197921753
+              ],
+              [
+                0.29119613766670227,
+                -0.27899986505508423,
+                1.6151961088180542
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0055664060637354885,
+          "linear_contrast": 0.033134316886961473,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.28599998354911804,
+              -0.28249986469745636,
+              1.7398039102554321
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2808038294315338,
+                -0.2859998643398285,
+                1.7398039102554321
+              ],
+              [
+                0.29119613766670227,
+                -0.27899986505508423,
+                1.750196099281311
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.011132812127470977,
+          "onset_m": 0.0012687193229747264,
+          "width_m": 0.008349609095603233,
+          "linear_contrast": 0.03620090698649486,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.28599998354911804,
+              -0.28249983489513397,
+              1.874803900718689
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2808038294315338,
+                -0.2859998345375061,
+                1.874803900718689
+              ],
+              [
+                0.29119613766670227,
+                -0.27899983525276184,
+                1.8851960897445679
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0055664060637354885,
+          "onset_m": 0.005458286497737164,
+          "width_m": 0.0055664060637354885,
+          "linear_contrast": 0.03623801989431183,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.28599998354911804,
+              -0.28249983489513397,
+              2.0098040103912354
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2808038294315338,
+                -0.2859998345375061,
+                2.0098040103912354
+              ],
+              [
+                0.29119613766670227,
+                -0.27899983525276184,
+                2.0201961994171143
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0027832030318677443,
+          "onset_m": 0.006864531431342401,
+          "width_m": 0.0055664060637354885,
+          "linear_contrast": 0.05161410821154712,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.28599998354911804,
+              -0.28249983489513397,
+              2.144804000854492
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2808038294315338,
+                -0.2859998345375061,
+                2.144804000854492
+              ],
+              [
+                0.29119613766670227,
+                -0.27899983525276184,
+                2.155196189880371
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.006958007579669361,
+          "linear_contrast": 0.05444242166355251,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.28599998354911804,
+              -0.2824998050928116,
+              2.279803991317749
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2808038294315338,
+                -0.2859998047351837,
+                2.279803991317749
+              ],
+              [
+                0.29119613766670227,
+                -0.27899980545043945,
+                2.290196180343628
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "lane": "present",
+      "measurements": [
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Hinges",
+            "position_blender": [
+              -0.25999998301267624,
+              -0.3009999692440033,
+              0.3100000321865082
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.26999998092651367,
+                -0.3109999895095825,
+                0.3100000321865082
+              ],
+              [
+                -0.2499999850988388,
+                -0.2909999489784241,
+                0.39000001549720764
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Hinges",
+            "position_blender": [
+              -0.25999998301267624,
+              -0.30099980533123016,
+              1.209999918937683
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.26999998092651367,
+                -0.3109998106956482,
+                1.209999918937683
+              ],
+              [
+                -0.2499999850988388,
+                -0.29099979996681213,
+                1.290000081062317
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Hinges",
+            "position_blender": [
+              -0.25999998301267624,
+              -0.30099962651729584,
+              2.1100001335144043
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.26999998092651367,
+                -0.31099963188171387,
+                2.1100001335144043
+              ],
+              [
+                -0.2499999850988388,
+                -0.2909996211528778,
+                2.190000057220459
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0027832030318677443,
+          "linear_contrast": 0.04272924150377512,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.29499998688697815,
+              -0.2964998930692673,
+              1.3348039388656616
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.3001961410045624,
+                -0.2999998927116394,
+                1.3348039388656616
+              ],
+              [
+                -0.2898038327693939,
+                -0.29299989342689514,
+                1.3451961278915405
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.29499998688697815,
+              -0.2964998930692673,
+              1.3348039388656616
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2898038327693939,
+                -0.2999998927116394,
+                1.3348039388656616
+              ],
+              [
+                0.3001961410045624,
+                -0.29299989342689514,
+                1.3451961278915405
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.29499998688697815,
+              -0.2964998632669449,
+              1.4698039293289185
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.3001961410045624,
+                -0.299999862909317,
+                1.4698039293289185
+              ],
+              [
+                -0.2898038327693939,
+                -0.29299986362457275,
+                1.4801961183547974
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.29499998688697815,
+              -0.2964998632669449,
+              1.4698039293289185
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2898038327693939,
+                -0.299999862909317,
+                1.4698039293289185
+              ],
+              [
+                0.3001961410045624,
+                -0.29299986362457275,
+                1.4801961183547974
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.29499998688697815,
+              -0.2964998632669449,
+              1.6048039197921753
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.3001961410045624,
+                -0.299999862909317,
+                1.6048039197921753
+              ],
+              [
+                -0.2898038327693939,
+                -0.29299986362457275,
+                1.6151961088180542
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.29499998688697815,
+              -0.2964998632669449,
+              1.6048039197921753
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2898038327693939,
+                -0.299999862909317,
+                1.6048039197921753
+              ],
+              [
+                0.3001961410045624,
+                -0.29299986362457275,
+                1.6151961088180542
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.012524413643404848,
+          "linear_contrast": 0.03964603378653525,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.29499998688697815,
+              -0.2964998632669449,
+              1.7398039102554321
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.3001961410045624,
+                -0.299999862909317,
+                1.7398039102554321
+              ],
+              [
+                -0.2898038327693939,
+                -0.29299986362457275,
+                1.750196099281311
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.29499998688697815,
+              -0.2964998632669449,
+              1.7398039102554321
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2898038327693939,
+                -0.299999862909317,
+                1.7398039102554321
+              ],
+              [
+                0.3001961410045624,
+                -0.29299986362457275,
+                1.750196099281311
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.012524413643404848,
+          "linear_contrast": 0.03964603378653525,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.29499998688697815,
+              -0.2964998334646225,
+              1.874803900718689
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.3001961410045624,
+                -0.29999983310699463,
+                1.874803900718689
+              ],
+              [
+                -0.2898038327693939,
+                -0.29299983382225037,
+                1.8851960897445679
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.29499998688697815,
+              -0.2964998334646225,
+              1.874803900718689
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2898038327693939,
+                -0.29999983310699463,
+                1.874803900718689
+              ],
+              [
+                0.3001961410045624,
+                -0.29299983382225037,
+                1.8851960897445679
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.011132812127470977,
+          "linear_contrast": 0.06538160392045972,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.29499998688697815,
+              -0.2964998334646225,
+              2.0098040103912354
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.3001961410045624,
+                -0.29999983310699463,
+                2.0098040103912354
+              ],
+              [
+                -0.2898038327693939,
+                -0.29299983382225037,
+                2.0201961994171143
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.29499998688697815,
+              -0.2964998334646225,
+              2.0098040103912354
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2898038327693939,
+                -0.29999983310699463,
+                2.0098040103912354
+              ],
+              [
+                0.3001961410045624,
+                -0.29299983382225037,
+                2.0201961994171143
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.29499998688697815,
+              -0.2964998334646225,
+              2.144804000854492
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.3001961410045624,
+                -0.29999983310699463,
+                2.144804000854492
+              ],
+              [
+                -0.2898038327693939,
+                -0.29299983382225037,
+                2.155196189880371
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.29499998688697815,
+              -0.2964998334646225,
+              2.144804000854492
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2898038327693939,
+                -0.29999983310699463,
+                2.144804000854492
+              ],
+              [
+                0.3001961410045624,
+                -0.29299983382225037,
+                2.155196189880371
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.29499998688697815,
+              -0.2964998036623001,
+              2.279803991317749
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.3001961410045624,
+                -0.29999980330467224,
+                2.279803991317749
+              ],
+              [
+                -0.2898038327693939,
+                -0.292999804019928,
+                2.290196180343628
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.29499998688697815,
+              -0.2964998036623001,
+              2.279803991317749
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2898038327693939,
+                -0.29999980330467224,
+                2.279803991317749
+              ],
+              [
+                0.3001961410045624,
+                -0.292999804019928,
+                2.290196180343628
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.20250000059604645,
+              -0.2964998036623001,
+              2.3848040103912354
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.20769615471363068,
+                -0.29999980330467224,
+                2.3848040103912354
+              ],
+              [
+                -0.19730384647846222,
+                -0.292999804019928,
+                2.3951961994171143
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.04453124850988391,
+          "onset_m": 0.0019426741637239915,
+          "width_m": 0.008349609095603233,
+          "linear_contrast": 0.07353724018844465,
+          "passed": true,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.06749999523162842,
+              -0.2964998036623001,
+              2.3848040103912354
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.07269614934921265,
+                -0.29999980330467224,
+                2.3848040103912354
+              ],
+              [
+                -0.06230384111404419,
+                -0.292999804019928,
+                2.3951961994171143
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.06749999523162842,
+              -0.2964998036623001,
+              2.3848040103912354
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.06230384111404419,
+                -0.29999980330467224,
+                2.3848040103912354
+              ],
+              [
+                0.07269614934921265,
+                -0.292999804019928,
+                2.3951961994171143
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.008349609095603233,
+          "linear_contrast": 0.0593259027416507,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.20250001549720764,
+              -0.2964998036623001,
+              2.3848040103912354
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.1973038613796234,
+                -0.29999980330467224,
+                2.3848040103912354
+              ],
+              [
+                0.20769616961479187,
+                -0.292999804019928,
+                2.3951961994171143
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0027832030318677443,
+          "onset_m": 0.0012101456522898987,
+          "width_m": 0.008349609095603233,
+          "linear_contrast": 0.03544915028885007,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.28600001335144043,
+              -0.28249989449977875,
+              1.3348039388656616
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.29119616746902466,
+                -0.2859998941421509,
+                1.3348039388656616
+              ],
+              [
+                -0.2808038592338562,
+                -0.2789998948574066,
+                1.3451961278915405
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.008349609095603233,
+          "linear_contrast": 0.03446178091081479,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.28600001335144043,
+              -0.28249986469745636,
+              1.4698039293289185
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.29119616746902466,
+                -0.2859998643398285,
+                1.4698039293289185
+              ],
+              [
+                -0.2808038592338562,
+                -0.27899986505508423,
+                1.4801961183547974
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.28600001335144043,
+              -0.28249986469745636,
+              1.6048039197921753
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.29119616746902466,
+                -0.2859998643398285,
+                1.6048039197921753
+              ],
+              [
+                -0.2808038592338562,
+                -0.27899986505508423,
+                1.6151961088180542
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.008349609095603233,
+          "linear_contrast": 0.035396387788504347,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.28600001335144043,
+              -0.28249986469745636,
+              1.7398039102554321
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.29119616746902466,
+                -0.2859998643398285,
+                1.7398039102554321
+              ],
+              [
+                -0.2808038592338562,
+                -0.27899986505508423,
+                1.750196099281311
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0027832030318677443,
+          "onset_m": 0.0012687193229747264,
+          "width_m": 0.011132812127470977,
+          "linear_contrast": 0.035396387788504347,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.28600001335144043,
+              -0.28249983489513397,
+              1.874803900718689
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.29119616746902466,
+                -0.2859998345375061,
+                1.874803900718689
+              ],
+              [
+                -0.2808038592338562,
+                -0.27899983525276184,
+                1.8851960897445679
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0027832030318677443,
+          "linear_contrast": 0.04393467332273723,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.28600001335144043,
+              -0.28249983489513397,
+              2.0098040103912354
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.29119616746902466,
+                -0.2859998345375061,
+                2.0098040103912354
+              ],
+              [
+                -0.2808038592338562,
+                -0.27899983525276184,
+                2.0201961994171143
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.28600001335144043,
+              -0.28249983489513397,
+              2.144804000854492
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.29119616746902466,
+                -0.2859998345375061,
+                2.144804000854492
+              ],
+              [
+                -0.2808038592338562,
+                -0.27899983525276184,
+                2.155196189880371
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.011132812127470977,
+          "linear_contrast": 0.035489421416074,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              -0.28600001335144043,
+              -0.2824998050928116,
+              2.279803991317749
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                -0.29119616746902466,
+                -0.2859998047351837,
+                2.279803991317749
+              ],
+              [
+                -0.2808038592338562,
+                -0.27899980545043945,
+                2.290196180343628
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.28599998354911804,
+              -0.28249989449977875,
+              1.3348039388656616
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2808038294315338,
+                -0.2859998941421509,
+                1.3348039388656616
+              ],
+              [
+                0.29119613766670227,
+                -0.2789998948574066,
+                1.3451961278915405
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.012524413643404848,
+          "linear_contrast": 0.03480157643303275,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.28599998354911804,
+              -0.28249986469745636,
+              1.4698039293289185
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2808038294315338,
+                -0.2859998643398285,
+                1.4698039293289185
+              ],
+              [
+                0.29119613766670227,
+                -0.27899986505508423,
+                1.4801961183547974
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.011132812127470977,
+          "linear_contrast": 0.03137556553333998,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.28599998354911804,
+              -0.28249986469745636,
+              1.6048039197921753
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2808038294315338,
+                -0.2859998643398285,
+                1.6048039197921753
+              ],
+              [
+                0.29119613766670227,
+                -0.27899986505508423,
+                1.6151961088180542
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.28599998354911804,
+              -0.28249986469745636,
+              1.7398039102554321
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2808038294315338,
+                -0.2859998643398285,
+                1.7398039102554321
+              ],
+              [
+                0.29119613766670227,
+                -0.27899986505508423,
+                1.750196099281311
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.0,
+          "linear_contrast": 0.0,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.28599998354911804,
+              -0.28249983489513397,
+              1.874803900718689
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2808038294315338,
+                -0.2859998345375061,
+                1.874803900718689
+              ],
+              [
+                0.29119613766670227,
+                -0.27899983525276184,
+                1.8851960897445679
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0055664060637354885,
+          "onset_m": 0.0026750834658694194,
+          "width_m": 0.008349609095603233,
+          "linear_contrast": 0.04135696819151441,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.28599998354911804,
+              -0.28249983489513397,
+              2.0098040103912354
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2808038294315338,
+                -0.2859998345375061,
+                2.0098040103912354
+              ],
+              [
+                0.29119613766670227,
+                -0.27899983525276184,
+                2.0201961994171143
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0027832030318677443,
+          "onset_m": 0.009647734463210145,
+          "width_m": 0.011132812127470977,
+          "linear_contrast": 0.04166092814579604,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.28599998354911804,
+              -0.28249983489513397,
+              2.144804000854492
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2808038294315338,
+                -0.2859998345375061,
+                2.144804000854492
+              ],
+              [
+                0.29119613766670227,
+                -0.27899983525276184,
+                2.155196189880371
+              ]
+            ]
+          }
+        },
+        {
+          "length_m": 0.0,
+          "onset_m": null,
+          "width_m": 0.011132812127470977,
+          "linear_contrast": 0.041641223713979145,
+          "passed": false,
+          "source": {
+            "part": "Rivets",
+            "position_blender": [
+              0.28599998354911804,
+              -0.2824998050928116,
+              2.279803991317749
+            ],
+            "width_m": 0.0075,
+            "length_m": 0.15,
+            "bounds_blender": [
+              [
+                0.2808038294315338,
+                -0.2859998047351837,
+                2.279803991317749
+              ],
+              [
+                0.29119613766670227,
+                -0.27899980545043945,
+                2.290196180343628
+              ]
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "replaced_gates": {
+    "swatch colour and correlation": "Same thresholds, measured on every complete face image against its own saved crop",
+    "edge/broad >=2.5": "Replaced by the requested >=1.8 on every painted face and all lighting lanes"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "face": "top",
+  "seed": 95533,
+  "model": "black-forest-labs/FLUX.2-klein-4B",
+  "quantize": 4,
+  "steps": 4,
+  "concept": "docs/art/quarters/concept-now.png",
+  "crop": [
+    464,
+    266,
+    561,
+    306
+  ],
+  "input": "top-initial-input.png",
+  "source": "top-initial-source.png",
+  "size": [
+    256,
+    272
+  ],
+  "prompt": "Remove every hinge, handle, latch, rivet, bolt, seam, frame, object, perspective and cast shadow from this image. Replace all hardware and edges with a continuous aged grey-green painted steel surface matching the surrounding surface. Preserve the paint and rust colour, ragged peeling borders, irregular layout and varied sizes from the reference. Keep most broad central areas as surviving grey-green paint, with about fifteen percent central reddish-brown rust. Concentrate broken irregular corrosion near the image edges and corners, with varied gaps of surviving paint, never a straight outline. Thin rusty runs travel downward from a few of the existing corrosion patches, with varied lengths and soft translucent ends. Fill the entire image edge to edge with only this flat material, lit flat and evenly, shadowless, without seams, borders or hardware. Do not draw a rectangular panel or a frame. No regular repeated spots, stars, crosses, circles or vertical bars. This is a horizontal upward-facing top. Preserve old paint and rust under a fine soft settled warm grey dust veil. Dust is even, powdery, low contrast, with no cloud patches, swirls, drifts or mottled blobs. No vertical runoff. \n",
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/top-input.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/top-prompt.txt",
+    "--seed",
+    "95533",
+    "--width",
+    "256",
+    "--height",
+    "272",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/top-95533.png"
+  ],
+  "scores": {
+    "delta_e": 22.331302313653715,
+    "planar_light_gradient": 0.004484755575914562,
+    "secondary_autocorrelation": 0.28824144693408227,
+    "edge_rust": 0.12426929653636616,
+    "broad_rust": 0.007845341126222323,
+    "edge_broad_ratio": 15.83988440235028,
+    "paint_mean_delta_e": 24.05075109924263,
+    "paint_std_delta_e": 10.419204565266952,
+    "rust_mean_delta_e": 17.079035067204877,
+    "rust_std_delta_e": 3.4970501457590606
+  },
+  "visual_rejection": "Final source-matched calibration amplified cloudy variation; source crop included shadows and seams"
+}

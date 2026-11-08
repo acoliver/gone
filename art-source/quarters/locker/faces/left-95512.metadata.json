@@ -1,0 +1,54 @@
+{
+  "face": "left",
+  "seed": 95512,
+  "model": "black-forest-labs/FLUX.2-klein-4B",
+  "quantize": 4,
+  "steps": 4,
+  "concept": "docs/art/quarters/concept-now.png",
+  "crop": [
+    445,
+    338,
+    535,
+    411
+  ],
+  "input": "left-input.png",
+  "source": "left-source.png",
+  "size": [
+    192,
+    768
+  ],
+  "prompt": "Remove every hinge, handle, latch, rivet, bolt, seam, frame, object, perspective and cast shadow from this image. Replace all hardware and edges with a continuous aged grey-green painted steel surface matching the surrounding surface. Preserve the paint and rust colour, ragged peeling borders, irregular layout and varied sizes from the reference. Keep most broad central areas as surviving grey-green paint, with about fifteen percent central reddish-brown rust. Concentrate broken irregular corrosion near the image edges and corners, with varied gaps of surviving paint, never a straight outline. Thin rusty runs travel downward from a few of the existing corrosion patches, with varied lengths and soft translucent ends. Fill the entire image edge to edge with only this flat material, lit flat and evenly, shadowless, without seams, borders or hardware. Do not draw a rectangular panel or a frame. No regular repeated spots, stars, crosses, circles or vertical bars. \n",
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/left-input.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/left-prompt.txt",
+    "--seed",
+    "95512",
+    "--width",
+    "192",
+    "--height",
+    "768",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/left-95512.png"
+  ],
+  "scores": {
+    "delta_e": 16.203707108363393,
+    "planar_light_gradient": 0.10753001289939844,
+    "secondary_autocorrelation": 0.09010834382037322,
+    "edge_rust": 0.24433575082925732,
+    "broad_rust": 0.01723789786917477,
+    "edge_broad_ratio": 14.174335680813174,
+    "paint_mean_delta_e": 15.015077563624498,
+    "paint_std_delta_e": 10.842598890929287,
+    "rust_mean_delta_e": 28.255783170453494,
+    "rust_std_delta_e": 4.426699174283719
+  }
+}

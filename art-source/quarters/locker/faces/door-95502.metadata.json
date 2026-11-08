@@ -1,0 +1,55 @@
+{
+  "face": "door",
+  "seed": 95502,
+  "model": "black-forest-labs/FLUX.2-klein-4B",
+  "quantize": 4,
+  "steps": 4,
+  "concept": "docs/art/quarters/concept-now.png",
+  "crop": [
+    448,
+    310,
+    534,
+    460
+  ],
+  "input": "door-initial-input.png",
+  "source": "door-initial-source.png",
+  "size": [
+    320,
+    1344
+  ],
+  "prompt": "Remove every hinge, handle, latch, rivet, bolt, seam, frame, object, perspective and cast shadow from this image. Replace all hardware and edges with a continuous aged grey-green painted steel surface matching the surrounding surface. Preserve the paint and rust colour, ragged peeling borders, irregular layout and varied sizes from the reference. Keep most broad central areas as surviving grey-green paint, with about fifteen percent central reddish-brown rust. Concentrate broken irregular corrosion near the image edges and corners, with varied gaps of surviving paint, never a straight outline. Thin rusty runs travel downward from a few of the existing corrosion patches, with varied lengths and soft translucent ends. Fill the entire image edge to edge with only this flat material, lit flat and evenly, shadowless, without seams, borders or hardware. Do not draw a rectangular panel or a frame. No regular repeated spots, stars, crosses, circles or vertical bars. This image represents the full upright locker door. Include delicate downward rusty runs below the vent positions at 15, 13 and 10 percent from the top, across the middle 60 percent of the width, and below the handle position at 88 percent from the left and 65 percent from the top. Do not draw vents or a handle. \n",
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/door-input.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/door-prompt.txt",
+    "--seed",
+    "95502",
+    "--width",
+    "320",
+    "--height",
+    "1344",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/door-95502.png"
+  ],
+  "scores": {
+    "delta_e": 19.53311067678261,
+    "planar_light_gradient": 0.08266245813823343,
+    "secondary_autocorrelation": 0.4181675219851603,
+    "edge_rust": 0.10544938016528925,
+    "broad_rust": 0.025450581395348837,
+    "edge_broad_ratio": 4.1432994605207885,
+    "paint_mean_delta_e": 19.557861781421455,
+    "paint_std_delta_e": 13.082702048215825,
+    "rust_mean_delta_e": 30.264585319677536,
+    "rust_std_delta_e": 1.499530591380517
+  },
+  "visual_rejection": "Long straight image-owned rust bars, pixelated-looking losses and insufficient edge-concentrated coverage"
+}

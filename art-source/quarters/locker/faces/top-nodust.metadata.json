@@ -1,0 +1,9 @@
+{
+  "seed": 95830,
+  "model": "FLUX.2-klein-4B",
+  "steps": 4,
+  "quantize": 4,
+  "input": "top-95530.png",
+  "prompt": "Remove only the fine pale settled dust from this flat aged painted steel material. Reveal darker grey-green surviving paint and darker red-brown rust beneath the dust. Preserve the exact positions, shapes and sizes of every paint loss, rust mark and surface feature. Do not add damage, objects, hardware, borders, lighting gradients, highlights or shadows. The entire image is one evenly lit, shadowless, edge-to-edge flat material. This is the same surface without its light powder veil, not a different design.",
+  "purpose": "matched generated dust-disabled image control"
+}

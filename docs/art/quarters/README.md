@@ -57,121 +57,227 @@ The third-pass neutral renders are in the gitignored `tmp/fit/locker/pass3/` dir
 
 ## Locker materials
 
-The locker shares one rigid mesh between `as_built` and `aged`. The aged finish represents 1000 years in dry, sealed, sterile, oxygenated air. Pass four keeps the generated FLUX.2-klein palette and adds the hatch's close-range material layers. The as-built atlases, design paint, cached material behaviour, geometry and UVs are unchanged.
+The aged locker now follows the hatch's complete-face image method in `tools/prepare_hatch_paint.py`. Each visible face gets a separate FLUX.2-klein edit of a saved concept crop at that face's aspect ratio. The generated image supplies its complete paint/rust layout, ragged borders, trails and variation. Earlier procedural masks kept imposing recognisable islands and straight edge bands on generated swatch colours. That compositing path is no longer used by the aged material. The ship has been adrift about 1000 years.
 
-### Close-range finish
+The three as-built atlases remain byte-identical to `2fecbce`. Both states share the same replacement hinge mesh; state changes still preserve meshes, pivots, part names and footprint. The unchanged clean material keeps its original UV1 and shader path. The separately exported hinge mesh transfers UV1 from the fitted source, without rebuilding the other locker geometry.
 
-`aged_paint.png` and `aged_oxide.png` contain separate class-conditioned colours from the calibrated panel and heavy-loss swatches. The baked albedo alpha locates paint loss, without baking that boundary into either colour layer. Interpolating Catmull-Rom reconstruction preserves small losses while removing bilinear cell corners. `quarters_steel.gdshader` blends the layers through a smoothstep whose width follows screen-space derivatives. Bounded oxide-scan variation breaks the interpolated field's grid alignment. The atlas determines material placement and low-frequency colour; the shared hatch scans add paint grain, steel grain, oxide structure, pitting normals and ORM variation at a 0.20 m pitch. Scan light levels are measured in linear light before applying luminance grain, so their green pigments do not replace the selected locker palette. Reduced baked-normal strength keeps coarse atlas relief from obscuring the detail normals.
+### Faces, sources and selection
 
-The generated seeds remain panel 95031, heavy loss 95132 and settled dust 95332. Inputs, calibration and provenance are in `art-source/quarters/locker/`. No new image-model generation or installation was needed. Dominant-axis colour projection remains 300 source pixels per metre. Physical wear noise is evaluated in a rotated metre-space frame to avoid long axis-aligned boundaries. Source pigment varies ordinary edge reach from 5 to 25 mm; exposure and multiscale breakup leave intact paint gaps. Broad-face blisters remain separated, with a height-dependent physical shear corrugating their contours. The shear preserves area and varies by at most 3 mm. Dense side coverage uses coarse-to-fine placement with 6 to 24 mm nominal radii. Individually seeded angular profiles add lobes and bites, with their radial offset solved to preserve each island's area. Bounded expansion leaves paint between neighbours, and the contour, noise and shear bounds keep individual islands below 60 mm. Exact mesh-part IDs assign hardware, rather than fixture bounding boxes.
+`art-source/quarters/locker/faces/` retains source crops, resized inputs, prompts, raw candidates, seeds, calibration metadata and selected final images. Every face has at least four generated seeds. Generation uses the installed FLUX.2-klein-4B, four steps, 4-bit weights, sequential jobs under `nohup`, and no installs. Sources are the locker/wardrobe panels in `concept-now.png` and door/heavy-corrosion regions in `hatch-concept-rusted.png`. Exact XYXY crops are in `face-layout.json`; each generation metadata file records its own input and full prompt. Thin vent and handle placement guides enter the door input only, not the atlas.
 
-Hardware receives oxide patches, source-derived dark and orange variation, worn grey steel, baked pits and the finer hatch oxide normals. Dust colour is smoothed over 80 mm before projection. Its density varies at low frequency, increases against lips and in cavities, and decreases on bevels. There is no per-texel speckle overlay. Matched dust-disabled captures measure its visible contribution under albedo, neutral and present lighting.
+The atlas is 2048 by 4096. UV rectangles below use image origin at the upper left and exclusive right/bottom. Physical dimensions are width by height; top uses width by depth. Image pixels map directly to each face, without retiling its paint/rust pattern.
 
-Runoff retains float outlet positions. Close rivet pairs use narrower trails with intact paint between them; vent backing and handle pockets do not duplicate outlets. Width tapers continuously to zero, opacity fades, and the path wanders by millimetres. Lengths vary by about threefold, with longer upper trails and faint stains at low fasteners. Partial-opacity pigment interpolation retains rust colour instead of washing it into neutral grey. Ragged paint shoulders preserve the visible start of a trail without creating long rectangular clear strips.
+| Face | Metres | UV rectangle | px/m, X / Y | Selected seed |
+| --- | --- | --- | --- | --- |
+| door | 0.514000, 2.220000 | 0.003906, 0.001953, 0.253906, 0.548828 | 996.108949, 1009.009009 | 96001 |
+| left | 0.560000, 2.295000 | 0.339844, 0.001953, 0.433594, 0.189453 | 342.857143, 334.640523 | 95511 |
+| right | 0.560000, 2.295000 | 0.441406, 0.001953, 0.535156, 0.189453 | 342.857143, 334.640523 | 95523 |
+| top | 0.556000, 0.580000 | 0.542969, 0.001953, 0.792969, 0.134766 | 920.863309, 937.931034 | 96130 |
+| stile-left | 0.040000, 2.180000 | 0.261719, 0.001953, 0.292969, 0.853516 | 1600.000000, 1600.000000 | 95742 |
+| stile-right | 0.040000, 2.180000 | 0.300781, 0.001953, 0.332031, 0.853516 | 1600.000000, 1600.000000 | 95652 |
+| header | 0.520000, 0.055000 | 0.339844, 0.193359, 0.808594, 0.220703 | 1846.153846, 2036.363636 | 95562 |
+| kick | 0.520000, 0.105000 | 0.339844, 0.224609, 0.652344, 0.255859 | 1230.769231, 1219.047619 | 95572 |
+| hardware | 0.200000, 0.200000 | 0.339844, 0.259766, 0.839844, 0.509766 | 5120.000000, 5120.000000 | 95582 |
 
-### Measured gates
+The hardware cell is a generated heavy-corrosion swatch at a 0.20 m square physical pitch. Knuckles unwrap by circumference and axial distance. Other hardware repeats only this fine corrosion swatch at equal physical pitch on both axes. It is not stretched across a thin lever or a whole rivet assembly. The rear and underside reuse the side image; these hidden surfaces are not additional generated front faces.
 
-**60 of 60 gates pass.** Fractions use 0 to 1 and distances use metres unless specified. Every threshold and measured result is listed below.
+Selection measures source colour, planar lighting gradient, physical secondary autocorrelation and edge/broad rust ratio. Spatially uniform colour transforms remove the lighting plane and match source pigment statistics without a spatial wear mask. `candidate-scores.json` and `finish-scores.json` retain failed candidates as failures. `selection.json` records the selected calibration and final scores. Image-comparer selected top seed 96130 for fine soft dust and rejected candidates with cloudy patches, branching streaks or heavy dark margins.
 
-The visible-streak design gate changed at Andrew's request in pass four. It now requires a connected, narrow rust-coloured run at least 40 mm long, beginning within 10 mm below a fastener or opening and contrasting with paint on both sides by at least 0.03 linear. At least 50% of door and upper-side fasteners must qualify in each lighting lane. Lower fasteners remain in the full distribution but may have only stain rings. Translucent oxide is classified separately from opaque substrate, with hue 5 to 50 degrees and saturation at least 0.18. The contrast and connected-length requirements prevent weak colour and scattered rust from passing.
+| Face | Seed | Whole-image ΔE00 | Paint mean / std ΔE | Rust mean / std ΔE | Gradient | Secondary peak | Edge/broad rust |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| door | 96001 | 3.3066 | 4.6476 / 1.1093 | 0.2383 / 0.3293 | 0.001791 | 0.3247 | 2.7828 |
+| left | 95511 | 4.7546 | 2.9443 / 3.3151 | 2.1724 / 1.4102 | 0.015130 | 0.4251 | 11.9274 |
+| right | 95523 | 4.1122 | 4.0846 / 3.7576 | 0.4603 / 1.5036 | 0.027217 | 0.3265 | 30.7623 |
+| top | 96130 | 2.7834 | 1.1178 / 3.3575 | 1.0361 / 0.6214 | 0.006491 | 0.2998 | 4.8430 |
+| stile-left | 95742 | 7.8011 | 4.1494 / 6.7610 | 3.4158 / 0.4530 | 0.018272 | 0.2564 | 2.0936 |
+| stile-right | 95652 | 4.7265 | 7.7524 / 7.9608 | 5.6609 / 2.3618 | 0.004379 | 0.2141 | 1.9925 |
+| header | 95562 | 6.7059 | 7.9242 / 6.3702 | 4.7464 / 2.8335 | 0.008121 | 0.2274 | 1.9248 |
+| kick | 95572 | 4.7967 | 4.4863 / 3.0667 | 2.3500 / 1.4555 | 0.016849 | 0.2165 | 2.0487 |
+| hardware | 95582 | 1.1580 | 1.7400 / 0.9463 | 0.7178 / 0.3316 | 0.000001 | 0.0731 | 0.9704 |
 
-This replaces both the old rust-row occupancy predicate (`fasteners_with_streaks`) and the fixed-strip visible predicates. The former name now reports the same albedo connected-run result; its old measurement remains under `legacy_rust_row_sampling` in `gates.json`. The reason is that rust occupying a fixed strip does not establish an attached visible trail, and a fixed 110 mm strip penalises the requested short tapered runs. All other prior gates and thresholds are retained. `gates.json` records the change, full per-fastener distributions, histogram and edge bins.
+### Relief, hardware and dust
 
-The added close-up gate measures the gradient-orientation histogram on the aged half of `streaks-closeup.png`, at the unchanged 0.4 m camera. Neither the 0-degree nor 90-degree bin may exceed twice the median of 18 ten-degree bins. One capture pixel of smoothing removes image-raster quantisation while retaining the roughly 17-pixel atlas-texel period at this framing. The isolated analytic-runoff control excludes genuinely vertical trails, which are not sampled from the atlas; only painted receivers enter this test.
+The hatch's unchanged `paint_fields()` chroma rule derives raised paint from the selected image. It supplies the 1.5 mm paint relief, normal and roughness. It never composites paint and rust colours. The shader differentiates that same image-derived height in physical space. A 12 mm scan contributes at most 2.5% high-frequency paint grain; it cannot place wear or shift the generated boundaries. The previous procedural island, curvature-loss and full-strength analytic-streak composition is no longer used. Only the permitted low-opacity, image-coloured fixture stains remain as additions. Historical generator modules remain only for their existing regression fixtures and old reproduction tools; the clean bake still uses its original microscopic grain.
 
-| Gate | Value | Requirement | Result |
+The original knuckles had 16 flat-shaded sides, producing 22.5-degree steps. `hinge_finish.py` exports 48-sided cylinders with smooth side normals and 0.7 mm end-rim bevels with seven segments. Exported triangle adjacency includes the end rims, with no cap exclusion; coincident split normals are also measured outside Blender. An unused automatically generated bevel UV layer was removed after it caused tiny nondeterministic export differences; only the transferred UV1 is exported. The first generated hardware mapping also stretched a square swatch across the thin handle. Equal 0.20 m physical pitch removes that anisotropy. Hardware pitting comes from its own generated image's linear luminance, with no independent pattern field.
+
+Optional fixture stains use at most 30% linear-light opacity and pigment sampled from rust in the same receiving image. They leave existing image corrosion untouched. Positions come from actual hinge/rivet outlets, with tapered ends. They do not replace image-owned wear. The generated top already includes its fine soft dust; no cloudy density mask is composited over it. Seed 96230 edits that selected final top to illustrate dust removal. Because an image edit can change substrate detail, this is not treated as a matched numerical effect-disabled control.
+
+### Gates and changes
+
+**126 of 126 current gates pass.** Complete values and thresholds are in `art-source/quarters/locker/faces/gates.json` and reproduced below. Fractions use 0 to 1; distances use metres unless specified. Hardware is exempt from the painted-edge rust ratio because its swatch is deliberately corroded throughout. Every painted face requires the requested ratio of at least 1.8.
+
+The following design-specific gates are retired, rather than marked as passes. As-built and colour-statistic checks remain.
+
+| Retired gate | Reason |
+| --- | --- |
+| `dust_grain_std_ratio` | Compared a procedural dust-density field with its smoothed control. Dust is now in the complete generated top image. |
+| `broad_face_island_max_m` | Measured placed blister instances; there are no placed islands in the image-owned layout. |
+| `unattached_runoff_max` | Measured the removed analytic runoff control texture; new supplementary stains are baked at bounded opacity. |
+| `streak_width_median_m` | Measured half-opacity contours of the removed full-opacity analytic generator. |
+| `streak_source_length_range_m` | Preset source lengths no longer decide the corrosion layout. |
+| `streak_reduced_opacity_max` | Replaced the old less-than-one generator opacity by the explicit <=0.30 limit. |
+| `panel_edge_rust_cv_min` | Measured variability of the old procedural edge band, replaced by independently measured image edge/broad rust ratios. |
+| `fasteners_with_streaks, visible_fastener_streaks_{albedo,neutral,present}` | The old >=50% population of strong 40 mm generated trails required a stamped fixture distribution and >=0.03 contrast. Image-owned trails and optional <=30% stains replace that generator contract; connected-run measurements remain diagnostics, not passes. |
+| `dust_linear_difference_{albedo,neutral,present}` | The old control disabled a separate dust mask while retaining identical substrate. Dust is now part of the top image. A generated dust-removal edit is illustrative and is not a numerically matched effect-disabled control; differences remain diagnostics, not visibility passes. |
+
+The old swatch colour and correlation gates become per-face checks at the same thresholds. The procedural-path edge/broad ratio of 2.5 becomes the requested 1.8. Rendered boundary-orientation, straight-boundary and secondary-correlation checks remain independent of source-image statistics. Legacy connected-trail measurements and generated dust-control differences remain in `gates.json` as diagnostics, without being counted as successful gates.
+
+| Gate | Value | Threshold | Result |
 | --- | --- | --- | --- |
-| `aged_painted_rust` | 0.254395 | 0.250000, 0.600000 | PASS |
+| `face_door_delta_e` | 3.306598 | <=8 D65 Lab | PASS |
+| `face_door_planar_light_gradient` | 0.001791 | <0.06 linear luminance across full image | PASS |
+| `face_door_secondary_autocorrelation` | 0.324652 | <=0.5 at secondary peaks beyond 50 mm | PASS |
+| `face_door_edge_broad_ratio` | 2.782825 | >=1.8, outer 10% against broad interior | PASS |
+| `face_door_paint_mean_delta_e` | 4.647622 | <=8 D65 Lab | PASS |
+| `face_door_paint_std_delta_e` | 1.109332 | <=8 D65 Lab | PASS |
+| `face_door_rust_mean_delta_e` | 0.238326 | <=8 D65 Lab | PASS |
+| `face_door_rust_std_delta_e` | 0.329309 | <=8 D65 Lab | PASS |
+| `face_door_pixels_per_metre` | 996.108949 | >=600 | PASS |
+| `face_left_delta_e` | 4.754643 | <=8 D65 Lab | PASS |
+| `face_left_planar_light_gradient` | 0.015130 | <0.06 linear luminance across full image | PASS |
+| `face_left_secondary_autocorrelation` | 0.425134 | <=0.5 at secondary peaks beyond 50 mm | PASS |
+| `face_left_edge_broad_ratio` | 11.927444 | >=1.8, outer 10% against broad interior | PASS |
+| `face_left_paint_mean_delta_e` | 2.944305 | <=8 D65 Lab | PASS |
+| `face_left_paint_std_delta_e` | 3.315121 | <=8 D65 Lab | PASS |
+| `face_left_rust_mean_delta_e` | 2.172395 | <=8 D65 Lab | PASS |
+| `face_left_rust_std_delta_e` | 1.410204 | <=8 D65 Lab | PASS |
+| `face_left_pixels_per_metre` | 334.640523 | >=300 | PASS |
+| `face_right_delta_e` | 4.112159 | <=8 D65 Lab | PASS |
+| `face_right_planar_light_gradient` | 0.027217 | <0.06 linear luminance across full image | PASS |
+| `face_right_secondary_autocorrelation` | 0.326461 | <=0.5 at secondary peaks beyond 50 mm | PASS |
+| `face_right_edge_broad_ratio` | 30.762305 | >=1.8, outer 10% against broad interior | PASS |
+| `face_right_paint_mean_delta_e` | 4.084645 | <=8 D65 Lab | PASS |
+| `face_right_paint_std_delta_e` | 3.757606 | <=8 D65 Lab | PASS |
+| `face_right_rust_mean_delta_e` | 0.460318 | <=8 D65 Lab | PASS |
+| `face_right_rust_std_delta_e` | 1.503564 | <=8 D65 Lab | PASS |
+| `face_right_pixels_per_metre` | 334.640523 | >=300 | PASS |
+| `face_top_delta_e` | 2.783428 | <=8 D65 Lab | PASS |
+| `face_top_planar_light_gradient` | 0.006491 | <0.06 linear luminance across full image | PASS |
+| `face_top_secondary_autocorrelation` | 0.299796 | <=0.5 at secondary peaks beyond 50 mm | PASS |
+| `face_top_edge_broad_ratio` | 4.842975 | >=1.8, outer 10% against broad interior | PASS |
+| `face_top_paint_mean_delta_e` | 1.117767 | <=8 D65 Lab | PASS |
+| `face_top_paint_std_delta_e` | 3.357512 | <=8 D65 Lab | PASS |
+| `face_top_rust_mean_delta_e` | 1.036111 | <=8 D65 Lab | PASS |
+| `face_top_rust_std_delta_e` | 0.621441 | <=8 D65 Lab | PASS |
+| `face_top_pixels_per_metre` | 920.863309 | >=300 | PASS |
+| `face_stile-left_delta_e` | 7.801056 | <=8 D65 Lab | PASS |
+| `face_stile-left_planar_light_gradient` | 0.018272 | <0.06 linear luminance across full image | PASS |
+| `face_stile-left_secondary_autocorrelation` | 0.256412 | <=0.5 at secondary peaks beyond 50 mm | PASS |
+| `face_stile-left_edge_broad_ratio` | 2.093593 | >=1.8, outer 10% against broad interior | PASS |
+| `face_stile-left_paint_mean_delta_e` | 4.149431 | <=8 D65 Lab | PASS |
+| `face_stile-left_paint_std_delta_e` | 6.760951 | <=8 D65 Lab | PASS |
+| `face_stile-left_rust_mean_delta_e` | 3.415797 | <=8 D65 Lab | PASS |
+| `face_stile-left_rust_std_delta_e` | 0.452955 | <=8 D65 Lab | PASS |
+| `face_stile-left_pixels_per_metre` | 1600.000000 | >=300 | PASS |
+| `face_stile-right_delta_e` | 4.726517 | <=8 D65 Lab | PASS |
+| `face_stile-right_planar_light_gradient` | 0.004379 | <0.06 linear luminance across full image | PASS |
+| `face_stile-right_secondary_autocorrelation` | 0.214115 | <=0.5 at secondary peaks beyond 50 mm | PASS |
+| `face_stile-right_edge_broad_ratio` | 1.992473 | >=1.8, outer 10% against broad interior | PASS |
+| `face_stile-right_paint_mean_delta_e` | 7.752382 | <=8 D65 Lab | PASS |
+| `face_stile-right_paint_std_delta_e` | 7.960829 | <=8 D65 Lab | PASS |
+| `face_stile-right_rust_mean_delta_e` | 5.660857 | <=8 D65 Lab | PASS |
+| `face_stile-right_rust_std_delta_e` | 2.361817 | <=8 D65 Lab | PASS |
+| `face_stile-right_pixels_per_metre` | 1600.000000 | >=300 | PASS |
+| `face_header_delta_e` | 6.705902 | <=8 D65 Lab | PASS |
+| `face_header_planar_light_gradient` | 0.008121 | <0.06 linear luminance across full image | PASS |
+| `face_header_secondary_autocorrelation` | 0.227420 | <=0.5 at secondary peaks beyond 50 mm | PASS |
+| `face_header_edge_broad_ratio` | 1.924838 | >=1.8, outer 10% against broad interior | PASS |
+| `face_header_paint_mean_delta_e` | 7.924178 | <=8 D65 Lab | PASS |
+| `face_header_paint_std_delta_e` | 6.370245 | <=8 D65 Lab | PASS |
+| `face_header_rust_mean_delta_e` | 4.746393 | <=8 D65 Lab | PASS |
+| `face_header_rust_std_delta_e` | 2.833491 | <=8 D65 Lab | PASS |
+| `face_header_pixels_per_metre` | 1846.153846 | >=300 | PASS |
+| `face_kick_delta_e` | 4.796706 | <=8 D65 Lab | PASS |
+| `face_kick_planar_light_gradient` | 0.016849 | <0.06 linear luminance across full image | PASS |
+| `face_kick_secondary_autocorrelation` | 0.216525 | <=0.5 at secondary peaks beyond 50 mm | PASS |
+| `face_kick_edge_broad_ratio` | 2.048747 | >=1.8, outer 10% against broad interior | PASS |
+| `face_kick_paint_mean_delta_e` | 4.486262 | <=8 D65 Lab | PASS |
+| `face_kick_paint_std_delta_e` | 3.066661 | <=8 D65 Lab | PASS |
+| `face_kick_rust_mean_delta_e` | 2.349953 | <=8 D65 Lab | PASS |
+| `face_kick_rust_std_delta_e` | 1.455520 | <=8 D65 Lab | PASS |
+| `face_kick_pixels_per_metre` | 1219.047619 | >=300 | PASS |
+| `face_hardware_delta_e` | 1.157993 | <=8 D65 Lab | PASS |
+| `face_hardware_planar_light_gradient` | 0.000001 | <0.06 linear luminance across full image | PASS |
+| `face_hardware_secondary_autocorrelation` | 0.073121 | <=0.5 at secondary peaks beyond 50 mm | PASS |
+| `face_hardware_paint_mean_delta_e` | 1.739994 | <=8 D65 Lab | PASS |
+| `face_hardware_paint_std_delta_e` | 0.946332 | <=8 D65 Lab | PASS |
+| `face_hardware_rust_mean_delta_e` | 0.717796 | <=8 D65 Lab | PASS |
+| `face_hardware_rust_std_delta_e` | 0.331606 | <=8 D65 Lab | PASS |
+| `face_hardware_pixels_per_metre` | 5120.000000 | >=300 | PASS |
+| `knuckle_adjacent_face_angle_max_deg` | 12.996104 | <=15 degrees, all exported knuckle adjacency including rounded end rims | PASS |
+| `knuckle_split_normal_jump_max_deg` | 6.423121 | <=15 degrees, all exported knuckle adjacency including rounded end rims | PASS |
+| `byte_identical_bakes` | True | True | PASS |
+| `as_built_atlases_unchanged` | True | True | PASS |
+| `as_built_exported_uv_density` | 304.127508, 304.844790 | 304.6 +/-15% px/m | PASS |
+| `as_built_exported_uv_no_stretch` | 1.001787 | <=1.015 | PASS |
+| `paint_roughness_range` | 0.349020, 0.549020 | .34 <= minimum; maximum <= .56; span >= .12 | PASS |
 | `as_built_rust` | 0.000000 | <0.01 | PASS |
-| `fasteners_with_streaks` | 0.512821 | >=0.50; same attached-run definition as visible_fastener_streaks_albedo | PASS |
-| `up_face_dust` | 0.977951 | >=0.70 | PASS |
-| `no_new_green` | 0.000000 | <0.005 | PASS |
+| `aged_painted_rust` | 0.252922 | [.25,.60] | PASS |
+| `no_new_green` | 0.000004 | <0.005 | PASS |
+| `up_face_dust` | 0.797302 | >=0.70 | PASS |
 | `identical_geometry` | True | True | PASS |
-| `dust_linear_difference_albedo` | 0.100543 | >=0.06 | PASS |
-| `dust_warm_low_saturation_albedo` | 0.984684 | >=0.70 of up faces | PASS |
-| `dust_linear_difference_neutral` | 0.109660 | >=0.06 | PASS |
-| `dust_warm_low_saturation_neutral` | 0.982848 | >=0.70 of up faces | PASS |
-| `dust_linear_difference_present` | 0.079400 | >=0.06 | PASS |
-| `dust_warm_low_saturation_present` | 0.996831 | >=0.70 of up faces | PASS |
-| `edge_broad_ratio_albedo` | 2.947069 | >=2.5 | PASS |
-| `broad_face_rust_albedo` | 0.169626 | [0.08,0.25] | PASS |
-| `visible_fastener_streaks_albedo` | 0.512821 | >=0.50 of door/upper-side fasteners; contiguous rust run>=40mm, onset<=10mm, both-flank linear contrast>=0.03, width<=15mm | PASS |
-| `edge_broad_ratio_neutral` | 2.928696 | >=2.5 | PASS |
-| `broad_face_rust_neutral` | 0.168438 | [0.08,0.25] | PASS |
-| `visible_fastener_streaks_neutral` | 0.512821 | >=0.50 of door/upper-side fasteners; contiguous rust run>=40mm, onset<=10mm, both-flank linear contrast>=0.03, width<=15mm | PASS |
-| `edge_broad_ratio_present` | 2.598537 | >=2.5 | PASS |
-| `broad_face_rust_present` | 0.210545 | [0.08,0.25] | PASS |
-| `visible_fastener_streaks_present` | 0.512821 | >=0.50 of door/upper-side fasteners; contiguous rust run>=40mm, onset<=10mm, both-flank linear contrast>=0.03, width<=15mm | PASS |
-| `closeup_atlas_axis_peak_ratio` | 1.269137 | <=2.0 at 0 and 90 degrees relative to median, 10-degree bins | PASS |
-| `longest_straight_rust_boundary_m` | 0.033398 | <=0.040 within 0.001m | PASS |
-| `door_secondary_autocorrelation` | 0.138093 | <=0.5 at offsets>0.050m | PASS |
-| `aged_bare_steel_rust` | 0.856644 | >=0.30 | PASS |
-| `as_built_bare_steel_linear_luminance` | 0.476644 | >=0.35 | PASS |
+| `broad_face_rust_albedo` | 0.149709 | [.08,.25] | PASS |
+| `edge_broad_ratio_albedo` | 3.294882 | >=1.8, replaces procedural-path >=2.5 | PASS |
+| `dust_warm_low_saturation_albedo` | 0.817760 | >=0.70 | PASS |
+| `broad_face_rust_neutral` | 0.142193 | [.08,.25] | PASS |
+| `edge_broad_ratio_neutral` | 3.373030 | >=1.8, replaces procedural-path >=2.5 | PASS |
+| `dust_warm_low_saturation_neutral` | 0.821022 | >=0.70 | PASS |
+| `broad_face_rust_present` | 0.191413 | [.08,.25] | PASS |
+| `edge_broad_ratio_present` | 2.878184 | >=1.8, replaces procedural-path >=2.5 | PASS |
+| `dust_warm_low_saturation_present` | 0.752953 | >=0.70 | PASS |
+| `aged_bare_steel_rust` | 0.923957 | >=0.30 | PASS |
+| `as_built_bare_steel_linear_luminance` | 0.476270 | >=0.35 | PASS |
 | `as_built_bare_steel_roughness_max` | 0.391573 | <=0.45 | PASS |
 | `as_built_design_delta_e_2000` | 1.529041 | <=6 | PASS |
-| `streak_texel_density_range_px_m` | 304.300944, 304.717010 | 304.6 +/-15% | PASS |
-| `byte_identical_bakes` | True | True | PASS |
-| `byte_identical_export` | True | True | PASS |
-| `exported_uv_density` | 304.127508, 304.844790 | 304.6 +/-15% px/m, every triangle singular value | PASS |
-| `exported_uv_no_stretch` | 1.001787 | anisotropy <=1.015, every triangle | PASS |
-| `paint_roughness_range` | 0.349020, 0.549020 | about 0.35..0.55, span>=0.12 | PASS |
-| `bare_steel_pit_normal_rms` | 0.094538 | >=0.01 tangent-normal deviation | PASS |
-| `hardware` | See hardware table | each named hardware part: atlas rust>=0.30, pit normal RMS>=0.01 | PASS |
-| `chroma_hardware_rust_min` | 0.357922 | >=0.30 on each actual hardware mesh; hatch paint_fields rule | PASS |
-| `chroma_broad_face_rust` | 0.162580 | [0.08,0.25] hatch paint_fields, unlit capture | PASS |
-| `chroma_edge_broad_rust_ratio` | 2.866517 | >=2.5 hatch paint_fields, unlit capture | PASS |
-| `broad_face_island_max_m` | 0.046347 | <=0.060 max Feret diameter; broad front receivers, analytic runoff excluded | PASS |
-| `unattached_runoff_max` | 0.000000 | <=0.01 linear coverage outside outlet envelopes on the flat door plane | PASS |
-| `streak_width_median_m` | 0.005566 | [0.004,0.012] half-opacity contour at 30% drop | PASS |
-| `streak_source_length_range_m` | 0.060000, 0.195021 | [0.060,0.200] | PASS |
-| `streak_reduced_opacity_max` | 0.939874 | <1 | PASS |
-| `panel_edge_rust_cv_min` | 0.374946 | >=0.35 on every 25 mm band, 25 mm bins | PASS |
-| `swatch_panel_paint_mean_delta_e` | 6.640615 | <=8 D65 Lab | PASS |
-| `swatch_panel_paint_std_delta_e` | 7.289065 | <=8 D65 Lab | PASS |
-| `swatch_panel_rust_mean_delta_e` | 1.233443 | <=8 D65 Lab | PASS |
-| `swatch_panel_rust_std_delta_e` | 5.626604 | <=8 D65 Lab | PASS |
-| `swatch_panel_autocorrelation` | 0.190236 | <=0.5 beyond 50 mm | PASS |
-| `swatch_loss_paint_mean_delta_e` | 3.829559 | <=8 D65 Lab | PASS |
-| `swatch_loss_paint_std_delta_e` | 2.002381 | <=8 D65 Lab | PASS |
-| `swatch_loss_rust_mean_delta_e` | 4.989966 | <=8 D65 Lab | PASS |
-| `swatch_loss_rust_std_delta_e` | 3.252099 | <=8 D65 Lab | PASS |
-| `swatch_loss_autocorrelation` | 0.070388 | <=0.5 beyond 50 mm | PASS |
-| `swatch_dust_paint_mean_delta_e` | 3.179011 | <=8 D65 Lab | PASS |
-| `swatch_dust_paint_std_delta_e` | 6.757188 | <=8 D65 Lab | PASS |
-| `swatch_dust_rust_mean_delta_e` | 3.657650 | <=8 D65 Lab | PASS |
-| `swatch_dust_rust_std_delta_e` | 1.021611 | <=8 D65 Lab | PASS |
-| `swatch_dust_autocorrelation` | 0.375558 | <=0.5 beyond 50 mm | PASS |
+| `closeup_atlas_axis_peak_ratio` | 1.619847 | <=2.0 | PASS |
+| `door_secondary_autocorrelation` | 0.310291 | <=0.5 beyond 50 mm, actual rendered door | PASS |
+| `longest_straight_rust_boundary_m` | 0.038965 | <=0.040 at <=1 mm chord deviation | PASS |
+| `hardware_Rivets_rust` | 0.878400 | >=0.30 | PASS |
+| `hardware_Rivets_chroma_rust` | 0.656800 | >=0.30 | PASS |
+| `hardware_Rivets_pit_normal_rms` | 0.016612 | >=0.01 | PASS |
+| `hardware_Hinges_rust` | 0.871071 | >=0.30 | PASS |
+| `hardware_Hinges_chroma_rust` | 0.613214 | >=0.30 | PASS |
+| `hardware_Hinges_pit_normal_rms` | 0.017255 | >=0.01 | PASS |
+| `hardware_DoorVents_rust` | 0.953859 | >=0.30 | PASS |
+| `hardware_DoorVents_chroma_rust` | 0.789616 | >=0.30 | PASS |
+| `hardware_DoorVents_pit_normal_rms` | 0.015925 | >=0.01 | PASS |
+| `hardware_Handle_rust` | 0.936047 | >=0.30 | PASS |
+| `hardware_Handle_chroma_rust` | 0.720930 | >=0.30 | PASS |
+| `hardware_Handle_pit_normal_rms` | 0.016207 | >=0.01 | PASS |
+| `hardware_KickPlate_rust` | 0.438099 | >=0.30 | PASS |
+| `hardware_KickPlate_chroma_rust` | 0.561029 | >=0.30 | PASS |
+| `hardware_KickPlate_pit_normal_rms` | 0.293316 | >=0.01 | PASS |
+| `hinge_screen_px_per_mm` | 6.400000 | >=5 at 0.3 m, ID-pass horizontal silhouette pixels / physical width in mm | PASS |
+| `handle_screen_px_per_mm` | 6.400000 | >=5 at 0.3 m, ID-pass horizontal silhouette pixels / physical width in mm | PASS |
+| `supplemental_runoff_max_opacity` | 0.300000 | <=0.30 | PASS |
 
-| Hardware | HSV rust fraction | Chroma rust fraction | Pit-normal RMS |
-| --- | --- | --- | --- |
-| Rivets | 0.590000 | 0.404800 | 0.069688 |
-| Hinges | 0.604233 | 0.357922 | 0.114438 |
-| DoorVents | 0.717095 | 0.513050 | 0.134033 |
-| Handle | 0.724806 | 0.478682 | 0.127065 |
-| KickPlate | 0.868835 | 0.620257 | 0.146584 |
+### Rebuild, tests and images
 
-Each named hardware part requires at least 0.30 rust by each classifier and at least 0.01 pit-normal RMS. Swatch gates still compare paint/rust Lab means and standard deviations with the saved source crops. Geometry, exported UV density and stretch, clean paint roughness, clean steel brightness, dust visibility and byte-repeatability retain their previous thresholds.
-
-### Rebuild, tests and captures
-
-Use the installed Hunyuan Python and Godot, with no packages added. Run jobs sequentially under `nohup` from this worktree, with scratch under `tmp/mat/locker/pass4/`. With the unchanged geometry fields available, regenerate each finish set and capture:
+Run these commands from the worktree with the installed Hunyuan Python and Godot. Run generation jobs one at a time under `nohup`; all scratch stays in `tmp/mat/locker/pass5/`.
 
 ```sh
 PYTHON=/Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python
-$PYTHON tools/quarters_aging/bake_finishes.py assets/props/quarters/storage_locker_module --fields tmp/mat/locker/pass4/geometry.npz
-$PYTHON tools/quarters_aging/bake_finishes.py tmp/mat/locker/pass4/repeat --fields tmp/mat/locker/pass4/repeat/geometry.npz
+$PYTHON tools/quarters_aging/generate_locker_faces.py
+$PYTHON tools/quarters_aging/select_locker_faces.py
+$PYTHON tools/quarters_aging/finish_locker_faces.py
+/Volumes/XS1000/acoliver/projects/threedee/branch-1/.tools/Blender-4.5.11.app/Contents/MacOS/Blender --background --factory-startup --python-exit-code 1 --python tools/blender/quarters/storage_locker_module/hinge_finish.py
 godot --headless --editor --path . --import
-godot --windowed --path . -s tools/quarters_aging/locker_preview.gd -- --out res://tmp/mat/locker/pass4
-$PYTHON tools/quarters_aging/locker_gates.py --captures tmp/mat/locker/pass4 --masks assets/props/quarters/storage_locker_module/masks.json --fields tmp/mat/locker/pass4/geometry.npz --repeat tmp/mat/locker/pass4/repeat
+godot --windowed --path . -s tools/quarters_aging/locker_preview.gd -- --out res://tmp/mat/locker/pass5
+$PYTHON tools/quarters_aging/locker_face_gates.py
+$PYTHON -m unittest discover -s tools/quarters_aging -p 'test_*.py'
+godot --headless --path . -s tests/run_tests.gd
 ```
 
-The geometry baker and exporter remain unchanged from pass three. Its independent repeat export is reused for the unchanged mesh; both finish bakes run again and are compared byte for byte. There are now 16 compared mask/finish files, including both separated colour layers. As-built atlas bytes remain unchanged. Matched clean captures differ only by renderer rounding of at most one 8-bit level on a few lit pixels; their unlit albedo captures are identical.
+The saved raw candidates allow selection and packing without running an image model. `bake_finishes.py` retains the unchanged clean bake and packs the selected aged face images. The source normal atlas and runtime atlas reproduce byte for byte. Hinge export is also byte-identical on repeat.
 
-Godot passes **796 tests, 0 failures**, including eight locker tests. Python passes **43 tests, 0 failures**. The new controls cover 5 to 25 mm ordinary reach, threefold runoff length variation, faint lower fasteners, connected trail length/onset/contrast, wide-smear rejection and the close-up orientation histogram. The existing Blender fixture runner checks density, reflected exposure, contact, isolated AO, visibility, exact part identity and receiver isolation. Godot still prints allocator teardown warnings after the passing suite.
+Python passes **51 tests, 0 failures**. Godot passes **798 tests, 0 failures**, including ten locker tests. Godot still prints resource/allocator teardown warnings after the passing suite. Regression controls include direct RGB packing, chroma-derived alpha, atlas separation/density, constant-image rejection, threshold failures, exported hinge normals, unchanged existing corrosion under optional stains, physical hardware pitch and isolated material caches. The procedural-colour regression failed before implementation; the hardware-pitch regression failed on the stretched mapping before its correction. No OCR code review was run, per Andrew's instruction.
 
-The requested sheets are `tmp/mat/locker/pass4/before-after.png`, `neutral-pair.png`, `front-pair.png`, `details.png`, `streaks-closeup.png`, `top-pair.png` and `swatches.png`. The additional `closeup-hinge.png` shows the middle hinge and handle under neutral light, aged only, from 0.3 m. Paired captures put as-built on the left and aged on the right. Individual views, matched controls, `preview.json` and the complete `gates.json` remain in the same scratch directory.
+The requested images are `tmp/mat/locker/pass5/before-after.png`, `neutral-pair.png`, `front-pair.png`, `details.png`, `streaks-closeup.png`, `top-pair.png`, `swatches.png`, `closeup-hinge.png`, `faces.png` and `pattern-compare.png`. `faces.png` pairs each chosen image with its source crop. `pattern-compare.png` pairs the aged door with the concept-now locker crop at 400 px/m by height, registering the concept locker to the fitted 2.4 m carcass and preserving the crop's aspect ratio. The concept has no independent metric annotation, so that registration is an assumption. The hinge/handle capture is 4096-square, with an actual 0.3 m camera-to-front-plane distance and silhouette-measured screen density. Individual views, IDs and `preview.json` remain beside them.
 
-The image-comparer inspection of the profiled finish, before the final coverage and spacing adjustment, scored as-built **8/10** and aged **4/10**. It found repeated geometric losses, stripe-like runoff, coarse hardware and broad cloud-like dust. These appearance defects remain unresolved; passing the numerical checks does not demonstrate the requested material believability. The report is retained in `tmp/mat/locker/pass4/profiled-art-inspection.log`.
+The delivered sheet received **8/10 as-built and 6/10 aged** from image-comparer. It found dense connected door flaking, a cloudy-looking top coating at sheet scale and regular-looking hardware bands. These remain visual limitations; passing the numerical checks does not establish visual sign-off. Matched controls show hinge bands remain with height disabled and in a flat-grey geometry view; a handle band remains with height disabled while the flat-grey handle is smooth. The exported normal measurements establish the numerical faceting limit, without treating every visible band as a normal discontinuity.
+
+Generated-face inspection found no apparent hardware, perspective objects or repeated stamped shapes in the assessable crops. The narrow stile images were too small for reliable fine-feature judgments; dark areas in the kick and hardware images could not be confidently distinguished from texture. Reports are `tmp/mat/locker/pass5/image-faces-final.log`, `image-delivery.log` and `image-hardware-controls.log`.
 
 ## Sofa
 

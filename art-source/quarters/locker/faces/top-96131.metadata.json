@@ -1,0 +1,54 @@
+{
+  "face": "top",
+  "seed": 96131,
+  "model": "black-forest-labs/FLUX.2-klein-4B",
+  "quantize": 4,
+  "steps": 4,
+  "concept": "docs/art/quarters/concept-now.png",
+  "crop": [
+    656,
+    272,
+    720,
+    304
+  ],
+  "input": "top-input.png",
+  "source": "top-source.png",
+  "size": [
+    512,
+    544
+  ],
+  "prompt": "Edit the reference into a flat, evenly lit, shadowless, edge-to-edge aged painted steel material image. Preserve the reference grey-green paint, reddish-brown rust, irregular paint-loss layout and ragged organic borders. Remove hardware, seams, objects and cast shadows only; fill each removed hardware area with its neighbouring material. Keep all existing paint-loss edges and corrosion variation. Do not draw a panel, frame, border or perspective. Broken edge and corner regions have the most rust. The broad field retains quiet painted areas among differing sizes of irregular corrosion patches. Rust has natural variations of dark oxide and orange pigment. A few narrow rusty runs travel downward with irregular gently wandering paths and tapered ends. No long straight rust stripe, geometric cutout, stamped motif or repeated shape. This is a horizontal upward-facing top. Preserve old paint and rust under a fine soft settled warm grey dust veil. Dust is even, powdery, low contrast, with no cloud patches, swirls, drifts or mottled blobs. No vertical runoff. \nPreserve this reference patch of aged cabinet paint and oxide while adding a uniform fine soft settled pale warm-grey dust veil. No cloudy mottling, no swirls, no drifts, no isolated powder patches. The small-scale dust grain is quiet and soft across both surviving paint and corrosion. The whole image is a single flat horizontal top material, no sides, no edges of an object, no hardware and no directional lighting.\n",
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/top-input.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/top-extra-600-prompt.txt",
+    "--seed",
+    "96131",
+    "--width",
+    "512",
+    "--height",
+    "544",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/top-96131.png"
+  ],
+  "scores": {
+    "delta_e": 18.26074574097812,
+    "planar_light_gradient": 0.021670605071932702,
+    "secondary_autocorrelation": 0.372251588554159,
+    "edge_rust": 0.1840815799151203,
+    "broad_rust": 0.02311216030126746,
+    "edge_broad_ratio": 7.96470678273313,
+    "paint_mean_delta_e": 18.905947557487526,
+    "paint_std_delta_e": 2.4758158164366386,
+    "rust_mean_delta_e": 5.574933395264339,
+    "rust_std_delta_e": 13.601054855395743
+  }
+}

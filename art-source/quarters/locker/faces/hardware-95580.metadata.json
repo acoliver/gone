@@ -1,0 +1,54 @@
+{
+  "face": "hardware",
+  "seed": 95580,
+  "model": "black-forest-labs/FLUX.2-klein-4B",
+  "quantize": 4,
+  "steps": 4,
+  "concept": "docs/art/corridors/hatch-concept-rusted.png",
+  "crop": [
+    550,
+    814,
+    806,
+    1032
+  ],
+  "input": "hardware-input.png",
+  "source": "hardware-source.png",
+  "size": [
+    1024,
+    1024
+  ],
+  "prompt": "Remove all hardware, objects, seams, borders, perspective and shadows. Preserve the extensive dark reddish-brown rust and orange corrosion of this heavily rusted reference crop. Fill the entire image edge to edge with only this continuous flat heavily corroded steel surface, lit flat and evenly, without shadows or borders. Fine irregular pits and dark cavities intermix with orange oxide and small grey metal flecks. No shapes or repeated motifs. \n",
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/hardware-input.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/hardware-prompt.txt",
+    "--seed",
+    "95580",
+    "--width",
+    "1024",
+    "--height",
+    "1024",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/hardware-95580.png"
+  ],
+  "scores": {
+    "delta_e": 4.64650256475901,
+    "planar_light_gradient": 0.013733557740263202,
+    "secondary_autocorrelation": 0.13681607161779202,
+    "edge_rust": 0.5010891573918452,
+    "broad_rust": 0.6388102468688549,
+    "edge_broad_ratio": 0.7844100182298998,
+    "paint_mean_delta_e": 4.846782350917032,
+    "paint_std_delta_e": 1.2712300739983475,
+    "rust_mean_delta_e": 6.277563264970086,
+    "rust_std_delta_e": 5.443975503134432
+  }
+}

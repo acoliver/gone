@@ -1,0 +1,30 @@
+{
+  "seed": 96230,
+  "model": "FLUX.2-klein-4B",
+  "steps": 4,
+  "quantize": 4,
+  "input": "top-96130-quantile-affine-finish.png",
+  "prompt": "Edit this exact flat material image. Remove only its settled pale dust veil to reveal the darker grey-green painted steel and red-brown oxide directly beneath. Preserve the exact paint and rust boundaries and all their positions, shapes and sizes. Do not introduce a different wear layout. Keep all surface features aligned. The bare surface is dark, with no remaining pale powder. No objects, hardware, border, perspective, lighting gradients, cast shadows or new damage. Flat evenly lit shadowless edge-to-edge material.",
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/top-96130-quantile-affine-finish.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/top-nodust-96230-prompt.txt",
+    "--seed",
+    "96230",
+    "--width",
+    "512",
+    "--height",
+    "544",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/top-nodust-96230.png"
+  ],
+  "purpose": "Generated dust-disabled comparison edited from the selected final top image, not a different seed"
+}

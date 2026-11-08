@@ -176,11 +176,19 @@ def create_asset():
 
     hinge_parts = []
     for center_y in (0.350, 1.250, 2.150):
-        bpy.ops.mesh.primitive_cylinder_add(vertices=16, radius=0.010, depth=0.080,
+        bpy.ops.mesh.primitive_cylinder_add(vertices=48, radius=0.010, depth=0.080,
                                             location=(-0.260, center_y, 0.301),
                                             rotation=(math.radians(90), 0, 0))
         knuckle = bpy.context.object
         knuckle.name = "Hinge knuckle"
+        bevel = knuckle.modifiers.new("Rounded knuckle rims", "BEVEL")
+        bevel.width = .0007
+        bevel.segments = 7
+        bevel.limit_method = 'ANGLE'
+        bevel.angle_limit = .5
+        bpy.ops.object.modifier_apply(modifier=bevel.name)
+        for face in knuckle.data.polygons:
+            face.use_smooth = abs(face.normal.z) < .9999
         knuckle.data.materials.append(bare)
         hinge_parts.append(knuckle)
     hinges = join_pieces("Hinges", hinge_parts, carcass)

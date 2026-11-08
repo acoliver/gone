@@ -1,6 +1,12 @@
-# Locker aged-colour swatches
+# Locker generated face images
 
-The aged locker uses generated colour, following `art-source/hatch/gen4-recipe.md` and `tools/prepare_hatch_paint.py`. The earlier noise-based colour and flake masks produced evenly distributed broad-face damage, heavy outlines and blocky boundaries. The fourth pass retains those generated paint, rust and dust colours. Physical noise now breaks up coverage and bounds the size of blisters, as well as supplying surface relief and roughness.
+The current aged finish maps a complete generated image onto each visible face, following `tools/prepare_hatch_paint.py`. `faces/face-layout.json` records physical dimensions, pixel cells, UV rectangles and concept crops. `faces/selection.json` records chosen seeds, source-matched colour calibration and final measurements. Each face has at least four saved FLUX.2-klein candidates. The image owns paint loss, corrosion borders and trails; the hatch's `paint_fields()` rule derives only relief and roughness. The top image already contains settled dust. Hardware uses its own heavily corroded generated image with pitting from luminance, at equal physical pitch on both axes.
+
+`tools/quarters_aging/generate_locker_faces.py`, `select_locker_faces.py` and `finish_locker_faces.py` reproduce generation, selection and atlas packing. Optional attached stains stay at or below 30% opacity and sample receiving-image rust colour. Procedural island and streak fields no longer drive the aged material. The locker section of `docs/art/quarters/README.md` lists dimensions, seeds, measured gates, retired design-specific checks, commands, tests and captures. The ship's age is about 1000 years.
+
+## Historical swatch method
+
+The following describes the superseded fourth-pass composition. Its generated inputs remain available for historical reproduction and regression fixtures. The earlier masks imposed evenly distributed broad-face damage, edge outlines and recognisable shapes even when their colours came from generated images.
 
 ## Saved inputs and generation
 
