@@ -27,7 +27,7 @@ Status: in progress. Layout approved 2026-11-07; stage 1 (contact sheets) is nex
 
 These have already been proven in this project, and the plan builds on them rather than inventing new ones.
 
-- **The round hatch** (branch-1, `issue-sliding-doors`, not yet on `main`):
+- **The round hatch** (now merged to `main`):
   - **Geometry:** generated images of the frame and leaf (`art-source/hatch/`) went through Hunyuan into parts, which were fitted and repaired (`tools/blender/hatch_fit.py`, `hatch_generated_*.py`).
   - **Paint colour:** generated, shadowless images of the concept paint, packed into an atlas (`tools/prepare_hatch_paint.py`).
   - **Masks:** baked per model in Blender: ambient occlusion, curvature, coverage and weather (`tools/blender/hatch_bake.py`).
@@ -38,7 +38,7 @@ These have already been proven in this project, and the plan builds on them rath
   - **Plastic:** glossy plastic with its clearcoat restored in code.
   - **Verification:** the glass gates and the capture and raycast diagnostics.
 
-The quarters props use the hatch's texture and weathering method for everything metal, and the pod glass for every pane: the view screen, the console screen cover and the photo-frame glass. Quarters implementation depends on the branch-1 steel and hatch work reaching `main`, so stage 2 starts after it merges.
+The quarters props use the hatch's texture and weathering method for everything metal, and the pod glass for every pane: the view screen, the console screen cover and the photo-frame glass. The steel and hatch work is on `main`, so its mask and material methods are available to stage 2.
 
 ## Decisions I made, and why
 
@@ -51,9 +51,9 @@ The quarters props use the hatch's texture and weathering method for everything 
    - **Why:** the memory transition swaps states in place, so the two must line up exactly.
 3. **How each prop gets its aged state depends on whether its shape changes.**
    - **Hard props whose shape stays put** (lockers, desk, console, wardrobe, table, chairs, bed frame, screen housing, frame):
-     - one mesh, with the weathered-steel masks baked once;
-     - two material settings: "as built" (paint intact, no oxide, no dust) and "after a thousand years" (paint flaked, oxide, streaks, dust).
-     - The transition swaps the material settings. This is the hatch method plus a clean end of its range.
+     - one mesh, with the geometry and weather masks baked once;
+     - two baked albedo/normal/ORM sets: "as built" (paint intact, no oxide, no dust) and "after a thousand years" (paint flaked, oxide, streaks, dust).
+     - The transition swaps cached materials. The locker pilot chose separate baked sets so the existing hatch, door and ship-shell shader stays unchanged. A quarters shader reuses the hatch detail scans and scan-sampling include.
    - **Props whose shape changes** (mattress, quilt, pillows, cushions, throw, garments, jacket, boots, and the dust and debris heaps):
      - a second mesh produced by the aging toolkit's geometry transforms, baked as its own asset.
      - A shader can blend colour but cannot collapse foam or tear cloth.
@@ -159,7 +159,7 @@ This stage follows the skill's stages 3 to 8 for each prop:
    - Every surface gets a UV layout at a consistent texel density, because the aging masks live in UV space.
    - Every surface gets a named material class from this list: PaintedSteel, BareSteel, Aluminium, Brass, HardPlastic, Ceramic, Glass, Display, Foam, NaturalFabric, SyntheticFabric, Leather, Rubber.
 6. **Textures.** Use the hatch method.
-   - **Metal:** bake ambient occlusion, curvature, coverage and weather masks into a per-prop atlas, then shade with `weathered_steel.gdshader` over the existing steel scans.
+   - **Metal:** bake ambient occlusion, curvature, coverage and weather masks into a per-prop atlas, then shade with the hatch scan method. The locker pilot uses `quarters_steel.gdshader` with two baked finish sets, leaving `weathered_steel.gdshader` unchanged.
    - **Concept colour:** where a prop needs concept colour (painted panels, the console face), generate shadowless paint images and pack them the way `prepare_hatch_paint.py` does.
    - **Non-metal classes:** fabric, leather, ceramic, plastic and the photo get the same mask atlas and their own small shaders or materials.
    - **Glass:** every pane uses the pod glass shader.
@@ -171,7 +171,7 @@ This stage follows the skill's stages 3 to 8 for each prop:
 
 ## Stage 3: aging toolkit
 
-These are reusable tools, not one-off edits. They run headless (Blender `bpy` plus NumPy/PIL), are seeded and versioned, and take a per-prop parameter file. They read an unaged GLB plus its `.blend` and write the aged GLB with the same origin, pivots and part names.
+These are reusable tools, not one-off edits. They run headless (Blender `bpy` plus NumPy/PIL), are seeded and versioned, and take per-prop parameters. They read the unaged source. Rigid props keep one exported mesh and receive two baked finish sets. Deformed props receive an aged GLB with the same origin, pivots and part names. The locker pilot's reusable baker is `tools/blender/quarters_aging/bake_masks.py`; its two steel finishes come from `tools/quarters_aging/bake_finishes.py`.
 
 **Masks, baked per mesh in UV space:**
 
@@ -183,7 +183,7 @@ These are reusable tools, not one-off edits. They run headless (Blender `bpy` pl
 | Gravity streak fields | Below fasteners, edges and holes | Rust runs down from them |
 | Contact | Where parts touch | Staining and corrosion at joints |
 
-**Material transforms**, one per material class, driven by the masks and the age (ruling 25). For metal this is not new work: `weathered_steel.gdshader` already does the flaking, oxide and streaks. The toolkit adds the "as built" end of its range, and the remembered state uses it.
+**Material transforms**, one per material class, driven by the masks and the age (ruling 25). Metal reuses the hatch's flaking, oxide, streak fields and detail scans. The locker pilot bakes two atlas sets from those masks, with intact paint and zero oxide or dust in the remembered finish. It does not change the shared shader's output.
 
 | Material class | Change after 1000 years |
 | --- | --- |

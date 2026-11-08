@@ -1,0 +1,19 @@
+{
+  "method": "two baked atlas sets; shared geometry and masks; unchanged hatch shader",
+  "age_years": {
+    "as_built": 0,
+    "aged": 1000
+  },
+  "seed": 9501,
+  "as_built_paint_srgb": [
+    0.4729999899864197,
+    0.574999988079071,
+    0.5559999942779541
+  ],
+  "channels": {
+    "*_albedo.png": "RGB sRGB reflectance, A oxide coverage",
+    "*_normal.png": "RGB OpenGL tangent normal, A=1",
+    "*_orm.png": "R ambient occlusion, G roughness, B metallic, A dust coverage"
+  },
+  "detail_scans": "shared CC0 hatch_detail_steel/paint/oxide scans at 0.20 m pitch"
+}

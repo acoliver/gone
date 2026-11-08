@@ -55,6 +55,47 @@ To rebuild the editable source and export, run `/Volumes/XS1000/acoliver/project
 
 The third-pass neutral renders are in the gitignored `tmp/fit/locker/pass3/` directory. `compare-hero.png` and `compare-front.png` show the locker upright. `turntable.png` contains the 30°, 120°, 210° and 300° views under main and fill lighting. `compare-detail.png` shows the door hardware.
 
+## Locker materials
+
+The locker has one mesh and two baked finishes, `as_built` and `aged`. The aged finish represents 1000 years in sealed, sterile, oxygenated air. It has flaked paint, orange-brown oxide, downward rust trails, pitted fittings and grey-brown dust. Neither finish contains biological growth or water stains.
+
+I chose two albedo/normal/ORM atlas sets instead of an age uniform. This leaves the existing hatch, door and ship-shell shader unchanged. `app/quarters_props.gd` caches one material per registered prop and state, shares the hatch's CC0 steel, paint and oxide detail scans, and swaps materials without changing meshes, names, transforms or pivots. `app/shaders/quarters_steel.gdshader` uses the hatch's `steel_sampling.gdshaderinc` and physical 0.20 m detail pitch. Scan luminance adds grain without importing green pigment from the source scans.
+
+The clean paint uses sRGB (0.473, 0.575, 0.556), derived from the fitted source's grey-green paint. Its hardware is bare steel; its kick plate is dark steel. Clean atlases have zero oxide and dust. Aged colour, roughness and tangent normals come from the same geometry masks, with edge-biased flakes, broad-face failure and dust on exposed upward faces. The atlas imports enable mipmaps and disable alpha-border repair because alpha stores oxide or dust rather than transparency. Otherwise the importer replaces intact-paint colour and ORM data near rust boundaries. The material registry preloads every runtime atlas so exported builds retain these dependencies.
+
+`tools/blender/quarters_aging/bake_masks.py` accepts a blend and mesh or root object names. It reuses the hatch's joined bake context, conservative bevel footprints, Cycles AO and image writer. Each planar face gets an isometric island. Non-planar corner faces are triangulated before unfolding so projection cannot discard surface area. All objects are packed together with a three-pixel margin. The locker atlas is 2048 by 2048 at 304.55 px/m, with measured triangle densities from 304.30 to 304.72 px/m. UVs stay at that scale even when a narrow bevel needs a conservative bake sample. The overlap check reports zero overlapping raster interiors.
+
+The fixed locker seed is 9501. `masks.json` beside the atlas describes every channel. `geometry_masks.png` packs AO, cavity, edge proximity and coverage into RGBA. `weather_masks.png` packs upward exposure, downward streak fields, contact and material class. Contact measures distance to other parts, excluding the sampled part. Individual connected rivets and hinge knuckles remain separate streak sources even when they share one object. Horizontal returns seed additional downward fields, including opening lips. Authoring geometry arrays stay in scratch rather than the runtime asset directory.
+
+Regenerate from the repository root with the installed Blender:
+
+```sh
+/Volumes/XS1000/acoliver/projects/threedee/branch-1/.tools/Blender-4.5.11.app/Contents/MacOS/Blender --background --factory-startup --python-exit-code 1 --python tools/blender/quarters_aging/bake_masks.py -- --blend tools/blender/quarters/storage_locker_module/locker-working.blend --objects Carcass Door --output assets/props/quarters/storage_locker_module --seed 9501 --fields tmp/mat/locker/geometry.npz --save-source --export assets/props/quarters/storage_locker_module.glb
+/Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python tools/quarters_aging/bake_finishes.py assets/props/quarters/storage_locker_module --fields tmp/mat/locker/geometry.npz
+godot --headless --path . --editor --import
+godot --path . -s tools/quarters_pilot_preview.gd
+/Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python tools/quarters_aging/locker_gates.py --captures tmp/mat/locker --masks assets/props/quarters/storage_locker_module/masks.json
+```
+
+Run long commands with `nohup` and logs under `tmp/mat/locker/`. `tools/quarters_pilot_preview.gd` accepts `--asset`, `--prop`, `--factory`, `--height` and `--out` after `--` for other pilot props. Use `--aged-asset` for a separate collapsed or torn mesh, `--factory none` to retain imported materials, `--centre-y` for a hanging origin and `--frame-size` for wider furniture. Rigid geometry assertions apply when both states use one asset. A material factory implements `apply(root, prop, state)`; albedo/ID diagnostics are captured only when its shader exposes the diagnostic uniform. The preview renders remembered, present and neutral lanes from hero, front and upper-door cameras, plus a top view for dust. Present lighting uses `Lighting.REGULAR_WHITE`, colour (1.0, 0.97, 0.90), and the regular fixture energy. Neutral pairs hold lighting constant. Capture-only unlit albedo and material/up-face ID passes use the same shader and cameras so colour measurements do not confuse lighting with aging.
+
+The measured capture gates pass:
+
+| Gate | Measured | Requirement |
+| --- | --- | --- |
+| Aged PaintedSteel rust, pooled hero and front pixels | 38.00% | 25% to 60% |
+| Fasteners with downward rust trails | 70 of 71, 98.59% | At least 80% |
+| Dust on visible up-facing surfaces | 97.47% | At least 70% |
+| As-built rust | 0.00% | Under 1% |
+| Total newly green area | 0.00% | Under 0.5% of prop pixels |
+| Shared mesh, pivots, names and footprint | Identical | Identical |
+
+The streak measurement probes ten rows below each fastener in the front capture and requires rust in at least 70% of the visible receiving rows. Four low fasteners have no visible PaintedSteel receiving surface and are excluded, with their count recorded in `gates.json`. The no-green gate compares each aged pixel against its clean counterpart at hue 70 to 170 degrees and saturation above 0.25. Existing grey-green paint is excluded. Python controls reject an introduced green patch, detect orange-brown rust and exclude background pixels.
+
+The full `godot --headless --path . -s tests/run_tests.gd` run completed under `nohup` with 792 passed, 0 failed and exit code 0. Godot printed allocator teardown warnings at exit. All five Python capture-classifier controls pass. The unchanged locker geometry verifier passes with 5,416 triangles, no nonmanifold edges, no degenerate faces and no invalid normals. A second seeded bake produces byte-identical mask PNGs and GLB output.
+
+The image sheets are `tmp/mat/locker/before-after.png`, `details.png`, `neutral-pair.png` and `front-pair.png`, with as-built left and aged right. Captures and `gates.json` stay in scratch. The designated image-review endpoint at `127.0.0.1:8308` refused connections, so the images have measured gates but no visual sign-off.
+
 ## Sofa
 
 The fitted source is `tools/blender/quarters/sofa/sofa-working.blend`, and the game asset is `assets/props/quarters/sofa.glb`. The cushions and throw are baked Blender cloth meshes with no live modifiers. Authoring uses Blender Z up and front -Y. Export uses `export_yup=True`, giving the game +Y up and front +Z.

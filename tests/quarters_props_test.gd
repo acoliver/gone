@@ -1,0 +1,72 @@
+extends SimTestCase
+
+func test_packed_atlases_preserve_colour_independent_of_alpha() -> void:
+	for state: String in ["as_built", "aged"]:
+		for kind: String in ["albedo", "normal", "orm"]:
+			var path := "res://assets/props/quarters/storage_locker_module/%s_%s.png.import" % [state, kind]
+			var settings := ConfigFile.new()
+			assert_int_equal(settings.load(path), OK, "atlas has explicit import settings")
+			assert_false(settings.get_value("params", "process/fix_alpha_border"), "alpha is packed data, never transparency")
+			assert_true(settings.get_value("params", "mipmaps/generate"), "atlas has minification mipmaps")
+
+func _factory() -> GDScript:
+	assert_true(ResourceLoader.exists("res://app/quarters_props.gd"), "quarters material factory exists")
+	return load("res://app/quarters_props.gd") if ResourceLoader.exists("res://app/quarters_props.gd") else null
+
+func test_two_finishes_are_cached_and_distinct() -> void:
+	var factory := _factory()
+	if factory == null: return
+	var clean: ShaderMaterial = factory.material(&"storage_locker_module", &"as_built")
+	var aged: ShaderMaterial = factory.material(&"storage_locker_module", &"aged")
+	assert_true(clean != aged, "states have distinct material resources")
+	for state: StringName in [&"as_built", &"aged"]:
+		var first: ShaderMaterial = factory.material(&"storage_locker_module", state)
+		assert_true(first == factory.material(&"storage_locker_module", state), "cache shares each finish")
+		for kind: String in ["albedo", "normal", "orm"]:
+			var texture: Texture2D = first.get_shader_parameter("baked_" + kind)
+			assert_true(texture != null and texture.get_width() == 2048, "full baked atlas: " + kind)
+			assert_true(clean.get_shader_parameter("baked_" + kind) != aged.get_shader_parameter("baked_" + kind), "state atlases differ: " + kind)
+	assert_int_equal(factory.cache_size(), 2, "one material per prop and state")
+
+func test_state_swap_preserves_shared_mesh_pivots_names_and_footprint() -> void:
+	var factory := _factory()
+	if factory == null: return
+	var scene: PackedScene = load("res://assets/props/quarters/storage_locker_module.glb")
+	var first: Node3D = scene.instantiate()
+	var second: Node3D = scene.instantiate()
+	factory.apply(first, &"storage_locker_module", &"as_built")
+	factory.apply(second, &"storage_locker_module", &"aged")
+	_compare_parts(first, second)
+	var meshes := first.find_children("*", "MeshInstance3D", true, false)
+	for node: Node in meshes:
+		var piece := node as MeshInstance3D
+		var original := piece.mesh
+		var pose := piece.transform
+		for index: int in range(10):
+			factory.apply(first, &"storage_locker_module", &"aged" if index % 2 == 0 else &"as_built")
+		assert_true(piece.mesh == original and piece.transform == pose, "state swap never mutates geometry")
+	assert_true(meshes.size() > 10, "all named locker parts are exercised")
+	assert_int_equal(factory.cache_size(), 2, "swaps allocate no additional materials")
+	first.free()
+	second.free()
+
+func _compare_parts(a: Node, b: Node) -> void:
+	assert_true(a.name == b.name, "part names identical")
+	assert_int_equal(a.get_child_count(), b.get_child_count(), "same hierarchy")
+	if a is Node3D:
+		assert_true(a.transform == b.transform, "same local origins and pivots")
+	if a is MeshInstance3D:
+		assert_true(a.mesh == b.mesh, "one shared mesh resource")
+		assert_true(a.get_aabb() == b.get_aabb(), "same footprint")
+		assert_true(a.material_override != b.material_override, "all surfaces swap finish")
+	for index: int in range(a.get_child_count()):
+		_compare_parts(a.get_child(index), b.get_child(index))
+
+func test_material_reuses_hatch_detail_scans_without_changing_hatch() -> void:
+	var factory := _factory()
+	if factory == null: return
+	var material: ShaderMaterial = factory.material(&"storage_locker_module", &"aged")
+	for parameter: String in Surfaces.HATCH_DETAIL_TEXTURES:
+		assert_true(material.get_shader_parameter(parameter) == Surfaces.HATCH_DETAIL_TEXTURES[parameter], "shared hatch scan: " + parameter)
+	assert_true(material.shader != Surfaces.STEEL, "quarters do not alter the shared steel shader")
+	assert_true(Surfaces.material(&"modelled_hatch").get_shader_parameter(&"baked_hatch"), "hatch keeps its existing recipe")
