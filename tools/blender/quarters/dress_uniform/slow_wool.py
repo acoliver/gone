@@ -9,10 +9,10 @@ def slow_wool(mod):
     settings = mod.settings
     for field in ('mass', 'tension_stiffness', 'compression_stiffness', 'shear_stiffness',
                   'bending_stiffness', 'tension_stiffness_max', 'compression_stiffness_max',
-                  'shear_stiffness_max', 'bending_stiffness_max', 'sewing_force_max'):
+                  'shear_stiffness_max', 'bending_stiffness_max', 'sewing_force_max', 'pin_stiffness'):
         setattr(settings, field, getattr(settings, field)*MASS_SCALE)
-    settings.tension_damping = settings.compression_damping = settings.shear_damping = 5.
-    settings.bending_damping = .5
+    settings.tension_damping = settings.compression_damping = settings.shear_damping = 5.*MASS_SCALE
+    settings.bending_damping = .5*MASS_SCALE
     settings.air_damping = 10.
     settings.quality = 30
     mod.collision_settings.collision_quality = 6
@@ -20,7 +20,8 @@ def slow_wool(mod):
     mod.collision_settings.self_distance_min = .002
     return dict(mass_and_spring_scale=MASS_SCALE, vertex_mass_kg=settings.mass,
                 terminal_speed_model_m_s=100*settings.mass*9.81/10,
-                contact_distance_m=.002, quality=30, air_damping=10.)
+                contact_distance_m=.002, quality=30, air_damping=10.,
+                structural_damping=settings.tension_damping, bending_damping=settings.bending_damping)
 
 
 def release_pins(body, mod):

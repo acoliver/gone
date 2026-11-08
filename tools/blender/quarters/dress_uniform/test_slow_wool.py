@@ -9,22 +9,28 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from aging_support import load_source, configure_detail_stiffness
 from cloth_stage import configure
 from slow_wool import MASS_SCALE, slow_wool, release_pins
+from rest_carrier import add_rest_carrier
 
 body = load_source()
+add_rest_carrier(body)
 body.vertex_groups.new(name='DetailPatch')
 mod = configure(body, dict(stiffness=500., shear=350., mass=.22, bending=.3, frames=151),
                 len(body.data.vertices), {0: 1.})
 configure_detail_stiffness(mod)
 fields = ('mass', 'tension_stiffness', 'shear_stiffness', 'bending_stiffness',
           'tension_stiffness_max', 'compression_stiffness_max',
-          'shear_stiffness_max', 'bending_stiffness_max', 'sewing_force_max')
+          'shear_stiffness_max', 'bending_stiffness_max', 'sewing_force_max', 'pin_stiffness')
 before = {field: getattr(mod.settings, field) for field in fields}
 report = slow_wool(mod)
 for field in fields:
     np.testing.assert_allclose(getattr(mod.settings, field), before[field]*MASS_SCALE, rtol=1e-6)
 assert mod.settings.air_damping == 10
+np.testing.assert_allclose(mod.settings.tension_damping, .25)
+np.testing.assert_allclose(mod.settings.bending_damping, .025)
 assert abs(mod.collision_settings.self_distance_min-.002) < 1e-8
 release_pins(body, mod)
+assert body.modifiers[0].type == 'VERTEX_WEIGHT_MIX'
+assert body.modifiers[1].type == 'SUBSURF'
 body.modifiers.remove(mod)
 release = body.modifiers['150 frame shoulder release']
 group = body.vertex_groups['Releasing shoulder stitches']
