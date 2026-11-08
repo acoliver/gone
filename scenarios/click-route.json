@@ -158,29 +158,33 @@
 		},
 		{
 			"deck": 14,
-			"kind": "act",
-			"target": "D14-POWER-CONSOLE",
+			"kind": "floor",
+			"point": [
+				22.3999996185303,
+				0.0,
+				-7.5
+			],
 			"tick": 2941,
 			"type": "objective"
 		},
 		{
 			"pitch_deg": -10.9999997495522,
-			"tick": 3123,
+			"tick": 3217,
 			"type": "look",
-			"yaw_deg": 17.9073114504116
+			"yaw_deg": 141.036416074046
 		},
 		{
 			"deck": 14,
 			"kind": "act",
 			"target": "D14-POWER-CONSOLE",
-			"tick": 3126,
+			"tick": 3220,
 			"type": "objective"
 		},
 		{
 			"pitch_deg": 7.99999941818584,
-			"tick": 3217,
+			"tick": 3311,
 			"type": "look",
-			"yaw_deg": -136.660206214002
+			"yaw_deg": 171.938867841217
 		}
 	],
 	"beats": [
@@ -214,11 +218,11 @@
 		},
 		{
 			"name": "console-inactive",
-			"tick": 3124
+			"tick": 3218
 		},
 		{
 			"name": "power-active",
-			"tick": 3218
+			"tick": 3312
 		}
 	],
 	"content": "gameplay",

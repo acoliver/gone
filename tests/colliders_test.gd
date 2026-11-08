@@ -1,6 +1,19 @@
 extends SimTestCase
 ## Port of the colliders.rs inline test module.
 
+func test_copies_keep_same_cell_insertions_private_in_both_directions() -> void:
+	var original := ColliderSet.new()
+	original.insert(ColliderSet.Aabb.from_parts(Vector3(.2, .2, .2), Vector3.ONE * .05))
+	var copied := original.copy()
+	var in_copy := ColliderSet.Aabb.from_parts(Vector3(.8, .2, .2), Vector3.ONE * .05)
+	copied.insert(in_copy)
+	assert_true(original.overlapping(in_copy).is_empty(), "a copied bucket cannot add an index to the original")
+	assert_true(copied.overlapping(in_copy) == PackedInt32Array([1]), "copy insertion retains its own index")
+	var in_original := ColliderSet.Aabb.from_parts(Vector3(1.5, .2, .2), Vector3.ONE * .05)
+	original.insert(in_original)
+	assert_true(copied.overlapping(in_original).is_empty(), "the original bucket cannot add an index to its copy")
+	assert_true(original.overlapping(in_original) == PackedInt32Array([1]), "original insertion retains its own index")
+
 func unit(x: float, y: float, z: float) -> ColliderSet.Aabb:
 	return ColliderSet.Aabb.from_min_max(Vector3(x, y, z), Vector3(x + 1.0, y + 1.0, z + 1.0)).box
 
@@ -29,6 +42,52 @@ func test_overlap_query_is_inclusive_and_reports_indices() -> void:
 	assert_true(colliders.overlapping(touching) == PackedInt32Array([0]), "face contact counts as overlap")
 	var far := unit(50.0, 50.0, 50.0)
 	assert_true(colliders.overlapping(far).is_empty(), "separated boxes are skipped")
+
+class CountedBox:
+	extends ColliderSet.Aabb
+	static var queries := 0
+	func overlaps(other: ColliderSet.Aabb) -> bool:
+		queries += 1
+		return super.overlaps(other)
+
+func test_broad_phase_does_not_scan_distant_hatch_cells() -> void:
+	var colliders := ColliderSet.new()
+	for index: int in range(1000):
+		var box := CountedBox.new()
+		box._center = Vector3(index * 10, 0, 0)
+		box._half_extents = Vector3.ONE * 0.5
+		colliders.insert(box)
+	CountedBox.queries = 0
+	assert_true(colliders.overlapping(unit(0, 0, 0)) == PackedInt32Array([0]), "same exact overlap indices")
+	assert_true(CountedBox.queries < 8, "distant refined hatch colliders must not enter the narrow phase")
+
+func test_spatial_queries_preserve_order_boundaries_and_deduplicate_large_boxes() -> void:
+	var colliders := ColliderSet.new()
+	var large := CountedBox.new()
+	large._half_extents = Vector3(8, 4, 8)
+	colliders.insert(large)
+	for center: Vector3 in [Vector3(-2, -2, -2), Vector3(2, 2, 2), Vector3.ZERO]:
+		colliders.insert(ColliderSet.Aabb.from_parts(center, Vector3.ZERO))
+	var query := ColliderSet.Aabb.from_parts(Vector3.ZERO, Vector3(2, 2, 2))
+	CountedBox.queries = 0
+	assert_true(colliders.overlapping(query) == PackedInt32Array([0, 1, 2, 3]), "inclusive cell boundaries and insertion order")
+	assert_int_equal(CountedBox.queries, 1, "a multi-cell collider is evaluated once")
+	var late := colliders.insert(unit(-1, -1, -1))
+	assert_true(colliders.overlapping(query) == PackedInt32Array([0, 1, 2, 3, late]), "inserts after an earlier query reach the index")
+
+func test_spatial_queries_equal_a_linear_reference_across_negative_cells() -> void:
+	var colliders := ColliderSet.new()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 7308
+	for index: int in range(200):
+		var center := Vector3(rng.randf_range(-20, 20), rng.randf_range(-10, 10), rng.randf_range(-20, 20))
+		colliders.insert(ColliderSet.Aabb.from_parts(center, Vector3(rng.randf_range(0, 4), rng.randf_range(0, 4), rng.randf_range(0, 4))))
+	for index: int in range(100):
+		var query := ColliderSet.Aabb.from_parts(Vector3(rng.randf_range(-20, 20), rng.randf_range(-10, 10), rng.randf_range(-20, 20)), Vector3(3, 2, 3))
+		var expected := PackedInt32Array()
+		for candidate: int in range(colliders.size()):
+			if colliders.boxes()[candidate].overlaps(query): expected.append(candidate)
+		assert_true(colliders.overlapping(query) == expected, "indexed broad phase matches the exact insertion-ordered reference")
 
 func test_empty_set_overlaps_nothing() -> void:
 	var colliders := ColliderSet.new()

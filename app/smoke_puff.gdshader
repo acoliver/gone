@@ -21,9 +21,9 @@ render_mode blend_mix, depth_draw_never, cull_disabled, diffuse_lambert, specula
 
 // Lit translucent grey with a red emission glint: reads under the
 // emergency fixtures without becoming a light source. Authored values
-// live in app/hazards.gd.
+// live in app/hazards.gd; Lighting owns the required emission binding.
 uniform vec4 tint : source_color = vec4(0.22, 0.21, 0.21, 1.0);
-uniform vec4 emission_tint : source_color = vec4(0.05, 0.0, 0.0, 1.0);
+uniform vec4 emission_tint : source_color;
 uniform float opacity : hint_range(0.0, 1.0) = 0.48;
 
 // Each lobe's falloff reaches zero at this UV radius from the lobe

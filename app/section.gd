@@ -9,26 +9,24 @@ static func build(layout: ShipLayout, spec: ShipLayout.SectionSpec) -> ShipSecti
 	section.name = String(spec.id())
 	var mask := Lighting.space_mask(layout, spec.id())
 	for solid: ShipGeometry.SolidSpec in ShipGeometry.section_solids(layout, spec):
-		var piece := surface(solid, mask)
+		var regular := solid.material_role == &"door"
+		var piece := SlidingDoorModel.leaf(layout.door(solid.surface_owner), mask, layout) if regular else surface(solid, mask, layout)
+		if regular: section.add_child(SlidingDoorModel.frame(layout.door(solid.surface_owner), mask))
+		if solid.material_role == &"floor": piece.visible = false
 		section.add_child(piece)
 		for id: StringName in spec.side_door_ids():
 			if solid.id == StringName("%s/LEAF" % id):
 				section.side_leaves[id] = piece
-	var bounds := spec.bounds()
-	var pitch := bounds.size.x / 4
-	for station: int in range(4):
-		for side: int in [-1, 1]:
-			var origin := Vector3(bounds.position.x + (station + 0.5) * pitch, bounds.position.y + Lighting.WALL_MOUNT_HEIGHT, side * (bounds.size.z / 2 - Lighting.WALL_STANDOFF))
-			section.add_child(Lighting.steady_fixture(origin, mask, minf(Lighting.FIXTURE_RANGE, pitch)))
+	section.add_child(CorridorDressing.build(layout, spec.id()))
+	var pitch := spec.bounds().size.x / 4
+	for frame: Transform3D in spec.emergency_fixture_frames():
+		section.add_child(Lighting.steady_fixture(frame.origin, mask, minf(Lighting.FIXTURE_RANGE, pitch)))
 	return section
 
-static func surface(solid: ShipGeometry.SolidSpec, mask: int) -> MeshInstance3D:
-	var material := RoomGeometry.wall_material()
-	match solid.material_role:
-		&"floor": material = RoomGeometry.floor_material()
-		&"ceiling": material = RoomGeometry.ceiling_material()
-		&"door", &"frame": material = HatchModel.flat_grey(HatchModel.DOOR_SHADE)
-	var piece := HatchModel.mesh_piece(Hallway._box_mesh(solid.size), solid.transform, mask, material)
+static func surface(solid: ShipGeometry.SolidSpec, mask: int, layout: ShipLayout = ShipLayout.authored().layout) -> MeshInstance3D:
+	var mesh := SlidingDoorModel.wall_mesh(layout, solid) if solid.material_role == &"wall" and solid.hatch_profile == null else Hallway._box_mesh(solid.size)
+	var piece := HatchModel.mesh_piece(mesh, solid.transform, mask, Surfaces.material(Surfaces.role_for_solid(solid)))
+	Surfaces.bind_solid(piece, layout, solid)
 	piece.name = String(solid.id).replace("/", "_")
 	piece.set_meta(&"solid_id", solid.id)
 	return piece

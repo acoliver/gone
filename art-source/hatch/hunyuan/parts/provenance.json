@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "recipe_normalization": {
+    "file": "generation/parts-proto/recipe.md",
+    "original_sha256": "15863d295fbee375011f6fbd0ff391caf9f5048306b8ad88c2a5980f4e6514cb",
+    "reason": "The committed recipe omits the scratch original's final blank line. Record its exact committed bytes; no recipe content or generated input changed."
+  },
+  "files": {
+    "edits/edit_wheel.py": "6b57dd3d1e7e49ea61f582a195e8fcf71e92da27167d4383a7b3dbad8f1e2f59",
+    "edits/measure_hub_cut.py": "c3ecc4f2431806608a734031be63f2ab613fee998059254bc293a44247c622fa",
+    "edits/reduce_wheel.py": "4331b32b21cc0dd21adc1aa33ffecf6147e0cafb3520f3f30f2f4fccab35b826",
+    "generation/driver-notes.md": "844136cfd14d17b99fedd3154d99eb7e046a731aa54d2ce690333e76999445a7",
+    "generation/leaf3/recipe.md": "db085dbf25065d0ccb19da5d1c9a550ff9109379086e571e2fbf5f2df868ac9b",
+    "generation/leaf3/run.py": "d70f5f05782d1b4cf6036eb1472f3f9428da39a5b40a2415f0cf991c29043dbf",
+    "generation/leaf3/stats.json": "acdab0a195ebc6570f3fac014a7d938f80d5ce613a1055b322b20667116c3e5e",
+    "generation/parts-proto/matte.py": "54de3d7d56c0c6710d548c8e396a8730a574db465201cca0cd6a0abf007f13db",
+    "generation/parts-proto/recipe.md": "54ad64d4f4c1294b82a32a72be3d736ab2bffe8f1d4cc72a09db912aa7749685",
+    "generation/parts-proto/run.py": "6ff050b54c982d17637eccada8b396235f16f671c09993551b3ef79829dcd079",
+    "generation/parts-proto/stats.json": "5bc712e7a824ad11b632d8097ed994e2db5cd07aae790b74424be9af6513cc76",
+    "handwheel-s600.glb": "e5c8d5983e44e00c09834a659bd579ca480df641247623418d5f40e8704144db",
+    "hub-cut.json": "814e05a56c1da679b25bee5e99c5eda6f40f399f401c0a872dd269b1598a4848",
+    "inputs/handwheel/concept-crop.png": "52ed18666fc99e1b8b7ac9476739002275e9dd8d8cafdec3537a213380f771fa",
+    "inputs/handwheel/front-rgba.json": "7a8106feb91abe0a7e97c9dcb3a5e55b7348c0a325521c1d63f8dbcfb6f51c18",
+    "inputs/handwheel/front-rgba.png": "17d84b143fe33106792992520769aa65af90347d88d3057aa151b4d2fe10f145",
+    "inputs/handwheel/isolated.metadata.json": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+    "inputs/handwheel/isolated.png": "7fa14de52c9ff4f64a25d1c4b9dae7f295486303e06bcbef164f109ad75d3efa",
+    "inputs/handwheel/prompt.txt": "9c7c455170f47b13432946e528f95b76af10f3a0abf802ae2f3d78b4def8c881",
+    "inputs/latch-dog/concept-crop.png": "ef43571a42348839a058b0aaee3e1a14cce386c0714177c1548edde5c82927d9",
+    "inputs/latch-dog/front-rgba.json": "d4f44362c50af4cb68e6b1b42629426c01843bafc7443e5a66fdd3e4ac2e4122",
+    "inputs/latch-dog/front-rgba.png": "762a995e2fbf931be61ffd3f4fa7429233f7e056c874fdff1ae384e4ccd114ce",
+    "inputs/latch-dog/isolated.metadata.json": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+    "inputs/latch-dog/isolated.png": "c85739e6271ac06c0ee97bbb8fbb2a3be98ad929965a6658c23a8fb11033af7a",
+    "inputs/latch-dog/prompt.txt": "fa865e0c49c11754f4252c0db5df24cc01a237e68db6c7ff39de8c1f1a329af9",
+    "inputs/leaf/concept-crop.png": "ef637da5842594a0eb32b01d3bdc3913a63c4a0722b94ac9e13557912518154b",
+    "inputs/leaf/concept-leaf-rgba.png": "b3b93428d29b1bffefee0386e28483f31a2d5976156f72e8820d0507a43244c7",
+    "inputs/leaf/outline-mask.png": "6e1c3ea25ef9af181457d17bf3a3476f0cd76fcc1d262ea9cbeb6b8f79fe59fd",
+    "inputs/leaf/outline.json": "fb77c87baf59866ea81f0f0c0043e9714ae5b45147c552841f2207607fcc3ab0",
+    "inputs/leaf/projection-reference.png": "7b29c0c4fd62edc276073adebb1a84255c7253b61cb7e505f0a2da31f454c604",
+    "inputs/upper-strap-hinge/concept-crop.png": "d614c8432a1ff1cce59f84b15be8bcdefcb34d2059313d01c751717a00e6c9c4",
+    "inputs/upper-strap-hinge/front-rgba.json": "8d00195e553bfffba9d9b3ab05e167c63d3239f27f798d90efbb65f5e4d324e2",
+    "inputs/upper-strap-hinge/front-rgba.png": "3acde5ac334e8a30735e5d716ebedbba94be1174838190b2495e852e4e80e610",
+    "inputs/upper-strap-hinge/isolated.metadata.json": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+    "inputs/upper-strap-hinge/isolated.png": "ceae1ec8b3a2a793ca1384d5616418625b8db580715229fe8e8b94774c4a483f",
+    "inputs/upper-strap-hinge/prompt.txt": "4a260d914c3ad13d038cb583413d404298d35ffac0814f5b7afe7c8adb03ad65",
+    "latch-dog-s601.glb": "91b76a3c2579cbc5bfefa4ccee0e068fa76a62fb69f2d37e1d0ffd0fb78b8762",
+    "leaf-fit.json": "165702e2a24596c4926e35d19dc9816069bf0c71445a41ed44c2205babf82926",
+    "leaf-s430.glb": "ed01c588ee3714bbadbcdbe6f2ab6174305929d5d728dac4bfae54734454b9a7",
+    "placements.json": "d8f17eb50c10153c3d92698f37f42bb0777f7349a3d7ab214f3e42a2062cb516",
+    "retention-nuts.json": "17a1fb584b0ff48d3bb389972f12d8e8750946070c7f735b5bd907667cd7a5e1",
+    "upper-strap-hinge-s600.glb": "d3485c9383098492e3cfb36cf93f4bd7720ae331690e982a7db1adf40287f682",
+    "wheel-edit.json": "9504af4f7d7003fb808e1a1871b2a5537dc57b44aec6078cf58c51371383fbe7",
+    "wheel-fit.json": "db270341cfa342cfda4e7b2653a7417a1f0bff84b06545b0f5175d69660bec7d",
+    "wheel-high.npz": "b895c840aa41fde923cc7c635e2884aba6061626eb1620ad5da929aafaf34fb6",
+    "wheel-low.npz": "5e088abbc202143a31f0bc4084b351e9ec88e360b77424066a2ebd5f7b75c597",
+    "edits/decimate_wheel_sector.py": "f1096c3388c7cfdefa14d0b29cbeb5082447459bd2e405101a2d3b578813fe29",
+    "edits/cleanup_wheel.py": "58f166515b919032280191691c907189d0dfee699a861f66963e9a837d953367"
+  },
+  "model": {
+    "checkpoint": "model.fp16.safetensors",
+    "checkpoint_sha256": "d36f5881bcdc56726b73e517cd444c13c60732431622da7268145355c8d38e9c",
+    "config_sha256": "315fd5bf601d1d103130b9fda202f1bd28eda495e68ed1621bc823d5519c5e5b",
+    "repository": "tencent/Hunyuan3D-2mv",
+    "revision": "3a761b539b29fe4ff64714813aa9560fd66f5de0",
+    "subfolder": "hunyuan3d-dit-v2-mv"
+  },
+  "generator": {
+    "commit": "f26094cde48344b3165d67271cc98ad99610abf8",
+    "historical_commit_recorded_by_prototype": false,
+    "identity_basis": "Byte comparison against published checkout. generate.py and every shape module match this revision; only unused paint_pipeline.py differs and its actual bytes are frozen.",
+    "non_shape_differences": [
+      "mlx_hunyuan3d/paint_pipeline.py"
+    ],
+    "shape_entrypoint": "../generator/generate.py"
+  },
+  "licence": {
+    "name": "Tencent Hunyuan 3D 2.0 Community License",
+    "territory_excludes": [
+      "European Union",
+      "United Kingdom",
+      "South Korea"
+    ],
+    "url": "https://huggingface.co/tencent/Hunyuan3D-2/resolve/main/LICENSE"
+  },
+  "identity_limit": "Generation did not record a separate historical checkout; shape-path identity reuses the frozen frame evidence.",
+  "selected": {
+    "latch": {
+      "file": "latch-dog-s601.glb",
+      "seed": 601
+    },
+    "wheel": {
+      "file": "handwheel-s600.glb",
+      "seed": 600
+    },
+    "leaf": {
+      "file": "leaf-s430.glb",
+      "seed": 430
+    },
+    "hinge": {
+      "file": "upper-strap-hinge-s600.glb",
+      "seed": 600,
+      "status": "frozen only; existing hinges unchanged pending Andrew"
+    }
+  },
+  "conditioning": {
+    "upper-strap-hinge": {
+      "crop": [
+        850,
+        185,
+        1080,
+        395
+      ],
+      "description": "the same upper strap hinge, its mounting plate and vertical knuckle barrel together as one whole object",
+      "flux_seed": 590,
+      "prompt": "Isolate the same upper strap hinge, its mounting plate and vertical knuckle barrel together as one whole object from the reference image. Same object, isolated, plain grey background, no other parts. Keep its exact shape, proportions, orientation and mechanical details. Remove the door, wall and surrounding hardware; show only this complete object centered with a clear margin on all sides."
+    },
+    "latch-dog": {
+      "crop": [
+        380,
+        200,
+        565,
+        350
+      ],
+      "description": "the same upper latch dog, its horizontal handle lug and keeper together as one whole object",
+      "flux_seed": 591,
+      "prompt": "Isolate the same upper latch dog, its horizontal handle lug and keeper together as one whole object from the reference image. Same object, isolated, plain grey background, no other parts. Keep its exact shape, proportions, orientation and mechanical details. Remove the door, wall and surrounding hardware; show only this complete object centered with a clear margin on all sides."
+    },
+    "handwheel": {
+      "crop": [
+        490,
+        340,
+        890,
+        740
+      ],
+      "description": "the same handwheel, its circular rim, six spokes and central hub together as one whole object",
+      "flux_seed": 592,
+      "prompt": "Isolate the same handwheel, its circular rim, six spokes and central hub together as one whole object from the reference image. Same object, isolated, plain grey background, no other parts. Keep its exact shape, proportions, orientation and mechanical details. Remove the door, wall and surrounding hardware; show only this complete object centered with a clear margin on all sides."
+    }
+  },
+  "settings": {
+    "model": "Hunyuan3D-2mv full non-turbo",
+    "view": "front only",
+    "steps": 30,
+    "cfg": 5,
+    "requested_octree_resolution": 512,
+    "seeds": [
+      600,
+      601,
+      602,
+      603
+    ]
+  },
+  "source_generation_logs": "generation/parts-proto/recipe.md; generation/leaf3/recipe.md",
+  "derived_cache_recipe": "measure_hub_cut.py --output <work>; edit_wheel.py --output <work>; Python with manifold3d: edits/reduce_wheel.py --output <work> --blender <Blender executable>. The reducer writes wheel-low.npz and wheel-fit.json after sector-local reduction, welded repetition, hub cut and low-facet cleanup.",
+  "no_new_inference": true,
+  "retention_nut_source": {
+    "commit": "436071ad6f0d6aecd7953a72a5cd198772c32f6c",
+    "exported_vertices": "retention-nuts.json",
+    "triangles_each": 44,
+    "source_asset_sha256": "da781048cfaef647431fb4db32eca3bdea2932478bf1bf825f17f8f9df705935",
+    "relative_scale": 0.7240990990990991
+  },
+  "low_poly_processing": {
+    "triangle_budget": 4000,
+    "sector_triangle_budget": 550,
+    "hub_triangle_budget": 450,
+    "sector_degrees": [
+      7.5,
+      67.5
+    ],
+    "repetitions": 6,
+    "seam_weld": "Manifold Boolean union of six repeated reduced sectors and separately reduced hub, then the existing planar hub cut",
+    "rim_weight": 0.01,
+    "pin": "Source metric extrema and repeated diameter stations; bound QEM overshoot to source envelope",
+    "low_cleanup_edge_distance_m": 0.0001,
+    "minimum_triangle_angle_degrees": 0.1,
+    "low_normals": "flat geometric normals with source high-to-low normal transfer",
+    "rim_added_max_error_m": 0.0008312428963437868
+  }
+}

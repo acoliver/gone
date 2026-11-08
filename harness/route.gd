@@ -130,7 +130,6 @@ func corridor(name: String) -> void:
 	walk_to(anchor(&"D14-POWER-CONSOLE", Vector3(2.45, 0, 3)))
 	walk_to(anchor(&"D14-POWER-CONSOLE", Vector3(0.35, 0, 0)))
 	look_at(anchor(&"D14-POWER-CONSOLE", Vector3(-1, 1.4, 0)), -1)
-	press()
 	hold(30)
 	look_at(anchor(&"D14-POWER-CONSOLE", Vector3(-1, 1.4, 0)), -20)
 	beat("console-inactive")

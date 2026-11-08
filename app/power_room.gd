@@ -9,7 +9,7 @@ extends Node3D
 ## looks inexplicably new next to the damaged walls (the stasis pods
 ## share that too-new quality; the reason is a later reveal). Under the
 ## emergency circuit the room reads red like the hall; actioning the
-## working console twice (palo / INACTIVO to shenu / EN FUNCIONAMIENTO) lights the generator and
+## working console once (palo / INACTIVO to shenu / EN FUNCIONAMIENTO) lights the generator and
 ## hands the hallway, bay and this room over to dim regular white.
 ## Colliders extend the hallway's set from
 ## solids authored here (Placement stays untouched): one construction
@@ -28,9 +28,7 @@ const ROOM_START_X = ShipGeometry.ROOM_START_X
 const ROOM_END_X = ShipGeometry.ROOM_END_X
 const ROOM_CEILING = ShipGeometry.ROOM_CEILING
 
-## The power door's leaf: the side doors' exact dimensions, proud of
-## the corridor side of the wall band, sliding aside along the wall
-## when it opens (the animation contract lives in PlayerMotion).
+## Regular steel is inset into the wall and slides into its drawn pocket.
 const DOOR_WIDTH: float = Hallway.SIDE_DOOR_WIDTH
 const DOOR_HEIGHT: float = Hallway.SIDE_DOOR_HEIGHT
 const DOOR_THICKNESS: float = Hallway.SIDE_DOOR_THICKNESS
@@ -121,6 +119,7 @@ var _fade: Intensity.FixtureFade = null
 var _white_fade: Intensity.FixtureFade = null
 var _generator_fade: Intensity.FixtureFade = null
 var _lights: Array[OmniLight3D] = []
+var _fill_lights: Array[Lighting.EmergencyFill] = []
 var _lenses: Array[MeshInstance3D] = []
 var _lens_mesh: BoxMesh = null
 var _lens_material: StandardMaterial3D = null
@@ -132,6 +131,7 @@ var _generator_light: OmniLight3D = null
 var _generator_ring_material: StandardMaterial3D = null
 var _door_leaf: MeshInstance3D = null
 var _door_leaf_base: Vector3 = Vector3.ZERO
+var _door_binding: Surfaces.MotionBinding
 var _console_state: int = -1
 var _screen_material: StandardMaterial3D = null
 var console_display: ShipDisplay = null
@@ -148,10 +148,7 @@ var _palette_cache: Dictionary = {}
 static func room_solids() -> Array[Placement.SolidPlacement]:
 	return ShipGeometry.power_room_solids()
 
-## The power door's closed leaf: the side doors' exact proud-mount
-## placement on the corridor side of the north wall band, at the power
-## door station. Slides into the wall band when it opens; the collider
-## rides only while shut, exactly like the stasis hatch's slab.
+## Closed collider and rendered leaf share the sim-owned in-wall dimensions.
 static func door_leaf() -> Placement.SolidPlacement:
 	return ShipGeometry.power_door_leaf()
 
@@ -181,7 +178,7 @@ static func console_solid(station: ConsoleStation) -> Placement.SolidPlacement:
 static func generator_solid() -> Placement.SolidPlacement:
 	return ShipGeometry.generator_solid()
 
-## Both authored layers, flattened for the harness. STANDBY is blank.
+## Both authored layers, flattened for the harness.
 static func console_labels(state: int) -> Dictionary:
 	var id := _state_message_id(state)
 	if id.is_empty():
@@ -204,8 +201,6 @@ static func _state_message_id(state: int) -> String:
 
 static func console_state_name(state: int) -> String:
 	match state:
-		Game.ConsoleState.STANDBY:
-			return "standby"
 		Game.ConsoleState.INACTIVE:
 			return "inactive"
 		Game.ConsoleState.ACTIVE:
@@ -245,13 +240,17 @@ static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 		"every power room surface carries its name"
 	)
 	for index: int in range(solids.size()):
-		var piece := _surface_instance(surface_roles[index], solids[index])
+		var piece := _surface_instance(surface_roles[index], solids[index], game.layout)
 		piece.name = surface_names[index]
 		room.add_child(piece)
 
-	room._door_leaf = _box_instance(door_leaf(), _flat_grey(DOOR_SHADE))
+	room._door_leaf = SlidingDoorModel.leaf(game.layout.door(ShipLayout.POWER_DOOR_ID), 1, game.layout)
+	var door_frame := SlidingDoorModel.frame(game.layout.door(ShipLayout.POWER_DOOR_ID))
+	room.add_child(door_frame)
+	room._door_binding = Surfaces.MotionBinding.new(room._door_leaf)
+	room._door_binding.pieces.append(room._door_leaf)
 	room._door_leaf.name = "PowerDoorLeaf"
-	room._door_leaf_base = door_leaf().center
+	room._door_leaf_base = room._door_leaf.position
 	room.add_child(room._door_leaf)
 
 	for station: ConsoleStation in console_stations():
@@ -261,10 +260,7 @@ static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 
 	room._lens_mesh = BoxMesh.new()
 	room._lens_mesh.size = Lighting.LENS_SIZE
-	room._lens_material = StandardMaterial3D.new()
-	room._lens_material.albedo_color = Lighting.LENS_BASE_COLOR
-	room._lens_material.emission = Color(Lighting.FIXTURE_EMISSIVE * level, 0.0, 0.0)
-	room._lens_material.roughness = 0.8
+	room._lens_material = Lighting.emergency_lens_material(level)
 	room._lens_mesh.material = room._lens_material
 	var held: Intensity.Result = Intensity.FixtureFade.holding(level)
 	assert(held.is_ok(), "the power room's level maps to a valid fade")
@@ -282,11 +278,21 @@ static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 	var white_held: Intensity.Result = Intensity.FixtureFade.holding(white_level)
 	assert(white_held.is_ok(), "the white strip level maps to a valid fade")
 	room._white_fade = white_held.fade
+	var fill_positions := game.layout.power_room().emergency_fill_positions()
 	for station_x: float in REGULAR_STATIONS_X:
 		for station_z: float in REGULAR_STATIONS_Z:
 			room.add_child(room._white_fixture(station_x, station_z, white_level))
+			var fill := Lighting.emergency_fill(fill_positions[room._fill_lights.size()], level, Lighting.POWER_FILL_MASK)
+			fill.name = "EmergencyFill%d" % room._fill_lights.size()
+			room.add_child(fill)
+			room._fill_lights.append(fill)
 
 	room._apply_console_state(game.console_state)
+	Lighting.mesh_layers(room, 1 | Lighting.POWER_FILL_MASK)
+	# This steel borders both rooms; the room-wide pass must not exclude hall fill.
+	var door_mask := 1 | Lighting.HALL_FILL_MASK | Lighting.POWER_FILL_MASK
+	room._door_leaf.layers = door_mask
+	Lighting.mesh_layers(door_frame, door_mask)
 	return room
 
 ## One console station: spine, screen, shelf, and the blank colored
@@ -414,6 +420,7 @@ func _build_generator(glow_level: float) -> Node3D:
 	_generator_light.light_color = GENERATOR_GLOW
 	_generator_light.light_energy = GENERATOR_LIGHT_ENERGY * glow_level
 	_generator_light.omni_range = 6.5
+	_generator_light.light_cull_mask = 1
 	_generator_light.shadow_enabled = false
 	_generator_light.position = Vector3(0.0, GENERATOR_HEIGHT - 0.7, 0.0)
 	group.add_child(_generator_light)
@@ -428,14 +435,11 @@ func _fixture(position: Vector3, level: float) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "PowerFixture"
 	fixture.position = position
-	var light := OmniLight3D.new()
-	light.light_color = Lighting.EMERGENCY_RED
-	light.light_energy = Lighting.FIXTURE_ENERGY * level
-	light.omni_range = Lighting.FIXTURE_RANGE
-	light.shadow_enabled = false
+	var light := Lighting.switched_key(_game.layout.power_room().emergency_light_role(), level)
 	fixture.add_child(light)
 	var lens := MeshInstance3D.new()
 	lens.name = "Lens"
+	lens.set_meta(&"lamp_circuit", "emergency")
 	lens.mesh = _lens_mesh
 	fixture.add_child(lens)
 	_lights.append(light)
@@ -451,11 +455,13 @@ func _white_fixture(station_x: float, station_z: float, level: float) -> Node3D:
 	light.light_color = Lighting.REGULAR_WHITE
 	light.light_energy = Lighting.regular_energy() * level
 	light.omni_range = Lighting.REGULAR_RANGE
+	light.light_cull_mask = 1
 	light.shadow_enabled = false
 	light.position = Vector3(0.0, -0.12, 0.0)
 	fixture.add_child(light)
 	var lens := MeshInstance3D.new()
 	lens.name = "Lens"
+	lens.set_meta(&"lamp_circuit", "white")
 	lens.mesh = _white_lens_mesh
 	fixture.add_child(lens)
 	_white_lights.append(light)
@@ -493,11 +499,13 @@ func process_frame(delta_secs: float) -> void:
 ## Writes render state only, and only when a value actually changed: no
 ## per-tick material allocation.
 func _apply_level(level: float) -> void:
-	var energy: float = Lighting.FIXTURE_ENERGY * level
+	var energy: float = Lighting.emergency_energy() * level
 	for light: OmniLight3D in _lights:
 		if light.light_energy != energy:
 			light.light_energy = energy
-	var emissive := Color(Lighting.FIXTURE_EMISSIVE * level, 0.0, 0.0)
+	for fill: Lighting.EmergencyFill in _fill_lights:
+		fill.apply_level(level)
+	var emissive := Lighting.emergency_emission(level)
 	if _lens_material.emission != emissive:
 		_lens_material.emission = emissive
 
@@ -525,8 +533,6 @@ func _apply_console_state(state: int) -> void:
 	console_display.set_messages(HEADING_ID, _state_message_id(state))
 	var emission: float = 0.0
 	match state:
-		Game.ConsoleState.STANDBY:
-			emission = 0.10
 		Game.ConsoleState.INACTIVE:
 			emission = 0.30
 		Game.ConsoleState.ACTIVE:
@@ -537,6 +543,7 @@ func _apply_console_state(state: int) -> void:
 ## space: the deterministic projection this module's leaf renders.
 func set_door_offset(offset: Vector3) -> void:
 	_door_leaf.position = _door_leaf_base + offset
+	_door_binding.refresh()
 
 ## The emergency red circuit's level in this room.
 func level() -> float:
@@ -595,15 +602,11 @@ func tick_console_attention(eye: Vector3, camera_forward: Vector3) -> void:
 
 ## One textured surface piece wearing the stasis room's shared material
 ## for its role — the same resource instance, never a copy.
-static func _surface_instance(
-	role: String, placement: Placement.SolidPlacement
-) -> MeshInstance3D:
-	var material := RoomGeometry.wall_material()
-	if role == "floor":
-		material = RoomGeometry.floor_material()
-	elif role == "ceiling":
-		material = RoomGeometry.ceiling_material()
-	return _box_instance(placement, material)
+static func _surface_instance(role: String, placement: Placement.SolidPlacement, layout: ShipLayout = ShipLayout.authored().layout) -> MeshInstance3D:
+	assert(StringName(role) == placement.material_role, "surface role agrees with pure recipe")
+	var piece := _box_instance(placement, Surfaces.material(placement.material_role))
+	Surfaces.bind_solid(piece, layout, placement)
+	return piece
 
 static func _box_instance(
 	placement: Placement.SolidPlacement, material: Material

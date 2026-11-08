@@ -2,16 +2,14 @@ extends SimTestCase
 
 const Writing = preload("res://app/naleya.gd")
 
-func test_console_builds_native_strokes_for_both_states_and_none_for_standby() -> void:
+func test_console_builds_native_strokes_on_arrival_and_after_activation() -> void:
 	var game := Game.new(0)
 	var room := PowerRoom.build(game)
 	var display := room.console_display
 	var quad: MeshInstance3D = display.get_node("TextSurface")
-	assert_true(display.native_canvas.stroke_quads.is_empty(), "standby has no native strokes")
-	assert_true(display.native_canvas.heading.is_empty() and display.perceived_canvas.heading.is_empty(), "standby has no heading")
-	assert_false(quad.visible, "standby text quad hidden")
 	for word: String in ["palo", "shenu"]:
-		game.press_console()
+		if word == "shenu":
+			game.press_console()
 		room.process_frame(Sim.LOGICAL_TICK_SECS)
 		assert_true(display.native_canvas.heading == "te mu nawa lina", "native heading")
 		assert_true(display.native_canvas.state_word == word, "native state")
@@ -35,7 +33,6 @@ func test_physical_only_switch_forces_shader_perception_to_zero() -> void:
 func _check_physical_only_switch() -> void:
 	var game := Game.new(0)
 	var room := PowerRoom.build(game)
-	game.press_console()
 	room.process_frame(Sim.LOGICAL_TICK_SECS)
 	var display := room.console_display
 	var tree := Engine.get_main_loop() as SceneTree
@@ -139,7 +136,6 @@ func _check_level_gaze_at_console_stand() -> void:
 	var to_screen := room.console_display.global_position - PlayerMotion.standing_eye(capsule)
 	var yaw := atan2(-to_screen.x, -to_screen.z)
 	player.adapter.look(yaw - player.look_angles().x, -player.look_angles().y)
-	game.press_console()
 	for _tick: int in range(DisplayPerception.FIRST_HOLD):
 		GameStep.new(game, player).advance()
 	assert_int_equal(game.console_state, Game.ConsoleState.INACTIVE, "console remains inactive")

@@ -31,7 +31,7 @@ Con el tiempo, el jugador descubre que:
 * saboteó primero el H-drive para retrasar la misión y, tras conocer las órdenes selladas, retiró un componente crítico del S-drive y lo llevó a astrometría;
 * durante el intento de contenerla, causó accidentalmente la muerte de su pareja, y conserva la responsabilidad por sus actos;
 * su sabotaje no detuvo la misión; los registros muestran la devastación de la Tierra, pero no prueban que murieran todas las personas;
-* han pasado más de cien años terrestres;
+* han pasado alrededor de mil años terrestres;
 * el único destino alcanzable es el mundo que la tripulación llama Nuestro Planeta (Ko Lu Ki Wena).
 
 Con S-drive y H-drive, el viaje dura unos cinco años. Con S-drive y propulsión convencional, dura unos treinta años terrestres. Sin S-drive el trayecto no es sobrevivible.
@@ -300,9 +300,9 @@ El sabotaje fracasa en su objetivo fundamental.
 
 Después de la muerte de su hija, el capitán deja inconsciente al protagonista y ordena que lo pongan en estasis. La nave queda a la deriva.
 
-### Más de un siglo
+### Alrededor de mil años
 
-La nave continúa existiendo durante más de cien años gracias a una combinación de:
+La nave continúa existiendo durante alrededor de mil años gracias a una combinación de:
 
 * sistemas automáticos;
 * energía intermitente;
@@ -794,7 +794,7 @@ Su traición no consiguió lo que pretendía.
 
 Los sistemas finalmente proporcionan datos fiables suficientes para reconstruir la cronología.
 
-Han pasado más de cien años.
+Han pasado alrededor de mil años desde que el capitán lo puso en estasis. Los intervalos ocultos de rescate, de años a décadas, siguen vigentes; casi todo ese tiempo transcurrió antes de su primer despertar.
 
 Las aparentes contradicciones anteriores adquieren sentido:
 
@@ -942,7 +942,7 @@ El archivo histórico sobre el descubrimiento de otra civilización, junto con l
 
 ### Fase 14
 
-**Han pasado más de cien años.**
+**Han pasado alrededor de mil años.**
 
 ### Fase 15
 
@@ -1431,9 +1431,9 @@ Fuente y mecanismo exactos de radiación: **POR DEFINIR.**
 
 ---
 
-## 49. Deterioro de cien años
+## 49. Deterioro de mil años
 
-La nave debe mostrar envejecimiento compatible con largos períodos:
+Tras mil años en aire sellado, estéril y oxigenado, no hay moho ni putrefacción biológica. La espuma se deshace en costra; la mayoría de las telas se vuelven quebradizas y caen en jirones o polvo; los sintéticos duran más, pero se decoloran y endurecen; el acero pintado se oxida mucho y las impresiones se desvanecen. Los plásticos de las cápsulas de estasis sobreviven. La nave debe mostrar envejecimiento compatible con este período:
 
 * materiales degradados;
 * depósitos;
@@ -1477,7 +1477,7 @@ Con S-drive y H-drive, la estimación es de **unos cinco años**. Con S-drive y 
 
 ## 52. Nave a la deriva
 
-La nave permanece a la deriva durante más de cien años.
+La nave permanece a la deriva durante alrededor de mil años.
 
 Debe establecerse posteriormente:
 
@@ -1574,7 +1574,7 @@ Estado de los catorce asuntos. «Resuelto» indica que el punto principal está 
 10. **Parcial.** S-drive más H-drive: unos cinco años; S-drive más propulsión convencional: unos treinta años terrestres. Distancias, fechas y mecánica exacta abiertas.
 11. **Abierto.** Se desconoce la causa y los límites de la zona irradiada.
 12. **Abierto.** Siguen pendientes los límites médicos, neurológicos y energéticos de la estasis.
-13. **Parcial.** Han pasado más de cien años terrestres y los despertares de rescate son posibles. Su número y distribución temporal siguen abiertos.
+13. **Parcial.** Han pasado alrededor de mil años terrestres y los despertares de rescate son posibles. Su número y distribución temporal siguen abiertos.
 14. **Parcial.** El destino es el único mundo habitable a su alcance, Nuestro Planeta (Ko Lu Ki Wena), hogar de la tripulación. Su nombre político y condiciones detalladas siguen abiertos; también quedan sin resolver la supervivencia del protagonista, su llegada y la protección que pueda ofrecerle su gente.
 
 El detalle social está en [docs/design/society-history-and-command.md](society-history-and-command.md); la secuencia de historia en [docs/design/story-reference.md](story-reference.md).

@@ -1,0 +1,248 @@
+[
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/leaf3/meshes/leaf-s430.glb",
+    "vertices": 256202,
+    "faces": 512436,
+    "watertight": false,
+    "welded_vertices": 256202,
+    "welded_watertight": false,
+    "bounds": [
+      [
+        -0.6816734075546265,
+        -0.9997913837432861,
+        -0.13693788647651672
+      ],
+      [
+        0.6492807269096375,
+        0.9946148991584778,
+        0.13223153352737427
+      ]
+    ],
+    "extents": [
+      1.330954134464264,
+      1.994406282901764,
+      0.269169420003891
+    ],
+    "components": 5,
+    "largest_component_face_fraction": 0.9999921941471716,
+    "units": "native normalized Hunyuan units; no metric fitting",
+    "off_wheel_slab_ray_span": {
+      "median": 0.04974114999999999,
+      "p10": 0.04950776,
+      "p90": 0.06491316,
+      "minimum": 0.0492842,
+      "maximum": 0.0658448,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.02494032957398682,
+      "method": "Same as previous run: frontmost minus backmost z at 90 bbox-relative samples, x=25..75%, y=18..33% and 72..82%. Intended off-wheel bands, not verified semantic segmentation. No semantic isolation of wheel or hardware is established."
+    },
+    "seed": 430,
+    "measurement_seconds": 1.4369027080247179
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/leaf3/meshes/leaf-s431.glb",
+    "vertices": 241346,
+    "faces": 482720,
+    "watertight": true,
+    "welded_vertices": 241346,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.6661603450775146,
+        -0.9998162984848022,
+        -0.14853845536708832
+      ],
+      [
+        0.6536638140678406,
+        0.994455099105835,
+        0.13418777287006378
+      ]
+    ],
+    "extents": [
+      1.3198241591453552,
+      1.9942713975906372,
+      0.2827262282371521
+    ],
+    "components": 2,
+    "largest_component_face_fraction": 0.9999834272456082,
+    "units": "native normalized Hunyuan units; no metric fitting",
+    "off_wheel_slab_ray_span": {
+      "median": 0.04381135,
+      "p10": 0.04371307000000001,
+      "p90": 0.04955839,
+      "minimum": 0.04361960000000001,
+      "maximum": 0.050420400000000004,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.02196859968654734,
+      "method": "Same as previous run: frontmost minus backmost z at 90 bbox-relative samples, x=25..75%, y=18..33% and 72..82%. Intended off-wheel bands, not verified semantic segmentation. No semantic isolation of wheel or hardware is established."
+    },
+    "seed": 431,
+    "measurement_seconds": 1.4463722079526633
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/leaf3/meshes/leaf-s432.glb",
+    "vertices": 250344,
+    "faces": 500740,
+    "watertight": false,
+    "welded_vertices": 250344,
+    "welded_watertight": false,
+    "bounds": [
+      [
+        -0.6837643384933472,
+        -0.9999479055404663,
+        -0.13352937996387482
+      ],
+      [
+        0.6630576252937317,
+        0.9944763779640198,
+        0.13813093304634094
+      ]
+    ],
+    "extents": [
+      1.3468219637870789,
+      1.994424283504486,
+      0.27166031301021576
+    ],
+    "components": 17,
+    "largest_component_face_fraction": 0.9999680472900108,
+    "units": "native normalized Hunyuan units; no metric fitting",
+    "off_wheel_slab_ray_span": {
+      "median": 0.03899414999999999,
+      "p10": 0.038623979999999995,
+      "p90": 0.04330738000000002,
+      "minimum": 0.03845799999999999,
+      "maximum": 0.04627680000000001,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.0195515820392448,
+      "method": "Same as previous run: frontmost minus backmost z at 90 bbox-relative samples, x=25..75%, y=18..33% and 72..82%. Intended off-wheel bands, not verified semantic segmentation. No semantic isolation of wheel or hardware is established."
+    },
+    "seed": 432,
+    "measurement_seconds": 1.3310576670337468
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/leaf3/meshes/leaf-s433.glb",
+    "vertices": 248193,
+    "faces": 496412,
+    "watertight": false,
+    "welded_vertices": 248193,
+    "welded_watertight": false,
+    "bounds": [
+      [
+        -0.6634345650672913,
+        -0.9999291896820068,
+        -0.1481046974658966
+      ],
+      [
+        0.6588839888572693,
+        0.9947115778923035,
+        0.15447011590003967
+      ]
+    ],
+    "extents": [
+      1.3223185539245605,
+      1.9946407675743103,
+      0.3025748133659363
+    ],
+    "components": 11,
+    "largest_component_face_fraction": 0.9999637397967817,
+    "units": "native normalized Hunyuan units; no metric fitting",
+    "off_wheel_slab_ray_span": {
+      "median": 0.011789549999999996,
+      "p10": 0.011631270000000004,
+      "p90": 0.023942460000000002,
+      "minimum": 0.011532999999999988,
+      "maximum": 0.026381799999999997,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.005910613174891291,
+      "method": "Same as previous run: frontmost minus backmost z at 90 bbox-relative samples, x=25..75%, y=18..33% and 72..82%. Intended off-wheel bands, not verified semantic segmentation. No semantic isolation of wheel or hardware is established."
+    },
+    "seed": 433,
+    "measurement_seconds": 1.3287434999947436
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/leaf3/meshes/leaf-s434.glb",
+    "vertices": 246274,
+    "faces": 492592,
+    "watertight": false,
+    "welded_vertices": 246274,
+    "welded_watertight": false,
+    "bounds": [
+      [
+        -0.6756850481033325,
+        -0.9998499155044556,
+        -0.0906393900513649
+      ],
+      [
+        0.6698466539382935,
+        0.9947010278701782,
+        0.1159285381436348
+      ]
+    ],
+    "extents": [
+      1.345531702041626,
+      1.9945509433746338,
+      0.2065679281949997
+    ],
+    "components": 7,
+    "largest_component_face_fraction": 0.9992854126741807,
+    "units": "native normalized Hunyuan units; no metric fitting",
+    "off_wheel_slab_ray_span": {
+      "median": 0.014870799999999997,
+      "p10": 0.014761620000000003,
+      "p90": 0.018289850000000003,
+      "minimum": 0.014573199999999994,
+      "maximum": 0.1431645,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.007455713301982497,
+      "method": "Same as previous run: frontmost minus backmost z at 90 bbox-relative samples, x=25..75%, y=18..33% and 72..82%. Intended off-wheel bands, not verified semantic segmentation. No semantic isolation of wheel or hardware is established."
+    },
+    "seed": 434,
+    "measurement_seconds": 1.2349786669947207
+  },
+  {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/hunyuan-hatch/leaf3/meshes/leaf-s435.glb",
+    "vertices": 250417,
+    "faces": 500818,
+    "watertight": true,
+    "welded_vertices": 250417,
+    "welded_watertight": true,
+    "bounds": [
+      [
+        -0.6682710647583008,
+        -0.9999260306358337,
+        -0.14177225530147552
+      ],
+      [
+        0.6627104878425598,
+        0.9948957562446594,
+        0.14728248119354248
+      ]
+    ],
+    "extents": [
+      1.3309815526008606,
+      1.9948217868804932,
+      0.289054736495018
+    ],
+    "components": 10,
+    "largest_component_face_fraction": 0.9998083135989522,
+    "units": "native normalized Hunyuan units; no metric fitting",
+    "off_wheel_slab_ray_span": {
+      "median": 0.0207337,
+      "p10": 0.020588459999999996,
+      "p90": 0.038347760000000015,
+      "minimum": 0.020418999999999993,
+      "maximum": 0.041941599999999996,
+      "valid_rays": 90,
+      "attempted_rays": 90,
+      "median_over_height": 0.01039376055362991,
+      "method": "Same as previous run: frontmost minus backmost z at 90 bbox-relative samples, x=25..75%, y=18..33% and 72..82%. Intended off-wheel bands, not verified semantic segmentation. No semantic isolation of wheel or hardware is established."
+    },
+    "seed": 435,
+    "measurement_seconds": 1.3776468749856576
+  }
+]

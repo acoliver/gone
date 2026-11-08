@@ -40,12 +40,12 @@ func enter_well(index: int) -> void:
 	if index == 1:
 		walk_to(Vector3(27, 0, 0))
 		open_hatch(&"D14-C-001-H-FORE", Vector3(28.2, 0, 0), Vector3(33, 0, 0))
-		open_hatch(&"D14-C-001-H-AFT", Vector3(34.3, 0, 0), Vector3(38, 0, 0))
+		open_hatch(&"D14-C-001-H-AFT", Vector3(33.9, 0, 0), Vector3(38, 0, 0))
 		walk_to(Vector3(33, 0, 0))
 	else:
 		walk_to(Vector3(8, 0, 0))
 		open_hatch(&"D14-C-000-H-AFT", Vector3(7.8, 0, 0), Vector3(3, 0, 0))
-		open_hatch(&"D14-C-000-H-FORE", Vector3(1.7, 0, 0), Vector3(-2, 0, 0))
+		open_hatch(&"D14-C-000-H-FORE", Vector3(2.1, 0, 0), Vector3(-2, 0, 0))
 		walk_to(Vector3(3, 0, 0))
 	var well := player.game.layout.well(StringName("C-%03d-LADDER" % index))
 	walk_to(Vector3(well.landing(14).origin.x, 0, -0.5))
@@ -87,7 +87,8 @@ func refusals(index: int, deck: int) -> void:
 	var layout := player.game.layout
 	var spec := layout.connector(ShipLayout.connector_id(deck, index))
 	var center := spec.bounds().get_center()
-	walk_to(Vector3(spec.port_opening().origin.x, center.y, -0.5))
+	walk_to(Vector3(spec.port_opening().origin.x, center.y, -1.2))
+	walk_to(Vector3(center.x, center.y, -1.2))
 	walk_to(Vector3(center.x, center.y, 0))
 	var ids := spec.hatch_ids()
 	ids.append(layout.lift(spec.lift_id()).door_id())
@@ -104,7 +105,8 @@ func refusals(index: int, deck: int) -> void:
 		var after := player.game.doors.snapshot(id)
 		assert(after.attempt == before + 1 and after.state == Doors.State.CLOSED and after.work == 0, "real selected endpoint door refuses: %s" % id)
 	walk_to(Vector3(center.x, center.y, 0))
-	walk_to(Vector3(spec.port_opening().origin.x, center.y, -0.5))
+	walk_to(Vector3(center.x, center.y, -1.2))
+	walk_to(Vector3(spec.port_opening().origin.x, center.y, -1.2))
 	walk_to(layout.well(spec.well_id()).landing(deck).origin)
 
 func trip(index: int) -> void:

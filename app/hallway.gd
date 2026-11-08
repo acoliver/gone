@@ -91,11 +91,13 @@ var side_leaves: Dictionary = {}
 var _game: Game = null
 var _fade: Intensity.FixtureFade = null
 var _lights: Array[OmniLight3D] = []
+var _fill_lights: Array[Lighting.EmergencyFill] = []
 var _lenses: Array[MeshInstance3D] = []
 var _lens_mesh: BoxMesh = null
 var _lens_material: StandardMaterial3D = null
 var _white_fade: Intensity.FixtureFade = null
 var _white_lights: Array[OmniLight3D] = []
+var _white_end_fill: Lighting.RegularEndFill
 var _white_lenses: Array[MeshInstance3D] = []
 var _white_lens_mesh: BoxMesh = null
 var _white_lens_material: StandardMaterial3D = null
@@ -153,13 +155,10 @@ static func build(game: Game) -> Hallway:
 	var hallway := Hallway.new()
 	hallway.name = "Hallway"
 	hallway._game = game
-	var level := 1.0 if game.hallway_lit else 0.0
+	var level := 1.0 if (game.hallway_lit and not game.power_active) else 0.0
 	hallway._lens_mesh = BoxMesh.new()
 	hallway._lens_mesh.size = Lighting.LENS_SIZE
-	hallway._lens_material = StandardMaterial3D.new()
-	hallway._lens_material.albedo_color = Lighting.LENS_BASE_COLOR
-	hallway._lens_material.emission = Color(Lighting.FIXTURE_EMISSIVE * level, 0.0, 0.0)
-	hallway._lens_material.roughness = 0.8
+	hallway._lens_material = Lighting.emergency_lens_material(level)
 	hallway._lens_mesh.material = hallway._lens_material
 	var held: Intensity.Result = Intensity.FixtureFade.holding(level)
 	assert(held.is_ok(), "the hallway's level maps to a finite nonnegative fade")
@@ -182,20 +181,23 @@ static func build(game: Game) -> Hallway:
 		"every hallway surface carries its name"
 	)
 	for index: int in range(hall_solids.size()):
-		var piece := _surface_instance(surface_roles[index], hall_solids[index])
+		var piece := _surface_instance(surface_roles[index], hall_solids[index], game.layout)
 		piece.name = surface_names[index]
+		if hall_solids[index].material_role == &"floor": piece.visible = false
 		hallway.add_child(piece)
 
-	hallway.add_child(_build_ceiling_damage())
+	hallway.add_child(CorridorDressing.build(game.layout, &"D14-S-041"))
+	hallway.add_child(_build_ceiling_damage(game.layout.section(&"D14-S-041")))
 
 	var doors := Node3D.new()
 	doors.name = "HallSideDoors"
-	var door_material := _flat_grey(SIDE_DOOR_SHADE)
 	var by_solid_id: Dictionary = {}
 	for id: StringName in game.layout.section(&"D14-S-041").side_door_ids():
 		by_solid_id[StringName("%s/LEAF" % id)] = id
 	for solid: ShipGeometry.SolidSpec in ShipGeometry.side_door_solids(game.layout):
-		var leaf := _box_instance(solid, door_material)
+		var spec := game.layout.door(by_solid_id[solid.id])
+		var leaf := SlidingDoorModel.leaf(spec, 1, game.layout)
+		doors.add_child(SlidingDoorModel.frame(spec))
 		leaf.set_meta(&"solid_id", solid.id)
 		hallway.side_leaves[by_solid_id[solid.id]] = leaf
 		doors.add_child(leaf)
@@ -203,7 +205,7 @@ static func build(game: Game) -> Hallway:
 
 	hallway.add_child(_build_switch())
 
-	for fixture_transform: Transform3D in fixture_transforms():
+	for fixture_transform: Transform3D in game.layout.section(&"D14-S-041").emergency_fixture_frames():
 		hallway.add_child(hallway._fixture(fixture_transform, level))
 
 	var white_level := 1.0 if game.power_active else 0.0
@@ -217,26 +219,32 @@ static func build(game: Game) -> Hallway:
 	var white_held: Intensity.Result = Intensity.FixtureFade.holding(white_level)
 	assert(white_held.is_ok(), "the white strip level maps to a valid fade")
 	hallway._white_fade = white_held.fade
-	for station_x: float in REGULAR_STATIONS_X:
-		hallway.add_child(hallway._white_fixture(station_x, white_level))
+	for frame: Transform3D in game.layout.section(&"D14-S-041").regular_light_frames():
+		var fixture := hallway._white_fixture(frame.origin.x, white_level)
+		fixture.transform = frame
+		hallway.add_child(fixture)
+	var section := game.layout.section(&"D14-S-041")
+	for position: Vector3 in section.emergency_fill_positions():
+		var fill := Lighting.emergency_fill(position, level, Lighting.HALL_FILL_MASK)
+		fill.name = "EmergencyFill%d" % hallway._fill_lights.size()
+		hallway.add_child(fill)
+		hallway._fill_lights.append(fill)
+	var bounce := Lighting.emergency_fill(section.emergency_end_fill_position(), level, Lighting.HALL_FILL_MASK, Lighting.EMERGENCY_END_FILL_SHARE, Lighting.EMERGENCY_END_FILL_COLOR)
+	bounce.name = "EmergencyFillEnd"
+	hallway.add_child(bounce)
+	hallway._fill_lights.append(bounce)
+	# Ceiling strips cannot directly light the downward arch. Reuse the
+	# layout-owned end bounce on the regular circuit, leaving emergency off.
+	hallway._white_end_fill = Lighting.regular_end_fill(section.emergency_end_fill_position(), white_level)
+	hallway.add_child(hallway._white_end_fill)
+	Lighting.mesh_layers(hallway, Lighting.architectural_mask(game.layout, section.id()))
 	return hallway
 
 ## The fixture group mirrors the stasis bay's: a pair at every station
 ## standoff from both side walls, so the whole corridor reads one
 ## rhythm from the doorway to the power door.
 static func fixture_transforms() -> Array[Transform3D]:
-	var transforms: Array[Transform3D] = []
-	for station_x: float in FIXTURE_STATIONS_X:
-		for side: float in [-1.0, 1.0]:
-			transforms.append(Transform3D(
-				Basis(),
-				Vector3(
-					station_x,
-					Lighting.WALL_MOUNT_HEIGHT,
-					side * (HALL_WIDTH / 2.0 - Lighting.WALL_STANDOFF)
-				)
-			))
-	return transforms
+	return ShipLayout.authored().layout.section(&"D14-S-041").emergency_fixture_frames()
 
 ## The fixture group holds the light and the lens as siblings, exactly
 ## as the stasis bay's do, so no mesh bounds stand in for the light's
@@ -245,14 +253,11 @@ func _fixture(fixture_transform: Transform3D, level: float) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "HallFixture"
 	fixture.transform = fixture_transform
-	var light := OmniLight3D.new()
-	light.light_color = Lighting.EMERGENCY_RED
-	light.light_energy = Lighting.FIXTURE_ENERGY * level
-	light.omni_range = Lighting.FIXTURE_RANGE
-	light.shadow_enabled = false
+	var light := Lighting.switched_key(_game.layout.section(&"D14-S-041").emergency_light_role(), level)
 	fixture.add_child(light)
 	var lens := MeshInstance3D.new()
 	lens.name = "Lens"
+	lens.set_meta(&"lamp_circuit", "emergency")
 	lens.mesh = _lens_mesh
 	fixture.add_child(lens)
 	_lights.append(light)
@@ -270,11 +275,13 @@ func _white_fixture(station_x: float, level: float) -> Node3D:
 	light.light_color = Lighting.REGULAR_WHITE
 	light.light_energy = Lighting.regular_energy() * level
 	light.omni_range = Lighting.REGULAR_RANGE
+	light.light_cull_mask = 1
 	light.shadow_enabled = false
 	light.position = Vector3(0.0, -0.12, 0.0)
 	fixture.add_child(light)
 	var lens := MeshInstance3D.new()
 	lens.name = "Lens"
+	lens.set_meta(&"lamp_circuit", "white")
 	lens.mesh = _white_lens_mesh
 	fixture.add_child(lens)
 	_white_lights.append(light)
@@ -292,7 +299,10 @@ static func _build_switch() -> Node3D:
 	var plate := MeshInstance3D.new()
 	plate.name = "Plate"
 	var plate_mesh := BoxMesh.new()
-	plate_mesh.size = SWITCH_PLATE_SIZE
+	var wall_depth := ShipLayout.CORRIDOR_WIDTH / 2 - SWITCH_PLATE_CENTER.z
+	var front := SWITCH_PLATE_SIZE.x / 2
+	plate_mesh.size = Vector3(front + wall_depth, SWITCH_PLATE_SIZE.y, SWITCH_PLATE_SIZE.z)
+	plate.position.x = (front - wall_depth) / 2
 	plate.mesh = plate_mesh
 	plate.material_override = _flat_grey(SWITCH_PLATE_SHADE)
 	group.add_child(plate)
@@ -300,8 +310,12 @@ static func _build_switch() -> Node3D:
 	dome.name = "Dome"
 	var dome_mesh := SphereMesh.new()
 	dome_mesh.radius = SWITCH_DOME_RADIUS
-	dome_mesh.height = SWITCH_DOME_RADIUS * 2.0
-	dome.mesh = dome_mesh
+	dome_mesh.height = SWITCH_DOME_RADIUS
+	dome_mesh.is_hemisphere = true
+	var cap := SurfaceTool.new()
+	cap.begin(Mesh.PRIMITIVE_TRIANGLES)
+	cap.append_from(dome_mesh, 0, Transform3D(Basis(Vector3.BACK, -PI / 2), Vector3(-SWITCH_DOME_RADIUS * 0.55 - 0.001, 0, 0)))
+	dome.mesh = cap.commit()
 	dome.position = Vector3(
 		SWITCH_PLATE_SIZE.x / 2.0 + SWITCH_DOME_RADIUS * 0.55, 0.0, 0.0)
 	var dome_material := StandardMaterial3D.new()
@@ -309,19 +323,25 @@ static func _build_switch() -> Node3D:
 	dome_material.roughness = 0.35
 	dome.material_override = dome_material
 	group.add_child(dome)
+	var bezel_material := _flat_grey(0.20)
+	bezel_material.metallic = 0.75
+	bezel_material.roughness = 0.67
+	var bezel := HatchModel.mesh_piece(HatchModel.cylinder(SWITCH_DOME_RADIUS * 1.15, 0.012), Transform3D(Basis(Vector3.BACK, -PI / 2), Vector3(front, 0, 0)), 1, bezel_material)
+	bezel.name = "ButtonBezel"
+	group.add_child(bezel)
 	return group
 
 ## The hall's ceiling damage, in the stasis room's language: tray runs
 ## tipped off level, hanging wire loops beneath them. Dressing only —
 ## outside the walking envelope, deliberately not colliders.
-static func _build_ceiling_damage() -> Node3D:
+static func _build_ceiling_damage(spec: ShipLayout.SectionSpec) -> Node3D:
 	var damage := Node3D.new()
 	damage.name = "HallCeilingDamage"
 	var tray_material := _flat_grey(RoomGeometry.TRAY_SHADE)
 	var wire_material := _flat_grey(RoomGeometry.WIRE_SHADE)
-	for placement: Placement.SolidPlacement in _ceiling_trays():
+	for placement: ShipGeometry.SolidSpec in spec.ceiling_trays():
 		damage.add_child(_box_instance(placement, tray_material))
-	for loop: Placement.WireLoop in _ceiling_loops():
+	for loop: Placement.WireLoop in spec.ceiling_loops():
 		var mesh := TorusMesh.new()
 		mesh.inner_radius = Placement.WIRE_INNER_RADIUS
 		mesh.outer_radius = Placement.WIRE_OUTER_RADIUS
@@ -336,33 +356,12 @@ static func _build_ceiling_damage() -> Node3D:
 ## One long tray run down the corridor and one torn cross stub, tipped
 ## off level the way the stasis room's trays read.
 static func _ceiling_trays() -> Array[Placement.SolidPlacement]:
-	var drop := HALL_CEILING_HEIGHT - Placement.TRAY_CEILING_DROP
-	return [
-		Placement.SolidPlacement.new(
-			Vector3(16.5, drop, 0.35),
-			Vector3(9.0, Placement.TRAY_HEIGHT, Placement.TRAY_WIDTH),
-			Quaternion(Vector3.UP, 0.0) * Quaternion(Vector3.RIGHT, 0.05)
-		),
-		Placement.SolidPlacement.new(
-			Vector3(23.0, drop - 0.04, -0.55),
-			Vector3(3.2, Placement.TRAY_HEIGHT, Placement.TRAY_WIDTH),
-			Quaternion(Vector3.UP, PI / 2.0) * Quaternion(Vector3.RIGHT, -0.06)
-		),
-	]
+	return ShipLayout.authored().layout.section(&"D14-S-041").ceiling_trays()
 
 ## Two hanging wire loops under the tray run, at the stasis room's
 ## scale and above the camera-clearance floor.
 static func _ceiling_loops() -> Array[Placement.WireLoop]:
-	return [
-		Placement.WireLoop.new(
-			Vector3(13.6, 2.72, 0.42),
-			Quaternion(Vector3.RIGHT, PI / 2.0) * Quaternion(Vector3.UP, 0.8)
-		),
-		Placement.WireLoop.new(
-			Vector3(21.4, 2.66, -0.48),
-			Quaternion(Vector3.RIGHT, PI / 2.0) * Quaternion(Vector3.UP, 2.1)
-		),
-	]
+	return ShipLayout.authored().layout.section(&"D14-S-041").ceiling_loops()
 
 ## One render-bridge frame, mirroring the stasis bay's Lighting bridge:
 ## retarget only on the sim-side target change (the switch flip, the
@@ -390,17 +389,20 @@ func process_frame(delta_secs: float) -> void:
 ## Writes render state only, and only when a value actually changed: no
 ## per-tick material allocation.
 func _apply_level(level: float) -> void:
-	var energy: float = Lighting.FIXTURE_ENERGY * level
+	var energy: float = Lighting.emergency_energy() * level
 	for light: OmniLight3D in _lights:
 		if light.light_energy != energy:
 			light.light_energy = energy
-	var emissive := Color(Lighting.FIXTURE_EMISSIVE * level, 0.0, 0.0)
+	for fill: Lighting.EmergencyFill in _fill_lights:
+		fill.apply_level(level)
+	var emissive := Lighting.emergency_emission(level)
 	if _lens_material.emission != emissive:
 		_lens_material.emission = emissive
 
 ## Writes the regular strips' render state the same way.
 func _apply_white_level(level: float) -> void:
 	var energy: float = Lighting.regular_energy() * level
+	_white_end_fill.apply_level(level)
 	for light: OmniLight3D in _white_lights:
 		if light.light_energy != energy:
 			light.light_energy = energy
@@ -440,17 +442,15 @@ func white_lens_material() -> StandardMaterial3D:
 
 ## One textured surface piece wearing the stasis room's shared material
 ## for its role — the same resource instance, never a copy.
-static func _surface_instance(role: String, placement: Placement.SolidPlacement) -> MeshInstance3D:
-	var material := RoomGeometry.wall_material()
-	if role == "floor":
-		material = RoomGeometry.floor_material()
-	elif role == "ceiling":
-		material = RoomGeometry.ceiling_material()
-	return _box_instance(placement, material)
+static func _surface_instance(role: String, placement: Placement.SolidPlacement, layout: ShipLayout = ShipLayout.authored().layout) -> MeshInstance3D:
+	assert(StringName(role) == placement.material_role, "surface role agrees with pure recipe")
+	var piece := _box_instance(placement, Surfaces.material(placement.material_role), layout)
+	Surfaces.bind_solid(piece, layout, placement)
+	return piece
 
-static func _box_instance(placement: Placement.SolidPlacement, material: Material) -> MeshInstance3D:
+static func _box_instance(placement: Placement.SolidPlacement, material: Material, layout: ShipLayout = ShipLayout.authored().layout) -> MeshInstance3D:
 	var instance := MeshInstance3D.new()
-	instance.mesh = _box_mesh(placement.size)
+	instance.mesh = SlidingDoorModel.wall_mesh(layout, placement) if placement.material_role == &"wall" else HatchModel.solid_mesh(placement)
 	instance.material_override = material
 	instance.position = placement.center
 	instance.quaternion = placement.rotation

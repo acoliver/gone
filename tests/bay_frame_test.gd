@@ -1,6 +1,36 @@
 extends SimTestCase
 # New pod #88: pins follow the fitted asset, row centers and eight-piece topology.
 
+func test_bay_side_wall_caps_do_not_compete_with_the_hall_facing_wall() -> void:
+	var room := RoomGeometry.build(true)
+	for index: int in [2, 3]:
+		var wall: MeshInstance3D = room.get_child(index)
+		var end: float = wall.position.x + wall.mesh.size.x / 2
+		assert_true(end <= Pods.ROOM_LENGTH / 2 + 0.00001, "bay-only cap is behind the hall wall, not coplanar with its hall-lit face")
+		assert_true(is_equal_approx(wall.position.x - wall.mesh.size.x / 2, -Pods.ROOM_LENGTH / 2 - ShipLayout.WALL), "far bay corner remains sealed")
+	var layout := ShipLayout.authored().layout
+	var hall := ShipGeometry.hallway_solids(layout)
+	for side: float in [-1.0, 1.0]:
+		for offset: float in [0.025, 0.1, 0.175]:
+			var point := layout.bay_to_world() * Vector3(Pods.ROOM_LENGTH / 2 + ShipLayout.WALL / 2, 1.6, side * (Pods.ROOM_WIDTH / 2 + offset))
+			var closed := false
+			for solid: ShipGeometry.SolidSpec in hall:
+				if AABB(-solid.size / 2, solid.size).has_point(solid.transform.affine_inverse() * point): closed = true
+			assert_true(closed, "hall wall owns the removed overlap, with no see-through gap")
+	room.free()
+
+func test_bay_shell_weather_uses_the_layout_frame_exactly_once() -> void:
+	var root := Node3D.new()
+	var game := Game.new(0)
+	var scene := ShipScene.build_into(root, game, false)
+	var wall: GeometryInstance3D = scene.room.get_child(2)
+	var frame: Surfaces.SurfaceFrame = wall.get_meta(&"surface_frame")
+	assert_true(frame.world_from_surface == game.layout.bay_to_world(), "weather follows the same bay-local frame as geometry")
+	assert_true(frame.key == &"D14-BAY/PORT", "bay wall uses semantic layout identity")
+	var point := Vector3(2, 1, -4)
+	assert_true(Surfaces.sample_position(wall, game.layout.bay_to_world() * point).is_equal_approx(point), "sample frame is applied once")
+	root.free()
+
 func test_runtime_exit_is_the_rigidly_transformed_local_path() -> void:
 	var game := Game.new(0)
 	var frame := ShipLayout.authored().layout.bay_to_world()
@@ -37,10 +67,10 @@ func test_all_pod_and_light_frames_rotate_without_changing_local_fixtures() -> v
 		var center := pod.placement().center
 		assert_close(frame * Vector3(center.x, 0, center.y), pins[pod.id().index()], "world pod pin")
 		assert_close(frame.affine_inverse() * pins[pod.id().index()], Vector3(center.x, 0, center.y), "inverse returns local pod")
-	var fixtures := Lighting.fixture_transforms(game.registry)
+	var fixtures := game.layout.bay().emergency_fixtures(game.registry)
 	for index: int in range(7):
-		assert_vec3_equal(Vector3(0, (frame * fixtures[index]).origin.y, 0), Vector3(0, 2.65, 0), "fixture height unchanged")
-		assert_vec3_equal((frame * fixtures[index]).basis.x, Vector3(0, 0, -1), "light frame quarter-turn")
+		assert_vec3_equal(Vector3(0, (frame * fixtures[index].frame).origin.y, 0), Vector3(0, 2.65, 0), "fixture height unchanged")
+		assert_vec3_equal((frame * fixtures[index].frame).basis.x, Vector3(0, 0, -1), "light frame quarter-turn")
 	var rig := Player.build(game, null)
 	rig.scripted = true
 	rig._ready()
@@ -60,6 +90,11 @@ func test_resolver_sweep_is_covariant_in_the_moved_bay_and_ends_have_closed_hatc
 	var actual := Resolve.resolve_motion(world, frame.basis * Vector3(0, 0, 6), game.colliders)
 	assert_true(expected.is_ok() and actual.is_ok(), "both sweeps accepted")
 	assert_close(actual.motion.displacement, frame.basis * expected.motion.displacement, "rotated collision sweep")
+	var ids := game.collision.solid_ids(14)
 	for x: float in [5.9, 30.1]:
 		var probe := ColliderSet.Aabb.try_new(Vector3(x, 1.2, 0), Vector3(0.05, 0.5, 0.3)).box
-		assert_int_equal(game.colliders.overlapping(probe).size(), 1 if x < 6 else 2, "reserved swing at X=5.9; aperture plus swing at X=30.1")
+		var owners: Array[StringName] = []
+		for index: int in game.colliders.overlapping(probe):
+			owners.append(ids[index])
+		var expected_owners := [&"D14-C-000-H-AFT/SWING"] if x < 6 else [&"D14-C-001-H-FORE/BLOCKER", &"D14-C-001-H-FORE/SWING"]
+		assert_true(owners == expected_owners, "only the named passage gate and hardware sweep at X=%s: %s" % [x, owners])

@@ -10,6 +10,7 @@ var _leaf: Node3D
 var _leaf_base := Vector3.ZERO
 var _offset_sink: Callable
 var _angle: float = 0.0
+var _surface_bindings: Array[Surfaces.MotionBinding] = []
 
 static func adapter(spec: ShipLayout.DoorSpec, sink: Callable) -> DoorView:
 	var view := DoorView.new()
@@ -22,6 +23,10 @@ static func bind_leaf(spec: ShipLayout.DoorSpec, leaf: Node3D) -> DoorView:
 	view._spec = spec
 	view._leaf = leaf
 	view._leaf_base = leaf.position
+	var binding := Surfaces.MotionBinding.new(leaf)
+	_collect_bound(leaf, binding.pieces)
+	assert(not binding.pieces.is_empty(), "side/lift leaf has bound steel")
+	view._surface_bindings.append(binding)
 	return view
 
 static func build(spec: ShipLayout.DoorSpec, fore_mask: int = 1, aft_mask: int = 1) -> DoorView:
@@ -30,50 +35,74 @@ static func build(spec: ShipLayout.DoorSpec, fore_mask: int = 1, aft_mask: int =
 	view.name = String(spec.id())
 	view._spec = spec
 	view.transform = spec.frame()
-	var frame := Node3D.new()
-	frame.name = "Frame"
-	view.add_child(frame)
 	var masks: Array[int] = [fore_mask, aft_mask]
-	HatchModel.add_faces(frame, &"frame", spec.aperture(), masks, false)
-	for solid: ShipGeometry.SolidSpec in ShipGeometry.hatch_frame_solids(spec):
-		if solid.id == StringName("%s/COAMING" % spec.id()):
-			var piece := split_surface(solid, spec.frame(), fore_mask, aft_mask)
-			piece.name = "Coaming"
-			view.add_child(piece)
+	view.add_child(HatchModel.surround_faces(spec, masks))
 	view._hinge = Node3D.new()
 	view._hinge.name = "Hinge"
 	view._hinge.transform = spec.hinge_frame()
 	view.add_child(view._hinge)
-	var leaf := HatchModel.leaf(spec.aperture(), masks)
+	var leaf := HatchModel.leaf(spec, masks, view._surface_bindings)
 	view._hinge.add_child(leaf)
 	view._wheel = leaf.get_node("Wheel")
 	view._reverse_wheel = leaf.get_node("ReverseWheel")
-	var hinges := Node3D.new()
-	hinges.name = "Hinges"
-	view.add_child(hinges)
-	hinges.transform = spec.hinge_frame()
-	HatchModel.add_faces(hinges, &"hinges", spec.aperture(), masks, true)
-	# Both faces have an unpowered button and reader, without emissive material.
-	for side: int in [-1, 1]:
-		var panel := HatchModel.control_panel()
-		panel.name = "ForePanel" if side < 0 else "AftPanel"
-		panel.position = Vector3(spec.aperture().x / 2 + 0.38, 1.25, -0.08 if side < 0 else ShipLayout.WALL + 0.08)
-		if side < 0:
-			panel.rotation.y = PI
-		Lighting.mesh_layers(panel, fore_mask if side < 0 else aft_mask)
+	for side: int in range(2):
+		var services := HatchServices.build(spec, side, masks[side])
+		view.add_child(services)
+		var panel := services.get_node("Control")
+		services.remove_child(panel)
+		panel.name = "ForePanel" if side == 0 else "AftPanel"
 		view.add_child(panel)
+	view.refresh_surfaces()
 	return view
 
-static func split_surface(solid: ShipGeometry.SolidSpec, frame: Transform3D, fore_mask: int, aft_mask: int) -> Node3D:
+static func collar_surface(solid: ShipGeometry.SolidSpec, spec: ShipLayout.DoorSpec, fore_mask: int, aft_mask: int, material: Material = null, surface_frame: Surfaces.SurfaceFrame = null) -> Node3D:
+	var group := Node3D.new()
+	var arrays := HatchModel.solid_mesh(solid).surface_get_arrays(0)
+	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+	var faces: Array[SurfaceTool] = [SurfaceTool.new(), SurfaceTool.new()]
+	for face: SurfaceTool in faces:
+		face.begin(Mesh.PRIMITIVE_TRIANGLES)
+	# The sleeve between the wall and setback leaf is in the approach room.
+	# Only its far end cap faces the other room, not half of every side wall.
+	var approach := 0 if spec.hinge_frame().origin.z > ShipLayout.WALL / 2 else 1
+	if solid.hatch_profile == null:
+		for index: int in range(vertices.size()): vertices[index] = ShipGeometry.hatch_frame_vertex(spec, solid, vertices[index])
+	for triangle: int in range(0, indices.size(), 3):
+		var a := vertices[indices[triangle]]
+		var b := vertices[indices[triangle + 1]]
+		var c := vertices[indices[triangle + 2]]
+		var normal := (c - a).cross(b - a).normalized()
+		var side := (0 if normal.z < 0 else 1) if absf(normal.z) > 0.5 else approach
+		for vertex: Vector3 in [a, b, c]:
+			faces[side].set_normal(normal)
+			faces[side].add_vertex(vertex)
+	var pose := spec.frame().affine_inverse() * solid.transform
+	var binding := Surfaces.door_frame(spec, &"FRAME") if surface_frame == null else surface_frame
+	var role := solid.material_role if material == null else &"wall"
+	var surface := Surfaces.material(role) if material == null else material
+	for side: int in range(2):
+		var piece := HatchModel.mesh_piece(faces[side].commit(), pose, fore_mask if side == 0 else aft_mask, surface)
+		Surfaces.bind(piece, role, binding)
+		group.add_child(piece)
+	return group
+
+static func split_surface(solid: ShipGeometry.SolidSpec, frame: Transform3D, fore_mask: int, aft_mask: int, layout: ShipLayout = ShipLayout.authored().layout) -> Node3D:
+	var material := Surfaces.material(Surfaces.role_for_solid(solid))
+	var binding := Surfaces.frame_for_solid(layout, solid)
+	if solid.hatch_profile != null:
+		assert(frame == solid.hatch_profile.frame(), "profiled wall uses its portal frame")
+		return collar_surface(solid, solid.hatch_profile, fore_mask, aft_mask, material, binding)
 	var group := Node3D.new()
 	var pose := frame.affine_inverse() * solid.transform
-	var material := RoomGeometry.wall_material() if solid.material_role == &"wall" else HatchModel.material(HatchModel.DOOR_SHADE)
 	for side: int in [-1, 1]:
 		var half_size := solid.size
 		half_size.z /= 2
 		var half_pose := pose
 		half_pose.origin += pose.basis.z * side * half_size.z / 2
-		group.add_child(HatchModel.mesh_piece(HatchModel.box_mesh(half_size), half_pose, fore_mask if side < 0 else aft_mask, material))
+		var piece := HatchModel.mesh_piece(HatchModel.box_mesh(half_size), half_pose, fore_mask if side < 0 else aft_mask, material)
+		Surfaces.bind(piece, Surfaces.role_for_solid(solid), binding)
+		group.add_child(piece)
 	return group
 
 func label_leaf() -> Node3D:
@@ -87,9 +116,17 @@ func present(snapshot: Doors.Snapshot) -> void:
 	if _leaf != null:
 		_leaf.position = _leaf_base + _spec.frame().basis.z * (snapshot.shudder * 0.012)
 	if _hinge != null:
-		_hinge.basis = Basis(Vector3.UP, _spec.swing_radians() * snapshot.leaf_fraction)
+		_hinge.basis = Basis(Vector3.UP, snapshot.open_radians * snapshot.leaf_fraction)
 		_wheel.rotation.z = deg_to_rad(_angle)
 		_reverse_wheel.rotation.z = -deg_to_rad(_angle)
+	refresh_surfaces()
+
+func refresh_surfaces() -> void:
+	for binding: Surfaces.MotionBinding in _surface_bindings: binding.refresh()
+
+static func _collect_bound(node: Node, pieces: Array[GeometryInstance3D]) -> void:
+	if node is GeometryInstance3D and node.has_meta(&"surface_frame"): pieces.append(node)
+	for child: Node in node.get_children(): _collect_bound(child, pieces)
 
 func wheel_angle() -> float:
 	return _angle

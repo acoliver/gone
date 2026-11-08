@@ -23,6 +23,9 @@ func test_one_step_and_capture_pause_freeze_all_logic() -> void:
 	assert_int_equal(step.logical_tick, 1, "one logical tick")
 	var before := player.position
 	var fade_before := hallway.level()
+	var fills := hallway.find_children("EmergencyFill*", "OmniLight3D", true, false)
+	assert_int_equal(fills.size(), 8, "eight hall fills follow the logical clock")
+	var fill_before := fills.map(func(fill: OmniLight3D) -> float: return fill.light_energy)
 	var door_before := game.doors.snapshot(ShipLayout.POWER_DOOR_ID).offset
 	assert_true(fade_before > 0 and fade_before < 1, "a fade is running before capture")
 	for _frame: int in range(30):
@@ -32,6 +35,8 @@ func test_one_step_and_capture_pause_freeze_all_logic() -> void:
 	assert_vec3_equal(player.position, before, "capture freezes movement")
 	assert_float_equal(lighting.level(), 1.0, "capture holds fixture state")
 	assert_float_equal(hallway.level(), fade_before, "capture freezes a running fade")
+	for index: int in range(fills.size()):
+		assert_float_equal(fills[index].light_energy, fill_before[index], "capture freezes each fill with the keys")
 	assert_vec3_equal(game.doors.snapshot(ShipLayout.POWER_DOOR_ID).offset, door_before, "capture freezes a running door")
 	player.free()
 	lighting.free()

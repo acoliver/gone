@@ -1,5 +1,22 @@
 extends SimTestCase
 
+func test_building_and_freeing_every_hatch_leaves_no_orphans() -> void:
+	var layout := ShipLayout.authored().layout
+	var initial_orphans := Node.get_orphan_node_ids().size()
+	var builds := 0
+	for cycle: int in range(2):
+		for id: StringName in layout.door_ids():
+			var spec := layout.door(id)
+			if spec.animation() != ShipLayout.AnimationRecipe.HINGE:
+				continue
+			var view := DoorView.build(spec)
+			for solid: ShipGeometry.SolidSpec in ShipGeometry.hatch_wall_solids(spec):
+				view.add_child(DoorView.split_surface(solid, spec.frame(), 1, 1))
+			view.free()
+			builds += 1
+			assert_int_equal(Node.get_orphan_node_ids().size(), initial_orphans, "building and freeing %s in cycle %d leaves no orphan nodes" % [id, cycle])
+	print("HATCH BUILD/FREE builds=%d orphan_growth=%d" % [builds, Node.get_orphan_node_ids().size() - initial_orphans])
+
 func test_shared_hatch_model_has_no_presenter_dependencies() -> void:
 	var source := FileAccess.get_file_as_string("res://app/hatch_model.gd")
 	for presenter: String in ["DoorView.", "Hatch.", "Hallway."]:
@@ -10,21 +27,29 @@ func test_hatch_hardware_shares_resources_without_sharing_room_masks() -> void:
 	var first := DoorView.build(layout.door(&"D14-C-001-H-FORE"), 4, 8)
 	var remote := DoorView.build(layout.door(&"D01-C-001-H-FORE"), 32, 64)
 	var bay := Hatch.build()
-	for path: String in ["Frame/ForeSteel", "Frame/AftSteel", "Hinges/ForeSteel", "Hinge/Leaf/Wheel"]:
+	for path: String in ["Frame/ForeSteel", "Frame/AftSteel", "Hinge/Leaf/ForeSteel", "Hinge/Leaf/Wheel"]:
 		var a: MeshInstance3D = first.get_node(path).get_child(0) if path.ends_with("Wheel") else first.get_node(path)
 		var b: MeshInstance3D = remote.get_node(path).get_child(0) if path.ends_with("Wheel") else remote.get_node(path)
 		assert_true(a.mesh == b.mesh and a.material_override == b.material_override, "shared hardware resource " + path)
 		assert_int_equal(a.layers, 8 if path.contains("Aft") else 4, "D14 mask remains local")
 		assert_int_equal(b.layers, 64 if path.contains("Aft") else 32, "remote mask remains local")
+	var panel_parts: Array[String] = ["MountingBox", "Housing", "FacePlate", "Fastener00", "Fastener01", "Fastener10", "Fastener11", "ButtonBezel", "Button", "CardReader", "Indicator", "Toggle"]
 	for panel: String in ["ForePanel", "AftPanel"]:
-		for index: int in range(3):
-			var a: MeshInstance3D = first.get_node(panel).get_child(index)
-			var b: MeshInstance3D = remote.get_node(panel).get_child(index)
-			var c: MeshInstance3D = bay.get_node(panel).get_child(index)
-			assert_true(a.mesh == b.mesh and a.mesh == c.mesh, "all hatch panels share primitives")
-			assert_true(a.material_override == b.material_override and a.material_override == c.material_override, "all hatch panels share materials")
-			assert_int_equal(a.layers, 4 if panel == "ForePanel" else 8, "panel room mask")
-			assert_int_equal(c.layers, 1, "bay panel room mask")
+		var first_panel := first.get_node(panel)
+		var remote_panel := remote.get_node(panel)
+		var bay_panel := bay.view.get_node(panel)
+		for owner: Node in [first_panel, remote_panel, bay_panel]:
+			assert_int_equal(owner.get_child_count(), panel_parts.size(), "complete panel part inventory")
+			for part: String in panel_parts:
+				assert_true(owner.has_node(NodePath(part)), "stable panel part name: " + part)
+		for a: MeshInstance3D in first_panel.get_children():
+			var b := remote_panel.get_node(NodePath(a.name)) as MeshInstance3D
+			var c := bay_panel.get_node(NodePath(a.name)) as MeshInstance3D
+			assert_true(a.mesh == b.mesh and a.mesh == c.mesh, "all hatch panels share primitives: " + a.name)
+			assert_true(a.material_override == b.material_override and a.material_override == c.material_override, "all hatch panels share materials: " + a.name)
+			assert_int_equal(a.layers, 4 if panel == "ForePanel" else 8, "panel room mask: " + a.name)
+			assert_int_equal(b.layers, 32 if panel == "ForePanel" else 64, "remote panel room mask: " + a.name)
+			assert_int_equal(c.layers, 1, "bay panel room mask: " + a.name)
 	first.free()
 	remote.free()
 	bay.free()
@@ -44,29 +69,54 @@ func test_hatch_meshes_have_rounded_frame_braces_large_wheel_and_instanced_rivet
 		else:
 			assert_true(piece.mesh == other.mesh, "all decks share generated geometry")
 		assert_true(piece.material_override == other.material_override, "all decks share steel materials")
-	for path: String in ["Hinges", "Hinge/Leaf/StrapHinges", "Hinge/Leaf/Lugs"]:
-		var fore: MeshInstance3D = first.get_node(path + "/ForeSteel")
-		var aft: MeshInstance3D = first.get_node(path + "/AftSteel")
-		var fore_bounds := fore.transform * fore.mesh.get_aabb()
-		var aft_bounds := aft.transform * aft.mesh.get_aabb()
-		assert_float_equal(fore_bounds.position.x, aft_bounds.position.x, "both faces keep the same physical hinge/latch edge: " + path)
-		assert_float_equal(fore_bounds.end.x, aft_bounds.end.x, "reverse-face hardware is not moved to the opposite jamb: " + path)
+	var fore: MeshInstance3D = first.get_node("Hinge/Leaf/ForeSteel")
+	var aft: MeshInstance3D = first.get_node("Hinge/Leaf/AftSteel")
+	var fore_bounds := _group_bounds(fore.mesh, "Lugs/ForeSteel/")
+	var aft_bounds := _group_bounds(aft.mesh, "Lugs/AftSteel/")
+	assert_float_equal(fore_bounds.position.x, aft_bounds.position.x, "both faces keep the same physical latch edge")
+	assert_float_equal(fore_bounds.end.x, aft_bounds.end.x, "reverse-face latches are not moved to the opposite jamb")
+	# Andrew 2026-11-06 removed the non-working push-side hinges. The
+	# connector-facing pair remains in the submitted buffer, not both faces.
+	assert_true(_group_bounds(aft.mesh, "StrapHinges/AftSteel/").has_volume(), "working swing-side hinges remain rendered")
+	for id: StringName in preload("res://tests/hatch_mesh_ranges.gd").parts(fore.mesh):
+		assert_false(String(id).begins_with("StrapHinges/"), "removed push-side hardware is absent from the submitted buffer")
 	var leaf_mesh: Mesh = first.get_node("Hinge/Leaf/ForeSteel").mesh
-	assert_float_in_range(leaf_mesh.get_aabb().size.x, 1.17499, 1.17501, "rounded leaf body survives batching with the X ribs")
-	assert_float_in_range(leaf_mesh.get_aabb().size.y, 2.29499, 2.29501, "rounded leaf retains its full tall silhouette")
+	var plate_bounds := _group_bounds(leaf_mesh, "ForeSteel/plate")
+	# Andrew's 2026-11-05 flush-leaf design closes the old 60 mm side recesses.
+	assert_float_in_range(plate_bounds.size.x, 1.17999, 1.18001, "flush leaf body survives batching without the obsolete X ribs")
+	assert_float_in_range(plate_bounds.size.y, 2.31999, 2.32001, "rounded leaf retains its full tall silhouette")
 	var leaf_arrays := leaf_mesh.surface_get_arrays(0)
 	var leaf_normals: PackedVector3Array = leaf_arrays[Mesh.ARRAY_NORMAL]
 	assert_true(leaf_normals[0].dot(Vector3.FORWARD) > 0.99, "leaf front faces outward, not into the steel")
 	var wheel: Node3D = first.get_node("Hinge/Leaf/Wheel")
-	var bounds := AABB()
-	for child: MeshInstance3D in wheel.get_children(): bounds = bounds.merge(child.transform * child.mesh.get_aabb())
-	assert_float_in_range(bounds.size.x, 0.58, 0.64, "wheel diameter is half the 1.2m leaf width")
+	# Slice 3 v2 uses the concept's 0.3215 m radial bound. A faceted rim's
+	# X extent is smaller; measure actual submitted vertices about the wheel axis.
+	var radius := 0.0
+	for child: MeshInstance3D in wheel.get_children():
+		for vertex: Vector3 in child.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX]:
+			var point := child.transform * vertex
+			radius = maxf(radius, Vector2(point.x, point.y).length())
+	assert_float_in_range(radius, 0.32149, 0.32151, "slice3v2 wheel radial bound is 0.3215m")
 	var bay := Hatch.build()
-	assert_true(bay.door_piece().get_node("Leaf/ForeSteel").mesh == first.get_node("Hinge/Leaf/ForeSteel").mesh, "bay and connector hatches use the same shared leaf")
-	assert_true(bay.get_node("Frame/ForeSteel").mesh == first.get_node("Frame/ForeSteel").mesh, "bay and connector hatches use the same rounded frame")
+	assert_true(bay.door_piece().get_node("ForeSteel").mesh == first.get_node("Hinge/Leaf/ForeSteel").mesh, "bay and connector hatches use the same shared leaf")
+	assert_true(bay.view.get_node("Frame/ForeSteel").mesh == first.get_node("Frame/ForeSteel").mesh, "bay and connector hatches use the same rounded frame")
 	bay.free()
 	first.free()
 	remote.free()
+
+func _group_bounds(mesh: Mesh, prefix: String, straps_only: bool = false) -> AABB:
+	var found := false
+	var result := AABB()
+	var parts: Dictionary = preload("res://tests/hatch_mesh_ranges.gd").parts(mesh)
+	for id: StringName in parts:
+		if not String(id).begins_with(prefix): continue
+		if straps_only and ("/barrel-" in String(id) or "/cap-" in String(id)): continue
+		var part: Dictionary = parts[id]
+		var bounds: AABB = part.pose * part.bounds
+		result = result.merge(bounds) if found else bounds
+		found = true
+	assert_true(found, "all original hardware groups remain in the submitted buffers: " + prefix)
+	return result
 
 func test_all_hatch_bulkheads_share_plated_wall_material_and_mapping() -> void:
 	var root := Node3D.new()
@@ -82,18 +132,30 @@ func test_all_hatch_bulkheads_share_plated_wall_material_and_mapping() -> void:
 		assert_int_equal(node.get_child_count(), 2, "bulkhead retains independently masked halves")
 		for piece: MeshInstance3D in node.get_children():
 			assert_true(piece.material_override == RoomGeometry.wall_material(), "hatch bulkhead shares exact plated wall material resource")
-			assert_true(piece.material_override.uv1_triplanar, "hatch bulkhead uses shared triplanar mapping")
-			assert_true(piece.material_override.uv1_scale == RoomGeometry.WALL_UV1_SCALE, "same wall texture density")
-	assert_int_equal(count, 18, "three bulkhead pieces around each of six hatches")
+			assert_true(piece.has_meta(&"surface_frame"), "hatch bulkhead uses explicit surface-local mapping")
+			assert_true(piece.material_override.get_shader_parameter(&"panel_pitch") == Surfaces.PANEL_PITCH, "same wall panel density")
+	assert_int_equal(count, 18, "three continuously profiled wall pieces around each of six hatches, without corner filler solids")
 	root.free()
 
 func test_connector_lights_reach_hatches_floor_ladder_and_lift_inside_falloff() -> void:
-	var layout := ShipLayout.authored().layout
-	for id: StringName in layout.deck(14).connector_ids():
+	var game := Game.new(0)
+	var layout := game.layout
+	var root := Node3D.new()
+	var scene := ShipScene.build_into(root, game, false)
+	scene.prepare_near(Vector3(10, 0, 0))
+	scene.prepare_near(Vector3(26, 0, 0))
+	for id: StringName in layout.connector_ids():
 		var spec := layout.connector(id)
-		var connector := ShipConnector.build(layout, spec)
+		var connector := root.get_node(NodePath(id)) as ShipConnector if spec.deck_number() == 14 else scene.build_remote(spec) as ShipConnector
 		var lights: Array[OmniLight3D] = []
 		_collect_lights(connector, lights)
+		assert_int_equal(lights.size(), 3, "%s keeps its three-light budget after composition" % id)
+		var caged := 0
+		for light: OmniLight3D in lights:
+			assert_float_equal(light.omni_range, 3.0, "%s keeps its original key ranges" % id)
+			if light.get_parent().has_meta(&"hatch_lamp"): caged += 1
+			else: assert_close(Surfaces.world_frame(light).origin, spec.landing_key_position(), "remaining key uses the authored landing position")
+		assert_int_equal(caged, 2, "%s keeps both hatch keys seated in cages" % id)
 		var bounds := spec.bounds()
 		var probes: Array[Vector3] = []
 		for offset: float in [0.5, 3.0, 5.5]:
@@ -111,10 +173,12 @@ func test_connector_lights_reach_hatches_floor_ladder_and_lift_inside_falloff() 
 		for probe: Vector3 in probes:
 			var best := INF
 			for light: OmniLight3D in lights:
-				var origin: Vector3 = light.position + light.get_parent().position
+				var origin := Surfaces.world_frame(light).origin
 				best = minf(best, origin.distance_to(probe) / light.omni_range)
-			assert_true(best <= 0.9, "room detail lies inside useful light range, not its black cutoff: %s ratio=%f" % [probe, best])
-		connector.free()
+			assert_true(best <= 0.9, "%s room detail lies inside useful light range, not its black cutoff: %s ratio=%f" % [id, probe, best])
+		if spec.deck_number() != 14:
+			scene.remove_remote(spec, connector)
+	root.free()
 
 func test_d14_topology_and_exact_openability() -> void:
 	var layout := ShipLayout.authored().layout
@@ -132,6 +196,24 @@ func test_d14_topology_and_exact_openability() -> void:
 			cranks.append(id)
 	assert_true(cranks == [&"D14-C-000-H-AFT", &"D14-C-000-H-FORE", &"D14-C-001-H-AFT", &"D14-C-001-H-FORE"], "only four inner hatches crank")
 
+func test_setback_collar_sides_use_the_approach_rooms_light_mask() -> void:
+	var layout := ShipLayout.authored().layout
+	for id: StringName in [ShipLayout.BAY_DOOR_ID, &"D14-C-000-H-AFT", &"D14-C-001-H-FORE"]:
+		var spec := layout.door(id)
+		var view := DoorView.build(spec, 1, 8)
+		var approach_mask := 1 if spec.hinge_frame().origin.z > ShipLayout.WALL / 2 else 8
+		for part: String in ["FRAME/RIGHT", "FRAME/TOP", "COAMING"]:
+			for side: String in ["ForeSteel", "AftSteel"]:
+				var piece: MeshInstance3D = view.get_node("Frame/" + side)
+				var ranges: Dictionary = preload("res://tests/hatch_mesh_ranges.gd").parts(piece.mesh, &"hatch_reservations")
+				var row: Dictionary = ranges[StringName(part)].row
+				var normals: PackedVector3Array = piece.mesh.surface_get_arrays(0)[Mesh.ARRAY_NORMAL]
+				for index: int in range(int(row.vertex_start), int(row.vertex_start + row.vertex_count)):
+					var normal := normals[index]
+					var expected := (1 if normal.z < 0 else 8) if absf(normal.z) > 0.5 else approach_mask
+					assert_int_equal(piece.layers, expected, "%s %s normal %s belongs to its visible room" % [id, part, normal])
+		view.free()
+
 func test_section_41_endcaps_are_replaced_by_owned_portal_solids() -> void:
 	var game := Game.new(0)
 	for x: float in [6, 30]:
@@ -140,7 +222,7 @@ func test_section_41_endcaps_are_replaced_by_owned_portal_solids() -> void:
 		for solid: ShipGeometry.SolidSpec in ShipCollision.opening_solids(game.registry, false, false, game.layout):
 			if ShipGeometry.box_aabb(solid).overlaps(probe):
 				owners.append(solid.id)
-		assert_true(owners == ([&"D14-C-000-H-AFT/BLOCKER", &"D14-C-000-H-AFT/SWING"] if x == 6 else [&"D14-C-001-H-FORE/BLOCKER", &"D14-C-001-H-FORE/SWING"]), "aperture contains only the named hatch blockers, no old endcap: %s" % [owners])
+		assert_true(owners == ([&"D14-C-000-H-AFT/BLOCKER", &"D14-C-000-H-AFT/SWING"] if x == 6 else [&"D14-C-001-H-FORE/BLOCKER", &"D14-C-001-H-FORE/SWING"]), "aperture contains only the named passage gate and hardware sweep, no old endcap: %s" % [owners])
 
 func test_new_geometry_contains_landings_and_no_duplicate_power_wall() -> void:
 	var layout := ShipLayout.authored().layout
@@ -154,7 +236,7 @@ func test_new_geometry_contains_landings_and_no_duplicate_power_wall() -> void:
 	assert_int_equal(shared_hits, 1, "power south wall has exactly one owner")
 	var set := ShipCollision.new(layout).deck_set(14)
 	var capsule := Resolve.Capsule.new()
-	capsule.foot = Vector3(34.5, 0.417, -0.8)
+	capsule.foot = Vector3(34.5, 0.417, -1.2)
 	capsule.head = capsule.foot + Vector3.UP * 1.15
 	var result := Resolve.resolve_motion(capsule, Vector3(0, 0, -2.1), set)
 	assert_true(result.is_ok(), "aft landing approach is valid")
@@ -172,8 +254,18 @@ func test_real_scene_has_shared_hatch_details_and_lazy_red_rooms() -> void:
 			hatches.append(view)
 	assert_int_equal(hatches.size(), 2, "opening contains only its two boundary hatch views")
 	for view: DoorView in hatches:
-		for path: String in ["Frame", "Coaming", "Hinge/Leaf", "Hinge/Leaf/Wheel", "Hinge/Leaf/ReverseWheel", "Hinges", "Hinge/Leaf/Lugs", "ForePanel/Button", "ForePanel/CardReader", "AftPanel/Button", "AftPanel/CardReader"]:
+		for path: String in ["Frame", "Hinge/Leaf", "Hinge/Leaf/Wheel", "Hinge/Leaf/ReverseWheel", "ForePanel/Button", "ForePanel/CardReader", "AftPanel/Button", "AftPanel/CardReader"]:
 			assert_true(view.has_node(NodePath(path)), "shared hatch detail: " + path)
+		var fixed: Dictionary = preload("res://tests/hatch_mesh_ranges.gd").parts(view.get_node("Frame/ForeSteel").mesh, &"hatch_reservations")
+		assert_true(fixed.has(&"COAMING"), "coaming is present in the submitted fixed buffer")
+		assert_true(_group_bounds(view.get_node("Hinge/Leaf/ForeSteel").mesh, "Lugs/ForeSteel/").has_volume(), "shared hatch latches remain rendered")
+		# Hinges now exist only on the working swing face for either sign.
+		var spec := game.layout.door(view.door_id())
+		var swing := "AftSteel" if spec.hinge_frame().origin.z > ShipLayout.WALL / 2 else "ForeSteel"
+		var push := "ForeSteel" if swing == "AftSteel" else "AftSteel"
+		assert_true(_group_bounds(view.get_node("Hinge/Leaf/" + swing).mesh, "StrapHinges/" + swing + "/").has_volume(), "working hinge pair remains rendered")
+		for id: StringName in preload("res://tests/hatch_mesh_ranges.gd").parts(view.get_node("Hinge/Leaf/" + push).mesh):
+			assert_false(String(id).begins_with("StrapHinges/"), "wrong-side hinge parts stay removed")
 	root.free()
 
 func test_four_open_hatches_allow_both_directions_and_locked_faces_contain() -> void:
@@ -217,9 +309,11 @@ func test_prefetch_and_independent_red_light_masks() -> void:
 	var lights: Array[OmniLight3D] = []
 	_collect_lights(root.get_node("D14-C-001"), lights)
 	assert_int_equal(lights.size(), 3, "connector and landing have three steady fixtures")
+	# D14 now uses the shared five-deck connector allocation, leaving layer four
+	# exclusively for pod receivers instead of overlapping the power-room fill.
 	for light: OmniLight3D in lights:
-		assert_int_equal(light.light_cull_mask, 16, "isolated aft connector mask")
-		assert_float_in_range(light.light_energy, Lighting.FIXTURE_ENERGY - 1e-5, Lighting.FIXTURE_ENERGY + 1e-5, "red independent of power activation")
+		assert_int_equal(light.light_cull_mask, 1 << 13, "isolated D14 aft connector mask")
+		assert_float_in_range(light.light_energy, Lighting.FIXTURE_ENERGY * Lighting.EMERGENCY_NO_FILL_KEY_MULTIPLIER - 1e-5, Lighting.FIXTURE_ENERGY * Lighting.EMERGENCY_NO_FILL_KEY_MULTIPLIER + 1e-5, "red independent of power activation")
 		assert_true(light.light_color == Lighting.EMERGENCY_RED, "steady emergency red")
 		assert_true(light.omni_range <= 3, "local fixture range")
 	scene.prepare_near(Vector3(10, 0, 0))
@@ -248,7 +342,7 @@ func test_hatch_projects_model_wheel_and_leaf_without_advancing_them() -> void:
 	for _tick: int in range(48):
 		store.tick()
 		view.present(store.snapshot(id))
-	assert_float_in_range(view.get_node("Hinge").rotation.y, -PI / 2 - 1e-5, -PI / 2 + 1e-5, "leaf swings into connector")
+	assert_float_in_range(view.get_node("Hinge").rotation.y, layout.door(id).swing_radians() - 1e-5, layout.door(id).swing_radians() + 1e-5, "leaf swings into connector")
 	var before := store.snapshot(id).wheel_angle
 	view.present(store.snapshot(id))
 	assert_float_equal(store.snapshot(id).wheel_angle, before, "presentation never advances model")

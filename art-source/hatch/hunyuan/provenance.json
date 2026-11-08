@@ -1,0 +1,133 @@
+{
+  "alternative": "C-s412-sv",
+  "environment": {
+    "Pillow": "12.3.0",
+    "mlx": "0.32.0",
+    "numpy": "2.5.2",
+    "trimesh": "5.0.0"
+  },
+  "files": {
+    "C-s410-sv-selection.json": "29c10c4fb5d8f1e702553da3118f6ab90272f3131002cd99847f82f7159ed329",
+    "C-s410-sv.glb": "ba8831fbf528fe8de5b586b6c4c6c7c5a95f77eda2c137fb73db2b20f811ec78",
+    "C-s412-sv-selection.json": "1354d31f4463fb62652e323c7c9c655ec4cbd9e05319e67aa4cd186b36cbf60f",
+    "C-s412-sv.glb": "a338c4d7f558c03a2043c73068c5d5a556738b81ec544978d186f2b3913d82ba",
+    "LICENSE": "eca02cc10abaf520d85c3c523aef0b88f36b935b85635f1e34370688e93da3dd",
+    "Notice": "62fab292fc5778b98cd4f15054fb795f7b2c7f7719e78bee6effb25496c59ce8",
+    "SOURCES.md": "640bc23c5ff96332a82e900423071ea8f66dc05a723c286d6f7b5454cc1902cb",
+    "baseline-physical.json": "9471e3de786dd3020be0155a238f0086997bb9732fd06e014b6eef1751295cc3",
+    "baseline-replays.json": "f01ce12af96658e233a15821ac59ab557f74210fb9df06586efb9b3c8f373ea6",
+    "generation/driver-notes.md": "b030215b4fd9bbb4a97905cf20e105a7e6a2317c1568104522c0c5cfa82a9951",
+    "generation/recipe.md": "56390191c0deeb41194a89243513f3df44d125b00c2ba29620aca3c11d9b6284",
+    "generation/run.py": "a45672e2a8aead0e77b077b2d2fe21ef2acda61d195ed49df95cee5627de5963",
+    "generation/stats.json": "9c1685a74b41ff0b1b166e1069483dd9cbd83d6dd2a62358a4a99f0a52ae6417",
+    "generator/LICENSE": "82a4eedfffac1a8ee3252d81f831588dc115d6809cf51273d8f39a8cd1b81352",
+    "generator/generate.py": "bc5167f2ba64a0f54cf5101aa9823dabd922fbc4b8d8a45963bbfd5dce4dd888",
+    "generator/mlx_hunyuan3d/__init__.py": "cfaa3c9108a9a30985b92768ddf276214e5f909281f3cc7bfabab7ba5f464da4",
+    "generator/mlx_hunyuan3d/delight.py": "7fe3699f432ce7641025763a0c6a8b3b861ff254d4593d641f5a58feb037fbb9",
+    "generator/mlx_hunyuan3d/dinov2.py": "b032d83f7123443af54f6433281f2cb866cbcd009961475afc1fc740eaf357fa",
+    "generator/mlx_hunyuan3d/dit.py": "09ab4068b345febd7b2a33a90327660882b091c648afd5986e42c1976a477df0",
+    "generator/mlx_hunyuan3d/era3d.py": "abfa4bdb0a4dcbb289b5f44a62429d433becadc9d197c769416bb43eeed8e6e4",
+    "generator/mlx_hunyuan3d/era3d_clip.py": "39b4a2d6c83757600111549825432c5fe06885e3866fd208a67b0e799e13d89d",
+    "generator/mlx_hunyuan3d/era3d_conditioning.py": "923d9322c8c9b762187228dff01ad4fcfc04ddfe257440b68d6b5712ef17a17e",
+    "generator/mlx_hunyuan3d/era3d_factory.py": "063fec1550ae2bfdf6b316756179f030d20a1b90d669eb7a191a1d6d6bfc61d3",
+    "generator/mlx_hunyuan3d/era3d_io.py": "849ccd74309e5720c54e873a293eaf8c2f039dfcd6d538e5d4b16b8aba9c42df",
+    "generator/mlx_hunyuan3d/era3d_runtime.py": "cde2368ac740d0778c65fc8beb653d0fcb5b26cc80a78bc38592d1e4fa3bfb10",
+    "generator/mlx_hunyuan3d/era3d_scheduler.py": "144584c3ec0168737e4be13160420960591c65ef5f709594d605d6573881572d",
+    "generator/mlx_hunyuan3d/era3d_unet.py": "101d17f1f1c8b88c4847953a290f9938ba41db8a1bd339baacd2469cc53d8772",
+    "generator/mlx_hunyuan3d/era3d_weights.py": "f42eee0fe479c72a37d75192b6b008ae94a245642673e1b837256f0a9c45bede",
+    "generator/mlx_hunyuan3d/instant_nsr.py": "a50bfdeb8da911d6f3caaab8fa00c9a2c12d93129627950a899399a20f1531f1",
+    "generator/mlx_hunyuan3d/instant_nsr_data.py": "4a30ef6512524d79d55ce1a8aeaf6e35f2e95e6aa19c59b6b85c4ee86359bd11",
+    "generator/mlx_hunyuan3d/instant_nsr_loss.py": "b01dfd95074ca16716c6c08a21f491b1a46ac6145776cb58af3d8018d39f4241",
+    "generator/mlx_hunyuan3d/instant_nsr_mesh.py": "8b0b1af3dbaabc6e137eed9158d88750a045d96d6ce47be1217f00b1e4e8abb1",
+    "generator/mlx_hunyuan3d/instant_nsr_occupancy.py": "77cb0a9f1db0cf2805c62b60d01e01ab87b96fe298b20ea049ddeba4906b46aa",
+    "generator/mlx_hunyuan3d/instant_nsr_refine.py": "bfb3493b44f3217e7744739d38c2d7c298ace45cafccf750b9a133bf898d9b7e",
+    "generator/mlx_hunyuan3d/instant_nsr_render.py": "b7e15c7f8651d2300b58a646d7a9edc84fec944f9a0bc19694308407da8aa9e7",
+    "generator/mlx_hunyuan3d/instant_nsr_train.py": "f5413ffc6ccd9f1d3edf92ea0cbe5968ba3f09126752e15bfec587a7cf1f5dcd",
+    "generator/mlx_hunyuan3d/matting.py": "a873f4a9c367371d8a680dcf59043885e53b09cd7014256f6466f68b88ad3a50",
+    "generator/mlx_hunyuan3d/meshclean.py": "2bb40e9c98fbcdfd9aa919248ec5be0df0f0ae2f5f5894989b3665d1c2b27630",
+    "generator/mlx_hunyuan3d/p3sam_data.py": "5a4fdebf9fe70e407e6d564e3dd5a53041d4ba44e07e4b4f80b53447baff7b67",
+    "generator/mlx_hunyuan3d/p3sam_model.py": "f3507b4ed254a1840517bb1516771b1d20d561bb0f7c93c3707253a9cb929c8c",
+    "generator/mlx_hunyuan3d/p3sam_pipeline.py": "a72ee5720f543a6e8f5fda5f98a795f8cf5c3c5a8a7ff9ff13974e2640248b4b",
+    "generator/mlx_hunyuan3d/p3sam_serialization.py": "8595d27cf80db0426c9023cece527e2a560f51ada282b342ca207c47e0a23c7d",
+    "generator/mlx_hunyuan3d/p3sam_weights.py": "ad8cb92353b0c223582c17ed29925a6163161e8cedddf7bea0f613e477361e35",
+    "generator/mlx_hunyuan3d/paint_conditioning.py": "6f103de54b761bef0cd3c704a72a651ca6417cd216b3bcfee81242335ba0bf1c",
+    "generator/mlx_hunyuan3d/paint_pipeline.py": "9334bdceaf8c1a5b252e5fe03544afbf441176bb0363cfd3ca0eab26739c72a2",
+    "generator/mlx_hunyuan3d/paint_scheduler.py": "3a2080bf54b984063e6961d6c5e29cc5400039cfaabc9f4b9a40e86e689c7d97",
+    "generator/mlx_hunyuan3d/paint_unet.py": "c94e28646768e3cfb017bccfb743baf17e9eb8c68594a7ac09222dfe055a5116",
+    "generator/mlx_hunyuan3d/paint_vae.py": "d1182b10d7550fe36127e7a4cc298c51af3a93fe6ecde71ddd2af5cff0e6b9ae",
+    "generator/mlx_hunyuan3d/paint_weights.py": "9d155b976b48d108d013559ee7e99db4903c0b06cdeb6380efba31e449986212",
+    "generator/mlx_hunyuan3d/pipeline.py": "14a68c663074dac8f571595086700dd85c27a8276ec84aa4278b2bada3dc0d52",
+    "generator/mlx_hunyuan3d/preprocess.py": "90e41aac1c03e4794166736fbd94705b7eb2486957e580f53556ee9464212765",
+    "generator/mlx_hunyuan3d/rasterizer.py": "f95778f3a84ad068ea2f38d4f2a0cfa0b84e59ecef7c24ed1667bbe3f9958056",
+    "generator/mlx_hunyuan3d/schedulers.py": "9c275351eec69d13bd9c665eecc20d24773f2ebf0c35afbb12eb4d4312c71cca",
+    "generator/mlx_hunyuan3d/texture_bake.py": "0d7f625ca5ae43ed18683fa3e46413e55731f4923163b388e4038159e2e3df96",
+    "generator/mlx_hunyuan3d/vae.py": "0a5a7b3a9b3450dca923a06b7ae4b8e277fad7053d16095f3220ddc5eda5fdd2",
+    "generator/mlx_hunyuan3d/weights.py": "3046816307f964a108b996724408fb0b781114dc36a4c49eb83f9414317db771",
+    "inputs/C-front-mask.png": "76ebffabc9cf9e99ae473ba8d360c2f055621cb990601bbdd4ed1d5385060252",
+    "inputs/C-front-rgba.png": "dfb947c455b1a823f37cbc3b36b60da6d031f8932f8d7eb80ecfe68fd2576de9",
+    "inputs/C-front.metadata.json": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+    "inputs/C-front.png": "f4852105f8017ab7f86683fb121d0db7b70a50d3da9cd20f284b0e0927cf2d86",
+    "inputs/concept-assembly-crop.png": "65b4070bb8d08af54188013ada735a1ef68904b99dd79e843ee92826add7bc6b",
+    "model/README.md": "53b682bae4301043f28dedef19264f2b791797d2c049febd230c42182a462cda",
+    "model/config.yaml": "315fd5bf601d1d103130b9fda202f1bd28eda495e68ed1621bc823d5519c5e5b",
+    "prompts/C-front.txt": "45f898502097cff0b986cb3cc1c634d3daaeed107828bf9b4be36f855f655d56"
+  },
+  "generator": {
+    "commit": "f26094cde48344b3165d67271cc98ad99610abf8",
+    "historical_commit_recorded_by_prototype": false,
+    "identity_basis": "Byte comparison against published checkout. generate.py and every shape module match this revision; only unused paint_pipeline.py differs and its actual bytes are frozen.",
+    "non_shape_differences": [
+      "mlx_hunyuan3d/paint_pipeline.py"
+    ],
+    "shape_entrypoint": "generator/generate.py"
+  },
+  "licence": {
+    "name": "Tencent Hunyuan 3D 2.0 Community License",
+    "territory_excludes": [
+      "European Union",
+      "United Kingdom",
+      "South Korea"
+    ],
+    "url": "https://huggingface.co/tencent/Hunyuan3D-2/resolve/main/LICENSE"
+  },
+  "mask_recipe": {
+    "implementation": "generation/run.py",
+    "interior_white_removed": true,
+    "maximum_chroma": 18,
+    "minimum_rgb": 235,
+    "white_component_minimum_pixels": 48
+  },
+  "model": {
+    "checkpoint": "model.fp16.safetensors",
+    "checkpoint_sha256": "d36f5881bcdc56726b73e517cd444c13c60732431622da7268145355c8d38e9c",
+    "config_sha256": "315fd5bf601d1d103130b9fda202f1bd28eda495e68ed1621bc823d5519c5e5b",
+    "repository": "tencent/Hunyuan3D-2mv",
+    "revision": "3a761b539b29fe4ff64714813aa9560fd66f5de0",
+    "subfolder": "hunyuan3d-dit-v2-mv"
+  },
+  "schema_version": 1,
+  "selected": "C-s410-sv",
+  "selection_authority": "Driver choice recorded in generation/driver-notes.md; no scalar reranking.",
+  "settings": {
+    "box_v": 1.01,
+    "conditioning_image": "inputs/C-front-rgba.png",
+    "dtype": "float16",
+    "guidance_scale": 5.0,
+    "mask": "inputs/C-front-mask.png",
+    "mc_level": 0.0,
+    "min_component_faces": 0,
+    "num_chunks": 50000,
+    "octree_resolution": 384,
+    "post_generation_edits": [],
+    "remove_bg": false,
+    "seeds": {
+      "C-s410-sv": 410,
+      "C-s412-sv": 412
+    },
+    "source_axes": "X horizontal, Y up, Z front; no metric scale",
+    "steps": 30,
+    "views": [
+      "front"
+    ]
+  }
+}

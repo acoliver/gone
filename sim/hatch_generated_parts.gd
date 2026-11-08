@@ -1,0 +1,52 @@
+class_name HatchGeneratedParts
+extends RefCounted
+## Measured whole-object reservations. Source registration belongs to the exporter.
+
+const LATCH_SIZE := Vector3(0.206066697073493, 0.137948541778924, 0.063895721073589)
+const LATCH_CENTER := Vector3(0.069857674387797, 0.034979292176354, -0.031947860536794)
+const WHEEL_SIZE := Vector3(0.642854690551758, 0.637397766113281, 0.125891596078873)
+const WHEEL_CENTER := Vector3(0.000000000000000, 0.000000000000000, 0.040952477604151)
+const NUT_SEAT: float = 0.021993325053357
+const RIB_WIDTH: float = 0.081427747901
+const RIB_DEPTH: float = 0.020356567030
+const RIB_INTERVALS: Array[Vector2] = [Vector2(0.196082594714, 0.777709365436), Vector2(2.120002, 2.289938969311)]
+# Radius/depth support of the delivered wheel vertices, measured about its axis.
+# A rotating rectangular proxy invents corners outside the 643 mm wheel.
+const WHEEL_PROFILE: Array[Vector2] = [
+	Vector2(0.004051113812508, 0.103898275643587),
+	Vector2(0.064931157148879, -0.021993320435286),
+	Vector2(0.074065168353470, -0.021993320435286),
+	Vector2(0.292536016118441, -0.017903562635183),
+	Vector2(0.293820675214881, -0.017851967364550),
+	Vector2(0.294786649209585, -0.017796102911234),
+	Vector2(0.299308349024652, -0.017515331506729),
+	Vector2(0.303547990307852, -0.016308877617121),
+	Vector2(0.309914053706590, -0.013131584972143),
+	Vector2(0.310051248362758, -0.013045493513346),
+	Vector2(0.311025542511677, -0.012208137661219),
+	Vector2(0.313851172585689, -0.009740866720676),
+	Vector2(0.317165680675257, -0.005803052335978),
+	Vector2(0.318972041807606, -0.002690535038710),
+	Vector2(0.320852221308204, 0.001808404922485),
+	Vector2(0.321427938340357, 0.007487777620554),
+	Vector2(0.321500014567251, 0.010736253112555),
+	Vector2(0.320920940596621, 0.015612745657563),
+	Vector2(0.319214407294627, 0.019380202516913),
+	Vector2(0.317209743624123, 0.023447360843420),
+	Vector2(0.313852802354756, 0.028365897014737),
+	Vector2(0.307281033125389, 0.033027805387974),
+	Vector2(0.304284923095429, 0.034131288528442),
+	Vector2(0.302699620276474, 0.034644041210413),
+	Vector2(0.008779372238336, 0.103898275643587),
+]
+
+static func bounds(pose: Transform3D) -> AABB:
+	var lo := Vector3(INF, INF, INF)
+	var hi := -lo
+	for support: Vector2 in WHEEL_PROFILE:
+		var center := pose * Vector3(0, 0, support.y - WHEEL_CENTER.z)
+		for axis: int in range(3):
+			var amplitude := support.x * Vector2(pose.basis.x[axis], pose.basis.y[axis]).length()
+			lo[axis] = minf(lo[axis], center[axis] - amplitude)
+			hi[axis] = maxf(hi[axis], center[axis] + amplitude)
+	return AABB(lo, hi - lo)

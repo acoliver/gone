@@ -45,6 +45,7 @@ var perf_samples_ms: Array[float] = []
 var connector_evidence: ConnectorEvidence
 var finished: bool = false
 var last_batch_wait: String = ""
+var lamp_samples := preload("res://harness/lamp_samples.gd").new()
 
 func _initialize() -> void:
 	if OS.get_environment(Protocol.ENV_HARNESS) != "1":
@@ -369,6 +370,8 @@ func capture_next_beat() -> void:
 	var pinned_tick: int = tick
 	var pinned_frame: int = frame
 	chip.set_code(pinned_tick, pinned_frame)
+	var camera_pose := player.camera.transform
+	player.camera.global_position += player.camera.global_basis.z * float(beat.get("camera_back", 0.0))
 	if connector_evidence != null:
 		print("GONE_CONNECTOR_CAPTURE %s tick=%d frame=%d" % [beat.name, pinned_tick, pinned_frame])
 	# Flush scene transforms before explicitly drawing a motionless capture.
@@ -384,6 +387,11 @@ func capture_next_beat() -> void:
 	var request_id: int = report.beats.size() + 1
 	report.beats[beat.name] = {"file": file, "tick": pinned_tick,
 		"frame": pinned_frame, "request_id": request_id}
+	if beat.get("light", "red") == "white" or beat.name in ["power-active", "hall-white"]:
+		report.beats[beat.name].lamps = lamp_samples.record(root.get_node("CaptureRoot"), player.camera, image.get_size())
+	var capture_eye := player.camera.global_position
+	report.beats[beat.name].camera_eye = [capture_eye.x, capture_eye.y, capture_eye.z]
+	player.camera.transform = camera_pose
 	report.add_event({"kind": "beat", "name": beat.name, "tick": pinned_tick,
 		"frame": pinned_frame, "request_id": request_id})
 	report.checkpoints.append("beat `%s` captured at tick %d frame %d" % [

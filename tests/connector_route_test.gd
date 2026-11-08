@@ -23,11 +23,13 @@ func test_both_wells_full_real_player_journey_and_replay_digest() -> void:
 				opened.append(id)
 		assert_true(opened == [&"D14-C-000-H-AFT", &"D14-C-000-H-FORE", &"D14-C-001-H-AFT", &"D14-C-001-H-FORE"], "exactly the four D14 internal hatches opened")
 		assert_true(game.power_active and game.door_open and game.power_door_open and player.motion.rod_carried, "opening state survives both complete trips")
-		assert_int_equal(player.motion.console_presses, 2, "console state not replayed or reset")
+		assert_int_equal(player.motion.console_presses, 1, "console state not replayed or reset")
 		digests.append("\n".join(route.digest_lines).sha256_text())
 		player.free()
 	assert_true(digests[0] == digests[1], "fixed seed/input event digest repeats")
-	assert_true(digests[0] == "e0b514ef37cef2f4df134a060c781ddd0ad5cb8e3c923c4ab7c44486b19a4e5d", "#88: regenerated journey preserves deliberate rod approach after row translation")
+	# Whole generated hardware changes parked collision and journey timing.
+	# Both complete real-input replays must match the newly compiled digest.
+	assert_true(digests[0] == "46cdf6adef8be9376f4168dc9e5f02e4945613c1333b3ef4ad9cb2b18d475266", "pinned full journey event digest")
 	print("connector route digest: ", digests[0])
 
 func test_climb_channel_is_single_consumption_and_scenario_validated() -> void:
