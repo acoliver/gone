@@ -1,5 +1,17 @@
 # Quarters geometry aging
 
+## Sofa pass 6: fitted six-cover collapse
+
+`sofa_decay_joint.py` starts all six covers from `sofa/sofa-working.blend` in one dense cloth system. Each cover has its own seed. Inter-cover contact uses self-collision across all resolvable panels; the exclusion group contains split lips and triangles below Blender's 2 mm contact diameter, rather than whole top panels. The working system has 131,148 triangles. It contains no sofa-k geometry.
+
+The filling contacts animate from the fitted volumes into the residue envelopes. A static, already-settled back residue intersects an inflated seat at frame one, so that final residue is not also added as a premature collider. Back-envelope roof heights are sampled from the actual residue, not a box. Exported covers and residues still require the complete G30 SAT test.
+
+The fitted back's front bulge has downward normals as high as 650 mm. Removing every downward face deleted that front panel and stopped a grain walk after 109 mm. The back opening is now confined to faces below the 432 mm hem. The fitted-asset regressions in `test_sofa_decay_geometry.py` verify both the preserved front panel and a 160 mm grain walk across it.
+
+`sofa_full_decay.py` retains the ordered fallback and the isolated seat controls. Keyed cloth is frozen from evaluated data because Blender cannot apply a cloth modifier to a mesh with shape keys. A folded-rest control found that Blender 4.5.11 transfers the rest coordinates only when a real level-1 Subdivision modifier precedes Cloth; an absent or level-0 modifier leaves the same control flat. The joint path reduces the carrier first, then subdivides it back to the working density. This second subdivision uses SIMPLE because the cover was already smoothed before cutting: another Catmull-Clark pass bends opposite split lips through each other at frame one. The initial surface and collider SAT checks pass with SIMPLE. Vertex mass uses the evaluated count. Per-cover vertex groups survive subdivision and restore the original pivots when the solved mesh is separated. A solved checkpoint is saved before reduction or baking, and `--finish <joint-solved.blend>` resumes that work without another simulation.
+
+The pass-6 controls, checkpoints and captures stay under `tmp/age/pass6/`. Missing or failed gates block publication. The game asset is not replaced by a preview.
+
 ## Pass 5 calibration and contact policy
 
 The 200 mm cantilever now compares 21 width-averaged material stations in 3D, rather than only the free-tip height. At 150 frames and 24 fps, the maximum dense/reference profile difference is 1.926 mm for upholstery and 4.409 mm for wool, against a 10 mm limit. Both fits retain total swatch mass. The requested 6 mm grid is actually 5.882 mm (34 cells); the reference is 22.222 mm (9 cells).
