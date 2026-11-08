@@ -194,12 +194,13 @@ def thickness_weights(obj, blockers):
     for index, point in enumerate(positions):
         gaps = [distance for _, _, face, distance in tree.find_nearest_range(point, .0036)
                 if not neighbors[index].intersection(faces[face])]
-        weight = min(1., max(.1, min(gaps)/.0036)) if gaps else 1.
+        # Both opposing cut edges extrude into this gap; reserve half for each.
+        weight = min(1., .45*min(gaps)/.003) if gaps else 1.
         inward = -(obj.matrix_world.to_3x3() @ obj.data.vertices[index].normal).normalized()
         for support in supports:
             hit, _, _, distance = support.ray_cast(point, inward, .0036)
             if hit is not None:
-                weight = min(weight, max(.1, .9*distance/.003))
+                weight = min(weight, .9*distance/.003)
         group.add([index], weight, 'REPLACE')
     return group.name
 

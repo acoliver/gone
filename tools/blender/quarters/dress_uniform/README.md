@@ -40,6 +40,51 @@ maximum-motion vertex and position so remaining motion can be traced rather
 than attributed to the entire garment. This trial is still in progress; the
 delivery remains unchanged.
 
+## Tunic7 empty sleeve and collar controls
+
+The sleeve's original construction used bending 5, but dense aging assigned
+it the torso's 0.3. An isolated pressed-cylinder control changed from depth /
+width 0.333 at frame 1 to 0.704 at frame 300 with bending 0.3. Restoring bending
+5 reduced the final ratio to 0.574, still above 0.45. The regional setting is
+now retained without changing the torso or detail-patch bending. That setting
+alone does not solve the sleeve.
+
+The initial geometry was also an oval, not two pressed faces. At the measured
+mid-sleeve rows it was 37.689 mm deep in its own pressed frame. The replacement
+maps each source row's measured perimeter onto a capsule with broad faces and
+6 mm fold radii, then turns its broad face toward the unchanged close camera.
+The measured rest depth is 12.000 mm and sampled perimeter retention is
+96.75% to 96.86%. Structural and bending coordinates agree. The evaluated
+26,964-triangle rest has minimum altitude 3.028 mm, above the 2 mm contact
+diameter, with no exclusion group. These are preparation controls; the dense
+candidate still has to pass the corrected camera-ray G22.
+
+Rotating the collar's 43 mm height with individual shoulder triangles folded
+its upper vertices into the neckline. Keeping only its height upright reduced
+self contacts from 93 to 7, but the side offsets still inherited those face
+twists. The collar now gets its horizontal tangent and outward normal from
+the complete sewn curve, while retaining its standing height and 2 mm sewn
+layering. The actual source-damped control then has zero collar self contacts,
+61 collar/body contacts and 10 collar/hanger contacts. The latter two remain
+failures. Translation, sewn-column, twist and rigid-attachment controls pass.
+
+A separate facing control found a 0.0995 mm face-interior penetration despite
+positive vertex distances. On the source-damped dense sheet the bound shoulder
+boards have 779 and 866 body crossings before reduction; nearest-point seating
+still leaves 505 and 550. Thus vertex distances alone cannot certify seating.
+A continuous-clearance/refinement experiment exceeded the unchanged 2 mm
+attachment limit and was discarded. Its source-quality scratch export is a
+rejected experiment, not the final tunic7 comparison candidate. The retained
+pipeline still requires actual exported SAT contacts to reach zero.
+
+The rim thickness control also allocated the same gap to both opposing edges:
+its old extrusion was 0.833 times the gap on each side. A two-ply 2 mm control
+produced four strict SAT crossings. Each inward rim now receives at most 0.45
+times that gap, and the arbitrary 10% minimum thickness is removed where a
+support is closer. The control has zero crossings, and the existing single
+shell, retained-sheet and floor controls still pass. The final export must
+still verify that this removes its actual rim contacts.
+
 ## Tunic7 tear and deposit construction
 
 The old hanger tear followed nearly constant pattern V with only ±0.0006

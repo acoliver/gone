@@ -121,19 +121,20 @@ def cut_tunic(body):
 def pressed_sleeve(body):
     body.shape_key_add(name='Aged basis')
     rest = body.shape_key_add(name='Empty pressed left sleeve')
+    from pressed_pattern import press_rows
     uv = body.data.uv_layers[0].data
-    sleeve = {loop.vertex_index for loop in body.data.loops if 1.099 < uv[loop.index].uv.x < 1.551}
-    def press(point):
-        t = float(np.clip((-.33-point.z)/.14, 0, 1))
-        progress = float(np.clip((-.425-point.z)/.44, 0, 1))
-        center = np.array([.326+.013*progress, -.008-.027*progress])
-        radial = np.array(point[:2])-center
-        angle = np.arctan2(.3, .9)*t
-        x, y = radial*np.array([1+.2*t, 1-.6*t])
-        point.x, point.y = center+np.array([np.cos(angle)*x-np.sin(angle)*y,
-                                           np.sin(angle)*x+np.cos(angle)*y])
-    for index in sleeve:
-        press(rest.data[index].co)
+    coordinates = {}
+    for loop in body.data.loops:
+        point = uv[loop.index].uv
+        if 1.099 < point.x < 1.551:
+            old = coordinates.get(loop.vertex_index)
+            if old is None or point.x < old[0]:
+                coordinates[loop.vertex_index] = tuple(point)
+    sleeve = sorted(coordinates)
+    original = np.array([body.data.vertices[index].co[:] for index in sleeve])
+    pressed = press_rows(original, np.array([coordinates[index] for index in sleeve]))
+    for index, point in zip(sleeve, pressed):
+        rest.data[index].co = Vector(point)
     offsets = open_lip_rest(body, rest)
     # Structural springs take their lengths from the starting mesh, whereas
     # rest_shape_key supplies bending angles. Both must describe empty wool.
@@ -142,10 +143,8 @@ def pressed_sleeve(body):
         basis.data[index].co += offset
         body.data.vertices[index].co = basis.data[index].co
     for index in sleeve:
-        original = basis.data[index].co.copy()
-        press(original)
-        basis.data[index].co = original
-        body.data.vertices[index].co = original
+        basis.data[index].co = rest.data[index].co
+        body.data.vertices[index].co = rest.data[index].co
     body.data.update()
     return rest
 

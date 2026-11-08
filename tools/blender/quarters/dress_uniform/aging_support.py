@@ -224,7 +224,19 @@ def configure_detail_stiffness(mod):
     s.tension_stiffness_max = max(750., s.tension_stiffness)
     s.compression_stiffness_max = max(750., s.compression_stiffness)
     s.shear_stiffness_max = max(525., s.shear_stiffness)
-    s.vertex_group_bending = 'DetailPatch'
+    body = mod.id_data
+    bending = body.vertex_groups.new(name='Wool bending')
+    patch = body.vertex_groups['DetailPatch'].index
+    sleeve = {loop.vertex_index for loop in body.data.loops
+              if 1.099 < body.data.uv_layers[0].data[loop.index].uv.x < 1.551}
+    for vertex in body.data.vertices:
+        weight = next((group.weight for group in vertex.groups if group.group == patch), 0.)
+        if vertex.index in sleeve:
+            transition = float(np.clip((-.33-vertex.co.z)/.14, 0, 1))
+            weight = max(weight, transition*(5.-s.bending_stiffness)/(15.-s.bending_stiffness))
+        if weight:
+            bending.add([vertex.index], weight, 'REPLACE')
+    s.vertex_group_bending = bending.name
     s.bending_stiffness_max = 15.
 
 
@@ -233,7 +245,11 @@ def fit_details(body, bindings):
     for name, binding in bindings.items():
         obj = bpy.data.objects[name]
         original = np.asarray(binding['original'])
-        destination = follow_points(body, binding['entries'])
+        if name == 'Collar':
+            from collar_fit import fit_standing_collar
+            destination = fit_standing_collar(body, obj, binding)
+        else:
+            destination = follow_points(body, binding['entries'])
         if binding['rigid']:
             for ids in binding['groups']:
                 src, dst = original[ids], destination[ids]

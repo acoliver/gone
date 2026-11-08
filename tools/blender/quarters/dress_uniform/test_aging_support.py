@@ -37,8 +37,14 @@ mod = configure(body, dict(stiffness=500., shear=350., bending=.3, mass=.22, fra
                 len(body.data.vertices))
 configure_detail_stiffness(mod)
 assert mod.settings.vertex_group_structural_stiffness == 'DetailPatch'
-assert mod.settings.vertex_group_bending == 'DetailPatch'
+assert mod.settings.vertex_group_bending == 'Wool bending'
 assert mod.settings.bending_stiffness_max == 15.
+patch_group = body.vertex_groups['DetailPatch']
+bending_group = body.vertex_groups['Wool bending']
+for vertex in body.data.vertices:
+    patch_weight = next((group.weight for group in vertex.groups if group.group == patch_group.index), 0.)
+    if patch_weight:
+        assert bending_group.weight(vertex.index) >= patch_weight
 body.modifiers.remove(mod)
 fit_details(body, bindings)
 original = np.array([v.co[:] for v in bpy.data.objects['Collar'].data.vertices])
