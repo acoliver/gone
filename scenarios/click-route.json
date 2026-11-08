@@ -222,6 +222,7 @@
 		},
 		{
 			"name": "power-active",
+			"camera_pitch_up": 30.0,
 			"tick": 3330
 		}
 	],

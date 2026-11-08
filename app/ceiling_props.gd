@@ -63,6 +63,3 @@ static func _add(root: Node3D, layout: ShipLayout, id: StringName, family: Strin
 	piece.set_meta(&"instance_poses", poses.duplicate())
 	Surfaces.bind(piece, role, Surfaces.surface_frame(layout, id, part))
 	root.add_child(piece)
-
-static func armour(fixture: Node3D, layout: ShipLayout, id: StringName) -> void:
-	_add(fixture, layout, id, &"ArmouredModules", mesh(&"module"), CeilingServices.module_poses(), &"ceiling", &"CEILING")

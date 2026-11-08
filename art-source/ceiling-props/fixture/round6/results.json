@@ -1,0 +1,1812 @@
+{
+  "status": "completed-measured-no-visual-verdict",
+  "final_glb": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/fixture.glb",
+  "source_round": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round5/fixture.blend",
+  "triangles": 2664,
+  "triangle_budget": 3000,
+  "dimensions_gltf_m": [
+    1.0999999940395355,
+    0.10000000149011612,
+    0.2199999988079071
+  ],
+  "bounds_gltf_m": [
+    [
+      -0.550000011920929,
+      -0.10000000149011612,
+      -0.10999999940395355
+    ],
+    [
+      0.5499999821186066,
+      0.0,
+      0.10999999940395355
+    ]
+  ],
+  "top_mount_y_m": 0.0,
+  "axes": "+Y up, +Z front; Blender authored +Z up and -Y front; export_yup=True",
+  "slot_count": 14,
+  "visible_slot_intervals_x_m": [
+    [
+      -0.4728,
+      -0.43720000000000003
+    ],
+    [
+      -0.4028,
+      -0.367
+    ],
+    [
+      -0.333,
+      -0.29700000000000004
+    ],
+    [
+      -0.263,
+      -0.22699999999999998
+    ],
+    [
+      -0.19280000000000003,
+      -0.1558
+    ],
+    [
+      -0.12159999999999999,
+      -0.08700000000000002
+    ],
+    [
+      -0.052800000000000014,
+      -0.017199999999999993
+    ],
+    [
+      0.017199999999999993,
+      0.05279999999999996
+    ],
+    [
+      0.08699999999999997,
+      0.12280000000000002
+    ],
+    [
+      0.1572,
+      0.19279999999999997
+    ],
+    [
+      0.22699999999999998,
+      0.263
+    ],
+    [
+      0.29700000000000004,
+      0.3330000000000001
+    ],
+    [
+      0.367,
+      0.40280000000000005
+    ],
+    [
+      0.43720000000000003,
+      0.473
+    ]
+  ],
+  "all_meshes_closed_and_winding_consistent": true,
+  "glass_rays": {
+    "full_footprint": {
+      "rays": 112500,
+      "fractions": {
+        "DarkArmouredSteel": 0.2273777777777778,
+        "OliveSteel_StructuredWeather": 0.47915555555555556,
+        "RaisedRailSteel": 0.1087111111111111,
+        "RecessedFrostedGlass": 0.13978666666666667,
+        "miss": 0.04496888888888889
+      },
+      "glass_hits_outside_slot_envelopes": 0
+    },
+    "grille_strip": {
+      "rays": 82500,
+      "fractions": {
+        "DarkArmouredSteel": 0.4875151515151515,
+        "OliveSteel_StructuredWeather": 0.16373333333333334,
+        "RaisedRailSteel": 0.053696969696969694,
+        "RecessedFrostedGlass": 0.29505454545454546
+      },
+      "glass_hits_outside_slot_envelopes": 0
+    }
+  },
+  "angular_glass_fraction": {
+    "across_-55": {
+      "rays": 45000,
+      "glass_fraction": 0.15604444444444446,
+      "glass_hits_outside_slots_through_grille_depth": 0,
+      "all_visible_glass_faces_point_down": true
+    },
+    "across_-35": {
+      "rays": 45000,
+      "glass_fraction": 0.21522222222222223,
+      "glass_hits_outside_slots_through_grille_depth": 0,
+      "all_visible_glass_faces_point_down": true
+    },
+    "across_-15": {
+      "rays": 45000,
+      "glass_fraction": 0.23144444444444445,
+      "glass_hits_outside_slots_through_grille_depth": 0,
+      "all_visible_glass_faces_point_down": true
+    },
+    "across_15": {
+      "rays": 45000,
+      "glass_fraction": 0.23144444444444445,
+      "glass_hits_outside_slots_through_grille_depth": 0,
+      "all_visible_glass_faces_point_down": true
+    },
+    "across_35": {
+      "rays": 45000,
+      "glass_fraction": 0.21522222222222223,
+      "glass_hits_outside_slots_through_grille_depth": 0,
+      "all_visible_glass_faces_point_down": true
+    },
+    "across_55": {
+      "rays": 45000,
+      "glass_fraction": 0.15604444444444446,
+      "glass_hits_outside_slots_through_grille_depth": 0,
+      "all_visible_glass_faces_point_down": true
+    },
+    "along_-55": {
+      "rays": 45000,
+      "glass_fraction": 0.15053333333333332,
+      "glass_hits_outside_slots_through_grille_depth": 0,
+      "all_visible_glass_faces_point_down": true
+    },
+    "along_-35": {
+      "rays": 45000,
+      "glass_fraction": 0.19766666666666666,
+      "glass_hits_outside_slots_through_grille_depth": 0,
+      "all_visible_glass_faces_point_down": true
+    },
+    "along_-15": {
+      "rays": 45000,
+      "glass_fraction": 0.22166666666666668,
+      "glass_hits_outside_slots_through_grille_depth": 0,
+      "all_visible_glass_faces_point_down": true
+    },
+    "along_15": {
+      "rays": 45000,
+      "glass_fraction": 0.22033333333333333,
+      "glass_hits_outside_slots_through_grille_depth": 0,
+      "all_visible_glass_faces_point_down": true
+    },
+    "along_35": {
+      "rays": 45000,
+      "glass_fraction": 0.19826666666666667,
+      "glass_hits_outside_slots_through_grille_depth": 0,
+      "all_visible_glass_faces_point_down": true
+    },
+    "along_55": {
+      "rays": 45000,
+      "glass_fraction": 0.15166666666666667,
+      "glass_hits_outside_slots_through_grille_depth": 0,
+      "all_visible_glass_faces_point_down": true
+    }
+  },
+  "total_aperture_rays": 740201,
+  "end_bolt_seat_rays": [
+    {
+      "end_sign": -1,
+      "front_z_m": -0.077,
+      "first_hit_x_m": -0.5485999807715416,
+      "head_recess_from_end_plane_m": 0.001400019228458449
+    },
+    {
+      "end_sign": -1,
+      "front_z_m": 0.077,
+      "first_hit_x_m": -0.5485999807715416,
+      "head_recess_from_end_plane_m": 0.001400019228458449
+    },
+    {
+      "end_sign": 1,
+      "front_z_m": -0.077,
+      "first_hit_x_m": 0.5485999882221222,
+      "head_recess_from_end_plane_m": 0.001400011777877852
+    },
+    {
+      "end_sign": 1,
+      "front_z_m": 0.077,
+      "first_hit_x_m": 0.5485999882221222,
+      "head_recess_from_end_plane_m": 0.001400011777877852
+    }
+  ],
+  "geometry": {
+    "objects": {
+      "Seed720_CleanedGeneratedBeam": 788,
+      "GeneratedUnderside_ArmouredGrille": 992,
+      "RaisedRails_Rivets_GravityFasteners": 872,
+      "RecessedGlass_13mm": 12
+    },
+    "source_seed": 720,
+    "source_round": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round5/fixture.blend",
+    "louvre_thickness_m": 0.0095,
+    "louvre_edge_bevel_m": 0.00065,
+    "bent_louvre_centres_x_m": [
+      -0.14
+    ],
+    "dent_depths_m": [
+      0.0014
+    ],
+    "body_bevel_m": 0.00085,
+    "body_bevel_segments": 2,
+    "channel_dimensions_m": [
+      1.014,
+      0.116,
+      0.024
+    ],
+    "side_shadow_gap_m": 0.01,
+    "rail_dimensions_m": [
+      0.985,
+      0.008,
+      0.0078
+    ],
+    "rail_chamfer_m": 0.00085,
+    "side_fasteners": [
+      {
+        "x": -0.3199999928474426,
+        "y": 0.0035191476345062256,
+        "z": -0.04500000178813934
+      },
+      {
+        "x": -0.3199999928474426,
+        "y": 0.10348322987556458,
+        "z": -0.04500000178813934
+      },
+      {
+        "x": 0.3199999928474426,
+        "y": -0.030014872550964355,
+        "z": -0.04500000178813934
+      },
+      {
+        "x": 0.3199999928474426,
+        "y": 0.10307016968727112,
+        "z": -0.04500000178813934
+      }
+    ],
+    "method": "Round5 sealed body and recessed channel; retained round5 grille with one shallow dent and 1.2 mm lateral bend; 12 mm chamfered tapered end caps, thin bolted end flange and ceiling flanges",
+    "skewed_louvre_centre_x_m": -0.14,
+    "maximum_lateral_bend_m": 0.0012,
+    "terminal_cut_x_m": [
+      -0.51,
+      0.51
+    ],
+    "end_plate_dimensions_m": [
+      0.04,
+      0.218,
+      0.096
+    ],
+    "end_plate_chamfer_m": 0.012,
+    "flange_dimensions_m": [
+      0.046,
+      0.22,
+      0.004
+    ],
+    "end_plate_chamfer_segments": 1,
+    "end_cap_lower_x_taper_m": 0.011,
+    "end_cap_lower_width_taper_fraction": 0.12,
+    "flange_chamfer_m": 0.0012,
+    "end_flange_dimensions_m": [
+      0.002,
+      0.184,
+      0.058
+    ]
+  },
+  "material": {
+    "body": {
+      "albedo_mean_abs_effect": 0.0608298789890993,
+      "edge_rust_mean": 0.3741650623969639,
+      "broad_rust_mean": 0.013672133985272493,
+      "edge_to_broad_rust_ratio": 27.36698329609784,
+      "broad_olive_paint_fraction": 0.9179193223202122,
+      "all_olive_paint_fraction": 0.7514658047374152,
+      "edge_band_m": 0.0025,
+      "sharp_edge_sample_count": 12574
+    },
+    "grille": {
+      "albedo_mean_abs_effect": 0.10201693299099641,
+      "edge_rust_mean": 0.31504289093881704,
+      "broad_rust_mean": 0.019109438221708037,
+      "edge_to_broad_rust_ratio": 16.48624555487628,
+      "broad_olive_paint_fraction": 0.03634599086907789,
+      "all_olive_paint_fraction": 0.012708557984511322,
+      "edge_band_m": 0.0025,
+      "sharp_edge_sample_count": 16992
+    },
+    "hardware": {
+      "albedo_mean_abs_effect": 0.08333998057060502,
+      "edge_rust_mean": 0.38607150194742273,
+      "broad_rust_mean": 0.022074045608650852,
+      "edge_to_broad_rust_ratio": 17.48983891725406,
+      "broad_olive_paint_fraction": 0.9090328997991854,
+      "all_olive_paint_fraction": 0.28531062020834,
+      "edge_band_m": 0.0025,
+      "sharp_edge_sample_count": 57955
+    },
+    "glass_slots": [
+      {
+        "slot": 1,
+        "x_m": -0.455,
+        "emission_rgb_linear_mean": [
+          0.8514889525174226,
+          0.7665913586322817,
+          0.642990728967855
+        ],
+        "relative_luminance_linear": 0.7757166216304909,
+        "normalized_tint": [
+          1.0,
+          0.9002951316818126,
+          0.7551369011504568
+        ]
+      },
+      {
+        "slot": 2,
+        "x_m": -0.385,
+        "emission_rgb_linear_mean": [
+          0.8281441161000643,
+          0.7471602972967738,
+          0.6261570152145666
+        ],
+        "relative_luminance_linear": 0.7556410202080179,
+        "normalized_tint": [
+          1.0,
+          0.9022104761370963,
+          0.7560966781522218
+        ]
+      },
+      {
+        "slot": 3,
+        "x_m": -0.315,
+        "emission_rgb_linear_mean": [
+          0.8666625299422275,
+          0.7841684550190853,
+          0.6564113601889243
+        ],
+        "relative_luminance_linear": 0.7924826331010076,
+        "normalized_tint": [
+          1.0,
+          0.9048140745987469,
+          0.7574013384802517
+        ]
+      },
+      {
+        "slot": 4,
+        "x_m": -0.245,
+        "emission_rgb_linear_mean": [
+          0.4756885213591597,
+          0.4318653803250136,
+          0.3610165779967082
+        ],
+        "relative_luminance_linear": 0.4360668965807694,
+        "normalized_tint": [
+          1.0,
+          0.9078742936471695,
+          0.7589348108825384
+        ]
+      },
+      {
+        "slot": 5,
+        "x_m": -0.175,
+        "emission_rgb_linear_mean": [
+          0.4324552661662126,
+          0.39404152710444623,
+          0.32892017713389815
+        ],
+        "relative_luminance_linear": 0.3975065265611042,
+        "normalized_tint": [
+          1.0,
+          0.9111729187568681,
+          0.7605877483001419
+        ]
+      },
+      {
+        "slot": 6,
+        "x_m": -0.10499999999999998,
+        "emission_rgb_linear_mean": [
+          0.4978670674980083,
+          0.4552300373350794,
+          0.37946685997521296
+        ],
+        "relative_luminance_linear": 0.4588245685423357,
+        "normalized_tint": [
+          1.0,
+          0.9143606136127904,
+          0.762185098689483
+        ]
+      },
+      {
+        "slot": 7,
+        "x_m": -0.034999999999999976,
+        "emission_rgb_linear_mean": [
+          0.9255094724945971,
+          0.8487933515149959,
+          0.7066842953425789
+        ],
+        "relative_luminance_linear": 0.8548429249796106,
+        "normalized_tint": [
+          1.0,
+          0.9171093076197023,
+          0.7635624662358108
+        ]
+      },
+      {
+        "slot": 8,
+        "x_m": 0.03500000000000003,
+        "emission_rgb_linear_mean": [
+          0.9373864796794916,
+          0.8616874315376438,
+          0.7167561148568169
+        ],
+        "relative_luminance_linear": 0.8673170081082449,
+        "normalized_tint": [
+          1.0,
+          0.9192445701075925,
+          0.7646324439220502
+        ]
+      },
+      {
+        "slot": 9,
+        "x_m": 0.10500000000000004,
+        "emission_rgb_linear_mean": [
+          0.896694179326589,
+          0.8254475518775103,
+          0.6862258916758828
+        ],
+        "relative_luminance_linear": 0.8305427810066269,
+        "normalized_tint": [
+          1.0,
+          0.9205452325980475,
+          0.7652842044667152
+        ]
+      },
+      {
+        "slot": 10,
+        "x_m": 0.1750000000000001,
+        "emission_rgb_linear_mean": [
+          0.9250149820097099,
+          0.8518480236476373,
+          0.7080646630840531
+        ],
+        "relative_luminance_linear": 0.8570221603627232,
+        "normalized_tint": [
+          1.0,
+          0.9209018666885717,
+          0.7654629134175694
+        ]
+      },
+      {
+        "slot": 11,
+        "x_m": 0.24500000000000005,
+        "emission_rgb_linear_mean": [
+          0.9122322126420338,
+          0.8395066027811248,
+          0.6979944287620787
+        ],
+        "relative_luminance_linear": 0.8447508884733788,
+        "normalized_tint": [
+          1.0,
+          0.9202773056541393,
+          0.7651499465695546
+        ]
+      },
+      {
+        "slot": 12,
+        "x_m": 0.315,
+        "emission_rgb_linear_mean": [
+          0.8844564338842196,
+          0.8125738462690953,
+          0.6760546173279577
+        ],
+        "relative_luminance_linear": 0.8179993960665205,
+        "normalized_tint": [
+          1.0,
+          0.9187268192516376,
+          0.7643729995370887
+        ]
+      },
+      {
+        "slot": 13,
+        "x_m": 0.38500000000000006,
+        "emission_rgb_linear_mean": [
+          0.8426340971455997,
+          0.7721819198982309,
+          0.6431002770417067
+        ],
+        "relative_luminance_linear": 0.7778403581667804,
+        "normalized_tint": [
+          1.0,
+          0.9163905454502451,
+          0.7632022953025418
+        ]
+      },
+      {
+        "slot": 14,
+        "x_m": 0.455,
+        "emission_rgb_linear_mean": [
+          0.8634480752180029,
+          0.7887509442122729,
+          0.6577304462517611
+        ],
+        "relative_luminance_linear": 0.7951718743113422,
+        "normalized_tint": [
+          1.0,
+          0.9134897243393929,
+          0.7617486970316052
+        ]
+      }
+    ],
+    "failed_section_slot_numbers": [
+      4,
+      5,
+      6
+    ],
+    "failed_section_length_m": 0.21,
+    "failed_section_fraction_of_tube": 0.21649484536082475,
+    "failed_section_linear_output_fraction": 0.528333093897287,
+    "emission_colour_linear": [
+      1,
+      0.91,
+      0.76
+    ],
+    "maximum_authored_tint_drift_fraction": 0.012,
+    "emission_max_adjacent_texel_linear_difference": 0.00483847478177124,
+    "side_streak_length_m": 0.073,
+    "channel_shoulder_streak_length_m": 0.078,
+    "streak_fwhm_m": [
+      0.003163707522399251,
+      0.004162773055788488
+    ],
+    "gravity_blender": [
+      0,
+      0,
+      -1
+    ],
+    "texture_resolution_px": [
+      1024,
+      1024
+    ],
+    "glass_resolution_px": [
+      2048,
+      256
+    ],
+    "texture_repeat": false,
+    "field_method": "True sharp-edge distance sampled from mesh; nonperiodic hashed 3D smooth-value noise only modulates edge chips; fastener-distance heads and vertical Gaussian tails; channel-confined soot; normal-driven upper dust",
+    "rust_is_albedo_and_orm_only": true
+  },
+  "lit_capture_contrast": {
+    "weather_control_mean_abs_rgb_difference": 0.041297701525054464,
+    "round3_same_region_mean_abs_rgb_difference": 0.013473872549019607,
+    "round4_same_region_mean_abs_rgb_difference": 0.05241996187363834,
+    "mean_difference_ratio_to_round3": 3.065020941441174,
+    "mean_difference_ratio_to_round4": 0.7878239519632846,
+    "weather_control_fraction_pixels_difference_above_2_255": 0.8036708333333333,
+    "sample_region_pixels_xy": [
+      100,
+      330,
+      1100,
+      570
+    ],
+    "control_keeps": "Same geometry, glass emission, lighting, camera, seed and samples; clean metal albedo and ORM",
+    "control_disables": "Edge chips, oxide, rivet streaks, channel soot, upper dust and paint aging",
+    "round5_same_region_mean_abs_rgb_difference": 0.03006313180827886,
+    "round6_same_region_mean_abs_rgb_difference": 0.041297701525054464,
+    "round4_round5_midpoint_target": 0.0412415468409586,
+    "midpoint_error": 5.615468409586599e-05,
+    "close": {
+      "whole_image_mean_abs_rgb_difference": 0.013409432340837569,
+      "metal_mask_mean_abs_rgb_difference": 0.045299478444576484,
+      "metal_mask_pixels": 272250,
+      "metal_mask_fraction_above_2_255": 0.98910927456382
+    },
+    "2p5m": {
+      "whole_image_mean_abs_rgb_difference": 0.004779831759864439,
+      "metal_mask_mean_abs_rgb_difference": 0.04547713003929897,
+      "metal_mask_pixels": 100445,
+      "metal_mask_fraction_above_2_255": 0.9841803972323162,
+      "round4_metal_mask_mean_abs_rgb_difference": 0.07021210068756478,
+      "round5_metal_mask_mean_abs_rgb_difference": 0.03158196866485058
+    },
+    "grazing": {
+      "whole_image_mean_abs_rgb_difference": 0.004231521423384169,
+      "metal_mask_mean_abs_rgb_difference": 0.03143761593148735,
+      "metal_mask_pixels": 130243,
+      "metal_mask_fraction_above_2_255": 0.9420314335511314
+    }
+  },
+  "lit_feature_measurements": {
+    "edge_rust_lit_mean_rgb_difference": 0.013725199183535208,
+    "broad_face_rust_lit_mean_rgb_difference": 0.002171931847786227,
+    "edge_to_broad_rust_lit_ratio": 6.319350764861622,
+    "edge_pixels": 33689,
+    "broad_pixels": 84196,
+    "streak_mask_pixels": 2506,
+    "streak_lit_mean_rgb_difference": 0.0270759327939742,
+    "streak_lit_p95_rgb_difference": 0.06274509803921569,
+    "streak_fraction_pixels_above_2_255": 0.8683160415003991,
+    "dust_lit_effect_mean_rgb_difference_over_metal": 0.0004041916821241983,
+    "dust_lit_effect_p95_rgb_difference_over_metal": 0.00261437908496732,
+    "streak_authored_fwhm_m": [
+      0.003163707522399251,
+      0.004162773055788488
+    ],
+    "side_streak_authored_length_m": 0.073,
+    "channel_shoulder_streak_authored_length_m": 0.078,
+    "note": "Effect-isolating lit pairs with identical geometry, lighting and ORM; feature masks rendered from matching cameras.",
+    "lit_streak_horizontal_run_width_px": {
+      "median": 5.0,
+      "p10": 3.0,
+      "p90": 10.0,
+      "run_count": 364,
+      "threshold_abs_rgb_difference": 0.00784313725490196,
+      "view": "grazing"
+    }
+  },
+  "visible_broad_paint_coverage": {
+    "close": {
+      "visible_broad_shell_pixels": 141897,
+      "olive_preserving_material_fraction": 0.8092419149101109,
+      "lit_chromaticity_retained_within_0p04": 0.9612606327124604,
+      "combined_visible_olive_preserving_fraction": 0.8083750889729875,
+      "lit_broad_mean_rgb": [
+        0.20568083974766174,
+        0.2135443176335374,
+        0.14192327022092927
+      ],
+      "clean_broad_mean_rgb": [
+        0.24360470249984473,
+        0.2568405113513993,
+        0.16731937706288216
+      ]
+    },
+    "grazing": {
+      "visible_broad_shell_pixels": 73637,
+      "olive_preserving_material_fraction": 0.9517226394339802,
+      "lit_chromaticity_retained_within_0p04": 0.9626818039844101,
+      "combined_visible_olive_preserving_fraction": 0.9305240571995057,
+      "lit_broad_mean_rgb": [
+        0.1700461751032864,
+        0.17771735063925886,
+        0.1186169996061138
+      ],
+      "clean_broad_mean_rgb": [
+        0.19156886976313728,
+        0.20277545894852808,
+        0.13329392432988582
+      ]
+    },
+    "2p5m": {
+      "visible_broad_shell_pixels": 50840,
+      "olive_preserving_material_fraction": 0.8188630999213218,
+      "lit_chromaticity_retained_within_0p04": 0.9651652242328875,
+      "combined_visible_olive_preserving_fraction": 0.8146341463414634,
+      "lit_broad_mean_rgb": [
+        0.21043944092188335,
+        0.21788401906786842,
+        0.1447760756544085
+      ],
+      "clean_broad_mean_rgb": [
+        0.24841062310057144,
+        0.2622503509665306,
+        0.1709110473456799
+      ]
+    },
+    "method": "Body and end/rail hardware only; excludes intentionally dark recessed grille. Olive-preserving material: rust <20%, soot <20%, bare-metal wear <10%. Projected masks intersect lit chromaticity within 0.04 of clean olive after RGB-sum normalization. This is a material/lighting measurement, not a visual verdict."
+  },
+  "blockiness_and_tiling_check": {
+    "lit_16px_grid_gradient_ratio": 0.9212588107843506,
+    "lit_weather_difference_horizontal_autocorrelation": {
+      "16": 0.8463187965180203,
+      "32": 0.8422117874751408,
+      "64": 0.8378677687836088,
+      "128": 0.8358232276776665
+    },
+    "raw_peak_correlation": 0.8463187965180203,
+    "broad_face_detrended_autocorrelation_peak": {
+      "axis": "vertical",
+      "lag_px": 168,
+      "correlation": 0.6002856063119228,
+      "paired_pixels": 11090
+    },
+    "broad_face_detrended_absolute_peak": {
+      "axis": "vertical",
+      "lag_px": 168,
+      "correlation": 0.6002856063119228,
+      "paired_pixels": 11090
+    },
+    "broad_face_detrended_scan": [
+      {
+        "axis": "vertical",
+        "lag_px": 16,
+        "correlation": 0.37837419288765967,
+        "paired_pixels": 94840
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 20,
+        "correlation": 0.05524279136829812,
+        "paired_pixels": 89928
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 24,
+        "correlation": 0.14116126394166198,
+        "paired_pixels": 81776
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 28,
+        "correlation": 0.20594626889904558,
+        "paired_pixels": 72176
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 32,
+        "correlation": 0.19329618843275975,
+        "paired_pixels": 62576
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 36,
+        "correlation": 0.13209393242474096,
+        "paired_pixels": 52976
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 40,
+        "correlation": 0.055222913346846654,
+        "paired_pixels": 43376
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 44,
+        "correlation": -0.00968918520112054,
+        "paired_pixels": 33776
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 48,
+        "correlation": -0.055082741187575904,
+        "paired_pixels": 24575
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 52,
+        "correlation": -0.00903380608695307,
+        "paired_pixels": 18877
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 56,
+        "correlation": 0.03407707655709799,
+        "paired_pixels": 14720
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 60,
+        "correlation": -0.004927953566201557,
+        "paired_pixels": 12098
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 64,
+        "correlation": 0.045768630192049825,
+        "paired_pixels": 11450
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 68,
+        "correlation": 0.21469444121697184,
+        "paired_pixels": 9491
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 72,
+        "correlation": 0.0017951125396687502,
+        "paired_pixels": 3914
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 140,
+        "correlation": -0.02023952382786356,
+        "paired_pixels": 1200
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 144,
+        "correlation": -0.051584477014614834,
+        "paired_pixels": 1200
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 152,
+        "correlation": 0.01678591543388115,
+        "paired_pixels": 3402
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 156,
+        "correlation": 0.07064398755893492,
+        "paired_pixels": 3402
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 160,
+        "correlation": -0.550197018851304,
+        "paired_pixels": 1490
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 164,
+        "correlation": -0.24452733098231694,
+        "paired_pixels": 6290
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 168,
+        "correlation": 0.6002856063119228,
+        "paired_pixels": 11090
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 172,
+        "correlation": 0.5045261943937437,
+        "paired_pixels": 14492
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 176,
+        "correlation": 0.018995474421528876,
+        "paired_pixels": 14492
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 180,
+        "correlation": -0.1408496027900244,
+        "paired_pixels": 14646
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 184,
+        "correlation": 0.06531671385864866,
+        "paired_pixels": 19446
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 188,
+        "correlation": -0.18817786450159188,
+        "paired_pixels": 24246
+      },
+      {
+        "axis": "vertical",
+        "lag_px": 192,
+        "correlation": -0.2623666648954443,
+        "paired_pixels": 29046
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 16,
+        "correlation": 0.5369310496967015,
+        "paired_pixels": 136890
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 20,
+        "correlation": 0.5551660128524681,
+        "paired_pixels": 136378
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 24,
+        "correlation": 0.549343552949363,
+        "paired_pixels": 135881
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 28,
+        "correlation": 0.5399347499628846,
+        "paired_pixels": 135384
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 32,
+        "correlation": 0.5370014045296333,
+        "paired_pixels": 134912
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 36,
+        "correlation": 0.5441968307608628,
+        "paired_pixels": 134413
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 40,
+        "correlation": 0.5513832471875199,
+        "paired_pixels": 133918
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 44,
+        "correlation": 0.5481175567581017,
+        "paired_pixels": 133424
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 48,
+        "correlation": 0.5412585150918849,
+        "paired_pixels": 132918
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 52,
+        "correlation": 0.5382889669521781,
+        "paired_pixels": 132442
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 56,
+        "correlation": 0.5345485404069154,
+        "paired_pixels": 131953
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 60,
+        "correlation": 0.5333098604732682,
+        "paired_pixels": 131465
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 64,
+        "correlation": 0.5369317010084139,
+        "paired_pixels": 130953
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 68,
+        "correlation": 0.5420711606369477,
+        "paired_pixels": 130471
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 72,
+        "correlation": 0.5403928807554712,
+        "paired_pixels": 129991
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 76,
+        "correlation": 0.5295728584853837,
+        "paired_pixels": 129485
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 80,
+        "correlation": 0.5212464171248151,
+        "paired_pixels": 129018
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 84,
+        "correlation": 0.5241071111627056,
+        "paired_pixels": 128529
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 88,
+        "correlation": 0.5358915292174451,
+        "paired_pixels": 128026
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 92,
+        "correlation": 0.53847275184022,
+        "paired_pixels": 127557
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 96,
+        "correlation": 0.5290750344811009,
+        "paired_pixels": 127068
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 100,
+        "correlation": 0.518597679942361,
+        "paired_pixels": 126592
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 104,
+        "correlation": 0.5190200902226153,
+        "paired_pixels": 126112
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 108,
+        "correlation": 0.52754398893839,
+        "paired_pixels": 125622
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 112,
+        "correlation": 0.5283913700775841,
+        "paired_pixels": 125151
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 116,
+        "correlation": 0.5187869647895093,
+        "paired_pixels": 124648
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 120,
+        "correlation": 0.5125750140616988,
+        "paired_pixels": 124155
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 124,
+        "correlation": 0.5183320136055588,
+        "paired_pixels": 123695
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 128,
+        "correlation": 0.5305293353923228,
+        "paired_pixels": 123202
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 132,
+        "correlation": 0.5330811873209277,
+        "paired_pixels": 122723
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 136,
+        "correlation": 0.5227898264438273,
+        "paired_pixels": 122221
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 140,
+        "correlation": 0.5125284035864393,
+        "paired_pixels": 121765
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 144,
+        "correlation": 0.5124739146856383,
+        "paired_pixels": 121294
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 148,
+        "correlation": 0.5213411814093379,
+        "paired_pixels": 120799
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 152,
+        "correlation": 0.5253675011646858,
+        "paired_pixels": 120302
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 156,
+        "correlation": 0.5242307304744314,
+        "paired_pixels": 119824
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 160,
+        "correlation": 0.5247292037806384,
+        "paired_pixels": 119347
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 164,
+        "correlation": 0.5216798836269786,
+        "paired_pixels": 118864
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 168,
+        "correlation": 0.5154614334084446,
+        "paired_pixels": 118382
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 172,
+        "correlation": 0.5127964598039805,
+        "paired_pixels": 117903
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 176,
+        "correlation": 0.5131676472969041,
+        "paired_pixels": 117430
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 180,
+        "correlation": 0.5127064490031473,
+        "paired_pixels": 116947
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 184,
+        "correlation": 0.5130033521287827,
+        "paired_pixels": 116455
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 188,
+        "correlation": 0.5184408915753135,
+        "paired_pixels": 115978
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 192,
+        "correlation": 0.5365010732754084,
+        "paired_pixels": 115501
+      }
+    ],
+    "repeated_texture_tiles_authored": false,
+    "measurement_note": "Actual lit weather-on/off pair. Raw correlations include physical grille repetition and broad darkening. Broad-face relative effect divides the lit difference by clean-control luminance (floor 0.035), removes a normalized Gaussian sigma-6 px trend, and scans both axes at lags 16..192 px, step 4. Absolute-effect peak is retained separately. Normalization removes illumination scaling without changing material or captures. Correlation statistics do not establish a visual verdict.",
+    "broad_face_absolute_effect_detrended_peak": {
+      "axis": "vertical",
+      "lag_px": 168,
+      "correlation": 0.6577462214651015,
+      "paired_pixels": 11090
+    },
+    "relative_effect_normalization_floor": 0.035,
+    "horizontal_secondary_local_peaks": [
+      {
+        "axis": "horizontal",
+        "lag_px": 20,
+        "correlation": 0.5551660128524681,
+        "paired_pixels": 136378,
+        "prominence": 0.01823496315576667
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 40,
+        "correlation": 0.5513832471875199,
+        "paired_pixels": 133918,
+        "prominence": 0.014381842657886557
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 68,
+        "correlation": 0.5420711606369477,
+        "paired_pixels": 130471,
+        "prominence": 0.008761300163679486
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 92,
+        "correlation": 0.53847275184022,
+        "paired_pixels": 127557,
+        "prominence": 0.017226334715404912
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 112,
+        "correlation": 0.5283913700775841,
+        "paired_pixels": 125151,
+        "prominence": 0.009793690135223132
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 132,
+        "correlation": 0.5330811873209277,
+        "paired_pixels": 122723,
+        "prominence": 0.020506173259228877
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 152,
+        "correlation": 0.5253675011646858,
+        "paired_pixels": 120302,
+        "prominence": 0.012661052161538455
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 160,
+        "correlation": 0.5247292037806384,
+        "paired_pixels": 119347,
+        "prominence": 0.0004984733062070035
+      },
+      {
+        "axis": "horizontal",
+        "lag_px": 176,
+        "correlation": 0.5131676472969041,
+        "paired_pixels": 117430,
+        "prominence": 0.0003711874929236414
+      }
+    ],
+    "horizontal_max_secondary_peak_prominence": 0.020506173259228877,
+    "fixed_correlation_cutoff_applied": false,
+    "cutoff_note": "A correlation maximum alone does not distinguish smooth spatial continuity, physical paired surfaces and periodic image tiling. All maxima and the horizontal secondary-peak prominences are reported without a visual verdict.",
+    "round5_normalized_peak": 0.7608111973542846,
+    "round5_raw_peak": 0.9237065225322801,
+    "round5_absolute_effect_peak": 0.7656924416600721,
+    "normalized_peak_at_or_below_round5": true
+  },
+  "slot_lit_measurements": {
+    "view": "below-2p5m",
+    "sample_pixels_per_slot": 77,
+    "slots": [
+      {
+        "slot": 1,
+        "pixel_xy": [
+          261,
+          450
+        ],
+        "mean_rgb": [
+          0.8775146422205238,
+          0.8670231729055258,
+          0.8519480519480519
+        ],
+        "mean_luma": 0.8681652355487647,
+        "normalized_tint": [
+          1.0,
+          0.9880441091120148,
+          0.9708647707486949
+        ]
+      },
+      {
+        "slot": 2,
+        "pixel_xy": [
+          313,
+          450
+        ],
+        "mean_rgb": [
+          0.8738477209065442,
+          0.8629997453526856,
+          0.8474662592309643
+        ],
+        "mean_luma": 0.8641845072574477,
+        "normalized_tint": [
+          1.0,
+          0.9875859657302709,
+          0.9698100011656364
+        ]
+      },
+      {
+        "slot": 3,
+        "pixel_xy": [
+          366,
+          450
+        ],
+        "mean_rgb": [
+          0.879449961802902,
+          0.8691112808759862,
+          0.8538324420677355
+        ],
+        "mean_luma": 0.8702061522790928,
+        "normalized_tint": [
+          1.0,
+          0.9882441510308089,
+          0.9708709752142693
+        ]
+      },
+      {
+        "slot": 4,
+        "pixel_xy": [
+          418,
+          450
+        ],
+        "mean_rgb": [
+          0.8159409218232743,
+          0.8033104150751209,
+          0.7833969951617008
+        ],
+        "mean_luma": 0.8045579118920293,
+        "normalized_tint": [
+          1.0,
+          0.984520317083828,
+          0.9601148492603461
+        ]
+      },
+      {
+        "slot": 5,
+        "pixel_xy": [
+          470,
+          450
+        ],
+        "mean_rgb": [
+          0.8078431372549012,
+          0.7957728545963842,
+          0.7756047873694923
+        ],
+        "mean_luma": 0.7968828622358033,
+        "normalized_tint": [
+          1.0,
+          0.9850586306896999,
+          0.9600933047534987
+        ]
+      },
+      {
+        "slot": 6,
+        "pixel_xy": [
+          522,
+          450
+        ],
+        "mean_rgb": [
+          0.8219505984211862,
+          0.8104914693149984,
+          0.7906289788642726
+        ],
+        "mean_luma": 0.8114936083524315,
+        "normalized_tint": [
+          1.0,
+          0.9860586157754508,
+          0.9618935497862322
+        ]
+      },
+      {
+        "slot": 7,
+        "pixel_xy": [
+          574,
+          450
+        ],
+        "mean_rgb": [
+          0.885103132161955,
+          0.8765469824293349,
+          0.8604023427552837
+        ],
+        "mean_luma": 0.8772003768780234,
+        "normalized_tint": [
+          1.0,
+          0.9903331607112035,
+          0.9720927556246048
+        ]
+      },
+      {
+        "slot": 8,
+        "pixel_xy": [
+          626,
+          450
+        ],
+        "mean_rgb": [
+          0.8857142857142848,
+          0.8774637127578293,
+          0.8613700025464722
+        ],
+        "mean_luma": 0.8780558186911117,
+        "normalized_tint": [
+          1.0,
+          0.990684836984647,
+          0.9725145190040826
+        ]
+      },
+      {
+        "slot": 9,
+        "pixel_xy": [
+          678,
+          450
+        ],
+        "mean_rgb": [
+          0.8812324929971984,
+          0.8721161191749416,
+          0.8561751973516668
+        ],
+        "mean_luma": 0.8729033256939129,
+        "normalized_tint": [
+          1.0,
+          0.9896549731260468,
+          0.9715656244581856
+        ]
+      },
+      {
+        "slot": 10,
+        "pixel_xy": [
+          730,
+          450
+        ],
+        "mean_rgb": [
+          0.8843901196842365,
+          0.8766488413547231,
+          0.86060606060606
+        ],
+        "mean_luma": 0.8771363483575241,
+        "normalized_tint": [
+          1.0,
+          0.9912467607255977,
+          0.9731068240714082
+        ]
+      },
+      {
+        "slot": 11,
+        "pixel_xy": [
+          782,
+          450
+        ],
+        "mean_rgb": [
+          0.883116883116883,
+          0.8746116628469569,
+          0.8581614463967405
+        ],
+        "mean_luma": 0.8752321670486376,
+        "normalized_tint": [
+          1.0,
+          0.9903690888119955,
+          0.9717416378316034
+        ]
+      },
+      {
+        "slot": 12,
+        "pixel_xy": [
+          834,
+          450
+        ],
+        "mean_rgb": [
+          0.8806213394448682,
+          0.8711993888464471,
+          0.8552075375604781
+        ],
+        "mean_luma": 0.8720478838808243,
+        "normalized_tint": [
+          1.0,
+          0.989300792319704,
+          0.9711410560407148
+        ]
+      },
+      {
+        "slot": 13,
+        "pixel_xy": [
+          887,
+          450
+        ],
+        "mean_rgb": [
+          0.8747135217723452,
+          0.8650878533231471,
+          0.8492997198879549
+        ],
+        "mean_luma": 0.8659943672014258,
+        "normalized_tint": [
+          1.0,
+          0.9889956331877726,
+          0.9709461426491993
+        ]
+      },
+      {
+        "slot": 14,
+        "pixel_xy": [
+          939,
+          450
+        ],
+        "mean_rgb": [
+          0.8786860198624895,
+          0.8691622103386799,
+          0.853781512605041
+        ],
+        "mean_luma": 0.870076485867073,
+        "normalized_tint": [
+          1.0,
+          0.989161305280241,
+          0.9716571031125021
+        ]
+      }
+    ],
+    "failed_vs_other_slots_screen_luma_fraction": 0.9224522069545581,
+    "source_failed_section_linear_output_fraction": 0.528333093897287,
+    "failed_section_length_fraction": 0.21649484536082475,
+    "note": "Display-referred screen luminance after AgX is distinct from the requested physical emission fraction.",
+    "emission_strength": 3.0,
+    "olive_body_sample_pixels": 41631,
+    "olive_body_mean_rgb": [
+      0.23186454664008282,
+      0.241566781164624,
+      0.15999399014959662
+    ],
+    "olive_body_mean_luma": 0.23361453059342155,
+    "all_slots_mean_luma": 0.8574383607988646,
+    "healthy_slots_mean_luma": 0.8719275153367125,
+    "failed_slots_mean_luma": 0.8043114608267548,
+    "slots_to_olive_body_screen_luma_ratio": 3.6703126240513466,
+    "healthy_to_olive_body_screen_luma_ratio": 3.7323342564431456,
+    "exported_gltf_emissive_strength": 3,
+    "exported_gltf_emissive_factor": [
+      1,
+      1,
+      1
+    ]
+  },
+  "render_settings": {
+    "engine": "Cycles CPU",
+    "samples": 48,
+    "seed": 0,
+    "size": [
+      1200,
+      900
+    ],
+    "white_secondary_fill_watts": [
+      18,
+      12
+    ],
+    "views": [
+      {
+        "name": "below-2p5m",
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/below-2p5m.png",
+        "camera_blender_m": [
+          0,
+          -0.025,
+          -2.55
+        ],
+        "target_blender_m": [
+          0,
+          0,
+          -0.05
+        ],
+        "emission": 3.0,
+        "all_metal_weather_disabled": false,
+        "angle_below_ceiling_deg": 89.42706130231652
+      },
+      {
+        "name": "below-close",
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/below-close.png",
+        "camera_blender_m": [
+          0,
+          -0.2,
+          -1.35
+        ],
+        "target_blender_m": [
+          0,
+          0,
+          -0.05
+        ],
+        "emission": 3.0,
+        "all_metal_weather_disabled": false,
+        "angle_below_ceiling_deg": 81.2538377374448
+      },
+      {
+        "name": "three-quarter",
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/three-quarter.png",
+        "camera_blender_m": [
+          1.05,
+          -1.15,
+          -1.85
+        ],
+        "target_blender_m": [
+          0,
+          0,
+          -0.05
+        ],
+        "emission": 3.0,
+        "all_metal_weather_disabled": false,
+        "angle_below_ceiling_deg": 49.13580409125802
+      },
+      {
+        "name": "grazing",
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/grazing.png",
+        "camera_blender_m": [
+          1.05,
+          -1.15,
+          -0.48
+        ],
+        "target_blender_m": [
+          0,
+          0,
+          -0.05
+        ],
+        "emission": 3.0,
+        "all_metal_weather_disabled": false,
+        "angle_below_ceiling_deg": 15.436391892108409
+      },
+      {
+        "name": "end-left",
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/end-left.png",
+        "camera_blender_m": [
+          -1.15,
+          -0.33,
+          -0.37
+        ],
+        "target_blender_m": [
+          0,
+          0,
+          -0.05
+        ],
+        "emission": 3.0,
+        "all_metal_weather_disabled": false,
+        "angle_below_ceiling_deg": 14.974195807784227
+      },
+      {
+        "name": "end-right",
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/end-right.png",
+        "camera_blender_m": [
+          1.15,
+          -0.33,
+          -0.37
+        ],
+        "target_blender_m": [
+          0,
+          0,
+          -0.05
+        ],
+        "emission": 3.0,
+        "all_metal_weather_disabled": false,
+        "angle_below_ceiling_deg": 14.974195807784227
+      },
+      {
+        "name": "emissive-off",
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/emissive-off.png",
+        "camera_blender_m": [
+          0,
+          -0.2,
+          -1.35
+        ],
+        "target_blender_m": [
+          0,
+          0,
+          -0.05
+        ],
+        "emission": 0.0,
+        "all_metal_weather_disabled": false,
+        "angle_below_ceiling_deg": 81.2538377374448
+      },
+      {
+        "name": "weather-disabled",
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/weather-disabled.png",
+        "camera_blender_m": [
+          0,
+          -0.2,
+          -1.35
+        ],
+        "target_blender_m": [
+          0,
+          0,
+          -0.05
+        ],
+        "emission": 3.0,
+        "all_metal_weather_disabled": true,
+        "angle_below_ceiling_deg": 81.2538377374448
+      },
+      {
+        "name": "grazing-weather-disabled",
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/grazing-weather-disabled.png",
+        "camera_blender_m": [
+          1.05,
+          -1.15,
+          -0.48
+        ],
+        "target_blender_m": [
+          0,
+          0,
+          -0.05
+        ],
+        "emission": 3.0,
+        "all_metal_weather_disabled": true,
+        "angle_below_ceiling_deg": 15.436391892108409
+      },
+      {
+        "name": "below-2p5m-weather-disabled",
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/below-2p5m-weather-disabled.png",
+        "camera_blender_m": [
+          0,
+          -0.025,
+          -2.55
+        ],
+        "target_blender_m": [
+          0,
+          0,
+          -0.05
+        ],
+        "emission": 3.0,
+        "all_metal_weather_disabled": true,
+        "angle_below_ceiling_deg": 89.42706130231652
+      },
+      {
+        "name": "rust-disabled",
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/rust-disabled.png",
+        "camera_blender_m": [
+          0,
+          -0.2,
+          -1.35
+        ],
+        "target_blender_m": [
+          0,
+          0,
+          -0.05
+        ],
+        "emission": 3.0,
+        "all_metal_weather_disabled": false,
+        "angle_below_ceiling_deg": 81.2538377374448
+      },
+      {
+        "name": "grazing-rust-disabled",
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/grazing-rust-disabled.png",
+        "camera_blender_m": [
+          1.05,
+          -1.15,
+          -0.48
+        ],
+        "target_blender_m": [
+          0,
+          0,
+          -0.05
+        ],
+        "emission": 3.0,
+        "all_metal_weather_disabled": false,
+        "angle_below_ceiling_deg": 15.436391892108409
+      },
+      {
+        "name": "grazing-streak-disabled",
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/grazing-streak-disabled.png",
+        "camera_blender_m": [
+          1.05,
+          -1.15,
+          -0.48
+        ],
+        "target_blender_m": [
+          0,
+          0,
+          -0.05
+        ],
+        "emission": 3.0,
+        "all_metal_weather_disabled": false,
+        "angle_below_ceiling_deg": 15.436391892108409
+      },
+      {
+        "name": "grazing-dust-disabled",
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/grazing-dust-disabled.png",
+        "camera_blender_m": [
+          1.05,
+          -1.15,
+          -0.48
+        ],
+        "target_blender_m": [
+          0,
+          0,
+          -0.05
+        ],
+        "emission": 3.0,
+        "all_metal_weather_disabled": false,
+        "angle_below_ceiling_deg": 15.436391892108409
+      }
+    ]
+  },
+  "renders": {
+    "below-2p5m": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/below-2p5m.png",
+    "below-close": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/below-close.png",
+    "three-quarter": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/three-quarter.png",
+    "grazing": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/grazing.png",
+    "end-left": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/end-left.png",
+    "end-right": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/end-right.png",
+    "emissive-off": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/emissive-off.png",
+    "weather-disabled": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/weather-disabled.png",
+    "grazing-weather-disabled": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/grazing-weather-disabled.png",
+    "below-2p5m-weather-disabled": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/below-2p5m-weather-disabled.png",
+    "rust-disabled": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/rust-disabled.png",
+    "grazing-rust-disabled": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/grazing-rust-disabled.png",
+    "grazing-streak-disabled": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/grazing-streak-disabled.png",
+    "grazing-dust-disabled": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/grazing-dust-disabled.png"
+  },
+  "sheet": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round6/sheet.jpg",
+  "sheet_size_px": [
+    2280,
+    5440
+  ],
+  "scope": "Only tmp/lights-redo/round6 written. Round4, round5 and concepts read-only. No git state changes or foreign process signals. Blender geometry, baking, export and renders; external arrays, sheet assembly and requested trimesh verification.",
+  "limitations": [
+    "No visual inspection or visual quality verdict.",
+    "Godot installation and lighting not tested.",
+    "Olive-preserving mask measures material composition and retained lit chromaticity, not human perception.",
+    "Autocorrelation includes uncertainty from curved mesh shading, sampling and physical repeated geometry."
+  ],
+  "final_acceptance": {
+    "triangle_budget": true,
+    "fourteen_slots": true,
+    "closed_consistent_meshes": true,
+    "dimensions_and_mount": true,
+    "wear_between_rounds_5_and_4": true,
+    "wear_near_midpoint": true,
+    "olive_broad_faces_at_least_65_percent": true,
+    "normalized_tiling_peak_at_or_below_round5": true,
+    "raw_tiling_peak_at_or_below_round5": true,
+    "absolute_effect_peak_at_or_below_round5": true,
+    "failing_section_40_to_60_percent_physical_output": true,
+    "slot_luminance_exceeds_olive_body": true,
+    "sheet_width_under_2400": true,
+    "exported_emission_strength_matches_blender": true
+  }
+}

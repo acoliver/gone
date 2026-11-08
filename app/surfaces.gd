@@ -74,13 +74,6 @@ class SurfaceFrame:
 	var aperture := Vector2(1.08, 2.4)
 	var seed_offset: Vector3
 
-static func light_glass_material() -> StandardMaterial3D:
-	var result := StandardMaterial3D.new()
-	result.set_meta(&"surface_role", &"light_glass")
-	result.albedo_color = Color(0.72, 0.72, 0.70)
-	result.roughness = 0.8
-	return result
-
 static func hatch_runtime_textures() -> Dictionary:
 	var textures := {"hatch_painted": HATCH_PAINTED}
 	for kind: String in HATCH_TEXTURES: textures["baked_" + kind] = HATCH_TEXTURES[kind]

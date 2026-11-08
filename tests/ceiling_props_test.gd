@@ -90,21 +90,20 @@ func test_imported_generated_meshes_stay_in_instance_budgets() -> void:
 	var script: GDScript = load("res://app/ceiling_props.gd") if FileAccess.file_exists("res://app/ceiling_props.gd") else null
 	assert_true(script != null, "generated mesh provider exists")
 	if script == null: return
-	for shape: String in ["detector", "sprinkler", "duct", "module"]:
+	for shape: String in ["detector", "sprinkler", "duct"]:
 		var mesh: Mesh = script.call(&"mesh", StringName(shape))
 		var triangles := mesh.get_faces().size() / 3
-		assert_true(triangles > 0 and triangles <= {"detector": 3000, "sprinkler": 3000, "duct": 2000, "module": 1500}[shape], "instance budget: %s = %d" % [shape, triangles])
+		assert_true(triangles > 0 and triangles <= {"detector": 3000, "sprinkler": 3000, "duct": 2000}[shape], "instance budget: %s = %d" % [shape, triangles])
 		assert_int_equal(mesh.get_surface_count(), 1, "one draw per repeated mesh family")
 
-func test_light_cassettes_follow_every_existing_strip_and_use_glass_role() -> void:
+func test_light_fixtures_follow_every_existing_strip() -> void:
 	var layout := ShipLayout.authored().layout
 	for id: StringName in [ShipLayout.BAY_ID, ShipLayout.POWER_ID, &"D14-S-041"]:
 		var spec := layout.ceiling_services(id)
-		assert_int_equal(spec.modules.size(), 8 if id == &"D14-S-041" else 12, "two cassettes per existing regular strip")
-		for pose: Transform3D in spec.modules:
-			assert_vec3_equal(pose.basis.get_scale(), CeilingServices.MODULE_SIZE, "metric cassette size remains layout-owned")
-	var glass := Surfaces.light_glass_material()
-	assert_true(glass.get_meta(&"surface_role") == &"light_glass", "one surface factory supplies light glass")
+		assert_int_equal(spec.fixtures.size(), 4 if id == &"D14-S-041" else 6, "one beam per existing regular strip")
+		for pose: Transform3D in spec.fixtures:
+			assert_vec3_equal(pose.basis.get_scale(), Vector3.ONE, "asset is already metric")
+			assert_float_equal((pose * CeilingServices.FIXTURE_BOUNDS).end.y, spec.bounds.end.y, "beam top attaches to ceiling")
 	for role: StringName in [&"weathered_red", &"corroded_brass"]:
 		var finish := Surfaces.material(role)
 		assert_false(finish.shader.code.contains("EMISSION"), "fire-safety finishes have no emission")

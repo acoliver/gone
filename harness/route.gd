@@ -137,8 +137,11 @@ func corridor(name: String) -> void:
 	hold(50)
 	look_at(anchor(&"D14-POWER-CONSOLE", Vector3(4.95, 1.3, 1.8)), -12)
 	beat("power-active")
+	beats.back().camera_pitch_up = 30.0
 	walk_to(anchor(&"D14-POWER-CONSOLE", Vector3(2.45, 0, 3)))
 	walk_to(anchor(ShipLayout.POWER_DOOR_ID, Vector3(0, 0, 1.5)))
 	walk_to(anchor(ShipLayout.POWER_DOOR_ID, Vector3(0, 0, -1)))
 	look_at(anchor(ShipLayout.BAY_DOOR_ID), -3)
 	beat("hall-white")
+	beats.back().camera_back = 2.0
+	beats.back().camera_pitch_up = 15.0

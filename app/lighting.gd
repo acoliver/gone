@@ -167,14 +167,10 @@ static func build(game: Game) -> Lighting:
 		lighting._pod_keys.append(key)
 	var white_level := 1.0 if game.power_active else 0.0
 	lighting._white_fade = Intensity.FixtureFade.holding(white_level).fade
-	lighting._white_lens_material = Surfaces.light_glass_material()
-	lighting._white_lens_material.emission_enabled = true
-	var white_mesh := BoxMesh.new()
-	white_mesh.size = Hallway.REGULAR_LENS_SIZE
-	white_mesh.material = lighting._white_lens_material
+	lighting._white_lens_material = CeilingFixture.glass_material(white_level)
 	var fill_positions := game.layout.bay().emergency_fill_positions()
 	for frame: Transform3D in game.layout.bay().regular_light_frames():
-		lighting.add_child(lighting._white_fixture(frame, white_mesh))
+		lighting.add_child(lighting._white_fixture(frame))
 		var fill := emergency_fill(fill_positions[lighting._fill_lights.size()], level, BAY_FILL_MASK, EMERGENCY_BAY_FILL_SHARE)
 		fill.name = "EmergencyFill%d" % lighting._fill_lights.size()
 		lighting.add_child(fill)
@@ -358,11 +354,10 @@ func process_frame(delta_secs: float) -> void:
 func _circuit_target() -> float:
 	return 0.0 if _game.power_active else _game.emergency_circuit_target()
 
-func _white_fixture(frame: Transform3D, mesh: BoxMesh) -> Node3D:
+func _white_fixture(frame: Transform3D) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "BayRegularStrip"
 	fixture.transform = frame
-	DressingMounts.ceiling_stem(fixture, Pods.ROOM_CEILING_HEIGHT, Surfaces.surface_frame(_game.layout, ShipLayout.BAY_ID, &"CEILING"))
 	var light := OmniLight3D.new()
 	light.light_color = REGULAR_WHITE
 	light.omni_range = REGULAR_RANGE
@@ -370,13 +365,7 @@ func _white_fixture(frame: Transform3D, mesh: BoxMesh) -> Node3D:
 	light.shadow_enabled = false
 	light.position.y = -0.12
 	fixture.add_child(light)
-	var lens := MeshInstance3D.new()
-	lens.name = "Lens"
-	lens.set_meta(&"lamp_circuit", "white")
-	lens.mesh = mesh
-	lens.position.y = 0.012
-	fixture.add_child(lens)
-	CeilingProps.armour(fixture, _game.layout, ShipLayout.BAY_ID)
+	CeilingFixture.mount(fixture, Pods.ROOM_CEILING_HEIGHT, architectural_mask(_game.layout, ShipLayout.BAY_ID), _white_lens_material)
 	_white_lights.append(light)
 	return fixture
 

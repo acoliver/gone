@@ -1,0 +1,91 @@
+extends SimTestCase
+
+const ASSET := "res://assets/props/ceiling/fixture.glb"
+
+func test_generated_fixture_keeps_metric_bounds_budget_and_separate_glass() -> void:
+	assert_true(ResourceLoader.exists(ASSET), "selected round-6 fixture must be installed")
+	if not ResourceLoader.exists(ASSET): return
+	var node: Node3D = load(ASSET).instantiate()
+	var bounds := _bounds(node)
+	assert_close(bounds.position, Vector3(-0.55, -0.10, -0.11), "exported mounting envelope minimum")
+	assert_close(bounds.end, Vector3(0.55, 0, 0.11), "exported mounting plane is Y=0")
+	var triangles := 0
+	var glass_count := 0
+	for piece: MeshInstance3D in node.find_children("*", "MeshInstance3D", true, false):
+		triangles += piece.mesh.get_faces().size() / 3
+		assert_true(piece.material_override == null, "authored metal finish is not replaced")
+		for surface: int in range(piece.mesh.get_surface_count()):
+			var material := piece.mesh.surface_get_material(surface) as StandardMaterial3D
+			if material.resource_name == "RecessedFrostedGlass":
+				glass_count += 1
+				assert_true(material.emission_enabled and material.emission_texture != null, "authored glass retains its emission texture")
+	assert_int_equal(triangles, 2664, "selected round-6 topology")
+	assert_true(triangles <= 3000, "fixture triangle budget")
+	assert_int_equal(glass_count, 1, "one independent glass surface")
+	assert_true(node.find_children("*", "CollisionObject3D", true, false).is_empty(), "visual prop adds no colliders")
+	node.free()
+
+func test_all_sixteen_fixtures_attach_directly_to_the_actual_ceiling() -> void:
+	var game := Game.new(91)
+	var nodes: Array[Node3D] = [Lighting.build(game), Hallway.build(game), PowerRoom.build(game)]
+	for index: int in range(nodes.size()):
+		var node := nodes[index]
+		var fixtures := node.find_children("CeilingFixture", "Node3D", true, false)
+		assert_int_equal(fixtures.size(), 4 if index == 1 else 6, "one complete beam replaces each pair")
+		for fixture: Node3D in fixtures:
+			var bounds := _bounds(fixture)
+			assert_float_equal(bounds.end.y, Vector3(0, 3.2, 0).y, "fixture top touches actual ceiling without a stem")
+			assert_float_equal(bounds.position.y, Vector3(0, 3.1, 0).y, "fixture depth stays 0.10 m")
+			assert_true(fixture.find_children("*", "CollisionObject3D", true, false).is_empty(), "fixture adds zero prop colliders")
+		node.free()
+
+func test_imported_glass_tracks_each_room_circuit_without_material_churn() -> void:
+	var game := Game.new(91)
+	game.light_hallway()
+	var nodes: Array[Node3D] = [Lighting.build(game), Hallway.build(game), PowerRoom.build(game)]
+	var materials: Array[StandardMaterial3D] = []
+	for node: Node3D in nodes:
+		var glasses := _glasses(node)
+		assert_int_equal(glasses.size(), 4 if node is Hallway else 6, "each beam owns its imported recessed glass")
+		for glass: MeshInstance3D in glasses:
+			var material := glass.get_active_material(0) as StandardMaterial3D
+			assert_true(material.emission == Lighting.REGULAR_WHITE * 0.0, "emergency leaves white glass dark")
+			materials.append(material)
+	game.press_console()
+	game.press_console()
+	for tick: int in range(Lighting.FIXTURE_SETTLE_TICKS):
+		for node: Node3D in nodes:
+			node.process_frame(Sim.LOGICAL_TICK_SECS)
+			for glass: MeshInstance3D in _glasses(node):
+				var material := glass.get_active_material(0) as StandardMaterial3D
+				assert_true(materials.has(material), "fade reuses the circuit material")
+				assert_true(material.emission == Lighting.REGULAR_WHITE * Lighting.REGULAR_EMISSIVE * node.white_level(), "actual imported glass follows the same fade as the light")
+				assert_float_equal(material.emission_energy_multiplier, 3.0, "circuit control preserves the imported glass emission strength")
+				assert_int_equal(material.emission_operator, BaseMaterial3D.EMISSION_OP_MULTIPLY, "zero circuit level extinguishes the textured emission")
+	for node: Node3D in nodes:
+		assert_float_equal(node.white_level(), 1.0, "regular circuit settles lit")
+	game.power_active = false
+	for tick: int in range(Lighting.FIXTURE_SETTLE_TICKS):
+		for node: Node3D in nodes:
+			node.process_frame(Sim.LOGICAL_TICK_SECS)
+			for glass: MeshInstance3D in _glasses(node):
+				var material := glass.get_active_material(0) as StandardMaterial3D
+				assert_true(material.emission == Lighting.REGULAR_WHITE * Lighting.REGULAR_EMISSIVE * node.white_level(), "return to emergency fades actual glass off")
+	for node: Node3D in nodes:
+		assert_float_equal(node.white_level(), 0.0, "emergency leaves no white emission")
+		node.free()
+
+func _glasses(node: Node3D) -> Array[MeshInstance3D]:
+	var result: Array[MeshInstance3D] = []
+	for piece: MeshInstance3D in node.find_children("*", "MeshInstance3D", true, false):
+		if piece.get_meta(&"lamp_circuit", "") == "white" and piece.get_active_material(0).resource_name == "RecessedFrostedGlass": result.append(piece)
+	return result
+
+func _bounds(node: Node3D) -> AABB:
+	var bounds := AABB()
+	var first := true
+	for piece: MeshInstance3D in node.find_children("*", "MeshInstance3D", true, false):
+		var box := Surfaces.world_frame(piece) * piece.mesh.get_aabb()
+		bounds = box if first else bounds.merge(box)
+		first = false
+	return bounds
