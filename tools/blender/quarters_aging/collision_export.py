@@ -134,7 +134,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--input', type=Path, required=True)
     parser.add_argument('--report', type=Path, required=True)
+    parser.add_argument('--baseline', type=Path)
     args = parser.parse_args(sys.argv[sys.argv.index('--') + 1:])
+    baseline = check(args.baseline) if args.baseline else None
     result = check(args.input)
+    if baseline is not None:
+        from collision_policy import sofa_contacts
+        result['sofa_contacts'] = sofa_contacts(result, baseline)
+        result['pass'] = result['sofa_contacts']['pass'] and all(v['pass'] for v in result['topology'].values())
     args.report.write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps({k: v for k, v in result.items() if k in ['self_intersections', 'part_intersections', 'pass', 'topology']}, indent=2))

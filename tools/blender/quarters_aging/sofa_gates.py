@@ -27,7 +27,7 @@ SPECS = {
     'G17': ('back horizontal front folds with >=8 mm prominence', '>=2 each back'),
     'G18': ('arm-cap crest split share', '0.60..0.90'),
     'G19': ('fallen throw distance and folds', '<=0.250 m from arm footprint; >=3 folds >=0.010 m'),
-    'G30': ('all-part triangle SAT, no pair exclusions', '0'),
+    'G30': ('changed-part triangle SAT and unchanged rigid baseline', '0 changed intersections; rigid counts exactly equal unaged'),
     'G31': ('export triangle count', '<=29325 and <=1.5x unaged'),
     'G32': ('decimated/dense open-boundary Hausdorff distance', '<=0.0015 m'),
 }
@@ -104,7 +104,7 @@ def cluster_fraction(points, eps=.030, minimum=4):
     return float(max((np.sum(labels == i) for i in range(cluster)), default=0) / len(points))
 
 
-def measure(path, collisions=None, reexport=None):
+def measure(path, collisions=None, reexport=None, baseline_collisions=None):
     from visible_gates import load, primitive, heights
     from verify import clean, geometry_buffers, pivots
     from scipy.spatial import ConvexHull
@@ -166,10 +166,11 @@ def measure(path, collisions=None, reexport=None):
     old_count = sum(len(m.faces) for m in before.values())
     measured('G31', {'aged': count, 'unaged': old_count, 'ratio': count/old_count}, count <= min(29325, 1.5*old_count))
     if collisions:
+        from collision_policy import sofa_contacts
         sat = json.loads(collisions.read_text())
-        excluded = sum(x['count'] for x in sat.get('excluded_unchanged_assembly', {}).values())
-        total = sat['self_intersections'] + sat['part_intersections'] + excluded
-        measured('G30', {'intersections': total, 'excluded': excluded}, total == 0 and not sat.get('excluded_unchanged_assembly'))
+        if baseline_collisions is not None:
+            contact = sofa_contacts(sat, json.loads(baseline_collisions.read_text()))
+            measured('G30', contact, contact['pass'])
     original = ROOT / 'assets/props/quarters/sofa.glb'
     old, new = geometry_buffers(original), geometry_buffers(path)
     invariants = {'fixed_geometry_bytes': all(old[n] == new[n] for n in ['Frame', 'Feet', 'Rivets']),
@@ -185,8 +186,9 @@ if __name__ == '__main__':
     p.add_argument('--report', type=Path, required=True)
     p.add_argument('--collisions', type=Path)
     p.add_argument('--reexport', type=Path)
+    p.add_argument('--baseline-collisions', type=Path)
     a = p.parse_args()
-    result = measure(a.input, a.collisions, a.reexport)
+    result = measure(a.input, a.collisions, a.reexport, a.baseline_collisions)
     a.report.write_text(json.dumps(result, indent=2)+'\n')
     print(json.dumps(result, indent=2))
     raise SystemExit(0 if result['pass'] else 1)

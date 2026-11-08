@@ -1,5 +1,17 @@
 # Quarters geometry aging
 
+## Pass 5 calibration and contact policy
+
+The 200 mm cantilever now compares 21 width-averaged material stations in 3D, rather than only the free-tip height. At 150 frames and 24 fps, the maximum dense/reference profile difference is 1.926 mm for upholstery and 4.409 mm for wool, against a 10 mm limit. Both fits retain total swatch mass. The requested 6 mm grid is actually 5.882 mm (34 cells); the reference is 22.222 mm (9 cells).
+
+The upholstery reference is the selected fitted `seat-u` record: structural 500, shear 350, bending 10, vertex mass 0.015 kg. The wool reference uses structural 150, shear 80, vertex mass 0.15 kg and bending 0.25, as specified for the fitted throw in the #95 task. The older `throw-l` trial records a different bending experiment (0.7); it must not replace the task's 0.25 reference.
+
+Spring-only sweeps failed to reproduce the upholstery drape. Damping had also been left constant while vertex mass fell with resolution, so the dense swatch was still moving toward its drape at frame 150. Joint spring/damping sweeps and independent mass, structural and bending perturbations found a mass-conserving fit. At the measured edge ratio 9/34, upholstery uses structural 160, shear 56 and bending 1.6; wool retains 150/80/0.25. Both use structural damping 1.44, bending damping 0.36 and air damping 0.6.
+
+`cloth_stage.calibrated_config` records the empirical formula `q(h) = q_ref * (h / h_ref)^p`. Upholstery exponents are 0.857274446 for structural springs and 1.378776541 for shear and bending. Wool spring exponents are zero. Both fabrics use 1.595219466 for damping and air damping. Mass remains `mass_ref * N_ref / N_dense`. These coefficients describe this Blender version and fixture; they are not a general resolution law. The full sweeps, selected settings, profiles and exponents are under `pass5_calibration` in `sofa/cloth-trials.json`. Reproduce with `swatch_calibration.py`; raw exploratory runs stay under `tmp/age/pass5/`.
+
+G30 now uses the owner's rigid-assembly decision below. `collision_policy.py` compares all six rigid self/pair counts against the unaged SAT report and separately totals every changed-part contact. The controls reject an added changed contact and either an increase or decrease in rigid baseline counts. Supply the unaged report explicitly with `sofa_gates.py --baseline-collisions`; `collision_export.py --baseline` can perform both inspections in one Blender run.
+
 ## Reusable soft-prop stages
 
 `densify.py` subdivides working surfaces and optionally refines projected bands. `tear_paths.py` snaps paths with Dijkstra and splits edges without removing area. `grain_paths.py` derives physical warp/weft directions from the pattern UV gradient. `cloth_stage.py` preserves explicit lip, welt and collision groups, scales per-vertex mass and records every frame's elapsed compute time.
@@ -30,9 +42,9 @@ Gate changes and reasons:
 - Remove the >=65% retained back-height target and hero-area proxy. G15 requires 40% to 65% retained height, G16 >=60% residue in the lowest third and G17 at least two 8 mm folds.
 - G1 and G2 limit exported cloth faceting and normal-pass discontinuities. G7 limits large planar crust facets to 5%; G8 requires dense crust roughness plus a normal map.
 - G9 checks cut-residue fragment templates rather than jittered icosahedra. G18 and G19 require the crest failure and nearby folded fall that explain the throw's pose.
-- G30 includes every part, including fixed assemblies, Feet, rivets and fringe cards. Nothing is removed from collision totals. G31 retains the 29,325 triangle cap; G32 limits dense-to-game open-boundary error to 1.5 mm.
+- G30 requires zero SAT intersections for every pair involving any changed or new part, including covers, residues, throw, fringe, crumbs and powder against Frame, Feet and Rivets. The unchanged rigid set is reported separately, with every self and cross-part count required to equal the unaged export exactly. Its fitted overlapping steel primitives have 522 Frame self-crossings and 272 Frame/Rivets crossings. These joints are acceptable because this rigid assembly is never deformed. Removing an existing rigid crossing also fails the exact-baseline check. G31 retains the 29,325 triangle cap; G32 limits dense-to-game open-boundary error to 1.5 mm.
 
-`Frame`, `Feet` and `Rivets` are all cloth colliders without changing their mesh. Neighbouring settled covers and the floor remain colliders. Fixed meshes and pivots are checked independently of the all-part SAT test.
+`Frame`, `Feet` and `Rivets` are all cloth colliders without changing their mesh. Neighbouring settled covers and the floor remain colliders. Fixed meshes and pivots are checked independently of the changed-part SAT test and the exact rigid baseline comparison.
 
 The sofa and tunic represent 1000 years in dry, sealed, sterile, oxygenated air. Foam oxidises into crust and crumbs; wool splits at seams and hanging stress points. There is no biological or water damage. Locker materials and `bake_masks.py` belong to a separate pipeline.
 
@@ -82,7 +94,7 @@ The normal prop exporters load baked sources: `sofa/build.py -- --aged --output 
 
 ## Export and camera gates
 
-`collision_export.py` imports the actual GLB, builds triangle BVHs, then tests candidates with triangle-triangle SAT, including coplanar overlap. Only shared-vertex adjacency is omitted from self checks. No cloth, cushion or attachment is exempt from intersection tests. Fixed frame and hanger joints remain in the intersection totals, with their original geometry bytes checked independently. Cloth boundaries must be unbranched, without nonmanifold or degenerate edges; crust must be closed.
+`collision_export.py` imports the actual GLB, builds triangle BVHs, then tests candidates with triangle-triangle SAT, including coplanar overlap. Only shared-vertex adjacency is omitted from self checks. No cloth, cushion or attachment is exempt from intersection tests. Sofa frame, feet and rivet joints remain reported as the unchanged rigid baseline; their counts must match the unaged export pair by pair, and their original geometry bytes are checked independently. The tunic's collision policy is unchanged. Cloth boundaries must be unbranched, without nonmanifold or degenerate edges; crust must be closed.
 
 Run `pass3_gates.py` with the installed Hunyuan Python:
 
