@@ -30,7 +30,9 @@ def main():
     bpy.context.view_layer.update()
     objects = [body, rivet]
     bake.planar_atlas(objects, 128)
-    position, normal, edge, contact, _, occupied, _, density = bake.rasterize(objects, 128)
+    position, normal, edge, contact, _, occupied, _, density, part_index = bake.rasterize(objects, 128)
+    assert np.isin(part_index[occupied], [0, 1]).all(), "every texel retains exact part identity"
+    assert (part_index[occupied & (position[:, :, 1] < -.59)] == 1).all(), "fixture identity cannot leak onto its receiver"
     assert np.isfinite(position).all() and np.isfinite(edge).all()
     assert np.ptp(density) / np.median(density) < .015
     top = occupied & (position[:, :, 2] > .999)
@@ -44,7 +46,7 @@ def main():
     assert np.array_equal(ao_without, ao_with), "unselected guide cannot affect prop AO"
     assert not guide.hide_render, "guide visibility restored"
     assert not body.hide_render and not body.hide_get(), "body visibility restored"
-    print("BAKER FIXTURES PASS: density, reflected exposure, contact, isolated AO, visibility", flush=True)
+    print("BAKER FIXTURES PASS: density, reflected exposure, contact, isolated AO, visibility, part identity, receiver isolation", flush=True)
 
 
 if __name__ == "__main__":

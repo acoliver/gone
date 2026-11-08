@@ -219,7 +219,7 @@ def rasterize(objects, resolution):
     densities = np.asarray(densities)
     if np.ptp(densities) / np.median(densities) > .015:
         raise ValueError(f"inconsistent texel density: {densities.min()} to {densities.max()}")
-    return position, normal, edge_mask, contact, ownership, occupied, sources, densities
+    return position, normal, edge_mask, contact, ownership, occupied, sources, densities, np.where(occupied, face_owner // 100000, -1).astype(np.int16)
 
 
 def save_rgba(name, data, output):
@@ -290,7 +290,7 @@ def main():
     objects = [obj for obj in parts if obj.type == "MESH"]
     args.output.mkdir(parents=True, exist_ok=True)
     planar_atlas(objects, args.resolution)
-    positions, normals, edge, contact, ownership, occupied, sources, density = rasterize(objects, args.resolution)
+    positions, normals, edge, contact, ownership, occupied, sources, density, part_index = rasterize(objects, args.resolution)
     ao = bake_ao(objects, args.resolution, args.seed)
     streak = np.zeros_like(edge)
     p, n = positions[occupied], normals[occupied]
@@ -302,7 +302,8 @@ def main():
     # Geometry fields remain authoring inputs, not runtime allocations.
     args.fields.parent.mkdir(parents=True, exist_ok=True)
     np.savez_compressed(args.fields, position=positions, normal=normals,
-                        ownership=ownership, occupied=occupied)
+                        ownership=ownership, occupied=occupied, part_index=part_index,
+                        part_names=np.array([obj.name for obj in objects]))
     document = {"version": 1, "seed": args.seed, "atlas_size": [args.resolution] * 2,
                 "texels_per_metre": float(np.median(density)),
                 "density_range_px_m": [float(density.min()), float(density.max())],

@@ -161,12 +161,21 @@ def main():
     extra['gates']['bare_steel_pit_normal_rms'] = atlas['bare_steel_pit_normal_rms'] >= .01
     extra['gates']['hardware'] = all(row['rust_fraction'] >= .30 and row['pit_normal_rms'] >= .01 for row in atlas['hardware'].values())
     extra['thresholds']['hardware'] = 'each named hardware part: atlas rust>=0.30, pit normal RMS>=0.01'
+    extra['values']['chroma_hardware_rust_min'] = min(row['chroma_rust_fraction'] for row in atlas['hardware'].values())
+    extra['gates']['chroma_hardware_rust_min'] = extra['values']['chroma_hardware_rust_min'] >= .30
+    extra['thresholds']['chroma_hardware_rust_min'] = '>=0.30 on each actual hardware mesh; hatch paint_fields rule'
     extra['thresholds'].update(exported_uv_density='304.6 +/-15% px/m, every triangle singular value',
                                exported_uv_no_stretch='anisotropy <=1.015, every triangle',
                                paint_roughness_range='about 0.35..0.55, span>=0.12',
                                bare_steel_pit_normal_rms='>=0.01 tangent-normal deviation')
+    from locker_swatch_gates import measure_swatches
+    swatches = measure_swatches(args.captures, args.masks.parent, args.fields,
+                               json.loads(args.masks.read_text()), json.loads((args.captures / 'preview.json').read_text()))
     for name in ('values', 'gates', 'thresholds'):
         result[name].update(extra[name])
+        result[name].update(swatches[name])
+    result['panel_edges'] = swatches['panel_edges']
+    result['measured_streak_widths_m'] = swatches['measured_streak_widths_m']
     result['visibility_fasteners'] = extra['visibility_fasteners']
     result['passed'] = all(result['gates'].values())
     (args.captures / "gates.json").write_text(json.dumps(result, indent=2) + "\n")

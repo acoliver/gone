@@ -1,13 +1,18 @@
 {
-  "method": "two atlas sets for edge/fixture flakes; float source table for subtexel gravity trails; runtime dust with matched disabled control",
+  "method": "generated FLUX.2-klein swatches, hatch linear albedo calibration and chroma-derived edge loss; procedural relief only",
+  "colour_source": "art-source/quarters/locker/albedo-calibration.json",
+  "swatches": {
+    "panel": "panel-95031.png",
+    "loss": "loss-95132.png",
+    "dust": "dust-95332.png"
+  },
+  "swatch_pixels_per_metre": 300,
   "gravity_direction_prop": [
     0,
     -1,
     0
   ],
   "gravity_source_count": 85,
-  "aged_paint_chalking_linear_gain": 1.6,
-  "aged_paint_chalking_linear_offset": 0.02,
   "age_years": {
     "as_built": 0,
     "aged": 1000
@@ -29,16 +34,13 @@
     0.1811642348766327,
     0.17144109308719635
   ],
-  "dust_srgb": [
-    0.6399999856948853,
-    0.6100000143051147,
-    0.550000011920929
-  ],
   "channels": {
     "*_albedo.png": "RGB sRGB undusted reflectance, A oxide coverage",
     "*_normal.png": "RGB OpenGL tangent normal, A=1",
     "*_orm.png": "R AO, G undusted roughness, B undusted metallic, A dust",
+    "aged_dust.png": "RGB calibrated generated dust swatch, physical 300 px/m projection",
+    "aged_rust.png": "RGB calibrated heavy-loss swatch for translucent runoff colour",
     "region_masks.png": "R edge/fixture band <=25 mm, G broad >=60 mm, B BareSteel, A coverage"
   },
-  "detail_scans": "shared CC0 hatch steel/paint/oxide at 0.20 m pitch"
+  "detail_scans": "shared CC0 hatch steel/paint/oxide relief at 0.20 m pitch; clean finish also uses scan colour grain"
 }

@@ -1,0 +1,41 @@
+{
+  "model": "black-forest-labs/FLUX.2-klein-4B",
+  "steps": 4,
+  "quantize": 4,
+  "seed": 95331,
+  "size": [
+    768,
+    768
+  ],
+  "source_concept": "docs/art/quarters/concept-now.png",
+  "concept_crop_xyxy": [
+    464,
+    266,
+    561,
+    306
+  ],
+  "prompt": "Remove all hardware, seams, borders, shadows, vertical streaks and panel edges from the reference. Replace them with a continuous flat horizontal dusty old painted steel surface. A thick soft smooth layer of settled fine warm grey-brown dust covers almost all of the grey-green painted metal. Very faint irregular patches of reddish-brown rust show through the deposited dust. No dark streaks, no spots, no runs, no scratches, no grid, no speckles, no sharp pattern. Fill edge to edge with the flat dusty material only, lit completely evenly without shadows or directional lighting. Preserve the warm muted grey-brown dusty colour of the reference.",
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/dust-crop.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/dust-settled-prompt.txt",
+    "--seed",
+    "95331",
+    "--width",
+    "768",
+    "--height",
+    "768",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/dust-95331.png"
+  ],
+  "source_crop": "dust-crop.png",
+  "candidate": "dust-95331.png"
+}

@@ -1,0 +1,20 @@
+{
+  "reviewer": "image-comparer",
+  "basis": "Uncalibrated candidate sheet; no visible hardware or cast shadows; repeated motifs rejected independently of correlation score.",
+  "rejected": {
+    "95030": "Over-rusted and mottled broad panel",
+    "95032": "Top border and excessive panel rust",
+    "95130": "Crosshatched grid pattern",
+    "95131": "Regular orange spots and large turquoise islands",
+    "95230": "Strong directional vertical staining",
+    "95231": "Repeated vertical streaks",
+    "95232": "Deposits retain pronounced vertical streaks; settled-dust candidates are softer",
+    "95330": "Dense rust spots and vertical streaks",
+    "95331": "Strong reddish vertical staining"
+  },
+  "preferred": {
+    "panel": 95031,
+    "loss": 95132,
+    "dust": 95332
+  }
+}

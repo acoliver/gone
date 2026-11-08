@@ -1,5 +1,4 @@
 """Exported-UV and baked finish checks independent of the Blender baker."""
-import json
 import numpy as np
 from PIL import Image
 import trimesh
@@ -7,7 +6,7 @@ import trimesh
 
 def repeat_metrics(directory, repeat):
     names = ['geometry_masks.png', 'weather_masks.png', 'region_masks.png',
-             'masks.json', 'finishes.json', 'streak_sources.tres']
+             'masks.json', 'finishes.json', 'streak_sources.tres', 'aged_dust.png', 'aged_rust.png']
     names += [f'{state}_{kind}.png' for state in ('as_built', 'aged') for kind in ('albedo', 'normal', 'orm')]
     matches = [name for name in names if (directory / name).read_bytes() == (repeat / name).read_bytes()]
     exported = directory.with_suffix('.glb').read_bytes() == (repeat / 'storage_locker_module.glb').read_bytes()
@@ -44,18 +43,17 @@ def measure_atlases(directory, fields):
     magnitude = np.linalg.norm(normal[bare], axis=-1)
     from locker_gates import rust_pixels
     aged = np.asarray(Image.open(directory / 'aged_albedo.png'), np.float32)[..., :3] / 255
-    metadata = json.loads((directory / 'masks.json').read_text())
-    p = arrays['position'][occupied]
     oxide = rust_pixels(aged)[occupied]
     pits = np.linalg.norm(normal[occupied], axis=-1)
     hardware = {}
+    names = arrays['part_names'][arrays['part_index'][occupied]]
+    from locker_swatches import paint_field
+    chroma_rust = paint_field(aged)[occupied] < .5
     for part in ('Rivets', 'Hinges', 'DoorVents', 'Handle', 'KickPlate'):
-        selected = p[:, 2] <= .105 if part == 'KickPlate' else np.zeros(len(p), bool)
-        for source in metadata['sources']:
-            if source['part'] != part: continue
-            lo, hi = np.array(source['bounds_blender'])
-            selected |= ((p >= lo - 1e-5) & (p <= hi + 1e-5)).all(-1)
+        selected = names == part
         if not selected.any(): raise ValueError('no hardware samples: ' + part)
-        hardware[part] = dict(rust_fraction=float(oxide[selected].mean()), pit_normal_rms=float(np.sqrt(np.mean(pits[selected] ** 2))))
+        hardware[part] = dict(rust_fraction=float(oxide[selected].mean()),
+                              chroma_rust_fraction=float(chroma_rust[selected].mean()),
+                              pit_normal_rms=float(np.sqrt(np.mean(pits[selected] ** 2))))
     return dict(paint_roughness_range=[float(clean[..., 1][paint].min()), float(clean[..., 1][paint].max())],
                 bare_steel_pit_normal_rms=float(np.sqrt(np.mean(magnitude ** 2))), hardware=hardware)

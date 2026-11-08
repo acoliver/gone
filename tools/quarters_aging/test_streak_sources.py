@@ -8,7 +8,7 @@ from streak_sources import write_sources
 
 class StreakSourceTests(unittest.TestCase):
     def setUp(self):
-        scratch = Path(__file__).resolve().parents[2] / 'tmp/mat/locker/pass2'
+        scratch = Path(__file__).resolve().parents[2] / 'tmp/mat/locker/pass3'
         scratch.mkdir(parents=True, exist_ok=True)
         self.directory = tempfile.TemporaryDirectory(dir=scratch)
         self.addCleanup(self.directory.cleanup)

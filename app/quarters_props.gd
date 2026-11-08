@@ -16,6 +16,8 @@ const PROPS := {
 			"normal": preload("res://assets/props/quarters/storage_locker_module/aged_normal.png"),
 			"orm": preload("res://assets/props/quarters/storage_locker_module/aged_orm.png"),
 		},
+		&"baked_dust": preload("res://assets/props/quarters/storage_locker_module/aged_dust.png"),
+		&"runoff_colour": preload("res://assets/props/quarters/storage_locker_module/aged_rust.png"),
 		&"weather_masks": preload("res://assets/props/quarters/storage_locker_module/weather_masks.png"),
 		&"region_masks": preload("res://assets/props/quarters/storage_locker_module/region_masks.png"),
 		&"streak_sources": preload("res://assets/props/quarters/storage_locker_module/streak_sources.tres"),
@@ -32,6 +34,8 @@ static func material(prop: StringName, state: StringName) -> ShaderMaterial:
 	result.shader = STEEL
 	for kind: String in ["albedo", "normal", "orm"]:
 		result.set_shader_parameter("baked_" + kind, PROPS[prop][state][kind])
+	result.set_shader_parameter(&"baked_dust", PROPS[prop][&"baked_dust"])
+	result.set_shader_parameter(&"runoff_colour", PROPS[prop][&"runoff_colour"])
 	result.set_shader_parameter(&"weather_masks", PROPS[prop][&"weather_masks"])
 	result.set_shader_parameter(&"region_masks", PROPS[prop][&"region_masks"])
 	result.set_shader_parameter(&"streak_sources", PROPS[prop][&"streak_sources"])

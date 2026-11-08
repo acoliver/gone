@@ -57,83 +57,117 @@ The third-pass neutral renders are in the gitignored `tmp/fit/locker/pass3/` dir
 
 ## Locker materials
 
-The locker uses one shared mesh and two cached finishes, `as_built` and `aged`. The aged finish represents 1000 years in dry, sealed, sterile, oxygenated air. It combines orange-brown oxide, edge and fixture paint failure, narrow gravity trails, pitted hardware and grey-brown dust. There is no biological growth or wet layer. The exported GLB is byte-identical to the first material pass, including names, geometry, pivots and UVs. The hatch, door and ship-shell materials are unchanged.
+The locker uses one shared mesh and two cached finishes, `as_built` and `aged`. The aged finish represents 1000 years in dry, sealed, sterile, oxygenated air. Its paint, oxide and dust colours now come from generated FLUX.2-klein swatches, following the hatch method. The earlier noise-based corrosion produced evenly distributed broad-face damage, continuous outlines and blocky flake boundaries. Noise remains in roughness, microrelief, pitting and bounded runoff shapes; it does not create the aged colour islands.
 
-The clean paint is measured from the design sheet's broad door face, using the median of pixels x=460..549, y=440..599 after conversion to linear light. Its sRGB reflectance is (0.38039, 0.46275, 0.45098). The actual unlit shader output differs from that reference by ΔE2000 1.529, below the limit of 6. Paint has a 0.3490 to 0.5490 roughness range, orange-peel tangent-normal variation and shared CC0 paint-scan grain. BareSteel uses brighter reflectance and a 0.30 to 0.40 roughness field. Its measured clean linear luminance is 0.4766 and maximum rendered roughness is 0.3916.
+The source crops, prompts, raw candidates, seeds, measurement scores and linear-light calibration are saved in `art-source/quarters/locker/`. `recipe.md` documents generation and selection. The chosen seeds are panel **95031**, heavy loss **95132** and settled dust **95332**. Generation used the hatch's offline FLUX.2-klein-4B edit tool, four-bit weights and four steps, at 768 by 768 pixels. Jobs ran sequentially under `nohup` on the shared GPU. The source crops come from our aged quarters and rusted hatch concepts.
 
-`tools/blender/quarters_aging/bake_masks.py` retains the isometric face islands, shared three-pixel-margin pack and Cycles AO. The 2048-square atlas has a median density of 304.55 px/m, with triangle area densities from 304.30 to 304.72 px/m. Independent singular-value measurements on the exported GLB range from 304.13 to 304.84 px/m; the greatest anisotropy is 1.00179. Every triangle stays within 15% of the 304.6 px/m target. Narrow bevels keep their physical UV scale, and raster interiors do not overlap.
+`tools/quarters_aging/locker_swatches.py` uses the hatch's unchanged `paint_fields()` chroma rule and `calibrate_albedo()` conversion. Calibration works in linear light; final paint/rust Lab class statistics include the saved contrast and white-balance corrections. The generated images project on physical face axes at 300 source pixels per metre, without stretching. The selected panel region avoids the larger flakes in the other regions of the same image. The source image's pigment contrast varies the edge-loss reach from 31 to 80 mm, while its paint islands break the boundary. Edge distance, fixture distance and cavity exposure determine where that image replaces the broad-panel colour. This wider exposure keeps the original pooled-rust gate while leaving the broad faces mostly painted.
 
-The vent smear came from overlapping source fields. The first generator emitted 432 vent-edge samples as well as broad connected-component trails up to 0.48 m long. Those fields accumulated into regular vertical bands. Exported UV measurements show no corresponding stretch, gravity follows the correct axis, and the shader does not sample vertex colours. The replacement uses 85 outlets from individual rivets, hinge knuckles, the handle and louvres. Thin vent backing meshes and the handle pocket do not duplicate the visible hardware's outlets.
+Hardware assignment uses exact baked mesh-part IDs. Fixture bounding boxes locate surrounding receiving surfaces but cannot classify the door as hardware, which previously leaked rectangular heavy-loss patches. Hinges, vent blades, rivets, handle and kick plate receive heavy-loss colour and pitting. Generated settled-dust colour covers up faces; there is no procedural speckle overlay. Effect-disabled controls expose the same underlying surface for dust visibility measurements.
 
-`finish_fields.py` generates seeded, domain-warped, layered flakes in physical Blender coordinates. Edge and fixture distance lower the paint-failure threshold. Broad faces use a separate, finer pinhole and blister field; the larger flakes stay near edges and fixtures. Lifted flake rims and recessed oxide modulate the normal atlas. Surviving aged paint is lightly chalked, while rivets, hinges, louvres, the handle and the kick plate receive separate pitting. CC0 steel and oxide scans add variation inside the exposed regions without transferring their green pigments.
+The float source table keeps subtexel outlet positions. Runoff takes oxide colour from the heavy-loss image, at reduced opacity, with 4 to 12 mm nominal origins, tapered profiles and fading ends within 200 mm. Millimetre-scale drift prevents uniformly straight graphic lines. Close rivet pairs remain separate; the handle pocket and thin vent backing meshes do not duplicate visible outlets. Shader diagnostics use preview copies, leaving the runtime material cache unchanged.
 
-At 304.6 px/m, filtering the close rivet pairs merged their trails. A small two-row `RGBAFloat` texture now stores signed source coordinates and seeded trail shapes. `quarters_steel.gdshader` evaluates those narrow trails in prop space, along game -Y, with ragged borders and fading ends. Close rivet pairs use nominal 7 mm trails; other outlets use 9.5 mm. Independent, bounded width and millimetre-scale drift fields keep the trails continuous. Smaller paired profiles keep adjacent runs separate after filtering. `app/quarters_props.gd` preloads the table and atlases and still caches exactly one material per prop and finish. This preserves subtexel positions without changing UV density or geometry.
+The as-built finish and its gates are unchanged. Clean paint still uses the design sheet's linear median, sRGB (0.38039, 0.46275, 0.45098), with paint-scan grain, orange-peel relief and bright bare hardware. Geometry, pivots, names and UVs are shared. The 2048-square atlas retains isometric face islands, three-pixel margins and Cycles AO. Exported UV densities remain 304.13 to 304.84 px/m, with maximum anisotropy 1.00179. The hatch, door and ship-shell materials are unchanged.
 
-The seed is 9501. `geometry_masks.png` contains AO, cavity, edge proximity and coverage. `weather_masks.png` contains upward exposure, a baked gravity field, contact and material class. `region_masks.png` identifies the 25 mm edge/fixture band, broad areas at least 60 mm away, and BareSteel. `finishes.json` records the design sample and channel meanings. Geometry arrays stay in scratch. Atlas imports retain packed alpha data and mipmaps; alpha-border colour repair is disabled.
+### Measured gates
 
-Dust is blended in the shader so a preview copy can disable only that effect. The warm, low-saturation powder changes albedo, roughness, metallic response and normal strength. Runtime materials keep dust enabled. Unlit, neutral and present-light captures compare identical pixels with and without dust, rather than inferring visibility from coverage.
+**Acceptance remains incomplete: 53 of 57 gates pass.** All added swatch/material gates pass. The retained three-lane fastener visibility checks and straight-boundary limit fail, as reported below. No threshold has been removed or relaxed.
 
-### Capture gates
+Measurements use actual Godot albedo and matched neutral/present captures, effect-disabled dust controls, named hardware texels and exported triangles. Every pass-2 gate is retained, alongside the additional chroma, edge-variation, runoff and swatch-colour gates. Fractions below use 0 to 1; distances are in metres unless the metric states otherwise. Failing rows are retained and the gate command exits nonzero when any row fails.
 
-All original gates remain in place. The new measurements use the same cameras, geometry and lighting as their controls. Values below are ordered **unlit / neutral / present** where three lanes are shown.
-
-| Gate | Measured | Requirement |
-| --- | --- | --- |
-| Aged PaintedSteel rust, pooled hero and front | 25.582% | 25% to 60% |
-| Original fastener row-presence gate | 68/71, 95.775% | At least 80%; rust in at least 70% of sampled receiver rows |
-| Original up-face dust coverage | 98.474% | At least 70% |
-| As-built rust | 0.000% | Under 1% |
-| Newly green total and largest region | Both 0.000% | Total under 0.5% of prop pixels |
-| Shared mesh, pivots, names and footprint | Identical | Identical |
-| Dust linear luminance increase | 0.21960 / 0.23587 / 0.16990 | At least 0.06 in each lane |
-| Warm, low-saturation dust on up faces | 99.540% / 98.985% / 98.436% | At least 70%; hue 20..55°, saturation 0.06..0.25 |
-| Fasteners passing the visibility strip | 64/71 / 63/71 / 62/71, 90.141% / 88.732% / 87.324% | At least 80% in each lane |
-| Edge-band / broad-face rust ratio | 6.0162 / 6.0929 / 5.3913 | At least 2.5 |
-| Broad-face rust | 9.338% / 9.195% / 10.459% | 8% to 25% |
-| Longest straight rust boundary | 38.965 mm | At most 40 mm within 1 mm of its chord |
-| Secondary door-albedo autocorrelation peak | 0.33205 | At most 0.5 at offsets beyond 50 mm |
-| Visible aged BareSteel rust | 77.388% | At least 30% |
-| Clean BareSteel linear albedo luminance | 0.47664 | At least 0.35 |
-| Clean BareSteel maximum roughness | 0.39157 | At most 0.45 |
-| Clean paint ΔE2000 against design sample | 1.52904 | At most 6 |
-| Clean paint roughness range | 0.34902 to 0.54902 | About 0.35 to 0.55, span at least 0.12 |
-| Streaked-area atlas density | 304.30 to 304.72 px/m | 258.91 to 350.29 px/m |
-| Exported UV principal densities | 304.13 to 304.84 px/m | 258.91 to 350.29 px/m, every triangle |
-| Exported UV maximum anisotropy | 1.00179 | At most 1.015 |
-| BareSteel pit-normal RMS | 0.11278 | At least 0.01 |
-| Repeated bake files and export | All 12 finish/mask files and the GLB byte-identical | Identical |
-
-Each new streak strip is 15 mm wide and 110 mm long, starting 10 mm below the fixture's lower bound. Passing requires at least 35% rust-coloured receiver pixels, linear luminance contrast of at least 0.04 against the flanking strips, and median trail width from 4 to 15 mm. The capture report retains every fastener's values. Four low fasteners have no visible receiving strip and remain excluded, with their count reported. Boundaries and autocorrelation use the actual flat door-face ID pass, excluding the prop silhouette and hardware geometry rather than counting repeated vent openings as painted-albedo tiling.
-
-Named hardware is also checked in the undusted atlas, separately from the visible BareSteel capture gate:
-
-| Part | Rust fraction | Pit-normal RMS | Requirement |
+| Gate | Value | Requirement | Result |
 | --- | --- | --- | --- |
-| Rivets | 58.701% | 0.10774 | At least 30% rust and 0.01 RMS |
-| Hinges | 63.464% | 0.14586 | Same |
-| Vents | 84.306% | 0.13263 | Same |
-| Handle | 60.465% | 0.14000 | Same |
-| Kick plate | 74.056% | 0.16050 | Same |
+| `aged_painted_rust` | 0.255810 | 0.250000, 0.600000 | PASS |
+| `as_built_rust` | 0.000000 | <0.01 | PASS |
+| `fasteners_with_streaks` | 0.929577 | >=0.80 | PASS |
+| `up_face_dust` | 0.885063 | >=0.70 | PASS |
+| `no_new_green` | 0.000000 | <0.005 | PASS |
+| `identical_geometry` | True | True | PASS |
+| `dust_linear_difference_albedo` | 0.283477 | >=0.06 | PASS |
+| `dust_warm_low_saturation_albedo` | 0.892995 | >=0.70 of up faces | PASS |
+| `dust_linear_difference_neutral` | 0.301500 | >=0.06 | PASS |
+| `dust_warm_low_saturation_neutral` | 0.887963 | >=0.70 of up faces | PASS |
+| `dust_linear_difference_present` | 0.215752 | >=0.06 | PASS |
+| `dust_warm_low_saturation_present` | 0.769700 | >=0.70 of up faces | PASS |
+| `edge_broad_ratio_albedo` | 5.957555 | >=2.5 | PASS |
+| `broad_face_rust_albedo` | 0.103816 | [0.08,0.25] | PASS |
+| `visible_fastener_streaks_albedo` | 0.112676 | >=0.80; per strip rust>=0.35, contrast>=0.04, width 4..15mm | FAIL |
+| `edge_broad_ratio_neutral` | 5.923413 | >=2.5 | PASS |
+| `broad_face_rust_neutral` | 0.103626 | [0.08,0.25] | PASS |
+| `visible_fastener_streaks_neutral` | 0.084507 | >=0.80; per strip rust>=0.35, contrast>=0.04, width 4..15mm | FAIL |
+| `edge_broad_ratio_present` | 5.778348 | >=2.5 | PASS |
+| `broad_face_rust_present` | 0.109574 | [0.08,0.25] | PASS |
+| `visible_fastener_streaks_present` | 0.056338 | >=0.80; per strip rust>=0.35, contrast>=0.04, width 4..15mm | FAIL |
+| `longest_straight_rust_boundary_m` | 0.055664 | <=0.040 within 0.001m | FAIL |
+| `door_secondary_autocorrelation` | 0.410538 | <=0.5 at offsets>0.050m | PASS |
+| `aged_bare_steel_rust` | 0.826011 | >=0.30 | PASS |
+| `as_built_bare_steel_linear_luminance` | 0.476644 | >=0.35 | PASS |
+| `as_built_bare_steel_roughness_max` | 0.391573 | <=0.45 | PASS |
+| `as_built_design_delta_e_2000` | 1.529041 | <=6 | PASS |
+| `streak_texel_density_range_px_m` | 304.300944, 304.717010 | 304.6 +/-15% | PASS |
+| `byte_identical_bakes` | True | True | PASS |
+| `byte_identical_export` | True | True | PASS |
+| `exported_uv_density` | 304.127508, 304.844790 | 304.6 +/-15% px/m, every triangle singular value | PASS |
+| `exported_uv_no_stretch` | 1.001787 | anisotropy <=1.015, every triangle | PASS |
+| `paint_roughness_range` | 0.349020, 0.549020 | about 0.35..0.55, span>=0.12 | PASS |
+| `bare_steel_pit_normal_rms` | 0.097897 | >=0.01 tangent-normal deviation | PASS |
+| `hardware` | See named-hardware table | each named hardware part: atlas rust>=0.30, pit normal RMS>=0.01 | PASS |
+| `chroma_hardware_rust_min` | 0.550388 | >=0.30 on each actual hardware mesh; hatch paint_fields rule | PASS |
+| `chroma_broad_face_rust` | 0.099672 | [0.08,0.25] hatch paint_fields, unlit capture | PASS |
+| `chroma_edge_broad_rust_ratio` | 5.899049 | >=2.5 hatch paint_fields, unlit capture | PASS |
+| `streak_width_median_m` | 0.005566 | [0.004,0.012] half-opacity contour at 30% drop | PASS |
+| `streak_source_length_range_m` | 0.130421, 0.193756 | [0.060,0.200] | PASS |
+| `streak_reduced_opacity_max` | 0.749902 | <1 | PASS |
+| `panel_edge_rust_cv_min` | 0.370720 | >=0.35 on every 25 mm band, 25 mm bins | PASS |
+| `swatch_panel_paint_mean_delta_e` | 6.640615 | <=8 D65 Lab | PASS |
+| `swatch_panel_paint_std_delta_e` | 7.289065 | <=8 D65 Lab | PASS |
+| `swatch_panel_rust_mean_delta_e` | 1.233443 | <=8 D65 Lab | PASS |
+| `swatch_panel_rust_std_delta_e` | 5.626604 | <=8 D65 Lab | PASS |
+| `swatch_panel_autocorrelation` | 0.190236 | <=0.5 beyond 50 mm | PASS |
+| `swatch_loss_paint_mean_delta_e` | 3.829559 | <=8 D65 Lab | PASS |
+| `swatch_loss_paint_std_delta_e` | 2.002381 | <=8 D65 Lab | PASS |
+| `swatch_loss_rust_mean_delta_e` | 4.989966 | <=8 D65 Lab | PASS |
+| `swatch_loss_rust_std_delta_e` | 3.252099 | <=8 D65 Lab | PASS |
+| `swatch_loss_autocorrelation` | 0.070388 | <=0.5 beyond 50 mm | PASS |
+| `swatch_dust_paint_mean_delta_e` | 3.179011 | <=8 D65 Lab | PASS |
+| `swatch_dust_paint_std_delta_e` | 6.757188 | <=8 D65 Lab | PASS |
+| `swatch_dust_rust_mean_delta_e` | 3.657650 | <=8 D65 Lab | PASS |
+| `swatch_dust_rust_std_delta_e` | 1.021611 | <=8 D65 Lab | PASS |
+| `swatch_dust_autocorrelation` | 0.375558 | <=0.5 beyond 50 mm | PASS |
+
+The retained visibility strip requires at least 35% rust-coloured receiver pixels, linear luminance contrast of at least 0.04 against its flanks and a contiguous rust width from 4 to 15 mm. It measures existing surface corrosion as well as runoff. The separate isolated-runoff control measures the actual tapered trail width. Both results are reported. Each 25 mm panel-edge band is divided into 25 mm bins; the reported variation is the minimum coefficient across all measured panel edges.
+
+| Hardware | HSV rust fraction | Hatch-chroma rust fraction | Pit-normal RMS |
+| --- | --- | --- | --- |
+| Rivets | 0.742000 | 0.574000 | 0.068332 |
+| Hinges | 0.830661 | 0.710712 | 0.119695 |
+| DoorVents | 0.708986 | 0.560030 | 0.134447 |
+| Handle | 0.767442 | 0.550388 | 0.138074 |
+| KickPlate | 0.807091 | 0.643974 | 0.160943 |
+
+Each hardware part requires at least 0.30 rust by both classifiers and at least 0.01 pit-normal RMS. Swatch colour gates compare both means and standard deviations of paint and rust in D65 Lab, with a maximum difference of 8. Autocorrelation is measured beyond a physical offset of 50 mm. The source scores also record border luminance differences and planar-light gradients; image-comparer checks the swatches for visible hardware, shadows and borders.
 
 ### Rebuild and verification
 
-Use the installed Blender and Hunyuan Python, with no additional packages. Run long commands under `nohup`, redirecting logs below `tmp/mat/locker/pass2/`, and poll their managed jobs. Captures require a windowed Godot renderer.
+Use the installed Blender and Hunyuan Python, with no additional packages. Run long jobs under `nohup`, with scratch output below `tmp/mat/locker/pass3/`. Rebuilding finishes consumes the saved generated PNGs and calibration; it does not run the image model again. Captures require a windowed Godot renderer.
 
 ```sh
 BLENDER=/Volumes/XS1000/acoliver/projects/threedee/branch-1/.tools/Blender-4.5.11.app/Contents/MacOS/Blender
 PYTHON=/Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python
-$BLENDER --background --factory-startup --python-exit-code 1 --python tools/blender/quarters_aging/bake_masks.py -- --blend tools/blender/quarters/storage_locker_module/locker-working.blend --objects Carcass Door --output assets/props/quarters/storage_locker_module --seed 9501 --fields tmp/mat/locker/pass2/geometry.npz --save-source --export assets/props/quarters/storage_locker_module.glb
-$PYTHON tools/quarters_aging/bake_finishes.py assets/props/quarters/storage_locker_module --fields tmp/mat/locker/pass2/geometry.npz
-$BLENDER --background --factory-startup --python-exit-code 1 --python tools/blender/quarters_aging/bake_masks.py -- --blend tools/blender/quarters/storage_locker_module/locker-working.blend --objects Carcass Door --output tmp/mat/locker/pass2/repeat --seed 9501 --fields tmp/mat/locker/pass2/repeat/geometry.npz --export tmp/mat/locker/pass2/repeat/storage_locker_module.glb
-$PYTHON tools/quarters_aging/bake_finishes.py tmp/mat/locker/pass2/repeat --fields tmp/mat/locker/pass2/repeat/geometry.npz
+$BLENDER --background --factory-startup --python-exit-code 1 --python tools/blender/quarters_aging/bake_masks.py -- --blend tools/blender/quarters/storage_locker_module/locker-working.blend --objects Carcass Door --output assets/props/quarters/storage_locker_module --seed 9501 --fields tmp/mat/locker/pass3/geometry.npz --export assets/props/quarters/storage_locker_module.glb
+$PYTHON tools/quarters_aging/bake_finishes.py assets/props/quarters/storage_locker_module --fields tmp/mat/locker/pass3/geometry.npz
+$BLENDER --background --factory-startup --python-exit-code 1 --python tools/blender/quarters_aging/bake_masks.py -- --blend tools/blender/quarters/storage_locker_module/locker-working.blend --objects Carcass Door --output tmp/mat/locker/pass3/repeat --seed 9501 --fields tmp/mat/locker/pass3/repeat/geometry.npz --export tmp/mat/locker/pass3/repeat/storage_locker_module.glb
+$PYTHON tools/quarters_aging/bake_finishes.py tmp/mat/locker/pass3/repeat --fields tmp/mat/locker/pass3/repeat/geometry.npz
 godot --headless --path . --editor --import
-godot --windowed --path . -s tools/quarters_pilot_preview.gd -- --out res://tmp/mat/locker/pass2
-$PYTHON tools/quarters_aging/locker_gates.py --captures tmp/mat/locker/pass2 --masks assets/props/quarters/storage_locker_module/masks.json --fields tmp/mat/locker/pass2/geometry.npz --repeat tmp/mat/locker/pass2/repeat
+godot --windowed --path . -s tools/quarters_aging/locker_preview.gd -- --out res://tmp/mat/locker/pass3
+$PYTHON tools/quarters_aging/locker_gates.py --captures tmp/mat/locker/pass3 --masks assets/props/quarters/storage_locker_module/masks.json --fields tmp/mat/locker/pass3/geometry.npz --repeat tmp/mat/locker/pass3/repeat
 ```
 
-The complete Godot suite passes **795 tests, 0 failures**, including seven locker material tests. Python passes **19 tests, 0 failures**, including invisible-dust, wide-smear, rectangular-island, periodic-albedo, equal-area UV-stretch and duplicate-fixture-outlet controls. The unchanged Blender fixture suite passes its five checks for density, reflected exposure, contact, isolated AO and restored visibility. Godot still reports allocator teardown warnings after the passing suite. Repeated geometry and finish bakes produce byte-identical PNGs, metadata, source tables and GLB output.
+Godot passes **795 tests, 0 failures**, including seven locker material tests. Python passes **27 tests, 0 failures**, including hatch-chroma parity, linear-light calibration, constant physical projection, image-dependent edge reach, narrow translucent runoff, continuous-outline rejection and the existing dust, smear, tiling, UV and outlet controls. The Blender fixture runner passes its seven named groups, including exact part identity and receiver isolation. Godot still prints allocator teardown warnings after the passing suite. All 14 saved mask/finish files and the GLB reproduce byte for byte.
 
-All requested sheets are below `tmp/mat/locker/pass2/`: `before-after.png`, `neutral-pair.png`, `front-pair.png`, `details.png` and `streaks-closeup.png`. As-built is left and aged is right. The detail sheet includes upper-door hardware and up-facing surfaces. The streak close-up frames two rivets and a hinge from 0.4 m under neutral light. `gates.json` retains values, thresholds, pass flags and the per-fastener strips. These captures and the gate report stay in scratch. Visual sign-off remains unverified: image-comparer returned conflicting exact-file identification, so its scores are not used as evidence.
+The requested sheets are `tmp/mat/locker/pass3/before-after.png`, `neutral-pair.png`, `front-pair.png`, `details.png`, `streaks-closeup.png` and `swatches.png`. As-built is left and aged is right in the paired captures. The swatch sheet has source crops, raw generated candidates and calibrated albedo in three columns. `gates.json` retains every value, threshold, pass flag, panel-edge bin and per-fastener strip in scratch.
+
+The final image-comparer inspection scored as-built **8/10** and aged **6/10**. It found visible hardware rust and top dust, with no obvious hardware, cast shadows or borders in the generated swatches. It also found dense, nearly continuous edge bands, some sharply defined trails and pixelated close-up paint/rust transitions. The passing edge-variation metric therefore does not establish that the edge wear reads as sufficiently broken. These appearance defects and the four failed capture gates remain unresolved.
 
 ## Sofa
 
