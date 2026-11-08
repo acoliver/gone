@@ -187,6 +187,7 @@ static func build(game: Game) -> Hallway:
 		hallway.add_child(piece)
 
 	hallway.add_child(CorridorDressing.build(game.layout, &"D14-S-041"))
+	hallway.add_child(CeilingProps.build(game.layout, &"D14-S-041"))
 	hallway.add_child(_build_ceiling_damage(game.layout.section(&"D14-S-041")))
 
 	var doors := Node3D.new()
@@ -211,10 +212,8 @@ static func build(game: Game) -> Hallway:
 	var white_level := 1.0 if game.power_active else 0.0
 	hallway._white_lens_mesh = BoxMesh.new()
 	hallway._white_lens_mesh.size = REGULAR_LENS_SIZE
-	hallway._white_lens_material = StandardMaterial3D.new()
-	hallway._white_lens_material.albedo_color = REGULAR_LENS_BASE_COLOR
+	hallway._white_lens_material = Surfaces.light_glass_material()
 	hallway._white_lens_material.emission = Lighting.REGULAR_WHITE * Lighting.REGULAR_EMISSIVE * white_level
-	hallway._white_lens_material.roughness = 0.8
 	hallway._white_lens_mesh.material = hallway._white_lens_material
 	var white_held: Intensity.Result = Intensity.FixtureFade.holding(white_level)
 	assert(white_held.is_ok(), "the white strip level maps to a valid fade")
@@ -285,7 +284,9 @@ func _white_fixture(station_x: float, level: float) -> Node3D:
 	lens.name = "Lens"
 	lens.set_meta(&"lamp_circuit", "white")
 	lens.mesh = _white_lens_mesh
+	lens.position.y = 0.012
 	fixture.add_child(lens)
+	CeilingProps.armour(fixture, _game.layout, &"D14-S-041")
 	_white_lights.append(light)
 	_white_lenses.append(lens)
 	return fixture

@@ -49,6 +49,7 @@ static func _clearances(layout: ShipLayout, space: ShipLayout.Spec, spec: ShipLa
 		_reserve(spec, &"TRANSFER", AABB(Vector3(landing.position.x + 0.15, landing.position.y, well.climb_line().origin.z - 0.35), Vector3(landing.size.x - 0.30, 2.4, b.position.z - well.climb_line().origin.z + 0.7)))
 		_reserve(spec, &"CLIMB", AABB(Vector3(well.climb_line().origin.x - 0.35, b.position.y, well.climb_line().origin.z - 0.35), Vector3(0.7, b.size.y, 0.7)))
 	spec.clearances.append_array(space.service_reservations())
+	spec.clearances.append_array(CeilingServices.build(layout, space).reservations())
 
 static func _sweep(door: ShipLayout.DoorSpec) -> AABB:
 	var result := AABB()

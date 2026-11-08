@@ -38,6 +38,7 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 	scene.room = RoomGeometry.build(true, game.layout)
 	scene.room.name = "RoomGeometry"
 	scene.bay_root.add_child(scene.room)
+	scene.bay_root.add_child(CeilingProps.build(game.layout, ShipLayout.BAY_ID))
 	scene.pods_node = StasisPods.build(game.registry)
 	scene.bay_root.add_child(scene.pods_node)
 	scene.lighting = Lighting.build(game)

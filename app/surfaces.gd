@@ -34,6 +34,8 @@ const ROLES := {
 	&"plate_edge": {"edge_surface": true},
 	&"rivet": {"rivet_surface": true, "curved_surface": true},
 	&"modelled_hatch": {"baked_hatch": true},
+	&"weathered_red": {"colour_gain": Vector3(2.8, 0.25, 0.14)},
+	&"corroded_brass": {"colour_gain": Vector3(1.35, 0.92, 0.35), "curved_surface": true},
 }
 const PARTS: Array[StringName] = [
 	&"PORT", &"STARBOARD", &"FORE", &"AFT", &"BACK", &"FLOOR", &"CEILING",
@@ -71,6 +73,13 @@ class SurfaceFrame:
 	var bounds: AABB
 	var aperture := Vector2(1.08, 2.4)
 	var seed_offset: Vector3
+
+static func light_glass_material() -> StandardMaterial3D:
+	var result := StandardMaterial3D.new()
+	result.set_meta(&"surface_role", &"light_glass")
+	result.albedo_color = Color(0.72, 0.72, 0.70)
+	result.roughness = 0.8
+	return result
 
 static func hatch_runtime_textures() -> Dictionary:
 	var textures := {"hatch_painted": HATCH_PAINTED}
