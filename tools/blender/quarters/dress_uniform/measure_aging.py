@@ -21,7 +21,7 @@ THRESHOLDS = {'G1': '<= 0.06 visible sharp adjacency', 'G2': '<= 0.02 normal-jum
               'G5': '>= 0.30 lip length lifted >3 mm', 'G6': '1.15..1.40 contour dimension',
               'G20': '<= 0.10 sharp adjacency within 120 mm of hanger',
               'G21': '0 hanger pixels outside split hull inside unaged cloth mask',
-              'G22': '<= 0.45 sleeve cross-section minor/major',
+              'G22': '<= 0.45 maximum camera-depth / camera-width at 25%, 50%, 75% sleeve length',
               'G23': '>= 0.35 retained arc and >= 0.70 released-edge fringe coverage',
               'G24': '0.92..1.08 chest width / unaged', 'G25': '>= 0.70 open-hem fringe coverage',
               'G26': '< 0.30 hem-height autocorrelation peak, 20..120 mm lags',
@@ -115,20 +115,10 @@ def measure(out, images):
         selected = near[pairs].all(1)
         sharp = float(np.mean(body.face_adjacency_angles[selected] > np.pi/6))
         put('G20', sharp, sharp <= .10)
-        ids = np.unique(f[(face_uv[:, 0] > 1.09) & (face_uv[:, 0] < 1.56) &
-                             (face_uv[:, 1] > .45) & (face_uv[:, 1] < .60)])
-        sleeve_faces = f[(face_uv[:, 0] > 1.09) & (face_uv[:, 0] < 1.56)]
-        sleeve = trimesh.Trimesh(v, sleeve_faces, process=False)
-        sleeve.remove_unreferenced_vertices()
-        axis = np.linalg.svd(sleeve.vertices-sleeve.vertices.mean(0))[2][0]
-        section = sleeve.section(plane_origin=v[ids].mean(0), plane_normal=axis)
-        if section is None:
-            raise ValueError('Mid-sleeve section does not intersect sleeve')
-        transverse = np.linalg.svd(np.array([axis]))[2][1:]
-        coords = section.vertices@transverse.T
-        covariance = np.linalg.eigvalsh(np.cov(coords.T))
-        ratio = float(np.sqrt(covariance[0]/covariance[1]))
-        put('G22', ratio, ratio <= .45, method='minor/major axes of an actual transverse mid-sleeve section')
+        from sleeve_metrics import pressed_sections
+        sleeve = pressed_sections(v, f, data['uv'])
+        ratio = sleeve.pop('ratio')
+        put('G22', ratio, ratio <= .45, **sleeve)
         front = np.unique(f[face_uv[:, 0] < 1.])
         chest = v[front][np.abs(v[front, 2]+.285) < .025]
         baseline = meshes(ROOT / 'assets/props/quarters/dress_uniform.glb')['TunicBody']
