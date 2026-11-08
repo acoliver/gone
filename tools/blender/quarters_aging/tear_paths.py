@@ -96,6 +96,8 @@ def split_polyline(obj, points, shrink_band=.008, max_length=None):
         lengths2 = (delta*delta).sum(1)
     area = sum(f.calc_area() for f in bm.faces)
     split_length = sum(e.calc_length() for e in edges)
+    split_points = np.array([v.co[:] for e in edges for v in e.verts])
+    split_bounds = [split_points.min(0).tolist(), split_points.max(0).tolist()] if len(split_points) else None
     bmesh.ops.split_edges(bm, edges=edges)
     bm.verts.index_update()
     bm.verts.ensure_lookup_table()
@@ -118,7 +120,7 @@ def split_polyline(obj, points, shrink_band=.008, max_length=None):
     bm.free()
     return {'split_length_m': split_length, 'area_before_m2': area,
             'area_after_m2': final_area, 'removed_area_m2': area-final_area,
-            'boundary_vertex_count': len(boundary_points)}
+            'boundary_vertex_count': len(boundary_points), 'split_bounds_local_m': split_bounds}
 
 
 def lift_pattern_path(obj, points):

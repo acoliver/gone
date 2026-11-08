@@ -69,6 +69,25 @@ vertices. This changes no rigid-baseline allowance.
 
 
 # Quarters geometry aging
+### Production preparation
+
+The seat welt release is checked against its measured 55–75% perimeter
+range. The longer side releases leave rear stitching rather than adding
+partitions. Back ties select existing rear-panel vertices at 0.60–0.62 m;
+moving nearby vertices into that band produced 4.3 mm triangle altitudes,
+so that approach was removed. Each nominal 30 × 20 mm tie patch currently
+resolves to one vertex on the coarse rear grid. The centre back retains its
+6.101 mm minimum altitude after tears and welt release.
+
+The throw has one continuous crest split, reaching the front boundary,
+and 351 cap pins. The split is 89.298% of the grid-edge crest length.
+The remaining rear bridge is 67.500 mm wide along the crest axis; its
+zigzag grid-edge arc is 82.025 mm. Measuring that arc as the bridge's
+physical width incorrectly rejected the intended corner hold. The
+post-split throw minimum triangle altitude is 6.163 mm, with no exclusions.
+Back residue is compressed into the lower return without applying its
+height shrinkage a second time to its lateral dimensions.
+
 
 ## Sofa pass 6: fitted six-cover collapse
 

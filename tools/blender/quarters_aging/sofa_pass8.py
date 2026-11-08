@@ -37,7 +37,8 @@ def back_residue(obj, plan):
         inverse = part.matrix_world.inverted()
         for v in part.data.vertices:
             p = part.matrix_world@v.co
-            p.y = .350+(p.y-.245)*.17
+            p.x = obj.matrix_world.translation.x+(p.x-obj.matrix_world.translation.x)/plan['residue_height_scale']
+            p.y = .350+(p.y-.245)*.17/plan['residue_height_scale']
             v.co = inverse@p
         recalc(part)
     report['placement'] = 'lower return at y=0.335..0.365, outside settled seat space'
@@ -192,27 +193,56 @@ def stage(out, record, back=False):
     return record
 
 
-def throw(out, record):
-    bpy.context.scene.frame_set(1)
-    contact_settings = install_contacts()
-    obj = bpy.data.objects['Throw']
+def prepare_throw(obj):
+    from common import surface_tree
     obj.modifiers.clear()
     midsurface(obj)
     reference = len(obj.data.vertices)
     density = clean_mesh(obj)
-    # Only the rear 65 mm bridge survives this single crest run.
-    cut = split_world(obj, [(1.095, y, .802) for y in np.linspace(-.44, .075, 130)])
+    points = np.array([obj.matrix_world@v.co for v in obj.data.vertices])
+    tree = surface_tree(obj)
+    path = []
+    for y in np.linspace(points[:, 1].min()-.02, points[:, 1].max()+.02, 180):
+        p, _, _, _ = tree.find_nearest(Vector((1.095, y, .802)))
+        if not path or (p-Vector(path[-1])).length > 1e-8:
+            path.append(tuple(p))
+    proxy = obj.copy()
+    proxy.data = obj.data.copy()
+    bpy.context.collection.objects.link(proxy)
+    proxy.name = 'CrestLengthControl'
+    full_cut = split_world(proxy, path)
+    full = full_cut['split_length_m']
+    bpy.data.objects.remove(proxy, do_unlink=True)
+    cut = split_world(obj, path, max_length=full*.90)
+    share = cut['split_length_m']/full
+    # Bridge width follows the crest axis, not the zigzag length of grid edges.
+    bridge = full_cut['split_bounds_local_m'][1][1]-cut['split_bounds_local_m'][1][1]
+    if not .88 <= share <= .90 or not .055 <= bridge <= .070:
+        raise ValueError(f'Throw needs 88–90% crest release and one 55–70 mm bridge: {share}, {bridge}')
     points = np.array([obj.matrix_world@v.co for v in obj.data.vertices])
     pins = {int(i): 1. for i in np.flatnonzero((points[:, 0] < 1.078) &
             (points[:, 0] > .98) & (points[:, 2] > .785))}
     if not pins:
         raise ValueError('Throw cap has no pins')
+    splits = {'runs': [cut], 'split_share': share, 'reference_crest_length_m': full,
+              'rear_bridge_length_m': bridge, 'rear_bridge_grid_arc_m': full-cut['split_length_m'],
+              'bridge_measure': 'width along the fitted crest Y axis', 'pins': len(pins)}
+    return reference, density, splits, pins
+
+
+def throw(out, record):
+    bpy.context.scene.frame_set(1)
+    contact_settings = install_contacts()
+    obj = bpy.data.objects['Throw']
+    reference, density, splits, pins = prepare_throw(obj)
     assert_surface_clear(obj)
     assert_collision_clear(obj)
     initial_contacts(obj, contacts())
     mod, config = cloth(obj, reference, 'wool', quality=30, pins=pins)
-    record['throw'] = dict(density=density, splits={'runs': [cut], 'split_share': cut['split_length_m']/.58,
-                            'reference_crest_length_m': .58, 'pins': len(pins)},
+    mod.settings.tension_damping = mod.settings.compression_damping = mod.settings.shear_damping = 12
+    mod.settings.bending_damping = 3
+    config.update(structural_damping=12., bending_damping=3., damping_source='throw-l; air remeasured for 0.3 m/s')
+    record['throw'] = dict(density=density, splits=splits,
                            settings=config, collider_friction_percent=contact_settings)
     checkpoint(out, record, 'throw-prepared.blend')
     simulation = solve(obj, mod, out, 'throw', collapse_frames=0)

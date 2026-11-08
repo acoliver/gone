@@ -64,6 +64,34 @@ class Pass8Tests(unittest.TestCase):
         self.assertFalse(result['pass'])
         self.assertFalse(result['self_collision_exclusions'])
 
+    def test_back_ties_pin_existing_vertices_without_creating_slivers(self):
+        from sofa_pass8_mesh import tie_pins
+        xs = [-.21, -.19, -.01, .01, .19, .21]
+        vertices = [(x, .37, z) for z in [.59, .61, .63] for x in xs]
+        faces = [(i, i+1, i+7, i+6) for row in range(2) for i in range(row*6, row*6+5)]
+        obj = new_object('Back', vertices, faces, material('Cloth', (.3, .3, .3)))
+        original = np.array([v.co[:] for v in obj.data.vertices])
+        pins, patches = tie_pins(obj)
+        self.assertEqual(len(patches), 3)
+        self.assertTrue(pins)
+        np.testing.assert_array_equal(original, [v.co[:] for v in obj.data.vertices])
+        self.assertTrue(all(.60 <= original[i, 2] <= .62 for i in pins))
+        self.assertTrue(mesh_quality(obj)['pass'])
+
+    def test_fitted_throw_has_one_bridge_and_a_pinned_cap(self):
+        from sofa_full_decay import initialize
+        from sofa_pass8 import prepare_throw
+        initialize()
+        obj = bpy.data.objects['Throw']
+        _, _, splits, pins = prepare_throw(obj)
+        self.assertGreaterEqual(splits['split_share'], .88)
+        self.assertLessEqual(splits['split_share'], .90)
+        self.assertGreaterEqual(splits['rear_bridge_length_m'], .055)
+        self.assertLessEqual(splits['rear_bridge_length_m'], .070)
+        self.assertTrue(pins)
+        self.assertTrue(mesh_quality(obj)['pass'])
+        self.assertLess(splits['runs'][0]['split_bounds_local_m'][0][1], -.46)
+
 
 if __name__ == '__main__':
     suite = unittest.defaultTestLoader.loadTestsFromTestCase(Pass8Tests)

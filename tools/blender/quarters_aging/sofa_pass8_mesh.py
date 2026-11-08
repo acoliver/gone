@@ -68,9 +68,9 @@ def clean_mesh(obj):
     return density
 
 
-def split_world(obj, points):
+def split_world(obj, points, max_length=None):
     inverse = obj.matrix_world.inverted()
-    return split_polyline(obj, [tuple(inverse@Vector(p)) for p in points], shrink_band=.015)
+    return split_polyline(obj, [tuple(inverse@Vector(p)) for p in points], shrink_band=.015, max_length=max_length)
 
 
 def welt_release(obj, back=False):
@@ -88,13 +88,16 @@ def welt_release(obj, back=False):
         # The two long side runs plus the front release leave rear stitches.
         z = .559
         for x in [lo[0]+.012, hi[0]-.012]:
-            records.append(split_world(obj, [(x, y, z) for y in np.linspace(lo[1]+.025, hi[1]-.11, 50)]))
+            records.append(split_world(obj, [(x, y, z) for y in np.linspace(lo[1]+.025, hi[1]-.065, 50)]))
         records.append(split_world(obj, [(x, lo[1]+.012, z) for x in np.linspace(lo[0]+.035, hi[0]-.035, 50)]))
         for x in [lo[0]+.012, hi[0]-.012]:
             records.append(split_world(obj, [(x, lo[1]+.012, z) for z in np.linspace(.451, .555, 20)]))
     perimeter = 2*((hi[0]-lo[0])+(hi[1]-lo[1]))
     share = sum(r['split_length_m'] for r in records[:3])/perimeter
-    return {'runs': records, 'welt_split_share': share, 'target_share': [.3, .5] if back else [.55, .75]}
+    target = [.3, .5] if back else [.55, .75]
+    if not target[0] <= share <= target[1]:
+        raise ValueError(f'{obj.name}: welt release {share} outside {target}')
+    return {'runs': records, 'welt_split_share': share, 'target_share': target}
 
 
 def tie_pins(obj):
@@ -103,15 +106,13 @@ def tie_pins(obj):
     pins = {}
     patches = []
     for x in [cx-.20, cx, cx+.20]:
-        rear = np.flatnonzero(p[:, 1] >= .34)
-        nearest = rear[np.linalg.norm(p[rear][:, [0, 2]]-[x, .61], axis=1).argmin()]
+        rear = np.flatnonzero((p[:, 1] >= .34) & (p[:, 2] >= .60) & (p[:, 2] <= .62))
+        if not len(rear):
+            raise ValueError(f'{obj.name}: no rear tie vertices at 0.60–0.62 m')
+        nearest = rear[np.abs(p[rear, 0]-x).argmin()]
         centre = p[nearest]
-        ids = np.flatnonzero((np.abs(p[:, 0]-centre[0]) <= .018) &
-                             (np.abs(p[:, 2]-centre[2]) <= .010) & (p[:, 1] >= .34))
-        inverse = obj.matrix_world.inverted()
-        for index in ids:
-            p[index, 2] = np.clip(p[index, 2], .60, .62)
-            obj.data.vertices[int(index)].co = inverse@Vector(p[index])
+        ids = rear[np.abs(p[rear, 0]-centre[0]) <= .015]
         pins.update({int(i): 1. for i in ids})
-        patches.append({'vertices': ids.tolist(), 'bounds_m': [p[ids].min(0).tolist(), p[ids].max(0).tolist()]})
+        patches.append({'vertices': ids.tolist(), 'bounds_m': [p[ids].min(0).tolist(), p[ids].max(0).tolist()],
+                        'nominal_patch_size_m': [.030, .020]})
     return pins, patches
