@@ -16,7 +16,8 @@
   ],
   "asset": "assets/props/quarters/dress_uniform_aged.glb",
   "colliders": [
-    "Hanger"
+    "Hanger",
+    "ShoulderChestForm"
   ],
   "floor_z_m": -0.95,
   "cloth": {
