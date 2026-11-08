@@ -34,7 +34,7 @@ func test_extracted_opening_recipes_match_presentation_placements() -> void:
 	assert_int_equal(ShipGeometry.hallway_solids().size(), 8, "eight hall slabs; rounded openings no longer add corner filler solids")
 	assert_int_equal(ShipGeometry.power_room_solids().size(), 5, "five power pieces; hall owns the shared south wall")
 	assert_vec3_equal(ShipGeometry.power_doorway_wall_solids()[1].center, Vector3(30.35, 1.6, -1.6), "shared power wall reaches X=33.2")
-	assert_vec3_equal(ShipGeometry.generator_solid().size, Vector3(1.6, 2.6, 1.6), "generator hull")
+	assert_vec3_equal(ShipGeometry.generator_solid().size, Vector3(1.6, 3.2, 1.6), "generator hull reaches the ceiling without changing its footprint")
 	for index: int in range(6):
 		var actual := ShipGeometry.console_solid(ShipGeometry.console_stations()[index])
 		var rendered := PowerRoom.console_solid(PowerRoom.console_stations()[index])

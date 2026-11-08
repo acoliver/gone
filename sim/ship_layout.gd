@@ -105,7 +105,6 @@ class DressingSpec:
 	var rib_pitch: float = ShipLayout.DRESSING_RIB_PITCH
 	var panel_pitch := ShipLayout.DRESSING_PANEL_PITCH
 	var rib_stations: Array[float] = []
-	var pipe_paths: Array[PackedVector3Array] = []
 	var kick_rail_paths: Array[PackedVector3Array] = []
 	var grate_footprint: AABB
 	var floor_patches: Array[AABB] = []

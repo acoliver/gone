@@ -15,6 +15,7 @@ var pipes: Array[Transform3D] = []
 var tees: Array[Transform3D] = []
 var clips: Array[Transform3D] = []
 var ducts: Array[Transform3D] = []
+var spine: SpineServices
 var modules: Array[Transform3D] = []
 
 static func build(layout: ShipLayout, space: ShipLayout.Spec) -> CeilingServices:
@@ -104,11 +105,9 @@ static func build(layout: ShipLayout, space: ShipLayout.Spec) -> CeilingServices
 		result.tees.append(_pose(Vector3(x, pipe_y, pipe_z), Vector3(0.10, 0.064, 0.064)))
 		result.tees.append(Transform3D(Basis(Vector3.BACK, PI / 2).scaled_local(Vector3(0.08, 0.032, 0.032)), Vector3(x + into * 0.012, pipe_y - 0.04, pipe_z - into * 0.02)))
 		result.clips.append(_pose(Vector3(x + 0.18, pipe_y, wall_z + into * 0.065), Vector3(0.035, 0.075, 0.13)))
-	if space is ShipLayout.SectionSpec:
-		var segments := ceili(b.size.x / 0.8)
-		var length := b.size.x / segments
-		for index: int in range(segments):
-			result.ducts.append(_pose(Vector3(b.position.x + (index + 0.5) * length, b.end.y - 0.175, b.end.z - 0.45), Vector3(length, 0.35, 0.44)))
+	if space is ShipLayout.SectionSpec or space is ShipLayout.ConnectorSpec:
+		result.spine = SpineServices.build(b)
+		result.ducts = result.spine.ducts
 	var frames: Array[Transform3D] = []
 	if space is ShipLayout.BaySpec or space is ShipLayout.SectionSpec: frames = space.regular_light_frames()
 	if space is ShipLayout.PowerRoomSpec:
@@ -132,6 +131,7 @@ func reservations() -> Array[ShipLayout.DressingClearance]:
 	var result: Array[ShipLayout.DressingClearance] = []
 	for row: Dictionary in detectors:
 		result.append(ShipLayout.DressingClearance.new(&"FIRE_DETECTOR", row.bounds.grow(0.002)))
-	for pose: Transform3D in heads + pipes + tees + clips + ducts:
+	for pose: Transform3D in heads + pipes + tees + clips:
 		result.append(ShipLayout.DressingClearance.new(&"CEILING_SERVICE", (pose * ShipDressing.UNIT).grow(0.002)))
+	if spine != null: result.append_array(spine.reservations())
 	return result

@@ -32,7 +32,10 @@ static func build(layout: ShipLayout, id: StringName) -> Node3D:
 	_add(root, layout, id, &"Sprinklers", mesh(&"sprinkler"), spec.heads, &"corroded_brass", &"WALL")
 	_add(root, layout, id, &"SprinklerPipes", _pipe_mesh(), spec.pipes + spec.tees, &"weathered_red", &"WALL")
 	_add(root, layout, id, &"PipeClips", CorridorDressing._mesh(&"box"), spec.clips, &"pipe", &"WALL")
-	if not spec.ducts.is_empty(): _add(root, layout, id, &"CeilingDucts", mesh(&"duct"), spec.ducts, &"wall", &"CEILING")
+	if spec.spine != null:
+		_add(root, layout, id, &"OverheadPipes", CorridorDressing._mesh(&"cylinder"), spec.spine.pipes + spec.spine.pipe_collars, &"pipe", &"CEILING")
+		_add(root, layout, id, &"PipeBrackets", CorridorDressing._mesh(&"box"), spec.spine.brackets + spec.spine.duct_collars, &"pipe", &"CEILING")
+		_add(root, layout, id, &"CeilingDucts", mesh(&"duct"), spec.ducts, &"wall", &"CEILING")
 	return root
 
 static func _pipe_mesh() -> Mesh:

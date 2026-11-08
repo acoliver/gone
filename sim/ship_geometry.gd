@@ -69,7 +69,7 @@ const CONSOLE_HEALTHS := {
 }
 const GENERATOR_CENTER: Vector3 = ShipLayout.POWER_GENERATOR_CENTER
 const GENERATOR_RADIUS: float = 0.8
-const GENERATOR_HEIGHT: float = 2.6
+const GENERATOR_HEIGHT: float = ROOM_CEILING
 
 class SolidSpec:
 	extends RefCounted

@@ -150,19 +150,6 @@ static func _structure(spec: ShipLayout.DressingSpec) -> void:
 				_put(spec, &"RibHeads", Vector3(0.20, 0.22, 0.18), Vector3(x, b.end.y - 0.11, z - side * 0.03))
 		_run(spec, &"CeilingRibs", Vector3(x, b.end.y - 0.06, b.position.z + 0.04), Vector3(x, b.end.y - 0.06, b.end.z - 0.04), Vector2(0.11, 0.12), &"wall", &"CEILING")
 		x += RIB_PITCH
-	for offset: float in [-0.91, -0.63, 0.73]:
-		var diameter := 0.15 if offset < -0.8 else 0.09
-		var z := center.z + offset * b.size.z / ShipLayout.CORRIDOR_WIDTH
-		var y := b.end.y - 0.29
-		var paths := _run(spec, &"OverheadPipes", Vector3(b.position.x + 0.15, y, z), Vector3(b.end.x - 0.15, y, z), Vector2(diameter, diameter), &"pipe", &"CEILING", &"cylinder")
-		spec.pipe_paths.append_array(paths)
-		for path: PackedVector3Array in paths:
-			var stations: Array[float] = [(path[0].x + path[1].x) / 2]
-			for station: float in spec.rib_stations:
-				if station > path[0].x and station < path[1].x: stations.append(station)
-			for station: float in stations:
-				var bottom := y + diameter / 2 - 0.01
-				_put(spec, &"PipeBrackets", Vector3(0.06, b.end.y - bottom, diameter), Vector3(station, (b.end.y + bottom) / 2, z), &"pipe", &"CEILING")
 	for side: int in [-1, 1]:
 		var z := center.z + side * (b.size.z / 2 - 0.035)
 		for height: float in [0.19, 0.38]:
