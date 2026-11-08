@@ -39,6 +39,6 @@ def press_rows(points, pattern_uv):
         lengths = np.linalg.norm(np.roll(ring, -1, axis=0)-ring, axis=1)
         distance = np.r_[0., np.cumsum(lengths[:-1])]
         pressed = capsule_section(lengths.sum(), distance)@rotation.T+ring.mean(0)
-        transition = np.clip((-.33-points[ids, 2])/.14, 0, 1)
+        transition = np.clip((-.235-points[ids, 2])/.105, 0, 1)
         result[ids, :2] += (pressed[inverse]-points[ids, :2])*transition[:, None]
     return result

@@ -72,9 +72,8 @@ def split_seam(body, kind, fraction):
     if kind == 'shoulder':
         edges.sort(key=lambda e: abs(sum(v.co.x for v in e.verts)/2-.19))
     else:
-        # Front arc first, then the cap's back quadrant. Underarm/back remain sewn.
-        edges.sort(key=lambda e: (sum(v.co.y for v in e.verts) > 0,
-                                  -sum(v.co.z for v in e.verts)))
+        # Retain the low underarm bridge, not the upper back of the cap.
+        edges.sort(key=lambda e: -sum(v.co.z for v in e.verts))
     chosen, length = [], 0.
     for edge in edges:
         if length+edge.calc_length()/2 > total*fraction:
@@ -97,23 +96,25 @@ def split_seam(body, kind, fraction):
 
 
 def cut_tunic(body):
-    record = {'armhole': split_seam(body, 'armhole', .59),
+    record = {'armhole': split_seam(body, 'armhole', .65),
               'shoulder': split_seam(body, 'shoulder', .60)}
     # The seam already follows the hanger crest. A second parallel slit only
     # 5 mm away made an unresolved strip between two coincident split lips.
     record['hanger'] = dict(record['shoulder'], method='hanger wear follows the released shoulder seam')
     hems = []
-    for lo, hi in [(.035, .145), (.29, .395), (.58, .70)]:
-        # End cuts detach an allowance; their vertices remain in the cloth model.
-        path_uv = [(lo, 0.), (lo, .038)]
-        path_uv += [(u, .038) for u in np.linspace(lo, hi, 30)[1:]]
-        path_uv += [(hi, 0.)]
+    runs = [(.026, .154, [.014, .025, .021, .042, .033, .020]),
+            (.278, .386, [.028, .045, .031, .024, .038]),
+            (.566, .711, [.012, .024, .041, .035, .049, .022, .016])]
+    for lo, hi, heights in runs:
+        stations = np.linspace(lo, hi, len(heights))
+        path_uv = [(lo-.009, 0.)]
+        path_uv += list(zip(stations, heights))
+        path_uv += [(hi+.006, 0.)]
         path = lift_pattern_path(body, np.array(path_uv))
         hems.append(split_polyline(body, path))
     record['hem_runs'] = hems
     record['hem_runs_count'] = len(hems)
-    record['hem_released_pattern_fraction'] = sum(hi-lo for lo, hi in [(.035, .145), (.29, .395), (.58, .70)])/.92
-    triangulate(body)
+    record['hem_released_pattern_fraction'] = sum(hi-lo+.015 for lo, hi, _ in runs)/.92
     recalc(body)
     return record
 

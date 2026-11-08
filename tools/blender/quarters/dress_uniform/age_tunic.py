@@ -71,6 +71,8 @@ def prepare(out):
     pressed_sleeve(body)
     recalc(body)
     add_rest_carrier(body)
+    from grid_clearance import resolve_grid_contacts
+    record['grid_contacts'] = resolve_grid_contacts(body)
     surface = evaluated_binding_surface(body)
     record['bindings'], _ = reinforce_and_bind(surface)
     record['density']['carrier_vertices'] = len(body.data.vertices)
@@ -109,7 +111,7 @@ def bake_simulation(obj, mod, frames, settle=False):
     motion = None
     for frame in range(1, frames+1):
         start = time.perf_counter()
-        if settle and frame == 601:
+        if settle and frame == 601 and not obj.get('slow_wool'):
             # Free swatches do not exercise stiff detail patches against colliders.
             # Use the source garment solver for contact settling after opening.
             reference = json.loads((HERE / 'aging-calibration.json').read_text())['reference_settings']
@@ -148,7 +150,7 @@ def bake_simulation(obj, mod, frames, settle=False):
     obj.data = frozen
     return dict(frames=frame, maximum_frames=frames, seconds_per_frame=float(np.mean(durations[1:])),
                 last_five_frames_motion_m=motion,
-                source_damping_settle_from_frame=601 if settle and frame > 600 else None,
+                source_damping_settle_from_frame=(1 if obj.get('slow_wool') else 601) if settle else None,
                 final_solver=final_solver, samples=samples)
 
 
@@ -170,6 +172,10 @@ def simulate(out, frames):
     s.tension_damping = s.compression_damping = s.shear_damping = 5*damping
     s.bending_damping = .5*damping
     s.air_damping = 10*damping
+    from slow_wool import slow_wool, release_pins
+    record['slow_wool'] = slow_wool(mod)
+    record['pin_release'] = release_pins(body, mod)
+    body['slow_wool'] = True
     record['simulation_config'] = config
     mod.collision_settings.vertex_group_self_collisions = ''
     from cloth_contacts import validate_rest_faces

@@ -208,7 +208,11 @@ def reinforce_and_bind(body):
             indices.update(selected.tolist())
         patch.add(sorted(indices), 1., 'REPLACE')
         support = collar if name.startswith('CollarInsignia') else body
-        entries = bind_points(support, original)
+        targets = original.copy()
+        if name.startswith('ShoulderBoard'):
+            # A loose board follows its front sewn ply, never both split lips.
+            targets[:, 1] -= .025
+        entries = bind_points(support, targets)
         sewn = name.startswith('ShoulderBoard') or name in ('Placket', 'RibbonBar')
         if sewn:
             for entry in entries:
