@@ -6,7 +6,7 @@ from mathutils import Vector
 from mathutils.bvhtree import BVHTree
 
 
-def surface_walk(obj, start, length, seed, step=.004):
+def surface_walk(obj, start, length, seed, step=.004, axis=0, sign=1, direction=None):
     obj.data.calc_loop_triangles()
     triangles = list(obj.data.loop_triangles)
     points = [obj.matrix_world@v.co for v in obj.data.vertices]
@@ -16,9 +16,9 @@ def surface_walk(obj, start, length, seed, step=.004):
     current, _, face, _ = tree.find_nearest(Vector(start))
     inverse = obj.matrix_world.inverted()
     path = [tuple(inverse@current)]
-    distance, next_turn, axis, sign = 0., rng.uniform(.02, .04), 0, 1
+    distance, next_turn = 0., rng.uniform(.02, .04)
     previous = None
-    while distance < length:
+    while distance < length-1e-7:
         tri = triangles[face]
         p = np.array([points[i] for i in tri.vertices])
         pattern = np.array([uv[i].uv[:] for i in tri.loops])
@@ -27,6 +27,10 @@ def surface_walk(obj, start, length, seed, step=.004):
         if abs(determinant) < 1e-12:
             raise ValueError('Tear path reaches a degenerate pattern triangle')
         tangents = np.linalg.solve(delta, p[1:]-p[0])
+        if distance == 0 and direction is not None:
+            alignment = tangents@np.asarray(direction)/np.linalg.norm(tangents, axis=1)
+            axis = int(np.argmax(np.abs(alignment)))
+            sign = 1 if alignment[axis] >= 0 else -1
         warp = tangents[axis]/np.linalg.norm(tangents[axis])
         normal = np.cross(p[1]-p[0], p[2]-p[0])
         normal /= np.linalg.norm(normal)
@@ -46,7 +50,7 @@ def surface_walk(obj, start, length, seed, step=.004):
         following, _, next_face, _ = tree.find_nearest(candidate)
         actual = (following-current).length
         if actual < stride*.1:
-            raise ValueError('Tear walk reached an open pattern boundary')
+            raise ValueError(f'Tear walk from {start} reached boundary at {tuple(current)} after {distance:.5f} m')
         distance += actual
         path.append(tuple(inverse@following))
         current, face, previous = following, next_face, direction

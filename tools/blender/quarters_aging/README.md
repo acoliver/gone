@@ -14,6 +14,16 @@ G30 now uses the owner's rigid-assembly decision below. `collision_policy.py` co
 
 ## Reusable soft-prop stages
 
+## Pass 5 centre-seat initialization diagnosis
+
+The old centre seat is already crumpled before decimation: the proxy-residue run has 52.727% dense sharp adjacencies and 60.985% after reduction. Decimation adds faceting but does not create the outlier at 1.138 m. The x=1.455 m and below-floor outliers belong to the unchanged sofa-k throw, not the centre seat.
+
+The fitted cover begins with 1,765 SAT crossings against the already-aged centre back and 18 against the right back. The collapse envelope, residue, frame, feet and rivets have zero initial crossings. These mixed-time initial poses cause collision impulses before the foam has collapsed. Disabling self-collision or slowing the collider without clearing the initial contacts still leaves more than 40% dense sharp adjacencies.
+
+`neighbour_colliders.py` starts seat simulation against the fitted back contacts. The maintained `--uncut-control --settings <self-collision-off.json>` regression at 360 frames, with collapse over 240 frames, measures 1.174% dense and 6.920% game sharp adjacencies, below the 8% limit. All vertices are within the frame bounds expanded by 0.15 m; G32 is 0.125 mm. The grain-tear production seat is a separate run. Fitted contacts do not certify final clearance against the comparison backs: G30 must still inspect those actual exported meshes.
+
+The stage now also uses Blender's self-collision group as an exclusion, as its API specifies. The old group excluded boxing walls instead of enabling their contacts. Lip shrink now interpolates from zero outside the authored band to the configured lip shrink, rather than applying the same 4% shrink everywhere. These API fixes have direct Blender controls in `test_cloth_stage.py`.
+
 `densify.py` subdivides working surfaces and optionally refines projected bands. `tear_paths.py` snaps paths with Dijkstra and splits edges without removing area. `grain_paths.py` derives physical warp/weft directions from the pattern UV gradient. `cloth_stage.py` preserves explicit lip, welt and collision groups, scales per-vertex mass and records every frame's elapsed compute time.
 
 `bake_down.py` protects a 6 mm **surface-distance** band around open boundaries, then reduces the interior. Euclidean distance incorrectly protected nearby folds in the centre-seat test, freezing reduction at 4,886 triangles. Blender decimates weighted vertices, so the `Keep` group must be inverted. A conservative sampled Hausdorff upper bound includes half the sampling interval; the control and centre-seat result are both 0.125 mm against a 1.5 mm limit. The stage creates `BakeUV` and selected-to-active Cycles tangent normal and AO maps, with 4 mm cage extrusion, 12 mm ray range and an 8 px margin.
