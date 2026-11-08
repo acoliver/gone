@@ -9,8 +9,6 @@ extends SimTestCase
 const CLEARANCE_FLOOR: float = 2.1
 ## An anchored end sits at least this high: at a torn tray underside.
 const ANCHOR_HEIGHT: float = 2.9
-## The spark strobes sit this far under their tray centers (Hazards).
-const SPARK_DROP: float = 0.2
 
 func test_wire_inventory_is_the_authored_mix() -> void:
 	var wires := Placement.hanging_wires()
@@ -54,10 +52,11 @@ func test_every_wire_clears_the_camera_envelope() -> void:
 		"the clearance floor holds margin over the standing eye height")
 
 func test_spark_strobe_positions_carry_wire_anchor_clusters() -> void:
-	var trays := Placement.cable_trays()
+	var spots := Placement.spark_spots()
 	var wires := Placement.hanging_wires()
-	for index: int in range(trays.size()):
-		var spot: Vector3 = trays[index].center + Vector3(0.0, -SPARK_DROP, 0.0)
+	assert_int_equal(spots.size(), 3, "three wire spark clusters remain after tray removal")
+	for index: int in range(spots.size()):
+		var spot := spots[index]
 		var near := 0
 		for wire: Placement.HangingWire in wires:
 			for end: Vector3 in [wire.points.front(), wire.points.back()]:

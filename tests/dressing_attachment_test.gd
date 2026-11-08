@@ -45,13 +45,31 @@ func test_hall_has_no_suspended_tray_or_hangers() -> void:
 		assert_false(spec.has_method(&"ceiling_damage_bounds"), "removed trays reserve no dressing envelope: %s" % id)
 	hall.free()
 
+func test_bay_has_no_suspended_trays_hangers_or_recipes() -> void:
+	var room := RoomGeometry.build()
+	assert_false(room.has_node("CeilingDamage"), "remove all three bay trays and their hangers, not just their visibility")
+	assert_false(room.has_method(&"_build_ceiling_damage"), "removed bay trays leave no presenter")
+	var placement := Placement.new()
+	assert_false(placement.has_method(&"cable_trays"), "removed bay trays leave no placement recipe")
+	var mounts := DressingMounts.new()
+	assert_false(mounts.has_method(&"tray_hangers"), "removed trays leave no hanger recipe")
+	room.free()
+
+func test_bay_tray_removal_preserves_wire_spark_positions() -> void:
+	var hazards := Hazards.build()
+	var spots: Array[Vector3] = [Vector3(-0.5, 3.2 - 0.15, 0.35), Vector3(0.9, 3.2 - 0.15 - 0.04, -0.7), Vector3(1.6, 3.2 - 0.15 + 0.05, 1.1)]
+	for index: int in range(spots.size()): spots[index] += Vector3(0, -0.2, 0)
+	assert_int_equal(hazards._spark_lights.size(), spots.size(), "all three wire spark clusters remain")
+	for index: int in range(spots.size()):
+		assert_vec3_equal(hazards._spark_lights[index].get_parent().position, spots[index], "tray removal does not move spark cluster %d" % index)
+	hazards.free()
+
 func test_bay_and_power_dressing_connects_to_structure() -> void:
 	var game := Game.new(91)
 	var world := Node3D.new()
 	var scene := ShipScene.build_into(world, game)
 	var structure := _solid_bounds(ShipGeometry.opening_scene_solids(game.registry, false, false, game.layout))
 	var pieces: Dictionary = {}
-	_collect(scene.room.get_node("CeilingDamage"), pieces)
 	_collect(scene.bay_root.get_node("HangingWires"), pieces)
 	_collect(scene.lighting, pieces)
 	_collect(scene.hallway, pieces, ["CorridorDressing", "HallSideDoors"])
