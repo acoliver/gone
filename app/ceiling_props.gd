@@ -33,8 +33,9 @@ static func build(layout: ShipLayout, id: StringName) -> Node3D:
 	_add(root, layout, id, &"SprinklerPipes", _pipe_mesh(), spec.pipes + spec.tees, &"weathered_red", &"WALL")
 	_add(root, layout, id, &"PipeClips", CorridorDressing._mesh(&"box"), spec.clips, &"pipe", &"WALL")
 	if spec.spine != null:
-		_add(root, layout, id, &"OverheadPipes", CorridorDressing._mesh(&"cylinder"), spec.spine.pipes + spec.spine.pipe_collars, &"pipe", &"CEILING")
-		_add(root, layout, id, &"PipeBrackets", CorridorDressing._mesh(&"box"), spec.spine.brackets + spec.spine.duct_collars, &"pipe", &"CEILING")
+		_add(root, layout, id, &"OverheadPipes", CorridorDressing._mesh(&"cylinder"), spec.spine.pipes + spec.spine.pipe_collars, &"collar_steel", &"CEILING")
+		_add(root, layout, id, &"SideConduits", CorridorDressing._mesh(&"cylinder"), spec.spine.side_conduits + spec.spine.service_collars, &"collar_steel", &"WALL")
+		_add(root, layout, id, &"PipeBrackets", CorridorDressing._mesh(&"box"), spec.spine.brackets + spec.spine.duct_collars + spec.spine.bolts, &"collar_steel", &"CEILING")
 		_add(root, layout, id, &"CeilingDucts", mesh(&"duct"), spec.ducts, &"wall", &"CEILING")
 	return root
 

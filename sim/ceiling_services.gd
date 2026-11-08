@@ -52,7 +52,7 @@ static func build(layout: ShipLayout, space: ShipLayout.Spec) -> CeilingServices
 	# Side-wall conduit is continuous at this height in the corridor template.
 	if space is ShipLayout.SectionSpec or space is ShipLayout.ConnectorSpec:
 		for side: int in [-1, 1]:
-			result.detector_exclusions.append(AABB(Vector3(b.position.x, b.end.y - 0.658, b.get_center().z + side * (b.size.z / 2 - 0.018) - 0.018), Vector3(b.size.x, 0.036, 0.036)))
+			result.detector_exclusions.append(AABB(Vector3(b.position.x, b.end.y - SpineServices.SIDE_DROP - 0.018, b.get_center().z + side * (b.size.z / 2 - SpineServices.SIDE_INSET) - 0.018), Vector3(b.size.x, 0.036, 0.036)))
 	var sight_blockers: Array[AABB] = []
 	if space is ShipLayout.BaySpec:
 		for pod: Pods.Pod in space.template().pods():
@@ -96,7 +96,9 @@ static func build(layout: ShipLayout, space: ShipLayout.Spec) -> CeilingServices
 	var into := -1.0 if space is ShipLayout.LiftSpec else 1.0
 	var wall_z := b.end.z if space is ShipLayout.LiftSpec else b.position.z
 	var pipe_z := wall_z + into * 0.10
-	result.pipes.append(_pose(Vector3(b.get_center().x, pipe_y, pipe_z), Vector3(b.size.x, PIPE_RADIUS * 2, PIPE_RADIUS * 2)))
+	var spine_space := space is ShipLayout.SectionSpec or space is ShipLayout.ConnectorSpec
+	var pipe_center := b.get_center().x + (ShipLayout.WALL / 2 if spine_space else 0.0)
+	result.pipes.append(_pose(Vector3(pipe_center, pipe_y, pipe_z), Vector3(b.size.x, PIPE_RADIUS * 2, PIPE_RADIUS * 2)))
 	for index: int in range(count):
 		var x := b.position.x + (index + 0.5) * pitch
 		var head := _pose(Vector3(x, pipe_y - HEAD_SIZE.y / 2 + PIPE_RADIUS, wall_z + into * HEAD_SIZE.z / 2), HEAD_SIZE)

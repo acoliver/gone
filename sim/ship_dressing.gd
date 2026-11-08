@@ -154,7 +154,6 @@ static func _structure(spec: ShipLayout.DressingSpec) -> void:
 		var z := center.z + side * (b.size.z / 2 - 0.035)
 		for height: float in [0.19, 0.38]:
 			spec.kick_rail_paths.append_array(_run(spec, &"KickRails", Vector3(b.position.x + 0.05, b.position.y + height, z), Vector3(b.end.x - 0.05, b.position.y + height, z), Vector2(0.045, 0.07), &"pipe", &"WALL"))
-		_run(spec, &"SideConduits", Vector3(b.position.x + 0.15, b.end.y - 0.64, center.z + side * (b.size.z / 2 - 0.018)), Vector3(b.end.x - 0.15, b.end.y - 0.64, center.z + side * (b.size.z / 2 - 0.018)), Vector2(0.036, 0.036), &"pipe", &"WALL", &"cylinder")
 		for row: int in range(1, int(b.size.y / PANEL_PITCH.y)):
 			var y := b.position.y + row * PANEL_PITCH.y
 			_run(spec, &"PlateLips", Vector3(b.position.x, y + 0.025, center.z + side * (b.size.z / 2 - 0.004)), Vector3(b.end.x, y + 0.025, center.z + side * (b.size.z / 2 - 0.004)), Vector2(0.008, 0.006), &"plate_edge", &"WALL")

@@ -2,6 +2,98 @@ extends SimTestCase
 
 const CONTACT := 0.002
 
+func test_all_six_drawn_pipe_and_conduit_runs_reach_bulkhead_centres() -> void:
+	var layout := ShipLayout.authored().layout
+	for space: ShipLayout.Spec in layout.records():
+		if not (space is ShipLayout.SectionSpec or space is ShipLayout.ConnectorSpec) or not space.is_built(): continue
+		var roots: Array[Node3D] = [CorridorDressing.build(layout, space.id()), CeilingProps.build(layout, space.id())]
+		var runs := _all_runs(roots)
+		assert_int_equal(runs.size(), 6, "six unbroken service lines: %s" % space.id())
+		for run: AABB in runs:
+			assert_true(absf(run.position.x - space.bounds().position.x - ShipLayout.WALL / 2) <= CONTACT, "all services reach fore bulkhead centre: %s" % space.id())
+			assert_true(absf(run.end.x - space.bounds().end.x - ShipLayout.WALL / 2) <= CONTACT, "all services reach aft bulkhead centre: %s" % space.id())
+		for root: Node3D in roots: root.free()
+
+func test_all_service_lines_match_across_every_bulkhead() -> void:
+	var layout := ShipLayout.authored().layout
+	var joins := 0
+	for id: StringName in layout.door_ids():
+		var door := layout.door(id)
+		if door.kind() != ShipLayout.DoorKind.HATCH or not layout.connector(door.owner_id()).is_built(): continue
+		var sides: Array = []
+		for space_id: StringName in door.spaces():
+			var runs: Array[AABB] = []
+			var services := layout.ceiling_services(space_id)
+			for pose: Transform3D in services.spine.pipes + services.pipes:
+				runs.append(pose * ShipDressing.UNIT)
+			for pose: Transform3D in services.spine.side_conduits:
+				runs.append(pose * ShipDressing.UNIT)
+			sides.append(runs)
+		assert_int_equal(sides[0].size(), 6, "all six lines on near face")
+		assert_int_equal(sides[1].size(), 6, "all six lines on far face")
+		if sides[0].size() != 6 or sides[1].size() != 6: return
+		for index: int in range(6):
+			var a: AABB = sides[0][index]
+			var b: AABB = sides[1][index]
+			assert_close(Vector3(a.end.x, a.get_center().y, a.get_center().z), Vector3(b.position.x, b.get_center().y, b.get_center().z), "all six lines join: %s/%d" % [id, index])
+			assert_true(absf(a.size.y - b.size.y) <= CONTACT and absf(a.size.z - b.size.z) <= CONTACT, "service diameters match")
+		joins += 1
+	assert_int_equal(joins, 120, "every built bulkhead joins all six services")
+
+func test_penetration_collars_have_visible_shoulders_and_bolt_rings() -> void:
+	var layout := ShipLayout.authored().layout
+	for space: ShipLayout.Spec in layout.records():
+		if not (space is ShipLayout.SectionSpec or space is ShipLayout.ConnectorSpec) or not space.is_built(): continue
+		var spine := layout.ceiling_services(space.id()).spine
+		var fittings: Variant = spine.get("fittings")
+		assert_true(fittings != null, "each pipe and duct has a drawn bolted wall fitting")
+		if fittings == null: return
+		assert_int_equal(fittings.size(), 14, "six pipe collars and one duct frame on each wall")
+		for fitting: Dictionary in fittings:
+			var box: AABB = fitting.body * ShipDressing.UNIT
+			assert_true(box.size.x >= 0.025 - CONTACT and box.size.x <= 0.040 + CONTACT, "25 to 40 mm proud of the wall")
+			assert_true(fitting.bolts.size() >= 4, "visible bolt ring on every fitting")
+			if fitting.kind == &"pipe":
+				assert_true(box.size.y >= fitting.diameter * 1.6 - CONTACT and box.size.y <= fitting.diameter * 1.8 + CONTACT, "pipe collar shoulder is 1.6 to 1.8 times pipe diameter")
+			for bolt: Transform3D in fitting.bolts:
+				assert_true((bolt * ShipDressing.UNIT).grow(CONTACT).intersects(box), "bolt ring attaches to fitting")
+		var node := CeilingProps.build(layout, space.id())
+		var drawn: Array[Transform3D] = []
+		for family: String in ["OverheadPipes", "SideConduits", "PipeBrackets"]:
+			drawn.append_array(node.get_node(family).get_meta(&"instance_poses"))
+		for fitting: Dictionary in fittings:
+			if fitting.kind == &"pipe": assert_true(fitting.body in drawn, "pipe collar is drawn, not metadata only")
+			for bolt: Transform3D in fitting.bolts: assert_true(bolt in drawn, "every bolt is drawn")
+		for pose: Transform3D in spine.duct_collars: assert_true(pose in drawn, "duct frame is drawn")
+		assert_true(node.get_node("PipeBrackets").get_meta(&"role") == &"collar_steel", "contrasting worn steel wall fittings")
+		assert_true(Surfaces.material(&"collar_steel").get_shader_parameter("colour_gain").x < 0.5, "collars contrast with wall steel without changing lights")
+		node.free()
+
+func test_added_services_clear_hatch_frames_and_complete_swings_without_lowering_runs() -> void:
+	var layout := ShipLayout.authored().layout
+	for space: ShipLayout.Spec in layout.records():
+		if not (space is ShipLayout.SectionSpec or space is ShipLayout.ConnectorSpec) or not space.is_built(): continue
+		var spine := layout.ceiling_services(space.id()).spine
+		for pose: Transform3D in spine.side_conduits + spine.service_collars + spine.bolts:
+			var box := pose * ShipDressing.UNIT
+			assert_true(box.position.y >= space.bounds().end.y - 0.658 - CONTACT, "side fittings stay above the former side-conduit bottom")
+			for door_id: StringName in layout.door_ids():
+				var door := layout.door(door_id)
+				if space.id() not in door.spaces() or door.kind() != ShipLayout.DoorKind.HATCH: continue
+				for solid: ShipGeometry.SolidSpec in ShipGeometry.hatch_frame_solids(door):
+					assert_false(box.intersects(solid.transform * AABB(-solid.size / 2, solid.size)), "new fittings clear the hatch frame")
+				for degree: int in range(131):
+					var hinge := door.hinge_frame()
+					hinge.basis = Basis(Vector3.UP, signf(door.swing_radians()) * deg_to_rad(degree))
+					assert_false(box.intersects(door.frame() * hinge * ShipGeometry.hatch_leaf_bounds(door)), "new fittings clear the complete hatch swing")
+
+func _all_runs(roots: Array[Node3D]) -> Array[AABB]:
+	var runs: Array[AABB] = []
+	for family: String in ["OverheadPipes", "SprinklerPipes", "SideConduits"]:
+		for box: AABB in _boxes(roots, family):
+			if box.size.x > 1: runs.append(box)
+	return runs
+
 func test_spine_runs_reach_both_bulkheads_in_every_built_space() -> void:
 	var layout := ShipLayout.authored().layout
 	for space: ShipLayout.Spec in layout.records():
@@ -66,7 +158,7 @@ func test_extreme_runs_terminate_inside_the_actual_ship_end_walls() -> void:
 			assert_true(spine != null, "outer section has terminating spine services")
 			if spine == null: return
 			var fore := door.frame().origin.x == section.bounds().position.x
-			var runs: Array[Transform3D] = spine.pipes.duplicate()
+			var runs: Array[Transform3D] = spine.pipes + spine.side_conduits + layout.ceiling_services(space_id).pipes
 			runs.append(spine.ducts[0] if fore else spine.ducts[-1])
 			for pose: Transform3D in runs:
 				var box: AABB = pose * ShipDressing.UNIT

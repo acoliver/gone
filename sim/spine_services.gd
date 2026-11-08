@@ -3,18 +3,23 @@ extends RefCounted
 ## Each room owns its runs up to the bulkhead centre, with a collar on its face.
 
 const PIPE_OFFSETS: Array[float] = [-0.91, -0.63, 0.73]
-# Raise the old runs 40 mm so collars clear the top conduit without hanging lower.
-const PIPE_DROP := 0.25
+const PIPE_DROP := 0.225
 const SUPPORT_PITCH := 2.0
 const DUCT_PITCH := 0.8
 const DUCT_SIZE := Vector2(0.35, 0.44)
-const COLLAR_DEPTH := 0.03
+const COLLAR_DEPTH := 0.035
+const SIDE_DROP := 0.627
+const SIDE_INSET := 0.05
 
 var pipes: Array[Transform3D] = []
 var pipe_collars: Array[Transform3D] = []
+var side_conduits: Array[Transform3D] = []
+var service_collars: Array[Transform3D] = []
+var bolts: Array[Transform3D] = []
 var brackets: Array[Transform3D] = []
 var ducts: Array[Transform3D] = []
 var duct_collars: Array[Transform3D] = []
+var fittings: Array[Dictionary] = []
 
 static func build(bounds: AABB) -> SpineServices:
 	var result := SpineServices.new()
@@ -26,14 +31,21 @@ static func build(bounds: AABB) -> SpineServices:
 		var y := bounds.end.y - PIPE_DROP
 		var z := bounds.get_center().z + offset
 		result.pipes.append(_pipe(Vector3((start + end) / 2, y, z), end - start, diameter))
-		for x: float in faces:
-			result.pipe_collars.append(_pipe(Vector3(x, y, z), COLLAR_DEPTH, diameter + 0.06))
+		for index: int in range(2):
+			result.pipe_collars.append(result._collar(Vector3(faces[index], y, z), diameter, index))
 		var x := floorf(start / SUPPORT_PITCH) * SUPPORT_PITCH + SUPPORT_PITCH / 2
 		if x < start: x += SUPPORT_PITCH
 		while x < end:
 			var bottom := y + diameter / 2 - 0.01
 			result.brackets.append(_pose(Vector3(x, (bounds.end.y + bottom) / 2, z), Vector3(0.06, bounds.end.y - bottom, diameter)))
 			x += SUPPORT_PITCH
+	for side: int in [-1, 1]:
+		var center := Vector3((start + end) / 2, bounds.end.y - SIDE_DROP, bounds.get_center().z + side * (bounds.size.z / 2 - SIDE_INSET))
+		result.side_conduits.append(_pipe(center, end - start, 0.036))
+		for index: int in range(2):
+			result.service_collars.append(result._collar(Vector3(faces[index], center.y, center.z), 0.036, index))
+	for index: int in range(2):
+		result.service_collars.append(result._collar(Vector3(faces[index], bounds.end.y - 0.28, bounds.position.z + 0.10), CeilingServices.PIPE_RADIUS * 2, index))
 	# Keep the same tile grid through short hatch bays; only wall-end tiles are cut.
 	var datum := ShipLayout.WALL / 2
 	var x := floorf((start - datum) / DUCT_PITCH) * DUCT_PITCH + datum
@@ -43,14 +55,35 @@ static func build(bounds: AABB) -> SpineServices:
 		if right - left > 0.0001:
 			result.ducts.append(_pose(Vector3((left + right) / 2, bounds.end.y - DUCT_SIZE.x / 2, bounds.end.z - 0.45), Vector3(right - left, DUCT_SIZE.x, DUCT_SIZE.y)))
 		x += DUCT_PITCH
-	for face: float in faces:
+	for index: int in range(2):
+		var face := faces[index]
 		var z := bounds.end.z - 0.45
 		var bottom := bounds.end.y - DUCT_SIZE.x
-		for y: float in [bottom + 0.012, bounds.end.y - 0.012]:
-			result.duct_collars.append(_pose(Vector3(face, y, z), Vector3(COLLAR_DEPTH, 0.024, DUCT_SIZE.y + 0.06)))
+		var width := DUCT_SIZE.y + 0.10
+		for y: float in [bottom + 0.025, bounds.end.y - 0.025]:
+			result.duct_collars.append(_pose(Vector3(face, y, z), Vector3(COLLAR_DEPTH, 0.05, width)))
 		for side: int in [-1, 1]:
-			result.duct_collars.append(_pose(Vector3(face, (bottom + bounds.end.y) / 2, z + side * (DUCT_SIZE.y / 2 + 0.015)), Vector3(COLLAR_DEPTH, DUCT_SIZE.x, 0.03)))
+			result.duct_collars.append(_pose(Vector3(face, (bottom + bounds.end.y) / 2, z + side * (width / 2 - 0.025)), Vector3(COLLAR_DEPTH, DUCT_SIZE.x, 0.05)))
+		var ring: Array[Transform3D] = []
+		for side: int in [-1, 1]:
+			for y: float in [bottom + 0.025, bounds.end.y - 0.025]:
+				ring.append(_pose(Vector3(face + (1 if index == 0 else -1) * COLLAR_DEPTH / 2, y, z + side * (width / 2 - 0.025)), Vector3(0.012, 0.022, 0.022)))
+		result.bolts.append_array(ring)
+		result.fittings.append({"kind": &"duct", "body": _pose(Vector3(face, (bottom + bounds.end.y) / 2, z), Vector3(COLLAR_DEPTH, DUCT_SIZE.x, width)), "bolts": ring})
 	return result
+
+func _collar(center: Vector3, diameter: float, face: int) -> Transform3D:
+	var outer := diameter * 1.7
+	var body := _pipe(center, COLLAR_DEPTH, outer)
+	var ring: Array[Transform3D] = []
+	for index: int in range(6):
+		var angle := TAU * index / 6
+		var position := center + Vector3((1 if face == 0 else -1) * COLLAR_DEPTH / 2, sin(angle) * diameter * 0.68, cos(angle) * diameter * 0.68)
+		var size := minf(0.016, diameter * 0.18)
+		ring.append(_pose(position, Vector3(0.012, size, size)))
+	bolts.append_array(ring)
+	fittings.append({"kind": &"pipe", "body": body, "diameter": diameter, "bolts": ring})
+	return body
 
 static func _pose(center: Vector3, size: Vector3) -> Transform3D:
 	return Transform3D(Basis.from_scale(size), center)
@@ -60,6 +93,6 @@ static func _pipe(center: Vector3, length: float, diameter: float) -> Transform3
 
 func reservations() -> Array[ShipLayout.DressingClearance]:
 	var result: Array[ShipLayout.DressingClearance] = []
-	for pose: Transform3D in pipes + pipe_collars + brackets + ducts + duct_collars:
+	for pose: Transform3D in pipes + pipe_collars + side_conduits + service_collars + bolts + brackets + ducts + duct_collars:
 		result.append(ShipLayout.DressingClearance.new(&"SPINE_SERVICE", (pose * ShipDressing.UNIT).grow(0.002)))
 	return result

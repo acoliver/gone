@@ -137,7 +137,7 @@ func test_each_service_mount_touches_structure_and_stays_above_walk_band() -> vo
 		var pieces: Dictionary = {}
 		for index: int in range(spec.detectors.size()): pieces["detector/%d" % index] = spec.detectors[index].bounds
 		var poses: Array[Transform3D] = spec.heads + spec.pipes + spec.tees + spec.clips + spec.ducts
-		if spec.spine != null: poses.append_array(spec.spine.pipes + spec.spine.pipe_collars + spec.spine.brackets + spec.spine.duct_collars)
+		if spec.spine != null: poses.append_array(spec.spine.pipes + spec.spine.pipe_collars + spec.spine.side_conduits + spec.spine.service_collars + spec.spine.bolts + spec.spine.brackets + spec.spine.duct_collars)
 		for index: int in range(poses.size()):
 			var box: AABB = poses[index] * ShipDressing.UNIT
 			assert_true(box.position.y > b.position.y + 2.2, "overhead services stay outside walking envelope")
