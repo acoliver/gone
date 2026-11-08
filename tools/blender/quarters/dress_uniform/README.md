@@ -117,19 +117,23 @@ the last-five-frame maximum motion every 25 frames and can stop after frame
 The previous G22 accepted a thin cross-section without checking its orientation
 in the close camera. Its origin was the mean of vertices in pattern V 0.45 to
 0.60, not a camera-facing width measurement. The tunic6 sleeve's principal-axis
-ratio was 0.2708, but its mid-sleeve camera-depth/width ratio was 2.254:
-69.61 mm deep and only 30.88 mm wide. At quarter and three-quarter stations the
-ratios were 2.746 and 1.349. A flattened sleeve viewed edge-on therefore passed
+ratio was 0.2708, but its mid-sleeve camera-ray depth/width ratio was 2.300:
+69.67 mm deep and only 30.29 mm wide. At quarter and three-quarter stations the
+ratios were 2.767 and 1.413. A flattened sleeve viewed edge-on therefore passed
 while looking like a narrow tube.
 
 G22 now uses transverse mesh-plane intersections at pattern-length stations
 0.25, 0.50 and 0.75. Each section is measured along camera depth and camera
 width after projection perpendicular to the sleeve axis. The largest ratio
 must remain at most 0.45. Section extents replace vertex covariance, so uneven
-mesh sampling cannot make the ratio smaller. The same close-camera direction
-is used by the renderer. Three unit controls cover a visible pressed section,
-an edge-on section and biased sampling. The old candidate fails this corrected
-gate. This diagnostic milestone does not replace the delivered GLB.
+mesh sampling cannot make the ratio smaller. The gate reads the actual camera
+position from `tunic-cameras.json`, then uses the ray to each section centre;
+a fixed optical-axis vector would miss perspective changes away from the aim
+point. Four unit controls cover a visible pressed section, an edge-on section,
+biased sampling and a translated sleeve in perspective. The perspective
+control failed at 0.3883 before the camera-ray fix; all four controls now pass.
+The old candidate fails this corrected gate. This diagnostic milestone does not
+replace the delivered GLB.
 
 ## Recovered checkpoint (2026-11-08)
 

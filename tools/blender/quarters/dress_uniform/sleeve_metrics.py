@@ -2,12 +2,8 @@
 import numpy as np
 import trimesh
 
-CLOSE_VIEW = np.array([.3, -.9, .22])
-
-
-def section_ratio(points, axis, view=CLOSE_VIEW):
-    axis = np.asarray(axis, dtype=float)
-    axis /= np.linalg.norm(axis)
+def section_ratio(points, axis, view):
+    axis = np.asarray(axis, dtype=float)/np.linalg.norm(axis)
     depth = np.asarray(view, dtype=float)-axis*np.dot(view, axis)
     depth /= np.linalg.norm(depth)
     width = np.cross(axis, depth)
@@ -18,7 +14,7 @@ def section_ratio(points, axis, view=CLOSE_VIEW):
                 ratio=float(spans[1]/spans[0]))
 
 
-def pressed_sections(vertices, faces, pattern_uv):
+def pressed_sections(vertices, faces, pattern_uv, camera_position):
     face_uv = np.asarray(pattern_uv).mean(1)
     left = (face_uv[:, 0] > 1.09) & (face_uv[:, 0] < 1.56)
     sleeve = trimesh.Trimesh(vertices, faces[left], process=False)
@@ -34,8 +30,10 @@ def pressed_sections(vertices, faces, pattern_uv):
         section = sleeve.section(plane_origin=origin, plane_normal=axis)
         if section is None:
             raise ValueError(f'No sleeve cross-section at {station}')
-        item = section_ratio(section.vertices, axis)
+        view = np.asarray(camera_position)-origin
+        item = section_ratio(section.vertices, axis, view)
         item.update(pattern_station=station, origin_m=origin.tolist())
         sections.append(item)
     return dict(ratio=max(item['ratio'] for item in sections), sections=sections,
-                method='maximum camera-depth / camera-width of transverse sections at 25%, 50%, 75% pattern length')
+                camera_position_blender_m=np.asarray(camera_position).tolist(),
+                method='maximum camera-ray depth / width of transverse sections at 25%, 50%, 75% pattern length')

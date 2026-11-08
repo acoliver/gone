@@ -116,7 +116,8 @@ def measure(out, images):
         sharp = float(np.mean(body.face_adjacency_angles[selected] > np.pi/6))
         put('G20', sharp, sharp <= .10)
         from sleeve_metrics import pressed_sections
-        sleeve = pressed_sections(v, f, data['uv'])
+        cameras = json.loads((images / 'tunic-cameras.json').read_text())
+        sleeve = pressed_sections(v, f, data['uv'], cameras['labels']['position_blender_m'])
         ratio = sleeve.pop('ratio')
         put('G22', ratio, ratio <= .45, **sleeve)
         front = np.unique(f[face_uv[:, 0] < 1.])

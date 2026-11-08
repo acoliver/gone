@@ -91,6 +91,7 @@ def diagnostics(asset, out):
             record['split_hull_pixels'] = [[p.x*1600, (1-p.y)*1422] for p in points]
             bm.free()
         record[mode] = dict(distance_m=float((camera.location-target).length), lens_mm=data.lens,
+                            position_blender_m=list(camera.location), look_at_blender_m=list(target),
                             projection=data.type, resolution=[1600, 1422])
         bpy.ops.render.render(write_still=True)
     (out / 'tunic-cameras.json').write_text(json.dumps(record, indent=2)+'\n')
