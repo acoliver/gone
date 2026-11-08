@@ -27,7 +27,7 @@ def value_noise(points, wavelength, seed):
 
 
 def opacity_bake(obj, out, size=4096, seed=9501, gain=3.5):
-    samples = boundary_samples(boundary_segments(obj), .001)
+    samples = boundary_samples(boundary_segments(obj), .00025)
     if not samples:
         raise ValueError('Opacity lip bake requires open cloth boundaries')
     tree = KDTree(len(samples))
@@ -35,7 +35,6 @@ def opacity_bake(obj, out, size=4096, seed=9501, gain=3.5):
         tree.insert(p, i)
     tree.balance()
     positions = np.array([obj.matrix_world@v.co for v in obj.data.vertices])
-    distance = np.array([tree.find(p)[2] for p in positions])
     obj.data.calc_loop_triangles()
     uv = obj.data.uv_layers['BakeUV'].data
     mask = np.ones((size, size), dtype=np.float32)
@@ -60,8 +59,8 @@ def opacity_bake(obj, out, size=4096, seed=9501, gain=3.5):
         if not inside.any():
             continue
         bary = np.stack([u[inside], v[inside], w[inside]], axis=1)
-        p = bary@positions[ids]
-        d = bary@distance[ids]
+        p = np.einsum('ij,jk->ik', bary, positions[ids])
+        d = np.array([tree.find(point)[2] for point in p])
         noise = np.zeros(len(p))
         for octave, (wavelength, weight) in enumerate(zip(frequencies, weights)):
             noise += weight*value_noise(p, wavelength, seed+octave)
@@ -76,4 +75,5 @@ def opacity_bake(obj, out, size=4096, seed=9501, gain=3.5):
     out.parent.mkdir(parents=True, exist_ok=True)
     image = image_from_array(obj.name+'_Opacity', rgba, out, noncolor=True)
     return image, {'path': str(out), 'size': size, 'transparent_texels': int((mask < .5).sum()),
-                   'lip_band_m': .003, 'noise_gain': gain, 'feature_wavelengths_m': frequencies.tolist()}
+                   'lip_band_m': .003, 'noise_gain': gain, 'feature_wavelengths_m': frequencies.tolist(),
+                   'distance_method': 'per-texel nearest physical lip sampled at 0.25 mm'}

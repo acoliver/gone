@@ -1,3 +1,34 @@
+## Sofa pass 8: coarse cloth controls and gate scope
+
+Pass 8 follows `tmp/age/advice/STALL_DIAGNOSIS.md`. The runner is
+`sofa_pass8.py`; it writes only to `tmp/age/pass8/` and refuses production
+until the early controls pass. The previously shipped sofa stays in place
+unless every final gate passes. Existing shared function signatures remain
+compatible with the concurrent tunic work. `decimate` adds an optional
+`keep_factor` argument; its previous defaults are unchanged.
+
+### Gate decisions for this pass
+
+These changes apply to the sofa's visual-design measurements. They do not
+relax contact checks, geometry invariants, or the other thresholds.
+
+- **G12:** measure visible box-wall pixels on the cover/residue silhouette in
+  the hero and front cameras, relative to the unaged silhouette. Do not count
+  every near-vertical fabric face. A 0.72 m² cover inside a 0.46 m² footprint
+  has slack that must fold or hang; the intended front-edge hanging strips
+  must not be treated as upright cushion boxing.
+- **G3:** the 12 px / 4.5 mm straight-run limit applies to panel tears only.
+  Released stitched seams may follow a straight seam line. Their lips still
+  need to gape under G5 and carry fringe. G4 and G6 keep their thresholds.
+- **G7:** measure coplanar residue only where first-hit camera visibility
+  shows it through openings. Hidden residue cannot contribute visible facets.
+- **G19:** accept one connected throw from its pinned arm corner to within
+  100 mm of the floor. Keep the 250 mm footprint-distance limit, the three
+  folds with at least 10 mm prominence, and at most one detached remnant.
+- **G30:** zero changed contacts after clearance push-out, with no exclusions.
+  Frame, Feet and Rivets must match the rigid baseline exactly. The rigid
+  geometry bytes, object origins and pivots also remain unchanged.
+
 # Quarters geometry aging
 
 ## Sofa pass 6: fitted six-cover collapse

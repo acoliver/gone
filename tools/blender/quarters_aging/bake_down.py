@@ -43,7 +43,7 @@ def boundary_hausdorff(a, b, step=.00025):
     return max(directed(sa, sb), directed(sb, sa))+step/2
 
 
-def decimate(dense, target, protect=.006):
+def decimate(dense, target, protect=.006, keep_factor=15):
     low = dense.copy()
     low.data = dense.data.copy()
     bpy.context.collection.objects.link(low)
@@ -84,7 +84,7 @@ def decimate(dense, target, protect=.006):
         mod.vertex_group = keep.name
         # Blender decimates the weighted region; Keep names the opposite region.
         mod.invert_vertex_group = True
-        mod.vertex_group_factor = 15
+        mod.vertex_group_factor = keep_factor
         apply(low, mod)
         low.data.calc_loop_triangles()
         count = len(low.data.loop_triangles)
