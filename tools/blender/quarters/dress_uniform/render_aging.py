@@ -73,6 +73,7 @@ def diagnostics(asset, out):
             data.type = 'PERSP'
             data.lens = 40
         aim(camera, target)
+        bpy.context.view_layer.update()
         scene.render.filepath = str(out / f'tunic-{mode}.png')
         if mode == 'hero-labels':
             body = bpy.data.objects['TunicBody']

@@ -84,14 +84,24 @@ def bind_points(body, points):
         uv = np.linalg.lstsq(np.c_[b-a, c-a], np.asarray(q)-a, rcond=None)[0]
         weights = np.array([1-uv.sum(), *uv])
         result.append({'triangle': tri, 'weights': weights.tolist(),
+                       'offset_frame': triangle_frame(vertices[list(tri)]).tolist(),
                        'offset': (np.asarray(p)-weights@vertices[list(tri)]).tolist()})
     return result
+
+
+def triangle_frame(triangle):
+    tangent = triangle[1]-triangle[0]
+    tangent /= np.linalg.norm(tangent)
+    normal = np.cross(tangent, triangle[2]-triangle[0])
+    normal /= np.linalg.norm(normal)
+    return np.array([tangent, np.cross(normal, tangent), normal])
 
 
 def bind_neckline(body, points):
     bm = bmesh.new()
     bm.from_mesh(body.data)
     bm.verts.index_update()
+    bm.verts.ensure_lookup_table()
     remaining = {edge for edge in bm.edges if edge.is_boundary}
     necklines = []
     while remaining:
@@ -130,7 +140,9 @@ def bind_neckline(body, points):
         ids = [v.index for v in edge.verts]
         triangle = next(f for f in triangles if all(i in f for i in ids))
         weights = [1-t if i == ids[0] else t if i == ids[1] else 0. for i in triangle]
-        result.append({'triangle': triangle, 'weights': weights, 'offset': (p-q).tolist()})
+        positions = np.array([body.matrix_world @ bm.verts[i].co for i in triangle])
+        result.append({'triangle': triangle, 'weights': weights, 'offset': (p-q).tolist(),
+                       'offset_frame': triangle_frame(positions).tolist()})
     bm.free()
     return result
 
@@ -140,7 +152,9 @@ def follow_points(body, entries):
     result = []
     for entry in entries:
         triangle = vertices[list(entry['triangle'])]
-        point = np.array(entry['weights'])@triangle+entry['offset']
+        offset = np.asarray(entry['offset'])
+        offset = offset @ np.asarray(entry['offset_frame']).T @ triangle_frame(triangle)
+        point = np.array(entry['weights'])@triangle+offset
         if 'sewn_clearance_m' in entry:
             normal = np.cross(triangle[1]-triangle[0], triangle[2]-triangle[0])
             normal /= np.linalg.norm(normal)
@@ -189,8 +203,16 @@ def reinforce_and_bind(body):
                 selected = np.argsort(np.linalg.norm(points-center, axis=1))[:3]
             indices.update(selected.tolist())
         patch.add(sorted(indices), 1., 'REPLACE')
-        bindings[name] = {'entries': bind_points(body, original), 'original': original.tolist(),
-                          'rigid': True, 'groups': groups, 'patch_vertices': sorted(indices)}
+        entries = bind_points(body, original)
+        sewn = name.startswith('ShoulderBoard') or name == 'Placket'
+        if sewn:
+            for entry in entries:
+                # These fabric facings were authored on the solidified source,
+                # 1.75 mm above its midsurface. Retain their sewn clearance.
+                normal = np.asarray(entry['offset_frame'])[2]
+                entry['offset'] = (np.asarray(entry['offset'])-normal*.00175).tolist()
+        bindings[name] = {'entries': entries, 'original': original.tolist(),
+                          'rigid': not sewn, 'groups': groups, 'patch_vertices': sorted(indices)}
         coverage[name] = len(indices)
     return bindings, coverage
 
@@ -244,7 +266,7 @@ def fit_details(body, bindings):
                             gaps.append(float((Vector(point)-hit).dot(direction)))
                 if not gaps:
                     raise ValueError(f'{name}: rigid detail has no support beneath its footprint')
-                destination[ids] += normal*max(0., .0005-min(gaps))
+                destination[ids] += normal*(.0005-min(gaps))
         inverse = obj.matrix_world.inverted()
         for vertex, point in zip(obj.data.vertices, destination):
             vertex.co = inverse @ Vector(point)

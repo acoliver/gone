@@ -9,6 +9,31 @@ buttons and medal must remain recognizable. The source is `tunic-working.blend`,
 with `body-p` as the wool reference. `ShoulderChestForm` remains an invisible,
 unexported collider.
 
+## Tunic7 attachment and projection controls
+
+Attachment offsets were stored in world coordinates. A 90-degree support
+rotation left a 10 mm offset pointing in its old direction, putting the test
+attachment 10 mm off its intended position. Offsets now carry the source
+triangle frame and rotate into the deformed support frame. The rotation
+regression fails before the change and passes after it. Translation, sewn
+column and closed-ribbon controls also pass.
+
+Shoulder boards and the placket are fabric facings in the source, authored as
+surface-fitted grids. Treating either as one rigid object replaced the local
+cloth shape with a whole-object fit. They now follow their sewn points and
+local normals, keeping the original topology. Their source bindings also
+remove the 1.75 mm offset belonging to the original body's Solidify shell.
+Metal details remain rigid. Their seating can move inward as well as outward,
+so an excessive original offset is not preserved as a gap.
+
+The old G21 split hull used a stale camera matrix. Its recorded image bounds
+were x=892.93 to 1137.56, y=674.15 to 748.65. Updating the view layer before
+projection gives x=873.84 to 1078.49, y=362.42 to 629.99. Both previously flagged
+pixels, (904,370) and (905,371), lie inside the correctly projected split hull.
+This fixes the projection error without changing the hull selection, threshold,
+hanger, camera or cloth. Visible wire inside an actual split still needs visual
+inspection; a zero poke-through count does not establish that it looks right.
+
 ## Tunic7 rest-grid control
 
 The rest probe isolates the tessellation defect. The source has 2,268 quads
