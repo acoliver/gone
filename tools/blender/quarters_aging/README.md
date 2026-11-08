@@ -23,6 +23,19 @@ The sofa and tunic represent 1000 years in dry, sealed, sterile, oxygenated air.
 Author in Blender's native Z-up frame, with front toward -Y, then export with `export_yup=True`. The GLBs have +Y up and front +Z. Existing object names, transforms and pivots are retained. Crust and cover share their cushion node; debris has separate named nodes.
 
 ## Cut-first physics
+### Swatch measurements
+
+`swatch_tests.py` runs 200 by 200 mm cantilevers for 150 frames at 24 fps. The first fixture uses 24 mm requested edges; dense fixtures use 6 mm and 3 mm. Vertex mass scales by reference vertex count divided by dense count. Upholstery uses 180 structural stiffness and 0.2 bending; wool uses 150 and 0.5. These are candidate settings, not accepted calibration against the fitted wool's 0.25 bending.
+
+| Material | Edge | Uncut s/frame | Split s/frame | Uncut tip drop | Reference drop |
+| --- | --- | --- | --- | --- | --- |
+| Upholstery | 6 mm | 0.0605 | 0.0472 | 56 mm | 154 mm |
+| Upholstery | 3 mm | 0.2504 | 0.2476 | 16 mm | 154 mm |
+| Wool | 6 mm | 0.0528 | 0.0529 | 193 mm | 198 mm |
+| Wool | 3 mm | 0.2260 | 0.2233 | 93 mm | 198 mm |
+
+Raw frame costs, mass, slit gape and local lip-plane distances are recorded in `sofa/cloth-trials.json` under `pass4_swatches`. Drape differs by more than the 10 mm fixture tolerance in three cases. The settings are not production-ready; no calibration success is claimed. The first attempt stopped at an outdated bmesh lookup table after splitting. Refreshing that table fixed the tool error; its log remains under `tmp/age/pass4/swatches/run.log`.
+
 
 `pass3.py` loads the unchanged fitted source. `stress_cut.py` releases shared armhole stitches and cuts stress-aligned rips before simulation. Its seeded boundary field has four octaves and a requested 6 mm amplitude, limited locally by edge length. It separates face fans that meet at a point, since a point contact is not a surviving stitch.
 
