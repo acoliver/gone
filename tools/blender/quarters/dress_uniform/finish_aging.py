@@ -41,6 +41,6 @@ def finish(out):
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--out', type=Path, default=ROOT / 'tmp/age/tunic6/main')
+    p.add_argument('--out', type=Path, default=ROOT / 'tmp/age/tunic7/source-damped')
     a = p.parse_args(sys.argv[sys.argv.index('--')+1:])
     finish(a.out.resolve())

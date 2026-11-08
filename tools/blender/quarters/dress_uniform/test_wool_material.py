@@ -16,7 +16,7 @@ from fabric_mesh import material, new_object
 from fringe_cards import image_from_array, strand_atlas
 from wool_material import wool_material
 
-out = ROOT/'tmp/age/tunic6/material-control'
+out = ROOT/'tmp/age/tunic7/material-control'
 out.mkdir(parents=True, exist_ok=True)
 bpy.ops.wm.read_factory_settings(use_empty=True)
 fringe = wool_fringe(out)

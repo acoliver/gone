@@ -9,6 +9,51 @@ buttons and medal must remain recognizable. The source is `tunic-working.blend`,
 with `body-p` as the wool reference. `ShoulderChestForm` remains an invisible,
 unexported collider.
 
+## Tunic7 settling controls
+
+The source-grid carrier removes the old masked-face workaround. The runtime
+rest check now rejects any evaluated triangle smaller than the contact diameter;
+it never installs an exclusion group. A resolved free-fall control must match
+the same mesh without self collision, while a sub-diameter mesh must fail.
+
+At frame 200 the unmasked dense body had two strict self contacts but still
+moved 14.41 mm over five frames. Extending that control to 1500 frames produced
+52 contacts and 49.70 mm motion, so extension alone failed. Its damping still
+came from the finer 2.985 mm swatch, rather than the measured working grid.
+The next control measures evaluated edge length and fits damping through both
+existing swatches, without changing the 500/500/350 springs or 0.3 bending.
+Residual motion remains concentrated in free lower cloth after the opening
+phase. A separate settle control restores the source wool's damping from frame
+601: structural 5, bending 0.5 and air 10. It retains the same rest shape,
+springs, mass, contact radius, pins and force field. A falling-plane test checks
+that this transition continues physics rather than freezing or resetting the
+mesh. The final dense control still requires fewer than 50 self contacts and
+less than 1 mm motion; the exported changed-part contact requirement is zero.
+
+## Tunic7 tear and deposit construction
+
+The old hanger tear followed nearly constant pattern V with only ±0.0006
+variation in that pattern coordinate. Its opening had a 270.6 px straight contour and dimension 1.1105.
+The opacity stage interpolated distances measured only at triangle vertices.
+On the tunic6 baked sheet, that interpolation missed 2,745 texels inside the
+physical 3 mm lip band. The new wrapper measures distance per texel instead.
+It retains the shared breakup frequencies and gain, uses pattern-grain
+coordinates, and adds two 30 mm grain walks with 18 mm branches. Crack widths
+remain 1.3 mm, carried by opacity; the main gaping lips remain geometry.
+Fringe is still generated and contact-tested on those physical lips. These
+changes require alpha-aware contour measurement on the finished export.
+
+The fallen strips previously landed away from the mound's centre. For example,
+the first and third pieces occupied y=-0.129 to -0.065 m and y=-0.113 to -0.061 m,
+while the mound is centred at zero with a 0.072 m half-width. They also used
+straight strip rest shapes, so floor friction preserved slab-like pieces.
+Released source allowances now receive a regular working grid and an
+arclength-curled rest, start over the deposit, and settle under gravity against
+the mound, body, floor and earlier strips. Their minimum rest altitudes are
+3.002, 2.656 and 3.442 mm; none needs a self-contact exclusion. The mound gets
+normal/AO bakes from its dense SDF source, in addition to its floor skirt and
+contact-tested loose fibre cards. These controls do not establish appearance.
+
 ## Tunic7 attachment and projection controls
 
 Attachment offsets were stored in world coordinates. A 90-degree support

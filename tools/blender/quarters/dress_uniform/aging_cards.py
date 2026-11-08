@@ -12,7 +12,7 @@ from common import apply, surface_tree
 from fabric_mesh import material, new_object
 from fringe_cards import fringe_material, image_from_array, strand_atlas
 from fringe_boundary import spaced_cards
-from opacity_bake import opacity_bake
+from tear_opacity import wool_opacity
 from powder_cards import powder_card
 
 
@@ -222,7 +222,7 @@ def floor_skirt(out):
 def finish_cards(out, record):
     body = bpy.data.objects['TunicBody']
     categories = edge_groups(body)
-    opacity, report = opacity_bake(body, out / 'textures/tunic_opacity.png', size=2048, seed=9521)
+    opacity, report = wool_opacity(body, out / 'textures/tunic_opacity.png', size=2048, seed=9521)
     report['stitch_holes'] = stitch_holes(body, opacity)
     material_maps(body.data.materials[0], (.025, .043, .08), opacity_image=opacity)
     fringe = wool_fringe(out / 'textures')

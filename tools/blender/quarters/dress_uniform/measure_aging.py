@@ -204,8 +204,8 @@ def measure(out, images):
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--out', type=Path, default=ROOT / 'tmp/age/tunic6/main')
-    p.add_argument('--images', type=Path, default=ROOT / 'tmp/age/tunic6')
+    p.add_argument('--out', type=Path, default=ROOT / 'tmp/age/tunic7/source-damped')
+    p.add_argument('--images', type=Path, default=ROOT / 'tmp/age/tunic7')
     a = p.parse_args()
     r = measure(a.out.resolve(), a.images.resolve())
     raise SystemExit(0 if r['pass'] else 1)

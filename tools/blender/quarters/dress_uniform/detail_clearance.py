@@ -103,3 +103,33 @@ def seat_details(body, bindings):
         report[name] = dict(clearance_m=.0005, additional_rigid_translation_m=shifts,
                             support='continuous projected overlap of actual reduced triangles')
     return report
+
+
+def seat_sewn(body, bindings):
+    from common import surface_tree
+    tree = surface_tree(body)
+    report = {}
+    for name in ('ShoulderBoard_L', 'ShoulderBoard_R', 'Placket'):
+        obj = bpy.data.objects[name]
+        original = np.asarray(bindings[name]['original'])
+        count = len(original)//2
+        if len(original) != count*2:
+            raise ValueError(f'{name}: expected paired facing vertices')
+        points = np.array([obj.matrix_world @ v.co for v in obj.data.vertices])
+        maximum = 0.
+        for i in range(count):
+            middle = (points[i]+points[i+count])/2
+            hit, normal, _, distance = tree.find_nearest(Vector(middle))
+            maximum = max(maximum, distance)
+            thickness = float(np.linalg.norm(original[i+count]-original[i]))
+            sign = float(np.dot(points[i+count]-points[i], normal))
+            lower, upper = (i, i+count) if sign >= 0 else (i+count, i)
+            points[lower] = np.asarray(hit)+np.asarray(normal)*.0005
+            points[upper] = np.asarray(hit)+np.asarray(normal)*(.0005+thickness)
+        inverse = obj.matrix_world.inverted()
+        for vertex, point in zip(obj.data.vertices, points):
+            vertex.co = inverse @ Vector(point)
+        recalc(obj)
+        report[name] = dict(base_clearance_m=.0005, maximum_before_distance_m=maximum,
+                            method='paired sewn facing columns follow actual reduced cloth normals')
+    return report

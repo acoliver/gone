@@ -17,7 +17,6 @@ from aging_geometry import cut_tunic, detach_fallen, pressed_sleeve, refine
 from bake_down import bake, decimate, material_maps
 from cloth_metrics import lip_lift, save_surface, surface_metrics
 from cloth_stage import configure
-from cloth_contacts import exclude_small_rest_faces
 from reduce_aging import reduce_game
 from common import activate, apply, assert_collision_clear, assert_surface_clear, collision, recalc
 from fabric_mesh import material
@@ -84,11 +83,18 @@ def prepare(out):
     return record
 
 
-def wool_config(frames):
+def wool_config(frames, edge=None):
     calibration = json.loads((HERE / 'aging-calibration.json').read_text())
     if not calibration['pass']:
         raise ValueError('Wool calibration has not passed')
     config = calibration['selected']['0.003']['settings'].copy()
+    if edge is not None:
+        coarse = calibration['selected']['0.006']
+        fine = calibration['selected']['0.003']
+        exponent = np.log(coarse['settings']['damping_multiplier']/fine['settings']['damping_multiplier'])/np.log(coarse['edge_m']/fine['edge_m'])
+        config['damping_multiplier'] = float(fine['settings']['damping_multiplier']*(edge/fine['edge_m'])**exponent)
+        config['measured_working_edge_m'] = edge
+        config['damping_exponent'] = float(exponent)
     config.update(frames=frames, quality=12, self_collision=True, collision_quality=4,
                   distance=.0015, self_distance=.001, shrink=.04)
     return config
@@ -103,6 +109,14 @@ def bake_simulation(obj, mod, frames, settle=False):
     motion = None
     for frame in range(1, frames+1):
         start = time.perf_counter()
+        if settle and frame == 601:
+            # The swatch fit controls opening transients. Finish at rest with
+            # the source wool's damping; static springs and contacts are unchanged.
+            reference = json.loads((HERE / 'aging-calibration.json').read_text())['reference_settings']
+            mod.settings.tension_damping = mod.settings.compression_damping = mod.settings.shear_damping = reference['structural_damping']
+            mod.settings.bending_damping = reference['bending_damping']
+            mod.settings.air_damping = reference['air_damping']
+            print('SOURCE DAMPING SETTLE', frame, reference, flush=True)
         bpy.context.scene.frame_set(frame)
         deps = bpy.context.evaluated_depsgraph_get()
         evaluated = obj.evaluated_get(deps)
@@ -128,6 +142,7 @@ def bake_simulation(obj, mod, frames, settle=False):
     obj.data = frozen
     return dict(frames=frame, maximum_frames=frames, seconds_per_frame=float(np.mean(durations[1:])),
                 last_five_frames_motion_m=motion,
+                source_damping_settle_from_frame=601 if settle and frame > 600 else None,
                 samples=samples)
 
 
@@ -135,7 +150,10 @@ def simulate(out, frames):
     bpy.ops.wm.open_mainfile(filepath=str(out / 'prepared.blend'))
     record = json.loads(bpy.context.scene['tunic5_record'])
     body = bpy.data.objects['TunicBody']
-    config = wool_config(frames)
+    surface = body.evaluated_get(bpy.context.evaluated_depsgraph_get()).data
+    edge = float(np.median([(surface.vertices[e.vertices[0]].co-surface.vertices[e.vertices[1]].co).length
+                           for e in surface.edges]))
+    config = wool_config(frames, edge)
     pins = {int(i): w for i, w in record['pins'].items()}
     mod = configure(body, config, record['density']['unaged_vertices'], pins,
                     body.data.shape_keys.key_blocks['Empty pressed left sleeve'])
@@ -148,7 +166,8 @@ def simulate(out, frames):
     s.air_damping = 10*damping
     record['simulation_config'] = config
     mod.collision_settings.vertex_group_self_collisions = ''
-    record['rest_contact_policy'] = {'exclusion_vertices': 0, 'policy': 'all dense faces collide'}
+    from cloth_contacts import validate_rest_faces
+    record['rest_contact_policy'] = validate_rest_faces(body, mod)
     record['simulation'] = bake_simulation(body, mod, frames, settle=True)
     record['dense_metrics'] = surface_metrics(body)
     record['lip_lift'] = lip_lift(body)
@@ -172,23 +191,8 @@ def simulate(out, frames):
     heap.hide_set(True)
     record['heap'] = json.loads((out / 'heap.json').read_text())
     collision(mound, .001)
-    # Fall detached allowances against the settled body and the original floor.
-    collision(body, .0015)
-    record['fallen_simulations'] = {}
-    for piece in record['fallen']:
-        obj = bpy.data.objects[piece['name']]
-        bpy.context.scene.frame_set(1)
-        mod = configure(obj, config, max(4, int(piece['vertices']*record['density']['mass_multiplier'])))
-        mod.settings.bending_stiffness = .3
-        # Free-hang swatch damping does not model repeated floor contacts.
-        mod.settings.tension_damping = 5.
-        mod.settings.compression_damping = 5.
-        mod.settings.shear_damping = 5.
-        mod.settings.bending_damping = .5
-        mod.settings.air_damping = 10.
-        piece['rest_contact_policy'] = exclude_small_rest_faces(obj, mod)
-        record['fallen_simulations'][obj.name] = bake_simulation(obj, mod, frames)
-        collision(obj, .001)
+    from settle_debris import settle_fallen
+    record = settle_fallen(out, record, config, bake_simulation)
     for obj in bpy.context.scene.objects:
         for m in list(obj.modifiers):
             if m.type == 'COLLISION' and obj.get('aged_export'):
@@ -222,7 +226,16 @@ def reduce_and_bake(out):
         record['bakes'][name] = paths
         if name == 'TunicBody':
             record['game_sheet_metrics'] = surface_metrics(low)
-    from detail_clearance import seat_details
+    dense_heap = bpy.data.objects['FibreDust_Dense']
+    mound = bpy.data.objects['FibreDust']
+    heap_mat, record['bakes']['FibreDust'] = bake(dense_heap, mound, out / 'textures', size=512)
+    material_maps(heap_mat, (.19, .18, .16))
+    from wool_material import wool_material
+    record['heap_material'] = wool_material(mound, out / 'textures', color=(.19, .18, .16))
+    dense_heap.hide_render = True
+    dense_heap.hide_set(True)
+    from detail_clearance import seat_details, seat_sewn
+    record['reduced_sewn_clearance'] = seat_sewn(bpy.data.objects['TunicBody'], record['bindings'])
     record['reduced_detail_clearance'] = seat_details(bpy.data.objects['TunicBody'], record['bindings'])
     save_checkpoint(out, 'baked', record)
     return record
@@ -231,8 +244,8 @@ def reduce_and_bake(out):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--stage', choices=['prepare', 'simulate', 'bake', 'all'], default='all')
-    p.add_argument('--out', type=Path, default=ROOT / 'tmp/age/tunic6/main')
-    p.add_argument('--frames', type=int, default=600)
+    p.add_argument('--out', type=Path, default=ROOT / 'tmp/age/tunic7/source-damped')
+    p.add_argument('--frames', type=int, default=2400)
     a = p.parse_args(sys.argv[sys.argv.index('--')+1:])
     a.out = a.out.resolve()
     a.out.mkdir(parents=True, exist_ok=True)
