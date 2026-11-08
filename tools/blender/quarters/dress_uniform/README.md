@@ -5,6 +5,10 @@ asset. Acceptance requires every measured gate and a visual concept comparison;
 passing local controls does not certify a trial's geometry or appearance.
 
 The tunic represents 1000 years of dry aging. Its cut, collar, shoulder boards,
+buttons and medal must remain recognizable. The source is `tunic-working.blend`,
+with `body-p` as the wool reference. `ShoulderChestForm` remains an invisible,
+unexported collider.
+
 ## Recovered checkpoint (2026-11-08)
 
 The inherited `tmp/age/tunic5/carrier/` trial reached all scratch stages, not
@@ -29,8 +33,6 @@ records are not the dense carrier trial. The carrier's actual stage records
 and gates are in its scratch directory. No delivery export or visual approval
 is claimed by this recovery checkpoint. New work uses `tmp/age/tunic6/`.
 
-buttons and medal must remain recognizable. The source is `tunic-working.blend`,
-with `body-p` as the wool reference. `ShoulderChestForm` remains an invisible,
 ## Continuation controls
 
 A stage-by-stage SAT probe found zero body/hanger crossings in the inherited
@@ -57,8 +59,33 @@ export exactly, rather than relying on equal self-contact counts alone.
 Positive and negative controls reject changed cloth, card pairs and a moved
 hanger. Shared modules have not been edited by the tunic continuation.
 
-unexported collider. The collar follows neckline edges without a vertical lift.
-Closed fittings retain their topology and are seated against the reduced sheet
+## Dense milestone: tunic6-main
+
+The new trial completed 600 frames with the chest form and baked the body and
+three fallen strips to normal/AO maps. The body reduces from 30,000 working
+triangles to 10,799 sheet triangles. Fallen pieces have 249, 249 and 59 sheet
+triangles. Their maximum boundary Hausdorff upper bound is 0.639 mm, below
+1.5 mm. Shoulder and armhole releases remain 60.56% and 58.93%; the three hem
+runs release 36.41% of the pattern. Lip lift covers 46.40% of the open edge,
+above 30%. Both structural and bending sleeve rest retain 40% depth.
+
+The simulation is not a clean final cloth result. Its last five frames still
+move 15.05 mm, and sharp-adjacency shares are 18.45% on the dense body and
+24.40% on the reduced sheet, before visibility filtering. The inherited trial
+had 787 dense self contacts; 780 touched a face excluded from Blender contact.
+The fresh carrier still excludes 9,303 of 15,781 evaluated vertices. These
+measurements identify rest tessellation and its contact exclusions as work
+that remains; they do not justify exempting those contacts from G30.
+
+`cloth-trials.json` now records this trial separately under `dense_aging`.
+Preparation, simulation and bakes are saved under `tmp/age/tunic6/main/`.
+The delivered asset is unchanged. Final geometry, cards and rendered gates
+are measured after the finishing stage.
+
+## Attachment constraints
+
+The collar follows neckline edges without a vertical lift. Closed fittings
+retain their topology and are seated against the reduced sheet
 and its rim, rather than against the dense bake source alone. Clearance uses
 continuous projected triangle overlap, including support triangles whose
 vertices and centroids all lie outside the fitting. Collar top and bottom

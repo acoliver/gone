@@ -12856,5 +12856,169 @@
         }
       }
     }
+  ],
+  "dense_aging": [
+    {
+      "trial": "tunic6-main",
+      "status": "dense simulation and normal/AO bake complete; final acceptance pending",
+      "source": "tunic-working.blend",
+      "seed": 9521,
+      "scratch": "tmp/age/tunic6/main",
+      "construction": {
+        "working_triangles": 30000,
+        "carrier_triangles": 5000,
+        "rest_subdivision": "SIMPLE level 1",
+        "sleeve_structural_and_bending_depth_ratio": 0.4,
+        "shoulder_release_fraction": 0.6055905243172856,
+        "armhole_release_fraction": 0.5893211521948896,
+        "hem_release_fraction": 0.3641304347826087,
+        "hem_runs": 3,
+        "chest_form": "retained invisible collider",
+        "collar_support_normal_clearance_m": 0.002
+      },
+      "simulation": {
+        "frames": 600,
+        "seconds_per_frame": 3.5706061854669344,
+        "last_five_frames_motion_m": 0.015049961225389928
+      },
+      "lip_lift": {
+        "lip_length_m": 1.2654539037913373,
+        "lifted_length_m": 0.5871151905439083,
+        "fraction": 0.4639562047933108,
+        "threshold": 0.3,
+        "pass": true
+      },
+      "reduction": {
+        "TunicBody": {
+          "source_triangles": 28927,
+          "target_triangles": 10800,
+          "triangles": 10799,
+          "boundary_hausdorff_upper_m": 0.0006386535037308931,
+          "pass": true,
+          "outline_protection": {
+            "protected_vertices": 1436,
+            "hanger_distance_m": 0.006,
+            "silhouette_section_height_m": 0.01,
+            "silhouette_band_m": 0.001
+          },
+          "boundary_chord_tolerance_m": 0.0005,
+          "interior_relaxation": {
+            "passes": 4,
+            "factor": 0.3,
+            "boundary_fixed": true,
+            "keep_fixed": true,
+            "maximum_allowed_motion_m": 0.001,
+            "measured_maximum_motion_m": 0.0010000283917888288,
+            "moved_vertices": 471
+          }
+        },
+        "FallenHem_1": {
+          "source_triangles": 377,
+          "target_triangles": 250,
+          "triangles": 249,
+          "boundary_hausdorff_upper_m": 0.0006093031929340214,
+          "pass": true
+        },
+        "FallenHem_2": {
+          "source_triangles": 497,
+          "target_triangles": 250,
+          "triangles": 249,
+          "boundary_hausdorff_upper_m": 0.0006305913352407515,
+          "pass": true
+        },
+        "FallenHem_3": {
+          "source_triangles": 59,
+          "target_triangles": 250,
+          "triangles": 59,
+          "boundary_hausdorff_upper_m": 0.0005853551351465285,
+          "pass": true
+        }
+      },
+      "dense_metrics": {
+        "triangles": 30000,
+        "dihedral_over_30_share": 0.1845116931288732,
+        "bounds_blender_m": [
+          [
+            -0.34326300024986267,
+            -0.057874713093042374,
+            -0.8769592642784119
+          ],
+          [
+            0.2960546314716339,
+            0.1512056291103363,
+            -0.1382153481245041
+          ]
+        ]
+      },
+      "game_sheet_metrics": {
+        "triangles": 10799,
+        "dihedral_over_30_share": 0.24402334190876576,
+        "bounds_blender_m": [
+          [
+            -0.34469783306121826,
+            -0.05825566500425339,
+            -0.8769481778144836
+          ],
+          [
+            0.2950441539287567,
+            0.1512056291103363,
+            -0.1382153481245041
+          ]
+        ]
+      },
+      "bakes": {
+        "TunicBody": {
+          "size": [
+            2048,
+            2048
+          ],
+          "maps": [
+            "normal",
+            "ao"
+          ]
+        },
+        "FallenHem_1": {
+          "size": [
+            512,
+            512
+          ],
+          "maps": [
+            "normal",
+            "ao"
+          ]
+        },
+        "FallenHem_2": {
+          "size": [
+            512,
+            512
+          ],
+          "maps": [
+            "normal",
+            "ao"
+          ]
+        },
+        "FallenHem_3": {
+          "size": [
+            512,
+            512
+          ],
+          "maps": [
+            "normal",
+            "ao"
+          ]
+        }
+      },
+      "fallen_last_five_frames_motion_m": {
+        "FallenHem_1": 0.0024875265484799545,
+        "FallenHem_2": 0.00017115739378077433,
+        "FallenHem_3": 1.9786161123720814e-05
+      },
+      "limitations": [
+        "The body still moves 15.05 mm over its final five frames.",
+        "Dense sharp-adjacency share is 18.45%; reduced sheet share is 24.40%, before visibility filtering.",
+        "Local controls do not certify exported geometry or appearance."
+      ],
+      "delivered_asset_replaced": false
+    }
   ]
 }

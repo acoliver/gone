@@ -16,7 +16,6 @@ entry = dict(triangle=[0, 1, 2], weights=[1., 0., 0.], offset=[0., 0., .043], se
 point = follow_points(obj, [entry])[0]
 np.testing.assert_allclose(point, [.002, 0., .043], atol=1e-8)
 obj.location = (.1, -.2, -.025)
-translated = follow_points(obj, [entry])[0]
 bpy.context.view_layer.update()
 translated = follow_points(obj, [entry])[0]
 np.testing.assert_allclose(translated-point, [.1, -.2, -.025], atol=1e-8)
