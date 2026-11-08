@@ -81,29 +81,45 @@ def field(width=.66, depth=.70, voxel=.002, seed=9501):
     return sdf.astype(np.float32), np.array([x[0], y[0], z[0]]), voxel
 
 
-def mesh_sdf(sdf, origin, voxel):
-    vertices, faces, normals, _ = marching_cubes(sdf, .000013, spacing=(voxel,)*3, allow_degenerate=False)
-    return vertices+origin, faces, normals
+def mesh_sdf(sdf, origin, voxel, level=.000013):
+    vertices, faces, normals, _ = marching_cubes(sdf, level, spacing=(voxel,)*3, allow_degenerate=False)
+    return vertices.astype(np.float64)+origin, faces, normals
 
 
 def filled_proxy(sdf, origin, voxel):
     """Fill sub-surface pore tunnels for the low-poly collision/bake target."""
-    filled = np.minimum.accumulate(sdf[:, :, ::-1], axis=2)[:, :, ::-1].copy()
-    z = origin[2]+np.arange(sdf.shape[2])*voxel
+    level = .000013
+    inside = sdf < level
+    footprint = np.any(inside, axis=2)
+    columns = np.argwhere(footprint)
+    last = sdf.shape[2]-1-np.argmax(inside[:, :, ::-1], axis=2)[footprint]
+    lower = sdf[columns[:,0], columns[:,1], last]
+    upper = sdf[columns[:,0], columns[:,1], last+1]
+    top = np.zeros(footprint.shape)
+    top[footprint] = origin[2]+voxel*(last+(level-lower)/(upper-lower))
+    holes = binary_fill_holes(footprint) & ~footprint
+    nearest = distance_transform_edt(~footprint, return_distances=False, return_indices=True)
+    top[holes] = top[nearest[0][holes], nearest[1][holes]]
+    regions, _ = label(footprint | holes)
+    largest = np.argmax(np.bincount(regions.ravel())[1:])+1
+    footprint = regions == largest
     x = origin[0]+np.arange(sdf.shape[0])*voxel
     y = origin[1]+np.arange(sdf.shape[1])*voxel
-    filled = np.maximum(filled, underside(x[:, None], y[None, :])[:, :, None]-z[None, None, :])
-    footprint = np.any(sdf < .000013, axis=2)
-    holes = binary_fill_holes(footprint) & ~footprint
-    # Thin powder can fall between Z samples. Fill those interior columns in
-    # the collision proxy, as well as the sub-surface pore tunnels.
-    nearest = distance_transform_edt(~footprint, return_distances=False, return_indices=True)
-    filled[holes] = filled[nearest[0][holes], nearest[1][holes]]
-    regions, _ = label(filled < .000013)
-    largest = np.argmax(np.bincount(regions.ravel())[1:])+1
-    filled[(regions != 0) & (regions != largest)] = .01
-    filled[:, :, 0] = .01
-    return mesh_sdf(filled, origin, voxel)
+    z = origin[2]+np.arange(sdf.shape[2])*voxel
+    bottom = underside(x[:, None], y[None, :])
+    # Sub-voxel sheets and narrow necks consume the collapse budget as handles.
+    # Keep the collision envelope at least two Z cells thick. Normal and AO
+    # still come from the pore-rich dense source.
+    top = np.maximum(top, bottom+2*voxel)
+    filled = np.maximum(z[None,None,:]-top[:,:,None], bottom[:,:,None]-z[None,None,:])
+    filled[~footprint] = .01
+    filled[:, :, [0,-1]] = .01
+    # Keep float32 marching-cubes crossings away from grid corners. Otherwise
+    # export/import vertex merging can identify distinct sub-micrometre tips.
+    proxy_level = level+.0000005
+    filled = np.clip(np.rint(filled/.000001)*.000001,
+                     proxy_level-voxel, proxy_level+voxel)
+    return mesh_sdf(filled, origin, voxel, level=proxy_level)
 
 
 def fragments(sdf, origin, voxel, seed=9501, count=12):

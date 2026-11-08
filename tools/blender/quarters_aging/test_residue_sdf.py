@@ -34,6 +34,15 @@ class ResidueSDF(unittest.TestCase):
         self.assertEqual(mesh.euler_number, 2)
         self.assertLess(mesh.bounds[1, 2], .035)
 
+    def test_full_size_proxy_has_one_closed_shell_without_pore_handles(self):
+        sdf, origin, voxel = field(seed=9501)
+        v, f, _ = filled_proxy(sdf, origin, voxel)
+        mesh = trimesh.Trimesh(v, f, process=True)
+        self.assertTrue(mesh.is_watertight)
+        self.assertEqual(mesh.euler_number, 2)
+        self.assertGreater(mesh.volume, 0)
+        self.assertGreater(mesh.bounds[0, 2], 0)
+
 
 if __name__ == '__main__':
     unittest.main()
