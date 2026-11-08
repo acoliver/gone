@@ -297,7 +297,7 @@ Seat tears now bound the actual snapped cut length, rather than only the authore
 
 A same-mesh shrink control found that a 3% minimum shrink also contracts vertices outside the lip group. At frame 20 it produced 30.726% sharp dihedrals; changing only that minimum to zero reduced the share to 2.044%. Production keeps zero minimum shrink and 5% maximum shrink in the authored lip group. This preserves local lip curl without contracting the whole panel.
 
-The Blender regression suite passes 25 tests. The final six-cover, throw, render and export acceptance milestones remain pending at this checkpoint. No pass-7 candidate has replaced the shipped sofa or its textures.
+All six final covers completed: seats centre/left/right took 456.500/196.325/285.175 seconds; backs took 724.758/543.668/366.601 seconds. The backs no longer retain their fitted boxes, but they over-collapse: height retention is 28.053/39.047/33.517%, below G15's 40–65%. G17 finds 2/2/1 front folds, against at least two each. Seat centre retention is 58.463/63.084/58.513%, above G14's 10–25%. The stable residue mesh reduces G7 to 4.486/6.846/5.678% on seats and 1.620/2.919/2.750% on backs; the remaining above-limit patches are on the roof, not the corrected underside or rim. These failed source measurements block publication. The throw, captures and final exported measurements remain pending at this checkpoint. The Blender regression suite passes 27 tests. No pass-7 candidate has replaced the shipped sofa or its textures.
 
 ### Dense aging pilot, not shipped
 
