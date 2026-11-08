@@ -5,13 +5,14 @@ extends RefCounted
 const DETECTOR_SIZE := Vector3(0.22, 0.22, 0.055)
 const HEAD_SIZE := Vector3(0.16, 0.25, 0.14)
 const MODULE_SIZE := Vector3(0.575, 0.06, 0.18)
-const PIPE_RADIUS := 0.016
+const PIPE_RADIUS := 0.025
 
 var bounds: AABB
 var detectors: Array[Dictionary] = []
 var detector_exclusions: Array[AABB] = []
 var heads: Array[Transform3D] = []
 var pipes: Array[Transform3D] = []
+var tees: Array[Transform3D] = []
 var clips: Array[Transform3D] = []
 var ducts: Array[Transform3D] = []
 var modules: Array[Transform3D] = []
@@ -88,17 +89,21 @@ static func build(layout: ShipLayout, space: ShipLayout.Spec) -> CeilingServices
 	assert(result.detectors.size() == 2, "room needs two clear detector walls: %s" % space.id())
 	var count := ceili(b.size.x / 3.0)
 	var pitch := b.size.x / count
-	var pipe_y := b.end.y - 0.07
+	# Keep the supply below the rib heads and exposed on the room side of the wall.
+	var pipe_y := b.end.y - 0.28
 	# A lift's entrance lintel occupies its near wall; use its solid back wall.
 	var into := -1.0 if space is ShipLayout.LiftSpec else 1.0
 	var wall_z := b.end.z if space is ShipLayout.LiftSpec else b.position.z
-	result.pipes.append(_pose(Vector3(b.get_center().x, pipe_y, wall_z + into * 0.04), Vector3(b.size.x, PIPE_RADIUS * 2, PIPE_RADIUS * 2)))
+	var pipe_z := wall_z + into * 0.10
+	result.pipes.append(_pose(Vector3(b.get_center().x, pipe_y, pipe_z), Vector3(b.size.x, PIPE_RADIUS * 2, PIPE_RADIUS * 2)))
 	for index: int in range(count):
 		var x := b.position.x + (index + 0.5) * pitch
 		var head := _pose(Vector3(x, pipe_y - HEAD_SIZE.y / 2 + PIPE_RADIUS, wall_z + into * HEAD_SIZE.z / 2), HEAD_SIZE)
 		if into < 0: head.basis = Basis(Vector3.UP, PI) * head.basis
 		result.heads.append(head)
-		result.clips.append(_pose(Vector3(x, pipe_y, wall_z + into * 0.022), Vector3(0.05, 0.06, 0.044)))
+		result.tees.append(_pose(Vector3(x, pipe_y, pipe_z), Vector3(0.10, 0.064, 0.064)))
+		result.tees.append(Transform3D(Basis(Vector3.BACK, PI / 2).scaled_local(Vector3(0.08, 0.032, 0.032)), Vector3(x + into * 0.012, pipe_y - 0.04, pipe_z - into * 0.02)))
+		result.clips.append(_pose(Vector3(x + 0.18, pipe_y, wall_z + into * 0.065), Vector3(0.035, 0.075, 0.13)))
 	if space is ShipLayout.SectionSpec:
 		var segments := ceili(b.size.x / 0.8)
 		var length := b.size.x / segments
@@ -127,6 +132,6 @@ func reservations() -> Array[ShipLayout.DressingClearance]:
 	var result: Array[ShipLayout.DressingClearance] = []
 	for row: Dictionary in detectors:
 		result.append(ShipLayout.DressingClearance.new(&"FIRE_DETECTOR", row.bounds.grow(0.002)))
-	for pose: Transform3D in heads + pipes + clips + ducts:
+	for pose: Transform3D in heads + pipes + tees + clips + ducts:
 		result.append(ShipLayout.DressingClearance.new(&"CEILING_SERVICE", (pose * ShipDressing.UNIT).grow(0.002)))
 	return result

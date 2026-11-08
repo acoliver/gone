@@ -128,7 +128,7 @@ func test_each_service_mount_touches_structure_and_stays_above_walk_band() -> vo
 			for box: AABB in SlidingDoorParts.wall_boxes(layout, solid): structure.append(to_local * solid.transform * box)
 		var pieces: Dictionary = {}
 		for index: int in range(spec.detectors.size()): pieces["detector/%d" % index] = spec.detectors[index].bounds
-		var poses: Array[Transform3D] = spec.heads + spec.pipes + spec.clips + spec.ducts
+		var poses: Array[Transform3D] = spec.heads + spec.pipes + spec.tees + spec.clips + spec.ducts
 		for index: int in range(poses.size()):
 			var box: AABB = poses[index] * ShipDressing.UNIT
 			assert_true(box.position.y > b.position.y + 2.2, "overhead services stay outside walking envelope")
