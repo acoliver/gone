@@ -160,8 +160,8 @@ bands, without overlapping geometry. That stile now takes a matching-scale
 40 mm strip of the adjacent door paint, within its original padded atlas slot.
 The three pale floor spots are the sofa's authored `FineFloorPowder_SeatCushion_*`
 deposits, confirmed by a removal control. They remain beneath the sofa seats.
-The five current standard captures, two desk/console close-ups and the console
-message frame are under `tmp/demo5/`.
+The demo5 standard captures, two desk/console close-ups and console message
+frame remain under `tmp/demo5/`. The owner presentation pass is in `tmp/demo6/`.
 
 D16's corridor now switches all eight red keys by their circuit metadata,
 not their display names, which Godot renames when siblings share a name. The
@@ -218,6 +218,43 @@ The broad room comparison also misidentified the already accepted collapsed
 sofa as a floating bed; sofa geometry was not changed in this pass. Existing
 ObjectDB, resource and allocator teardown warnings remain after the passing
 tests.
+
+### Owner presentation cleanup (demo6)
+
+The eleven `Standin_storage_*` meshes now share the real furniture's interim
+steel finishes instead of the brown soft-part material. Small-item boxes are
+neutral grey. `Standin_medal_case` and `Standin_data_tablet_2` now rest on the
+actual worktop, clear of the console; both previously intersected it and
+floated 60 mm above the desk. Names and storage footprints are unchanged.
+
+The console has a dark, unshaded emissive base, brighter text, faint scanlines
+and animated black/cyan/white corruption blocks. Glyph-width wrapping keeps
+the uppercase fault inside the bezel. Placeholder wording and the 300-tick
+sequence are unchanged. Five hundred interior rays confirm solid panels in
+the Present wardrobe and over-bed cabinets; their dark interiors are unlit.
+
+The black/cyan numbers are the harness's 96 by 40 pixel protocol chip, absent
+from normal `--start quarters` play. Machine captures and decoding are unchanged.
+Make the ten owner copies from a completed run with:
+
+```sh
+godot --headless --path . -s tools/quarters_presentation.gd -- tmp/demo6/routes-final/quarters-demo/run-<id> tmp/demo6
+```
+
+This crops only the top 40 rows, producing 1536 by 824 images. The five standard
+files are `corridor-door.png`, `remembered-doorway.png`, `remembered-wide.png`,
+`present-doorway.png` and `present-wide.png`; desk views are
+`remembered-console.png` and `present-console.png`; playback phases are
+`console-corruption.png`, `console-message.png` and `console-fault.png`.
+
+Demo6 passed **912 headless tests, zero failures**, including six new
+regressions. The full suite and all eight windowed scenarios ran under `nohup`;
+all eight passed their machine checks, including the ten quarters beats.
+Logs are `tmp/demo6/full-suite-final.log`, `routes-final.log` and
+`route-final-<scenario>.log`. All ten owner images match their source pixels
+below the cropped protocol band. Image-comparer confirms storage colour
+agreement, readable message/fault text and visible block corruption. Existing
+ObjectDB/resource/allocator teardown warnings remain. D14 is unchanged.
 
 ## Plan view
 
