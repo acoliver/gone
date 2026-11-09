@@ -68,7 +68,7 @@ def bake(item, surface=False):
             if 'Plastic' in name:
                 rgb = rgb*np.array([1.0,.85,.54])*.78
             if name == 'Leather':
-                rgb = rgb*.75+np.array([.16,.09,.04])*.30
+                rgb = rgb*.52+np.array([.12,.07,.03])*.20
             # Seeded irregular hairline networks, not a uniform square grid.
             spots = rng.random((180 if name=='Display' else 38,2))*size
             yy,xx = np.mgrid[:size,:size]
@@ -79,9 +79,10 @@ def bake(item, surface=False):
                 closer = dist<nearest
                 second = np.where(closer,nearest,np.minimum(second,dist))
                 nearest = np.minimum(nearest,dist)
-            crack = np.sqrt(second)-np.sqrt(nearest)<(.28 if name=='Display' else 1.15)
-            rgb[crack] *= .18
-            height = np.where(crack,-.18,fine*.025)
+            crack_width=.28 if name=='Display' else .38 if item=='jewellery_box' else 1.15
+            crack = np.sqrt(second)-np.sqrt(nearest)<crack_width
+            rgb[crack] *= .60 if item=='jewellery_box' else .18
+            height = np.where(crack,-.07 if item=='jewellery_box' else -.18,fine*.025)
             if name=='Display':
                 rgb = rgb*.25+broad[...,None]*.008
                 rgb[crack]=(.12,.13,.12)
@@ -93,6 +94,17 @@ def bake(item, surface=False):
                 height += fine*.025
         else:
             rgb = rgb*.56+np.array([.26,.20,.12])*.18
+        if item=='jewellery_box' and name=='IvoryPlastic':
+            rgb=rgb*np.array([1.12,1.16,1.37])
+        if item=='jewellery_box' and name=='BluePlastic':
+            rgb=rgb*np.array([.82,1.04,1.56])
+        if item=='boots' and name=='Rubber':
+            rgb=np.repeat(rgb.mean(axis=2,keepdims=True),3,axis=2)*.65
+        if item=='boots' and name=='Leather':
+            dy,dx=np.gradient(noise(rng,size,256)*.70+grain*.14)
+            clean_normal=np.stack((-dx,-dy,np.ones_like(dx)),axis=-1)
+            clean_normal/=np.linalg.norm(clean_normal,axis=-1,keepdims=True)
+            Image.fromarray(((clean_normal*.5+.5)*255+.5).astype('uint8')).save(folder/'Leather_clean_normal.png')
         surface_dust=None
         if geometry is not None and name in {'Ceramic','Glaze','Stain','DustCeramic'}:
             p,n=geometry
@@ -123,6 +135,9 @@ def bake(item, surface=False):
         dust_alpha = surface_dust if surface_dust is not None else ((.52+.18*fine) if name=='DustCeramic' else (.08+.16*fine))
         if name in {'Display','Leather','Bristle'}:
             dust_alpha *= .15 if name=='Display' else .55
+        if item=='jewellery_box':
+            dust_alpha=.22+.25*broad
+            dust=np.array([.71,.66,.55])
         rgb = rgb*(1-dust_alpha[...,None])+dust*dust_alpha[...,None]
         rgb = np.clip(rgb+(grain[...,None]-.5)*.018,0,1)
         Image.fromarray((rgb*255+.5).astype('uint8')).save(folder/f'{name}_aged.png')
