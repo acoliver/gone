@@ -1,10 +1,11 @@
 """Shared clearance deformation for dense and reduced sofa cover surfaces."""
+import heapq
+
 import bmesh
 import numpy as np
 from mathutils import Vector
 from mathutils.bvhtree import BVHTree
 from mathutils.geometry import barycentric_transform
-from mathutils.kdtree import KDTree
 
 from common import recalc
 
@@ -59,7 +60,6 @@ def open_lips(obj, seed):
     positions = {v: v.co.copy() for v in bm.verts}
     displacement = {}
     pending = []
-    import heapq
     bm.verts.index_update()
     by_index = {v.index: v for v in bm.verts}
     distances = {}

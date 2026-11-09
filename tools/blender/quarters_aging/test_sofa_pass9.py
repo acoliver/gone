@@ -65,6 +65,20 @@ class Pass9Tests(unittest.TestCase):
         self.assertAlmostEqual(obj.data.vertices[0].co.x, -.1)
         self.assertAlmostEqual(obj.data.vertices[5].co.x, .1)
 
+    def test_side_boxing_release_preserves_area_and_tie_vertices(self):
+        from sofa_full_decay import initialize
+        from sofa_pass9 import prepare_part
+        initialize()
+        obj, detail, driver, pins = prepare_part('BackCushion_C', ROOT/'tmp/age/pass9')
+        self.assertIsNone(driver)
+        self.assertTrue(detail['mesh_quality']['pass'])
+        self.assertEqual(len(detail['side_boxing_release']), 2)
+        for run in detail['side_boxing_release']:
+            self.assertAlmostEqual(run['removed_area_m2'], 0.)
+            self.assertGreater(run['split_length_m'], .30)
+        self.assertTrue(pins)
+        self.assertTrue(all(.60 <= (obj.matrix_world@obj.data.vertices[i].co).z <= .62 for i in pins))
+
     def test_back_vacuum_has_no_automatic_volume_spring(self):
         from fabric_mesh import material, new_object
         from sofa_pass8_solver import cloth

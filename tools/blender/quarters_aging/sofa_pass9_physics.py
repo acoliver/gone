@@ -10,9 +10,15 @@ def linear_keys(obj):
 
 def tune(obj, mod, config, kind, pressure=.01):
     settings = mod.settings
-    bending = {'seats': .30, 'backs': .30, 'throw': .12}[kind]
-    if obj.vertex_groups.get('Welt'):
+    bending = {'seats': 1.20, 'backs': 1.20, 'throw': .12}[kind]
+    if kind == 'seats':
+        for frame, value in [(1, config['bending']), (200, config['bending']), (600, bending)]:
+            settings.bending_stiffness_max = value
+            settings.keyframe_insert(data_path='bending_stiffness_max', frame=frame)
+        config['seat_bending_ramp'] = {'frames': [200, 600], 'from': config['bending'], 'to': bending}
+    elif obj.vertex_groups.get('Welt'):
         settings.bending_stiffness_max = bending
+        config['weighted_bending_max'] = bending
     else:
         settings.bending_stiffness = bending
     damping = 12. if kind == 'throw' else 5.

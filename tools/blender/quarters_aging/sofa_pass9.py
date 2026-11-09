@@ -18,11 +18,29 @@ from sofa_decay_throw import install_contacts
 from sofa_full_decay import ROOT, checkpoint, initialize
 from sofa_partitions import clear_partitions, fitted_back_barriers, pair_crossings
 from sofa_pass8 import combine, contacts, prepare, prepare_throw
-from sofa_pass8_finish import clearance, initial_contacts, lip_curl, save_lip_classes
-from sofa_pass8_mesh import mesh_quality
+from sofa_pass8_finish import clearance, initial_contacts, save_lip_classes
+from sofa_pass8_mesh import mesh_quality, split_world, tie_pins
 from sofa_pass8_solver import cloth, solve
-from sofa_pass9_finish import carry_clearance, points
+from sofa_pass9_finish import carry_clearance, open_lips, points
 from sofa_pass9_physics import tune
+
+
+
+def prepare_part(name, out):
+    obj, detail, driver, pins = prepare(name, out)
+    detail['plan']['frames'] = 2400
+    if name.startswith('Back'):
+        p = points(obj)
+        lo, hi = p.min(0), p.max(0)
+        releases = [split_world(obj, [(x, .275, z) for z in np.linspace(.433, .828, 80)])
+                    for x in [lo[0]+.012, hi[0]-.012]]
+        pins, patches = tie_pins(obj)
+        quality = mesh_quality(obj)
+        if not quality['pass']:
+            raise ValueError(f'{name}: side-release element quality failed: {quality}')
+        detail.update(side_boxing_release=releases, tie_patches=patches, mesh_quality=quality,
+                      filling_driver='opened side boxing, static lower-return residue, gentle inward load')
+    return obj, detail, driver, pins
 
 
 def stage(out, record, back=False):
@@ -35,7 +53,7 @@ def stage(out, record, back=False):
         for name in ORDER[:3]:
             collision(bpy.data.objects[name+'_GameContact'], .001)
         collision(bpy.data.objects['Throw'], .001)
-    states = [prepare(name, out) for name in names]
+    states = [prepare_part(name, out) for name in names]
     joint, reference, pins = combine(states, 'JointBacks' if back else 'JointSeats')
     bpy.context.view_layer.update()
     assert_surface_clear(joint)
@@ -48,18 +66,18 @@ def stage(out, record, back=False):
                 if count:
                     raise ValueError(f'C5: {name} residue crosses {seat}: {count}')
     label = 'backs' if back else 'seats'
-    mod, settings = cloth(joint, reference, pins=pins, frames=2400)
+    mod, settings = cloth(joint, reference, pins=pins, frames=2400, quality=30 if back else 20)
     tune(joint, mod, settings, label)
     record[label+'_setup'] = {'parts': list(names), 'settings': settings,
                               'mesh_quality': mesh_quality(joint), 'pins': len(pins), 'C5_pass': True}
     checkpoint(out, record, label+'-prepared.blend')
-    result = solve(joint, mod, out, label, frames=2400)
+    result = solve(joint, mod, out, label, frames=2400, collapse_frames=600)
     record[label+'_simulation'] = result
     checkpoint(out, record, label+'-solved.blend')
     lows = []
     for obj, detail, driver, _ in states:
         restore_part(joint, obj)
-        detail['lip_curl'] = lip_curl(obj, detail['plan']['seed'])
+        detail['lip_curl'] = open_lips(obj, detail['plan']['seed'])
         detail.update(settings=settings, simulation=result)
         low, reduction = decimate(obj, 2000 if back else 2400, protect=.002, keep_factor=4)
         low.name = obj.name+'_GameContact'
@@ -102,6 +120,7 @@ def throw(out, record):
     checkpoint(out, record, 'throw-prepared.blend')
     result = solve(obj, mod, out, 'throw', frames=2400, collapse_frames=600)
     record['throw']['simulation'] = result
+    record['throw']['lip_curl'] = open_lips(obj, 9699)
     low, reduction = decimate(obj, 3200, protect=.002, keep_factor=4)
     low.name = 'Throw_GameContact'
     low['aged_export'] = False
