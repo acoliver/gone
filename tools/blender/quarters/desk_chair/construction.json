@@ -1,0 +1,175 @@
+{
+  "bounds_gltf": [
+    [
+      -0.25,
+      0,
+      -0.25
+    ],
+    [
+      0.25,
+      0.95,
+      0.25
+    ]
+  ],
+  "required_nodes": [
+    "Chair",
+    "Frame",
+    "SeatPan",
+    "SeatPad",
+    "BackPlate"
+  ],
+  "parents": {
+    "Frame": "Chair",
+    "SeatPan": "Frame",
+    "SeatPad": "Chair",
+    "BackPlate": "Frame"
+  },
+  "pivots_gltf": {
+    "Chair": [
+      0,
+      0,
+      0
+    ]
+  },
+  "materials": [
+    "PaintedSteel",
+    "BareSteel",
+    "DarkSteel",
+    "Fabric"
+  ],
+  "paint_color": [
+    0.08,
+    0.095,
+    0.07,
+    1
+  ],
+  "visible_details": [
+    "SeatPad",
+    "BackPlate"
+  ],
+  "hero_camera_native": [
+    -1.5,
+    -2.5,
+    1.6
+  ],
+  "hero_camera_gltf": [
+    -1.5,
+    1.6,
+    2.5
+  ],
+  "hero_target_native": [
+    0,
+    0,
+    0.475
+  ],
+  "triangle_limit": 6000,
+  "fit_notes": "The generated seat patch determines sitting height within an ergonomic .42-.46 m range. Its frame and back surfaces are faired to sparse manufactured panels and beams, preserving the four-legged silhouette and the separate thin seat pad. No textures or aging.",
+  "guide": {
+    "source_bounds_native": [
+      [
+        -0.8647765517234802,
+        -0.7640584111213684,
+        -0.999809980392456
+      ],
+      [
+        0.8616213798522949,
+        0.7839908599853516,
+        0.9928687214851379
+      ]
+    ],
+    "carcass_fitting_bounds_native": [
+      [
+        -0.8647765517234802,
+        -0.7640584111213684,
+        -0.999809980392456
+      ],
+      [
+        0.8616213798522949,
+        0.7839908599853516,
+        0.9928687214851379
+      ]
+    ],
+    "fitted_size_whd": [
+      0.5,
+      0.95,
+      0.5
+    ],
+    "sections": [
+      {
+        "height_m": 0.095,
+        "vertices": 1861,
+        "xy_min": [
+          -0.24319738149642944,
+          -0.24469149112701416
+        ],
+        "xy_max": [
+          0.24148985743522644,
+          0.24340586364269257
+        ]
+      },
+      {
+        "height_m": 0.2375,
+        "vertices": 1877,
+        "xy_min": [
+          -0.22901874780654907,
+          -0.2325764149427414
+        ],
+        "xy_max": [
+          0.2244878113269806,
+          0.22970052063465118
+        ]
+      },
+      {
+        "height_m": 0.475,
+        "vertices": 33771,
+        "xy_min": [
+          -0.22866560518741608,
+          -0.23738513886928558
+        ],
+        "xy_max": [
+          0.19301368296146393,
+          0.20336303114891052
+        ]
+      },
+      {
+        "height_m": 0.7124999999999999,
+        "vertices": 3636,
+        "xy_min": [
+          0.04341471567749977,
+          -0.04892020672559738
+        ],
+        "xy_max": [
+          0.22078734636306763,
+          0.21954967081546783
+        ]
+      },
+      {
+        "height_m": 0.855,
+        "vertices": 3058,
+        "xy_min": [
+          0.062179356813430786,
+          -0.03685078024864197
+        ],
+        "xy_max": [
+          0.2364749312400818,
+          0.2281486690044403
+        ]
+      }
+    ],
+    "mesh_triangles": 465572,
+    "seat_fit": {
+      "sample_count": 72031,
+      "guide_height_m": 0.469154417514801,
+      "fitted_seat_height_m": 0.46
+    },
+    "back_fit": {
+      "upper_samples": 7646,
+      "lower_samples": 6295,
+      "guide_dy_dz": 0.14339630128607156,
+      "fitted_dy_dz": 0.14339630128607156,
+      "continuous_plate_from_seat": true
+    },
+    "source": "tmp/props/desk_chair/guide.glb"
+  },
+  "id": "desk_chair"
+}

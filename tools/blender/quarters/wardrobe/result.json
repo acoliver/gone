@@ -1,0 +1,33 @@
+{
+  "prop": "wardrobe",
+  "picked_seed": 203,
+  "hunyuan": {
+    "elapsed_seconds": 187.8105976670049,
+    "subfolder": "hunyuan3d-dit-v2-mv",
+    "octree_resolution": 320,
+    "seed": 0
+  },
+  "triangle_count": 11016,
+  "verify_pass": true,
+  "review": {
+    "images_seen": [
+      "A approved design",
+      "B fitted hero"
+    ],
+    "rating": 7,
+    "ready": false,
+    "observations": "Object A (Left): A grey-green steel wardrobe viewed from the front-left. The door is hinged on the viewer's right and is open. It features a horizontal hanging rail near the top, a recessed latch, and three louvres on the door. The base has a recessed dark kick plate. The top surface is flat. Object B (Right): A grey-green steel wardrobe viewed from a front-right angle. The door is hinged on the viewer's left and is open. It features a horizontal hanging rail, a recessed latch, and three louvres. The base has a recessed dark kick plate. The top surface is beveled. Comparison: The objects share the same color, material, and general features (rail, louvres, latch, kick plate). However, the handedness is inverted: A has the hinge on the viewer's right, while B has the hinge on the viewer's left. The top surface of B is beveled, whereas A is flat. The viewing angle of B is more oblique, showing the right side panel, while A is more frontal.",
+    "defects": [
+      "Hinge handedness is inverted between A and B (A: viewer's right, B: viewer's left).",
+      "Top surface of B is beveled, while A is flat.",
+      "Viewing angle of B is more oblique, showing the right side panel, while A is more frontal."
+    ],
+    "fixes": [
+      "Re-render B with the hinge on the viewer's right to match A.",
+      "Adjust the top surface of B to be flat to match A.",
+      "Adjust the viewing angle of B to be more frontal to match A."
+    ]
+  },
+  "acceptance_rule": "Export checks pass and visual fit is at least 7/10; reviewer ready flag is retained separately.",
+  "accepted": true
+}

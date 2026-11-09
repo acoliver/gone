@@ -1365,3 +1365,35 @@ The exported asset is `assets/props/quarters/dress_uniform.glb`. It has 13,768 t
 Node and mesh names are `TunicBody`, `Collar`, `ShoulderBoard_L`, `ShoulderBoard_R`, `Placket`, `Buttons`, `CollarInsignia_L`, `CollarInsignia_R`, `RibbonBar`, `Medal` and `Hanger`. Materials are `NaturalFabric`, `Brass`, `RibbonFabric` and `BareSteel`.
 
 The neutral, light-grey comparison sheets are in `tmp/fit/tunic/sim/`: `compare-hero.png`, `turntable.png` and `compare-detail.png`. The hero uses a front-left orthographic view, and the turntable shows 30°, 120°, 210° and 300°. Four area lights illuminate the navy cloth, brass and steel from both sides. The PNG files were rendered and validated, but visual sign-off remains unavailable: the configured Qwen image endpoint refused connections, and the installed local alternative returned HTTP 500.
+
+## Batch 1
+
+Rigid furniture follows the pilot's approved image, full Hunyuan3D-2mv guide and clean fitted-part route. `prompts/batch1.json` uses the pilot style and tail, with four seeds per prop. The selected hero and its generation provenance live in `sheets/<prop>/`. `tools/blender/quarters/<prop>/` contains the editable source, build and verification scripts, measurements and visual verdict. No texture maps or aging have been applied. A fit is accepted when its export checks pass and its visual score reaches the requested 7/10. The reviewer's separate readiness flag and remaining findings are retained; a passing score does not mean every visual difference is resolved.
+
+Authoring uses Blender Z-up with front -Y; exports have +Y up and front +Z, with floor-centred asset roots. Dimensions are asset-local width, height and depth. Wall and desktop mounting heights belong to room placement. Wardrobe bounds refer to its closed carcass, excluding the parked leaf and mating hinge hardware; its open envelope is measured separately. The bed includes the separate layout headboard height and leaves its mattress platform exposed.
+
+Verification reads the exported GLB through trimesh. It checks the layout envelope within 10 mm, floor origin, named parts and material classes, positive closed shells, winding, inward rays across all six faces of each shell, capture-matched orthographic hero-camera first hits, UV triangle overlap and consistent physical texel density, triangle budget and byte-identical export from the saved source. Visibility is weighted by projected surface area. Eight positive and negative controls cover closure, winding, UV overlap and occlusion, including an off-axis case that distinguishes orthographic from perspective visibility. The wardrobe adds five-face carcass rays, a 0.5-degree door sweep and unobstructed hanging-space rays. Each `verify.json` records measured values and limits.
+
+| Prop | Picked seed | Hunyuan wall seconds | Triangles | Export checks | Fit rating | Status | Reviewer findings |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| wardrobe | 203 | 187.81 | 11,016 | Pass | 7/10 | Accepted fit | Hinge handedness is inverted between A and B (A: viewer's right, B: viewer's left).; Top surface of B is beveled, while A is flat.; Viewing angle of B is more oblique, showing the right side panel, while A is more frontal.; Reviewer marked not ready to show. |
+| bed | 216 | 177.60 | 3,512 | Pass | 9/10 | Accepted fit | In image B, the rivets on the headboard appear slightly irregular in spacing and size, potentially looking like noise rather than precise manufacturing details.; The 'folded panel edges' mentioned in the brief are not clearly distinct in B; the edges look flat rather than folded over. |
+| desk_chair | 244 | 175.21 | 2,032 | Pass | 8/10 | Accepted fit | The small bare steel rivets on the corner plates in B are less distinct than in A, potentially due to lighting or resolution.; The fabric texture on the seat pad in B appears slightly smoother and less detailed than in A. |
+| dining_table | 251 | 2004.80 | 3,728 | Pass | 8/10 | Accepted fit | None observed. |
+| dining_chair | 263 | 181.26 | 3,780 | Pass | 8/10 | Accepted fit | The seat pad in image-right appears slightly thicker or more pronounced than in image-left, though this may be due to lighting and angle.; The rivet heads on the seat frame are less visible in image-right compared to image-left, possibly due to the viewing angle. |
+
+### Rebuilding and checking
+
+For example, run Blender with `--background --factory-startup --python-exit-code 1 --python tools/blender/quarters/wardrobe/build.py -- --assemble` to fit from `tmp/props/wardrobe/guide.glb`. Each prop's default guide has the same scratch path pattern. Omit `--assemble` to export directly from the committed `.blend` without scratch inputs. Supply `--output tmp/props/wardrobe/reexport.glb` for an independent second export, then run the local Hunyuan Python on `tools/blender/quarters/wardrobe/verify.py --reexport tmp/props/wardrobe/reexport.glb`. Run `tools/blender/quarters/wardrobe/test_verify.py` for the eight gate controls. Other props use the wardrobe's shared construction and verification helpers. `construction.json` records cameras, guide landmarks and part hierarchies.
+
+### Bed platform
+
+The selected seed 216 shows thin rails, an exposed continuous plate and open legs. The fit keeps the layout frame top at .55 m and the separate headboard at 1.10 m, with the platform at .50 to .52 m to preserve that selected silhouette. This differs from the generation prompt's .40 m platform request, which the selected image did not reproduce. The platform range is a recorded fitting choice, separate from the layout height check; build and verification read the same value from `construction.json`.
+
+### Wardrobe placement
+
+The single right-hinged door is parked at 100 degrees in the asset used for both room states. At room origin (7.675, 0, 3.6), with Y rotation -90 degrees, its barrel axis lies at room X/Z (7.335, 4.1). The barrel axis is 15 mm forward of the plan's closed-carcass hinge line. The parked leaf and hardware extend outside the closed footprint. The generated hero is left-hinged; the fitted assembly and hidden guide are reflected in X with face winding corrected and positive node scales retained. `hero.png` remains the original generated image and `fit-reference.png` is the reflected fitting target. The hanging rail is faired to a 32 mm diameter at 1.82 m, below the opening head so it reads as separate hardware. The guide's measured rail median was 1.986 m. The 7/10 review reports inverse handedness, while the exported axis and room placement checks agree with the layout. That visual disagreement remains recorded; the model has not been flipped away from the required hinge. The small roof bevel follows the batch's clean-edge requirement.
+
+Not yet accepted: desk, console, bedside, view_screen, media_cabinet, lockers_over_bed.
+
+Batch sheets: [`sheets/batch1-heroes.png`](sheets/batch1-heroes.png) and [`sheets/batch1-fitted-turntables.png`](sheets/batch1-fitted-turntables.png). Unaccepted fits are labelled as unfinished work. Per-prop `fit-review.json` retains the reviewer observations.
