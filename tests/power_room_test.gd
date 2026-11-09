@@ -382,3 +382,68 @@ func test_rendered_power_shell_uses_pure_collision_recipe() -> void:
 func _bay(local: Vector2) -> Vector2:
 	var point := _bay_frame * Vector3(local.x, 0, local.y)
 	return Vector2(point.x, point.z)
+
+func test_generated_console_models_and_wall_mounts_are_present() -> void:
+	var room := PowerRoom.build(_awake_game())
+	var stations := room.get_children().filter(func(node: Node) -> bool: return node.name.begins_with("ConsoleStation"))
+	assert_int_equal(stations.size(), 6, "six stations use generated terminal models")
+	for station: Node3D in stations:
+		assert_true(station.has_node("TerminalModel"), "each station has the terminal body")
+		assert_true(station.has_node("KeyboardTray"), "each station has a separate keyboard tray")
+		assert_true(station.get_node("TerminalModel").find_child("ScreenSocket", true, false) != null, "terminal socket imports")
+		assert_vec3_equal(station.get_node("TerminalModel").position, Vector3.ZERO, "terminal back is on the station wall plane")
+		var roomward := Vector3(27, 0, -5.8) - station.position
+		assert_true(station.basis.z.dot(roomward) > 0.8, "terminal screen faces into the room")
+		assert_true(station.position.x >= PowerRoom.ROOM_START_X and station.position.x <= PowerRoom.ROOM_END_X, "station lies inside room x bounds")
+		assert_true(station.position.z >= PowerRoom.ROOM_END_Z and station.position.z <= PowerRoom.ROOM_START_Z, "station lies inside room z bounds")
+	var active_station: Node3D = stations[1]
+	assert_true(active_station.has_node("ScreenGlass"), "active console puts glass on the imported screen plane")
+	assert_true(active_station.has_node("ShipDisplay"), "active screen keeps the existing state display")
+	assert_true((active_station.get_node("ShipDisplay/TextSurface").mesh as QuadMesh).size.is_equal_approx(Vector2(0.54, 0.28)), "live text fits the terminal screen")
+	var busted_station: Node3D = stations[2]
+	assert_true(busted_station.get_node("ScreenGlass").material_override.albedo_texture != null, "busted screen uses procedural crack glass")
+	var mount := room.get_node("StatusPanelMount") as Node3D
+	assert_vec3_equal(mount.position, Vector3(27, 1.4, PowerRoom.ROOM_END_Z), "panel is centered on north wall with 2.10 m screen center")
+	assert_true(mount.has_node("StatusPanelModel"), "status panel shell loads")
+	assert_true(mount.has_node("StatusBoard"), "runtime status board is attached")
+	assert_float_in_range(mount.position.y + mount.get_node("StatusBoard").position.y, 2.10 - 0.003, 2.10 + 0.003, "status screen center is within 3 mm of the approved height")
+	assert_true(absf(mount.position.x - 24.5) > 1.9 and absf(mount.position.x - 29.5) > 1.9, "panel clears both north stations")
+	assert_true(absf(mount.position.z - PowerRoom.REGULAR_STATIONS_Z[1]) > 1.5, "panel clears the north ceiling fixture row")
+	assert_true(mount.position.distance_to(PowerRoom.door_act_center()) > 5.0, "panel clears the power doorway")
+	room.free()
+
+func test_status_board_has_one_running_system_and_native_naleya() -> void:
+	assert_int_equal(StatusBoardData.SYSTEMS.size(), 14, "board data carries the system list")
+	assert_int_equal(StatusBoardData.running_system_count(), 1, "only secondary power is running")
+	assert_true(StatusBoardData.SYSTEMS[1].perceived_es == "ENERGÍA SECUNDARIA", "running row is secondary power")
+	assert_true(StatusBoardData.SYSTEMS[12].native == "kelawa pasha lina", "native board includes the approved fire vocabulary")
+	for text: String in StatusBoardData.native_text():
+		for word: String in text.replace("[", " ").replace("]", " ").split(" ", false):
+			if word.is_valid_int():
+				continue
+			assert_false(Naleya.syllabify(word).is_empty(), "native board contains Naleya only: " + word)
+
+func test_terminal_collision_uses_keyboard_tray_depth() -> void:
+	for station: PowerRoom.ConsoleStation in PowerRoom.console_stations():
+		var hull := PowerRoom.console_solid(station)
+		var horizontal := Vector2(hull.size.x, hull.size.z)
+		assert_true(maxf(horizontal.x, horizontal.y) >= 1.005 - 0.0001, "terminal width is represented in the collider")
+		assert_true(minf(horizontal.x, horizontal.y) >= 0.90 - 0.0001, "keyboard tray depth is represented in the collider")
+
+func test_power_room_glbs_remain_within_the_prop_triangle_budget() -> void:
+	for path: String in [
+		"res://assets/props/terminal/terminal.glb",
+		"res://assets/props/terminal/keyboard-tray.glb",
+		"res://assets/props/status_panel/panel.glb",
+	]:
+		var model := load(path).instantiate() as Node3D
+		assert_true(_mesh_triangle_count(model) < 50000, "%s remains below the 50k triangle prop budget" % path)
+		model.free()
+
+func _mesh_triangle_count(node: Node) -> int:
+	var total := 0
+	if node is MeshInstance3D and node.mesh != null:
+		total += node.mesh.get_faces().size() / 3
+	for child: Node in node.get_children():
+		total += _mesh_triangle_count(child)
+	return total
