@@ -86,7 +86,7 @@ func test_all_sixteen_fixtures_keep_their_sources_in_glass_and_mount_to_the_ceil
 			var bounds := _bounds(fixture)
 			assert_float_equal(bounds.end.y, Vector3(0, 3.2, 0).y, "beam mounting plane is flush with the actual ceiling")
 			assert_false(fixture.get_parent().has_node("CeilingMount"), "no ceiling drop under a flush beam")
-			var light := fixture.get_parent().get_child(0) as OmniLight3D
+			var light := fixture.get_parent().get_child(0) as SpotLight3D
 			var glasses := _glasses(fixture)
 			assert_int_equal(glasses.size(), 1, "one imported emitter remains behind the grille")
 			var glass := glasses[0]

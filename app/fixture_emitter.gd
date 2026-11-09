@@ -94,17 +94,17 @@ static func pendant_plate(parent: Node3D, ceiling_y: float) -> void:
 	if not _pendant_mounts.has(height):
 		var tool := SurfaceTool.new()
 		tool.begin(Mesh.PRIMITIVE_TRIANGLES)
-		tool.append_from(mount.mesh, 0, mount.transform)
-		tool.append_from(HatchModel.box_mesh(Vector3(0.12, 0.012, 0.12)), 0, Transform3D(Basis.IDENTITY, Vector3(0, height - 0.006, 0)))
-		for x: float in [-0.04, 0.04]:
-			for z: float in [-0.04, 0.04]:
+		tool.append_from(HatchModel.cylinder(0.015, height), 0, Transform3D(Basis.IDENTITY, Vector3(0, height / 2, 0)))
+		tool.append_from(HatchModel.box_mesh(Vector3(0.15, 0.012, 0.15)), 0, Transform3D(Basis.IDENTITY, Vector3(0, height - 0.006, 0)))
+		for x: float in [-0.055, 0.055]:
+			for z: float in [-0.055, 0.055]:
 				tool.append_from(HatchModel.cylinder(0.006, 0.008), 0, Transform3D(Basis.IDENTITY, Vector3(x, height - 0.014, z)))
 		tool.index()
 		_pendant_mounts[height] = tool.commit()
 	mount.mesh = _pendant_mounts[height]
 	mount.transform = Transform3D.IDENTITY
 
-static func beam(light: OmniLight3D, lens: MeshInstance3D, _surface: Surfaces.SurfaceFrame) -> void:
+static func beam(light: SpotLight3D, lens: MeshInstance3D, _surface: Surfaces.SurfaceFrame) -> void:
 	var housing: MeshInstance3D
 	for piece: MeshInstance3D in lens.get_parent().find_children("*", "MeshInstance3D", true, false):
 		if piece != lens:
@@ -113,6 +113,9 @@ static func beam(light: OmniLight3D, lens: MeshInstance3D, _surface: Surfaces.Su
 	assert(housing != null, "beam has its imported metal housing")
 	# A flush recessed aperture emits from its glass, not from a drop below the ceiling.
 	seat(light, lens, housing)
+	light.basis = Surfaces.world_frame(light.get_parent()).basis.inverse() * Basis(Vector3.RIGHT, Vector3.FORWARD, Vector3.UP)
+	light.spot_angle = 90.0
+	light.spot_angle_attenuation = 0.0
 
 static func wall_source(light: OmniLight3D, surface: Surfaces.SurfaceFrame, circuit: String, material: StandardMaterial3D, yaw: float) -> void:
 	var lens := cage(light, light.light_cull_mask, surface, material, Basis(Vector3.UP, yaw))

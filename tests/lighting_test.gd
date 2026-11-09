@@ -20,7 +20,7 @@ func test_bay_handoff_matches_hallway_without_darkness() -> void:
 		assert_float_equal(bay.level() + bay.white_level(), 1.0, "no blackout in handoff")
 	_assert_output(bay, 0.0)
 	assert_float_equal(bay.white_level(), 1.0, "white settles lit")
-	for light: OmniLight3D in bay.white_lights():
+	for light: SpotLight3D in bay.white_lights():
 		assert_true(light.light_color == Lighting.REGULAR_WHITE, "regular white color")
 		assert_true(is_equal_approx(light.light_energy, Lighting.regular_energy()), "regular white energy")
 	assert_true(bay.white_lens_material().emission == Lighting.REGULAR_WHITE * Lighting.REGULAR_EMISSIVE, "white lenses glow")
@@ -87,11 +87,11 @@ func test_fixture_inventory_places_eight_red_lights_from_registry() -> void:
 		)
 	for fixture: Node3D in fixtures:
 		assert_true(fixture.position.y > 2.4, "fixtures sit outside the walking envelope")
-	assert_int_equal(_count_class(lighting, "OmniLight3D"), 28 + 6 * Pods.POD_COUNT, "eight architectural keys, eight pod-only keys, six regular strips, six warm fills and six status spill samples per pod")
-	for light: OmniLight3D in lighting.white_lights():
+	assert_int_equal(_count_class(lighting, "OmniLight3D"), 22 + 6 * Pods.POD_COUNT, "eight architectural keys, eight pod-only keys, six warm fills and six status spill samples per pod")
+	for light: SpotLight3D in lighting.white_lights():
 		assert_float_equal(light.light_energy, 0.0, "regular strips start dark")
 	assert_int_equal(_count_class(lighting, "DirectionalLight3D"), 0, "no directional light is authored")
-	assert_int_equal(_count_class(lighting, "SpotLight3D"), 0, "no spot light is authored")
+	assert_int_equal(_count_class(lighting, "SpotLight3D"), 6, "six downward regular beam sources")
 
 func test_lenses_share_rounded_glass_inside_weathered_cages() -> void:
 	var lighting := Lighting.build(Game.new(0))
@@ -276,7 +276,7 @@ func test_bay_reflections_cover_the_room_without_adding_light() -> void:
 	assert_int_equal(probe.cull_mask, 1 | Lighting.POD_STATUS_MASK, "probe captures bay architecture and the isolated pod receivers")
 	assert_false(probe.enable_shadows, "reflection capture needs no shadow pass")
 	assert_int_equal(probe.ambient_mode, ReflectionProbe.AMBIENT_DISABLED, "probe adds no ambient fill")
-	assert_int_equal(_count_class(lighting, "OmniLight3D"), 28 + 6 * Pods.POD_COUNT, "reflections add no lights beyond architectural keys, isolated pod keys, regular strips, fills and status spill")
+	assert_int_equal(_count_class(lighting, "OmniLight3D") + _count_class(lighting, "SpotLight3D"), 28 + 6 * Pods.POD_COUNT, "reflections add no lights beyond architectural keys, isolated pod keys, regular strips, fills and status spill")
 	assert_int_equal(_count_class(lighting, "CollisionShape3D"), 0, "reflections add no colliders")
 	lighting.free()
 

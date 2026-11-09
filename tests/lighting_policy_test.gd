@@ -37,14 +37,14 @@ func test_bay_hatch_identity_selects_its_profile_even_when_fixture_order_changes
 func test_bay_and_power_fill_coordinates_preserve_the_authored_six_stations() -> void:
 	var game := Game.new(91)
 	var bay_expected: Array[Vector3] = [
-		Vector3(-4, 2.35, -1.6), Vector3(-4, 2.35, 1.6),
-		Vector3(0, 2.35, -1.6), Vector3(0, 2.35, 1.6),
-		Vector3(4, 2.35, -1.6), Vector3(4, 2.35, 1.6),
+		Vector3(-4, 2.5, -1.6), Vector3(-4, 2.5, 1.6),
+		Vector3(0, 2.5, -1.6), Vector3(0, 2.5, 1.6),
+		Vector3(4, 2.5, -1.6), Vector3(4, 2.5, 1.6),
 	]
 	var power_expected: Array[Vector3] = [
-		Vector3(24, 2.35, -3.7), Vector3(24, 2.35, -7.7),
-		Vector3(27, 2.35, -3.7), Vector3(27, 2.35, -7.7),
-		Vector3(30, 2.35, -3.7), Vector3(30, 2.35, -7.7),
+		Vector3(24, 2.5, -3.7), Vector3(24, 2.5, -7.7),
+		Vector3(27, 2.5, -3.7), Vector3(27, 2.5, -7.7),
+		Vector3(30, 2.5, -3.7), Vector3(30, 2.5, -7.7),
 	]
 	var rooms: Array[Node3D] = [Lighting.build(game), PowerRoom.build(game)]
 	var positions := [game.layout.bay().emergency_fill_positions(), game.layout.power_room().emergency_fill_positions()]

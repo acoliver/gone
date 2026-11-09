@@ -87,6 +87,6 @@ func test_pod_keys_keep_main_profile_and_follow_the_existing_fade() -> void:
 		lighting.process_frame(Sim.LOGICAL_TICK_SECS)
 		for key: OmniLight3D in lighting._pod_keys:
 			assert_float_equal(key.light_energy, PackedFloat32Array([Lighting.FIXTURE_ENERGY * lighting.level()])[0], "pod keys use the existing emergency fade at native light-property precision")
-	for white: OmniLight3D in lighting.white_lights():
+	for white: SpotLight3D in lighting.white_lights():
 		assert_true((white.light_cull_mask & Lighting.POD_STATUS_MASK) != 0, "regular white still lights the pods")
 	lighting.free()

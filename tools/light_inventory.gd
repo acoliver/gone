@@ -145,13 +145,24 @@ func _rgb(c: Color) -> Array:
 
 func incident(light: Light3D, point: Vector3, normal: Vector3, mask: int) -> float:
 	if not _visible(light) or (light.light_cull_mask & mask) == 0: return 0.0
-	assert(light is OmniLight3D, "inventory currently contains only omni lights")
+	assert(light is OmniLight3D or light is SpotLight3D, "inventory requires a local light")
 	var delta := Surfaces.world_frame(light).origin - point
 	var d := delta.length()
-	var fade := maxf(1.0 - pow(d / light.omni_range, 4), 0.0)
+	var radius: float = light.omni_range if light is OmniLight3D else light.spot_range
+	var decay: float = light.omni_attenuation if light is OmniLight3D else light.spot_attenuation
+	var cone := 1.0
+	if light is SpotLight3D:
+		var axis := -Surfaces.world_frame(light).basis.z.normalized()
+		var cosine := axis.dot(-delta.normalized())
+		var boundary := cos(deg_to_rad(light.spot_angle))
+		if cosine <= boundary: return 0.0
+		if light.spot_angle_attenuation > 0.0:
+			var rim := maxf(0.0001, (1.0 - cosine) / (1.0 - boundary))
+			cone = 1.0 - pow(rim, 1.0 / light.spot_angle_attenuation)
+	var fade := maxf(1.0 - pow(d / radius, 4), 0.0)
 	var color := light.light_color.srgb_to_linear()
 	var luminance := color.r * 0.2126 + color.g * 0.7152 + color.b * 0.0722
-	return light.light_energy * luminance * fade * fade * pow(maxf(d, 0.0001), -light.omni_attenuation) * maxf(normal.dot(delta.normalized()), 0.0)
+	return light.light_energy * luminance * cone * fade * fade * pow(maxf(d, 0.0001), -decay) * maxf(normal.dot(delta.normalized()), 0.0)
 
 func _fixture_error(light: Light3D) -> String:
 	if light.has_meta(&"spark_emitter"): return _spark_error(light)

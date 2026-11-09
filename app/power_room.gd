@@ -120,7 +120,7 @@ var _lights: Array[OmniLight3D] = []
 var _fill_lights: Array[Lighting.EmergencyFill] = []
 var _lenses: Array[MeshInstance3D] = []
 var _lens_material: StandardMaterial3D = null
-var _white_lights: Array[OmniLight3D] = []
+var _white_lights: Array[SpotLight3D] = []
 var _white_lenses: Array[MeshInstance3D] = []
 var _white_lens_material: StandardMaterial3D = null
 var _generator_light: OmniLight3D = null
@@ -270,7 +270,7 @@ static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 	for station_x: float in REGULAR_STATIONS_X:
 		for station_z: float in REGULAR_STATIONS_Z:
 			room.add_child(room._white_fixture(station_x, station_z, white_level))
-			var fill := Lighting.emergency_fill(fill_positions[room._fill_lights.size()], level, Lighting.POWER_FILL_MASK)
+			var fill := Lighting.pendant_fill(fill_positions[room._fill_lights.size()], level, Lighting.POWER_FILL_MASK)
 			fill.name = "EmergencyFill%d" % room._fill_lights.size()
 			FixtureEmitter.suspended(fill, ROOM_CEILING, Surfaces.surface_frame(game.layout, ShipLayout.POWER_ID, &"CEILING"), "emergency", fill.lens_material)
 			room.add_child(fill)
@@ -448,10 +448,10 @@ func _white_fixture(station_x: float, station_z: float, level: float) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "PowerRegularStrip"
 	fixture.position = Vector3(station_x, REGULAR_MOUNT_Y, station_z)
-	var light := OmniLight3D.new()
+	var light := SpotLight3D.new()
 	light.light_color = Lighting.REGULAR_WHITE
 	light.light_energy = Lighting.regular_energy() * level
-	light.omni_range = Lighting.REGULAR_RANGE
+	light.spot_range = Lighting.REGULAR_RANGE
 	light.light_cull_mask = 1
 	light.shadow_enabled = false
 	light.position = Vector3(0.0, -0.12, 0.0)
@@ -505,7 +505,7 @@ func _apply_level(level: float) -> void:
 
 func _apply_white_level(level: float) -> void:
 	var energy: float = Lighting.regular_energy() * level
-	for light: OmniLight3D in _white_lights:
+	for light: SpotLight3D in _white_lights:
 		if light.light_energy != energy:
 			light.light_energy = energy
 	var emissive := Lighting.REGULAR_WHITE * Lighting.REGULAR_EMISSIVE * level
@@ -568,7 +568,7 @@ func lenses() -> Array[MeshInstance3D]:
 func lens_material() -> StandardMaterial3D:
 	return _lens_material
 
-func white_lights() -> Array[OmniLight3D]:
+func white_lights() -> Array[SpotLight3D]:
 	return _white_lights
 
 func white_lenses() -> Array[MeshInstance3D]:

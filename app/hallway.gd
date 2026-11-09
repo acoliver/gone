@@ -92,7 +92,7 @@ var _fill_lights: Array[Lighting.EmergencyFill] = []
 var _lenses: Array[MeshInstance3D] = []
 var _lens_material: StandardMaterial3D = null
 var _white_fade: Intensity.FixtureFade = null
-var _white_lights: Array[OmniLight3D] = []
+var _white_lights: Array[SpotLight3D] = []
 var _white_end_fill: Lighting.RegularEndFill
 var _white_lenses: Array[MeshInstance3D] = []
 var _white_lens_material: StandardMaterial3D = null
@@ -210,7 +210,7 @@ static func build(game: Game) -> Hallway:
 		hallway.add_child(fixture)
 	var section := game.layout.section(&"D14-S-041")
 	for position: Vector3 in section.emergency_fill_positions():
-		var fill := Lighting.emergency_fill(position, level, Lighting.HALL_FILL_MASK)
+		var fill := Lighting.pendant_fill(position, level, Lighting.HALL_FILL_MASK)
 		fill.name = "EmergencyFill%d" % hallway._fill_lights.size()
 		FixtureEmitter.suspended(fill, HALL_CEILING_HEIGHT, Surfaces.surface_frame(game.layout, &"D14-S-041", &"CEILING"), "emergency", fill.lens_material)
 		hallway.add_child(fill)
@@ -257,10 +257,10 @@ func _white_fixture(frame: Transform3D, level: float) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "HallRegularStrip"
 	fixture.transform = frame
-	var light := OmniLight3D.new()
+	var light := SpotLight3D.new()
 	light.light_color = Lighting.REGULAR_WHITE
 	light.light_energy = Lighting.regular_energy() * level
-	light.omni_range = Lighting.REGULAR_RANGE
+	light.spot_range = Lighting.REGULAR_RANGE
 	light.light_cull_mask = 1
 	light.shadow_enabled = false
 	light.position = Vector3(0.0, -0.12, 0.0)
@@ -354,7 +354,7 @@ func _apply_level(level: float) -> void:
 func _apply_white_level(level: float) -> void:
 	var energy: float = Lighting.regular_energy() * level
 	_white_end_fill.apply_level(level)
-	for light: OmniLight3D in _white_lights:
+	for light: SpotLight3D in _white_lights:
 		if light.light_energy != energy:
 			light.light_energy = energy
 	var emissive := Lighting.REGULAR_WHITE * Lighting.REGULAR_EMISSIVE * level
@@ -382,7 +382,7 @@ func lenses() -> Array[MeshInstance3D]:
 func lens_material() -> StandardMaterial3D:
 	return _lens_material
 
-func white_lights() -> Array[OmniLight3D]:
+func white_lights() -> Array[SpotLight3D]:
 	return _white_lights
 
 func white_lenses() -> Array[MeshInstance3D]:

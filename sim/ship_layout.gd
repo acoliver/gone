@@ -23,7 +23,7 @@ const BAY_ID: StringName = &"D14-BAY"
 const POWER_ID: StringName = &"D14-POWER"
 const BAY_DOOR_ID: StringName = &"D14-BAY-DOOR"
 const BAY_HATCH_KEY_ID: StringName = &"D14-BAY-HATCH-KEY"
-const EMERGENCY_FILL_CEILING_DROP: float = 0.77
+const EMERGENCY_FILL_CEILING_DROP: float = 0.62
 const POWER_DOOR_ID: StringName = &"D14-POWER-DOOR"
 const POWER_CENTER_X: float = 27.0
 const POWER_NEAR_Z: float = -(CORRIDOR_WIDTH / 2.0 + WALL)
@@ -183,7 +183,7 @@ class SectionSpec:
 		var positions: Array[Vector3] = []
 		if _services.light_role == ArchitecturalLightRole.LOCAL: return positions
 		for index: int in range(7):
-			positions.append(Vector3(_bounds.position.x + 1.5 + index * 3.0, _bounds.end.y - 0.85, _bounds.get_center().z))
+			positions.append(Vector3(_bounds.position.x + 1.5 + index * 3.0, _bounds.end.y - 0.08 - ShipLayout.EMERGENCY_FILL_CEILING_DROP, _bounds.get_center().z))
 		return positions
 	func emergency_end_fill_position() -> Vector3:
 		return Vector3(_bounds.end.x - 0.9, _bounds.position.y + 1.7, _bounds.get_center().z + 1.3)

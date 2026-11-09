@@ -43,7 +43,7 @@ func test_regular_end_fill_policy_belongs_to_lighting() -> void:
 	var fill := Lighting.regular_end_fill(origin, 0.5)
 	assert_true(fill.position == origin, "layout supplies the fill placement")
 	assert_true(fill.light_color == Lighting.REGULAR_WHITE, "regular palette")
-	assert_float_equal(fill.light_energy, PackedFloat32Array([Lighting.regular_energy() * 0.12 * 0.5])[0], "unchanged regular share and native float32 energy")
+	assert_float_equal(fill.light_energy, PackedFloat32Array([Lighting.regular_energy() * 0.24 * 0.5])[0], "housed end practical retains the hall total with downward beams")
 	assert_float_equal(fill.omni_range, Lighting.EMERGENCY_FILL_RANGE, "unchanged fill range")
 	assert_int_equal(fill.light_cull_mask, Lighting.HALL_FILL_MASK, "hall-only fill")
 	assert_false(fill.shadow_enabled, "no fill shadows")

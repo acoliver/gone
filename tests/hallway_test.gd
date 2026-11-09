@@ -223,7 +223,7 @@ func test_fixtures_hold_zero_until_the_switch_flips() -> void:
 	assert_int_equal(Hallway.REGULAR_STATIONS_X.size(), 4, "a regular strip stands at every fixture station")
 	assert_int_equal(hallway.white_lights().size(), 4, "every station's strip lights the corridor")
 	assert_int_equal(hallway.white_lenses().size(), 4, "every strip carries its lens")
-	for light: OmniLight3D in hallway.white_lights():
+	for light: SpotLight3D in hallway.white_lights():
 		assert_float_in_range(light.light_energy, -1e-4, 1e-4, "the regular strips hold dark through the red flip")
 	assert_float_in_range(hallway.white_level(), -1e-4, 1e-4, "the strips' fade holds zero")
 	assert_float_in_range(hallway.white_lens_material().emission.r, -1e-4, 1e-4, "the strip lenses hold no emission before activation")

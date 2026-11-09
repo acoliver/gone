@@ -64,6 +64,12 @@ class EmergencyFill:
 		light_energy = Lighting.emergency_energy() * energy_share * level
 		lens_material.emission = light_color * Lighting.REGULAR_EMISSIVE * level
 
+static func pendant_fill(origin: Vector3, level: float, room_mask: int, share: float = EMERGENCY_FILL_SHARE) -> EmergencyFill:
+	var fill := emergency_fill(origin, level, room_mask, share)
+	# The shorter drop would lose floor reach with the old four-metre cutoff.
+	fill.omni_range = EMERGENCY_FILL_RANGE + 0.20
+	return fill
+
 static func emergency_fill(origin: Vector3, level: float, room_mask: int, share: float = EMERGENCY_FILL_SHARE, color: Color = EMERGENCY_FILL_COLOR) -> EmergencyFill:
 	var fill := EmergencyFill.new()
 	fill.name = "EmergencyFill"
@@ -84,7 +90,7 @@ const REGULAR_RANGE: float = 7.0
 ## What share of an emergency fixture's throw a regular strip holds
 ## once lit: the "dim but regular" brief.
 const REGULAR_DIM_SHARE: float = 0.55
-const REGULAR_END_FILL_SHARE: float = 0.12
+const REGULAR_END_FILL_SHARE: float = 0.24
 
 class RegularEndFill:
 	extends OmniLight3D
@@ -125,7 +131,7 @@ const EXPOSURE_MULTIPLIER: float = 2.0
 
 var _game: Game
 var _white_fade: Intensity.FixtureFade
-var _white_lights: Array[OmniLight3D] = []
+var _white_lights: Array[SpotLight3D] = []
 var _white_lens_material: StandardMaterial3D
 var _fade: Intensity.FixtureFade = null
 var _fixtures: Array[Node3D] = []
@@ -171,7 +177,7 @@ static func build(game: Game) -> Lighting:
 	var fill_positions := game.layout.bay().emergency_fill_positions()
 	for frame: Transform3D in game.layout.bay().regular_light_frames():
 		lighting.add_child(lighting._white_fixture(frame))
-		var fill := emergency_fill(fill_positions[lighting._fill_lights.size()], level, BAY_FILL_MASK, EMERGENCY_BAY_FILL_SHARE)
+		var fill := pendant_fill(fill_positions[lighting._fill_lights.size()], level, BAY_FILL_MASK, EMERGENCY_BAY_FILL_SHARE)
 		fill.name = "EmergencyFill%d" % lighting._fill_lights.size()
 		FixtureEmitter.suspended(fill, Pods.ROOM_CEILING_HEIGHT, Surfaces.surface_frame(game.layout, ShipLayout.BAY_ID, &"CEILING"), "emergency", fill.lens_material)
 		lighting.add_child(fill)
@@ -357,9 +363,9 @@ func _white_fixture(frame: Transform3D) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "BayRegularStrip"
 	fixture.transform = frame
-	var light := OmniLight3D.new()
+	var light := SpotLight3D.new()
 	light.light_color = REGULAR_WHITE
-	light.omni_range = REGULAR_RANGE
+	light.spot_range = REGULAR_RANGE
 	light.light_cull_mask = 1 | POD_STATUS_MASK
 	light.shadow_enabled = false
 	light.position.y = -0.12
@@ -370,14 +376,14 @@ func _white_fixture(frame: Transform3D) -> Node3D:
 	return fixture
 
 func _apply_white_level(level: float) -> void:
-	for light: OmniLight3D in _white_lights:
+	for light: SpotLight3D in _white_lights:
 		light.light_energy = regular_energy() * level
 	_white_lens_material.emission = REGULAR_WHITE * REGULAR_EMISSIVE * level
 
 func white_level() -> float:
 	return _white_fade.intensity()
 
-func white_lights() -> Array[OmniLight3D]:
+func white_lights() -> Array[SpotLight3D]:
 	return _white_lights
 
 func white_lens_material() -> StandardMaterial3D:

@@ -59,7 +59,7 @@ func test_hall_fill_placements_are_layout_owned_and_cover_both_ends() -> void:
 	assert_int_equal(fills.size(), 8, "seven neutral stations plus the warm end bounce")
 	if fills.size() == 8:
 		for index: int in range(7):
-			assert_true(fills[index].position.is_equal_approx(Vector3(7.5 + index * 3.0, 2.35, 0)), "neutral fill station")
+			assert_true(fills[index].position.is_equal_approx(Vector3(7.5 + index * 3.0, 2.5, 0)), "neutral fill station")
 		assert_true(fills[7].position.is_equal_approx(Vector3(29.1, 1.7, 1.3)), "end bounce in front of the hatch")
 	hall.free()
 

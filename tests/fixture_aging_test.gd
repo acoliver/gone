@@ -129,3 +129,27 @@ func test_spark_source_is_at_the_visible_arc_without_a_lamp_cage() -> void:
 	assert_false(arc.visible, "arc extinguishes with the flash")
 	assert_float_equal(light.light_energy, 0, "light extinguishes with the arc")
 	hazards.free()
+
+func test_pendants_have_short_thirty_millimetre_conduits_and_fifteen_centimetre_plates() -> void:
+	for room: Node3D in [Lighting.build(Game.new(91)), Hallway.build(Game.new(91)), PowerRoom.build(Game.new(91))]:
+		for light: OmniLight3D in room.find_children("EmergencyFill*", "OmniLight3D", true, false):
+			if light.name == "EmergencyFillEnd": continue
+			assert_float_equal(light.position.y, Vector3(0, 2.5, 0).y, "shorten the visible conduit between housing and plate")
+			var steel: MeshInstance3D = light.get_node("Steel")
+			var mount: AABB = steel.get_meta(&"mount_bounds")
+			assert_close(Vector3(mount.size.x, 0, mount.size.z), Vector3(0.15, 0, 0.15), "150 mm plate")
+			var cross_section := AABB()
+			var first := true
+			var faces := steel.mesh.get_faces()
+			var plane_y: float = mount.end.y - 0.1
+			for index: int in range(0, faces.size(), 3):
+				for edge: int in range(3):
+					var a := steel.transform * faces[index + edge]
+					var b := steel.transform * faces[index + (edge + 1) % 3]
+					if (a.y - plane_y) * (b.y - plane_y) >= 0.0: continue
+					var point := a.lerp(b, (plane_y - a.y) / (b.y - a.y))
+					cross_section = AABB(point, Vector3.ZERO) if first else cross_section.expand(point)
+					first = false
+			assert_false(first, "conduit joins the plate continuously")
+			assert_close(Vector3(cross_section.size.x, 0, cross_section.size.z), Vector3(0.03, 0, 0.03), "30 mm round conduit instead of a thin connection")
+		room.free()
