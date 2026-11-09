@@ -57,7 +57,9 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 	scene.hatch = Hatch.build(game.layout, 1 | Lighting.HALL_FILL_MASK, 1 | Lighting.BAY_FILL_MASK)
 	scene.hatch.name = "Hatch"
 	scene.bay_root.add_child(scene.hatch)
-	var environment := scene.lighting.get_node("RoomEnvironment")
+	var environment := scene.lighting.get_node("RoomEnvironment") as WorldEnvironment
+	# Enable local probe diffuse evaluation while keeping global ambient at zero.
+	environment.environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	scene.lighting.remove_child(environment)
 	parent.add_child(environment)
 	scene.hallway = Hallway.build(game)

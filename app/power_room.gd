@@ -285,6 +285,7 @@ static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 	var door_mask := 1 | Lighting.HALL_FILL_MASK | Lighting.POWER_FILL_MASK
 	room._door_leaf.layers = door_mask
 	Lighting.mesh_layers(door_frame, door_mask)
+	room.add_child(RoomReturn.build(game.layout.power_room().bounds(), room._lights, room._white_lights, 1 | Lighting.POWER_FILL_MASK))
 	return room
 
 ## One console station: spine, screen, shelf, and the blank colored

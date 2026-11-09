@@ -227,6 +227,7 @@ static func build(game: Game) -> Hallway:
 	hallway._white_end_fill = Lighting.regular_end_fill(section.emergency_end_fill_position(), white_level)
 	hallway.add_child(hallway._white_end_fill)
 	Lighting.mesh_layers(hallway, Lighting.architectural_mask(game.layout, section.id()))
+	hallway.add_child(RoomReturn.build(game.layout.section(&"D14-S-041").bounds(), hallway._lights, hallway._white_lights, 1 | Lighting.HALL_FILL_MASK))
 	return hallway
 
 ## The fixture group mirrors the stasis bay's: a pair at every station

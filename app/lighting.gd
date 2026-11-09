@@ -180,6 +180,7 @@ static func build(game: Game) -> Lighting:
 	lighting.add_child(lighting._reflection_probe)
 	lighting._reflected_levels = Vector2(level, white_level)
 	lighting.add_child(_world_environment())
+	lighting.add_child(RoomReturn.build(game.layout.bay().local_bounds(), lighting._lights, lighting._white_lights, 1 | BAY_FILL_MASK))
 	return lighting
 
 static func switched_key(role: ShipLayout.EmergencyLightRole, level: float) -> OmniLight3D:
