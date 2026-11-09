@@ -55,6 +55,13 @@ def move_fringe(sheet, delta):
                     mapped = barycentric_transform(p, *[Vector(v) for v in old], *[Vector(v) for v in new])
                     height = float((np.array(p)-old[0]) @ old_normal)
                     obj.data.vertices[i].co = inverse @ (mapped+Vector(normal)*height)
+                if obj.name == 'Seamallowance':
+                    root_points = [obj.data.vertices[i].co for i in roots]
+                    centre = sum(root_points, Vector())/len(root_points)
+                    tangent = max((b-a for a in root_points for b in root_points), key=lambda v: v.length).normalized()
+                    for i in ids:
+                        vertex = obj.data.vertices[i]
+                        vertex.co += tangent*((vertex.co-centre).dot(tangent)*.25)
                 changes += 1
         obj.data.update()
         if changes:

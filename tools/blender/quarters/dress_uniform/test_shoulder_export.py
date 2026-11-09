@@ -92,7 +92,10 @@ def verify(out, baseline):
     assert json.loads((out/'attachment-audit.json').read_text())['all_bases_within_2mm']
     assert (out/'candidate.glb').read_bytes() == (out/'repeat.glb').read_bytes()
     bounds = trimesh.util.concatenate(list(after.values())).bounds
-    assert np.ptp(bounds[:, 1]) > .94 and np.ptp(bounds[:, 2]) < .30, bounds
+    previous_bounds = trimesh.util.concatenate(list(before.values())).bounds
+    np.testing.assert_array_equal(bounds, previous_bounds)
+    spans = np.ptp(bounds, axis=0)
+    assert spans[1] > .94 and spans[1] > max(spans[0], spans[2]), bounds
     print('PASS: shoulder-only geometry; exact names/pivots, colour/alpha PNG bytes and palette; unchanged thresholds; G4/G5/G30/seating; Y-up and repeat bytes')
 
 

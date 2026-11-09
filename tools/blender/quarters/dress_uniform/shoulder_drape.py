@@ -148,9 +148,12 @@ def drape(body, sheet, sample):
     region = smoothstep((before[:, 0]-.14)/.03)*smoothstep((before[:, 2]+.35)/.05)
     delta *= (region*smoothstep((clearance-.008)/.010))[:, None]
     seam = body.vertex_groups['Seam allowance'].index
-    retained_armhole = np.array([any(g.group == seam and g.weight >= .5 for g in vertex.groups)
-                                for vertex in body.data.vertices])
-    delta[retained_armhole] = 0
+    seam_vertices = np.array([any(g.group == seam and g.weight >= .5 for g in vertex.groups)
+                              for vertex in body.data.vertices])
+    armhole = (np.abs(pattern[:, 0]-.46) < .003) | (np.abs(pattern[:, 0]-.97) < .003) | (pattern[:, 0] > 1.)
+    roots = before[seam_vertices & armhole]
+    distance = np.linalg.norm(before[:, None]-roots[None, :], axis=2).min(1)
+    delta *= smoothstep((distance-.002)/.018)[:, None]
     if not np.isfinite(delta).all():
         raise ValueError('Rest-pattern drape produced nonfinite motion')
     for vertex, change in zip(body.data.vertices, delta):
