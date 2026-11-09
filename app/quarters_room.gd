@@ -7,6 +7,7 @@ var screens: Array[MeshInstance3D] = []
 var screen_labels: Array[Label3D] = []
 var corruption: Node3D
 var white_lights: Array[OmniLight3D] = []
+var entrance_bounces: Array[OmniLight3D] = []
 var white_finish: StandardMaterial3D
 var white_fade: Intensity.FixtureFade
 var _game: Game
@@ -74,6 +75,18 @@ func _screen(state: Node3D) -> void:
 			corruption.add_child(block)
 
 func _lights() -> void:
+	# Both entrance-side storage banks face away from the ceiling keys.
+	# Local diffuse bounce lights their solid panels without ambient or D14 changes.
+	for x: float in [0.9, 7.1]:
+		var bounce := OmniLight3D.new()
+		bounce.name = "EntranceStorageBounce" if x < 4 else "EntranceStorageBounceRight"
+		bounce.position = QuartersLayout.to_world(Vector3(x, 2.6, 0.05))
+		bounce.light_color = Lighting.REGULAR_WHITE
+		bounce.omni_range = 3.2
+		bounce.light_cull_mask = Lighting.QUARTERS_MASK
+		bounce.light_specular = 0.0
+		add_child(bounce)
+		entrance_bounces.append(bounce)
 	white_fade = Intensity.FixtureFade.holding(1.0 if _game.power_active else 0.0).fade
 	white_finish = CeilingFixture.glass_material(1.0 if _game.power_active else 0.0)
 	var warm := _lens(Color(1.0, 0.69, 0.38))
@@ -124,6 +137,7 @@ func process_frame() -> void:
 	if white_fade.target() != white: white_fade.retarget(white, 30)
 	white_fade.tick()
 	var level := white_fade.intensity()
+	for bounce: OmniLight3D in entrance_bounces: bounce.light_energy = Lighting.regular_energy() * 0.35 * level
 	for lamp: OmniLight3D in white_lights: lamp.light_energy = Lighting.regular_energy() * level
 	white_finish.emission = Lighting.REGULAR_WHITE * Lighting.REGULAR_EMISSIVE * level
 	var text := _wrapped(_game.quarters.screen_text())
