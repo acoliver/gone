@@ -2,12 +2,12 @@
 import numpy as np
 
 
-def tuft_sections(root, direction, sideways, normal, width, length, rows=4):
+def tuft_sections(root, direction, sideways, normal, width, length, rows=4, curl_strength=1.):
     t = np.linspace(0., 1., rows)
     root, direction, sideways, normal = map(np.asarray, (root, direction, sideways, normal))
     path = root+t[:, None]*direction*length
-    path += np.sin(t*np.pi*.85)[:, None]*normal*length*.28
-    path += (1-np.cos(t*np.pi*.75))[:, None]*sideways*length*.16
+    path += np.sin(t*np.pi*.85)[:, None]*normal*length*.28*curl_strength
+    path += (1-np.cos(t*np.pi*.75))[:, None]*sideways*length*.16*curl_strength
     breadth = width*(1-.55*t)
     return np.stack([path-sideways*breadth[:, None]/2,
                      path+sideways*breadth[:, None]/2], axis=1)

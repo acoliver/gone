@@ -40,9 +40,10 @@ def wool_opacity(obj, out, size=2048, seed=9521):
     from tear_boundaries import labelled_samples, lip_opacity, retained_binding
     stations = None
     if obj.get('pass12_wear'):
-        from lip_arclength import labelled_station_samples
+        from lip_arclength import labelled_station_samples, WAVELENGTHS_M
         samples, erodible, stations, lengths = labelled_station_samples(obj)
         report['physical_boundary_lengths_m'] = lengths
+        report['physical_lip_noise_wavelengths_m'] = list(WAVELENGTHS_M)
         report['noise_parameter'] = 'physical arclength on each connected lip, including the allowance'
     else:
         samples, erodible = labelled_samples(obj)
@@ -107,6 +108,8 @@ def wool_opacity(obj, out, size=2048, seed=9521):
             else:
                 from wear_pass10 import body_wear
             wear = body_wear(pattern)
+            if obj.get('pass12_wear'):
+                wear['hole'][:] = False
             thinning[lo[1]:hi[1]+1, lo[0]:hi[0]+1][inside] = wear['thinning']
             if fading is not None:
                 fading[lo[1]:hi[1]+1, lo[0]:hi[0]+1][inside] = wear['fade']
@@ -152,7 +155,8 @@ def wool_opacity(obj, out, size=2048, seed=9521):
         obj['pass10_thinning_image'] = wear_image.name
         report['stress_wear'] = dict(through_texels=worn_texels, lost_area_m2=float(worn_area),
                                      thinning_texels=int((thinning > .1).sum()),
-                                     holes='seven isolated fold/seam-aligned losses; no biological clusters')
+                                     holes='surface aging only on the broad torso; structural losses follow the shoulder/armhole/hem plan'
+                                     if obj.get('pass12_wear') else 'seven isolated fold/seam-aligned losses; no biological clusters')
     density = []
     for triangle in obj.data.loop_triangles:
         pattern = np.array([pattern_uv[i].uv[:] for i in triangle.loops])
@@ -166,11 +170,12 @@ def wool_opacity(obj, out, size=2048, seed=9521):
         jacobian = np.linalg.solve(edges, np.array([world[1]-world[0], world[2]-world[0]]))
         density.extend(np.linalg.svd(jacobian, compute_uv=False).tolist())
     report['hem_texel_m_quantiles'] = np.quantile(density, [0., .5, .95, 1.]).tolist()
-    report.update(distance_method='per-texel nearest physical lip, sampled at 0.25 mm; no vertex-distance interpolation',
+    report.update(distance_method='per-texel nearest physical lip, sampled at '+('0.20' if stations is not None else '0.25')+' mm; no vertex-distance interpolation',
                   grain_paths_m=[p.tolist() for p in paths], pattern_scale_m=pattern_scale.tolist(),
                   branch_length_m=.018,
                   crack_width_m=.0013, crack_width_range_m=[.0003, .0027], changed_texels=changed,
-                  erosion_method='boundary-station noise with monotone inward opacity, 0.15 to 2.85 mm',
+                  erosion_method='physical-arclength noise with monotone inward opacity, 0.15 to 6 mm' if stations is not None
+                  else 'boundary-station noise with monotone inward opacity, 0.15 to 2.85 mm',
                   retained_crest='release labels plus the collar-side binding (abs x <160 mm, z >-190 mm); no grain perforations',
                   missed_lip_texels_by_vertex_interpolation=missed_lip_texels,
                   maximum_distance_interpolation_error_m=maximum_distance_error,

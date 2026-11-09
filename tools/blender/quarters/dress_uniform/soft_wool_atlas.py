@@ -7,15 +7,15 @@ def bundle_alpha(seed, fine=False):
     alpha = np.zeros((1024, 1024), np.float32)
     for variant in range(8):
         tile = alpha[variant*128:(variant+1)*128]
-        strands = 24 if fine else 14
+        strands = 18 if fine else 14
         for index in range(strands):
-            root = 70+(index+.5)*884/strands+rng.uniform(-12, 12)
+            root = (220+(index+.5)*584/strands if fine else 70+(index+.5)*884/strands)+rng.uniform(-12, 12)
             length = rng.uniform(64, 116)
-            curl = rng.uniform(24, 54)*rng.choice([-1, 1])
+            curl = rng.uniform(140 if fine else 24, 240 if fine else 54)*rng.choice([-1, 1])
             t = np.linspace(0, 1, 24)
             x = root+curl*np.sin(t*np.pi*1.35)*t
             y = t*length+np.sin(t*np.pi*1.6)*9
-            radius = rng.uniform(3, 6) if fine else rng.uniform(7, 12)
+            radius = rng.uniform(2.5, 4) if fine else rng.uniform(7, 12)
             radius *= 1-.45*t
             for i in range(len(t)-1):
                 a, b = np.array([x[i], y[i]]), np.array([x[i+1], y[i+1]])

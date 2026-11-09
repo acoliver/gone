@@ -143,7 +143,8 @@ def spaced_cards(obj, mat, seed, wool, blockers, group_name=None, tuft_mat=None)
                             if curled:
                                 from soft_tuft import tuft_sections
                                 sections = tuft_sections(root, tail_direction, sideways, side_normal, width, length,
-                                                         rows=3 if obj.get('pass12_wear') else 4)
+                                                         rows=3 if obj.get('pass12_wear') else 4,
+                                                         curl_strength=1.6 if obj.get('pass12_wear') else 1.)
                             else:
                                 sections = np.array([[root-sideways*width/2, root+sideways*width/2],
                                                      [tip-sideways*width/2, tip+sideways*width/2]])

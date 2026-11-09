@@ -1,6 +1,8 @@
 """Physical boundary stations shared by the tunic's sheet and connected allowance."""
 import numpy as np
 
+WAVELENGTHS_M = (.0022, .0011, .00055, .000275)
+
 
 def chain_stations(points):
     points = np.asarray(points)
@@ -13,7 +15,7 @@ def erosion_depth(stations, seed):
     coordinates = np.column_stack([stations, np.zeros((len(stations), 2))])
     noise = sum(weight*value_noise(coordinates, wavelength, seed+octave)
                 for octave, (weight, wavelength) in enumerate(zip(
-                    [.48, .27, .16, .09], [.0038, .0019, .00095, .00048])))
+                    [.48, .27, .16, .09], WAVELENGTHS_M)))
     return np.clip(.0027+.0068*noise, .00015, .006)
 
 

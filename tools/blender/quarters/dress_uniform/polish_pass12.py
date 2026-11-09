@@ -25,6 +25,9 @@ def open_shoulder(body):
     patch = body.vertex_groups['DetailPatch'].index
     protected = np.array([any(g.group == patch and g.weight > .1 for g in vertex.groups)
                           for vertex in body.data.vertices])
+    board = bpy.data.objects['ShoulderBoard_L']
+    support_back = max((board.matrix_world @ vertex.co).y for vertex in board.data.vertices)+.002
+    protected &= points[:, 1] <= support_back
     fade[protected] = 0.
     for vertex, weight in zip(body.data.vertices, fade):
         vertex.co.y += .008*weight
@@ -35,7 +38,7 @@ def open_shoulder(body):
 
 
 def prepare(base, out, shoulder=True, shape=False):
-    from bake_down import bake, decimate, material_maps
+    from bake_down import bake, material_maps
     from cloth_metrics import lip_lift
     bpy.ops.wm.open_mainfile(filepath=str(base/'baked.blend'))
     record = json.loads(bpy.context.scene['tunic5_record'])
@@ -51,6 +54,9 @@ def prepare(base, out, shoulder=True, shape=False):
         report['hem'] = torn_hem(body)
         report['heap'] = scatter_debris(record, report['hem']['removed_area_m2'])
         body['pass12_full_fringe'] = True
+    patch = body.vertex_groups['DetailPatch'].index
+    support = [v.index for v in body.data.vertices if any(g.group == patch and g.weight > 0 for g in v.groups)]
+    report['protected_fitting_support_vertices'] = len(support)
     dense = bpy.data.objects['TunicBody_Dense']
     # The retained game sheet is the reference for this finishing pass.
     bpy.data.objects.remove(dense, do_unlink=True)
@@ -63,7 +69,8 @@ def prepare(base, out, shoulder=True, shape=False):
     dense.hide_set(True)
     report['allowance_faces'] = sum(p.material_index != 0 for p in body.data.polygons)
     if shape:
-        low, reduction = decimate(body, 7100, protect=.004, keep_factor=1000)
+        from reduce_pass12 import reduce_body
+        low, reduction = reduce_body(body, 7100)
         bpy.data.objects.remove(body, do_unlink=True)
         low.name = 'TunicBody'
         body = low

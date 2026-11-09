@@ -7,7 +7,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from aging_support import ROOT
 from lip_arclength import labelled_station_samples, erosion_depth
 
-bpy.ops.wm.open_mainfile(filepath=str(ROOT/'tmp/age/tunic12/lips/baked.blend'))
+import argparse
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--out', type=Path, default=ROOT/'tmp/age/tunic12/lips')
+args = parser.parse_args(sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else [])
+bpy.ops.wm.open_mainfile(filepath=str(args.out/'baked.blend'))
 body = bpy.data.objects['TunicBody']
 body.data.calc_loop_triangles()
 uv = body.data.uv_layers['BakeUV'].data

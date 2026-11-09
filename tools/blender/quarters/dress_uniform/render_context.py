@@ -80,10 +80,21 @@ def setup(asset):
     return scene, camera, origin, rotation
 
 
-def render_context(asset, out, state):
+def render_context(asset, out, state, body_base=None, views=None):
     scene, camera, origin, rotation = setup(asset)
+    if body_base:
+        image = bpy.data.images.load(str(body_base.resolve()), check_existing=False)
+        for obj in scene.objects:
+            if obj.type != 'MESH' or not obj.name.startswith('TunicBody'):
+                continue
+            for mat in obj.data.materials:
+                shader = mat.node_tree.nodes.get('Principled BSDF')
+                texture = shader.inputs['Base Color'].links[0].from_node
+                if texture.type != 'TEX_IMAGE':
+                    raise ValueError('Dust control requires the exported baked base texture')
+                texture.image = image
     record = {}
-    for view in ['hero', 'closeup', 'heap']:
+    for view in views or ['hero', 'closeup', 'heap']:
         if view == 'hero':
             target = Vector((0, -.02, .88))
             camera.location = (.82, -2.9, 1.48)
@@ -116,6 +127,8 @@ def render_context(asset, out, state):
                           placement='Garment raised to a plausible 1.65 m hook; debris separately placed on the 0.105 m locker floor. Scene floor drop 1.545 m; authored parameter 0.95 m unchanged. Full-size sleeves turn diagonally, with one sleeve extending through the open doorway.',
                           ceiling_strip=dict(power_w=75, color=[1., .97, .90], position=[.1, -1., 2.65]),
                           rim_light=False)
+    if body_base:
+        record['body_base_control'] = str(body_base)
     (out/f'{state}-context.json').write_text(json.dumps(record, indent=2)+'\n')
 
 
@@ -124,6 +137,8 @@ if __name__ == '__main__':
     parser.add_argument('--input', type=Path, required=True)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--state', default='after')
+    parser.add_argument('--body-base', type=Path, help='Baked-base replacement for the dust-off control only')
+    parser.add_argument('--views', nargs='+', choices=['hero', 'closeup', 'heap'])
     args = parser.parse_args(sys.argv[sys.argv.index('--')+1:])
     args.out.mkdir(parents=True, exist_ok=True)
-    render_context(args.input.resolve(), args.out.resolve(), args.state)
+    render_context(args.input.resolve(), args.out.resolve(), args.state, args.body_base, args.views)

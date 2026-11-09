@@ -311,6 +311,9 @@ def finish_cards(out, record):
     from common import surface_tree
     from card_contacts import CardContacts
     mound = bpy.data.objects['FibreDust']
+    if 'pass12' in record:
+        from heap_tufts import add_heap_tufts
+        return add_heap_tufts(mound, objects, tufts, record)
     tree = surface_tree(mound)
     print('FRINGE', record['fringe'], record['fallen_fringe'], flush=True)
     print('CARD BLOCKERS', [(o.name, len(o.data.polygons)) for o in objects], flush=True)

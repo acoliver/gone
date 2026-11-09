@@ -20,7 +20,25 @@ def compose(directory):
         result.save(directory/name)
 
 
+def target_match(directory, target):
+    hero = Image.open(directory/'after-hero.png').convert('RGB')
+    reference = Image.open(target).convert('RGB')
+    reference.thumbnail((hero.width, hero.height), Image.Resampling.LANCZOS)
+    result = Image.new('RGB', (hero.width*2, hero.height+40), (25, 27, 26))
+    result.paste(hero, (0, 40))
+    result.paste(reference, (hero.width+(hero.width-reference.width)//2,
+                             40+(hero.height-reference.height)//2))
+    draw = ImageDraw.Draw(result)
+    draw.text((20, 12), '1000 years | in-locker candidate', fill='white')
+    draw.text((hero.width+20, 12), 'Fixed overall-look target | placement follows plan', fill='white')
+    result.save(directory/'tunic-target-match.png')
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--out', type=Path, required=True)
-    compose(parser.parse_args().out)
+    parser.add_argument('--target', type=Path)
+    args = parser.parse_args()
+    compose(args.out)
+    if args.target:
+        target_match(args.out, args.target)

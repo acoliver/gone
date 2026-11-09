@@ -11,6 +11,8 @@ def torn_hem(body):
     bm = bmesh.new()
     bm.from_mesh(body.data)
     uv = bm.loops.layers.uv[0]
+    deform = bm.verts.layers.deform.active
+    patch = body.vertex_groups['DetailPatch'].index
     selected = {edge for face in bm.faces
                 if max(loop[uv].uv.x for loop in face.loops) < 1. and
                 max(loop[uv].uv.y for loop in face.loops) < .14 for edge in face.edges}
@@ -18,11 +20,12 @@ def torn_hem(body):
     bmesh.ops.triangulate(bm, faces=list(bm.faces))
     before = sum(face.calc_area() for face in bm.faces)
     slots = [(-.159, .006, .026), (-.131, .011, .048), (-.067, .008, .035),
-             (.022, .012, .054), (.133, .009, .022), (.168, .005, .043)]
+             (.045, .012, .054), (.133, .009, .022), (.168, .005, .043)]
     remove = []
     for face in bm.faces:
         pattern = np.array([loop[uv].uv[:] for loop in face.loops])
-        if pattern[:, 0].max() >= 1. or pattern[:, 1].max() >= .14:
+        if (pattern[:, 0].max() >= 1. or pattern[:, 1].max() >= .14 or
+                any(vertex[deform].get(patch, 0.) > 0 for vertex in face.verts)):
             continue
         x, y, z = face.calc_center_median()
         pattern_height = pattern[:, 1].mean()
@@ -67,16 +70,17 @@ def torn_hem(body):
     maximum = 0.
     for vertex in bm.verts:
         pattern = next(iter(vertex.link_loops))[uv].uv
-        if pattern.x >= 1. or pattern.y >= .10:
+        if pattern.x >= 1. or pattern.y >= .10 or vertex[deform].get(patch, 0.) > 0:
             continue
         x, y, z = vertex.co
-        tongues = [(-.145, .007, .014), (-.101, .015, .032), (-.018, .020, .024),
+        free_hem = float(smoothstep((abs(x)-.035)/.02))
+        tongues = [(-.145, .007, .014), (-.101, .015, .032), (-.045, .020, .024),
                    (.090, .021, .041), (.151, .009, .012)]
         tongue = max(np.exp(-((x-center)/width)**4) for center, width, _ in tongues)
         length = max(height*np.exp(-((x-center)/width)**4) for center, width, height in tongues)
-        amount = float(length*smoothstep((-z-.795)/.065))
+        amount = float(length*smoothstep((-z-.795)/.065))*free_hem
         vertex.co.z -= amount
-        vertex.co.y -= .005*tongue*smoothstep((-z-.80)/.06)
+        vertex.co.y -= .005*tongue*smoothstep((-z-.80)/.06)*free_hem
         maximum = max(maximum, amount)
     bm.to_mesh(body.data)
     bm.free()
