@@ -57,6 +57,24 @@ def exportable_material(mat, color, out, opacity=None):
             'normal': str(normal_tex.image.filepath_raw), 'alpha_scissor': opacity is not None}
 
 
+def yarn_coverage(seed, width=1024, height=256, variants=8):
+    """Resolved yarn bundles, with dense roots and tapering individual ends."""
+    rng = np.random.default_rng(seed)
+    coverage = np.zeros((variants*height, width), dtype=np.float32)
+    yy, xx = np.mgrid[:height, :width]
+    y = yy/height
+    x = xx/width
+    for variant in range(variants):
+        strip = coverage[variant*height:(variant+1)*height]
+        for strand in range(8):
+            root = (strand+.5)/8
+            length = rng.uniform(.42, .98)
+            bend = rng.uniform(-.018, .018)*np.sin(y*7+rng.uniform(0, 2*np.pi))
+            radius = .047*np.clip((length-y)/.30, 0, 1)
+            strip[(np.abs(x-root-bend) < radius) & (y < length)] = 1.
+    return coverage
+
+
 def fabric_fringe(out, seed, color, wool=False):
     mat = fringe_material(out, seed, wool=wool)
     shader = mat.node_tree.nodes['Principled BSDF']
@@ -65,6 +83,12 @@ def fabric_fringe(out, seed, color, wool=False):
     pixels = np.array(image.pixels[:], dtype=np.float32).reshape((image.size[1], image.size[0], 4))
     reference = np.array([.42, .36, .26] if wool else [.15, .16, .14])
     pixels[:, :, :3] *= linear_to_srgb(color)/reference
+    pixels[:, :, 3] = yarn_coverage(seed, image.size[0], image.size[1]//8)
+    # Exposed broken yarns carry filling dust near the root. Their width is
+    # resolved at the hero distance instead of disappearing in MASK mipmaps.
+    if not wool:
+        root = np.tile(np.linspace(1., 0., image.size[1]//8), 8)[:, None, None]
+        pixels[:, :, :3] = pixels[:, :, :3]*(1-.45*root)+linear_to_srgb((.20, .11, .045))*.45*root
     image.pixels.foreach_set(pixels.ravel())
     image.save()
     image.pack()
