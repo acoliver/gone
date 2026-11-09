@@ -38,10 +38,10 @@ def open_shoulder(body):
     front *= smoothstep((v-.88)/.06)*(u < .48)*smoothstep((clearance-.008)/.006)
     for vertex, weight, forward in zip(body.data.vertices, fade, front):
         vertex.co.y += .008*weight-.012*forward
-        vertex.co.z += .004*weight+.002*forward
+        vertex.co.z += .004*weight+.029*forward
     recalc(body)
     return dict(maximum_rear_lip_motion_m=float(fade.max()*np.hypot(.008, .004)),
-                maximum_front_lip_motion_m=float(front.max()*np.hypot(.012, .002)),
+                maximum_front_lip_motion_m=float(front.max()*np.hypot(.012, .029)),
                 fitting_support_clearance_limit_m=.008,
                 retained_binding_and_fitting_supports_unchanged=True)
 

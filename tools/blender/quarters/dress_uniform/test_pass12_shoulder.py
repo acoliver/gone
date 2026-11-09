@@ -28,6 +28,7 @@ free_front = front & (pattern[:, 1] > .93) & (before[:, 0] > .18) & (before[:, 0
 free_front &= distance > .014
 assert free_front.any()
 assert np.median((after-before)[free_front, 1]) < -.005, 'The free front lip must emerge in front of the board'
+assert np.median((after-before)[free_front, 2]) > .020, 'The free front lip must clear the occluding shoulder silhouette'
 rear = (pattern[:, 0] > .48) & (pattern[:, 0] < 1) & (pattern[:, 1] > .93)
 rear &= (before[:, 0] > .18) & (before[:, 0] < .235) & (before[:, 1] > .008)
 assert rear.any()

@@ -29,8 +29,8 @@ def add_heap_tufts(mound, blockers, material, record):
         sideways = normal.cross(direction).normalized()
         direction = (direction+normal*.08).normalized()
         sections = tuft_sections(hit+normal*.00035, direction, sideways, normal,
-                                 rng.uniform(.0007, .0012), rng.uniform(.002, .0032),
-                                 rows=3, curl_strength=1.6)
+                                 rng.uniform(.003, .004), rng.uniform(.004, .006),
+                                 rows=3, curl_strength=.8)
         quads = [[a[0], a[1], b[1], b[0]] for a, b in zip(sections, sections[1:])]
         if not all(contacts.clear(quad) for quad in quads):
             continue
@@ -48,6 +48,8 @@ def add_heap_tufts(mound, blockers, material, record):
             break
     if accepted == 0:
         raise ValueError('No clear top-facing mound surface for loose fibre bundles')
+    material = material.copy()
+    material.name = 'Loose pale wool heap bundles'
     obj = new_object('HeapFibres', vertices, faces, material)
     for polygon, face, pattern in zip(obj.data.polygons, faces, patterns):
         coordinates = dict(zip(face, pattern))

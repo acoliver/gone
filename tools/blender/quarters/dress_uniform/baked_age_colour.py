@@ -240,8 +240,8 @@ def recolour_fibres(out, palette):
         if source and alpha_nodes[0].inputs['Vector'].is_linked:
             mat.node_tree.links.new(alpha_nodes[0].inputs['Vector'].links[0].from_socket, texture.inputs['Vector'])
         if source and (width, height) == (1024, 1024) and 'Surviving' not in mat.name:
-            from soft_wool_atlas import bundle_alpha
-            rgba[:, :, 3] = bundle_alpha(9521, fine=True)
+            from soft_wool_atlas import bundle_alpha, heap_bundle_alpha
+            rgba[:, :, 3] = heap_bundle_alpha(9521) if 'heap bundles' in mat.name else bundle_alpha(9521, fine=True)
             image.unpack(method='REMOVE')
             image.pixels.foreach_set(rgba.ravel())
             image.save()
