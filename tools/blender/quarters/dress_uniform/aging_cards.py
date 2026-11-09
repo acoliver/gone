@@ -136,7 +136,7 @@ def stitch_holes(body, image):
                 placement='physical arclength on each released seam lip', transparent_stitch_texels=count)
 
 
-def wool_fringe(out):
+def wool_fringe(out, soft=False):
     mat = fringe_material(out, 9521, wool=True)
     rgba, normal = strand_atlas(9521, wool=True, strip_height=128)
     alpha = rgba[:, :, 3]
@@ -147,6 +147,9 @@ def wool_fringe(out):
     # tips instead of discarding their subpixel coverage.
     blend = np.clip(1-(np.arange(len(alpha)) % 128)/40., 0, 1)[:, None]
     rgba[:, :, 3] = tips+(root-tips)*blend
+    if soft:
+        from soft_wool_atlas import bundle_alpha
+        rgba[:, :, 3] = bundle_alpha(9521)
     gy, gx = np.gradient(rgba[:, :, 3])
     normals = np.stack([-gx*.7, -gy*.7, np.ones_like(gx)], axis=2)
     normals /= np.linalg.norm(normals, axis=2, keepdims=True)
@@ -234,6 +237,7 @@ def finish_cards(out, record):
     report['stitch_holes'] = stitch_holes(body, opacity)
     material_maps(body.data.materials[0], (.025, .043, .08), opacity_image=opacity)
     fringe = wool_fringe(out / 'textures')
+    tufts = wool_fringe(out / 'textures/tufts', soft=True) if body.get('pass11_wear') else None
     record['fringe'] = {}
     sheets = [body]+[bpy.data.objects[p['name']] for p in record['fallen']]
     from wool_material import wool_material
@@ -266,7 +270,7 @@ def finish_cards(out, record):
             record['fringe'][name] = {'cards': 0, 'authored_coverage': 0.}
             continue
         obj, measured = spaced_cards(body, fringe, 9521+number, wool=name != 'Seam allowance',
-                                     group_name=name, blockers=objects)
+                                     group_name=name, blockers=objects, tuft_mat=tufts)
         obj.name = name.replace(' ', '')
         obj['aged_export'] = True
         objects.append(obj)
@@ -325,7 +329,7 @@ def finish_cards(out, record):
         patterns.append([(0, variant/8), (1, variant/8), (1, (variant+1)/8), (0, (variant+1)/8)])
         if len(faces) == (50 if 'pass10' in record else 65):
             break
-    fibre = new_object('HeapFibres', vertices, faces, fringe)
+    fibre = new_object('HeapFibres', vertices, faces, tufts if tufts is not None else fringe)
     for polygon, pattern in zip(fibre.data.polygons, patterns):
         for i in polygon.loop_indices:
             fibre.data.uv_layers.active.data[i].uv = pattern[fibre.data.loops[i].vertex_index % 4]

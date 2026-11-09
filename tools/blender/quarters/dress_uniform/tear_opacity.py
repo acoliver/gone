@@ -90,7 +90,10 @@ def wool_opacity(obj, out, size=2048, seed=9521):
         boundary = np.array([hit[0] for hit in nearest_lip])
         opaque = lip_opacity(distance, boundary, seed)
         if pass10:
-            from wear_pass10 import body_wear
+            if obj.get('pass11_wear'):
+                from wear_pass11 import body_wear
+            else:
+                from wear_pass10 import body_wear
             wear = body_wear(pattern)
             thinning[lo[1]:hi[1]+1, lo[0]:hi[0]+1][inside] = wear['thinning']
             count = int(wear['hole'].sum())

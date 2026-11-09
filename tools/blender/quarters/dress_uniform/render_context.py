@@ -44,10 +44,11 @@ def setup(asset):
         debris = obj.name.startswith(('FibreDust', 'HeapFibres', 'FallenHem'))
         shift = Vector((-.015, -.10, 1.055)) if debris else origin
         obj.matrix_world = Matrix.Translation(shift) @ rotation @ obj.matrix_world
-    # A peg at the hanger crown makes the hanging support explicit.
-    bpy.ops.mesh.primitive_cylinder_add(vertices=16, radius=.004, depth=.08,
-                                       location=(origin.x, origin.y+.035, origin.z-.007),
-                                       rotation=(math.pi/2, 0, 0))
+    # The hanger rests on a rail spanning the two side panels.
+    bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=.009, depth=.566,
+                                       location=(0, origin.y, origin.z-.017),
+                                       rotation=(0, math.pi/2, 0))
+    bpy.context.object.name = 'Context wardrobe rail'
     bpy.context.object.data.materials.append(paint)
     scene = bpy.context.scene
     scene.render.engine = 'CYCLES'
@@ -84,10 +85,10 @@ def render_context(asset, out, state):
     record = {}
     for view in ['hero', 'closeup', 'heap']:
         if view == 'hero':
-            target = Vector((0, -.02, 1.10))
-            camera.location = (.82, -2.9, 1.7)
+            target = Vector((0, -.02, .88))
+            camera.location = (.82, -2.9, 1.48)
             camera.data.type = 'ORTHO'
-            camera.data.ortho_scale = 2.62
+            camera.data.ortho_scale = 1.85
         elif view == 'closeup':
             target = origin+rotation @ Vector((.235, -.01, -.285))
             # A face-normal approach to the diagonally hung garment crosses
@@ -98,7 +99,7 @@ def render_context(asset, out, state):
             camera.data.lens = 40
         else:
             target = Vector((-.015, -.10, .125))
-            camera.location = (.35, -.85, .43)
+            camera.location = (.15, -.56, .31)
             camera.data.type = 'PERSP'
             camera.data.lens = 50
         aim(camera, target)

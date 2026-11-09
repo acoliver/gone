@@ -49,7 +49,7 @@ def boundary_chains(obj, group_name=None):
     return chains
 
 
-def measured_coverage(obj, chains):
+def measured_coverage(obj, chains, root_pairs=None):
     covered = 0.
     total = 0.
     records = []
@@ -61,8 +61,9 @@ def measured_coverage(obj, chains):
         records.append((starts, delta, lengths, distance))
         total += distance[-1]
     intervals = [[] for _ in chains]
-    for face in obj.data.polygons:
-        a, b = [np.array(obj.matrix_world @ obj.data.vertices[i].co) for i in sorted(face.vertices)[:2]]
+    roots = root_pairs if root_pairs is not None else [sorted(face.vertices)[:2] for face in obj.data.polygons]
+    for ids in roots:
+        a, b = [np.array(obj.matrix_world @ obj.data.vertices[i].co) for i in ids]
         root = (a+b)/2
         nearest = None
         for index, (starts, delta, lengths, distance) in enumerate(records):
@@ -84,18 +85,20 @@ def measured_coverage(obj, chains):
                 authored_coverage=float(covered/total), method='union of card-root projections onto actual lip arclength')
 
 
-def spaced_cards(obj, mat, seed, wool, blockers, group_name=None):
+def spaced_cards(obj, mat, seed, wool, blockers, group_name=None, tuft_mat=None):
     chains = boundary_chains(obj, group_name)
     if not chains:
         raise ValueError(f'{obj.name}: no {group_name or "open"} boundary')
     contacts = CardContacts(blockers)
     rng = np.random.default_rng(seed)
     vertices, faces, variants, offsets, extents = [], [], [], [], []
+    uv_faces, root_pairs, soft_faces = [], [], []
+    soft = bool(obj.get('pass11_wear'))
     omitted = 0
     for chain in chains:
         lengths = np.array([np.linalg.norm(s[1]-s[0]) for s in chain])
         distance = np.r_[0., lengths.cumsum()]
-        spacing = .0095 if group_name == 'Seam allowance' else .011
+        spacing = .0095 if group_name == 'Seam allowance' else .016 if soft and group_name == 'Long wool fringe' else .011
         count = max(1, int(round(distance[-1]/spacing)))
         stride = distance[-1]/count
         for station in (np.arange(count)+.5)*stride:
@@ -116,6 +119,13 @@ def spaced_cards(obj, mat, seed, wool, blockers, group_name=None):
                                    minimum_length, maximum_length))
             if group_name == 'Long wool fringe' and point.z > -.4:
                 extent = min(extent, .006)
+            curled = soft and (group_name == 'Seam allowance' or
+                               (group_name == 'Long wool fringe' and point.z > -.4))
+            if curled:
+                minimum_length = .002
+                extent = float(rng.uniform(.0025, .0045))
+                if group_name == 'Long wool fringe':
+                    width = min(float(rng.uniform(.012, .015)), .9*stride)
             droop = float(rng.uniform(0, math.radians(35)))
             twist = float(rng.uniform(-.15, .15))
             direction = (outward*math.cos(droop)+Vector((0, 0, -1))*math.sin(droop)).normalized()
@@ -129,10 +139,15 @@ def spaced_cards(obj, mat, seed, wool, blockers, group_name=None):
                         for factor in [1., .75, .5]:
                             length = max(minimum_length, extent*factor)
                             tip = root+tail_direction*length
-                            quad = [root-sideways*width/2, root+sideways*width/2,
-                                    tip+sideways*width/2, tip-sideways*width/2]
-                            if contacts.clear(quad):
-                                placement = quad
+                            if curled:
+                                from soft_tuft import tuft_sections
+                                sections = tuft_sections(root, tail_direction, sideways, side_normal, width, length)
+                            else:
+                                sections = np.array([[root-sideways*width/2, root+sideways*width/2],
+                                                     [tip-sideways*width/2, tip+sideways*width/2]])
+                            quads = [[a[0], a[1], b[1], b[0]] for a, b in zip(sections, sections[1:])]
+                            if all(contacts.clear(quad) for quad in quads):
+                                placement = sections
                                 break
                         if placement is not None:
                             break
@@ -143,25 +158,43 @@ def spaced_cards(obj, mat, seed, wool, blockers, group_name=None):
             if placement is None:
                 omitted += 1
                 continue
-            contacts.add(placement)
             base = len(vertices)
-            vertices.extend(placement)
-            faces.append((base, base+1, base+2, base+3))
-            variants.append(int(rng.integers(8)))
+            variant = int(rng.integers(8))
+            root_pairs.append((base, base+1))
+            if not curled:
+                a, b = placement
+                quad = [a[0], a[1], b[1], b[0]]
+                contacts.add(quad)
+                vertices.extend(quad)
+                faces.append((base, base+1, base+2, base+3))
+                soft_faces.append(False)
+                uv_faces.append([(0, variant/8), (1, variant/8),
+                                 (1, (variant+1)/8), (0, (variant+1)/8)])
+            else:
+                vertices.extend(placement.reshape(-1, 3))
+                for row, (a, b) in enumerate(zip(placement, placement[1:])):
+                    contacts.add([a[0], a[1], b[1], b[0]])
+                    start = base+2*row
+                    faces.append((start, start+1, start+3, start+2))
+                    soft_faces.append(True)
+                    lo, hi = row/(len(placement)-1), (row+1)/(len(placement)-1)
+                    uv_faces.append([(0, (variant+lo)/8), (1, (variant+lo)/8),
+                                     (1, (variant+hi)/8), (0, (variant+hi)/8)])
+            variants.append(variant)
             offsets.append(offset)
             extents.append(length)
     result = new_object(obj.name+'_Fringe', vertices, faces, mat)
     # Face-normal recalculation can reverse a disconnected card. Preserve its
     # root/tip UV meaning by vertex identity, independently of winding.
+    if tuft_mat is not None:
+        result.data.materials.append(tuft_mat)
     for polygon in result.data.polygons:
-        variant = variants[polygon.index]
+        polygon.material_index = int(tuft_mat is not None and soft_faces[polygon.index])
+        coordinates = dict(zip(faces[polygon.index], uv_faces[polygon.index]))
         for i in polygon.loop_indices:
-            corner = result.data.loops[i].vertex_index % 4
-            result.data.uv_layers.active.data[i].uv = (
-                1. if corner in [1, 2] else 0.,
-                (variant+(corner >= 2))/8)
-    report = measured_coverage(result, chains)
-    report.update(cards=len(faces), triangles=len(faces)*2, omitted_contacts=omitted,
+            result.data.uv_layers.active.data[i].uv = coordinates[result.data.loops[i].vertex_index]
+    report = measured_coverage(result, chains, root_pairs)
+    report.update(cards=len(root_pairs), triangles=len(faces)*2, omitted_contacts=omitted,
                   maximum_root_offset_m=max(offsets, default=0.), sat_checked=True,
                   extent_min_max_m=[min(extents, default=0.), max(extents, default=0.)])
     report['coverage_pass'] = report['authored_coverage'] >= .70
