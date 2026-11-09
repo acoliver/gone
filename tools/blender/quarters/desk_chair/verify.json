@@ -271,16 +271,18 @@
   },
   "hero_first_hit_visibility": {
     "SeatPad": {
-      "sample_count": 52,
-      "visible_projected_area_fraction": 0.9999868845689388,
-      "visible_triangle_fraction": 0.9615384615384616,
+      "sample_count": 54,
+      "visible_projected_area_fraction": 0.9993234714959429,
+      "visible_triangle_fraction": 0.9629629629629629,
+      "projection": "orthographic",
       "minimum": 0.6,
       "pass": true
     },
     "BackPlate": {
-      "sample_count": 49,
-      "visible_projected_area_fraction": 0.9890619096954182,
-      "visible_triangle_fraction": 0.8367346938775511,
+      "sample_count": 54,
+      "visible_projected_area_fraction": 0.9890360383057121,
+      "visible_triangle_fraction": 0.8518518518518519,
+      "projection": "orthographic",
       "minimum": 0.6,
       "pass": true
     }

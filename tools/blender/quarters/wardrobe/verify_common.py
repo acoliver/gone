@@ -67,26 +67,36 @@ def closure(mesh):
             'pass':bool(misses==0 and mesh.is_watertight and mesh.is_winding_consistent and all(p.volume>0 for p in components))}
 
 
-def visibility(meshes, combined, camera, names):
+def visibility(meshes, combined, camera, names, orthographic_target=None):
     offsets={}; offset=0
     for name,mesh in meshes.items():
         offsets[name]=(offset,offset+len(mesh.faces)); offset+=len(mesh.faces)
+    if orthographic_target is not None:
+        forward=orthographic_target-camera
+        forward/=np.linalg.norm(forward)
     result={}
     for name in names:
         mesh=meshes[name]
-        toward=camera-mesh.triangles_center
+        toward=(camera-mesh.triangles_center if orthographic_target is None else -forward)
         front=(mesh.face_normals*toward).sum(axis=1)>0
         ids=np.where(front)[0]
         target=mesh.triangles_center[ids]
-        dirs=target-camera; distances=np.linalg.norm(dirs,axis=1)
-        dirs/=distances[:,None]
-        face=combined.ray.intersects_first(np.repeat(camera[None,:],len(ids),axis=0),dirs)
+        if orthographic_target is None:
+            dirs=target-camera; distances=np.linalg.norm(dirs,axis=1)
+            dirs/=distances[:,None]
+            origins=np.repeat(camera[None,:],len(ids),axis=0)
+            weights=mesh.area_faces[ids]*np.maximum(0,-(mesh.face_normals[ids]*dirs).sum(axis=1))/distances**2
+        else:
+            dirs=np.repeat(forward[None,:],len(ids),axis=0)
+            origins=target-((target-camera)@forward)[:,None]*forward
+            weights=mesh.area_faces[ids]*np.maximum(0,-(mesh.face_normals[ids]*dirs).sum(axis=1))
+        face=combined.ray.intersects_first(origins,dirs)
         low,high=offsets[name]
         visible=(face>=low)&(face<high)
-        weights=mesh.area_faces[ids]*np.maximum(0,-(mesh.face_normals[ids]*dirs).sum(axis=1))/distances**2
         fraction=float(np.sum(weights[visible])/np.sum(weights))
         result[name]={'sample_count':len(ids),'visible_projected_area_fraction':fraction,
                       'visible_triangle_fraction':float(visible.mean()),
+                      'projection':'perspective' if orthographic_target is None else 'orthographic',
                       'minimum':.60,'pass':fraction>=.60}
     return result
 
@@ -115,7 +125,9 @@ def verify(path,spec_path,report_path,reexport):
                       'pass':bool(np.max(np.abs(matrix[:3,3]-expected))<.001)}
     materials=sorted({m.visual.material.name for m in meshes.values()})
     uv=uv_report(meshes)
-    vis=visibility(meshes,combined,np.array(spec['hero_camera_gltf']),spec['visible_details'])
+    tx,ty,tz=spec['hero_target_native']
+    vis=visibility(meshes,combined,np.array(spec['hero_camera_gltf']),spec['visible_details'],
+                   orthographic_target=np.array([tx,tz,-ty]))
     tri=sum(len(m.faces) for m in meshes.values())
     byte_identical=Path(path).read_bytes()==Path(reexport).read_bytes()
     report={'asset':spec['id'],'bounds_gltf':{'actual':body.bounds.tolist(),'expected':target.tolist(),

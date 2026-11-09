@@ -35,6 +35,20 @@ class ExportChecks(unittest.TestCase):
         combined=trimesh.util.concatenate([mesh,blocker])
         report=visibility({'detail':mesh,'blocker':blocker},combined,np.array([0,0,3.]),['detail'])
         self.assertFalse(report['detail']['pass'])
+    def test_orthographic_occlusion_uses_parallel_rays(self):
+        detail=trimesh.creation.box(extents=[.2,.2,.2])
+        detail.apply_translation([1,0,0])
+        blocker=trimesh.creation.box(extents=[.3,.3,.1])
+        blocker.apply_translation([1,0,1])
+        meshes={'detail':detail,'blocker':blocker}
+        combined=trimesh.util.concatenate(list(meshes.values()))
+        camera=np.array([0,0,3.])
+        perspective=visibility(meshes,combined,camera,['detail'])
+        orthographic=visibility(meshes,combined,camera,['detail'],
+                                orthographic_target=np.zeros(3))
+        self.assertTrue(perspective['detail']['pass'])
+        self.assertFalse(orthographic['detail']['pass'])
+
 
     def uv_mesh(self,coordinates):
         mesh=trimesh.Trimesh(

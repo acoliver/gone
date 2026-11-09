@@ -302,16 +302,18 @@
   },
   "hero_first_hit_visibility": {
     "MattressPlatform": {
-      "sample_count": 50,
-      "visible_projected_area_fraction": 0.9270082658939091,
-      "visible_triangle_fraction": 0.04,
+      "sample_count": 54,
+      "visible_projected_area_fraction": 0.9309446057711925,
+      "visible_triangle_fraction": 0.07407407407407407,
+      "projection": "orthographic",
       "minimum": 0.6,
       "pass": true
     },
     "HeadboardRivets": {
       "sample_count": 480,
-      "visible_projected_area_fraction": 0.7432890676834889,
+      "visible_projected_area_fraction": 0.7333332727008842,
       "visible_triangle_fraction": 0.7333333333333333,
+      "projection": "orthographic",
       "minimum": 0.6,
       "pass": true
     },
@@ -319,6 +321,7 @@
       "sample_count": 160,
       "visible_projected_area_fraction": 1.0,
       "visible_triangle_fraction": 1.0,
+      "projection": "orthographic",
       "minimum": 0.6,
       "pass": true
     }
