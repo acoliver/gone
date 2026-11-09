@@ -285,7 +285,7 @@ The fitted source is `tools/blender/quarters/sofa/sofa-working.blend`, and the g
 
 ### Material pilot: pass 10 accepted with known geometry failures
 
-Geometry iteration stops at pass 10 by Andrew's decision. The anchored comparison against `sheets/sofa/aged-target.png` rated pass 10 at 60% shape/damage match, versus 38–55% for pass 11. Much of the remaining difference concerns dusty faded fabric, grime and brown debris contrast, so this pilot proceeds to materials without changing geometry thresholds.
+Geometry iteration stops at pass 10 by Andrew's decision. The anchored comparison against aged-target version 1 rated pass 10 at 60% shape/damage match, versus 38–55% for pass 11. Version 2 at `sheets/sofa/aged-target.png` governs colours and materials only. Much of the remaining difference concerns dusty faded fabric, grime and brown debris contrast, so this pilot proceeds to materials without changing geometry thresholds.
 
 A Hunyuan mesh generated from the aged target was tried as a shape guide under `tmp/hy/aged/`. It did not improve on pass 10 and is not used for the pilot.
 
@@ -297,19 +297,19 @@ Known pilot limitations remain: G1 right-back sharp adjacency is **9.426987%**, 
 
 The pilot uses generated diffuse images. `art-source/quarters/sofa/` saves the concept crops, prompts, FLUX.2-klein-4B outputs, selected-image map and colour statistics. The six initial edits use seeds 95600–95605, 4-bit weights, four steps and 768-square output. Seed 95606 edits the aged upholstery crop into a separate granular warm-grey dust scan, with its own prompt, crop and generation metadata. Refinements 95620–95622 flatten wool/foam and replace the weave; 95630–95631 derive flat aged wool and finer yarn from accepted clean fabric. All generation runs sequentially with cached weights and offline mode. Rejected images remain as provenance, not material inputs.
 
-Clean upholstery follows Andrew's oatmeal direction; the hero's upholstery crop is charcoal, so it supplies yarn character rather than the final hue. The aged upholstery and wool use the aged target's surface crops. Foam retains its generated pores, but its pigment and the floor crumbs now use the Godot display-to-albedo fit below. Aged wool uses its crop's 90th percentile to avoid copying deep fold shadows into albedo. A fitted log-linear illumination plane is removed before linear-RGB colour calibration. The final per-role diffuse images and sRGB/Lab statistics are saved beside their generated inputs.
+The earlier oatmeal-upholstery brief was incorrect: the approved hero has charcoal-grey upholstery on all six cushions, with oatmeal confined to the throw. The current cloth palette follows that hero and aged-target version 2 through the Godot display-to-albedo fit recorded below. The generated images still supply weave, pore and broad cloth variation. A fitted log-linear illumination plane is removed before linear-RGB colour calibration. The final per-role diffuse images and sRGB/Lab statistics are saved beside their generated inputs. The version-1 crops and rejected generations remain as provenance; their colours no longer determine the cloth pigments.
 
 Mean sRGB values below are weighted by occupied, alpha-surviving atlas texels, before runtime lighting and fine grain. Full generated/crop mean and standard deviation in sRGB and D65 Lab, calibration gains, and each part's final colour are in `as_built-statistics.json` and `aged-statistics.json`.
 
 | Role | As-built mean RGB | Aged mean RGB |
 | --- | --- | --- |
-| Upholstery | 0.7459, 0.6548, 0.4984 | 0.7084, 0.6379, 0.5436 |
-| Throw | 0.8043, 0.7065, 0.5913 | 0.5295, 0.4675, 0.4098 |
-| Foam/crust/powder | Not exposed | 0.4199, 0.3223, 0.2190 |
+| Upholstery | 0.3444, 0.3493, 0.3611 | 0.4078, 0.4102, 0.4102 |
+| Throw | 0.5594, 0.4926, 0.4219 | 0.5901, 0.5559, 0.5210 |
+| Foam/crust/powder | Not exposed | 0.4973, 0.4177, 0.2860 |
 | Painted frame/feet | 0.4080, 0.4235, 0.4319 | 0.4225, 0.4360, 0.4413 |
 | Bare rivets | 0.7212, 0.7503, 0.7682 | 0.3243, 0.2415, 0.1801 |
 
-The unchanged locker no-green predicate is reused: hue 70–170 degrees with saturation above 0.25, allowing less than 0.5% newly green coverage. Clean atlas coverage is **0%** and aged coverage is **0.0000580%**, with a largest connected region of **0.0000145%**. These values pass without altering the threshold. The mask mean AO/cavity/up values are **0.4742/0.9672/0.2397** clean and **0.4812/0.9615/0.3744** aged; all three channels span 0–1.
+The unchanged locker no-green predicate is reused: hue 70–170 degrees with saturation above 0.25, allowing less than 0.5% newly green coverage. Clean atlas coverage is **0%** and aged coverage is **0.0001305%**, with a largest connected region of **0.0000145%**. These values pass without altering the threshold. The mask mean AO/cavity/up values are **0.4742/0.9672/0.2397** clean and **0.4812/0.9615/0.3744** aged; all three channels span 0–1.
 
 Frame/feet paint follows the sofa's approved hero, independently of the locker's grey-green paint. Both states start with the same calibrated grey pigment; the aged state adds local grime and settled dust. The generated metal scan supplies normalized fine grain, with broad oxide staining removed. Bare rivets retain the locker's clean steel palette and selected aged hardware image, whose aged contrast is reduced to 10%. Clean paint has roughness 0.45 and metallic 0.02; bare steel has roughness 0.35 and metallic 0.45. Aged metal has roughness 0.96 and is non-metallic. Runtime metal grain still uses the shared hatch scans and sampling include. Colour-derived normal relief is omitted. Baked metal AO affects ambient rather than direct lighting, and the overlapping frame UVs are replaced as described below. No locker shader code changes.
 
@@ -363,10 +363,40 @@ Image-comparer identifies neutral grey rather than teal on the clean frame, redu
 
 To rebuild this finish without regenerating material scans, run `calibrate_finish.py`; run Blender `material_pilot.py -- --stage prepare --state as_built|aged --scratch tmp/mat/sofa2`; run Python `finish_materials.py --state as_built|aged --scratch tmp/mat/sofa2`; then Blender `material_pilot.py -- --stage assemble --state as_built|aged --scratch tmp/mat/sofa2`. Run `texture_imports.py`, import in Godot, and capture with `material_preview.gd` using the two sofa assets, height 0.86, centre Y 0.43 and output `res://tmp/mat/sofa2`. `compose_finish.py` builds the comparison sheets; `validate_finish.py` checks exports, UV density, visible dust/debris and locker bytes. Long jobs run under `nohup`. Texture import metadata retains existing resource UIDs.
 
+#### Charcoal upholstery correction (2026-11-09)
+
+The earlier brief called the upholstery oatmeal. That was an error: `hero.png` specifies charcoal-grey woven fabric on all six cushions and an oatmeal throw. The first aged target inherited the same error. The current palette uses the hero and `aged-target.png` version 2, whose metadata restricts it to colours and materials. Geometry remains frozen at pass 10; the target's heavy edge rust, larger foam clumps, upright backs and shorter throw are not copied.
+
+`cloth-reference.json` records the reference rectangles, material roles, swatch positions, normals and lighting. The image-comparer identified cloth, foam and debris regions; numerical inspection narrowed the faded-cloth samples to low-variance interiors. Cloth selection requires saturation below 0.35 and display values between 20 and 235, excluding saturated exposed filling. Foam and crumbs retain the warm-pixel predicate. `calibrate_finish.py` renders flat swatches through the same Godot Forward+ / Metal preview, measures the central 64 by 64 pixels, and updates linear albedo using the target/display linear-light ratio. Every new fit converged in two renders, within one sRGB level per channel. Roughness is 0.98 and metallic is zero for these swatches. Frame settings and lighting are unchanged.
+
+| Role | Sampled display RGB | Fitted display RGB | Fitted linear-RGB albedo |
+| --- | --- | --- | --- |
+| As-built upholstery | 108, 110, 113 | 109, 111, 114 | 0.097460, 0.100351, 0.107293 |
+| As-built throw | 153, 135, 116 | 153, 135, 116 | 0.273334, 0.207312, 0.148732 |
+| Aged upholstery | 119, 117, 111 | 120, 118, 112 | 0.140461, 0.144148, 0.147389 |
+| Aged throw | 143, 132, 117 | 143, 131, 116 | 0.343684, 0.299294, 0.259085 |
+| Upward cloth dust | 144, 139, 129 | 144, 140, 130 | 0.221265, 0.218561, 0.212330 |
+| Exposed foam | 142, 117, 78 | 142, 118, 78 | 0.213998, 0.146596, 0.067100 |
+| Floor crumbs/powder | 169, 143, 96 | 169, 143, 96 | 0.309335, 0.223772, 0.105137 |
+
+The new foam and crumb samples differ from the previous fitted display colours by at most 24 and 51 sRGB levels respectively. Both exceed the requested six-level tolerance, so their pigments are adjusted; their pores, fragment shapes and alpha are retained. `version2_check` records the old displayed values and the decision. Subsequent calibration runs preserve that comparison when the target samples have not changed.
+
+The cloth base images are recoloured in linear light after illumination removal and low-pass filtering. Their variation survives, and the separate fine weave texture is byte-identical to the previous finish. Folds still darken through the retained cloth-only masks. Upward cloth dust has a separate fitted grey pigment, while deposit density still comes from the original granular scan. Separating density from pigment prevents the darker dust colour from erasing deposits. The initial cloth recolour still produced an overly broad film: the old density rule imposed at least 30% coverage and allowed 85% dust blending on an upward face. Cloth now uses a smooth coverage transition between scan values 0.65 and 0.90, without that coverage floor, and a maximum blend of 65%. A 6 px periodic low-pass softens the density scan; pigment variation is reduced to 45% before restoring the fitted linear mean. This addresses the image-comparer's broad-film and pale-patch observations without changing any visibility threshold, cloth alpha, normal map or weave texture. Frame and foam keep their original density rule and dust palette. This keeps all 786,432 covered clean-frame texels and 1,572,864 covered aged-frame texels byte-identical, including the existing restrained aging.
+
+Both saved material sources re-export byte-identically. External GLB measurements confirm zero position difference, unchanged triangles and local pivots, ten named clean parts and 21 named aged parts. The pass-10 G9–G11 measurements and their thresholds remain unchanged. These checks preserve the accepted geometry exception; they do not resolve its G1, G3, G4 or G6 failures.
+
+The five actual-shader albedo views have **0% newly green coverage**. Matched lit top controls show dust changing **52.487%** of visible upward-face pixels by at least eight sRGB levels under neutral light and **41.343%** under present light, above the unchanged 5% gate. Debris retains **1,209 visible pixels**, a median ON/OFF difference of **10 levels**, a mean of **11.945 levels**, and **63.027%** of pixels at or above eight levels. This passes the unchanged median-eight-level and majority-coverage requirements. All **89 locker control PNGs are byte-identical**, and the locker assets, shader and shared material code remain unchanged.
+
+Final verification passes **19 sofa Python tests**, **37 unchanged locker Python tests**, **14 focused Godot tests** (four sofa and ten locker), and the full headless suite with **802 passed, 0 failed** after the cloth-dust refinement. The full suite ran under `nohup`; logs are `python-tests.log`, `locker-python-tests.log`, `focused-tests.log` and `unit-suite.log` under `tmp/mat/sofa3/`. Godot retains the existing ObjectDB leak, resources-in-use and allocator teardown diagnostics. The no-green, debris and geometry thresholds are unchanged. No OCR review was run.
+
+The final image-comparer inspection passes the charcoal/oatmeal separation, faded aged cloth, debris toggle and absence of green/teal or sampling artifacts. It calls the colour correction ready to show, with two remaining visual concerns: foam can read gold/yellow in the close-up, and the throw boundary looks sharply cut out. The fitted foam and crumb swatches already match the version-2 regional samples within one level, so their pigments are not desaturated again to chase that contextual appearance. Original alpha, tears and normals stay intact. These observations and the fixed shape limitations remain visible in `final-material-vision.json`; the review does not establish full target parity.
+
+The current outputs and raw controls are under `tmp/mat/sofa3/`. `before-after.png` places the old oatmeal brief on the left and the corrected palette on the right, with clean above aged. `neutral-pair.png` compares clean and aged under identical lighting; `closeup.png` shows upholstery and throw at 0.6 m. `target-compare.png` uses aged-target version 2, and `design-compare.png` uses the approved hero. Rebuild with `calibrate_finish.py --out tmp/mat/sofa3/calibration`; use `material_pilot.py -- --stage prepare --state as_built|aged --scratch tmp/mat/sofa3` only when masks need rebuilding, then `finish_materials.py --state as_built|aged --scratch tmp/mat/sofa3` and Blender `material_pilot.py -- --stage assemble --state as_built|aged --scratch tmp/mat/sofa3`. This pass reuses the retained prepared scenes and mask arrays from `sofa2`, without rebaking or changing geometry. After `texture_imports.py` and Godot import, capture with the existing sofa `material_preview.gd` arguments and `--out res://tmp/mat/sofa3`. `compose_finish.py --out tmp/mat/sofa3` builds the sheets; `validate_finish.py --out tmp/mat/sofa3` checks the retained geometry, export bytes, UVs and lit controls.
+
 ### Pass 11: rejected visible-boundary candidate
 
-The fixed target is `sheets/sofa/aged-target.png`, depicting 1000 years of
-aging. The shipped sofa remains unchanged while this candidate is measured.
+This shape trial used version 1 of `sheets/sofa/aged-target.png`, depicting
+1000 years of aging. The shipped sofa remained unchanged while this candidate was measured.
 The target calls for broad gashes and exposed tan foam, individual seat sag
 and much more debris. Small repeated holes do not meet that target.
 

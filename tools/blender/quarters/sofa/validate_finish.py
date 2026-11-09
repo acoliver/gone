@@ -1,4 +1,5 @@
 """Check sofa finish exports, rail texel density and lit debris visibility."""
+import argparse
 import json
 from pathlib import Path
 
@@ -58,4 +59,7 @@ def main():
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--out', type=Path, default=OUT)
+    OUT = parser.parse_args().out.resolve()
     main()
