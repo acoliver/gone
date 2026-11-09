@@ -564,10 +564,7 @@ func _keyboard_tray_mesh_names() -> Array[String]:
 	var names: Array[String] = [
 		"Rugged olive steel perimeter housing",
 		"Recessed black elastomer membrane",
-		"Olive steel tray shelf 8mm",
-		"Tray rounded downturned front lip",
-		"Tray side return -1",
-		"Tray side return +1",
+		"Bent steel keyboard tray",
 		"Terminal mounting back flange",
 		"Flange back perimeter rubber gasket",
 		"Tray triangular gusset -0_34",
