@@ -790,6 +790,8 @@ static func deck_static_solids(layout: ShipLayout, deck: int) -> Array[SolidSpec
 	if deck == 14:
 		return opening_scene_solids(layout.bay().template(), true, true, layout, {}, false)
 	var solids: Array[SolidSpec] = []
+	for id: StringName in layout.deck(deck).section_ids():
+		solids.append_array(section_solids(layout, layout.section(id)))
 	for id: StringName in layout.deck(deck).connector_ids():
 		solids.append_array(connector_solids(layout, layout.connector(id)))
 	for id: StringName in layout.door_ids():

@@ -490,3 +490,13 @@ Main risks are concrete:
 9. Existing art/atlas files describe the previous build and example hatch states. Export built geometry from layout and retain proposed-versus-built markings; do not let them become a second runtime authoring path.
 
 No product-direction question blocks implementation. The brief settles deck availability, hatches, labels, movement limits and audio source. Sound quality remains for Andrew's listening judgment after assets exist. Frame-time parity, raster clarity at capture resolution, and swing/landing clearance require measured runtime evidence. These are acceptance tasks, not reasons to reopen decisions 1 through 21. Crew counts, remote rooms, radiation causes and future lift behavior remain outside this feature.
+
+## D16 quarters route (#114)
+
+D16 section 42 is built from X 36 to 60 at floor Y -11. Its corridor has the
+same paired side-door stations as D14 section 42 and regular white strips
+under secondary power. The aft ladder well reaches the D16 aft connector.
+`D16-C-001-H-AFT` is the only off-D14 hatch with CRANK policy, so that landing
+can reach the quarters corridor. Every other off-D14 hatch remains
+NEVER_OPENS, including the corridor's aft boundary at X 60. This deliberate
+exception is the location decision in issue #114.
