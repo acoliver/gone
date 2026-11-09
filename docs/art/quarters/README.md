@@ -553,6 +553,58 @@ The lit captures are `tmp/fit/sofa/cloth2/compare-hero.png`, `compare-detail.png
 
 The tunic now comes from Blender cloth simulation. The hand-modelled pilot rated 2/10: its waist was pinched, its sleeves were detached cylinders, and its collar and shoulders had visible voids. A sewn pattern lets gravity and fabric strain produce the hanging shape. The design remains `docs/art/quarters/sheets/dress_uniform/hero.png`; the filled Hunyuan torso is only a silhouette reference.
 
+### Tunic11: not shipped, 16 of 19 gates pass
+
+The final scratch candidate is `tmp/age/tunic11/visible/candidate.glb`; `retained/` records the preceding surface-wear control. G3, G4 and G6 still fail, so neither `assets/props/quarters/dress_uniform_aged.glb` nor its textures was replaced. Pass eleven starts from pass ten's `curled/baked.blend`, preserving its settled sleeve, connected allowance, surviving yarns, hanger and seated fittings. The intended age remains 1000 years. Physical-lip experiments introduced new crossings and were rejected rather than replacing the pass-ten shape.
+
+**Locker context.** The full-size tunic hangs diagonally at 55 degrees in the unmodified `storage_locker_module.glb`, whose door is opened 112 degrees for the scene. Its hanger crown is 1.65 m above the locker base, on a rail spanning the side panels. One sleeve extends through the open doorway; transformed wool vertices do not cross the side or back panels. The inner floor is at 0.105 m. The garment was raised to this plausible hanging height and the heap, fallen strips and loose fibres were placed separately on that floor. This gives a scene floor drop of 1.545 m; the asset's authored 0.95 m parameter is unchanged.
+
+The provisional locker paint has linear albedo 0.065/0.080/0.070, roughness 0.76 and metallic 0.15. A 75 W rectangular area light at Blender (0.1, -1.0, 2.65) supplies dim overhead/front light with colour (1.0, 0.97, 0.90). There is no rim light. The back panel is 225.7 to 252.2 mm behind the pass-ten armhole yarn roots, instead of the distant lit studio floor. The 0.5 m close camera approaches through the doorway: approaching along the rotated garment normal crossed the right locker wall and produced an unusable dark control. The corrected camera sees the shoulder and upper torso. Both states use identical cameras and lighting. Context captures are the main review images; studio captures remain for comparison. The initial pass-ten-in-locker comparison is under `tmp/age/tunic11/context-base/`. Its review preceded the geometry and finishing trials.
+
+**Contour diagnosis.** G3/G4/G6 use unlit emission labels, decoded as wool-plus-fringe alpha coverage. They do not trace the lit wool's shading boundary. On the pass-ten control, ordinary rendering gives a 27.459060 px longest run. Making the wool opaque leaves that maximum unchanged and changes little on the armhole; hiding fringe increases it to 39.849718 px. The connected allowance is an opaque, separately shaded material, so the sheet opacity texture cannot roughen its outer contour. Removing that texture is therefore not a repair for those lips.
+
+Rendering at twice the resolution reveals more small fibre detail, but still gives a 26.967573 px longest run after conversion back to the original pixel scale. Several qualifying contours remain below dimension 1.15, while others exceed 1.40. Antialiasing and subpixel coverage affect fine fringe, but do not explain away the straight physical outlines. The original geometry noise also uses a fixed world-space projection: its station variation on the three armhole chains is only 43.9% to 70.7% of physical arclength, stretching the intended noise wavelengths. No measurement algorithm or numbered threshold was relaxed. Controls and individual contour results are in `tmp/age/tunic11/diagnosis/` and `noise-projection.json`.
+
+Two physical-boundary trials refine the existing lips and add inward losses. The first leaves 50 new body/rim crossings, lifts only 27.3100% of lip length and exceeds the triangle budget. Arclength-based losses bounded by supporting face depth reduce the crossings to 22, but lift remains 26.7864%, below 30%. Its midsurface has zero self crossings before thickness; the new rim geometry introduces the 22 crossings. These are rejected trials under `candidate/` and `arclength/`, not accepted geometry. `polish_pass11.py --refine-lips` retains the bounded experiment; the default keeps the pass-ten lips.
+
+**Wool finishing.** The long-fringe category now has 47 cards instead of 69. Shoulder and seam tufts use four transverse sections with curl and taper, mostly 2.5 to 4.5 mm long. A separate atlas supplies rounded, curved wool bundles with fractional edge coverage; shortening a card while retaining straight atlas strands still produced bristles. Hem and fallen-strip fringe retain their previous atlas. Coverage measures each tuft's attached root once, rather than counting its internal section edges as additional roots. Released-seam root coverage is 79.6704%, above 70%.
+
+The first retained-lip control scores 5/10 against the fixed aged target's 8/10 on that reviewer's scale. Its 5.6 mm-wide patch control still reads as punctures, its broad wool remains too uniform, and the heap reads as a flat backing with angular scraps. This is a separate comparison from the earlier pass-ten rating, which used a different reference and scale.
+
+Seven fold-aligned losses are now short, irregular patches with surrounding thinning rather than long narrow slit masks. The final visibility trial enlarges them by 1.5 times in each direction, removing 203.2697 square millimetres of wool. It also bakes distributed blue-grey fading separately from the thinning mask. Additional broad wrinkles and sag move the wool at most 2.4772 mm, below the fittings and away from the placket. The original 2.5 mm local motion limit is unchanged. G1 and G24 remain within their limits.
+
+The original mound and fallen-strip geometry are retained; loose mound fibres use the curled atlas. Each fallen piece now has perimeter-only alpha erosion within 3 mm of its physical edge, while its interior stays opaque. The additional 837.8124 square millimetres of lost strip-edge wool are included in the heap mass estimate. This avoids leaving a completely straight, opaque strip boundary beneath the frayed cards. These construction changes do not establish visual acceptance. The final image-comparer review remains 5/10 against the fixed target's 8/10. It still finds hard shoulder strands, isolated torso marks, insufficient visible wool variation and a flat-looking heap. The task's remaining visual defects are not resolved. That review also asks for a lip touching the steel; contact with the backing is not a requirement and was not introduced. The scene retains the measured air gap between wool and steel.
+
+All 19 numeric gates below are measured on the final visibility candidate. G3 has 13 over-limit runs among 30, and eight of eleven qualifying G6 contours are outside their limits. Those image-space results are worse than pass ten's despite the unchanged 16/19 pass count. G4's first value is the hero shoulder, where only one lip is measurable; the other values are hero armhole, close shoulder and close armhole. Missing width evidence remains a failure.
+
+| Gate | Measured value | Threshold | Result |
+| --- | --- | --- | --- |
+| G1 | Visible sharp adjacency 1.967946% | ≤6% | Pass |
+| G2 | Normal-jump pixels 0.143307% | ≤2% | Pass |
+| G3 | Longest visible lip run 37.583241 px | ≤12 px | Fail |
+| G4 | Width CV unavailable / 0.822366 / 0.775748 / 0.873879 | Each measurable and ≥0.35 | Fail |
+| G5 | Lifted lip length 32.031467% | ≥30% lifted over 3 mm | Pass |
+| G6 | Dimensions 0.936005 to 1.183320; 8 of 11 fail | Each qualifying contour 1.15 to 1.40 | Fail |
+| G20 | Near-hanger sharp adjacency 3.348641% | ≤10% | Pass |
+| G21 | Hanger pixels outside the split hull 0 | 0 | Pass |
+| G22 | Maximum hero sleeve depth/width 0.425572 | ≤0.45 | Pass |
+| G23 | Retained arc 36.004298%; released fringe 79.670392% | ≥35%; ≥70% | Pass |
+| G24 | Chest width/unaged 1.014395 | 0.92 to 1.08 | Pass |
+| G25 | Open-hem fringe coverage 86.020641% | ≥70% | Pass |
+| G26 | Hem-height autocorrelation peak 0.0 | <0.30 | Pass |
+| G27 | Mound height 26.876078 mm | 15 to 35 mm | Pass |
+| G28 | Fallen cloth pieces 3 | ≥2 | Pass |
+| G29 | Mound 95.259745 cm³; lost wool 9.510194 cm³; inferred packing 9.983435% | Factor 2 of lost-wool volume at 5% to 15% packing | Pass |
+| G30 | Changed SAT crossings 0; original hanger 28/28; hanger geometry exact | 0 changed crossings; exact hanger baseline | Pass |
+| G31 | 20,580 triangles / 13,768 unaged = 1.494770 times unaged | ≤20,652 and ≤1.5 times unaged | Pass |
+| G32 | Worst boundary bound 0.623240 mm | ≤1.5 mm | Pass |
+
+The separate armhole gap audit passes at 32.940270 mm median, against 25 mm minimum. Every attachment base passes the independent 2 mm seating audit. Shoulder-board maxima remain 1.299524 and 1.421234 mm; the largest other gap is 1.800060 mm at the medal ribbon. The saved blend re-exports byte-identically. All nine studio camera records match pass ten exactly, including position, aim, projection, lens, distance and resolution.
+
+The requested images are `tmp/age/tunic11/tunic-in-locker-before-after.png`, `tunic-in-locker-closeup.png` and the supplemental `tunic-in-locker-heap.png`. Studio comparisons are `tunic-before-after.png`, `tunic-turntable.png` and `tunic-closeup.png` in the same directory. Individual context states and camera/setup records are under `context-visible/`; studio diagnostics are under `visible-images/`. The unchanged legacy studio renderer still substitutes grey for unrecognised untextured materials, including the exposed allowance and surviving yarns, so its bright opening is not a faithful colour comparison with the locker render.
+
+Focused Blender controls pass, including the saved-candidate contracts, independent fading/thinning channels, fallen-edge opacity and area accounting, and 3,072 retained-binding opacity samples. Six Python wear/atlas checks and five open-lip metric checks pass. The full acceptance command exits 1 because G3, G4 and G6 fail. Per-opening values, all SAT contacts and seating are in `visible/gates.json`, `collisions.json` and `attachment-audit.json`. No shared aging module or locker asset was edited. Rebuild with `polish_pass11.py -- --out tmp/age/tunic11/visible`, then `finish_aging.py`, `render_aging.py`, `render_context.py`, `compose_context.py`, the shared studio composer/collision audit, `audit_attachments.py` and `measure_aging.py`. The scratch driver is `tmp/age/tunic11/run.sh`.
+
 ### Tunic10: rejected, 16 of 19 gates pass
 
 The measured candidate is `tmp/age/tunic10/curled/candidate.glb`. G3, G4 and G6 fail, and the visual review rejects it for close-up use. The production `assets/props/quarters/dress_uniform_aged.glb` and its tunic textures remain unchanged. Pass ten starts from `tmp/age/tunic9/binding/baked.blend`, preserving the settled sleeve, retained underarm, original hanger and seated fittings. It adds finishing geometry and texture fields without rerunning the cloth solve. The intended age remains 1000 years.
