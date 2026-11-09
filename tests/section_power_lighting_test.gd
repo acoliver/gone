@@ -47,6 +47,29 @@ func test_d16_matches_d14_profiles_and_levels_through_both_power_handoffs() -> v
 	section.free()
 	hallway.free()
 
+func test_quarters_reveal_bounce_is_local_and_follows_the_same_power_handoff() -> void:
+	var game := Game.new(114)
+	game.light_hallway()
+	var spec := game.layout.section(QuartersLayout.SECTION)
+	var section := ShipSection.build(game.layout, spec)
+	var circuit := SectionPowerLighting.build(game, spec, section)
+	section.add_child(circuit)
+	var regular := circuit.find_children("QuartersRevealRegular", "OmniLight3D", true, false)
+	var emergency := circuit.find_children("QuartersRevealEmergency", "OmniLight3D", true, false)
+	assert_int_equal(regular.size(), 1, "one local white reveal bounce")
+	assert_int_equal(emergency.size(), 1, "one local emergency reveal bounce")
+	for active: bool in [false, true]:
+		game.power_active = active
+		for tick: int in range(31): circuit.process_frame()
+		for light: OmniLight3D in regular + emergency:
+			assert_int_equal(light.light_cull_mask, Lighting.QUARTERS_MASK, "bounce cannot illuminate corridor surfaces without the quarters receiver layer")
+			assert_true(is_equal_approx(light.omni_range, 1.8), "bounce remains local to the entrance hardware")
+		for light: OmniLight3D in regular:
+			assert_true(is_equal_approx(light.light_energy, Lighting.regular_energy() * Lighting.REGULAR_END_FILL_SHARE if active else 0.0), "regular end-bounce profile follows secondary")
+		for light: OmniLight3D in emergency:
+			assert_true(is_equal_approx(light.light_energy, 0.0 if active else Lighting.emergency_energy() * Lighting.EMERGENCY_END_FILL_SHARE), "emergency end-bounce profile follows emergency")
+	section.free()
+
 func _check_lights(actual: Array, expected: Array, context: String) -> void:
 	assert_int_equal(actual.size(), expected.size(), context + " count")
 	for index: int in range(mini(actual.size(), expected.size())):

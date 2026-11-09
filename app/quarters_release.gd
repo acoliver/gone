@@ -10,7 +10,7 @@ static func build(layout: ShipLayout) -> Node3D:
 	root.transform = QuartersLayout.release_frame()
 	var steel := Surfaces.material(&"hatch_leaf")
 	var frame := Surfaces.door_frame(layout.door(QuartersLayout.DOOR), &"FRAME")
-	var mask := Lighting.architectural_mask(layout, QuartersLayout.SECTION)
+	var mask := Lighting.architectural_mask(layout, QuartersLayout.SECTION) | Lighting.QUARTERS_MASK
 	var size := QuartersLayout.RELEASE_SIZE
 	for part: Array in [
 		["Recess", Vector3(size.x, size.y, 0.03), Vector3.ZERO],

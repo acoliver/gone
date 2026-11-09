@@ -17,6 +17,9 @@ func _run() -> void:
 	scene._add_hatch(&"D16-C-001-H-AFT")
 	scene.ensure_d16()
 	var release: Node3D = scene.d16_section.get_node("ManualRelease")
+	check.assert_true((scene.d16_section.get_node("D16-S-042_STARBOARD_002").layers & Lighting.QUARTERS_MASK) != 0, "lintel underside receives the local threshold bounce")
+	check.assert_true((release.get_node("PullGrip").layers & Lighting.QUARTERS_MASK) != 0, "grip receives the local threshold bounce")
+	check.assert_int_equal(scene.d16_section.get_node("D16-S-042_STARBOARD_000").layers & Lighting.QUARTERS_MASK, 0, "other corridor walls do not receive the local threshold bounce")
 	for part: String in ["Recess", "FrameHead", "FrameFoot", "FrameLeft", "FrameRight", "PullGrip", "HandleLeft", "HandleRight"]:
 		check.assert_true(release.has_node(part), "readable recessed handle component: " + part)
 	check.assert_true(release.get_node("PullGrip").position.z > release.get_node("Recess").position.z + 0.03, "grip stands clear of dark recess")

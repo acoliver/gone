@@ -11,6 +11,8 @@ var _white_lights: Array[OmniLight3D] = []
 var _white_material: StandardMaterial3D
 var _fills: Array[Lighting.EmergencyFill] = []
 var _white_end_fill: Lighting.RegularEndFill
+var _reveal_regular: Lighting.RegularEndFill
+var _reveal_emergency: Lighting.EmergencyFill
 
 static func build(game: Game, spec: ShipLayout.SectionSpec, owner: ShipSection) -> SectionPowerLighting:
 	var circuit := SectionPowerLighting.new()
@@ -58,6 +60,15 @@ static func build(game: Game, spec: ShipLayout.SectionSpec, owner: ShipSection) 
 	circuit._fills.append(end)
 	circuit._white_end_fill = Lighting.regular_end_fill(spec.emergency_end_fill_position(), white)
 	circuit.add_child(circuit._white_end_fill)
+	var reveal := game.layout.door(QuartersLayout.DOOR).frame() * Vector3(0, 1.7, -0.45)
+	circuit._reveal_regular = Lighting.regular_end_fill(reveal, white)
+	circuit._reveal_regular.name = "QuartersRevealRegular"
+	circuit._reveal_emergency = Lighting.emergency_fill(reveal, red, Lighting.QUARTERS_MASK, Lighting.EMERGENCY_END_FILL_SHARE, Lighting.EMERGENCY_END_FILL_COLOR)
+	circuit._reveal_emergency.name = "QuartersRevealEmergency"
+	for bounce: OmniLight3D in [circuit._reveal_regular, circuit._reveal_emergency]:
+		bounce.light_cull_mask = Lighting.QUARTERS_MASK
+		bounce.omni_range = 1.8
+		circuit.add_child(bounce)
 	circuit._apply()
 	return circuit
 
@@ -77,6 +88,8 @@ func _apply() -> void:
 		material.emission = Lighting.emergency_emission(_red.intensity())
 	for fill: Lighting.EmergencyFill in _fills: fill.apply_level(_red.intensity())
 	_white_end_fill.apply_level(_white.intensity())
+	_reveal_regular.apply_level(_white.intensity())
+	_reveal_emergency.apply_level(_red.intensity())
 	for light: OmniLight3D in _white_lights:
 		light.light_energy = Lighting.regular_energy() * _white.intensity()
 	_white_material.emission = Lighting.REGULAR_WHITE * Lighting.REGULAR_EMISSIVE * _white.intensity()

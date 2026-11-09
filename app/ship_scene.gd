@@ -345,6 +345,9 @@ func ensure_d16() -> void:
 	var spec := _game.layout.section(&"D16-S-042")
 	d16_section = ShipSection.build(_game.layout, spec)
 	_parent.add_child(d16_section)
+	for piece: Node in d16_section.get_children():
+		if piece is MeshInstance3D and piece.get_meta(&"solid_id", &"") == &"D16-S-042/STARBOARD/002":
+			piece.layers |= Lighting.QUARTERS_MASK
 	d16_lighting = SectionPowerLighting.build(_game, spec, d16_section)
 	d16_section.add_child(d16_lighting)
 	for id: StringName in d16_section.side_leaves:
