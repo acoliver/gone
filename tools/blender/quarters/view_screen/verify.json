@@ -1,0 +1,266 @@
+{
+  "asset": "view_screen",
+  "bounds_gltf": {
+    "actual": [
+      [
+        -0.9000000096857548,
+        0.0,
+        -0.04000000189989805
+      ],
+      [
+        0.9000000096857548,
+        1.0499999858438969,
+        0.04310017142850754
+      ]
+    ],
+    "expected": [
+      [
+        -0.9,
+        0.0,
+        -0.04
+      ],
+      [
+        0.9,
+        1.05,
+        0.04
+      ]
+    ],
+    "max_error_m": 0.0031001714285075407,
+    "tolerance_m": 0.01,
+    "pass": true
+  },
+  "origin_at_floor": {
+    "min_y_m": 0.0,
+    "pass": true
+  },
+  "required_nodes": {
+    "missing": [],
+    "pass": true
+  },
+  "hierarchy": {
+    "Housing": {
+      "actual": "ViewScreen",
+      "expected": "ViewScreen",
+      "pass": true
+    },
+    "Bezel": {
+      "actual": "ViewScreen",
+      "expected": "ViewScreen",
+      "pass": true
+    },
+    "Glass": {
+      "actual": "ViewScreen",
+      "expected": "ViewScreen",
+      "pass": true
+    },
+    "Display": {
+      "actual": "ViewScreen",
+      "expected": "ViewScreen",
+      "pass": true
+    },
+    "HousingBack": {
+      "actual": "Housing",
+      "expected": "Housing",
+      "pass": true
+    }
+  },
+  "pivots": {
+    "ViewScreen": {
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "pass": true
+    }
+  },
+  "topology": {
+    "BezelBottom": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "BezelLeft": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "BezelRight": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "BezelTop": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Display": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Glass": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "HousingBack": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "HousingBottom": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "HousingLeft": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "HousingRight": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "HousingRivets": {
+      "component_count": 4,
+      "probe_count": 216,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "HousingTop": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "ScreenBacking": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    }
+  },
+  "degenerate_faces": 0,
+  "triangle_count": 1472,
+  "triangle_limit": 15000,
+  "material_slots": [
+    "BareSteel",
+    "DarkSteel",
+    "Display",
+    "Glass",
+    "PaintedSteel"
+  ],
+  "required_materials_pass": true,
+  "UV": {
+    "overlapping_triangle_pairs": 0,
+    "max_overlap_area_uv2": 0.0,
+    "out_of_unit_square_coordinates": 0,
+    "linear_texel_density_p05_p50_p95": [
+      0.22701284524642945,
+      0.2407864547773746,
+      0.25020780735147097
+    ],
+    "density_p95_p05_ratio": 1.1021746680451614,
+    "pass": true
+  },
+  "hero_first_hit_visibility": {
+    "Glass": {
+      "sample_count": 54,
+      "visible_projected_area_fraction": 1.0,
+      "visible_triangle_fraction": 1.0,
+      "projection": "orthographic",
+      "minimum": 0.6,
+      "pass": true
+    },
+    "HousingRivets": {
+      "sample_count": 136,
+      "visible_projected_area_fraction": 1.0,
+      "visible_triangle_fraction": 1.0,
+      "projection": "orthographic",
+      "minimum": 0.6,
+      "pass": true
+    },
+    "BezelBottom": {
+      "sample_count": 54,
+      "visible_projected_area_fraction": 0.9591926098219186,
+      "visible_triangle_fraction": 0.7222222222222222,
+      "projection": "orthographic",
+      "minimum": 0.6,
+      "pass": true
+    }
+  },
+  "byte_identical_reexport": true,
+  "axis_contract": "Blender Z-up/-Y front -> exported glTF +Y up/+Z front; bounds measured outside Blender",
+  "pass": true,
+  "screen_assembly": {
+    "glass_thickness_m": 0.004000000189989805,
+    "glass_transmission": 0.949999988079071,
+    "glass_front_z_m": 0.03600000194273889,
+    "display_front_z_m": 0.027000000467523932,
+    "display_emissive_factor": [
+      8.000000201165668e-05,
+      0.00016000000402331335,
+      0.0002399999967217445
+    ],
+    "housing_centre_first_hit_z_m": -0.028000001795589924,
+    "pass": true
+  }
+}

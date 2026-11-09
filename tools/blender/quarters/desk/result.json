@@ -1,0 +1,43 @@
+{
+  "prop": "desk",
+  "picked_seed": 227,
+  "hunyuan": {
+    "elapsed_seconds": 327.559247749974,
+    "subfolder": "hunyuan3d-dit-v2-mv",
+    "octree_resolution": 320,
+    "seed": 0
+  },
+  "triangle_count": 4704,
+  "verify_pass": true,
+  "review": {
+    "rating": 8,
+    "ready": true,
+    "observations": "The fitted asset (B) successfully replicates the rigid geometry of the design (A), including the rectangular footprint, the three-drawer pedestal on the left, and the open leg space on the right. The grey-green military furniture style is consistent across both images, with a matte finish and clean, untextured surfaces. The silhouette of the top surface, including the raised back edge, is accurately maintained in the fit. The drawer handles in the fit are simplified to flat, horizontal bars, which is a reasonable manufacturing interpretation of the design's hardware.",
+    "defects": [
+      "The design (A) features a distinct metallic trim or bevel along the front edge of the top surface, which is missing in the fitted asset (B).",
+      "The design (A) shows a small, dark rectangular opening or cutout on the right side panel, which is not present in the fit (B).",
+      "The rivets or fasteners visible on the side panels in the design are less prominent or absent in the fit."
+    ],
+    "fixes": [
+      "Add a metallic trim or bevel to the front edge of the top surface in the fitted asset to match the design.",
+      "Include the small rectangular opening or cutout on the right side panel if it is a functional feature (e.g., for cable management).",
+      "Enhance the visibility of rivets or fasteners on the side panels to better match the military style of the design."
+    ],
+    "images_seen": [
+      "A: Desk design (top left)",
+      "B: Desk fit (top right)",
+      "C: Dining table design (bottom left)",
+      "D: Dining table fit (bottom right)"
+    ]
+  },
+  "acceptance_rule": "Export checks pass and visual fit is at least 7/10; reviewer ready flag is retained separately.",
+  "accepted": true,
+  "review_calibration": {
+    "reference_prop": "dining_table",
+    "reference_rating": 9,
+    "isolated_rating": 4,
+    "scope": "Full design-to-fit comparison of both pairs, using identical criteria. Captures unchanged."
+  },
+  "texture_map_count": 0,
+  "earlier_failure_cause": "The earlier builder used an open tube end frame against a solid end panel in seed 227. Raised edge returns and the inset kick plate also differed in the captures."
+}

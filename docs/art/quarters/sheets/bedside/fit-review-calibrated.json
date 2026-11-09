@@ -1,0 +1,45 @@
+{
+  "images_seen": [
+    "A: Bedside design",
+    "B: Bedside fit",
+    "C: Dining table design",
+    "D: Dining table fit"
+  ],
+  "bedside": {
+    "rating": 7,
+    "ready": false,
+    "observations": "Both panels show a two-drawer cabinet with a grey-green finish and a small lamp on top. Panel A (design) features a distinct, flared foot structure at the base. Panel B (fit) replaces the flared feet with a solid, dark rectangular plinth. The drawer pulls in Panel B appear as recessed slots, whereas Panel A shows protruding bar handles. The lamp shade in Panel B is a simple dome, while Panel A has a more complex, curved profile.",
+    "defects": [
+      "The base geometry is inconsistent between the design and the fit (flared feet vs. solid plinth).",
+      "The drawer hardware is not identical; the fit version lacks the protruding handles seen in the design.",
+      "The lamp accessory does not match the design's specific shade shape."
+    ],
+    "fixes": [
+      "Update the fit asset's base to match the flared foot design or vice versa.",
+      "Ensure the drawer pulls in the fit asset match the protruding bar style of the design.",
+      "Refine the lamp model in the fit asset to replicate the curved shade of the design."
+    ],
+    "images_seen": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ]
+  },
+  "dining_table": {
+    "rating": 9,
+    "ready": true,
+    "observations": [
+      "Both panels depict a round pedestal table with a grey-green finish.",
+      "The top, central column, and circular base are consistent in shape and proportion across both panels.",
+      "Rivets are visible around the perimeter of the top and base in both versions.",
+      "The transition from the column to the base is smooth and identical in both renders."
+    ],
+    "defects": [
+      "No significant geometric or stylistic defects observed between the design and fit."
+    ],
+    "fixes": [
+      "No corrective action required."
+    ]
+  }
+}

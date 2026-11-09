@@ -1,0 +1,492 @@
+{
+  "asset": "media_cabinet",
+  "bounds_gltf": {
+    "actual": [
+      [
+        -1.0999999605119228,
+        0.0,
+        -0.22500000521540642
+      ],
+      [
+        1.0999999605119228,
+        0.6000000238418579,
+        0.23400000017136327
+      ]
+    ],
+    "expected": [
+      [
+        -1.1,
+        0.0,
+        -0.225
+      ],
+      [
+        1.1,
+        0.6,
+        0.225
+      ]
+    ],
+    "max_error_m": 0.009000000171363265,
+    "tolerance_m": 0.01,
+    "pass": true
+  },
+  "origin_at_floor": {
+    "min_y_m": 0.0,
+    "pass": true
+  },
+  "required_nodes": {
+    "missing": [],
+    "pass": true
+  },
+  "hierarchy": {
+    "Carcass": {
+      "actual": "MediaCabinet",
+      "expected": "MediaCabinet",
+      "pass": true
+    },
+    "Door_0": {
+      "actual": "MediaCabinet",
+      "expected": "MediaCabinet",
+      "pass": true
+    },
+    "Door_1": {
+      "actual": "MediaCabinet",
+      "expected": "MediaCabinet",
+      "pass": true
+    },
+    "Door_2": {
+      "actual": "MediaCabinet",
+      "expected": "MediaCabinet",
+      "pass": true
+    }
+  },
+  "pivots": {
+    "MediaCabinet": {
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "pass": true
+    },
+    "Door_0": {
+      "actual": [
+        -1.0820000171661377,
+        0.08100000023841858,
+        0.2280000001192093
+      ],
+      "expected": [
+        -1.082,
+        0.081,
+        0.228
+      ],
+      "pass": true
+    },
+    "Door_1": {
+      "actual": [
+        -0.3486666679382324,
+        0.08100000023841858,
+        0.2280000001192093
+      ],
+      "expected": [
+        -0.3486666666666667,
+        0.081,
+        0.228
+      ],
+      "pass": true
+    },
+    "Door_2": {
+      "actual": [
+        0.38466668128967285,
+        0.08100000023841858,
+        0.2280000001192093
+      ],
+      "expected": [
+        0.3846666666666667,
+        0.081,
+        0.228
+      ],
+      "pass": true
+    }
+  },
+  "topology": {
+    "Bay_0_Back": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Bay_0_Bottom": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Bay_0_SideL": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Bay_0_SideR": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Bay_0_Top": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Bay_1_Back": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Bay_1_Bottom": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Bay_1_SideL": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Bay_1_SideR": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Bay_1_Top": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Bay_2_Back": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Bay_2_Bottom": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Bay_2_SideL": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Bay_2_SideR": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Bay_2_Top": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DoorRivets_0": {
+      "component_count": 5,
+      "probe_count": 270,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DoorRivets_1": {
+      "component_count": 5,
+      "probe_count": 270,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DoorRivets_2": {
+      "component_count": 5,
+      "probe_count": 270,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Door_0": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Door_1": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Door_2": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Hinge_0_0": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Hinge_0_1": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Hinge_1_0": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Hinge_1_1": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Hinge_2_0": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Hinge_2_1": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "KickPlate_0": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "KickPlate_1": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "KickPlate_2": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "LatchPocket_0": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "LatchPocket_1": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "LatchPocket_2": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Latch_0": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Latch_1": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Latch_2": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    }
+  },
+  "degenerate_faces": 0,
+  "triangle_count": 4752,
+  "triangle_limit": 15000,
+  "material_slots": [
+    "BareSteel",
+    "DarkSteel",
+    "PaintedSteel"
+  ],
+  "required_materials_pass": true,
+  "UV": {
+    "overlapping_triangle_pairs": 0,
+    "max_overlap_area_uv2": 0.0,
+    "out_of_unit_square_coordinates": 0,
+    "linear_texel_density_p05_p50_p95": [
+      0.21077525759057866,
+      0.22373901602642737,
+      0.23276722181072526
+    ],
+    "density_p95_p05_ratio": 1.1043384525847193,
+    "pass": true
+  },
+  "hero_first_hit_visibility": {
+    "Latch_0": {
+      "sample_count": 54,
+      "visible_projected_area_fraction": 0.997443606935513,
+      "visible_triangle_fraction": 0.8518518518518519,
+      "projection": "orthographic",
+      "minimum": 0.6,
+      "pass": true
+    },
+    "Latch_1": {
+      "sample_count": 54,
+      "visible_projected_area_fraction": 0.997443606935513,
+      "visible_triangle_fraction": 0.8518518518518519,
+      "projection": "orthographic",
+      "minimum": 0.6,
+      "pass": true
+    },
+    "DoorRivets_0": {
+      "sample_count": 160,
+      "visible_projected_area_fraction": 1.0,
+      "visible_triangle_fraction": 1.0,
+      "projection": "orthographic",
+      "minimum": 0.6,
+      "pass": true
+    }
+  },
+  "byte_identical_reexport": true,
+  "axis_contract": "Blender Z-up/-Y front -> exported glTF +Y up/+Z front; bounds measured outside Blender",
+  "pass": true
+}

@@ -85,12 +85,12 @@
         "DarkSteel",
         "Display"
       ],
-      "prompt": "An armoured military desktop computer terminal formed from one solid low trapezoidal wedge of grey-green painted steel. The flat broad bottom of the wedge rests directly on the desk; the sloping keyboard deck and upper display face are continuous parts of this same compact housing. Precisely 1.1 metres wide, 0.55 metres deep and 0.69 metres high. The broad steeply sloping upper face contains one dark teal luminous rectangular screen surrounded by a thick recessed armoured bezel. The lower shallow sloping face contains three rows of eight chunky dark square keys and three tall bare steel toggle switches. Folded steel edges, small bevels, sparse rivet rows and a flat base. A solid tabletop wedge computer with an integral keyboard, factory fresh grey-green satin steel matching warship locker furniture.",
+      "prompt": "A single broad military tabletop control terminal, a landscape-format armoured console made of grey-green satin painted steel. The whole terminal is one and a half times as wide as it is tall, 1.1 metres wide, 0.69 metres tall and 0.55 metres deep. A solid trapezoidal wedge rests directly on its broad flat base. A horizontal dark teal screen is twice as wide as it is tall, recessed inside a thick painted steel bezel on the steep backward-leaning upper face. The shallow sloping lower face has exactly twenty-four large blank square keys in three straight rows of eight, and three long thin bare-steel toggle levers along the back of the keys. A sparse industrial control keypad, not a typewriter keyboard. The lower solid front wall is about one third of the whole height. Small bevels and sparse rivet rows, fresh even factory paint. Only the low wide desktop terminal, no stand, pedestal, legs or separate monitor.",
       "seeds": [
-        331,
-        332,
-        333,
-        334
+        351,
+        352,
+        353,
+        354
       ]
     },
     {
@@ -189,12 +189,12 @@
         "Glass",
         "Display"
       ],
-      "prompt": "A thin wall-mounted military starship viewing screen, 1.8 metres wide, 1.05 metres tall, 0.08 metres deep. Rectangular grey-green satin painted steel housing with narrow chamfered corners and small round rivets along the edges, a dark inset bezel, a flat glass cover, and a blank dark display surface. A horizontal utilitarian screen with a smooth broad uninterrupted front and solid shallow back. Fresh even paint.",
+      "prompt": "A very thin wall-mounted military display panel, a flat horizontal steel frame with a blank black glass screen. Overall width 1.8 metres and height 1.05 metres, but only eight centimetres thick: the edge thickness is less than one twentieth of the width. A shallow solid back, not a deep box or cabinet. A narrow grey-green satin painted steel outer rim surrounds a separate recessed dark inner bezel and one broad flat black glass display face. Small chamfers and one small bare-steel rivet at each of the four front corners. Fresh even factory paint. The entire object is just the thin wall-hung display panel, no stand, legs, base, bracket or furniture. Nearly frontal view with only a narrow side edge visible.",
       "seeds": [
-        281,
-        282,
-        283,
-        284
+        361,
+        362,
+        363,
+        364
       ]
     },
     {
@@ -209,12 +209,12 @@
         "BareSteel",
         "DarkSteel"
       ],
-      "prompt": "A low wide storage cabinet beneath a military starship cabin viewing screen, 2.2 metres wide, 0.45 metres deep and 0.60 metres tall. Grey-green satin painted steel carcass with a flat top, three separate front hinged doors with recessed bare steel latches, riveted folded edge rails and a dark continuous inset kick plate. Plain broad painted door panels, fresh even factory paint.",
+      "prompt": "A standalone low wide three-door steel storage credenza for military starship officers quarters. The entire top is bare empty steel, with nothing standing on it. Precisely 2.2 metres wide, 0.45 metres deep and 0.60 metres tall, more than three times wider than tall. Grey-green satin painted steel carcass with a flat top, three separate front hinged doors with recessed bare steel latches, riveted folded edge rails and a dark continuous inset kick plate. Plain broad painted door panels, fresh even factory paint. A cabinet only, no electronics, monitor, television, screen, stand, ornaments or objects on top.",
       "seeds": [
-        291,
-        292,
-        293,
-        294
+        341,
+        342,
+        343,
+        344
       ]
     },
     {

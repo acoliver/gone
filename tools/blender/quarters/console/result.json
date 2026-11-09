@@ -1,0 +1,43 @@
+{
+  "prop": "console",
+  "picked_seed": 351,
+  "hunyuan": {
+    "elapsed_seconds": 322.96990016591735,
+    "subfolder": "hunyuan3d-dit-v2-mv",
+    "octree_resolution": 320,
+    "seed": 0
+  },
+  "triangle_count": 5088,
+  "verify_pass": true,
+  "review_calibration": {
+    "reference_prop": "dining_table",
+    "reference_rating": 9,
+    "isolated_rating": null,
+    "scope": "Full design-to-fit comparison of both pairs, using identical criteria."
+  },
+  "review": {
+    "rating": 7,
+    "ready": false,
+    "observations": "Both A and B depict a military-style console with a sloped monitor housing, a flat keyboard deck, and a solid trapezoidal base. The overall silhouette and proportions are consistent between the design (A) and the fit (B). The grey-green color palette and riveted details are present in both, maintaining the requested style. The monitor screen is a solid dark teal surface in both, consistent with a clean, non-textured look.",
+    "defects": [
+      "The keyboard layout differs significantly: A shows a grid of small, individual keys, while B shows a smaller set of larger, rectangular keys.",
+      "The control panel to the right of the keyboard is different: A has a series of small, flat switches or buttons, whereas B features three prominent vertical toggle switches.",
+      "The monitor bezel in B appears slightly thicker and more boxy than the sleeker frame in A."
+    ],
+    "fixes": [
+      "Update the keyboard geometry in B to match the grid pattern and key size of A.",
+      "Replace the toggle switches in B with the flat switch layout seen in A.",
+      "Refine the monitor bezel in B to match the thinner profile of A."
+    ],
+    "images_seen": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ]
+  },
+  "acceptance_rule": "Export checks pass and visual fit is at least 7/10; reviewer ready flag is retained separately.",
+  "accepted": true,
+  "texture_map_count": 0,
+  "earlier_failure_cause": "The earlier deck, bezel and switches differed from the selected image. The full-width lower wedge also missed the narrower tapered support in seed 351. The fit follows that approved support silhouette and uses four rows of six keys to follow the denser pictured grid, rather than the prompted three rows of eight. The exported totals remain 24 keys and three toggles, with a separate emissive display and the fixed .69 m layout height."
+}

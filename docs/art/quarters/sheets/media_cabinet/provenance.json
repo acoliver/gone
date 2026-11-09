@@ -1,0 +1,27 @@
+{
+  "command": "env HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 /Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-z-image-turbo --model filipstrand/Z-Image-Turbo-mflux-4bit --quantize 4 --steps 8 --seed 342 --width 1024 --height 1024 --output /Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/tmp/props/contacts/media_cabinet/hero-s342.png --prompt 'Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish. A standalone low wide three-door steel storage credenza for military starship officers quarters. The entire top is bare empty steel, with nothing standing on it. Precisely 2.2 metres wide, 0.45 metres deep and 0.60 metres tall, more than three times wider than tall. Grey-green satin painted steel carcass with a flat top, three separate front hinged doors with recessed bare steel latches, riveted folded edge rails and a dark continuous inset kick plate. Plain broad painted door panels, fresh even factory paint. A cabinet only, no electronics, monitor, television, screen, stand, ornaments or objects on top. Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.'",
+  "prompt": "Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish. A standalone low wide three-door steel storage credenza for military starship officers quarters. The entire top is bare empty steel, with nothing standing on it. Precisely 2.2 metres wide, 0.45 metres deep and 0.60 metres tall, more than three times wider than tall. Grey-green satin painted steel carcass with a flat top, three separate front hinged doors with recessed bare steel latches, riveted folded edge rails and a dark continuous inset kick plate. Plain broad painted door panels, fresh even factory paint. A cabinet only, no electronics, monitor, television, screen, stand, ornaments or objects on top. Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.",
+  "seed": 342,
+  "model_id": "filipstrand/Z-Image-Turbo-mflux-4bit",
+  "sha256": "7de34ecdd8265e7af1d9cd47c9d2370e2c5ac61d7dbbae4a913cf6e97dfd9469",
+  "elapsed_seconds": 68.394,
+  "selection": {
+    "chosen_seed": 342,
+    "rating": 8,
+    "approved": true,
+    "observations": "All six panels are visible. Panel A shows the approved room context. Panel B shows the accepted locker style. Panels C1, C2, C3, and C4 show candidate media cabinets. C2 (seed 342) is the most suitable candidate as it correctly depicts a low, wide, three-door steel credenza with a flat top, recessed latches, and a dark kick plate, matching the brief's requirements for a standalone storage unit.",
+    "defects": [
+      "C1 (seed 341) has a slightly uneven top surface and less distinct kick plate.",
+      "C3 (seed 343) has a slightly different door proportion and less distinct kick plate.",
+      "C4 (seed 344) has a slightly different door proportion and less distinct kick plate."
+    ],
+    "fitting_landmarks": {
+      "form": "Low wide three-door steel storage credenza",
+      "top": "Flat, bare empty steel",
+      "doors": "Three separate front hinged doors with recessed bare steel latches",
+      "carcass": "Grey-green satin painted steel with riveted folded edge rails",
+      "kick_plate": "Dark continuous inset kick plate"
+    }
+  },
+  "inputs_policy": "Single approved hero; no independently hallucinated side/back views."
+}
