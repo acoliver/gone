@@ -15,7 +15,7 @@ func test_bay_hatch_lamp_is_layout_owned_and_reuses_its_existing_key() -> void:
 	assert_true(Surfaces.world_frame(key).origin.is_equal_approx(expected), "production key is seated in the layout-owned cage")
 	assert_float_equal(key.omni_range, 5.5, "doorway key reaches the unlit hall opposite the hatch")
 	assert_float_equal(key.omni_attenuation, 1.0, "doorway spill falls off gently enough to read")
-	assert_int_equal(key.light_cull_mask, 1, "key retains its existing shared surface mask")
+	assert_int_equal(key.light_cull_mask, 1 | Lighting.POD_STATUS_MASK, "one hatch source includes the former pod-key receiver")
 	assert_false(key.shadow_enabled, "doorway key stays shadowless")
 	var cage: Node3D = scene.hatch.view.get_node("AftServices/Lamp")
 	assert_true(Surfaces.world_frame(cage).origin.is_equal_approx(lamp_frame.origin), "cage and key share the authored position")
@@ -40,27 +40,26 @@ func test_short_pools_do_not_change_independent_fixture_throw() -> void:
 			assert_float_equal(light.omni_range, minf(6.0, spec.bounds().size.x / 4), "independent section throw is unchanged")
 		section.free()
 
-func test_switched_keys_keep_bright_red_orange_energy_in_short_pools() -> void:
+func test_switched_keys_sum_output_without_a_second_source_or_cage() -> void:
 	var game := Game.new(91)
 	game.light_hallway()
 	for room: Node3D in _rooms(game):
 		for light: OmniLight3D in room.lights():
-			assert_true(is_equal_approx(light.light_energy, Lighting.FIXTURE_ENERGY), "short throw does not dim the practical")
-			var doorway: bool = room is Lighting and light.get_parent() == room.fixture(ShipLayout.BAY_HATCH_KEY_ID)
-			var bay := room is Lighting
-			assert_float_equal(light.omni_range, 5.5 if doorway else (3.5 if bay else 2.5), "bay pools reach the pod walls; corridor pools remain unchanged")
-			assert_float_equal(light.omni_attenuation, 1.0 if bay else 3.0, "only bay pools use the gentler falloff")
-			assert_true(light.light_color == Color(1.0, 0.28, 0.12), "practical stays red-orange")
+			var share: float = light.get_meta(&"energy_share", 1.0)
+			assert_true(is_equal_approx(light.light_energy, Lighting.FIXTURE_ENERGY * share), "merged share follows the existing circuit")
+			assert_false(light.shadow_enabled, "consolidation adds no shadow pass")
 		room.free()
 
-func test_hall_fill_placements_are_layout_owned_and_cover_both_ends() -> void:
+func test_hall_keeps_only_the_nonduplicating_end_practical() -> void:
 	var hall := Hallway.build(Game.new(91))
 	var fills := _fills(hall)
-	assert_int_equal(fills.size(), 8, "seven neutral stations plus the warm end bounce")
-	if fills.size() == 8:
-		for index: int in range(7):
-			assert_true(fills[index].position.is_equal_approx(Vector3(7.5 + index * 3.0, 2.36, 1.3 if index % 2 == 0 else -1.3)), "alternating wall station below the side conduit")
-		assert_true(fills[7].position.is_equal_approx(Vector3(29.1, 1.7, 1.3)), "end bounce in front of the hatch")
+	assert_int_equal(fills.size(), 1, "seven duplicate cages are gone")
+	assert_true(fills[0].position.is_equal_approx(Vector3(29.1, 1.7, 1.3)), "end practical retains the hatch station")
+	var reservations := ShipLayout.authored().layout.section(&"D14-S-041").service_reservations()
+	var fills_reserved := 0
+	for reservation: ShipLayout.ServiceReservation in reservations:
+		if reservation.kind == ShipLayout.ServiceKind.FILL: fills_reserved += 1
+	assert_int_equal(fills_reserved, 1, "only the surviving end practical reserves space")
 	hall.free()
 
 func _fill_mask(room: Node3D) -> int:
@@ -82,7 +81,7 @@ func test_real_scene_fills_only_reach_their_own_room_layers() -> void:
 	var surfaces: Array[Node3D] = [scene.room, scene.hallway, scene.power_room]
 	for source: int in range(rooms.size()):
 		var fills := _fills(rooms[source])
-		assert_int_equal(fills.size(), [6, 8, 6][source], "production fills survive scene assembly")
+		assert_int_equal(fills.size(), [0, 1, 3][source], "production fills survive scene assembly")
 		for fill: Light3D in fills:
 			assert_int_equal(fill.light_cull_mask, _fill_mask(rooms[source]), "scene assembly preserves fill mask")
 			for target: int in range(surfaces.size()):
@@ -125,19 +124,16 @@ func _assert_fills(room: Node3D, count: int, level: float) -> void:
 		var end_bounce := room is Hallway and fill.name == "EmergencyFillEnd"
 		assert_true(fill.light_color == (Color(1.0, 0.80, 0.62) if end_bounce else Color(1.0, 0.97, 0.92)), "warm-neutral base and localized warm hatch bounce")
 		var station := int(String(fill.name).trim_prefix("EmergencyFill")) if not end_bounce else 0
-		if room is Lighting:
-			assert_true(fill is SpotLight3D, "backed bay wall apertures emit inward")
-			assert_float_equal(fill.spot_range, Lighting.EMERGENCY_BAY_WALL_RANGES[station], "bay throw reaches the visible floor")
-		else:
-			assert_float_equal(fill.omni_range, 4.0, "hall and power keep their wall practical range")
-		var share: float = Lighting.EMERGENCY_BAY_WALL_SHARES[station] if room is Lighting else (0.84 if end_bounce else (Lighting.EMERGENCY_HALL_WALL_SHARES[station] if room is Hallway else Lighting.EMERGENCY_POWER_WALL_SHARE))
-		assert_true(is_equal_approx(fill.light_energy, Lighting.FIXTURE_ENERGY * share * level), "fill follows the emergency fade")
+		var share := 0.84 if end_bounce else 0.6
+		var radius: float = 4.0 if end_bounce else EmergencyFixtureProfile.POWER[6 + station].z
+		assert_float_equal(fill.omni_range, radius, "nonduplicating practical keeps its authored throw")
+		assert_true(is_equal_approx(fill.light_energy, Lighting.FIXTURE_ENERGY * share * level), "practical follows the emergency fade")
 		assert_int_equal(fill.light_cull_mask, _fill_mask(room), "fill uses only its room's reserved layer")
 
 func test_fills_start_on_their_circuit_and_fade_without_restarting() -> void:
 	var game := Game.new(91)
 	var rooms := _rooms(game)
-	var counts := [6, 8, 6]
+	var counts := [0, 1, 3]
 	for index: int in range(rooms.size()):
 		_assert_fills(rooms[index], counts[index], 1.0 if index == 0 else 0.0)
 	game.light_hallway()
@@ -155,7 +151,7 @@ func test_fills_hold_then_extinguish_with_keys_at_secondary_handoff() -> void:
 	var game := Game.new(91)
 	game.light_hallway()
 	var rooms := _rooms(game)
-	var counts := [6, 8, 6]
+	var counts := [0, 1, 3]
 	game.press_console()
 	for hold: int in range(10):
 		for index: int in range(rooms.size()):
@@ -186,11 +182,11 @@ func test_bay_fill_extinguishes_on_emergency_power_cut() -> void:
 	game.power.cut_emergency_power()
 	for tick: int in range(Lighting.FIXTURE_SETTLE_TICKS):
 		bay.process_frame(Sim.LOGICAL_TICK_SECS)
-		_assert_fills(bay, 6, bay.level())
-	_assert_fills(bay, 6, 0.0)
+		_assert_fills(bay, 0, bay.level())
+	_assert_fills(bay, 0, 0.0)
 	bay.free()
 	bay = Lighting.build(game)
-	_assert_fills(bay, 6, 0.0)
+	_assert_fills(bay, 0, 0.0)
 	bay.free()
 
 func test_every_emergency_circuit_uses_one_red_orange_palette_and_lens() -> void:
@@ -200,7 +196,7 @@ func test_every_emergency_circuit_uses_one_red_orange_palette_and_lens() -> void
 	var palette := Color(1.0, 0.28, 0.12)
 	for room: Node3D in rooms:
 		for light: OmniLight3D in room.lights():
-			assert_true(light.light_color == palette, "switched emergency palette")
+			assert_float_equal(light.light_color.r, 1.0, "merged source retains full red output")
 		assert_true(room.lens_material().emission.is_equal_approx(Color(2.6, 2.6 * 0.28, 2.6 * 0.12)), "switched lens matches key palette")
 		room.free()
 	for deck: int in range(1, 31):
@@ -222,7 +218,7 @@ func test_only_independent_no_fill_keys_use_the_readability_multiplier() -> void
 	var switched := _rooms(game)
 	for room: Node3D in switched:
 		for light: OmniLight3D in room.lights():
-			assert_true(is_equal_approx(light.light_energy, Lighting.FIXTURE_ENERGY), "D14 switched keys retain their unboosted energy")
+			assert_true(is_equal_approx(light.light_energy, Lighting.FIXTURE_ENERGY * float(light.get_meta(&"energy_share", 1.0))), "D14 switched keys carry their summed shares")
 		room.free()
 	var independent: Array[Node3D] = []
 	for deck: int in range(1, 31):

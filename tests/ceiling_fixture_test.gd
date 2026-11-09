@@ -26,7 +26,7 @@ func test_every_built_spine_fixture_keeps_its_light_at_the_visible_lens() -> voi
 		var lights := node.find_children("*", "OmniLight3D", true, false)
 		var fixtures := 0
 		for light: OmniLight3D in lights:
-			if light.light_color != Lighting.EMERGENCY_RED: continue
+			if not light.get_parent().has_node("Lens"): continue
 			var lens: MeshInstance3D = light.get_parent().get_node("Lens")
 			var light_position := Surfaces.world_frame(light).origin
 			var lens_position := Surfaces.world_frame(lens) * lens.mesh.get_aabb().get_center()

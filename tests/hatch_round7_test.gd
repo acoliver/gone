@@ -164,7 +164,8 @@ func test_hatch_lamps_reuse_existing_circuit_keys_and_follow_switching() -> void
 		moved += 1
 		assert_false(light.get_parent().get_node("Lens").visible, "old fixture lens is not duplicated")
 		var bay_doorway := light.get_parent() == scene.lighting.fixture(ShipLayout.BAY_HATCH_KEY_ID)
-		assert_float_equal(light.omni_range, 5.5 if bay_doorway else 2.5, "only the bay hatch key has the longer doorway spill")
+		var expected_range := 5.5 if bay_doorway else EmergencyFixtureProfile.HALL[scene.hallway.lights().find(light)].z
+		assert_float_equal(light.omni_range, expected_range, "hatch cage keeps the throw of its consolidated circuit key")
 	assert_int_equal(moved, 4, "two bay faces and two section-end faces reuse four existing keys")
 	var bay_lens: MeshInstance3D = scene.hatch.view.get_node("AftServices/Lamp/Lens")
 	var hall_lens: MeshInstance3D = scene.hatch.view.get_node("ForeServices/Lamp/Lens")

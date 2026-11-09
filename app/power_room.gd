@@ -270,11 +270,14 @@ static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 	for station_x: float in REGULAR_STATIONS_X:
 		for station_z: float in REGULAR_STATIONS_Z:
 			room.add_child(room._white_fixture(station_x, station_z, white_level))
-			var fill := Lighting.emergency_fill(fill_positions[room._fill_lights.size()], level, Lighting.POWER_FILL_MASK, Lighting.EMERGENCY_POWER_WALL_SHARE)
-			fill.name = "EmergencyFill%d" % room._fill_lights.size()
-			FixtureEmitter.wall_source(fill, Surfaces.surface_frame(game.layout, ShipLayout.POWER_ID, &"PORT" if fill.position.z < ShipLayout.POWER_GENERATOR_CENTER.z else &"STARBOARD"), "emergency", fill.lens_material, PI if fill.position.z < ShipLayout.POWER_GENERATOR_CENTER.z else 0.0)
-			room.add_child(fill)
-			room._fill_lights.append(fill)
+	for position: Vector3 in fill_positions:
+		var index := room._fill_lights.size()
+		var fill := Lighting.emergency_fill(position, level, Lighting.POWER_FILL_MASK, 0.6)
+		EmergencyFixtureProfile.apply(fill, EmergencyFixtureProfile.POWER[6 + index], level, 0.0)
+		fill.name = "EmergencyFill%d" % index
+		FixtureEmitter.wall_source(fill, Surfaces.surface_frame(game.layout, ShipLayout.POWER_ID, &"STARBOARD"), "emergency", fill.lens_material, 0.0)
+		room.add_child(fill)
+		room._fill_lights.append(fill)
 
 	room._apply_console_state(game.console_state)
 	Lighting.mesh_layers(room, 1 | Lighting.POWER_FILL_MASK)
@@ -434,6 +437,7 @@ func _fixture(position: Vector3, level: float) -> Node3D:
 	fixture.name = "PowerFixture"
 	fixture.position = position
 	var light := Lighting.switched_key(_game.layout.power_room().emergency_light_role(), level)
+	EmergencyFixtureProfile.apply(light, EmergencyFixtureProfile.POWER[_lights.size()], level)
 	fixture.add_child(light)
 	var yaw := -PI / 2 if is_equal_approx(position.x, ROOM_START_X + FIXTURE_STANDOFF) else (PI / 2 if is_equal_approx(position.x, ROOM_END_X - FIXTURE_STANDOFF) else PI)
 	var lens := FixtureEmitter.cage(fixture, 1 | Lighting.POWER_FILL_MASK, Surfaces.surface_frame(_game.layout, ShipLayout.POWER_ID, &"CEILING"), _lens_material, Basis(Vector3.UP, yaw))
@@ -494,8 +498,7 @@ func process_frame(delta_secs: float) -> void:
 func _apply_level(level: float) -> void:
 	var energy: float = Lighting.emergency_energy() * level
 	for light: OmniLight3D in _lights:
-		if light.light_energy != energy:
-			light.light_energy = energy
+		light.light_energy = energy * light.get_meta(&"energy_share")
 	for fill: Lighting.EmergencyFill in _fill_lights:
 		fill.apply_level(level)
 	var emissive := Lighting.emergency_emission(level)

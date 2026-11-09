@@ -1,124 +1,125 @@
-# Wall-mounted emergency lamps (#111)
+# Consolidated wall fixtures (#111)
 
-The nineteen neutral emergency lamps that were pendants at `219a257` use weathered hatch cages on wall brackets. None uses a ceiling exception. Their `EmergencyFill` names preserve the circuit bindings. Every source remains inside visible glass, with no added light or ambient fill. The sixteen white beam fixtures, their assets, materials, textures, seating and source profiles are unchanged. Pod belts and their sources are unchanged.
+The wall relocation at `49f9127` put neutral cages beside the original emergency keys. Bay keys were also only 1.4 m apart, and two added bay sources had shares of 0.01. Removing the added cages alone would have left the original bay row below the requested spacing.
 
-## Why the bay needed another lighting pass
+Six bay cages, seven hall cages and three far-wall power cages are removed. Their output is folded into the existing keys. The eight pod-only bay channels also share those keys instead of adding a second source in each cage. Every standalone cage and beam now has exactly one source. The ship changes from 255 to 239 standalone fixtures and from 309 to 285 sources. The other 196 fixtures are unchanged.
 
-The first wall layout, `5a24c61`, passed the fixed incident-illumination grid while its bay overview fell from 52.9640 to 19.2251 mean display luma. The power overview lost 15.95%. The grid samples ninety architectural points equally, including walls outside the camera view. It does not model the surfaces visible between pods, material response or reflected light.
+## Energy and visible glow
 
-Before changing production code, the follow-up compared rendered-triangle camera rays and six individual source-off captures against `219a257`. The visible floor's mean direct incident proxy fell from 0.4147 to 0.0499, an 88% loss. The middle pair supplied 0.3491 units before the move and only 0.02636 afterwards. Moving the lamps from Z=±1.6 to Z=±3.8, reducing range to 4 m and reducing the central energy share to 0.10 left the centre floor outside useful throw. Stronger end lamps spent energy on nearby wall samples instead.
+Shares multiply the unchanged 45/(4π) energy unit. Merging sums energy and blends source colours in linear RGB. The bay retains eight red shares, eight pod shares and all 5.84 neutral shares, totalling 21.84. Hall output remains 11.62 shares, including its retained 0.84 end practical. Power output remains 9.6 shares. `app/emergency_fixture_profile.gd` records the consolidated shares, throw and falloff at each station.
 
-Both versions had shadows disabled, the same receiver masks, attenuation 1, exposure multiplier 2 and auto exposure disabled. Occlusion and exposure changes do not explain the discrepancy. The red strips are the installed pod status belts. The combined pod-only direct contribution remains 0.1596 in both versions; the belts stood out after neutral room light disappeared. Increasing their output would worsen the imbalance.
+A live lamp must have at least one third of the median live share in its room and circuit. Circuit state determines whether a lamp is live. Independent section and connector lamps are always live; the three switched spaces follow the emergency/white handoff. Zero-output lamps on either kind of live circuit fail too. The white hall end practical rises from 0.24 to 0.36 of regular-fixture energy, putting its absolute share at 0.198 beside the unchanged 0.55 beams. This changes no beam source, asset, texture, material or seating.
 
-Local `tmp/emerg5/diagnosis.md` records the measurements, controls and limitations. `diagnose-baseline/` and `diagnose-wall/` retain the renders and 3,600 camera-ray records per scene. Those diagnostic tables use Rec.709-weighted RGB; the image regression below uses Pillow RGB-to-L, matching the review's display-luma convention.
+Bay cages move down to Y=2.5 m to clear the service band. Their four-lamp row uses a 3.2 m pitch; the opposite three-lamp row uses 4 m. Hall keeps its original stations and integrated hatch cages. Power keeps its original side and far-wall keys; its three distinct near-wall cages use X=24, 26 and 28 m at a 2 m pitch. Full housing bounds clear services and hatch exclusions. The existing ship-wide mounting gate still rejects ceiling drops over 150 mm without wall contact. Walking lanes, pods and generator geometry are unchanged.
 
-## Positions and mounting
+No source is detached from its emitter, and no ambient or GI fill is added. Status belts and their local samples are unchanged. Emergency handoff and blackout still use the existing fade clock. Consolidated bay keys now serve the architecture and pod receiver channels from one source. Source colour and range therefore cannot retain two different receiver-specific profiles; the fixed room and image checks constrain the combined result.
 
-Coordinates are source centres in metres. Bay positions use its local frame; hall and power positions use ship-world coordinates. No positions change in this follow-up. All nineteen cages still face inward, with no drop into the walking lane.
-
-| Space | Lamp indices | Positions |
-|---|---|---|
-| Bay | 0, 1 | (-4, 2.50, -3.8), (-4, 2.50, 3.8) |
-| Bay | 2, 3 | (0, 2.50, -3.8), (0, 2.50, 3.8) |
-| Bay | 4, 5 | (4, 2.50, -3.8), (4, 2.50, 3.8) |
-| Hall | 0, 1 | (7.5, 2.36, 1.3), (10.5, 2.36, -1.3) |
-| Hall | 2, 3 | (13.5, 2.36, 1.3), (16.5, 2.36, -1.3) |
-| Hall | 4, 5, 6 | (19.5, 2.36, 1.3), (22.5, 2.36, -1.3), (25.5, 2.36, 1.3) |
-| Power | 0, 1 | (24, 2.50, -1.9), (24, 2.50, -9.5) |
-| Power | 2, 3 | (26, 2.50, -1.9), (27, 2.50, -9.5) |
-| Power | 4, 5 | (30, 2.50, -1.9), (30, 2.50, -9.5) |
-
-Hall cages sit below the side conduits with lower edges above 2.2 m. Bay and power cages sit below the pipe and sprinkler band. The power near-wall middle lamp stays at X=26 to clear the doorway, frame, labels and hatch services. Tests check complete fitting bounds against service, detector, hatch and door exclusions and require bracket contact with a structural wall. The unchanged ship-wide gate rejects any fixture extending more than 150 mm below a ceiling without wall contact. It still rejects a supported pendant and a 160 mm ceiling fitting and accepts 150 mm.
-
-## Source profiles
-
-The six backed bay cages now emit inward hemispheres: 90-degree SpotLight3D apertures without angular fade. They no longer illuminate the wall immediately behind their housings. The central pair throws across the visible room. The end pairs retain shorter reach. All six retain their source centres, glass, metalwork, neutral colour, attenuation 1, room-only mask, disabled shadows and existing fade clock. A shared level application keeps the omni and wall-aperture circuit behaviour together.
-
-Energy shares multiply the unchanged 45/(4π) fixture energy.
-
-| Space | Shares in lamp-index order | Ranges in metres |
-|---|---|---|
-| Bay | 2.35, 2.35, 0.56, 0.56, 0.01, 0.01 | 3, 3, 12, 12, 3, 3 |
-| Hall | 0.71, 0.30, 0.42, 0.315, 0.315, 0.42, 0.30 | 4 for all seven |
-| Power | 0.60 for all six | 4 for all six |
-
-The power share rises from 0.58 to 0.60 to recover its overview while retaining the existing floor bound. Hall profiles and the existing emergency and white end practicals are unchanged. No fixture was added: the inventory remains 309 sources and 255 standalone housings. There is no GI, exposure adjustment, free fill source or beam/belt compensation.
-
-## Regression checks
-
-`tests/fixtures/overviews-219a257.json` fixes all ten standard overview reference lumas and camera poses. `tools/capture_fixture_views.gd` captures the same hall overview, hall eye-height, bay, power and connector views on both circuits at 1600×900, FOV 55 and 2× MSAA. It also captures every relocated cage close-up. `tools/check_fixture_overviews.py` checks every overview's full-image mean display luma within ±15%, rejects changed camera poses and dimensions, and fails on missing or duplicate views. Display luma is Pillow's 8-bit RGB-to-L conversion averaged over every pixel.
-
-The new image test failed against `5a24c61` before the lighting implementation: bay -63.70%, power -15.95%. A separate GDScript regression failed on the missing inward aperture. Boundary tests reject values outside either side of the image limit. No threshold was loosened.
-
-Run native captures and their image check from the project root:
-
-```sh
-godot --path . -s tools/capture_fixture_views.gd -- /absolute/path/to/captures
-python tools/check_fixture_overviews.py /absolute/path/to/captures
-FIXTURE_OVERVIEW_CAPTURES=/absolute/path/to/captures python -m unittest discover -s tests -p 'test_*.py'
-```
-
-The existing illuminance regression independently retains all 370 space/circuit rows against `217355c`, with ±10% limits for totals, floors, walls and ceilings. Only the three previously approved secondary-white ceiling exceptions remain. All 618 source/circuit observations must still pass emitter co-location. A new directional test requires inward emission, no throw behind a bay housing and direct contribution at the visible centre floor.
+## Layout
 
 
-## Measured result
+Counts include wall cages and white ceiling beams, excluding status belts, machinery rings and spark arcs. Positions below are world source centres. The full before/after inventories contain circuit, shares and ranges for every deck.
 
-All ten overview images pass the fixed ±15% display-luma limit against `219a257`:
+| Space | Before | After |
+|---|---:|---:|
+| D14-BAY | 20 | 14 |
+| D14-S-041 | 21 | 14 |
+| D14-POWER | 18 | 15 |
 
-| Circuit / view | Reference luma | Final luma | Change |
-|---|---:|---:|---:|
-| Emergency / bay | 52.9640 | 58.7373 | +10.90% |
-| Emergency / power | 35.7838 | 30.5659 | -14.58% |
-| Emergency / hall eye-height | 44.7644 | 39.5286 | -11.70% |
-| Emergency / hall overview | 44.3910 | 40.6447 | -8.44% |
-| Emergency / connector | 33.0537 | 33.0596 | +0.02% |
-| White / bay | 80.5903 | 74.0314 | -8.14% |
-| White / power | 42.7201 | 42.3211 | -0.93% |
-| White / hall eye-height | 39.5115 | 39.2813 | -0.58% |
-| White / hall overview | 37.4494 | 37.1352 | -0.84% |
-| White / connector | 33.0650 | 33.0650 | 0.00% |
+## D14-BAY: Before
+- WEST: (11.1, 2.65, 12.5), (11.1, 2.65, 11.1), (11.1, 2.65, 9.7), (11.1, 2.65, 8.3), (11.2, 2.5, 11.7), (11.2, 2.5, 7.7), (11.2, 2.5, 3.7)
+- EAST: (18.9, 2.65, 9.7), (18.9, 2.65, 11.1), (18.9, 2.65, 12.5), (18.8, 2.5, 11.7), (18.8, 2.5, 7.7), (18.8, 2.5, 3.7)
+- PORT: (15.0, 2.56, 2.01)
+- CEILING: (13.607, 3.115, 11.7), (16.393, 3.115, 11.7), (13.607, 3.115, 7.7), (16.393, 3.115, 7.7), (13.607, 3.115, 3.7), (16.393, 3.115, 3.7)
 
-The incident proxy independently passes all 370 space/circuit rows. All 618 source observations pass co-location, with maximum emitter separation 0.000003815 m. The affected room subtotals change as follows against `217355c`:
+## D14-BAY: After
+- WEST: (11.1, 2.5, 12.5), (11.1, 2.5, 9.3), (11.1, 2.5, 6.1), (11.1, 2.5, 2.9)
+- EAST: (18.9, 2.5, 11.7), (18.9, 2.5, 7.7), (18.9, 2.5, 3.7)
+- PORT: (15.0, 2.56, 2.01)
+- CEILING: (13.607, 3.115, 11.7), (16.393, 3.115, 11.7), (13.607, 3.115, 7.7), (16.393, 3.115, 7.7), (13.607, 3.115, 3.7), (16.393, 3.115, 3.7)
+
+## D14-S-041: Before
+- WEST: (6.51, 2.56, 0.99)
+- EAST: (29.69, 2.56, -0.99)
+- PORT: (9.0, 2.65, -1.3), (15.0, 2.65, -1.3), (21.0, 2.65, -1.3), (10.5, 2.36, -1.3), (16.5, 2.36, -1.3), (22.5, 2.36, -1.3), (29.1, 1.7, -1.3)
+- STARBOARD: (15.99, 2.56, 1.19), (21.0, 2.65, 1.3), (27.0, 2.65, 1.3), (7.5, 2.36, 1.3), (13.5, 2.36, 1.3), (19.5, 2.36, 1.3), (25.5, 2.36, 1.3), (29.1, 1.7, 1.3)
+- CEILING: (9.0, 3.115, 0.0), (15.0, 3.115, 0.0), (21.0, 3.115, 0.0), (27.0, 3.115, 0.0)
+
+## D14-S-041: After
+- WEST: (6.51, 2.56, 0.99)
+- EAST: (29.69, 2.56, -0.99)
+- PORT: (9.0, 2.65, -1.3), (15.0, 2.65, -1.3), (21.0, 2.65, -1.3), (29.1, 1.7, -1.3)
+- STARBOARD: (15.99, 2.56, 1.19), (21.0, 2.65, 1.3), (27.0, 2.65, 1.3), (29.1, 1.7, 1.3)
+- CEILING: (9.0, 3.115, 0.0), (15.0, 3.115, 0.0), (21.0, 3.115, 0.0), (27.0, 3.115, 0.0)
+
+## D14-POWER: Before
+- WEST: (21.1, 2.65, -3.7), (21.1, 2.65, -7.5)
+- EAST: (32.9, 2.65, -3.7), (32.9, 2.65, -7.5)
+- PORT: (24.5, 2.65, -9.6), (29.5, 2.65, -9.6), (24.0, 2.5, -9.5), (27.0, 2.5, -9.5), (30.0, 2.5, -9.5)
+- STARBOARD: (24.0, 2.5, -1.9), (26.0, 2.5, -1.9), (30.0, 2.5, -1.9)
+- CEILING: (24.0, 3.115, -3.7), (24.0, 3.115, -7.7), (27.0, 3.115, -3.7), (27.0, 3.115, -7.7), (30.0, 3.115, -3.7), (30.0, 3.115, -7.7)
+
+## D14-POWER: After
+- WEST: (21.1, 2.65, -3.7), (21.1, 2.65, -7.5)
+- EAST: (32.9, 2.65, -3.7), (32.9, 2.65, -7.5)
+- PORT: (24.5, 2.65, -9.6), (29.5, 2.65, -9.6)
+- STARBOARD: (24.0, 2.5, -1.9), (26.0, 2.5, -1.9), (28.0, 2.5, -1.9)
+- CEILING: (24.0, 3.115, -3.7), (24.0, 3.115, -7.7), (27.0, 3.115, -3.7), (27.0, 3.115, -7.7), (30.0, 3.115, -3.7), (30.0, 3.115, -7.7)
+
+The other 196 fixtures are unchanged: three per connector on every deck, plus sixteen cages in the two independent D14 outer sections. The ship total changes from 255 to 239 standalone fixtures and from 309 to 285 sources. Bay row pitch is 3.2 m on the four-lamp wall and 4 m on the three-lamp wall. Hall original stations and integrated hatch lamps remain. Power near-wall pitch is 2 m; its far-wall duplicates are folded into the original X=24.5 and X=29.5 keys.
+
+## Regression coverage
+
+The spacing and glow tests failed on `49f9127` before production changes. They cover both circuit states and every deck represented by the ship inventory. Shared receiver channels are grouped by physical emitter for the baseline comparison; the new single-source assertion also rejects multiple sources in one standalone fixture. Exactly 1.5 m fails the spacing rule. A share exactly one third of the median passes; smaller shares and zero-output live lamps fail.
+
+The original illuminance reference and its ±10% check remain unchanged, including only the three existing secondary-white ceiling exceptions. The original ten overview references, poses, dimensions and ±15% checker also remain unchanged. Range and attenuation fitting uses actual mounted positions and camera-visible triangles as well as the fixed incident grid. Power-room camera rays include the generator instead of treating the visible room as an empty box.
+
+
+The fixed 217355c reference and ±10% checks are unchanged. Only the three existing secondary-white ceiling exceptions apply.
 
 | Circuit / space | Total | Floor | Walls | Ceiling |
 |---|---:|---:|---:|---:|
-| Emergency / bay | -7.033% | -8.050% | -6.863% | -7.386% |
-| Emergency / power | +0.818% | +9.400% | +0.833% | -4.813% |
-| Emergency / hall | -7.515% | -3.046% | -9.368% | +1.574% |
-| White / bay | -7.722% | -3.315% | -3.415% | -100.000% |
-| White / power | -9.452% | -2.679% | -3.190% | -73.216% |
-| White / hall | -8.696% | -2.691% | -1.888% | -92.422% |
+| emergency/D14-BAY | -0.254% | +8.500% | -2.701% | +8.500% |
+| emergency/D14-POWER | +8.392% | +6.040% | +8.500% | -1.624% |
+| emergency/D14-S-041 | +6.288% | +7.198% | +7.316% | -0.477% |
+| secondary-white/D14-BAY | -7.722% | -3.315% | -3.415% | -100.000% |
+| secondary-white/D14-POWER | -9.452% | -2.679% | -3.190% | -73.216% |
+| secondary-white/D14-S-041 | -5.734% | -1.596% | +1.593% | -89.054% |
 
-Only the three existing white ceiling exceptions apply. Local `tmp/emerg5/illuminance.md`, `illuminance-summary.json` and `after.json` retain the full measurements. `tmp/emerg5/luma.json` records the image gate. `compare.jpg` contains 48 matched pairs: ten overviews and nineteen lamp close-ups on each circuit. PNGs and camera manifests are in `before/` and `after/`; `CAPTURES_READY` is present. These captures are not a visual-review verdict.
+All 370 rows pass. All 570 source observations are housed and co-located; maximum gap 0.000003815 m.
 
-The final guarded run, without this worker's other suites, reports **859 passed, 0 failed**. Lighting-focused tests pass all 50 cases, including the new aperture test. The previous guarded run reported 858 passed and one failed native click-device test: free-cursor motion changed the view. That failed run and passing diagnostic input traces remain recorded in [#115](https://github.com/acoliver/gone/issues/115); its varying input and root cause remain unconfirmed. Neither the input code nor its assertion was changed. The final pass does not resolve that intermittent failure. The earlier run's obsolete OmniLight3D count was corrected to account explicitly for six SpotLight3D bay apertures without reducing the total-source assertion.
+## Overview display luma
 
-Fresh-capture Python verification passes all 32 tests, including the new image gate. All twelve Blender suites pass 78 tests. Native hatch colour checks pass; seal rendering reports 1,230 checks, 28,369,212 samples and zero green leaks. Collider counts remain 1,024 with both D14 doors closed, 1,023 with the bay open and 1,022 with both open, and 542 on each other deck. `git diff --check` passes. Renderer resource-cleanup warnings remain in the logs; successful native checks report no light/geometry unpair errors or signal-11 crashes. Review skipped per Andrew 2026-10-09.
+| View | Reference | Consolidated | Change |
+|---|---:|---:|---:|
+| emergency-hall-overview | 44.3910 | 38.5202 | -13.23% |
+| emergency-hall-eye-height | 44.7644 | 39.4991 | -11.76% |
+| emergency-bay-overview | 52.9640 | 51.9069 | -2.00% |
+| emergency-power-overview | 35.7838 | 31.3530 | -12.38% |
+| emergency-connector-overview | 33.0537 | 33.0667 | +0.04% |
+| white-hall-overview | 37.4494 | 37.1532 | -0.79% |
+| white-hall-eye-height | 39.5115 | 39.2824 | -0.58% |
+| white-bay-overview | 80.5903 | 80.7322 | +0.18% |
+| white-power-overview | 42.7201 | 42.2390 | -1.13% |
+| white-connector-overview | 33.0650 | 33.0650 | +0.00% |
 
-All nine functional native lanes pass: calibration-move, calibration-step, click-route, connector-route, gameplay-full, gameplay-keyboard-turn, hallway, power-room and rod-pickup. The three negative controls, calibration-no-autoexposure, never-beat and white-without-handoff, fail as intended. These completed runs use `tmp/hatch-model/round8/run/run_visible.py` pointed at this worktree and remain recorded in `tmp/emerg5/native-results.json`.
+Local `tmp/emerg6/inventory.md` contains the complete before/after fixture inventory, close pairs and dim-lamp findings. `fixture-table.md`, `illuminance-summary.json` and `luma.json` retain the measurements. `compare.jpg` pairs 22 matched views against `49f9127`, with ten overviews and each long bay, hall and power wall on both circuits. The power wall cameras sit between the wall and generator so the column cannot hide the lamp row. Individual PNGs and camera manifests are under `before/` and `after/`, and `CAPTURES_READY` is present. These files record captures, not an independent visual-review verdict.
+
+## Verification
+
+The final guarded suite ran alone and passed 866 tests with zero failures. The focused run passed 47; Python passed 32 tests, and all twelve Blender suites passed 78. The new spacing and glow tests ran red on `49f9127`. A further zero-output always-on regression ran red before the circuit classification fix. The earlier full run's six failures were obsolete height, colour, energy, range and fixture-selector expectations; their replacements test the consolidated profiles without changing tolerances. The intermediate 865-test pass and the failed logs remain under `tmp/emerg6/`.
+
+All nine functional native lanes pass through `tmp/hatch-model/round8/run/run_visible.py` pointed at this worktree: calibration-move, calibration-step, click-route, connector-route, gameplay-full, gameplay-keyboard-turn, hallway, power-room, rod-pickup. The three negative controls fail as intended: calibration-no-autoexposure, never-beat, white-without-handoff. Native hatch colour, Python-native checks and seal rendering pass. Successful native checks report zero light/geometry pairing errors and no signal-11 crashes. Renderer cleanup warnings remain in the logs. Review skipped per Andrew 2026-10-09.
+
+Collider counts remain D14 1,024 closed, 1,023 with the bay open and 1,022 with both doors open, and 542 on every other deck. `git diff --check` passes. No beam asset, texture, material, source profile or seating changed, and only the assigned lighting worktree was edited.
 
 ## Performance under shared host load
 
-The final batch runs the required AB/BA/AB comparison against `217355c`, with three repetitions per phase, 60 warm-up frames and 300 measured frames per repetition at 1152×648. All eighteen runs pass their native policies and all 5,400 measured frames are retained. There is no host-idle requirement or sample exclusion. The median paired mean-cost change is **-37.22%**, passing the unchanged limit of at most +10%. The first complete batch passed, so no repeat was needed.
+AB/BA/AB against `217355c` uses three repetitions per phase, 60 warm-up frames and 300 measured frames per repetition at 1152×648. All eighteen runs pass and all 5,400 measured frames are retained. Median paired mean cost is -15.86%, passing the unchanged limit of at most +10%. No idle wait or idle gate was used. The shared-load variance does not establish a stable speed improvement.
 
-| Pair / order | Baseline mean ms | Candidate mean ms | Cost change |
+| Pair / order | Baseline mean ms | Candidate mean ms | Change |
 |---|---:|---:|---:|
-| 1 / AB | 7.981860 | 5.011056 | -37.22% |
-| 2 / BA | 16.708598 | 7.103142 | -57.49% |
-| 3 / AB | 7.564140 | 16.723258 | +121.09% |
+| 1 / AB | 4.713997 | 2.213084 | -53.05% |
+| 2 / BA | 2.506791 | 2.109319 | -15.86% |
+| 3 / AB | 6.960919 | 8.343730 | +19.87% |
 
-These measurements pass the paired budget under the observed workload; they do not establish a stable speed improvement. One-minute host load ranged from 7.52 to 25.29. Foreign workloads continued throughout, including the processes below. CPU is the highest observed value for an individual process, not a sum across the listed PIDs.
-
-| Foreign process / workload | Observed PIDs | Peak process CPU |
-|---|---|---:|
-| Blender console asset builds in branch-2/wt-95p | 56994, 57154 | 1062.0% |
-| Metal compiler services | 58318, 58320, 58407, 58408 | 553.7% |
-| Rust builds and Clippy for worldrunner and UQM | 57146, 57883, 58165, 58430, 59455 | 347.3% |
-| UQM native campaign automation | 29557 | 158.6% |
-| Qwen llama-server | 97788 | 145.7% |
-| MLX Z-Image generation | 57710, 58912 | 106.3% |
-| LM Studio worker | 1247 | 100.0% |
-| Foreign Godot guarded/native checks and routes in branch-2/wt-95 | 57447, 57909, 57917, 58024, 58274, 58275, 58278, 58282, 58291, 58292, 58306, 58757, 58773, 59312, 59316 | 100.0% |
-| Hunyuan-environment prop finalization and queues | 23458, 37202, 43214, 48820, 49442, 54721, 54748, 54962, 56966, 56992, 57196, 57709, 83310 | 75.9% |
-
-Complete foreign process snapshots, load averages, all run reports and per-repetition means remain in `tmp/emerg5/perf-current-load/`; `perf-final-summary.json` records the result. Earlier workers' logs and interrupted performance outputs remain untouched. Native work uses `tmp/emerg5/LANES_RUNNING` and waits only for the age/gi lane markers, without signalling foreign processes.
+One-minute host load ranged from 9.27 to 13.65 across 51 recorded snapshots. Per-run reports and foreign-process snapshots remain under local `tmp/emerg6/perf-current-load/`; `perf-final-summary.json` records the complete first batch. No samples or phases were discarded.

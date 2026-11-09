@@ -50,8 +50,8 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 	scene.rod = Rod.build()
 	scene.bay_root.add_child(scene.rod)
 	Lighting.mesh_layers(scene.bay_root, 1 | Lighting.BAY_FILL_MASK)
-	# Pod lighting keeps main's pure-red, long-throw look; architectural fills
-	# and short orange keys remain on the bay walls and hatch.
+	# Wall keys include the former pod channel in their single source.
+	# Status belts retain their own local, always-on layer.
 	Lighting.mesh_layers(scene.pods_node, Lighting.POD_STATUS_MASK)
 	# The shared hatch is split by visible room, including its collar returns.
 	scene.hatch = Hatch.build(game.layout, 1 | Lighting.HALL_FILL_MASK, 1 | Lighting.BAY_FILL_MASK)
@@ -74,7 +74,6 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 	assert(bay_hatch_key.get_meta(&"light_role") == ShipLayout.EmergencyLightRole.BAY_HATCH, "seat the authored bay hatch key")
 	HatchServices.seat_fixture(scene.hatch.view, 1, bay_hatch_key)
 	HatchServices.seat_nearest(scene.hatch.view, 0, scene.hallway.lights())
-	scene.lighting.bind_pod_keys()
 	scene.lighting.bind_status_belts(scene.pods_node)
 	scene.door_views.append(scene.hatch.view)
 	scene.door_views.append(DoorView.adapter(game.layout.door(ShipLayout.POWER_DOOR_ID), scene.power_room.set_door_offset))

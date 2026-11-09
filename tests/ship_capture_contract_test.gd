@@ -8,7 +8,7 @@ func test_capture_identity_pins_build_resources_and_lighting_policy() -> void:
 	if not methods.has("capture_identity"): return
 	var identity: Dictionary = capture.capture_identity()
 	assert_true(identity.app_hash == load("res://harness/protocol.gd").app_hash(ProjectSettings.globalize_path("res://")), "same app identity as harness")
-	for path: String in ["app/lighting.gd", "app/hallway.gd", "app/power_room.gd", "app/ship_scene.gd", "tools/capture_ship_surfaces.gd", "app/shaders/weathered_steel.gdshader", "assets/surfaces/hatch/leaf-weather.png"]:
+	for path: String in ["app/lighting.gd", "app/emergency_fixture_profile.gd", "app/hallway.gd", "app/power_room.gd", "app/ship_scene.gd", "tools/capture_ship_surfaces.gd", "app/shaders/weathered_steel.gdshader", "assets/surfaces/hatch/leaf-weather.png"]:
 		assert_true(identity.resources.get(path) == FileAccess.get_sha256("res://" + path), "capture resource identity: " + path)
 	for file: String in Surfaces.IMAGES:
 		for suffix: String in ["", ".import"]:
@@ -27,11 +27,10 @@ func test_capture_identity_pins_build_resources_and_lighting_policy() -> void:
 	assert_float_equal(policy.key_energy, Lighting.emergency_energy(), "key energy")
 	assert_float_equal(policy.fill_energy, Lighting.emergency_energy() * Lighting.EMERGENCY_FILL_SHARE, "fill energy")
 	assert_float_equal(policy.no_fill_multiplier, Lighting.EMERGENCY_NO_FILL_KEY_MULTIPLIER, "independent key multiplier")
-	assert_true(policy.bay_wall_shares == Lighting.EMERGENCY_BAY_WALL_SHARES, "all bay station energies are recorded")
-	assert_true(policy.bay_wall_ranges == Lighting.EMERGENCY_BAY_WALL_RANGES, "all bay throw distances are recorded")
-	assert_true(policy.bay_wall_aperture == "inward hemisphere; 90 degree spot; no angular fade", "bay backed apertures are recorded")
-	assert_true(policy.hall_wall_shares == Lighting.EMERGENCY_HALL_WALL_SHARES, "all hall station energies are recorded")
-	assert_float_equal(policy.power_wall_share, Lighting.EMERGENCY_POWER_WALL_SHARE, "power wall energy is recorded")
+	assert_true(policy.bay_wall_profiles == str(EmergencyFixtureProfile.BAY), "merged bay profiles recorded")
+	assert_true(policy.hall_wall_profiles == str(EmergencyFixtureProfile.HALL), "merged hall profiles recorded")
+	assert_true(policy.power_wall_profiles == str(EmergencyFixtureProfile.POWER), "merged power profiles recorded")
+	assert_true(policy.minimum_live_share == "one third of room circuit median", "glow rule recorded")
 	assert_true(policy.emergency_mounting == "wall brackets; no ceiling drops", "capture records physical wall mounting")
 	assert_false(policy.fill_shadows, "fill shadow policy")
 	assert_false(policy.key_shadows, "key shadow policy")
@@ -49,7 +48,7 @@ func test_regular_end_fill_policy_belongs_to_lighting() -> void:
 	var fill := Lighting.regular_end_fill(origin, 0.5)
 	assert_true(fill.position == origin, "layout supplies the fill placement")
 	assert_true(fill.light_color == Lighting.REGULAR_WHITE, "regular palette")
-	assert_float_equal(fill.light_energy, PackedFloat32Array([Lighting.regular_energy() * 0.24 * 0.5])[0], "housed end practical retains the hall total with downward beams")
+	assert_float_equal(fill.light_energy, PackedFloat32Array([Lighting.regular_energy() * 0.36 * 0.5])[0], "housed end practical retains the hall total with downward beams")
 	assert_float_equal(fill.omni_range, Lighting.EMERGENCY_FILL_RANGE, "unchanged fill range")
 	assert_int_equal(fill.light_cull_mask, Lighting.HALL_FILL_MASK, "hall-only fill")
 	assert_false(fill.shadow_enabled, "no fill shadows")

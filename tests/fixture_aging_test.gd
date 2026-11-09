@@ -104,7 +104,7 @@ func test_shared_cage_has_local_weathering_and_dirty_emissive_glass() -> void:
 func test_wall_cage_retains_its_hatch_bracket_without_a_ceiling_stem() -> void:
 	var game := Game.new(91)
 	var hall := Hallway.build(game)
-	var light: OmniLight3D = hall.get_node("EmergencyFill0")
+	var light: OmniLight3D = hall.get_node("EmergencyFillEnd")
 	var steel: MeshInstance3D = light.get_node("Steel")
 	assert_false(light.has_node("CeilingMount"), "wall cage has no ceiling drop")
 	assert_false(steel.has_meta(&"mount_bounds"), "native hatch bracket needs no added stem")
@@ -130,7 +130,7 @@ func test_spark_source_is_at_the_visible_arc_without_a_lamp_cage() -> void:
 	assert_float_equal(light.light_energy, 0, "light extinguishes with the arc")
 	hazards.free()
 
-func test_all_nineteen_relocated_cages_have_no_exposed_ceiling_conduit() -> void:
+func test_remaining_nonkey_wall_cages_have_no_exposed_ceiling_conduit() -> void:
 	var checked := 0
 	for room: Node3D in [Lighting.build(Game.new(91)), Hallway.build(Game.new(91)), PowerRoom.build(Game.new(91))]:
 		for light: Light3D in room.find_children("EmergencyFill*", "Light3D", true, false):
@@ -142,4 +142,4 @@ func test_all_nineteen_relocated_cages_have_no_exposed_ceiling_conduit() -> void
 			assert_true(box.end.y < 2.7, "cage is below the pipe and duct band")
 			assert_false(steel.has_meta(&"mount_bounds"), "cage uses its own wall bracket")
 		room.free()
-	assert_int_equal(checked, 19, "six bay, seven hall and six power-room lamps")
+	assert_int_equal(checked, 3, "three non-duplicating near-wall power-room lamps")

@@ -69,7 +69,7 @@ func test_all_pod_and_light_frames_rotate_without_changing_local_fixtures() -> v
 		assert_close(frame.affine_inverse() * pins[pod.id().index()], Vector3(center.x, 0, center.y), "inverse returns local pod")
 	var fixtures := game.layout.bay().emergency_fixtures(game.registry)
 	for index: int in range(7):
-		assert_vec3_equal(Vector3(0, (frame * fixtures[index].frame).origin.y, 0), Vector3(0, 2.65, 0), "fixture height unchanged")
+		assert_vec3_equal(Vector3(0, (frame * fixtures[index].frame).origin.y, 0), Vector3(0, 2.5, 0), "consolidated wall row clears the services at 2.5 m")
 		assert_vec3_equal((frame * fixtures[index].frame).basis.x, Vector3(0, 0, -1), "light frame quarter-turn")
 	var rig := Player.build(game, null)
 	rig.scripted = true

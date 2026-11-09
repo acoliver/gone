@@ -17,7 +17,7 @@ func test_every_ship_light_has_a_visible_housed_emitter_within_one_centimetre() 
 		checked += 1
 		if not record.get("fixture_valid", false):
 			failures.append("%s %s %s: %s" % [record.owner, record.circuit_state, record.path, record.get("fixture_error", "no housed emitter")])
-	assert_int_equal(checked, 618, "all 309 lights, including inactive circuits and spark strobes, in both circuit states")
+	assert_int_equal(checked, 570, "all 285 lights, including inactive circuits and spark strobes, in both circuit states")
 	assert_true(failures.is_empty(), "%d unhoused or misplaced lights: %s" % [failures.size(), "; ".join(failures)])
 
 func test_every_space_keeps_its_recorded_floor_wall_ceiling_illuminance() -> void:

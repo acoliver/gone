@@ -205,8 +205,10 @@ func test_fixtures_hold_zero_until_the_switch_flips() -> void:
 	assert_int_equal(hallway.lenses().size(), 8, "every light carries its lens")
 	for light: OmniLight3D in lights:
 		assert_float_in_range(light.light_energy, -1e-4, 1e-4, "every hall fixture starts dark")
-		assert_true(light.light_color == Lighting.EMERGENCY_RED, "the hall fixtures hold the stasis bay's emergency red")
-		assert_float_in_range(light.omni_range, Lighting.EMERGENCY_POOL_RANGE - 1e-4, Lighting.EMERGENCY_POOL_RANGE + 1e-4, "the hall fixtures hold the stasis bay's pool range")
+		var profile := EmergencyFixtureProfile.HALL[lights.find(light)]
+		var expected_color := ((Lighting.EMERGENCY_RED.srgb_to_linear() + Lighting.EMERGENCY_FILL_COLOR.srgb_to_linear() * profile.x) / (1.0 + profile.x)).linear_to_srgb()
+		assert_true(light.light_color.is_equal_approx(expected_color), "the key carries its original red and consolidated neutral output")
+		assert_float_equal(light.omni_range, profile.z, "the consolidated key keeps its fitted throw")
 	assert_true(hallway.lens_material().emission == Color(0.0, 0.0, 0.0), "the lenses hold no emission before the flip")
 	assert_true(hallway.is_settled(), "the dark hallway starts settled")
 	assert_false(game.hallway_lit, "the sim starts the hallway unlit")
@@ -216,7 +218,8 @@ func test_fixtures_hold_zero_until_the_switch_flips() -> void:
 	assert_true(hallway.is_settled(), "the flip settles on the fixture clock")
 	assert_float_in_range(hallway.level(), 0.999, 1.001, "the fade lands at full level")
 	for light: OmniLight3D in lights:
-		assert_float_in_range(light.light_energy, Lighting.FIXTURE_ENERGY - 1e-3, Lighting.FIXTURE_ENERGY + 1e-3, "the fixtures hold the stasis bay's lit energy")
+		var expected := Lighting.FIXTURE_ENERGY * (1.0 + EmergencyFixtureProfile.HALL[lights.find(light)].x)
+		assert_float_in_range(light.light_energy, expected - 1e-3, expected + 1e-3, "the fixtures hold their summed key and neutral energy")
 	assert_float_in_range(hallway.lens_material().emission.r, Lighting.FIXTURE_EMISSIVE - 1e-3, Lighting.FIXTURE_EMISSIVE + 1e-3, "the lenses hold the stasis bay's lit emission")
 	# The regular strips wait for the secondary power: the switch's red
 	# flip must never touch them.
@@ -244,7 +247,8 @@ func test_lit_fixtures_hold_their_level_steady() -> void:
 	for _frame: int in range(300):
 		hallway.process_frame(Sim.LOGICAL_TICK_SECS)
 		for light: OmniLight3D in hallway.lights():
-			assert_float_in_range(light.light_energy, Lighting.FIXTURE_ENERGY - 1e-6, Lighting.FIXTURE_ENERGY + 1e-6, "a settled fixture never blinks: the energy holds steady")
+			var expected := Lighting.FIXTURE_ENERGY * (1.0 + EmergencyFixtureProfile.HALL[hallway.lights().find(light)].x)
+			assert_float_in_range(light.light_energy, expected - 1e-6, expected + 1e-6, "a settled fixture never blinks: its summed energy holds steady")
 		assert_true(hallway.lens_material().emission == steady_emission, "a settled lens never blinks: the emission holds steady")
 	assert_true(hallway.is_settled(), "the steady hall stays settled")
 

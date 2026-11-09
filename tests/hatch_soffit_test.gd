@@ -33,7 +33,7 @@ func test_regular_hatch_bounce_follows_white_fade_without_relighting_emergency()
 	game.press_console()
 	for tick: int in range(Lighting.FIXTURE_SETTLE_TICKS):
 		hall.process_frame(Sim.LOGICAL_TICK_SECS)
-		var expected := PackedFloat32Array([Lighting.regular_energy() * hall.white_level() * 0.24])[0]
+		var expected := PackedFloat32Array([Lighting.regular_energy() * hall.white_level() * 0.36])[0]
 		assert_float_equal(fill.light_energy, expected, "native float32 bounce energy follows the white fade clock")
 	assert_true(fill.light_color == Lighting.REGULAR_WHITE and fill.light_energy > 0, "regular colour and energy after handoff")
 	assert_float_equal((hall.get_node("EmergencyFillEnd") as OmniLight3D).light_energy, 0, "emergency bounce remains extinguished")

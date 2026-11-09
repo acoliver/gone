@@ -24,7 +24,7 @@ func test_whole_ship_fixtures_are_wall_mounted_or_within_150_mm_of_ceiling() -> 
 		checked += _check(node, spec.bounds(), _walls(layout, 14))
 		node.free()
 	print("MOUNTED FIXTURES ", checked)
-	assert_int_equal(checked, 255, "all standalone cages and beams across the ship are checked")
+	assert_int_equal(checked, 239, "all standalone cages and beams across the ship are checked")
 	world.free()
 
 func test_mount_gate_rejects_a_centreline_drop_and_accepts_only_wall_contact_or_flush_depth() -> void:
@@ -55,7 +55,11 @@ func test_relocated_emergency_cages_clear_services_frames_and_door_sweeps() -> v
 		var services := game.layout.ceiling_services(id)
 		var walls := _walls(game.layout, 14)
 		var to_world := game.layout.bay_to_world() if room is Lighting else Transform3D.IDENTITY
-		for light: Light3D in room.find_children("EmergencyFill*", "Light3D", true, false):
+		var sources := room.find_children("EmergencyFill*", "Light3D", true, false)
+		if room is Lighting:
+			for light: OmniLight3D in room.lights():
+				if light.get_parent() != room.fixture(ShipLayout.BAY_HATCH_KEY_ID): sources.append(light)
+		for light: Light3D in sources:
 			if light.name == "EmergencyFillEnd": continue
 			var housing: MeshInstance3D = light.get_meta(&"fixture_housing")
 			var box := to_world * Surfaces.world_frame(housing) * housing.mesh.get_aabb()
