@@ -10,7 +10,11 @@ godot --path . -- --start quarters
 ```
 
 The player starts in the corridor facing the door, with secondary power active.
-Space operates the corridor-face manual release. Walk across the threshold to
+Space operates the corridor-face manual release. The plate to the right of the
+door now has a dark recess, a steel frame and a rounded pull grip in the
+existing brighter gray hardware material; aiming at that control also operates
+the release. Its ship-text label uses the same attention and
+translation system as the other door labels. Walk across the threshold to
 see Remembered, then use the desk console on the right. Its corruption blocks,
 message and fault text are placeholders under `decisions.md` ruling 16. The
 sequence lasts 300 logical ticks, then switches to Present. Re-entering keeps
@@ -18,13 +22,18 @@ Present for the current play session. The regular white strips follow secondary
 power; the bedside lamps are dead in Present, and the console stays lit.
 Both states retain the world exposure multiplier of 2.0. Remembered has four
 warm ceiling keys at energy 3.2 each, colour (1.0, 0.73, 0.46), plus two
-bedside lamps at 0.35, colour (1.0, 0.64, 0.31): total energy 13.5. Present
-keeps four secondary-power regular strips at 1.969542 each, colour
-(1.0, 0.97, 0.90): total 7.878170, with no bedside light. The previous warm
-keys were only 1.1 each, making Remembered's total 5.1, below Present.
+bedside lamps at 0.35, colour (1.0, 0.64, 0.31): state-specific energy 13.5.
+Present keeps four secondary-power regular strips at 1.969542 each, colour
+(1.0, 0.97, 0.90): state-specific energy 7.878170, with no bedside light. The
+previous warm keys were only 1.1 each, making Remembered's total 5.1, below
+Present.
 Increasing only the room's remembered keys makes the memory warm and brighter
 without changing corridor strips, other rooms, or exposure. Their shared-range
-ceiling keys also give a colour-weighted light-energy contrast above 1.25:1.
+ceiling keys also give an RGB-weighted light-energy contrast above 1.25:1.
+Matched captures at unchanged exposure measure mean linear luminance of
+0.175012 / 0.085375 for Remembered / Present at the doorway and
+0.120309 / 0.072199 for the wide view. Present is 48.8% and 60.0% of the
+corresponding remembered image; these image means include the changed finishes.
 Without the start option, play still begins in stasis. The aft ladder well
 reaches D16, where `D16-C-001-H-AFT` cranks open onto the quarters corridor.
 
@@ -44,22 +53,73 @@ stand-ins, not new art specifications.
 (49 - x, -11 + y, 1.7 + z). Both state roots and their single shared collider
 list use the same approved placements. The interior is 8 by 6 m, with 3.2 m
 clear height and 0.2 m shell walls. Capsule and walkway tests cover the paths
-to the plan's reach targets.
+to the plan's reach targets. The corridor wall owns the entrance header from
+2.4 to 3.2 m. A room-owned head return closes the sliding pocket's 20 mm
+clearance above the passage, between the wall faces at ship Z 1.5 and 1.7.
+Rendered-triangle tests cover 209 crown rays across that thickness and 330
+through-wall rays above the aperture, while leaving the intended passage open.
+Pixel rays through the remaining black band hit the header's downward-facing
+steel at 2.4 m, rather than passing through a hole. A local threshold bounce at
+ship (45, -9.3, 1.05), range 1.8 m, now lights that return and the release grip.
+Its regular energy is 1.418070 under secondary power, a local 0.72 share of
+the regular fixture energy. The initial 0.12 end-bounce share still read as black.
+Emergency uses the existing emergency end-bounce colour and 0.84 energy share.
+Both follow the same power fade; the threshold bounce is common to both room
+states. Its quarters-only receiver layer covers the header, the six doorway
+trim pieces and the release hardware, excluding the main corridor walls. The
+head trim initially lacked that layer, leaving a separate three-pixel black
+line at capture rows 22 to 24; pixel rays identified its 12 mm underside.
+A rendered control changed the sampled band from near-zero RGB to
+(0.227, 0.212, 0.185) without changing the corridor strip levels.
+The release label also supplies unshaded albedo. GPU controls showed that its
+raster was ready by frame 21, but emission-only ink contributed no visible
+pixels; adding albedo produced native glyphs. This override is local to the
+release; existing labels retain their original material defaults.
+The Present wardrobe's named `FibreDust` mesh and detached hem fragments are
+seated from their visible bounds against the actual shelf top, with 0.5 mm
+clearance. Their former preview offset left the heap 64.984 mm above the shelf.
+
+D16's corridor now switches all eight red keys by their circuit metadata,
+not their display names, which Godot renames when siblings share a name. The
+old lookup missed seven keys; each stayed at energy 6.861170 even after 120
+ticks under secondary power. The switched circuit uses D14's emergency key
+profile, seven pool fills, end bounce and four regular strips. Tests compare
+both power handoffs tick by tick, including energy, colour, range and falloff.
+No D14 lighting values or behavior changed.
 
 Regenerate the ordinary-input scenario and run its windowed capture lane with:
 
 ```sh
 godot --headless --path . -s tools/build_quarters_scenario.gd
-godot --headless --path . -s harness/run.gd -- scenarios/quarters-demo.json --out tmp/demo/quarters-capture
+godot --headless --path . -s harness/run.gd -- scenarios/quarters-demo.json --out tmp/demo2/routes/quarters-demo
 ```
 
 The harness writes eight beats and a report under the printed run directory.
+The five presentation captures are copied into `tmp/demo2/` as
+`corridor-door.png`, `remembered-doorway.png`, `remembered-wide.png`,
+`present-doorway.png` and `present-wide.png`. A separate wardrobe-floor contact
+close-up is `tmp/demo2/wardrobe-contact-detail.png`.
 The doorway pair uses the exact camera in `layout.json`; the wider pair uses
-an elevated camera inside the room. Capture cameras do not move the player.
+room-local position (0.75, 2.2, 0.10), aimed at (4.0, 1.15, 3.6), with a
+132-degree horizontal field. Frustum tests use the actual 1536 by 864 capture
+size, the sofa bounds in both states and the full mounted fixture models,
+keeping them inside the unchanged 1.5% frame margin. Godot's default 64 by 64
+headless viewport previously hid the 16:9 vertical crop. The former wide camera
+was at 3.0 m and aimed down at 0.5 m, cropping those features.
+Capture cameras do not move the player.
 The scenario opens the door, walks around furniture, uses the console and
 walks out and back in. The separate `d16_route_test.gd` follows ordinary input
 from the D14 stasis start through the aft well to this door. Run the full suite
 with `godot --headless --path . -s tests/run_tests.gd`.
+
+This demo pass verified 889 headless tests with zero failures. The seven
+windowed routes (`gameplay-full`, `rod-pickup`, `gameplay-keyboard-turn`,
+`hallway`, `power-room`, `connector-route` and `click-route`) all passed their
+machine checks, as did the eight-beat quarters-demo scenario. The focused
+fix checks passed 16 tests, and the 1536 by 864 camera check passed separately.
+These runs used `nohup`; logs and captures are under `tmp/demo2/`. Existing
+ObjectDB, resource and allocator teardown warnings remain in the full-suite
+output after the passing tests.
 
 ## Plan view
 

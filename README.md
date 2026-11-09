@@ -52,7 +52,9 @@ expect it to take longer than later runs.
 
 Run `godot --path . -- --start quarters` to start in the D16 corridor facing
 the protagonist's quarters, with secondary power active. Space opens the
-manual-release door. Walk inside, then use the desk console on the right.
+manual-release door. The framed pull handle to its right is also selectable
+and uses the existing ship-text attention and translation system.
+Walk inside, then use the desk console on the right.
 Its placeholder message switches the room from Remembered to Present.
 Re-entering keeps Present. Without the option, the game still starts in stasis.
 The full route reaches the same room through the aft ladder well on D16.
