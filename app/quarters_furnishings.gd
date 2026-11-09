@@ -45,11 +45,19 @@ static func build(state: StringName) -> Node3D:
 	# Seat the console on the accepted worktop, not on that raised lip.
 	var desk := root.get_node("Placement_desk/desk")
 	var top := desk.find_child("Worktop", true, false) as MeshInstance3D
-	var desktop := (ShipScene._world_frame(top) * top.get_aabb()).end.y
+	var worktop := ShipScene._world_frame(top) * top.get_aabb()
 	var console := root.get_node("Placement_console/console") as Node3D
-	console.position.y += desktop - _bounds(console).position.y
+	console.position.y += worktop.end.y - _bounds(console).position.y
+	var item_finish := StandardMaterial3D.new()
+	item_finish.albedo_color = Color(0.32, 0.33, 0.33)
+	item_finish.roughness = 0.85
 	for item: Dictionary in QuartersInventory.small_items():
-		root.add_child(box("Standin_" + item.id, item.bounds, finish))
+		var small := box("Standin_" + item.id, item.bounds, item_finish)
+		if item.on == "desk":
+			# The free strip beside the console ends at the worktop's outer edge.
+			small.position.y = worktop.end.y + small.get_aabb().size.y / 2
+			small.position.z = worktop.end.z - small.get_aabb().size.z / 2 - 0.05
+		root.add_child(small)
 	return root
 
 static func _asset(path: String, prop: StringName, state: StringName) -> Node3D:

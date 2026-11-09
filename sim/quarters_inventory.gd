@@ -38,7 +38,7 @@ static func small_items() -> Array[Dictionary]:
 			point.x += (index % 2 - 0.5) * minf(0.25, parent.size.x * 0.35)
 			point.z += (index / 2 - 0.5) * minf(0.22, parent.size.z * 0.30)
 			bounds = AABB(point - Vector3(0.05, 0, 0.05), Vector3(0.10, 0.08, 0.10))
-		result.append({"id": item.id, "bounds": bounds})
+		result.append({"id": item.id, "on": item.on, "bounds": bounds})
 	return result
 
 static func world_bounds(local: AABB) -> AABB:
