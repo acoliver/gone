@@ -3,6 +3,10 @@ extends RefCounted
 
 const ROOT := "res://assets/props/quarters/"
 static var _fits: Dictionary = {}
+const REAL_FURNITURE := {
+	"bed": "bed", "desk_chair": "desk_chair", "dining_table": "dining_table",
+	"dining_chair_1": "dining_chair", "dining_chair_2": "dining_chair",
+}
 
 static func build(state: StringName) -> Node3D:
 	var root := Node3D.new()
@@ -20,7 +24,17 @@ static func build(state: StringName) -> Node3D:
 			_fit(sofa, bounds, prop.faces, "sofa.glb")
 			group.add_child(sofa)
 		elif prop.id == "wardrobe":
-			_wardrobe(group, bounds, state, finish)
+			_wardrobe(group, state, finish)
+		elif REAL_FURNITURE.has(prop.id):
+			var source: String = REAL_FURNITURE[prop.id]
+			var asset := _asset(source + ".glb", StringName(source), state)
+			# The accepted bed includes the separate 1.1 m layout headboard.
+			if prop.id == "bed": bounds.size.y = 1.1
+			_fit(asset, bounds, prop.get("faces", "+z"), source + ".glb")
+			group.add_child(asset)
+			if prop.id == "bed": _bed_soft(group, asset, bounds, finish)
+		elif prop.id == "headboard":
+			continue
 		elif prop.id.begins_with("storage_") or prop.id == "lockers_over_bed":
 			_storage(group, prop, bounds, state, finish)
 		else:
@@ -108,36 +122,41 @@ static func _storage(group: Node3D, prop: Dictionary, bounds: AABB, state: Strin
 			slot.size.z = remainder
 		group.add_child(box("Standin_" + prop.id + "_infill", slot, finish))
 
-static func _wardrobe(group: Node3D, bounds: AABB, state: StringName, finish: Material) -> void:
-	var carcass := Node3D.new()
-	carcass.name = "Standin_wardrobe"
-	group.add_child(carcass)
-	for z: float in [bounds.position.z, bounds.end.z - 0.04]:
-		carcass.add_child(box("Side", AABB(Vector3(bounds.position.x, 0, z), Vector3(bounds.size.x, bounds.size.y, 0.04)), finish))
-	carcass.add_child(box("Back", AABB(Vector3(bounds.end.x - 0.04, 0, bounds.position.z), Vector3(0.04, bounds.size.y, bounds.size.z)), finish))
-	for y: float in [0.0, bounds.end.y - 0.04]:
-		carcass.add_child(box("Shelf", AABB(Vector3(bounds.position.x, y, bounds.position.z), Vector3(bounds.size.x, 0.04, bounds.size.z)), finish))
-	var leaf := box("OpenDoor", AABB(Vector3(6.85, 0, 4.08), Vector3(1, 2.2, 0.04)), finish)
-	leaf.position = QuartersLayout.to_world(Vector3(7.35 - sin(deg_to_rad(100)) / 2, 1.1, 4.1 - cos(deg_to_rad(100)) / 2))
-	leaf.rotation.y = deg_to_rad(-10)
-	carcass.add_child(leaf)
-	var inward := Basis(Vector3.UP, PI / 2)
+static func _bed_soft(group: Node3D, bed: Node3D, bounds: AABB, finish: Material) -> void:
+	var soft := Node3D.new()
+	soft.name = "Standin_bed_soft"
+	group.add_child(soft)
+	var platform := bed.find_child("MattressPlatform", true, false) as MeshInstance3D
+	var top := (ShipScene._world_frame(platform) * platform.get_aabb()).end.y - QuartersLayout.FLOOR_Y
+	soft.add_child(box("Mattress", AABB(Vector3(bounds.position.x + 0.045, top + 0.0005, bounds.position.z + 0.06), Vector3(bounds.size.x - 0.09, 0.16, bounds.size.z - 0.18)), finish))
+	soft.add_child(box("Quilt", AABB(Vector3(bounds.position.x + 0.035, top + 0.1605, bounds.position.z + 0.04), Vector3(bounds.size.x - 0.07, 0.035, bounds.size.z - 0.55)), finish))
+	for index: int in range(2):
+		soft.add_child(box("PillowL" if index == 0 else "PillowR", AABB(Vector3(bounds.position.x + 0.10 + index * 0.76, top + 0.1605, bounds.end.z - 0.48), Vector3(0.64, 0.12, 0.32)), finish))
+
+static func _wardrobe(group: Node3D, state: StringName, finish: Material) -> void:
+	var wardrobe := _asset("wardrobe.glb", &"wardrobe", state)
+	# The plan's X axis is mirrored in ship space. Preserve the documented
+	# room -90 degree rotation and hinge handedness across that mapping.
+	wardrobe.basis = Basis(Vector3.LEFT, Vector3.UP, Vector3.BACK) * Basis(Vector3.UP, -PI / 2)
+	wardrobe.position = QuartersLayout.to_world(Vector3(7.675, 0, 3.6))
+	group.add_child(wardrobe)
+	var rail := wardrobe.find_child("Rail", true, false) as Node3D
+	var shelf := wardrobe.find_child("BottomPanel", true, false) as MeshInstance3D
+	var rail_frame := ShipScene._world_frame(rail)
+	var shelf_top := (ShipScene._world_frame(shelf) * shelf.get_aabb()).end.y
 	for debris: bool in [false, true]:
 		var garment := _asset("dress_uniform.glb" if state == &"as_built" else "dress_uniform_aged.glb", &"dress_uniform", state)
 		for piece: MeshInstance3D in garment.find_children("*", "MeshInstance3D", true, false):
 			var fallen := String(piece.name).begins_with("FallenHem") or piece.name in [&"FibreDust", &"HeapFibres"]
 			piece.visible = fallen == debris
 		garment.name = "UniformFragments" if debris else "HangingUniform"
-		var preview_offset := Vector3(-0.015, 1.055, 0.10) if debris else Vector3(-0.015, 1.65, 0.17)
-		garment.position = QuartersLayout.to_world(Vector3(7.70, 0, 3.58)) + inward * preview_offset
-		garment.basis = inward * Basis(Vector3.UP, deg_to_rad(55))
+		# The former 55-degree preview turn protruded through the new carcass.
+		# The source hook is at its origin; hang it directly on the real rail.
+		garment.position = rail_frame.origin
+		garment.basis = Basis(Vector3.UP, PI / 2)
 		if debris and state == &"aged":
 			var visible_bounds := _bounds(garment, Transform3D.IDENTITY, true)
-			var shelf: MeshInstance3D = carcass.get_node("Shelf")
-			var shelf_bounds := shelf.transform * shelf.get_aabb()
-			garment.position.y += shelf_bounds.end.y + 0.0005 - visible_bounds.position.y
+			garment.position.y += shelf_top + 0.0005 - visible_bounds.position.y
 		group.add_child(garment)
-	var rail := box("Rail", AABB(Vector3(7.57, 1.633, 3.13), Vector3(0.018, 0.018, 0.94)), finish)
-	carcass.add_child(rail)
 	for index: int in range(2):
-		carcass.add_child(box("Standin_her_dress_%d" % (index + 1), AABB(Vector3(7.67, 0.45, 3.17 + index * 0.17), Vector3(0.08, 1.12, 0.12)), finish))
+		group.add_child(box("Standin_her_dress_%d" % (index + 1), AABB(Vector3(7.67, 0.45, 3.17 + index * 0.17), Vector3(0.08, 1.12, 0.12)), finish))

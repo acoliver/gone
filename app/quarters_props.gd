@@ -117,6 +117,15 @@ static func _sofa_powder_material(state: StringName) -> ShaderMaterial:
 	return result
 
 static func apply(root: Node3D, prop: StringName, state: StringName) -> void:
+	if prop in [&"wardrobe", &"bed", &"desk_chair", &"dining_table", &"dining_chair"]:
+		for node: MeshInstance3D in root.find_children("*", "MeshInstance3D", true, false):
+			for surface: int in range(node.mesh.get_surface_count()):
+				var slot := StringName(node.mesh.surface_get_material(surface).resource_name)
+				node.set_surface_override_material(surface, interim_material(slot, state))
+			if state == &"aged":
+				node.set_instance_shader_parameter(&"floor_datum", QuartersLayout.FLOOR_Y)
+				node.set_instance_shader_parameter(&"lateral_bounds", Vector4(41, 49, 1.7, 7.7))
+		return
 	if prop == &"dress_uniform":
 		for node: MeshInstance3D in root.find_children("*", "MeshInstance3D", true, false):
 			for surface: int in range(node.mesh.get_surface_count()):
@@ -216,4 +225,36 @@ static func _tunic_finish(imported: StandardMaterial3D, state: StringName) -> Sh
 	var aged_pigment := state == &"aged" and imported.resource_name != "BareSteel" and imported.resource_name != "RibbonFabric"
 	result.set_shader_parameter(&"specular", .12 if aged_pigment else imported.metallic_specular)
 	result.set_shader_parameter(&"pigment_gain", TUNIC_AGED_WOOL_GAIN if aged_pigment and is_zero_approx(imported.metallic) else Vector3.ONE)
+	return result
+
+# Interim batch-1 finishes, until each prop gets its own material pass. Slot
+# resources are shared across every prop and instance; Present uses the ship's
+# existing world-space steel scans rather than a per-prop UV bake.
+static var _interim_materials: Dictionary = {}
+
+static func interim_material(slot: StringName, state: StringName) -> Material:
+	assert(STATES.has(state), "known interim finish state")
+	assert(slot in [&"PaintedSteel", &"BareSteel", &"DarkSteel", &"Fabric", &"Wood", &"Display"], "unknown furniture material slot: " + String(slot))
+	var identity := StringName("%s/%s" % [slot, state])
+	if _interim_materials.has(identity): return _interim_materials[identity]
+	var result: Material
+	if state == &"aged" and slot in [&"PaintedSteel", &"BareSteel", &"DarkSteel"]:
+		var steel := Surfaces.material(&"pipe").duplicate() as ShaderMaterial
+		steel.set_shader_parameter(&"seam_strength", 0.0)
+		steel.set_shader_parameter(&"colour_gain", Vector3.ONE * (0.45 if slot == &"DarkSteel" else 1.0))
+		result = steel
+	else:
+		var simple := StandardMaterial3D.new()
+		# Same hero ROI median used by bake_finishes.design_paint for the locker.
+		simple.albedo_color = {
+			&"PaintedSteel": Color(97.0 / 255, 118.0 / 255, 115.0 / 255),
+			&"BareSteel": Color(0.72, 0.75, 0.77), &"DarkSteel": Color(0.23, 0.265, 0.26),
+			&"Fabric": Color(0.18, 0.19, 0.20) if state == &"as_built" else Color(0.27, 0.25, 0.22),
+			&"Wood": Color(0.35, 0.22, 0.12) if state == &"as_built" else Color(0.20, 0.15, 0.10),
+			&"Display": Color(0.025, 0.055, 0.065),
+		}[slot]
+		simple.roughness = 0.9 if state == &"aged" or slot in [&"Fabric", &"Wood"] else (0.35 if slot == &"BareSteel" else 0.45)
+		simple.metallic = 0.45 if slot in [&"BareSteel", &"DarkSteel"] else 0.02
+		result = simple
+	_interim_materials[identity] = result
 	return result

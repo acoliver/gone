@@ -37,17 +37,39 @@ corresponding remembered image; these image means include the changed finishes.
 Without the start option, play still begins in stasis. The aft ladder well
 reaches D16, where `D16-C-001-H-AFT` cranks open onto the quarters corridor.
 
-The locker modules, sofa and hanging tunic are the real pilot assets. Their
-Remembered and Present finishes use `QuartersProps`; the aged sofa and tunic
-keep their fitted clean-source placements. The wardrobe carcass, its open door,
-drawer banks, shelves, other furniture and small items are plain stand-ins.
-Their node names begin with `Standin_<id>`. Storage subslots add `_slot_<index>`
-or `_infill`. Locker tiles occupy complete 0.6 m slots inside the approved
-footprints; leftover widths remain stand-in infill. The footprint takes
-precedence where a module description suggests more tiles than will fit.
-Small items without dimensions in the plan use 0.10 by 0.08 by 0.10 m tabletop
-boxes; boots use a 0.28 by 0.25 by 0.24 m floor box. Those dimensions are demo
-stand-ins, not new art specifications.
+The real assets in both states are the locker modules, sofa, hanging tunic,
+wardrobe, bed frame with headboard, desk chair, dining table and two instances
+of the dining chair. The six furniture placements use the accepted batch-1
+GLBs. Their footprint, facing and height follow the layout; the bed asset
+includes the separate 1.10 m headboard. Its mattress, quilt and two pillows
+remain under `Standin_bed_soft`, with the mattress seated on the real platform.
+The redundant headboard box is gone. The wardrobe uses the documented room
+origin (7.675, 0, 3.6), room Y rotation -90 degrees and the exported 100-degree
+parked door. The room-to-ship mapping mirrors X, including the hinge placement.
+The old tunic preview turn protruded through the real carcass. Its hook now
+sits on the real 1.82 m rail, with its width aligned along the rail; both the
+hanging garment and fallen fibres fit inside the actual panel interior.
+
+Batch-1 materials are **interim**, pending each prop's texture/material pass.
+`QuartersProps.interim_material` caches resources by imported material slot
+and state, shared across all props and instances. Remembered painted steel
+uses the locker's as-built grey-green, sRGB (97, 118, 115)/255, with separate
+bare and dark steel. Present metal uses the ship's existing world-space
+weathered steel scans, without a prop bake or architectural panel seams.
+Fabric pads, wood and display slots have simple matching finishes. The pilot
+lockers, sofa and tunic retain their existing material paths.
+
+Desk, console housing, view screen, media cabinet, bedside units, drawer/shelf
+modules, remaining small items and her dresses are still stand-ins. Their node
+names begin with `Standin_<id>`. Storage subslots add `_slot_<index>` or `_infill`.
+Locker tiles occupy complete 0.6 m slots inside the approved footprints;
+leftover widths remain stand-in infill. The footprint takes precedence where a
+module description suggests more tiles than will fit. Shared footprint
+colliders are unchanged: the new assets fit those envelopes, with the small
+hardware protrusions recorded in each `verify.json`. Small items without
+dimensions in the plan use 0.10 by 0.08 by 0.10 m tabletop boxes; boots use a
+0.28 by 0.25 by 0.24 m floor box. Those dimensions are demo stand-ins, not new
+art specifications.
 
 `QuartersLayout` maps a room-local point (x, y, z) to ship coordinates
 (49 - x, -11 + y, 1.7 + z). Both state roots and their single shared collider

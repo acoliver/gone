@@ -12,7 +12,7 @@ func test_both_states_cover_approved_inventory_and_share_placements() -> void:
 	for item: Dictionary in QuartersInventory.small_items():
 		assert_true(room.remembered.has_node("Standin_" + item.id), "remembered small item " + item.id)
 		assert_true(room.present.has_node("Standin_" + item.id), "present small item " + item.id)
-	assert_true(room.remembered.has_node("Placement_wardrobe/Standin_wardrobe"), "wardrobe is explicitly a stand-in carcass")
+	assert_true(room.remembered.has_node("Placement_wardrobe/wardrobe"), "wardrobe uses the accepted carcass")
 	assert_true(room.present.has_node("Placement_wardrobe/HangingUniform") and room.present.has_node("Placement_wardrobe/UniformFragments"), "aged hanging uniform and detached fragments")
 	for screen: MeshInstance3D in room.screens:
 		assert_true(screen.material_override.emission_enabled, "console emissive in both states")
@@ -44,7 +44,7 @@ func test_every_prop_has_one_shared_collider_not_one_per_state() -> void:
 func test_present_fibre_dust_and_fragments_rest_on_wardrobe_shelf() -> void:
 	var furnishings := QuartersFurnishings.build(&"aged")
 	var wardrobe := furnishings.get_node("Placement_wardrobe")
-	var shelf: MeshInstance3D = wardrobe.get_node("Standin_wardrobe/Shelf")
+	var shelf: MeshInstance3D = wardrobe.get_node("wardrobe").find_child("BottomPanel", true, false)
 	var floor_bounds := ShipScene._world_frame(shelf) * shelf.get_aabb()
 	var fragments := wardrobe.get_node("UniformFragments")
 	var bottom := INF
