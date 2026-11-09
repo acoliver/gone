@@ -382,3 +382,318 @@ func test_rendered_power_shell_uses_pure_collision_recipe() -> void:
 func _bay(local: Vector2) -> Vector2:
 	var point := _bay_frame * Vector3(local.x, 0, local.y)
 	return Vector2(point.x, point.z)
+
+func test_generated_console_models_and_wall_mounts_are_present() -> void:
+	var room := PowerRoom.build(_awake_game())
+	var stations := room.get_children().filter(func(node: Node) -> bool: return node.name.begins_with("ConsoleStation"))
+	assert_int_equal(stations.size(), 6, "six stations use generated terminal models")
+	for station: Node3D in stations:
+		assert_true(station.has_node("TerminalModel"), "each station has the terminal body")
+		assert_true(station.get_node("TerminalModel/Terminal_GeneratedFit").visible, "every station keeps its terminal body visible")
+		assert_true(station.has_node("KeyboardTray"), "each station has a separate keyboard tray")
+		assert_true(station.get_node("TerminalModel").find_child("ScreenSocket", true, false) != null, "terminal socket imports")
+		assert_vec3_equal(station.get_node("TerminalModel").position, Vector3.ZERO, "terminal back is on the station wall plane")
+		var roomward := Vector3(27, 0, -5.8) - station.position
+		assert_true(station.basis.z.dot(roomward) > 0.8, "terminal screen faces into the room")
+		assert_true(station.position.x >= PowerRoom.ROOM_START_X and station.position.x <= PowerRoom.ROOM_END_X, "station lies inside room x bounds")
+		assert_true(station.position.z >= PowerRoom.ROOM_END_Z and station.position.z <= PowerRoom.ROOM_START_Z, "station lies inside room z bounds")
+	var active_station: Node3D = stations[1]
+	assert_true(active_station.has_node("ScreenGlass"), "active console puts glass on the imported screen plane")
+	assert_true(active_station.has_node("ShipDisplay"), "active screen keeps the existing state display")
+	assert_true((active_station.get_node("ShipDisplay/TextSurface").mesh as QuadMesh).size.is_equal_approx(Vector2(0.54, 0.28)), "live text fits the terminal screen")
+	var busted_station: Node3D = stations[2]
+	assert_true(busted_station.get_node("ScreenGlass").material_override.albedo_texture != null, "busted screen uses procedural crack glass")
+	var active_plane := active_station.get_node("TerminalModel/DisplayPlane") as MeshInstance3D
+	var active_quad := active_station.get_node("ShipDisplay") as Node3D
+	var text_surface := active_quad.get_node("TextSurface") as MeshInstance3D
+	var text_transform := _test_transform_in_room(text_surface, room)
+	var active_plane_transform := _test_transform_in_room(active_plane, room)
+	assert_true(text_transform.basis.y.dot(Vector3.UP) > 0.99, "native text surface stays upright")
+	assert_true(text_transform.basis.z.dot(active_plane_transform.basis.z.normalized()) > 0.999, "native text surface faces along the imported screen normal")
+	var busted_plane := busted_station.get_node("TerminalModel/DisplayPlane") as MeshInstance3D
+	var busted_glass := busted_station.get_node("ScreenGlass") as MeshInstance3D
+	var busted_glass_transform := _test_transform_in_room(busted_glass, room)
+	var busted_plane_transform := _test_transform_in_room(busted_plane, room)
+	assert_true(busted_glass_transform.basis.y.dot(Vector3.UP) > 0.99, "busted screen crack glass stays upright")
+	assert_true(busted_glass_transform.basis.z.dot(busted_plane_transform.basis.z.normalized()) > 0.999, "busted glass faces along the imported screen normal")
+	assert_false(active_plane.visible, "active text replaces the imported pale display surface")
+	var plane_size := active_plane.mesh.get_aabb().size
+	assert_true(Vector2(plane_size.x, plane_size.y).is_equal_approx((active_quad.get_node("TextSurface").mesh as QuadMesh).size), "live text exactly covers the hidden display plane")
+	assert_false(active_station.get_node("ScreenGlass").visible, "active station does not put a second glass pane over its display")
+	var plane_transform: Transform3D = (active_plane.get_parent() as Node3D).transform * active_plane.transform
+	var expected_display_position: Vector3 = plane_transform * active_plane.mesh.get_aabb().get_center() + plane_transform.basis.z * 0.003
+	assert_float_in_range(active_quad.position.distance_to(expected_display_position), -0.0001, 0.0001, "live display sits 3 mm ahead of the imported screen face")
+	assert_true(active_station.basis.z.dot(Vector3(27.0, 1.65, -5.8) - active_station.position) > 0.0, "imported screen normal points into the room")
+	var facing := Vector3(sin(PowerRoom.console_stations()[1].yaw), 0.0, cos(PowerRoom.console_stations()[1].yaw))
+	var tray_bounds := _test_world_aabb(active_station.get_node("KeyboardTray"), room)
+	var eye := _test_front_lip(tray_bounds, facing) + facing * 0.55
+	eye.y = 1.65
+	var surface := active_quad.get_node("TextSurface") as MeshInstance3D
+	var target := _test_transform_in_room(surface, room).origin
+	var first_hit := _test_first_triangle_hit(room, eye, target)
+	assert_true(first_hit == surface, "capture-height eye ray reaches live text before the terminal shell: " + str(first_hit))
+	var busted_tray := busted_station.get_node("KeyboardTray") as Node3D
+	assert_float_in_range(rad_to_deg(busted_tray.rotation.x), 6.9, 7.1, "busted tray droops seven degrees toward the player")
+	var front_edge := busted_tray.position + busted_tray.basis * Vector3(0.0, 0.0, 0.2)
+	var rear_edge := busted_tray.position + busted_tray.basis * Vector3(0.0, 0.0, -0.2)
+	assert_true(front_edge.y < rear_edge.y, "busted tray droop lowers the front edge")
+	assert_false(busted_tray.get_node("Keycap 03 onset p").visible, "busted station is missing an onset keycap")
+	assert_false(busted_tray.get_node("Keycap 24 control number").visible, "busted station is missing a control keycap")
+	var dead_station: Node3D = stations[0]
+	assert_true(dead_station.get_node("ScreenGlass").material_override.albedo_texture == null, "dead station remains dark glass without cracks")
+	var mount := room.get_node("StatusPanelMount") as Node3D
+	assert_vec3_equal(mount.position, Vector3(27, 1.4, PowerRoom.ROOM_END_Z), "panel is centered on north wall with 2.10 m screen center")
+	assert_true(mount.has_node("StatusPanelModel"), "status panel shell loads")
+	assert_true(mount.has_node("StatusBoard"), "runtime status board is attached")
+	assert_float_in_range(mount.position.y + mount.get_node("StatusBoard").position.y, 2.10 - 0.003, 2.10 + 0.003, "status screen center is within 3 mm of the approved height")
+	assert_true(absf(mount.position.x - 24.5) > 1.9 and absf(mount.position.x - 29.5) > 1.9, "panel clears both north stations")
+	assert_true(absf(mount.position.z - PowerRoom.REGULAR_STATIONS_Z[1]) > 1.5, "panel clears the north ceiling fixture row")
+	assert_true(mount.position.distance_to(PowerRoom.door_act_center()) > 5.0, "panel clears the power doorway")
+	room.free()
+
+func test_every_keyboard_frame_slopes_down_toward_the_room() -> void:
+	var room := PowerRoom.build(_awake_game())
+	var stations := room.get_children().filter(func(node: Node) -> bool: return node.name.begins_with("ConsoleStation"))
+	assert_int_equal(stations.size(), 6, "check every console station's keyboard slope")
+	for station: Node3D in stations:
+		var frame := station.get_node("KeyboardTray").find_child("Rugged olive steel perimeter housing", true, false) as MeshInstance3D
+		assert_true(frame != null, "%s has its keyboard frame" % station.name)
+		var transform := _test_transform_in_room(frame, room)
+		var roomward := station.basis.z.normalized()
+		var vertices := frame.mesh.get_faces()
+		var front := -INF
+		var rear := INF
+		for vertex: Vector3 in vertices:
+			var depth := (transform * vertex).dot(roomward)
+			front = maxf(front, depth)
+			rear = minf(rear, depth)
+		var front_height := 0.0
+		var rear_height := 0.0
+		var front_count := 0
+		var rear_count := 0
+		for vertex: Vector3 in vertices:
+			var point := transform * vertex
+			var depth := point.dot(roomward)
+			if depth >= lerpf(rear, front, 0.85):
+				front_height += point.y
+				front_count += 1
+			if depth <= lerpf(rear, front, 0.15):
+				rear_height += point.y
+				rear_count += 1
+		assert_true(front_count > 0 and rear_count > 0, "%s has front and rear frame edges" % station.name)
+		assert_true(front_height / front_count < rear_height / rear_count, "%s keyboard front edge is lower than its rear toward the room" % station.name)
+	room.free()
+
+func test_status_board_has_one_running_system_and_native_naleya() -> void:
+	assert_int_equal(StatusBoardData.MINIMUM_ROW_CELL_PX, 60, "system rows preserve the minimum distance-reading cell height")
+	assert_int_equal(StatusBoardData.SYSTEMS.size(), 14, "board data carries the system list")
+	assert_int_equal(StatusBoardData.running_system_count(), 1, "only secondary power is running")
+	assert_true(StatusBoardData.SYSTEMS[1].perceived_es == "ENERGÍA SECUNDARIA", "running row is secondary power")
+	assert_true(StatusBoardData.SYSTEMS[12].native == "kelawa pasha lina", "native board includes the approved fire vocabulary")
+	for text: String in StatusBoardData.native_text():
+		for word: String in text.replace("[", " ").replace("]", " ").split(" ", false):
+			if word.is_valid_int():
+				continue
+			assert_false(Naleya.syllabify(word).is_empty(), "native board contains Naleya only: " + word)
+
+func test_terminal_collision_uses_keyboard_tray_depth() -> void:
+	for station: PowerRoom.ConsoleStation in PowerRoom.console_stations():
+		var hull := PowerRoom.console_solid(station)
+		var horizontal := Vector2(hull.size.x, hull.size.z)
+		assert_true(maxf(horizontal.x, horizontal.y) >= 1.005 - 0.0001, "terminal width is represented in the collider")
+		assert_true(minf(horizontal.x, horizontal.y) >= 0.90 - 0.0001, "keyboard tray depth is represented in the collider")
+
+func test_power_room_glbs_remain_within_the_prop_triangle_budget() -> void:
+	for path: String in [
+		"res://assets/props/terminal/terminal.glb",
+		"res://assets/props/terminal/keyboard-tray.glb",
+		"res://assets/props/status_panel/panel.glb",
+	]:
+		var model := load(path).instantiate() as Node3D
+		assert_true(_mesh_triangle_count(model) < 50000, "%s remains below the 50k triangle prop budget" % path)
+		model.free()
+
+func test_power_room_prop_glbs_have_exact_mesh_sets() -> void:
+	var expected := {
+		"res://assets/props/status_panel/panel.glb": ["Panel_ArmoredBody", "DisplayPlane"],
+		"res://assets/props/terminal/terminal.glb": ["Terminal_GeneratedFit", "DisplayPlane", "WallMountPlate"],
+		"res://assets/props/terminal/keyboard-tray.glb": _keyboard_tray_mesh_names(),
+	}
+	for path: String in expected:
+		var model := (load(path) as PackedScene).instantiate() as Node3D
+		var actual := _mesh_names(model)
+		actual.sort()
+		var wanted: Array = expected[path]
+		wanted.sort()
+		assert_true(actual == wanted, "%s mesh names match the complete authored set: %s" % [path, actual])
+		model.free()
+
+func _test_transform_in_room(node: Node3D, room: Node3D) -> Transform3D:
+	var transform := Transform3D.IDENTITY
+	var current := node
+	while current != room:
+		transform = current.transform * transform
+		current = current.get_parent() as Node3D
+	return transform
+
+func _test_world_aabb(parent: Node3D, room: Node3D) -> AABB:
+	var result := AABB()
+	var initialized := false
+	var stack: Array[Node] = [parent]
+	while not stack.is_empty():
+		var node: Node = stack.pop_back()
+		if node is MeshInstance3D and node.mesh != null:
+			var local_bounds: AABB = node.get_aabb()
+			for x: float in [local_bounds.position.x, local_bounds.end.x]:
+				for y: float in [local_bounds.position.y, local_bounds.end.y]:
+					for z: float in [local_bounds.position.z, local_bounds.end.z]:
+						var point: Vector3 = _test_transform_in_room(node, room) * Vector3(x, y, z)
+						if initialized:
+							result = result.expand(point)
+						else:
+							result = AABB(point, Vector3.ZERO)
+							initialized = true
+		for child: Node in node.get_children():
+			stack.append(child)
+	assert_true(initialized, "terminal tray has mesh geometry")
+	return result
+
+func _test_front_lip(bounds: AABB, facing: Vector3) -> Vector3:
+	var lip := bounds.get_center()
+	var support := 0.0
+	for x: float in [bounds.position.x, bounds.end.x]:
+		for z: float in [bounds.position.z, bounds.end.z]:
+			support = maxf(support, Vector3(x - lip.x, 0.0, z - lip.z).dot(facing))
+	return lip + facing * support
+
+func _test_first_triangle_hit(root_node: Node, start: Vector3, finish: Vector3) -> MeshInstance3D:
+	var best := INF
+	var result: MeshInstance3D
+	var stack: Array[Node] = [root_node]
+	while not stack.is_empty():
+		var node: Node = stack.pop_back()
+		if node is MeshInstance3D and node.mesh != null and node.visible:
+			var faces: PackedVector3Array = node.mesh.get_faces()
+			for index: int in range(0, faces.size(), 3):
+				var node_transform := _test_transform_in_room(node, root_node as Node3D)
+				var a: Vector3 = node_transform * faces[index]
+				var b: Vector3 = node_transform * faces[index + 1]
+				var c: Vector3 = node_transform * faces[index + 2]
+				var point: Variant = Geometry3D.segment_intersects_triangle(start, finish, a, b, c)
+				if point != null:
+					var distance := start.distance_to(point)
+					if distance < best:
+						best = distance
+						result = node
+		for child: Node in node.get_children():
+			stack.append(child)
+	return result
+
+func _mesh_names(node: Node) -> Array[String]:
+	var names: Array[String] = []
+	if node is MeshInstance3D and node.mesh != null:
+		names.append(node.name)
+	for child: Node in node.get_children():
+		names.append_array(_mesh_names(child))
+	return names
+
+func _keyboard_tray_mesh_names() -> Array[String]:
+	var names: Array[String] = [
+		"Rugged olive steel perimeter housing",
+		"Recessed black elastomer membrane",
+		"Bent steel keyboard tray",
+		"Terminal mounting back flange",
+		"Flange back perimeter rubber gasket",
+		"Tray triangular gusset -0_34",
+		"Tray triangular gusset +0_34",
+		"Proud 13 mm hex socket cap screw",
+		"Dark recessed hex socket",
+	]
+	for index: int in range(1, 7):
+		names.append("Flange hex bolt %02d" % index)
+	for index: int in range(1, 10):
+		names.append("Proud 13 mm hex socket cap screw_%03d" % index)
+		names.append("Dark recessed hex socket_%03d" % index)
+	var keys := [
+		"29 control right", "28 control down", "27 control left", "26 control up",
+		"25 control punct", "24 control number", "23 control box", "22 control enter",
+		"21 control back", "20 control space", "19 command help", "18 command systems",
+		"17 command map", "16 command power", "15 vowel u", "14 vowel o", "13 vowel i",
+		"12 vowel e", "11 vowel a", "10 onset carrier", "09 onset ch", "08 onset t",
+		"07 onset sh", "06 onset w", "05 onset k", "04 onset m", "03 onset p",
+		"02 onset l", "01 onset n",
+	]
+	for key: String in keys:
+		names.append("Keycap " + key)
+		names.append("Black rubber bellows " + key)
+	return names
+
+func _mesh_triangle_count(node: Node) -> int:
+	var total := 0
+	if node is MeshInstance3D and node.mesh != null:
+		total += node.mesh.get_faces().size() / 3
+	for child: Node in node.get_children():
+		total += _mesh_triangle_count(child)
+	return total
+
+func test_status_board_screen_faces_into_room_and_has_schematic_content() -> void:
+	var game := _awake_game()
+	var room := PowerRoom.build(game)
+	var panel: Node3D = room.get_node("StatusPanelMount/StatusPanelModel")
+	var socket := panel.find_child("ScreenSocket", true, false) as Node3D
+	var screen := panel.find_child("DisplayPlane", true, false) as MeshInstance3D
+	var board: MeshInstance3D = room.status_board
+	assert_true(socket != null and screen != null and board != null, "the panel exports its screen and the room builds its status board")
+	assert_true(socket.basis.z.is_equal_approx(Vector3(0.0, 0.0, 1.0)), "the screen socket faces into the room")
+	assert_true(screen.basis.z.is_equal_approx(Vector3(0.0, 0.0, 1.0)), "the panel glass faces into the room")
+	assert_true(board.basis.z.is_equal_approx(Vector3(0.0, 0.0, 1.0)), "the board quad faces into the room")
+	assert_true(board.position.z > screen.position.z, "the board quad sits in front of the panel glass")
+	var board_texture := load("res://assets/props/status_panel/board-native.png") as Texture2D
+	var perceived_texture := load("res://assets/props/status_panel/board-perceived.png") as Texture2D
+	assert_true(board_texture != null and perceived_texture != null, "both board schematic textures load")
+	var image := board_texture.get_image()
+	var perceived_image := perceived_texture.get_image()
+	assert_true(image.get_size() == Vector2i(2560, 1080), "native board preserves the 2560×1080 layout")
+	assert_true(perceived_image.get_size() == image.get_size(), "perceived board preserves identical texture geometry")
+	var first := image.get_pixel(0, 0)
+	var has_schematic_detail := false
+	for y: int in range(0, image.get_height(), 16):
+		for x: int in range(0, image.get_width(), 16):
+			if (absf(image.get_pixel(x, y).r - first.r) + absf(image.get_pixel(x, y).g - first.g) + absf(image.get_pixel(x, y).b - first.b)) > 0.15:
+				has_schematic_detail = true
+				break
+		if has_schematic_detail:
+			break
+	assert_true(has_schematic_detail, "the board image contains schematic detail, not a blank fill")
+	room.free()
+
+func test_status_board_resolves_while_looked_at_and_decays_when_ignored() -> void:
+	var output: Array = []
+	var exit_code := OS.execute(OS.get_executable_path(), [
+		"--headless", "--path", ProjectSettings.globalize_path("res://"),
+		"-s", "tests/power_room_scene_checks.gd",
+	], output, true)
+	var text := "".join(output)
+	assert_int_equal(exit_code, 0, text)
+	assert_false(text.contains("SCRIPT ERROR:"), text)
+	assert_false(text.contains("ERROR:"), text)
+
+func _check_status_board_attention() -> void:
+	var game := _awake_game()
+	var room := PowerRoom.build(game)
+	var tree := Engine.get_main_loop() as SceneTree
+	tree.root.add_child(room)
+	var board: StatusBoard = room.status_board
+	var board_position := board.global_position
+	var eye := board_position + Vector3(0.0, 0.0, 3.0)
+	var forward := (board_position - eye).normalized()
+	for _tick: int in range(DisplayPerception.FIRST_HOLD + DisplayPerception.FIRST_RAMP):
+		board.tick_attention(eye, forward)
+	assert_float_in_range(board.perception.perceive, 1.0, 1.0, "a player looking at the board centre from 3 m resolves its text")
+	var away := board_position + Vector3(0.0, 0.0, -3.0)
+	board.tick_attention(away, Vector3(0.0, 0.0, -1.0))
+	assert_true(board.perception.perceive < 1.0, "looking away starts the native-text decay")
+	for _tick: int in range(DisplayPerception.DECAY):
+		board.tick_attention(away, Vector3(0.0, 0.0, -1.0))
+	assert_float_in_range(board.perception.perceive, 0.0, 0.0, "ignoring the board returns it to native text")
+	room.free()

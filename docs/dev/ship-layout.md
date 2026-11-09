@@ -490,3 +490,7 @@ Main risks are concrete:
 9. Existing art/atlas files describe the previous build and example hatch states. Export built geometry from layout and retain proposed-versus-built markings; do not let them become a second runtime authoring path.
 
 No product-direction question blocks implementation. The brief settles deck availability, hatches, labels, movement limits and audio source. Sound quality remains for Andrew's listening judgment after assets exist. Frame-time parity, raster clarity at capture resolution, and swing/landing clearance require measured runtime evidence. These are acceptance tasks, not reasons to reopen decisions 1 through 21. Crew counts, remote rooms, radiation causes and future lift behavior remain outside this feature.
+
+## Power room terminal and status panel
+
+The six power-room stations use the generated terminal body and matching keyboard tray in `assets/props/terminal/`. The active secondary-power station renders its existing Naleya/Spanish state on the model's `ScreenSocket`; dark and damaged stations share the same shell. Their collision hulls cover the 1.005 m terminal width and the 0.90 m terminal-plus-tray depth. The north-wall status panel is centered at X=27 m, with its screen at Y=2.10 m. Its board shows the ship profile, current location, damage status and system state. The native and perceived Spanish board layers crossfade using the shared writing-memory attention timing. See `art-source/terminal/` and `art-source/status_panel/` for selection and generation records.

@@ -287,8 +287,8 @@ static func door_act_center() -> Vector3:
 static func console_solid(station: ConsoleStation) -> ShipGeometry.SolidSpec:
 	var facing := Vector3(sin(station.yaw), 0.0, cos(station.yaw))
 	var along := Vector3(facing.z, 0.0, -facing.x)
-	var local_size := Vector3(1.25, 1.75, 0.56)
-	var center := station.position + facing * 0.28
+	var local_size := Vector3(1.005, 1.75, 0.90)
+	var center := station.position + facing * 0.45
 	return ShipGeometry.SolidSpec.new(
 		Vector3(center.x, 0.875, center.z),
 		Vector3(

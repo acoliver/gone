@@ -32,46 +32,7 @@ const ROOM_CEILING = ShipGeometry.ROOM_CEILING
 const DOOR_WIDTH: float = Hallway.SIDE_DOOR_WIDTH
 const DOOR_HEIGHT: float = Hallway.SIDE_DOOR_HEIGHT
 const DOOR_THICKNESS: float = Hallway.SIDE_DOOR_THICKNESS
-const DOOR_SHADE: float = Hallway.SIDE_DOOR_SHADE
-
-## Console station construction, all in the station's local frame (the
-## origin at the wall's inner face, the panel facing +Z into the room):
-## a wall spine, a flatscreen at working height, a keyboard shelf, and
-## blank colored buttons — a 4x3 grid plus three wider function buttons
-## off to the side. Nothing mechanical; buttons carry no letters.
-## Only the working screen carries native writing.
 const CONSOLE_HEALTHS = ShipGeometry.CONSOLE_HEALTHS
-const SCREEN_SIZE: Vector3 = Vector3(0.92, 0.58, 0.06)
-const SCREEN_CENTER_Y: float = 1.30
-const SHELF_SIZE: Vector3 = Vector3(1.10, 0.05, 0.42)
-const SHELF_CENTER_Y: float = 0.97
-const BUTTON_SIZE: Vector3 = Vector3(0.07, 0.05, 0.07)
-const FUNCTION_BUTTON_SIZE: Vector3 = Vector3(0.055, 0.05, 0.055)
-## The grid's column pitch and the function block's side position, in
-## the shelf's local frame.
-const GRID_COLUMNS_X: Array[float] = [-0.295, -0.205, -0.115, -0.025]
-const GRID_ROWS_Z: Array[float] = [0.15, 0.24, 0.33]
-const FUNCTION_BUTTONS_X: Array[float] = [0.18, 0.28, 0.38]
-## The blank buttons' deterministic palette: colored, no letters.
-const BUTTON_PALETTE: Array[Color] = [
-	Color(0.72, 0.10, 0.08),
-	Color(0.75, 0.45, 0.06),
-	Color(0.16, 0.55, 0.14),
-	Color(0.08, 0.42, 0.55),
-	Color(0.12, 0.18, 0.60),
-	Color(0.48, 0.10, 0.45),
-	Color(0.68, 0.66, 0.60),
-	Color(0.60, 0.50, 0.08),
-	Color(0.10, 0.48, 0.42),
-	Color(0.70, 0.28, 0.05),
-	Color(0.35, 0.58, 0.10),
-	Color(0.38, 0.16, 0.52),
-]
-## A visibly busted console drops two grid buttons and its screen hangs
-## forward off the mount.
-const BUSTED_MISSING_BUTTONS: Array[int] = [4, 7]
-const BUSTED_SCREEN_TILT: float = 0.55
-
 const HEADING_ID: String = "secondary_power.heading"
 
 ## The secondary generator at the room's center: a sleek black column,
@@ -131,11 +92,14 @@ var _door_leaf_base: Vector3 = Vector3.ZERO
 var _door_binding: Surfaces.MotionBinding
 var _console_state: int = -1
 var _screen_material: StandardMaterial3D = null
+const StatusBoardScript = preload("res://app/status_board.gd")
+
 var console_display: ShipDisplay = null
+var status_board = null
 var _text_cache: ShipTextCache
 var _remainder: float = 0.0
 static var _box_cache: Dictionary = {}
-var _palette_cache: Dictionary = {}
+static var _crack_texture_cache: Texture2D = null
 
 ## The room's shell in fixed order: floor, ceiling, the west and east
 ## side walls, the far (north) wall, and the south wall's gap band east
@@ -251,8 +215,12 @@ static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 	room._door_leaf_base = room._door_leaf.position
 	room.add_child(room._door_leaf)
 
-	for station: ConsoleStation in console_stations():
-		room.add_child(room._build_console(station))
+	var stations := console_stations()
+	for index: int in range(stations.size()):
+		var console := room._build_console(stations[index])
+		console.name = "ConsoleStation%d" % index
+		room.add_child(console)
+	room.add_child(room._build_status_panel())
 
 	room.add_child(room._build_generator(glow_level))
 
@@ -287,87 +255,153 @@ static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 	Lighting.mesh_layers(door_frame, door_mask)
 	return room
 
-## One console station: spine, screen, shelf, and the blank colored
-## buttons. The broken looks differ by health — a blacked station holds
-## a dead screen; a busted one drops buttons and hangs its screen
-## forward — and the working station's screen is the room's only one
-## that glows.
+## One generated terminal and its matching keyboard tray. Each source model
+## shares the authored station frame; only the active station owns live text.
 func _build_console(station: ConsoleStation) -> Node3D:
 	var group := Node3D.new()
 	group.name = "ConsoleStation"
 	group.position = station.position
 	group.rotation.y = station.yaw
-	var spine := MeshInstance3D.new()
-	spine.name = "Spine"
-	spine.mesh = _box_mesh(Vector3(0.06, 1.7, 0.10))
-	spine.material_override = _flat_grey(0.10)
-	spine.position = Vector3(0.0, 0.85, 0.05)
-	group.add_child(spine)
-	var screen := MeshInstance3D.new()
-	screen.name = "Screen"
-	screen.mesh = _box_mesh(SCREEN_SIZE)
+	var terminal := load("res://assets/props/terminal/terminal.glb").instantiate() as Node3D
+	terminal.name = "TerminalModel"
+	group.add_child(terminal)
+	var keyboard := load("res://assets/props/terminal/keyboard-tray.glb").instantiate() as Node3D
+	keyboard.name = "KeyboardTray"
+	group.add_child(keyboard)
+	if station.health == CONSOLE_HEALTHS["dead_busted"]:
+		var hinge := Vector3(0.0, -0.85, 1.10)
+		var droop := deg_to_rad(7.0)
+		var hinge_rotation := Basis(Vector3.RIGHT, droop)
+		keyboard.position = hinge + hinge_rotation * (keyboard.position - hinge)
+		keyboard.rotation.x = droop
+		assert(is_equal_approx(rad_to_deg(keyboard.rotation.x), 7.0), "busted tray droops seven degrees around its flange hinge")
+		for cap_name: String in ["Keycap 03 onset p", "Keycap 24 control number"]:
+			var missing_cap := keyboard.find_child(cap_name, true, false) as MeshInstance3D
+			assert(missing_cap != null, "busted keyboard contains " + cap_name)
+			missing_cap.visible = false
+	var socket := terminal.find_child("ScreenSocket", true, false) as Node3D
+	assert(socket != null, "terminal GLB exports its screen socket")
+	var display_plane := terminal.find_child("DisplayPlane", true, false) as MeshInstance3D
+	assert(display_plane != null, "terminal GLB exports its display plane")
 	if station.health == CONSOLE_HEALTHS["active"]:
 		_screen_material = StandardMaterial3D.new()
-		_screen_material.albedo_color = Color(0.05, 0.05, 0.05)
-		_screen_material.roughness = 0.35
+		_screen_material.albedo_color = Color(0.025, 0.035, 0.04)
+		_screen_material.roughness = 0.3
 		_screen_material.emission_enabled = true
 		_screen_material.emission = Lighting.REGULAR_WHITE * 0.10
+		var screen := MeshInstance3D.new()
+		screen.name = "ScreenGlass"
+		screen.mesh = _box_mesh(Vector3(0.54, 0.28, 0.008))
 		screen.material_override = _screen_material
-		screen.position = Vector3(0.0, SCREEN_CENTER_Y, 0.13)
-	elif station.health == CONSOLE_HEALTHS["dead_busted"]:
-		var busted := StandardMaterial3D.new()
-		busted.albedo_color = Color(0.03, 0.03, 0.03)
-		busted.roughness = 0.4
-		screen.material_override = busted
-		# The screen hangs forward off its mount, tilted past level.
-		screen.position = Vector3(0.0, SCREEN_CENTER_Y - 0.18, 0.20)
-		screen.rotation.x = -BUSTED_SCREEN_TILT
-	else:
-		var blacked := StandardMaterial3D.new()
-		blacked.albedo_color = Color(0.04, 0.04, 0.04)
-		blacked.roughness = 0.4
-		screen.material_override = blacked
-		screen.position = Vector3(0.0, SCREEN_CENTER_Y, 0.13)
-	group.add_child(screen)
-	if station.health == CONSOLE_HEALTHS["active"]:
+		screen.visible = false
+		group.add_child(screen)
+		var terminal_fit := terminal.find_child("Terminal_GeneratedFit", true, false) as MeshInstance3D
+		assert(terminal_fit != null, "terminal GLB exports its fitted housing")
+		var plane_transform := terminal.transform * display_plane.transform
+		var display_frame := _upright_screen_frame(group, plane_transform, display_plane.mesh.get_aabb())
+		screen.transform = display_frame.transform
+		screen.mesh = _box_mesh(Vector3(display_frame.size.x, display_frame.size.y, 0.008))
+		var plane_size: Vector2 = display_frame.size
+		assert(display_frame.transform.basis.z.dot(Vector3.BACK) > 0.0, "terminal display plane faces out from its screen")
+		display_plane.visible = false
 		console_display = ShipDisplay.build(_game.writing_memory, _text_cache)
-		console_display.position = Vector3(0.0, SCREEN_CENTER_Y, 0.166)
+		console_display.transform = display_frame.transform
+		console_display.position += display_frame.transform.basis.z * 0.003
+		var text_quad := console_display.get_node("TextSurface") as MeshInstance3D
+		(text_quad.mesh as QuadMesh).size = plane_size
 		group.add_child(console_display)
-	var shelf := MeshInstance3D.new()
-	shelf.name = "Shelf"
-	shelf.mesh = _box_mesh(SHELF_SIZE)
-	shelf.material_override = _flat_grey(0.12)
-	shelf.position = Vector3(0.0, SHELF_CENTER_Y, 0.26)
-	group.add_child(shelf)
-	var button_index := 0
-	for row_z: float in GRID_ROWS_Z:
-		for column_x: float in GRID_COLUMNS_X:
-			var busted_missing: bool = (
-				station.health == CONSOLE_HEALTHS["dead_busted"]
-				and BUSTED_MISSING_BUTTONS.has(button_index)
-			)
-			if not busted_missing:
-				group.add_child(_button(
-					Vector3(column_x, SHELF_CENTER_Y + 0.05, row_z),
-					BUTTON_SIZE,
-					BUTTON_PALETTE[button_index % BUTTON_PALETTE.size()]
-				))
-			button_index += 1
-	for function_x: float in FUNCTION_BUTTONS_X:
-		group.add_child(_button(
-			Vector3(function_x, SHELF_CENTER_Y + 0.05, 0.24),
-			FUNCTION_BUTTON_SIZE,
-			Color(0.55, 0.55, 0.52)
-		))
+	else:
+		var glass := StandardMaterial3D.new()
+		glass.albedo_color = Color(0.018, 0.02, 0.025)
+		glass.roughness = 0.38
+		if station.health == CONSOLE_HEALTHS["dead_busted"]:
+			glass.albedo_color = Color.WHITE
+			glass.albedo_texture = _crack_texture()
+		var dead_screen := MeshInstance3D.new()
+		dead_screen.name = "ScreenGlass"
+		var dead_transform := terminal.transform * display_plane.transform
+		var dead_frame := _upright_screen_frame(group, dead_transform, display_plane.mesh.get_aabb())
+		dead_screen.mesh = _box_mesh(Vector3(dead_frame.size.x, dead_frame.size.y, 0.008))
+		dead_screen.material_override = glass
+		dead_screen.transform = dead_frame.transform
+		group.add_child(dead_screen)
 	return group
 
-func _button(position: Vector3, size: Vector3, color: Color) -> MeshInstance3D:
-	var button := MeshInstance3D.new()
-	button.name = "Button"
-	button.mesh = _box_mesh(size)
-	button.material_override = _palette_material(color)
-	button.position = position
-	return button
+func _upright_screen_frame(group: Node3D, plane_transform: Transform3D, bounds: AABB) -> Dictionary:
+	var group_basis := group.transform.basis.orthonormalized()
+	var plane_normal_world := (group_basis * plane_transform.basis.z).normalized()
+	var up_world := (Vector3.UP - plane_normal_world * Vector3.UP.dot(plane_normal_world)).normalized()
+	var right_world := up_world.cross(plane_normal_world).normalized()
+	var inverse_group_basis := group_basis.inverse()
+	var frame_basis := Basis(
+		(inverse_group_basis * right_world).normalized(),
+		(inverse_group_basis * up_world).normalized(),
+		(inverse_group_basis * plane_normal_world).normalized()
+	)
+	var plane_center := plane_transform * bounds.get_center()
+	var left := INF
+	var right := -INF
+	var bottom := INF
+	var top := -INF
+	for x: float in [bounds.position.x, bounds.end.x]:
+		for y: float in [bounds.position.y, bounds.end.y]:
+			for z: float in [bounds.position.z, bounds.end.z]:
+				var corner := plane_transform * Vector3(x, y, z)
+				var relative := group_basis * (corner - plane_center)
+				var horizontal := relative.dot(right_world)
+				var vertical := relative.dot(up_world)
+				left = minf(left, horizontal)
+				right = maxf(right, horizontal)
+				bottom = minf(bottom, vertical)
+				top = maxf(top, vertical)
+	return {
+		"transform": Transform3D(frame_basis, plane_center),
+		"size": Vector2(right - left, top - bottom),
+	}
+
+static func _crack_texture() -> Texture2D:
+	if _crack_texture_cache != null:
+		return _crack_texture_cache
+	var image := Image.create(128, 64, false, Image.FORMAT_RGBA8)
+	image.fill(Color(0.025, 0.02, 0.02, 1.0))
+	var paths: Array[PackedVector2Array] = [
+		PackedVector2Array([Vector2(64, 31), Vector2(55, 23), Vector2(52, 13), Vector2(43, 7)]),
+		PackedVector2Array([Vector2(55, 23), Vector2(44, 25), Vector2(36, 32)]),
+		PackedVector2Array([Vector2(52, 13), Vector2(56, 5)]),
+		PackedVector2Array([Vector2(64, 31), Vector2(73, 23), Vector2(85, 20), Vector2(97, 12)]),
+		PackedVector2Array([Vector2(73, 23), Vector2(76, 35), Vector2(88, 43)]),
+		PackedVector2Array([Vector2(85, 20), Vector2(94, 28), Vector2(108, 29)]),
+		PackedVector2Array([Vector2(64, 31), Vector2(57, 42), Vector2(49, 48)]),
+		PackedVector2Array([Vector2(57, 42), Vector2(66, 53)]),
+	]
+	for path: PackedVector2Array in paths:
+		for index: int in range(path.size() - 1):
+			var start := Vector2i(path[index])
+			var finish := Vector2i(path[index + 1])
+			var steps := maxi(absi(finish.x - start.x), absi(finish.y - start.y))
+			for step: int in range(steps + 1):
+				var point := Vector2i(roundi(lerpf(start.x, finish.x, float(step) / steps)), roundi(lerpf(start.y, finish.y, float(step) / steps)))
+				image.set_pixel(point.x, point.y, Color(0.92, 0.96, 1.0, 1.0))
+				if point.y + 1 < image.get_height():
+					image.set_pixel(point.x, point.y + 1, Color(0.30, 0.38, 0.44, 1.0))
+	_crack_texture_cache = ImageTexture.create_from_image(image)
+	return _crack_texture_cache
+
+func _build_status_panel() -> Node3D:
+	var mount := Node3D.new()
+	mount.name = "StatusPanelMount"
+	mount.position = Vector3(27.0, 1.4, ROOM_END_Z)
+	var panel := load("res://assets/props/status_panel/panel.glb").instantiate() as Node3D
+	panel.name = "StatusPanelModel"
+	mount.add_child(panel)
+	var socket := panel.find_child("ScreenSocket", true, false) as Node3D
+	assert(socket != null, "status panel GLB exports its screen socket")
+	status_board = StatusBoardScript.build(_game.writing_memory)
+	status_board.transform = socket.transform
+	status_board.position += socket.basis.z * 0.002
+	mount.add_child(status_board)
+	return mount
+
 
 ## The secondary generator: a sleek black column with light rings that
 ## sit dark until the console activation, then glow slick while an omni
@@ -594,6 +628,7 @@ func tick_console_attention(eye: Vector3, camera_forward: Vector3) -> void:
 		console_display.prefetch(HEADING_ID, ["secondary_power.inactive", "secondary_power.active"])
 	_apply_console_state(_game.console_state)
 	console_display.tick_attention(eye, camera_forward)
+	status_board.tick_attention(eye, camera_forward)
 
 ## One textured surface piece wearing the stasis room's shared material
 ## for its role — the same resource instance, never a copy.
@@ -620,21 +655,3 @@ static func _box_mesh(size: Vector3) -> BoxMesh:
 	mesh.size = size
 	_box_cache[size] = mesh
 	return mesh
-
-static func _flat_grey(shade: float) -> StandardMaterial3D:
-	var material := StandardMaterial3D.new()
-	material.albedo_color = Color(shade, shade, shade)
-	material.roughness = 0.95
-	return material
-
-## One shared material per palette color across every console's
-## buttons: the blank colored buttons read in rows without per-button
-## material churn.
-func _palette_material(color: Color) -> StandardMaterial3D:
-	if _palette_cache.has(color):
-		return _palette_cache[color]
-	var material := StandardMaterial3D.new()
-	material.albedo_color = color
-	material.roughness = 0.6
-	_palette_cache[color] = material
-	return material
