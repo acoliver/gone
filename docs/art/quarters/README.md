@@ -1372,6 +1372,9 @@ Dust is checked in lit captures against an otherwise matching dust-disabled mate
 | Item | Triangles remembered / aged | Export verification | Visual rating remembered / aged | Remaining visual findings |
 |---|---:|---|---|---|
 | photo_frame | 540 / 540 | Pass | 9 / 8 | Dense haze makes the couple harder to read; corrosion is fairly uniform. |
+| mug | 1,296 / 1,296 | Pass | 8 / 9 | Slight base faceting; dust can read as texture noise at small sizes. |
+
+Tableware uses `tools/blender/quarters/mug/surface_bake.py` to rasterise the actual mesh positions and normals into its packed UVs. The finish baker places irregular liquid rings on cup interiors and plate wells, plus stronger dust on upward surfaces. Generic texture noise had left these features too weak or uniform. The remembered glaze stripe remains a deliberate factory finish, not mineral patina. Labelled comparison cards distinguish the generated reference (A), remembered fitted mesh (B) and aged fitted mesh (C); ratings apply to B/C.
 
 To rebuild an item, run the local Hunyuan Python on `tools/blender/quarters/photo_frame/texture_bake.py <item>`, then Blender 4.5.11 with `--background --factory-startup --threads 6 --python-exit-code 1 --python tools/blender/quarters/<item>/build.py -- --assemble --render`. The photo baker reads the retained `sheets/photo_frame/couple-portrait.png`; the boots fitter needs `tmp/small/boots/guide.glb`. Neither guide is required for a saved-source re-export. Run the same builder without `--assemble`, with `--state remembered|aged --output tmp/small/<item>/<state>-repeat.glb`, then run `tools/blender/quarters/photo_frame/verify.py <item>` with the Hunyuan Python. `test_verify.py` in the shared small-item directory covers positive/negative topology and dust controls; the eight existing wardrobe verification controls also pass.
 

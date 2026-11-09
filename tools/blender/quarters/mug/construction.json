@@ -1,0 +1,27 @@
+{
+  "id": "mug",
+  "bounds_gltf": [
+    [
+      -0.060999996960163116,
+      0.0,
+      -0.04399999976158142
+    ],
+    [
+      0.060999996960163116,
+      0.10000000149011612,
+      0.04399999976158142
+    ]
+  ],
+  "triangle_limit": 1500,
+  "required_nodes": [
+    "Cup",
+    "Handle"
+  ],
+  "axis_contract": "Blender +Z up/-Y front, export_yup=True -> glTF +Y up/+Z front",
+  "age_years": 1000,
+  "base_origin": [
+    0,
+    0,
+    0
+  ]
+}

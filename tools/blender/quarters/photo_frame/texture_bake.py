@@ -13,7 +13,7 @@ COLORS = {
     'IvoryPlastic': (.72,.70,.58), 'BluePlastic': (.08,.18,.23), 'Display': (.007,.012,.014),
     'Rubber': (.018,.024,.021), 'Leather': (.055,.033,.023), 'Lining': (.15,.025,.035),
     'Bristle': (.39,.26,.12), 'Ribbon': (.40,.045,.035), 'RibbonIvory': (.65,.61,.45),
-    'Stain': (.77,.74,.64),
+    'Stain': (.77,.74,.64), 'DustCeramic': (.77,.74,.64),
 }
 
 
@@ -22,13 +22,19 @@ def noise(rng, size, coarse):
     return np.asarray(source.resize((size,size), Image.Resampling.BICUBIC), dtype=float)/255
 
 
-def bake(item):
+def bake(item, surface=False):
+    geometry=None
+    if surface:
+        from scipy.ndimage import distance_transform_edt
+        data=np.load(ROOT/'tmp/small'/item/'surface.npz')
+        nearest=distance_transform_edt(~data['valid'],return_distances=False,return_indices=True)
+        geometry=(data['position'][tuple(nearest)],data['normal'][tuple(nearest)])
     folder = ROOT/'assets/props/quarters/textures'/item
     folder.mkdir(parents=True, exist_ok=True)
     used = {
         'photo_frame': ['PaintedSteel','BareSteel'],
-        'mug': ['Ceramic','Glaze','Stain'],
-        'plate': ['Ceramic','Glaze','Stain'],
+        'mug': ['Ceramic','Glaze','Stain','DustCeramic'],
+        'plate': ['Ceramic','Glaze','Stain','DustCeramic'],
         'data_tablet': ['HardPlastic','Rubber','Display','BareSteel'],
         'medal_case': ['PaintedSteel','Lining','Brass','Ribbon','RibbonIvory'],
         'jewellery_box': ['IvoryPlastic','BluePlastic','Brass'],
@@ -64,7 +70,7 @@ def bake(item):
             if name == 'Leather':
                 rgb = rgb*.75+np.array([.16,.09,.04])*.30
             # Seeded irregular hairline networks, not a uniform square grid.
-            spots = rng.random((38,2))*size
+            spots = rng.random((180 if name=='Display' else 38,2))*size
             yy,xx = np.mgrid[:size,:size]
             nearest = np.full((size,size),np.inf)
             second = nearest.copy()
@@ -73,25 +79,50 @@ def bake(item):
                 closer = dist<nearest
                 second = np.where(closer,nearest,np.minimum(second,dist))
                 nearest = np.minimum(nearest,dist)
-            crack = np.sqrt(second)-np.sqrt(nearest)<(.65 if name=='Display' else 1.15)
+            crack = np.sqrt(second)-np.sqrt(nearest)<(.28 if name=='Display' else 1.15)
             rgb[crack] *= .18
             height = np.where(crack,-.18,fine*.025)
             if name=='Display':
-                rgb += broad[...,None]*.035
+                rgb = rgb*.25+broad[...,None]*.008
+                rgb[crack]=(.12,.13,.12)
         elif name in {'Ceramic','Glaze','Stain'}:
             rgb *= (.87+fine[...,None]*.12)
             if name=='Stain':
-                stain = .55+fine*.36
+                stain = np.clip((broad-.38)*4,0,.90)
                 rgb = rgb*(1-stain[...,None])+np.array([.21,.105,.035])*stain[...,None]
                 height += fine*.025
         else:
             rgb = rgb*.56+np.array([.26,.20,.12])*.18
+        surface_dust=None
+        if geometry is not None and name in {'Ceramic','Glaze','Stain','DustCeramic'}:
+            p,n=geometry
+            x,y,z=p[...,0],p[...,1],p[...,2]
+            radius=np.hypot(x,y); angle=np.arctan2(y,x)
+            up=np.clip(n[...,2],0,1)
+            substrate=np.array(COLORS['Glaze' if name=='Glaze' else 'Ceramic'])**(1/2.2)
+            rgb=np.broadcast_to(substrate,(size,size,3)).copy()*(.95+fine[...,None]*.05)
+            if item=='mug':
+                inner=(n[...,0]*x+n[...,1]*y)<(-.2*radius)
+                line=.077+.0025*np.sin(angle*5)+.0015*np.sin(angle*9)
+                ring=np.exp(-((z-line)/.006)**2)*inner
+                floor=(z<.025)*(up>.4)*(radius<.034)
+                ring+=np.exp(-((radius-(.024+.0015*np.sin(angle*7)))/.003)**2)*floor
+            else:
+                line=.076+.0035*np.sin(angle*5)+.002*np.cos(angle*9)
+                ring=np.exp(-((radius-line)/.0045)**2)*(up>.4)
+            stain=np.clip(ring*(.57+.35*broad),0,.90)
+            rgb=rgb*(1-stain[...,None])+np.array([.26,.115,.035])*stain[...,None]
+            craze=(np.abs(fine-.5)<.010)&(up>.1)
+            rgb[craze]*=.62
+            height=np.where(craze,-.08,fine*.015)
+            surface_dust=(.06+up*(.48+.23*fine))
         control = ROOT/'tmp/small'/item/'no_dust'
         control.mkdir(parents=True,exist_ok=True)
-        Image.fromarray(np.clip(rgb*255+.5,0,255).astype('uint8')).save(control/f'{name}_aged.png')
-        dust_alpha = .08+.16*fine
+        no_dust_rgb=np.clip(rgb+(grain[...,None]-.5)*.018,0,1)
+        Image.fromarray((no_dust_rgb*255+.5).astype('uint8')).save(control/f'{name}_aged.png')
+        dust_alpha = surface_dust if surface_dust is not None else ((.52+.18*fine) if name=='DustCeramic' else (.08+.16*fine))
         if name in {'Display','Leather','Bristle'}:
-            dust_alpha *= .55
+            dust_alpha *= .15 if name=='Display' else .55
         rgb = rgb*(1-dust_alpha[...,None])+dust*dust_alpha[...,None]
         rgb = np.clip(rgb+(grain[...,None]-.5)*.018,0,1)
         Image.fromarray((rgb*255+.5).astype('uint8')).save(folder/f'{name}_aged.png')
@@ -109,6 +140,9 @@ def bake(item):
 
 
 if __name__=='__main__':
-    import sys
-    for item in sys.argv[1:]:
-        bake(item)
+    import argparse
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('item')
+    parser.add_argument('--surface',action='store_true')
+    args=parser.parse_args()
+    bake(args.item,args.surface)

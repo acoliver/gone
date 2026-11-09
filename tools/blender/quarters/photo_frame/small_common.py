@@ -20,6 +20,7 @@ COLORS = {
     'Leather': (.055, .033, .023, 1), 'Lining': (.15, .025, .035, 1),
     'Bristle': (.39, .26, .12, 1), 'Ribbon': (.40, .045, .035, 1),
     'RibbonIvory': (.65, .61, .45, 1), 'Stain': (.77, .74, .64, 1),
+    'DustCeramic': (.77, .74, .64, 1),
 }
 
 
@@ -34,10 +35,10 @@ def mats():
     return result
 
 
-def box(name, dims, center, mat, bevel=.001):
+def box(name, dims, center, mat, bevel=.001, segments=1):
     assert bevel < min(dims)/2, f'{name}: bevel must leave a nonzero straight edge'
     obj = bt.panel(name, dims, center, mat, 0)
-    bt.bevel(obj, bevel, 1)
+    bt.bevel(obj, bevel, segments)
     return obj
 
 
@@ -77,20 +78,26 @@ def lathe(name, profile, mat, sides=24, band_mats=None):
     return obj
 
 
-def tube(name, centers, radius, mat, sides=6):
+def tube(name, centers, radius, mat, sides=6, closed=False, frame_axis=(0,1,0)):
     vertices = []
+    count=len(centers)
     for i, point in enumerate(centers):
-        tangent = Vector(centers[min(i+1, len(centers)-1)]) - Vector(centers[max(0, i-1)])
-        tangent.normalize()
-        across = tangent.cross(Vector((0, 1, 0))).normalized()
+        previous=(i-1)%count if closed else max(0,i-1)
+        following=(i+1)%count if closed else min(i+1,count-1)
+        tangent = (Vector(centers[following])-Vector(centers[previous])).normalized()
+        across = tangent.cross(Vector(frame_axis))
+        assert across.length>1e-6, f'{name}: tube frame is parallel to its path'
+        across.normalize()
         second = tangent.cross(across).normalized()
         vertices.extend(tuple(Vector(point) + radius * (math.cos(k*math.tau/sides)*across +
                             math.sin(k*math.tau/sides)*second)) for k in range(sides))
-    faces = [tuple(reversed(range(sides)))]
-    for i in range(len(centers)-1):
+    faces = [] if closed else [tuple(reversed(range(sides)))]
+    for i in range(count if closed else count-1):
+        next_ring=(i+1)%count
         faces.extend((i*sides+k, i*sides+(k+1)%sides,
-                      (i+1)*sides+(k+1)%sides, (i+1)*sides+k) for k in range(sides))
-    faces.append(tuple(range((len(centers)-1)*sides, len(centers)*sides)))
+                      next_ring*sides+(k+1)%sides, next_ring*sides+k) for k in range(sides))
+    if not closed:
+        faces.append(tuple(range((count-1)*sides,count*sides)))
     obj = bt.cage(name, vertices, faces, mat, 0)
     for face in obj.data.polygons:
         face.use_smooth = len(face.vertices) == 4
@@ -126,7 +133,7 @@ def aged_material(clean, item):
         mat.node_tree.nodes['Principled BSDF'].inputs['Alpha'].default_value = .21
         return mat
     texture = ROOT / 'assets/props/quarters/textures' / item / (name + '_aged.png')
-    mat = image_material(name + '_Aged', texture, .88)
+    mat = image_material(name + '_Aged', texture, .65 if name=='Display' else .88)
     shader = mat.node_tree.nodes.get('Principled BSDF')
     shader.inputs['Metallic'].default_value = .12 if name in {'Brass', 'BareSteel', 'PaintedSteel'} else 0
     nodes = mat.node_tree.nodes
@@ -175,6 +182,10 @@ def main(script, item, assemble, deform=None):
         bt.unwrap(objects)
         if item == 'photo_frame':
             photo_uv(bpy.data.objects['PhotoPlate'])
+        if item in {'mug','plate'}:
+            sys.path.insert(0,str(ROOT/'tools/blender/quarters/mug'))
+            from surface_bake import bake
+            bake(ROOT,item,objects)
         root = bt.empty(item)
         root['age_years'] = 0
         root['front'] = 'Blender -Y; exported glTF +Z'

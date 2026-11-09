@@ -374,8 +374,8 @@
   "rigid_geometry_identical": true,
   "axis_contract": "Blender +Z up/-Y front, export_yup=True -> glTF +Y up/+Z front",
   "dust_visibility": {
-    "mean_absolute_linear_rgb": 0.015356858504997338,
-    "pixels_above_0_01_fraction": 0.3048909505208333,
+    "mean_absolute_linear_rgb": 0.015326346524355309,
+    "pixels_above_0_01_fraction": 0.30389404296875,
     "minimum_mean": 0.001,
     "minimum_changed_fraction": 0.01,
     "pass": true
