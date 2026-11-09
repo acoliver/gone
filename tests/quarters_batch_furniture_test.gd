@@ -15,7 +15,7 @@ func test_remaining_batch_assets_replace_all_their_standins_in_both_states() -> 
 			assert_true(asset != null, "real furniture at " + id)
 			if asset != null:
 				assert_true(asset.scene_file_path == QuartersFurnishings.ROOT + ASSETS[id] + ".glb", "imported asset " + id)
-		assert_true(furnishings.has_node("Placement_bed/Standin_bed_soft"), "soft bed parts remain")
+		assert_true(furnishings.has_node("Placement_bed/bed_soft"), "real soft bed parts remain")
 		furnishings.free()
 
 func test_console_base_contacts_actual_worktop_without_clipping() -> void:

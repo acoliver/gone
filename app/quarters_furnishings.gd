@@ -34,7 +34,7 @@ static func build(state: StringName) -> Node3D:
 			if prop.id == "bed": bounds.size.y = 1.1
 			_fit(asset, bounds, prop.get("faces", "+z"), source + ".glb")
 			group.add_child(asset)
-			if prop.id == "bed": _bed_soft(group, asset, bounds, finish)
+			if prop.id == "bed": _bed_soft(group, asset, state)
 		elif prop.id == "headboard":
 			continue
 		elif prop.id.begins_with("storage_"):
@@ -143,16 +143,14 @@ static func _storage(group: Node3D, prop: Dictionary, bounds: AABB, state: Strin
 			mesh.set_instance_shader_parameter(&"floor_datum", QuartersLayout.FLOOR_Y)
 			mesh.set_instance_shader_parameter(&"lateral_bounds", Vector4(41, 49, 1.7, 7.7))
 
-static func _bed_soft(group: Node3D, bed: Node3D, bounds: AABB, finish: Material) -> void:
-	var soft := Node3D.new()
-	soft.name = "Standin_bed_soft"
+static func _bed_soft(group: Node3D, bed: Node3D, state: StringName) -> void:
+	var source := "bed_soft.glb" if state == &"as_built" else "bed_soft_aged.glb"
+	var scene: PackedScene = load(ROOT + source)
+	var soft := scene.instantiate() as Node3D
+	soft.name = "bed_soft"
+	# Cloth and debris share the frame's authored origin and imported finishes.
+	soft.transform = bed.transform
 	group.add_child(soft)
-	var platform := bed.find_child("MattressPlatform", true, false) as MeshInstance3D
-	var top := (ShipScene._world_frame(platform) * platform.get_aabb()).end.y - QuartersLayout.FLOOR_Y
-	soft.add_child(box("Mattress", AABB(Vector3(bounds.position.x + 0.045, top + 0.0005, bounds.position.z + 0.06), Vector3(bounds.size.x - 0.09, 0.16, bounds.size.z - 0.18)), finish))
-	soft.add_child(box("Quilt", AABB(Vector3(bounds.position.x + 0.035, top + 0.1605, bounds.position.z + 0.04), Vector3(bounds.size.x - 0.07, 0.035, bounds.size.z - 0.55)), finish))
-	for index: int in range(2):
-		soft.add_child(box("PillowL" if index == 0 else "PillowR", AABB(Vector3(bounds.position.x + 0.10 + index * 0.76, top + 0.1605, bounds.end.z - 0.48), Vector3(0.64, 0.12, 0.32)), finish))
 
 static func _wardrobe(group: Node3D, state: StringName, finish: Material) -> void:
 	var wardrobe := _asset("wardrobe.glb", &"wardrobe", state)

@@ -19,7 +19,7 @@ func test_accepted_furniture_uses_real_assets_in_both_states() -> void:
 				assert_true(asset.scene_file_path == QuartersFurnishings.ROOT + REPLACED[id] + ".glb", "real imported GLB " + id)
 		for item: Dictionary in QuartersInventory.small_items():
 			assert_true(furnishings.has_node("Standin_" + item.id), "unfinished small item stays named " + item.id)
-		assert_true(furnishings.has_node("Placement_bed/Standin_bed_soft/Mattress"), "soft stand-in remains explicit")
+		assert_true(furnishings.get_node("Placement_bed/bed_soft").find_child("Mattress", true, false) is MeshInstance3D, "real mattress remains with bed")
 		furnishings.free()
 
 func test_real_furniture_matches_layout_footprints_facing_and_height() -> void:
@@ -111,10 +111,14 @@ func test_soft_bed_parts_rest_on_real_platform() -> void:
 	var bed := furnishings.get_node_or_null("Placement_bed/bed") as Node3D
 	assert_true(bed != null, "real bed")
 	if bed != null:
+		var soft := furnishings.get_node("Placement_bed/bed_soft") as Node3D
+		# Measure the millimetre gap near zero, without ship-coordinate cancellation.
+		bed.position = Vector3.ZERO
+		soft.position = Vector3.ZERO
 		var platform := bed.find_child("MattressPlatform", true, false) as MeshInstance3D
 		var top := (ShipScene._world_frame(platform) * platform.get_aabb()).end.y
-		var mattress := furnishings.get_node("Placement_bed/Standin_bed_soft/Mattress") as MeshInstance3D
-		assert_float_in_range((mattress.transform * mattress.get_aabb()).position.y - top, 0, 0.001, "mattress contacts platform")
-		for name: String in ["Quilt", "PillowL", "PillowR"]:
-			assert_true(furnishings.has_node("Placement_bed/Standin_bed_soft/" + name), "remaining soft part " + name)
+		var mattress := soft.find_child("Mattress", true, false) as MeshInstance3D
+		assert_float_in_range((ShipScene._world_frame(mattress) * mattress.get_aabb()).position.y - top, 0, 0.001, "mattress contacts platform")
+		for name: String in ["Quilt", "Pillow_L", "Pillow_R"]:
+			assert_true(soft.find_child(name, true, false) is MeshInstance3D, "real soft part " + name)
 	furnishings.free()
