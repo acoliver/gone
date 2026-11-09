@@ -34,8 +34,8 @@ def open_shoulder(body):
                 retained_binding_and_fitting_supports_unchanged=True)
 
 
-def prepare(base, out, shoulder=True):
-    from bake_down import bake, material_maps
+def prepare(base, out, shoulder=True, shape=False):
+    from bake_down import bake, decimate, material_maps
     from cloth_metrics import lip_lift
     bpy.ops.wm.open_mainfile(filepath=str(base/'baked.blend'))
     record = json.loads(bpy.context.scene['tunic5_record'])
@@ -44,6 +44,13 @@ def prepare(base, out, shoulder=True):
     if shoulder:
         report['shoulder'] = open_shoulder(body)
     body['pass12_wear'] = True
+    from lip_arclength import refine_physical_lips
+    report['physical_lips'] = refine_physical_lips(body)
+    if shape:
+        from shape_pass12 import torn_hem, scatter_debris
+        report['hem'] = torn_hem(body)
+        report['heap'] = scatter_debris(record, report['hem']['removed_area_m2'])
+        body['pass12_full_fringe'] = True
     dense = bpy.data.objects['TunicBody_Dense']
     # The retained game sheet is the reference for this finishing pass.
     bpy.data.objects.remove(dense, do_unlink=True)
@@ -55,6 +62,12 @@ def prepare(base, out, shoulder=True):
     dense.hide_render = True
     dense.hide_set(True)
     report['allowance_faces'] = sum(p.material_index != 0 for p in body.data.polygons)
+    if shape:
+        low, reduction = decimate(body, 7100, protect=.004, keep_factor=1000)
+        bpy.data.objects.remove(body, do_unlink=True)
+        low.name = 'TunicBody'
+        body = low
+        record['reduction']['TunicBody'] = reduction
     mat, paths = bake(dense, body, out/'textures', size=2048, samples=8)
     material_maps(mat, (.025, .043, .08))
     dense.hide_render = True
@@ -76,7 +89,8 @@ if __name__ == '__main__':
     p.add_argument('--base', type=Path, default=ROOT/'tmp/age/tunic11/visible')
     p.add_argument('--out', type=Path, required=True)
     p.add_argument('--no-shoulder', action='store_true')
+    p.add_argument('--shape', action='store_true')
     a = p.parse_args(sys.argv[sys.argv.index('--')+1:])
     a.out.mkdir(parents=True, exist_ok=True)
     (a.out/'textures').mkdir(exist_ok=True)
-    prepare(a.base.resolve(), a.out.resolve(), not a.no_shoulder)
+    prepare(a.base.resolve(), a.out.resolve(), not a.no_shoulder, a.shape)

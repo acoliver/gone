@@ -2,19 +2,21 @@
 import numpy as np
 
 
-def bundle_alpha(seed):
+def bundle_alpha(seed, fine=False):
     rng = np.random.default_rng(seed)
     alpha = np.zeros((1024, 1024), np.float32)
     for variant in range(8):
         tile = alpha[variant*128:(variant+1)*128]
-        for index in range(14):
-            root = 70+(index+.5)*884/14+rng.uniform(-12, 12)
+        strands = 24 if fine else 14
+        for index in range(strands):
+            root = 70+(index+.5)*884/strands+rng.uniform(-12, 12)
             length = rng.uniform(64, 116)
             curl = rng.uniform(24, 54)*rng.choice([-1, 1])
             t = np.linspace(0, 1, 24)
             x = root+curl*np.sin(t*np.pi*1.35)*t
             y = t*length+np.sin(t*np.pi*1.6)*9
-            radius = rng.uniform(7, 12)*(1-.45*t)
+            radius = rng.uniform(3, 6) if fine else rng.uniform(7, 12)
+            radius *= 1-.45*t
             for i in range(len(t)-1):
                 a, b = np.array([x[i], y[i]]), np.array([x[i+1], y[i+1]])
                 margin = radius[i]+2

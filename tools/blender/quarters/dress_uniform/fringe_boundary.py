@@ -119,7 +119,8 @@ def spaced_cards(obj, mat, seed, wool, blockers, group_name=None, tuft_mat=None)
                                    minimum_length, maximum_length))
             if group_name == 'Long wool fringe' and point.z > -.4:
                 extent = min(extent, .006)
-            curled = soft and (group_name == 'Seam allowance' or
+            curled = soft and (bool(obj.get('pass12_full_fringe')) or bool(obj.get('pass12_wear')) or
+                               group_name == 'Seam allowance' or
                                (group_name == 'Long wool fringe' and point.z > -.4))
             if curled:
                 minimum_length = .002
@@ -141,7 +142,8 @@ def spaced_cards(obj, mat, seed, wool, blockers, group_name=None, tuft_mat=None)
                             tip = root+tail_direction*length
                             if curled:
                                 from soft_tuft import tuft_sections
-                                sections = tuft_sections(root, tail_direction, sideways, side_normal, width, length)
+                                sections = tuft_sections(root, tail_direction, sideways, side_normal, width, length,
+                                                         rows=3 if obj.get('pass12_wear') else 4)
                             else:
                                 sections = np.array([[root-sideways*width/2, root+sideways*width/2],
                                                      [tip-sideways*width/2, tip+sideways*width/2]])

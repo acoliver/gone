@@ -2,8 +2,8 @@
 import numpy as np
 
 
-def tuft_sections(root, direction, sideways, normal, width, length):
-    t = np.linspace(0., 1., 4)
+def tuft_sections(root, direction, sideways, normal, width, length, rows=4):
+    t = np.linspace(0., 1., rows)
     root, direction, sideways, normal = map(np.asarray, (root, direction, sideways, normal))
     path = root+t[:, None]*direction*length
     path += np.sin(t*np.pi*.85)[:, None]*normal*length*.28

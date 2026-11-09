@@ -283,7 +283,8 @@ def finish_cards(out, record):
         record['fringe'][name] = measured
     record['fallen_fringe'] = {}
     for i, sheet in enumerate(sheets[1:]):
-        obj, measured = spaced_cards(sheet, fringe, 9540+i, wool=True, blockers=objects)
+        obj, measured = spaced_cards(sheet, fringe, 9540+i, wool=True, blockers=objects,
+                                     tuft_mat=tufts if sheet.get('pass12_wear') else None)
         obj['aged_export'] = True
         objects.append(obj)
         record['fallen_fringe'][sheet.name] = measured
