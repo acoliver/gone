@@ -29,6 +29,7 @@ func _run() -> void:
 	ink.fill(Color.WHITE)
 	scene.text_cache.complete(label.pair.key, ink, ink)
 	check.assert_true(label.pair.ready() and label._quad != null, "release label attaches when the shared raster completes")
+	check.assert_true(label._material.get_shader_parameter("ink_albedo") == ShipTextCanvas.STATE_COLOR, "release supplies visible unshaded albedo, not emission alone")
 	var eye := release.global_position + Vector3(0, 0.1, -1)
 	var aim := (label.global_position - eye).normalized()
 	for tick: int in range(180): scene.tick_attention(eye, aim, 16)

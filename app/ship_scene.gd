@@ -365,6 +365,7 @@ func ensure_d16() -> void:
 	d16_section.add_child(release)
 	var term := ShipText.message("navigation.hatch")
 	_add_label(QuartersLayout.RELEASE, 16, spec.id(), release.transform * QuartersRelease.LABEL_FRAME, QuartersRelease.LABEL_SIZE, ShipText.LabelText.new(term.native, term.perceived_es), release, QuartersRelease.LABEL_FRAME)
+	labels[QuartersLayout.RELEASE].ink_albedo = ShipTextCanvas.STATE_COLOR
 	_spaces[spec.id()] = true
 	_spaces[ShipLayout.QUARTERS_ID] = true
 	_sync_sliding_labels()
