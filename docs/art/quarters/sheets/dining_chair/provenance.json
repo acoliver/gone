@@ -1,0 +1,25 @@
+{
+  "command": "env HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 /Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-z-image-turbo --model filipstrand/Z-Image-Turbo-mflux-4bit --quantize 4 --steps 8 --seed 263 --width 1024 --height 1024 --output /Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/tmp/props/contacts/dining_chair/hero-s263.png --prompt 'Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish. A compact military starship dining chair, 0.50 metres wide, 0.45 metres deep and 0.90 metres tall. Four grey-green satin painted steel legs, cross braces, a broad flat steel seat pan and a plain slightly reclined steel backrest with rounded corners. One separate thin charcoal fabric seat pad. Small bare steel rivet heads on the frame corners. Sturdy utilitarian cabin furniture, fresh even paint. Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.'",
+  "prompt": "Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish. A compact military starship dining chair, 0.50 metres wide, 0.45 metres deep and 0.90 metres tall. Four grey-green satin painted steel legs, cross braces, a broad flat steel seat pan and a plain slightly reclined steel backrest with rounded corners. One separate thin charcoal fabric seat pad. Small bare steel rivet heads on the frame corners. Sturdy utilitarian cabin furniture, fresh even paint. Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.",
+  "seed": 263,
+  "model_id": "filipstrand/Z-Image-Turbo-mflux-4bit",
+  "sha256": "1f350741f5608a1ffbc706cf407aa4db7bc7e7638fa99b5026fc4e68bb094b4e",
+  "elapsed_seconds": 64.587,
+  "selection": {
+    "chosen_seed": 263,
+    "rating": 8,
+    "approved": true,
+    "observations": "All six panels are visible. Panel A shows the approved room context. Panel B shows the accepted locker style. Panels C1, C2, C3, and C4 show four variations of the dining chair. C1 and C2 feature a continuous steel seat pan with a thin pad, while C3 and C4 feature a distinct, thick charcoal fabric pad on a steel frame. C3 is the most complete and coherent representation of the brief, showing the four legs, cross braces, and the separate pad clearly.",
+    "defects": [
+      "The backrest in C3 appears slightly more vertical than the 'slightly reclined' description, though acceptable.",
+      "Rivet heads are visible but small, requiring high-resolution fitting to ensure they are modeled as separate geometry rather than texture."
+    ],
+    "fitting_landmarks": {
+      "seat_pan": "Flat steel frame supporting the separate charcoal pad",
+      "backrest": "Plain steel panel with rounded corners, attached to the rear legs",
+      "legs": "Four grey-green steel legs with visible cross braces",
+      "pad": "Separate thin charcoal fabric seat pad"
+    }
+  },
+  "inputs_policy": "Single approved hero; no independently hallucinated side/back views."
+}
