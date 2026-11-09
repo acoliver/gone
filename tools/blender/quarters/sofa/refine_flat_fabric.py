@@ -30,6 +30,7 @@ def main():
         (SOURCE / (name + '-flat2.json')).write_text(json.dumps(dict(command=command, prompt=prompt, input=file, seed=95630 + index, model='black-forest-labs/FLUX.2-klein-4B', quantize=4, steps=4, colour_reference='throw-aged-crop.png' if name == 'throw-aged' else 'upholstery-clean.png'), indent=2) + '\n')
         selected[name] = output.name
         print('FLAT', name, flush=True)
+    selected['weave'] = 'upholstery-clean.png'
     (SOURCE / 'selected.json').write_text(json.dumps(selected, indent=2) + '\n')
 
 

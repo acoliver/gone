@@ -22,11 +22,12 @@ class SofaMaterials(unittest.TestCase):
             rectangles([('too-large', 4097, 4097)], 4096)
 
     def test_dust_follows_up_faces_and_grime_follows_cavities(self):
-        base = np.full((3, 3), .35)
-        masks = np.array([[1, 1, 0], [1, 1, 1], [1, .1, 0]])
+        base = np.full((4, 3), .35)
+        masks = np.array([[1, 1, 0], [1, 1, 1], [1, .1, 0], [.1, 1, 0]])
         aged = finish_colour(base, masks, True, 'fabric')
         self.assertGreater(aged[1].mean(), aged[0].mean())
         self.assertLess(aged[2].mean(), aged[0].mean())
+        self.assertLess(aged[3].mean(), aged[0].mean())
         np.testing.assert_array_equal(finish_colour(base, masks, False, 'fabric'), base)
 
     def test_weave_edges_are_periodic(self):

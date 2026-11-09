@@ -36,10 +36,11 @@ def tileable(image):
 def finish_colour(base, masks, aged, kind):
     if not aged: return base.copy()
     cavity, up = masks[..., 1:2], masks[..., 2:3]
-    grime = (.36 if kind in {'fabric', 'throw'} else .18) * (1 - cavity)
+    crease = .10 * masks[..., :1] + .90 * cavity
+    grime = (.55 if kind in {'fabric', 'throw'} else .18) * (1 - crease)
     dirty = base * (1 - grime)
-    dust = (.38 if kind in {'fabric', 'throw'} else .18) * up
-    return dirty * (1 - dust) + np.array([.56, .50, .41]) * dust
+    dust = (.60 if kind in {'fabric', 'throw'} else (.06 if kind == 'foam' else .18)) * up
+    return dirty * (1 - dust) + np.array([.78, .74, .66]) * dust
 
 
 def read(path):
@@ -119,13 +120,13 @@ def sources(state):
         crop = read(SOURCE / (name + '-crop.png'))
         if kind == 'foam':
             hue, saturation, value = hsv(crop)
-            target = crop[(hue >= 5) & (hue <= 45) & (saturation > .25) & (value > .15)]
+            target = crop[(hue >= 5) & (hue <= 45) & (saturation > .50) & (value > .15)]
             if not len(target): raise ValueError('No tan foam samples in target crop')
-            target_linear = linear(target).mean(0)
-            method = 'target tan pixels only; exclude neutral floor'
+            target_linear = linear(np.quantile(target, .90, axis=0))
+            method = 'target tan 90th percentile, saturation >0.50; exclude low-chroma warm floor and pore shadows'
         elif kind == 'throw':
-            target_linear = linear(np.quantile(crop.reshape(-1, 3), .75, axis=0))
-            method = 'target 75th percentile, excluding deep fold shadows'
+            target_linear = linear(np.quantile(crop.reshape(-1, 3), .90, axis=0))
+            method = 'target 90th percentile, excluding deep fold shadows'
         else:
             target_linear = linear(crop).mean((0, 1))
             method = 'mean target reflectance of the interior cloth crop'
@@ -150,6 +151,13 @@ def sources(state):
             variation = luminance(scan)
             variation = np.clip(variation / max(variation.mean(), 1e-6), .75, 1.25)
             images[kind] = np.clip(mean * variation[..., None], 0, 1)
+    for kind in ['fabric', 'throw']:
+        images[kind] = gaussian_filter(images[kind], (6, 6, 0), mode='wrap')
+        calibration[kind].update(base_colour_lowpass_sigma_px=6, calibrated=statistics(images[kind]))
+    if aged:
+        for kind in ['paint', 'steel']:
+            mean = images[kind].mean((0, 1))
+            images[kind] = mean + (images[kind] - mean) * .35
     for kind, image in images.items():
         Image.fromarray(np.round(image * 255).astype(np.uint8)).save(SOURCE / (state + '-' + kind + '-source.png'))
     return images, calibration
@@ -160,6 +168,8 @@ def build(state):
     record = json.loads((directory / 'layout.json').read_text())
     size = record['size']
     masks = np.stack([read(directory / (kind + '.png'))[::-1, :, 0] for kind in ['ao', 'cavity', 'up']], -1)
+    folds = read(directory / 'fold.png')[::-1, :, 0]
+    masks[..., 1] = .35 * masks[..., 1] + .65 * folds
     masks = np.dstack([masks, np.zeros((size, size), np.float32)])
     albedo = np.zeros((size, size, 4), np.float32)
     nodust = np.zeros_like(albedo)
@@ -203,7 +213,7 @@ def build(state):
             masks[yy, xx, 3] = {'fabric': .1, 'throw': .3, 'foam': .5, 'paint': .7, 'steel': .9}[kind]
             if 'normal' in original:
                 normal[yy, xx] = sample(original['normal'], bary @ old)[..., :3]
-            orm[yy, xx, 0] = masks[yy, xx, 0]
+            orm[yy, xx, 0] = .55 + .45 * masks[yy, xx, 0] if kind == 'foam' else masks[yy, xx, 0]
             orm[yy, xx, 1] = .98 if kind in {'fabric', 'throw', 'foam'} else (.91 if state == 'aged' else (.35 if kind == 'steel' else .45))
             orm[yy, xx, 2] = 0 if state == 'aged' or kind in {'fabric', 'throw', 'foam'} else (.45 if kind == 'steel' else .02)
             occupied[yy, xx] = True
@@ -229,8 +239,11 @@ def build(state):
     report['no_green'] = dict(largest_region=no_green[0], total=no_green[1], threshold='<0.005', **{'pass': no_green[1] < .005})
     if not report['no_green']['pass']: raise ValueError('Sofa finish introduced green')
     report['mask_statistics'] = {name: [float(masks[..., i][mask].min()), float(masks[..., i][mask].mean()), float(masks[..., i][mask].max())] for i, name in enumerate(['ao', 'cavity', 'up'])}
-    (SOURCE / (state + '-statistics.json')).write_text(json.dumps(report, indent=2) + '\n')
     weave = weave_tile(read(SOURCE / selected['weave']))
+    report['weave'] = dict(source=selected['weave'], low_frequency_normalization_sigma_px=6,
+                          opposite_edge_maximum_delta=float(max(np.abs(weave[0] - weave[-1]).max(), np.abs(weave[:, 0] - weave[:, -1]).max())),
+                          colour=statistics(weave))
+    (SOURCE / (state + '-statistics.json')).write_text(json.dumps(report, indent=2) + '\n')
     Image.fromarray(np.round(weave * 255).astype(np.uint8)).save(ASSETS / 'weave.png')
     print('FINISHED', state, report['no_green'], flush=True)
 

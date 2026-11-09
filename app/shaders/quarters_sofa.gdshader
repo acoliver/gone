@@ -32,12 +32,12 @@ void fragment() {
 	if (masks.a < 0.4) {
 		vec3 weights = pow(abs(normalize(surface_normal)), vec3(4.0));
 		weights /= dot(weights, vec3(1.0));
-		vec3 p = surface_position / 0.18;
+		vec3 p = surface_position / 0.12;
 		float yarn = dot(texture(weave, p.yz).rgb, vec3(0.3333)) * weights.x
 			+ dot(texture(weave, p.xz).rgb, vec3(0.3333)) * weights.y
 			+ dot(texture(weave, p.xy).rgb, vec3(0.3333)) * weights.z;
-		colour.rgb *= 0.94 + 0.12 * yarn;
-		detail.xy += vec2(dFdx(yarn), -dFdy(yarn)) * 0.22;
+		colour.rgb *= 0.88 + 0.30 * yarn;
+		detail.xy += vec2(dFdx(yarn), -dFdy(yarn)) * 0.80;
 	}
 	ALBEDO = colour.rgb;
 	ALPHA = colour.a;
@@ -58,7 +58,7 @@ void fragment() {
 		vec3 scan = aged_finish ? oxide : (masks.a > 0.8 ? steel : paint);
 		float grain = clamp(dot(scan, vec3(0.2126, 0.7152, 0.0722)) * 3.0, 0.0, 1.0);
 		ALBEDO *= 0.97 + grain * 0.06;
-		float height = dot(colour.rgb, vec3(0.2126, 0.7152, 0.0722)) * (aged_finish ? 0.0004 : 0.00008);
+		float height = dot(colour.rgb, vec3(0.2126, 0.7152, 0.0722)) * (aged_finish ? 0.0001 : 0.00008);
 		vec3 dx = dFdx(VERTEX);
 		vec3 dy = dFdy(VERTEX);
 		vec3 r1 = cross(dy, NORMAL);
