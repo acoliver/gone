@@ -627,3 +627,20 @@ func test_status_board_screen_faces_into_room_and_has_schematic_content() -> voi
 			break
 	assert_true(has_schematic_detail, "the board image contains schematic detail, not a blank fill")
 	room.free()
+
+func test_status_board_resolves_while_looked_at_and_decays_when_ignored() -> void:
+	var game := _awake_game()
+	var room := PowerRoom.build(game)
+	var board: StatusBoard = room.status_board
+	var eye := board.global_position + Vector3(0.0, 0.0, 3.0)
+	var forward := (board.global_position - eye).normalized()
+	for _tick: int in range(DisplayPerception.FIRST_HOLD + DisplayPerception.FIRST_RAMP):
+		board.tick_attention(eye, forward)
+	assert_float_in_range(board.perception.perceive, 1.0, 1.0, "a player looking at the board centre from 3 m resolves its text")
+	var away := board.global_position + Vector3(0.0, 0.0, -3.0)
+	board.tick_attention(away, Vector3(0.0, 0.0, -1.0))
+	assert_true(board.perception.perceive < 1.0, "looking away starts the native-text decay")
+	for _tick: int in range(DisplayPerception.DECAY):
+		board.tick_attention(away, Vector3(0.0, 0.0, -1.0))
+	assert_float_in_range(board.perception.perceive, 0.0, 0.0, "ignoring the board returns it to native text")
+	room.free()
