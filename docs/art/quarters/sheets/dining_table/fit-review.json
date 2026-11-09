@@ -1,0 +1,15 @@
+{
+  "images_seen": [
+    "A approved design",
+    "B fitted hero"
+  ],
+  "rating": 8,
+  "ready": true,
+  "observations": "Object A (Left): A round, grey-green steel table. The tabletop is a flat disc with a distinct, rolled rim edge. A sparse ring of small, dark rivet heads is visible on the top surface near the perimeter. The central pedestal is a smooth cylinder that flares out into a broad, circular deck base. The base features a ring of visible bolt heads. The finish is a uniform satin grey-green. Object B (Right): A round, grey-green steel table. The tabletop is a flat disc with a rolled rim edge. A ring of small, dark rivet heads is visible on the top surface. The central pedestal is a smooth cylinder that connects to a broad, circular deck base. The base features a ring of visible bolt heads. The finish is a uniform satin grey-green. Comparison: The two objects are nearly identical in shape, silhouette, and proportions. The material color and satin finish match perfectly. The placement of the rivets on the tabletop and bolts on the base is consistent between A and B. The pedestal-to-base transition is identical. The only difference is the camera angle: A is viewed from a lower angle, emphasizing the table's height, while B is viewed from a higher angle, emphasizing the tabletop surface. No missing features or manufacturing incoherence are observed.",
+  "defects": [
+    "None observed."
+  ],
+  "fixes": [
+    "None required."
+  ]
+}

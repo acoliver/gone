@@ -1,0 +1,161 @@
+{
+  "bounds_gltf": [
+    [
+      -0.45,
+      0,
+      -0.45
+    ],
+    [
+      0.45,
+      0.75,
+      0.45
+    ]
+  ],
+  "required_nodes": [
+    "DiningTable",
+    "Top",
+    "Base",
+    "Pedestal",
+    "DeckPlate"
+  ],
+  "parents": {
+    "Top": "DiningTable",
+    "Base": "DiningTable",
+    "Pedestal": "Base",
+    "DeckPlate": "Base"
+  },
+  "pivots_gltf": {
+    "DiningTable": [
+      0,
+      0,
+      0
+    ]
+  },
+  "materials": [
+    "PaintedSteel",
+    "BareSteel",
+    "DarkSteel"
+  ],
+  "visible_details": [
+    "TopRivets",
+    "Pedestal"
+  ],
+  "hero_camera_native": [
+    -1.6,
+    -2.3,
+    1.6
+  ],
+  "hero_camera_gltf": [
+    -1.6,
+    1.6,
+    2.3
+  ],
+  "hero_target_native": [
+    0,
+    0,
+    0.375
+  ],
+  "triangle_limit": 6000,
+  "fit_notes": "The generated mid-height radial profile sets the pedestal radius. Its axis and the tabletop are faired to concentric manufactured surfaces; the top is constrained to the layout 0.90 m diameter. The rolled edge is real bevel geometry.",
+  "guide": {
+    "source_bounds_native": [
+      [
+        -0.9991270303726196,
+        -0.9928780794143677,
+        -0.6845586895942688
+      ],
+      [
+        0.9921761751174927,
+        0.9992232918739319,
+        0.6744137406349182
+      ]
+    ],
+    "carcass_fitting_bounds_native": [
+      [
+        -0.9991270303726196,
+        -0.9928780794143677,
+        -0.6845586895942688
+      ],
+      [
+        0.9921761751174927,
+        0.9992232918739319,
+        0.6744137406349182
+      ]
+    ],
+    "fitted_size_whd": [
+      0.9,
+      0.75,
+      0.9
+    ],
+    "sections": [
+      {
+        "height_m": 0.07500000000000001,
+        "vertices": 1427,
+        "xy_min": [
+          -0.07664316892623901,
+          -0.07677292823791504
+        ],
+        "xy_max": [
+          0.0740964263677597,
+          0.07674926519393921
+        ]
+      },
+      {
+        "height_m": 0.1875,
+        "vertices": 650,
+        "xy_min": [
+          -0.05665174871683121,
+          -0.057191185653209686
+        ],
+        "xy_max": [
+          0.05704783648252487,
+          0.05711780861020088
+        ]
+      },
+      {
+        "height_m": 0.375,
+        "vertices": 659,
+        "xy_min": [
+          -0.05776209011673927,
+          -0.0593423917889595
+        ],
+        "xy_max": [
+          0.05790981277823448,
+          0.05953936651349068
+        ]
+      },
+      {
+        "height_m": 0.5625,
+        "vertices": 643,
+        "xy_min": [
+          -0.0565619133412838,
+          -0.058389101177453995
+        ],
+        "xy_max": [
+          0.056716710329055786,
+          0.05879538133740425
+        ]
+      },
+      {
+        "height_m": 0.675,
+        "vertices": 812,
+        "xy_min": [
+          -0.0571901910007,
+          -0.05833500623703003
+        ],
+        "xy_max": [
+          0.056908875703811646,
+          0.05884518474340439
+        ]
+      }
+    ],
+    "mesh_triangles": 598928,
+    "pedestal_fit": {
+      "sample_count": 16514,
+      "guide_radius_m": 0.058859871634896054,
+      "fitted_radius_m": 0.058859871634896054
+    },
+    "source": "tmp/props/dining_table/guide.glb"
+  },
+  "id": "dining_table"
+}
