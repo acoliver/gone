@@ -405,6 +405,17 @@ func test_generated_console_models_and_wall_mounts_are_present() -> void:
 	assert_true(busted_station.get_node("ScreenGlass").material_override.albedo_texture != null, "busted screen uses procedural crack glass")
 	var active_plane := active_station.get_node("TerminalModel/DisplayPlane") as MeshInstance3D
 	var active_quad := active_station.get_node("ShipDisplay") as Node3D
+	var text_surface := active_quad.get_node("TextSurface") as MeshInstance3D
+	var text_transform := _test_transform_in_room(text_surface, room)
+	var active_plane_transform := _test_transform_in_room(active_plane, room)
+	assert_true(text_transform.basis.y.dot(Vector3.UP) > 0.99, "native text surface stays upright")
+	assert_true(text_transform.basis.z.dot(active_plane_transform.basis.z.normalized()) > 0.999, "native text surface faces along the imported screen normal")
+	var busted_plane := busted_station.get_node("TerminalModel/DisplayPlane") as MeshInstance3D
+	var busted_glass := busted_station.get_node("ScreenGlass") as MeshInstance3D
+	var busted_glass_transform := _test_transform_in_room(busted_glass, room)
+	var busted_plane_transform := _test_transform_in_room(busted_plane, room)
+	assert_true(busted_glass_transform.basis.y.dot(Vector3.UP) > 0.99, "busted screen crack glass stays upright")
+	assert_true(busted_glass_transform.basis.z.dot(busted_plane_transform.basis.z.normalized()) > 0.999, "busted glass faces along the imported screen normal")
 	assert_false(active_plane.visible, "active text replaces the imported pale display surface")
 	var plane_size := active_plane.mesh.get_aabb().size
 	assert_true(Vector2(plane_size.x, plane_size.y).is_equal_approx((active_quad.get_node("TextSurface").mesh as QuadMesh).size), "live text exactly covers the hidden display plane")

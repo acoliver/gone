@@ -293,15 +293,15 @@ func _build_console(station: ConsoleStation) -> Node3D:
 		var terminal_fit := terminal.find_child("Terminal_GeneratedFit", true, false) as MeshInstance3D
 		assert(terminal_fit != null, "terminal GLB exports its fitted housing")
 		var plane_transform := terminal.transform * display_plane.transform
-		screen.transform = plane_transform
-		var plane_bounds := display_plane.mesh.get_aabb()
-		var plane_size := Vector2(plane_bounds.size.x, plane_bounds.size.y)
-		var plane_center := plane_transform * plane_bounds.get_center()
-		assert(plane_transform.basis.z.dot(Vector3.BACK) > 0.0, "terminal display plane faces out from its screen")
+		var display_frame := _upright_screen_frame(group, plane_transform, display_plane.mesh.get_aabb())
+		screen.transform = display_frame.transform
+		screen.mesh = _box_mesh(Vector3(display_frame.size.x, display_frame.size.y, 0.008))
+		var plane_size: Vector2 = display_frame.size
+		assert(display_frame.transform.basis.z.dot(Vector3.BACK) > 0.0, "terminal display plane faces out from its screen")
 		display_plane.visible = false
 		console_display = ShipDisplay.build(_game.writing_memory, _text_cache)
-		console_display.transform = plane_transform
-		console_display.position = plane_center + plane_transform.basis.z * 0.003
+		console_display.transform = display_frame.transform
+		console_display.position += display_frame.transform.basis.z * 0.003
 		var text_quad := console_display.get_node("TextSurface") as MeshInstance3D
 		(text_quad.mesh as QuadMesh).size = plane_size
 		group.add_child(console_display)
@@ -314,13 +314,45 @@ func _build_console(station: ConsoleStation) -> Node3D:
 			glass.albedo_texture = _crack_texture()
 		var dead_screen := MeshInstance3D.new()
 		dead_screen.name = "ScreenGlass"
-		dead_screen.mesh = _box_mesh(Vector3(0.54, 0.28, 0.008))
-		dead_screen.material_override = glass
 		var dead_transform := terminal.transform * display_plane.transform
-		dead_transform.origin = dead_transform * display_plane.mesh.get_aabb().get_center()
-		dead_screen.transform = dead_transform
+		var dead_frame := _upright_screen_frame(group, dead_transform, display_plane.mesh.get_aabb())
+		dead_screen.mesh = _box_mesh(Vector3(dead_frame.size.x, dead_frame.size.y, 0.008))
+		dead_screen.material_override = glass
+		dead_screen.transform = dead_frame.transform
 		group.add_child(dead_screen)
 	return group
+
+func _upright_screen_frame(group: Node3D, plane_transform: Transform3D, bounds: AABB) -> Dictionary:
+	var group_basis := group.transform.basis.orthonormalized()
+	var plane_normal_world := (group_basis * plane_transform.basis.z).normalized()
+	var up_world := (Vector3.UP - plane_normal_world * Vector3.UP.dot(plane_normal_world)).normalized()
+	var right_world := up_world.cross(plane_normal_world).normalized()
+	var inverse_group_basis := group_basis.inverse()
+	var frame_basis := Basis(
+		(inverse_group_basis * right_world).normalized(),
+		(inverse_group_basis * up_world).normalized(),
+		(inverse_group_basis * plane_normal_world).normalized()
+	)
+	var plane_center := plane_transform * bounds.get_center()
+	var left := INF
+	var right := -INF
+	var bottom := INF
+	var top := -INF
+	for x: float in [bounds.position.x, bounds.end.x]:
+		for y: float in [bounds.position.y, bounds.end.y]:
+			for z: float in [bounds.position.z, bounds.end.z]:
+				var corner := plane_transform * Vector3(x, y, z)
+				var relative := group_basis * (corner - plane_center)
+				var horizontal := relative.dot(right_world)
+				var vertical := relative.dot(up_world)
+				left = minf(left, horizontal)
+				right = maxf(right, horizontal)
+				bottom = minf(bottom, vertical)
+				top = maxf(top, vertical)
+	return {
+		"transform": Transform3D(frame_basis, plane_center),
+		"size": Vector2(right - left, top - bottom),
+	}
 
 static func _crack_texture() -> Texture2D:
 	if _crack_texture_cache != null:
