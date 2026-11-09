@@ -496,6 +496,50 @@ The lit captures are `tmp/fit/sofa/cloth2/compare-hero.png`, `compare-detail.png
 
 The tunic now comes from Blender cloth simulation. The hand-modelled pilot rated 2/10: its waist was pinched, its sleeves were detached cylinders, and its collar and shoulders had visible voids. A sewn pattern lets gravity and fabric strain produce the hanging shape. The design remains `docs/art/quarters/sheets/dress_uniform/hero.png`; the filled Hunyuan torso is only a silhouette reference.
 
+### Tunic10: rejected, 16 of 19 gates pass
+
+The measured candidate is `tmp/age/tunic10/curled/candidate.glb`. G3, G4 and G6 fail, and the visual review rejects it for close-up use. The production `assets/props/quarters/dress_uniform_aged.glb` and its tunic textures remain unchanged. Pass ten starts from `tmp/age/tunic9/binding/baked.blend`, preserving the settled sleeve, retained underarm, original hanger and seated fittings. It adds finishing geometry and texture fields without rerunning the cloth solve. The intended age remains 1000 years.
+
+**Armhole and shoulder.** Pass nine's short edge fringe did not supply an actual fabric connection across the opening. Pass ten extrudes connected allowance from the existing armhole boundaries, with 125 added edge vertices and measured widths of 1.252 to 9.812 mm. Three curved surviving yarns are placed on the visible wool before fringe placement. Building them afterwards let the fringe card planes occupy their attachment space. Their exported endpoint vertices are at most 1.238 mm from the final wool surface. The armhole median clearance is 32.940 mm, against the 25 mm minimum and intended 25 to 35 mm range; its 90th percentile is 39.270 mm and maximum 41.836 mm.
+
+The shoulder boundary is refined at 1.8 mm spacing, with irregular losses up to 8 mm and an outward roll up to 4.5 mm. The stronger experimental opacity erosion produced fragmented dark contours, so the final candidate keeps pass nine's monotone 0.15 to 2.85 mm lip erosion. Initial gap probes hit the lit studio floor 3.10 to 3.97 m behind the garment. The final rear-light-disabled control still shows the bright aperture. No light or floor change conceals it. Despite the connected geometry, the image-comparer still sees an oversized bright tangle, sharp shoulder fibres and an insufficiently convincing sleeve connection.
+
+**Hem, body and dust.** The existing curved hem has deeper irregular scallops. A world-height taper and protected centre keep the new hem and bagging fields away from the placket support; earlier pass-ten attempts introduced crossings there. Sparse fold-aligned wear adds seven isolated losses, faded thinning fields and bagging up to 3.5 mm, without biological clusters. The through-wear raster accounts for 135.877 square millimetres of additional lost wool in G29. The saved 4096-square thinning image retains a Blender user so it survives checkpoint reload.
+
+The original mound topology is retained because reducing it introduced a self-crossing. Its albedo is now linear 0.34/0.31/0.26, and loose fibres have an independent pale 0.39/0.35/0.29 material instead of reusing navy wool. Fallen strips are slightly lighter. The dust-disabled control confirms a visible pale contribution, but the reviewer still sees a low, nearly flat patch with dark angular scraps rather than the requested soft heap. Body wear also remains too smooth overall, with conspicuous dark slits. Passing geometry measurements do not establish those visual requirements.
+
+All 19 numeric gates are measured. G3 includes 12 over-limit runs among 38 traced runs. G4 is ordered hero shoulder, hero armhole, close shoulder, close armhole; the hero shoulder still lacks two measurable lips. Six of ten qualifying G6 contours fall below 1.15.
+
+| Gate | Measured value | Threshold | Result |
+| --- | --- | --- | --- |
+| G1 | Visible sharp adjacency 1.927693% | ≤6% | Pass |
+| G2 | Normal-jump pixels 0.072177% | ≤2% | Pass |
+| G3 | Longest visible lip run 27.459060 px | ≤12 px | Fail |
+| G4 | Width CV absent / 0.784572 / 0.690266 / 0.779957 | ≥0.35, measurable in every required view | Fail |
+| G5 | Lip length lifted over 3 mm: 32.031271% | ≥30% | Pass |
+| G6 | Contour dimensions 1.003139 to 1.333767; six failures | 1.15 to 1.40 on each qualifying contour | Fail |
+| G20 | Sharp adjacency near hanger 3.315022% | ≤10% | Pass |
+| G21 | Hanger exposure outside split hull 0 pixels | 0 | Pass |
+| G22 | Maximum sleeve depth/width 0.429021 | ≤0.45 | Pass |
+| G23 | Retained arc 36.004298%; released fringe 78.622307% | ≥35%; ≥70% | Pass |
+| G24 | Chest width/unaged 1.014395 | 0.92 to 1.08 | Pass |
+| G25 | Open-hem fringe coverage 86.018800% | ≥70% | Pass |
+| G26 | Hem-height autocorrelation peak 0 | <0.30 at 20 to 120 mm lags | Pass |
+| G27 | Heap height 26.876078 mm | 15 to 35 mm | Pass |
+| G28 | Fallen cloth pieces 3 | ≥2 | Pass |
+| G29 | Mound 95.259745 cm³; lost wool 6.341975 cm³; inferred packing 6.657560% | Volume ratio 0.5 to 2 at packing 5% to 15% | Pass |
+| G30 | Changed SAT crossings 0; original hanger's 28 unchanged; hanger geometry exact | 0 changed crossings; exact hanger baseline | Pass |
+| G31 | 20,594 triangles / 13,768 unaged = 1.495787 times unaged | ≤20,652 and ≤1.5 times unaged | Pass |
+| G32 | Worst boundary bound 0.623240 mm | ≤1.5 mm | Pass |
+
+The independent attachment audit passes every base within 2 mm. Maximum shoulder-board base distances remain 1.299524 and 1.421234 mm; the largest other attachment distance is 1.800060 mm at the medal. G32 compares the final game sheet with the authored pass-nine sheet after pass-ten finishing and before its further reduction, not with an independently deformed obsolete dense checkpoint. That reference has 11,279 triangles, reduced to 10,199 before thickness. The body's boundary bound is 0.125 mm; an unchanged fallen strip sets the overall 0.623240 mm maximum.
+
+A fresh image-comparer review scores this candidate 6/10 against 5/10 for the reference in that comparison. It prefers the more readable shoulder and hem damage, but identifies the bright tangled armhole, spiky fibres, graphic torso slits and under-described dust as remaining defects. Its report is `tmp/age/tunic10/curled-image-review.md`. These scores are that review's judgments, not a recalibration of earlier ratings.
+
+The requested sheets are `tmp/age/tunic10/tunic-before-after.png`, `tunic-turntable.png` and `tunic-closeup.png`. Detailed captures and calibration are under `curled-images/`; controls are under `controls/`. All nine camera records retain tunic nine's camera parameters, including the 0.5 m close view. External GLB bounds confirm Y-up height 950.012 mm and depth 180.090 mm. Gates, SAT contacts, seating and repeat-export results are in `curled/gates.json`, `collisions.json`, `attachment-audit.json` and `repeat.json`. Repeat export is byte-identical.
+
+Thirteen focused script checks pass, covering wear fields, metrics, fringe, sampling, rims, connected allowance/shoulder geometry, surviving yarns, the saved candidate and 3,072 retained-binding opacity samples. The complete numeric acceptance command exits 1 because the three lip gates fail. No numbered threshold or collision check was relaxed. Rebuild with `polish_pass10.py -- --base tmp/age/tunic9/binding --out tmp/age/tunic10/curled`, then `finish_aging.py` with that output, `render_aging.py`, the shared composer and exported collision audit, `audit_attachments.py` and `measure_aging.py`. The recorded scratch driver is `tmp/age/tunic10/final-run.sh`.
+
 ### Tunic9: 16 of 19 gates pass, not shipped
 
 The latest scratch candidate is `tmp/age/tunic9/binding/candidate.glb`. G3, G4 and G6 still fail. The attachment seating audit now passes, but the candidate has not replaced `assets/props/quarters/dress_uniform_aged.glb` or its textures. This pass starts from the settled tunic8 checkpoint, without rerunning or replacing its solve. The armhole opening intentionally connects to the exterior. By the gate author's decision, G3, G4 and G6 now trace each visible tear lip as an open polyline in both the hero and close cameras, regardless of whether the gap is enclosed. G3 still limits straight runs to 12 px; G4 still requires width CV of at least 0.35 along each gap; G6 still requires dimension 1.15 to 1.40 on lip contours at least 64 px long. Endpoints are not joined by an artificial closing edge. Cloth silhouettes are selected near projected physical tear lips after alpha testing, so an unrelated garment outline is not a tear.
