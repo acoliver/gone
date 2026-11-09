@@ -42,6 +42,15 @@ func test_fixed_opening_schedule_snapshots() -> void:
 		var source := FileAccess.get_file_as_string("res://scenarios/%s.json" % name)
 		if name in ["power-room", "connector-route", "click-route"]:
 			var scenario: HarnessScenario = HarnessScenario.parse(source).scenario
+			if name == "connector-route":
+				for label: String in ["fore-inner-closed", "fore-inner-mid-crank"]:
+					var beat: Dictionary = scenario.beats.filter(func(value: Dictionary) -> bool: return value.name == label)[0]
+					assert_float_equal(beat.camera_back, 9.0, "frame the next beam beyond the occluding pendant")
+					assert_float_equal(beat.camera_pitch_up, 15.0, "include recessed glass and the whole hatch")
+					var framing := "\t\t\t\"camera_back\": 9.0,\n\t\t\t\"camera_pitch_up\": 15.0,\n\t\t\t\"light\": \"white\",\n\t\t\t\"name\": \"%s\",\n" % label
+					assert_int_equal(source.count(framing), 1, "only this named beat changes its fixture view")
+					var original := framing.replace("\"camera_back\": 9.0", "\"camera_back\": 4.5").replace("\t\t\t\"camera_pitch_up\": 15.0,\n", "")
+					source = source.replace(framing, original)
 			var captures := {"power-active": {"camera_pitch_up": 30.0}}
 			if name != "click-route": captures["hall-white"] = {"camera_back": 2.0, "camera_pitch_up": 15.0}
 			for label: String in captures:

@@ -22,7 +22,7 @@ func test_status_spill_is_local_symmetric_and_red() -> void:
 			else:
 				belt_positions.append(light.position)
 		for side: float in [-1.0,1.0]:
-			assert_true(Vector3(side*.38,.42,-1.30) in head_positions,"both sides of the attached head roll receive the wall bounce")
+			assert_true(Vector3(side*.38,.28,-0.80) in head_positions,"both sides of the attached head roll receive the wall bounce")
 			for station: float in [-.45,.45]:
 				assert_true(Vector3(side*.52,.28,station) in belt_positions,"the belt spill is mirrored at the existing belt height")
 	lighting.free()
@@ -75,7 +75,8 @@ func test_pod_keys_keep_main_profile_and_follow_the_existing_fade() -> void:
 	assert_int_equal(lighting._pod_keys.size(), 8, "seven pod wall keys plus main's lintel key")
 	for index: int in range(8):
 		var key := lighting._pod_keys[index]
-		assert_true(key.transform.is_equal_approx(frames[index]), "main's fixture placement stays unchanged for pods")
+		var emitter: MeshInstance3D = key.get_meta(&"fixture_emitter")
+		assert_close(Surfaces.world_frame(key).origin, Surfaces.world_frame(emitter) * emitter.mesh.get_aabb().get_center(), "pod receiver key shares the actual emergency lens")
 		assert_true(key.light_color == Color.RED, "main's pure-red pod keys")
 		assert_float_equal(key.omni_range, 6.0, "main's long throw reaches fitted pod padding")
 		assert_float_equal(key.omni_attenuation, 1.0, "main's default falloff")

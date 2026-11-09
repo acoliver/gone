@@ -34,7 +34,6 @@ const SMOKE_EMISSION: Color = Color(EMERGENCY_RED.r * SMOKE_EMISSION_STRENGTH, E
 const BAY_FILL_MASK: int = 1 << 17
 const HALL_FILL_MASK: int = 1 << 18
 const POWER_FILL_MASK: int = 1 << 19
-const LENS_SIZE: Vector3 = Vector3(0.42, 0.16, 0.12)
 const LENS_BASE_COLOR: Color = Color(0.18, 0.05, 0.025)
 
 static func emergency_energy() -> float:
@@ -59,9 +58,11 @@ static func emergency_lens_material(level: float) -> StandardMaterial3D:
 
 class EmergencyFill:
 	extends OmniLight3D
+	var lens_material := Lighting.emergency_lens_material(0.0)
 	var energy_share: float
 	func apply_level(level: float) -> void:
 		light_energy = Lighting.emergency_energy() * energy_share * level
+		lens_material.emission = light_color * Lighting.REGULAR_EMISSIVE * level
 
 static func emergency_fill(origin: Vector3, level: float, room_mask: int, share: float = EMERGENCY_FILL_SHARE, color: Color = EMERGENCY_FILL_COLOR) -> EmergencyFill:
 	var fill := EmergencyFill.new()
@@ -87,8 +88,10 @@ const REGULAR_END_FILL_SHARE: float = 0.12
 
 class RegularEndFill:
 	extends OmniLight3D
+	var lens_material := Lighting.emergency_lens_material(0.0)
 	func apply_level(level: float) -> void:
 		light_energy = Lighting.regular_energy() * Lighting.REGULAR_END_FILL_SHARE * level
+		lens_material.emission = light_color * Lighting.REGULAR_EMISSIVE * level
 
 static func regular_end_fill(origin: Vector3, level: float) -> RegularEndFill:
 	var fill := RegularEndFill.new()
@@ -130,7 +133,6 @@ var _lights: Array[OmniLight3D] = []
 var _pod_keys: Array[OmniLight3D] = []
 var _fill_lights: Array[Lighting.EmergencyFill] = []
 var _lenses: Array[MeshInstance3D] = []
-var _lens_mesh: BoxMesh = null
 var _lens_material: StandardMaterial3D = null
 var _remainder: float = 0.0
 var _reflection_probe: ReflectionProbe
@@ -141,10 +143,7 @@ static func build(game: Game) -> Lighting:
 	lighting.name = "Lighting"
 	lighting._game = game
 	var level: float = lighting._circuit_target()
-	lighting._lens_mesh = BoxMesh.new()
-	lighting._lens_mesh.size = LENS_SIZE
 	lighting._lens_material = emergency_lens_material(level)
-	lighting._lens_mesh.material = lighting._lens_material
 	var held: Intensity.Result = Intensity.FixtureFade.holding(level)
 	assert(held.is_ok(), "power maps to a finite nonnegative level")
 	lighting._fade = held.fade
@@ -173,8 +172,10 @@ static func build(game: Game) -> Lighting:
 		lighting.add_child(lighting._white_fixture(frame))
 		var fill := emergency_fill(fill_positions[lighting._fill_lights.size()], level, BAY_FILL_MASK, EMERGENCY_BAY_FILL_SHARE)
 		fill.name = "EmergencyFill%d" % lighting._fill_lights.size()
+		FixtureEmitter.suspended(fill, Pods.ROOM_CEILING_HEIGHT, Surfaces.surface_frame(game.layout, ShipLayout.BAY_ID, &"CEILING"), "emergency", fill.lens_material)
 		lighting.add_child(fill)
 		lighting._fill_lights.append(fill)
+	lighting.bind_pod_keys()
 	lighting._apply_white_level(white_level)
 	lighting._reflection_probe = bay_reflection_probe()
 	lighting.add_child(lighting._reflection_probe)
@@ -226,7 +227,7 @@ static func _pod_status_spill(pod: Pods.Pod) -> Node3D:
 	for side: float in [-1.0,1.0]:
 		var head := OmniLight3D.new()
 		head.name = "HeadStatusBounceLeft" if side < 0 else "HeadStatusBounceRight"
-		head.position = Vector3(side*.38,.42,-1.30)
+		head.position = Vector3(side*.38,.28,-0.80)
 		head.light_color = POD_STATUS_RED
 		head.light_energy = POD_STATUS_ENERGY
 		head.light_specular = 0.0
@@ -294,11 +295,8 @@ func _fixture(spec: ShipLayout.EmergencyFixtureSpec, level: float) -> Node3D:
 	var light := switched_key(spec.role, level)
 	fixture.add_child(light)
 	DressingMounts.ceiling_stem(fixture, Pods.ROOM_CEILING_HEIGHT, Surfaces.surface_frame(_game.layout, ShipLayout.BAY_ID, &"CEILING"))
-	var lens := MeshInstance3D.new()
-	lens.name = "Lens"
-	lens.set_meta(&"lamp_circuit", "emergency")
-	lens.mesh = _lens_mesh
-	fixture.add_child(lens)
+	var lens := FixtureEmitter.cage(fixture, 1, Surfaces.surface_frame(_game.layout, ShipLayout.BAY_ID, &"CEILING"), _lens_material, Basis(Vector3.UP, PI if spec.frame.origin.z < 0 else 0.0))
+	FixtureEmitter.bind(light, lens, fixture.get_node("Steel"))
 	_fixtures.append(fixture)
 	_lights.append(light)
 	_lenses.append(lens)
@@ -365,7 +363,8 @@ func _white_fixture(frame: Transform3D) -> Node3D:
 	light.shadow_enabled = false
 	light.position.y = -0.12
 	fixture.add_child(light)
-	CeilingFixture.mount(fixture, Pods.ROOM_CEILING_HEIGHT, architectural_mask(_game.layout, ShipLayout.BAY_ID), _white_lens_material)
+	var lens := CeilingFixture.mount(fixture, Pods.ROOM_CEILING_HEIGHT, architectural_mask(_game.layout, ShipLayout.BAY_ID), _white_lens_material)
+	FixtureEmitter.beam(light, lens, Surfaces.surface_frame(_game.layout, ShipLayout.BAY_ID, &"CEILING"))
 	_white_lights.append(light)
 	return fixture
 
@@ -468,8 +467,30 @@ static func steady_fixture(origin: Vector3, mask: int, radius: float, support_y:
 	fixture.add_child(light)
 	DressingMounts.vertical_stem(fixture, support_y, surface)
 	var material := emergency_lens_material(1.0)
-	var lens := HatchModel.mesh_piece(Hallway._box_mesh(LENS_SIZE), Transform3D.IDENTITY, mask, material)
-	lens.name = "Lens"
-	lens.set_meta(&"lamp_circuit", "emergency")
-	fixture.add_child(lens)
+	var lens := FixtureEmitter.cage(fixture, mask, surface, material, Basis(Vector3.UP, PI if origin.z < 0 else 0.0))
+	FixtureEmitter.bind(light, lens, fixture.get_node("Steel"))
+	mesh_layers(fixture, mask)
 	return fixture
+
+func bind_pod_keys() -> void:
+	for index: int in range(_pod_keys.size()):
+		var source := _lights[index]
+		FixtureEmitter.seat(_pod_keys[index], source.get_meta(&"fixture_emitter"), source.get_meta(&"fixture_housing"))
+
+func bind_status_belts(pods: StasisPods) -> void:
+	for pod: Pods.Pod in _game.registry.pods():
+		var group := pods.get_node("Pod%d" % pod.id().index())
+		var emitter: MeshInstance3D = group.get_node("PodStrips")
+		var housing: MeshInstance3D = group.get_node("PodShell").find_children("*", "MeshInstance3D", true, false)[0]
+		var spill := get_node("PodStatusSpill%d" % pod.id().index())
+		for light: OmniLight3D in spill.get_children():
+			var path := PodStrips.FLANK_TRAY if light.position.x < 0 else PodStrips.FLANK_DOME
+			var station := light.position.z
+			var point: Vector3
+			for index: int in range(path.size() - 1):
+				if station >= path[index].z and station <= path[index + 1].z:
+					point = path[index].lerp(path[index + 1], (station - path[index].z) / (path[index + 1].z - path[index].z))
+					break
+			light.position = point
+			FixtureEmitter.bind(light, emitter, housing)
+			light.set_meta(&"emitter_point", point)

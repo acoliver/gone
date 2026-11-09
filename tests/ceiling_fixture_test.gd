@@ -45,8 +45,9 @@ func test_spine_fixture_housings_and_mounts_clear_every_service() -> void:
 		var services := game.layout.ceiling_services(space.id())
 		var node: Node3D = Hallway.build(game) if space.id() == &"D14-S-041" else (ShipSection.build(game.layout, space) if space is ShipLayout.SectionSpec else ShipConnector.build(game.layout, space))
 		for mesh: MeshInstance3D in node.find_children("*", "MeshInstance3D", true, false):
-			if mesh.name != "CeilingMount" and mesh.get_meta(&"lamp_circuit", "") == "" and mesh.get_parent().name != "CeilingFixture": continue
-			var box := Surfaces.world_frame(mesh) * mesh.mesh.get_aabb()
+			var combined_mount := mesh.has_meta(&"mount_bounds")
+			if not combined_mount and mesh.name != "CeilingMount" and mesh.get_meta(&"lamp_circuit", "") == "" and mesh.get_parent().name != "CeilingFixture": continue
+			var box := Surfaces.world_frame(mesh.get_parent()) * (mesh.get_meta(&"mount_bounds") as AABB) if combined_mount else Surfaces.world_frame(mesh) * mesh.mesh.get_aabb()
 			for obstacle: ShipLayout.DressingClearance in services.reservations():
 				assert_false(box.intersects(obstacle.bounds), "%s %s clears %s: %s versus %s" % [space.id(), mesh.name, obstacle.id, box, obstacle.bounds])
 		node.free()
@@ -74,7 +75,7 @@ func test_generated_fixture_keeps_metric_bounds_budget_and_separate_glass() -> v
 	assert_true(node.find_children("*", "CollisionObject3D", true, false).is_empty(), "visual prop adds no colliders")
 	node.free()
 
-func test_all_sixteen_fixtures_attach_directly_to_the_actual_ceiling() -> void:
+func test_all_sixteen_fixtures_keep_their_sources_in_glass_and_mount_to_the_ceiling() -> void:
 	var game := Game.new(91)
 	var nodes: Array[Node3D] = [Lighting.build(game), Hallway.build(game), PowerRoom.build(game)]
 	for index: int in range(nodes.size()):
@@ -83,8 +84,15 @@ func test_all_sixteen_fixtures_attach_directly_to_the_actual_ceiling() -> void:
 		assert_int_equal(fixtures.size(), 4 if index == 1 else 6, "one complete beam replaces each pair")
 		for fixture: Node3D in fixtures:
 			var bounds := _bounds(fixture)
-			assert_float_equal(bounds.end.y, Vector3(0, 3.2, 0).y, "fixture top touches actual ceiling without a stem")
-			assert_float_equal(bounds.position.y, Vector3(0, 3.1, 0).y, "fixture depth stays 0.10 m")
+			var mount := fixture.get_parent().get_node("CeilingMount") as MeshInstance3D
+			var support := Surfaces.world_frame(mount) * mount.mesh.get_aabb()
+			assert_float_equal(support.end.y, Vector3(0, 3.2, 0).y, "physical mount reaches the actual ceiling")
+			assert_true(support.position.y <= bounds.end.y, "short drop joins the housing without moving its measured light")
+			var light := fixture.get_parent().get_child(0) as OmniLight3D
+			var glasses := _glasses(fixture)
+			assert_int_equal(glasses.size(), 1, "one imported emitter remains independent of its mounting stem")
+			var glass := glasses[0]
+			assert_close(Surfaces.world_frame(glass) * glass.mesh.get_aabb().get_center(), Surfaces.world_frame(light).origin, "glass contains the original source")
 			assert_true(fixture.find_children("*", "CollisionObject3D", true, false).is_empty(), "fixture adds zero prop colliders")
 		node.free()
 

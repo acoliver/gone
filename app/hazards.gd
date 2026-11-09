@@ -51,8 +51,13 @@ static func build(ventilation: BayVentilation = BayVentilation.new(), bay: ShipL
 	var spots := Placement.spark_spots()
 	assert(spots.size() == SPARK_COUNT, "the authored wires carry exactly three spark spots")
 	var spark_material := _spark_material()
+	var surface := Surfaces.SurfaceFrame.new()
+	surface.key = &"D14-BAY/CEILING"
+	surface.world_from_surface = bay.frame()
+	surface.bounds = bay.local_bounds()
+	surface.seed_offset = Surfaces._seed_offset(ShipLayout.BAY_ID, &"CEILING")
 	for index: int in range(SPARK_COUNT):
-		hazards.add_child(hazards._spark_spot(spots[index], spark_material))
+		hazards.add_child(hazards._spark_spot(spots[index], spark_material, surface))
 	hazards._smoke_field = hazards._smoke()
 	hazards._smoke_shader = hazards._smoke_field.draw_pass_1.material as ShaderMaterial
 	hazards.add_child(hazards._smoke_field)
@@ -82,7 +87,7 @@ func process_frame(_delta_secs: float) -> void:
 		for vent: AudioStreamPlayer3D in _vents:
 			vent.stop()
 
-func _spark_spot(spot: Vector3, spark_material: StandardMaterial3D) -> Node3D:
+func _spark_spot(spot: Vector3, spark_material: StandardMaterial3D, surface: Surfaces.SurfaceFrame) -> Node3D:
 	var group := Node3D.new()
 	group.name = "SparkSpot"
 	group.position = spot
@@ -92,6 +97,10 @@ func _spark_spot(spot: Vector3, spark_material: StandardMaterial3D) -> Node3D:
 	light.omni_range = SPARK_RANGE
 	light.shadow_enabled = false
 	group.add_child(light)
+	var lens := FixtureEmitter.cage(group, 1, surface, Lighting.emergency_lens_material(0.0), Basis(Vector3.RIGHT, -PI / 2))
+	DressingMounts.ceiling_stem(group, Pods.ROOM_CEILING_HEIGHT, surface)
+	FixtureEmitter.combine_mount(group)
+	FixtureEmitter.bind(light, lens, group.get_node("Steel"))
 	var particles := GPUParticles3D.new()
 	particles.name = "SparkSpray"
 	particles.one_shot = true
@@ -146,6 +155,7 @@ func _physics_process(delta: float) -> void:
 		_flash_remaining = maxf(_flash_remaining - delta, 0.0)
 		if _flash_remaining == 0.0:
 			_spark_lights[_active_index].light_energy = 0.0
+			_spark_lights[_active_index].get_meta(&"fixture_emitter").material_override.emission = Color.BLACK
 		else:
 			_strobe()
 	if not auto_bursts:
@@ -172,6 +182,7 @@ func _strobe() -> void:
 	_spark_lights[_active_index].light_energy = _rng.randf_range(
 		SPARK_MIN_ENERGY, SPARK_MAX_ENERGY
 	)
+	_spark_lights[_active_index].get_meta(&"fixture_emitter").material_override.emission = SPARK_LIGHT_COLOR * _spark_lights[_active_index].light_energy
 
 static func _spark_process() -> ParticleProcessMaterial:
 	var process := ParticleProcessMaterial.new()

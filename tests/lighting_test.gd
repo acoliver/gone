@@ -93,35 +93,35 @@ func test_fixture_inventory_places_eight_red_lights_from_registry() -> void:
 	assert_int_equal(_count_class(lighting, "DirectionalLight3D"), 0, "no directional light is authored")
 	assert_int_equal(_count_class(lighting, "SpotLight3D"), 0, "no spot light is authored")
 
-func test_lenses_share_one_cuboid_and_never_ride_the_light_node() -> void:
+func test_lenses_share_rounded_glass_inside_weathered_cages() -> void:
 	var lighting := Lighting.build(Game.new(0))
-	var lenses: Array[MeshInstance3D] = lighting.lenses()
+	var lenses := lighting.lenses()
 	assert_int_equal(lenses.size(), 8, "one lens per fixture")
-	var shared_mesh: BoxMesh = lenses[0].mesh
-	assert_vec3_equal(shared_mesh.size, Vector3(0.42, 0.16, 0.12), "lens cuboid is 0.42 x 0.16 x 0.12")
+	var shared_mesh := lenses[0].mesh
+	assert_false(shared_mesh is BoxMesh, "a bare cuboid cannot stand in for a lamp")
+	assert_close(shared_mesh.get_aabb().size, Vector3(0.26, 0.16, 0.07), "rounded hatch glass dimensions")
 	for lens: MeshInstance3D in lenses:
-		assert_true(lens.mesh == shared_mesh, "all lenses share one mesh resource")
-		assert_true(
-			shared_mesh.material == lighting.lens_material(),
-			"all lenses share one material resource"
-		)
-		assert_false(
-			lens.get_parent() is OmniLight3D,
-			"a lens mesh never rides the light node itself"
-		)
-		assert_int_equal(
-			lens.get_parent().get_child_count(),
-			3,
-			"fixture groups carry a light, its new ceiling mount, and a lens"
-		)
-		assert_true(lens.get_parent().get_child(0) is OmniLight3D, "the fixture's light remains its first child")
-		assert_true(lens.get_parent().get_node("CeilingMount") is MeshInstance3D, "the added child is the physical support")
-	var expected_emission := Color(1.0, 0.28, 0.12) * Lighting.FIXTURE_EMISSIVE
-	expected_emission.a = 1.0
-	assert_true(
-		lighting.lens_material().emission == expected_emission,
-		"full-power lens emission matches the emergency palette"
-	)
+		assert_true(lens.mesh == shared_mesh, "all cages reuse the same glass geometry")
+		assert_true(lens.material_override == lighting.lens_material(), "cages share their circuit material")
+		assert_false(lens.get_parent() is OmniLight3D, "wall glass and key remain siblings")
+		assert_int_equal(lens.get_parent().get_child_count(), 3, "light, rounded glass and caged housing with integrated stock")
+		assert_true(lens.get_parent().get_child(0) is OmniLight3D, "key remains first child")
+		assert_true(lens.get_parent().get_node("Steel").has_meta(&"mount_bounds"), "integrated support reaches the structure")
+		assert_true(lens.get_parent().get_node("Steel") is MeshInstance3D, "rounded housing and protective grille are present")
+	var expected := Lighting.EMERGENCY_RED * Lighting.FIXTURE_EMISSIVE
+	expected.a = 1.0
+	assert_true(lighting.lens_material().emission == expected, "full-power lens retains the approved output")
+	lighting.free()
+
+func test_cage_and_its_mount_share_one_weathered_draw_surface() -> void:
+	var lighting := Lighting.build(Game.new(0))
+	for lens: MeshInstance3D in lighting.lenses():
+		var fixture := lens.get_parent()
+		var steel: MeshInstance3D = fixture.get_node("Steel")
+		assert_int_equal(steel.mesh.get_surface_count(), 1, "cage and stock share one draw surface")
+		assert_true(steel.has_meta(&"mount_bounds"), "combined housing preserves its physical support bounds")
+		assert_false(fixture.has_node("CeilingMount"), "stock is rendered in the housing, not a second draw")
+	lighting.free()
 
 func test_bridge_follows_sim_fade_and_repeated_dead_does_not_restart() -> void:
 	var game := Game.new(0)

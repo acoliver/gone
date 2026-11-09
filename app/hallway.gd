@@ -90,7 +90,6 @@ var _fade: Intensity.FixtureFade = null
 var _lights: Array[OmniLight3D] = []
 var _fill_lights: Array[Lighting.EmergencyFill] = []
 var _lenses: Array[MeshInstance3D] = []
-var _lens_mesh: BoxMesh = null
 var _lens_material: StandardMaterial3D = null
 var _white_fade: Intensity.FixtureFade = null
 var _white_lights: Array[OmniLight3D] = []
@@ -152,10 +151,7 @@ static func build(game: Game) -> Hallway:
 	hallway.name = "Hallway"
 	hallway._game = game
 	var level := 1.0 if (game.hallway_lit and not game.power_active) else 0.0
-	hallway._lens_mesh = BoxMesh.new()
-	hallway._lens_mesh.size = Lighting.LENS_SIZE
 	hallway._lens_material = Lighting.emergency_lens_material(level)
-	hallway._lens_mesh.material = hallway._lens_material
 	var held: Intensity.Result = Intensity.FixtureFade.holding(level)
 	assert(held.is_ok(), "the hallway's level maps to a finite nonnegative fade")
 	hallway._fade = held.fade
@@ -216,15 +212,18 @@ static func build(game: Game) -> Hallway:
 	for position: Vector3 in section.emergency_fill_positions():
 		var fill := Lighting.emergency_fill(position, level, Lighting.HALL_FILL_MASK)
 		fill.name = "EmergencyFill%d" % hallway._fill_lights.size()
+		FixtureEmitter.suspended(fill, HALL_CEILING_HEIGHT, Surfaces.surface_frame(game.layout, &"D14-S-041", &"CEILING"), "emergency", fill.lens_material)
 		hallway.add_child(fill)
 		hallway._fill_lights.append(fill)
 	var bounce := Lighting.emergency_fill(section.emergency_end_fill_position(), level, Lighting.HALL_FILL_MASK, Lighting.EMERGENCY_END_FILL_SHARE, Lighting.EMERGENCY_END_FILL_COLOR)
 	bounce.name = "EmergencyFillEnd"
+	FixtureEmitter.wall_source(bounce, Surfaces.surface_frame(game.layout, &"D14-S-041", &"STARBOARD"), "emergency", bounce.lens_material, 0.0)
 	hallway.add_child(bounce)
 	hallway._fill_lights.append(bounce)
 	# Ceiling strips cannot directly light the downward arch. Reuse the
 	# layout-owned end bounce on the regular circuit, leaving emergency off.
-	hallway._white_end_fill = Lighting.regular_end_fill(section.emergency_end_fill_position(), white_level)
+	hallway._white_end_fill = Lighting.regular_end_fill(section.emergency_end_fill_position() - Vector3(0, 0, 2.6), white_level)
+	FixtureEmitter.wall_source(hallway._white_end_fill, Surfaces.surface_frame(game.layout, &"D14-S-041", &"PORT"), "white", hallway._white_end_fill.lens_material, PI)
 	hallway.add_child(hallway._white_end_fill)
 	Lighting.mesh_layers(hallway, Lighting.architectural_mask(game.layout, section.id()))
 	return hallway
@@ -245,11 +244,8 @@ func _fixture(fixture_transform: Transform3D, level: float) -> Node3D:
 	var light := Lighting.switched_key(_game.layout.section(&"D14-S-041").emergency_light_role(), level)
 	fixture.add_child(light)
 	DressingMounts.ceiling_stem(fixture, _game.layout.section(&"D14-S-041").bounds().end.y, Surfaces.surface_frame(_game.layout, &"D14-S-041", &"CEILING"))
-	var lens := MeshInstance3D.new()
-	lens.name = "Lens"
-	lens.set_meta(&"lamp_circuit", "emergency")
-	lens.mesh = _lens_mesh
-	fixture.add_child(lens)
+	var lens := FixtureEmitter.cage(fixture, 1, Surfaces.surface_frame(_game.layout, &"D14-S-041", &"CEILING"), _lens_material, Basis(Vector3.UP, PI if fixture_transform.origin.z < 0 else 0.0))
+	FixtureEmitter.bind(light, lens, fixture.get_node("Steel"))
 	_lights.append(light)
 	_lenses.append(lens)
 	return fixture
@@ -270,6 +266,7 @@ func _white_fixture(frame: Transform3D, level: float) -> Node3D:
 	light.position = Vector3(0.0, -0.12, 0.0)
 	fixture.add_child(light)
 	var lens := CeilingFixture.mount(fixture, _game.layout.section(&"D14-S-041").bounds().end.y, Lighting.architectural_mask(_game.layout, &"D14-S-041"), _white_lens_material)
+	FixtureEmitter.beam(light, lens, Surfaces.surface_frame(_game.layout, &"D14-S-041", &"CEILING"))
 	_white_lights.append(light)
 	_white_lenses.append(lens)
 	return fixture

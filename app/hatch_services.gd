@@ -89,7 +89,7 @@ static func _control(root: Node3D, mask: int, frame: Surfaces.SurfaceFrame) -> v
 
 static func _lamp(root: Node3D, service: ShipLayout.HatchServiceSpec, mask: int, frame: Surfaces.SurfaceFrame) -> void:
 	var mount_depth := 0.10 + service.stand_off
-	_box(root, Vector3(0.31, 0.24, mount_depth), Vector3(0, 0, 0.02 + mount_depth / 2), mask, frame)
+	_box(root, Vector3(0.31, 0.24, mount_depth + 0.14), Vector3(0, 0, 0.02 + (mount_depth - 0.14) / 2), mask, frame)
 	_rounded(root, Vector3(0.37, 0.31, 0.055), 0.045, Vector3.ZERO, mask, &"hardware", frame)
 	var lens := _rounded(root, Vector3(0.26, 0.16, 0.07), 0.065, Vector3(0, 0, -0.060), mask, &"hardware", frame)
 	lens.name = "Lens"
@@ -102,6 +102,11 @@ static func _lamp(root: Node3D, service: ShipLayout.HatchServiceSpec, mask: int,
 			_rod(root, Vector3(dx, dy, -0.015), Vector3(dx, dy, -0.12), 0.011, mask, frame)
 	for dx: float in [-0.14, -0.07, 0, 0.07, 0.14]:
 		_rod(root, Vector3(dx, -0.115, -0.12), Vector3(dx, 0.115, -0.12), 0.009, mask, frame)
+
+	# Extend the wall mounting box so the glass surrounds the authored key,
+	# preserving its measured throw instead of moving the source toward a wall.
+	for index: int in range(1, root.get_child_count()):
+		root.get_child(index).position.z -= 0.14
 
 static func _conduit(root: Node3D, service: ShipLayout.HatchServiceSpec, mask: int, frame: Surfaces.SurfaceFrame) -> void:
 	for index: int in range(service.route.size() - 1):
@@ -126,6 +131,9 @@ static func seat_fixture(view: DoorView, side: int, fixture: Node3D) -> void:
 	world.origin += world.basis.z * -0.20
 	fixture.transform = Surfaces.world_frame(fixture.get_parent()).affine_inverse() * world
 	fixture.get_node("Lens").visible = false
+	fixture.get_node("Steel").visible = false
+	var lens: MeshInstance3D = lamp.get_node("Lens")
+	FixtureEmitter.bind(fixture.get_child(0), lens, lamp.get_node("Steel"))
 	if fixture.has_node("CeilingMount"): fixture.get_node("CeilingMount").visible = false
 	fixture.set_meta(&"hatch_lamp", true)
 

@@ -186,7 +186,7 @@ class SectionSpec:
 			positions.append(Vector3(_bounds.position.x + 1.5 + index * 3.0, _bounds.end.y - 0.85, _bounds.get_center().z))
 		return positions
 	func emergency_end_fill_position() -> Vector3:
-		return Vector3(_bounds.end.x - 0.9, _bounds.position.y + 1.7, _bounds.get_center().z)
+		return Vector3(_bounds.end.x - 0.9, _bounds.position.y + 1.7, _bounds.get_center().z + 1.3)
 
 	func switch_frames() -> Array[Transform3D]:
 		return _services.switch_frames.duplicate()

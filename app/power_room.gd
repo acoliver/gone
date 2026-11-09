@@ -119,7 +119,6 @@ var _generator_fade: Intensity.FixtureFade = null
 var _lights: Array[OmniLight3D] = []
 var _fill_lights: Array[Lighting.EmergencyFill] = []
 var _lenses: Array[MeshInstance3D] = []
-var _lens_mesh: BoxMesh = null
 var _lens_material: StandardMaterial3D = null
 var _white_lights: Array[OmniLight3D] = []
 var _white_lenses: Array[MeshInstance3D] = []
@@ -256,10 +255,7 @@ static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 
 	room.add_child(room._build_generator(glow_level))
 
-	room._lens_mesh = BoxMesh.new()
-	room._lens_mesh.size = Lighting.LENS_SIZE
 	room._lens_material = Lighting.emergency_lens_material(level)
-	room._lens_mesh.material = room._lens_material
 	var held: Intensity.Result = Intensity.FixtureFade.holding(level)
 	assert(held.is_ok(), "the power room's level maps to a valid fade")
 	room._fade = held.fade
@@ -276,6 +272,7 @@ static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 			room.add_child(room._white_fixture(station_x, station_z, white_level))
 			var fill := Lighting.emergency_fill(fill_positions[room._fill_lights.size()], level, Lighting.POWER_FILL_MASK)
 			fill.name = "EmergencyFill%d" % room._fill_lights.size()
+			FixtureEmitter.suspended(fill, ROOM_CEILING, Surfaces.surface_frame(game.layout, ShipLayout.POWER_ID, &"CEILING"), "emergency", fill.lens_material)
 			room.add_child(fill)
 			room._fill_lights.append(fill)
 
@@ -403,6 +400,7 @@ func _build_generator(glow_level: float) -> Node3D:
 	_generator_ring_material.roughness = 0.3
 	_generator_ring_material.emission_enabled = true
 	_generator_ring_material.emission = GENERATOR_GLOW * GENERATOR_EMISSIVE * glow_level
+	var middle_ring: MeshInstance3D
 	for ring_y: float in GENERATOR_RING_RADII_Y:
 		var ring := MeshInstance3D.new()
 		ring.name = "Ring"
@@ -413,6 +411,7 @@ func _build_generator(glow_level: float) -> Node3D:
 		ring.material_override = _generator_ring_material
 		ring.position = Vector3(0.0, ring_y, 0.0)
 		group.add_child(ring)
+		if ring_y == 1.5: middle_ring = ring
 	_generator_light = OmniLight3D.new()
 	_generator_light.name = "Glow"
 	_generator_light.light_color = GENERATOR_GLOW
@@ -420,8 +419,9 @@ func _build_generator(glow_level: float) -> Node3D:
 	_generator_light.omni_range = 6.5
 	_generator_light.light_cull_mask = 1
 	_generator_light.shadow_enabled = false
-	_generator_light.position = Vector3(0.0, 1.9, 0.0)
+	_generator_light.position = Vector3(0.0, 1.5, 0.0)
 	group.add_child(_generator_light)
+	FixtureEmitter.bind(_generator_light, middle_ring, column)
 	var glow_held: Intensity.Result = Intensity.FixtureFade.holding(glow_level)
 	assert(glow_held.is_ok(), "the generator's glow level maps to a valid fade")
 	_generator_fade = glow_held.fade
@@ -436,11 +436,9 @@ func _fixture(position: Vector3, level: float) -> Node3D:
 	DressingMounts.ceiling_stem(fixture, ROOM_CEILING, Surfaces.surface_frame(_game.layout, ShipLayout.POWER_ID, &"CEILING"))
 	var light := Lighting.switched_key(_game.layout.power_room().emergency_light_role(), level)
 	fixture.add_child(light)
-	var lens := MeshInstance3D.new()
-	lens.name = "Lens"
-	lens.set_meta(&"lamp_circuit", "emergency")
-	lens.mesh = _lens_mesh
-	fixture.add_child(lens)
+	var yaw := -PI / 2 if is_equal_approx(position.x, ROOM_START_X + FIXTURE_STANDOFF) else (PI / 2 if is_equal_approx(position.x, ROOM_END_X - FIXTURE_STANDOFF) else PI)
+	var lens := FixtureEmitter.cage(fixture, 1 | Lighting.POWER_FILL_MASK, Surfaces.surface_frame(_game.layout, ShipLayout.POWER_ID, &"CEILING"), _lens_material, Basis(Vector3.UP, yaw))
+	FixtureEmitter.bind(light, lens, fixture.get_node("Steel"))
 	_lights.append(light)
 	_lenses.append(lens)
 	return fixture
@@ -459,6 +457,7 @@ func _white_fixture(station_x: float, station_z: float, level: float) -> Node3D:
 	light.position = Vector3(0.0, -0.12, 0.0)
 	fixture.add_child(light)
 	var lens := CeilingFixture.mount(fixture, ROOM_CEILING, 1 | Lighting.POWER_FILL_MASK, _white_lens_material)
+	FixtureEmitter.beam(light, lens, Surfaces.surface_frame(_game.layout, ShipLayout.POWER_ID, &"CEILING"))
 	_white_lights.append(light)
 	_white_lenses.append(lens)
 	return fixture

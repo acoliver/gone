@@ -183954,13 +183954,15 @@
 			"tick": 3711.0
 		},
 		{
-			"camera_back": 4.5,
+			"camera_back": 9.0,
+			"camera_pitch_up": 15.0,
 			"light": "white",
 			"name": "fore-inner-closed",
 			"tick": 4994
 		},
 		{
-			"camera_back": 4.5,
+			"camera_back": 9.0,
+			"camera_pitch_up": 15.0,
 			"light": "white",
 			"name": "fore-inner-mid-crank",
 			"tick": 5031

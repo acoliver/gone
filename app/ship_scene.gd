@@ -74,6 +74,8 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 	assert(bay_hatch_key.get_meta(&"light_role") == ShipLayout.EmergencyLightRole.BAY_HATCH, "seat the authored bay hatch key")
 	HatchServices.seat_fixture(scene.hatch.view, 1, bay_hatch_key)
 	HatchServices.seat_nearest(scene.hatch.view, 0, scene.hallway.lights())
+	scene.lighting.bind_pod_keys()
+	scene.lighting.bind_status_belts(scene.pods_node)
 	scene.door_views.append(scene.hatch.view)
 	scene.door_views.append(DoorView.adapter(game.layout.door(ShipLayout.POWER_DOOR_ID), scene.power_room.set_door_offset))
 	for id: StringName in scene.hallway.side_leaves:

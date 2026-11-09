@@ -7,7 +7,7 @@ func test_bay_hatch_identity_selects_its_profile_even_when_fixture_order_changes
 	specs.reverse()
 	var lighting := Lighting.new()
 	lighting._game = game
-	lighting._lens_mesh = BoxMesh.new()
+	lighting._lens_material = Lighting.emergency_lens_material(1.0)
 	for spec: ShipLayout.EmergencyFixtureSpec in specs:
 		lighting.add_child(lighting._fixture(spec, 1.0))
 	var ids: Dictionary = {}
