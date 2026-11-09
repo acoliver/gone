@@ -118,9 +118,27 @@ and adjacent rusty steel at (100, 250) to (181, 123, 81). The ray regression
 checks opaque front-facing triangles, positive light incidence, range and
 receiver mask; a separate check covers both power handoffs. Image-comparer's
 matched left-edge crop also distinguishes the formerly black region from the
-now visible textured surface. A separate dark region at the wide view's right
-edge traces to the corridor-owned `D16-S-042/STARBOARD/001` wall, outside the
-quarters receiver mask. That entrance-wall shading is unchanged in this pass.
+now visible textured surface. The separate right-edge black area was the
+room-facing +Z surface of corridor-owned `D16-S-042/STARBOARD/001` at ship
+Z 1.7, outside the quarters light mask. It was solid front-facing steel,
+not a backface or space outside the room. Three room-owned 2 mm inner panels
+now cover the entrance spans and lintel, with the same wall finish and receiver
+mask as the rest of the room. The 1.2 by 2.4 m passage and sliding pocket stay
+clear; the corridor geometry, lighting and D14 are unchanged. The corridor-door
+capture is pixel-identical to demo3. A matched control
+changes wide pixel (1400, 350) from RGB (0, 0, 0) to (94, 89, 80). The regression
+casts all 1,327,104 pixels from each wide camera and the doorway camera, checking
+front-facing opaque enclosure and incident light. In each wide frame, 1,568
+rays pass through the exact working doorway to lit corridor steel; all other
+rays hit the room shell. The doorway view has no portal rays.
+
+The orange-brown left-edge sliver was the near locker's `SurroundStile_R` paint
+swatch. Cyan, flat-normal and unshaded controls isolated horizontal pigment
+bands, without overlapping geometry. That stile now takes a matching-scale
+40 mm strip of the adjacent door paint, within its original padded atlas slot.
+The three pale floor spots are the sofa's authored `FineFloorPowder_SeatCushion_*`
+deposits, confirmed by a removal control. They remain beneath the sofa seats.
+The five current standard captures are under `tmp/demo4/`.
 
 D16's corridor now switches all eight red keys by their circuit metadata,
 not their display names, which Godot renames when siblings share a name. The
@@ -134,11 +152,11 @@ Regenerate the ordinary-input scenario and run its windowed capture lane with:
 
 ```sh
 godot --headless --path . -s tools/build_quarters_scenario.gd
-godot --headless --path . -s harness/run.gd -- scenarios/quarters-demo.json --out tmp/demo3/routes/quarters-demo
+godot --headless --path . -s harness/run.gd -- scenarios/quarters-demo.json --out tmp/demo4/routes/quarters-demo
 ```
 
 The harness writes eight beats and a report under the printed run directory.
-The five presentation captures are copied into `tmp/demo3/` as
+The five presentation captures are copied into `tmp/demo4/` as
 `corridor-door.png`, `remembered-doorway.png`, `remembered-wide.png`,
 `present-doorway.png` and `present-wide.png`.
 The doorway pair uses the exact camera in `layout.json`; the wider pair uses
@@ -154,15 +172,16 @@ walks out and back in. The separate `d16_route_test.gd` follows ordinary input
 from the D14 stasis start through the aft well to this door. Run the full suite
 with `godot --headless --path . -s tests/run_tests.gd`.
 
-The Batch-1 demo pass verified 897 headless tests with zero failures and exit 0,
-including eight new furniture and storage-light regressions. The seven existing
-windowed routes (`gameplay-full`, `rod-pickup`, `gameplay-keyboard-turn`,
-`hallway`, `power-room`, `connector-route` and `click-route`) all passed their
-machine checks, as did the eight-beat quarters-demo scenario. The focused
-quarters run passed 22 tests with zero failures and no script errors.
-These runs used `nohup`; logs and captures are under `tmp/demo3/`. Existing
-ObjectDB, resource and allocator teardown warnings remain in the full-suite
-output after the passing tests.
+The demo4 pass verified 900 headless tests and nine locker-material Python
+tests with zero failures. The full suite ran under `nohup` and exited 0.
+The seven existing windowed routes (`gameplay-full`, `rod-pickup`,
+`gameplay-keyboard-turn`, `hallway`, `power-room`, `connector-route` and
+`click-route`) passed their machine checks, as did the eight-beat quarters-demo
+scenario and its final-atlas capture run. Logs and captures are under
+`tmp/demo4/`; the final full-suite log is `full-suite-final.log`.
+Harness visual verdict fields remain pending; targeted image-comparer controls
+cover the entrance lining and stile. Existing ObjectDB, resource and allocator
+teardown warnings remain after the passing tests.
 
 ## Plan view
 
