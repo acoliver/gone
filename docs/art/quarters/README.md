@@ -1378,6 +1378,7 @@ Dust is checked in lit captures against an otherwise matching dust-disabled mate
 | medal_case | 920 / 920 | Pass | 9 / 8 | Brass patina is fairly uniform and the aged lining looks flat. The medal is cast brass, despite the review's gold interpretation. |
 | jewellery_box | 820 / 820 | Pass | 8 / 7 | The domed lid is puffier than the hero; dust and yellowing are subtle at small scale. |
 | hairbrush | 1,494 / 1,494 | Pass | 6 / 8 before the density correction | Thin tuft groups and a flat-looking grip reduced the remembered score. The final mesh widens/spreads those bundles and deepens the oval grip; its batch review is pending. |
+| boots | 3,736 / 3,736 | Pass | Pending final-capture review | Detailed reference comparison scored the previous fit 4 / 6 while the batch sheet scored it 9 / 8. The final source increases shaft height, squares the toe and restrains leather grain. |
 
 Tableware uses `tools/blender/quarters/mug/surface_bake.py` to rasterise the actual mesh positions and normals into its packed UVs. The finish baker places irregular liquid rings on cup interiors and plate wells, plus stronger dust on upward surfaces. Generic texture noise had left these features too weak or uniform. The remembered glaze stripe remains a deliberate factory finish, not mineral patina. Labelled comparison cards distinguish the generated reference (A), remembered fitted mesh (B) and aged fitted mesh (C); ratings apply to B/C.
 

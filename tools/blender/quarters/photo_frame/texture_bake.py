@@ -101,7 +101,7 @@ def bake(item, surface=False):
         if item=='boots' and name=='Rubber':
             rgb=np.repeat(rgb.mean(axis=2,keepdims=True),3,axis=2)*.65
         if item=='boots' and name=='Leather':
-            dy,dx=np.gradient(noise(rng,size,256)*.70+grain*.14)
+            dy,dx=np.gradient(noise(rng,size,256)*.22+grain*.06)
             clean_normal=np.stack((-dx,-dy,np.ones_like(dx)),axis=-1)
             clean_normal/=np.linalg.norm(clean_normal,axis=-1,keepdims=True)
             Image.fromarray(((clean_normal*.5+.5)*255+.5).astype('uint8')).save(folder/'Leather_clean_normal.png')
