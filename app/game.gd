@@ -37,6 +37,7 @@ var power_door_open: bool:
 	get: return doors.snapshot(ShipLayout.POWER_DOOR_ID).state == Doors.State.OPEN
 var console_state: int = ConsoleState.INACTIVE
 var power_active: bool = false
+var quarters := QuartersMemory.new()
 var writing_memory := DisplayPerception.Memory.new()
 var label_attention := LabelAttention.new(writing_memory)
 
@@ -62,7 +63,8 @@ func advance_doors() -> void:
 		if event.kind() == Doors.EventKind.OPENED:
 			colliders = collision.deck_set(14)
 
-func observe_bay_crossing(previous: Vector3, current: Vector3, walking: bool) -> void:
+func observe_bay_crossing(previous: Vector3, current: Vector3, walking: bool, deck: int = 14) -> void:
+	quarters.observe_entry(previous, current, deck, walking, doors.snapshot(QuartersLayout.DOOR).state == Doors.State.OPEN)
 	if not bay_exited and PortalCrossing.exits(previous, current, layout.door(ShipLayout.BAY_DOOR_ID), 14, walking, door_open):
 		bay_exited = true
 

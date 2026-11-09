@@ -48,6 +48,15 @@ func _init(layout: ShipLayout, solids: Array[AABB] = []) -> void:
 	_legacy(&"D14-HALL-SWITCH", Kind.SWITCH, layout.anchor(&"D14-HALL-SWITCH").origin, 2.2, 2)
 	_legacy(ShipLayout.POWER_DOOR_ID, Kind.DOOR, layout.door(ShipLayout.POWER_DOOR_ID).frame().origin, 2.2, 3)
 	_legacy(&"D14-POWER-CONSOLE", Kind.CONSOLE, layout.anchor(&"D14-POWER-CONSOLE").origin, 1.8, 4)
+	var console := Target.new()
+	console.id = QuartersLayout.CONSOLE
+	console.kind = Kind.CONSOLE
+	console.deck = QuartersLayout.DECK
+	console.reach = CONSOLE_ACT_REACH
+	for prop: Dictionary in QuartersInventory.props():
+		if prop.id == "console": console.bounds = QuartersInventory.world_bounds(QuartersInventory.prop_bounds(prop))
+	console.center = console.bounds.get_center()
+	_targets.append(console)
 	for id: StringName in layout.door_ids():
 		if id not in [ShipLayout.BAY_DOOR_ID, ShipLayout.POWER_DOOR_ID]:
 			register_door(id)
@@ -210,7 +219,7 @@ func _dispatch(target: Target, context: Context) -> bool:
 			game.light_hallway()
 			motion.hallway_switch_flips += 1
 		Kind.CONSOLE:
-			if not game.press_console():
+			if not (game.quarters.press_console() if target.id == QuartersLayout.CONSOLE else game.press_console()):
 				return false
 			motion.console_presses += 1
 		Kind.DOOR:

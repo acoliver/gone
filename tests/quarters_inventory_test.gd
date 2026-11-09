@@ -1,7 +1,7 @@
 extends SimTestCase
 
 func test_both_states_cover_approved_inventory_and_share_placements() -> void:
-	var room := QuartersRoom.build()
+	var room := QuartersRoom.build(Game.new(0))
 	for prop: Dictionary in QuartersInventory.props():
 		var clean := room.remembered.get_node("Placement_" + prop.id) as Node3D
 		var aged := room.present.get_node("Placement_" + prop.id) as Node3D

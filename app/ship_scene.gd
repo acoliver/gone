@@ -355,7 +355,7 @@ func ensure_d16() -> void:
 	_add_hatch(&"D16-C-002-H-FORE", d16_section)
 	quarters_shell = RoomGeometry.build_solids(_game.layout, QuartersGeometry.shell())
 	quarters_shell.name = "Quarters"
-	quarters = QuartersRoom.build()
+	quarters = QuartersRoom.build(_game)
 	quarters_shell.add_child(quarters)
 	_parent.add_child(quarters_shell)
 	var release := HatchModel.control_panel()
@@ -375,3 +375,4 @@ func ensure_d16() -> void:
 
 func tick_rooms() -> void:
 	if d16_lighting != null: d16_lighting.process_frame()
+	if quarters != null: quarters.process_frame()

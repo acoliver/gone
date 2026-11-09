@@ -66,7 +66,7 @@ func advance(plane: InputPlane, game: Game, yaw: float, dt: float, facing: Vecto
 		BodyState.WALK:
 			_advance_walk(plane, game, yaw, dt, Vector3(-sin(yaw), 0, -cos(yaw)) if facing == Vector3.ZERO else facing)
 	if previous != null and capsule() != null:
-		game.observe_bay_crossing(previous.foot, capsule().foot, state() == BodyState.WALK)
+		game.observe_bay_crossing(previous.foot, capsule().foot, state() == BodyState.WALK, deck())
 
 ## The Lying tick: a fresh activate press starts the get-up, but only in
 ## AwakeInPod; every other phase drops the edge, never buffers it.

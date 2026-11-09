@@ -27,6 +27,7 @@ func advance(paused: bool = false) -> void:
 		var transition := game.phase.wake_complete()
 		assert(transition.kind == Phase.Transition.Kind.ADVANCED)
 	game.advance_doors()
+	game.quarters.tick()
 	game.ventilation.tick(game.power_active)
 	if player != null:
 		sampled_eye = player.motion.eye(game)
