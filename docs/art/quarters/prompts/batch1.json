@@ -189,12 +189,12 @@
         "Glass",
         "Display"
       ],
-      "prompt": "A thin wall-mounted military starship viewing screen, 1.8 metres wide, 1.05 metres tall, 0.08 metres deep. Rectangular grey-green satin painted steel housing with narrow chamfered corners and small round rivets along the edges, a dark inset bezel, a flat glass cover, and a blank dark display surface. A horizontal utilitarian screen with a smooth broad uninterrupted front and solid shallow back. Fresh even paint.",
+      "prompt": "A very thin wall-mounted military display panel, a flat horizontal steel frame with a blank black glass screen. Overall width 1.8 metres and height 1.05 metres, but only eight centimetres thick: the edge thickness is less than one twentieth of the width. A shallow solid back, not a deep box or cabinet. A narrow grey-green satin painted steel outer rim surrounds a separate recessed dark inner bezel and one broad flat black glass display face. Small chamfers and one small bare-steel rivet at each of the four front corners. Fresh even factory paint. The entire object is just the thin wall-hung display panel, no stand, legs, base, bracket or furniture. Nearly frontal view with only a narrow side edge visible.",
       "seeds": [
-        281,
-        282,
-        283,
-        284
+        361,
+        362,
+        363,
+        364
       ]
     },
     {
