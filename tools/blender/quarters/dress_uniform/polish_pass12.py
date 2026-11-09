@@ -1,0 +1,82 @@
+"""Retain the settled tunic and give its allowance a real opacity bake domain."""
+import argparse
+import json
+from pathlib import Path
+import sys
+
+import bpy
+import numpy as np
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from aging_support import ROOT
+from age_tunic import save_checkpoint
+from common import recalc
+from polish_pass9 import vertex_pattern
+from wear_pass10 import smoothstep
+
+
+def open_shoulder(body):
+    pattern = vertex_pattern(body)
+    points = np.array([v.co[:] for v in body.data.vertices])
+    u, v = pattern.T
+    rear = (u > .48) & (u < 1.)
+    fade = smoothstep((points[:, 0]-.165)/.025)*smoothstep((.255-points[:, 0])/.025)
+    fade *= smoothstep((v-.85)/.085)*rear
+    patch = body.vertex_groups['DetailPatch'].index
+    protected = np.array([any(g.group == patch and g.weight > .1 for g in vertex.groups)
+                          for vertex in body.data.vertices])
+    fade[protected] = 0.
+    for vertex, weight in zip(body.data.vertices, fade):
+        vertex.co.y += .008*weight
+        vertex.co.z += .004*weight
+    recalc(body)
+    return dict(maximum_rear_lip_motion_m=float(fade.max()*np.hypot(.008, .004)),
+                retained_binding_and_fitting_supports_unchanged=True)
+
+
+def prepare(base, out, shoulder=True):
+    from bake_down import bake, material_maps
+    from cloth_metrics import lip_lift
+    bpy.ops.wm.open_mainfile(filepath=str(base/'baked.blend'))
+    record = json.loads(bpy.context.scene['tunic5_record'])
+    body = bpy.data.objects['TunicBody']
+    report = dict(base=str(base.relative_to(ROOT)), age_years=1000)
+    if shoulder:
+        report['shoulder'] = open_shoulder(body)
+    body['pass12_wear'] = True
+    dense = bpy.data.objects['TunicBody_Dense']
+    # The retained game sheet is the reference for this finishing pass.
+    bpy.data.objects.remove(dense, do_unlink=True)
+    dense = body.copy()
+    dense.data = body.data.copy()
+    bpy.context.collection.objects.link(dense)
+    dense.name = 'TunicBody_Dense'
+    dense['aged_export'] = False
+    dense.hide_render = True
+    dense.hide_set(True)
+    report['allowance_faces'] = sum(p.material_index != 0 for p in body.data.polygons)
+    mat, paths = bake(dense, body, out/'textures', size=2048, samples=8)
+    material_maps(mat, (.025, .043, .08))
+    dense.hide_render = True
+    dense.hide_set(True)
+    body['aged_export'] = True
+    body['pass10_wear'] = True
+    body['pass11_wear'] = True
+    body['pass12_wear'] = True
+    record['lip_lift'] = lip_lift(body)
+    report['maps'] = paths
+    report['allowance'] = 'same nondegenerate BakeUV atlas, wool base, opacity and cut-edge alpha as the sheet'
+    record['pass12'] = report
+    record['finish_opacity_size'] = 4096
+    save_checkpoint(out, 'baked', record)
+
+
+if __name__ == '__main__':
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--base', type=Path, default=ROOT/'tmp/age/tunic11/visible')
+    p.add_argument('--out', type=Path, required=True)
+    p.add_argument('--no-shoulder', action='store_true')
+    a = p.parse_args(sys.argv[sys.argv.index('--')+1:])
+    a.out.mkdir(parents=True, exist_ok=True)
+    (a.out/'textures').mkdir(exist_ok=True)
+    prepare(a.base.resolve(), a.out.resolve(), not a.no_shoulder)

@@ -38,7 +38,14 @@ def wool_opacity(obj, out, size=2048, seed=9521):
     deltas = np.concatenate([np.diff(p, axis=0) for p in paths])
     length2 = np.sum(deltas**2, axis=1)
     from tear_boundaries import labelled_samples, lip_opacity, retained_binding
-    samples, erodible = labelled_samples(obj)
+    stations = None
+    if obj.get('pass12_wear'):
+        from lip_arclength import labelled_station_samples
+        samples, erodible, stations, lengths = labelled_station_samples(obj)
+        report['physical_boundary_lengths_m'] = lengths
+        report['noise_parameter'] = 'physical arclength on each connected lip, including the allowance'
+    else:
+        samples, erodible = labelled_samples(obj)
     tree = KDTree(len(samples))
     for index, point in enumerate(samples):
         tree.insert(point, index)
@@ -89,7 +96,11 @@ def wool_opacity(obj, out, size=2048, seed=9521):
         coordinates = np.c_[pattern*pattern_scale, np.zeros(len(pattern))]
         # One erosion depth per boundary station avoids opaque islands over the dark inner ply.
         boundary = np.array([hit[0] for hit in nearest_lip])
-        opaque = lip_opacity(distance, boundary, seed)
+        if stations is not None:
+            from lip_arclength import erosion_depth
+            opaque = distance >= erosion_depth(stations[[hit[1] for hit in nearest_lip]], seed)
+        else:
+            opaque = lip_opacity(distance, boundary, seed)
         if pass10:
             if obj.get('pass11_wear'):
                 from wear_pass11 import body_wear
