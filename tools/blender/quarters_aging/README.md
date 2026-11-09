@@ -1,5 +1,139 @@
 # Quarters geometry aging
 
+## Sofa pass 9: collapse improves, candidate still rejected
+
+Pass 9 continues pass 8 (`5a16e5b`). The candidate passes **15 of 22**
+sofa gates, compared with 11 in pass 8. Seat height, back height, throw reach
+and folds, boundary accuracy, and stillness now pass. Faceting, tear shapes,
+one back lip-lift result, right-seat residue planarity, and throw self-contact
+still fail. `assets/props/quarters/sofa_aged.glb`, its shipped textures, and
+the shipped Blender source remain unchanged. Preview export is scratch only.
+
+### Causes and controls
+
+The tied back covers had no remaining filling-loss driver after pass 8
+removed the stretching envelope. Gentle inward pressure alone left the side
+boxing supporting the pillow. Two zero-area side releases let each cover
+fold while retaining the existing rear tie vertices. Blender's automatic
+initial-volume term also opposes collapse, so the sofa-only setup explicitly
+uses a zero pressure-volume target. Pressure ramps from zero at frame 1 to
+-0.01 at frame 40 and -0.65 at frame 180. These are Blender pressure settings,
+not a measured physical vacuum. Residue stays static in the lower return.
+No animated back collider or self-collision exclusion was introduced.
+
+The final 40-frame control ran before the joint-back solve. Its frame-20
+sharp share is **4.738%**, below 5%; sampled area is **99.916–100.000%**,
+within 97–103%; initial SAT contacts are zero. The earlier C1–C5 controls
+remain passing. The production back solve preserves 99.387–100.005% area
+across its per-cover checks. Back height reaches 64.793/58.772/59.683%,
+with all residue in the lowest third and two qualifying front folds each.
+
+Seat bending softens after the early controls, over frames 200–600. Immediate
+softening was rejected by the area/motion controls. The final seats retain
+16.555/11.357/10.944% centre height and no longer retain the left boxing
+failure. Their sampled per-cover areas stay at 99.565–100.000%.
+
+The fringe failure had two demonstrated causes. Sparse single-pixel atlas
+yarns disappeared under the exported 0.5 alpha cutoff after minification,
+and editing an already packed image left its earlier PNG payload in place.
+The new material uses tapering yarn bundles with over 55% root coverage,
+unpacks before editing, then saves and repacks. A regression compares the
+reloaded packed alpha with the edited pixels. Backface culling remains off;
+contact-tested placement remains enabled. The final close diagnostics now
+contain 240/139/259 seat, 106/70/154 back, and 1,356 throw fringe pixels.
+The broad hero still resolves only 14 first-hit fringe pixels,
+12 with at least eight RGB levels of lit contrast against the disabled-fringe
+control. That proves visibility, but does not establish sufficient visual
+coverage or satisfy the failed seam/tear gates.
+
+Opposing tear lips now curl into their own connected panels. A nearest-point
+field could associate coincident lips with the wrong panel and close a tear.
+The topological curl regression checks that the two sides separate. This
+change does not fix every opening: centre-back lifted lip length is only
+28.157%, and several openings remain too straight or unresolved in the
+unchanged diagnostics.
+
+Crumbs were mostly hidden below the cover, and their previous 5 mm median
+size gave little broad-view coverage. Sofa-only visible deposition includes
+the solved seat covers as landing supports and uses an 11 mm median for
+non-floor fragments. Floor sampling and its thresholds are unchanged.
+The final hero has 275 first-hit sofa crumb pixels, all with at least eight
+levels of lit contrast, including 160 at the seat fronts. G9–G11 still pass.
+The new deposition argument is optional; existing callers retain their
+previous behavior.
+
+G32's 3.125 mm seat error came from repairing only the reduced mesh after
+baking-source capture. The same barycentric clearance field now deforms the
+dense source and the game mesh. The measured boundary bound is 0.125 mm for
+all seven cloth parts. Seat SAT clearance reaches zero after one repair.
+
+The throw retains only its outer rear arm corner, rather than the broad cap
+hold. It reaches 76.153 mm above the floor with five folds of at least 10 mm
+prominence, and remains one connected arm-to-near-floor sheet. The crest
+split length passes G18, but its visibility along the arm is not signed off.
+The final throw fails G30 with **eight self-intersections**, all in wool near
+the retained corner (approximately x 1.109–1.115 m, y 0.124–0.135 m,
+z 0.750–0.760 m). Clearance counts 10/9/6/8 did not converge. This local
+contact regression is unresolved; no contacts were excluded to pass it.
+
+Solves allow 2,400 frames and ramp air damping to six times its initial
+value over frames 300–600. All three satisfy the unchanged requirement of
+three successive checks below 1 mm over five frames: seats stop at frame
+1,550 with 0.481 mm final motion; backs at 925 with 0.977 mm; throw at 750
+with 0.190 mm. A larger damping trial was rejected rather than using drag
+to conceal an unfinished collapse.
+
+### Final measurements
+
+Values are from `tmp/age/pass9/gates.json`. Triplets are centre/left/right.
+Missing resolved openings count as failures. G20–G29 remain tunic-only.
+No acceptance thresholds or rigid-baseline allowances were relaxed.
+
+| Gate | Measured value | Threshold | Result |
+| --- | --- | --- | --- |
+| G1 | Visible sharp pairs: seats 8.283/10.744/8.986%; backs 9.283/15.619/8.317%; throw 19.789% | Covers ≤8%; throw ≤9% | Fail |
+| G2 | Normal jumps: seats 0.728/0.722/0.712%; backs 1.400/1.629/1.623%; throw 0.251% | ≤2% each | Pass |
+| G3 | Longest panel-tear runs: seats 27.203/28.714/33.526 px; backs 19.300/16.031/20.797 px; throw absent; seat seam gape/fringe also fails | ≤12 px / 4.5 mm; seams require gape and fringe | Fail |
+| G4 | Minimum width CV: seats 0.4530/0.2879/0.3532; backs/throw absent | ≥0.35 each opening, with a measured opening per part | Fail |
+| G5 | Lip length lifted >3 mm: seats 35.369/55.360/49.235%; backs 28.157/36.983/51.304% | ≥30% each | Fail |
+| G6 | Resolved contour ranges: seats 1.1688–1.2443 / 1.0560–1.3102 / 1.1224–1.3381; backs/throw absent | 1.15–1.40 each resolved contour, with one per part | Fail |
+| G7 | Visible large planar residue: seats 2.699/4.935/6.159%; backs 0/0/0% | ≤5% each | Fail |
+| G8 | Dense crust RMS: seats 1.848/1.680/1.914 mm; backs 2.935/2.948/2.977 mm; all normal maps present | ≥1.5 mm and normal map | Pass |
+| G9 | Eight cut templates, 24 triangles each, thickness/width 0.2663–0.4592 | ≥8; 14–40 triangles, not 20; ratio 0.25–0.70 | Pass |
+| G10 | Clark-Evans R 1.007235; largest cluster 0%; 18 floor crumbs | R 0.8–1.4; cluster ≤20% | Pass |
+| G11 | Radial-density rho -1/-1/-1; powder present per source | rho ≤-0.6 and powder per source | Pass |
+| G12 | Hero/front boxing ratios: centre 0/0%; left 0/0%; right 3.059/2.413% | ≤25% in each camera | Pass |
+| G13 | Rounded-box RMS: 13.591/18.467/19.215 mm | ≥12 mm each | Pass |
+| G14 | Seat centre-height retention: 16.555/11.357/10.944% | 10–25% each | Pass |
+| G15 | Back height retention: 64.793/58.772/59.683% | 40–65% each | Pass |
+| G16 | Back residue in lowest third: 100/100/100% | ≥60% each | Pass |
+| G17 | Back front folds: 2/2/2 | ≥2 each, ≥8 mm prominence | Pass |
+| G18 | Crest split 89.298% | 60–90% | Pass |
+| G19 | One connected arm-to-near-floor sheet; 0 mm footprint distance; lowest point 76.153 mm; five folds | ≤250 mm; lowest point ≤100 mm; ≥3 folds ≥10 mm; ≤1 remnant | Pass |
+| G30 | Eight throw self-intersections; all other changed self/pair counts zero; rigid counts exact | Zero changed intersections; exact rigid baseline | Fail |
+| G31 | 28,478 triangles; 1.456675 times fitted | ≤29,325 and ≤1.5 times fitted | Pass |
+| G32 | 0.125 mm boundary bound for all seven parts | ≤1.5 mm | Pass |
+
+Fixed geometry bytes, origins/pivots, byte-identical re-export, all six
+covers simulated, all cloth settled, no self-collision exclusions, exported
+fringe nodes, and the three lit visibility invariants pass. Final acceptance
+returns exit 1 and `publication_allowed: false`. The measurements show a
+faceting regression despite the improved collapse; no visual sign-off is
+claimed. Review skipped per Andrew 2026-10-09.
+
+The final regression runs pass 18 Blender tests and ten Python camera and
+visibility tests. Logs are `tmp/age/pass9/final-blender-tests.log` and
+`tmp/age/pass9/final-python-tests.log`. Both the rejection and captures were
+produced from the final round-tripped preview, not a Blender-only material.
+
+Captures retain the pass-8 cameras:
+`tmp/age/pass9/sofa-before-after.png` (3200 × 1422),
+`tmp/age/pass9/sofa-turntable.png` (3200 × 2844), and
+`tmp/age/pass9/sofa-closeup.png` (1100 × 1000).
+The rejected candidate is `tmp/age/pass9/sofa-preview.glb`; the full gates,
+SAT pairs and controls are `gates.json`, `collisions.json` and `controls.json`
+in the same scratch directory. Nothing was pushed.
+
 ## Sofa pass 8: coarse cloth controls and gate scope
 
 Pass 8 follows `tmp/age/advice/STALL_DIAGNOSIS.md`. The runner is
