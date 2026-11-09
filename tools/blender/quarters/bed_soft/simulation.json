@@ -1,0 +1,140 @@
+{
+  "Mattress": {
+    "frames": 80,
+    "uniform_pressure": 0.01,
+    "pressure_factor": 1,
+    "quality": 20,
+    "time_scale": 0.4,
+    "mass": 0.015,
+    "stiffness": 150,
+    "bending": 0.3,
+    "last_five_frames_motion_m": 0.012383074945467866,
+    "support_translation_m": -0.0019784440994262695,
+    "bounds_native_m": [
+      [
+        -0.7017061710357666,
+        -1.0159848928451538,
+        0.5009999871253967
+      ],
+      [
+        0.6987012624740601,
+        0.9624140858650208,
+        0.7298750281333923
+      ]
+    ]
+  },
+  "Pillow_L": {
+    "frames": 80,
+    "uniform_pressure": 0.01,
+    "pressure_factor": 1,
+    "quality": 20,
+    "time_scale": 0.4,
+    "mass": 0.015,
+    "stiffness": 150,
+    "bending": 0.3,
+    "last_five_frames_motion_m": 0.003611452361421661,
+    "support_translation_m": -0.002011167049407959,
+    "bounds_native_m": [
+      [
+        -0.6834208965301514,
+        0.47876670956611633,
+        0.6856902241706848
+      ],
+      [
+        -0.03263336420059204,
+        0.8984280824661255,
+        0.8799509406089783
+      ]
+    ],
+    "face_sample_contact_translation_m": 1.2874603271505192e-08,
+    "exact_face_contact_translation_m": 0.0005785158009300453
+  },
+  "Pillow_R": {
+    "frames": 80,
+    "uniform_pressure": 0.01,
+    "pressure_factor": 1,
+    "quality": 20,
+    "time_scale": 0.4,
+    "mass": 0.015,
+    "stiffness": 150,
+    "bending": 0.3,
+    "last_five_frames_motion_m": 0.008306593211144646,
+    "support_translation_m": -0.003102945327758789,
+    "bounds_native_m": [
+      [
+        0.02411016821861267,
+        0.4728259742259979,
+        0.670650064945221
+      ],
+      [
+        0.6877443194389343,
+        0.928284764289856,
+        0.8621927499771118
+      ]
+    ],
+    "face_sample_contact_translation_m": 1.2874603271505192e-08,
+    "exact_face_contact_translation_m": 0.00175658052016489
+  },
+  "Quilt": {
+    "frames": 180,
+    "retained_pins": 6,
+    "pressure": {
+      "enabled": false,
+      "uniform_force": 0.0,
+      "scale": 1.0
+    },
+    "strength_groups": {
+      "structural": "",
+      "shear": "",
+      "bending": ""
+    },
+    "last_five_frames_motion_m": 0.0008240997824821965,
+    "trace": [
+      {
+        "frame": 50,
+        "bounds_blender_m": [
+          [
+            -0.8504263758659363,
+            -1.125806212425232,
+            0.5341428518295288
+          ],
+          [
+            0.827045202255249,
+            0.46938517689704895,
+            0.7558750510215759
+          ]
+        ]
+      },
+      {
+        "frame": 100,
+        "bounds_blender_m": [
+          [
+            -0.8407262563705444,
+            -1.1241886615753174,
+            0.5346812009811401
+          ],
+          [
+            0.827283501625061,
+            0.47181811928749084,
+            0.7558750510215759
+          ]
+        ]
+      },
+      {
+        "frame": 150,
+        "bounds_blender_m": [
+          [
+            -0.8363739252090454,
+            -1.119861364364624,
+            0.5356587171554565
+          ],
+          [
+            0.8293218016624451,
+            0.4712739586830139,
+            0.7558750510215759
+          ]
+        ]
+      }
+    ]
+  }
+}
