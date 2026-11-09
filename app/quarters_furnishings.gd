@@ -36,13 +36,14 @@ static func _asset(path: String, prop: StringName, state: StringName) -> Node3D:
 	QuartersProps.apply(asset, prop, state)
 	return asset
 
-static func _bounds(node: Node3D, parent: Transform3D = Transform3D.IDENTITY) -> AABB:
+static func _bounds(node: Node3D, parent: Transform3D = Transform3D.IDENTITY, visible_only: bool = false) -> AABB:
+	if visible_only and not node.visible: return AABB()
 	var result := AABB()
 	var frame := parent * node.transform
 	if node is MeshInstance3D: result = frame * node.get_aabb()
 	for child: Node in node.get_children():
 		if child is Node3D:
-			var child_bounds := _bounds(child, frame)
+			var child_bounds := _bounds(child, frame, visible_only)
 			if child_bounds.has_volume(): result = child_bounds if not result.has_volume() else result.merge(child_bounds)
 	return result
 
@@ -130,6 +131,11 @@ static func _wardrobe(group: Node3D, bounds: AABB, state: StringName, finish: Ma
 		var preview_offset := Vector3(-0.015, 1.055, 0.10) if debris else Vector3(-0.015, 1.65, 0.17)
 		garment.position = QuartersLayout.to_world(Vector3(7.70, 0, 3.58)) + inward * preview_offset
 		garment.basis = inward * Basis(Vector3.UP, deg_to_rad(55))
+		if debris and state == &"aged":
+			var visible_bounds := _bounds(garment, Transform3D.IDENTITY, true)
+			var shelf: MeshInstance3D = carcass.get_node("Shelf")
+			var shelf_bounds := shelf.transform * shelf.get_aabb()
+			garment.position.y += shelf_bounds.end.y + 0.0005 - visible_bounds.position.y
 		group.add_child(garment)
 	var rail := box("Rail", AABB(Vector3(7.57, 1.633, 3.13), Vector3(0.018, 0.018, 0.94)), finish)
 	carcass.add_child(rail)

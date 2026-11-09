@@ -41,6 +41,28 @@ func test_every_prop_has_one_shared_collider_not_one_per_state() -> void:
 	for item: Dictionary in QuartersInventory.small_items():
 		assert_int_equal(ids.count(StringName("D16-QUARTERS/ITEM/" + item.id)), 1, "one small item collider " + item.id)
 
+func test_present_fibre_dust_and_fragments_rest_on_wardrobe_shelf() -> void:
+	var furnishings := QuartersFurnishings.build(&"aged")
+	var wardrobe := furnishings.get_node("Placement_wardrobe")
+	var shelf: MeshInstance3D = wardrobe.get_node("Standin_wardrobe/Shelf")
+	var floor_bounds := ShipScene._world_frame(shelf) * shelf.get_aabb()
+	var fragments := wardrobe.get_node("UniformFragments")
+	var bottom := INF
+	var found_dust := false
+	for piece: MeshInstance3D in fragments.find_children("*", "MeshInstance3D", true, false):
+		if not piece.visible: continue
+		var bounds := ShipScene._world_frame(piece) * piece.get_aabb()
+		bottom = minf(bottom, bounds.position.y)
+		assert_true(bounds.position.y >= floor_bounds.end.y - 0.00001, "no debris clips below the shelf")
+		assert_true(bounds.position.x >= floor_bounds.position.x and bounds.end.x <= floor_bounds.end.x, "debris fits shelf width")
+		assert_true(bounds.position.z >= floor_bounds.position.z and bounds.end.z <= floor_bounds.end.z, "debris fits shelf depth")
+		if piece.name == &"FibreDust":
+			found_dust = true
+			assert_float_in_range(bounds.position.y - floor_bounds.end.y, 0.0, 0.001, "fibre-dust heap rests within 1 mm of wardrobe floor")
+	assert_true(found_dust, "pale patch is the named fibre-dust mesh")
+	assert_float_in_range(bottom - floor_bounds.end.y, 0.0, 0.001, "fragment group is seated, not floating")
+	furnishings.free()
+
 func _flood(radius: float) -> Dictionary:
 	var obstacles: Array[AABB] = []
 	for solid: ShipGeometry.SolidSpec in QuartersGeometry.furniture():
