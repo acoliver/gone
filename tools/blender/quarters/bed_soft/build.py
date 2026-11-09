@@ -112,11 +112,17 @@ def pressure_shell(name, dims, center, divisions, support):
         if frame % 20 == 0:
             print(name, 'pressure frame', frame, flush=True)
     apply(obj, mod)
+    if name != 'Mattress':
+        points = np.array([v.co[:] for v in obj.data.vertices])
+        lo, hi = points[:, 2].min(), points[:, 2].max()
+        for vertex in obj.data.vertices:
+            vertex.co.z = lo + (vertex.co.z - lo) * .12 / (hi - lo)
     bake_origin(obj)
     print(name, 'solved bounds', mesh_points(obj).min(0), mesh_points(obj).max(0),
           'support bounds', mesh_points(support).min(0), mesh_points(support).max(0), flush=True)
     shift = drop_to(obj, support)
-    obj.data.materials.append(material('CottonTicking' if name == 'Mattress' else 'CottonPillow', (.66, .61, .51)))
+    obj.data.materials.append(material('CottonTicking' if name == 'Mattress' else 'CottonPillow',
+                                       (.50, .46, .37) if name == 'Mattress' else (.78, .76, .70)))
     unwrap(obj)
     collision(obj, .0005)
     return obj, {'frames': frames, 'uniform_pressure': .01, 'pressure_factor': 1,
@@ -128,10 +134,10 @@ def pressure_shell(name, dims, center, divisions, support):
 def quilt_sheet(top):
     nx = 32
     # A continuous doubled head cuff, not an intersecting second rectangular sheet.
-    profile = [(y, top + .026) for y in np.linspace(-1.13, .37, 31)]
-    profile += [(.37 + .07 * math.sin(a), top + .026 + .07 * (1 - math.cos(a)))
+    profile = [(y, top + .008) for y in np.linspace(-1.13, .37, 31)]
+    profile += [(.37 + .024 * math.sin(a), top + .008 + .024 * (1 - math.cos(a)))
                 for a in np.linspace(0, math.pi, 9)[1:]]
-    profile += [(y, top + .166) for y in np.linspace(.37, .12, 6)[1:]]
+    profile += [(y, top + .056) for y in np.linspace(.37, .12, 6)[1:]]
     verts, faces = [], []
     for j, (y, z) in enumerate(profile):
         for i, x in enumerate(np.linspace(-.855, .855, nx + 1)):
@@ -142,9 +148,33 @@ def quilt_sheet(top):
             if i < nx and j < len(profile) - 1:
                 a = j * (nx + 1) + i
                 faces.append((a, a + 1, a + nx + 2, a + nx + 1))
-    obj = new_object('Quilt', verts, faces, material('WovenWool', (.28, .225, .175)))
+    obj = new_object('Quilt', verts, faces, material('WovenWool', (.14, .105, .075)))
+    obj.data.materials.append(material('WoolCuff', (.19, .15, .11)))
+    obj.data.materials.append(material('WoolBinding', (.075, .053, .035)))
+    for face in obj.data.polygons:
+        row = face.index // nx
+        face.material_index = 2 if row >= len(profile) - 2 else (1 if row >= len(profile) - 6 else 0)
     pins = {j * (nx + 1) + i: 1.0 for j in (15, 16) for i in (15, 16, 17)}
     return obj, pins
+
+
+def settle_quilt(mattress):
+    quilt, pins = quilt_sheet(float(mesh_points(mattress)[:, 2].max()))
+    tree = surface_tree(mattress)
+    for index in pins:
+        p = quilt.data.vertices[index].co
+        hit = tree.ray_cast(Vector((p.x, p.y, 2)), Vector((0, 0, -1)))[0]
+        if hit is None:
+            raise ValueError('Quilt contact stitch missed the mattress')
+        p.z = hit.z + .003
+    settings = dict(quality=24, time_scale=.35, mass=.18, stiffness=180, bending=.5,
+                    frames=180, collision_quality=10, collision_distance_m=.001,
+                    self_distance_m=.003, air_damping=8)
+    record = settle(quilt, settings, pins)
+    solidify(quilt, .003)
+    bake_origin(quilt)
+    unwrap(quilt)
+    return record
 
 
 def remembered():
@@ -158,14 +188,7 @@ def remembered():
     for name, x in (('Pillow_L', -.355), ('Pillow_R', .355)):
         pillow, record = pressure_shell(name, (.65, .43, .155), (x, .70, top + .10), (12, 10, 4), mattress)
         records[name] = record
-    quilt, pins = quilt_sheet(top)
-    settings = dict(quality=24, time_scale=.35, mass=.18, stiffness=180, bending=.5,
-                    frames=180, collision_quality=10, collision_distance_m=.001,
-                    self_distance_m=.003, air_damping=8)
-    records['Quilt'] = settle(quilt, settings, pins)
-    solidify(quilt, .003)
-    bake_origin(quilt)
-    unwrap(quilt)
+    records['Quilt'] = settle_quilt(mattress)
     SCRATCH.mkdir(parents=True, exist_ok=True)
     (HERE / 'simulation.json').write_text(json.dumps(records, indent=2) + '\n')
     save(HERE / 'bed-soft-working.blend', records)

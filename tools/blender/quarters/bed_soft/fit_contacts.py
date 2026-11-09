@@ -1,4 +1,4 @@
-"""Fit baked pillow undersides using exact overlaps of exported triangle planes."""
+"""Fit baked cloth contacts using exact overlaps of exported triangle planes."""
 import argparse
 import json
 from pathlib import Path
@@ -15,7 +15,7 @@ def main():
     args = parser.parse_args()
     suffix = '_aged' if args.state == 'aged' else ''
     _, meshes = load(ROOT / f'assets/props/quarters/bed_soft{suffix}.glb')
-    shifts = {name: .001 - support_gap(meshes[name], meshes['Mattress']) for name in ('Pillow_L', 'Pillow_R')}
+    shifts = {name: .001 - support_gap(meshes[name], meshes['Mattress']) for name in ('Pillow_L', 'Pillow_R', 'Quilt')}
     path = ROOT / f'tmp/bed_soft/{args.state}-contact-shifts.json'
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(shifts, indent=2) + '\n')

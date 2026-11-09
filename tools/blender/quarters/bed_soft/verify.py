@@ -122,21 +122,28 @@ def main():
         mesh = scene.geometry[key].copy()
         if getattr(mesh.visual.material, 'name', None) == 'Foam':
             mesh.apply_transform(matrix)
-            mesh.merge_vertices()
+            mesh.merge_vertices(merge_tex=True, merge_norm=True)
             foam.append(mesh)
     if not foam:
         raise ValueError('No exported Foam material primitives')
     crust = trimesh.util.concatenate(foam)
     mattress = clean['Mattress'].copy()
-    mattress.merge_vertices()
-    ratio = abs(crust.volume / mattress.volume)
+    mattress.merge_vertices(merge_tex=True, merge_norm=True)
+    aged_mattress = aged['Mattress'].copy()
+    aged_mattress.merge_vertices(merge_tex=True, merge_norm=True)
+    ratio = abs(aged_mattress.volume / mattress.volume)
+    foam_ratio = abs(crust.volume / mattress.volume)
     result['mattress_volume'] = {'remembered_m3': abs(float(mattress.volume)),
+                                 'aged_crust_and_cover_m3': abs(float(aged_mattress.volume)),
                                  'aged_foam_crust_m3': abs(float(crust.volume)),
-                                 'ratio': float(ratio), 'pass': volume_gate(ratio),
+                                 'foam_ratio': float(foam_ratio),
+                                 'ratio': float(ratio), 'pass': volume_gate(ratio) and volume_gate(foam_ratio),
                                  'remembered_watertight': bool(mattress.is_watertight),
+                                 'aged_mattress_watertight': bool(aged_mattress.is_watertight),
                                  'aged_crust_watertight': bool(crust.is_watertight)}
     result['pass'] = bool(all(result[state]['pass'] for state in ('remembered', 'aged'))
-                          and result['mattress_volume']['pass'] and mattress.is_watertight and crust.is_watertight)
+                          and result['mattress_volume']['pass'] and mattress.is_watertight
+                          and aged_mattress.is_watertight and crust.is_watertight)
     (HERE / 'verify.json').write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps(result, indent=2), flush=True)
     if not result['pass']:

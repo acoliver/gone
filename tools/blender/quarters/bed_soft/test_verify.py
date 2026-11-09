@@ -21,6 +21,15 @@ class GateTests(unittest.TestCase):
         part.apply_translation([0, .01, 0])
         self.assertGreater(support_gap(part, support), .003)
 
+    def test_contact_interior_crest_is_not_missed_between_part_vertices(self):
+        support = trimesh.Trimesh(vertices=[[-1, 0, -1], [1, 0, -1], [1, 0, 1], [-1, 0, 1], [0, .01, 0]],
+                                  faces=[[0, 4, 1], [1, 4, 2], [2, 4, 3], [3, 4, 0]], process=False)
+        part = trimesh.Trimesh(vertices=[[-.8, .009, -.8], [.8, .009, -.8], [0, .009, .8]],
+                               faces=[[0, 1, 2]], process=False)
+        self.assertAlmostEqual(support_gap(part, support), -.001)
+        part.apply_translation([0, .002, 0])
+        self.assertAlmostEqual(support_gap(part, support), .001)
+
     def test_volume_band_rejects_fluffy_or_vanished_mattress(self):
         for value in (.25, .32, .40):
             self.assertTrue(volume_gate(value))
