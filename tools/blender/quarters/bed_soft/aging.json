@@ -8,7 +8,7 @@
       "shear": "",
       "bending": ""
     },
-    "last_five_frames_motion_m": 0.000209169267917794,
+    "last_five_frames_motion_m": 7.453147922695384e-05,
     "trace": [
       {
         "frame": 50,
@@ -21,7 +21,7 @@
           [
             0.6987012624740601,
             0.962414026260376,
-            0.5827950835227966
+            0.582011878490448
           ]
         ]
       },
@@ -36,7 +36,7 @@
           [
             0.6987012624740601,
             0.962414026260376,
-            0.5828450322151184
+            0.5820780396461487
           ]
         ]
       },
@@ -51,12 +51,12 @@
           [
             0.6987012624740601,
             0.962414026260376,
-            0.5828794836997986
+            0.5822250247001648
           ]
         ]
       }
     ],
-    "post_reduction_clearance_fit_max_m": 0.010413965682242997,
+    "post_reduction_clearance_fit_max_m": 0.009188540016157697,
     "decimation_support_fit_z_m": 3.260374069213867e-05,
     "seed": 95240,
     "voronoi_plates": 22,
@@ -68,29 +68,31 @@
     }
   },
   "Pillow_L": {
-    "removed_faces": 14,
-    "removed_area_m2": 0.022439901309553534,
+    "removed_faces": 18,
+    "removed_area_m2": 0.02027159190038219,
     "boundary_noise_amplitude_m": 0.006,
     "octaves": 4,
     "point_fan_clearance_m": 0.002,
-    "height_ratio": 0.12,
-    "support_translation_m": -0.10896639728546142,
-    "finished_height_m": 0.0144,
-    "exact_face_contact_translation_m": 0.00020006223450079724
+    "height_ratio": 0.08,
+    "support_translation_m": -0.1063315143585205,
+    "finished_height_m": 0.01945638656616211,
+    "exact_face_contact_translation_m": 0.002406146123240859,
+    "headboard_translation_y_m": 0.0949976315498352
   },
   "Pillow_R": {
     "removed_faces": 11,
-    "removed_area_m2": 0.02391796000301838,
+    "removed_area_m2": 0.02408963651396334,
     "boundary_noise_amplitude_m": 0.006,
     "octaves": 4,
     "point_fan_clearance_m": 0.002,
-    "height_ratio": 0.12,
-    "support_translation_m": -0.09813015365600586,
-    "finished_height_m": 0.0144,
-    "exact_face_contact_translation_m": 0.0012631324562082233
+    "height_ratio": 0.08,
+    "support_translation_m": -0.10406272315979004,
+    "finished_height_m": 0.01794832944869995,
+    "exact_face_contact_translation_m": 0.0015359307349310227,
+    "headboard_translation_y_m": 0.07125346565246582
   },
   "Quilt": {
-    "frames": 220,
+    "frames": 260,
     "retained_pins": 0,
     "pressure": {
       "enabled": false,
@@ -102,20 +104,20 @@
       "shear": "",
       "bending": ""
     },
-    "last_five_frames_motion_m": 0.0006686091568892664,
+    "last_five_frames_motion_m": 0.009589093800399434,
     "trace": [
       {
         "frame": 50,
         "bounds_blender_m": [
           [
-            -0.9904080629348755,
-            -1.1184436082839966,
-            0.4100194573402405
+            -1.0213314294815063,
+            -1.1057051420211792,
+            0.23176135122776031
           ],
           [
-            0.6836987733840942,
-            0.40328556299209595,
-            0.6605215072631836
+            0.46993309259414673,
+            0.406022846698761,
+            0.6307917237281799
           ]
         ]
       },
@@ -123,14 +125,14 @@
         "frame": 100,
         "bounds_blender_m": [
           [
-            -0.9801961779594421,
-            -1.1215946674346924,
-            0.3511175513267517
+            -0.9529675245285034,
+            -1.09561288356781,
+            0.1939346194267273
           ],
           [
-            0.6796789169311523,
-            0.4021007716655731,
-            0.653731107711792
+            0.44037100672721863,
+            0.4194281995296478,
+            0.633853554725647
           ]
         ]
       },
@@ -138,14 +140,14 @@
         "frame": 150,
         "bounds_blender_m": [
           [
-            -0.9792452454566956,
-            -1.1211291551589966,
-            0.3502131402492523
+            -0.9498154520988464,
+            -1.1504074335098267,
+            0.15060830116271973
           ],
           [
-            0.6780467629432678,
-            0.4015328288078308,
-            0.6529718637466431
+            0.39478468894958496,
+            0.46217936277389526,
+            0.6610943675041199
           ]
         ]
       },
@@ -153,39 +155,62 @@
         "frame": 200,
         "bounds_blender_m": [
           [
-            -0.9789344072341919,
-            -1.1211028099060059,
-            0.3496526777744293
+            -1.0789068937301636,
+            -1.1750396490097046,
+            0.0628812313079834
           ],
           [
-            0.67585289478302,
-            0.40091609954833984,
-            0.6525501608848572
+            0.3756304681301117,
+            0.4841201603412628,
+            0.6607545018196106
+          ]
+        ]
+      },
+      {
+        "frame": 250,
+        "bounds_blender_m": [
+          [
+            -1.1098427772521973,
+            -1.1976326704025269,
+            0.0019502479117363691
+          ],
+          [
+            0.3444907069206238,
+            0.4764435887336731,
+            0.6644429564476013
           ]
         ]
       }
     ],
+    "coarse_cuts_before_gravity": {
+      "removed_faces": 105,
+      "removed_area_m2": 0.26528138061985373,
+      "boundary_noise_amplitude_m": 0,
+      "octaves": 0,
+      "point_fan_clearance_m": 0.006
+    },
     "initial_collision_clear": true,
-    "initial_nearest_support_m": 0.04985693842172623,
-    "initial_whole_sheet_lift_m": 0.21662511825561526,
+    "initial_nearest_support_m": 0.03935559466481209,
+    "initial_whole_sheet_lift_m": 0.20069768428802492,
     "cuts": {
-      "removed_faces": 87,
-      "removed_area_m2": 0.23081454657949507,
+      "removed_faces": 231,
+      "removed_area_m2": 0.29013672820292413,
       "boundary_noise_amplitude_m": 0.006,
       "octaves": 4,
       "point_fan_clearance_m": 0.002
     },
-    "side_slide_m": -0.17,
-    "exact_face_contact_translation_m": 0.0025657397541879448,
+    "side_slide_m": -0.31,
     "rail_wrap_finish": {
       "outside_x_m": -0.8055,
       "rail_clear_top_m": 0.5525,
-      "fitted_vertices": 37
-    }
+      "fitted_vertices": 193
+    },
+    "exact_face_contact_translation_m": -1.3151763789999438e-08,
+    "headboard_translation_y_m": 0
   },
   "debris": [
     {
-      "pieces": 67,
+      "pieces": 37,
       "seed": 95244,
       "floor_z_m": 0.0,
       "templates": 3
@@ -195,12 +220,20 @@
       "seed": 95245,
       "floor_z_m": 0.5,
       "templates": 3
+    },
+    {
+      "name": "FibreFoamPowder_Floor",
+      "opaque_grain_fraction": 0.16775798797607422
+    },
+    {
+      "name": "FibreFoamPowder_Platform",
+      "opaque_grain_fraction": 0.14601421356201172
     }
   ],
   "fine_weave": {
     "source": "assets/props/quarters/sofa/weave.png",
     "median_tile_pitch_m": 0.12,
-    "normal_height_scale_m": 0.00012,
+    "normal_height_scale_m": 0.0004,
     "geometry_unchanged": true
   }
 }

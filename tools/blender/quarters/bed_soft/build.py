@@ -114,9 +114,13 @@ def pressure_shell(name, dims, center, divisions, support):
     apply(obj, mod)
     if name != 'Mattress':
         points = np.array([v.co[:] for v in obj.data.vertices])
-        lo, hi = points[:, 2].min(), points[:, 2].max()
+        low, high = points.min(0), points.max(0)
+        center_xy, half_xy = (low[:2] + high[:2]) / 2, (high[:2] - low[:2]) / 2
         for vertex in obj.data.vertices:
-            vertex.co.z = lo + (vertex.co.z - lo) * .12 / (hi - lo)
+            u, v = np.abs((np.array(vertex.co[:2]) - center_xy) / half_xy)
+            shoulder = .12 + .88 * np.sqrt(max(0, (1 - u ** 4) * (1 - v ** 4)))
+            height = ((vertex.co.z - low[2]) / (high[2] - low[2]) - .5) * .18
+            vertex.co.z = low[2] + .09 + height * shoulder
     bake_origin(obj)
     print(name, 'solved bounds', mesh_points(obj).min(0), mesh_points(obj).max(0),
           'support bounds', mesh_points(support).min(0), mesh_points(support).max(0), flush=True)
@@ -134,22 +138,23 @@ def pressure_shell(name, dims, center, divisions, support):
 def quilt_sheet(top):
     nx = 32
     # A continuous doubled head cuff, not an intersecting second rectangular sheet.
-    profile = [(y, top + .008) for y in np.linspace(-1.13, .37, 31)]
-    profile += [(.37 + .024 * math.sin(a), top + .008 + .024 * (1 - math.cos(a)))
+    profile = [(y, top + .020) for y in np.linspace(-1.10, .37, 31)]
+    profile += [(.37 + .024 * math.sin(a), top + .020 + .024 * (1 - math.cos(a)))
                 for a in np.linspace(0, math.pi, 9)[1:]]
-    profile += [(y, top + .056) for y in np.linspace(.37, .12, 6)[1:]]
+    profile += [(y, top + .068) for y in np.linspace(.37, .12, 6)[1:]]
     verts, faces = [], []
     for j, (y, z) in enumerate(profile):
-        for i, x in enumerate(np.linspace(-.855, .855, nx + 1)):
+        for i, x in enumerate(np.linspace(-.80, .80, nx + 1)):
             edge = max(0, (abs(x) - .60) / .255)
             foot = max(0, (-y - .87) / .26)
-            ripple = .007 * math.sin(y * 15 + x * 4) * edge
+            ripple = (.007 * math.sin(y * 15 + x * 4) * edge
+                      + .008 * math.sin(x * 35 + y * 9) + .004 * math.sin(x * 14 - y * 17))
             verts.append((x, y, z - .055 * edge - .045 * foot + ripple))
             if i < nx and j < len(profile) - 1:
                 a = j * (nx + 1) + i
                 faces.append((a, a + 1, a + nx + 2, a + nx + 1))
     obj = new_object('Quilt', verts, faces, material('WovenWool', (.14, .105, .075)))
-    obj.data.materials.append(material('WoolCuff', (.19, .15, .11)))
+    obj.data.materials.append(material('WoolCuff', (.65, .57, .45)))
     obj.data.materials.append(material('WoolBinding', (.075, .053, .035)))
     for face in obj.data.polygons:
         row = face.index // nx
@@ -213,8 +218,10 @@ def main():
             record = json.loads(record_path.read_text())
             for name, shift in shifts.items():
                 for vertex in bpy.data.objects[name].data.vertices:
-                    vertex.co.z += shift
-                record[name]['exact_face_contact_translation_m'] = shift
+                    vertex.co.z += shift['up_m']
+                    vertex.co.y += shift['back_m']
+                record[name]['exact_face_contact_translation_m'] = shift['up_m']
+                record[name]['headboard_translation_y_m'] = shift['back_m']
             record_path.write_text(json.dumps(record, indent=2) + chr(10))
             save(HERE / source, record)
         export(args.output or ASSETS / ('bed_soft.glb' if args.state == 'remembered' else 'bed_soft_aged.glb'))

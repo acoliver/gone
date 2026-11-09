@@ -32,16 +32,20 @@ def apply(state):
     factor = (1 / .12) / float(np.median(densities))
     for loop in uv:
         loop.uv *= factor
+    normal_image = bpy.data.images.load(str(ASSETS / 'bed_soft_textures/wool_weave_normal.png'), check_existing=False)
+    normal_image.colorspace_settings.name = 'Non-Color'
+    normal_image.pack()
     for mat in quilt.data.materials:
         nodes, links = mat.node_tree.nodes, mat.node_tree.links
+        for node in list(nodes):
+            if node.type in ('TEX_IMAGE', 'NORMAL_MAP'):
+                nodes.remove(node)
         shader = nodes.get('Principled BSDF')
         color = nodes.new('ShaderNodeTexImage')
-        color.image = bpy.data.images.load(str(ASSETS / 'bed_soft_textures' / f'{mat.name.lower()}_weave.png'), check_existing=True)
+        color.image = bpy.data.images.load(str(ASSETS / 'bed_soft_textures' / f'{mat.name.lower()}_weave.png'), check_existing=False)
         color.image.pack()
         normal = nodes.new('ShaderNodeTexImage')
-        normal.image = bpy.data.images.load(str(ASSETS / 'bed_soft_textures/wool_weave_normal.png'), check_existing=True)
-        normal.image.colorspace_settings.name = 'Non-Color'
-        normal.image.pack()
+        normal.image = normal_image
         bump = nodes.new('ShaderNodeNormalMap')
         links.new(color.outputs['Color'], shader.inputs['Base Color'])
         links.new(normal.outputs['Color'], bump.inputs['Color'])
@@ -49,7 +53,7 @@ def apply(state):
     record_path = HERE / ('aging.json' if aged else 'simulation.json')
     record = json.loads(record_path.read_text())
     record['fine_weave'] = {'source': 'assets/props/quarters/sofa/weave.png',
-                            'median_tile_pitch_m': .12, 'normal_height_scale_m': .00012,
+                            'median_tile_pitch_m': .12, 'normal_height_scale_m': .0004,
                             'geometry_unchanged': True}
     record_path.write_text(json.dumps(record, indent=2) + '\n')
     save(source, record)

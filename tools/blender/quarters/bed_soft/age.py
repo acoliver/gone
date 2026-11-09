@@ -52,7 +52,7 @@ def aged_quilt(quilt, mattress, old_top):
     new_top = float(mesh_points(mattress)[:, 2].max())
     supports = [surface_tree(mattress)] + [surface_tree(o) for o in bpy.context.scene.objects if o.get('bed_frame')]
     for vertex in quilt.data.vertices:
-        vertex.co.x -= .17
+        vertex.co.x -= .31
         vertex.co.z -= old_top - new_top
     # Vertex rays miss rail crossings between cloth samples. Start the entire
     # connected sheet above the rail/crust envelope without flattening its cuff.
@@ -67,21 +67,26 @@ def aged_quilt(quilt, mattress, old_top):
         cuff = abs(point.y - (.19 + fractal(point.x, 95241, .025))) < .022 and -.61 < point.x < .20
         fold = abs(point.x - (-.34 + fractal(point.y, 95242, .035))) < .06 + .035 * np.sin(point.y * 12) ** 2 and -.90 < point.y < -.18
         side = abs(point.x + .72 + fractal(point.y, 95243, .025)) < .027 and -.64 < point.y < -.04
-        return cuff or fold or side
-    # Refined tear fans are a finishing mesh, not a stable working cloth cage.
-    # Friction, rather than suspended stitches, holds the free aged sheet.
-    record = settle(quilt, cloth_settings(220), {})
+        edge = point.x > .12 and abs(point.y - (-.43 + .15 * point.x + fractal(point.x, 95251, .045))) < .045
+        return cuff or fold or side or edge
+    # Break load paths on the coarse cage before gravity; refine tear edges only
+    # after settling, when their small triangles cannot destabilize the solve.
+    coarse_cuts = cut_faces(quilt, split, 95241, refine=False, fan_clearance=.006)
+    settings = cloth_settings(260)
+    settings.update(bending=.06, air_damping=5, time_scale=.4)
+    record = settle(quilt, settings, {})
+    record['coarse_cuts_before_gravity'] = coarse_cuts
     record['initial_collision_clear'] = True
     record['initial_nearest_support_m'] = initial_distance
     record['initial_whole_sheet_lift_m'] = lift
     record['cuts'] = cut_faces(quilt, split, 95241, refine=True)
-    record['side_slide_m'] = -.17
+    record['side_slide_m'] = -.31
     quilt.data.materials.clear()
-    quilt.data.materials.append(material('BrittleWool', (.32, .27, .21)))
+    quilt.data.materials.append(material('BrittleWool', (.20, .17, .125)))
     for face in quilt.data.polygons:
         face.material_index = 0
     reduction = quilt.modifiers.new('Brittle wool runtime reduction', 'DECIMATE')
-    reduction.ratio = .65
+    reduction.ratio = .60
     apply(quilt, reduction)
     record['rail_wrap_finish'] = clear_left_rail(quilt)
     solidify(quilt, .0018)
@@ -95,7 +100,7 @@ def age_pillow(obj, mattress, seed):
     bottom = points[:, 2].min()
     for vertex in obj.data.vertices:
         p = vertex.co
-        p.z = bottom + (p.z - bottom) * .12
+        p.z = bottom + (p.z - bottom) * .08
         p.z += .003 * np.sin(p.x * 27 + p.y * 18 + seed)
     shift = drop_to(obj, mattress, .001)
     report = cut_faces(obj, lambda p: abs(p.y - (.69 + fractal(p.x, seed, .022))) < .014
@@ -105,7 +110,8 @@ def age_pillow(obj, mattress, seed):
     obj.data.materials.append(material('BrittleCotton', (.47, .425, .34)))
     bake_origin(obj)
     unwrap(obj)
-    report.update({'height_ratio': .12, 'support_translation_m': shift})
+    report.update({'height_ratio': .08, 'support_translation_m': shift,
+                   'finished_height_m': float(np.ptp(mesh_points(obj)[:, 2]))})
     return report
 
 
@@ -118,10 +124,11 @@ def deposits(source):
         ('FoamCrumbs_Floor', (-.98, -.40, 0), (.15, .58), True),
         ('FoamCrumbs_Platform', (0, -1.017, .5), (.50, .009), False),
     ):
-        config = dict(name=name, material='FoamPowder', color=[.34, .235, .12],
-                      center_blender_m=centre, radius_xy_m=radius, count=72 if floor else 36,
-                      piece_size_m=[.003, .014] if floor else [.003, .007], piece_thickness_m=.001,
-                      heap_height_m=.003, floor_gap_m=.0007)
+        config = dict(name=name, material='FoamPowder', color=[.20, .105, .035],
+                      center_blender_m=centre, radius_xy_m=radius, count=49 if floor else 36,
+                      piece_size_m=[.012, .035] if floor else [.003, .007],
+                      piece_thickness_m=.006 if floor else .001,
+                      heap_height_m=.007 if floor else .003, floor_gap_m=.0007)
         records.append(scatter(source, config, 95244 if floor else 95245))
     for name, centre, extent, seed in (
         ('FibreFoamPowder_Floor', (-.98, -.40, .0008), (.15, .58), 95246),
@@ -129,14 +136,48 @@ def deposits(source):
     ):
         obj = powder_card(name, centre, extent, texture_dir, seed, sectors=24)
         obj['aged_export'] = True
-        # glTF and Blender both retain the binary grain alpha as a cutout.
+        # A fully opaque centre reads as a painted puddle. Preserve the shared
+        # grain shape but let the support show through irregular powder pools.
         shader = obj.data.materials[0].node_tree.nodes.get('Principled BSDF')
-        image_node = next(n for n in obj.data.materials[0].node_tree.nodes if n.type == 'TEX_IMAGE' and n.image and not n.image.name.endswith('Normal'))
+        image_node = shader.inputs['Base Color'].links[0].from_node
+        image = image_node.image
+        pixels = np.array(image.pixels[:], dtype=np.float32).reshape(1024, 1024, 4)
+        rng = np.random.default_rng(seed + 20)
+        coarse = rng.random((16, 4))
+        horizontal = np.array([np.interp(np.linspace(0, 3, 1024), np.arange(4), row) for row in coarse])
+        pools = np.array([np.interp(np.linspace(0, 15, 1024), np.arange(16), column) for column in horizontal.T]).T
+        pixels[:, :, 3] *= rng.random((1024, 1024)) < (.05 + .55 * pools)
+        image.pixels.foreach_set(pixels.ravel())
+        image.filepath_raw = str(texture_dir / f'{name.lower()}.png')
+        image.save()
+        image.pack()
+        records.append({'name': name, 'opaque_grain_fraction': float(pixels[:, :, 3].mean())})
         obj.data.materials[0].node_tree.links.new(image_node.outputs['Alpha'], shader.inputs['Alpha'])
         obj.data.materials[0].surface_render_method = 'DITHERED'
         obj.data.materials[0].alpha_threshold = .5
         bake_origin(obj)
     return records
+
+
+def aged_palette():
+    for name, color in (('Foam', (.12, .045, .008)), ('CottonTicking', (.22, .17, .11)),
+                        ('BrittleCotton', (.33, .29, .22))):
+        mat = bpy.data.materials[name]
+        mat.node_tree.nodes.get('Principled BSDF').inputs['Base Color'].default_value = (*color, 1)
+        mat.diffuse_color = (*color, 1)
+
+
+def detail_only():
+    bpy.ops.wm.open_mainfile(filepath=str(HERE / 'bed-soft-aged.blend'))
+    records = json.loads((HERE / 'aging.json').read_text())
+    for obj in list(bpy.context.scene.objects):
+        if obj.name.startswith(('FoamCrumbs_', 'FibreFoamPowder_')):
+            bpy.data.objects.remove(obj, do_unlink=True)
+    aged_palette()
+    records['debris'] = deposits(bpy.data.objects['Mattress'])
+    (HERE / 'aging.json').write_text(json.dumps(records, indent=2) + chr(10))
+    save(HERE / 'bed-soft-aged.blend', records)
+    export(ASSETS / 'bed_soft_aged.glb')
 
 
 def main():
@@ -149,24 +190,19 @@ def main():
     config = dict(support_z_m=.5, support_gap_m=.001, height_ratio=.34,
                   back_depth_ratio=1, back_support_y_shift_m=0, core_reduction=.30,
                   voronoi_cells=22, crack_width_m=.006, cover_lift_m=.007,
-                  cover_loss_fraction=.22, cover_reduction=.86, cover_thickness_m=.0018,
+                  cover_loss_fraction=.45, cover_reduction=.86, cover_thickness_m=.0018,
                   contact_clearance_m=.0005, cloth=cloth_settings(160))
     records = {'Mattress': collapse(mattress, config, 95240)}
     from finish_aged import repair_cover
     records['Mattress']['cover_finish'] = repair_cover(mattress)
     # The shared module supplies closed crust plates and a separately settled
     # upper cover, joined into the original Mattress node.
-    foam = bpy.data.materials['Foam']
-    foam.node_tree.nodes.get('Principled BSDF').inputs['Base Color'].default_value = (.32, .18, .075, 1)
-    foam.diffuse_color = (.32, .18, .075, 1)
-    cotton = bpy.data.materials['CottonTicking']
-    cotton.node_tree.nodes.get('Principled BSDF').inputs['Base Color'].default_value = (.43, .365, .26, 1)
-    cotton.diffuse_color = (.43, .365, .26, 1)
     unwrap(mattress)
     collision(mattress, .0005)
     for name, seed in (('Pillow_L', 95248), ('Pillow_R', 95249)):
         records[name] = age_pillow(bpy.data.objects[name], mattress, seed)
         collision(bpy.data.objects[name], .0005)
+    aged_palette()
     records['Quilt'] = aged_quilt(bpy.data.objects['Quilt'], mattress, old_top)
     records['debris'] = deposits(mattress)
     (HERE / 'aging.json').write_text(json.dumps(records, indent=2) + '\n')
@@ -177,20 +213,17 @@ def main():
 def quilt_only():
     bpy.ops.wm.open_mainfile(filepath=str(HERE / 'bed-soft-aged.blend'))
     records = json.loads((HERE / 'aging.json').read_text())
-    bpy.data.objects.remove(bpy.data.objects['Quilt'], do_unlink=True)
+    for name in ('Quilt', 'Pillow_L', 'Pillow_R'):
+        bpy.data.objects.remove(bpy.data.objects[name], do_unlink=True)
     with bpy.data.libraries.load(str(HERE / 'bed-soft-working.blend')) as (source, target):
-        target.objects = ['Quilt']
-    quilt = target.objects[0]
-    bpy.context.collection.objects.link(quilt)
+        target.objects = ['Quilt', 'Pillow_L', 'Pillow_R']
+    for obj in target.objects:
+        bpy.context.collection.objects.link(obj)
+    quilt = bpy.data.objects['Quilt']
     mattress = bpy.data.objects['Mattress']
-    for name in ('Pillow_L', 'Pillow_R'):
-        obj = bpy.data.objects[name]
-        points = mesh_points(obj)
-        bottom, top = points[:, 2].min(), points[:, 2].max()
-        for vertex in obj.data.vertices:
-            vertex.co.z = bottom + (vertex.co.z - bottom) * .0144 / (top - bottom)
-        drop_to(obj, mattress)
-        records[name]['finished_height_m'] = .0144
+    for name, seed in (('Pillow_L', 95248), ('Pillow_R', 95249)):
+        records[name] = age_pillow(bpy.data.objects[name], mattress, seed)
+    aged_palette()
     for obj in bpy.context.scene.objects:
         if obj.type == 'MESH' and (obj.get('bed_frame') or obj.name in ('Mattress', 'Pillow_L', 'Pillow_R', 'SupportFloor')):
             collision(obj, .0005)
@@ -221,5 +254,7 @@ if __name__ == '__main__':
         quilt_only()
     elif '--rail-only' in sys.argv:
         rail_only()
+    elif '--detail-only' in sys.argv:
+        detail_only()
     else:
         main()

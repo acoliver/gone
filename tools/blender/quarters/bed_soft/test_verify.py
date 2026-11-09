@@ -3,6 +3,7 @@ import unittest
 import numpy as np
 import trimesh
 from verify import crossings, support_gap, volume_gate, axes_gate
+from fit_contacts import headboard_shift
 
 
 class GateTests(unittest.TestCase):
@@ -29,6 +30,14 @@ class GateTests(unittest.TestCase):
         self.assertAlmostEqual(support_gap(part, support), -.001)
         part.apply_translation([0, .002, 0])
         self.assertAlmostEqual(support_gap(part, support), .001)
+
+    def test_pillow_back_shift_stops_at_headboard_in_exported_space(self):
+        headboard = trimesh.creation.box(extents=[2, 1, .1])
+        headboard.apply_translation([0, .6, -1.05])
+        pillow = trimesh.creation.box(extents=[.6, .18, .4])
+        pillow.apply_translation([0, .8, -.7])
+        pillow.apply_translation([0, 0, -headboard_shift(pillow, headboard)])
+        self.assertAlmostEqual(pillow.bounds[0, 2] - headboard.bounds[1, 2], .001)
 
     def test_volume_band_rejects_fluffy_or_vanished_mattress(self):
         for value in (.25, .32, .40):

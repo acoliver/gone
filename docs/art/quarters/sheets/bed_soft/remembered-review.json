@@ -1,0 +1,36 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "```json\n{\n  \"state\": \"pass\",\n  \"score_out_of_10\": 8,\n  \"visible_observations\": [\n    \"Doorway capture: Two distinct white pillows are visible against the headboard.\",\n    \"Doorway capture: A tan/brown quilt is folded back at the head, revealing a lighter under-layer.\",\n    \"Doorway capture: The bedding exhibits a soft, rounded volume consistent with a stuffed mattress and cloth cover.\",\n    \"Three-quarter capture: Two distinct white pillows are visible against the headboard.\",\n    \"Three-quarter capture: The tan quilt shows a gravity drape over the side of the bed.\",\n    \"Three-quarter capture: The shapes of the pillows and quilt read as soft goods rather than rigid blocks.\",\n    \"Both captures align with the 'selected soft-goods design' in terms of the two-pillow arrangement and the folded-back quilt configuration.\"\n  ],\n  \"defects\": [\n    \"The 'muted woven wool' texture is not clearly visible; the fabric appears smooth or low-resolution, though this is acceptable for an interim material stage.\",\n    \"The 'military' neatness is present, but the drape is slightly more casual than a strict military standard, though it fits the 'warm couple's cabin' requirement.\"\n  ],\n  \"acceptable_for_interim_material_stage\": true\n}\n```"
+      }
+    }
+  ],
+  "created": 1794258632,
+  "model": "qwen3.8-27b",
+  "system_fingerprint": "b1-6d05498",
+  "object": "chat.completion",
+  "usage": {
+    "completion_tokens": 295,
+    "prompt_tokens": 2782,
+    "total_tokens": 3077,
+    "prompt_tokens_details": {
+      "cached_tokens": 43
+    }
+  },
+  "id": "chatcmpl-iBySQLUoEOU67PJ5nREwIiCYUFbQlphe",
+  "timings": {
+    "cache_n": 43,
+    "prompt_n": 2739,
+    "prompt_ms": 23127.307,
+    "prompt_per_token_ms": 8.443704636728734,
+    "prompt_per_second": 118.43142826789129,
+    "predicted_n": 295,
+    "predicted_ms": 34570.544,
+    "predicted_per_token_ms": 117.5868843537415,
+    "predicted_per_second": 8.504349830306401
+  }
+}
