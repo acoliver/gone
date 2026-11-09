@@ -1258,6 +1258,7 @@ Verification reads the exported GLB through trimesh. It checks the layout envelo
 | wardrobe | 203 | 187.81 | 11,016 | Pass | 7/10 | Accepted fit | Hinge handedness is inverted between A and B (A: viewer's right, B: viewer's left).; Top surface of B is beveled, while A is flat.; Viewing angle of B is more oblique, showing the right side panel, while A is more frontal.; Reviewer marked not ready to show. |
 | bed | 216 | 177.60 | 3,512 | Pass | 9/10 | Accepted fit | In image B, the rivets on the headboard appear slightly irregular in spacing and size, potentially looking like noise rather than precise manufacturing details.; The 'folded panel edges' mentioned in the brief are not clearly distinct in B; the edges look flat rather than folded over. |
 | desk | 227 | 327.56 | 4,704 | Pass | 8/10 | Accepted fit | The design (A) features a distinct metallic trim or bevel along the front edge of the top surface, which is missing in the fitted asset (B).; The design (A) shows a small, dark rectangular opening or cutout on the right side panel, which is not present in the fit (B).; The rivets or fasteners visible on the side panels in the design are less prominent or absent in the fit. |
+| console | 351 | 322.97 | 5,088 | Pass | 7/10 | Accepted fit | The keyboard layout differs significantly: A shows a grid of small, individual keys, while B shows a smaller set of larger, rectangular keys.; The control panel to the right of the keyboard is different: A has a series of small, flat switches or buttons, whereas B features three prominent vertical toggle switches.; The monitor bezel in B appears slightly thicker and more boxy than the sleeker frame in A.; Reviewer marked not ready to show. |
 | desk_chair | 244 | 175.21 | 2,032 | Pass | 8/10 | Accepted fit | The small bare steel rivets on the corner plates in B are less distinct than in A, potentially due to lighting or resolution.; The fabric texture on the seat pad in B appears slightly smoother and less detailed than in A. |
 | dining_table | 251 | 2004.80 | 3,728 | Pass | 8/10 | Accepted fit | None observed. |
 | dining_chair | 263 | 181.26 | 3,780 | Pass | 8/10 | Accepted fit | The seat pad in image-right appears slightly thicker or more pronounced than in image-left, though this may be due to lighting and angle.; The rivet heads on the seat frame are less visible in image-right compared to image-left, possibly due to the viewing angle. |
@@ -1283,6 +1284,8 @@ Continued fits include a full-scope paired comparison with the dining-table desi
 
 desk: isolated 4/10; paired 8/10; reference table in that comparison 9/10.
 
+console: paired 7/10; reference table in that comparison 9/10.
+
 bedside: isolated 4/10; paired 7/10; reference table in that comparison 9/10.
 
 media_cabinet: paired 7/10; reference table in that comparison 9/10.
@@ -1293,12 +1296,14 @@ lockers_over_bed: paired 8/10; reference table in that comparison 9/10.
 
 **desk:** The earlier builder used an open tube end frame against a solid end panel in seed 227. Raised edge returns and the inset kick plate also differed in the captures.
 
+**console:** The earlier deck, bezel and switches differed from the selected image. The full-width lower wedge also missed the narrower tapered support in seed 351. The fit follows that approved support silhouette and uses four rows of six keys to follow the denser pictured grid, rather than the prompted three rows of eight. The exported totals remain 24 keys and three toggles, with a separate emissive display and the fixed .69 m layout height.
+
 **bedside:** The earlier lamp hood was a painted rectangular block rather than a curved bare-metal canopy. Large rivets and the high capture camera exaggerated the squat cabinet appearance.
 
 **media_cabinet:** All earlier cabinet candidates included an extra monitor, which contaminated the guide bounds and could not be cleanly cropped away. The replacement source requires an empty top.
 
 **lockers_over_bed:** The previous queue had not completed hero generation, selection or a Hunyuan guide.
 
-Not yet accepted: console, view_screen.
+Not yet accepted: view_screen.
 
 Batch sheets: [`sheets/batch1-heroes.png`](sheets/batch1-heroes.png) and [`sheets/batch1-fitted-turntables.png`](sheets/batch1-fitted-turntables.png). Unaccepted fits are labelled as unfinished work. Per-prop `fit-review.json` retains the reviewer observations.

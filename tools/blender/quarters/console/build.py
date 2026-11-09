@@ -1,4 +1,4 @@
-"""Fit an armoured display and sloping key deck over the generated console."""
+"""Fit an armoured display, key deck and tapered support over the generated console."""
 import math
 from pathlib import Path
 import sys
@@ -12,16 +12,16 @@ from batch_tools import attach, build_main, cage, cylinder, empty, material, mat
 
 SPEC={
     'bounds_gltf':[[-.55,0,-.275],[.55,.69,.275]],
-    'required_nodes':['Console','ArmouredHousing','Bezel','Display','ControlPanel','Keys','Toggles'],
-    'parents':{'ArmouredHousing':'Console','Bezel':'ScreenPlane','Display':'ScreenPlane',
+    'required_nodes':['Console','ArmouredHousing','LowerDeckHousing','DesktopSupport','Bezel','Display','ControlPanel','Keys','Toggles'],
+    'parents':{'ArmouredHousing':'Console','LowerDeckHousing':'Console','DesktopSupport':'Console','Bezel':'ScreenPlane','Display':'ScreenPlane',
                'ScreenPlane':'Console','ControlPanel':'Console','Keys':'ControlPanel','Toggles':'ControlPanel'},
     'pivots_gltf':{'Console':[0,0,0]},
     'materials':['PaintedSteel','BareSteel','DarkSteel','Display'],
-    'visible_details':['Display','Key_1_4','Toggle_1'],
-    'hero_camera_native':[-1.4,-4,2.6],'hero_camera_gltf':[-1.4,2.6,4],
+    'visible_details':['Display','Key_1_4','Toggle_1','DesktopSupport'],
+    'hero_camera_native':[-1.4,-4,1.8],'hero_camera_gltf':[-1.4,1.8,4],
     'hero_target_native':[0,0,.34],'triangle_limit':15000,
     'display_states':['remembered','present'],
-    'fit_notes':'The approved seed 332 has a tall solid lower wedge, a painted armoured bezel and long-stem toggles. Front-section guide percentiles set the upper slope. The lower deck is raised to .30-.36 m rather than the earlier .14-.22 m slab. The fixed layout envelope is retained. Twenty-four separate keys and three separate toggles follow the written control count; the hero has additional keys. The display remains an independent emissive part in both states.',
+    'fit_notes':'Seed 351 has a broad head carried on a narrower tapered support, not the full-width solid wedge described by the prompt. Guide sections below .32 m determine the support widths. The selected image supports a 4-by-6 key grid instead of the prompted 3-by-8 grid; the verified total remains 24 keys and three separate toggles. The support and head remain inside the .69 m asset-local height and are mounted on the desk by room placement. The display is an independent emissive part in both states.',
 }
 
 
@@ -40,47 +40,61 @@ def assemble(guide):
     display.node_tree.nodes['Principled BSDF'].inputs['Specular IOR Level'].default_value=0
     root=empty('Console')
     cloud=np.array([list(v.co) for o in bpy.data.objects if o.name.startswith('Guide_') for v in o.data.vertices])
+    bottom=cloud[(cloud[:,2]>.02)&(cloud[:,2]<.08)]
+    neck=cloud[(cloud[:,2]>.27)&(cloud[:,2]<.31)]
+    bottom_width=float(np.clip(np.ptp(np.quantile(bottom[:,0],[.02,.98])),.66,.78))
+    neck_width=float(np.clip(np.ptp(np.quantile(neck[:,0],[.02,.98])),.50,.64))
+    guide['support_fit']={'bottom_samples':len(bottom),'neck_samples':len(neck),
+        'bottom_width_m':bottom_width,'neck_width_m':neck_width,'top_height_m':.32,
+        'fitting_choice':'The generated pedestal is faired to a symmetric closed manufactured support. The selected head/support junction is near image y=555 of its y=160..910 envelope.'}
+    vertices=[(x,.025+y,z) for width,depth,z in ((bottom_width,.36,.018),(neck_width,.28,.32))
+              for y in (-depth/2,depth/2) for x in (-width/2,width/2)]
+    faces=[(0,2,3,1),(4,5,7,6),(0,1,5,4),(2,6,7,3),(0,4,6,2),(1,3,7,5)]
+    cage('DesktopSupport',vertices,faces,paint,.004,parent=root)
+    panel('BaseShoe',(bottom_width-.015,.35,.018),(0,.025,.009),dark,.002,parent=root)
     lower=cloud[(cloud[:,2]>.36)&(cloud[:,2]<.42)]
     upper=cloud[(cloud[:,2]>.59)&(cloud[:,2]<.65)]
     measured=float((np.quantile(upper[:,1],.10)-np.quantile(lower[:,1],.10))/.23)
     slope=float(np.clip(measured,.35,.60))
-    low=-.045; high=low+slope*.33
+    low=-.045; high=low+slope*.27
     guide['display_face_fit']={'lower_samples':len(lower),'upper_samples':len(upper),
-        'guide_dy_dz':measured,'fitted_dy_dz':slope,'lower_deck_height_m':.30,
-        'screen_lower_height_m':.36,'screen_upper_height_m':.69}
-    profile=[(-.275,0),(.275,0),(.275,.69),(high,.69),(low,.36),(-.275,.30)]
-    vertices=[(x,y,z) for x in (-.55,.55) for y,z in profile]; n=len(profile)
-    faces=[tuple(reversed(range(n))),tuple(range(n,2*n))]
-    faces += [(i,(i+1)%n,(i+1)%n+n,i+n) for i in range(n)]
-    cage('ArmouredHousing',vertices,faces,paint,.006,parent=root)
-    screen=empty('ScreenPlane',(0,(low+high)/2-.012,.525),parent=root)
+        'guide_dy_dz':measured,'fitted_dy_dz':slope,'lower_deck_height_m':.36,
+        'screen_lower_height_m':.42,'screen_upper_height_m':.69}
+    for name,profile in [
+        ('ArmouredHousing',[(low,.42),(.275,.42),(.275,.69),(high,.69)]),
+        ('LowerDeckHousing',[(-.275,.31),(.275,.31),(.275,.42),(low,.42),(-.275,.36)]),
+    ]:
+        vertices=[(x,y,z) for x in (-.55,.55) for y,z in profile]; n=len(profile)
+        faces=[tuple(reversed(range(n))),tuple(range(n,2*n))]
+        faces += [(i,(i+1)%n,(i+1)%n+n,i+n) for i in range(n)]
+        cage(name,vertices,faces,paint,.006,parent=root)
+    screen=empty('ScreenPlane',(0,(low+high)/2-.012,.542),parent=root)
     screen.rotation_euler.x=-math.atan(slope)
     bezel=local(empty('Bezel'),screen,(0,0,0))
     for name,dims,pos in [
-        ('BezelLeft',(.075,.030,.344),(-.4825,-.020,0)),
-        ('BezelRight',(.075,.030,.344),(.4825,-.020,0)),
-        ('BezelTop',(.89,.030,.045),(0,-.020,.1495)),
-        ('BezelBottom',(.89,.030,.045),(0,-.020,-.1495)),
+        ('BezelLeft',(.075,.030,.300),(-.4825,-.020,0)),
+        ('BezelRight',(.075,.030,.300),(.4825,-.020,0)),
+        ('BezelTop',(.89,.030,.030),(0,-.020,.135)),
+        ('BezelBottom',(.89,.030,.030),(0,-.020,-.135)),
     ]:local(panel(name,dims,(0,0,0),paint,.003),bezel,pos)
-    local(panel('ScreenGasket',(.894,.008,.258),(0,0,0),dark,.001),screen,(0,-.023,0))
+    local(panel('ScreenGasket',(.894,.008,.244),(0,0,0),dark,.001),screen,(0,-.023,0))
     local(panel('Display',(.874,.004,.238),(0,0,0),display,.001),screen,(0,-.029,0))
     bpy.context.view_layer.update()
     from mathutils import Vector
-    points=[screen.matrix_world@Vector((x,-.036,z)) for x in (-.4825,.4825) for z in (-.12,.12)]
+    points=[screen.matrix_world@Vector((x,-.036,z)) for x in (-.4825,.4825) for z in (-.105,.105)]
     axis=screen.matrix_world.to_3x3()@Vector((0,-1,0))
     rivets('BezelRivets',points,bare,axis=axis,radius=.004,parent=bezel)
     deck_length=math.hypot(low+.275,.06)-.014
-    control=panel('ControlPanel',(1.02,deck_length,.018),(0,(-.275+low)/2,.33),paint,.003,parent=root)
+    control=panel('ControlPanel',(1.02,deck_length,.018),(0,(-.275+low)/2,.39),paint,.003,parent=root)
     control.rotation_euler.x=math.atan(.06/(low+.275))
     keys=local(empty('Keys'),control,(0,0,0)); toggles=local(empty('Toggles'),control,(0,0,0))
-    for row,y in enumerate((-.065,-.010,.045)):
-        for col in range(8):
-            local(panel(f'Key_{row}_{col}',(.073,.042,.014),(0,0,0),dark,.002),keys,(-.425+col*.12,y,.016))
-    for i,x in enumerate((-.28,0,.28)):
-        local(cylinder(f'ToggleSocket_{i}',.012,.008,(0,0,0),dark,sides=12),toggles,(x,.088,.014))
-        local(cylinder(f'Toggle_{i}',.004,.052,(0,0,0),bare,sides=12),toggles,(x,.088,.041),(math.radians(-18),0,0))
-    rivets('HousingRivets',[(x,-.2753,z) for x in (-.48,.48) for z in (.055,.24)],bare,radius=.004,parent=root)
-    panel('BaseShoe',(1.05,.50,.018),(0,0,.009),dark,.002,parent=root)
+    for row,y in enumerate((-.0675,-.0225,.0225,.0675)):
+        for col in range(6):
+            local(panel(f'Key_{row}_{col}',(.073,.034,.014),(0,0,0),dark,.002),keys,(-.425+col*.105,y,.016))
+    for i,y in enumerate((-.060,0,.060)):
+        local(cylinder(f'ToggleSocket_{i}',.012,.008,(0,0,0),dark,sides=12),toggles,(.34,y,.014))
+        local(cylinder(f'Toggle_{i}',.004,.052,(0,0,0),bare,sides=12),toggles,(.34,y,.041),(math.radians(-18),0,0))
+    rivets('HousingRivets',[(x,-.2753,.335) for x in (-.48,.48)],bare,radius=.004,parent=root)
 
 
 if __name__=='__main__':
