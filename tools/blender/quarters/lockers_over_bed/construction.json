@@ -1,0 +1,187 @@
+{
+  "bounds_gltf": [
+    [
+      -1.35,
+      0,
+      -0.2
+    ],
+    [
+      1.35,
+      0.6,
+      0.2
+    ]
+  ],
+  "required_nodes": [
+    "OverBedLockers",
+    "Carcass",
+    "Door_0",
+    "Door_1",
+    "Door_2",
+    "Module_0",
+    "Module_1",
+    "Module_2"
+  ],
+  "parents": {
+    "Carcass": "OverBedLockers",
+    "Door_0": "Module_0",
+    "Door_1": "Module_1",
+    "Door_2": "Module_2"
+  },
+  "pivots_gltf": {
+    "OverBedLockers": [
+      0,
+      0,
+      0
+    ],
+    "Door_0": [
+      -1.332,
+      0.020999999999999998,
+      0.203
+    ],
+    "Door_1": [
+      -0.43200000000000005,
+      0.020999999999999998,
+      0.203
+    ],
+    "Door_2": [
+      0.46799999999999997,
+      0.020999999999999998,
+      0.203
+    ]
+  },
+  "materials": [
+    "PaintedSteel",
+    "BareSteel",
+    "DarkSteel"
+  ],
+  "visible_details": [
+    "Latch_0",
+    "Latch_1",
+    "DoorRivets_0"
+  ],
+  "hero_camera_native": [
+    -2.8,
+    -4.0,
+    2.1
+  ],
+  "hero_camera_gltf": [
+    -2.8,
+    2.1,
+    4
+  ],
+  "hero_target_native": [
+    0,
+    0,
+    0.3
+  ],
+  "triangle_limit": 15000,
+  "room_mount_height_m": 1.9,
+  "fit_notes": "Three equal bays fair the approved generated cabinet silhouette. Manufactured closed sheet cages replace scan noise. Door leaves have their own barrel-axis origins; latches and rivet heads are separate geometry. Wall units retain a local floor-centred origin and are mounted at room y=1.9.",
+  "guide": {
+    "source_bounds_native": [
+      [
+        -0.9994111657142639,
+        -0.2930240333080292,
+        -0.6198765635490417
+      ],
+      [
+        0.9928950071334839,
+        0.3425810933113098,
+        0.6118080615997314
+      ]
+    ],
+    "carcass_fitting_bounds_native": [
+      [
+        -0.9994111657142639,
+        -0.2930240333080292,
+        -0.6198765635490417
+      ],
+      [
+        0.9928950071334839,
+        0.3425810933113098,
+        0.6118080615997314
+      ]
+    ],
+    "fitted_size_whd": [
+      2.7,
+      0.6,
+      0.4
+    ],
+    "sections": [
+      {
+        "height_m": 0.06,
+        "vertices": 3303,
+        "xy_min": [
+          -1.3469361066818237,
+          -0.17785638570785522
+        ],
+        "xy_max": [
+          1.347002387046814,
+          0.19998058676719666
+        ]
+      },
+      {
+        "height_m": 0.15,
+        "vertices": 3298,
+        "xy_min": [
+          -1.3466999530792236,
+          -0.17234328389167786
+        ],
+        "xy_max": [
+          1.3470121622085571,
+          0.19989636540412903
+        ]
+      },
+      {
+        "height_m": 0.3,
+        "vertices": 3539,
+        "xy_min": [
+          -1.3470796346664429,
+          -0.1998262256383896
+        ],
+        "xy_max": [
+          1.3472105264663696,
+          0.19988562166690826
+        ]
+      },
+      {
+        "height_m": 0.44999999999999996,
+        "vertices": 3298,
+        "xy_min": [
+          -1.3468084335327148,
+          -0.17256511747837067
+        ],
+        "xy_max": [
+          1.3470790386199951,
+          0.19982491433620453
+        ]
+      },
+      {
+        "height_m": 0.54,
+        "vertices": 3355,
+        "xy_min": [
+          -1.3466607332229614,
+          -0.18071582913398743
+        ],
+        "xy_max": [
+          1.3467941284179688,
+          0.1997920423746109
+        ]
+      }
+    ],
+    "mesh_triangles": 442492,
+    "bay_fitting": {
+      "front_samples": 45723,
+      "front_x_quantiles_m": [
+        -1.349448800086975,
+        -0.48595231771469116,
+        0.46919867396354675,
+        1.349863052368164
+      ],
+      "fitted_equal_bays_m": 0.9,
+      "constraint": "Three equal manufactured bays follow the approved image; raw scan seam noise is faired."
+    },
+    "source": "tmp/props/lockers_over_bed/guide.glb"
+  },
+  "id": "lockers_over_bed"
+}

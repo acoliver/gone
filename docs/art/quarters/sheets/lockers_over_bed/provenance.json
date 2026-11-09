@@ -1,0 +1,29 @@
+{
+  "command": "env HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 /Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-z-image-turbo --model filipstrand/Z-Image-Turbo-mflux-4bit --quantize 4 --steps 8 --seed 304 --width 1024 --height 1024 --output /Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/tmp/props/contacts/lockers_over_bed/hero-s304.png --prompt 'Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish. A modular horizontal bank of three overhead wall lockers for a military starship cabin, total width 2.7 metres, height 0.60 metres and depth 0.40 metres. Three identical joined grey-green satin painted steel bays, each with a separate rectangular hinged front door, recessed bare steel latch and small exposed barrel hinges. Small round rivets along the fixed surrounds and panel edges. Solid backs and bases, plain broad door panels, fresh even paint. Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.'",
+  "prompt": "Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish. A modular horizontal bank of three overhead wall lockers for a military starship cabin, total width 2.7 metres, height 0.60 metres and depth 0.40 metres. Three identical joined grey-green satin painted steel bays, each with a separate rectangular hinged front door, recessed bare steel latch and small exposed barrel hinges. Small round rivets along the fixed surrounds and panel edges. Solid backs and bases, plain broad door panels, fresh even paint. Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.",
+  "seed": 304,
+  "model_id": "filipstrand/Z-Image-Turbo-mflux-4bit",
+  "sha256": "fc3237821cd7a3f2315b68370a8a79df9fe2ca24e3d9e7875983c7433c289ef9",
+  "elapsed_seconds": 78.359,
+  "selection": {
+    "chosen_seed": 304,
+    "rating": 8,
+    "approved": true,
+    "observations": "All six panels are visible. Panel A shows the approved room context. Panel B shows a tall, single-bay locker with vents, which does not match the brief's horizontal 3-bay requirement. Panel C1 (seed 301) shows a corner unit with open lower bays and closed upper bays. Panel C2 (seed 302) shows a horizontal unit with closed upper bays and open lower bays. Panel C3 (seed 303) shows a horizontal 3-bay unit with full-height doors. Panel C4 (seed 304) shows a horizontal 3-bay unit with full-height doors, similar to C3 but with a slightly different perspective and latch style.",
+    "defects": [
+      "Seed 301 and 302 have open lower bays, which contradicts the brief for a solid bank of lockers.",
+      "Seed 303 and 304 have full-height doors, whereas the brief specifies overhead lockers (implying a lower height relative to width, though 'overhead' can be interpreted as the location).",
+      "The latches in C3 and C4 appear to be simple pull handles rather than the specified 'recessed bare steel latch'.",
+      "Hinges are not clearly visible as 'exposed barrel hinges' in any candidate."
+    ],
+    "fitting_landmarks": {
+      "form": "Horizontal bank of three joined bays",
+      "doors": "Three separate rectangular hinged front doors, full height of the unit",
+      "latches": "Small exposed handles/latches on the left side of each door",
+      "hinges": "Visible on the right side of each door",
+      "finish": "Grey-green satin painted steel",
+      "details": "Rivets visible along the fixed surrounds and panel edges"
+    }
+  },
+  "inputs_policy": "Single approved hero; no independently hallucinated side/back views."
+}

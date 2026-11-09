@@ -1263,6 +1263,7 @@ Verification reads the exported GLB through trimesh. It checks the layout envelo
 | dining_chair | 263 | 181.26 | 3,780 | Pass | 8/10 | Accepted fit | The seat pad in image-right appears slightly thicker or more pronounced than in image-left, though this may be due to lighting and angle.; The rivet heads on the seat frame are less visible in image-right compared to image-left, possibly due to the viewing angle. |
 | bedside | 271 | 344.81 | 3,430 | Pass | 7/10 | Accepted fit | The base geometry is inconsistent between the design and the fit (flared feet vs. solid plinth).; The drawer hardware is not identical; the fit version lacks the protruding handles seen in the design.; The lamp accessory does not match the design's specific shade shape.; Reviewer marked not ready to show. |
 | media_cabinet | 342 | 176.76 | 4,752 | Pass | 7/10 | Accepted fit | Hardware mismatch: The design specifies external latches, but the fit renders recessed cutouts.; Style inconsistency: The fit introduces rivets that are not present in the clean design render, creating a discrepancy in the intended surface finish.; Reviewer marked not ready to show. |
+| lockers_over_bed | 304 | 282.94 | 4,536 | Pass | 8/10 | Accepted fit | In the fit (B), the top surface appears slightly lighter in tone than the front face, which may be a lighting artifact rather than a material defect, but it breaks the uniformity seen in A.; The rivets on the doors in B appear slightly less defined than in A, potentially due to the viewing distance or resolution. |
 
 ### Rebuilding and checking
 
@@ -1286,6 +1287,8 @@ bedside: isolated 4/10; paired 7/10; reference table in that comparison 9/10.
 
 media_cabinet: paired 7/10; reference table in that comparison 9/10.
 
+lockers_over_bed: paired 8/10; reference table in that comparison 9/10.
+
 ### Fitting corrections
 
 **desk:** The earlier builder used an open tube end frame against a solid end panel in seed 227. Raised edge returns and the inset kick plate also differed in the captures.
@@ -1294,6 +1297,8 @@ media_cabinet: paired 7/10; reference table in that comparison 9/10.
 
 **media_cabinet:** All earlier cabinet candidates included an extra monitor, which contaminated the guide bounds and could not be cleanly cropped away. The replacement source requires an empty top.
 
-Not yet accepted: console, view_screen, lockers_over_bed.
+**lockers_over_bed:** The previous queue had not completed hero generation, selection or a Hunyuan guide.
+
+Not yet accepted: console, view_screen.
 
 Batch sheets: [`sheets/batch1-heroes.png`](sheets/batch1-heroes.png) and [`sheets/batch1-fitted-turntables.png`](sheets/batch1-fitted-turntables.png). Unaccepted fits are labelled as unfinished work. Per-prop `fit-review.json` retains the reviewer observations.
