@@ -11,10 +11,10 @@ static func pose(camera: Camera3D, view: String) -> void:
 		point = Vector3(plan.camera.position[0], plan.camera.position[1], plan.camera.position[2])
 		target = Vector3(plan.camera.look_at[0], plan.camera.look_at[1], plan.camera.look_at[2])
 	else:
-		point = Vector3(4, 3.0, 1.0)
-		target = Vector3(4, 0.5, 4.5)
+		point = Vector3(0.75, 2.2, 0.10)
+		target = Vector3(4.0, 1.15, 3.6)
 	camera.keep_aspect = Camera3D.KEEP_WIDTH
-	camera.fov = float(plan.camera.horizontal_fov_deg) if view == "doorway" else 110.0
+	camera.fov = float(plan.camera.horizontal_fov_deg) if view == "doorway" else 120.0
 	camera.global_position = QuartersLayout.to_world(point)
 	camera.look_at(QuartersLayout.to_world(target))
 
