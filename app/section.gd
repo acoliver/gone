@@ -7,7 +7,7 @@ static func build(layout: ShipLayout, spec: ShipLayout.SectionSpec) -> ShipSecti
 	assert(spec.number() != 41, "section 41 keeps its opening presentation")
 	var section := ShipSection.new()
 	section.name = String(spec.id())
-	var mask := Lighting.space_mask(layout, spec.id())
+	var mask := Lighting.architectural_mask(layout, spec.id())
 	for solid: ShipGeometry.SolidSpec in ShipGeometry.section_solids(layout, spec):
 		var regular := solid.material_role == &"door"
 		var piece := SlidingDoorModel.leaf(layout.door(solid.surface_owner), mask, layout) if regular else surface(solid, mask, layout)

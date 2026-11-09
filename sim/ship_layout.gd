@@ -1011,7 +1011,7 @@ static func _authored_records() -> Array[Spec]:
 			if (d == 14 and number == 41) or (d == 16 and number == 42):
 				if d == 14: services.switch_frames = [authored_hall_switch_frame()]
 				services.regular_strips = true
-				services.light_role = ArchitecturalLightRole.HALL_FILL if d == 14 else ArchitecturalLightRole.LOCAL
+				services.light_role = ArchitecturalLightRole.HALL_FILL
 			specs.append(SectionSpec.new(id, d, number, AABB(Vector3(start, y, -1.5), Vector3(24, CLEAR_HEIGHT, 3)), openings, side_ids, &"opening" if number == 41 else &"emergency", built, services))
 		for n: int in range(2):
 			var id := connector_id(d, n)
