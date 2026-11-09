@@ -8,7 +8,7 @@ def linear_keys(obj):
             key.interpolation = 'LINEAR'
 
 
-def tune(obj, mod, config, kind, pressure=.01):
+def tune(obj, mod, config, kind, pressure=.01, final_pressure=.65):
     settings = mod.settings
     bending = {'seats': 1.20, 'backs': 1.20, 'throw': .12}[kind]
     if kind == 'seats':
@@ -36,7 +36,7 @@ def tune(obj, mod, config, kind, pressure=.01):
         # the prescribed inward load on the cloth, not an animated collider.
         settings.use_pressure_volume = True
         settings.target_volume = 0.
-        for frame, force in [(1, 0.), (40, -pressure)]:
+        for frame, force in [(1, 0.), (40, -pressure), (180, -final_pressure)]:
             settings.uniform_pressure_force = force
             settings.keyframe_insert(data_path='uniform_pressure_force', frame=frame)
     linear_keys(obj)
@@ -44,8 +44,8 @@ def tune(obj, mod, config, kind, pressure=.01):
     config.update(pass9_bending=bending, structural_damping=damping, bending_damping=.3,
                   late_air_multiplier=late_air, late_air_ramp_frames=[300, 600], frames=2400)
     if kind == 'backs':
-        config.update(volume_loss='zero-target uniform inward pressure', vacuum_kpa=pressure,
-                      vacuum_ramp_frames=[1, 40], automatic_volume_term=False)
+        config.update(volume_loss='zero-target uniform inward pressure', initial_vacuum_kpa=pressure,
+                      vacuum_kpa=final_pressure, vacuum_ramp_frames=[1, 40, 180], automatic_volume_term=False)
     bpy.context.scene.frame_set(1)
     bpy.context.view_layer.update()
     return config

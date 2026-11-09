@@ -79,6 +79,14 @@ class Pass9Tests(unittest.TestCase):
         self.assertTrue(pins)
         self.assertTrue(all(.60 <= (obj.matrix_world@obj.data.vertices[i].co).z <= .62 for i in pins))
 
+    def test_throw_hold_is_confined_to_the_outer_rear_arm_corner(self):
+        from fabric_mesh import material, new_object
+        from sofa_pass9 import throw_pins
+        obj = new_object('Throw corner', [(1.11, .13, .755), (1.11, .13, .775),
+                                         (1.11, -.30, .755), (1.02, .13, .755)], [],
+                         material('Wool', (.5, .4, .3)))
+        self.assertEqual(throw_pins(obj), {0: 1.})
+
     def test_back_vacuum_has_no_automatic_volume_spring(self):
         from fabric_mesh import material, new_object
         from sofa_pass8_solver import cloth
@@ -92,6 +100,8 @@ class Pass9Tests(unittest.TestCase):
         self.assertAlmostEqual(mod.settings.bending_damping, .3)
         bpy.context.scene.frame_set(40)
         self.assertAlmostEqual(mod.settings.uniform_pressure_force, -.01)
+        bpy.context.scene.frame_set(180)
+        self.assertAlmostEqual(mod.settings.uniform_pressure_force, -.65)
         self.assertEqual(mod.point_cache.frame_end, 2400)
 
 

@@ -112,16 +112,21 @@ def finish_parts(joint, states, out, record, back=False):
     checkpoint(out, record, 'cushions.blend' if back else 'seats.blend')
 
 
+def throw_pins(obj):
+    p = points(obj)
+    pins = {i: 1. for i in range(len(p)) if p[i, 1] >= .120 and p[i, 0] >= 1.100 and .745 <= p[i, 2] <= .765}
+    if not pins:
+        raise ValueError('Throw outer rear corner has no retained stitches')
+    return pins
+
+
 def throw(out, record):
     bpy.context.scene.frame_set(1)
     contact_settings = install_contacts()
     obj = bpy.data.objects['Throw']
-    reference, density, splits, pins = prepare_throw(obj)
-    p = points(obj)
-    pins = {i: 1. for i in range(len(p)) if p[i, 1] >= .120 and p[i, 0] >= 1.100 and .765 <= p[i, 2] <= .790}
-    if not pins:
-        raise ValueError('Throw outer rear corner has no retained stitches')
-    splits.update(pins=len(pins), pin_policy='outer rear arm corner: x>=1.100 m, y>=0.120 m, z=0.765..0.790 m')
+    reference, density, splits, _ = prepare_throw(obj)
+    pins = throw_pins(obj)
+    splits.update(pins=len(pins), pin_policy='outer rear arm corner: x>=1.100 m, y>=0.120 m, z=0.745..0.765 m')
     assert_surface_clear(obj)
     assert_collision_clear(obj)
     initial_contacts(obj, contacts())

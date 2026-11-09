@@ -235,5 +235,6 @@ if __name__ == '__main__':
     p.add_argument('--source', type=Path, required=True)
     p.add_argument('--out', type=Path, default=ROOT/'tmp/age/pass6')
     p.add_argument('--library', type=Path, default=ROOT/'tmp/age/pass4/fragments8/fragment-library.blend')
+    p.add_argument('--visible-deposits', action='store_true')
     a = p.parse_args(sys.argv[sys.argv.index('--')+1:])
-    deposit(a.source, a.out, a.library)
+    deposit(a.source, a.out, a.library, visible_deposits=a.visible_deposits)
