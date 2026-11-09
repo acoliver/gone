@@ -13,10 +13,9 @@ def save_lip_classes(obj, path):
     bm.from_mesh(obj.data)
     layer = bm.verts.layers.deform.active
     panel = obj.vertex_groups['Panel tear'].index
-    lip = obj.vertex_groups['Lip shrink'].index
     points, classes = [], []
     for edge in bm.edges:
-        if not edge.is_boundary or max(v[layer].get(lip, 0.) for v in edge.verts) < .5:
+        if not edge.is_boundary:
             continue
         points.append(tuple(obj.matrix_world@((edge.verts[0].co+edge.verts[1].co)/2)))
         classes.append('tear' if max(v[layer].get(panel, 0.) for v in edge.verts) >= .5 else 'seam')

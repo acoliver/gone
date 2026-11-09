@@ -283,6 +283,45 @@ Generated-face inspection found no apparent hardware, perspective objects or rep
 
 The fitted source is `tools/blender/quarters/sofa/sofa-working.blend`, and the game asset is `assets/props/quarters/sofa.glb`. The cushions and throw are baked Blender cloth meshes with no live modifiers. Authoring uses Blender Z up and front -Y. Export uses `export_yup=True`, giving the game +Y up and front +Z.
 
+### Pass 8: rejected candidate, shipped sofa unchanged
+
+Pass 8 replaces seat partitions and back subdivision carriers with clean
+level-1 cloth. Seats solve jointly with 55–75% welt release. Backs solve
+jointly with rear ties at 0.60–0.62 m and residue inside the lower return.
+A controlled comparison found that the animated back envelope stretched
+the pinned covers, so the final back solve uses static residue instead.
+The actual fitted throw is a back collider; the throw then solves with one
+67.500 mm rear-corner bridge and 351 cap pins. Every working triangle has
+at least 5 mm altitude, and no self-collision exclusions are used.
+
+The early controls completed within 21 minutes of the first inspection:
+centre-back frame-20 sharpness 3.440%, Frame-only 0.932%, free-fall speed
+0.300000 m/s, cantilever co-scaling error 0 mm, area within 0.174% of fitted,
+maximum sampled substep motion 0.909 mm, and zero initial SAT crossings.
+The measured drag relation is `2.4*m*g/air` for the RNA setting at 24 fps
+and half-speed integration. Production targets 0.3 m/s, with 3 mm contact
+distances and quality 20 for covers, 30 for the throw.
+
+The final preview passes 11 of 22 gates. G30 passes with zero changed
+contacts and an exact rigid baseline. Fixed geometry bytes, pivots,
+byte-identical re-export and all seven fringe-node checks pass. All solves
+reach 900 frames without satisfying the three-check stillness rule. The
+left seat retains 32.708% centre height and 31.697% of fitted boxing pixels
+in the hero view. Back height retention is 90.464/86.450/87.603%, above
+40–65%. The throw remains one piece at the arm, but stops 118.619 mm above
+the floor with only one qualifying fold. Contours, left-back/throw
+faceting, visible centre residue planarity and seat boundary error also
+fail. No shipped GLB, texture or baked source was replaced.
+
+The [aging README](../../../tools/blender/quarters_aging/README.md) records
+all gate values against their thresholds, the G3/G7/G12/G19/G30 scope
+decisions, failed controls and measured stage runtimes. The final exported
+candidate and reports remain in `tmp/age/pass8/`. Captures use the pass-7
+cameras: `sofa-before-after.png`, `sofa-turntable.png` and
+`sofa-closeup.png` in that directory. The closeup is at 0.6 m. Software
+checks pass 35 Blender tests and five Python camera-gate tests. The captures
+have no visual sign-off. Review skipped per Andrew 2026-10-09.
+
 ### Pass 7: partitioned aging controls
 
 Pass 7 uses invisible seam and arm partitions, fitted back-contact helpers for seat solves, then each predecessor's final reduced surface. None of the helpers exports. The centre-settled/right-fitted control reports zero initial SAT crossings. The final six-cover solve starts from the fitted source; controls and checkpoints stay under `tmp/age/pass7/`.

@@ -173,6 +173,9 @@ def measure(args):
     record = json.loads((args.out/'simulation.json').read_text())
     result['invariants']['all_cloth_settled'] = all(record[k+'_simulation']['settled'] for k in ['seats', 'backs']) and record['throw']['simulation']['settled']
     result['invariants']['no_self_collision_exclusions'] = all(not record[k+'_setup']['mesh_quality']['self_collision_exclusions'] for k in ['seats', 'backs'])
+    from verify import geometry_buffers
+    exported = geometry_buffers(args.input)
+    result['invariants']['exported_fringe_nodes'] = all(name+'_Fringe' in exported for name in [*ORDER, 'Throw'])
     result['pass'] = all(g['pass'] for g in result['gates'].values()) and all(result['invariants'].values())
     result['publication_allowed'] = result['pass']
     return result

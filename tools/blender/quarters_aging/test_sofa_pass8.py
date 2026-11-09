@@ -78,6 +78,20 @@ class Pass8Tests(unittest.TestCase):
         self.assertTrue(all(.60 <= original[i, 2] <= .62 for i in pins))
         self.assertTrue(mesh_quality(obj)['pass'])
 
+    def test_seam_classification_keeps_unweighted_boundary_edges(self):
+        from sofa_pass8_finish import save_lip_classes
+        obj = new_object('Split cover', [(0, 0, 0), (.02, 0, 0), (.02, .02, 0), (0, .02, 0)],
+                         [(0, 1, 2, 3)], material('Cloth', (.3, .3, .3)))
+        panel = obj.vertex_groups.new(name='Panel tear')
+        panel.add([0, 1], 1., 'REPLACE')
+        obj.vertex_groups.new(name='Lip shrink')
+        path = ROOT/'tmp/age/pass8/test-lip-classes.npz'
+        save_lip_classes(obj, path)
+        data = np.load(path)
+        self.assertEqual(len(data['points']), 4)
+        self.assertIn('seam', data['classes'])
+        self.assertIn('tear', data['classes'])
+
     def test_right_back_residue_starts_inside_the_lower_return(self):
         from sofa_full_decay import initialize
         from sofa_pass8 import prepare
