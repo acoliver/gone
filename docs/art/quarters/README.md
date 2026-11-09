@@ -283,6 +283,45 @@ Generated-face inspection found no apparent hardware, perspective objects or rep
 
 The fitted source is `tools/blender/quarters/sofa/sofa-working.blend`, and the game asset is `assets/props/quarters/sofa.glb`. The cushions and throw are baked Blender cloth meshes with no live modifiers. Authoring uses Blender Z up and front -Y. Export uses `export_yup=True`, giving the game +Y up and front +Z.
 
+### Pass 10: rejected, 18 of 22 gates pass
+
+Pass 10 continues the pass-9 solve (`bdd5171`). G5 lip lift, G7 residue
+planarity and G30 contact now pass. Every collapse gate G12–G19 remains
+passing. G1 still fails on the right back (9.427%, against ≤8%); G3, G4
+and G6 still fail on tear runs, width variation and contour dimension.
+The throw has no enclosed diagnostic opening qualifying for those gates.
+
+Dense/reduced comparisons identify reduction-driven cover faceting, plus
+sharp folds already present in the left back and throw. Bounded fairing
+retains open boundaries and
+stitches. A local repair restores the unpinched prepared throw fold around
+the retained corner, rather than excluding its collision pairs.
+
+The dark tear interiors combined a dark placeholder colour with a
+surrounding-cover AO bake. Provisional foam is now tan-brown with an 8 mm
+residue-only cavity bake. Seat residue has additional crust relief;
+non-floor crumbs use a 4 mm median and contact-fitted fine powder is added
+inside and below openings. Packed alpha is explicitly unpacked, edited,
+saved and repacked so exported tears use the edited payload.
+
+The candidate does not replace `sofa_aged.glb`, shipped textures, or the
+fitted Blender source. More aggressive back-collapse trials failed the
+unchanged area controls and were rejected. Broad seat slabs, pillow-like
+backs and uneven apparent sag remain visual concerns. Numerical collapse
+passes do not establish that those visual defects are fixed.
+
+All gate values and root-cause controls are in the Sofa pass-10 section of
+[the aging README](../../../tools/blender/quarters_aging/README.md).
+Matching pass-9 camera captures are `tmp/age/pass10/sofa-before-after.png`,
+`tmp/age/pass10/sofa-turntable.png` and `tmp/age/pass10/sofa-closeup.png`.
+The closeup is at 0.6 m. The preview GLB and per-opening measurements stay
+in that scratch directory. Software verification passes 34 Blender tests
+and 18 Python tests; it does not substitute for art acceptance.
+Image-comparer rates pass 9 at 4/10 and pass 10 at 5/10 within its matching
+comparison. It finds clearer tan residue and more throw wear, but still
+rejects the coherent cushion forms, abrupt tears and sparse angular debris.
+Fine powder is not visually established.
+
 ### Pass 8: rejected candidate, shipped sofa unchanged
 
 Pass 8 replaces seat partitions and back subdivision carriers with clean
