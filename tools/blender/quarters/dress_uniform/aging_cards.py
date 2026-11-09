@@ -257,6 +257,10 @@ def finish_cards(out, record):
     record['rim_detail_clearance'] = seat_details(rim_proxies[0], record['bindings'])
     objects = [o for o in bpy.context.scene.objects if o.type == 'MESH' and o.get('aged_export') and o not in sheets]+rim_proxies
     objects.append(bpy.data.objects['AgingFloorCollider'])
+    if 'pass10' in record:
+        from polish_pass10 import add_surviving_yarns
+        yarns, record['pass10']['yarns'] = add_surviving_yarns(record, rim_proxies[0], objects)
+        objects.append(yarns)
     for number, name in enumerate(categories):
         if not categories[name]:
             record['fringe'][name] = {'cards': 0, 'authored_coverage': 0.}
@@ -284,6 +288,13 @@ def finish_cards(out, record):
         bpy.data.objects.remove(proxy, do_unlink=True)
     objects.extend(sheets)
     record['opacity'] = report
+    if 'stress_wear' in report:
+        worn_area = report['stress_wear']['lost_area_m2']
+        record['heap']['stress_wear_area_m2'] = worn_area
+        record['heap']['lost_area_m2'] += worn_area
+        expected = record['heap']['lost_area_m2']*.0035/record['heap']['packing_fraction']
+        record['heap']['expected_volume_m3'] = expected
+        record['heap']['ratio'] = record['heap']['measured_volume_m3']/expected
     from common import surface_tree
     from card_contacts import CardContacts
     mound = bpy.data.objects['FibreDust']

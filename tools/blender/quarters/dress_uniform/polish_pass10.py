@@ -96,7 +96,7 @@ def prepare(base, out):
     protected = [v.index for v in body.data.vertices if abs(v.co.x) < .035 or v.co.z > -.26 or
                  any(g.group == patch and g.weight > .1 for g in v.groups)]
     keep.add(protected, 1., 'REPLACE')
-    low, reduction = decimate(body, 10450, protect=.006, keep_factor=1000)
+    low, reduction = decimate(body, 10200, protect=.006, keep_factor=1000)
     reduction['seated_support_protected_vertices'] = len(protected)
     body['aged_export'] = False
     body.hide_render = True
@@ -118,13 +118,12 @@ def prepare(base, out):
     save_checkpoint(out, 'baked', record)
 
 
-def finish_details(record):
+def add_surviving_yarns(record, sheet, blockers):
     from card_contacts import CardContacts
     from common import surface_tree
     from fabric_mesh import material, new_object
-    objects = [o for o in bpy.context.scene.objects if o.type == 'MESH' and o.get('aged_export')]
-    contacts = CardContacts(objects)
-    tree = surface_tree(bpy.data.objects['TunicBody'])
+    contacts = CardContacts(blockers)
+    tree = surface_tree(sheet)
     vertices, faces = [], []
     accepted = []
     view = np.array([.3, -.9, .22])
@@ -132,16 +131,23 @@ def finish_details(record):
     for number, roots in enumerate(record['pass10']['bridge_roots']):
         anchors = []
         for root in roots:
-            hit, _, _, _ = tree.ray_cast(Vector(np.asarray(root)+view*.12), Vector(-view), .24)
+            hit, normal, _, _ = tree.ray_cast(Vector(np.asarray(root)+view*.12), Vector(-view), .24)
             if hit is not None:
-                anchors.append(np.asarray(hit)+view*.0008)
+                normal = np.asarray(normal)
+                if normal@view < 0:
+                    normal = -normal
+                anchors.append(np.asarray(hit)+normal*.001)
         if len(anchors) != 2:
             continue
         a, b = anchors
-        t = np.linspace(0, 1, 9)
+        t = np.linspace(0, 1, 17)
         path = a[None]*(1-t[:, None])+b[None]*t[:, None]
         path[:, 2] -= (.0035+number*.00035)*np.sin(np.pi*t)
         path += view[None]*.006*np.sin(np.pi*t[:, None])
+        curl_axis = np.cross(b-a, view)
+        curl_axis /= np.linalg.norm(curl_axis)
+        curl = .0015*np.sin(t*np.pi*(8+2*(number % 2))+number*.9)*np.sin(np.pi*t)
+        path += curl[:, None]*curl_axis
         tangent = np.gradient(path, axis=0)
         sideways = np.cross(tangent, view)
         sideways /= np.linalg.norm(sideways, axis=1)[:, None]
@@ -158,13 +164,21 @@ def finish_details(record):
         for quad in quads:
             contacts.add(quad)
         accepted.append(number)
-    mat = material('Torn surviving wool yarn', (.064, .079, .108))
+        if len(accepted) == 3:
+            break
+    mat = material('WoolFringeSurvivingYarn', (.064, .079, .108))
     mat.use_backface_culling = False
     shader = mat.node_tree.nodes['Principled BSDF']
     shader.inputs['Roughness'].default_value = .97
     shader.inputs['Specular IOR Level'].default_value = .12
     threads = new_object('ArmholeSurvivingYarns', vertices, faces, mat)
     threads['aged_export'] = True
+    return threads, dict(surviving_yarns=len(accepted), attempted_yarns=len(record['pass10']['bridge_roots']),
+                         accepted_roots=accepted, yarn_width_m=[.00095, .00125], collision_tested=True,
+                         placement='visible wool anchors before fringe placement')
+
+
+def finish_details(record):
     fibre = bpy.data.objects['HeapFibres']
     light_fibres = fibre.data.materials[0].copy()
     light_fibres.name = 'Loose pale wool fibres'
@@ -173,9 +187,7 @@ def finish_details(record):
         light_fibres.node_tree.links.remove(link)
     shader.inputs['Base Color'].default_value = (.39, .35, .29, 1)
     fibre.data.materials[0] = light_fibres
-    return dict(surviving_yarns=len(accepted), attempted_yarns=len(record['pass10']['bridge_roots']),
-                accepted_roots=accepted, yarn_width_m=[.00095, .00125], collision_tested=True,
-                dust_fibres_albedo_linear=[.39, .35, .29])
+    return dict(record['pass10']['yarns'], dust_fibres_albedo_linear=[.39, .35, .29])
 
 
 if __name__ == '__main__':

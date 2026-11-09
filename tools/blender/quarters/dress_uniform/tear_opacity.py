@@ -50,6 +50,7 @@ def wool_opacity(obj, out, size=2048, seed=9521):
     pass10 = bool(obj.get('pass10_wear'))
     thinning = np.zeros((size, size), np.float32) if pass10 else None
     worn_texels = 0
+    worn_area = 0.
     obj.data.calc_loop_triangles()
     bake_uv = obj.data.uv_layers['BakeUV'].data
     pattern_uv = obj.data.uv_layers[0].data
@@ -92,7 +93,11 @@ def wool_opacity(obj, out, size=2048, seed=9521):
             from wear_pass10 import body_wear
             wear = body_wear(pattern)
             thinning[lo[1]:hi[1]+1, lo[0]:hi[0]+1][inside] = wear['thinning']
-            worn_texels += int(wear['hole'].sum())
+            count = int(wear['hole'].sum())
+            worn_texels += count
+            world = positions[ids]
+            area = np.linalg.norm(np.cross(world[1]-world[0], world[2]-world[0]))*.5
+            worn_area += count*area/(abs(determinant)*.5)
         # The sewn collar binding stays intact; only released lips break up.
         opaque |= ~allowed
         binding = retained_binding(p)
@@ -126,7 +131,8 @@ def wool_opacity(obj, out, size=2048, seed=9521):
         wear_image = image_from_array('TunicStressThinning', rgba, out.with_name('tunic_thinning.png'), True)
         wear_image.use_fake_user = True
         obj['pass10_thinning_image'] = wear_image.name
-        report['stress_wear'] = dict(through_texels=worn_texels, thinning_texels=int((thinning > .1).sum()),
+        report['stress_wear'] = dict(through_texels=worn_texels, lost_area_m2=float(worn_area),
+                                     thinning_texels=int((thinning > .1).sum()),
                                      holes='seven isolated fold/seam-aligned losses; no biological clusters')
     density = []
     for triangle in obj.data.loop_triangles:
