@@ -24,7 +24,7 @@ after = np.array([v.co[:] for v in body.data.vertices])
 front = pattern[:, 0] < .48
 np.testing.assert_array_equal(before[front & (before[:, 0] <= .18)], after[front & (before[:, 0] <= .18)])
 np.testing.assert_array_equal(before[front & (distance <= .008)], after[front & (distance <= .008)])
-np.testing.assert_array_equal(before[front & (pattern[:, 1] < .88)], after[front & (pattern[:, 1] < .88)])
+np.testing.assert_array_equal(before[front & (pattern[:, 1] <= .90)], after[front & (pattern[:, 1] <= .90)])
 free_front = front & (pattern[:, 1] > .93) & (before[:, 0] > .18) & (before[:, 0] < .235)
 free_front &= distance > .014
 assert free_front.any()
