@@ -210,18 +210,25 @@ def main():
     if args.assemble:
         remembered()
     else:
-        source = 'bed-soft-working.blend' if args.state == 'remembered' else 'bed-soft-aged.blend'
+        source = 'bed-soft-working.blend' if args.state == 'remembered' else 'bed-soft-aged-finished.blend'
         bpy.ops.wm.open_mainfile(filepath=str(HERE / source))
         if args.fit_contacts:
             shifts = json.loads(args.fit_contacts.read_text())
-            record_path = HERE / ('simulation.json' if args.state == 'remembered' else 'aging.json')
+            record_path = HERE / ('simulation.json' if args.state == 'remembered' else 'refinement.json')
             record = json.loads(record_path.read_text())
             for name, shift in shifts.items():
                 for vertex in bpy.data.objects[name].data.vertices:
                     vertex.co.z += shift['up_m']
                     vertex.co.y += shift['back_m']
-                record[name]['exact_face_contact_translation_m'] = shift['up_m']
-                record[name]['headboard_translation_y_m'] = shift['back_m']
+                if args.state == 'aged' and name == 'Quilt':
+                    for vertex in bpy.data.objects['Quilt_Fringe'].data.vertices:
+                        vertex.co.z += shift['up_m']
+                        vertex.co.y += shift['back_m']
+                if args.state == 'remembered':
+                    record[name]['exact_face_contact_translation_m'] = shift['up_m']
+                    record[name]['headboard_translation_y_m'] = shift['back_m']
+            if args.state == 'aged':
+                record['exact_face_contact_fit'] = shifts
             record_path.write_text(json.dumps(record, indent=2) + chr(10))
             save(HERE / source, record)
         export(args.output or ASSETS / ('bed_soft.glb' if args.state == 'remembered' else 'bed_soft_aged.glb'))
