@@ -7,7 +7,21 @@ from common import recalc
 from sofa_pass9_finish import points
 
 
-def fair_interior(obj, maximum=.006, iterations=10):
+
+def roughen_residue(obj, seed, amplitude=.0015):
+    from opacity_bake import value_noise
+    original = points(obj)
+    offset = np.column_stack([amplitude*value_noise(original, .030, seed+axis*31)
+                              for axis in range(3)])
+    inverse = obj.matrix_world.inverted()
+    for vertex, position in zip(obj.data.vertices, original+offset):
+        vertex.co = inverse@Vector(position)
+    recalc(obj)
+    return {'method': 'continuous three-axis crust detail before contact clearance',
+            'wavelength_m': .030, 'amplitude_m': amplitude, 'seed': seed,
+            'maximum_displacement_m': float(np.linalg.norm(offset, axis=1).max())}
+
+def fair_interior(obj, maximum=.006, iterations=10, nonshrinking=False):
     bm = bmesh.new()
     bm.from_mesh(obj.data)
     original = {v: v.co.copy() for v in bm.verts}
@@ -16,23 +30,26 @@ def fair_interior(obj, maximum=.006, iterations=10):
     hold = obj.vertex_groups.get('Retained stitches')
     if hold:
         fixed.update(v for v in bm.verts if v[layer].get(hold.index, 0.) > .5)
+    factors = (.5, -.53) if nonshrinking else (.45,)
     for _ in range(iterations):
-        updates = {}
-        for vertex in bm.verts:
-            if vertex in fixed or not vertex.link_edges:
-                continue
-            mean = sum((e.other_vert(vertex).co for e in vertex.link_edges), Vector())/len(vertex.link_edges)
-            target = vertex.co+.45*(mean-vertex.co)-original[vertex]
-            if target.length > maximum:
-                target *= maximum/target.length
-            updates[vertex] = original[vertex]+target
-        for vertex, position in updates.items():
-            vertex.co = position
+        for factor in factors:
+            updates = {}
+            for vertex in bm.verts:
+                if vertex in fixed or not vertex.link_edges:
+                    continue
+                mean = sum((e.other_vert(vertex).co for e in vertex.link_edges), Vector())/len(vertex.link_edges)
+                target = vertex.co+factor*(mean-vertex.co)-original[vertex]
+                if target.length > maximum:
+                    target *= maximum/target.length
+                updates[vertex] = original[vertex]+target
+            for vertex, position in updates.items():
+                vertex.co = position
     moved = max(((v.co-original[v]).length for v in bm.verts), default=0.)
     bm.to_mesh(obj.data)
     bm.free()
     recalc(obj)
     return {'method': 'bounded one-ring fairing; open boundaries and retained stitches fixed',
+            'nonshrinking': nonshrinking, 'factors': list(factors),
             'iterations': iterations, 'displacement_limit_m': maximum, 'maximum_displacement_m': moved}
 
 

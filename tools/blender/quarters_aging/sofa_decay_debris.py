@@ -81,7 +81,8 @@ def opening_sources(obj):
     return points
 
 
-def deposit(source, out, library, seed=9666, visible_deposits=False):
+def deposit(source, out, library, seed=9666, visible_deposits=False,
+            nonfloor_median=None, deck_target=20):
     bpy.ops.wm.open_mainfile(filepath=str(source))
     record = json.loads(bpy.context.scene['sofa_decay_record'])
     rng = np.random.default_rng(seed)
@@ -102,6 +103,8 @@ def deposit(source, out, library, seed=9666, visible_deposits=False):
         index = len(pieces)
         template, points, faces = templates[index % len(templates)]
         median = .011 if visible_deposits and not floor else .005
+        if not floor and nonfloor_median is not None:
+            median = nonfloor_median
         size = float(np.clip(rng.lognormal(np.log(median), .55), .002, .025))
         points = points*(size/np.ptp(points, axis=0).max())
         yaw = rng.uniform(0, 2*np.pi)
@@ -166,7 +169,7 @@ def deposit(source, out, library, seed=9666, visible_deposits=False):
             middle, outward = lips[int(rng.integers(len(lips)))]
             point = middle+outward*rng.uniform(.003, .030)
             deck_accepted += int(place((point.x, point.y), False, source_index))
-            if deck_accepted >= 20:
+            if deck_accepted >= deck_target:
                 break
         lip_accepted = 0
         for _ in range(2000):
@@ -219,7 +222,7 @@ def deposit(source, out, library, seed=9666, visible_deposits=False):
     join(debris, pieces[1:])
     record['debris'] = {'method': 'contact-free residue skin templates; opening-led deck deposits and front-lip drifts, sparse floor tails',
                          'visible_deposits': visible_deposits,
-                         'nonfloor_size_median_m': .011 if visible_deposits else .005,
+                         'nonfloor_size_median_m': nonfloor_median if nonfloor_median is not None else (.011 if visible_deposits else .005),
                          'support_objects': [o.name for o in support_objects],
                          'seed': seed, 'templates': [t[0] for t in templates], 'placements': placements,
                          'spills': spills, 'rejected_contacts': rejected,
