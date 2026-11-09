@@ -108,9 +108,12 @@ def spaced_cards(obj, mat, seed, wool, blockers, group_name=None):
             if obj.name.startswith('FallenHem_') and normal.z < 0:
                 normal.negate()
             width = min(float(rng.uniform(.008, .012)), .9*stride)
-            minimum_length = .003 if wool else .002
-            extent = float(np.clip(rng.lognormal(np.log(.007 if wool else .004), .4),
-                                   minimum_length, .018 if wool else .006))
+            torn_allowance = group_name == 'Seam allowance' and bool(obj.get('pass10_wear'))
+            minimum_length = .005 if torn_allowance else .003 if wool else .002
+            mean_length = .009 if torn_allowance else .007 if wool else .004
+            maximum_length = .014 if torn_allowance else .018 if wool else .006
+            extent = float(np.clip(rng.lognormal(np.log(mean_length), .4),
+                                   minimum_length, maximum_length))
             if group_name == 'Long wool fringe' and point.z > -.4:
                 extent = min(extent, .006)
             droop = float(rng.uniform(0, math.radians(35)))

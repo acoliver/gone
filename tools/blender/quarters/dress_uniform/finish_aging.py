@@ -29,6 +29,9 @@ def finish(out):
     record = finish_cards(out, record)
     from detail_clearance import seat_medal
     record['finished_medal_seating'] = seat_medal(body, record['bindings']['Medal'])
+    if 'pass10' in record:
+        from polish_pass10 import finish_details
+        record['pass10']['details'] = finish_details(record)
     for obj in bpy.context.scene.objects:
         for modifier in list(obj.modifiers):
             if modifier.type == 'COLLISION':

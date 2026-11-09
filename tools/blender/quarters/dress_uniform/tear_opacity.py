@@ -47,6 +47,9 @@ def wool_opacity(obj, out, size=2048, seed=9521):
     pixels = np.empty(size*size*4, np.float32)
     image.pixels.foreach_get(pixels)
     pixels = pixels.reshape(size, size, 4)
+    pass10 = bool(obj.get('pass10_wear'))
+    thinning = np.zeros((size, size), np.float32) if pass10 else None
+    worn_texels = 0
     obj.data.calc_loop_triangles()
     bake_uv = obj.data.uv_layers['BakeUV'].data
     pattern_uv = obj.data.uv_layers[0].data
@@ -83,11 +86,20 @@ def wool_opacity(obj, out, size=2048, seed=9521):
         maximum_distance_error = max(maximum_distance_error, float(np.max(np.abs(interpolated-distance))))
         coordinates = np.c_[pattern*pattern_scale, np.zeros(len(pattern))]
         # One erosion depth per boundary station avoids opaque islands over the dark inner ply.
-        opaque = lip_opacity(distance, np.array([hit[0] for hit in nearest_lip]), seed)
+        boundary = np.array([hit[0] for hit in nearest_lip])
+        opaque = lip_opacity(distance, boundary, seed)
+        if pass10:
+            from wear_pass10 import body_wear, ragged_erosion
+            opaque = distance >= ragged_erosion(boundary, seed)
+            wear = body_wear(pattern)
+            thinning[lo[1]:hi[1]+1, lo[0]:hi[0]+1][inside] = wear['thinning']
+            worn_texels += int(wear['hole'].sum())
         # The sewn collar binding stays intact; only released lips break up.
         opaque |= ~allowed
         binding = retained_binding(p)
         opaque |= binding
+        if pass10:
+            opaque &= ~wear['hole']
         delta = coordinates[:, None, :2]-starts
         t = np.clip(np.sum(delta*deltas, axis=2)/length2, 0, 1)
         distances = np.linalg.norm(delta-t[:, :, None]*deltas, axis=2)
@@ -108,6 +120,14 @@ def wool_opacity(obj, out, size=2048, seed=9521):
     image.save()
     image.reload()
     image.pack()
+    if pass10:
+        from fringe_cards import image_from_array
+        rgba = np.ones((size, size, 4), np.float32)
+        rgba[:, :, :3] = thinning[:, :, None]
+        wear_image = image_from_array('TunicStressThinning', rgba, out.with_name('tunic_thinning.png'), True)
+        obj['pass10_thinning_image'] = wear_image.name
+        report['stress_wear'] = dict(through_texels=worn_texels, thinning_texels=int((thinning > .1).sum()),
+                                     holes='seven isolated fold/seam-aligned losses; no biological clusters')
     density = []
     for triangle in obj.data.loop_triangles:
         pattern = np.array([pattern_uv[i].uv[:] for i in triangle.loops])
@@ -121,6 +141,8 @@ def wool_opacity(obj, out, size=2048, seed=9521):
         jacobian = np.linalg.solve(edges, np.array([world[1]-world[0], world[2]-world[0]]))
         density.extend(np.linalg.svd(jacobian, compute_uv=False).tolist())
     report['hem_texel_m_quantiles'] = np.quantile(density, [0., .5, .95, 1.]).tolist()
+    if pass10:
+        report['pass10_lip_erosion_range_m'] = [.0002, .0065]
     report.update(distance_method='per-texel nearest physical lip, sampled at 0.25 mm; no vertex-distance interpolation',
                   grain_paths_m=[p.tolist() for p in paths], pattern_scale_m=pattern_scale.tolist(),
                   branch_length_m=.018,

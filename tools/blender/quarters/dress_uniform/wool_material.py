@@ -20,6 +20,15 @@ def wool_material(obj, out, opacity=None, color=(.025, .043, .08)):
         columns = np.minimum((np.arange(width)*ao_width/width).astype(int), ao_width-1)
         values = values[rows[:, None], columns[None, :]]
     linear = np.clip(values[:, :, :3]*np.array(color), 0, 1)
+    if obj.get('pass10_thinning_image'):
+        import bpy
+        wear = bpy.data.images[obj['pass10_thinning_image']]
+        if tuple(wear.size) != (width, height):
+            raise ValueError('Stress thinning and wool base must share BakeUV texel density')
+        mask = np.empty(width*height*4, np.float32)
+        wear.pixels.foreach_get(mask)
+        mask = mask.reshape(height, width, 4)[:, :, :1]
+        linear = linear*(1-mask*.5)+np.array([.062, .072, .096])*values[:, :, :3]*mask*.5
     rgba = np.ones_like(values)
     rgba[:, :, :3] = np.where(linear <= .0031308, linear*12.92,
                               1.055*linear**(1/2.4)-.055)
