@@ -1374,6 +1374,7 @@ Dust is checked in lit captures against an otherwise matching dust-disabled mate
 | photo_frame | 540 / 540 | Pass | 9 / 8 | Dense haze makes the couple harder to read; corrosion is fairly uniform. |
 | mug | 1,296 / 1,296 | Pass | 8 / 9 | Slight base faceting; dust can read as texture noise at small sizes. |
 | plate | 1,440 / 1,440 | Pass | 7 / 8 | The raised rim still reads shallow in the capture; powder is speckled and the residue ring fairly regular. |
+| data_tablet | 1,296 / 1,296 | Pass | 7 / 8 | The thin shell reads flatter than the hero; small hardware is difficult to distinguish and the crazing is conspicuous. |
 
 Tableware uses `tools/blender/quarters/mug/surface_bake.py` to rasterise the actual mesh positions and normals into its packed UVs. The finish baker places irregular liquid rings on cup interiors and plate wells, plus stronger dust on upward surfaces. Generic texture noise had left these features too weak or uniform. The remembered glaze stripe remains a deliberate factory finish, not mineral patina. Labelled comparison cards distinguish the generated reference (A), remembered fitted mesh (B) and aged fitted mesh (C); ratings apply to B/C.
 
