@@ -75,7 +75,7 @@ def calibrate(source, out):
             albedo = np.clip(albedo*(decode(desired/255)/decode(np.maximum(displayed, 1)/255))**.8, .00001, 1)
         if steps[-1]['maximum_error_bytes'] > 1:
             raise ValueError(f'{role} swatch failed to converge: {steps[-1]}')
-        colour['sample_display_linear'] = colour['linear']
+        colour['sample_display_linear'] = decode(desired/255).tolist()
         colour['linear'] = steps[-1]['albedo_linear']
         palette['calibration']['roles'][role] = dict(position_blender_m=list(target), normal=list(normal),
                                                     metallic=shader.inputs['Metallic'].default_value,

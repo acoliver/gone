@@ -603,9 +603,80 @@ The lit captures are `tmp/fit/sofa/cloth2/compare-hero.png`, `compare-detail.png
 
 The tunic now comes from Blender cloth simulation. The hand-modelled pilot rated 2/10: its waist was pinched, its sleeves were detached cylinders, and its collar and shoulders had visible voids. A sewn pattern lets gravity and fabric strain produce the hanging shape. The design remains `docs/art/quarters/sheets/dress_uniform/hero.png`; the filled Hunyuan torso is only a silhouette reference.
 
-### Tunic12: not shipped, 17 of 19 gates pass
+### Tunic13: exported pilot, with two accepted geometry limitations
 
-The final scratch candidate is `tmp/age/tunic12/curled/candidate.glb`. G3 and G6 fail, so the delivered `assets/props/quarters/dress_uniform_aged.glb`, its textures and the as-built navy/brass asset remain unchanged. This pass starts from tunic11's `visible/baked.blend` and retains its settled garment, connected allowance, hanger and fittings. The age is 1000 years. The fixed `aged-target.png` supplies the overall look; `aged-target.json` explicitly leaves shoulder, armhole and hem damage placement to the plan.
+The delivered aged asset is `assets/props/quarters/dress_uniform_aged.glb`, with packed editable source `tools/blender/quarters/dress_uniform/tunic-pilot.blend` and its PNG textures under `assets/props/quarters/dress_uniform/`. The as-built navy/bright-brass GLB is byte-for-byte unchanged. This finish retains pass-12 geometry except two free hem tongues and their attached fringe. The ship has been adrift about **1000 years**.
+
+Andrew accepted pass-12 geometry as showable for the pilot after an anchored fixed-target review rated it 70%, compared with pass 11's 60%. **G3 still fails at 37.047267 px, and G6 still fails with a 0.979305 minimum.** Andrew's exception permits pilot export while both gates remain failed and their thresholds stay unchanged. All other gates and the independent attachment audit pass on this export. Godot material integration is deferred; this pass changes no application code, game tests or shared aging helpers.
+
+#### Display-to-albedo calibration
+
+The target's regional RGB samples already include illumination and tone mapping. `calibrate_pilot.py` renders flat swatches in the fixed locker scene, measures the central displayed pixels and iterates the linear albedo using the linearised display-colour ratio. The lighting remains the 75 W ceiling strip, dim world and AgX Medium High Contrast view. The final fit uses a common upper-chest plane at world (-0.08, -0.31, 1.30) m with normal proportional to (0.47, -0.88, 0), measured from the exported garment. The fibre-dust swatch uses the floor location. Keeping garment pigments on the same plane avoids comparing a shaded substrate with a directly lit dust swatch.
+
+The chest-reference fit uses 17 initial swatch renders across six roles, followed by eight renders after broadening the primary wool sample. Every final role is within one sRGB byte level of its sampled target. The old 5 by 5 wool patch at target (620, 520) had median RGB (104, 106, 109); a 49 by 49 patch at the same point gives (102, 106, 114). The smaller mottled patch underrepresented the blue cast. All other target patches stay unchanged. Every attempted albedo and displayed result is recorded in `tools/blender/quarters/dress_uniform/target-colours.json`, also copied to `tmp/age/tunic13/target-colours.json`. It retains the original samples, mixed-orientation trial, upward-only trial and narrow-patch chest fit with their dispositions. The upward-only fit made the front cloth too dark in the locker view. The fitted swatches do not establish a pixel match for the entire target photograph.
+
+| Role | Final linear-RGB albedo | Target display RGB | Final swatch RGB | Chest-fit renders, including broad-patch check |
+| --- | --- | --- | --- | --- |
+| Dark wool fold | 0.031189, 0.034975, 0.047071 | 46, 50, 57 | 47, 50, 57 | 3 |
+| Dusty grey-blue wool | 0.103681, 0.111554, 0.139753 | 102, 106, 114 | 102, 106, 114 | 6 |
+| Faded wool ridge | 0.125226, 0.133025, 0.156793 | 114, 117, 122 | 114, 117, 122 | 4 |
+| Shoulder dust | 0.149091, 0.165695, 0.205108 | 126, 131, 139 | 126, 131, 139 | 5 |
+| Floor fibre dust | 0.205806, 0.215150, 0.234512 | 126, 127, 128 | 126, 127, 128 | 3 |
+| Dull brown brass | 0.178494, 0.162993, 0.130634 | 131, 122, 105 | 132, 122, 105 | 4 |
+
+Wool retains blue greater than green greater than red, with darker self-occluded folds and lighter convex ridges. Broad dust coverage follows upward exposure and upper-garment height; fine grain amplitude is reduced so it does not replace the directional deposit with uniform speckle. Brass uses metallic 0.15, roughness 0.94 and specular 0.12 to represent an oxide-dulled surface. The higher-metallic trial retained pale reflections on the fittings.
+
+#### Chest repair, hem and lit dust control
+
+The isolated chest disk at hero pixel approximately (465, 495) was a stale selected-to-active AO transfer. The cloth there was opaque, with alpha 1, AO 0 and a neutral tangent normal. A 60 mm current-cloth-only self-occlusion bake excludes hidden dense copies and fittings. AO at the old spot is now **0.956863**. Its rendered 10 px-radius mean RGB changes from (23.68, 24.85, 25.62) to (78.61, 81.75, 88.03), removing the isolated near-black disk.
+
+Two retained front hem tongues extend downward by approximately **78 mm and 99 mm**, with forward drape at 0.7 times the extension to avoid the separate floor debris. No side-to-side displacement is added. Faces crossing the extension root are split at z = -0.840 m so straight interpolation cannot drive an adjacent rim through the sheet. Only affected faces are triangulated; unaffected fringe keeps its original tessellation. Export inspection confirms exact node names and transforms, unchanged fittings and hanger, and exact body/fringe triangles outside the two selected hem regions. G25 coverage is 82.121978% and G26 remains zero.
+
+The matched locker closeup disables dust on all five garment-cloth parts while retaining fade, alpha, camera, exposure and lighting. A separate alpha-aware raw diagnostic selects visible body/collar/board pixels above 1.31 m whose geometric normal has world Z greater than 0.35. Over **107,153 fully covered shoulder-top pixels**, dust raises mean RGB by **20.803966 sRGB levels**, with a median of **21.333333**. **98.107379%** rise by at least **8 levels**, exceeding the requirement over most shoulder tops. The measurement uses lit ON-minus-OFF captures to test the displayed change. `pilot-dust.json` stores the result; captures and the raw mask are in `tmp/age/tunic13/`.
+
+#### Export gates and source
+
+`pilot-gates.json` and `pilot-seating.json` beside the packed source contain the measured values and explicit pilot exceptions. The full gate measurement still exits 1 because G3 and G6 fail. Publication separately permits only those two failures and requires passing seating, dust and byte-identity checks.
+
+| Gate | Measured | Requirement | Result |
+| --- | --- | --- | --- |
+| G1 | 4.026253% visible sharp adjacency | At most 6% | Pass |
+| G2 | 0.115220% normal-jump pixels | At most 2% | Pass |
+| G3 | 37.047267 px longest straight lip run | At most 12 px on every visible lip | Accepted pilot failure |
+| G4 | 0.454798 to 0.850919 width CV | At least 0.35 on every visible gap | Pass |
+| G5 | 30.552230% lifted lip length | At least 30% over 3 mm | Pass |
+| G6 | 0.979305 to 1.379382 contour dimension | Every resolved lip 1.15 to 1.40 | Accepted pilot failure |
+| G20 | 4.541915% near-hanger sharp adjacency | At most 10% | Pass |
+| G21 | 0 hanger pixels outside split hull | Zero | Pass |
+| G22 | 0.425571 maximum sleeve depth/width | At most 0.45 | Pass |
+| G23 | 36.004298% retained arc; 78.673496% released-edge fringe | At least 35%; at least 70% | Pass |
+| G24 | 101.413899% chest width | 92% to 108% | Pass |
+| G25 | 82.121978% open-hem fringe | At least 70% | Pass |
+| G26 | 0.0 hem autocorrelation peak | Below 0.30 | Pass |
+| G27 | 33.057582 mm mound height | 15 to 35 mm | Pass |
+| G28 | 6 fallen cloth pieces | At least 2 | Pass |
+| G29 | 351.508860 cm³ mound; 50.184712 cm³ lost wool; 14.276941% inferred packing | Volume within factor 2 at 5% to 15% packing | Pass |
+| G30 | 0 changed crossings; hanger 28/28, geometry exact | Zero; exact unchanged hanger | Pass |
+| G31 | 20,305 / 13,768 triangles, ratio 1.474797 | At most 20,652, ratio 1.5 | Pass |
+| G32 | 0.623240 mm retained boundary-error bound; extended-hem bound 0.050156 mm | At most 1.5 mm | Pass |
+
+The extended hem is checked against the dense reference after applying the same root-split affine extension. The baseline dense and reduced hem boundaries match exactly. Bidirectional samples at no more than 0.1 mm give a 0.000156 mm sampled difference after extension; adding half the sample spacing bounds the new hem error at 0.050156 mm. The unchanged remainder retains its 0.623240 mm bound. All attachment bases remain within 2 mm; the maximum is 1.800060 mm. External trimesh inspection confirms exported +Y-up bounds, 29 named parts and 20,305 triangles.
+
+The measured candidate, checkpoint reload, pruned standalone source export and fresh standalone-source reload all produce **byte-identical GLBs**. The packed source includes only the exported parts and active material graphs; committed PNGs are also packed into it. Re-export with Blender:
+
+```sh
+blender --background --threads 3 --python-exit-code 1 \
+  --python tools/blender/quarters/dress_uniform/publish_pilot.py -- \
+  --export-only tmp/age/tunic13/reexport.glb
+```
+
+The complete finishing run starts with `pilot_finish.py -- --base tmp/age/tunic12/curled --out tmp/age/tunic13/blue`. `test_pilot_export.py` checks the actual GLB against pass 12, including frozen triangles, pivots, repaired AO, retained gates, seating and repeat bytes. Focused hem, lip-station, lip-metric, wear, fringe, heap-alpha, shoulder, support and colour scripts pass. OCR review is skipped per Andrew 2026-10-09. No Godot integration is claimed in this pass.
+
+The four requested composites are under `tmp/age/tunic13/`: `tunic-in-locker-before-after.png`, `tunic-in-locker-closeup.png`, `tunic-in-locker-heap.png` and `tunic-target-match.png`, all 2400 by 1440. `context/` holds the source frames and cameras, `dust-off/` holds the matched control, and `dust-top-detail.png` shows the upper-cloth crop. The final image-comparer result is recorded separately in `final-art-review.json`. It judges all requested material and aging goals achieved, including a visible cool/blue cast, directional dust, dull readable brass, no circular chest artefact, distinct longer strips, soft fray and a volumetric heap. It reports no rendering defects in that scope. The blue cast still reads slightly weaker than the fixed target, and the exact number of long strips is uncertain in the low-contrast full-body capture. Those visual qualifications remain separate from the two documented geometry-gate exceptions.
+
+### Tunic12: historical checkpoint before pilot approval
+
+The final scratch candidate at this checkpoint was `tmp/age/tunic12/curled/candidate.glb`. G3 and G6 failed, so the delivered `assets/props/quarters/dress_uniform_aged.glb`, its textures and the as-built navy/brass asset remained unchanged then. This pass starts from tunic11's `visible/baked.blend` and retains its settled garment, connected allowance, hanger and fittings. The age is 1000 years. The fixed `aged-target.png` supplies the overall look; `aged-target.json` explicitly leaves shoulder, armhole and hem damage placement to the plan.
 
 **Physical lips and visibility.** The old world-coordinate projection traversed only 43.9% to 70.7% of armhole arclength. Each connected boundary now gets cumulative physical stations sampled every 0.20 mm. Its opacity noise uses 2.2, 1.1, 0.55 and 0.275 mm wavelengths, with monotone inward losses of 0.15 to 6 mm. Every allowance triangle gets nonzero bake area and the sheet's wool/opacity material, including its cut edge. These repairs do not eliminate the remaining straight or under-detailed contours. A wider noise-spectrum experiment was measured and rejected.
 
@@ -662,7 +733,7 @@ Every attachment passes the independent 2 mm base-distance audit. The two board 
 
 The candidate is judged too pale and neutral against the target, with a uniform-looking fine speckle. Directional shoulder dust is not visually established by the matched control. The complete-frame mean absolute dust-on/off difference is 0.574988 sRGB byte values; 1.5675% of pixels differ by at least eight in any channel. These measurements have no body mask and do not constitute visual acceptance. The directional mask exists in the bake; the review does not establish why its contribution reads weakly. Source display-colour samples have not been calibrated through the fixed lighting and AgX pipeline. That colour fit, visible directional dust, longer readable tongues, G3 and G6 remain unfinished. The review is `tmp/age/tunic12/curled-review.json`, and the lit difference measurements are `dust-lit-difference.json`.
 
-Rebuild with `polish_pass12.py -- --shape --out tmp/age/tunic12/retained-curled`, then `finish_aging.py` with that output and `colour_pass12.py -- --base tmp/age/tunic12/retained-curled --out tmp/age/tunic12/curled`. Render, collision, seating and measurement commands are in `tmp/age/tunic12/curled.sh`; final tests and the lit dust-off comparison are in `review-curled.sh`. Shared aging modules and the locker asset were not edited. No production export is permitted while either remaining gate fails.
+Rebuild with `polish_pass12.py -- --shape --out tmp/age/tunic12/retained-curled`, then `finish_aging.py` with that output and `colour_pass12.py -- --base tmp/age/tunic12/retained-curled --out tmp/age/tunic12/curled`. Render, collision, seating and measurement commands are in `tmp/age/tunic12/curled.sh`; final tests and the lit dust-off comparison are in `review-curled.sh`. Shared aging modules and the locker asset were not edited. At that checkpoint production export was blocked by G3 and G6; the Tunic13 section above records Andrew's later pilot exception.
 
 ### Tunic11: not shipped, 16 of 19 gates pass
 

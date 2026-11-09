@@ -1,0 +1,12 @@
+{
+  "method": "Positive mean-RGB sRGB byte increase, dust ON minus OFF, on visible upward upper cloth",
+  "mask": "Geometry normal Z > 0.35 and world height > 1.31 m, body/collar/boards, alpha-aware, full coverage pixels",
+  "shoulder_pixels": 107153,
+  "mean_srgb_levels": 20.80396566902778,
+  "median_srgb_levels": 21.333333333333332,
+  "fraction_at_least_8": 0.9810737916810542,
+  "required_srgb_levels": 8,
+  "required_fraction": ">0.5 (most shoulder tops)",
+  "pass_gate": true,
+  "pass": true
+}

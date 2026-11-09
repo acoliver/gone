@@ -1,0 +1,149 @@
+{
+  "ShoulderBoard_L": {
+    "support": "TunicBody",
+    "groups": [
+      {
+        "base_vertices": 425,
+        "minimum_base_distance_m": 0.00034943377249874175,
+        "maximum_base_distance_m": 0.0012995307333767414,
+        "normal_error_degrees": 1.7534518275764228,
+        "within_2mm": true
+      }
+    ],
+    "within_2mm": true
+  },
+  "ShoulderBoard_R": {
+    "support": "TunicBody",
+    "groups": [
+      {
+        "base_vertices": 425,
+        "minimum_base_distance_m": 0.0004920142819173634,
+        "maximum_base_distance_m": 0.0014212342211976647,
+        "normal_error_degrees": 3.146451905811117,
+        "within_2mm": true
+      }
+    ],
+    "within_2mm": true
+  },
+  "Placket": {
+    "support": "TunicBody",
+    "groups": [
+      {
+        "base_vertices": 325,
+        "minimum_base_distance_m": 4.1389026591787115e-05,
+        "maximum_base_distance_m": 0.0005020465468987823,
+        "normal_error_degrees": null,
+        "within_2mm": true
+      }
+    ],
+    "within_2mm": true
+  },
+  "Buttons": {
+    "support": "Placket",
+    "groups": [
+      {
+        "base_vertices": 33,
+        "minimum_base_distance_m": 0.0009024010505527258,
+        "maximum_base_distance_m": 0.0010930834105238318,
+        "normal_error_degrees": 0.6669474848676484,
+        "within_2mm": true
+      },
+      {
+        "base_vertices": 33,
+        "minimum_base_distance_m": 0.0007700440473854542,
+        "maximum_base_distance_m": 0.0009212982258759439,
+        "normal_error_degrees": 0.4205458102401347,
+        "within_2mm": true
+      },
+      {
+        "base_vertices": 33,
+        "minimum_base_distance_m": 0.0008334420854225755,
+        "maximum_base_distance_m": 0.0010258842958137393,
+        "normal_error_degrees": 0.6261816201708283,
+        "within_2mm": true
+      },
+      {
+        "base_vertices": 33,
+        "minimum_base_distance_m": 0.0008424121187999845,
+        "maximum_base_distance_m": 0.0013070268323644996,
+        "normal_error_degrees": 0.4315160005521105,
+        "within_2mm": true
+      },
+      {
+        "base_vertices": 33,
+        "minimum_base_distance_m": 0.0007969582220539451,
+        "maximum_base_distance_m": 0.001116064377129078,
+        "normal_error_degrees": 0.2262191425427422,
+        "within_2mm": true
+      },
+      {
+        "base_vertices": 33,
+        "minimum_base_distance_m": 0.000852636294439435,
+        "maximum_base_distance_m": 0.0009988927049562335,
+        "normal_error_degrees": 0.11911085633471546,
+        "within_2mm": true
+      }
+    ],
+    "within_2mm": true
+  },
+  "RibbonBar": {
+    "support": "TunicBody",
+    "groups": [
+      {
+        "base_vertices": 45,
+        "minimum_base_distance_m": 0.00046163579099811614,
+        "maximum_base_distance_m": 0.0014569804770871997,
+        "normal_error_degrees": null,
+        "within_2mm": true
+      }
+    ],
+    "within_2mm": true
+  },
+  "Medal": {
+    "support": "TunicBody",
+    "groups": [
+      {
+        "base_vertices": 41,
+        "minimum_base_distance_m": 0.0003208009002264589,
+        "maximum_base_distance_m": 0.0009080003947019577,
+        "normal_error_degrees": 1.1269125864134315,
+        "within_2mm": true
+      },
+      {
+        "base_vertices": 35,
+        "minimum_base_distance_m": 0.0004999970551580191,
+        "maximum_base_distance_m": 0.0018000599229708314,
+        "normal_error_degrees": 1.4853717993184326,
+        "within_2mm": true
+      }
+    ],
+    "within_2mm": true
+  },
+  "CollarInsignia_L": {
+    "support": "Collar",
+    "groups": [
+      {
+        "base_vertices": 11,
+        "minimum_base_distance_m": 0.0005020946846343577,
+        "maximum_base_distance_m": 0.0005250234389677644,
+        "normal_error_degrees": 0.02326678805819729,
+        "within_2mm": true
+      }
+    ],
+    "within_2mm": true
+  },
+  "CollarInsignia_R": {
+    "support": "Collar",
+    "groups": [
+      {
+        "base_vertices": 11,
+        "minimum_base_distance_m": 0.0005000189412385225,
+        "maximum_base_distance_m": 0.000538214051630348,
+        "normal_error_degrees": 0.0211588205644936,
+        "within_2mm": true
+      }
+    ],
+    "within_2mm": true
+  },
+  "all_bases_within_2mm": true
+}

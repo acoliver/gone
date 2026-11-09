@@ -60,4 +60,12 @@ assert gates['G30']['value']['changed_intersections'] == 0
 assert gates['armhole_opening']['pass_gap']
 assert json.loads((a.out/'attachment-audit.json').read_text())['all_bases_within_2mm']
 assert (a.out/'candidate.glb').read_bytes() == (a.out/'repeat.glb').read_bytes()
-print('PASS: exact node names/pivots and frozen upper garment, repaired AO, retained gates/seating and repeat bytes')
+palette = json.loads(Path(__file__).with_name('target-colours.json').read_text())
+for role, colour in palette['colours'].items():
+    step = palette['calibration']['roles'][role]['steps'][-1]
+    assert np.array_equal(colour['linear'], step['albedo_linear']), (role, 'recorded albedo differs')
+    assert np.max(np.abs(np.array(step['displayed_srgb_bytes'])-colour['srgb_bytes'])) <= 1, (role, 'display fit differs')
+    if role != 'brass_brown':
+        red, green, blue = colour['linear']
+        assert blue > green > red, (role, 'wool/dust lost its blue cast')
+print('PASS: exact node names/pivots and frozen nonselected geometry, repaired AO, retained gates/seating and repeat bytes')

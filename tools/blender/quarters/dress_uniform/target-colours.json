@@ -36,35 +36,58 @@
     },
     "dusty_grey_blue": {
       "srgb_bytes": [
-        104,
+        102,
         106,
-        109
+        114
       ],
       "linear": [
-        0.10691288112547845,
-        0.11314559243074225,
-        0.12773846954806098
+        0.1036813161385927,
+        0.11155393852903678,
+        0.1397534394146257
       ],
       "xy": [
         620,
         520
       ],
-      "population": 25,
+      "population": 2401,
       "patch_min": [
-        81,
-        85,
-        84
+        30,
+        24,
+        26
       ],
       "patch_max": [
-        119,
-        122,
-        132
+        133,
+        139,
+        149
       ],
       "sample_display_linear": [
-        0.13843161503245183,
+        0.13286832155381798,
         0.14412847085805777,
-        0.15292615199615017
-      ]
+        0.16826940018969075
+      ],
+      "patch_width_px": 49,
+      "previous_sample": {
+        "srgb_bytes": [
+          104,
+          106,
+          109
+        ],
+        "xy": [
+          620,
+          520
+        ],
+        "population": 25,
+        "patch_min": [
+          81,
+          85,
+          84
+        ],
+        "patch_max": [
+          119,
+          122,
+          132
+        ]
+      }
     },
     "faded_crest": {
       "srgb_bytes": [
@@ -214,29 +237,12 @@
           -0.882075309753418,
           0.0
         ],
+        "metallic": 0.0,
+        "roughness": 0.9700000286102295,
+        "specular_ior": 0.11999999731779099,
         "steps": [
           {
             "iteration": 0,
-            "albedo_linear": [
-              0.027320891639074894,
-              0.03189603307301153,
-              0.04091519690685319
-            ],
-            "displayed_srgb_bytes": [
-              42.0,
-              47.0,
-              52.000003814697266
-            ],
-            "target_srgb_bytes": [
-              46.0,
-              50.0,
-              57.0
-            ],
-            "maximum_error_bytes": 4.999996185302734,
-            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/dark_fold-00.png"
-          },
-          {
-            "iteration": 1,
             "albedo_linear": [
               0.03118885506828155,
               0.03497461266680807,
@@ -253,12 +259,9 @@
               57.0
             ],
             "maximum_error_bytes": 1.0,
-            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/dark_fold-01.png"
+            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-blue/dark_fold-00.png"
           }
-        ],
-        "metallic": 0,
-        "roughness": 0.97,
-        "specular_ior": 0.12
+        ]
       },
       "dusty_grey_blue": {
         "position_blender_m": [
@@ -271,71 +274,71 @@
           -0.882075309753418,
           0.0
         ],
+        "metallic": 0.0,
+        "roughness": 0.9700000286102295,
+        "specular_ior": 0.11999999731779099,
         "steps": [
           {
             "iteration": 0,
             "albedo_linear": [
-              0.13843161503245183,
+              0.13286832155381798,
               0.14412847085805777,
-              0.15292615199615017
+              0.16826940018969075
             ],
             "displayed_srgb_bytes": [
-              121.00000762939453,
-              121.00000762939453,
-              120.00000762939453
+              118.00000762939453,
+              122.00000762939453,
+              127.00000762939453
             ],
             "target_srgb_bytes": [
-              104.0,
+              102.0,
               106.0,
-              109.0
+              114.0
             ],
-            "maximum_error_bytes": 17.00000762939453,
-            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/dusty_grey_blue-00.png"
+            "maximum_error_bytes": 16.00000762939453,
+            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-blue/dusty_grey_blue-00.png"
           },
           {
             "iteration": 1,
             "albedo_linear": [
-              0.10691289677908161,
-              0.11496249609305915,
-              0.12973950053244962
+              0.10368133178525477,
+              0.11334528324786307,
+              0.13975345702903885
             ],
             "displayed_srgb_bytes": [
-              104.00000762939453,
+              102.00000762939453,
               107.00000762939453,
-              110.00000762939453
+              114.00000762939453
             ],
             "target_srgb_bytes": [
-              104.0,
+              102.0,
               106.0,
-              109.0
+              114.0
             ],
             "maximum_error_bytes": 1.0000076293945312,
-            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/dusty_grey_blue-01.png"
+            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-blue/dusty_grey_blue-01.png"
           },
           {
             "iteration": 2,
             "albedo_linear": [
-              0.10691288112547845,
-              0.11314559243074225,
-              0.12773846954806098
+              0.1036813161385927,
+              0.11155393852903678,
+              0.1397534394146257
             ],
             "displayed_srgb_bytes": [
-              104.00000762939453,
+              102.00000762939453,
               106.00000762939453,
-              109.00000762939453
+              114.00000762939453
             ],
             "target_srgb_bytes": [
-              104.0,
+              102.0,
               106.0,
-              109.0
+              114.0
             ],
             "maximum_error_bytes": 7.62939453125e-06,
-            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/dusty_grey_blue-02.png"
+            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-blue/dusty_grey_blue-02.png"
           }
-        ],
-        "metallic": 0,
-        "roughness": 0.97,
-        "specular_ior": 0.12
+        ]
       },
       "faded_crest": {
         "position_blender_m": [
@@ -348,49 +351,12 @@
           -0.882075309753418,
           0.0
         ],
+        "metallic": 0.0,
+        "roughness": 0.9700000286102295,
+        "specular_ior": 0.11999999731779099,
         "steps": [
           {
             "iteration": 0,
-            "albedo_linear": [
-              0.16826940018969075,
-              0.17788841598362912,
-              0.1946178304415758
-            ],
-            "displayed_srgb_bytes": [
-              133.0,
-              135.0,
-              136.0
-            ],
-            "target_srgb_bytes": [
-              114.0,
-              117.0,
-              122.0
-            ],
-            "maximum_error_bytes": 19.0,
-            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/faded_crest-00.png"
-          },
-          {
-            "iteration": 1,
-            "albedo_linear": [
-              0.12900900050627973,
-              0.13893449941424188,
-              0.1612487578266943
-            ],
-            "displayed_srgb_bytes": [
-              116.00000762939453,
-              120.00000762939453,
-              124.00000762939453
-            ],
-            "target_srgb_bytes": [
-              114.0,
-              117.0,
-              122.0
-            ],
-            "maximum_error_bytes": 3.0000076293945312,
-            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/faded_crest-01.png"
-          },
-          {
-            "iteration": 2,
             "albedo_linear": [
               0.12522595943682338,
               0.1330250060430578,
@@ -407,12 +373,9 @@
               122.0
             ],
             "maximum_error_bytes": 7.62939453125e-06,
-            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/faded_crest-02.png"
+            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-blue/faded_crest-00.png"
           }
-        ],
-        "metallic": 0,
-        "roughness": 0.97,
-        "specular_ior": 0.12
+        ]
       },
       "shoulder_dust": {
         "position_blender_m": [
@@ -425,69 +388,12 @@
           -0.882075309753418,
           0.0
         ],
+        "metallic": 0.0,
+        "roughness": 0.9700000286102295,
+        "specular_ior": 0.11999999731779099,
         "steps": [
           {
             "iteration": 0,
-            "albedo_linear": [
-              0.20863687014525575,
-              0.22696587351009836,
-              0.2581828529215958
-            ],
-            "displayed_srgb_bytes": [
-              147.0,
-              150.0,
-              153.0
-            ],
-            "target_srgb_bytes": [
-              126.0,
-              131.0,
-              139.0
-            ],
-            "maximum_error_bytes": 21.0,
-            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/shoulder_dust-00.png"
-          },
-          {
-            "iteration": 1,
-            "albedo_linear": [
-              0.159540368512101,
-              0.17918578727491224,
-              0.2182381683320728
-            ],
-            "displayed_srgb_bytes": [
-              130.0,
-              136.0,
-              143.0
-            ],
-            "target_srgb_bytes": [
-              126.0,
-              131.0,
-              139.0
-            ],
-            "maximum_error_bytes": 5.0,
-            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/shoulder_dust-01.png"
-          },
-          {
-            "iteration": 2,
-            "albedo_linear": [
-              0.1511417779854528,
-              0.16789573268269792,
-              0.20768941249785489
-            ],
-            "displayed_srgb_bytes": [
-              127.00000762939453,
-              132.0,
-              140.0
-            ],
-            "target_srgb_bytes": [
-              126.0,
-              131.0,
-              139.0
-            ],
-            "maximum_error_bytes": 1.0000076293945312,
-            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/shoulder_dust-02.png"
-          },
-          {
-            "iteration": 3,
             "albedo_linear": [
               0.14909073980210324,
               0.16569510626240183,
@@ -504,12 +410,9 @@
               139.0
             ],
             "maximum_error_bytes": 7.62939453125e-06,
-            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/shoulder_dust-03.png"
+            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-blue/shoulder_dust-00.png"
           }
-        ],
-        "metallic": 0,
-        "roughness": 0.97,
-        "specular_ior": 0.12
+        ]
       },
       "fibre_dust": {
         "position_blender_m": [
@@ -522,29 +425,12 @@
           0.0,
           1.0
         ],
+        "metallic": 0.0,
+        "roughness": 0.9700000286102295,
+        "specular_ior": 0.11999999731779099,
         "steps": [
           {
             "iteration": 0,
-            "albedo_linear": [
-              0.20863687014525575,
-              0.21223075741405523,
-              0.21586050011389926
-            ],
-            "displayed_srgb_bytes": [
-              127.00000762939453,
-              126.00000762939453,
-              122.00000762939453
-            ],
-            "target_srgb_bytes": [
-              126.0,
-              127.0,
-              128.0
-            ],
-            "maximum_error_bytes": 5.999992370605469,
-            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/fibre_dust-00.png"
-          },
-          {
-            "iteration": 1,
             "albedo_linear": [
               0.2058056067260597,
               0.21515036646532965,
@@ -561,12 +447,9 @@
               128.0
             ],
             "maximum_error_bytes": 7.62939453125e-06,
-            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/fibre_dust-01.png"
+            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-blue/fibre_dust-00.png"
           }
-        ],
-        "metallic": 0,
-        "roughness": 0.97,
-        "specular_ior": 0.12
+        ]
       },
       "brass_brown": {
         "position_blender_m": [
@@ -579,49 +462,12 @@
           -0.882075309753418,
           0.0
         ],
+        "metallic": 0.15000000596046448,
+        "roughness": 0.9399999976158142,
+        "specular_ior": 0.11999999731779099,
         "steps": [
           {
             "iteration": 0,
-            "albedo_linear": [
-              0.22696587351009836,
-              0.1946178304415758,
-              0.14126329114027164
-            ],
-            "displayed_srgb_bytes": [
-              147.0,
-              133.0,
-              111.00000762939453
-            ],
-            "target_srgb_bytes": [
-              131.0,
-              122.0,
-              105.0
-            ],
-            "maximum_error_bytes": 16.0,
-            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/brass_brown-00.png"
-          },
-          {
-            "iteration": 1,
-            "albedo_linear": [
-              0.1856503172697299,
-              0.1676252640084784,
-              0.12853476582209872
-            ],
-            "displayed_srgb_bytes": [
-              134.0,
-              124.00000762939453,
-              104.00000762939453
-            ],
-            "target_srgb_bytes": [
-              131.0,
-              122.0,
-              105.0
-            ],
-            "maximum_error_bytes": 3.0,
-            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/brass_brown-01.png"
-          },
-          {
-            "iteration": 2,
             "albedo_linear": [
               0.1784935961873665,
               0.16299283246728571,
@@ -638,15 +484,13 @@
               105.0
             ],
             "maximum_error_bytes": 1.0,
-            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/brass_brown-02.png"
+            "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-blue/brass_brown-00.png"
           }
-        ],
-        "metallic": 0.15,
-        "roughness": 0.94,
-        "specular_ior": 0.12
+        ]
       }
     },
     "reference_reason": "Common garment-oriented upper-chest swatch at world (-.08,-.31,1.30), normal (.47,-.88,0) measured from the exported chest. Keeps pigments comparable while avoiding the overly dark front cloth from an upward-only fit. Heap uses its floor location.",
+    "brass_reason": "Oxide-dulled brass: metallic .15, roughness .94, specular .12. The .55-metallic trial retained pale reflections on the real fittings.",
     "previous_trials": [
       {
         "method": "Rendered fixed-point inversion in linearised display RGB; all iterations saved",
@@ -1618,8 +1462,463 @@
         },
         "reference_reason": "All garment pigments use the same upward-facing upper-cloth swatch to keep shade, fade and dust albedos comparable. Brass uses a front-facing chest plane; heap uses its floor position.",
         "disposition": "Not applied to delivery: the upward-only reference made front cloth too dark in the locker full-frame inspection."
+      },
+      {
+        "method": "Rendered fixed-point inversion in linearised display RGB; all iterations saved",
+        "lighting": "render_context.setup, unchanged 75 W strip and dim world",
+        "view_transform": "AgX",
+        "look": "AgX - Medium High Contrast",
+        "sample": "Central 32 by 32 pixels of a flat 80 mm swatch, 128-square render",
+        "units": "albedo linear RGB; display and target sRGB bytes",
+        "roles": {
+          "dark_fold": {
+            "position_blender_m": [
+              -0.07999999821186066,
+              -0.3100000023841858,
+              1.2999999523162842
+            ],
+            "normal": [
+              0.47110840678215027,
+              -0.882075309753418,
+              0.0
+            ],
+            "steps": [
+              {
+                "iteration": 0,
+                "albedo_linear": [
+                  0.027320891639074894,
+                  0.03189603307301153,
+                  0.04091519690685319
+                ],
+                "displayed_srgb_bytes": [
+                  42.0,
+                  47.0,
+                  52.000003814697266
+                ],
+                "target_srgb_bytes": [
+                  46.0,
+                  50.0,
+                  57.0
+                ],
+                "maximum_error_bytes": 4.999996185302734,
+                "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/dark_fold-00.png"
+              },
+              {
+                "iteration": 1,
+                "albedo_linear": [
+                  0.03118885506828155,
+                  0.03497461266680807,
+                  0.04707106529200301
+                ],
+                "displayed_srgb_bytes": [
+                  47.0,
+                  50.000003814697266,
+                  57.000003814697266
+                ],
+                "target_srgb_bytes": [
+                  46.0,
+                  50.0,
+                  57.0
+                ],
+                "maximum_error_bytes": 1.0,
+                "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/dark_fold-01.png"
+              }
+            ],
+            "metallic": 0,
+            "roughness": 0.97,
+            "specular_ior": 0.12
+          },
+          "dusty_grey_blue": {
+            "position_blender_m": [
+              -0.07999999821186066,
+              -0.3100000023841858,
+              1.2999999523162842
+            ],
+            "normal": [
+              0.47110840678215027,
+              -0.882075309753418,
+              0.0
+            ],
+            "steps": [
+              {
+                "iteration": 0,
+                "albedo_linear": [
+                  0.13843161503245183,
+                  0.14412847085805777,
+                  0.15292615199615017
+                ],
+                "displayed_srgb_bytes": [
+                  121.00000762939453,
+                  121.00000762939453,
+                  120.00000762939453
+                ],
+                "target_srgb_bytes": [
+                  104.0,
+                  106.0,
+                  109.0
+                ],
+                "maximum_error_bytes": 17.00000762939453,
+                "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/dusty_grey_blue-00.png"
+              },
+              {
+                "iteration": 1,
+                "albedo_linear": [
+                  0.10691289677908161,
+                  0.11496249609305915,
+                  0.12973950053244962
+                ],
+                "displayed_srgb_bytes": [
+                  104.00000762939453,
+                  107.00000762939453,
+                  110.00000762939453
+                ],
+                "target_srgb_bytes": [
+                  104.0,
+                  106.0,
+                  109.0
+                ],
+                "maximum_error_bytes": 1.0000076293945312,
+                "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/dusty_grey_blue-01.png"
+              },
+              {
+                "iteration": 2,
+                "albedo_linear": [
+                  0.10691288112547845,
+                  0.11314559243074225,
+                  0.12773846954806098
+                ],
+                "displayed_srgb_bytes": [
+                  104.00000762939453,
+                  106.00000762939453,
+                  109.00000762939453
+                ],
+                "target_srgb_bytes": [
+                  104.0,
+                  106.0,
+                  109.0
+                ],
+                "maximum_error_bytes": 7.62939453125e-06,
+                "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/dusty_grey_blue-02.png"
+              }
+            ],
+            "metallic": 0,
+            "roughness": 0.97,
+            "specular_ior": 0.12
+          },
+          "faded_crest": {
+            "position_blender_m": [
+              -0.07999999821186066,
+              -0.3100000023841858,
+              1.2999999523162842
+            ],
+            "normal": [
+              0.47110840678215027,
+              -0.882075309753418,
+              0.0
+            ],
+            "steps": [
+              {
+                "iteration": 0,
+                "albedo_linear": [
+                  0.16826940018969075,
+                  0.17788841598362912,
+                  0.1946178304415758
+                ],
+                "displayed_srgb_bytes": [
+                  133.0,
+                  135.0,
+                  136.0
+                ],
+                "target_srgb_bytes": [
+                  114.0,
+                  117.0,
+                  122.0
+                ],
+                "maximum_error_bytes": 19.0,
+                "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/faded_crest-00.png"
+              },
+              {
+                "iteration": 1,
+                "albedo_linear": [
+                  0.12900900050627973,
+                  0.13893449941424188,
+                  0.1612487578266943
+                ],
+                "displayed_srgb_bytes": [
+                  116.00000762939453,
+                  120.00000762939453,
+                  124.00000762939453
+                ],
+                "target_srgb_bytes": [
+                  114.0,
+                  117.0,
+                  122.0
+                ],
+                "maximum_error_bytes": 3.0000076293945312,
+                "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/faded_crest-01.png"
+              },
+              {
+                "iteration": 2,
+                "albedo_linear": [
+                  0.12522595943682338,
+                  0.1330250060430578,
+                  0.15679254511822846
+                ],
+                "displayed_srgb_bytes": [
+                  114.00000762939453,
+                  117.00000762939453,
+                  122.00000762939453
+                ],
+                "target_srgb_bytes": [
+                  114.0,
+                  117.0,
+                  122.0
+                ],
+                "maximum_error_bytes": 7.62939453125e-06,
+                "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/faded_crest-02.png"
+              }
+            ],
+            "metallic": 0,
+            "roughness": 0.97,
+            "specular_ior": 0.12
+          },
+          "shoulder_dust": {
+            "position_blender_m": [
+              -0.07999999821186066,
+              -0.3100000023841858,
+              1.2999999523162842
+            ],
+            "normal": [
+              0.47110840678215027,
+              -0.882075309753418,
+              0.0
+            ],
+            "steps": [
+              {
+                "iteration": 0,
+                "albedo_linear": [
+                  0.20863687014525575,
+                  0.22696587351009836,
+                  0.2581828529215958
+                ],
+                "displayed_srgb_bytes": [
+                  147.0,
+                  150.0,
+                  153.0
+                ],
+                "target_srgb_bytes": [
+                  126.0,
+                  131.0,
+                  139.0
+                ],
+                "maximum_error_bytes": 21.0,
+                "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/shoulder_dust-00.png"
+              },
+              {
+                "iteration": 1,
+                "albedo_linear": [
+                  0.159540368512101,
+                  0.17918578727491224,
+                  0.2182381683320728
+                ],
+                "displayed_srgb_bytes": [
+                  130.0,
+                  136.0,
+                  143.0
+                ],
+                "target_srgb_bytes": [
+                  126.0,
+                  131.0,
+                  139.0
+                ],
+                "maximum_error_bytes": 5.0,
+                "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/shoulder_dust-01.png"
+              },
+              {
+                "iteration": 2,
+                "albedo_linear": [
+                  0.1511417779854528,
+                  0.16789573268269792,
+                  0.20768941249785489
+                ],
+                "displayed_srgb_bytes": [
+                  127.00000762939453,
+                  132.0,
+                  140.0
+                ],
+                "target_srgb_bytes": [
+                  126.0,
+                  131.0,
+                  139.0
+                ],
+                "maximum_error_bytes": 1.0000076293945312,
+                "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/shoulder_dust-02.png"
+              },
+              {
+                "iteration": 3,
+                "albedo_linear": [
+                  0.14909073980210324,
+                  0.16569510626240183,
+                  0.20510817408928775
+                ],
+                "displayed_srgb_bytes": [
+                  126.00000762939453,
+                  131.0,
+                  139.0
+                ],
+                "target_srgb_bytes": [
+                  126.0,
+                  131.0,
+                  139.0
+                ],
+                "maximum_error_bytes": 7.62939453125e-06,
+                "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/shoulder_dust-03.png"
+              }
+            ],
+            "metallic": 0,
+            "roughness": 0.97,
+            "specular_ior": 0.12
+          },
+          "fibre_dust": {
+            "position_blender_m": [
+              0.029999999329447746,
+              -0.10000000149011612,
+              0.14000000059604645
+            ],
+            "normal": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "steps": [
+              {
+                "iteration": 0,
+                "albedo_linear": [
+                  0.20863687014525575,
+                  0.21223075741405523,
+                  0.21586050011389926
+                ],
+                "displayed_srgb_bytes": [
+                  127.00000762939453,
+                  126.00000762939453,
+                  122.00000762939453
+                ],
+                "target_srgb_bytes": [
+                  126.0,
+                  127.0,
+                  128.0
+                ],
+                "maximum_error_bytes": 5.999992370605469,
+                "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/fibre_dust-00.png"
+              },
+              {
+                "iteration": 1,
+                "albedo_linear": [
+                  0.2058056067260597,
+                  0.21515036646532965,
+                  0.23451227079448092
+                ],
+                "displayed_srgb_bytes": [
+                  126.00000762939453,
+                  127.00000762939453,
+                  128.0
+                ],
+                "target_srgb_bytes": [
+                  126.0,
+                  127.0,
+                  128.0
+                ],
+                "maximum_error_bytes": 7.62939453125e-06,
+                "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/fibre_dust-01.png"
+              }
+            ],
+            "metallic": 0,
+            "roughness": 0.97,
+            "specular_ior": 0.12
+          },
+          "brass_brown": {
+            "position_blender_m": [
+              -0.07999999821186066,
+              -0.3100000023841858,
+              1.2999999523162842
+            ],
+            "normal": [
+              0.47110840678215027,
+              -0.882075309753418,
+              0.0
+            ],
+            "steps": [
+              {
+                "iteration": 0,
+                "albedo_linear": [
+                  0.22696587351009836,
+                  0.1946178304415758,
+                  0.14126329114027164
+                ],
+                "displayed_srgb_bytes": [
+                  147.0,
+                  133.0,
+                  111.00000762939453
+                ],
+                "target_srgb_bytes": [
+                  131.0,
+                  122.0,
+                  105.0
+                ],
+                "maximum_error_bytes": 16.0,
+                "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/brass_brown-00.png"
+              },
+              {
+                "iteration": 1,
+                "albedo_linear": [
+                  0.1856503172697299,
+                  0.1676252640084784,
+                  0.12853476582209872
+                ],
+                "displayed_srgb_bytes": [
+                  134.0,
+                  124.00000762939453,
+                  104.00000762939453
+                ],
+                "target_srgb_bytes": [
+                  131.0,
+                  122.0,
+                  105.0
+                ],
+                "maximum_error_bytes": 3.0,
+                "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/brass_brown-01.png"
+              },
+              {
+                "iteration": 2,
+                "albedo_linear": [
+                  0.1784935961873665,
+                  0.16299283246728571,
+                  0.1306338645078645
+                ],
+                "displayed_srgb_bytes": [
+                  132.0,
+                  122.00000762939453,
+                  105.00000762939453
+                ],
+                "target_srgb_bytes": [
+                  131.0,
+                  122.0,
+                  105.0
+                ],
+                "maximum_error_bytes": 1.0,
+                "image": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/tunic13/calibration-chest/brass_brown-02.png"
+              }
+            ],
+            "metallic": 0.15,
+            "roughness": 0.94,
+            "specular_ior": 0.12
+          }
+        },
+        "reference_reason": "Common garment-oriented upper-chest swatch at world (-.08,-.31,1.30), normal (.47,-.88,0) measured from the exported chest. Keeps pigments comparable while avoiding the overly dark front cloth from an upward-only fit. Heap uses its floor location.",
+        "brass_reason": "Oxide-dulled brass: metallic .15, roughness .94, specular .12. The .55-metallic trial retained pale reflections on the real fittings.",
+        "disposition": "Superseded only for primary wool: a 5 by 5 mottled-pixel sample underrepresented the blue cast; use the same labelled point with a 49 by 49 median."
       }
     ],
-    "brass_reason": "Oxide-dulled brass: metallic .15, roughness .94, specular .12. The .55-metallic trial retained pale reflections on the real fittings."
+    "sampling_reason": "Primary wool patch widened at unchanged target point (620,520): median (104,106,109) over 25 pixels becomes (102,106,114) over 2401 pixels. Other target samples and the calibrated brass finish are unchanged."
   }
 }
