@@ -175,6 +175,7 @@ def build(state):
     size = record['size']
     masks = np.stack([read(directory / (kind + '.png'))[::-1, :, 0] for kind in ['ao', 'cavity', 'up']], -1)
     folds = read(directory / 'fold.png')[::-1, :, 0]
+    cloth_cavity = read(directory / 'cloth_cavity.png')[::-1, :, 0]
     masks[..., 1] = .35 * masks[..., 1] + .65 * folds
     masks = np.dstack([masks, np.zeros((size, size), np.float32)])
     albedo = np.zeros((size, size, 4), np.float32)
@@ -209,6 +210,8 @@ def build(state):
                 base = sample(texture, material_uv)
             else:
                 base = sample(texture, physical_uv, True)
+            if kind in {'fabric', 'throw'}:
+                masks[yy, xx, 1] = .35 * cloth_cavity[yy, xx] + .65 * folds[yy, xx]
             dust_scan = sample(surfaces['dust'], physical_uv, True)
             colour = finish_colour(base, masks[yy, xx], state == 'aged', kind, dust_scan)
             alpha = sample(original['albedo'], bary @ old)[..., 3] if 'albedo' in original else np.ones(len(xx))

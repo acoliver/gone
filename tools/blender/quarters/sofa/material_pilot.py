@@ -11,19 +11,11 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[3]
 sys.path.insert(0, str(HERE))
 from atlas_layout import rectangles
-from fold_masks import bake_folds
+from fold_masks import bake_cloth_masks
+from material_roles import role
 
 SCRATCH = ROOT / 'tmp/mat/sofa'
 ASSETS = ROOT / 'assets/props/quarters/sofa'
-
-
-def role(name):
-    if name.startswith('PaintedSteel'): return 'paint'
-    if name.startswith('BareSteel'): return 'steel'
-    if name.startswith(('Foam', 'FloorDust')): return 'foam'
-    if name.startswith(('Oatmeal', 'Wool')): return 'throw'
-    if name.startswith(('Charcoal', 'Upholstery')): return 'fabric'
-    raise ValueError('Unknown sofa material: ' + name)
 
 
 def image_pixels(image):
@@ -143,7 +135,7 @@ def prepare(state):
         image.filepath_raw = str(directory / (channel + '.png'))
         image.file_format = 'PNG'
         image.save()
-    bake_folds(objects, directory / 'fold.png', size)
+    bake_cloth_masks(objects, directory, size)
     (directory / 'layout.json').write_text(json.dumps(dict(state=state, size=size, groups=records), indent=2) + '\n')
     bpy.context.preferences.filepaths.save_version = 0
     bpy.ops.wm.save_as_mainfile(filepath=str(directory / 'prepared.blend'))

@@ -53,12 +53,15 @@ bpy.ops.object.bake(type='EMIT')
 joined = np.array(control.pixels[:]).reshape(64, 64, 4)[14:48, 10:23, 0].mean()
 vertices = [v.co[:] for v in mesh.vertices]
 faces = [p.vertices[:] for p in mesh.polygons]
-output = ROOT / 'tmp/mat/sofa/fold-test.png'
-bake_folds([obj], output, 64)
-separated = np.array(bpy.data.images['Sofa_cloth_folds'].pixels[:]).reshape(64, 64, 4)[14:48, 10:23, 0].mean()
+isolated = {}
+for name, distance in [('fold', .03), ('cavity', .008)]:
+    output = ROOT / 'tmp/mat/sofa' / (name + '-test.png')
+    bake_folds([obj], output, 64, distance=distance)
+    image = bpy.data.images.load(str(output), check_existing=False)
+    isolated[name] = float(np.array(image.pixels[:]).reshape(64, 64, 4)[14:48, 10:23, 0].mean())
 assert joined < .6, ('control must see filling occlusion', joined)
-assert separated > .99, ('flat cloth must have no fold grime', separated)
+assert all(value > .99 for value in isolated.values()), ('flat cloth must have no fold/cavity grime', isolated)
 assert [v.co[:] for v in mesh.vertices] == vertices
 assert [p.vertices[:] for p in mesh.polygons] == faces
 assert len(bpy.context.scene.objects) == 1
-print('FOLD REGRESSION PASS', dict(joined_ao=float(joined), cloth_only_ao=float(separated), geometry_unchanged=True))
+print('FOLD REGRESSION PASS', dict(joined_ao=float(joined), cloth_only_ao=isolated, geometry_unchanged=True))

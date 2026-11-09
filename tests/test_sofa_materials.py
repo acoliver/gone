@@ -10,6 +10,16 @@ from atlas_layout import rectangles
 
 
 class SofaMaterials(unittest.TestCase):
+    def test_atlas_and_cloth_masks_share_slot_roles(self):
+        from material_roles import role
+        for name, expected in [('Charcoal', 'fabric'), ('Upholstery', 'fabric'),
+                               ('Wool', 'throw'), ('Oatmeal', 'throw'),
+                               ('Foam_Charcoal', 'foam'), ('FloorDust', 'foam'),
+                               ('PaintedSteel_Wool', 'paint'), ('BareSteel', 'steel')]:
+            self.assertEqual(role(name), expected)
+        with self.assertRaises(ValueError):
+            role('Unknown')
+
     def test_dust_scan_controls_deposit_variation(self):
         base = np.full((3, 3), .4)
         masks = np.array([[1, 1, 1], [1, 1, 1], [1, 1, 0]])

@@ -8,9 +8,11 @@ import bpy
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from material_roles import role
 
 
-def bake_folds(objects, output, size):
+def bake_folds(objects, output, size, distance=.03):
     image = bpy.data.images.new('Sofa_cloth_folds', width=size, height=size, alpha=False)
     image.colorspace_settings.name = 'Non-Color'
     image.pixels.foreach_set(np.ones(size * size * 4, dtype=np.float32))
@@ -19,7 +21,7 @@ def bake_folds(objects, output, size):
     for source in objects:
         source.hide_render = True
         for slot, original in enumerate(source.data.materials):
-            if not any(token in original.name for token in ['Charcoal', 'Upholstery', 'Oatmeal', 'Wool']):
+            if role(original.name) not in {'fabric', 'throw'}:
                 continue
             clone = source.copy()
             clone.data = source.data.copy()
@@ -40,7 +42,7 @@ def bake_folds(objects, output, size):
             emit = nodes.new('ShaderNodeEmission')
             occlusion = nodes.new('ShaderNodeAmbientOcclusion')
             occlusion.only_local = True
-            occlusion.inputs['Distance'].default_value = .12
+            occlusion.inputs['Distance'].default_value = distance
             occlusion.samples = 8
             links.new(occlusion.outputs['Color'], emit.inputs['Color'])
             links.new(emit.outputs[0], output_node.inputs['Surface'])
@@ -76,6 +78,11 @@ def bake_folds(objects, output, size):
     print('CLOTH FOLDS', output, flush=True)
 
 
+def bake_cloth_masks(objects, directory, size):
+    bake_folds(objects, directory / 'fold.png', size)
+    bake_folds(objects, directory / 'cloth_cavity.png', size, distance=.008)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--state', choices=['aged', 'as_built'], required=True)
@@ -83,4 +90,4 @@ if __name__ == '__main__':
     directory = ROOT / 'tmp/mat/sofa' / args.state
     bpy.ops.wm.open_mainfile(filepath=str(directory / 'prepared.blend'))
     objects = [obj for obj in bpy.context.scene.objects if obj.type == 'MESH']
-    bake_folds(objects, directory / 'fold.png', 4096 if args.state == 'aged' else 2048)
+    bake_cloth_masks(objects, directory, 4096 if args.state == 'aged' else 2048)
