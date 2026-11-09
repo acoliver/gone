@@ -94,19 +94,19 @@ def lip_seeds(sheet, scene, camera, opacity):
     return result
 
 
-def diagnostics(asset, out):
+def diagnostics(asset, out, modes=None, scale=1, control=None):
     record = {}
     sheet = np.load(asset.parent / 'game-sheet.npz')
     opacity = json.loads((asset.parent / 'finished.json').read_text())['opacity']
-    for mode in ['labels', 'normals', 'faces', 'faces-30', 'faces-120', 'faces-210',
-                 'faces-300', 'hero-labels', 'hero-before']:
+    for mode in modes or ['labels', 'normals', 'faces', 'faces-30', 'faces-120', 'faces-210',
+                          'faces-300', 'hero-labels', 'hero-before']:
         bpy.ops.wm.read_factory_settings(use_empty=True)
         path = ROOT / 'assets/props/quarters/dress_uniform.glb' if mode == 'hero-before' else asset
         bpy.ops.import_scene.gltf(filepath=str(path.resolve()))
         scene = bpy.context.scene
         scene.render.engine = 'BLENDER_EEVEE_NEXT'
-        scene.render.resolution_x = 1600
-        scene.render.resolution_y = 1422
+        scene.render.resolution_x = 1600*scale
+        scene.render.resolution_y = 1422*scale
         scene.render.resolution_percentage = 100
         scene.render.image_settings.file_format = 'PNG'
         scene.render.image_settings.color_mode = 'RGB'
@@ -137,7 +137,13 @@ def diagnostics(asset, out):
                 category = ('cover' if obj.name == 'TunicBody' else
                             'fringe' if 'Fringe' in source.name else
                             'residue' if obj.name == 'Hanger' else 'other')
-                obj.data.materials[i] = diagnostic_material(source, category, mode == 'normals', mode.startswith('faces'))
+                mat = diagnostic_material(source, category, mode == 'normals', mode.startswith('faces'))
+                if control == 'opaque' and obj.name == 'TunicBody':
+                    emission = next(n for n in mat.node_tree.nodes if n.type == 'EMISSION')
+                    mat.node_tree.links.new(emission.outputs[0], mat.node_tree.nodes['Material Output'].inputs['Surface'])
+                obj.data.materials[i] = mat
+            if control == 'no-fringe' and any('Fringe' in m.name for m in obj.data.materials):
+                obj.hide_render = True
         data = bpy.data.cameras.new('Tunic acceptance camera')
         camera = bpy.data.objects.new(data.name, data)
         scene.collection.objects.link(camera)
@@ -173,9 +179,14 @@ def diagnostics(asset, out):
             bm.free()
         record[mode] = dict(distance_m=float((camera.location-target).length), lens_mm=data.lens,
                             position_blender_m=list(camera.location), look_at_blender_m=list(target),
-                            projection=data.type, resolution=[1600, 1422])
+                            projection=data.type, resolution=[1600*scale, 1422*scale])
         if mode in ['labels', 'hero-labels']:
-            record[mode]['tear_lips'] = lip_seeds(sheet, scene, camera, opacity)
+            seeds = lip_seeds(sheet, scene, camera, opacity)
+            for sides in seeds.values():
+                for data in sides.values():
+                    data['segments_yx'] = (np.asarray(data['segments_yx'])*scale).tolist()
+                    data['radius_px'] *= scale
+            record[mode]['tear_lips'] = seeds
         bpy.ops.render.render(write_still=True)
     (out / 'tunic-cameras.json').write_text(json.dumps(record, indent=2)+'\n')
 
