@@ -204,13 +204,21 @@ def assemble(state):
     group.interface.new_socket(name='Occlusion', in_out='INPUT', socket_type='NodeSocketFloat')
     gltf.node_tree = group
     links.new(channels.outputs['Red'], gltf.inputs['Occlusion'])
+    powder_material = None
+    if any(obj.type == 'MESH' and 'Powder' in obj.name for obj in bpy.context.scene.objects):
+        powder_material = material.copy()
+        powder_material.name = 'SofaPowder_' + state
+        powder_nodes = powder_material.node_tree.nodes
+        powder_shader = powder_nodes['Principled BSDF']
+        powder_albedo = next(node for node in powder_nodes if node.type == 'TEX_IMAGE' and node.image == images['albedo'])
+        powder_material.node_tree.links.new(powder_albedo.outputs['Alpha'], powder_shader.inputs['Alpha'])
     for obj in bpy.context.scene.objects:
         if obj.type != 'MESH': continue
         obj.data.materials.clear()
-        obj.data.materials.append(material)
+        obj.data.materials.append(powder_material if 'Powder' in obj.name else material)
         for face in obj.data.polygons: face.material_index = 0
     for mat in list(bpy.data.materials):
-        if mat != material: bpy.data.materials.remove(mat)
+        if mat not in {material, powder_material}: bpy.data.materials.remove(mat)
     for image in list(bpy.data.images):
         if image not in images.values() and image.users == 0: bpy.data.images.remove(image)
     bpy.context.preferences.filepaths.save_version = 0

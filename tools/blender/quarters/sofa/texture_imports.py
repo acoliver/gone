@@ -12,7 +12,9 @@ def main():
     for file in sorted(ASSETS.glob('*.png')):
         path = 'res://' + file.relative_to(ROOT).as_posix()
         imported = 'res://.godot/imported/' + file.name + '-' + hashlib.md5(path.encode()).hexdigest() + '.ctex'
-        text = re.sub(r'^uid=.*\n', '', template, flags=re.MULTILINE)
+        metadata = file.with_suffix('.png.import')
+        uid = re.search(r'^uid=.*$', metadata.read_text(), flags=re.MULTILINE) if metadata.exists() else None
+        text = re.sub(r'^uid=.*\n', uid.group(0) + '\n' if uid else '', template, flags=re.MULTILINE)
         text = re.sub(r'res://\.godot/imported/[^"\]]+\.ctex', imported, text)
         text = text.replace('res://assets/props/quarters/storage_locker_module/as_built_albedo.png', path)
         text = text.replace('detect_3d/compress_to=1', 'detect_3d/compress_to=0')

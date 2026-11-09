@@ -45,6 +45,12 @@ def finish_colour(base, masks, aged, kind, dust_scan=None):
     return dirty * (1 - dust * coverage) + pigment * dust * coverage
 
 
+def tear_edge_colour(colour, distance, foam):
+    weight = .45 * np.clip(1 - np.asarray(distance) / 5, 0, 1)
+    weight = weight * weight / .45
+    return colour * (1 - weight[..., None]) + foam * weight[..., None]
+
+
 def read(path):
     return np.asarray(Image.open(path).convert('RGB'), np.float32) / 255
 
@@ -114,6 +120,8 @@ def statistics(colour):
 
 
 def sources(state):
+    from finish_calibration import calibrated_scan
+    fitted = json.loads((SOURCE / 'finish-calibration.json').read_text())
     aged = state == 'aged'
     names = {'fabric': 'upholstery-aged' if aged else 'upholstery-clean',
              'throw': 'throw-aged' if aged else 'throw-clean', 'foam': 'foam'}
@@ -146,7 +154,6 @@ def sources(state):
     images['paint'] = tileable(read(locker / selection['left']['chosen']))
     images['steel'] = tileable(read(locker / selection['hardware']['chosen']))
     if not aged:
-        # The locker's clean atlas owns the painted and bare-steel palette.
         clean = read(ROOT / 'assets/props/quarters/storage_locker_module/as_built_albedo.png')
         orm = read(ROOT / 'assets/props/quarters/storage_locker_module/as_built_orm.png')
         painted = (orm[..., 2] < .1) & (clean.max(2) > .05)
@@ -159,9 +166,15 @@ def sources(state):
         images[kind] = gaussian_filter(images[kind], (6, 6, 0), mode='wrap')
         calibration[kind].update(base_colour_lowpass_sigma_px=6, calibrated=statistics(images[kind]))
     if aged:
-        for kind in ['paint', 'steel']:
-            mean = images[kind].mean((0, 1))
-            images[kind] = mean + (images[kind] - mean) * .10
+        mean = images['steel'].mean((0, 1))
+        images['steel'] = mean + (images['steel'] - mean) * .10
+    # Both states start with the design's grey pigment, before local aging.
+    paint_grain = clean_metal_scan(read(locker / selection['left']['chosen']), np.ones(3) * .5)
+    images['paint'] = calibrated_scan(paint_grain, fitted['paint']['linear_albedo'])
+    images['foam'] = calibrated_scan(images['foam'], fitted['foam']['linear_albedo'])
+    images['crumb'] = calibrated_scan(images['foam'], fitted['crumb']['linear_albedo'])
+    for kind in ['paint', 'foam', 'crumb']:
+        calibration[kind] = dict(display_fit=fitted[kind], calibrated=statistics(images[kind]))
     dust, plane = flatten_illumination(read(SOURCE / selected['dust']))
     gain = linear(np.array([.86, .82, .74])) / linear(dust).mean((0, 1))
     images['dust'] = tileable(np.clip(srgb(linear(dust) * gain), 0, 1))
@@ -186,6 +199,7 @@ def build(state):
     orm = np.full((size, size, 3), [1, 1, 0], np.float32)
     occupied = np.zeros((size, size), bool)
     surfaces, calibration = sources(state)
+    foam_mean = surfaces['foam'].mean((0, 1))
     report = dict(state=state, size=size, groups={}, source_statistics={}, calibration=calibration)
     selected = json.loads((SOURCE / 'selected.json').read_text())
     for name, file in selected.items():
@@ -196,6 +210,11 @@ def build(state):
         data = np.load(directory / (identity + '.npz'))
         original = {name: np.load(directory / file, mmap_mode='r') for name, file in group['sources'].items()}
         texture = surfaces[kind]
+        edge_distance = None
+        if state == 'aged' and kind in {'fabric', 'throw'} and 'albedo' in original:
+            opacity = original['albedo'][..., 3] >= .5
+            if not opacity.all():
+                edge_distance = distance_transform_edt(opacity)[..., None]
         for uv, old, position in zip(data['uv'], data['source_uv'], data['positions']):
             raster = pixels(uv, size)
             if raster is None: continue
@@ -210,17 +229,26 @@ def build(state):
                 material_uv = (bary @ uv * size - [x + 8, y + 8]) / [w - 16, h - 16]
                 # One full generated image per part; only the fine yarn swatch repeats.
                 base = sample(texture, material_uv)
+                if kind == 'foam':
+                    floor = xyz[:, 2] < .04
+                    base[floor] = sample(surfaces['crumb'], material_uv[floor])
             else:
                 base = sample(texture, physical_uv, True)
             if kind in {'fabric', 'throw'}:
                 masks[yy, xx, 1] = .35 * cloth_cavity[yy, xx] + .65 * folds[yy, xx]
             dust_scan = sample(surfaces['dust'], physical_uv, True)
             colour = finish_colour(base, masks[yy, xx], state == 'aged', kind, dust_scan)
+            if edge_distance is not None:
+                distance = sample(edge_distance, bary @ old)[..., 0]
+                colour = tear_edge_colour(colour, distance, foam_mean)
             alpha = sample(original['albedo'], bary @ old)[..., 3] if 'albedo' in original else np.ones(len(xx))
             albedo[yy, xx, :3], albedo[yy, xx, 3] = colour, alpha
             without_dust = masks[yy, xx, :3].copy()
             without_dust[:, 2] = 0
-            nodust[yy, xx, :3] = finish_colour(base, without_dust, state == 'aged', kind, dust_scan)
+            control = finish_colour(base, without_dust, state == 'aged', kind, dust_scan)
+            if edge_distance is not None:
+                control = tear_edge_colour(control, distance, foam_mean)
+            nodust[yy, xx, :3] = control
             nodust[yy, xx, 3] = alpha
             masks[yy, xx, 3] = {'fabric': .1, 'throw': .3, 'foam': .5, 'paint': .7, 'steel': .9}[kind]
             if 'normal' in original:
@@ -268,4 +296,7 @@ def build(state):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--state', choices=['as_built', 'aged'], required=True)
-    build(parser.parse_args().state)
+    parser.add_argument('--scratch', type=Path, default=SCRATCH)
+    args = parser.parse_args()
+    SCRATCH = args.scratch.resolve()
+    build(args.state)

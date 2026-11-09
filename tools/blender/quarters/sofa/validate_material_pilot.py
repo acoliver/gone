@@ -32,27 +32,27 @@ def geometry(before_path, after_path):
     return dict(parts=parts, names_identical=True, pivots_identical=True, maximum_position_delta_m=max(p['maximum_position_delta_m'] for p in parts.values()))
 
 
-def renders():
+def renders(directory=OUT, locker_before=None):
     results = {}
     for angle in ['hero', 'front', 'detail', 'top', 'streaks']:
-        aged = rgb(OUT / ('aged-albedo-' + angle + '.png'))
-        ids = rgb(OUT / ('aged-ids-' + angle + '.png'))
+        aged = rgb(directory / ('aged-albedo-' + angle + '.png'))
+        ids = rgb(directory / ('aged-ids-' + angle + '.png'))
         covered = (ids[..., 0] > .5) & (ids[..., 2] > .5)
         largest, total = newly_green(np.zeros_like(aged), aged, covered)
         results[angle] = dict(no_green_largest_region=largest, no_green_total=total, **{'pass': total < .005})
     dust = {}
     for light in ['neutral', 'present']:
-        enabled = rgb(OUT / ('aged-' + light + '-top.png'))
-        disabled = rgb(OUT / ('aged-nodust-' + light + '-top.png'))
-        ids = rgb(OUT / 'aged-ids-top.png')
-        regions = rgb(OUT / 'aged-regions-top.png')
+        enabled = rgb(directory / ('aged-' + light + '-top.png'))
+        disabled = rgb(directory / ('aged-nodust-' + light + '-top.png'))
+        ids = rgb(directory / 'aged-ids-top.png')
+        regions = rgb(directory / 'aged-regions-top.png')
         covered = (ids[..., 0] > .5) & (ids[..., 2] > .5) & (regions[..., 2] > .7)
         delta = np.abs(enabled - disabled).max(2)
         changed = float((delta[covered] >= 8 / 255).mean())
         dust[light] = dict(up_face_pixels=int(covered.sum()), changed_by_8_levels_fraction=changed,
                            mean_absolute_srgb_delta=float(delta[covered].mean()),
                            threshold='>=0.05 of visible up-face pixels change by >=8/255', **{'pass': changed >= .05})
-    before, after = OUT / 'locker-before', OUT / 'locker-after'
+    before, after = locker_before or directory / 'locker-before', directory / 'locker-after'
     names = sorted(p.name for p in before.glob('*.png'))
     same = [name for name in names if (before / name).read_bytes() == (after / name).read_bytes()]
     assert names and len(same) == len(names), 'locker rendered PNG bytes unchanged'

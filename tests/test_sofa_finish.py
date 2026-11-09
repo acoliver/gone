@@ -22,6 +22,29 @@ class SofaFinish(unittest.TestCase):
         np.testing.assert_allclose(linear(result).mean((0, 1)), target, atol=1e-6)
         self.assertGreater(result.std(), .03)
 
+    def test_torn_rim_blends_colour_without_changing_interior(self):
+        from finish_materials import tear_edge_colour
+        cloth = np.full((3, 3), .7)
+        foam = np.array([.42, .31, .20])
+        result = tear_edge_colour(cloth, np.array([0, 2, 8]), foam)
+        self.assertLess(result[0, 2], result[1, 2])
+        self.assertLess(result[1, 2], result[2, 2])
+        np.testing.assert_array_equal(result[2], cloth[2])
+
+    def test_exported_powder_uses_blended_alpha_without_changing_cloth_cutouts(self):
+        import json
+        import struct
+        path = Path(__file__).resolve().parents[1] / 'assets/props/quarters/sofa_aged.glb'
+        raw = path.read_bytes()
+        document = json.loads(raw[20:20 + struct.unpack_from('<I', raw, 12)[0]])
+        for node in document['nodes']:
+            if 'mesh' not in node:
+                continue
+            expected = 'BLEND' if 'Powder' in node['name'] else 'MASK'
+            for primitive in document['meshes'][node['mesh']]['primitives']:
+                material = document['materials'][primitive['material']]
+                self.assertEqual(material['alphaMode'], expected, node['name'])
+
     def test_uv_measure_rejects_stacked_triangles(self):
         uv = np.array([[[0, 0], [1, 0], [0, 1]]] * 2, dtype=float)
         xyz = np.dstack([uv, np.zeros((2, 3))])

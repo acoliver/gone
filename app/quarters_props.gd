@@ -4,6 +4,7 @@ extends RefCounted
 
 const STEEL := preload("res://app/shaders/quarters_steel.gdshader")
 const SOFA := preload("res://app/shaders/quarters_sofa.gdshader")
+const SOFA_POWDER := preload("res://app/shaders/quarters_sofa_powder.gdshader")
 const SOFA_ROOT := "res://assets/props/quarters/sofa/"
 const SOFA_WEAVE := preload(SOFA_ROOT + "weave.png")
 const SOFA_SETS := {
@@ -94,11 +95,21 @@ static func material(prop: StringName, state: StringName) -> ShaderMaterial:
 	_materials[identity] = result
 	return result
 
+static func _sofa_powder_material(state: StringName) -> ShaderMaterial:
+	var identity := StringName("sofa/%s/powder" % state)
+	if _materials.has(identity): return _materials[identity]
+	var result := ShaderMaterial.new()
+	result.shader = SOFA_POWDER
+	for kind: String in SOFA_SETS[state]:
+		result.set_shader_parameter("baked_" + kind, SOFA_SETS[state][kind])
+	_materials[identity] = result
+	return result
+
 static func apply(root: Node3D, prop: StringName, state: StringName) -> void:
 	if prop == &"sofa":
 		var finish := material(prop, state)
 		for node: Node in root.find_children("*", "MeshInstance3D", true, false):
-			(node as MeshInstance3D).material_override = finish
+			(node as MeshInstance3D).material_override = _sofa_powder_material(state) if String(node.name).contains("Powder") else finish
 		return
 	prepare_geometry(root)
 	if _face_layout.is_empty():

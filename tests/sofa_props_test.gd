@@ -23,10 +23,17 @@ func test_both_sofa_mesh_states_receive_the_shared_finish_without_changing_pivot
 			meshes.append(piece.mesh)
 			transforms.append(piece.transform)
 		QuartersProps.apply(model, &"sofa", state)
+		var powder_finish: Material
 		for index: int in range(pieces.size()):
 			var piece := pieces[index] as MeshInstance3D
 			assert_true(piece.mesh == meshes[index] and piece.transform == transforms[index], "materials preserve mesh and pivot")
-			assert_true(piece.material_override == QuartersProps.material(&"sofa", state), "every surface uses the cached finish")
+			if String(piece.name).contains("Powder"):
+				if powder_finish == null: powder_finish = piece.material_override
+				assert_true(piece.material_override == powder_finish, "powder cards share one cached state material")
+				assert_true(piece.material_override.shader.resource_path.ends_with("quarters_sofa_powder.gdshader"), "powder retains filtered alpha coverage")
+				assert_true(piece.material_override.get_shader_parameter("baked_albedo") == QuartersProps.material(&"sofa", state).get_shader_parameter("baked_albedo"), "powder shares calibrated atlas")
+			else:
+				assert_true(piece.material_override == QuartersProps.material(&"sofa", state), "solid surfaces use the cached finish")
 		for name: String in ["Frame", "Feet", "Rivets", "SeatCushion_C", "SeatCushion_L", "SeatCushion_R", "BackCushion_C", "BackCushion_L", "BackCushion_R", "Throw"]:
 			assert_true(model.find_child(name, true, false) != null, "retained sofa part: " + name)
 		model.free()
@@ -42,7 +49,10 @@ func test_sofa_construction_does_not_mutate_locker_material_or_mapping() -> void
 	var door := locker.find_child("Door", true, false) as MeshInstance3D
 	var rectangle: Vector4 = door.get_instance_shader_parameter(&"face_rectangle")
 	for state: StringName in [&"as_built", &"aged"]:
-		QuartersProps.material(&"sofa", state)
+		var scene: PackedScene = load("res://assets/props/quarters/sofa%s.glb" % ("_aged" if state == &"aged" else ""))
+		var sofa := scene.instantiate() as Node3D
+		QuartersProps.apply(sofa, &"sofa", state)
+		sofa.free()
 	assert_true(finish == QuartersProps.material(&"storage_locker_module", &"aged"), "locker cache identity unchanged")
 	assert_true(finish.shader == shader and finish.shader != QuartersProps.material(&"sofa", &"aged").shader, "locker shader is untouched")
 	for parameter: String in parameters:
