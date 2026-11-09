@@ -16,6 +16,15 @@ message and fault text are placeholders under `decisions.md` ruling 16. The
 sequence lasts 300 logical ticks, then switches to Present. Re-entering keeps
 Present for the current play session. The regular white strips follow secondary
 power; the bedside lamps are dead in Present, and the console stays lit.
+Both states retain the world exposure multiplier of 2.0. Remembered has four
+warm ceiling keys at energy 3.2 each, colour (1.0, 0.73, 0.46), plus two
+bedside lamps at 0.35, colour (1.0, 0.64, 0.31): total energy 13.5. Present
+keeps four secondary-power regular strips at 1.969542 each, colour
+(1.0, 0.97, 0.90): total 7.878170, with no bedside light. The previous warm
+keys were only 1.1 each, making Remembered's total 5.1, below Present.
+Increasing only the room's remembered keys makes the memory warm and brighter
+without changing corridor strips, other rooms, or exposure. Their shared-range
+ceiling keys also give a colour-weighted light-energy contrast above 1.25:1.
 Without the start option, play still begins in stasis. The aft ladder well
 reaches D16, where `D16-C-001-H-AFT` cranks open onto the quarters corridor.
 

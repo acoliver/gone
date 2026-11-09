@@ -73,6 +73,28 @@ func test_console_registered_with_existing_interaction_system_only_on_d16() -> v
 	context.deck = 16
 	assert_true(Interactions.hit_distance(target, context, []) >= 0, "approved console approach is in reach")
 
+func test_remembered_is_brighter_than_secondary_present_without_exposure_changes() -> void:
+	var game := Game.new(114)
+	game.press_console()
+	var room := QuartersRoom.build(game)
+	var energies: Array[float] = []
+	var photopic: Array[float] = []
+	for state: Node3D in [room.remembered, room.present]:
+		var energy := 0.0
+		var weighted := 0.0
+		for light: OmniLight3D in state.find_children("*", "OmniLight3D", true, false):
+			energy += light.light_energy
+			weighted += light.light_energy * Vector3(light.light_color.r, light.light_color.g, light.light_color.b).dot(Vector3(0.2126, 0.7152, 0.0722))
+		energies.append(energy)
+		photopic.append(weighted)
+	assert_float_in_range(energies[0], 13.49, 13.51, "four warm 3.2 keys plus two 0.35 bedside lamps")
+	assert_float_in_range(energies[1], 7.87, 7.89, "four unchanged secondary regular strips")
+	assert_true(photopic[0] > photopic[1] * 1.25, "warm memory remains brighter after accounting for warm light colour")
+	var environment := Lighting._world_environment()
+	assert_float_equal(environment.camera_attributes.exposure_multiplier, 2.0, "one unchanged world exposure for both room states and corridors")
+	environment.free()
+	room.free()
+
 func _enter(game: Game) -> void:
 	var context := Doors.Context.new()
 	context.face_id = game.layout.door(QuartersLayout.DOOR).face_ids()[0]

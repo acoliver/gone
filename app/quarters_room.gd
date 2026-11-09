@@ -90,7 +90,7 @@ func _lights() -> void:
 				lamp.position = position - Vector3(0, 0.10, 0)
 				lamp.omni_range = Lighting.REGULAR_RANGE
 				lamp.light_color = Color(1.0, 0.73, 0.46) if state == remembered else Lighting.REGULAR_WHITE
-				lamp.light_energy = 1.1 if state == remembered else 0.0
+				lamp.light_energy = 3.2 if state == remembered else 0.0
 				lamp.light_cull_mask = Lighting.QUARTERS_MASK
 				state.add_child(lamp)
 				if state == present: white_lights.append(lamp)
