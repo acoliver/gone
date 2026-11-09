@@ -21,7 +21,7 @@ def powder_texture(seed, size=1024):
     return rgba
 
 
-def powder_card(name, centre, extent, out, seed):
+def powder_card(name, centre, extent, out, seed, sectors=48):
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     image = image_from_array(name, powder_texture(seed), out/f'{name.lower()}.png')
@@ -50,7 +50,7 @@ def powder_card(name, centre, extent, out, seed):
     links.new(tex.outputs['Alpha'], cutoff.inputs[0])
     links.new(cutoff.outputs[0], shader.inputs['Alpha'])
     rng = np.random.default_rng(seed)
-    angle = np.linspace(0, 2*np.pi, 49)[:-1]
+    angle = np.linspace(0, 2*np.pi, sectors+1)[:-1]
     radius = rng.uniform(.90, 1., len(angle))
     uv = np.c_[np.cos(angle)*radius, np.sin(angle)*radius]
     vertices = [tuple(centre)]+[(centre[0]+u*extent[0], centre[1]+v*extent[1], centre[2]) for u, v in uv]

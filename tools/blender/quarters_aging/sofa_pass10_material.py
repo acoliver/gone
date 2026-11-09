@@ -19,6 +19,13 @@ def foam_albedo(ao):
     return result
 
 
+def replace_pixels(image, pixels):
+    image.unpack(method='REMOVE')
+    image.pixels.foreach_set(np.asarray(pixels, dtype=np.float32).ravel())
+    image.save()
+    image.pack()
+
+
 def local_cavity(dense, low, out):
     """Bake only the residue's own 8 mm cavities, excluding surrounding covers."""
     source_materials = list(dense.data.materials)
@@ -39,6 +46,7 @@ def local_cavity(dense, low, out):
         face.material_index = 0
     target = low.data.materials[0]
     image = target.node_tree.nodes['AO'].image
+    image.unpack(method='REMOVE')
     target.node_tree.nodes.active = target.node_tree.nodes['AO']
     scene = bpy.context.scene
     scene.render.bake.use_selected_to_active = True

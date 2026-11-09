@@ -1,5 +1,6 @@
 """Smaller residue fragments and contact-fitted fine powder below the tears."""
 import argparse
+import json
 from pathlib import Path
 import sys
 
@@ -15,7 +16,29 @@ from sofa_decay_debris import DepositContacts, deposit, opening_sources
 from sofa_decay_material import linear_to_srgb
 from sofa_decay_policy import ORDER
 from sofa_full_decay import ROOT, checkpoint
-from sofa_pass10_material import FOAM_TAN
+from sofa_pass10_material import FOAM_TAN, replace_pixels
+
+
+def retain_floor(debris, baseline, record, reference):
+    bm = bmesh.new()
+    bm.from_mesh(debris.data)
+    remove = [f for f in bm.faces if all((debris.matrix_world@v.co).z < .03 for v in f.verts)]
+    bmesh.ops.delete(bm, geom=remove, context='FACES')
+    bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context='VERTS')
+    source = baseline.data
+    points = [baseline.matrix_world@v.co for v in source.vertices]
+    faces = [f for f in source.polygons if all(points[i].z < .03 for i in f.vertices)]
+    inverse = debris.matrix_world.inverted()
+    vertices = {i: bm.verts.new(inverse@points[i]) for i in sorted({i for f in faces for i in f.vertices})}
+    for face in faces:
+        bm.faces.new([vertices[i] for i in face.vertices])
+    bm.to_mesh(debris.data)
+    bm.free()
+    record['placements'] = [p for p in record['placements'] if not p['floor']]+[p for p in reference['placements'] if p['floor']]
+    for spill, old in zip(record['spills'], reference['spills'], strict=True):
+        spill['origin_blender_m'] = old['origin_blender_m']
+        spill['floor_count'] = old['floor_count']
+    record['retained_floor_triangles'] = len(faces)
 
 
 def grain_pixels(seed, size=1024):
@@ -56,9 +79,7 @@ def finish_powder(card, contacts, seed, unsupported=frozenset()):
     contacts.add_mesh(points, faces)
     shader = card.data.materials[0].node_tree.nodes['Principled BSDF']
     image = shader.inputs['Base Color'].links[0].from_node.image
-    image.pixels.foreach_set(grain_pixels(seed).ravel())
-    image.save()
-    image.pack()
+    replace_pixels(image, grain_pixels(seed))
     card['aged_export'] = True
     return len(faces)
 
@@ -72,8 +93,6 @@ def fine_powder(out, record):
         supports = [surface_tree(bpy.data.objects[name+'_Residue']), surface_tree(bpy.data.objects['Frame'])]
         lips = opening_sources(cover)
         eligible = [p for p, _ in lips if p.z > .395 and (p.y < -.08 if name.startswith('Seat') else p.y > .28)]
-        if not eligible:
-            eligible = [p for p, _ in lips]
         anchor = min(eligible, key=lambda p: abs(p.x-cover.matrix_world.translation.x))
         y = anchor.y if name.startswith('Seat') else .35
         seed = 9710+index
@@ -95,7 +114,7 @@ def fine_powder(out, record):
         x = spill['origin_blender_m'][0]
         seed = 9750+index
         card = powder_card('FineFloorPowder_'+name, (x, -.515, .0005), (.045, .025),
-                           out/'textures/fine-powder', seed)
+                           out/'textures/fine-powder', seed, sectors=16)
         label = card.name
         count = finish_powder(card, contacts, seed)
         reports.append({'part': name, 'triangles': count, 'node': label if count else None,
@@ -105,7 +124,15 @@ def fine_powder(out, record):
 
 
 def finish(source, out, library):
-    record = deposit(source, out, library, visible_deposits=True, nonfloor_median=.004, deck_target=26)
+    record = deposit(source, out, library, visible_deposits=True, nonfloor_median=.004)
+    reference = ROOT/'tmp/age/pass9'
+    with bpy.data.libraries.load(str(reference/'deposited.blend'), link=False) as (_, target):
+        target.objects = ['FoamDebris']
+    baseline = target.objects[0]
+    old = json.loads((reference/'simulation.json').read_text())['debris']
+    retain_floor(bpy.data.objects['FoamDebris'], baseline, record['debris'], old)
+    bpy.data.objects.remove(baseline, do_unlink=True)
+    record['debris']['floor_reference'] = str(reference/'deposited.blend')
     shader = bpy.data.materials['Foam_Debris'].node_tree.nodes['Principled BSDF']
     shader.inputs['Base Color'].default_value = (*FOAM_TAN, 1)
     fine_powder(out, record)

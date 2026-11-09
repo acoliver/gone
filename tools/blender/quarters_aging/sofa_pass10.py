@@ -15,8 +15,8 @@ from sofa_decay_policy import ORDER
 from sofa_full_decay import ROOT, checkpoint
 from sofa_pass8_finish import clearance, save_lip_classes
 from sofa_pass9_finish import carry_clearance, points
-from sofa_pass10_material import tan_residue
-from sofa_pass10_mesh import fair_interior, restore_hold_patch, roughen_residue
+from sofa_pass10_material import replace_pixels, tan_residue
+from sofa_pass10_mesh import break_planar_patches, fair_interior, restore_hold_patch, roughen_residue
 
 
 def geometry(source, prepared, out, cover_limit=.006, throw_limit=.006):
@@ -34,6 +34,13 @@ def geometry(source, prepared, out, cover_limit=.006, throw_limit=.006):
     low.hide_render = True
     low['aged_export'] = False
     record['throw']['reduction'] = reduction
+    dense_right = bpy.data.objects['BackCushion_R']
+    bpy.data.objects.remove(bpy.data.objects['BackCushion_R_GameContact'], do_unlink=True)
+    low_right, reduction = decimate(dense_right, 2300, protect=.002, keep_factor=4)
+    low_right.name = 'BackCushion_R_GameContact'
+    low_right.hide_render = True
+    low_right['aged_export'] = False
+    record['cushions']['BackCushion_R']['cover_decimation'] = reduction
     for name in [*ORDER, 'Throw']:
         dense, low = bpy.data.objects[name], bpy.data.objects[name+'_GameContact']
         original = points(low)
@@ -51,6 +58,7 @@ def geometry(source, prepared, out, cover_limit=.006, throw_limit=.006):
             residue = bpy.data.objects[name+'_'+suffix]
             report = roughen_residue(residue, record['cushions'][name]['plan']['seed'])
             record['cushions'][name]['pass10_residue_detail'] = report
+        record['cushions'][name]['pass10_crust_relief'] = break_planar_patches(bpy.data.objects[name+'_Residue'])
     supports = [bpy.data.objects[n] for n in ['Frame', 'Feet', 'Rivets', 'DecayFloor']]
     supports += [bpy.data.objects[n+'_Residue'] for n in ORDER]
     covers = [bpy.data.objects[n+'_GameContact'] for n in [*ORDER, 'Throw']]
@@ -76,10 +84,7 @@ def geometry(source, prepared, out, cover_limit=.006, throw_limit=.006):
     checkpoint(out, record, 'geometry.blend')
 
 
-def materials(source, out):
-    detail(source, out)
-    throw_detail(out/'detailed.blend', out)
-    record = json.loads(bpy.context.scene['sofa_decay_record'])
+def apply_opacity(record, out):
     from sofa_pass10_opacity import opacity
     for name in [*ORDER, 'Throw']:
         low = bpy.data.objects[name+'_GameContact']
@@ -89,13 +94,18 @@ def materials(source, out):
         image = shader.inputs['Base Color'].links[0].from_node.image
         pixels = np.array(image.pixels[:], dtype=np.float32).reshape(image.size[1], image.size[0], 4)
         pixels[:, :, 3] = np.array(alpha.pixels[:], dtype=np.float32).reshape(image.size[1], image.size[0], 4)[:, :, 0]
-        image.pixels.foreach_set(pixels.ravel())
-        image.save()
-        image.pack()
+        replace_pixels(image, pixels)
         if name == 'Throw':
             record['throw']['materials']['opacity'] = report
         else:
             record['materials'][name]['cover']['opacity'] = report
+
+
+def materials(source, out):
+    detail(source, out)
+    throw_detail(out/'detailed.blend', out)
+    record = json.loads(bpy.context.scene['sofa_decay_record'])
+    apply_opacity(record, out)
     for name in ORDER:
         dense = bpy.data.objects[name+'_DenseResidue']
         low = bpy.data.objects[name+'_Residue']

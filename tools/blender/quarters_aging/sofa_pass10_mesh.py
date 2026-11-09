@@ -21,10 +21,41 @@ def roughen_residue(obj, seed, amplitude=.0015):
             'wavelength_m': .030, 'amplitude_m': amplitude, 'seed': seed,
             'maximum_displacement_m': float(np.linalg.norm(offset, axis=1).max())}
 
+
+def break_planar_patches(obj, lift=.0012, maximum_faces=64):
+    bm = bmesh.new()
+    bm.from_mesh(obj.data)
+    bmesh.ops.triangulate(bm, faces=list(bm.faces))
+    bm.normal_update()
+    bm.faces.index_update()
+    selected = set()
+    for edge in bm.edges:
+        if len(edge.link_faces) != 2 or edge.calc_face_angle() >= .01:
+            continue
+        if sum(f.calc_area() for f in edge.link_faces) <= .001:
+            continue
+        selected.update(f for f in edge.link_faces if f.normal.z > .1)
+    selected = sorted(selected, key=lambda f: (-f.calc_area(), f.index))[:maximum_faces]
+    for face in selected:
+        vertices = list(face.verts)
+        apex = bm.verts.new(face.calc_center_median()+face.normal*lift)
+        for a, b in zip(vertices, vertices[1:]+vertices[:1]):
+            bm.faces.new((a, b, apex))
+        bm.faces.remove(face)
+    bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
+    bm.to_mesh(obj.data)
+    bm.free()
+    recalc(obj)
+    return {'method': 'explicit crust relief on broad near-planar top patches',
+            'lift_m': lift, 'faces_refined': len(selected), 'triangles_added': len(selected)*2,
+            'maximum_faces': maximum_faces}
+
 def fair_interior(obj, maximum=.006, iterations=10, nonshrinking=False):
     bm = bmesh.new()
     bm.from_mesh(obj.data)
     original = {v: v.co.copy() for v in bm.verts}
+    coordinates = np.array([tuple(v.co) for v in bm.verts])
+    lower, upper = coordinates.min(0), coordinates.max(0)
     fixed = {v for v in bm.verts if v.is_boundary}
     layer = bm.verts.layers.deform.active
     hold = obj.vertex_groups.get('Retained stitches')
@@ -41,7 +72,7 @@ def fair_interior(obj, maximum=.006, iterations=10, nonshrinking=False):
                 target = vertex.co+factor*(mean-vertex.co)-original[vertex]
                 if target.length > maximum:
                     target *= maximum/target.length
-                updates[vertex] = original[vertex]+target
+                updates[vertex] = Vector(np.clip(np.asarray(original[vertex]+target), lower, upper))
             for vertex, position in updates.items():
                 vertex.co = position
     moved = max(((v.co-original[v]).length for v in bm.verts), default=0.)
