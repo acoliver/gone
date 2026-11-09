@@ -1568,3 +1568,45 @@ lockers_over_bed: paired 8/10; reference table in that comparison 9/10.
 Not yet accepted: none.
 
 Batch sheets: [`sheets/batch1-heroes.png`](sheets/batch1-heroes.png) and [`sheets/batch1-fitted-turntables.png`](sheets/batch1-fitted-turntables.png). Unaccepted fits are labelled as unfinished work. Per-prop `fit-review.json` retains the reviewer observations.
+
+## Batch 2: bed soft goods
+
+The soft goods are a separate asset at the fitted bed's origin: `bed_soft.glb` and `bed_soft_aged.glb`, with `Mattress`, `Quilt`, `Pillow_L` and `Pillow_R` nodes in both states. Blender authoring uses Z up and front -Y; export uses `export_yup=True` for game +Y up and front +Z. The metal frame is loaded from `bed.glb` as a collider and is not included in either soft-goods export. The nominal 1.6 × 2.2 m bed has a 1.46 × 2.03 m inner platform at 0.50 m; the mattress fits that measured inner bay.
+
+`prompts/batch2.json` follows the pilot image format, with seeds 241–244 generated through `tools/art/contact_sheet.py`. The local image-comparer selected seed 242; [`sheets/bed_soft/hero.png`](sheets/bed_soft/hero.png) retains that guide. Hunyuan is not used for these cloth forms. `build.py -- --assemble` under `tools/blender/quarters/bed_soft/` runs the sofa's pressure-shell method for the mattress and two pillows, then gravity-drapes a continuous quilt with a doubled head cuff. The mattress retains its underside platform-contact stitches. An unconstrained trial drifted against a rail and buckled; retaining those contacts fixes that cause. Shell and quilt simulation settings and motion measurements are retained in `simulation.json`.
+
+`age.py` derives the second state from the baked remembered source. Age is 1000 years in sealed, sterile, dry, oxygenated air, following ruling 25. The shared `foam_collapse` module supplies closed cracked foam plates and a settled upper cover. Point-touching cover panels are separated before thickness is added, keeping the torn cover watertight. The quilt starts clear of the whole rail/crust envelope, slides 0.31 m sideways and settles without suspended stitches. Coarse tears break cloth load paths before the gravity solve; the small triangles at refined tear edges are added after that solve. A retained wrap ridge prevents reduction from replacing the rail turn with a chord through steel. Pillows flatten to roughly 18–19.5 mm and split. The shared cloth attachment-distance helper, stress cuts, debris scatter and powder cards are reused without changing any shared module. There is no mould, vegetation or biological rot.
+
+Materials remain provisional cotton, wool and brown foam slots. The quilt uses fine yarn detail from the sofa's existing generated weave, with a median tile pitch of 0.12 m and 0.4 mm normal-height scale. The remembered quilt has an undyed turned underside and dark binding, with a short drape that exposes the stuffed mattress. The aged quilt is faded, the exposed foam is brown, and the cover and pillows have discoloured. Floor crumbs are 12–35 mm wide and 6–13 mm thick. The shared powder texture is sparsified into individual grains and irregular pools so the support remains visible through it.
+
+Rebuild from the repository root using the installed Blender 4.5.11 LTS and the existing Hunyuan Python environment. Use Blender flags `--background --factory-startup --threads 6 --python-exit-code 1 --python` for these scripts:
+
+1. Run `tools/blender/quarters/bed_soft/build.py -- --assemble`, then run `fit_contacts.py --state remembered` with Python.
+2. Run `age.py` with Blender, then `fit_contacts.py --state aged` with Python.
+3. Run `weave_textures.py` with Python and `apply_weave.py -- --state remembered` and `--state aged` with Blender.
+4. Re-export each retained source with `build.py -- --state remembered|aged --output <file.glb>`, targeting `tmp/bed_soft/remembered-repeat.glb` and `aged-repeat.glb`.
+5. Run `verify.py` and `test_verify.py` with Python. Run `render.py` with Blender, then `comparison.py` with Python.
+
+`fit_contacts.py` places each pillow 1 mm from the real headboard, then measures exact projected intersections of exported triangle planes to put quilt and pillow undersides 1 mm above the mattress. Vertex-only sampling missed an interior mattress crest, so the contact test includes a regression for that case. `verify.py` checks the exported GLBs with trimesh and triangle SAT, including both the complete aged mattress and its isolated foam-crust volume. `test_verify.py` has six crossing, contact, headboard-placement, volume-band and axis controls. The determinism gate re-exports each retained `.blend` source. `render.py` uses the exported GLBs on the unchanged frame with CPU Cycles. The doorway camera is at its room-relative doorway position, with a tighter lens for a prop-sized crop; the second camera is an elevated three-quarter view. Scratch and logs stay in `tmp/bed_soft/`.
+
+
+### Bed soft-goods gates and review
+
+Both states pass the geometry gates and received 8/10 from the local image-comparer for the interim-material stage. Measurements come from the exported GLBs; [`verify.json`](../../../tools/blender/quarters/bed_soft/verify.json) retains the per-part values.
+
+| Gate | Remembered | Aged 1000 years |
+|---|---:|---:|
+| Triangles, maximum 15,000 | 10,476 | 14,798 |
+| Triangle crossings with frame | 0 | 0 |
+| Crossings between soft-goods parts | 0 | 0 |
+| Support gaps, maximum 3 mm | 1.000 mm | 0.700–1.000 mm |
+| Pillow-to-headboard clearance | 1.000 mm | 1.000 mm |
+| Byte-identical saved-source re-export | Pass | Pass |
+| Exported +Y up, front +Z | Pass | Pass |
+| Watertight mattress | Pass | Pass, including isolated foam crust |
+
+The remembered mattress volume is 0.427450 m³. The aged crust and cover occupy 0.144110 m³, a ratio of 0.337138; the foam crust alone occupies 0.140953 m³, a ratio of 0.329753. Both ratios are inside the required 0.25–0.40 band. Six measurement-control tests pass. The exported bounds in metres are remembered `[-0.791097, 0.501000, -0.999000]` to `[0.770054, 0.852411, 1.096274]`, and aged `[-1.126975, 0.000700, -0.999000]` to `[0.699097, 0.677207, 1.201491]`. The aged bounds include the floor deposits and hanging quilt.
+
+The local `image-comparer` route (`qwen38-llamacpp`) reviewed the labelled concept/design comparisons and both full-resolution captures, with GPU requests serialized. Remembered scored **8/10**, accepted for interim materials. It identified two pillows, the turned cuff, a stuffed mattress and soft gravity drape. Remaining defects: the fine wool weave is difficult to resolve, and the drape is more casual than a strict military bed. Aged scored **8/10**, also accepted. It identified the low brown crust, flattened pillows, split and slumped quilt, and platform/floor deposits. Remaining defects: the crust is somewhat uniform, the powder patch still reads decal-like, and some torn edges remain geometric. These are recorded in [`remembered-review.json`](sheets/bed_soft/remembered-review.json) and [`aged-review.json`](sheets/bed_soft/aged-review.json), alongside the review prompts.
+
+Captures: [remembered doorway](sheets/bed_soft/remembered-doorway.png), [remembered three-quarter](sheets/bed_soft/remembered-three_quarter.png), [aged doorway](sheets/bed_soft/aged-doorway.png), and [aged three-quarter](sheets/bed_soft/aged-three_quarter.png). The [remembered comparison](sheets/bed_soft/remembered-comparison.png) and [aged comparison](sheets/bed_soft/aged-comparison.png) retain the relevant reference crops. Godot scene integration is left to the separate demo worktree.

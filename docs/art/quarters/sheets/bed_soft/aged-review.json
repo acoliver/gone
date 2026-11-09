@@ -1,0 +1,36 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\n  \"state\": \"pass\",\n  \"score_out_of_10\": 8,\n  \"visible_observations\": [\n    \"Doorway capture: 1 metal frame, 1 low brown crust mattress, 2 flattened pillows, 1 split quilt slumped off the near side, and a patch of brown powder/debris on the floor.\",\n    \"Three-quarter capture: 1 metal frame, 1 low brown crust mattress, 2 flattened pillows, 1 split quilt slumped off the near side, and a patch of brown powder/debris on the floor.\",\n    \"The mattress reads as a collapsed, cracked brown crust rather than a plump foam form, matching the decayed-PU requirement.\",\n    \"The cotton cover and wool quilt are faded, brittle, and split along folds, with flat rag-like fragments and a slumped section sliding off the side.\",\n    \"Fibre/foam powder and crumbs are visible on the platform and floor beside the bed, supporting the crumbling state.\"\n  ],\n  \"defects\": [\n    \"The brown crust texture is somewhat uniform and could read more like a flat decal than a deeply cracked, sunken foam collapse.\",\n    \"The powder/debris patch is a single flat decal-like smear rather than scattered individual crumbs, reducing the sense of active crumbling.\",\n    \"The quilt's split edges are clean and geometric in places, which slightly weakens the brittle, ragged aging readability.\"\n  ],\n  \"acceptable_for_interim_material_stage\": true\n}"
+      }
+    }
+  ],
+  "created": 1794258678,
+  "model": "qwen3.8-27b",
+  "system_fingerprint": "b1-6d05498",
+  "object": "chat.completion",
+  "usage": {
+    "completion_tokens": 326,
+    "prompt_tokens": 2836,
+    "total_tokens": 3162,
+    "prompt_tokens_details": {
+      "cached_tokens": 43
+    }
+  },
+  "id": "chatcmpl-hcptYWEfbqj67gdShtGQZHn9YjWtcF3l",
+  "timings": {
+    "cache_n": 43,
+    "prompt_n": 2793,
+    "prompt_ms": 20989.041,
+    "prompt_per_token_ms": 7.514873254564984,
+    "prompt_per_second": 133.06944323945052,
+    "predicted_n": 326,
+    "predicted_ms": 25423.61,
+    "predicted_per_token_ms": 78.22649230769231,
+    "predicted_per_second": 12.7833930743903
+  }
+}
