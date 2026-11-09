@@ -449,6 +449,7 @@ func test_generated_console_models_and_wall_mounts_are_present() -> void:
 	room.free()
 
 func test_status_board_has_one_running_system_and_native_naleya() -> void:
+	assert_int_equal(StatusBoardData.MINIMUM_ROW_CELL_PX, 60, "system rows preserve the minimum distance-reading cell height")
 	assert_int_equal(StatusBoardData.SYSTEMS.size(), 14, "board data carries the system list")
 	assert_int_equal(StatusBoardData.running_system_count(), 1, "only secondary power is running")
 	assert_true(StatusBoardData.SYSTEMS[1].perceived_es == "ENERGÍA SECUNDARIA", "running row is secondary power")
@@ -613,9 +614,12 @@ func test_status_board_screen_faces_into_room_and_has_schematic_content() -> voi
 	assert_true(board.basis.z.is_equal_approx(Vector3(0.0, 0.0, 1.0)), "the board quad faces into the room")
 	assert_true(board.position.z > screen.position.z, "the board quad sits in front of the panel glass")
 	var board_texture := load("res://assets/props/status_panel/board-native.png") as Texture2D
-	assert_true(board_texture != null, "the native board schematic texture loads")
+	var perceived_texture := load("res://assets/props/status_panel/board-perceived.png") as Texture2D
+	assert_true(board_texture != null and perceived_texture != null, "both board schematic textures load")
 	var image := board_texture.get_image()
-	assert_true(image.get_width() > 0 and image.get_height() > 0, "the board schematic texture is decoded")
+	var perceived_image := perceived_texture.get_image()
+	assert_true(image.get_size() == Vector2i(2560, 1080), "native board preserves the 2560×1080 layout")
+	assert_true(perceived_image.get_size() == image.get_size(), "perceived board preserves identical texture geometry")
 	var first := image.get_pixel(0, 0)
 	var has_schematic_detail := false
 	for y: int in range(0, image.get_height(), 16):

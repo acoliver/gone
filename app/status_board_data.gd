@@ -1,6 +1,7 @@
 class_name StatusBoardData
 extends RefCounted
 
+const MINIMUM_ROW_CELL_PX := 60
 const SYSTEMS: Array[Dictionary] = [
 	{"native": "te na nawa lina", "perceived_es": "ENERGÍA PRINCIPAL", "state": "palo"},
 	{"native": "te mu nawa lina", "perceived_es": "ENERGÍA SECUNDARIA", "state": "shenu"},
