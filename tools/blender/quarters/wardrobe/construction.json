@@ -40,9 +40,14 @@
     "VentBacking_2",
     "InnerVentBacking_2",
     "InnerDoorVent_2",
+    "VentBacking_3",
+    "DoorVent_3",
+    "InnerVentBacking_3",
+    "InnerDoorVent_3",
     "DoorHingeLeaf_0",
     "DoorHingeLeaf_1",
-    "DoorHingeLeaf_2"
+    "DoorHingeLeaf_2",
+    "DoorRivetsOuter"
   ],
   "required_nodes": [
     "Carcass",
@@ -91,17 +96,18 @@
   "visible_details": [
     "Rail",
     "DoorLatch",
-    "Hinges"
+    "Hinges",
+    "DoorRivets"
   ],
   "hero_camera_native": [
-    -1.1,
-    -4.0,
-    1.65
+    -1.4,
+    -5.0,
+    2.8
   ],
   "hero_camera_gltf": [
-    -1.1,
-    1.65,
-    4.0
+    -1.4,
+    2.8,
+    5.0
   ],
   "capture_scale": 1.25,
   "hero_target_native": [
@@ -238,9 +244,10 @@
       "centre_native": [
         0,
         -0.003035596586414613,
-        1.9859039783477783
+        1.82
       ],
-      "method": "Median of generated interior rail vertices; symmetry and manufactured circular section imposed after sparse fitting."
+      "guide_median_height_m": 1.9859039783477783,
+      "method": "Generated rail section faired to a circular bar; lowered clear of the opening head so it reads as a hanging rail rather than perimeter trim."
     },
     "asset_x_reflected_to_match_layout_hinge": true,
     "source": "tmp/props/wardrobe/guide.glb"

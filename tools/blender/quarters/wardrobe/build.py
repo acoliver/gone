@@ -24,8 +24,8 @@ SPEC={
     'pivots_gltf':{'Wardrobe':[0,0,0],'Door':[.500,.12,.340]},
     'materials':['PaintedSteel','BareSteel','DarkSteel'],
     'visible_details':['Rail','DoorLatch','Hinges'],
-    'hero_camera_native':[-1.1,-4.0,1.65],
-    'hero_camera_gltf':[-1.1,1.65,4.0],
+    'hero_camera_native':[-1.4,-5.0,2.8],
+    'hero_camera_gltf':[-1.4,2.8,5.0],
     'capture_scale':1.25,
     'hero_target_native':[.1,-.25,1.1],
     'triangle_limit':15000,
@@ -42,7 +42,9 @@ SPEC={
 
 
 def assemble(guide):
-    mats=materials(); paint=mats['PaintedSteel']; bare=mats['BareSteel']; dark=mats['DarkSteel']
+    mats=materials(paint_color=(.075,.090,.085,1)); paint=mats['PaintedSteel']; bare=mats['BareSteel']; dark=mats['DarkSteel']
+    paint.node_tree.nodes['Principled BSDF'].inputs['Metallic'].default_value=.05
+    paint.node_tree.nodes['Principled BSDF'].inputs['Roughness'].default_value=.75
     root=empty('Wardrobe'); body=empty('Carcass',parent=root)
     for name,dims,centre in [
         ('SidePanel_L',(.024,.65,2.2),(-.488,0,1.1)),
@@ -63,9 +65,11 @@ def assemble(guide):
                            for v in obj.data.vertices if abs(v.co.x)<.4 and abs(v.co.y)<.2 and 1.65<v.co.z<2.05])
     rail_y,rail_z=np.median(rail_samples[:,1:],axis=0)
     rail_y,rail_z=float(rail_y),float(rail_z)
+    guide_rail_z=rail_z;rail_z=1.82
     guide['rail_fitting']={'sample_count':len(rail_samples),'centre_native':[0,rail_y,rail_z],
-                           'method':'Median of generated interior rail vertices; symmetry and manufactured circular section imposed after sparse fitting.'}
-    cylinder('Rail',.014,.90,(0,rail_y,rail_z),dark,axis=(1,0,0),sides=24,parent=body)
+                           'guide_median_height_m':guide_rail_z,
+                           'method':'Generated rail section faired to a circular bar; lowered clear of the opening head so it reads as a hanging rail rather than perimeter trim.'}
+    cylinder('Rail',.016,.90,(0,rail_y,rail_z),bare,axis=(1,0,0),sides=24,parent=body)
     for x in (-.46,.46):
         cylinder('RailSocket_L' if x<0 else 'RailSocket_R',.023,.035,(x,rail_y,rail_z),bare,axis=(1,0,0),parent=body)
     # Keep every leaf detail under the hinge-origin mesh, not under the carcass.
@@ -88,7 +92,7 @@ def assemble(guide):
     recess(door,(.340,-.331,1.04),(.062,.010,.148))
     panel('InnerLatchPocket',(.060,.001,.146),(.340,-.3355,1.04),dark,.0004,parent=door)
     panel('DoorLatch',(.088,.012,.018),(.340,-.313,1.02),bare,.002,parent=door)
-    for i,z in enumerate((1.82,1.865,1.91)):
+    for i,z in enumerate((1.775,1.82,1.865,1.91)):
         recess(door,(-.08,-.351,z),(.30,.018,.014))
         panel(f'VentBacking_{i}',(.298,.002,.013),(-.08,-.343,z),dark,.0003,parent=door)
         vent=panel(f'DoorVent_{i}',(.32,.016,.022),(-.08,-.363,z),paint,.001,parent=door)
@@ -119,7 +123,10 @@ def assemble(guide):
         door_points.extend([(-.445,-.355,z),(.433,-.355,z)])
     for x in [-.36+i*.18 for i in range(5)]:
         door_points.extend([(x,-.355,.18),(x,-.355,2.06)])
-    rivets('DoorRivets',door_points,bare,parent=door)
+    rivets('DoorRivetsOuter',door_points,bare,parent=door)
+    rivets('DoorRivets',[(x,-.3317,z) for x,y,z in door_points],bare,
+           axis=(0,1,0),parent=door)
+    SPEC['visible_details'].append('DoorRivets')
     bpy.context.view_layer.update()
     door.rotation_euler.z=math.radians(-100)
     bpy.context.view_layer.update()

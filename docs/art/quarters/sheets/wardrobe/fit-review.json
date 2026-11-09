@@ -3,17 +3,17 @@
     "A approved design",
     "B fitted hero"
   ],
-  "rating": 6,
+  "rating": 7,
   "ready": false,
-  "observations": "Object A (Left): A grey-green steel wardrobe with a tall, rectangular silhouette. The door is hinged on the object's right side (viewer's right) and is open. The door features a recessed latch, a vertical column of rivets, and a set of four horizontal louvres near the top. The interior is clear with a horizontal hanging rail near the top. The base features a recessed dark kick plate. The top surface is flat and grey-green. Object B (Right): A similar grey-green steel wardrobe. The door is hinged on the object's right side (viewer's right) and is open. The door features a recessed latch and a set of three horizontal louvres near the top. The interior is clear with a horizontal hanging rail. The base features a recessed dark kick plate. The top surface is rendered in a distinct, bright white color, contrasting with the grey-green body. Comparison: The overall shape, proportions, and layout of the furniture are consistent between A and B. The hinge placement matches the brief (object's right). However, there are distinct deviations in the fitted hero (B). The top surface in B is white, whereas in A it is grey-green. The door louvres in B are reduced to three, whereas A has four. The rivet detailing on the door in B is less prominent or absent compared to the clear vertical column in A.",
+  "observations": "Object A (Left): A grey-green steel wardrobe viewed from the front-left. The door is hinged on the viewer's right and is open. It features a horizontal hanging rail near the top, a recessed latch, and three louvres on the door. The base has a recessed dark kick plate. The top surface is flat. Object B (Right): A grey-green steel wardrobe viewed from a front-right angle. The door is hinged on the viewer's left and is open. It features a horizontal hanging rail, a recessed latch, and three louvres. The base has a recessed dark kick plate. The top surface is beveled. Comparison: The objects share the same color, material, and general features (rail, louvres, latch, kick plate). However, the handedness is inverted: A has the hinge on the viewer's right, while B has the hinge on the viewer's left. The top surface of B is beveled, whereas A is flat. The viewing angle of B is more oblique, showing the right side panel, while A is more frontal.",
   "defects": [
-    "Top surface material mismatch: B is white, A is grey-green.",
-    "Door louvre count mismatch: B has 3 louvres, A has 4.",
-    "Missing rivet detail on the door in B."
+    "Hinge handedness is inverted between A and B (A: viewer's right, B: viewer's left).",
+    "Top surface of B is beveled, while A is flat.",
+    "Viewing angle of B is more oblique, showing the right side panel, while A is more frontal."
   ],
   "fixes": [
-    "Update the material slot for the top panel in B to match the grey-green painted steel of the carcass.",
-    "Increase the number of door louvres in B from 3 to 4 to match the approved design.",
-    "Add the vertical column of rivets to the door in B to match the manufacturing coherence of A."
+    "Re-render B with the hinge on the viewer's right to match A.",
+    "Adjust the top surface of B to be flat to match A.",
+    "Adjust the viewing angle of B to be more frontal to match A."
   ]
 }

@@ -263,6 +263,15 @@
       "positive_volume": true,
       "pass": true
     },
+    "DoorRivetsOuter": {
+      "component_count": 34,
+      "probe_count": 1836,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
     "DoorVent_0": {
       "component_count": 1,
       "probe_count": 54,
@@ -282,6 +291,15 @@
       "pass": true
     },
     "DoorVent_2": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DoorVent_3": {
       "component_count": 1,
       "probe_count": 54,
       "missed_rays": 0,
@@ -371,6 +389,15 @@
       "positive_volume": true,
       "pass": true
     },
+    "InnerDoorVent_3": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
     "InnerLatchPocket": {
       "component_count": 1,
       "probe_count": 54,
@@ -399,6 +426,15 @@
       "pass": true
     },
     "InnerVentBacking_2": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "InnerVentBacking_3": {
       "component_count": 1,
       "probe_count": 54,
       "missed_rays": 0,
@@ -541,10 +577,19 @@
       "winding_consistent": true,
       "positive_volume": true,
       "pass": true
+    },
+    "VentBacking_3": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
     }
   },
   "degenerate_faces": 0,
-  "triangle_count": 9056,
+  "triangle_count": 11016,
   "triangle_limit": 15000,
   "material_slots": [
     "BareSteel",
@@ -557,18 +602,19 @@
     "max_overlap_area_uv2": 0.0,
     "out_of_unit_square_coordinates": 0,
     "linear_texel_density_p05_p50_p95": [
-      0.18528949734268374,
-      0.19608372475338287,
-      0.2041480813899534
+      0.18108862427867028,
+      0.19145846027881727,
+      0.20329381658716267
     ],
-    "density_p95_p05_ratio": 1.101779023191971,
+    "density_p95_p05_ratio": 1.1226205809279421,
     "pass": true
   },
   "hero_first_hit_visibility": {
     "Rail": {
-      "sample_count": 130,
-      "visible_projected_area_fraction": 0.9946503545677617,
-      "visible_triangle_fraction": 0.18461538461538463,
+      "sample_count": 142,
+      "visible_projected_area_fraction": 0.9907448292148718,
+      "visible_triangle_fraction": 0.16901408450704225,
+      "projection": "orthographic",
       "minimum": 0.6,
       "pass": true
     },
@@ -576,13 +622,23 @@
       "sample_count": 54,
       "visible_projected_area_fraction": 1.0,
       "visible_triangle_fraction": 1.0,
+      "projection": "orthographic",
       "minimum": 0.6,
       "pass": true
     },
     "Hinges": {
       "sample_count": 426,
-      "visible_projected_area_fraction": 0.7086877223775497,
-      "visible_triangle_fraction": 0.6455399061032864,
+      "visible_projected_area_fraction": 0.6512336800421133,
+      "visible_triangle_fraction": 0.5985915492957746,
+      "projection": "orthographic",
+      "minimum": 0.6,
+      "pass": true
+    },
+    "DoorRivets": {
+      "sample_count": 1020,
+      "visible_projected_area_fraction": 0.6470584867143694,
+      "visible_triangle_fraction": 0.6470588235294118,
+      "projection": "orthographic",
       "minimum": 0.6,
       "pass": true
     }
@@ -618,7 +674,7 @@
     "first_hit_back_panel_rays": 375,
     "ray_count": 375,
     "obstructions": [],
-    "rail_height_m": 1.9859039783477783,
+    "rail_height_m": 1.8200000524520874,
     "pass": true
   },
   "parked_leaf_axis": {
