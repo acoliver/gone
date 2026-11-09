@@ -114,6 +114,21 @@ the same frame as the hatch. Player input, label attention, logical ticks and
 the replay digest are unchanged; there is no automatic reframing when a lamp
 is missing.
 
+A beat may also declare `camera_pitch_up`, a finite angle from 0 to 90 degrees.
+A temporary camera tilts only the pinned capture and lamp projection; the
+wake/player presenters keep ownership of the gameplay camera. The temporary
+camera is freed and the player camera restored before logic resumes. The
+three `power-active` captures use 30 degrees. In `click-route`, the old
+12-degree-downward console view exposed only one pixel of the generated
+beam's recessed glass at 480 × 270. Looking up includes the nearby fixture
+without changing resolution, player input, circuit output or any image gate.
+The two `hall-white` captures move back 2 metres and tilt up 15 degrees.
+Their old view saw no recessed glass. The new view includes the nearby
+fixture while retaining the corridor and its emergency wall lenses. Schedule
+snapshots pin these exact framing values and the original scenario bytes
+after removing only those validated additions; inputs, checks and budgets
+remain unchanged.
+
 ### Connector capture route
 
 Generate `scenarios/connector-route.json` with:

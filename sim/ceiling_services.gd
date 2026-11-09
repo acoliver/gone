@@ -4,7 +4,7 @@ extends RefCounted
 
 const DETECTOR_SIZE := Vector3(0.22, 0.22, 0.055)
 const HEAD_SIZE := Vector3(0.16, 0.25, 0.14)
-const MODULE_SIZE := Vector3(0.575, 0.06, 0.18)
+const FIXTURE_BOUNDS := AABB(Vector3(-0.55, -0.10, -0.11), Vector3(1.10, 0.10, 0.22))
 const PIPE_RADIUS := 0.025
 
 var bounds: AABB
@@ -15,8 +15,8 @@ var pipes: Array[Transform3D] = []
 var tees: Array[Transform3D] = []
 var clips: Array[Transform3D] = []
 var ducts: Array[Transform3D] = []
+var fixtures: Array[Transform3D] = []
 var spine: SpineServices
-var modules: Array[Transform3D] = []
 
 static func build(layout: ShipLayout, space: ShipLayout.Spec) -> CeilingServices:
 	var result := CeilingServices.new()
@@ -115,16 +115,11 @@ static func build(layout: ShipLayout, space: ShipLayout.Spec) -> CeilingServices
 	if space is ShipLayout.PowerRoomSpec:
 		for x: float in [b.position.x + b.size.x / 4, b.get_center().x, b.end.x - b.size.x / 4]:
 			for z: float in [b.position.z + 2.0, b.end.z - 2.0]:
-				frames.append(Transform3D(Basis(), Vector3(x, b.end.y - 0.08, z)))
+				frames.append(Transform3D(Basis(), Vector3(x, b.end.y, z)))
 	for frame: Transform3D in frames:
-		for pose: Transform3D in module_poses(): result.modules.append(frame * pose)
+		frame.origin.y = b.end.y
+		result.fixtures.append(frame)
 	return result
-
-static func module_poses() -> Array[Transform3D]:
-	var poses: Array[Transform3D] = []
-	for side: int in [-1, 1]:
-		poses.append(_pose(Vector3(side * MODULE_SIZE.x / 2, -0.015, 0), MODULE_SIZE))
-	return poses
 
 static func _pose(center: Vector3, size: Vector3) -> Transform3D:
 	return Transform3D(Basis.from_scale(size), center)

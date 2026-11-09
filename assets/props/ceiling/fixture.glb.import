@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://be70cm2hqvadn"
-path="res://.godot/imported/module.glb-0bdf7182427e4b680fa09684a9c29b91.scn"
+uid="uid://dybn66hlolb8p"
+path="res://.godot/imported/fixture.glb-7d6ae521a86f8cc564ac8a75e81f3048.scn"
 
 [deps]
 
-source_file="res://assets/props/ceiling/module.glb"
-dest_files=["res://.godot/imported/module.glb-0bdf7182427e4b680fa09684a9c29b91.scn"]
+source_file="res://assets/props/ceiling/fixture.glb"
+dest_files=["res://.godot/imported/fixture.glb-7d6ae521a86f8cc564ac8a75e81f3048.scn"]
 
 [params]
 

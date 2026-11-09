@@ -11,6 +11,13 @@ static func capture_identity() -> Dictionary:
 			hashes[path] = FileAccess.get_sha256("res://" + path)
 	for path: String in ["app/surfaces.gd", "app/lighting.gd", "app/hallway.gd", "app/power_room.gd", "app/ship_scene.gd", "tools/capture_ship_surfaces.gd", "app/shaders/weathered_steel.gdshader", "app/shaders/steel_sampling.gdshaderinc", "app/shaders/weathered_tape.gdshader", "assets/surfaces/steel/manifest.json", "assets/surfaces/hatch/leaf-weather.png", "assets/surfaces/hatch/leaf-weather.png.import"]:
 		hashes[path] = FileAccess.get_sha256("res://" + path)
+	for file: String in DirAccess.get_files_at("res://assets/props/ceiling"):
+		if not file.begins_with("fixture_") or not file.ends_with(".png"): continue
+		for suffix: String in ["", ".import"]:
+			var path := "assets/props/ceiling/" + file + suffix
+			hashes[path] = FileAccess.get_sha256("res://" + path)
+	for path: String in ["app/ceiling_fixture.gd", "sim/ceiling_services.gd", "assets/props/ceiling/fixture.glb", "assets/props/ceiling/fixture.glb.import", "assets/props/ceiling/manifest.json"]:
+		hashes[path] = FileAccess.get_sha256("res://" + path)
 	for path: String in [HatchAsset.SOURCE, HatchAsset.SOURCE + ".import", HatchAsset.MANIFEST]:
 		hashes[path.trim_prefix("res://")] = FileAccess.get_sha256(path)
 	for texture: Texture2D in Surfaces.hatch_runtime_textures().values():
@@ -105,6 +112,7 @@ func _run() -> void:
 		camera.fov = 76
 		await _shot(circuit, "power-room-services", ShipLayout.POWER_ID, Vector3(27, 1.65, -2.5), Vector3(25.5, 2.3, -8.7))
 		await _fire_service_views(circuit)
+		await _fixture_views(circuit)
 		await _shot(circuit, "power-doorway", ShipLayout.POWER_ID, Vector3(25.5, 1.6, -0.1), Vector3(27, 1.4, -1.6))
 		await _sliding_views(circuit)
 		await _shot(circuit, "connector-aft", &"D14-C-001", Vector3(32.8, 1.6, 0), Vector3(30, 1.4, 0))
@@ -184,6 +192,20 @@ func _fire_service_views(circuit: String) -> void:
 			await _shot(circuit, "duct-flanges", id, target + Vector3(-1.0, -0.7, -0.8), target)
 	camera.fov = previous_fov
 
+
+func _fixture_views(circuit: String) -> void:
+	var previous_fov := camera.fov
+	camera.fov = 55
+	var hall := game.layout.section(&"D14-S-041").bounds()
+	var target := Vector3(21, hall.end.y - 0.087, hall.get_center().z)
+	await _shot(circuit, "hall-fixture-2p5m", &"D14-S-041", target + Vector3(0, -sqrt(2.5 * 2.5 - 0.025 * 0.025), 0.025), target)
+	var bay_frame := game.layout.bay_to_world()
+	await _shot(circuit, "bay-ceiling", ShipLayout.BAY_ID, bay_frame * Vector3(-1.2, 1.5, 0), bay_frame * Vector3(0, Pods.ROOM_CEILING_HEIGHT - 0.05, -1.6 + Pods.ROW_WALL_OFFSET))
+	await _shot(circuit, "power-ceiling", ShipLayout.POWER_ID, Vector3(22.7, 1.6, -2.7), Vector3(24, PowerRoom.ROOM_CEILING - 0.05, -3.7))
+	camera.fov = 76
+	await _shot(circuit, "hall-fixture-services", &"D14-S-041", Vector3(18.8, hall.position.y + 1.5, 0), Vector3(21, hall.end.y - 0.20, 0))
+	await _shot(circuit, "fixture-corridor", &"D14-S-041", Vector3(8, hall.position.y + 1.3, 0.3), Vector3(29, hall.end.y - 0.35, 0))
+	camera.fov = previous_fov
 
 func _label_views(circuit: String, spec: ShipLayout.DoorSpec) -> void:
 	while scene.text_cache.pending_count() > 0: await process_frame
