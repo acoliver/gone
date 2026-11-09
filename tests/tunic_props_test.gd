@@ -52,6 +52,8 @@ func test_imported_alpha_modes_two_sided_cards_and_pbr_survive() -> void:
 				if mode == "MASK": _near(finish.get_shader_parameter("alpha_cutoff"), source.get("alphaCutoff", .5), .00001, "cloth alpha cutoff")
 				_near(finish.get_shader_parameter("metallic"), source.pbrMetallicRoughness.get("metallicFactor", 1.0), .00001, "metallic retained")
 				_near(finish.get_shader_parameter("roughness"), source.pbrMetallicRoughness.get("roughnessFactor", 1.0), .00001, "roughness retained")
+				var specular: Dictionary = source.get("extensions", {}).get("KHR_materials_specular", {})
+				_near(finish.get_shader_parameter("specular"), specular.get("specularFactor", 1.0) * .5, .00001, "glTF specular factor retained")
 		model.free()
 
 func test_embedded_textures_have_mips_and_correct_colour_roles() -> void:
@@ -106,6 +108,37 @@ func test_tunic_does_not_mutate_sofa_or_locker_resources() -> void:
 		assert_true(saved.material.shader == saved.shader, "sofa/locker shader identity unchanged")
 		for parameter: String in saved.parameters:
 			assert_true(saved.material.get_shader_parameter(parameter) == saved.parameters[parameter], "sofa/locker parameters untouched: " + parameter)
+
+func test_wool_display_calibration_does_not_tint_brass_or_clean_wool() -> void:
+	for state: StringName in QuartersProps.STATES:
+		var model := _model(state)
+		QuartersProps.apply(model, &"dress_uniform", state)
+		for piece: MeshInstance3D in model.find_children("*", "MeshInstance3D", true, false):
+			for surface: int in range(piece.mesh.get_surface_count()):
+				var finish := piece.get_surface_override_material(surface) as ShaderMaterial
+				var gain: Vector3 = finish.get_shader_parameter(&"pigment_gain")
+				var source := piece.mesh.surface_get_material(surface) as StandardMaterial3D
+				var wool := state == &"aged" and is_zero_approx(source.metallic) and source.resource_name != "RibbonFabric"
+				assert_true(gain == (QuartersProps.TUNIC_AGED_WOOL_GAIN if wool else Vector3.ONE), "calibration is confined to aged wool/dust/fibres")
+				assert_true(finish.get_shader_parameter(&"albedo_texture") == source.albedo_texture, "no texture is copied or recoloured")
+				_near(finish.get_shader_parameter(&"normal_scale"), source.normal_scale, .00001, "normal strength retained")
+				assert_true(finish.get_shader_parameter(&"vertex_colour") == source.vertex_color_use_as_albedo, "ribbon vertex colours retained")
+		model.free()
+
+func test_export_uses_constant_orm_and_linear_normal_data() -> void:
+	for state: StringName in QuartersProps.STATES:
+		var data := _gltf(state)
+		for source: Dictionary in data.materials:
+			assert_false(source.pbrMetallicRoughness.has("metallicRoughnessTexture"), "this tunic export uses constant metallic/roughness, not an ORM atlas")
+			assert_false(source.has("occlusionTexture"), "ambient occlusion is baked into the supplied colour")
+		var model := _model(state)
+		QuartersProps.apply(model, &"dress_uniform", state)
+		for piece: MeshInstance3D in model.find_children("*", "MeshInstance3D", true, false):
+			for surface: int in range(piece.mesh.get_surface_count()):
+				var finish := piece.get_surface_override_material(surface) as ShaderMaterial
+				var source := piece.mesh.surface_get_material(surface) as StandardMaterial3D
+				assert_true(finish.get_shader_parameter(&"normal_texture") == source.normal_texture, "linear normal texture retained")
+		model.free()
 
 func _model(state: StringName) -> Node3D:
 	return (load(ROOT + "dress_uniform%s.glb" % ("_aged" if state == &"aged" else "")) as PackedScene).instantiate()

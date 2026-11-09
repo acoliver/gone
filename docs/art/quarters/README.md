@@ -663,6 +663,43 @@ The lit captures are `tmp/fit/sofa/cloth2/compare-hero.png`, `compare-detail.png
 
 The tunic now comes from Blender cloth simulation. The hand-modelled pilot rated 2/10: its waist was pinched, its sleeves were detached cylinders, and its collar and shoulders had visible voids. A sewn pattern lets gravity and fabric strain produce the hanging shape. The design remains `docs/art/quarters/sheets/dress_uniform/hero.png`; the filled Hunyuan torso is only a silhouette reference.
 
+### Godot tunic integration (2026-11-09)
+
+`QuartersProps.material(&"dress_uniform", state, part, surface)` and `apply(root, &"dress_uniform", state)` now support both tunic assets. The default material is the state's `TunicBody` surface zero. Instantiate `dress_uniform.glb` for `as_built` and `dress_uniform_aged.glb` for `aged`; each retains its own geometry. Applying a finish preserves all imported nodes, names, transforms, meshes and bounds. Materials are constructed once per state and shared by imported material identity, including across instances. There is no per-frame material work.
+
+Separate surface overrides preserve the medal's ribbon and brass, masked cloth cut edges and the shoulder's fractional-alpha rim. The three new tunic shaders retain glTF `OPAQUE`, `MASK` and `BLEND` roles, two-sided rendering, normal strengths, vertex colours, roughness and metallic values. Godot imports glTF `BLEND` as alpha with a depth prepass; the blend shader keeps that behavior. The aged Blender specular level of 0.12 is restored because Godot omits `KHR_materials_specular`. Clean wool remains navy and clean brass retains metallic 0.8; aged brass retains metallic 0.15 and roughness 0.94.
+
+Both GLB import files embed their textures, avoiding dependencies on editor-extracted PNGs. Embedded colour and normal textures have mipmaps. Albedo uses an sRGB `source_color` sampler; normals use the linear `hint_normal` path. These exports have no ORM textures: metallic and roughness are constants, and the supplied colour already contains the baked occlusion. No GLB geometry or texture bytes change.
+
+#### Godot colour check
+
+The comparison reuses the actual 49 by 49 pixel neutral chest render at `tmp/age/tunic14/swatch/aged-chest-neutral.png` and its recorded locker-context camera. Godot uses the same 49 mm crop, position, surface-normal approach and white light position. A separate co-located 18% linear-grey plane matches illumination before wool fitting. Blender's mean grey is **119.137, 119.449, 119.754**; Godot's is **119.335, 119.414, 119.663**, a maximum difference of **0.199 sRGB levels**. Godot's point-light energy is 4.17, ambient energy 0.0072 and fill energy zero for this calibration only. This measured grey reference compensates for the different area/point-light models rather than equating Blender watts with Godot light energy. The Godot preview retains its linear tone mapper; Blender retains AgX Medium High Contrast.
+
+| Neutral chest | Mean displayed RGB, sRGB levels |
+| --- | --- |
+| Blender locker-context reference | 75.347, 80.793, 91.388 |
+| Godot before material calibration | 83.382, 86.914, 96.167 |
+| Godot after material calibration | 75.455, 80.841, 91.417 |
+| Absolute calibrated difference | 0.108, 0.048, 0.029 |
+
+The initial red-channel difference of **8.035 levels** exceeds the six-level tolerance. Multiplying aged wool, dust and fibre albedo in linear light by **0.813331, 0.860586, 0.899057** brings the maximum displayed difference to **0.108 levels**. This is a Godot material parameter, not a texture edit. Clean wool, brass, ribbon and hanger are excluded. The measurements are in `tmp/mat/tunic/colour-check.json`; raw attempts remain in `raw/`, `light-matched/` and `uncalibrated/`. The fit establishes this chest patch under the calibration light, without claiming a whole-image match to the generated target or resolving the accepted G3/G6 geometry failures.
+
+#### Captures and regression checks
+
+Run the windowed Forward+ preview with:
+
+```sh
+nohup godot --windowed --path . -s tools/quarters_pilot_preview.gd -- \
+  --prop dress_uniform --out res://tmp/mat/tunic \
+  > tmp/mat/tunic/preview.log 2>&1 < /dev/null &
+nohup godot --headless --path . -s tests/run_tests.gd \
+  > tmp/mat/tunic/unit-suite.log 2>&1 < /dev/null &
+```
+
+The four 2048 by 1024 sheets are `before-after.png`, `neutral-pair.png`, `closeup.png` and `in-locker.png` under `tmp/mat/tunic/`. Remembered light is warm; present light uses the game's dim secondary-power settings with RGB **1.0, 0.97, 0.90**. Both neutral views use identical light. The shoulder camera is perspective and exactly **0.5 m** from its target. The locker sheet places both garments in `storage_locker_module.glb`, with each locker in its matching finish and the door open **112 degrees**. Garments turn **55 degrees** to fit diagonally. Preview-only placement raises the hook to 1.65 m and seats the separately placed heap on the 0.105 m locker floor. Runtime application never makes those placement changes. An offscreen viewport retains the requested pixel dimensions while the renderer runs windowed.
+
+Eight new tunic tests cover both states, shared materials, source surface roles, texture mipmaps and colour-space roles, specular/normal settings, brass/ribbon separation, retained names/transforms/meshes and isolation from sofa/locker materials. The focused run passes **22 tests, 0 failures**, including all four existing sofa tests and ten existing locker tests. All **91 locker control PNGs are byte-identical** before and after integration. Existing sofa and locker material/application branch bodies and geometry helpers are also byte-identical to `292d432`. No OCR review was run, per Andrew's standing instruction.
+
 ### Tunic14: shoulder drape and fibre-card polish
 
 This pass retains the calibrated pigments, chest repair, extended hem strips and fibre heap from Tunic13. It changes only the torn shoulder and its attached fringe. The tall triangular flap came from the pass-12 free-edge lift, rather than a loose fringe card. The replacement lowers the tongue by 14 mm, lays it forward by 16 mm and outward by 10 mm, and gives it a 4 mm local roll with a 3 mm downturned tip. The opposite lip drops 14 mm and moves back 12 mm. A smooth pinned transition preserves the retained armhole stitches, shoulder-board seating and hanger support.

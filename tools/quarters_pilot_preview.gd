@@ -34,6 +34,9 @@ func _initialize() -> void:
 	_run.call_deferred()
 
 func _run() -> void:
+	if prop == &"dress_uniform":
+		await _run_tunic()
+		return
 	assert(DisplayServer.get_name() != "headless", "captures require a windowed renderer")
 	output = ProjectSettings.globalize_path(output)
 	assert(DirAccess.make_dir_recursive_absolute(output) == OK, "create capture directory")
@@ -203,3 +206,182 @@ func _parts(node: Node) -> Dictionary:
 
 func _vec(value: Vector3) -> Array:
 	return [value.x, value.y, value.z]
+
+
+var tunic_view: SubViewport
+var tunic_states: Dictionary = {}
+var tunic_lockers: Dictionary = {}
+
+func _run_tunic() -> void:
+	assert(DisplayServer.get_name() != "headless", "captures require a windowed renderer")
+	output = ProjectSettings.globalize_path(output)
+	assert(DirAccess.make_dir_recursive_absolute(output) == OK)
+	root.size = Vector2i(960, 960)
+	tunic_view = SubViewport.new()
+	tunic_view.size = Vector2i(1024, 1024)
+	tunic_view.own_world_3d = true
+	tunic_view.msaa_3d = Viewport.MSAA_4X
+	tunic_view.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	root.add_child(tunic_view)
+	var display := TextureRect.new()
+	display.texture = tunic_view.get_texture()
+	display.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	display.size = Vector2(960, 960)
+	root.add_child(display)
+	stage = Node3D.new()
+	tunic_view.add_child(stage)
+	var world := WorldEnvironment.new()
+	environment = Environment.new()
+	environment.background_mode = Environment.BG_COLOR
+	environment.background_color = Color(.055, .065, .075)
+	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	environment.ambient_light_color = Color.WHITE
+	environment.tonemap_mode = Environment.TONE_MAPPER_LINEAR
+	world.environment = environment
+	stage.add_child(world)
+	camera = Camera3D.new()
+	stage.add_child(camera)
+	camera.current = true
+	ceiling = OmniLight3D.new()
+	ceiling.position = Vector3(.1, 2.65, 1.0)
+	ceiling.omni_range = Lighting.REGULAR_RANGE
+	ceiling.shadow_enabled = true
+	stage.add_child(ceiling)
+	fill = DirectionalLight3D.new()
+	fill.rotation_degrees = Vector3(-25, -25, 0)
+	fill.light_specular = 0
+	stage.add_child(fill)
+	for state: StringName in QuartersProps.STATES:
+		var group := Node3D.new()
+		stage.add_child(group)
+		tunic_states[state] = group
+		for debris: bool in [false, true]:
+			var garment := (load(QuartersProps.TUNIC_SCENES[state]) as PackedScene).instantiate() as Node3D
+			group.add_child(garment)
+			var before := _parts(garment)
+			QuartersProps.apply(garment, &"dress_uniform", state)
+			assert(_parts(garment) == before, "tunic finish preserves imported geometry and hierarchy")
+			for piece: MeshInstance3D in garment.find_children("*", "MeshInstance3D", true, false):
+				var fallen := String(piece.name).begins_with("FallenHem") or piece.name in [&"FibreDust", &"HeapFibres"]
+				piece.visible = fallen == debris
+			garment.position = Vector3(-.015, 1.055, .10) if debris else Vector3(-.015, 1.65, .17)
+			garment.rotation.y = deg_to_rad(55)
+		var locker := (load("res://assets/props/quarters/storage_locker_module.glb") as PackedScene).instantiate() as Node3D
+		stage.add_child(locker)
+		QuartersProps.apply(locker, &"storage_locker_module", state)
+		var hinge := Vector3(-.26, 0, .258)
+		var swing := Transform3D(Basis(Vector3.UP, deg_to_rad(-112)), Vector3.ZERO)
+		var door_pose := Transform3D(Basis.IDENTITY, hinge) * swing * Transform3D(Basis.IDENTITY, -hinge)
+		for piece: MeshInstance3D in locker.find_children("*", "MeshInstance3D", true, false):
+			if String(piece.name).begins_with("Door") or String(piece.name).begins_with("Handle"):
+				piece.transform = door_pose * piece.transform
+		var rail := MeshInstance3D.new()
+		var cylinder := CylinderMesh.new()
+		cylinder.top_radius = .009
+		cylinder.bottom_radius = .009
+		cylinder.height = .566
+		rail.mesh = cylinder
+		rail.position = Vector3(0, 1.633, .17)
+		rail.rotation.z = PI / 2
+		var rail_finish := StandardMaterial3D.new()
+		rail_finish.albedo_color = Color(.22, .23, .24) if state == &"as_built" else Color(.15, .13, .11)
+		rail_finish.metallic = .8 if state == &"as_built" else .15
+		rail_finish.roughness = .3 if state == &"as_built" else .94
+		rail.material_override = rail_finish
+		locker.add_child(rail)
+		tunic_lockers[state] = locker
+		group.visible = false
+		locker.visible = false
+	var floor := MeshInstance3D.new()
+	var plane := PlaneMesh.new()
+	plane.size = Vector2(4, 4)
+	floor.mesh = plane
+	floor.position.y = .104
+	var floor_finish := StandardMaterial3D.new()
+	floor_finish.albedo_color = Color(.20, .21, .22)
+	floor_finish.roughness = 1.0
+	floor.material_override = floor_finish
+	stage.add_child(floor)
+	for state: StringName in QuartersProps.STATES:
+		tunic_states[state].visible = true
+		_tunic_camera("hero")
+		for light: String in ["remembered", "present", "neutral"]:
+			_lighting(light)
+			await _tunic_capture("%s-%s-hero.png" % [state, light])
+		_tunic_camera("shoulder")
+		_lighting("neutral")
+		await _tunic_capture("%s-neutral-shoulder.png" % state)
+		tunic_lockers[state].visible = true
+		_tunic_camera("locker")
+		_lighting("remembered" if state == &"as_built" else "present")
+		await _tunic_capture("%s-in-locker.png" % state)
+		tunic_lockers[state].visible = false
+		tunic_states[state].visible = false
+	_pair("before-after.png", "as_built-remembered-hero.png", "aged-present-hero.png")
+	_pair("neutral-pair.png", "as_built-neutral-hero.png", "aged-neutral-hero.png")
+	_pair("closeup.png", "as_built-neutral-shoulder.png", "aged-neutral-shoulder.png")
+	_pair("in-locker.png", "as_built-in-locker.png", "aged-in-locker.png")
+	await _tunic_colour_capture()
+	var file := FileAccess.open(output.path_join("preview.json"), FileAccess.WRITE)
+	file.store_string(JSON.stringify({"prop": "dress_uniform", "renderer": RenderingServer.get_current_rendering_method(), "shoulder_distance_m": .5, "shoulder_target": _vec(_tunic_shoulder()), "present_colour": [1.0, .97, .90], "present_energy": Lighting.regular_energy(), "door_open_degrees": 112, "garment_yaw_degrees": 55, "tonemap": "linear", "geometry_preserved_per_state": true}, "\t") + "\n")
+	print("CAPTURES ", output)
+	stage.queue_free()
+	await process_frame
+	quit()
+
+func _tunic_shoulder() -> Vector3:
+	return Vector3(-.015, 1.65, .17) + Basis(Vector3.UP, deg_to_rad(55)) * Vector3(.235, -.285, .01)
+
+func _tunic_camera(view: String) -> void:
+	camera.projection = Camera3D.PROJECTION_ORTHOGONAL
+	camera.size = 1.9
+	camera.position = Vector3(1.15, 1.45, 3.2)
+	var target := Vector3(0, .94, .10)
+	if view == "locker":
+		camera.size = 2.7
+		camera.position = Vector3(.82, 1.9, 2.9)
+		target = Vector3(0, 1.18, .02)
+	if view == "shoulder":
+		target = _tunic_shoulder()
+		camera.position = target + Vector3(.16, .22, .96).normalized() * .5
+		camera.projection = Camera3D.PROJECTION_PERSPECTIVE
+		camera.fov = rad_to_deg(2 * atan(36.0 / (2 * 40.0)))
+		assert(absf(camera.position.distance_to(target) - .5) < .00001)
+	camera.look_at(target, Vector3.UP)
+
+func _tunic_colour_capture() -> void:
+	tunic_states[&"aged"].visible = true
+	tunic_lockers[&"aged"].visible = true
+	var target := Vector3(-.025945166, 1.292561531, .269643456)
+	var normal := Vector3(.771218181, -.012322559, .636451721).normalized()
+	camera.projection = Camera3D.PROJECTION_ORTHOGONAL
+	camera.size = .049
+	camera.position = target + normal * .5
+	camera.look_at(target, Vector3.UP)
+	tunic_view.size = Vector2i(49, 49)
+	ceiling.light_color = Color.WHITE
+	ceiling.light_energy = 4.17
+	environment.ambient_light_energy = .0072
+	fill.light_energy = 0
+	await _tunic_capture("aged-chest-neutral.png")
+	# A co-located neutral reference separates illumination matching from wool calibration.
+	var grey := MeshInstance3D.new()
+	var plane := QuadMesh.new()
+	plane.size = Vector2(.08, .08)
+	grey.mesh = plane
+	stage.add_child(grey)
+	grey.position = target + normal * .005
+	grey.look_at(grey.position + normal, Vector3.UP, true)
+	var finish := StandardMaterial3D.new()
+	finish.albedo_color = Color(.18, .18, .18).linear_to_srgb()
+	finish.roughness = .97
+	finish.metallic_specular = .12
+	grey.material_override = finish
+	await _tunic_capture("neutral-grey.png")
+	grey.queue_free()
+
+func _tunic_capture(name: String) -> void:
+	for index: int in range(4): await process_frame
+	await RenderingServer.frame_post_draw
+	var image := tunic_view.get_texture().get_image()
+	assert(image.save_png(output.path_join(name)) == OK, "save tunic capture: " + name)

@@ -54,6 +54,8 @@ const TUNIC_SCENES := {
 	&"aged": "res://assets/props/quarters/dress_uniform_aged.glb",
 }
 static var _tunic_materials: Dictionary = {}
+# Linear-light fit against the Tunic14 neutral chest, after grey-card light matching.
+const TUNIC_AGED_WOOL_GAIN := Vector3(.813331, .860586, .899057)
 
 static func prepare_geometry(root: Node3D) -> void:
 	if _hinge_mesh == null:
@@ -213,4 +215,5 @@ static func _tunic_finish(imported: StandardMaterial3D, state: StringName) -> Sh
 	# Godot omits glTF specularFactor; aged Blender cloth/brass uses .12.
 	var aged_pigment := state == &"aged" and imported.resource_name != "BareSteel" and imported.resource_name != "RibbonFabric"
 	result.set_shader_parameter(&"specular", .12 if aged_pigment else imported.metallic_specular)
+	result.set_shader_parameter(&"pigment_gain", TUNIC_AGED_WOOL_GAIN if aged_pigment and is_zero_approx(imported.metallic) else Vector3.ONE)
 	return result
