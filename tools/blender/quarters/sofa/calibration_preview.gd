@@ -46,9 +46,11 @@ func _run() -> void:
 		swatch.look_at(swatch.position + normal, Vector3.FORWARD if absf(normal.y) > .9 else Vector3.UP, true)
 		var pigment := ShaderMaterial.new()
 		var shader := Shader.new()
-		shader.code = "shader_type spatial; render_mode cull_disabled; uniform vec3 pigment; void fragment() { ALBEDO = pigment; ROUGHNESS = .96; METALLIC = 0.0; }"
+		shader.code = "shader_type spatial; render_mode cull_disabled; uniform vec3 pigment; uniform float roughness; uniform float metallic; void fragment() { ALBEDO = pigment; ROUGHNESS = roughness; METALLIC = metallic; }"
 		pigment.shader = shader
 		pigment.set_shader_parameter("pigment", Vector3(entry.albedo[0], entry.albedo[1], entry.albedo[2]))
+		pigment.set_shader_parameter("roughness", entry.roughness)
+		pigment.set_shader_parameter("metallic", entry.metallic)
 		swatch.material_override = pigment
 		camera.position = swatch.position + normal * .6
 		camera.look_at(swatch.position, Vector3.FORWARD if absf(normal.y) > .9 else Vector3.UP)

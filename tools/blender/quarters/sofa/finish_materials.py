@@ -156,12 +156,10 @@ def sources(state):
     if not aged:
         clean = read(ROOT / 'assets/props/quarters/storage_locker_module/as_built_albedo.png')
         orm = read(ROOT / 'assets/props/quarters/storage_locker_module/as_built_orm.png')
-        painted = (orm[..., 2] < .1) & (clean.max(2) > .05)
         bare = (orm[..., 2] > .3) & (orm[..., 1] < .45) & (clean.max(2) > .05)
-        for kind, role_mask in [('paint', painted), ('steel', bare)]:
-            palette = clean[role_mask]
-            if not len(palette): raise ValueError('Missing locker clean role: ' + kind)
-            images[kind] = clean_metal_scan(images[kind], palette.mean(0))
+        palette = clean[bare]
+        if not len(palette): raise ValueError('Missing locker clean bare-steel role')
+        images['steel'] = clean_metal_scan(images['steel'], palette.mean(0))
     for kind in ['fabric', 'throw']:
         images[kind] = gaussian_filter(images[kind], (6, 6, 0), mode='wrap')
         calibration[kind].update(base_colour_lowpass_sigma_px=6, calibrated=statistics(images[kind]))

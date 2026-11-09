@@ -36,18 +36,19 @@ def sample_target(path, rectangles, kind):
 
 
 def calibrate(out):
+    out = out.resolve()
     out.mkdir(parents=True, exist_ok=True)
     sheet = ROOT / 'docs/art/quarters/sheets/sofa'
     definitions = {
-        'paint': dict(image='hero.png', rectangles=[[104, 479, 218, 516], [132, 651, 246, 678], [360, 688, 472, 713]], position=[0, .24, .475], normal=[0, 0, 1], light='neutral'),
-        'foam': dict(image='aged-target.png', rectangles=[[357, 578, 389, 595], [572, 610, 594, 627], [397, 420, 415, 443]], position=[-.18, .43, .29], normal=[0, 1, 0], light='present'),
-        'crumb': dict(image='aged-target.png', rectangles=[[167, 790, 365, 855], [454, 866, 694, 918]], position=[0, .012, .58], normal=[0, 1, 0], light='present'),
+        'paint': dict(image='hero.png', rectangles=[[104, 479, 218, 516], [132, 651, 246, 678], [360, 688, 472, 713]], position=[0, .24, .475], normal=[0, 0, 1], light='neutral', roughness=.45, metallic=.02),
+        'foam': dict(image='aged-target.png', rectangles=[[357, 578, 389, 595], [572, 610, 594, 627], [397, 420, 415, 443]], position=[-.18, .43, .29], normal=[0, 1, 0], light='present', roughness=.98, metallic=0),
+        'crumb': dict(image='aged-target.png', rectangles=[[167, 790, 365, 855], [454, 866, 694, 918]], position=[0, .012, .58], normal=[0, 1, 0], light='present', roughness=.98, metallic=0),
     }
     record, swatches = {}, {}
     for role, definition in definitions.items():
         target, patches = sample_target(sheet / definition['image'], definition['rectangles'], role)
         record[role] = dict(reference=definition['image'], selection='neutral s<.18, 30<v<190' if role == 'paint' else 'warm pixels s>.30, r>1.08g, g>1.08b, 35<v<220', patches=patches, target_display_rgb=target.tolist(), attempts=[])
-        swatches[role] = {key: definition[key] for key in ['position', 'normal', 'light']}
+        swatches[role] = {key: definition[key] for key in ['position', 'normal', 'light', 'roughness', 'metallic']}
         swatches[role]['albedo'] = linear(target / 255).tolist()
     for iteration in range(8):
         (out / 'swatches.json').write_text(json.dumps(swatches, indent=2) + '\n')
@@ -70,7 +71,7 @@ def calibrate(out):
     for role in record:
         record[role]['linear_albedo'] = record[role]['attempts'][-1]['linear_albedo']
         record[role]['displayed_rgb'] = record[role]['attempts'][-1]['displayed_rgb']
-        record[role].update({key: definitions[role][key] for key in ['position', 'normal', 'light']})
+        record[role].update({key: definitions[role][key] for key in ['position', 'normal', 'light', 'roughness', 'metallic']})
     record['scene'] = dict(renderer='Godot Forward+ Metal', tone_mapping='linear', ambient_present=.20, ambient_neutral=.55, ceiling_position=[-.6, 1.46, 1.25], note='Warm-pixel segmentation excludes floor and cloth around irregular foam tears. Swatches fit regional pigment display, not complete target illumination.')
     (SOURCE / 'finish-calibration.json').write_text(json.dumps(record, indent=2) + '\n')
     (out / 'finish-calibration.json').write_text(json.dumps(record, indent=2) + '\n')
