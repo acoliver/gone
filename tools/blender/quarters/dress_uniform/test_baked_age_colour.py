@@ -20,6 +20,13 @@ assert dust[0, 0] > .4 and dust[0, 1] == 0
 assert fade[0, 0] > fade[0, 1]
 assert colour[1, 0].mean() > colour[1, 1].mean(), 'Convex fold crests must fade more than flat wool'
 assert (colour[:, :, 2] >= colour[:, :, 1]).all() and (colour[:, :, 1] >= colour[:, :, 0]).all()
+exposure, _, exposure_dust = aged_linear(ao, masks, palette, crest_fade=False)
+changed = masks.copy()
+changed[:, :, 1] = 1-masks[:, :, 1]
+control, _, control_dust = aged_linear(ao, changed, palette, crest_fade=False)
+np.testing.assert_array_equal(exposure, control)
+np.testing.assert_array_equal(exposure_dust, control_dust)
+assert exposure[0, 0].mean() > exposure[0, 1].mean()*3, 'Exposed wool must remain lighter than AO recesses'
 bpy.ops.wm.read_factory_settings(use_empty=True)
 mesh = bpy.data.meshes.new('MaskTest')
 mesh.from_pydata([(0, 0, 0), (1, 0, 0), (0, 1, 0)], [], [(0, 1, 2)])

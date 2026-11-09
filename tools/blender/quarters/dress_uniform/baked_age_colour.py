@@ -75,8 +75,10 @@ def raster_fields(obj, size):
     return result
 
 
-def aged_linear(ao, masks, palette, debris=False, dust=True):
+def aged_linear(ao, masks, palette, debris=False, dust=True, crest_fade=True):
     up, crest, upper, broad, fine = np.moveaxis(masks[:, :, :5], -1, 0)
+    if not crest_fade:
+        crest = np.zeros_like(crest)
     visibility = np.clip(ao, 0, 1)
     fade = np.clip(.34+.12*broad+.18*crest+.25*upper+.15*up, 0, .96)
     fade *= .40+.60*visibility
@@ -121,7 +123,10 @@ def bake_colour(obj, out, palette, debris=False):
         rows = np.minimum((np.arange(size)*image.size[1]/size).astype(int), image.size[1]-1)
         columns = np.minimum((np.arange(size)*image.size[0]/size).astype(int), image.size[0]-1)
         ao = data[rows[:, None], columns[None, :]]
-    colour, fade, dust = aged_linear(ao, masks, palette, debris)
+    # The main drape's fold contrast already comes from lighting and baked AO.
+    # Adding a curvature pigment term paints the same rounded folds twice.
+    crest_fade = obj.name != 'TunicBody'
+    colour, fade, dust = aged_linear(ao, masks, palette, debris, crest_fade=crest_fade)
     grain = .995+.01*masks[:, :, 4:5]
     colour *= grain
     rgba = np.ones((size, size, 4), np.float32)
@@ -155,7 +160,7 @@ def bake_colour(obj, out, palette, debris=False):
     image_from_array(obj.name+'_ExposureMasks', diagnostic, Path(out)/(obj.name.lower()+'_ao_up_curvature.png'), True)
     diagnostic[:, :, :3] = np.stack([fade, dust, masks[:, :, 3]], axis=2)
     image_from_array(obj.name+'_FadeDustMasks', diagnostic, Path(out)/(obj.name.lower()+'_fade_dust.png'), True)
-    without, _, _ = aged_linear(ao, masks, palette, debris, dust=False)
+    without, _, _ = aged_linear(ao, masks, palette, debris, dust=False, crest_fade=crest_fade)
     without *= grain
     control = rgba.copy()
     control[:, :, :3] = np.where(without <= .0031308, without*12.92, 1.055*without**(1/2.4)-.055)

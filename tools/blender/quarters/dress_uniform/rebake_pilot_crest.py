@@ -1,4 +1,4 @@
-"""Rebake only the pilot's crest contribution on its final garment mesh."""
+"""Remove baked torso-crest pigment while preserving every other contribution."""
 import argparse
 import json
 from pathlib import Path
@@ -15,9 +15,31 @@ from common import export
 from fringe_cards import image_from_array
 
 
+def pixels(image):
+    width, height = image.size
+    data = np.empty((height, width, 4), np.float32)
+    image.pixels.foreach_get(data.ravel())
+    return data
+
+
+def mask_pixels(path):
+    image = bpy.data.images.load(str(path), check_existing=False)
+    image.colorspace_settings.name = 'Non-Color'
+    return pixels(image)
+
+
+def apply_delta(rgba, delta):
+    encoded = rgba[:, :, :3]
+    linear = np.where(encoded <= .04045, encoded/12.92, ((encoded+.055)/1.055)**2.4)
+    colour = np.clip(linear+delta, 0, 1)
+    result = rgba.copy()
+    result[:, :, :3] = np.where(colour <= .0031308, colour*12.92, 1.055*colour**(1/2.4)-.055)
+    return result
+
+
 def rebake(base, out):
     out.mkdir(parents=True, exist_ok=True)
-    (out/'textures').mkdir(exist_ok=True)
+    shutil.copytree(base/'textures', out/'textures', dirs_exist_ok=True)
     bpy.ops.wm.open_mainfile(filepath=str(base/'finished.blend'))
     body = bpy.data.objects['TunicBody']
     shader = body.data.materials[0].node_tree.nodes['Principled BSDF']
@@ -25,43 +47,36 @@ def rebake(base, out):
     width, height = old.size
     if width != height:
         raise ValueError('Pilot colour atlas must be square')
-    rgba = np.empty((height, width, 4), np.float32)
-    old.pixels.foreach_get(rgba.ravel())
-    # Retain the original AO/up/noise/dust fields. Only the final-mesh crest is
-    # replaced, so a shoulder polish cannot silently move the dust boundary.
-    source = bpy.data.images.load(str(base/'textures/tunicbody_ao_up_curvature.png'), check_existing=False)
-    source.colorspace_settings.name = 'Non-Color'
-    original = np.empty((height, width, 4), np.float32)
-    source.pixels.foreach_get(original.ravel())
-    source = bpy.data.images.load(str(base/'textures/tunicbody_fade_dust.png'), check_existing=False)
-    source.colorspace_settings.name = 'Non-Color'
-    exposure = np.empty_like(original)
-    source.pixels.foreach_get(exposure.ravel())
+    rgba = pixels(old)
+    # Apply a linear-light difference to the shipped pixels. Quantised source
+    # masks cannot then rebake unrelated pigment, opacity or dust boundaries.
+    original = mask_pixels(base/'textures/tunicbody_ao_up_curvature.png')
+    exposure = mask_pixels(base/'textures/tunicbody_fade_dust.png')
     fields = raster_fields(body, width)
     fields[:, :, 0] = original[:, :, 1]
     fields[:, :, 3] = exposure[:, :, 2]
     rng = np.random.default_rng(9613+sum(map(ord, body.name)))
     fields[:, :, 4] = rng.random((height, width), dtype=np.float32)
+    grain = .995+.01*fields[:, :, 4:5]
     ao_image = body.data.materials[0].node_tree.nodes['AO'].image
     ao_width, ao_height = ao_image.size
-    ao = np.empty((ao_height, ao_width, 4), np.float32)
-    ao_image.pixels.foreach_get(ao.ravel())
     rows = np.minimum(np.arange(height)*ao_height//height, ao_height-1)
     cols = np.minimum(np.arange(width)*ao_width//width, ao_width-1)
-    ao = ao[rows[:, None], cols[None, :], 0]
+    ao = pixels(ao_image)[rows[:, None], cols[None, :], 0]
     palette = json.loads(Path(__file__).with_name('target-colours.json').read_text())['colours']
-    corrected, _, _ = aged_linear(ao, fields, palette)
-    fields[:, :, 1] = original[:, :, 2]
-    previous, _, _ = aged_linear(ao, fields, palette)
-    delta = (corrected-previous)*(.995+.01*fields[:, :, 4:5])
-    encoded = rgba[:, :, :3]
-    linear = np.where(encoded <= .04045, encoded/12.92, ((encoded+.055)/1.055)**2.4)
-    colour = np.clip(linear+delta, 0, 1)
-    rgba[:, :, :3] = np.where(colour <= .0031308, colour*12.92, 1.055*colour**(1/2.4)-.055)
-    image = image_from_array('Pilot density-independent crest', rgba, out/'textures/tunicbody_aged_base.png')
-    for material in body.data.materials:
-        texture = material.node_tree.nodes['Principled BSDF'].inputs['Base Color'].links[0].from_node
-        texture.image = image
+    for dust in [True, False]:
+        corrected, _, _ = aged_linear(ao, fields, palette, dust=dust, crest_fade=False)
+        fields[:, :, 1] = original[:, :, 2]
+        previous, _, _ = aged_linear(ao, fields, palette, dust=dust)
+        source = rgba if dust else mask_pixels(base/'textures/tunicbody_no_dust_control.png')
+        result = apply_delta(source, (corrected-previous)*grain)
+        name = 'tunicbody_aged_base.png' if dust else 'tunicbody_no_dust_control.png'
+        image = image_from_array('Pilot exposure fade' if dust else 'Pilot exposure no-dust control',
+                                 result, out/'textures'/name)
+        if dust:
+            for material in body.data.materials:
+                texture = material.node_tree.nodes['Principled BSDF'].inputs['Base Color'].links[0].from_node
+                texture.image = image
     bpy.context.preferences.filepaths.save_version = 0
     bpy.ops.wm.save_as_mainfile(filepath=str(out/'finished.blend'))
     export(out/'candidate.glb')
