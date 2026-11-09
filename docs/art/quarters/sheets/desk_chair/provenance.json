@@ -1,0 +1,26 @@
+{
+  "command": "env HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 /Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-z-image-turbo --model filipstrand/Z-Image-Turbo-mflux-4bit --quantize 4 --steps 8 --seed 244 --width 1024 --height 1024 --output /Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/tmp/props/contacts/desk_chair/hero-s244.png --prompt 'Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish. A compact fixed military starship desk chair, 0.50 metres wide and deep, 0.95 metres tall. A grey-green satin painted steel frame with four sturdy legs, transverse braces and an upright gently raked steel back plate. A separate thin charcoal fabric seat pad at normal sitting height, bolted onto its steel pan. Small bare steel rivets on corner plates. Compact angular industrial furniture, fresh even paint. Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.'",
+  "prompt": "Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish. A compact fixed military starship desk chair, 0.50 metres wide and deep, 0.95 metres tall. A grey-green satin painted steel frame with four sturdy legs, transverse braces and an upright gently raked steel back plate. A separate thin charcoal fabric seat pad at normal sitting height, bolted onto its steel pan. Small bare steel rivets on corner plates. Compact angular industrial furniture, fresh even paint. Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.",
+  "seed": 244,
+  "model_id": "filipstrand/Z-Image-Turbo-mflux-4bit",
+  "sha256": "48882e798386e93abeae601ad357d91f2bdfd279686bfa0e4d30ba3802a2b86f",
+  "elapsed_seconds": 70.265,
+  "selection": {
+    "chosen_seed": 244,
+    "rating": 8,
+    "approved": true,
+    "observations": "All six panels are visible. Panel A shows the approved room context with a matching desk and chair. Panel B shows the accepted locker style, establishing the grey-green satin paint and rivet details. Panels C1, C2, C3, and C4 show four variations of the desk chair. C1 and C3 feature sled-style bases. C2 features armrests. C4 features a four-legged base with transverse braces, which aligns best with the 'four sturdy legs' requirement in the brief.",
+    "defects": [
+      "The seat pad in C4 appears slightly thicker than the 'thin' descriptor in the brief, though it is the most proportionate of the set.",
+      "The back plate in C4 is a single flat sheet, whereas the brief mentions an 'upright gently raked steel back plate', which is present but lacks the specific 'raked' angle seen in C1 or C3.",
+      "Rivets are visible on the corner plates but are somewhat subtle compared to the 'small bare steel rivets' description."
+    ],
+    "fitting_landmarks": {
+      "frame": "Grey-green satin painted steel frame with four distinct legs and transverse braces.",
+      "back": "Upright, gently raked flat steel back plate.",
+      "seat": "Separate thin charcoal fabric seat pad bolted to a steel pan.",
+      "hardware": "Small bare steel rivets on corner plates."
+    }
+  },
+  "inputs_policy": "Single approved hero; no independently hallucinated side/back views."
+}
