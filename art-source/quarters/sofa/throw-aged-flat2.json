@@ -1,0 +1,30 @@
+{
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/sofa/throw-clean.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/sofa/throw-aged-flat2-prompt.txt",
+    "--seed",
+    "95630",
+    "--width",
+    "768",
+    "--height",
+    "768",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/sofa/throw-aged-flat2.png"
+  ],
+  "prompt": "A continuous perfectly flat wool textile albedo scan, faded muted taupe-brown oatmeal yarns with subtle dry brown grime mottling. Preserve the fine yarn texture and flat even illumination of this reference. Homogeneous edge-to-edge fabric surface, diffuse reflectance only. The material is uniformly flat and uniformly scaled.",
+  "input": "throw-clean.png",
+  "seed": 95630,
+  "model": "black-forest-labs/FLUX.2-klein-4B",
+  "quantize": 4,
+  "steps": 4,
+  "colour_reference": "throw-aged-crop.png"
+}

@@ -1,0 +1,35 @@
+{
+  "model": "black-forest-labs/FLUX.2-klein-4B",
+  "seed": 95602,
+  "quantize": 4,
+  "steps": 4,
+  "source": "docs/art/quarters/sheets/sofa/hero.png",
+  "crop_xyxy": [
+    785,
+    545,
+    895,
+    690
+  ],
+  "prompt": "New warm beige oatmeal wool blanket fabric, soft irregular interwoven yarns. Orthographic flat material scan, shadowless even diffuse illumination, edge-to-edge continuous surface. Remove the object shape, folds, cast shadows, floor, hardware, borders and perspective. No green; only warm neutral, tan and brown colours. No biological growth, lettering or objects. Seamless repeating texture.",
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/sofa/throw-clean-crop.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/sofa/throw-clean-prompt.txt",
+    "--seed",
+    "95602",
+    "--width",
+    "768",
+    "--height",
+    "768",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/sofa/throw-clean.png"
+  ]
+}

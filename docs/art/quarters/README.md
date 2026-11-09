@@ -293,6 +293,30 @@ The accepted source is `tmp/age/pass10/sofa-preview.blend` and its candidate GLB
 
 Known pilot limitations remain: G1 right-back sharp adjacency is **9.426987%**, above **8%**; G3 straight runs reach **47.942674 px**, above **12 px**; G4 includes width CV **0.016485**, below **0.35**; G6 resolved contour dimensions span **1.030141–1.202918**, outside **1.15–1.40**. The centre/left backs and throw have no qualifying 64 px contour for G6 and fail rather than being omitted. G1, G3, G4 and G6 fail; the other 18 of 22 gates retain their measured passing results. Publication is allowed only by the explicit pilot geometry exception, not by a claim that these gates pass.
 
+#### Material sources and build
+
+The pilot uses generated diffuse images, not flat placeholder colours. `art-source/quarters/sofa/` saves the concept crops, prompts, FLUX.2-klein-4B outputs, selected-image map and colour statistics. The six initial edits use seeds 95600–95605, 4-bit weights, four steps and 768-square output. Refinements 95620–95622 flatten wool/foam and replace the weave; 95630–95631 derive flat aged wool and finer yarn from accepted clean fabric. All generation runs sequentially with cached weights and offline mode. Rejected images remain as provenance, not material inputs.
+
+Clean upholstery follows Andrew's oatmeal direction; the hero's upholstery crop is charcoal, so it supplies yarn character rather than the final hue. The aged upholstery and wool use the aged target's surface crops. The foam colour fit selects tan pixels and excludes the neutral floor; the wool fit uses the crop's 75th percentile to avoid copying deep fold shadows into albedo. A fitted log-linear illumination plane is removed before linear-RGB colour calibration. The final per-role diffuse images and sRGB/Lab statistics are saved beside their generated inputs.
+
+Mean sRGB values below are weighted by occupied, alpha-surviving atlas texels, before runtime lighting and fine grain. Full generated/crop mean and standard deviation in sRGB and D65 Lab, calibration gains, and each part's final colour are in `as_built-statistics.json` and `aged-statistics.json`.
+
+| Role | As-built mean RGB | Aged mean RGB |
+| --- | --- | --- |
+| Upholstery | 0.7461, 0.6551, 0.4987 | 0.6729, 0.5914, 0.4891 |
+| Throw | 0.8044, 0.7066, 0.5914 | 0.4754, 0.4051, 0.3463 |
+| Foam/crust/powder | Not exposed | 0.4601, 0.3511, 0.2632 |
+
+The unchanged locker no-green predicate is reused: hue 70–170 degrees with saturation above 0.25, allowing less than 0.5% newly green coverage. Clean atlas coverage is **0%** and aged coverage is **0.001029%**, with a largest connected region of **0.0000327%**. These values pass without altering the threshold. The mask mean AO/cavity/up values are **0.4889/0.9625/0.2457** clean and **0.5143/0.9661/0.3794** aged; all three channels span 0–1.
+
+Frame/feet paint and bare rivets reuse the locker's clean role palette and its selected aged side/hardware images. Clean paint has roughness 0.45 and metallic 0.02; bare steel has roughness 0.35 and metallic 0.45, matching the locker role ranges. Aged oxide is non-metallic. Runtime metal grain uses the shared hatch scans and sampling include; no locker shader code changes.
+
+`material_pilot.py` preserves every retained vertex, triangle and local pivot while repacking UVs. The clean atlas is 2048-square; the aged atlas is 4096-square, with 8 px gutters. Cycles bakes 120 mm AO, 8 mm local cavity and up-facing exposure. Cavity darkens grime in folds and upward exposure deposits warm grey-brown dust. Each cloth/foam part uses a complete generated colour image; only the fine generated yarn swatch repeats, at a 0.18 m pitch. The original baked normals, cover cutout alpha, fringe and powder masks survive the repack. Packed mask alpha identifies fabric, throw, foam, paint and bare steel. Both states have direct albedo/normal/ORM exports and a separate no-dust runtime control.
+
+The editable material sources are `sofa-material-clean.blend` and `sofa-material-aged.blend` under `tools/blender/quarters/sofa/`. The current exporter is `material_pilot.py -- --stage export --state as_built|aged --output <path.glb>`, run with Blender's `--background --threads 6 --python-exit-code 1 --python` flags. Both saved-source re-exports are byte-identical. External trimesh checks confirm unchanged named geometry and pivots against the clean baseline and pass-10 candidate, with maximum position difference below 0.1 micrometres. No shared aging signatures are changed.
+
+Rebuild in order: run `generate_materials.py`, `refine_materials.py` and `refine_flat_fabric.py` with the installed Hunyuan Python; run Blender `material_pilot.py -- --stage prepare --state <state>`; run Python `finish_materials.py --state <state>`; run Blender `material_pilot.py -- --stage assemble --state <state>`; then Python `texture_imports.py` and Godot import. Preparation reads the original clean source or the retained pass-10 checkpoint. Material generation is separate from baking and need not be repeated when only masks or the shader change.
+
 ### Pass 11: visible-boundary controls, candidate in progress
 
 The fixed target is `sheets/sofa/aged-target.png`, depicting 1000 years of
