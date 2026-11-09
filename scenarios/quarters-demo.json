@@ -13119,6 +13119,7 @@
 		},
 		{
 			"name": "console-corruption",
+			"quarters_view": "console",
 			"tick": 653
 		},
 		{
@@ -13128,6 +13129,7 @@
 		},
 		{
 			"name": "console-fault",
+			"quarters_view": "console",
 			"tick": 897
 		},
 		{

@@ -21,11 +21,13 @@ func compile() -> void:
 	press()
 	assert(player.game.quarters.state == QuartersMemory.State.PLAYING, "console through existing interaction dispatch")
 	beat("console-corruption")
+	beats.back().quarters_view = "console"
 	hold(QuartersMemory.CORRUPT_TICKS)
 	beat("console-message")
 	beats.back().quarters_view = "console"
 	hold(QuartersMemory.MESSAGE_TICKS)
 	beat("console-fault")
+	beats.back().quarters_view = "console"
 	hold(QuartersMemory.FAULT_TICKS)
 	assert(player.game.quarters.state == QuartersMemory.State.PRESENT, "tick-driven memory completion")
 	_doorway_path()

@@ -1,6 +1,8 @@
 class_name QuartersRoom
 extends Node3D
 
+const CORRUPTION_COLORS: Array[Color] = [Color(0.004, 0.008, 0.012), Color(0.02, 0.10, 0.14), Color(0.12, 0.72, 0.82), Color(0.82, 0.94, 1.0), Color(0.08, 0.28, 0.34)]
+
 var remembered: Node3D
 var present: Node3D
 var screens: Array[MeshInstance3D] = []
@@ -39,21 +41,33 @@ func _screen(state: Node3D) -> void:
 	var screen := console.find_child("Display", true, false) as MeshInstance3D
 	var bounds := screen.get_aabb()
 	var finish := (QuartersProps.interim_material(&"Display", &"as_built" if state == remembered else &"aged") as StandardMaterial3D).duplicate() as StandardMaterial3D
-	finish.albedo_color = Color(0.05, 0.18, 0.24)
+	finish.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	finish.albedo_color = Color(0.004, 0.012, 0.018)
 	finish.emission_enabled = true
-	finish.emission = Color(0.12, 0.45, 0.62)
-	finish.emission_energy_multiplier = 0.8
+	finish.emission = Color(0.008, 0.035, 0.05)
+	finish.emission_energy_multiplier = 0.4
 	screen.material_override = finish
 	screens.append(screen)
 	var label := Label3D.new()
 	label.name = "PlaceholderText"
-	label.position = bounds.get_center() + Vector3(0, 0, bounds.size.z / 2 + 0.0007)
-	label.pixel_size = bounds.size.x / (64.0 * 20.0)
+	label.position = bounds.get_center() + Vector3(0, 0, bounds.size.z / 2 + 0.0017)
+	label.pixel_size = bounds.size.x / (64.0 * 16.0)
 	label.font_size = 32
 	label.outline_size = 0
-	label.modulate = Color(0.65, 0.85, 0.95)
+	label.shaded = false
+	label.modulate = Color(0.86, 0.98, 1.0)
 	screen.add_child(label)
 	screen_labels.append(label)
+	var scanlines := MeshInstance3D.new()
+	scanlines.name = "Scanlines"
+	var raster := QuadMesh.new()
+	raster.size = Vector2(bounds.size.x, bounds.size.y)
+	scanlines.mesh = raster
+	scanlines.position = bounds.get_center() + Vector3(0, 0, bounds.size.z / 2 + 0.0003)
+	var scan_finish := ShaderMaterial.new()
+	scan_finish.shader = preload("res://app/shaders/quarters_scanlines.gdshader")
+	scanlines.material_override = scan_finish
+	screen.add_child(scanlines)
 	if state == remembered:
 		corruption = Node3D.new()
 		corruption.name = "CorruptedVideoBlocks"
@@ -140,8 +154,7 @@ func process_frame() -> void:
 	if corruption.visible:
 		for index: int in range(corruption.get_child_count()):
 			var block := corruption.get_child(index) as MeshInstance3D
-			var shade := 0.01 + float((index * 19 + _game.quarters.elapsed / 4 * 7) % 13) * 0.022
-			block.material_override.albedo_color = Color(shade, shade * 1.12, shade * 1.2)
+			block.material_override.albedo_color = CORRUPTION_COLORS[(index * 3 + _game.quarters.elapsed / 4) % CORRUPTION_COLORS.size()]
 
 static func _wrapped(text: String) -> String:
 	var lines := PackedStringArray()
