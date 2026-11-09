@@ -20,6 +20,14 @@ func _run() -> void:
 	check.assert_true((scene.d16_section.get_node("D16-S-042_STARBOARD_002").layers & Lighting.QUARTERS_MASK) != 0, "lintel underside receives the local threshold bounce")
 	check.assert_true((release.get_node("PullGrip").layers & Lighting.QUARTERS_MASK) != 0, "grip receives the local threshold bounce")
 	check.assert_int_equal(scene.d16_section.get_node("D16-S-042_STARBOARD_000").layers & Lighting.QUARTERS_MASK, 0, "other corridor walls do not receive the local threshold bounce")
+	var trims := 0
+	for piece: MeshInstance3D in scene.d16_section.find_children("*", "MeshInstance3D", true, false):
+		if release.is_ancestor_of(piece) or not piece.has_meta(&"surface_frame"): continue
+		var surface: Surfaces.SurfaceFrame = piece.get_meta(&"surface_frame")
+		if surface.key != StringName("%s/FRAME" % QuartersLayout.DOOR): continue
+		trims += 1
+		check.assert_true((piece.layers & Lighting.QUARTERS_MASK) != 0, "all six doorway trims, including the head underside, receive the local bounce")
+	check.assert_int_equal(trims, 6, "both sides retain their three authored trim pieces")
 	for part: String in ["Recess", "FrameHead", "FrameFoot", "FrameLeft", "FrameRight", "PullGrip", "HandleLeft", "HandleRight"]:
 		check.assert_true(release.has_node(part), "readable recessed handle component: " + part)
 	var grip: MeshInstance3D = release.get_node("PullGrip")
