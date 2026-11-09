@@ -58,27 +58,8 @@ static func beam(light: OmniLight3D, lens: MeshInstance3D, surface: Surfaces.Sur
 			housing = piece
 			break
 	assert(housing != null, "beam has its imported metal housing")
-	var asset := lens.get_parent() as Node3D
-	var ceiling_y := asset.position.y
-	var emitter := Surfaces.world_frame(lens) * lens.mesh.get_aabb().get_center()
-	var offset := Surfaces.world_frame(asset.get_parent()).basis.inverse() * (Surfaces.world_frame(light).origin - emitter)
-	# Fit the visible assembly to the measured source, preserving every incident-light sample.
-	asset.position += offset
-	var mount := MeshInstance3D.new()
-	mount.name = "CeilingMount"
-	var stock := BoxMesh.new()
-	stock.size = Vector3(0.045, ceiling_y - asset.position.y + 0.001, 0.045)
-	# Ceiling-anchored stock overlaps the housing by 1 mm instead of leaving a floating joint.
-	var tool := SurfaceTool.new()
-	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
-	tool.append_from(stock, 0, Transform3D(Basis.IDENTITY, Vector3(0, -stock.size.y / 2, 0)))
-	mount.mesh = tool.commit()
-	mount.position = Vector3(asset.position.x, ceiling_y, asset.position.z)
-	mount.layers = lens.layers
-	mount.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	Surfaces.bind(mount, &"hardware", surface)
-	asset.get_parent().add_child(mount)
-	bind(light, lens, housing)
+	# A flush recessed aperture emits from its glass, not from a drop below the ceiling.
+	seat(light, lens, housing)
 
 static func wall_source(light: OmniLight3D, surface: Surfaces.SurfaceFrame, circuit: String, material: StandardMaterial3D, yaw: float) -> void:
 	var lens := cage(light, light.light_cull_mask, surface, material, Basis(Vector3.UP, yaw))
