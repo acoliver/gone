@@ -83,6 +83,8 @@ def wool_opacity(obj, out, size=2048, seed=9521):
         noise = sum(weight*value_noise(coordinates, wavelength, seed+octave)
                     for octave, (weight, wavelength) in enumerate(zip([.5, .25, .15, .1], [.002, .001, .0007, .0005])))
         opaque = (distance >= .003) | (distance/.003+noise*3.5 >= .35)
+        # The sewn collar binding stays intact; only released lips break up.
+        opaque |= (np.abs(p[:, 0]) < .12) & (p[:, 2] > -.18)
         delta = coordinates[:, None, :2]-starts
         t = np.clip(np.sum(delta*deltas, axis=2)/length2, 0, 1)
         nearest = np.linalg.norm(delta-t[:, :, None]*deltas, axis=2).min(1)
