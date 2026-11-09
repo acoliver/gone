@@ -11,7 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from sofa_decay_policy import ORDER
 from sofa_pass8_accept import project
 from sofa_pass9_accept import measure as previous_measure
-from sofa_pass11_metrics import cloth_coverage, visible_gashes
+from sofa_pass11_metrics import cloth_coverage, visible_gashes, fringe_visibility
 
 
 def connected_segments(segments):
@@ -60,8 +60,22 @@ def fragment_gate(path, record):
                 method='actual exported connected crumbs, PCA dimensions and area-centroid identity against placements', **{'pass': bool(passed)})
 
 
+def tear_result(outlines, seam_report):
+    result = dict(value=[o['longest_straight_run_px'] for o in outlines], outlines=outlines)
+    if seam_report is not None:
+        result.update({key: value for key, value in seam_report.items() if key.startswith('seam_')})
+    result['pass'] = (bool(outlines) and all(o['longest_straight_run_px'] <= 12 for o in outlines)
+                      and (seam_report is None or seam_report['seam_fringe_and_gape_pass']))
+    return result
+
+
 def measure(args):
     result = previous_measure(args)
+    images = [np.array(Image.open(args.renders/name).convert('RGB')) for name in
+              ['hero-visibility.png', 'sofa-after.png', 'hero-without-fringe.png']]
+    fringe = fringe_visibility(*images)
+    result['visibility']['fringe'].update(fringe)
+    result['invariants']['fringe_visible_in_lit_hero'] = fringe['pass']
     cameras = json.loads((args.renders/'diagnostics/cameras.json').read_text())['parts']
     values = {key: {} for key in ['G3', 'G4', 'G6']}
     for name in [*ORDER, 'Throw']:
@@ -79,8 +93,8 @@ def measure(args):
                     outline.update(physical_lip_component=index, camera=view)
                     outlines.append(outline)
         resolved = [o for o in outlines if o['maximum_extent_px'] >= 64]
-        values['G3'][name] = dict(value=[o['longest_straight_run_px'] for o in outlines], outlines=outlines,
-                                  **{'pass': bool(outlines) and all(o['longest_straight_run_px'] <= 12 for o in outlines)})
+        seam_report = None if name == 'Throw' else result['gates']['G3']['value'][name]
+        values['G3'][name] = tear_result(outlines, seam_report)
         widths = [o['width_cv'] for o in outlines]
         values['G4'][name] = dict(value=widths, **{'pass': bool(widths) and all(w is not None and w >= .35 for w in widths)})
         dimensions = [o['contour_dimension'] for o in resolved]

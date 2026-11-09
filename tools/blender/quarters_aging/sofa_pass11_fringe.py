@@ -29,10 +29,10 @@ def bundle_atlas(seed, wool=False):
     y, x = np.mgrid[0:height, 0:width]
     for variant in range(variants):
         alpha = np.zeros((height, width), np.float32)
-        for root in np.linspace(16, width-16, 20)+rng.uniform(-12, 12, 20):
+        for root in np.linspace(55, width-55, 8)+rng.uniform(-12, 12, 8):
             end = rng.uniform(.38, 1.)*height
             path = root+rng.uniform(-28, 28)*(y/height)+rng.uniform(5, 15)*np.sin(y*rng.uniform(.01, .04)+rng.uniform(0, 6.28))
-            radius = rng.uniform(7, 13)*np.sqrt(np.maximum(0., 1-y/end))
+            radius = rng.uniform(37, 42)*np.sqrt(np.maximum(0., 1-y/end))
             strand = np.clip(radius-np.abs(x-path)+.5, 0, 1)*(y < end)
             alpha = np.maximum(alpha, strand)
         rgba[variant*height:(variant+1)*height, :, 3] = alpha

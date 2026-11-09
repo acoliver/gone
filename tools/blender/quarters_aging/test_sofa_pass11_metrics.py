@@ -44,6 +44,18 @@ class VisibleGashTests(unittest.TestCase):
         seeds = np.array([[[40, 40], [40, 60]], [[44, 40], [44, 60]]])
         self.assertEqual(visible_gashes(mask, seeds), [])
 
+    def test_partial_fringe_coverage_requires_a_lit_disabled_effect_difference(self):
+        from sofa_pass11_metrics import fringe_visibility
+        labels = np.array([[[0, 80, 0], [0, 255, 255], [255, 255, 255]]], dtype=np.uint8)
+        before = np.array([[[80, 80, 80], [80, 80, 80], [80, 80, 80]]], dtype=np.uint8)
+        after = before.copy()
+        after[0, 0] -= 8
+        result = fringe_visibility(labels, before, after)
+        self.assertTrue(result['pass'])
+        self.assertAlmostEqual(result['hero_first_hit_coverage_px'], 80/255)
+        self.assertAlmostEqual(result['lit_first_hit_coverage_px'], 80/255)
+        self.assertFalse(fringe_visibility(labels, before, before)['pass'])
+
     def test_other_object_silhouette_is_not_a_cloth_lip(self):
         rgb = np.array([[[255, 0, 255], [255, 255, 255], [0, 0, 255], [255, 0, 0], [0, 255, 0]]], dtype=np.uint8)
         np.testing.assert_array_equal(cloth_coverage(rgb), [[False, False, False, True, True]])

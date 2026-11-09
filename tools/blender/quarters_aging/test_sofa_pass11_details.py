@@ -31,6 +31,11 @@ class DetailTests(unittest.TestCase):
         self.assertGreater(root.mean(), .20)
         self.assertLess(root.mean(), .65)
 
+    def test_bundle_roots_survive_hero_mask_mipmaps(self):
+        alpha = bundle_atlas(10031)[:256, :, 3]
+        filtered = alpha[:32].reshape(32, 8, 128).mean(axis=(0, 2))
+        self.assertGreaterEqual(int((filtered > .5).sum()), 4)
+
     def test_fragment_reduction_keeps_nine_hull_vertices(self):
         rng = np.random.default_rng(10111)
         points = rng.normal(size=(24, 3))
@@ -44,6 +49,29 @@ class DetailTests(unittest.TestCase):
         bmesh.ops.triangulate(bm, faces=list(bm.faces))
         self.assertEqual(len(bm.faces), 14)
         bm.free()
+
+    def test_exposed_foam_is_closed_and_inside_each_physical_gash(self):
+        import bpy
+        from sofa_pass11 import foam_core
+        from sofa_pass11_mesh import gash_field
+        specs = {
+            'SeatCushion_C': dict(centre=[0, -.295, .43], tangent=[1, 0, 0],
+                across=[0, 1, 0], half_length=.118, half_width=.048, seed=9801, height_min=.408),
+            'BackCushion_C': dict(centre=[0, .1, .535], tangent=[0, 0, 1],
+                across=[1, 0, 0], half_length=.07, half_width=.035, seed=9912, depth_max=.128),
+        }
+        for name, spec in specs.items():
+            with self.subTest(name=name):
+                obj = foam_core(name, spec, None)
+                positions = np.array([v.co[:] for v in obj.data.vertices])
+                self.assertTrue((gash_field(positions, spec) < 0).all())
+                bm = bmesh.new()
+                bm.from_mesh(obj.data)
+                self.assertTrue(all(edge.is_manifold for edge in bm.edges))
+                self.assertGreater(abs(bm.calc_volume()), .000001)
+                self.assertEqual(len(bm.faces), 144)
+                bm.free()
+                bpy.data.objects.remove(obj, do_unlink=True)
 
 
 if __name__ == '__main__':

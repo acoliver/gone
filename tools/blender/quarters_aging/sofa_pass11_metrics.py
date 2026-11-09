@@ -13,6 +13,16 @@ def cloth_coverage(rgb):
     return (pixels[:, :, :2].sum(2) >= 127.5) & (pixels[:, :, 2] < 127.5)
 
 
+def fringe_visibility(labels, before, without):
+    pixels = np.asarray(labels, dtype=float)
+    coverage = np.maximum(pixels[:, :, 1]-pixels[:, :, 2], 0.)/255.
+    changed = np.abs(np.asarray(before, dtype=int)-np.asarray(without, dtype=int)).max(2) >= 8
+    visible = float(coverage[changed].sum())
+    return dict(hero_first_hit_coverage_px=float(coverage.sum()), lit_first_hit_coverage_px=visible,
+                method='antialiased green coverage minus cyan crumb coverage; unchanged >=8-level lit disabled-effect difference',
+                **{'pass': visible > 0.})
+
+
 def visible_gashes(cloth, segments, radius=12., occluded=None):
     if not len(segments):
         return []

@@ -1,5 +1,139 @@
 # Quarters geometry aging
 
+## Sofa pass 11: rejected, 14 of 22 gates pass
+
+The fixed reference is `docs/art/quarters/sheets/sofa/aged-target.png`: this
+sofa after 1000 years. Ignore its wall socket and wall corner. The final
+candidate remains a scratch export at `tmp/age/pass11/final-fringe/sofa-preview.glb`.
+The game GLB, shipped textures and fitted Blender source remain unchanged.
+The requested visual result is not achieved.
+
+### Measurement findings and geometry changes
+
+The previous contour decoder required nearly pure red or green pixels. It
+classified antialiased cloth/fringe mixtures as holes. On the retained centre
+back, strict labels reported eleven enclosed holes; combined cloth coverage
+reported two. The sofa now decodes combined R+G coverage before tracing the
+visible alpha/lip boundary near physical tear components. Open lips are not
+closed with a synthetic line. Constant-width open and closed slot controls
+still fail the unchanged 12 px limit. G4 retains 0.35; G6 retains 1.15 to 1.40
+on contours at least 64 px across. Existing seam gape/fringe requirements
+remain required and cannot be bypassed by the panel-outline result. This
+agrees with the R+G finding recorded in the tunic README's shared-code section.
+
+The retained pass-10 solve is the source. Enclosed small wear holes are
+patched, detached specks removed, and one broad physical gash is cut into each
+seat front and each back seam. Seat openings span 17.95 to 24.99 cm and are
+7.48 to 10.73 cm wide; back openings span 11.98 to 13.99 cm and are about
+6.8 to 7.0 cm wide. Each has a closed, nonplanar 144-triangle tan foam core.
+Rear-fold depth limits avoid cutting through the entire back cushion.
+Existing slit-like damage is not completely removed, and the captures still
+show substantially less broad foam exposure than the target.
+
+Each seat receives its own shallow bowl while its already-collapsed middle
+stays above its support. The backs are pitched forward by 15/14/12 degrees
+and their ties lowered, without scaling the envelope. After cutting and
+finishing, back area is 101.235/100.521/100.659% of the retained source,
+within the unchanged 97% to 103% control. This is explicit finishing of a
+retained solve, not a new gravity simulation. A 14 cm physical split is cut
+at the throw's arm crease; the hanging sheet remains connected.
+
+The new openings add protected boundary vertices, increasing the pressure
+on reduction and exposing seat faceting. Source and reduced surfaces receive
+bounded fairing. The right-back G1 defect is fixed, at 5.644% versus 8%, but
+all three seats now fail G1. The contact finish also fails to converge:
+335/316/341 crossings before export, with 362 in the exported asset. These
+include 285 back/seat crossings, 26 right-back/throw crossings, eight frame/
+centre-seat crossings and 43 changed self crossings. Rigid baseline counts
+remain exact. No pair or cloth region is excluded.
+
+Debris uses eight reductions of the existing cut-fragment templates, with
+nine hull vertices and fourteen triangles each. All 198 exported fragments
+are measured directly rather than accepted from template metadata. There
+are 42 floor fragments, versus pass 10's 18, with broader supported powder
+cards. Lit first-hit hero crumb pixels increase from 42 to 275, and seat-front
+pixels from 17 to 253. Floor distribution and radial falloff still pass.
+Despite that increase, image-comparer finds the seats and floor too sparse.
+
+Fringe is sampled at physical arclength rather than once per tiny cut edge.
+Twenty thin bundles per card vanished under MASK mip filtering, despite
+being present in the export. A failing hero-scale filtering control exposed
+this. Eight wider bundles pass that control and affect the lit capture.
+Pure-green diagnostic pixels also discarded antialiased fringe coverage.
+The corrected measurement subtracts cyan crumb coverage from green coverage
+and still requires an eight-level disabled-effect difference: 312.075
+coverage-weighted first-hit pixels pass that condition. This does not certify
+the target's frayed-lip appearance. The geometry budget stays at 28,697
+triangles. Compact residue reduction leaves a visible planar patch on the
+right seat, so G7 regresses. Float64 barycentric clearance transfer prevents
+unstable skinny-triangle weights, but final boundary error still reaches
+2.317 mm and fails G32.
+
+### Final measurements
+
+Seat and back triplets are centre/left/right. G20 to G29 are tunic-only.
+Per-opening samples, unresolved contours and all per-part values remain in
+`tmp/age/pass11/final-fringe/gates.json`, mirrored to `tmp/age/pass11/gates.json`.
+Every numeric threshold is retained.
+
+| Gate | Final measured value | Threshold | Result |
+| --- | --- | --- | --- |
+| G1 | Sharp pairs: seats 11.887/10.473/8.276%; backs 6.809/4.046/5.644%; throw 8.583% | Covers <=8%; throw <=9% | Fail |
+| G2 | Largest normal-jump fraction 1.094% | <=2% each | Pass |
+| G3 | Longest visible runs: seats 74.061/47.671/76.059 px; backs 45.260/34.234/64.070 px; throw 7 px | <=12 px; seam gape/fringe still required | Fail |
+| G4 | Minimum paired CV: seats 0.070/0.135/0.250; backs 0.044/0.042/0.168; throw unpaired | >=0.35 each; missing measurement fails | Fail |
+| G5 | Lifted lip length: seats 40.289/27.557/36.077%; backs 32.112/36.609/32.884% | >=30% above 3 mm each | Fail |
+| G6 | Resolved contour dimensions span 0.932 to 1.236; throw has no resolved contour | 1.15 to 1.40 each; one resolved contour per part | Fail |
+| G7 | Visible planar residue: seats 0/2.225/8.176%; backs 0/0/0% | <=5% each | Fail |
+| G8 | Dense crust RMS: seats 1.850/1.675/1.910 mm; backs 3.074/3.034/2.913 mm; maps present | >=1.5 mm and normal map | Pass |
+| G9 | Eight templates, 198 exported crumbs, fourteen triangles each | >=8 templates; 14 to 40 triangles, not 20; thickness/width 0.25 to 0.70 | Pass |
+| G10 | R 1.252140; largest cluster 0%; 42 floor crumbs | R 0.8 to 1.4; cluster <=20% | Pass |
+| G11 | Radial rho -1/-1/-1; supported powder per spill | rho <=-0.6 and powder present | Pass |
+| G12 | Hero/front boxing: centre 0/0%; left 3.206/1.831%; right 1.173/0.623% | <=25% each camera | Pass |
+| G13 | Rounded-box RMS 12.799/19.728/16.693 mm | >=12 mm each seat | Pass |
+| G14 | Seat centre-height retention 17.694/11.921/11.417% | 10% to 25% each | Pass |
+| G15 | Back height retention 58.214/57.153/60.891% | 40% to 65% each | Pass |
+| G16 | Back residue in lowest third 98.765/98.824/98.428% | >=60% each | Pass |
+| G17 | Back front folds 2/2/2, >=8 mm prominence | >=2 each | Pass |
+| G18 | Arm-crest split 89.298% | 60% to 90% | Pass |
+| G19 | One connected arm-to-near-floor sheet; four folds; 76.153 mm above floor; zero arm gap | >=3 folds; <=250 mm arm gap; hang <=100 mm above floor | Pass |
+| G30 | 362 changed crossings; rigid Frame self 522 and Frame/Rivets 272, exact baseline | Zero changed; rigid counts equal unaged | Fail |
+| G31 | 28,697 triangles; 1.467877 times fitted | <=29,325 and <=1.5 times fitted | Pass |
+| G32 | Seat boundary errors 1.976/1.184/2.065 mm; backs 1.867/2.317/1.727 mm; throw 0.526 mm | <=1.5 mm each | Fail |
+
+### Captures, review and verification
+
+The before/after, turntable and 0.6 m close-up retain the pass-10 cameras.
+`sofa-target-match.png` places a new target-angle render beside the complete
+1024 by 1024 reference. Its angle is an approximation from the fitted hero;
+the generated target has no measured camera metadata. Image-comparer notes
+that the candidate is still viewed from too high an angle.
+
+The four requested outputs are `tmp/age/pass11/sofa-before-after.png`,
+`sofa-turntable.png`, `sofa-closeup.png` and `sofa-target-match.png`. Their
+headers identify a rejected, unshipped candidate. The full corresponding
+run, raw captures and visual review stay under `tmp/age/pass11/final-fringe/`.
+The renderer preserves exported materials; its optional argument defaults
+to the previous behavior for existing callers.
+
+Image-comparer estimates a 38% target match and recommends rejection.
+It finds narrow or fragmented tears, limited tan foam exposure, sparse
+debris, uniformly bowl-shaped seats, blockier backs and no convincing arm-
+crease split. It also reports upholstery/frame color and camera differences.
+These are visual judgments, not measured gate values. The requested damage,
+debris and collapse appearance remains unfinished even where numeric gates
+pass. The next geometry work must improve those visible features while
+removing the new contacts, seat faceting and boundary drift.
+
+The final focused and regression checks pass 51 tests: six contour/coverage,
+seven mesh, five fringe/foam/fragment, fourteen acceptance, three collision-
+policy and sixteen pass-10 tests. Python compilation and diff whitespace
+checks pass. Acceptance exits 1 because eight gates fail. Fixed rigid geometry,
+origins, byte-identical re-export, retained source simulation records, no
+self-collision exclusions, exported fringe, lit fringe/crumb coverage and
+back-area retention pass. Retained simulation records do not establish a
+new settled solve after the explicit pose edits. No game asset is published.
+
 ## Sofa pass 10: rejected, 18 of 22 gates pass
 
 Pass 10 retains pass 9 (`bdd5171`) as its cloth-simulation base. The work
