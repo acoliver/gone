@@ -547,10 +547,11 @@ class BaySpec:
 		return result
 	func regular_light_frames() -> Array[Transform3D]:
 		var frames: Array[Transform3D] = []
-		for x: float in [-4.0, 0.0, 4.0]:
-			# #88: the ceiling strips retain their offset from the shifted pod rows.
-			for z: float in [-1.6 + Pods.ROW_WALL_OFFSET, 1.6 - Pods.ROW_WALL_OFFSET]:
-				frames.append(Transform3D(Basis(), Vector3(x, Pods.ROOM_CEILING_HEIGHT - 0.08, z)))
+		# Center each generated 1.10 m beam over a 1.18 m panel service area.
+		# Keep the fixture frame at the existing beam's authored ceiling mount plane.
+		for x: float in [-4.2, -0.6, 4.2]:
+			for z: float in [-1.5, 1.5]:
+				frames.append(Transform3D(Basis(), Vector3(x, 3.12, z)))
 		return frames
 	func emergency_fixtures(registry: Pods.PodRegistry) -> Array[EmergencyFixtureSpec]:
 		var fixtures: Array[EmergencyFixtureSpec] = []

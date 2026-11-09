@@ -1,0 +1,773 @@
+{
+  "intact": {
+    "triangles": 8372,
+    "welded_vertices": 4132,
+    "edges": 12558,
+    "euler_characteristic": -54,
+    "components": 1,
+    "watertight": true,
+    "winding_consistent": true,
+    "boundary_edges": 0,
+    "nonmanifold_edges": 0,
+    "signed_volume_m3": 0.0012422609745446598,
+    "minimum_triangle_area_m2": 1.5892400728745315e-09,
+    "sha256": "5646be010925a5e668c743ba98459572e6108a97214bd1a9a4676afb4c6e691e",
+    "exported_vertices_including_uv_normal_seams": 5718,
+    "through_holes_from_genus": 28,
+    "bounds_gltf_m": [
+      [
+        -0.5899999737739563,
+        -0.019999999552965164,
+        -0.28999999165534973
+      ],
+      [
+        0.5899999737739563,
+        0.0,
+        0.28999999165534973
+      ]
+    ],
+    "extents_gltf_xyz_m": [
+      1.1799999475479126,
+      0.019999999552965164,
+      0.5799999833106995
+    ],
+    "assembly_bounds_gltf_m": [
+      [
+        -0.5899999737739563,
+        -0.019999999552965164,
+        -0.28999999165534973
+      ],
+      [
+        0.5899999737739563,
+        0.004399999976158142,
+        0.28999999165534973
+      ]
+    ],
+    "scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "vertical_sheet_thickness_min_max_m": [
+      0.001999998465180397,
+      0.0020000003278255463
+    ],
+    "attachment_max_error_m": 2.681745947090826e-08,
+    "attachment_points_gltf_m": [
+      [
+        -0.5566209418792396,
+        0.0,
+        0.27331205869110897
+      ],
+      [
+        -0.5503316133703933,
+        0.0,
+        -0.2702238721116856
+      ],
+      [
+        0.560146651665213,
+        0.0,
+        0.2750432529948089
+      ],
+      [
+        0.5592516330927035,
+        0.0,
+        -0.27460378090488036
+      ]
+    ],
+    "uv0_range": [
+      0.0,
+      1.0
+    ],
+    "minimum_uv_triangle_area": 2.320363234886713e-09,
+    "zero_area_uv_triangles": 0,
+    "slot_clearance_rays": 140,
+    "ligament_thickness_rays": 24,
+    "hardware_seat_rays": 64,
+    "center_ray_y_m": [
+      -0.02,
+      -0.018
+    ],
+    "minimum_y_at_2_99_placement_m": 2.970000000447035,
+    "hardware_bodies": {
+      "intact_mount_head_1": {
+        "triangles": 240,
+        "welded_vertices": 122,
+        "edges": 360,
+        "euler_characteristic": 2,
+        "components": 1,
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "signed_volume_m3": 3.1961506225883784e-07,
+        "minimum_triangle_area_m2": 4.5502048780484555e-07
+      },
+      "intact_mount_head_2": {
+        "triangles": 240,
+        "welded_vertices": 122,
+        "edges": 360,
+        "euler_characteristic": 2,
+        "components": 1,
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "signed_volume_m3": 3.1961402608815705e-07,
+        "minimum_triangle_area_m2": 4.5501250849188716e-07
+      },
+      "intact_mount_head_3": {
+        "triangles": 240,
+        "welded_vertices": 122,
+        "edges": 360,
+        "euler_characteristic": 2,
+        "components": 1,
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "signed_volume_m3": 3.1961427968186983e-07,
+        "minimum_triangle_area_m2": 4.5501874848287545e-07
+      },
+      "intact_mount_head_4": {
+        "triangles": 240,
+        "welded_vertices": 122,
+        "edges": 360,
+        "euler_characteristic": 2,
+        "components": 1,
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "signed_volume_m3": 3.196143480740837e-07,
+        "minimum_triangle_area_m2": 4.550133817783177e-07
+      }
+    },
+    "assembly_body_count": 5
+  },
+  "subtlewarp": {
+    "triangles": 8372,
+    "welded_vertices": 4132,
+    "edges": 12558,
+    "euler_characteristic": -54,
+    "components": 1,
+    "watertight": true,
+    "winding_consistent": true,
+    "boundary_edges": 0,
+    "nonmanifold_edges": 0,
+    "signed_volume_m3": 0.0012422609156749302,
+    "minimum_triangle_area_m2": 1.5892494020677589e-09,
+    "sha256": "c314582f5b283a0a2bae39c28c67682c85f5a5b05fb849d6dd2468c895da7623",
+    "exported_vertices_including_uv_normal_seams": 5726,
+    "through_holes_from_genus": 28,
+    "bounds_gltf_m": [
+      [
+        -0.5899999737739563,
+        -0.023993561044335365,
+        -0.28999999165534973
+      ],
+      [
+        0.5899999737739563,
+        4.8500735982866814e-17,
+        0.28999999165534973
+      ]
+    ],
+    "extents_gltf_xyz_m": [
+      1.1799999475479126,
+      0.023993561044335414,
+      0.5799999833106995
+    ],
+    "assembly_bounds_gltf_m": [
+      [
+        -0.5899999737739563,
+        -0.023993561044335365,
+        -0.28999999165534973
+      ],
+      [
+        0.5899999737739563,
+        0.004399999976158142,
+        0.28999999165534973
+      ]
+    ],
+    "scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "vertical_sheet_thickness_min_max_m": [
+      0.001999998465180397,
+      0.002000001259148121
+    ],
+    "attachment_max_error_m": 2.681745947090826e-08,
+    "attachment_points_gltf_m": [
+      [
+        -0.5566209418792396,
+        0.0,
+        0.27331205869110897
+      ],
+      [
+        -0.5503316133703933,
+        0.0,
+        -0.2702238721116856
+      ],
+      [
+        0.560146651665213,
+        0.0,
+        0.2750432529948089
+      ],
+      [
+        0.5592516330927035,
+        0.0,
+        -0.27460378090488036
+      ]
+    ],
+    "uv0_range": [
+      0.0,
+      1.0
+    ],
+    "minimum_uv_triangle_area": 2.320363234886713e-09,
+    "zero_area_uv_triangles": 0,
+    "slot_clearance_rays": 140,
+    "ligament_thickness_rays": 24,
+    "hardware_seat_rays": 64,
+    "center_ray_y_m": [
+      -0.02,
+      -0.018
+    ],
+    "minimum_y_at_2_99_placement_m": 2.966006438955665,
+    "hardware_bodies": {
+      "subtlewarp_mount_head_1": {
+        "triangles": 240,
+        "welded_vertices": 122,
+        "edges": 360,
+        "euler_characteristic": 2,
+        "components": 1,
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "signed_volume_m3": 3.1961506225883784e-07,
+        "minimum_triangle_area_m2": 4.5502048780484555e-07
+      },
+      "subtlewarp_mount_head_2": {
+        "triangles": 240,
+        "welded_vertices": 122,
+        "edges": 360,
+        "euler_characteristic": 2,
+        "components": 1,
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "signed_volume_m3": 3.1961402608815705e-07,
+        "minimum_triangle_area_m2": 4.5501250849188716e-07
+      },
+      "subtlewarp_mount_head_3": {
+        "triangles": 240,
+        "welded_vertices": 122,
+        "edges": 360,
+        "euler_characteristic": 2,
+        "components": 1,
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "signed_volume_m3": 3.1961427968186983e-07,
+        "minimum_triangle_area_m2": 4.5501874848287545e-07
+      },
+      "subtlewarp_mount_head_4": {
+        "triangles": 240,
+        "welded_vertices": 122,
+        "edges": 360,
+        "euler_characteristic": 2,
+        "components": 1,
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "signed_volume_m3": 3.196143480740837e-07,
+        "minimum_triangle_area_m2": 4.550133817783177e-07
+      }
+    },
+    "assembly_body_count": 5
+  },
+  "sag": {
+    "triangles": 8372,
+    "welded_vertices": 4132,
+    "edges": 12558,
+    "euler_characteristic": -54,
+    "components": 1,
+    "watertight": true,
+    "winding_consistent": true,
+    "boundary_edges": 0,
+    "nonmanifold_edges": 0,
+    "signed_volume_m3": 0.0012422609242859091,
+    "minimum_triangle_area_m2": 1.5896986171107237e-09,
+    "sha256": "f965ca05ed6b36ef13bf3c2a4ecd592d25a1f4c41d54e885b2d4163d3448db00",
+    "exported_vertices_including_uv_normal_seams": 5732,
+    "through_holes_from_genus": 28,
+    "bounds_gltf_m": [
+      [
+        -0.5899999737739563,
+        -0.0560000017285347,
+        -0.28999999165534973
+      ],
+      [
+        0.5899999737739563,
+        0.0,
+        0.28999999165534973
+      ]
+    ],
+    "extents_gltf_xyz_m": [
+      1.1799999475479126,
+      0.0560000017285347,
+      0.5799999833106995
+    ],
+    "assembly_bounds_gltf_m": [
+      [
+        -0.5899999737739563,
+        -0.0560000017285347,
+        -0.28999999165534973
+      ],
+      [
+        0.5899999737739563,
+        0.004399999976158142,
+        0.28999999165534973
+      ]
+    ],
+    "scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "vertical_sheet_thickness_min_max_m": [
+      0.001999996602535248,
+      0.0020000021904706955
+    ],
+    "attachment_max_error_m": 2.681745947090826e-08,
+    "attachment_points_gltf_m": [
+      [
+        -0.5566209418792396,
+        0.0,
+        0.27331205869110897
+      ],
+      [
+        -0.5503316133703933,
+        0.0,
+        -0.2702238721116856
+      ],
+      [
+        0.560146651665213,
+        0.0,
+        0.2750432529948089
+      ],
+      [
+        0.5592516330927035,
+        0.0,
+        -0.27460378090488036
+      ]
+    ],
+    "uv0_range": [
+      0.0,
+      1.0
+    ],
+    "minimum_uv_triangle_area": 2.320363234886713e-09,
+    "zero_area_uv_triangles": 0,
+    "slot_clearance_rays": 140,
+    "ligament_thickness_rays": 24,
+    "hardware_seat_rays": 64,
+    "center_ray_y_m": [
+      -0.056,
+      -0.054
+    ],
+    "minimum_y_at_2_99_placement_m": 2.9339999982714655,
+    "hardware_bodies": {
+      "sag_mount_head_1": {
+        "triangles": 240,
+        "welded_vertices": 122,
+        "edges": 360,
+        "euler_characteristic": 2,
+        "components": 1,
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "signed_volume_m3": 3.1961506225883784e-07,
+        "minimum_triangle_area_m2": 4.5502048780484555e-07
+      },
+      "sag_mount_head_2": {
+        "triangles": 240,
+        "welded_vertices": 122,
+        "edges": 360,
+        "euler_characteristic": 2,
+        "components": 1,
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "signed_volume_m3": 3.1961402608815705e-07,
+        "minimum_triangle_area_m2": 4.5501250849188716e-07
+      },
+      "sag_mount_head_3": {
+        "triangles": 240,
+        "welded_vertices": 122,
+        "edges": 360,
+        "euler_characteristic": 2,
+        "components": 1,
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "signed_volume_m3": 3.1961427968186983e-07,
+        "minimum_triangle_area_m2": 4.5501874848287545e-07
+      },
+      "sag_mount_head_4": {
+        "triangles": 240,
+        "welded_vertices": 122,
+        "edges": 360,
+        "euler_characteristic": 2,
+        "components": 1,
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "signed_volume_m3": 3.196143480740837e-07,
+        "minimum_triangle_area_m2": 4.550133817783177e-07
+      }
+    },
+    "assembly_body_count": 5
+  },
+  "torncorner": {
+    "triangles": 8608,
+    "welded_vertices": 4250,
+    "edges": 12912,
+    "euler_characteristic": -54,
+    "components": 1,
+    "watertight": true,
+    "winding_consistent": true,
+    "boundary_edges": 0,
+    "nonmanifold_edges": 0,
+    "signed_volume_m3": 0.0012130257671584016,
+    "minimum_triangle_area_m2": 1.5892400728745315e-09,
+    "sha256": "181ca1c54ab15611190b2224065edac28d533df1e959bff554ca8634a50c0847",
+    "exported_vertices_including_uv_normal_seams": 6090,
+    "through_holes_from_genus": 28,
+    "bounds_gltf_m": [
+      [
+        -0.5899999737739563,
+        -0.04213760420680046,
+        -0.28999999165534973
+      ],
+      [
+        0.5899999737739563,
+        0.0,
+        0.28999999165534973
+      ]
+    ],
+    "extents_gltf_xyz_m": [
+      1.1799999475479126,
+      0.04213760420680046,
+      0.5799999833106995
+    ],
+    "assembly_bounds_gltf_m": [
+      [
+        -0.5899999737739563,
+        -0.04213760420680046,
+        -0.28999999165534973
+      ],
+      [
+        0.5899999737739563,
+        0.004399999976158142,
+        0.28999999165534973
+      ]
+    ],
+    "scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "vertical_sheet_thickness_min_max_m": [
+      0.001999996602535248,
+      0.0020000003278255463
+    ],
+    "attachment_max_error_m": 2.4894894268326014e-08,
+    "attachment_points_gltf_m": [
+      [
+        -0.5566209418792396,
+        0.0,
+        0.27331205869110897
+      ],
+      [
+        -0.5503316133703933,
+        0.0,
+        -0.2702238721116856
+      ],
+      [
+        0.560146651665213,
+        0.0,
+        0.2750432529948089
+      ],
+      [
+        0.26478325512516115,
+        0.0,
+        -0.2820707136808903
+      ]
+    ],
+    "uv0_range": [
+      0.0,
+      1.0
+    ],
+    "minimum_uv_triangle_area": 2.320363234886713e-09,
+    "zero_area_uv_triangles": 0,
+    "slot_clearance_rays": 140,
+    "ligament_thickness_rays": 24,
+    "hardware_seat_rays": 64,
+    "center_ray_y_m": [
+      -0.02,
+      -0.018
+    ],
+    "minimum_y_at_2_99_placement_m": 2.9478623957931998,
+    "hardware_bodies": {
+      "torncorner_mount_head_1": {
+        "triangles": 240,
+        "welded_vertices": 122,
+        "edges": 360,
+        "euler_characteristic": 2,
+        "components": 1,
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "signed_volume_m3": 3.1961506225883784e-07,
+        "minimum_triangle_area_m2": 4.5502048780484555e-07
+      },
+      "torncorner_mount_head_2": {
+        "triangles": 240,
+        "welded_vertices": 122,
+        "edges": 360,
+        "euler_characteristic": 2,
+        "components": 1,
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "signed_volume_m3": 3.1961402608815705e-07,
+        "minimum_triangle_area_m2": 4.5501250849188716e-07
+      },
+      "torncorner_mount_head_3": {
+        "triangles": 240,
+        "welded_vertices": 122,
+        "edges": 360,
+        "euler_characteristic": 2,
+        "components": 1,
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "signed_volume_m3": 3.1961427968186983e-07,
+        "minimum_triangle_area_m2": 4.5501874848287545e-07
+      },
+      "torncorner_mount_head_4": {
+        "triangles": 240,
+        "welded_vertices": 122,
+        "edges": 360,
+        "euler_characteristic": 2,
+        "components": 1,
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "signed_volume_m3": 3.1961460300752775e-07,
+        "minimum_triangle_area_m2": 4.55024468089314e-07
+      }
+    },
+    "assembly_body_count": 5
+  },
+  "brokenedge": {
+    "triangles": 8628,
+    "welded_vertices": 4260,
+    "edges": 12942,
+    "euler_characteristic": -54,
+    "components": 1,
+    "watertight": true,
+    "winding_consistent": true,
+    "boundary_edges": 0,
+    "nonmanifold_edges": 0,
+    "signed_volume_m3": 0.0012300734514905654,
+    "minimum_triangle_area_m2": 1.5892400728745315e-09,
+    "sha256": "948541c70146a4380391ecdc339309304b10daefaf3b5ab0c08e4bb419aa15f8",
+    "exported_vertices_including_uv_normal_seams": 6034,
+    "through_holes_from_genus": 28,
+    "bounds_gltf_m": [
+      [
+        -0.5899999737739563,
+        -0.03936336189508438,
+        -0.28999999165534973
+      ],
+      [
+        0.5899999737739563,
+        0.0,
+        0.28999999165534973
+      ]
+    ],
+    "extents_gltf_xyz_m": [
+      1.1799999475479126,
+      0.03936336189508438,
+      0.5799999833106995
+    ],
+    "assembly_bounds_gltf_m": [
+      [
+        -0.5899999737739563,
+        -0.03936336189508438,
+        -0.28999999165534973
+      ],
+      [
+        0.5899999737739563,
+        0.004399999976158142,
+        0.28999999165534973
+      ]
+    ],
+    "scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "vertical_sheet_thickness_min_max_m": [
+      0.001999996602535248,
+      0.002000001259148121
+    ],
+    "attachment_max_error_m": 2.681745947090826e-08,
+    "attachment_points_gltf_m": [
+      [
+        -0.5566209418792396,
+        0.0,
+        0.27331205869110897
+      ],
+      [
+        -0.5503316133703933,
+        0.0,
+        -0.2702238721116856
+      ],
+      [
+        0.560146651665213,
+        0.0,
+        0.2750432529948089
+      ],
+      [
+        0.5592516330927035,
+        0.0,
+        -0.27460378090488036
+      ]
+    ],
+    "uv0_range": [
+      0.0,
+      1.0
+    ],
+    "minimum_uv_triangle_area": 2.320363234886713e-09,
+    "zero_area_uv_triangles": 0,
+    "slot_clearance_rays": 140,
+    "ligament_thickness_rays": 24,
+    "hardware_seat_rays": 64,
+    "center_ray_y_m": [
+      -0.02,
+      -0.018
+    ],
+    "minimum_y_at_2_99_placement_m": 2.950636638104916,
+    "hardware_bodies": {
+      "brokenedge_mount_head_1": {
+        "triangles": 240,
+        "welded_vertices": 122,
+        "edges": 360,
+        "euler_characteristic": 2,
+        "components": 1,
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "signed_volume_m3": 3.1961506225883784e-07,
+        "minimum_triangle_area_m2": 4.5502048780484555e-07
+      },
+      "brokenedge_mount_head_2": {
+        "triangles": 240,
+        "welded_vertices": 122,
+        "edges": 360,
+        "euler_characteristic": 2,
+        "components": 1,
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "signed_volume_m3": 3.1961402608815705e-07,
+        "minimum_triangle_area_m2": 4.5501250849188716e-07
+      },
+      "brokenedge_mount_head_3": {
+        "triangles": 240,
+        "welded_vertices": 122,
+        "edges": 360,
+        "euler_characteristic": 2,
+        "components": 1,
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "signed_volume_m3": 3.1961427968186983e-07,
+        "minimum_triangle_area_m2": 4.5501874848287545e-07
+      },
+      "brokenedge_mount_head_4": {
+        "triangles": 240,
+        "welded_vertices": 122,
+        "edges": 360,
+        "euler_characteristic": 2,
+        "components": 1,
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "signed_volume_m3": 3.196143480740837e-07,
+        "minimum_triangle_area_m2": 4.550133817783177e-07
+      }
+    },
+    "assembly_body_count": 5
+  },
+  "independent_variant_differences": {
+    "subtlewarp": {
+      "exported_height_delta_min_max_m": [
+        -0.003993561491370201,
+        0.00403452105820179
+      ],
+      "plan_coordinates_unchanged": true
+    },
+    "sag": {
+      "exported_height_delta_min_max_m": [
+        -0.036000002175569534,
+        0.0
+      ],
+      "plan_coordinates_unchanged": true
+    },
+    "torncorner": {
+      "removed_projected_material_area_m2": 0.014617603693129096,
+      "removed_region_clearance_rays": 44,
+      "maximum_notch_depth_m": 0.1353779703710629,
+      "changed_original_outline_arc_m": 0.49038820373997855,
+      "through_holes_unchanged": true
+    },
+    "brokenedge": {
+      "removed_projected_material_area_m2": 0.006093761527047243,
+      "removed_region_clearance_rays": 28,
+      "maximum_notch_depth_m": 0.04401766159907792,
+      "changed_original_outline_arc_m": 0.3288275401707793,
+      "through_holes_unchanged": true
+    }
+  },
+  "source_provenance": {
+    "source_sha256": "0a1037c563c074953a09218b69e142b5cbf596aebb79f4760a31f4a04ace1698",
+    "guide_sha256": "7fca22c0da007ffd26ac5361006feb43e5a2c303516f94a6966b03187a08de79"
+  },
+  "limits": [
+    "No exhaustive 3D triangle intersection certification; builder checks simple nested planar boundaries and paired extrusion.",
+    "Thickness is 2 mm vertical extrusion, not an exact normal offset on steep rim or bent variants.",
+    "Mount heads are separate closed captive-head solids with flat seats, not threaded fasteners or modeled hidden shanks.",
+    "Return UVs use metal-side planar colour-bank projections per edge; stretched sloping rim UVs remain planar.",
+    "Neutral GLB material only; generated-image material textures are rebaked separately for parent binding."
+  ]
+}

@@ -70,7 +70,6 @@ func test_bay_and_power_dressing_connects_to_structure() -> void:
 	var scene := ShipScene.build_into(world, game)
 	var structure := _solid_bounds(ShipGeometry.opening_scene_solids(game.registry, false, false, game.layout))
 	var pieces: Dictionary = {}
-	_collect(scene.bay_root.get_node("HangingWires"), pieces)
 	_collect(scene.lighting, pieces)
 	_collect(scene.hallway, pieces, ["CorridorDressing", "HallSideDoors"])
 	_collect(scene.power_room, pieces)

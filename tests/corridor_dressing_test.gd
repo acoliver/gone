@@ -273,7 +273,7 @@ func test_all_ordered_collision_boxes_are_identical_before_after_build_and_free(
 	var before: Dictionary = {}
 	for deck: int in range(1, 31): before[deck] = game.collision.deck_set(deck).boxes()
 	var root := Node3D.new()
-	var scene := ShipScene.build_into(root, game, false)
+	var scene := ShipScene.build_into(root, game)
 	scene.prepare_near(Vector3(8, 0.305, 0))
 	scene.prepare_near(Vector3(27, 0.305, 0))
 	scene.stream.focus(&"C-000-LADDER", 1)
@@ -288,7 +288,7 @@ func test_stream_eviction_frees_batches_and_reload_restores_identical_poses() ->
 	if not _available(): return
 	var root := Node3D.new()
 	var game := Game.new(0)
-	var scene := ShipScene.build_into(root, game, false)
+	var scene := ShipScene.build_into(root, game)
 	scene.stream.focus(&"C-000-LADDER", 1)
 	for frame: int in range(5): scene.stream.build_next()
 	var room: Node3D = scene.stream.room(&"D01-C-000")
