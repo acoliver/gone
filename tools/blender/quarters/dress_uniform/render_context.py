@@ -80,8 +80,18 @@ def setup(asset):
     return scene, camera, origin, rotation
 
 
-def render_context(asset, out, state, body_base=None, views=None):
+def render_context(asset, out, state, body_base=None, views=None, dust_controls=None):
     scene, camera, origin, rotation = setup(asset)
+    if dust_controls:
+        for obj in scene.objects:
+            if obj.type != 'MESH' or obj.name not in ['TunicBody', 'Collar', 'ShoulderBoard_L', 'ShoulderBoard_R', 'Placket']:
+                continue
+            image = bpy.data.images.load(str((dust_controls/f'{obj.name.lower()}_no_dust_control.png').resolve()), check_existing=False)
+            for mat in obj.data.materials:
+                texture = mat.node_tree.nodes['Principled BSDF'].inputs['Base Color'].links[0].from_node
+                if texture.type != 'TEX_IMAGE':
+                    raise ValueError('Dust control requires the exported baked base texture')
+                texture.image = image
     if body_base:
         image = bpy.data.images.load(str(body_base.resolve()), check_existing=False)
         for obj in scene.objects:
@@ -129,6 +139,8 @@ def render_context(asset, out, state, body_base=None, views=None):
                           rim_light=False)
     if body_base:
         record['body_base_control'] = str(body_base)
+    if dust_controls:
+        record['dust_controls'] = str(dust_controls)
     (out/f'{state}-context.json').write_text(json.dumps(record, indent=2)+'\n')
 
 
@@ -139,6 +151,7 @@ if __name__ == '__main__':
     parser.add_argument('--state', default='after')
     parser.add_argument('--body-base', type=Path, help='Baked-base replacement for the dust-off control only')
     parser.add_argument('--views', nargs='+', choices=['hero', 'closeup', 'heap'])
+    parser.add_argument('--dust-controls', type=Path, help='Disable dust on all garment cloth, retaining fade and lighting')
     args = parser.parse_args(sys.argv[sys.argv.index('--')+1:])
     args.out.mkdir(parents=True, exist_ok=True)
-    render_context(args.input.resolve(), args.out.resolve(), args.state, args.body_base, args.views)
+    render_context(args.input.resolve(), args.out.resolve(), args.state, args.body_base, args.views, args.dust_controls)

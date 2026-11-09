@@ -82,7 +82,9 @@ def aged_linear(ao, masks, palette, debris=False, dust=True):
     substrate = dark+(faded-dark)*fade[:, :, None]
     crest_mix = np.clip((.12*up+.25*crest+.18*upper)*visibility, 0, .55)
     substrate += (high-substrate)*crest_mix[:, :, None]
-    coverage = np.clip(up**1.7*(.20+.52*upper)*(.7+.3*fine)*visibility, 0, .78) if dust else np.zeros_like(up)
+    upward = np.clip((up-.04)/.51, 0, 1)
+    upward = upward*upward*(3-2*upward)
+    coverage = np.clip(upward*(.32+.62*upper)*(.92+.08*fine)*visibility, 0, .94) if dust else np.zeros_like(up)
     if debris:
         fibre = np.array(palette['fibre_dust']['linear'])
         substrate = fibre[None, None, :]*(.75+.55*broad[:, :, None])
@@ -116,7 +118,7 @@ def bake_colour(obj, out, palette, debris=False):
         columns = np.minimum((np.arange(size)*image.size[0]/size).astype(int), image.size[0]-1)
         ao = data[rows[:, None], columns[None, :]]
     colour, fade, dust = aged_linear(ao, masks, palette, debris)
-    grain = .98+.04*masks[:, :, 4:5]
+    grain = .995+.01*masks[:, :, 4:5]
     colour *= grain
     rgba = np.ones((size, size, 4), np.float32)
     if old:
