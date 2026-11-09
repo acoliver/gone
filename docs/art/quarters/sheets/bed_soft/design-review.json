@@ -1,0 +1,36 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\n  \"candidates\": [\n    {\n      \"seed\": 241,\n      \"score_out_of_10\": 4,\n      \"strengths\": [\n        \"Muted warm color palette\",\n        \"Woven texture visible on the blanket\"\n      ],\n      \"defects\": [\n        \"Excessive number of pillows (4 visible)\",\n        \"Blanket is draped loosely and informally rather than neatly made\",\n        \"Lacks the specific folded-back head cuff detail\"\n      ]\n    },\n    {\n      \"seed\": 242,\n      \"score_out_of_10\": 5,\n      \"strengths\": [\n        \"Correct pillow count (2)\",\n        \"Blanket is folded back at the head, creating a cuff-like appearance\"\n      ],\n      \"defects\": [\n        \"Blanket drape is somewhat stiff and flat\",\n        \"Lacks the 'lived-in' softness of the reference\"\n      ]\n    },\n    {\n      \"seed\": 243,\n      \"score_out_of_10\": 2,\n      \"strengths\": [\n        \"Correct pillow count (2)\"\n      ],\n      \"defects\": [\n        \"Severe rendering artifacts and transparency issues on the blanket\",\n        \"Blanket shape is physically implausible and distorted\",\n        \"Fails to represent a solid, usable cloth form\"\n      ]\n    },\n    {\n      \"seed\": 244,\n      \"score_out_of_10\": 1,\n      \"strengths\": [\n        \"Correct pillow count (2)\"\n      ],\n      \"defects\": [\n        \"Blanket is a hard, flat slab with no drape or volume\",\n        \"Completely lacks the 'softly stuffed' and 'woven wool' character\",\n        \"Fails the 'neatly made' requirement due to rigid, unnatural geometry\"\n      ]\n    }\n  ],\n  \"best_seed\": 242,\n  \"selection_reason\": \"Seed 242 is the only candidate that successfully combines the correct pillow count with a folded-back head cuff. While its drape is stiffer than the reference, it is the most plausible and usable guide for the required soft goods among the flawed options.\",\n  \"modelling_notes\": \"The reference image (1) shows a high-quality, soft, and lived-in bedding setup. The generated candidates (2-5) struggle to replicate this softness. Seed 242 is selected as the best available guide, but the final model will need significant manual adjustment to add the necessary volume, soft drape, and 'lived-in' character to match the reference.\"\n}"
+      }
+    }
+  ],
+  "created": 1794254439,
+  "model": "qwen3.8-27b",
+  "system_fingerprint": "b1-6d05498",
+  "object": "chat.completion",
+  "usage": {
+    "completion_tokens": 600,
+    "prompt_tokens": 3597,
+    "total_tokens": 4197,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  },
+  "id": "chatcmpl-9q8sv81LN43SVzTEjM1l9B9AiuwsymIE",
+  "timings": {
+    "cache_n": 0,
+    "prompt_n": 3597,
+    "prompt_ms": 51747.456,
+    "prompt_per_token_ms": 14.386281901584653,
+    "prompt_per_second": 69.51066348073228,
+    "predicted_n": 600,
+    "predicted_ms": 192589.452,
+    "predicted_per_token_ms": 321.5182838063439,
+    "predicted_per_second": 3.1102430261860863
+  }
+}

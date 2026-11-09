@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "issue": 95,
+  "note": "Batch 2a: remembered bed soft goods. Warm lived-in couple's cabin textiles on the fitted military double frame; the isolated presentation follows the pilot. Geometry is pressure-shell and drape simulation rather than Hunyuan reconstruction. Present state derives from the same parts after 1000 years, sealed, sterile, dry and oxygenated.",
+  "style": "Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, remembered as new, carefully made and personally cared for in a warm lived-in couple's cabin.",
+  "tail": "Single complete bed only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.",
+  "views": {},
+  "props": [
+    {
+      "id": "bed_soft",
+      "size_m": [1.6, 1.1, 2.2],
+      "materials": ["CottonTicking", "WovenWool", "CottonPillow", "Foam"],
+      "prompt": "A neatly made military double bed, 1.6 metres wide and 2.2 metres long, a low thin grey painted steel frame on open legs with a simple rounded steel headboard. A substantial softly rounded cotton ticking mattress fits inside its rails. A muted warm taupe woven wool quilt drapes softly over the mattress and falls a short distance down each side and foot. Its head edge folds back in a generous soft doubled cuff. Two separate plump ivory cotton pillows rest side by side on the mattress against the headboard. Fine natural fabric texture, small believable creases, soft pressure-filled forms and carefully tucked corners; understated intimate domestic comfort within utilitarian ship furniture. The quilt is a plain woven wool blanket, with no patchwork or printed motifs.",
+      "seeds": [241, 242, 243, 244]
+    }
+  ]
+}
