@@ -1,0 +1,25 @@
+{
+  "command": "env HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 /Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-z-image-turbo --model filipstrand/Z-Image-Turbo-mflux-4bit --quantize 4 --steps 8 --seed 271 --width 1024 --height 1024 --output /Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/tmp/props/contacts/bedside/hero-s271.png --prompt 'Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish. A bedside cabinet for military starship officers quarters, 0.50 metres wide, 0.45 metres deep and 0.60 metres tall including its compact built-in lamp. Grey-green satin painted steel carcass with two separate shallow drawers and recessed bare steel pulls, riveted corners, a dark inset kick plate, and a flat top at 0.45 metres. A small fixed steel reading lamp has a narrow upright stem and a compact downward-facing hood above the top. Utilitarian factory fresh hardware. Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.'",
+  "prompt": "Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish. A bedside cabinet for military starship officers quarters, 0.50 metres wide, 0.45 metres deep and 0.60 metres tall including its compact built-in lamp. Grey-green satin painted steel carcass with two separate shallow drawers and recessed bare steel pulls, riveted corners, a dark inset kick plate, and a flat top at 0.45 metres. A small fixed steel reading lamp has a narrow upright stem and a compact downward-facing hood above the top. Utilitarian factory fresh hardware. Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.",
+  "seed": 271,
+  "model_id": "filipstrand/Z-Image-Turbo-mflux-4bit",
+  "sha256": "373cc601495765771c194e1d83358042e2b9ad7e9ff965a0747f30cd71d46328",
+  "elapsed_seconds": 73.493,
+  "selection": {
+    "chosen_seed": 271,
+    "rating": 8,
+    "approved": true,
+    "observations": "All six panels are visible. Panel A shows the approved room context. Panel B shows the accepted locker style. Panels C1 (seed 271), C2 (seed 272), C3 (seed 273), and C4 (seed 274) show candidate bedside cabinets. Seed 271 is the most complete candidate, featuring two drawers, a recessed kick plate, and a lamp with a downward-facing hood. Seed 272 is similar but lacks the recessed kick plate. Seed 273 has an open shelf instead of a top drawer. Seed 274 has a lamp hood that is angled forward rather than downward.",
+    "defects": [
+      "Lamp hood on seed 271 is slightly wide and rounded, resembling a desk lamp more than a compact industrial fixture.",
+      "Drawer pulls on seed 271 appear to be surface-mounted bars rather than recessed pulls as specified in the brief."
+    ],
+    "fitting_landmarks": {
+      "carcass": "Rectangular box with a flat top and a recessed kick plate at the base.",
+      "drawers": "Two separate shallow drawers stacked vertically on the front face.",
+      "lamp": "Fixed steel lamp with a narrow upright stem and a compact hood positioned above the top surface.",
+      "hardware": "Rivets visible at the corners of the carcass and drawer fronts."
+    }
+  },
+  "inputs_policy": "Single approved hero; no independently hallucinated side/back views."
+}

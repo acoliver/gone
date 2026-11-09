@@ -1,0 +1,21 @@
+{
+  "images_seen": [
+    "image-left",
+    "image-right"
+  ],
+  "rating": 4,
+  "ready": false,
+  "observations": "Image-left (A) displays a compact bedside cabinet with a grey-green satin finish. It features a flat top, two stacked drawers with recessed pulls, and visible rivets at the corners. A distinct reading lamp with a narrow stem and a wide, downward-facing hood sits on the top. The base is a dark inset kick plate. Image-right (B) shows a similar grey-green cabinet, but the proportions are significantly wider and flatter. The lamp is a major deviation, appearing as a simple vertical post topped with a small, flat disc rather than a functional hood. The drawers in B have deep rectangular cutouts for pulls, whereas A has simple recessed slots. The kick plate in B is a solid dark block, while A has a recessed frame. The comparison reveals a significant mismatch in the lamp's form and the overall silhouette of the furniture.",
+  "defects": [
+    "The lamp in image-right is a flat disc on a post, completely missing the downward-facing hood and functional shape seen in image-left.",
+    "The overall proportions of the cabinet in image-right are wider and flatter than the taller, more compact unit in image-left.",
+    "The drawer pulls in image-right are deep rectangular cutouts, differing from the recessed slots in image-left.",
+    "The kick plate in image-right is a solid block, whereas image-left shows a recessed frame."
+  ],
+  "fixes": [
+    "Re-model the lamp in image-right to include the narrow stem and compact downward-facing hood as specified in the brief and shown in image-left.",
+    "Adjust the width and height of the cabinet in image-right to match the more compact proportions of image-left.",
+    "Modify the drawer pulls in image-right to be recessed slots rather than deep cutouts.",
+    "Update the kick plate in image-right to be a recessed frame rather than a solid block."
+  ]
+}

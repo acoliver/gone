@@ -1261,6 +1261,7 @@ Verification reads the exported GLB through trimesh. It checks the layout envelo
 | desk_chair | 244 | 175.21 | 2,032 | Pass | 8/10 | Accepted fit | The small bare steel rivets on the corner plates in B are less distinct than in A, potentially due to lighting or resolution.; The fabric texture on the seat pad in B appears slightly smoother and less detailed than in A. |
 | dining_table | 251 | 2004.80 | 3,728 | Pass | 8/10 | Accepted fit | None observed. |
 | dining_chair | 263 | 181.26 | 3,780 | Pass | 8/10 | Accepted fit | The seat pad in image-right appears slightly thicker or more pronounced than in image-left, though this may be due to lighting and angle.; The rivet heads on the seat frame are less visible in image-right compared to image-left, possibly due to the viewing angle. |
+| bedside | 271 | 344.81 | 3,430 | Pass | 7/10 | Accepted fit | The base geometry is inconsistent between the design and the fit (flared feet vs. solid plinth).; The drawer hardware is not identical; the fit version lacks the protruding handles seen in the design.; The lamp accessory does not match the design's specific shade shape.; Reviewer marked not ready to show. |
 
 ### Rebuilding and checking
 
@@ -1280,10 +1281,14 @@ Continued fits include a full-scope paired comparison with the dining-table desi
 
 desk: isolated 4/10; paired 8/10; reference table in that comparison 9/10.
 
+bedside: isolated 4/10; paired 7/10; reference table in that comparison 9/10.
+
 ### Fitting corrections
 
 **desk:** The earlier builder used an open tube end frame against a solid end panel in seed 227. Raised edge returns and the inset kick plate also differed in the captures.
 
-Not yet accepted: console, bedside, view_screen, media_cabinet, lockers_over_bed.
+**bedside:** The earlier lamp hood was a painted rectangular block rather than a curved bare-metal canopy. Large rivets and the high capture camera exaggerated the squat cabinet appearance.
+
+Not yet accepted: console, view_screen, media_cabinet, lockers_over_bed.
 
 Batch sheets: [`sheets/batch1-heroes.png`](sheets/batch1-heroes.png) and [`sheets/batch1-fitted-turntables.png`](sheets/batch1-fitted-turntables.png). Unaccepted fits are labelled as unfinished work. Per-prop `fit-review.json` retains the reviewer observations.
