@@ -3,7 +3,6 @@ render_mode cull_disabled, depth_prepass_alpha, diffuse_burley, specular_schlick
 #include "quarters_tunic.gdshaderinc"
 
 void fragment() {
-	if (!FRONT_FACING) NORMAL = -NORMAL;
 	vec4 base = tunic_base(UV, COLOR);
 	ALBEDO = base.rgb * pigment_gain;
 	METALLIC = metallic;

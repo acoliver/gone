@@ -140,6 +140,12 @@ func test_export_uses_constant_orm_and_linear_normal_data() -> void:
 				assert_true(finish.get_shader_parameter(&"normal_texture") == source.normal_texture, "linear normal texture retained")
 		model.free()
 
+func test_two_sided_normals_are_flipped_only_by_the_renderer() -> void:
+	for mode: String in ["opaque", "mask", "blend"]:
+		var shader := FileAccess.get_file_as_string("res://app/shaders/quarters_tunic_%s.gdshader" % mode)
+		assert_true("cull_disabled" in shader, "Godot enables its two-sided normal correction")
+		assert_false("NORMAL = -NORMAL" in shader, "do not undo Godot's backface correction")
+
 func _model(state: StringName) -> Node3D:
 	return (load(ROOT + "dress_uniform%s.glb" % ("_aged" if state == &"aged" else "")) as PackedScene).instantiate()
 
