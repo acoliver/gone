@@ -147,6 +147,10 @@ static func surface_frame(layout: ShipLayout, owner_id: StringName, part: String
 	if owner_id == ShipLayout.BAY_ID:
 		frame = layout.bay_to_world()
 		bounds = layout.bay().local_bounds()
+	elif owner_id == ShipLayout.QUARTERS_ID:
+		bounds = QuartersLayout.bounds()
+		frame.origin = bounds.position
+		bounds = frame.affine_inverse() * bounds
 	elif owner_id == ShipLayout.POWER_ID:
 		bounds = layout.power_room().bounds()
 		frame.origin = Vector3(bounds.position.x, bounds.position.y, bounds.get_center().z)

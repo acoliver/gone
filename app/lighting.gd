@@ -104,6 +104,7 @@ static func regular_end_fill(origin: Vector3, level: float) -> RegularEndFill:
 ## Extra receiver layer on bay pods, not on the nearby walls or floor.
 # D14 connectors use the same five-deck-separated masks as all other decks,
 # freeing layer 4 for pod-only keys and status spill without sharing a room fill.
+const QUARTERS_MASK: int = 1 << 4
 const POD_STATUS_MASK: int = 1 << 3
 const POD_STATUS_RED: Color = Color(1.0, 0.0, 0.0)
 const POD_STATUS_ENERGY: float = 0.14
@@ -427,6 +428,7 @@ static func architectural_mask(layout: ShipLayout, id: StringName) -> int:
 	return mask
 
 static func space_mask(layout: ShipLayout, id: StringName) -> int:
+	if id == ShipLayout.QUARTERS_ID: return QUARTERS_MASK
 	if id == &"D14-S-040":
 		return 2
 	if id == &"D14-S-042":

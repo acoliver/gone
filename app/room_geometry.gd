@@ -55,3 +55,11 @@ static func _box_mesh(size: Vector3) -> BoxMesh:
 	mesh.size = size
 	_box_cache[size] = mesh
 	return mesh
+
+static func build_solids(layout: ShipLayout, solids: Array[ShipGeometry.SolidSpec]) -> RoomGeometry:
+	var room := RoomGeometry.new()
+	for solid: ShipGeometry.SolidSpec in solids:
+		var piece := HatchModel.mesh_piece(_box_mesh(solid.size), solid.transform, Lighting.QUARTERS_MASK, Surfaces.material(solid.material_role))
+		Surfaces.bind_solid(piece, layout, solid)
+		room.add_child(piece)
+	return room

@@ -421,7 +421,7 @@ static func section_solids(layout: ShipLayout, section: ShipLayout.SectionSpec) 
 	var portals: Dictionary = {}
 	for id: StringName in section.opening_ids():
 		var door := layout.door(id)
-		if door.kind() in [ShipLayout.DoorKind.BAY, ShipLayout.DoorKind.POWER]:
+		if door.kind() in [ShipLayout.DoorKind.BAY, ShipLayout.DoorKind.POWER] or door.id() == ShipLayout.QUARTERS_DOOR_ID:
 			var side := -1 if door.frame().basis.z.z < 0 else 1
 			assert(not portals.has(side), "one room portal per section wall")
 			portals[side] = door
@@ -791,7 +791,9 @@ static func deck_static_solids(layout: ShipLayout, deck: int) -> Array[SolidSpec
 		return opening_scene_solids(layout.bay().template(), true, true, layout, {}, false)
 	var solids: Array[SolidSpec] = []
 	for id: StringName in layout.deck(deck).section_ids():
-		solids.append_array(section_solids(layout, layout.section(id)))
+		for solid: SolidSpec in section_solids(layout, layout.section(id)):
+			if solid.id != StringName("%s/LEAF" % ShipLayout.QUARTERS_DOOR_ID): solids.append(solid)
+	if deck == 16: solids.append_array(QuartersGeometry.shell())
 	for id: StringName in layout.deck(deck).connector_ids():
 		solids.append_array(connector_solids(layout, layout.connector(id)))
 	for id: StringName in layout.door_ids():

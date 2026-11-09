@@ -70,7 +70,7 @@ func test_door_counts_policies_and_reciprocal_faces() -> void:
 			cranks.append(id)
 		if door.kind() == ShipLayout.DoorKind.SIDE:
 			side_count += 1
-			assert_int_equal(door.policy(), ShipLayout.Policy.NEVER_OPENS, "side door stays shut")
+			assert_int_equal(door.policy(), ShipLayout.Policy.PRESS_SLIDE if id == ShipLayout.QUARTERS_DOOR_ID else ShipLayout.Policy.NEVER_OPENS, "#114 quarters manual release; all other side doors stay shut")
 		if door.kind() == ShipLayout.DoorKind.LIFT:
 			lift_count += 1
 		if door.kind() == ShipLayout.DoorKind.HATCH:
@@ -85,7 +85,7 @@ func test_door_counts_policies_and_reciprocal_faces() -> void:
 				var expected := 41 + layout.connector(door.owner_id()).pitch_index()
 				assert_int_equal(face.destination_section(), expected - index, "face travel destination")
 	assert_true(cranks == [&"D14-C-000-H-AFT", &"D14-C-000-H-FORE", &"D14-C-001-H-AFT", &"D14-C-001-H-FORE", &"D16-C-001-H-AFT"], "#114 adds the sole off-D14 crank")
-	assert_int_equal(side_count, 23, "seventeen D14 and six D16 shut side leaves")
+	assert_int_equal(side_count, 23, "seventeen D14 side leaves and six D16 side leaves")
 	assert_int_equal(lift_count, 60, "sixty lifts")
 	assert_int_equal(hatch_count, 123, "connector hatches and three section boundaries")
 	assert_int_equal(layout.door_ids().size(), 208, "one record per door")

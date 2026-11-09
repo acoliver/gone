@@ -28,6 +28,7 @@ var hallway: Hallway
 var power_room: PowerRoom
 var d16_section: ShipSection
 var d16_lighting: SectionPowerLighting
+var quarters_shell: RoomGeometry
 
 static func build_into(parent: Node3D, game: Game) -> ShipScene:
 	var scene := ShipScene.new()
@@ -351,7 +352,16 @@ func ensure_d16() -> void:
 		door_views.append(view)
 		view.present(_game.doors.snapshot(id))
 	_add_hatch(&"D16-C-002-H-FORE", d16_section)
+	quarters_shell = RoomGeometry.build_solids(_game.layout, QuartersGeometry.shell())
+	quarters_shell.name = "Quarters"
+	_parent.add_child(quarters_shell)
+	var release := HatchModel.control_panel()
+	release.name = "ManualRelease"
+	release.transform = Transform3D(Basis(Vector3.UP, PI), Vector3(44.1, -9.7, 1.48))
+	Lighting.mesh_layers(release, Lighting.space_mask(_game.layout, spec.id()))
+	d16_section.add_child(release)
 	_spaces[spec.id()] = true
+	_spaces[ShipLayout.QUARTERS_ID] = true
 	_sync_sliding_labels()
 	for id: StringName in spec.opening_ids():
 		var door := _game.layout.door(id)
