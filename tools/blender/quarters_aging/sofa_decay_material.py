@@ -81,6 +81,7 @@ def fabric_fringe(out, seed, color, wool=False):
     texture = shader.inputs['Base Color'].links[0].from_node
     image = texture.image
     pixels = np.array(image.pixels[:], dtype=np.float32).reshape((image.size[1], image.size[0], 4))
+    image.unpack(method='REMOVE')
     reference = np.array([.42, .36, .26] if wool else [.15, .16, .14])
     pixels[:, :, :3] *= linear_to_srgb(color)/reference
     pixels[:, :, 3] = yarn_coverage(seed, image.size[0], image.size[1]//8)

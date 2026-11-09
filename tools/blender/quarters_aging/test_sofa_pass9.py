@@ -28,6 +28,13 @@ class Pass9Tests(unittest.TestCase):
         self.assertTrue(np.all(root.mean(axis=(1, 2)) > .55))
         self.assertTrue(np.all(strips[:, -strips.shape[1]//4:].mean(axis=(1, 2)) < .30))
         self.assertFalse(mat.use_backface_culling)
+        # Force the packed payload through the same path used by glTF export.
+        # Saving edited pixels must not leave the earlier packed atlas behind.
+        packed_path = ROOT/'tmp/age/pass9/test-fringe/packed.png'
+        packed_path.write_bytes(image.packed_file.data)
+        reloaded = bpy.data.images.load(str(packed_path), check_existing=False)
+        packed_alpha = np.array(reloaded.pixels[:]).reshape(reloaded.size[1], reloaded.size[0], 4)[:, :, 3]
+        np.testing.assert_array_equal(alpha, packed_alpha)
 
     def test_clearance_field_keeps_dense_and_game_boundary_together(self):
         from fabric_mesh import material, new_object
@@ -43,6 +50,20 @@ class Pass9Tests(unittest.TestCase):
         report = carry_clearance(dense, low, original)
         self.assertLess(boundary_hausdorff(dense, low), .0015)
         self.assertLessEqual(report['maximum_dense_displacement_m'], .003001)
+
+    def test_opposing_lips_curl_into_their_own_panels(self):
+        from fabric_mesh import material, new_object
+        from sofa_pass9_finish import open_lips
+        vertices = [(-.1, 0, 0), (0, 0, 0), (0, .1, 0), (-.1, .1, 0),
+                    (0, 0, 0), (.1, 0, 0), (.1, .1, 0), (0, .1, 0)]
+        obj = new_object('Split', vertices, [(0, 1, 2, 3), (4, 5, 6, 7)], material('Control', (.3, .3, .3)))
+        group = obj.vertex_groups.new(name='Lip shrink')
+        group.add([1, 2, 4, 7], 1., 'REPLACE')
+        open_lips(obj, 9601)
+        self.assertLess(obj.data.vertices[1].co.x, -.001)
+        self.assertGreater(obj.data.vertices[4].co.x, .001)
+        self.assertAlmostEqual(obj.data.vertices[0].co.x, -.1)
+        self.assertAlmostEqual(obj.data.vertices[5].co.x, .1)
 
     def test_back_vacuum_has_no_automatic_volume_spring(self):
         from fabric_mesh import material, new_object
