@@ -35,6 +35,8 @@ static func capture_identity() -> Dictionary:
 		"bay_hatch_range": Lighting.BAY_HATCH_POOL_RANGE, "bay_hatch_attenuation": Lighting.BAY_HATCH_ATTENUATION,
 		"smoke_emission": [Lighting.SMOKE_EMISSION.r, Lighting.SMOKE_EMISSION.g, Lighting.SMOKE_EMISSION.b],
 		"bay_wall_shares": Lighting.EMERGENCY_BAY_WALL_SHARES,
+		"bay_wall_ranges": Lighting.EMERGENCY_BAY_WALL_RANGES,
+		"bay_wall_aperture": "inward hemisphere; 90 degree spot; no angular fade",
 		"hall_wall_shares": Lighting.EMERGENCY_HALL_WALL_SHARES,
 		"power_wall_share": Lighting.EMERGENCY_POWER_WALL_SHARE,
 		"end_fill_energy": Lighting.emergency_energy() * Lighting.EMERGENCY_END_FILL_SHARE,

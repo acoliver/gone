@@ -1,0 +1,72 @@
+{
+  "commit": "219a257",
+  "resolution": [
+    1600,
+    900
+  ],
+  "fov": 55,
+  "msaa": "2x",
+  "views": [
+    {
+      "name": "emergency-hall-overview",
+      "eye": "(6.8, 1.65, 0.0)",
+      "target": "(25.0, 2.05, 0.0)",
+      "mean_display_luma": 44.390964583333336
+    },
+    {
+      "name": "emergency-hall-eye-height",
+      "eye": "(10.0, 1.65, 0.0)",
+      "target": "(29.0, 1.65, 0.0)",
+      "mean_display_luma": 44.7644
+    },
+    {
+      "name": "emergency-bay-overview",
+      "eye": "(15.0, 1.65, 2.5)",
+      "target": "(15.0, 2.05, 11.5)",
+      "mean_display_luma": 52.964047916666665
+    },
+    {
+      "name": "emergency-power-overview",
+      "eye": "(22.0, 1.65, -2.5)",
+      "target": "(29.0, 2.1, -8.8)",
+      "mean_display_luma": 35.78381527777778
+    },
+    {
+      "name": "emergency-connector-overview",
+      "eye": "(0.6, 1.65, 0.0)",
+      "target": "(5.5, 1.8, 0.0)",
+      "mean_display_luma": 33.053700694444444
+    },
+    {
+      "name": "white-hall-overview",
+      "eye": "(6.8, 1.65, 0.0)",
+      "target": "(25.0, 2.05, 0.0)",
+      "mean_display_luma": 37.44940208333333
+    },
+    {
+      "name": "white-hall-eye-height",
+      "eye": "(10.0, 1.65, 0.0)",
+      "target": "(29.0, 1.65, 0.0)",
+      "mean_display_luma": 39.511543055555556
+    },
+    {
+      "name": "white-bay-overview",
+      "eye": "(15.0, 1.65, 2.5)",
+      "target": "(15.0, 2.05, 11.5)",
+      "mean_display_luma": 80.59033958333333
+    },
+    {
+      "name": "white-power-overview",
+      "eye": "(22.0, 1.65, -2.5)",
+      "target": "(29.0, 2.1, -8.8)",
+      "mean_display_luma": 42.72011111111111
+    },
+    {
+      "name": "white-connector-overview",
+      "eye": "(0.6, 1.65, 0.0)",
+      "target": "(5.5, 1.8, 0.0)",
+      "mean_display_luma": 33.065043055555556
+    }
+  ],
+  "display_luma": "Pillow RGB to L (BT.601 display coefficients, 8-bit rounding), mean over every pixel"
+}

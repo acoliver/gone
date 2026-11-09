@@ -28,6 +28,8 @@ func test_capture_identity_pins_build_resources_and_lighting_policy() -> void:
 	assert_float_equal(policy.fill_energy, Lighting.emergency_energy() * Lighting.EMERGENCY_FILL_SHARE, "fill energy")
 	assert_float_equal(policy.no_fill_multiplier, Lighting.EMERGENCY_NO_FILL_KEY_MULTIPLIER, "independent key multiplier")
 	assert_true(policy.bay_wall_shares == Lighting.EMERGENCY_BAY_WALL_SHARES, "all bay station energies are recorded")
+	assert_true(policy.bay_wall_ranges == Lighting.EMERGENCY_BAY_WALL_RANGES, "all bay throw distances are recorded")
+	assert_true(policy.bay_wall_aperture == "inward hemisphere; 90 degree spot; no angular fade", "bay backed apertures are recorded")
 	assert_true(policy.hall_wall_shares == Lighting.EMERGENCY_HALL_WALL_SHARES, "all hall station energies are recorded")
 	assert_float_equal(policy.power_wall_share, Lighting.EMERGENCY_POWER_WALL_SHARE, "power wall energy is recorded")
 	assert_true(policy.emergency_mounting == "wall brackets; no ceiling drops", "capture records physical wall mounting")

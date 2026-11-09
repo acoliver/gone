@@ -133,7 +133,7 @@ func test_spark_source_is_at_the_visible_arc_without_a_lamp_cage() -> void:
 func test_all_nineteen_relocated_cages_have_no_exposed_ceiling_conduit() -> void:
 	var checked := 0
 	for room: Node3D in [Lighting.build(Game.new(91)), Hallway.build(Game.new(91)), PowerRoom.build(Game.new(91))]:
-		for light: OmniLight3D in room.find_children("EmergencyFill*", "OmniLight3D", true, false):
+		for light: Light3D in room.find_children("EmergencyFill*", "Light3D", true, false):
 			if light.name == "EmergencyFillEnd": continue
 			checked += 1
 			var steel: MeshInstance3D = light.get_node("Steel")

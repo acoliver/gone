@@ -106,7 +106,7 @@ static func beam(light: SpotLight3D, lens: MeshInstance3D, _surface: Surfaces.Su
 	light.spot_angle = 90.0
 	light.spot_angle_attenuation = 0.0
 
-static func wall_source(light: OmniLight3D, surface: Surfaces.SurfaceFrame, circuit: String, material: StandardMaterial3D, yaw: float) -> void:
+static func wall_source(light: Light3D, surface: Surfaces.SurfaceFrame, circuit: String, material: StandardMaterial3D, yaw: float) -> void:
 	var lens := cage(light, light.light_cull_mask, surface, material, Basis(Vector3.UP, yaw))
 	lens.set_meta(&"lamp_circuit", circuit)
 	bind(light, lens, light.get_node("Steel"))

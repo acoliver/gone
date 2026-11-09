@@ -87,11 +87,12 @@ func test_fixture_inventory_places_eight_red_lights_from_registry() -> void:
 		)
 	for fixture: Node3D in fixtures:
 		assert_true(fixture.position.y > 2.4, "fixtures sit outside the walking envelope")
-	assert_int_equal(_count_class(lighting, "OmniLight3D"), 22 + 6 * Pods.POD_COUNT, "eight architectural keys, eight pod-only keys, six warm fills and six status spill samples per pod")
+	assert_int_equal(_count_class(lighting, "OmniLight3D"), 16 + 6 * Pods.POD_COUNT, "eight architectural keys, eight pod-only keys and six status spill samples per pod")
+	assert_int_equal(lighting.find_children("*", "Light3D", true, false).size(), 28 + 6 * Pods.POD_COUNT, "the same total sources include six backed wall apertures and six regular beams")
 	for light: SpotLight3D in lighting.white_lights():
 		assert_float_equal(light.light_energy, 0.0, "regular strips start dark")
 	assert_int_equal(_count_class(lighting, "DirectionalLight3D"), 0, "no directional light is authored")
-	assert_int_equal(_count_class(lighting, "SpotLight3D"), 6, "six downward regular beam sources")
+	assert_int_equal(_count_class(lighting, "SpotLight3D"), 12, "six inward emergency wall apertures and six downward regular beams")
 
 func test_lenses_share_rounded_glass_inside_weathered_cages() -> void:
 	var lighting := Lighting.build(Game.new(0))

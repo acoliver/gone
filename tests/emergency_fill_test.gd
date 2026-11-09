@@ -70,7 +70,7 @@ func _fill_mask(room: Node3D) -> int:
 
 func test_fills_never_cast_shadows() -> void:
 	for room: Node3D in _rooms(Game.new(91)):
-		for fill: OmniLight3D in _fills(room):
+		for fill: Light3D in _fills(room):
 			assert_false(fill.shadow_enabled, "dim fill must not render shadow passes")
 		room.free()
 
@@ -83,7 +83,7 @@ func test_real_scene_fills_only_reach_their_own_room_layers() -> void:
 	for source: int in range(rooms.size()):
 		var fills := _fills(rooms[source])
 		assert_int_equal(fills.size(), [6, 8, 6][source], "production fills survive scene assembly")
-		for fill: OmniLight3D in fills:
+		for fill: Light3D in fills:
 			assert_int_equal(fill.light_cull_mask, _fill_mask(rooms[source]), "scene assembly preserves fill mask")
 			for target: int in range(surfaces.size()):
 				var meshes := surfaces[target].find_children("*", "GeometryInstance3D", true, false)
@@ -115,17 +115,21 @@ func _rooms(game: Game) -> Array[Node3D]:
 	return [Lighting.build(game), Hallway.build(game), PowerRoom.build(game)]
 
 func _fills(room: Node3D) -> Array[Node]:
-	return room.find_children("EmergencyFill*", "OmniLight3D", true, false)
+	return room.find_children("EmergencyFill*", "Light3D", true, false)
 
 func _assert_fills(room: Node3D, count: int, level: float) -> void:
 	var fills := _fills(room)
 	assert_int_equal(fills.size(), count, "explicit switched-room fill inventory")
-	for fill: OmniLight3D in fills:
+	for fill: Light3D in fills:
 		assert_true(fill.get_parent() == room, "room owns each practical beside its key fixtures")
-		assert_float_equal(fill.omni_range, 4.0, "wall practicals no longer need the pendant range compensation")
 		var end_bounce := room is Hallway and fill.name == "EmergencyFillEnd"
 		assert_true(fill.light_color == (Color(1.0, 0.80, 0.62) if end_bounce else Color(1.0, 0.97, 0.92)), "warm-neutral base and localized warm hatch bounce")
 		var station := int(String(fill.name).trim_prefix("EmergencyFill")) if not end_bounce else 0
+		if room is Lighting:
+			assert_true(fill is SpotLight3D, "backed bay wall apertures emit inward")
+			assert_float_equal(fill.spot_range, Lighting.EMERGENCY_BAY_WALL_RANGES[station], "bay throw reaches the visible floor")
+		else:
+			assert_float_equal(fill.omni_range, 4.0, "hall and power keep their wall practical range")
 		var share: float = Lighting.EMERGENCY_BAY_WALL_SHARES[station] if room is Lighting else (0.84 if end_bounce else (Lighting.EMERGENCY_HALL_WALL_SHARES[station] if room is Hallway else Lighting.EMERGENCY_POWER_WALL_SHARE))
 		assert_true(is_equal_approx(fill.light_energy, Lighting.FIXTURE_ENERGY * share * level), "fill follows the emergency fade")
 		assert_int_equal(fill.light_cull_mask, _fill_mask(room), "fill uses only its room's reserved layer")

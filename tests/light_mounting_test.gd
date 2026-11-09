@@ -55,7 +55,7 @@ func test_relocated_emergency_cages_clear_services_frames_and_door_sweeps() -> v
 		var services := game.layout.ceiling_services(id)
 		var walls := _walls(game.layout, 14)
 		var to_world := game.layout.bay_to_world() if room is Lighting else Transform3D.IDENTITY
-		for light: OmniLight3D in room.find_children("EmergencyFill*", "OmniLight3D", true, false):
+		for light: Light3D in room.find_children("EmergencyFill*", "Light3D", true, false):
 			if light.name == "EmergencyFillEnd": continue
 			var housing: MeshInstance3D = light.get_meta(&"fixture_housing")
 			var box := to_world * Surfaces.world_frame(housing) * housing.mesh.get_aabb()

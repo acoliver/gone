@@ -1,5 +1,19 @@
 extends SimTestCase
 
+func test_bay_wall_lamps_emit_inward_across_the_visible_floor() -> void:
+	var bay := Lighting.build(Game.new(91))
+	var inventory := preload("res://tools/light_inventory.gd").new()
+	var sources := bay.find_children("EmergencyFill*", "Light3D", true, false)
+	assert_int_equal(sources.size(), 6, "six wall cages retain their circuit identities")
+	var incident := 0.0
+	for source: Light3D in sources:
+		assert_true(source is SpotLight3D, "backed wall cage emits only into the room")
+		incident += inventory.incident(source, Vector3(0, 0.05, 0), Vector3.UP, Lighting.BAY_FILL_MASK)
+		var behind := Vector3(source.position.x, source.position.y, signf(source.position.z) * 3.95)
+		assert_float_equal(inventory.incident(source, behind, Vector3.FORWARD if source.position.z > 0 else Vector3.BACK, Lighting.BAY_FILL_MASK), 0, "no throw through the wall behind the housing")
+	assert_true(incident > 0.20, "wall fixtures reach the visible central floor, not just the perimeter")
+	bay.free()
+
 func test_bay_hatch_identity_selects_its_profile_even_when_fixture_order_changes() -> void:
 	var game := Game.new(91)
 	var specs := game.layout.bay().emergency_fixtures(game.registry)
@@ -53,7 +67,7 @@ func test_bay_and_power_wall_cages_use_layout_owned_clear_mounts() -> void:
 		assert_int_equal(positions[index].size(), 6, "layout supplies all six final positions")
 		for station: int in range(expected.size()):
 			assert_vec3_equal(positions[index][station], expected[station], "layout fixes the wall coordinate")
-		var fills := rooms[index].find_children("EmergencyFill*", "OmniLight3D", true, false)
+		var fills := rooms[index].find_children("EmergencyFill*", "Light3D", true, false)
 		assert_int_equal(fills.size(), 6, "six existing fills per room")
 		for station: int in range(fills.size()):
 			assert_vec3_equal(fills[station].position, expected[station], "source follows its layout-owned wall mount")

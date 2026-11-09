@@ -23,10 +23,11 @@ const EMERGENCY_ENERGY_MULTIPLIER: float = 1.0
 # Independent rooms have no fill; stronger keys restore readability on the darker steel.
 const EMERGENCY_NO_FILL_KEY_MULTIPLIER: float = 1.916
 const EMERGENCY_FILL_SHARE: float = 0.28
-# Wall positions change floor/ceiling incidence; station shares preserve the fixed room subtotals.
-const EMERGENCY_BAY_WALL_SHARES: Array[float] = [1.435, 1.435, 0.10, 0.10, 1.435, 1.435]
+# Inward wall apertures spend their throw on the room, not the wall behind the cage.
+const EMERGENCY_BAY_WALL_SHARES: Array[float] = [2.35, 2.35, 0.56, 0.56, 0.01, 0.01]
+const EMERGENCY_BAY_WALL_RANGES: Array[float] = [3.0, 3.0, 12.0, 12.0, 3.0, 3.0]
 const EMERGENCY_HALL_WALL_SHARES: Array[float] = [0.71, 0.30, 0.42, 0.315, 0.315, 0.42, 0.30]
-const EMERGENCY_POWER_WALL_SHARE: float = 0.58
+const EMERGENCY_POWER_WALL_SHARE: float = 0.60
 const EMERGENCY_FILL_COLOR: Color = Color(1.0, 0.97, 0.92)
 const EMERGENCY_END_FILL_SHARE: float = 0.84
 const EMERGENCY_END_FILL_COLOR: Color = Color(1.0, 0.80, 0.62)
@@ -64,8 +65,33 @@ class EmergencyFill:
 	var lens_material := Lighting.emergency_lens_material(0.0)
 	var energy_share: float
 	func apply_level(level: float) -> void:
-		light_energy = Lighting.emergency_energy() * energy_share * level
-		lens_material.emission = light_color * Lighting.REGULAR_EMISSIVE * level
+		Lighting.apply_emergency_source(self, lens_material, energy_share, level)
+
+class BayWallLight:
+	extends SpotLight3D
+	var lens_material := Lighting.emergency_lens_material(0.0)
+	var energy_share: float
+	func apply_level(level: float) -> void:
+		Lighting.apply_emergency_source(self, lens_material, energy_share, level)
+
+static func apply_emergency_source(light: Light3D, material: StandardMaterial3D, share: float, level: float) -> void:
+	light.light_energy = emergency_energy() * share * level
+	material.emission = light.light_color * REGULAR_EMISSIVE * level
+
+static func bay_wall_light(origin: Vector3, station: int, level: float) -> BayWallLight:
+	var light := BayWallLight.new()
+	light.position = origin
+	light.basis = Basis(Vector3.UP, PI if origin.z < 0 else 0.0)
+	light.light_color = EMERGENCY_FILL_COLOR
+	light.light_cull_mask = BAY_FILL_MASK
+	light.energy_share = EMERGENCY_BAY_WALL_SHARES[station]
+	light.spot_range = EMERGENCY_BAY_WALL_RANGES[station]
+	light.spot_attenuation = 1.0
+	light.spot_angle = 90.0
+	light.spot_angle_attenuation = 0.0
+	light.shadow_enabled = false
+	light.apply_level(level)
+	return light
 
 static func emergency_fill(origin: Vector3, level: float, room_mask: int, share: float = EMERGENCY_FILL_SHARE, color: Color = EMERGENCY_FILL_COLOR) -> EmergencyFill:
 	var fill := EmergencyFill.new()
@@ -135,7 +161,7 @@ var _fixtures: Array[Node3D] = []
 var _fixtures_by_id: Dictionary[StringName, Node3D] = {}
 var _lights: Array[OmniLight3D] = []
 var _pod_keys: Array[OmniLight3D] = []
-var _fill_lights: Array[Lighting.EmergencyFill] = []
+var _fill_lights: Array[Lighting.BayWallLight] = []
 var _lenses: Array[MeshInstance3D] = []
 var _lens_material: StandardMaterial3D = null
 var _remainder: float = 0.0
@@ -174,9 +200,9 @@ static func build(game: Game) -> Lighting:
 	var fill_positions := game.layout.bay().emergency_fill_positions()
 	for frame: Transform3D in game.layout.bay().regular_light_frames():
 		lighting.add_child(lighting._white_fixture(frame))
-		var fill := emergency_fill(fill_positions[lighting._fill_lights.size()], level, BAY_FILL_MASK, EMERGENCY_BAY_WALL_SHARES[lighting._fill_lights.size()])
+		var fill := bay_wall_light(fill_positions[lighting._fill_lights.size()], lighting._fill_lights.size(), level)
 		fill.name = "EmergencyFill%d" % lighting._fill_lights.size()
-		FixtureEmitter.wall_source(fill, Surfaces.surface_frame(game.layout, ShipLayout.BAY_ID, &"PORT" if fill.position.z < 0 else &"STARBOARD"), "emergency", fill.lens_material, PI if fill.position.z < 0 else 0.0)
+		FixtureEmitter.wall_source(fill, Surfaces.surface_frame(game.layout, ShipLayout.BAY_ID, &"PORT" if fill.position.z < 0 else &"STARBOARD"), "emergency", fill.lens_material, 0.0)
 		lighting.add_child(fill)
 		lighting._fill_lights.append(fill)
 	lighting.bind_pod_keys()
@@ -394,7 +420,7 @@ func _apply_level(level: float) -> void:
 			light.light_energy = energy
 	for key: OmniLight3D in _pod_keys:
 		key.light_energy = FIXTURE_ENERGY * level
-	for fill: Lighting.EmergencyFill in _fill_lights:
+	for fill: Lighting.BayWallLight in _fill_lights:
 		fill.apply_level(level)
 	var emissive := emergency_emission(level)
 	if _lens_material.emission != emissive:
