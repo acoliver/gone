@@ -146,6 +146,31 @@ func test_two_sided_normals_are_flipped_only_by_the_renderer() -> void:
 		assert_true("cull_disabled" in shader, "Godot enables its two-sided normal correction")
 		assert_false("NORMAL = -NORMAL" in shader, "do not undo Godot's backface correction")
 
+func test_baked_maps_use_remapped_uvs_and_generated_tangents() -> void:
+	var model := _model(&"aged")
+	var data := _gltf(&"aged")
+	for node: Dictionary in data.nodes:
+		if not node.has("mesh"): continue
+		var piece := model.find_child(node.name, true, false) as MeshInstance3D
+		var primitives: Array = data.meshes[node.mesh].primitives
+		for surface: int in range(primitives.size()):
+			var source: Dictionary = data.materials[primitives[surface].material]
+			var imported := piece.mesh.surface_get_material(surface) as StandardMaterial3D
+			if not source.has("normalTexture"): continue
+			var coordinates: int = source.normalTexture.get("texCoord", 0)
+			assert_int_equal(imported.get_meta("_gltf_primary_texture_coord"), coordinates, "normal and colour use the importer's primary UV remapping")
+			var arrays := piece.mesh.surface_get_arrays(surface)
+			var normals: PackedVector3Array = arrays[Mesh.ARRAY_NORMAL]
+			var tangents: PackedFloat32Array = arrays[Mesh.ARRAY_TANGENT]
+			assert_int_equal(tangents.size(), normals.size() * 4, "normal-mapped vertices have generated tangent frames")
+			for index: int in range(normals.size()):
+				var offset := index * 4
+				var tangent := Vector3(tangents[offset], tangents[offset + 1], tangents[offset + 2])
+				_near(tangent.length(), 1.0, .002, "unit tangent")
+				_near(tangent.dot(normals[index]), 0, .002, "tangent orthogonal to normal")
+				_near(absf(tangents[offset + 3]), 1.0, .00001, "tangent handedness")
+	model.free()
+
 func _model(state: StringName) -> Node3D:
 	return (load(ROOT + "dress_uniform%s.glb" % ("_aged" if state == &"aged" else "")) as PackedScene).instantiate()
 

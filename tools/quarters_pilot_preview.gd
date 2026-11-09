@@ -296,7 +296,7 @@ func _run_tunic() -> void:
 	var plane := PlaneMesh.new()
 	plane.size = Vector2(4, 4)
 	floor.mesh = plane
-	floor.position.y = .104
+	floor.position.y = 0
 	var floor_finish := StandardMaterial3D.new()
 	floor_finish.albedo_color = Color(.20, .21, .22)
 	floor_finish.roughness = 1.0
@@ -308,31 +308,35 @@ func _run_tunic() -> void:
 		for light: String in ["remembered", "present", "neutral"]:
 			_lighting(light)
 			await _tunic_capture("%s-%s-hero.png" % [state, light])
+		# Real openings must see the same locker backing as the Blender closeup.
+		tunic_lockers[state].visible = true
 		_tunic_camera("shoulder")
 		_lighting("neutral")
 		await _tunic_capture("%s-neutral-shoulder.png" % state)
-		tunic_lockers[state].visible = true
-		_tunic_camera("locker")
 		_lighting("remembered" if state == &"as_built" else "present")
+		await _tunic_capture("%s-context-shoulder.png" % state)
+		_tunic_camera("locker-context")
+		await _tunic_capture("%s-locker-context.png" % state)
+		_tunic_camera("locker")
 		await _tunic_capture("%s-in-locker.png" % state)
+		_lighting("neutral")
+		await _tunic_capture("%s-in-locker-neutral.png" % state)
 		_tunic_camera("heap")
+		_lighting("remembered" if state == &"as_built" else "present")
 		await _tunic_capture("%s-in-locker-floor.png" % state)
 		tunic_lockers[state].visible = false
 		tunic_states[state].visible = false
 	_pair("before-after.png", "as_built-remembered-hero.png", "aged-present-hero.png")
 	_pair("neutral-pair.png", "as_built-neutral-hero.png", "aged-neutral-hero.png")
 	_pair("closeup.png", "as_built-neutral-shoulder.png", "aged-neutral-shoulder.png")
+	_pair("closeup-game-light.png", "as_built-context-shoulder.png", "aged-context-shoulder.png")
 	_pair("in-locker.png", "as_built-in-locker.png", "aged-in-locker.png")
+	_pair("in-locker-neutral.png", "as_built-in-locker-neutral.png", "aged-in-locker-neutral.png")
+	_pair("locker-context.png", "as_built-locker-context.png", "aged-locker-context.png")
 	_pair("in-locker-floor.png", "as_built-in-locker-floor.png", "aged-in-locker-floor.png")
-	var locker_sheet := Image.load_from_file(output.path_join("in-locker.png"))
-	var floor_sheet := Image.load_from_file(output.path_join("in-locker-floor.png"))
-	var combined := Image.create(2048, 2048, false, locker_sheet.get_format())
-	combined.blit_rect(locker_sheet, Rect2i(0, 0, 2048, 1024), Vector2i.ZERO)
-	combined.blit_rect(floor_sheet, Rect2i(0, 0, 2048, 1024), Vector2i(0, 1024))
-	assert(combined.save_png(output.path_join("in-locker.png")) == OK)
 	await _tunic_colour_capture()
 	var file := FileAccess.open(output.path_join("preview.json"), FileAccess.WRITE)
-	file.store_string(JSON.stringify({"prop": "dress_uniform", "renderer": RenderingServer.get_current_rendering_method(), "shoulder_distance_m": .5, "shoulder_target": _vec(_tunic_shoulder()), "present_colour": [1.0, .97, .90], "present_energy": Lighting.regular_energy(), "door_open_degrees": 112, "garment_yaw_degrees": 55, "tonemap": "linear", "geometry_preserved_per_state": true}, "\t") + "\n")
+	file.store_string(JSON.stringify({"prop": "dress_uniform", "renderer": RenderingServer.get_current_rendering_method(), "shoulder_distance_m": .5, "shoulder_target": _vec(_tunic_shoulder()), "present_colour": [1.0, .97, .90], "present_energy": Lighting.regular_energy(), "door_open_degrees": 112, "garment_yaw_degrees": 55, "tonemap": "linear", "geometry_preserved_per_state": true, "cameras": report, "shoulder_backing": "matching game locker", "floor_stripes_owner": "unchanged locker material; see isolated controls"}, "\t") + "\n")
 	print("CAPTURES ", output)
 	stage.queue_free()
 	await process_frame
@@ -346,10 +350,10 @@ func _tunic_camera(view: String) -> void:
 	camera.size = 1.9
 	camera.position = Vector3(1.15, 1.45, 3.2)
 	var target := Vector3(0, .94, .10)
-	if view == "locker":
-		camera.size = 2.7
+	if view in ["locker", "locker-context"]:
+		camera.size = 1.5 if view == "locker" else 2.7
 		camera.position = Vector3(.82, 1.9, 2.9)
-		target = Vector3(0, 1.18, .02)
+		target = Vector3(0, 1.17, .10) if view == "locker" else Vector3(0, 1.18, .02)
 	if view == "shoulder":
 		target = _tunic_shoulder()
 		camera.position = target + Vector3(.16, .22, .96).normalized() * .5
@@ -362,6 +366,7 @@ func _tunic_camera(view: String) -> void:
 		camera.projection = Camera3D.PROJECTION_PERSPECTIVE
 		camera.fov = 50
 	camera.look_at(target, Vector3.UP)
+	report[view] = {"position": _vec(camera.position), "target": _vec(target), "projection": camera.projection, "size": camera.size, "fov": camera.fov}
 
 func _tunic_colour_capture() -> void:
 	tunic_states[&"aged"].visible = true
