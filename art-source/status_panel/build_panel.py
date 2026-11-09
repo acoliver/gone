@@ -227,7 +227,17 @@ def main():
     screen.data.materials.clear(); screen.data.materials.append(black)
     scene.cycles.samples=128
     bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'panel.blend'))
-    bpy.ops.export_scene.gltf(filepath=str(ROOT/'panel.glb'),export_format='GLB',export_apply=True,export_image_format='AUTO',export_materials='EXPORT')
+    body=bpy.data.objects['Panel_ArmoredBody']
+    budget=body.modifiers.new('Runtime triangle budget','DECIMATE'); budget.ratio=.17
+    active(body); bpy.ops.object.modifier_apply(modifier=budget.name)
+    export_objects=[bpy.data.objects[name] for name in ('Panel_ArmoredBody','DisplayPlane','ScreenSocket')]
+    bpy.ops.object.select_all(action='DESELECT')
+    for export_object in export_objects: export_object.select_set(True)
+    screen_object=bpy.data.objects['DisplayPlane']
+    active(screen_object); bpy.ops.object.transform_apply(location=False,rotation=True,scale=False)
+    bpy.data.objects['ScreenSocket'].rotation_euler=(0,0,0)
+    bpy.context.view_layer.objects.active=export_objects[0]
+    bpy.ops.export_scene.gltf(filepath=str(ROOT/'panel.glb'),export_format='GLB',export_apply=True,export_image_format='AUTO',export_materials='EXPORT',use_selection=True)
     report={'candidates':scores,'selected_mesh':selected,'uniform_height_scale':scale,'axis_correction_before_remesh':corr,'generated_depth_after_uniform_scale_m':depth_before_crop,'depth_reduced_by_flattened_rear_crop':True,'post_remesh_adjustment':adjust,'final_dimensions_width_depth_height_m':dims,'depth_target_m':.35,'voxel_size_m':VOXEL,'boundary_edges':boundary,'nonmanifold_edges':nonmanifold,'screen_dimensions_m':[2.40,1.02],'screen_aspect':2.4/1.02,'textures':['panel-albedo.png','panel-normal.png','panel-orm.png','panel-ao.png'],'texture_resolution':2048,'renders':['panel-front.png','panel-threequarter.png','panel-side.png','panel-board-v2-perceived.png'],'board_native_source':str(board_native),'selected_shape_front_silhouette_iou':next(r['silhouette_iou'] for r in scores if r['mesh']==selected)}
     (ROOT/'build-report.json').write_text(json.dumps(report,indent=2)+'\n'); print('BUILD_REPORT',json.dumps(report),flush=True)
 if __name__=='__main__': main()

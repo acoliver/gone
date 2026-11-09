@@ -440,6 +440,64 @@ func test_power_room_glbs_remain_within_the_prop_triangle_budget() -> void:
 		assert_true(_mesh_triangle_count(model) < 50000, "%s remains below the 50k triangle prop budget" % path)
 		model.free()
 
+func test_power_room_prop_glbs_have_exact_mesh_sets() -> void:
+	var expected := {
+		"res://assets/props/status_panel/panel.glb": ["Panel_ArmoredBody", "DisplayPlane"],
+		"res://assets/props/terminal/terminal.glb": ["Terminal_GeneratedFit", "DisplayPlane", "WallMountPlate"],
+		"res://assets/props/terminal/keyboard-tray.glb": _keyboard_tray_mesh_names(),
+	}
+	for path: String in expected:
+		var model := (load(path) as PackedScene).instantiate() as Node3D
+		var actual := _mesh_names(model)
+		actual.sort()
+		var wanted: Array = expected[path]
+		wanted.sort()
+		assert_true(actual == wanted, "%s mesh names match the complete authored set: %s" % [path, actual])
+		model.free()
+
+func _mesh_names(node: Node) -> Array[String]:
+	var names: Array[String] = []
+	if node is MeshInstance3D and node.mesh != null:
+		names.append(node.name)
+	for child: Node in node.get_children():
+		names.append_array(_mesh_names(child))
+	return names
+
+func _keyboard_tray_mesh_names() -> Array[String]:
+	var names: Array[String] = [
+		"Rugged olive steel perimeter housing",
+		"Recessed black elastomer membrane",
+		"Olive steel tray shelf 8mm",
+		"Tray rounded downturned front lip",
+		"Tray side return -1",
+		"Tray side return +1",
+		"Terminal mounting back flange",
+		"Flange back perimeter rubber gasket",
+		"Tray triangular gusset -0_34",
+		"Tray triangular gusset +0_34",
+	]
+	for index: int in range(1, 7):
+		names.append("Flange hex bolt %02d" % index)
+	for index: int in range(1, 10):
+		names.append("Proud 13 mm hex socket cap screw_%03d" % (10 - index))
+		names.append("Dark recessed hex socket_%03d" % (10 - index))
+	names.append("Dark recessed hex socket")
+	var keys := [
+		"29 control right", "28 control down", "27 control left", "26 control up",
+		"25 control punct", "24 control number", "23 control box", "22 control enter",
+		"21 control back", "20 control space", "19 command help", "18 command systems",
+		"17 command map", "16 command power", "15 vowel u", "14 vowel o", "13 vowel i",
+		"12 vowel e", "11 vowel a", "10 onset carrier", "09 onset ch", "08 onset t",
+		"07 onset sh", "06 onset w", "05 onset k", "04 onset m", "03 onset p",
+		"02 onset l", "01 onset n",
+	]
+	for key: String in keys:
+		names.append("Keycap " + key)
+		names.append("Black rubber bellows " + key)
+	for side: String in ["right", "rear", "left", "front"]:
+		names.append("Keyboard steel skirt " + side)
+	return names
+
 func _mesh_triangle_count(node: Node) -> int:
 	var total := 0
 	if node is MeshInstance3D and node.mesh != null:
