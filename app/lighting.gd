@@ -53,7 +53,7 @@ static func emergency_lens_material(level: float) -> StandardMaterial3D:
 	material.albedo_color = LENS_BASE_COLOR
 	material.emission_enabled = true
 	material.emission = emergency_emission(level)
-	material.roughness = 0.8
+	FixtureEmitter.age_glass(material)
 	return material
 
 class EmergencyFill:
@@ -95,6 +95,7 @@ class RegularEndFill:
 
 static func regular_end_fill(origin: Vector3, level: float) -> RegularEndFill:
 	var fill := RegularEndFill.new()
+	FixtureEmitter.age_white_glass(fill.lens_material)
 	fill.name = "RegularFillEnd"
 	fill.position = origin
 	fill.light_color = REGULAR_WHITE

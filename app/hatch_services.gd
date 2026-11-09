@@ -37,6 +37,10 @@ static func build(spec: ShipLayout.DoorSpec, side: int, mask: int) -> Node3D:
 			&"Lamp": _lamp(group, service, mask, frame)
 			&"Conduit": _conduit(group, service, mask, frame)
 		if service.kind != &"Control": _batch_metal(group, mask, frame)
+		if service.kind == &"Lamp":
+			var steel: MeshInstance3D = group.get_node("Steel")
+			steel.mesh = FixtureEmitter.service_housing(steel.mesh)
+			steel.material_override = FixtureEmitter.steel_material()
 	return root
 
 static func _batch_metal(root: Node3D, mask: int, frame: Surfaces.SurfaceFrame) -> void:
@@ -89,9 +93,10 @@ static func _control(root: Node3D, mask: int, frame: Surfaces.SurfaceFrame) -> v
 
 static func _lamp(root: Node3D, service: ShipLayout.HatchServiceSpec, mask: int, frame: Surfaces.SurfaceFrame) -> void:
 	var mount_depth := 0.10 + service.stand_off
-	_box(root, Vector3(0.31, 0.24, mount_depth + 0.14), Vector3(0, 0, 0.02 + (mount_depth - 0.14) / 2), mask, frame)
+	_box(root, Vector3(0.075, 0.09, mount_depth + 0.14), Vector3(0, 0, 0.02 + (mount_depth - 0.14) / 2), mask, frame)
 	_rounded(root, Vector3(0.37, 0.31, 0.055), 0.045, Vector3.ZERO, mask, &"hardware", frame)
 	var lens := _rounded(root, Vector3(0.26, 0.16, 0.07), 0.065, Vector3(0, 0, -0.060), mask, &"hardware", frame)
+	lens.mesh = FixtureEmitter.glass_mesh(lens.mesh)
 	lens.name = "Lens"
 	lens.set_meta(&"lamp_circuit", "emergency")
 	lens.material_override = Lighting.emergency_lens_material(1.0)

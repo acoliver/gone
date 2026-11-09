@@ -154,6 +154,7 @@ func incident(light: Light3D, point: Vector3, normal: Vector3, mask: int) -> flo
 	return light.light_energy * luminance * fade * fade * pow(maxf(d, 0.0001), -light.omni_attenuation) * maxf(normal.dot(delta.normalized()), 0.0)
 
 func _fixture_error(light: Light3D) -> String:
+	if light.has_meta(&"spark_emitter"): return _spark_error(light)
 	if not light.has_meta(&"fixture_emitter") or not light.has_meta(&"fixture_housing"): return "no emitter/housing binding"
 	var emitter: MeshInstance3D = light.get_meta(&"fixture_emitter")
 	var housing: MeshInstance3D = light.get_meta(&"fixture_housing")
@@ -184,3 +185,17 @@ func _measure_adjacent(layout: ShipLayout, spec: ShipLayout.ConnectorSpec, light
 	var mask := Lighting.space_mask(layout, spec.id())
 	_measure_bounds(String(spec.lift_id()), layout.lift(spec.lift_id()).bounds(), Transform3D.IDENTITY, mask, lights)
 	_measure_bounds("%s/D%02d" % [spec.well_id(), spec.deck_number()], layout.well(spec.well_id()).landing_bounds(spec.deck_number()), Transform3D.IDENTITY, mask, lights)
+
+func _spark_error(light: Light3D) -> String:
+	var arc: MeshInstance3D = light.get_meta(&"spark_emitter")
+	if arc == null or arc.name != "SparkArc" or arc.get_parent() != light.get_parent(): return "spark has no local arc"
+	if not light.get_parent().has_node("SparkSpray"): return "spark has no particle emitter"
+	var spray: GPUParticles3D = light.get_parent().get_node("SparkSpray")
+	var source := Surfaces.world_frame(light).origin
+	if source.distance_to(Surfaces.world_frame(arc) * arc.mesh.get_aabb().get_center()) > 0.01: return "spark light is outside the arc point"
+	if source.distance_to(Surfaces.world_frame(spray).origin) > 0.01: return "spark light is outside the particle emitter"
+	var material := arc.material_override as StandardMaterial3D
+	if material == null or not material.emission_enabled: return "arc is not emissive"
+	if arc.visible != (light.light_energy > 0): return "arc visibility does not follow the flash"
+	if light.light_energy > 0 and (not _visible(arc) or material.emission != Hazards.SPARK_LIGHT_COLOR * light.light_energy): return "arc does not follow the strobe"
+	return ""
