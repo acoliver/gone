@@ -34,13 +34,6 @@ def geometry(source, prepared, out, cover_limit=.006, throw_limit=.006):
     low.hide_render = True
     low['aged_export'] = False
     record['throw']['reduction'] = reduction
-    dense_right = bpy.data.objects['BackCushion_R']
-    bpy.data.objects.remove(bpy.data.objects['BackCushion_R_GameContact'], do_unlink=True)
-    low_right, reduction = decimate(dense_right, 2300, protect=.002, keep_factor=4)
-    low_right.name = 'BackCushion_R_GameContact'
-    low_right.hide_render = True
-    low_right['aged_export'] = False
-    record['cushions']['BackCushion_R']['cover_decimation'] = reduction
     for name in [*ORDER, 'Throw']:
         dense, low = bpy.data.objects[name], bpy.data.objects[name+'_GameContact']
         original = points(low)

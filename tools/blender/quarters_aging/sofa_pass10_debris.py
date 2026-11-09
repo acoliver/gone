@@ -113,7 +113,7 @@ def fine_powder(out, record):
         name = spill['part']
         x = spill['origin_blender_m'][0]
         seed = 9750+index
-        card = powder_card('FineFloorPowder_'+name, (x, -.515, .0005), (.045, .025),
+        card = powder_card('FineFloorPowder_'+name, (x, -.515, .0005), (.075, .045),
                            out/'textures/fine-powder', seed, sectors=16)
         label = card.name
         count = finish_powder(card, contacts, seed)
