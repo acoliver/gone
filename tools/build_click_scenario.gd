@@ -38,7 +38,7 @@ func build() -> void:
 	route.beat("first-blink")
 	route.hold(200)
 	route.step([{"type": "press", "button": "activate"}])
-	route.hold(8)
+	route.hold(8 + Player.GET_UP_LOOK_TICKS)
 	route.look_at(game.layout.anchor(&"D14-BAY-ROD").origin, -12)
 	route.beat("standing")
 	route.floor_click(Vector3(15, 0, 11.5))
@@ -77,6 +77,7 @@ func build() -> void:
 	assert(game.power_active, "one console click starts power")
 	route.look_at(game.layout.anchor(&"D14-POWER-CONSOLE").origin + Vector3(4.95, 1.3, 1.8), -12)
 	route.beat("power-active")
+	route.beats.back().camera_pitch_up = 30.0
 	var data := {"name": "click-route", "seed": 0, "ticks_per_second": 60, "mode": "capture", "content": "gameplay", "max_frames": 10000, "logical_steps_per_present": 4, "actions": route.actions, "beats": route.beats}
 	FileAccess.open("res://scenarios/click-route.json", FileAccess.WRITE).store_string(JSON.stringify(data, "\t") + "\n")
 	print("CLICK ROUTE COMPLETE ticks=%d actions=%d" % [route.tick, route.actions.size()])

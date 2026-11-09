@@ -332,10 +332,12 @@ func test_rendered_shell_uses_pure_collision_recipe() -> void:
 		if solid.hatch_profile == null:
 			# Pocket and side-door mouths are drawn cutouts; collision stays solid.
 			var expected := PackedVector3Array()
-			for box: AABB in SlidingDoorParts.wall_boxes(ShipLayout.authored().layout, solid):
+			var layout := ShipLayout.authored().layout
+			var boxes := SlidingDoorParts.wall_boxes(layout, solid)
+			for box: AABB in boxes:
 				for vertex: Vector3 in _expanded_faces(HatchModel.box_mesh(box.size)):
 					expected.append(vertex + box.get_center())
-			assert_true(_same_triangles(rendered, expected), "drawn wall returns match the sim recipe and winding within 1e-6")
+			assert_true(_same_triangles(rendered, expected), "drawn wall returns and uncut ceiling match the sim recipe and winding within 1e-6")
 		else:
 			var expected := _profile_faces(solid)
 			assert_true(_same_triangles(rendered, expected), "rendered hall triangles match the shared wall profile and winding within 1e-6")

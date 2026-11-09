@@ -200,8 +200,8 @@ func test_shared_exit_path_is_the_scene_construction() -> void:
 
 func test_furnishing_recipe_uses_the_shared_pure_solid_type() -> void:
 	assert_true(Placement.indicator_plate() is ShipGeometry.SolidSpec, "furnishing solid is the pure shared type")
-	for tray: ShipGeometry.SolidSpec in Placement.cable_trays():
-		assert_true(tray.transform.origin == tray.center, "render transform uses the collider input center")
+	var plate := Placement.indicator_plate()
+	assert_true(plate.transform.origin == plate.center, "render transform uses the collider input center")
 	var pure := ShipCollision.bay_set(Pods.PodRegistry.frozen())
 	var adapter := Placement.scene_collider_set(Pods.PodRegistry.frozen())
 	assert_int_equal(pure.size(), 67, "old bay fixture stays at 67 colliders")

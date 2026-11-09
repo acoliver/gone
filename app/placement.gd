@@ -36,12 +36,6 @@ const HATCH_FRAME_X = ShipGeometry.HATCH_FRAME_X
 ## front face.
 const HATCH_DOOR_X = ShipGeometry.HATCH_DOOR_X
 
-## Cable tray cross-section, in meters, and the drop of the tray center
-## line below the ceiling.
-const TRAY_WIDTH: float = ShipGeometry.TRAY_WIDTH
-const TRAY_HEIGHT: float = ShipGeometry.TRAY_HEIGHT
-const TRAY_CEILING_DROP: float = ShipGeometry.TRAY_CEILING_DROP
-
 ## Hanging wire loop torus mesh radii, in meters: the inner ring radius
 ## and the outer extent.
 const WIRE_INNER_RADIUS: float = ShipGeometry.WIRE_INNER_RADIUS
@@ -92,46 +86,17 @@ static func room_shell(open_east_wall: bool = false) -> Array[Placement.SolidPla
 static func hatch_solids() -> Array[Placement.SolidPlacement]:
 	return ShipGeometry.hatch_solids()
 
-## The torn ceiling's cable trays, concentrated over the room center: a
-## junction of runs and one stub toward the player row, each tipped off
-## level about its run axis.
-static func cable_trays() -> Array[Placement.SolidPlacement]:
+## Wire spark clusters retain their positions after the suspended trays
+## are removed. Keep the vector offset separate to preserve float precision.
+static func spark_spots() -> Array[Vector3]:
 	return [
-		Placement.SolidPlacement.new(
-			Vector3(-0.5, Pods.ROOM_CEILING_HEIGHT - TRAY_CEILING_DROP, 0.35),
-			Vector3(6.0, TRAY_HEIGHT, TRAY_WIDTH),
-			Quaternion(Vector3.UP, 0.0) * Quaternion(Vector3.RIGHT, 0.06)
-		),
-		Placement.SolidPlacement.new(
-			Vector3(0.9, Pods.ROOM_CEILING_HEIGHT - TRAY_CEILING_DROP - 0.04, -0.7),
-			Vector3(4.5, TRAY_HEIGHT, TRAY_WIDTH),
-			Quaternion(Vector3.UP, PI / 2.0) * Quaternion(Vector3.RIGHT, -0.04)
-		),
-		Placement.SolidPlacement.new(
-			Vector3(1.6, Pods.ROOM_CEILING_HEIGHT - TRAY_CEILING_DROP + 0.05, 1.1),
-			Vector3(3.0, TRAY_HEIGHT, TRAY_WIDTH),
-			Quaternion(Vector3.UP, 0.0) * Quaternion(Vector3.RIGHT, -0.09)
-		),
+		Vector3(-0.5, Pods.ROOM_CEILING_HEIGHT - 0.15, 0.35) + Vector3(0, -0.2, 0),
+		Vector3(0.9, Pods.ROOM_CEILING_HEIGHT - 0.15 - 0.04, -0.7) + Vector3(0, -0.2, 0),
+		Vector3(1.6, Pods.ROOM_CEILING_HEIGHT - 0.15 + 0.05, 1.1) + Vector3(0, -0.2, 0),
 	]
 
-## The five hanging wire loops over the room center.
 static func wire_loops() -> Array[Placement.WireLoop]:
-	var loops: Array[Placement.WireLoop] = []
-	var authored: Array[Vector4] = [
-		Vector4(-1.3, 2.7, 0.5, 0.4),
-		Vector4(-0.4, 2.55, 0.2, 1.3),
-		Vector4(0.3, 2.78, -0.5, 2.2),
-		Vector4(1.1, 2.62, 0.8, 0.9),
-		Vector4(2.0, 2.5, -0.2, 2.9),
-	]
-	for entry: Vector4 in authored:
-		loops.append(
-			Placement.WireLoop.new(
-				Vector3(entry.x, entry.y, entry.z),
-				Quaternion(Vector3.RIGHT, PI / 2.0) * Quaternion(Vector3.UP, entry.w)
-			)
-		)
-	return loops
+	return []
 
 ## The authored hanging wires under the torn ceiling, in fixed order:
 ## five looped bundles (both ends anchored, sagging on parabolic
@@ -139,7 +104,7 @@ static func wire_loops() -> Array[Placement.WireLoop]:
 ## strands (one anchored end, hanging on S-bends that bow opposite ways
 ## above and below the hang's midpoint), and two frayed offshoots split
 ## from a parent wire's insulation. Anchors cluster at the spark strobe
-## spots (the tray centers less 0.2 m, as Hazards builds them) so the
+## spots returned by spark_spots() so the
 ## arcs read as traveling the wires. The two pod-area runs — the torn
 ## run whipped off the tray across the player pod and the segment
 ## caught between the wall edge and the pod's canopy corner — cross
@@ -243,7 +208,7 @@ static func pod_world_transform(placement: Pods.PodPlacement) -> Array:
 ## Build the whole static collider set from the same placement data the
 ## scene spawns: the room shell, every pod's construction solids through
 ## the pod group's world transform, and the hatch group, in that fixed
-## insertion order. The status plates, cable trays, and wire loops are
+## insertion order. The status plates and hanging wires are
 ## dressing outside the walking envelope and are deliberately not
 ## colliders, so the exit aperture mouth stays exactly as authored.
 static func scene_collider_set(registry: Pods.PodRegistry) -> ColliderSet:

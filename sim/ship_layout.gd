@@ -37,7 +37,7 @@ enum DoorKind { HATCH, SIDE, LIFT, BAY, POWER }
 enum AnimationRecipe { HINGE, FIXED, SLIDE }
 enum EmergencyLightRole { BAY_POOL, BAY_HATCH, ROOM_POOL }
 enum ArchitecturalLightRole { LOCAL, HALL_FILL }
-enum ServiceKind { SWITCH, CEILING_DAMAGE, FIXTURE, FILL, REGULAR_STRIP }
+enum ServiceKind { SWITCH, FIXTURE, FILL, REGULAR_STRIP }
 
 class EmergencyFixtureSpec:
 	extends RefCounted
@@ -96,7 +96,6 @@ class SectionServices:
 	extends RefCounted
 	var switch_frames: Array[Transform3D] = []
 	var regular_strips: bool = false
-	var ceiling_damage: bool = false
 	var light_role: ArchitecturalLightRole = ArchitecturalLightRole.LOCAL
 
 class DressingSpec:
@@ -106,7 +105,6 @@ class DressingSpec:
 	var rib_pitch: float = ShipLayout.DRESSING_RIB_PITCH
 	var panel_pitch := ShipLayout.DRESSING_PANEL_PITCH
 	var rib_stations: Array[float] = []
-	var pipe_paths: Array[PackedVector3Array] = []
 	var kick_rail_paths: Array[PackedVector3Array] = []
 	var grate_footprint: AABB
 	var floor_patches: Array[AABB] = []
@@ -171,7 +169,8 @@ class SectionSpec:
 		var pitch := _bounds.size.x / 4
 		for station: int in range(4):
 			for side: int in [-1, 1]:
-				frames.append(Transform3D(Basis(), Vector3(_bounds.position.x + (station + 0.5) * pitch, _bounds.position.y + 2.65, _bounds.get_center().z + side * (_bounds.size.z / 2 - 0.10))))
+				# Seat the entire fixture inward of the continuous wall-top services.
+				frames.append(Transform3D(Basis(), Vector3(_bounds.position.x + (station + 0.5) * pitch, _bounds.position.y + 2.65, _bounds.get_center().z + side * (_bounds.size.z / 2 - 0.20))))
 		return frames
 	func regular_light_frames() -> Array[Transform3D]:
 		var frames: Array[Transform3D] = []
@@ -180,29 +179,6 @@ class SectionSpec:
 		for station: int in range(4):
 			frames.append(Transform3D(Basis(), Vector3(_bounds.position.x + (station + 0.5) * pitch, _bounds.end.y - 0.08, _bounds.get_center().z)))
 		return frames
-	func ceiling_trays() -> Array[ShipGeometry.SolidSpec]:
-		if not _services.ceiling_damage: return []
-		var datum := Vector3(_bounds.position.x, _bounds.end.y - ShipGeometry.TRAY_CEILING_DROP, _bounds.get_center().z)
-		return [
-			ShipGeometry.SolidSpec.new(datum + Vector3(10.5, 0, 0.35), Vector3(9, ShipGeometry.TRAY_HEIGHT, ShipGeometry.TRAY_WIDTH), Quaternion(Vector3.RIGHT, 0.05)),
-			ShipGeometry.SolidSpec.new(datum + Vector3(17, -0.04, -0.55), Vector3(3.2, ShipGeometry.TRAY_HEIGHT, ShipGeometry.TRAY_WIDTH), Quaternion(Vector3.UP, PI / 2) * Quaternion(Vector3.RIGHT, -0.06)),
-		]
-	func ceiling_loops() -> Array[ShipGeometry.WireLoop]:
-		if not _services.ceiling_damage: return []
-		var datum := Vector3(_bounds.position.x, _bounds.position.y, _bounds.get_center().z)
-		return [
-			ShipGeometry.WireLoop.new(datum + Vector3(7.6, 2.72, 0.42), Quaternion(Vector3.RIGHT, PI / 2) * Quaternion(Vector3.UP, 0.8)),
-			ShipGeometry.WireLoop.new(datum + Vector3(15.4, 2.66, -0.48), Quaternion(Vector3.RIGHT, PI / 2) * Quaternion(Vector3.UP, 2.1)),
-		]
-	func ceiling_damage_bounds() -> Array[AABB]:
-		var boxes: Array[AABB] = []
-		for solid: ShipGeometry.SolidSpec in ceiling_trays():
-			var box := ShipGeometry.box_aabb(solid)
-			boxes.append(AABB(box.min_corner(), box.max_corner() - box.min_corner()).grow(0.02))
-		for loop: ShipGeometry.WireLoop in ceiling_loops():
-			var size := Vector3.ONE * ShipGeometry.WIRE_OUTER_RADIUS * 2
-			boxes.append(AABB(loop.center - size / 2, size).grow(0.02))
-		return boxes
 	func emergency_fill_positions() -> Array[Vector3]:
 		var positions: Array[Vector3] = []
 		if _services.light_role == ArchitecturalLightRole.LOCAL: return positions
@@ -226,9 +202,6 @@ class SectionSpec:
 			reservations.append(ServiceReservation.new(StringName("LAMP/%s" % frame.origin), ServiceKind.FIXTURE, AABB(frame.origin - Vector3(0.28, 0.20, 0.20), Vector3(0.56, 0.40, 0.40))))
 		for frame: Transform3D in regular_light_frames():
 			reservations.append(ServiceReservation.new(StringName("STRIP/%s" % frame.origin), ServiceKind.REGULAR_STRIP, AABB(frame.origin - Vector3(0.60, 0.20, 0.12), Vector3(1.20, 0.24, 0.24))))
-		var damage := ceiling_damage_bounds()
-		for index: int in range(damage.size()):
-			reservations.append(ServiceReservation.new(StringName("CEILING_DAMAGE/%d" % index), ServiceKind.CEILING_DAMAGE, damage[index]))
 		var fills := emergency_fill_positions()
 		if _services.light_role != ArchitecturalLightRole.LOCAL: fills.append(emergency_end_fill_position())
 		for point: Vector3 in fills:
@@ -292,7 +265,9 @@ class ConnectorSpec:
 	func emergency_fixture_frames() -> Array[Transform3D]:
 		var frames: Array[Transform3D] = []
 		for side: int in [-1, 1]:
-			frames.append(Transform3D(Basis(), Vector3(_bounds.get_center().x + side * _bounds.size.x / 4, _bounds.position.y + 1.75, side * (_bounds.size.z / 2 - 0.30))))
+			# The positive-side duct requires the complete fixture, including its stem, farther inboard.
+			var z := side * (_bounds.size.z / 2 - 0.30) - (0.80 if side > 0 else 0.0)
+			frames.append(Transform3D(Basis(), Vector3(_bounds.get_center().x + side * _bounds.size.x / 4, _bounds.position.y + 1.75, z)))
 		frames.append(Transform3D(Basis(), landing_key_position()))
 		return frames
 	func service_reservations() -> Array[ServiceReservation]:
@@ -572,10 +547,11 @@ class BaySpec:
 		return result
 	func regular_light_frames() -> Array[Transform3D]:
 		var frames: Array[Transform3D] = []
-		for x: float in [-4.0, 0.0, 4.0]:
-			# #88: the ceiling strips retain their offset from the shifted pod rows.
-			for z: float in [-1.6 + Pods.ROW_WALL_OFFSET, 1.6 - Pods.ROW_WALL_OFFSET]:
-				frames.append(Transform3D(Basis(), Vector3(x, Pods.ROOM_CEILING_HEIGHT - 0.08, z)))
+		# Center each generated 1.10 m beam over a 1.18 m panel service area.
+		# Keep the fixture frame at the existing beam's authored ceiling mount plane.
+		for x: float in [-4.2, -0.6, 4.2]:
+			for z: float in [-1.5, 1.5]:
+				frames.append(Transform3D(Basis(), Vector3(x, 3.12, z)))
 		return frames
 	func emergency_fixtures(registry: Pods.PodRegistry) -> Array[EmergencyFixtureSpec]:
 		var fixtures: Array[EmergencyFixtureSpec] = []
@@ -886,6 +862,10 @@ func dressing(space_id: StringName) -> DressingSpec:
 	assert((space is SectionSpec or space is ConnectorSpec) and space.is_built(), "dressing requires a built corridor space: %s" % space_id)
 	return ShipDressing.build(self, space)
 
+func ceiling_services(space_id: StringName) -> CeilingServices:
+	assert(has_space(space_id), "ceiling services require a space")
+	return CeilingServices.build(self, _records[space_id])
+
 func anchor(id: StringName) -> Transform3D:
 	assert(_anchors.has(id), "layout anchor exists: %s" % id)
 	return _anchors[id]
@@ -1009,7 +989,6 @@ static func _authored_records() -> Array[Spec]:
 			if d == 14 and number == 41:
 				services.switch_frames = [authored_hall_switch_frame()]
 				services.regular_strips = true
-				services.ceiling_damage = true
 				services.light_role = ArchitecturalLightRole.HALL_FILL
 			specs.append(SectionSpec.new(id, d, number, AABB(Vector3(start, y, -1.5), Vector3(24, CLEAR_HEIGHT, 3)), openings, side_ids, &"opening" if number == 41 else &"emergency", d == 14, services))
 		for n: int in range(2):

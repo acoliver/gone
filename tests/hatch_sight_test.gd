@@ -60,7 +60,7 @@ func test_every_seeded_open_hatch_resolves_from_each_exposed_face_and_refuses_ba
 	for seed: int in [0, 7, -913]:
 		var game := Game.new(seed)
 		var root := Node3D.new()
-		var scene := ShipScene.build_into(root, game, false)
+		var scene := ShipScene.build_into(root, game)
 		scene.prepare_near(Vector3(26, 0, 0))
 		scene.prepare_near(Vector3(10, 0, 0))
 		for id: StringName in IDS:

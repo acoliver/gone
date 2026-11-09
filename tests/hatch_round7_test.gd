@@ -155,7 +155,7 @@ func test_surround_and_band_caps_have_outward_winding() -> void:
 func test_hatch_lamps_reuse_existing_circuit_keys_and_follow_switching() -> void:
 	var game := Game.new(0)
 	var root := Node3D.new()
-	var scene := ShipScene.build_into(root, game, false)
+	var scene := ShipScene.build_into(root, game)
 	assert_int_equal(scene.hallway.lights().size(), 8, "hallway emergency key inventory is unchanged")
 	assert_int_equal(scene.lighting.lights().size(), 8, "bay emergency key inventory is unchanged")
 	var moved := 0

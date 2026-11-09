@@ -27,7 +27,7 @@ var rod: Rod
 var hallway: Hallway
 var power_room: PowerRoom
 
-static func build_into(parent: Node3D, game: Game, production_wires: bool = true) -> ShipScene:
+static func build_into(parent: Node3D, game: Game) -> ShipScene:
 	var scene := ShipScene.new()
 	scene._parent = parent
 	scene._game = game
@@ -38,14 +38,14 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 	scene.room = RoomGeometry.build(true, game.layout)
 	scene.room.name = "RoomGeometry"
 	scene.bay_root.add_child(scene.room)
+	scene.bay_root.add_child(CeilingProps.build(game.layout, ShipLayout.BAY_ID))
 	scene.pods_node = StasisPods.build(game.registry)
 	scene.bay_root.add_child(scene.pods_node)
 	scene.lighting = Lighting.build(game)
 	scene.bay_root.add_child(scene.lighting)
+	scene.bay_root.add_child(BayCeiling.build())
 	scene.hazards = Hazards.build(game.ventilation, game.layout.bay())
 	scene.bay_root.add_child(scene.hazards)
-	if production_wires:
-		scene.bay_root.add_child(Wires.build())
 	scene.rod = Rod.build()
 	scene.bay_root.add_child(scene.rod)
 	Lighting.mesh_layers(scene.bay_root, 1 | Lighting.BAY_FILL_MASK)

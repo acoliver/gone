@@ -59,6 +59,16 @@ func test_scenario_rejects_invalid_camera_pullback() -> void:
 		var parsed := HarnessScenario.parse(JSON.stringify({"name": "framing", "beats": [{"name": "white", "tick": 100, "camera_back": value}]}))
 		assert_false(parsed.error.is_empty(), "capture pullback must be a finite nonnegative distance")
 
+func test_scenario_preserves_upward_fixture_capture_framing() -> void:
+	var parsed := HarnessScenario.parse(JSON.stringify({"name": "framing", "beats": [{"name": "white", "tick": 100, "light": "white", "camera_pitch_up": 30.0}]}))
+	assert_true(parsed.error.is_empty(), parsed.error)
+	assert_float_equal(parsed.scenario.beats[0].get("camera_pitch_up", 0.0), 30.0, "recessed glass needs its authored upward capture view")
+
+func test_scenario_rejects_invalid_upward_capture_angles() -> void:
+	for value: Variant in [-1, 91, "up"]:
+		var parsed := HarnessScenario.parse(JSON.stringify({"name": "framing", "beats": [{"name": "white", "tick": 100, "camera_pitch_up": value}]}))
+		assert_false(parsed.error.is_empty(), "capture tilt must be a finite angle from zero to ninety degrees")
+
 func test_white_lens_does_not_bypass_nonblack_frame_gate() -> void:
 	var verifier := _verify(_frame(Color.WHITE, Color.BLACK, Color.BLACK), _entry())
 	assert_true(verifier.failures.any(func(message: String) -> bool: return message.contains("is black")), "whole-frame nonblack requirement remains")

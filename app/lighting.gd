@@ -167,16 +167,10 @@ static func build(game: Game) -> Lighting:
 		lighting._pod_keys.append(key)
 	var white_level := 1.0 if game.power_active else 0.0
 	lighting._white_fade = Intensity.FixtureFade.holding(white_level).fade
-	lighting._white_lens_material = StandardMaterial3D.new()
-	lighting._white_lens_material.albedo_color = Hallway.REGULAR_LENS_BASE_COLOR
-	lighting._white_lens_material.emission_enabled = true
-	lighting._white_lens_material.roughness = 0.8
-	var white_mesh := BoxMesh.new()
-	white_mesh.size = Hallway.REGULAR_LENS_SIZE
-	white_mesh.material = lighting._white_lens_material
+	lighting._white_lens_material = CeilingFixture.glass_material(white_level)
 	var fill_positions := game.layout.bay().emergency_fill_positions()
 	for frame: Transform3D in game.layout.bay().regular_light_frames():
-		lighting.add_child(lighting._white_fixture(frame, white_mesh))
+		lighting.add_child(lighting._white_fixture(frame))
 		var fill := emergency_fill(fill_positions[lighting._fill_lights.size()], level, BAY_FILL_MASK, EMERGENCY_BAY_FILL_SHARE)
 		fill.name = "EmergencyFill%d" % lighting._fill_lights.size()
 		lighting.add_child(fill)
@@ -299,6 +293,7 @@ func _fixture(spec: ShipLayout.EmergencyFixtureSpec, level: float) -> Node3D:
 	_fixtures_by_id[spec.id] = fixture
 	var light := switched_key(spec.role, level)
 	fixture.add_child(light)
+	DressingMounts.ceiling_stem(fixture, Pods.ROOM_CEILING_HEIGHT, Surfaces.surface_frame(_game.layout, ShipLayout.BAY_ID, &"CEILING"))
 	var lens := MeshInstance3D.new()
 	lens.name = "Lens"
 	lens.set_meta(&"lamp_circuit", "emergency")
@@ -359,7 +354,7 @@ func process_frame(delta_secs: float) -> void:
 func _circuit_target() -> float:
 	return 0.0 if _game.power_active else _game.emergency_circuit_target()
 
-func _white_fixture(frame: Transform3D, mesh: BoxMesh) -> Node3D:
+func _white_fixture(frame: Transform3D) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "BayRegularStrip"
 	fixture.transform = frame
@@ -370,11 +365,7 @@ func _white_fixture(frame: Transform3D, mesh: BoxMesh) -> Node3D:
 	light.shadow_enabled = false
 	light.position.y = -0.12
 	fixture.add_child(light)
-	var lens := MeshInstance3D.new()
-	lens.name = "Lens"
-	lens.set_meta(&"lamp_circuit", "white")
-	lens.mesh = mesh
-	fixture.add_child(lens)
+	CeilingFixture.mount(fixture, Pods.ROOM_CEILING_HEIGHT, architectural_mask(_game.layout, ShipLayout.BAY_ID), _white_lens_material)
 	_white_lights.append(light)
 	return fixture
 
@@ -463,7 +454,7 @@ static func isolate_lights(node: Node, mask: int) -> void:
 	for child: Node in node.get_children():
 		isolate_lights(child, mask)
 
-static func steady_fixture(origin: Vector3, mask: int, radius: float, attenuation: float = 1.0) -> Node3D:
+static func steady_fixture(origin: Vector3, mask: int, radius: float, support_y: float, surface: Surfaces.SurfaceFrame, attenuation: float = 1.0) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "EmergencyFixture"
 	fixture.position = origin
@@ -475,6 +466,7 @@ static func steady_fixture(origin: Vector3, mask: int, radius: float, attenuatio
 	light.light_cull_mask = mask
 	light.shadow_enabled = false
 	fixture.add_child(light)
+	DressingMounts.vertical_stem(fixture, support_y, surface)
 	var material := emergency_lens_material(1.0)
 	var lens := HatchModel.mesh_piece(Hallway._box_mesh(LENS_SIZE), Transform3D.IDENTITY, mask, material)
 	lens.name = "Lens"

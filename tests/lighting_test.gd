@@ -111,9 +111,11 @@ func test_lenses_share_one_cuboid_and_never_ride_the_light_node() -> void:
 		)
 		assert_int_equal(
 			lens.get_parent().get_child_count(),
-			2,
-			"fixture groups pair one light with one lens"
+			3,
+			"fixture groups carry a light, its new ceiling mount, and a lens"
 		)
+		assert_true(lens.get_parent().get_child(0) is OmniLight3D, "the fixture's light remains its first child")
+		assert_true(lens.get_parent().get_node("CeilingMount") is MeshInstance3D, "the added child is the physical support")
 	var expected_emission := Color(1.0, 0.28, 0.12) * Lighting.FIXTURE_EMISSIVE
 	expected_emission.a = 1.0
 	assert_true(

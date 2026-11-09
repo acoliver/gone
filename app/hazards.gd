@@ -48,12 +48,11 @@ static func build(ventilation: BayVentilation = BayVentilation.new(), bay: ShipL
 	hazards.name = "Hazards"
 	hazards._ventilation = ventilation
 	hazards._rng.randomize()
-	var trays := Placement.cable_trays()
-	assert(trays.size() >= SPARK_COUNT, "the authored ceiling damage carries spark spots")
+	var spots := Placement.spark_spots()
+	assert(spots.size() == SPARK_COUNT, "the authored wires carry exactly three spark spots")
 	var spark_material := _spark_material()
 	for index: int in range(SPARK_COUNT):
-		var spot: Vector3 = trays[index].center + Vector3(0.0, -0.2, 0.0)
-		hazards.add_child(hazards._spark_spot(spot, spark_material))
+		hazards.add_child(hazards._spark_spot(spots[index], spark_material))
 	hazards._smoke_field = hazards._smoke()
 	hazards._smoke_shader = hazards._smoke_field.draw_pass_1.material as ShaderMaterial
 	hazards.add_child(hazards._smoke_field)
@@ -187,7 +186,7 @@ static func _spark_process() -> ParticleProcessMaterial:
 
 static func _spark_draw_pass(spark_material: StandardMaterial3D) -> QuadMesh:
 	var quad := QuadMesh.new()
-	quad.size = Vector2(0.05, 0.05)
+	quad.size = Vector2(0.006, 0.035)
 	quad.material = spark_material
 	return quad
 
@@ -196,6 +195,7 @@ static func _spark_draw_pass(spark_material: StandardMaterial3D) -> QuadMesh:
 static func _spark_material() -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
 	material.emission_enabled = true
+	material.albedo_color = Color(1.0, 0.22, 0.05)
 	material.emission = Color(2.0, 0.55, 0.2)
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	material.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES

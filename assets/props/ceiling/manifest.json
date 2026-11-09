@@ -1,0 +1,76 @@
+{
+  "detector": {
+    "triangles": 2972,
+    "surfaces": 1,
+    "bounds": [
+      [
+        -0.5,
+        -0.5,
+        -0.5
+      ],
+      [
+        0.5,
+        0.5,
+        0.5
+      ]
+    ],
+    "source": "art-source/ceiling-props/detector/mesh.glb"
+  },
+  "sprinkler": {
+    "triangles": 2984,
+    "surfaces": 1,
+    "bounds": [
+      [
+        -0.5,
+        -0.5,
+        -0.5
+      ],
+      [
+        0.5,
+        0.5,
+        0.5
+      ]
+    ],
+    "source": "art-source/ceiling-props/sprinkler/mesh.glb"
+  },
+  "duct": {
+    "triangles": 576,
+    "surfaces": 1,
+    "bounds": [
+      [
+        -0.5,
+        -0.5,
+        -0.5
+      ],
+      [
+        0.5,
+        0.5,
+        0.5
+      ]
+    ],
+    "body_cross_section_m": [
+      0.4,
+      0.3
+    ],
+    "source": "tools/blender/build_ceiling_props.py"
+  },
+  "fixture": {
+    "triangles": 2664,
+    "surfaces": 4,
+    "bounds": [
+      [
+        -0.550000011920929,
+        -0.10000000149011612,
+        -0.10999999940395355
+      ],
+      [
+        0.5499999821186066,
+        0.0,
+        0.10999999940395355
+      ]
+    ],
+    "source": "art-source/ceiling-props/fixture/round6/fixture.blend",
+    "seed": 720,
+    "slot_count": 14
+  }
+}

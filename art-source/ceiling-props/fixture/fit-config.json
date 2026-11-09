@@ -1,0 +1,13 @@
+{
+  "seed": 720,
+  "source": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/hunyuan/720/painted.glb",
+  "grille_surface": "front",
+  "paint_success": true,
+  "reference": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/views/611/front-aligned.png",
+  "reference_bbox": [
+    72,
+    380,
+    952,
+    643
+  ]
+}

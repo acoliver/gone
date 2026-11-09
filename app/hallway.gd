@@ -12,9 +12,9 @@ extends Node3D
 ## room behind it; when the secondary power activates, the red emergency
 ## fixtures hand the corridor over to the dim regular white strips at
 ## the same stations. Surfaces wear the stasis room's shared surface
-## materials and the ceiling carries the same damage dressing language;
-## no smoke anywhere in this subtree. The hallway's colliders extend the
-## walk sim's set from solids authored here (Placement stays untouched):
+## materials; no suspended cable trays or smoke live in this subtree.
+## The hallway's colliders extend the walk sim's set from solids authored
+## here (Placement stays untouched):
 ## one construction path — the scene spawns these placements verbatim
 ## and the collider set derives from the same data.
 
@@ -79,9 +79,6 @@ const FIXTURE_STATIONS_X: Array[float] = [9.0, 15.0, 21.0, POWER_DOOR_X]
 ## then the corridor's light — dim but ordinary — while the red
 ## emergency pair at every station hands off to them.
 const REGULAR_STATIONS_X: Array[float] = [9.0, 15.0, 21.0, POWER_DOOR_X]
-const REGULAR_LENS_SIZE: Vector3 = Vector3(1.15, 0.05, 0.18)
-const REGULAR_LENS_BASE_COLOR: Color = Color(0.72, 0.72, 0.70)
-const REGULAR_MOUNT_Y: float = HALL_CEILING_HEIGHT - 0.08
 
 const SIDE_DOOR_SHADE: float = HatchModel.DOOR_SHADE
 
@@ -99,7 +96,6 @@ var _white_fade: Intensity.FixtureFade = null
 var _white_lights: Array[OmniLight3D] = []
 var _white_end_fill: Lighting.RegularEndFill
 var _white_lenses: Array[MeshInstance3D] = []
-var _white_lens_mesh: BoxMesh = null
 var _white_lens_material: StandardMaterial3D = null
 var _remainder: float = 0.0
 
@@ -187,7 +183,7 @@ static func build(game: Game) -> Hallway:
 		hallway.add_child(piece)
 
 	hallway.add_child(CorridorDressing.build(game.layout, &"D14-S-041"))
-	hallway.add_child(_build_ceiling_damage(game.layout.section(&"D14-S-041")))
+	hallway.add_child(CeilingProps.build(game.layout, &"D14-S-041"))
 
 	var doors := Node3D.new()
 	doors.name = "HallSideDoors"
@@ -209,19 +205,12 @@ static func build(game: Game) -> Hallway:
 		hallway.add_child(hallway._fixture(fixture_transform, level))
 
 	var white_level := 1.0 if game.power_active else 0.0
-	hallway._white_lens_mesh = BoxMesh.new()
-	hallway._white_lens_mesh.size = REGULAR_LENS_SIZE
-	hallway._white_lens_material = StandardMaterial3D.new()
-	hallway._white_lens_material.albedo_color = REGULAR_LENS_BASE_COLOR
-	hallway._white_lens_material.emission = Lighting.REGULAR_WHITE * Lighting.REGULAR_EMISSIVE * white_level
-	hallway._white_lens_material.roughness = 0.8
-	hallway._white_lens_mesh.material = hallway._white_lens_material
+	hallway._white_lens_material = CeilingFixture.glass_material(white_level)
 	var white_held: Intensity.Result = Intensity.FixtureFade.holding(white_level)
 	assert(white_held.is_ok(), "the white strip level maps to a valid fade")
 	hallway._white_fade = white_held.fade
 	for frame: Transform3D in game.layout.section(&"D14-S-041").regular_light_frames():
-		var fixture := hallway._white_fixture(frame.origin.x, white_level)
-		fixture.transform = frame
+		var fixture := hallway._white_fixture(frame, white_level)
 		hallway.add_child(fixture)
 	var section := game.layout.section(&"D14-S-041")
 	for position: Vector3 in section.emergency_fill_positions():
@@ -255,6 +244,7 @@ func _fixture(fixture_transform: Transform3D, level: float) -> Node3D:
 	fixture.transform = fixture_transform
 	var light := Lighting.switched_key(_game.layout.section(&"D14-S-041").emergency_light_role(), level)
 	fixture.add_child(light)
+	DressingMounts.ceiling_stem(fixture, _game.layout.section(&"D14-S-041").bounds().end.y, Surfaces.surface_frame(_game.layout, &"D14-S-041", &"CEILING"))
 	var lens := MeshInstance3D.new()
 	lens.name = "Lens"
 	lens.set_meta(&"lamp_circuit", "emergency")
@@ -267,10 +257,10 @@ func _fixture(fixture_transform: Transform3D, level: float) -> Node3D:
 ## One regular-service strip: a ceiling lens down the centerline with
 ## its light just beneath, dead until the secondary power hands the
 ## corridor over from emergency red.
-func _white_fixture(station_x: float, level: float) -> Node3D:
+func _white_fixture(frame: Transform3D, level: float) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "HallRegularStrip"
-	fixture.position = Vector3(station_x, REGULAR_MOUNT_Y, 0.0)
+	fixture.transform = frame
 	var light := OmniLight3D.new()
 	light.light_color = Lighting.REGULAR_WHITE
 	light.light_energy = Lighting.regular_energy() * level
@@ -279,11 +269,7 @@ func _white_fixture(station_x: float, level: float) -> Node3D:
 	light.shadow_enabled = false
 	light.position = Vector3(0.0, -0.12, 0.0)
 	fixture.add_child(light)
-	var lens := MeshInstance3D.new()
-	lens.name = "Lens"
-	lens.set_meta(&"lamp_circuit", "white")
-	lens.mesh = _white_lens_mesh
-	fixture.add_child(lens)
+	var lens := CeilingFixture.mount(fixture, _game.layout.section(&"D14-S-041").bounds().end.y, Lighting.architectural_mask(_game.layout, &"D14-S-041"), _white_lens_material)
 	_white_lights.append(light)
 	_white_lenses.append(lens)
 	return fixture
@@ -330,38 +316,6 @@ static func _build_switch() -> Node3D:
 	bezel.name = "ButtonBezel"
 	group.add_child(bezel)
 	return group
-
-## The hall's ceiling damage, in the stasis room's language: tray runs
-## tipped off level, hanging wire loops beneath them. Dressing only —
-## outside the walking envelope, deliberately not colliders.
-static func _build_ceiling_damage(spec: ShipLayout.SectionSpec) -> Node3D:
-	var damage := Node3D.new()
-	damage.name = "HallCeilingDamage"
-	var tray_material := _flat_grey(RoomGeometry.TRAY_SHADE)
-	var wire_material := _flat_grey(RoomGeometry.WIRE_SHADE)
-	for placement: ShipGeometry.SolidSpec in spec.ceiling_trays():
-		damage.add_child(_box_instance(placement, tray_material))
-	for loop: Placement.WireLoop in spec.ceiling_loops():
-		var mesh := TorusMesh.new()
-		mesh.inner_radius = Placement.WIRE_INNER_RADIUS
-		mesh.outer_radius = Placement.WIRE_OUTER_RADIUS
-		var wire := MeshInstance3D.new()
-		wire.mesh = mesh
-		wire.material_override = wire_material
-		wire.position = loop.center
-		wire.quaternion = loop.rotation
-		damage.add_child(wire)
-	return damage
-
-## One long tray run down the corridor and one torn cross stub, tipped
-## off level the way the stasis room's trays read.
-static func _ceiling_trays() -> Array[Placement.SolidPlacement]:
-	return ShipLayout.authored().layout.section(&"D14-S-041").ceiling_trays()
-
-## Two hanging wire loops under the tray run, at the stasis room's
-## scale and above the camera-clearance floor.
-static func _ceiling_loops() -> Array[Placement.WireLoop]:
-	return ShipLayout.authored().layout.section(&"D14-S-041").ceiling_loops()
 
 ## One render-bridge frame, mirroring the stasis bay's Lighting bridge:
 ## retarget only on the sim-side target change (the switch flip, the

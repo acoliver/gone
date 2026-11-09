@@ -66,7 +66,7 @@ func run() -> void:
 	var ship: ShipScene
 	if not capture_dir.is_empty():
 		DirAccess.make_dir_recursive_absolute(capture_dir)
-		ship = ShipScene.build_into(scene, game, false)
+		ship = ShipScene.build_into(scene, game)
 	player = Player.build(game, null)
 	player.scripted = true
 	scene.add_child(player)

@@ -52,6 +52,7 @@ func _ready() -> void:
 	step.fixtures.assign([ship.lighting, hallway, power_room])
 	voice_presentation = VoicePresentation.build(game, player)
 	add_child(voice_presentation)
+	add_child(HelpPanel.build(player))
 
 func _physics_process(_delta: float) -> void:
 	step.advance()

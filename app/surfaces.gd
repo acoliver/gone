@@ -28,12 +28,15 @@ const SCANS: Array[String] = ["green_metal_rust", "rusty_painted_metal", "rusty_
 const ROLES := {
 	&"wall": {}, &"floor": {"floor_surface": true}, &"ceiling": {},
 	&"pipe": {"curved_surface": true}, &"subfloor": {"floor_surface": true},
+	&"collar_steel": {"colour_gain": Vector3(0.35, 0.30, 0.26), "curved_surface": true},
 	&"hatch_leaf": {"hatch_surface": true, "leaf_paint": true}, &"seal": {"hatch_surface": true}, &"sill": {"hatch_surface": true, "raised_base": true}, &"frame": {"hatch_surface": true},
 	&"hardware": {"hatch_surface": true, "wheel_surface": true, "curved_surface": true, "leaf_hardware": true},
 	&"wheel": {"hatch_surface": true, "wheel_surface": true, "wheel_only": true, "curved_surface": true, "hero_wheel": true},
 	&"plate_edge": {"edge_surface": true},
 	&"rivet": {"rivet_surface": true, "curved_surface": true},
 	&"modelled_hatch": {"baked_hatch": true},
+	&"weathered_red": {"colour_gain": Vector3(2.8, 0.25, 0.14)},
+	&"corroded_brass": {"colour_gain": Vector3(1.35, 0.92, 0.35), "curved_surface": true},
 }
 const PARTS: Array[StringName] = [
 	&"PORT", &"STARBOARD", &"FORE", &"AFT", &"BACK", &"FLOOR", &"CEILING",

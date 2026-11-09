@@ -23,9 +23,6 @@ const HATCH_FLOOR_SKIN_HEIGHT: float = 0.001
 const HATCH_RIVET_RADIUS: float = 0.021
 const HATCH_RIVET_DEPTH: float = 0.025
 const HATCH_RIVET_PITCH: float = 0.13
-const TRAY_WIDTH: float = 0.3
-const TRAY_HEIGHT: float = 0.08
-const TRAY_CEILING_DROP: float = 0.15
 const WIRE_INNER_RADIUS: float = 0.035
 const WIRE_OUTER_RADIUS: float = 0.11
 
@@ -72,7 +69,7 @@ const CONSOLE_HEALTHS := {
 }
 const GENERATOR_CENTER: Vector3 = ShipLayout.POWER_GENERATOR_CENTER
 const GENERATOR_RADIUS: float = 0.8
-const GENERATOR_HEIGHT: float = 2.6
+const GENERATOR_HEIGHT: float = ROOM_CEILING
 
 class SolidSpec:
 	extends RefCounted

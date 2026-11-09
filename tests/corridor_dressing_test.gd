@@ -17,7 +17,8 @@ func test_service_exclusions_follow_inventory_without_room_identity() -> void:
 	var original := ShipDressing.build(layout, section)
 	section._id = &"TEST-SERVICE-BEARING-SPACE"
 	var renamed := ShipDressing.build(layout, section)
-	for prefix: String in ["SWITCH_REACH", "CEILING_DAMAGE/", "FILL/", "LAMP/", "STRIP/"]:
+	assert_int_equal(_reservation_count(original, "CEILING_DAMAGE/"), 0, "removed hall tray must not suppress attached ceiling dressing")
+	for prefix: String in ["SWITCH_REACH", "FILL/", "LAMP/", "STRIP/"]:
 		assert_true(_reservation_count(original, prefix) > 0, "authored service exists: %s" % prefix)
 		assert_int_equal(_reservation_count(renamed, prefix), _reservation_count(original, prefix), "service inventory survives renaming: %s" % prefix)
 	assert_true(_clearance(renamed, &"SWITCH_REACH").is_equal_approx(_clearance(original, &"SWITCH_REACH")), "switch bounds come from the service, not an id")
@@ -272,7 +273,7 @@ func test_all_ordered_collision_boxes_are_identical_before_after_build_and_free(
 	var before: Dictionary = {}
 	for deck: int in range(1, 31): before[deck] = game.collision.deck_set(deck).boxes()
 	var root := Node3D.new()
-	var scene := ShipScene.build_into(root, game, false)
+	var scene := ShipScene.build_into(root, game)
 	scene.prepare_near(Vector3(8, 0.305, 0))
 	scene.prepare_near(Vector3(27, 0.305, 0))
 	scene.stream.focus(&"C-000-LADDER", 1)
@@ -287,7 +288,7 @@ func test_stream_eviction_frees_batches_and_reload_restores_identical_poses() ->
 	if not _available(): return
 	var root := Node3D.new()
 	var game := Game.new(0)
-	var scene := ShipScene.build_into(root, game, false)
+	var scene := ShipScene.build_into(root, game)
 	scene.stream.focus(&"C-000-LADDER", 1)
 	for frame: int in range(5): scene.stream.build_next()
 	var room: Node3D = scene.stream.room(&"D01-C-000")

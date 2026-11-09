@@ -6,6 +6,7 @@ func test_bay_hatch_identity_selects_its_profile_even_when_fixture_order_changes
 	assert_int_equal(specs.size(), 8, "seven pod keys and the hatch key")
 	specs.reverse()
 	var lighting := Lighting.new()
+	lighting._game = game
 	lighting._lens_mesh = BoxMesh.new()
 	for spec: ShipLayout.EmergencyFixtureSpec in specs:
 		lighting.add_child(lighting._fixture(spec, 1.0))

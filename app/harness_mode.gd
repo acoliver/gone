@@ -107,7 +107,7 @@ func _build_scene() -> void:
 	game = Game.new(scenario.seed)
 	var scene := Node3D.new()
 	scene.name = "CaptureRoot"
-	var ship := ShipScene.build_into(scene, game, false)
+	var ship := ShipScene.build_into(scene, game)
 	pods_node = ship.pods_node
 	stasis_lighting = ship.lighting
 	rod = ship.rod
@@ -371,7 +371,16 @@ func capture_next_beat() -> void:
 	var pinned_frame: int = frame
 	chip.set_code(pinned_tick, pinned_frame)
 	var camera_pose := player.camera.transform
-	player.camera.global_position += player.camera.global_basis.z * float(beat.get("camera_back", 0.0))
+	var capture_camera := player.camera
+	if beat.has("camera_pitch_up"):
+		# The wake presenter owns the player rig; capture-only tilts need an independent camera.
+		capture_camera = player.camera.duplicate() as Camera3D
+		root.add_child(capture_camera)
+		capture_camera.global_transform = player.camera.global_transform
+		capture_camera.make_current()
+	capture_camera.global_position += capture_camera.global_basis.z * float(beat.get("camera_back", 0.0))
+	if capture_camera != player.camera:
+		capture_camera.rotate_object_local(Vector3.RIGHT, deg_to_rad(float(beat.camera_pitch_up)))
 	if connector_evidence != null:
 		print("GONE_CONNECTOR_CAPTURE %s tick=%d frame=%d" % [beat.name, pinned_tick, pinned_frame])
 	# Flush scene transforms before explicitly drawing a motionless capture.
@@ -388,9 +397,12 @@ func capture_next_beat() -> void:
 	report.beats[beat.name] = {"file": file, "tick": pinned_tick,
 		"frame": pinned_frame, "request_id": request_id}
 	if beat.get("light", "red") == "white" or beat.name in ["power-active", "hall-white"]:
-		report.beats[beat.name].lamps = lamp_samples.record(root.get_node("CaptureRoot"), player.camera, image.get_size())
-	var capture_eye := player.camera.global_position
+		report.beats[beat.name].lamps = lamp_samples.record(root.get_node("CaptureRoot"), capture_camera, image.get_size())
+	var capture_eye := capture_camera.global_position
 	report.beats[beat.name].camera_eye = [capture_eye.x, capture_eye.y, capture_eye.z]
+	if capture_camera != player.camera:
+		player.camera.make_current()
+		capture_camera.free()
 	player.camera.transform = camera_pose
 	report.add_event({"kind": "beat", "name": beat.name, "tick": pinned_tick,
 		"frame": pinned_frame, "request_id": request_id})

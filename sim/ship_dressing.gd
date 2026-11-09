@@ -49,6 +49,7 @@ static func _clearances(layout: ShipLayout, space: ShipLayout.Spec, spec: ShipLa
 		_reserve(spec, &"TRANSFER", AABB(Vector3(landing.position.x + 0.15, landing.position.y, well.climb_line().origin.z - 0.35), Vector3(landing.size.x - 0.30, 2.4, b.position.z - well.climb_line().origin.z + 0.7)))
 		_reserve(spec, &"CLIMB", AABB(Vector3(well.climb_line().origin.x - 0.35, b.position.y, well.climb_line().origin.z - 0.35), Vector3(0.7, b.size.y, 0.7)))
 	spec.clearances.append_array(space.service_reservations())
+	spec.clearances.append_array(CeilingServices.build(layout, space).reservations())
 
 static func _sweep(door: ShipLayout.DoorSpec) -> AABB:
 	var result := AABB()
@@ -149,35 +150,17 @@ static func _structure(spec: ShipLayout.DressingSpec) -> void:
 				_put(spec, &"RibHeads", Vector3(0.20, 0.22, 0.18), Vector3(x, b.end.y - 0.11, z - side * 0.03))
 		_run(spec, &"CeilingRibs", Vector3(x, b.end.y - 0.06, b.position.z + 0.04), Vector3(x, b.end.y - 0.06, b.end.z - 0.04), Vector2(0.11, 0.12), &"wall", &"CEILING")
 		x += RIB_PITCH
-	for offset: float in [-0.91, -0.63, 0.73]:
-		var diameter := 0.15 if offset < -0.8 else 0.09
-		var z := center.z + offset * b.size.z / ShipLayout.CORRIDOR_WIDTH
-		var y := b.end.y - 0.29
-		var paths := _run(spec, &"OverheadPipes", Vector3(b.position.x + 0.15, y, z), Vector3(b.end.x - 0.15, y, z), Vector2(diameter, diameter), &"pipe", &"CEILING", &"cylinder")
-		spec.pipe_paths.append_array(paths)
-		for station: float in spec.rib_stations:
-			var clamp_pose := _pose(Vector3(station, y, z), Vector3(diameter + 0.036, 0.035, diameter + 0.036), Basis(Vector3.BACK, PI / 2))
-			if _clear(spec, clamp_pose) and _on_path(station, paths):
-				_batch(spec, &"PipeClamps", &"ring", &"pipe", &"CEILING").poses.append(clamp_pose)
-				# The upper tab meets the ceiling rib; its lower end meets the ring.
-				_put(spec, &"PipeBrackets", Vector3(0.06, 0.30, 0.045), Vector3(station, b.end.y - 0.15, z), &"pipe", &"CEILING")
 	for side: int in [-1, 1]:
-		var z := center.z + side * (b.size.z / 2 - 0.055)
+		var z := center.z + side * (b.size.z / 2 - 0.035)
 		for height: float in [0.19, 0.38]:
 			spec.kick_rail_paths.append_array(_run(spec, &"KickRails", Vector3(b.position.x + 0.05, b.position.y + height, z), Vector3(b.end.x - 0.05, b.position.y + height, z), Vector2(0.045, 0.07), &"pipe", &"WALL"))
-		_run(spec, &"SideConduits", Vector3(b.position.x + 0.15, b.end.y - 0.64, z), Vector3(b.end.x - 0.15, b.end.y - 0.64, z), Vector2(0.036, 0.036), &"pipe", &"WALL", &"cylinder")
 		for row: int in range(1, int(b.size.y / PANEL_PITCH.y)):
 			var y := b.position.y + row * PANEL_PITCH.y
 			_run(spec, &"PlateLips", Vector3(b.position.x, y + 0.025, center.z + side * (b.size.z / 2 - 0.004)), Vector3(b.end.x, y + 0.025, center.z + side * (b.size.z / 2 - 0.004)), Vector2(0.008, 0.006), &"plate_edge", &"WALL")
 			x = b.position.x + RIVET_PITCH / 2
 			while x < b.end.x:
-				_put(spec, &"WallRivets", Vector3(0.022, 0.009, 0.022), Vector3(x, y + 0.065, center.z + side * (b.size.z / 2 - 0.008)), &"rivet", &"WALL", &"cylinder", Basis(Vector3.RIGHT, PI / 2))
+				_put(spec, &"WallRivets", Vector3(0.022, 0.009, 0.022), Vector3(x, y + 0.065, center.z + side * (b.size.z / 2 - 0.0045)), &"rivet", &"WALL", &"cylinder", Basis(Vector3.RIGHT, PI / 2))
 				x += RIVET_PITCH
-
-static func _on_path(x: float, paths: Array[PackedVector3Array]) -> bool:
-	for path: PackedVector3Array in paths:
-		if x > path[0].x + 0.03 and x < path[1].x - 0.03: return true
-	return false
 
 static func _grate(layout: ShipLayout, space: ShipLayout.Spec, spec: ShipLayout.DressingSpec) -> void:
 	var solids := ShipGeometry.section_solids(layout, space) if space is ShipLayout.SectionSpec else ShipGeometry.connector_solids(layout, space)
