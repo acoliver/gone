@@ -56,7 +56,7 @@ func test_illuminance_uses_the_renderer_range_cutoff_and_power_falloff() -> void
 func test_fixture_gate_rejects_missing_hidden_bare_and_displaced_emitters() -> void:
 	var inventory := Inventory.new()
 	var layout := ShipLayout.authored().layout
-	var fixture := Lighting.steady_fixture(Vector3(0, 2.65, 0), 1, 3, 3.2, Surfaces.surface_frame(layout, &"D14-S-041", &"CEILING"))
+	var fixture := Lighting.steady_fixture(Vector3(0, 2.65, 0), 1, 3, Surfaces.surface_frame(layout, &"D14-S-041", &"CEILING"))
 	var light := fixture.get_child(0) as OmniLight3D
 	var lens: MeshInstance3D = fixture.get_node("Lens")
 	assert_true(inventory._fixture_error(light).is_empty(), "real cage passes")

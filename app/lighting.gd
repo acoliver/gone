@@ -23,7 +23,10 @@ const EMERGENCY_ENERGY_MULTIPLIER: float = 1.0
 # Independent rooms have no fill; stronger keys restore readability on the darker steel.
 const EMERGENCY_NO_FILL_KEY_MULTIPLIER: float = 1.916
 const EMERGENCY_FILL_SHARE: float = 0.28
-const EMERGENCY_BAY_FILL_SHARE: float = 0.56
+# Wall positions change floor/ceiling incidence; station shares preserve the fixed room subtotals.
+const EMERGENCY_BAY_WALL_SHARES: Array[float] = [1.435, 1.435, 0.10, 0.10, 1.435, 1.435]
+const EMERGENCY_HALL_WALL_SHARES: Array[float] = [0.71, 0.30, 0.42, 0.315, 0.315, 0.42, 0.30]
+const EMERGENCY_POWER_WALL_SHARE: float = 0.58
 const EMERGENCY_FILL_COLOR: Color = Color(1.0, 0.97, 0.92)
 const EMERGENCY_END_FILL_SHARE: float = 0.84
 const EMERGENCY_END_FILL_COLOR: Color = Color(1.0, 0.80, 0.62)
@@ -63,12 +66,6 @@ class EmergencyFill:
 	func apply_level(level: float) -> void:
 		light_energy = Lighting.emergency_energy() * energy_share * level
 		lens_material.emission = light_color * Lighting.REGULAR_EMISSIVE * level
-
-static func pendant_fill(origin: Vector3, level: float, room_mask: int, share: float = EMERGENCY_FILL_SHARE) -> EmergencyFill:
-	var fill := emergency_fill(origin, level, room_mask, share)
-	# The shorter drop would lose floor reach with the old four-metre cutoff.
-	fill.omni_range = EMERGENCY_FILL_RANGE + 0.20
-	return fill
 
 static func emergency_fill(origin: Vector3, level: float, room_mask: int, share: float = EMERGENCY_FILL_SHARE, color: Color = EMERGENCY_FILL_COLOR) -> EmergencyFill:
 	var fill := EmergencyFill.new()
@@ -177,9 +174,9 @@ static func build(game: Game) -> Lighting:
 	var fill_positions := game.layout.bay().emergency_fill_positions()
 	for frame: Transform3D in game.layout.bay().regular_light_frames():
 		lighting.add_child(lighting._white_fixture(frame))
-		var fill := pendant_fill(fill_positions[lighting._fill_lights.size()], level, BAY_FILL_MASK, EMERGENCY_BAY_FILL_SHARE)
+		var fill := emergency_fill(fill_positions[lighting._fill_lights.size()], level, BAY_FILL_MASK, EMERGENCY_BAY_WALL_SHARES[lighting._fill_lights.size()])
 		fill.name = "EmergencyFill%d" % lighting._fill_lights.size()
-		FixtureEmitter.suspended(fill, Pods.ROOM_CEILING_HEIGHT, Surfaces.surface_frame(game.layout, ShipLayout.BAY_ID, &"CEILING"), "emergency", fill.lens_material)
+		FixtureEmitter.wall_source(fill, Surfaces.surface_frame(game.layout, ShipLayout.BAY_ID, &"PORT" if fill.position.z < 0 else &"STARBOARD"), "emergency", fill.lens_material, PI if fill.position.z < 0 else 0.0)
 		lighting.add_child(fill)
 		lighting._fill_lights.append(fill)
 	lighting.bind_pod_keys()
@@ -301,7 +298,6 @@ func _fixture(spec: ShipLayout.EmergencyFixtureSpec, level: float) -> Node3D:
 	_fixtures_by_id[spec.id] = fixture
 	var light := switched_key(spec.role, level)
 	fixture.add_child(light)
-	DressingMounts.ceiling_stem(fixture, Pods.ROOM_CEILING_HEIGHT, Surfaces.surface_frame(_game.layout, ShipLayout.BAY_ID, &"CEILING"))
 	var lens := FixtureEmitter.cage(fixture, 1, Surfaces.surface_frame(_game.layout, ShipLayout.BAY_ID, &"CEILING"), _lens_material, Basis(Vector3.UP, PI if spec.frame.origin.z < 0 else 0.0))
 	FixtureEmitter.bind(light, lens, fixture.get_node("Steel"))
 	_fixtures.append(fixture)
@@ -460,7 +456,7 @@ static func isolate_lights(node: Node, mask: int) -> void:
 	for child: Node in node.get_children():
 		isolate_lights(child, mask)
 
-static func steady_fixture(origin: Vector3, mask: int, radius: float, support_y: float, surface: Surfaces.SurfaceFrame, attenuation: float = 1.0) -> Node3D:
+static func steady_fixture(origin: Vector3, mask: int, radius: float, surface: Surfaces.SurfaceFrame, attenuation: float = 1.0) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "EmergencyFixture"
 	fixture.position = origin
@@ -472,9 +468,12 @@ static func steady_fixture(origin: Vector3, mask: int, radius: float, support_y:
 	light.light_cull_mask = mask
 	light.shadow_enabled = false
 	fixture.add_child(light)
-	DressingMounts.vertical_stem(fixture, support_y, surface)
 	var material := emergency_lens_material(1.0)
-	var lens := FixtureEmitter.cage(fixture, mask, surface, material, Basis(Vector3.UP, PI if origin.z < 0 else 0.0))
+	var bounds := surface.world_from_surface * surface.bounds
+	var yaw := (PI / 2 if origin.x > bounds.get_center().x else -PI / 2) if "LANDING/" in String(surface.key) else (PI if origin.z < bounds.get_center().z else 0.0)
+	var rotation := Basis(Vector3.UP, yaw)
+	var lens := FixtureEmitter.cage(fixture, mask, surface, material, rotation)
+	FixtureEmitter.wall_bracket(fixture, surface, rotation)
 	FixtureEmitter.bind(light, lens, fixture.get_node("Steel"))
 	mesh_layers(fixture, mask)
 	return fixture

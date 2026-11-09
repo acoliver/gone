@@ -67,17 +67,17 @@ func test_beam_tops_touch_the_rendered_ceiling_without_drops() -> void:
 			var top := Vector3(bounds.get_center().x, bounds.end.y, bounds.get_center().z)
 			var ceiling_y := INF
 			for mesh: MeshInstance3D in world.find_children("*", "MeshInstance3D", true, false):
-				if not mesh.has_meta(&"surface_frame"): continue
+				if not mesh.has_meta(&"surface_frame") or mesh.material_override != Surfaces.material(&"ceiling"): continue
 				var surface: Surfaces.SurfaceFrame = mesh.get_meta(&"surface_frame")
 				if not String(surface.key).ends_with("/CEILING"): continue
 				var hit := rays._hit(mesh.mesh, Surfaces.world_frame(mesh), top - Vector3(0, 0.02, 0), top + Vector3(0, 1, 0))
 				if not hit.is_empty(): ceiling_y = minf(ceiling_y, hit.position.y)
 			assert_true(is_finite(ceiling_y), "beam has a rendered ceiling above it")
 			assert_float_equal(top.y, Vector3(0, 3.2, 0).y, "beam top remains on its authored mounting plane")
-			var underside := Vector3(0, 3.188 if room is PowerRoom else 3.2, 0).y
+			var underside := Vector3(0, 3.2, 0).y
 			print("MOUNT ", room.name, " top_y=", top.y, " ceiling_underside_y=", ceiling_y)
 			assert_int_equal(roundi(ceiling_y * 100000), roundi(underside * 100000), "rendered ceiling underside is measured independently")
-			assert_int_equal(roundi((top.y - ceiling_y) * 100000), roundi((Vector3(0, 3.2, 0).y - underside) * 100000), "beam embeds in ceiling skin; there is no air gap")
+			assert_int_equal(roundi((top.y - ceiling_y) * 100000), roundi((Vector3(0, 3.2, 0).y - underside) * 100000), "beam contacts the architectural ceiling; there is no air gap")
 			assert_false(source.get_parent().has_node("CeilingMount"), "no beam hanger")
 			count += 1
 	assert_int_equal(count, 16, "all sixteen mounting planes measured")

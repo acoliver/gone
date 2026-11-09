@@ -23,7 +23,6 @@ const BAY_ID: StringName = &"D14-BAY"
 const POWER_ID: StringName = &"D14-POWER"
 const BAY_DOOR_ID: StringName = &"D14-BAY-DOOR"
 const BAY_HATCH_KEY_ID: StringName = &"D14-BAY-HATCH-KEY"
-const EMERGENCY_FILL_CEILING_DROP: float = 0.62
 const POWER_DOOR_ID: StringName = &"D14-POWER-DOOR"
 const POWER_CENTER_X: float = 27.0
 const POWER_NEAR_Z: float = -(CORRIDOR_WIDTH / 2.0 + WALL)
@@ -183,7 +182,7 @@ class SectionSpec:
 		var positions: Array[Vector3] = []
 		if _services.light_role == ArchitecturalLightRole.LOCAL: return positions
 		for index: int in range(7):
-			positions.append(Vector3(_bounds.position.x + 1.5 + index * 3.0, _bounds.end.y - 0.08 - ShipLayout.EMERGENCY_FILL_CEILING_DROP, _bounds.get_center().z))
+			positions.append(Vector3(_bounds.position.x + 1.5 + index * 3.0, _bounds.position.y + 2.36, _bounds.get_center().z + (1.3 if index % 2 == 0 else -1.3)))
 		return positions
 	func emergency_end_fill_position() -> Vector3:
 		return Vector3(_bounds.end.x - 0.9, _bounds.position.y + 1.7, _bounds.get_center().z + 1.3)
@@ -564,11 +563,9 @@ class BaySpec:
 		return fixtures
 	func emergency_fill_positions() -> Array[Vector3]:
 		var positions: Array[Vector3] = []
-		# The architectural fill stays at its authored stations while #88's
-		# regular strips move inward with the pod rows.
 		for x: float in [-4.0, 0.0, 4.0]:
-			for z: float in [-1.6, 1.6]:
-				positions.append(Vector3(x, Pods.ROOM_CEILING_HEIGHT - 0.08 - ShipLayout.EMERGENCY_FILL_CEILING_DROP, z))
+			for z: float in [-3.8, 3.8]:
+				positions.append(Vector3(x, 2.5, z))
 		return positions
 	func ceiling_vent_frames() -> Array[Transform3D]:
 		return [Transform3D(Basis(), Vector3(-3, 3.05, 0)), Transform3D(Basis(), Vector3(3, 3.05, 0))]
@@ -610,10 +607,9 @@ class PowerRoomSpec:
 		return ShipLayout.EmergencyLightRole.ROOM_POOL
 	func emergency_fill_positions() -> Array[Vector3]:
 		var positions: Array[Vector3] = []
-		var mount_y := Pods.ROOM_CEILING_HEIGHT - 0.08
 		for x: float in [24.0, ShipLayout.POWER_CENTER_X, 30.0]:
-			for z: float in [-3.7, -7.7]:
-				positions.append(Vector3(x, mount_y - ShipLayout.EMERGENCY_FILL_CEILING_DROP, z))
+			for z: float in [ShipLayout.POWER_NEAR_Z - 0.2, ShipLayout.POWER_FAR_Z + 0.2]:
+				positions.append(Vector3(26.0 if x == ShipLayout.POWER_CENTER_X and z > ShipLayout.POWER_GENERATOR_CENTER.z else x, 2.5, z))
 		return positions
 	func data() -> Dictionary:
 		var result := super.data()

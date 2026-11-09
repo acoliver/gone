@@ -34,17 +34,17 @@ func test_bay_hatch_identity_selects_its_profile_even_when_fixture_order_changes
 		key.free()
 	lighting.free()
 
-func test_bay_and_power_fill_coordinates_preserve_the_authored_six_stations() -> void:
+func test_bay_and_power_wall_cages_use_layout_owned_clear_mounts() -> void:
 	var game := Game.new(91)
 	var bay_expected: Array[Vector3] = [
-		Vector3(-4, 2.5, -1.6), Vector3(-4, 2.5, 1.6),
-		Vector3(0, 2.5, -1.6), Vector3(0, 2.5, 1.6),
-		Vector3(4, 2.5, -1.6), Vector3(4, 2.5, 1.6),
+		Vector3(-4, 2.5, -3.8), Vector3(-4, 2.5, 3.8),
+		Vector3(0, 2.5, -3.8), Vector3(0, 2.5, 3.8),
+		Vector3(4, 2.5, -3.8), Vector3(4, 2.5, 3.8),
 	]
 	var power_expected: Array[Vector3] = [
-		Vector3(24, 2.5, -3.7), Vector3(24, 2.5, -7.7),
-		Vector3(27, 2.5, -3.7), Vector3(27, 2.5, -7.7),
-		Vector3(30, 2.5, -3.7), Vector3(30, 2.5, -7.7),
+		Vector3(24, 2.5, -1.9), Vector3(24, 2.5, -9.5),
+		Vector3(26, 2.5, -1.9), Vector3(27, 2.5, -9.5),
+		Vector3(30, 2.5, -1.9), Vector3(30, 2.5, -9.5),
 	]
 	var rooms: Array[Node3D] = [Lighting.build(game), PowerRoom.build(game)]
 	var positions := [game.layout.bay().emergency_fill_positions(), game.layout.power_room().emergency_fill_positions()]
@@ -52,11 +52,11 @@ func test_bay_and_power_fill_coordinates_preserve_the_authored_six_stations() ->
 		var expected := bay_expected if index == 0 else power_expected
 		assert_int_equal(positions[index].size(), 6, "layout supplies all six final positions")
 		for station: int in range(expected.size()):
-			assert_vec3_equal(positions[index][station], expected[station], "layout preserves the fixed coordinate")
+			assert_vec3_equal(positions[index][station], expected[station], "layout fixes the wall coordinate")
 		var fills := rooms[index].find_children("EmergencyFill*", "OmniLight3D", true, false)
 		assert_int_equal(fills.size(), 6, "six existing fills per room")
 		for station: int in range(fills.size()):
-			assert_vec3_equal(fills[station].position, expected[station], "unchanged final fill coordinate")
+			assert_vec3_equal(fills[station].position, expected[station], "source follows its layout-owned wall mount")
 		rooms[index].free()
 
 func test_smoke_shader_requires_an_explicit_emission_binding_without_a_palette_default() -> void:

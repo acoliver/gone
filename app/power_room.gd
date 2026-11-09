@@ -270,9 +270,9 @@ static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 	for station_x: float in REGULAR_STATIONS_X:
 		for station_z: float in REGULAR_STATIONS_Z:
 			room.add_child(room._white_fixture(station_x, station_z, white_level))
-			var fill := Lighting.pendant_fill(fill_positions[room._fill_lights.size()], level, Lighting.POWER_FILL_MASK)
+			var fill := Lighting.emergency_fill(fill_positions[room._fill_lights.size()], level, Lighting.POWER_FILL_MASK, Lighting.EMERGENCY_POWER_WALL_SHARE)
 			fill.name = "EmergencyFill%d" % room._fill_lights.size()
-			FixtureEmitter.suspended(fill, ROOM_CEILING, Surfaces.surface_frame(game.layout, ShipLayout.POWER_ID, &"CEILING"), "emergency", fill.lens_material)
+			FixtureEmitter.wall_source(fill, Surfaces.surface_frame(game.layout, ShipLayout.POWER_ID, &"PORT" if fill.position.z < ShipLayout.POWER_GENERATOR_CENTER.z else &"STARBOARD"), "emergency", fill.lens_material, PI if fill.position.z < ShipLayout.POWER_GENERATOR_CENTER.z else 0.0)
 			room.add_child(fill)
 			room._fill_lights.append(fill)
 
@@ -433,7 +433,6 @@ func _fixture(position: Vector3, level: float) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "PowerFixture"
 	fixture.position = position
-	DressingMounts.ceiling_stem(fixture, ROOM_CEILING, Surfaces.surface_frame(_game.layout, ShipLayout.POWER_ID, &"CEILING"))
 	var light := Lighting.switched_key(_game.layout.power_room().emergency_light_role(), level)
 	fixture.add_child(light)
 	var yaw := -PI / 2 if is_equal_approx(position.x, ROOM_START_X + FIXTURE_STANDOFF) else (PI / 2 if is_equal_approx(position.x, ROOM_END_X - FIXTURE_STANDOFF) else PI)

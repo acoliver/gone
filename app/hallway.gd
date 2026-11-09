@@ -210,9 +210,9 @@ static func build(game: Game) -> Hallway:
 		hallway.add_child(fixture)
 	var section := game.layout.section(&"D14-S-041")
 	for position: Vector3 in section.emergency_fill_positions():
-		var fill := Lighting.pendant_fill(position, level, Lighting.HALL_FILL_MASK)
+		var fill := Lighting.emergency_fill(position, level, Lighting.HALL_FILL_MASK, Lighting.EMERGENCY_HALL_WALL_SHARES[hallway._fill_lights.size()])
 		fill.name = "EmergencyFill%d" % hallway._fill_lights.size()
-		FixtureEmitter.suspended(fill, HALL_CEILING_HEIGHT, Surfaces.surface_frame(game.layout, &"D14-S-041", &"CEILING"), "emergency", fill.lens_material)
+		FixtureEmitter.wall_source(fill, Surfaces.surface_frame(game.layout, &"D14-S-041", &"PORT" if position.z < 0 else &"STARBOARD"), "emergency", fill.lens_material, PI if position.z < 0 else 0.0)
 		hallway.add_child(fill)
 		hallway._fill_lights.append(fill)
 	var bounce := Lighting.emergency_fill(section.emergency_end_fill_position(), level, Lighting.HALL_FILL_MASK, Lighting.EMERGENCY_END_FILL_SHARE, Lighting.EMERGENCY_END_FILL_COLOR)
@@ -243,7 +243,6 @@ func _fixture(fixture_transform: Transform3D, level: float) -> Node3D:
 	fixture.transform = fixture_transform
 	var light := Lighting.switched_key(_game.layout.section(&"D14-S-041").emergency_light_role(), level)
 	fixture.add_child(light)
-	DressingMounts.ceiling_stem(fixture, _game.layout.section(&"D14-S-041").bounds().end.y, Surfaces.surface_frame(_game.layout, &"D14-S-041", &"CEILING"))
 	var lens := FixtureEmitter.cage(fixture, 1, Surfaces.surface_frame(_game.layout, &"D14-S-041", &"CEILING"), _lens_material, Basis(Vector3.UP, PI if fixture_transform.origin.z < 0 else 0.0))
 	FixtureEmitter.bind(light, lens, fixture.get_node("Steel"))
 	_lights.append(light)

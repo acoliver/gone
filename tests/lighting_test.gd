@@ -106,7 +106,7 @@ func test_lenses_share_rounded_glass_inside_weathered_cages() -> void:
 		assert_false(lens.get_parent() is OmniLight3D, "wall glass and key remain siblings")
 		assert_int_equal(lens.get_parent().get_child_count(), 3, "light, rounded glass and caged housing with integrated stock")
 		assert_true(lens.get_parent().get_child(0) is OmniLight3D, "key remains first child")
-		assert_true(lens.get_parent().get_node("Steel").has_meta(&"mount_bounds"), "integrated support reaches the structure")
+		assert_true(_wall_contact(lens.get_parent().get_node("Steel"), lighting._game.layout), "native hatch bracket reaches the wall")
 		assert_true(lens.get_parent().get_node("Steel") is MeshInstance3D, "rounded housing and protective grille are present")
 	var expected := Lighting.EMERGENCY_RED * Lighting.FIXTURE_EMISSIVE
 	expected.a = 1.0
@@ -119,7 +119,8 @@ func test_cage_and_its_mount_share_one_weathered_draw_surface() -> void:
 		var fixture := lens.get_parent()
 		var steel: MeshInstance3D = fixture.get_node("Steel")
 		assert_int_equal(steel.mesh.get_surface_count(), 1, "cage and stock share one draw surface")
-		assert_true(steel.has_meta(&"mount_bounds"), "combined housing preserves its physical support bounds")
+		assert_true(steel.mesh.has_meta(&"service_bounds"), "housing retains each wall fitting's physical bounds")
+		assert_true(_wall_contact(steel, lighting._game.layout), "one weathered draw includes the physical wall bracket")
 		assert_false(fixture.has_node("CeilingMount"), "stock is rendered in the housing, not a second draw")
 	lighting.free()
 
@@ -304,3 +305,7 @@ func test_reflections_refresh_once_after_power_handoff_or_blackout() -> void:
 			assert_int_equal(lighting.get_node("BayReflections").get_instance_id(), settled_id,
 				"steady lighting retains its reflection capture")
 		lighting.free()
+
+func _wall_contact(steel: MeshInstance3D, layout: ShipLayout) -> bool:
+	var mounting: SimTestCase = load("res://tests/light_mounting_test.gd").new()
+	return mounting._wall_contact(steel, mounting._walls(layout, 14), layout.bay_to_world())

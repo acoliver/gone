@@ -59,7 +59,7 @@ func test_hall_fill_placements_are_layout_owned_and_cover_both_ends() -> void:
 	assert_int_equal(fills.size(), 8, "seven neutral stations plus the warm end bounce")
 	if fills.size() == 8:
 		for index: int in range(7):
-			assert_true(fills[index].position.is_equal_approx(Vector3(7.5 + index * 3.0, 2.5, 0)), "neutral fill station")
+			assert_true(fills[index].position.is_equal_approx(Vector3(7.5 + index * 3.0, 2.36, 1.3 if index % 2 == 0 else -1.3)), "alternating wall station below the side conduit")
 		assert_true(fills[7].position.is_equal_approx(Vector3(29.1, 1.7, 1.3)), "end bounce in front of the hatch")
 	hall.free()
 
@@ -121,10 +121,12 @@ func _assert_fills(room: Node3D, count: int, level: float) -> void:
 	var fills := _fills(room)
 	assert_int_equal(fills.size(), count, "explicit switched-room fill inventory")
 	for fill: OmniLight3D in fills:
-		assert_true(fill.get_parent() == room, "room owns fill beside its key fixtures")
+		assert_true(fill.get_parent() == room, "room owns each practical beside its key fixtures")
+		assert_float_equal(fill.omni_range, 4.0, "wall practicals no longer need the pendant range compensation")
 		var end_bounce := room is Hallway and fill.name == "EmergencyFillEnd"
 		assert_true(fill.light_color == (Color(1.0, 0.80, 0.62) if end_bounce else Color(1.0, 0.97, 0.92)), "warm-neutral base and localized warm hatch bounce")
-		var share := 0.56 if room is Lighting else (0.84 if end_bounce else 0.28)
+		var station := int(String(fill.name).trim_prefix("EmergencyFill")) if not end_bounce else 0
+		var share: float = Lighting.EMERGENCY_BAY_WALL_SHARES[station] if room is Lighting else (0.84 if end_bounce else (Lighting.EMERGENCY_HALL_WALL_SHARES[station] if room is Hallway else Lighting.EMERGENCY_POWER_WALL_SHARE))
 		assert_true(is_equal_approx(fill.light_energy, Lighting.FIXTURE_ENERGY * share * level), "fill follows the emergency fade")
 		assert_int_equal(fill.light_cull_mask, _fill_mask(room), "fill uses only its room's reserved layer")
 

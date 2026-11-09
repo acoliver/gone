@@ -7,7 +7,6 @@ static var _glass_dirt: ImageTexture
 static var _glass_white_transmission: ImageTexture
 static var _glass_roughness: ImageTexture
 static var _glass_meshes: Dictionary[Mesh, ArrayMesh] = {}
-static var _pendant_mounts: Dictionary[float, ArrayMesh] = {}
 static var _housings: Dictionary[Mesh, ArrayMesh] = {}
 static var _service_housings: Dictionary[Mesh, ArrayMesh] = {}
 static var _mounted_housings: Dictionary = {}
@@ -69,8 +68,22 @@ static func cage(parent: Node3D, mask: int, surface: Surfaces.SurfaceFrame, mate
 		parent.add_child(piece)
 	lens.material_override = material
 	assembly.free()
-	if parent.has_node("CeilingMount"): combine_mount(parent)
 	return lens
+
+static func wall_bracket(parent: Node3D, surface: Surfaces.SurfaceFrame, rotation: Basis) -> void:
+	var bounds := surface.world_from_surface * surface.bounds
+	var direction := rotation * Vector3.BACK
+	var axis := 0 if absf(direction.x) > 0.5 else 2
+	var side := signf(direction[axis])
+	var reach := absf((bounds.position[axis] if side < 0 else bounds.end[axis]) - parent.position[axis])
+	if reach <= 0.32: return
+	var mount := MeshInstance3D.new()
+	mount.name = "WallMount"
+	mount.mesh = HatchModel.box_mesh(Vector3(0.045, 0.045, reach - 0.20))
+	mount.basis = rotation
+	mount.position = direction * (reach + 0.20) / 2
+	parent.add_child(mount)
+	combine_mount(parent, ^"WallMount")
 
 static func bind(light: Light3D, emitter: MeshInstance3D, housing: MeshInstance3D) -> void:
 	light.set_meta(&"fixture_emitter", emitter)
@@ -79,30 +92,6 @@ static func bind(light: Light3D, emitter: MeshInstance3D, housing: MeshInstance3
 static func seat(light: Light3D, emitter: MeshInstance3D, housing: MeshInstance3D) -> void:
 	light.position = Surfaces.world_frame(light.get_parent()).affine_inverse() * (Surfaces.world_frame(emitter) * emitter.mesh.get_aabb().get_center())
 	bind(light, emitter, housing)
-
-static func suspended(light: OmniLight3D, ceiling_y: float, surface: Surfaces.SurfaceFrame, circuit: String, material: StandardMaterial3D) -> void:
-	var lens := cage(light, light.light_cull_mask, surface, material, Basis(Vector3.RIGHT, -PI / 2))
-	lens.set_meta(&"lamp_circuit", circuit)
-	DressingMounts.ceiling_stem(light, ceiling_y, surface)
-	pendant_plate(light, ceiling_y)
-	combine_mount(light)
-	bind(light, lens, light.get_node("Steel"))
-
-static func pendant_plate(parent: Node3D, ceiling_y: float) -> void:
-	var mount: MeshInstance3D = parent.get_node("CeilingMount")
-	var height := ceiling_y - parent.position.y
-	if not _pendant_mounts.has(height):
-		var tool := SurfaceTool.new()
-		tool.begin(Mesh.PRIMITIVE_TRIANGLES)
-		tool.append_from(HatchModel.cylinder(0.015, height), 0, Transform3D(Basis.IDENTITY, Vector3(0, height / 2, 0)))
-		tool.append_from(HatchModel.box_mesh(Vector3(0.15, 0.012, 0.15)), 0, Transform3D(Basis.IDENTITY, Vector3(0, height - 0.006, 0)))
-		for x: float in [-0.055, 0.055]:
-			for z: float in [-0.055, 0.055]:
-				tool.append_from(HatchModel.cylinder(0.006, 0.008), 0, Transform3D(Basis.IDENTITY, Vector3(x, height - 0.014, z)))
-		tool.index()
-		_pendant_mounts[height] = tool.commit()
-	mount.mesh = _pendant_mounts[height]
-	mount.transform = Transform3D.IDENTITY
 
 static func beam(light: SpotLight3D, lens: MeshInstance3D, _surface: Surfaces.SurfaceFrame) -> void:
 	var housing: MeshInstance3D
@@ -122,9 +111,9 @@ static func wall_source(light: OmniLight3D, surface: Surfaces.SurfaceFrame, circ
 	lens.set_meta(&"lamp_circuit", circuit)
 	bind(light, lens, light.get_node("Steel"))
 
-static func combine_mount(parent: Node3D) -> void:
+static func combine_mount(parent: Node3D, mount_path: NodePath = ^"CeilingMount") -> void:
 	var steel: MeshInstance3D = parent.get_node("Steel")
-	var mount: MeshInstance3D = parent.get_node("CeilingMount")
+	var mount: MeshInstance3D = parent.get_node(mount_path)
 	var pose := steel.transform.affine_inverse() * mount.transform
 	var key := [steel.mesh, mount.mesh, pose]
 	if not _mounted_housings.has(key):
