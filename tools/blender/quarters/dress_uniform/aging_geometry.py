@@ -136,6 +136,8 @@ def pressed_sleeve(body):
     for index, point in zip(sleeve, pressed):
         rest.data[index].co = Vector(point)
     offsets = open_lip_rest(body, rest)
+    from pressed_pattern import released_cap_drop
+    body['cap_release_rest'] = json.dumps(released_cap_drop(body, rest, sleeve))
     # Structural springs take their lengths from the starting mesh, whereas
     # rest_shape_key supplies bending angles. Both must describe empty wool.
     basis = body.data.shape_keys.key_blocks[0]

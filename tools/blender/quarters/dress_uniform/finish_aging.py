@@ -25,6 +25,8 @@ def finish(out):
                         uv=np.array([[body.data.uv_layers[0].data[i].uv[:] for i in t.loops]
                                      for t in body.data.loop_triangles]))
     record = finish_cards(out, record)
+    from detail_clearance import seat_medal
+    record['finished_medal_seating'] = seat_medal(body, record['bindings']['Medal'])
     for obj in bpy.context.scene.objects:
         for modifier in list(obj.modifiers):
             if modifier.type == 'COLLISION':
@@ -41,6 +43,6 @@ def finish(out):
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--out', type=Path, default=ROOT / 'tmp/age/tunic7/source-damped')
+    p.add_argument('--out', type=Path, default=ROOT / 'tmp/age/tunic8/candidate')
     a = p.parse_args(sys.argv[sys.argv.index('--')+1:])
     finish(a.out.resolve())

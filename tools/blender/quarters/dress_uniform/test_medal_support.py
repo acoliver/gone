@@ -36,3 +36,15 @@ np.testing.assert_allclose(np.linalg.norm(points[:, None]-points[None, :], axis=
                            np.linalg.norm(original[:, None]-original[None, :], axis=2), atol=1e-7)
 assert not crossing_pairs(obj, body)
 print('PASS: rigid medal clears wool and all authored base anchors seat within 2 mm', first, final)
+
+obj.data.materials[0] = material('RibbonFabric', (.1, .1, .1))
+body.data.clear_geometry()
+body.data.from_pydata([(x, y*.05, z) for x, y, z in v], [], [face[::-1] for face in f])
+body.data.update()
+pair_offsets = points[4:]-points[:4]
+ribbon = seat_medal(body, binding)
+assert ribbon[0]['within_2mm'], ribbon
+after = np.array([vertex.co[:] for vertex in obj.data.vertices])
+np.testing.assert_allclose(after[4:]-after[:4], pair_offsets, atol=1e-7)
+assert not crossing_pairs(obj, body)
+print('PASS: flexible medal ribbon seats on wool while paired layers retain their thickness', ribbon)

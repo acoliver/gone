@@ -69,6 +69,7 @@ def prepare(out):
     record['pins'] = pins
     _, record['detail_patches'] = reinforce_and_bind(body)
     pressed_sleeve(body)
+    record['cap_release_rest'] = json.loads(body['cap_release_rest'])
     recalc(body)
     add_rest_carrier(body)
     from grid_clearance import resolve_grid_contacts
@@ -144,7 +145,7 @@ def bake_simulation(obj, mod, frames, settle=False):
     final_solver = dict(quality=mod.settings.quality, collision_quality=mod.collision_settings.collision_quality)
     frozen = bpy.data.meshes.new_from_object(evaluated, depsgraph=deps)
     for modifier in list(obj.modifiers):
-        if modifier == mod or modifier.type == 'SUBSURF':
+        if modifier == mod or modifier.type == 'SUBSURF' or modifier.name == '150 frame shoulder release':
             obj.modifiers.remove(modifier)
     obj.shape_key_clear()
     obj.data = frozen
@@ -258,11 +259,12 @@ def reduce_and_bake(out):
     record['heap_material'] = wool_material(mound, out / 'textures', color=(.19, .18, .16))
     dense_heap.hide_render = True
     dense_heap.hide_set(True)
-    from detail_clearance import seat_details, seat_sewn
+    from detail_clearance import seat_details, seat_sewn, seat_board_columns
     record['reduced_sewn_clearance'] = seat_sewn(bpy.data.objects['TunicBody'], record['bindings'])
     from reduced_clearance import clear_reduced
     from detail_clearance import seat_medal
     record['reduced_detail_clearance'] = seat_details(bpy.data.objects['TunicBody'], record['bindings'])
+    record['board_seating'] = seat_board_columns(bpy.data.objects['TunicBody'], record['bindings'])
     record['reduced_contacts'] = clear_reduced(bpy.data.objects['TunicBody'])
     insignia = {name: binding for name, binding in record['bindings'].items() if name.startswith('CollarInsignia')}
     record['cleared_insignia_fit'] = fit_details(bpy.data.objects['TunicBody'], insignia)
@@ -275,7 +277,7 @@ def reduce_and_bake(out):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--stage', choices=['prepare', 'simulate', 'bake', 'all'], default='all')
-    p.add_argument('--out', type=Path, default=ROOT / 'tmp/age/tunic7/source-damped')
+    p.add_argument('--out', type=Path, default=ROOT / 'tmp/age/tunic8/candidate')
     p.add_argument('--frames', type=int, default=2400)
     a = p.parse_args(sys.argv[sys.argv.index('--')+1:])
     a.out = a.out.resolve()

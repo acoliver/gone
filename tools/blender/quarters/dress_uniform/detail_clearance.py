@@ -138,6 +138,11 @@ def seat_sewn(body, bindings):
     return report
 
 
+def ribbon_vertices(obj):
+    return {i for polygon in obj.data.polygons
+            if obj.data.materials[polygon.material_index].name == 'RibbonFabric' for i in polygon.vertices}
+
+
 def seat_medal(body, binding):
     from attachment_metrics import base_indices
     from common import surface_tree
@@ -149,26 +154,38 @@ def seat_medal(body, binding):
     points = np.array([obj.matrix_world @ v.co for v in obj.data.vertices])
     tree = surface_tree(body)
     support = np.concatenate([triangles(body), triangles(bpy.data.objects['RibbonBar'])])
+    from mathutils.bvhtree import BVHTree
+    surface = BVHTree.FromPolygons(support.reshape(-1, 3).tolist(),
+                                   np.arange(support.size//3).reshape(-1, 3).tolist(), all_triangles=True)
+    ribbon = ribbon_vertices(obj)
     obj.data.calc_loop_triangles()
     reports = []
     for ids in binding['groups']:
         base = np.intersect1d(indices, ids)
-        hits = [tree.find_nearest(Vector(points[i])) for i in base]
-        target = np.array([hit[0][:] for hit in hits])
-        src = original[base]
-        u, _, vt = np.linalg.svd((src-src.mean(0)).T@(target-target.mean(0)))
-        if np.linalg.det(u@vt) < 0:
-            u[:, -1] *= -1
-        rotation = u@vt
-        points[ids] = (original[ids]-src.mean(0))@rotation+target.mean(0)
-        normal = np.array([0., -1., 0.])@rotation
-        group = set(ids)
-        faces = np.array([t.vertices[:] for t in obj.data.loop_triangles if set(t.vertices) <= group])
-        gap = continuous_gap(points[faces], support, normal)
-        points[ids] += normal*(.00025-gap)
+        if set(ids) <= ribbon:
+            hits = [surface.find_nearest(Vector(points[i])) for i in base]
+            target = np.array([hit[0]+hit[1]*.0005 for hit in hits])
+            pairs = np.linalg.norm(original[ids, None]-original[base], axis=2).argmin(1)
+            points[ids] += (target-points[base])[pairs]
+            method = 'flexible ribbon columns on reduced wool and ribbon bar'
+        else:
+            hits = [tree.find_nearest(Vector(points[i])) for i in base]
+            target = np.array([hit[0][:] for hit in hits])
+            src = original[base]
+            u, _, vt = np.linalg.svd((src-src.mean(0)).T@(target-target.mean(0)))
+            if np.linalg.det(u@vt) < 0:
+                u[:, -1] *= -1
+            rotation = u@vt
+            points[ids] = (original[ids]-src.mean(0))@rotation+target.mean(0)
+            normal = np.array([0., -1., 0.])@rotation
+            group = set(ids)
+            faces = np.array([t.vertices[:] for t in obj.data.loop_triangles if set(t.vertices) <= group])
+            gap = continuous_gap(points[faces], support, normal)
+            points[ids] += normal*(.00025-gap)
+            method = 'rigid metal base on continuous reduced support'
         distances = [tree.find_nearest(Vector(points[i]))[3] for i in base]
         reports.append(dict(minimum_base_distance_m=min(distances), maximum_base_distance_m=max(distances),
-                            within_2mm=max(distances) <= .002))
+                            within_2mm=max(distances) <= .002, method=method))
     inverse = obj.matrix_world.inverted()
     for vertex, point in zip(obj.data.vertices, points):
         vertex.co = inverse @ Vector(point)
@@ -177,7 +194,7 @@ def seat_medal(body, binding):
 
 
 def press_medal_support(body, binding):
-    """Keep the reinforced wool under rigid medal bases locally planar."""
+    """Keep the shared backing under medal bases and ribbon bar locally planar."""
     from attachment_metrics import base_indices, rigid_normal
     import json
 
@@ -187,12 +204,17 @@ def press_medal_support(body, binding):
     points = np.array([obj.matrix_world @ v.co for v in obj.data.vertices])
     vertices = np.array([body.matrix_world @ v.co for v in body.data.vertices])
     initial = vertices.copy()
+    ribbon = ribbon_vertices(obj)
     for ids in binding['groups']:
         base = np.intersect1d(bases, ids)
         local = np.flatnonzero(np.isin(ids, base))
         normal = rigid_normal(original[ids], points[ids], local, np.array([0., -1., 0.]))
         transverse = np.linalg.svd(np.array([normal]))[2][1:]
-        footprint = np.einsum('ij,kj->ik', points[base], transverse)
+        backing = points[base]
+        if set(ids) <= ribbon:
+            bar = bpy.data.objects['RibbonBar']
+            backing = np.vstack([backing, [bar.matrix_world @ v.co for v in bar.data.vertices]])
+        footprint = np.einsum('ij,kj->ik', backing, transverse)
         xy = np.einsum('ij,kj->ik', vertices, transverse)
         outside = np.maximum(footprint.min(0)-xy, xy-footprint.max(0)).clip(0).max(1)
         weight = np.clip(1-outside/.010, 0, 1)
@@ -211,25 +233,74 @@ def press_medal_support(body, binding):
 
 def fit_boards(body, bindings):
     """Interfacing keeps a shoulder board coherent across a failed wool seam."""
-    from aging_support import follow_points
-
     report = {}
     for name in ('ShoulderBoard_L', 'ShoulderBoard_R'):
         binding = bindings[name]
         original = np.asarray(binding['original'])
-        destination = follow_points(body, binding['entries'])
-        a, b = original.mean(0), destination.mean(0)
-        u, _, vt = np.linalg.svd((original-a).T@(destination-b))
-        if np.linalg.det(u@vt) < 0:
-            u[:, -1] *= -1
-        rotation = u@vt
-        points = (original-a)@rotation+b
+        vertices = np.array([body.matrix_world @ v.co for v in body.data.vertices])
+        patches = np.array([vertices[list(entry['triangle'])] for entry in binding['entries']])
+        destination = np.array([np.asarray(entry['weights'])@triangle
+                                for entry, triangle in zip(binding['entries'], patches)])
+        normal = np.cross(patches[:, 1]-patches[:, 0], patches[:, 2]-patches[:, 0])
+        normal = (normal/np.linalg.norm(normal, axis=1)[:, None]).mean(0)
+        normal /= np.linalg.norm(normal)
+        a = original.mean(0)
+        axes = np.linalg.svd(original-a)[2]
+        source_long = axes[0]*np.sign(axes[0, 0])
+        source_normal = axes[2]*np.sign(axes[2, 2])
+        order = np.argsort((original-a)@source_long)
+        span = destination[order[-20:]].mean(0)-destination[order[:20]].mean(0)
+        span -= normal*(span@normal)
+        span /= np.linalg.norm(span)
+        source_frame = np.array([source_long, np.cross(source_normal, source_long), source_normal])
+        target_frame = np.array([span, np.cross(normal, span), normal])
+        rotation = source_frame.T@target_frame
+        points = ((original-a)@rotation+destination.mean(0)+normal*.0005+[0., 0., -.02]
+                  if name == 'ShoulderBoard_L' else original+[.01, 0., 0.])
         obj = bpy.data.objects[name]
         inverse = obj.matrix_world.inverted()
         for vertex, point in zip(obj.data.vertices, points):
             vertex.co = inverse @ Vector(point)
         recalc(obj)
         binding['rigid'] = True
-        report[name] = dict(method='coherent source interfacing fitted to its front sewn ply',
+        report[name] = dict(method=('released board follows front ply, with 20 mm downward slip' if name == 'ShoulderBoard_L'
+                                    else 'retained source frame, with 10 mm inward seating'),
                             original_curvature_preserved=True)
+    return report
+
+
+def seat_board_columns(body, bindings):
+    """Bend board facings onto wool without changing their transverse ordering."""
+    from common import surface_tree
+    tree = surface_tree(body)
+    report = {}
+    for name in ('ShoulderBoard_L', 'ShoulderBoard_R'):
+        obj = bpy.data.objects[name]
+        original = np.asarray(bindings[name]['original'])
+        points = np.array([obj.matrix_world @ v.co for v in obj.data.vertices])
+        count = len(points)//2
+        if len(points) != count*2:
+            raise ValueError(f'{name}: expected paired board facings')
+        u, _, vt = np.linalg.svd((original-original.mean(0)).T@(points-points.mean(0)))
+        if np.linalg.det(u@vt) < 0:
+            u[:, -1] *= -1
+        normal = np.array([0., 0., 1.])@(u@vt)
+        before = points.copy()
+        if name == 'ShoulderBoard_R':
+            radius = .0095
+            for i in range(count):
+                points[[i, i+count], 1] += radius*np.sin(points[i, 1]/radius)-points[i, 1]
+        for i in range(count):
+            hit, _, _, _ = tree.ray_cast(Vector(points[i]+normal*.15), Vector(-normal), .3)
+            if hit is None:
+                raise ValueError(f'{name}: board column {i} at {points[i]} has no wool backing')
+            displacement = normal*(np.dot(np.asarray(hit)-points[i], normal)+.0005)
+            points[[i, i+count]] += displacement
+        inverse = obj.matrix_world.inverted()
+        for vertex, point in zip(obj.data.vertices, points):
+            vertex.co = inverse @ Vector(point)
+        recalc(obj)
+        report[name] = dict(method='paired normal-ray columns; fixed transverse parameterization',
+                            maximum_motion_m=float(np.linalg.norm(points-before, axis=1).max()),
+                            base_clearance_m=.0005)
     return report

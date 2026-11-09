@@ -10,6 +10,7 @@ from aging_support import load_source, configure_detail_stiffness
 from cloth_stage import configure
 from slow_wool import MASS_SCALE, slow_wool, release_pins
 from rest_carrier import add_rest_carrier
+from age_tunic import bake_simulation
 
 body = load_source()
 add_rest_carrier(body)
@@ -44,3 +45,15 @@ for frame, expected in ((1, 1.), (76, .5), (151, 0.)):
     permanent = next(g.weight for g in evaluated.data.vertices[0].groups if g.group == pins)
     np.testing.assert_allclose(permanent, 1.)
 print('PASS: all springs and mass co-scale; temporary holds release across 150 frames; permanent holds stay')
+
+body = load_source()
+count = len(body.data.vertices)
+add_rest_carrier(body)
+mod = configure(body, dict(stiffness=500., shear=350., mass=.22, bending=.3, frames=6), count, {0: 1.})
+slow_wool(mod)
+release_pins(body, mod)
+body['slow_wool'] = True
+bake_simulation(body, mod, 6)
+assert not body.modifiers, 'The evaluated weight controller must not survive the frozen export mesh'
+assert len(body.data.vertices) > count
+print('PASS: freezing consumes cloth, rest carrier and evaluated pin-release controller')

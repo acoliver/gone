@@ -82,7 +82,9 @@ def clear_reduced(body):
 
 
 def compress_rim(obj, sheet_vertices):
-    initial, _, _ = surface(obj)
+    source = np.array([item.value for item in obj.data.attributes['Wool rim source'].data])
+    if not np.array_equal(source[:sheet_vertices], np.arange(sheet_vertices)):
+        raise ValueError('Solidify changed the retained sheet vertex block')
     history = []
     for _ in range(16):
         pairs = crossing_pairs(obj)
@@ -94,8 +96,12 @@ def compress_rim(obj, sheet_vertices):
         if not changed:
             break
         for index in changed:
-            # Solidify retains the original vertex block and appends its copy.
+            # Rim-only Solidify appends boundary copies, not a full second block.
             vertex = obj.data.vertices[index]
-            vertex.co = vertex.co.lerp(obj.data.vertices[index-sheet_vertices].co, .5)
+            base = obj.data.vertices[int(source[index])].co
+            offset = vertex.co-base
+            if offset.length > .0001:
+                vertex.co = base+offset.normalized()*max(.0001, offset.length*.5)
         recalc(obj)
-    return dict(history=history, remaining_crossings=len(crossing_pairs(obj)))
+    return dict(history=history, remaining_crossings=len(crossing_pairs(obj)),
+                minimum_compressed_thickness_m=.0001)

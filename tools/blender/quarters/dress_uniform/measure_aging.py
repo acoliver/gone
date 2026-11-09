@@ -199,7 +199,8 @@ def measure(out, images):
         wire_after = (after[:, :, 2] > 230) & (after[:, :, 0] < 20) & (after[:, :, 1] < 20)
         poke = int((cloth_before & wire_after & ~hull_mask).sum())
         put('G21', poke, poke == 0)
-    gates['pass'] = all(gates[key]['pass_gate'] for key in THRESHOLDS)
+    gates['nineteen_gates_pass'] = all(gates[key]['pass_gate'] for key in THRESHOLDS)
+    gates['pass'] = gates['nineteen_gates_pass'] and gates['armhole_opening']['pass_gap']
     (out / 'gates.json').write_text(json.dumps(gates, indent=2)+'\n')
     print(json.dumps(gates, indent=2))
     return gates
@@ -207,8 +208,8 @@ def measure(out, images):
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--out', type=Path, default=ROOT / 'tmp/age/tunic7/source-damped')
-    p.add_argument('--images', type=Path, default=ROOT / 'tmp/age/tunic7')
+    p.add_argument('--out', type=Path, default=ROOT / 'tmp/age/tunic8/candidate')
+    p.add_argument('--images', type=Path, default=ROOT / 'tmp/age/tunic8')
     a = p.parse_args()
     r = measure(a.out.resolve(), a.images.resolve())
     raise SystemExit(0 if r['pass'] else 1)

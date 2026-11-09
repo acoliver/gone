@@ -162,6 +162,8 @@ def rim_modifier(obj, blockers):
     rim_mat.name = 'WoolCutEdge'
     rim_mat.use_backface_culling = False
     obj.data.materials.append(rim_mat)
+    source = obj.data.attributes.new(name='Wool rim source', type='INT', domain='POINT')
+    source.data.foreach_set('value', np.arange(len(obj.data.vertices), dtype=np.int32))
     rim = obj.modifiers.new('Rim-only 3 mm wool', 'SOLIDIFY')
     rim.use_rim_only = True
     rim.thickness = .003
