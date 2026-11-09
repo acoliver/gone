@@ -633,6 +633,50 @@ The lit captures are `tmp/fit/sofa/cloth2/compare-hero.png`, `compare-detail.png
 
 The tunic now comes from Blender cloth simulation. The hand-modelled pilot rated 2/10: its waist was pinched, its sleeves were detached cylinders, and its collar and shoulders had visible voids. A sewn pattern lets gravity and fabric strain produce the hanging shape. The design remains `docs/art/quarters/sheets/dress_uniform/hero.png`; the filled Hunyuan torso is only a silhouette reference.
 
+### Tunic14: shoulder drape and fibre-card polish
+
+This pass retains the calibrated pigments, chest repair, extended hem strips and fibre heap from Tunic13. It changes only the torn shoulder and its attached fringe. The tall triangular flap came from the pass-12 free-edge lift, rather than a loose fringe card. The replacement lowers the tongue by 14 mm, lays it forward by 16 mm and outward by 10 mm, and gives it a 4 mm local roll with a 3 mm downturned tip. The opposite lip drops 14 mm and moves back 12 mm. A smooth pinned transition preserves the retained armhole stitches, shoulder-board seating and hanger support.
+
+Matched cards-off and cut-rim-off controls isolate the conspicuous dark dashes to the curved fibre cards. Reversing their shading-normal orientation did not fix the appearance and was rejected. Rounding atlas alpha changes edge softness but does not remove the dashes. The shoulder cards projected up to **8.408 mm** from their root lines; seam-allowance cards reached **6.009 mm**. Their projected height is now limited to **1.2 mm**, retaining root width and arclength coverage. Cards are reseated against the changed cloth. The thin shoulder cut rim follows the new sheet with 0.10 to 0.35 mm thickness; its intersections are checked rather than hidden. Fractional atlas alpha and parent-cloth fibre normals soften the remaining short fringe without changing any colour or alpha PNG bytes.
+
+The numerical comparison isolates 1,491 previously dark card pixels in the upper tear crop: cards-off must brighten them by more than ten sRGB levels and the original mean RGB must be below 70. Shorter cards brighten **1,254 of those pixels (84.105%)** by more than ten levels; nine darken by that amount. Their mean RGB changes from **55.698, 59.532, 61.710** to **76.161, 81.064, 82.109**. This measures the removed dark-card footprint, not the brightness of the garment as a whole. The broad dark opening beneath the torn cloth remains intentional. The image-comparer confirms that the tall shard is gone and the free cloth droops. Its tighter fibre comparison finds the conspicuous dark dashes removed, with short lighter fuzz remaining. It still notes a somewhat decal-like fringe transition; this is a visual qualification, not a claim of matching every detail in the target.
+
+All thresholds remain unchanged. G3 and G6 retain Andrew's accepted pilot exceptions; they are still reported as failed. The exported candidate has the following measurements:
+
+| Gate | Measured | Result |
+| --- | --- | --- |
+| G1 visible sharp adjacency | 4.058853% | Pass, at most 6% |
+| G2 normal-jump pixels | 0.077591% | Pass, at most 2% |
+| G3 longest straight lip run | 35.014283 px | Accepted exception, at most 12 px required |
+| G4 visible tear-gap width CV | 0.726940 / 0.757397 / 0.985331 / 0.713087 / 0.447153 | Pass, each at least 0.35 |
+| G5 lip length lifted over 3 mm | 32.245909% | Pass, at least 30% |
+| G6 contour dimension | 0.993555 to 1.171888 | Accepted exception, each must be 1.15 to 1.40 |
+| G20 hanger-region sharp adjacency | 5.242668% | Pass, at most 10% |
+| G21 hanger leak pixels | 0 | Pass |
+| G22 sleeve depth / width | 0.425571 | Pass, at most 0.45 |
+| G23 retained armhole arc / released-edge fringe coverage | 36.004298% / 70.398494% | Pass, at least 35% / 70% |
+| G24 chest width / unaged | 1.014139 | Pass, 0.92 to 1.08 |
+| G25 open-hem fringe coverage | 82.121978% | Pass, at least 70% |
+| G26 hem-height autocorrelation peak | 0 | Pass, below 0.30 |
+| G27 heap height | 33.057582 mm | Pass, 15 to 35 mm |
+| G28 fallen pieces | 6 | Pass, at least 2 |
+| G29 inferred heap packing | 0.142769 | Pass, 0.05 to 0.15 |
+| G30 changed/new-part SAT crossings | 0 | Pass; unchanged hanger baseline remains 28 |
+| G31 triangles | 20,305 / 13,768 unaged, ratio 1.474797 | Pass, at most 1.5 |
+| G32 boundary Hausdorff | 0.623240 mm | Pass, at most 1.5 mm |
+| Armhole maximum clear opening | 41.958148 mm | Pass, at least 25 mm |
+| Independent attachment seating | Maximum base distance 1.800060 mm | Pass, at most 2 mm |
+
+#### Neutral-light wool comparison
+
+`tmp/age/tunic14/wool-neutral-swatch-sheet.png` places an actual rendered aged-chest crop beside the fixed target's wool crop at **(596, 496) to (645, 545)**. Both are 49 by 49 pixels, enlarged identically eightfold, with no exposure, colour or histogram correction. The candidate uses white light, exposure zero and the retained AgX view. The arithmetic mean RGB is **75.346, 80.793, 91.387** for the rendered chest and **101.081, 104.166, 111.483** for the target, in sRGB byte units. Their medians are **74, 80, 90** and **102, 106, 114** respectively. In this comparison the candidate is darker, with a larger blue-minus-red difference. No pigment changes follow from the pale-grey assessment.
+
+The target is a generated PNG with baked lighting and no recorded exposure or physical ruler. Its original lighting cannot be reproduced from those pixels. The rendered crop uses an approximate 1 mm per target pixel, recorded in `swatch/neutral-light.json`; both crops receive the same display sampling and no post-adjustment. This sheet does not establish a physically matched target relight. It also does not replace Tunic13's within-one-level calibration of flat displayed swatches.
+
+The requested locker-context composites are under `tmp/age/tunic14/`: `tunic-in-locker-before-after.png`, `tunic-in-locker-closeup.png`, `tunic-in-locker-heap.png` and `tunic-target-match.png`. `context/` retains the same cameras and lighting as Tunic13, including the 0.5 m shoulder camera. `controls/` contains matched full, cards-off, cut-rim-off and hard-alpha frames; `smooth-controls/` retains the longer-card controls used for diagnosis. `fibre-projection-comparison.png` and `fibre-projection-difference.json` record the card-length comparison. The swatch pixels and measured means are retained under `swatch/`.
+
+Rebuild with Blender `polish_pilot.py -- --out tmp/age/tunic14/short-fibres --edge-normals --soft-shoulder`, starting from `tmp/age/tunic13/blue` and the retained rest-pattern source. `test_shoulder_drape.py` tests the supported root, roll and tip; Blender `test_shoulder_fibres.py` tests exact fibre roots, width, topology and unaffected vertices. `test_shoulder_export.py --out tmp/age/tunic14/short-fibres --baseline <Tunic13 GLB>` checks names, pivots, unchanged pigment/alpha bytes, shoulder-only geometry, unchanged gate thresholds, seating, external Y-up bounds and byte-identical re-export. OCR review is skipped per Andrew 2026-10-09. This pass changes no application code, game tests or shared aging helpers and makes no new Godot integration claim.
+
 ### Tunic13: exported pilot, with two accepted geometry limitations
 
 The delivered aged asset is `assets/props/quarters/dress_uniform_aged.glb`, with packed editable source `tools/blender/quarters/dress_uniform/tunic-pilot.blend` and its PNG textures under `assets/props/quarters/dress_uniform/`. The as-built navy/bright-brass GLB is byte-for-byte unchanged. This finish retains pass-12 geometry except two free hem tongues and their attached fringe. The ship has been adrift about **1000 years**.
