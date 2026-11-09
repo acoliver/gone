@@ -135,7 +135,8 @@ def finish(base, out, rest, edge_normals=False, soft_shoulder=False):
     report = drape(bpy.data.objects['TunicBody'], sheet, sample)
     delta = sheet['vertices']-original['vertices']
     report['fringe_root_motion'] = move_fringe(original, delta)
-    from fringe_drape import measure_root_coverage, seat_cards
+    from fringe_drape import measure_root_coverage, seat_cards, shorten_shoulder_cards
+    report['shoulder_fibre_projection'] = shorten_shoulder_cards(report['fringe_root_motion'])
     report['fringe_seating'] = seat_cards(sheet, report['fringe_root_motion'])
     report['fringe_coverage'] = measure_root_coverage(bpy.data.objects['TunicBody'], report['fringe_root_motion'])
     for role, coverage in report['fringe_coverage'].items():

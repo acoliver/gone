@@ -8,6 +8,35 @@ from pilot_finish import card_groups
 from reduced_clearance import crossing_pairs
 
 
+def shorten_shoulder_cards(names, maximum=.0012):
+    report = {}
+    for name in names:
+        obj = bpy.data.objects[name]
+        lengths = []
+        for ids in card_groups(obj):
+            uv = {obj.data.loops[i].vertex_index: obj.data.uv_layers[0].data[i].uv.y
+                  for face in obj.data.polygons for i in face.loop_indices
+                  if obj.data.loops[i].vertex_index in ids}
+            roots = [i for i in ids if abs(uv[i]-min(uv.values())) < 1e-7]
+            centre = sum((obj.data.vertices[i].co for i in roots), Vector())/len(roots)
+            if centre.x < .14 or centre.z < -.35:
+                continue
+            tangent = max((obj.data.vertices[a].co-obj.data.vertices[b].co for a in roots for b in roots),
+                          key=lambda value: value.length).normalized()
+            offsets = {i: obj.data.vertices[i].co-centre for i in ids}
+            extent = max((offset-tangent*offset.dot(tangent)).length for offset in offsets.values())
+            scale = min(1., maximum/extent)
+            for index, offset in offsets.items():
+                if index not in roots:
+                    along = tangent*offset.dot(tangent)
+                    obj.data.vertices[index].co = centre+along+(offset-along)*scale
+            lengths.append(extent)
+        obj.data.update()
+        report[name] = dict(cards=len(lengths), previous_maximum_m=max(lengths),
+                            maximum_projection_m=maximum, root_vertices_unchanged=True)
+    return report
+
+
 def seat_cards(sheet, names):
     tree = BVHTree.FromPolygons(sheet['vertices'].tolist(), sheet['faces'].tolist(), all_triangles=True)
     report = {}
