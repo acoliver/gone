@@ -1,0 +1,67 @@
+{
+	"hardware_targets": {
+		"camera_offset": [
+			-0.35,
+			0.15,
+			0.8
+		],
+		"size_m": 0.35,
+		"storage_locker_module": [
+			-0.26,
+			1.25,
+			0.301
+		],
+		"wardrobe": [
+			0.5,
+			1.12,
+			0.34
+		]
+	},
+	"hero_pixels_per_metre": 320.0,
+	"lights": "white; ambient .55, omni 1.4 at (-.6,3,1.25), directional .35; linear tonemap",
+	"orthographic": true,
+	"views": {
+		"detail": {
+			"camera_up": "(0.0, 1.0, 0.0)",
+			"position": "(-1.4, 2.0, 2.4)",
+			"size_m": 0.55,
+			"target": "(-0.35, 1.85, 0.25)"
+		},
+		"front": {
+			"camera_up": "(0.0, 1.0, 0.0)",
+			"position": "(0.0, 1.2, 4.5)",
+			"size_m": 3.2,
+			"target": "(0.0, 1.2, 0.0)"
+		},
+		"hardware": {
+			"camera_up": "(0.0, 1.0, 0.0)",
+			"position": "(-0.61, 1.4, 1.101)",
+			"size_m": 0.35,
+			"target": "(-0.26, 1.25, 0.301)"
+		},
+		"hero": {
+			"camera_up": "(0.0, 1.0, 0.0)",
+			"position": "(-2.0, 2.6, 3.5)",
+			"size_m": 3.2,
+			"target": "(0.0, 1.2, 0.0)"
+		},
+		"roof": {
+			"camera_up": "(0.0, 0.0, -1.0)",
+			"position": "(0.0, 4.0, 0.0)",
+			"size_m": 1.15,
+			"target": "(0.0, 2.2, 0.0)"
+		},
+		"top": {
+			"camera_up": "(0.0, 1.0, 0.0)",
+			"position": "(-0.5, 3.7, 1.7)",
+			"size_m": 1.15,
+			"target": "(0.0, 2.18, 0.0)"
+		},
+		"trim": {
+			"camera_up": "(0.0, 1.0, 0.0)",
+			"position": "(0.0, 0.22, 1.4)",
+			"size_m": 1.2,
+			"target": "(0.0, 0.08, 0.33)"
+		}
+	}
+}
