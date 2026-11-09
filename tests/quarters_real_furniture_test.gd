@@ -3,6 +3,8 @@ extends SimTestCase
 const REPLACED := {
 	"wardrobe": "wardrobe", "bed": "bed", "desk_chair": "desk_chair",
 	"dining_table": "dining_table", "dining_chair_1": "dining_chair", "dining_chair_2": "dining_chair",
+	"desk": "desk", "console": "console", "bedside_l": "bedside", "bedside_r": "bedside",
+	"view_screen": "view_screen", "media_cabinet": "media_cabinet", "lockers_over_bed": "lockers_over_bed",
 }
 
 func test_accepted_furniture_uses_real_assets_in_both_states() -> void:
@@ -15,8 +17,8 @@ func test_accepted_furniture_uses_real_assets_in_both_states() -> void:
 			assert_true(asset != null, "accepted asset at " + id)
 			if asset != null:
 				assert_true(asset.scene_file_path == QuartersFurnishings.ROOT + REPLACED[id] + ".glb", "real imported GLB " + id)
-		for id: String in ["desk", "console", "view_screen", "media_cabinet", "bedside_l", "bedside_r"]:
-			assert_true(furnishings.has_node("Placement_%s/Standin_%s" % [id, id]), "unfinished furniture stays named " + id)
+		for item: Dictionary in QuartersInventory.small_items():
+			assert_true(furnishings.has_node("Standin_" + item.id), "unfinished small item stays named " + item.id)
 		assert_true(furnishings.has_node("Placement_bed/Standin_bed_soft/Mattress"), "soft stand-in remains explicit")
 		furnishings.free()
 
@@ -30,6 +32,9 @@ func test_real_furniture_matches_layout_footprints_facing_and_height() -> void:
 			continue
 		var expected := QuartersInventory.world_bounds(QuartersInventory.prop_bounds(prop))
 		if prop.id == "bed": expected.size.y = 1.1
+		if prop.id == "console":
+			var worktop := furnishings.get_node("Placement_desk/desk").find_child("Worktop", true, false) as MeshInstance3D
+			expected.position.y = (ShipScene._world_frame(worktop) * worktop.get_aabb()).end.y
 		var actual := QuartersFurnishings._bounds(asset)
 		assert_close(actual.position, expected.position, "asset minimum " + prop.id)
 		assert_close(actual.size, expected.size, "asset envelope " + prop.id)
@@ -82,7 +87,7 @@ func test_real_dining_chairs_clear_table_and_each_other() -> void:
 		furnishings.free()
 
 func test_interim_slot_materials_are_shared_and_state_specific() -> void:
-	for slot: StringName in [&"PaintedSteel", &"BareSteel", &"DarkSteel", &"Fabric", &"Wood", &"Display"]:
+	for slot: StringName in [&"PaintedSteel", &"BareSteel", &"DarkSteel", &"Fabric", &"Wood", &"Display", &"Glass"]:
 		var clean := QuartersProps.interim_material(slot, &"as_built")
 		var aged := QuartersProps.interim_material(slot, &"aged")
 		assert_true(clean == QuartersProps.interim_material(slot, &"as_built"), "clean slot cached")

@@ -14,6 +14,8 @@ func compile() -> void:
 	beats.back().quarters_view = "doorway"
 	beat("remembered-wide")
 	beats.back().quarters_view = "wide"
+	beat("remembered-console")
+	beats.back().quarters_view = "console"
 	_console_path()
 	look_at(QuartersLayout.console_frame().origin, -8)
 	press()
@@ -21,6 +23,7 @@ func compile() -> void:
 	beat("console-corruption")
 	hold(QuartersMemory.CORRUPT_TICKS)
 	beat("console-message")
+	beats.back().quarters_view = "console"
 	hold(QuartersMemory.MESSAGE_TICKS)
 	beat("console-fault")
 	hold(QuartersMemory.FAULT_TICKS)
@@ -30,6 +33,8 @@ func compile() -> void:
 	beats.back().quarters_view = "doorway"
 	beat("present-wide")
 	beats.back().quarters_view = "wide"
+	beat("present-console")
+	beats.back().quarters_view = "console"
 	walk_to(QuartersLayout.to_world(Vector3(4, 0.305, -0.6)))
 	walk_to(QuartersLayout.to_world(Vector3(4, 0.305, 0.6)))
 	assert(player.game.quarters.state == QuartersMemory.State.PRESENT, "re-entry remains present")

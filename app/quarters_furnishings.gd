@@ -6,6 +6,8 @@ static var _fits: Dictionary = {}
 const REAL_FURNITURE := {
 	"bed": "bed", "desk_chair": "desk_chair", "dining_table": "dining_table",
 	"dining_chair_1": "dining_chair", "dining_chair_2": "dining_chair",
+	"desk": "desk", "console": "console", "bedside_l": "bedside", "bedside_r": "bedside",
+	"view_screen": "view_screen", "media_cabinet": "media_cabinet", "lockers_over_bed": "lockers_over_bed",
 }
 
 static func build(state: StringName) -> Node3D:
@@ -35,10 +37,17 @@ static func build(state: StringName) -> Node3D:
 			if prop.id == "bed": _bed_soft(group, asset, bounds, finish)
 		elif prop.id == "headboard":
 			continue
-		elif prop.id.begins_with("storage_") or prop.id == "lockers_over_bed":
+		elif prop.id.begins_with("storage_"):
 			_storage(group, prop, bounds, state, finish)
 		else:
 			group.add_child(box("Standin_" + prop.id, bounds, finish))
+	# The plan's .76 m desk envelope includes a .06 m rear upstand.
+	# Seat the console on the accepted worktop, not on that raised lip.
+	var desk := root.get_node("Placement_desk/desk")
+	var top := desk.find_child("Worktop", true, false) as MeshInstance3D
+	var desktop := (ShipScene._world_frame(top) * top.get_aabb()).end.y
+	var console := root.get_node("Placement_console/console") as Node3D
+	console.position.y += desktop - _bounds(console).position.y
 	for item: Dictionary in QuartersInventory.small_items():
 		root.add_child(box("Standin_" + item.id, item.bounds, finish))
 	return root
@@ -101,7 +110,7 @@ static func _storage(group: Node3D, prop: Dictionary, bounds: AABB, state: Strin
 		else:
 			slot.position.z += index * 0.6
 			slot.size.z = 0.6
-		var locker: bool = prop.id == "lockers_over_bed" or prop.id in ["storage_left_near", "storage_right_near"]
+		var locker: bool = prop.id in ["storage_left_near", "storage_right_near"]
 		if prop.id == "storage_far_l": locker = index in [0, 2]
 		if prop.id == "storage_far_r": locker = index in [2, 3]
 		if prop.id == "storage_right_far": locker = index == count - 1

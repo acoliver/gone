@@ -30,18 +30,19 @@ Present.
 Increasing only the room's remembered keys makes the memory warm and brighter
 without changing corridor strips, other rooms, or exposure. Their shared-range
 ceiling keys also give an RGB-weighted light-energy contrast above 1.25:1.
-Batch-1 captures at unchanged exposure measure mean linear luminance of
+The earlier partial-batch captures at unchanged exposure measured mean linear luminance of
 0.153123 / 0.076009 for Remembered / Present at the doorway and
 0.139794 / 0.086268 for the wide view. Present is 49.6% and 61.7% of the
 corresponding remembered image; these image means include the changed finishes.
 Without the start option, play still begins in stasis. The aft ladder well
 reaches D16, where `D16-C-001-H-AFT` cranks open onto the quarters corridor.
 
-The real assets in both states are the locker modules, sofa, hanging tunic,
-wardrobe, bed frame with headboard, desk chair, dining table and two instances
-of the dining chair. The six furniture placements use the accepted batch-1
-GLBs. Their footprint, facing and height follow the layout; the bed asset
-includes the separate 1.10 m headboard. Its mattress, quilt and two pillows
+Both states now use all 11 accepted batch-1 furniture assets: wardrobe, bed
+frame with headboard, desk, console, desk chair, dining table, dining chair,
+bedside, view screen, media cabinet and over-bed lockers. The dining chair and
+bedside asset each appear twice. The existing locker modules, sofa and hanging
+tunic also remain real assets. Footprints and facing follow the layout; the
+bed asset includes the separate 1.10 m headboard. Its mattress, quilt and two pillows
 remain under `Standin_bed_soft`, with the mattress seated on the real platform.
 The redundant headboard box is gone. The wardrobe uses the documented room
 origin (7.675, 0, 3.6), room Y rotation -90 degrees and the exported 100-degree
@@ -56,12 +57,33 @@ and state, shared across all props and instances. Remembered painted steel
 uses the locker's as-built grey-green, sRGB (97, 118, 115)/255, with separate
 bare and dark steel. Present metal uses the ship's existing world-space
 weathered steel scans, without a prop bake or architectural panel seams.
-Fabric pads, wood and display slots have simple matching finishes. The pilot
-lockers, sofa and tunic retain their existing material paths.
+Fabric pads, wood, Display and Glass slots have simple matching finishes.
+The pilot lockers, sofa and tunic retain their existing material paths.
 
-Desk, console housing, view screen, media cabinet, bedside units, drawer/shelf
-modules, remaining small items and her dresses are still stand-ins. Their node
-names begin with `Standin_<id>`. Storage subslots add `_slot_<index>` or `_infill`.
+The console sequence now uses the imported `Display` mesh under `ScreenPlane`
+in both states. Its emissive finish, text and corruption blocks follow that
+sloped surface, replacing the separate demo quad. The interaction target and
+300-tick sequence are unchanged. The layout's 0.76 m desk envelope includes the
+rear upstand; the accepted desk's actual `Worktop` ends at 0.70 m. Placement
+measures that surface and seats the console base directly on it, retaining its
+0.69 m height and layout X/Z footprint. Mesh-pair checks cover the upstand and
+support as well as the worktop, with contact checked within 2 mm. The shared
+desk collider already covers that lower 60 mm, so no collider change is needed.
+
+Both bedside instances use their imported lamp and `LampLens`. Remembered
+lenses emit warm light, with the existing 0.35-energy lights seated 8 mm below
+the lenses. Present lenses do not emit and have no active bedside lights.
+The wall view screen is **off in both states**, including Remembered. Its
+separate Glass slot uses simple glossy alpha glass, roughness 0.07 and alpha
+0.10. The pod shader expects a vertex edge mask specific to the pod pane;
+applying it to this closed imported slab would need mesh changes. The wall
+screen starts at room Y 1.00 m; the real over-bed lockers start at 1.90 m.
+Tests cover shell, bed and mutual clearance in both states.
+
+Bed soft parts, storage drawer/shelf modules, leftover storage infill, small
+items and her dresses remain stand-ins. Their node names begin with
+`Standin_<id>`; bed soft parts are under `Standin_bed_soft`. Storage subslots
+add `_slot_<index>` or `_infill`.
 Locker tiles occupy complete 0.6 m slots inside the approved footprints;
 leftover widths remain stand-in infill. The footprint takes precedence where a
 module description suggests more tiles than will fit. Shared footprint
@@ -138,7 +160,8 @@ bands, without overlapping geometry. That stile now takes a matching-scale
 40 mm strip of the adjacent door paint, within its original padded atlas slot.
 The three pale floor spots are the sofa's authored `FineFloorPowder_SeatCushion_*`
 deposits, confirmed by a removal control. They remain beneath the sofa seats.
-The five current standard captures are under `tmp/demo4/`.
+The five current standard captures, two desk/console close-ups and the console
+message frame are under `tmp/demo5/`.
 
 D16's corridor now switches all eight red keys by their circuit metadata,
 not their display names, which Godot renames when siblings share a name. The
@@ -152,13 +175,16 @@ Regenerate the ordinary-input scenario and run its windowed capture lane with:
 
 ```sh
 godot --headless --path . -s tools/build_quarters_scenario.gd
-godot --headless --path . -s harness/run.gd -- scenarios/quarters-demo.json --out tmp/demo4/routes/quarters-demo
+godot --headless --path . -s harness/run.gd -- scenarios/quarters-demo.json --out tmp/demo5/routes/quarters-demo
 ```
 
-The harness writes eight beats and a report under the printed run directory.
-The five presentation captures are copied into `tmp/demo4/` as
+The harness writes ten beats and a report under the printed run directory.
+The five presentation captures are copied into `tmp/demo5/` as
 `corridor-door.png`, `remembered-doorway.png`, `remembered-wide.png`,
-`present-doorway.png` and `present-wide.png`.
+`present-doorway.png` and `present-wide.png`. The extra captures are
+`remembered-console.png`, `present-console.png` and `console-message.png`.
+The shared console close-up camera uses room-local (6.1, 1.6, 2.6), aimed at
+(7.65, 1.05, 2.0), with a 65-degree horizontal field.
 The doorway pair uses the exact camera in `layout.json`; the wider pair uses
 room-local position (0.75, 2.2, 0.10), aimed at (4.0, 1.15, 3.6), with a
 132-degree horizontal field. Frustum tests use the actual 1536 by 864 capture

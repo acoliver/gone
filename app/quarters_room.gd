@@ -35,25 +35,20 @@ static func build(game: Game) -> QuartersRoom:
 	return room
 
 func _screen(state: Node3D) -> void:
-	var screen := MeshInstance3D.new()
-	screen.name = "ConsoleScreen"
-	var quad := QuadMesh.new()
-	quad.size = Vector2(0.96, 0.48)
-	screen.mesh = quad
-	screen.transform = QuartersLayout.console_frame()
-	screen.position += Vector3(0.015, 0.38, 0)
-	var finish := StandardMaterial3D.new()
+	var console := state.get_node("Placement_console/console")
+	var screen := console.find_child("Display", true, false) as MeshInstance3D
+	var bounds := screen.get_aabb()
+	var finish := (QuartersProps.interim_material(&"Display", &"as_built" if state == remembered else &"aged") as StandardMaterial3D).duplicate() as StandardMaterial3D
 	finish.albedo_color = Color(0.05, 0.18, 0.24)
 	finish.emission_enabled = true
 	finish.emission = Color(0.12, 0.45, 0.62)
 	finish.emission_energy_multiplier = 0.8
 	screen.material_override = finish
-	state.add_child(screen)
 	screens.append(screen)
 	var label := Label3D.new()
 	label.name = "PlaceholderText"
-	label.position.z = 0.008
-	label.pixel_size = 0.0005
+	label.position = bounds.get_center() + Vector3(0, 0, bounds.size.z / 2 + 0.0007)
+	label.pixel_size = bounds.size.x / (64.0 * 20.0)
 	label.font_size = 32
 	label.outline_size = 0
 	label.modulate = Color(0.65, 0.85, 0.95)
@@ -62,13 +57,14 @@ func _screen(state: Node3D) -> void:
 	if state == remembered:
 		corruption = Node3D.new()
 		corruption.name = "CorruptedVideoBlocks"
+		corruption.position = bounds.get_center() + Vector3(0, 0, bounds.size.z / 2 + 0.0012)
 		screen.add_child(corruption)
 		for index: int in range(12):
 			var block := MeshInstance3D.new()
 			var mesh := QuadMesh.new()
-			mesh.size = Vector2(0.20, 0.085)
+			mesh.size = Vector2(bounds.size.x / 4.5, bounds.size.y / 4.0)
 			block.mesh = mesh
-			block.position = Vector3((index % 4 - 1.5) * 0.22, (index / 4 - 1) * 0.13, 0.012)
+			block.position = Vector3((index % 4 - 1.5) * bounds.size.x / 4.2, (index / 4 - 1) * bounds.size.y / 3.2, 0)
 			var material := StandardMaterial3D.new()
 			material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 			block.material_override = material
@@ -107,20 +103,17 @@ func _lights() -> void:
 				lamp.light_cull_mask = Lighting.QUARTERS_MASK
 				state.add_child(lamp)
 				if state == present: white_lights.append(lamp)
-	for x: float in [2.9, 5.1]:
-		for state: Node3D in [remembered, present]:
-			var finish := warm if state == remembered else StandardMaterial3D.new()
-			var lamp := QuartersFurnishings.box("Standin_bedside_lamp", AABB(Vector3(x - 0.06, 0.6, 5.69), Vector3(0.12, 0.22, 0.12)), finish)
-			lamp.layers = Lighting.QUARTERS_MASK
-			state.add_child(lamp)
+	for id: String in ["bedside_l", "bedside_r"]:
+		var asset := remembered.get_node("Placement_" + id + "/bedside")
+		var lens := asset.find_child("LampLens", true, false) as MeshInstance3D
 		var lamp := OmniLight3D.new()
 		lamp.name = "BedsideLamp"
-		lamp.position = QuartersLayout.to_world(Vector3(x, 0.85, 5.7))
+		lamp.position = lens.get_aabb().get_center() - Vector3(0, 0.008, 0)
 		lamp.light_color = Color(1.0, 0.64, 0.31)
 		lamp.light_energy = 0.35
 		lamp.omni_range = 2.0
 		lamp.light_cull_mask = Lighting.QUARTERS_MASK
-		remembered.add_child(lamp)
+		lens.add_child(lamp)
 
 static func _lens(color: Color) -> StandardMaterial3D:
 	var finish := StandardMaterial3D.new()

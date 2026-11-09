@@ -51,6 +51,11 @@ func test_harness_start_and_camera_options_are_scoped() -> void:
 	base.mode = "capture"
 	base.beats = [{"name": "view", "tick": 1, "quarters_view": "doorway"}]
 	assert_true(HarnessScenario.parse(JSON.stringify(base)).error == "", "approved capture view")
+	base.beats[0].quarters_view = "console"
+	assert_true(HarnessScenario.parse(JSON.stringify(base)).error == "", "desk close capture view")
+	base.beats[0].quarters_view = "missing"
+	assert_true(HarnessScenario.parse(JSON.stringify(base)).error != "", "unknown quarters camera rejected")
+	base.beats[0].quarters_view = "console"
 	base.start = "stasis"
 	assert_true(HarnessScenario.parse(JSON.stringify(base)).error != "", "quarters camera cannot alter existing start")
 

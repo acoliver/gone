@@ -117,11 +117,13 @@ static func _sofa_powder_material(state: StringName) -> ShaderMaterial:
 	return result
 
 static func apply(root: Node3D, prop: StringName, state: StringName) -> void:
-	if prop in [&"wardrobe", &"bed", &"desk_chair", &"dining_table", &"dining_chair"]:
+	if prop in [&"wardrobe", &"bed", &"desk_chair", &"dining_table", &"dining_chair", &"desk", &"console", &"bedside", &"view_screen", &"media_cabinet", &"lockers_over_bed"]:
 		for node: MeshInstance3D in root.find_children("*", "MeshInstance3D", true, false):
 			for surface: int in range(node.mesh.get_surface_count()):
 				var slot := StringName(node.mesh.surface_get_material(surface).resource_name)
 				node.set_surface_override_material(surface, interim_material(slot, state))
+			if prop == &"bedside" and node.name == &"LampLens":
+				node.material_override = bedside_lens(state)
 			if state == &"aged":
 				node.set_instance_shader_parameter(&"floor_datum", QuartersLayout.FLOOR_Y)
 				node.set_instance_shader_parameter(&"lateral_bounds", Vector4(41, 49, 1.7, 7.7))
@@ -234,7 +236,7 @@ static var _interim_materials: Dictionary = {}
 
 static func interim_material(slot: StringName, state: StringName) -> Material:
 	assert(STATES.has(state), "known interim finish state")
-	assert(slot in [&"PaintedSteel", &"BareSteel", &"DarkSteel", &"Fabric", &"Wood", &"Display"], "unknown furniture material slot: " + String(slot))
+	assert(slot in [&"PaintedSteel", &"BareSteel", &"DarkSteel", &"Fabric", &"Wood", &"Display", &"Glass"], "unknown furniture material slot: " + String(slot))
 	var identity := StringName("%s/%s" % [slot, state])
 	if _interim_materials.has(identity): return _interim_materials[identity]
 	var result: Material
@@ -252,9 +254,26 @@ static func interim_material(slot: StringName, state: StringName) -> Material:
 			&"Fabric": Color(0.18, 0.19, 0.20) if state == &"as_built" else Color(0.27, 0.25, 0.22),
 			&"Wood": Color(0.35, 0.22, 0.12) if state == &"as_built" else Color(0.20, 0.15, 0.10),
 			&"Display": Color(0.025, 0.055, 0.065),
+			&"Glass": Color(0.10, 0.12, 0.13, 0.10),
 		}[slot]
 		simple.roughness = 0.9 if state == &"aged" or slot in [&"Fabric", &"Wood"] else (0.35 if slot == &"BareSteel" else 0.45)
 		simple.metallic = 0.45 if slot in [&"BareSteel", &"DarkSteel"] else 0.02
+		if slot == &"Glass":
+			# The pod shader needs a mesh-specific vertex edge mask.
+			simple.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			simple.roughness = 0.07
 		result = simple
 	_interim_materials[identity] = result
 	return result
+
+static func bedside_lens(state: StringName) -> StandardMaterial3D:
+	var identity := StringName("bedside_lens/%s" % state)
+	if not _interim_materials.has(identity):
+		var finish := (interim_material(&"Display", state) as StandardMaterial3D).duplicate() as StandardMaterial3D
+		if state == &"as_built":
+			finish.albedo_color = Color(1.0, 0.69, 0.38)
+			finish.emission_enabled = true
+			finish.emission = finish.albedo_color
+			finish.emission_energy_multiplier = Lighting.REGULAR_EMISSIVE
+		_interim_materials[identity] = finish
+	return _interim_materials[identity]
