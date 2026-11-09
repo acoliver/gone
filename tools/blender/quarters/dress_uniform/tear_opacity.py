@@ -89,8 +89,7 @@ def wool_opacity(obj, out, size=2048, seed=9521):
         boundary = np.array([hit[0] for hit in nearest_lip])
         opaque = lip_opacity(distance, boundary, seed)
         if pass10:
-            from wear_pass10 import body_wear, ragged_erosion
-            opaque = distance >= ragged_erosion(boundary, seed)
+            from wear_pass10 import body_wear
             wear = body_wear(pattern)
             thinning[lo[1]:hi[1]+1, lo[0]:hi[0]+1][inside] = wear['thinning']
             worn_texels += int(wear['hole'].sum())
@@ -125,6 +124,7 @@ def wool_opacity(obj, out, size=2048, seed=9521):
         rgba = np.ones((size, size, 4), np.float32)
         rgba[:, :, :3] = thinning[:, :, None]
         wear_image = image_from_array('TunicStressThinning', rgba, out.with_name('tunic_thinning.png'), True)
+        wear_image.use_fake_user = True
         obj['pass10_thinning_image'] = wear_image.name
         report['stress_wear'] = dict(through_texels=worn_texels, thinning_texels=int((thinning > .1).sum()),
                                      holes='seven isolated fold/seam-aligned losses; no biological clusters')
@@ -141,8 +141,6 @@ def wool_opacity(obj, out, size=2048, seed=9521):
         jacobian = np.linalg.solve(edges, np.array([world[1]-world[0], world[2]-world[0]]))
         density.extend(np.linalg.svd(jacobian, compute_uv=False).tolist())
     report['hem_texel_m_quantiles'] = np.quantile(density, [0., .5, .95, 1.]).tolist()
-    if pass10:
-        report['pass10_lip_erosion_range_m'] = [.0002, .0065]
     report.update(distance_method='per-texel nearest physical lip, sampled at 0.25 mm; no vertex-distance interpolation',
                   grain_paths_m=[p.tolist() for p in paths], pattern_scale_m=pattern_scale.tolist(),
                   branch_length_m=.018,

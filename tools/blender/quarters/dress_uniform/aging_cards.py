@@ -237,8 +237,10 @@ def finish_cards(out, record):
     record['fringe'] = {}
     sheets = [body]+[bpy.data.objects[p['name']] for p in record['fallen']]
     from wool_material import wool_material
-    record['wool_materials'] = {sheet.name: wool_material(sheet, out / 'textures', opacity if sheet == body else None)
-                                for sheet in sheets}
+    record['wool_materials'] = {
+        sheet.name: wool_material(sheet, out / 'textures', opacity if sheet == body else None,
+                                  color=(.045, .061, .085) if 'pass10' in record and sheet != body else (.025, .043, .08))
+        for sheet in sheets}
     # Test placements against the actual rim geometry without losing the open
     # midsurface from which the cards and their UV categories are constructed.
     rim_proxies = []
@@ -310,7 +312,7 @@ def finish_cards(out, record):
         faces.append((i, i+1, i+2, i+3))
         variant = int(rng.integers(8))
         patterns.append([(0, variant/8), (1, variant/8), (1, (variant+1)/8), (0, (variant+1)/8)])
-        if len(faces) == 65:
+        if len(faces) == (50 if 'pass10' in record else 65):
             break
     fibre = new_object('HeapFibres', vertices, faces, fringe)
     for polygon, pattern in zip(fibre.data.polygons, patterns):

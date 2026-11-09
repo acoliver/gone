@@ -11,28 +11,24 @@ from mathutils import Vector
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from aging_support import ROOT
 from age_tunic import save_checkpoint
-from common import apply, recalc
+from common import recalc
 from polish_pass9 import vertex_pattern
 from wear_pass10 import finishing_displacement
 
 
-def deform(obj):
-    pattern = vertex_pattern(obj)
-    points = np.array([v.co[:] for v in obj.data.vertices])
+def deform(body):
+    pattern = vertex_pattern(body)
+    points = np.array([v.co[:] for v in body.data.vertices])
     delta = finishing_displacement(points, pattern)
-    for vertex, point in zip(obj.data.vertices, points+delta):
+    for vertex, point in zip(body.data.vertices, points+delta):
         vertex.co = point
-    recalc(obj)
+    recalc(body)
     return dict(maximum_motion_m=float(np.linalg.norm(delta, axis=1).max()),
                 maximum_rear_lip_opening_m=float(delta[:, 1].max()),
                 maximum_hem_deepening_m=float(delta[:, 2].max()))
 
 
 def bridge_roots(body):
-    from fringe_boundary import boundary_chains
-    from aging_cards import edge_groups
-    edge_groups(body)
-    chains = boundary_chains(body, 'Seam allowance')
     sleeve, torso = [], []
     uv = vertex_pattern(body)
     body.data.calc_loop_triangles()
@@ -52,7 +48,8 @@ def bridge_roots(body):
         inward -= tangent*(inward@tangent)
         inward /= np.linalg.norm(inward)
         entry = (a, b, inward)
-        if pattern[:, 0].min() > 1.09 and pattern[:, 0].max() < 1.56 and pattern[:, 1].max() < .001:
+        if (pattern[:, 0].min() > 1.09 and pattern[:, 0].max() < 1.56 and
+                pattern[:, 1].max() < .001 and edge.link_faces[0].normal.y < -.3):
             sleeve.append(entry)
         elif np.max(np.abs(pattern[:, 0]-.46)) < .003 and pattern[:, 1].min() > .66:
             torso.append(entry)
@@ -60,7 +57,7 @@ def bridge_roots(body):
     if not sleeve or not torso:
         raise ValueError('Pass-ten bridges require the existing body and sleeve armhole lips')
     roots = []
-    for height in [-.235, -.249, -.266, -.283, -.299]:
+    for height in [-.235, -.244, -.253, -.266, -.278, -.290]:
         candidates = []
         for a, b, inward in torso:
             t = np.clip((height-a[2])/(b[2]-a[2]), 0, 1) if abs(b[2]-a[2]) > 1e-9 else .5
@@ -73,7 +70,7 @@ def bridge_roots(body):
             q = a+(b-a)*t
             candidates.append((np.linalg.norm(p-q), q, inward))
         gap, q, other_inward = min(candidates, key=lambda item: item[0])
-        if .012 < gap < .050:
+        if .009 < gap < .055:
             p = p+own_inward*.007+np.array([0, -.0015, 0])
             q = q+other_inward*.007+np.array([0, -.0015, 0])
             roots.append([p.tolist(), q.tolist()])
@@ -81,23 +78,37 @@ def bridge_roots(body):
 
 
 def prepare(base, out):
-    from bake_down import boundary_hausdorff, material_maps
+    from bake_down import decimate, material_maps
     from cloth_metrics import lip_lift
+    from torn_allowance import add_allowances, ragged_shoulders
     from wool_material import wool_material
     bpy.ops.wm.open_mainfile(filepath=str(base/'baked.blend'))
     record = json.loads(bpy.context.scene['tunic5_record'])
     body = bpy.data.objects['TunicBody']
     report = dict(base=str(base.relative_to(ROOT)), age_years=1000, cloth=deform(body))
-    dense = bpy.data.objects['TunicBody_Dense']
-    report['dense_cloth'] = deform(dense)
-    record['reduction']['TunicBody']['boundary_hausdorff_upper_m'] = boundary_hausdorff(dense, body)
-    record['lip_lift'] = lip_lift(body)
+    report['shoulder'] = ragged_shoulders(body)
+    report['allowance'] = add_allowances(body)
+    bpy.data.objects.remove(bpy.data.objects['TunicBody_Dense'], do_unlink=True)
+    body.name = 'TunicBody_Dense'
     body['pass10_wear'] = True
+    keep = body.vertex_groups['Keep']
+    patch = body.vertex_groups['DetailPatch'].index
+    protected = [v.index for v in body.data.vertices if abs(v.co.x) < .035 or v.co.z > -.26 or
+                 any(g.group == patch and g.weight > .1 for g in v.groups)]
+    keep.add(protected, 1., 'REPLACE')
+    low, reduction = decimate(body, 10450, protect=.006, keep_factor=1000)
+    reduction['seated_support_protected_vertices'] = len(protected)
+    body['aged_export'] = False
+    body.hide_render = True
+    body.hide_set(True)
+    low.name = 'TunicBody'
+    low['aged_export'] = True
+    body = low
+    record['reduction']['TunicBody'] = reduction
+    report['reduction_reference'] = 'pass-nine game sheet with authored pass-ten folds, hem and connected allowances, before reduction'
+    record['lip_lift'] = lip_lift(body)
     report['bridge_roots'] = bridge_roots(body)
     mound = bpy.data.objects['FibreDust']
-    reduction = mound.modifiers.new('Budget for seam strands', 'DECIMATE')
-    reduction.ratio = .68
-    apply(mound, reduction)
     report['mound_triangles'] = len(mound.data.polygons)
     material_maps(mound.data.materials[0], (.34, .31, .26))
     record['heap_material'] = wool_material(mound, out/'textures', color=(.34, .31, .26))
@@ -109,22 +120,32 @@ def prepare(base, out):
 
 def finish_details(record):
     from card_contacts import CardContacts
+    from common import surface_tree
     from fabric_mesh import material, new_object
     objects = [o for o in bpy.context.scene.objects if o.type == 'MESH' and o.get('aged_export')]
     contacts = CardContacts(objects)
+    tree = surface_tree(bpy.data.objects['TunicBody'])
     vertices, faces = [], []
     accepted = []
     view = np.array([.3, -.9, .22])
+    view /= np.linalg.norm(view)
     for number, roots in enumerate(record['pass10']['bridge_roots']):
-        a, b = np.asarray(roots)
+        anchors = []
+        for root in roots:
+            hit, _, _, _ = tree.ray_cast(Vector(np.asarray(root)+view*.12), Vector(-view), .24)
+            if hit is not None:
+                anchors.append(np.asarray(hit)+view*.0008)
+        if len(anchors) != 2:
+            continue
+        a, b = anchors
         t = np.linspace(0, 1, 9)
         path = a[None]*(1-t[:, None])+b[None]*t[:, None]
-        path[:, 2] -= (.0025+number*.00035)*np.sin(np.pi*t)
-        path[:, 1] -= .002*np.sin(np.pi*t)
+        path[:, 2] -= (.0035+number*.00035)*np.sin(np.pi*t)
+        path += view[None]*.006*np.sin(np.pi*t[:, None])
         tangent = np.gradient(path, axis=0)
         sideways = np.cross(tangent, view)
         sideways /= np.linalg.norm(sideways, axis=1)[:, None]
-        width = (.00065+number*.00006)*(.8+.2*np.sin(np.pi*t))
+        width = (.00095+number*.00006)*(.8+.2*np.sin(np.pi*t))
         left, right = path-sideways*width[:, None]/2, path+sideways*width[:, None]/2
         quads = [[left[i], right[i], right[i+1], left[i+1]] for i in range(len(t)-1)]
         if not all(contacts.clear(quad) for quad in quads):
@@ -153,7 +174,7 @@ def finish_details(record):
     shader.inputs['Base Color'].default_value = (.39, .35, .29, 1)
     fibre.data.materials[0] = light_fibres
     return dict(surviving_yarns=len(accepted), attempted_yarns=len(record['pass10']['bridge_roots']),
-                accepted_roots=accepted, yarn_width_m=[.00065, .00089], collision_tested=True,
+                accepted_roots=accepted, yarn_width_m=[.00095, .00125], collision_tested=True,
                 dust_fibres_albedo_linear=[.39, .35, .29])
 
 

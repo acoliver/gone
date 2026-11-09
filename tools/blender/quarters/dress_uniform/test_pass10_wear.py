@@ -28,4 +28,11 @@ assert not wear['hole'][1:].all()
 assert not wear['hole'][-2:].any()
 assert np.all((wear['thinning'] >= 0) & (wear['thinning'] <= 1))
 np.testing.assert_array_equal(body_wear(uv)['hole'], wear['hole'])
-print('PASS: retained crest, separated rear shoulder lip, deeper hem, ragged erosion and sparse stress holes')
+placket = np.c_[np.zeros(100), np.full(100, -.08), np.linspace(-.86, -.38, 100)]
+np.testing.assert_array_equal(finishing_displacement(placket, np.tile([.23, .4], (100, 1))), np.zeros((100, 3)))
+for x in np.linspace(-.2, .2, 20):
+    height = np.linspace(-.90, -.70, 1000)
+    points = np.c_[np.full(1000, x), np.full(1000, -.08), height]
+    movement = finishing_displacement(points, np.tile([.3, .05], (1000, 1)))
+    assert np.all(np.diff(height+movement[:, 2]) > 0), 'Hem deformation must preserve height ordering'
+print('PASS: retained crest/placket, separated rear shoulder lip, monotone deeper hem and sparse stress holes')
