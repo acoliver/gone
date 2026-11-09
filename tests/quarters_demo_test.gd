@@ -55,16 +55,11 @@ func test_harness_start_and_camera_options_are_scoped() -> void:
 	assert_true(HarnessScenario.parse(JSON.stringify(base)).error != "", "quarters camera cannot alter existing start")
 
 func test_capture_camera_matches_approved_plan() -> void:
-	var root := Node3D.new()
-	var camera := Camera3D.new()
-	root.add_child(camera)
-	var tree: SceneTree = Engine.get_main_loop()
-	tree.root.add_child(root)
-	QuartersCapture.pose(camera, "doorway")
-	assert_close(camera.global_position, Vector3(45, -9.35, 1.85), "approved doorway eye")
-	assert_true((-camera.global_basis.z).dot((Vector3(45, -9.75, 7.7) - camera.global_position).normalized()) > 0.99999, "approved doorway aim")
-	assert_float_equal(camera.fov, 100, "approved horizontal field")
-	root.free()
+	var output: Array = []
+	var code := OS.execute(OS.get_executable_path(), ["--headless", "--path", ProjectSettings.globalize_path("res://"), "-s", "tests/quarters_camera_scene_checks.gd"], output, true)
+	var text := "".join(output)
+	assert_int_equal(code, 0, "approved camera scene check: " + text)
+	assert_true(text.contains("QUARTERS CAMERA PASS"), "scene check completed all camera assertions")
 
 func _player() -> Player:
 	var game := Game.new(114)

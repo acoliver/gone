@@ -1,5 +1,57 @@
 # Quarters art
 
+## Playable demo
+
+Issue [#114](https://github.com/acoliver/gone/issues/114) fixes the room on D16,
+starboard of section 42 at station offset 9. From the repository root, run:
+
+```sh
+godot --path . -- --start quarters
+```
+
+The player starts in the corridor facing the door, with secondary power active.
+Space operates the corridor-face manual release. Walk across the threshold to
+see Remembered, then use the desk console on the right. Its corruption blocks,
+message and fault text are placeholders under `decisions.md` ruling 16. The
+sequence lasts 300 logical ticks, then switches to Present. Re-entering keeps
+Present for the current play session. The regular white strips follow secondary
+power; the bedside lamps are dead in Present, and the console stays lit.
+Without the start option, play still begins in stasis. The aft ladder well
+reaches D16, where `D16-C-001-H-AFT` cranks open onto the quarters corridor.
+
+The locker modules, sofa and hanging tunic are the real pilot assets. Their
+Remembered and Present finishes use `QuartersProps`; the aged sofa and tunic
+keep their fitted clean-source placements. The wardrobe carcass, its open door,
+drawer banks, shelves, other furniture and small items are plain stand-ins.
+Their node names begin with `Standin_<id>`. Storage subslots add `_slot_<index>`
+or `_infill`. Locker tiles occupy complete 0.6 m slots inside the approved
+footprints; leftover widths remain stand-in infill. The footprint takes
+precedence where a module description suggests more tiles than will fit.
+Small items without dimensions in the plan use 0.10 by 0.08 by 0.10 m tabletop
+boxes; boots use a 0.28 by 0.25 by 0.24 m floor box. Those dimensions are demo
+stand-ins, not new art specifications.
+
+`QuartersLayout` maps a room-local point (x, y, z) to ship coordinates
+(49 - x, -11 + y, 1.7 + z). Both state roots and their single shared collider
+list use the same approved placements. The interior is 8 by 6 m, with 3.2 m
+clear height and 0.2 m shell walls. Capsule and walkway tests cover the paths
+to the plan's reach targets.
+
+Regenerate the ordinary-input scenario and run its windowed capture lane with:
+
+```sh
+godot --headless --path . -s tools/build_quarters_scenario.gd
+godot --headless --path . -s harness/run.gd -- scenarios/quarters-demo.json --out tmp/demo/quarters-capture
+```
+
+The harness writes eight beats and a report under the printed run directory.
+The doorway pair uses the exact camera in `layout.json`; the wider pair uses
+an elevated camera inside the room. Capture cameras do not move the player.
+The scenario opens the door, walks around furniture, uses the console and
+walks out and back in. The separate `d16_route_test.gd` follows ordinary input
+from the D14 stasis start through the aft well to this door. Run the full suite
+with `godot --headless --path . -s tests/run_tests.gd`.
+
 ## Plan view
 
 Regenerate `plan.png` and its check report from the repository root with `/Volumes/XS1000/tools/mlximg-venv/bin/python tools/art/quarters_plan.py --layout docs/art/quarters/layout.json --out docs/art/quarters/plan.png --report docs/art/quarters/plan-checks.json`. The checks cover room bounds, intersecting floor footprints, player reachability and route clearance, entrance-wall storage, and the clear doorway opening. The command exits with a nonzero status when a check fails.

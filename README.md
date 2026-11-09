@@ -5,8 +5,8 @@ starship. You wake in a stasis pod in a red-lit room, climb out, cross the
 floor on unsteady legs, pick up a dropped metal rod, and pry the only door
 open into a pitch-dark hallway whose red emergency lights wait behind a
 switch beside the doorway. This
-repository currently implements that opening beat plus the hallway
-crossing, which is milestone 1 of the design;
+repository implements that opening, the hallway and secondary-power room,
+the ladder wells, and a playable D16 quarters demo;
 the long-form plan is survival through repair, with the ship's systems as
 both the puzzle and the story. Read
 [docs/design/concept.md](docs/design/concept.md) for the design pillars and

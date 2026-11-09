@@ -17,7 +17,7 @@ Status: in progress. Layout approved 2026-11-07; stage 1 (contact sheets) is nex
   There are no windows and no books or paper.
 - **Two states:** he enters, sees the room as he remembers it, and looks up from the console into the present.
 - **Age:** about a thousand years in sealed, sterile, oxygenated air (ruling 25 in [`decisions.md`](../../design/decisions.md), #93/#94).
-- **Location:** not fixed. Andrew is thinking about two decks below the opening, which would make it D16. That deck band (D13–16) already lists proposed awake-crew quarters in the [ship atlas notes](../ship/README.md). Both ladder wells reach every deck, so D16 is reachable without new geometry rules. The room design below does not depend on the deck.
+- **Location:** fixed by [issue #114](https://github.com/acoliver/gone/issues/114). The quarters occupy the starboard side of D16 section 42, behind the station-offset-9 door at X 45. The aft ladder well and the cranked D16 aft connector hatch provide the route. This supersedes the D14 placement in the puzzle-progression proposal.
 - **Method:**
   - No prop is modelled by hand or built from primitives in Blender or Godot.
   - Every prop starts as a contact sheet of generated images. The local Hunyuan3D install turns it into a mesh, and the mesh is then fitted and adjusted, following the `concept-to-3d-asset` skill.
@@ -226,7 +226,20 @@ All of these also get matching roughness and normal changes.
 
 ## Stage 4: room assembly and the two states
 
-1. **Build the room shell.** Build it at the agreed location from `layout.json`, with the clean and aged surface sets.
+Issue #114 puts the playable demo before the remaining asset batches. It uses the
+locker, sofa and tunic pilots as they are, including their recorded limits. Every
+other inventory entry has a plain stand-in. Replace those stand-ins with finished
+props in later batches without changing the approved placements.
+
+`QuartersInventory` reads `layout.json` once for both state roots and collision.
+`QuartersLayout` owns the room-local to world mapping. Missing props and small
+items use `Standin_<id>` names. Mixed storage slots add `_slot_<index>` or
+`_infill` to that prefix. A `Placement_<id>` group keeps each main prop's place in
+both states. The wardrobe carcass and its open door are stand-ins; the hanging
+tunic and its aged fragments are pilot meshes.
+
+
+1. **Build the room shell.** The demo uses the shared room geometry and weathered-steel surfaces at D16, with the interior at X 41..49, Y -11..-7.8, Z 1.7..7.7.
 2. **Place the props.** Place every prop twice under two roots, Remembered and Present, sharing one set of transforms. The transition hides one root and shows the other in the same frame.
 3. **Light both states.**
    - **Remembered:** warm and bright, with the bedside lamps on.
@@ -235,10 +248,11 @@ All of these also get matching roughness and normal changes.
 4. **Add colliders and interactions.**
    - Colliders cover the furniture.
    - The console is the video-message trigger.
-   - The badge sits somewhere in the room.
+   - The badge remains a later gameplay prop and is outside #114.
    - Entry follows puzzle-progression P03: a manual release or the local circuit, never the badge inside.
 
-   These are gameplay slices (puzzle progression "Slice B") with their own issues.
+   Issue #114 implements the manual release and placeholder console sequence.
+   The badge and finished message content remain later gameplay work.
 5. **Verify.**
    - Doorway captures in both states, matched to the concept camera, reviewed against `concept-pair.png`.
    - Perf runs under the unchanged policy.
@@ -253,9 +267,9 @@ Each step gets its own issue under #95 and goes to PRs on issue branches.
 3. Pilot meshes through stage 2, with hatch-method masks and the "as built" end of the weathered-steel range. This step waits for the branch-1 steel and hatch work to merge.
 4. Aging toolkit v1 on the three pilot props.
 5. Pilot review with Andrew: unaged and aged, side by side in the doorway capture.
-6. Remaining inventory in batches, by material class: hard steel, then soft goods, then garments and small items.
-7. Room shell, clean and aged surface sets, and assembly in both states.
-8. Gameplay slice (entry, console video, badge) with the puzzle-progression work.
+6. Playable D16 demo in #114: room shell, both states, manual release and placeholder console sequence, using the three pilots and named stand-ins.
+7. Remaining inventory in batches, by material class: hard steel, then soft goods, then garments and small items.
+8. Later gameplay work: finished message content and the badge.
 9. Update the `concept-to-3d-asset` skill with the hatch texture method, contact sheets and aging lessons.
 
 ## Risks
@@ -265,9 +279,10 @@ Each step gets its own issue under #95 and goes to PRs on issue branches.
 - **"As built" steel.** The weathered-steel shader was tuned for old, worn surfaces. Its clean end is new territory, and the pilot checks it against the remembered concept.
 - **GPU contention.** Other sessions share the GPU, so long jobs queue one at a time, and performance runs wait for an idle machine.
 
-## Open questions for Andrew
+## Location decision
 
-1. **Location:** D16, or another deck once the deck plan is set?
+D16 is settled in issue #114. The room is reached from the aft well through
+`D16-C-001-H-AFT`. No additional location decision is pending.
 
 ## Pilot decision: soft props use Blender cloth simulation (2026-11-07)
 

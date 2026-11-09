@@ -36,7 +36,7 @@ func test_every_built_spine_fixture_keeps_its_light_at_the_visible_lens() -> voi
 		assert_int_equal(fixtures, space.emergency_fixture_frames().size(), "every authored emergency fixture is checked: %s" % space.id())
 		checked += fixtures
 		node.free()
-	assert_int_equal(checked, 204, "all section fixtures and connector fixtures, including remote decks and landing keys")
+	assert_int_equal(checked, 212, "#114 adds eight D16 section fixtures to the previous 204; all remote decks and landing keys remain checked")
 
 func test_spine_fixture_housings_and_mounts_clear_every_service() -> void:
 	var game := Game.new(91)
