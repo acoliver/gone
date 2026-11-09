@@ -26,12 +26,12 @@ class SofaFinish(unittest.TestCase):
 
     def test_dust_recolour_keeps_independent_deposit_density(self):
         from finish_materials import finish_colour
-        base = np.full((1, 3), .2)
-        masks = np.ones((1, 3))
-        pigment = np.full((1, 3), .5)
-        density = np.full((1, 3), .9)
+        base = np.full((3, 3), .2)
+        masks = np.ones((3, 3))
+        pigment = np.full((3, 3), .5)
+        density = np.repeat(np.array([.65, .775, .9])[:, None], 3, axis=1)
         result = finish_colour(base, masks, True, 'fabric', pigment, density)
-        weight = .85 * (.3 + .7 * (.9 - .5) / .45)
+        weight = .65 * np.array([0, .5, 1])[:, None]
         np.testing.assert_allclose(result, base * (1 - weight) + pigment * weight)
 
     def test_source_cloth_uses_state_fit_and_keeps_weave_separate(self):
