@@ -15,6 +15,18 @@ static func shell() -> Array[ShipGeometry.SolidSpec]:
 	result.append(_solid("STARBOARD", Vector3(b.get_center().x, b.get_center().y, b.end.z + wall / 2), Vector3(b.size.x + 2 * wall, b.size.y, wall)))
 	return result
 
+static func furniture() -> Array[ShipGeometry.SolidSpec]:
+	var result: Array[ShipGeometry.SolidSpec] = []
+	for prop: Dictionary in QuartersInventory.props():
+		var box := QuartersInventory.world_bounds(QuartersInventory.prop_bounds(prop))
+		result.append(_solid("PROP/" + prop.id, box.get_center(), box.size, &"furniture"))
+	for item: Dictionary in QuartersInventory.small_items():
+		var box := QuartersInventory.world_bounds(item.bounds)
+		result.append(_solid("ITEM/" + item.id, box.get_center(), box.size, &"furniture"))
+	var leaf := QuartersInventory.world_bounds(QuartersInventory.wardrobe_door())
+	result.append(_solid("WARDROBE-LEAF", leaf.get_center(), leaf.size, &"furniture"))
+	return result
+
 static func _solid(part: String, center: Vector3, size: Vector3, role: StringName = &"wall") -> ShipGeometry.SolidSpec:
 	var solid := ShipGeometry.SolidSpec.new(center, size, Quaternion.IDENTITY, StringName("%s/%s" % [QuartersLayout.ID, part]), role)
 	solid.surface_identity(QuartersLayout.ID, StringName(part))

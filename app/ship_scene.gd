@@ -29,6 +29,7 @@ var power_room: PowerRoom
 var d16_section: ShipSection
 var d16_lighting: SectionPowerLighting
 var quarters_shell: RoomGeometry
+var quarters: QuartersRoom
 
 static func build_into(parent: Node3D, game: Game) -> ShipScene:
 	var scene := ShipScene.new()
@@ -354,6 +355,8 @@ func ensure_d16() -> void:
 	_add_hatch(&"D16-C-002-H-FORE", d16_section)
 	quarters_shell = RoomGeometry.build_solids(_game.layout, QuartersGeometry.shell())
 	quarters_shell.name = "Quarters"
+	quarters = QuartersRoom.build()
+	quarters_shell.add_child(quarters)
 	_parent.add_child(quarters_shell)
 	var release := HatchModel.control_panel()
 	release.name = "ManualRelease"

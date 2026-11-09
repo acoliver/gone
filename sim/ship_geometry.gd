@@ -793,7 +793,9 @@ static func deck_static_solids(layout: ShipLayout, deck: int) -> Array[SolidSpec
 	for id: StringName in layout.deck(deck).section_ids():
 		for solid: SolidSpec in section_solids(layout, layout.section(id)):
 			if solid.id != StringName("%s/LEAF" % ShipLayout.QUARTERS_DOOR_ID): solids.append(solid)
-	if deck == 16: solids.append_array(QuartersGeometry.shell())
+	if deck == 16:
+		solids.append_array(QuartersGeometry.shell())
+		solids.append_array(QuartersGeometry.furniture())
 	for id: StringName in layout.deck(deck).connector_ids():
 		solids.append_array(connector_solids(layout, layout.connector(id)))
 	for id: StringName in layout.door_ids():
