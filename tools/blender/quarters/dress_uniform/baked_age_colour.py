@@ -280,6 +280,7 @@ def aged_brass(obj, source, out, palette):
     links.new(uv.outputs['UV'], tex.inputs['Vector'])
     shader = nodes['Principled BSDF']
     links.new(tex.outputs['Color'], shader.inputs['Base Color'])
-    shader.inputs['Metallic'].default_value = .55
-    shader.inputs['Roughness'].default_value = .82
+    shader.inputs['Metallic'].default_value = .15
+    shader.inputs['Roughness'].default_value = .94
+    shader.inputs['Specular IOR Level'].default_value = .12
     return mat

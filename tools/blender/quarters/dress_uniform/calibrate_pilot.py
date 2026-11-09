@@ -42,21 +42,18 @@ def calibrate(source, out):
                                   sample='Central 32 by 32 pixels of a flat 80 mm swatch, 128-square render',
                                   units='albedo linear RGB; display and target sRGB bytes', roles={})
     for role, colour in palette['colours'].items():
-        horizontal = role != 'brass_brown'
-        local = Vector((.16, -.095, -.16 if horizontal else -.28))
-        target = origin+rotation @ local
-        if role == 'fibre_dust':
-            target = Vector((.03, -.10, .14))
+        horizontal = role == 'fibre_dust'
+        target = Vector((.03, -.10, .14)) if horizontal else Vector((-.08, -.31, 1.30))
         plane.location = target
-        normal = Vector((0, 0, 1)) if horizontal else rotation @ Vector((0, -1, 0))
+        normal = Vector((0, 0, 1)) if horizontal else Vector((.47, -.88, 0)).normalized()
         plane.rotation_euler = normal.to_track_quat('Z', 'Y').to_euler()
         camera.location = target+Vector((0, -.12, .18) if horizontal else (.025, -.18, .025))
         camera.data.type = 'ORTHO'
         camera.data.ortho_scale = .035
         aim(camera, target)
-        shader.inputs['Metallic'].default_value = .55 if role == 'brass_brown' else 0
-        shader.inputs['Roughness'].default_value = .82 if role == 'brass_brown' else .97
-        shader.inputs['Specular IOR Level'].default_value = .5 if role == 'brass_brown' else .12
+        shader.inputs['Metallic'].default_value = .15 if role == 'brass_brown' else 0
+        shader.inputs['Roughness'].default_value = .94 if role == 'brass_brown' else .97
+        shader.inputs['Specular IOR Level'].default_value = .12
         albedo = np.array(colour['linear'])
         desired = np.array(colour['srgb_bytes'], dtype=float)
         steps = []
@@ -80,7 +77,10 @@ def calibrate(source, out):
             raise ValueError(f'{role} swatch failed to converge: {steps[-1]}')
         colour['sample_display_linear'] = colour['linear']
         colour['linear'] = steps[-1]['albedo_linear']
-        palette['calibration']['roles'][role] = dict(position_blender_m=list(target), normal=list(normal), steps=steps)
+        palette['calibration']['roles'][role] = dict(position_blender_m=list(target), normal=list(normal),
+                                                    metallic=shader.inputs['Metallic'].default_value,
+                                                    roughness=shader.inputs['Roughness'].default_value,
+                                                    specular_ior=shader.inputs['Specular IOR Level'].default_value, steps=steps)
         (out/'target-colours.json').write_text(json.dumps(palette, indent=2)+'\n')
         print('CALIBRATED', role, colour['linear'], displayed, flush=True)
 

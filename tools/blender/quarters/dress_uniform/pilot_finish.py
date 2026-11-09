@@ -51,16 +51,21 @@ def stretch_hem(body, fringe, sheet):
         # Each triangle must stay on one side of the extension's root plane.
         # Otherwise straight interpolation cuts across the piecewise-affine
         # bend and can push a neighbouring cut rim through the sheet.
-        bmesh.ops.bisect_plane(bm, geom=list(bm.verts)+list(bm.edges)+list(bm.faces),
+        affected = [f for f in bm.faces if np.any(hem_displacement(np.array([v.co[:] for v in f.verts])))]
+        edges = {e for f in affected for e in f.edges}
+        vertices = {v for f in affected for v in f.verts}
+        bmesh.ops.bisect_plane(bm, geom=list(vertices)+list(edges)+affected,
                               dist=1e-8, plane_co=(0, 0, -.840), plane_no=(0, 0, 1))
-        bmesh.ops.triangulate(bm, faces=[f for f in bm.faces if all(v.co.z < -.78 for v in f.verts)])
+        bmesh.ops.triangulate(bm, faces=[f for f in bm.faces
+                                        if np.any(hem_displacement(np.array([v.co[:] for v in f.verts])))])
         bm.to_mesh(obj.data)
         bm.free()
         points = np.array([obj.matrix_world @ v.co for v in obj.data.vertices])
         delta = hem_displacement(points)
         inverse = obj.matrix_world.inverted()
-        for vertex, point in zip(obj.data.vertices, points+delta):
-            vertex.co = inverse @ Vector(point)
+        for vertex, point, change in zip(obj.data.vertices, points+delta, delta):
+            if np.any(change):
+                vertex.co = inverse @ Vector(point)
         obj.data.update()
         moved[obj.name] = dict(vertices=int(np.sum(np.linalg.norm(delta, axis=1) > 1e-8)),
                                maximum_m=float(np.linalg.norm(delta, axis=1).max()))
@@ -167,7 +172,6 @@ def hem_coverage(sheet, fringe):
 def finish(base, out, palette):
     import bpy
     sys.path.insert(0, str(Path(__file__).resolve().parent))
-    from aging_support import ROOT
     from age_tunic import save_checkpoint
     from baked_age_colour import apply_colours
     from common import export
