@@ -4,6 +4,7 @@ func _initialize() -> void:
 	call_deferred("_run")
 
 func _run() -> void:
+	root.size = Vector2i(1536, 864)
 	var check := SimTestCase.new()
 	var room := Node3D.new()
 	var camera := Camera3D.new()
@@ -23,8 +24,12 @@ func _run() -> void:
 		furnishings.free()
 	for x: float in [2.0, 6.0]:
 		for z: float in [1.5, 4.5]:
-			for edge: float in [-0.65, 0.65]:
-				points.append(QuartersLayout.to_world(Vector3(x + edge, 3.2, z)))
+			var fixture := Node3D.new()
+			fixture.position = QuartersLayout.to_world(Vector3(x, 3.05, z))
+			CeilingFixture.mount(fixture, QuartersLayout.FLOOR_Y + QuartersLayout.HEIGHT, Lighting.QUARTERS_MASK, CeilingFixture.glass_material(1))
+			var bounds := QuartersFurnishings._bounds(fixture)
+			for corner: int in range(8): points.append(bounds.get_endpoint(corner))
+			fixture.free()
 	var viewport := root.get_visible_rect()
 	for point: Vector3 in points:
 		check.assert_false(camera.is_position_behind(point), "room content in front of wide camera")
