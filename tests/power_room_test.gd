@@ -451,6 +451,39 @@ func test_generated_console_models_and_wall_mounts_are_present() -> void:
 	assert_true(mount.position.distance_to(PowerRoom.door_act_center()) > 5.0, "panel clears the power doorway")
 	room.free()
 
+func test_every_keyboard_frame_slopes_down_toward_the_room() -> void:
+	var room := PowerRoom.build(_awake_game())
+	var stations := room.get_children().filter(func(node: Node) -> bool: return node.name.begins_with("ConsoleStation"))
+	assert_int_equal(stations.size(), 6, "check every console station's keyboard slope")
+	for station: Node3D in stations:
+		var frame := station.get_node("KeyboardTray").find_child("Rugged olive steel perimeter housing", true, false) as MeshInstance3D
+		assert_true(frame != null, "%s has its keyboard frame" % station.name)
+		var transform := _test_transform_in_room(frame, room)
+		var roomward := station.basis.z.normalized()
+		var vertices := frame.mesh.get_faces()
+		var front := -INF
+		var rear := INF
+		for vertex: Vector3 in vertices:
+			var depth := (transform * vertex).dot(roomward)
+			front = maxf(front, depth)
+			rear = minf(rear, depth)
+		var front_height := 0.0
+		var rear_height := 0.0
+		var front_count := 0
+		var rear_count := 0
+		for vertex: Vector3 in vertices:
+			var point := transform * vertex
+			var depth := point.dot(roomward)
+			if depth >= lerpf(rear, front, 0.85):
+				front_height += point.y
+				front_count += 1
+			if depth <= lerpf(rear, front, 0.15):
+				rear_height += point.y
+				rear_count += 1
+		assert_true(front_count > 0 and rear_count > 0, "%s has front and rear frame edges" % station.name)
+		assert_true(front_height / front_count < rear_height / rear_count, "%s keyboard front edge is lower than its rear toward the room" % station.name)
+	room.free()
+
 func test_status_board_has_one_running_system_and_native_naleya() -> void:
 	assert_int_equal(StatusBoardData.SYSTEMS.size(), 14, "board data carries the system list")
 	assert_int_equal(StatusBoardData.running_system_count(), 1, "only secondary power is running")
@@ -572,13 +605,14 @@ func _keyboard_tray_mesh_names() -> Array[String]:
 		"Flange back perimeter rubber gasket",
 		"Tray triangular gusset -0_34",
 		"Tray triangular gusset +0_34",
+		"Proud 13 mm hex socket cap screw",
+		"Dark recessed hex socket",
 	]
 	for index: int in range(1, 7):
 		names.append("Flange hex bolt %02d" % index)
 	for index: int in range(1, 10):
-		names.append("Proud 13 mm hex socket cap screw_%03d" % (10 - index))
-		names.append("Dark recessed hex socket_%03d" % (10 - index))
-	names.append("Dark recessed hex socket")
+		names.append("Proud 13 mm hex socket cap screw_%03d" % index)
+		names.append("Dark recessed hex socket_%03d" % index)
 	var keys := [
 		"29 control right", "28 control down", "27 control left", "26 control up",
 		"25 control punct", "24 control number", "23 control box", "22 control enter",
@@ -591,8 +625,6 @@ func _keyboard_tray_mesh_names() -> Array[String]:
 	for key: String in keys:
 		names.append("Keycap " + key)
 		names.append("Black rubber bellows " + key)
-	for side: String in ["right", "rear", "left", "front"]:
-		names.append("Keyboard steel skirt " + side)
 	return names
 
 func _mesh_triangle_count(node: Node) -> int:
@@ -632,15 +664,29 @@ func test_status_board_screen_faces_into_room_and_has_schematic_content() -> voi
 	room.free()
 
 func test_status_board_resolves_while_looked_at_and_decays_when_ignored() -> void:
+	var output: Array = []
+	var exit_code := OS.execute(OS.get_executable_path(), [
+		"--headless", "--path", ProjectSettings.globalize_path("res://"),
+		"-s", "tests/power_room_scene_checks.gd",
+	], output, true)
+	var text := "".join(output)
+	assert_int_equal(exit_code, 0, text)
+	assert_false(text.contains("SCRIPT ERROR:"), text)
+	assert_false(text.contains("ERROR:"), text)
+
+func _check_status_board_attention() -> void:
 	var game := _awake_game()
 	var room := PowerRoom.build(game)
+	var tree := Engine.get_main_loop() as SceneTree
+	tree.root.add_child(room)
 	var board: StatusBoard = room.status_board
-	var eye := board.global_position + Vector3(0.0, 0.0, 3.0)
-	var forward := (board.global_position - eye).normalized()
+	var board_position := board.global_position
+	var eye := board_position + Vector3(0.0, 0.0, 3.0)
+	var forward := (board_position - eye).normalized()
 	for _tick: int in range(DisplayPerception.FIRST_HOLD + DisplayPerception.FIRST_RAMP):
 		board.tick_attention(eye, forward)
 	assert_float_in_range(board.perception.perceive, 1.0, 1.0, "a player looking at the board centre from 3 m resolves its text")
-	var away := board.global_position + Vector3(0.0, 0.0, -3.0)
+	var away := board_position + Vector3(0.0, 0.0, -3.0)
 	board.tick_attention(away, Vector3(0.0, 0.0, -1.0))
 	assert_true(board.perception.perceive < 1.0, "looking away starts the native-text decay")
 	for _tick: int in range(DisplayPerception.DECAY):
