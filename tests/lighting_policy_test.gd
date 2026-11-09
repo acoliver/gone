@@ -2,17 +2,17 @@ extends SimTestCase
 
 func test_bay_uses_one_live_wall_source_per_existing_fixture_identity() -> void:
 	var bay := Lighting.build(Game.new(91))
-	assert_int_equal(bay.lights().size(), 8, "seven row lamps and the existing hatch lamp")
+	assert_int_equal(bay.lights().size(), 9, "eight mirrored row lamps and the existing hatch lamp")
 	assert_true(bay.find_children("EmergencyFill*", "Light3D", true, false).is_empty(), "no duplicate neutral cages")
 	var total := 0.0
 	for source: OmniLight3D in bay.lights(): total += source.light_energy / Lighting.FIXTURE_ENERGY
-	assert_true(is_equal_approx(total, 21.84), "eight red shares, eight pod shares and all 5.84 former fill shares are conserved")
+	assert_true(is_equal_approx(total, 21.84), "the bay retains its 21.84-share total with an even wall distribution")
 	bay.free()
 
 func test_bay_hatch_identity_selects_its_profile_even_when_fixture_order_changes() -> void:
 	var game := Game.new(91)
-	var specs := game.layout.bay().emergency_fixtures(game.registry)
-	assert_int_equal(specs.size(), 8, "seven pod keys and the hatch key")
+	var specs := game.layout.bay().emergency_fixtures()
+	assert_int_equal(specs.size(), 9, "eight wall keys and the hatch key")
 	specs.reverse()
 	var lighting := Lighting.new()
 	lighting._game = game
@@ -29,9 +29,8 @@ func test_bay_hatch_identity_selects_its_profile_even_when_fixture_order_changes
 		var key := fixture.get_child(0) as OmniLight3D
 		var hatch := spec.id == ShipLayout.BAY_HATCH_KEY_ID
 		assert_int_equal(spec.role, ShipLayout.EmergencyLightRole.BAY_HATCH if hatch else ShipLayout.EmergencyLightRole.BAY_POOL, "identity selects semantic role")
-		var station := String(spec.id).split("-")[3].to_int() if not hatch else 0
-		assert_float_equal(key.omni_range, 5.5 if hatch else EmergencyFixtureProfile.BAY[station].z, "identity selects its consolidated range")
-		assert_float_equal(key.omni_attenuation, 1.0 if hatch else EmergencyFixtureProfile.BAY[station].w, "identity selects its consolidated falloff")
+		assert_float_equal(key.omni_range, EmergencyFixtureProfile.BAY_HATCH.z if hatch else EmergencyFixtureProfile.BAY.z, "identity selects its consolidated range")
+		assert_float_equal(key.omni_attenuation, EmergencyFixtureProfile.BAY_HATCH.w if hatch else EmergencyFixtureProfile.BAY.w, "identity selects its consolidated falloff")
 		var isolated := Lighting.switched_key(spec.role, 1.0)
 		assert_float_equal(isolated.omni_range, 5.5 if hatch else 3.5, "base role remains independent of wall profile")
 		assert_float_equal(isolated.omni_attenuation, 1.0, "base role owns its original falloff")

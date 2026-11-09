@@ -2,16 +2,10 @@ class_name EmergencyFixtureProfile
 extends RefCounted
 
 # Neutral room output and pod-only key output now share the existing wall source.
-# Rows: neutral share, pod share, range, attenuation. Shares are added, not discarded.
-const BAY: Array[Vector4] = [
-	Vector4(2.350000, 1.000000, 2.753516, 0.150000),
-	Vector4(0.560000, 1.000000, 2.916304, 0.150000),
-	Vector4(0.000000, 1.000000, 12.000000, 0.669375),
-	Vector4(0.010000, 1.000000, 4.303024, 0.436541),
-	Vector4(2.350000, 1.000000, 12.000000, 3.000000),
-	Vector4(0.560000, 1.000000, 5.559570, 1.654765),
-	Vector4(0.010000, 1.000000, 11.513762, 3.000000),
-]
+# Profiles: neutral share, pod share, range, attenuation.
+# Identical row cages retain the bay budget; the hatch lamp preserves doorway spill.
+const BAY := Vector4(1.216167, 0.263833, 7.000000, 2.479420)
+const BAY_HATCH := Vector4(0.000000, 1.000000, 10.449859, 1.134204)
 const HALL: Array[Vector4] = [
 	Vector4(0.300000, 0.000000, 10.132588, 3.000000),
 	Vector4(0.710000, 0.000000, 4.217218, 2.151898),

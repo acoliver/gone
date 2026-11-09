@@ -50,27 +50,16 @@ func test_connectors_and_outer_sections_keep_their_steady_red_circuits() -> void
 			assert_true(light.light_cull_mask != 1, "independent circuit stays isolated from bay")
 		node.free()
 
-func test_fixture_inventory_places_eight_red_lights_from_registry() -> void:
+func test_fixture_inventory_places_mirrored_wall_rows_independent_of_pods() -> void:
 	var game := Game.new(0)
 	var lighting := Lighting.build(game)
 	var fixtures: Array[Node3D] = lighting.fixtures()
 	var lights: Array[OmniLight3D] = lighting.lights()
-	assert_int_equal(fixtures.size(), 8, "seven wall fixtures and one over the hatch")
-	assert_int_equal(lights.size(), 8, "one light per fixture")
-	var registry_pods: Array[Pods.Pod] = game.registry.pods()
-	for index: int in range(registry_pods.size()):
-		var placement := registry_pods[index].placement()
-		var side := signf(placement.center.y)
-		var expected := Vector3(
-			([-4.8, -1.6, 1.6, 4.8][index] if index < 4 else [-4.0, 0.0, 4.0][index - 4]),
-			2.5,
-			side * (Pods.ROOM_WIDTH / 2.0 - 0.10)
-		)
-		assert_vec3_equal(
-			fixtures[index].position,
-			expected,
-			"architectural fixture %d stays on the wall; separate pod keys follow #88's inset" % index
-		)
+	assert_int_equal(fixtures.size(), 9, "eight mirrored wall fixtures and one over the hatch")
+	assert_int_equal(lights.size(), 9, "one light per fixture")
+	for index: int in range(8):
+		var expected := Vector3([-4.5, -1.5, 1.5, 4.5][index % 4], 2.5, (-1.0 if index < 4 else 1.0) * (Pods.ROOM_WIDTH / 2.0 - 0.10))
+		assert_vec3_equal(fixtures[index].position, expected, "architectural fixture %d belongs to its mirrored wall station" % index)
 	var lintel: Placement.SolidPlacement = Placement.hatch_solids()[2]
 	assert_vec3_equal(
 		lighting.fixture(ShipLayout.BAY_HATCH_KEY_ID).position,
@@ -80,7 +69,7 @@ func test_fixture_inventory_places_eight_red_lights_from_registry() -> void:
 	for light: OmniLight3D in lights:
 		assert_float_equal(light.light_color.r, 1.0, "merged source retains full red output")
 		var index := lights.find(light)
-		assert_float_equal(light.omni_range, 5.5 if index == 7 else EmergencyFixtureProfile.BAY[index].z, "throw belongs to the consolidated wall profile")
+		assert_float_equal(light.omni_range, EmergencyFixtureProfile.BAY_HATCH.z if index == 8 else EmergencyFixtureProfile.BAY.z, "throw belongs to the consolidated wall profile")
 		assert_false(light.shadow_enabled, "fixture shadows are disabled")
 		assert_true(
 			absf(light.light_energy - Lighting.FIXTURE_ENERGY * float(light.get_meta(&"energy_share"))) < 1e-4,
@@ -88,8 +77,8 @@ func test_fixture_inventory_places_eight_red_lights_from_registry() -> void:
 		)
 	for fixture: Node3D in fixtures:
 		assert_true(fixture.position.y > 2.4, "fixtures sit outside the walking envelope")
-	assert_int_equal(_count_class(lighting, "OmniLight3D"), 8 + 6 * Pods.POD_COUNT, "eight single-source wall keys and six status spill samples per pod")
-	assert_int_equal(lighting.find_children("*", "Light3D", true, false).size(), 14 + 6 * Pods.POD_COUNT, "eight single-source cages, six regular beams and status-belt samples")
+	assert_int_equal(_count_class(lighting, "OmniLight3D"), 9 + 6 * Pods.POD_COUNT, "nine single-source wall keys and six status spill samples per pod")
+	assert_int_equal(lighting.find_children("*", "Light3D", true, false).size(), 15 + 6 * Pods.POD_COUNT, "nine single-source cages, six regular beams and status-belt samples")
 	for light: SpotLight3D in lighting.white_lights():
 		assert_float_equal(light.light_energy, 0.0, "regular strips start dark")
 	assert_int_equal(_count_class(lighting, "DirectionalLight3D"), 0, "no directional light is authored")
@@ -98,7 +87,7 @@ func test_fixture_inventory_places_eight_red_lights_from_registry() -> void:
 func test_lenses_share_rounded_glass_inside_weathered_cages() -> void:
 	var lighting := Lighting.build(Game.new(0))
 	var lenses := lighting.lenses()
-	assert_int_equal(lenses.size(), 8, "one lens per fixture")
+	assert_int_equal(lenses.size(), 9, "one lens per fixture")
 	var shared_mesh := lenses[0].mesh
 	assert_false(shared_mesh is BoxMesh, "a bare cuboid cannot stand in for a lamp")
 	assert_close(shared_mesh.get_aabb().size, Vector3(0.26, 0.16, 0.07), "rounded hatch glass dimensions")
@@ -279,7 +268,7 @@ func test_bay_reflections_cover_the_room_without_adding_light() -> void:
 	assert_int_equal(probe.cull_mask, 1 | Lighting.POD_STATUS_MASK, "probe captures bay architecture and the isolated pod receivers")
 	assert_false(probe.enable_shadows, "reflection capture needs no shadow pass")
 	assert_int_equal(probe.ambient_mode, ReflectionProbe.AMBIENT_DISABLED, "probe adds no ambient fill")
-	assert_int_equal(_count_class(lighting, "OmniLight3D") + _count_class(lighting, "SpotLight3D"), 14 + 6 * Pods.POD_COUNT, "reflections add no lights beyond consolidated wall keys, regular strips and status spill")
+	assert_int_equal(_count_class(lighting, "OmniLight3D") + _count_class(lighting, "SpotLight3D"), 15 + 6 * Pods.POD_COUNT, "reflections add no lights beyond consolidated wall keys, regular strips and status spill")
 	assert_int_equal(_count_class(lighting, "CollisionShape3D"), 0, "reflections add no colliders")
 	lighting.free()
 

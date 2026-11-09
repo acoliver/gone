@@ -1,12 +1,10 @@
 class_name Lighting
 extends Node3D
-## Emergency fixtures and the read-only power bridge, ported from
-## gone_app lighting.rs (issue #10): eight red OmniLight3D fixtures —
-## seven wall-mounted above each registry pod plus one over the hatch
-## lintel — with shared lens cuboids whose single emissive material the
-## FixtureFade bridge interpolates. Secondary power hands these fixtures
-## over to six regular white ceiling strips. The bridge only reads Game;
-## ambient stays black and fog stays off.
+## Layout-owned emergency fixtures and the read-only power bridge:
+## eight wall cages in mirrored rows plus the existing hatch lamp share
+## the emissive material interpolated by FixtureFade. Secondary power
+## hands these fixtures over to six regular white ceiling strips.
+## The bridge only reads Game; ambient stays black and fog stays off.
 
 const FIXTURE_LUMENS: float = 45.0
 const FIXTURE_RANGE: float = 6.0
@@ -148,7 +146,7 @@ static func build(game: Game) -> Lighting:
 	var held: Intensity.Result = Intensity.FixtureFade.holding(level)
 	assert(held.is_ok(), "power maps to a finite nonnegative level")
 	lighting._fade = held.fade
-	for spec: ShipLayout.EmergencyFixtureSpec in game.layout.bay().emergency_fixtures(game.registry):
+	for spec: ShipLayout.EmergencyFixtureSpec in game.layout.bay().emergency_fixtures():
 		lighting.add_child(lighting._fixture(spec, level))
 	var hatch_key := lighting.fixture(ShipLayout.BAY_HATCH_KEY_ID)
 	assert(hatch_key.get_meta(&"light_role") == ShipLayout.EmergencyLightRole.BAY_HATCH, "bay hatch identity requires the doorway profile")
@@ -250,11 +248,10 @@ func _fixture(spec: ShipLayout.EmergencyFixtureSpec, level: float) -> Node3D:
 	_fixtures_by_id[spec.id] = fixture
 	var light := switched_key(spec.role, level)
 	if spec.role == ShipLayout.EmergencyLightRole.BAY_POOL:
-		var index := String(spec.id).split("-")[3].to_int()
-		EmergencyFixtureProfile.apply(light, EmergencyFixtureProfile.BAY[index], level)
+		EmergencyFixtureProfile.apply(light, EmergencyFixtureProfile.BAY, level)
 		light.light_cull_mask = 1 | BAY_FILL_MASK | POD_STATUS_MASK
 	else:
-		EmergencyFixtureProfile.apply(light, Vector4(0, 1, BAY_HATCH_POOL_RANGE, BAY_HATCH_ATTENUATION), level)
+		EmergencyFixtureProfile.apply(light, EmergencyFixtureProfile.BAY_HATCH, level)
 		light.light_cull_mask = 1 | POD_STATUS_MASK
 	fixture.add_child(light)
 	var lens := FixtureEmitter.cage(fixture, 1, Surfaces.surface_frame(_game.layout, ShipLayout.BAY_ID, &"CEILING"), _lens_material, Basis(Vector3.UP, PI if spec.frame.origin.z < 0 else 0.0))

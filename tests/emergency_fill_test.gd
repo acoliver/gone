@@ -9,12 +9,12 @@ func test_bay_hatch_lamp_is_layout_owned_and_reuses_its_existing_key() -> void:
 	assert_true(lamp_frame.origin.is_equal_approx(Vector3(15, 2.56, 1.81)), "bay cage is centered over its hatch in layout data")
 	var root := Node3D.new()
 	var scene := ShipScene.build_into(root, game, false)
-	assert_int_equal(scene.lighting.lights().size(), 8, "doorway reuses an existing key")
+	assert_int_equal(scene.lighting.lights().size(), 9, "doorway reuses an existing key")
 	var key := scene.lighting.fixture(ShipLayout.BAY_HATCH_KEY_ID).get_child(0) as OmniLight3D
 	var expected := lamp_frame.origin - lamp_frame.basis.z * 0.20
 	assert_true(Surfaces.world_frame(key).origin.is_equal_approx(expected), "production key is seated in the layout-owned cage")
-	assert_float_equal(key.omni_range, 5.5, "doorway key reaches the unlit hall opposite the hatch")
-	assert_float_equal(key.omni_attenuation, 1.0, "doorway spill falls off gently enough to read")
+	assert_float_equal(key.omni_range, EmergencyFixtureProfile.BAY_HATCH.z, "doorway key reaches the unlit hall opposite the hatch")
+	assert_float_equal(key.omni_attenuation, EmergencyFixtureProfile.BAY_HATCH.w, "doorway spill falls off gently enough to read")
 	assert_int_equal(key.light_cull_mask, 1 | Lighting.POD_STATUS_MASK, "one hatch source includes the former pod-key receiver")
 	assert_false(key.shadow_enabled, "doorway key stays shadowless")
 	var cage: Node3D = scene.hatch.view.get_node("AftServices/Lamp")

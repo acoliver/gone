@@ -71,7 +71,7 @@ func test_pod_receiver_layer_is_disjoint_from_every_architectural_circuit() -> v
 func test_pod_key_output_is_merged_into_the_existing_wall_source_and_follows_its_fade() -> void:
 	var game := Game.new(0)
 	var lighting := Lighting.build(game)
-	assert_int_equal(lighting.lights().size(), 8, "seven wall keys plus the hatch key")
+	assert_int_equal(lighting.lights().size(), 9, "eight wall keys plus the hatch key")
 	assert_int_equal(lighting.find_children("PodEmergencyKey*", "Light3D", true, false).size(), 0, "no second light in a cage")
 	for key: OmniLight3D in lighting.lights():
 		var emitter: MeshInstance3D = key.get_meta(&"fixture_emitter")

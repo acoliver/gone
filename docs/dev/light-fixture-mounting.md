@@ -1,5 +1,41 @@
 # Consolidated wall fixtures (#111)
 
+## Mirrored bay rows after 4797e81
+
+The bay wall cages now belong to the room layout rather than the seven-pod registry. Each long wall has four cages at world Z=3.2, 6.2, 9.2 and 12.2 m, on a 3 m pitch at Y=2.5 m. West source centres are at X=11.1 m and east centres at X=18.9 m. The rows mirror across X=15 m. Their housings clear the services and hatch exclusions, and remain above the standing envelope.
+
+All eight row cages use one profile: 2.48 shares, 7 m range and 2.479420 attenuation. They share the same lens emission and colour mixture. There is no second row group. The existing bay-side hatch lamp stays at (15, 2.56, 2.01) m with two shares; its range becomes 10.449859 m and attenuation 1.134204. Retuning that doorway source preserves spill into the hall without changing a hall or power-room fixture. The total bay budget remains 21.84 shares. The long rows no longer inherit different throws and shares from former per-pod channels.
+
+| Wall | X | Y | Z stations | Share per cage | Range | Attenuation |
+|---|---:|---:|---|---:|---:|---:|
+| West | 11.1 | 2.5 | 3.2, 6.2, 9.2, 12.2 | 2.48 | 7.0 | 2.479420 |
+| East | 18.9 | 2.5 | 3.2, 6.2, 9.2, 12.2 | 2.48 | 7.0 | 2.479420 |
+
+The bay now has nine emergency wall fixtures, including its existing hatch lamp, and six unchanged ceiling beams. The whole ship has 240 standalone fixtures: 224 wall cages and 16 ceiling beams. There are 286 sources, including machinery, status belts and sparks, or 572 observations over both circuit states. Each standalone fixture still contains exactly one source. All observations have a housed, co-located emitter. The existing spacing and glow gates report no failures.
+
+| Bay circuit | Total versus 217355c | Floor | Walls | Ceiling |
+|---|---:|---:|---:|---:|
+| Emergency | +3.419% | +1.182% | +5.808% | -9.000% |
+| Secondary white | -7.722% | -3.315% | -3.415% | -100.000% (existing exception) |
+
+All 370 space/circuit rows pass the unchanged incident-light checks. The original three secondary-white ceiling exceptions remain the only exceptions. No reference, tolerance, glow ratio or mounting threshold changes.
+
+All ten fixed overview captures also pass the unchanged 219a257 display-luma checker. Bay emergency luma is 48.1064 versus 52.9640 (-9.17%); bay white luma is 73.5184 versus 80.5903 (-8.78%). The hall overview remains within its limit at 37.8545 versus 44.3910 (-14.72%).
+
+The first 9.973076 m row profile failed two AB/BA/AB batches, with median paired costs of +66.63% and +10.88%. A range-only native control repeatedly measured lower wall-frame time at 6 m than at 9.973076 m, while script CPU time stayed below 0.1 ms and GPU timestamps were unavailable. The final 7 m profile limits the affected volume while retaining all illumination and image limits. Its full AB/BA/AB batch against 217355c measures -7.66%, +6.59% and -6.67%, for a median paired cost of -6.67%, passing the unchanged +10% limit. Each phase has three repetitions, 60 warm-up frames and 300 measured frames at 1152×648. All eighteen runs and 5,400 measured frames are retained. One-minute host load spans 6.87–8.69; there was no idle wait or idle gate. Both failed designs and the final results remain in `tmp/emerg7/perf-final-summary.json`. Shared-load measurements do not establish a stable speed improvement.
+
+The new bay-row regression failed on 4797e81 before production changes: four west cages versus three east cages. It now checks both circuit inventories for mirrored positions, a single mounting height, uniform spacing within 3 cm, and no more than two symmetric share/range/falloff groups. Exact layout pins also cover all eight wall stations. The existing one-third-median glow rule remains unchanged.
+
+The final guarded suite ran without concurrent tests owned by this worker and passed 867 tests, with zero failures. Python passed 32. All twelve Blender suites passed 78 tests; their asset and exported-hatch inputs are unchanged by the final range-only tuning. All 672 pod-head/lid clearance checks pass. Collider counts remain 1,024 on D14 with doors closed, 1,023 with the bay open and 1,022 with both doors open, and 542 on every other deck. `git diff --check` passes.
+
+All nine native functional lanes pass through `tmp/hatch-model/round8/run/run_visible.py` pointed at this worktree. The three negative controls fail as intended. Native hatch colour and Python-native checks pass. Seal rendering passes 1,230 checks over 28,369,212 samples with zero green leaks. Native checks report zero light/geometry pairing errors and no signal-11 crashes. Renderer cleanup warnings remain in the logs. Review skipped per Andrew 2026-10-09.
+
+Local `tmp/emerg7/compare.jpg` contains eight matched before/after bay pairs against 4797e81: overview, west row, east row and doorway, each in emergency and white circuits. Camera manifests and full-resolution PNGs are in `before/` and `after/`; `CAPTURES_READY` marks the completed set. Only bay emergency wall lighting and its tests change. Beam assets, seating, pod placement, hall and power-room fixtures remain unchanged.
+
+## Earlier consolidation at 4797e81
+
+The following records the preceding consolidation and its measurements before the mirrored bay follow-up.
+
 The wall relocation at `49f9127` put neutral cages beside the original emergency keys. Bay keys were also only 1.4 m apart, and two added bay sources had shares of 0.01. Removing the added cages alone would have left the original bay row below the requested spacing.
 
 Six bay cages, seven hall cages and three far-wall power cages are removed. Their output is folded into the existing keys. The eight pod-only bay channels also share those keys instead of adding a second source in each cage. Every standalone cage and beam now has exactly one source. The ship changes from 255 to 239 standalone fixtures and from 309 to 285 sources. The other 196 fixtures are unchanged.

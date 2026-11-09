@@ -24,7 +24,7 @@ func test_whole_ship_fixtures_are_wall_mounted_or_within_150_mm_of_ceiling() -> 
 		checked += _check(node, spec.bounds(), _walls(layout, 14))
 		node.free()
 	print("MOUNTED FIXTURES ", checked)
-	assert_int_equal(checked, 239, "all standalone cages and beams across the ship are checked")
+	assert_int_equal(checked, 240, "all standalone cages and beams across the ship are checked")
 	world.free()
 
 func test_mount_gate_rejects_a_centreline_drop_and_accepts_only_wall_contact_or_flush_depth() -> void:

@@ -544,14 +544,12 @@ class BaySpec:
 			for z: float in [-1.6 + Pods.ROW_WALL_OFFSET, 1.6 - Pods.ROW_WALL_OFFSET]:
 				frames.append(Transform3D(Basis(), Vector3(x, Pods.ROOM_CEILING_HEIGHT - 0.08, z)))
 		return frames
-	func emergency_fixtures(registry: Pods.PodRegistry) -> Array[EmergencyFixtureSpec]:
+	func emergency_fixtures() -> Array[EmergencyFixtureSpec]:
 		var fixtures: Array[EmergencyFixtureSpec] = []
-		for pod: Pods.Pod in registry.pods():
-			var placement := pod.placement()
-			var side := signf(placement.center.y)
-			var station: float = [-4.8, -1.6, 1.6, 4.8][pod.id().index()] if pod.id().index() < 4 else [-4.0, 0.0, 4.0][pod.id().index() - 4]
-			var frame := Transform3D(Basis(), Vector3(station, 2.5, side * (Pods.ROOM_WIDTH / 2.0 - 0.10)))
-			fixtures.append(EmergencyFixtureSpec.new(StringName("D14-BAY-POD-%d-KEY" % pod.id().index()), ShipLayout.EmergencyLightRole.BAY_POOL, frame))
+		for side: float in [-1.0, 1.0]:
+			for station: float in [-4.5, -1.5, 1.5, 4.5]:
+				var frame := Transform3D(Basis(), Vector3(station, 2.5, side * (Pods.ROOM_WIDTH / 2.0 - 0.10)))
+				fixtures.append(EmergencyFixtureSpec.new(StringName("D14-BAY-WALL-%d-KEY" % fixtures.size()), ShipLayout.EmergencyLightRole.BAY_POOL, frame))
 		var lintel: ShipGeometry.SolidSpec = ShipGeometry.hatch_solids()[2]
 		fixtures.append(EmergencyFixtureSpec.new(ShipLayout.BAY_HATCH_KEY_ID, ShipLayout.EmergencyLightRole.BAY_HATCH, Transform3D(Basis(Vector3.UP, PI / 2.0), lintel.center + Vector3(-0.10, 0.22, 0.0))))
 		return fixtures
