@@ -293,7 +293,6 @@ func _build_console(station: ConsoleStation) -> Node3D:
 		group.add_child(screen)
 		var terminal_fit := terminal.find_child("Terminal_GeneratedFit", true, false) as MeshInstance3D
 		assert(terminal_fit != null, "terminal GLB exports its fitted housing")
-		terminal_fit.visible = false
 		var plane_transform := display_plane.transform
 		var plane_bounds := display_plane.mesh.get_aabb()
 		var plane_size := Vector2(plane_bounds.size.x, plane_bounds.size.y)

@@ -389,6 +389,7 @@ func test_generated_console_models_and_wall_mounts_are_present() -> void:
 	assert_int_equal(stations.size(), 6, "six stations use generated terminal models")
 	for station: Node3D in stations:
 		assert_true(station.has_node("TerminalModel"), "each station has the terminal body")
+		assert_true(station.get_node("TerminalModel/Terminal_GeneratedFit").visible, "every station keeps its terminal body visible")
 		assert_true(station.has_node("KeyboardTray"), "each station has a separate keyboard tray")
 		assert_true(station.get_node("TerminalModel").find_child("ScreenSocket", true, false) != null, "terminal socket imports")
 		assert_vec3_equal(station.get_node("TerminalModel").position, Vector3.ZERO, "terminal back is on the station wall plane")
@@ -404,8 +405,9 @@ func test_generated_console_models_and_wall_mounts_are_present() -> void:
 	assert_true(busted_station.get_node("ScreenGlass").material_override.albedo_texture != null, "busted screen uses procedural crack glass")
 	var active_plane := active_station.get_node("TerminalModel/DisplayPlane") as MeshInstance3D
 	var active_quad := active_station.get_node("ShipDisplay") as Node3D
-	assert_false(active_plane.visible, "active station hides the imported pale display surface")
-	assert_false(active_station.get_node("TerminalModel/Terminal_GeneratedFit").visible, "active station removes the fitted shell that occludes its screen")
+	assert_false(active_plane.visible, "active text replaces the imported pale display surface")
+	var plane_size := active_plane.mesh.get_aabb().size
+	assert_true(Vector2(plane_size.x, plane_size.y).is_equal_approx((active_quad.get_node("TextSurface").mesh as QuadMesh).size), "live text exactly covers the hidden display plane")
 	assert_false(active_station.get_node("ScreenGlass").visible, "active station does not put a second glass pane over its display")
 	assert_float_in_range(active_quad.position.distance_to(active_plane.transform * active_plane.mesh.get_aabb().get_center()), 0.003 - 0.0001, 0.003 + 0.0001, "live display sits 3 mm ahead of the imported screen face")
 	assert_true(active_station.basis.z.dot(Vector3(27.0, 1.65, -5.8) - active_station.position) > 0.0, "imported screen normal points into the room")

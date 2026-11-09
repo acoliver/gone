@@ -10,8 +10,8 @@ from mathutils import Vector
 from mathutils.bvhtree import BVHTree
 
 ROOT = Path(__file__).resolve().parent
-SOURCE = ROOT.parent / "termmodel2/meshes/front-s410.glb"
-KEYBOARD_REPORT = ROOT.parent / "kbmodel/keyboard-report.json"
+SOURCE = ROOT.parent.parent / "tmp/issue91/termmodel2/meshes/front-s410.glb"
+KEYBOARD_REPORT = ROOT.parent.parent / "tmp/issue91/kbmodel/keyboard-report.json"
 HEIGHT = 1.75
 VOXEL_SIZE = .011
 FRONT_SIGN = -1
@@ -211,13 +211,27 @@ def main():
     # The display fits the inset front panel with a 10 mm border left visible.
     screen_left, screen_right = -.270, .270
     screen_bottom, screen_top = 1.345, 1.625
-    screen_y = -.510
+    screen_hits = []
+    deps = bpy.context.evaluated_depsgraph_get()
+    for screen_x in [screen_left + (screen_right-screen_left)*i/20 for i in range(21)]:
+        for screen_z in [screen_bottom + (screen_top-screen_bottom)*i/12 for i in range(13)]:
+            hit, location, normal, face_index, hit_object, material = bpy.context.scene.ray_cast(
+                deps, Vector((screen_x, -1.0, screen_z)), Vector((0, 1, 0)), distance=1.5
+            )
+            if hit and hit_object == obj:
+                screen_hits.append(location.y)
+    if len(screen_hits) != 21 * 13:
+        raise RuntimeError(f'Screen opening ray grid hit {len(screen_hits)}/273 terminal faces')
+    screen_frontmost_y = min(screen_hits)
+    screen_y = screen_frontmost_y - .002
     mesh=bpy.data.meshes.new('DisplayPlaneMesh'); mesh.from_pydata([(screen_left,screen_y,screen_bottom),(screen_right,screen_y,screen_bottom),(screen_right,screen_y,screen_top),(screen_left,screen_y,screen_top)],[],[(0,3,2,1)]); mesh.materials.append(screen_mat)
     display=bpy.data.objects.new('DisplayPlane',mesh); bpy.context.collection.objects.link(display)
     display['material']='Screen'; display['screen_boolean_cut']=False
+    display['frontmost_surface_y_m']=screen_frontmost_y
+    display['screen_offset_m']=.002
     paint=add_mat('OliveDrab_WornMetal',(.105,.145,.075),.25,.48); obj.data.materials.clear(); obj.data.materials.append(paint)
     # Screen socket locates the independently modeled display plane.
-    empty=bpy.data.objects.new('ScreenSocket',None); bpy.context.collection.objects.link(empty); empty.empty_display_type='CUBE'; empty.empty_display_size=.03; empty.location=(0,-.565,1.485)
+    empty=bpy.data.objects.new('ScreenSocket',None); bpy.context.collection.objects.link(empty); empty.empty_display_type='CUBE'; empty.empty_display_size=.03; empty.location=(0,screen_y-.004,1.485)
     empty['interface_dimensions_m']=[screen_right-screen_left,screen_top-screen_bottom]
     # Decimate only after booleans; preserve planar cuts, with collapse for final count.
     active(obj); dec=obj.modifiers.new('PlanarReduction','DECIMATE'); dec.decimate_type='DISSOLVE'; dec.angle_limit=math.radians(1.0); bpy.ops.object.modifier_apply(modifier=dec.name)
@@ -233,7 +247,7 @@ def main():
     scene.world.color=(.15,.15,.15); (ROOT/'renders').mkdir(exist_ok=True)
     for name,cam in cams.items():
         scene.camera=cam; scene.render.filepath=str(ROOT/'renders'/f'{name.lower()}.png'); bpy.ops.render.render(write_still=True)
-    report={'source':str(SOURCE),'source_dimensions_xyz_m':spans,'uniform_scale_to_1_75m':uniform,'axis_correction':[1,1,1],'final_dimensions_width_depth_height_m':dims,'voxel_size_m':VOXEL_SIZE,'component_count':component_count,'removed_tiny_component_faces':removed_faces,'source_sample_count':len(distances),'source_to_remesh_mean_distance_m':sum(distances)/len(distances),'source_to_remesh_max_sample_distance_m':max(distances),'triangles':triangles(obj),'boundary_edges':boundary,'nonmanifold_edges':nonmanifold,'back_plane_y_m':0.0,'screen_boolean_cut':False,'screen_plane':'DisplayPlane','render_samples':128,'resolution':[1920,1080]}
+    report={'source':str(SOURCE),'source_dimensions_xyz_m':spans,'uniform_scale_to_1_75m':uniform,'axis_correction':[1,1,1],'final_dimensions_width_depth_height_m':dims,'voxel_size_m':VOXEL_SIZE,'component_count':component_count,'removed_tiny_component_faces':removed_faces,'source_sample_count':len(distances),'source_to_remesh_mean_distance_m':sum(distances)/len(distances),'source_to_remesh_max_sample_distance_m':max(distances),'triangles':triangles(obj),'boundary_edges':boundary,'nonmanifold_edges':nonmanifold,'back_plane_y_m':0.0,'screen_frontmost_surface_y_m':screen_frontmost_y,'screen_plane_y_m':screen_y,'screen_offset_m':.002,'screen_ray_samples':len(screen_hits),'screen_boolean_cut':False,'screen_plane':'DisplayPlane','render_samples':128,'resolution':[1920,1080]}
     if NO_BAY:
         report['keyboard_bay_skipped']=True
     else:

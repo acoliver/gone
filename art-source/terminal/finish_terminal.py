@@ -9,8 +9,8 @@ import numpy as np
 from mathutils import Vector
 
 ROOT = Path(__file__).resolve().parent
-SCAN = ROOT.parent / "rustlook" / "art-source" / "steel"
-SURF = ROOT.parent / "rustlook" / "assets" / "surfaces" / "steel"
+SCAN = ROOT.parent.parent / "tmp/issue91/rustlook/art-source/steel"
+SURF = ROOT.parent.parent / "tmp/issue91/rustlook/assets/surfaces/steel"
 RES = 2048
 
 
@@ -361,7 +361,7 @@ def main():
         nt.links.new(tex.outputs["Color"], bs.inputs["Base Color"])
         out = nt.nodes.new("ShaderNodeOutputMaterial"); nt.links.new(bs.outputs[0], out.inputs["Surface"])
         return mat
-    wall_mat = surface_material("RustlookWall", ROOT.parent / "rustlook/assets/surfaces/wall/albedo.png")
+    wall_mat = surface_material("RustlookWall", ROOT.parent.parent / "tmp/issue91/rustlook/assets/surfaces/wall/albedo.png")
     bpy.ops.mesh.primitive_plane_add(size=1, location=(0, .035, 2.15), rotation=(math.radians(90), 0, 0))
     wall = bpy.context.object; wall.name = "PresentationWall"; wall.dimensions = (5.0, 4.3, 0); bpy.ops.object.transform_apply(location=False, rotation=False, scale=True); wall.data.materials.append(wall_mat)
     bpy.ops.mesh.primitive_plane_add(size=1, location=(0, 0, -.018))
@@ -418,7 +418,7 @@ def main():
               "bake_margin_px": scene.render.bake.margin, "bake_margin_type": scene.render.bake.margin_type,
               "textures": ["terminal_albedo.png", "terminal_normal.png", "terminal_orm.png", "terminal_ao.png"],
               "renders": renders, "screen_material": screen_mat.name,
-              "scan_sources": [str(p.relative_to(ROOT.parent)) for p in scan_paths.values()],
+              "scan_sources": [str(p.relative_to(ROOT.parent.parent)) for p in scan_paths.values()],
               "unmet": ["Fitted terminal topology exceeds 40000 triangles." if tri_after > 40000 else None,
                         "High-detail weld beads and bolt rows were not baked."]}
     (ROOT / "finish-report.json").write_text(json.dumps(report, indent=2) + "\n")
