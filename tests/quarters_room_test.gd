@@ -24,9 +24,9 @@ func test_room_envelope_clears_connectors_lifts_and_wells() -> void:
 		assert_false(QuartersLayout.envelope().intersects(spec.bounds()), "connector clearance")
 		assert_false(QuartersLayout.envelope().intersects(layout.lift(spec.lift_id()).bounds()), "lift clearance")
 		assert_false(QuartersLayout.envelope().intersects(layout.well(spec.well_id()).bounds()), "well clearance")
-	assert_int_equal(QuartersGeometry.shell().size(), 6, "five room faces plus the entrance head return")
+	assert_int_equal(QuartersGeometry.shell().size(), 9, "five room faces, three entrance inner panels and the head return")
 	var ids := ShipCollision.new(layout).solid_ids(16)
-	for part: String in ["FLOOR", "CEILING", "FORE", "AFT", "STARBOARD", "ENTRANCE-HEAD"]:
+	for part: String in ["FLOOR", "CEILING", "FORE", "AFT", "STARBOARD", "ENTRANCE-HEAD", "ENTRANCE-INNER-0", "ENTRANCE-INNER-1", "ENTRANCE-INNER-2"]:
 		assert_true(StringName("D16-QUARTERS/" + part) in ids, "shell collider " + part)
 
 func test_manual_release_uses_shared_sliding_door_and_clears_passage() -> void:
