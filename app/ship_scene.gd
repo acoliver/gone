@@ -3,6 +3,8 @@ extends RefCounted
 ## Shared structural construction and snapshot adapters. Roots pass these
 ## presenters to GameStep; scene nodes never advance door state.
 
+const Bounce := preload("res://app/real_bounce.gd")
+
 var stream: ShipStream
 var door_views: Array[DoorView] = []
 var _parent: Node3D
@@ -90,6 +92,7 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 		scene._add_hatch(id, null, scene.hallway)
 	scene.stream = ShipStream.build(scene, game, parent)
 	parent.add_child(scene.stream)
+	Bounce.prepare_geometry(parent, OS.get_environment(Bounce.ENVIRONMENT_VARIABLE))
 	return scene
 
 func prepare_near(foot: Vector3) -> void:
@@ -289,6 +292,7 @@ func build_remote(spec: ShipLayout.ConnectorSpec) -> Node3D:
 				_add_hatch_label(door, face)
 	_seat_connector_lamps(spec, root)
 	_add_lift_label(spec, root.lift_leaf)
+	Bounce.prepare_geometry(root, OS.get_environment(Bounce.ENVIRONMENT_VARIABLE))
 	return root
 
 func remove_remote(spec: ShipLayout.ConnectorSpec, root: Node3D) -> void:
@@ -305,6 +309,7 @@ func remove_remote(spec: ShipLayout.ConnectorSpec, root: Node3D) -> void:
 
 func _add_opening_node(node: Node3D) -> void:
 	_parent.add_child(node)
+	Bounce.prepare_geometry(node, OS.get_environment(Bounce.ENVIRONMENT_VARIABLE))
 	_opening_nodes.append(node)
 
 func set_opening_visible(show: bool) -> void:

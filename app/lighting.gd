@@ -8,6 +8,7 @@ extends Node3D
 ## over to six regular white ceiling strips. The bridge only reads Game;
 ## ambient stays black and fog stays off.
 
+const Bounce := preload("res://app/real_bounce.gd")
 const FIXTURE_LUMENS: float = 45.0
 const FIXTURE_RANGE: float = 6.0
 const EMERGENCY_POOL_RANGE: float = 2.5
@@ -319,6 +320,7 @@ static func _world_environment() -> WorldEnvironment:
 	environment.ambient_light_color = Color(0.0, 0.0, 0.0)
 	environment.ambient_light_energy = 0.0
 	environment.fog_enabled = false
+	Bounce.configure(environment, OS.get_environment(Bounce.ENVIRONMENT_VARIABLE))
 	var attributes := CameraAttributes.new()
 	attributes.exposure_multiplier = EXPOSURE_MULTIPLIER
 	var world := WorldEnvironment.new()
