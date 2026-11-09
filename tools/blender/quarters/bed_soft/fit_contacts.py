@@ -26,7 +26,7 @@ def main():
         back = 0 if name == 'Quilt' else headboard_shift(meshes[name], bed['Headboard'])
         meshes[name].apply_translation([0, 0, -back])
         shifts[name] = {'back_m': back, 'up_m': .001 - support_gap(meshes[name], meshes['Mattress'])}
-    path = ROOT / f'tmp/bed_soft/{args.state}-contact-shifts.json'
+    path = ROOT / f'tmp/bed_soft2/{args.state}-contact-shifts.json'
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(shifts, indent=2) + '\n')
     print(shifts, flush=True)
