@@ -13,6 +13,12 @@ static func shell() -> Array[ShipGeometry.SolidSpec]:
 		var x := b.position.x - wall / 2 if side < 0 else b.end.x + wall / 2
 		result.append(_solid("FORE" if side < 0 else "AFT", Vector3(x, b.get_center().y, b.get_center().z), Vector3(wall, b.size.y, b.size.z)))
 	result.append(_solid("STARBOARD", Vector3(b.get_center().x, b.get_center().y, b.end.z + wall / 2), Vector3(b.size.x + 2 * wall, b.size.y, wall)))
+	# Seal the pocket's head clearance over the passage, while leaving the
+	# clearance over the parked leaf behind the jamb untouched.
+	var door := ShipLayout.authored().layout.door(QuartersLayout.DOOR)
+	var head := _solid("ENTRANCE-HEAD", door.frame() * Vector3(0, door.aperture().y + SlidingDoorParts.POCKET_CLEARANCE / 2, wall / 2), Vector3(door.aperture().x, SlidingDoorParts.POCKET_CLEARANCE, SlidingDoorParts.POCKET_DEPTH))
+	head.surface_identity(QuartersLayout.SECTION, &"STARBOARD")
+	result.append(head)
 	return result
 
 static func furniture() -> Array[ShipGeometry.SolidSpec]:
