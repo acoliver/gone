@@ -231,7 +231,7 @@ def main():
     display['screen_offset_m']=.002
     paint=add_mat('OliveDrab_WornMetal',(.105,.145,.075),.25,.48); obj.data.materials.clear(); obj.data.materials.append(paint)
     # Screen socket locates the independently modeled display plane.
-    empty=bpy.data.objects.new('ScreenSocket',None); bpy.context.collection.objects.link(empty); empty.empty_display_type='CUBE'; empty.empty_display_size=.03; empty.location=(0,screen_y-.004,1.485)
+    empty=bpy.data.objects.new('ScreenSocket',None); bpy.context.collection.objects.link(empty); empty.empty_display_type='CUBE'; empty.empty_display_size=.03; empty.location=(0,screen_y,1.485)
     empty['interface_dimensions_m']=[screen_right-screen_left,screen_top-screen_bottom]
     # Decimate only after booleans; preserve planar cuts, with collapse for final count.
     active(obj); dec=obj.modifiers.new('PlanarReduction','DECIMATE'); dec.decimate_type='DISSOLVE'; dec.angle_limit=math.radians(1.0); bpy.ops.object.modifier_apply(modifier=dec.name)

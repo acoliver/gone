@@ -288,12 +288,12 @@ func _build_console(station: ConsoleStation) -> Node3D:
 		screen.name = "ScreenGlass"
 		screen.mesh = _box_mesh(Vector3(0.54, 0.28, 0.008))
 		screen.material_override = _screen_material
-		screen.transform = socket.transform
 		screen.visible = false
 		group.add_child(screen)
 		var terminal_fit := terminal.find_child("Terminal_GeneratedFit", true, false) as MeshInstance3D
 		assert(terminal_fit != null, "terminal GLB exports its fitted housing")
-		var plane_transform := display_plane.transform
+		var plane_transform := terminal.transform * display_plane.transform
+		screen.transform = plane_transform
 		var plane_bounds := display_plane.mesh.get_aabb()
 		var plane_size := Vector2(plane_bounds.size.x, plane_bounds.size.y)
 		var plane_center := plane_transform * plane_bounds.get_center()
@@ -316,7 +316,9 @@ func _build_console(station: ConsoleStation) -> Node3D:
 		dead_screen.name = "ScreenGlass"
 		dead_screen.mesh = _box_mesh(Vector3(0.54, 0.28, 0.008))
 		dead_screen.material_override = glass
-		dead_screen.transform = socket.transform
+		var dead_transform := terminal.transform * display_plane.transform
+		dead_transform.origin = dead_transform * display_plane.mesh.get_aabb().get_center()
+		dead_screen.transform = dead_transform
 		group.add_child(dead_screen)
 	return group
 

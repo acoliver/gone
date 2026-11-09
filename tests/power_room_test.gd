@@ -409,8 +409,18 @@ func test_generated_console_models_and_wall_mounts_are_present() -> void:
 	var plane_size := active_plane.mesh.get_aabb().size
 	assert_true(Vector2(plane_size.x, plane_size.y).is_equal_approx((active_quad.get_node("TextSurface").mesh as QuadMesh).size), "live text exactly covers the hidden display plane")
 	assert_false(active_station.get_node("ScreenGlass").visible, "active station does not put a second glass pane over its display")
-	assert_float_in_range(active_quad.position.distance_to(active_plane.transform * active_plane.mesh.get_aabb().get_center()), 0.003 - 0.0001, 0.003 + 0.0001, "live display sits 3 mm ahead of the imported screen face")
+	var plane_transform: Transform3D = (active_plane.get_parent() as Node3D).transform * active_plane.transform
+	var expected_display_position: Vector3 = plane_transform * active_plane.mesh.get_aabb().get_center() + plane_transform.basis.z * 0.003
+	assert_float_in_range(active_quad.position.distance_to(expected_display_position), -0.0001, 0.0001, "live display sits 3 mm ahead of the imported screen face")
 	assert_true(active_station.basis.z.dot(Vector3(27.0, 1.65, -5.8) - active_station.position) > 0.0, "imported screen normal points into the room")
+	var facing := Vector3(sin(PowerRoom.console_stations()[1].yaw), 0.0, cos(PowerRoom.console_stations()[1].yaw))
+	var tray_bounds := _test_world_aabb(active_station.get_node("KeyboardTray"), room)
+	var eye := _test_front_lip(tray_bounds, facing) + facing * 0.55
+	eye.y = 1.65
+	var surface := active_quad.get_node("TextSurface") as MeshInstance3D
+	var target := _test_transform_in_room(surface, room).origin
+	var first_hit := _test_first_triangle_hit(room, eye, target)
+	assert_true(first_hit == surface, "capture-height eye ray reaches live text before the terminal shell: " + str(first_hit))
 	var busted_tray := busted_station.get_node("KeyboardTray") as Node3D
 	assert_float_in_range(rad_to_deg(absf(busted_tray.rotation.x)), 6.9, 7.1, "busted tray droops seven degrees")
 	assert_false(busted_tray.get_node("Keycap 03 onset p").visible, "busted station is missing an onset keycap")
@@ -469,6 +479,67 @@ func test_power_room_prop_glbs_have_exact_mesh_sets() -> void:
 		wanted.sort()
 		assert_true(actual == wanted, "%s mesh names match the complete authored set: %s" % [path, actual])
 		model.free()
+
+func _test_transform_in_room(node: Node3D, room: Node3D) -> Transform3D:
+	var transform := Transform3D.IDENTITY
+	var current := node
+	while current != room:
+		transform = current.transform * transform
+		current = current.get_parent() as Node3D
+	return transform
+
+func _test_world_aabb(parent: Node3D, room: Node3D) -> AABB:
+	var result := AABB()
+	var initialized := false
+	var stack: Array[Node] = [parent]
+	while not stack.is_empty():
+		var node: Node = stack.pop_back()
+		if node is MeshInstance3D and node.mesh != null:
+			var local_bounds: AABB = node.get_aabb()
+			for x: float in [local_bounds.position.x, local_bounds.end.x]:
+				for y: float in [local_bounds.position.y, local_bounds.end.y]:
+					for z: float in [local_bounds.position.z, local_bounds.end.z]:
+						var point: Vector3 = _test_transform_in_room(node, room) * Vector3(x, y, z)
+						if initialized:
+							result = result.expand(point)
+						else:
+							result = AABB(point, Vector3.ZERO)
+							initialized = true
+		for child: Node in node.get_children():
+			stack.append(child)
+	assert_true(initialized, "terminal tray has mesh geometry")
+	return result
+
+func _test_front_lip(bounds: AABB, facing: Vector3) -> Vector3:
+	var lip := bounds.get_center()
+	var support := 0.0
+	for x: float in [bounds.position.x, bounds.end.x]:
+		for z: float in [bounds.position.z, bounds.end.z]:
+			support = maxf(support, Vector3(x - lip.x, 0.0, z - lip.z).dot(facing))
+	return lip + facing * support
+
+func _test_first_triangle_hit(root_node: Node, start: Vector3, finish: Vector3) -> MeshInstance3D:
+	var best := INF
+	var result: MeshInstance3D
+	var stack: Array[Node] = [root_node]
+	while not stack.is_empty():
+		var node: Node = stack.pop_back()
+		if node is MeshInstance3D and node.mesh != null and node.visible:
+			var faces: PackedVector3Array = node.mesh.get_faces()
+			for index: int in range(0, faces.size(), 3):
+				var node_transform := _test_transform_in_room(node, root_node as Node3D)
+				var a: Vector3 = node_transform * faces[index]
+				var b: Vector3 = node_transform * faces[index + 1]
+				var c: Vector3 = node_transform * faces[index + 2]
+				var point: Variant = Geometry3D.segment_intersects_triangle(start, finish, a, b, c)
+				if point != null:
+					var distance := start.distance_to(point)
+					if distance < best:
+						best = distance
+						result = node
+		for child: Node in node.get_children():
+			stack.append(child)
+	return result
 
 func _mesh_names(node: Node) -> Array[String]:
 	var names: Array[String] = []
