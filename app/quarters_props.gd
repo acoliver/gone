@@ -3,6 +3,25 @@ extends RefCounted
 ## Rigid quarters props keep one mesh; the transition swaps shared atlas sets.
 
 const STEEL := preload("res://app/shaders/quarters_steel.gdshader")
+const SOFA := preload("res://app/shaders/quarters_sofa.gdshader")
+const SOFA_ROOT := "res://assets/props/quarters/sofa/"
+const SOFA_WEAVE := preload(SOFA_ROOT + "weave.png")
+const SOFA_SETS := {
+	&"as_built": {
+		"albedo": preload(SOFA_ROOT + "as_built_albedo.png"),
+		"nodust": preload(SOFA_ROOT + "as_built_nodust.png"),
+		"normal": preload(SOFA_ROOT + "as_built_normal.png"),
+		"orm": preload(SOFA_ROOT + "as_built_orm.png"),
+		"masks": preload(SOFA_ROOT + "as_built_masks.png"),
+	},
+	&"aged": {
+		"albedo": preload(SOFA_ROOT + "aged_albedo.png"),
+		"nodust": preload(SOFA_ROOT + "aged_nodust.png"),
+		"normal": preload(SOFA_ROOT + "aged_normal.png"),
+		"orm": preload(SOFA_ROOT + "aged_orm.png"),
+		"masks": preload(SOFA_ROOT + "aged_masks.png"),
+	},
+}
 const STATES: Array[StringName] = [&"as_built", &"aged"]
 const PROPS := {
 	&"storage_locker_module": {
@@ -40,11 +59,23 @@ static func prepare_geometry(root: Node3D) -> void:
 
 
 static func material(prop: StringName, state: StringName) -> ShaderMaterial:
-	assert(PROPS.has(prop), "unknown quarters prop: %s" % prop)
+	assert(prop == &"sofa" or PROPS.has(prop), "unknown quarters prop: %s" % prop)
 	assert(STATES.has(state), "unknown quarters finish: %s" % state)
 	var identity := StringName("%s/%s" % [prop, state])
 	if _materials.has(identity): return _materials[identity]
 	var result := ShaderMaterial.new()
+	if prop == &"sofa":
+		result.shader = SOFA
+		for kind: String in SOFA_SETS[state]:
+			result.set_shader_parameter("baked_" + kind, SOFA_SETS[state][kind])
+		result.set_shader_parameter(&"weave", SOFA_WEAVE)
+		result.set_shader_parameter(&"aged_finish", state == &"aged")
+		for parameter: String in ["albedo_a", "albedo_b", "albedo_c"]:
+			result.set_shader_parameter(parameter, Surfaces.HATCH_DETAIL_TEXTURES[parameter])
+		result.set_shader_parameter(&"dust_enabled", true)
+		result.set_shader_parameter(&"diagnostic", 0)
+		_materials[identity] = result
+		return result
 	result.shader = STEEL
 	for kind: String in ["albedo", "normal", "orm"]:
 		result.set_shader_parameter("baked_" + kind, PROPS[prop][state][kind])
@@ -64,6 +95,11 @@ static func material(prop: StringName, state: StringName) -> ShaderMaterial:
 	return result
 
 static func apply(root: Node3D, prop: StringName, state: StringName) -> void:
+	if prop == &"sofa":
+		var finish := material(prop, state)
+		for node: Node in root.find_children("*", "MeshInstance3D", true, false):
+			(node as MeshInstance3D).material_override = finish
+		return
 	prepare_geometry(root)
 	if _face_layout.is_empty():
 		_face_layout = JSON.parse_string(FileAccess.get_file_as_string(FACE_ROOT + "face-layout.json"))["faces"]
