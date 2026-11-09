@@ -28,6 +28,7 @@ const SCANS: Array[String] = ["green_metal_rust", "rusty_painted_metal", "rusty_
 const ROLES := {
 	&"wall": {}, &"floor": {"floor_surface": true}, &"ceiling": {},
 	&"pipe": {"curved_surface": true}, &"subfloor": {"floor_surface": true},
+	&"collar_steel": {"colour_gain": Vector3(0.35, 0.30, 0.26), "curved_surface": true},
 	&"hatch_leaf": {"hatch_surface": true, "leaf_paint": true}, &"seal": {"hatch_surface": true}, &"sill": {"hatch_surface": true, "raised_base": true}, &"frame": {"hatch_surface": true},
 	&"hardware": {"hatch_surface": true, "wheel_surface": true, "curved_surface": true, "leaf_hardware": true},
 	&"wheel": {"hatch_surface": true, "wheel_surface": true, "wheel_only": true, "curved_surface": true, "hero_wheel": true},
@@ -73,13 +74,6 @@ class SurfaceFrame:
 	var bounds: AABB
 	var aperture := Vector2(1.08, 2.4)
 	var seed_offset: Vector3
-
-static func light_glass_material() -> StandardMaterial3D:
-	var result := StandardMaterial3D.new()
-	result.set_meta(&"surface_role", &"light_glass")
-	result.albedo_color = Color(0.72, 0.72, 0.70)
-	result.roughness = 0.8
-	return result
 
 static func hatch_runtime_textures() -> Dictionary:
 	var textures := {"hatch_painted": HATCH_PAINTED}

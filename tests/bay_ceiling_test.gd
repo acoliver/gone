@@ -13,7 +13,7 @@ func test_authored_layout_is_dense_flat_and_limits_damage_to_one_cluster() -> vo
 		var pose: Transform3D = row.pose
 		assert_float_in_range(pose.origin.y, 2.98999, 2.99001, "all panel flanges share the captured mechanical seat plane")
 		assert_true(pose.basis.is_equal_approx(Basis.IDENTITY), "grid panels stay aligned to the captured frame")
-	assert_int_equal(first.size(), 111, "111 perforated panels plus eight fitted utility cassettes fill 119 cells")
+	assert_int_equal(first.size(), 111, "111 perforated panels plus eight fitted service cassettes fill 119 cells")
 	assert_int_equal(counts.get(&"intact", 0), 109, "more than 90 percent of all 120 cells retain normal intact panels")
 	assert_int_equal(damaged.size(), 2, "only two adjacent panels carry localized mechanical damage")
 	assert_true(damaged.has(Vector2i(3, 9)) and damaged.has(Vector2i(2, 8)), "damage stays beside the one missing tile")
@@ -96,7 +96,7 @@ func _check_actual_panel_bodies_clear_services_and_light_cells_have_fitted_infil
 			for obstacle: AABB in obstacles:
 				assert_true(not box.grow(-0.00001).intersects(obstacle), "panel body clears a measured fixture/service housing: %s vs %s" % [box, obstacle])
 	var trims := root.get_node("ServiceCassettes")
-	assert_int_equal(trims.get_child_count(), 8, "six light cassettes and two small hatch-stem edge-cutout cassettes")
+	assert_int_equal(trims.get_child_count(), 8, "six beam apertures and two emergency-light stem cells have fitted cassettes")
 	assert_true(trims.has_node("Cassette_9_5") and trims.has_node("Cassette_9_6"), "the stem no longer deletes two whole cells")
 	for trim: MultiMeshInstance3D in trims.get_children():
 		var sheet_area := 0.0
@@ -105,12 +105,55 @@ func _check_actual_panel_bodies_clear_services_and_light_cells_have_fitted_infil
 			if box.size.y < 0.003: sheet_area += box.size.x * box.size.z
 			for obstacle: AABB in obstacles:
 				assert_true(not box.grow(-0.000001).intersects(obstacle), "cassette solid clears measured service housing: %s %s vs %s" % [trim.name, box, obstacle])
-		var minimum_area := 0.67 if String(trim.name).begins_with("Cassette_9_") else 0.45
-		assert_true(sheet_area > minimum_area, "purpose-built sheet fills cell except its real small service cutout")
+		if String(trim.name).begins_with("Cassette_9_"):
+			assert_true(sheet_area > 0.67, "stem cassette retains its small service cutout")
+		else:
+			assert_float_in_range(sheet_area, 0.4343, 0.4346, "beam cassette fills the cell except the 1.106 by 0.226 m aperture")
 	assert_int_equal(BayCeiling.layout().size() + trims.get_child_count(), 119, "only the explicitly failed cell is empty")
+	_beam_visibility_and_cassette_bearings(root, fixtures)
 	fixtures.free()
 	services.free()
 	root.free()
+
+func _beam_visibility_and_cassette_bearings(root: Node3D, fixtures: Node3D) -> void:
+	var solids: Array[AABB] = []
+	_collect_bounds(root, Transform3D.IDENTITY, solids)
+	var visible := 0
+	for fixture: Node in fixtures.find_children("CeilingFixture", "Node3D", true, false):
+		var parts: Array[AABB] = []
+		_collect_bounds(fixture, (fixture.get_parent() as Node3D).transform, parts)
+		var body: AABB = parts[0]
+		for part: AABB in parts.slice(1): body = body.merge(part)
+		assert_float_in_range(body.size.x, 1.0999, 1.1001, "actual beam export is 1.10 m long")
+		assert_float_in_range(body.size.z, 0.2199, 0.2201, "actual beam export is 0.22 m wide")
+		assert_float_in_range(body.position.y, 3.0999, 3.1001, "fixture bottom retains its slab mount")
+		var sight := AABB(Vector3(body.position.x, 2.8, body.position.z), Vector3(body.size.x, body.position.y - 2.8, body.size.z))
+		var clear := true
+		for solid: AABB in solids:
+			if sight.grow(-0.00001).intersects(solid): clear = false
+		assert_true(clear, "entire body, grille and lens footprint has an unobstructed upward sightline through the ceiling")
+		if clear: visible += 1
+	assert_int_equal(visible, 6, "all six generated fixtures remain visible through fitted apertures")
+	var ledges: Array[AABB] = []
+	for name: String in ["PanelSupportLedgersCross", "PanelSupportLedgersLong"]:
+		_collect_bounds(root.get_node("CarrierGrid/" + name), Transform3D.IDENTITY, ledges)
+	var contacts := 0
+	for trim: MultiMeshInstance3D in root.get_node("ServiceCassettes").get_children():
+		var parts := String(trim.name).split("_")
+		var center := Vector3(-5.4 + int(parts[1]) * 1.2, 2.988, -3.3 + int(parts[2]) * 0.6)
+		var sheets: Array[AABB] = []
+		_collect_bounds(trim, Transform3D.IDENTITY, sheets)
+		for offset: Vector3 in [Vector3(-0.586, 0, 0), Vector3(0.586, 0, 0), Vector3(0, 0, -0.286), Vector3(0, 0, 0.286)]:
+			var point := center + offset
+			var seated := false
+			var filled := false
+			for ledge: AABB in ledges:
+				if ledge.grow(0.000001).has_point(point) and absf(ledge.end.y - point.y) < 0.000001: seated = true
+			for sheet: AABB in sheets:
+				if sheet.grow(0.000001).has_point(point) and absf(sheet.position.y - point.y) < 0.000001: filled = true
+			assert_true(seated and filled, "service sheet bears on the shared frame at all four edges")
+			contacts += 1
+	print("CEILING_BEAM_VISIBILITY fixtures=%d unobstructed_whole_footprints=%d aperture_m=1.106x0.226 clearance_per_side_m=0.003 cassette_edge_contacts=%d" % [visible, visible, contacts])
 
 func _check_actual_ledger_surfaces_have_one_owner_at_every_junction() -> void:
 	var root := BayCeiling.build()
@@ -207,7 +250,7 @@ func _check_actual_panel_undersides_rest_on_continuous_ledge_faces() -> void:
 			assert_true(nearest < 0.00001, "exported flange ray rests on actual ledge face at %s, gap=%s" % [point, nearest])
 			max_gap = maxf(max_gap, nearest)
 			contacts += 1
-	assert_int_equal(contacts, 7531, "17 real mesh bearing samples on each retained side of 111 panels")
+	assert_int_equal(contacts, 7531, "17 real mesh bearing samples on each retained side of 111 fitted panels")
 	var bent := (root.get_node("CarrierGrid/BrokenEdgeFrameRail") as MeshInstance3D).mesh
 	assert_float_in_range(_underside(bent, Vector3(-1.8, 0, 1.8)), 2.94699, 2.94701, "failure lip bows 38 mm at center")
 	for x: float in [-2.38, -1.22]:

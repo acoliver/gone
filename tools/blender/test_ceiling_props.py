@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 class CeilingPropsTest(unittest.TestCase):
     def test_fitted_meshes_have_one_surface_and_stay_in_budget(self):
         manifest = json.loads((ROOT / 'assets/props/ceiling/manifest.json').read_text())
-        for name, budget in {'detector': 3000, 'sprinkler': 3000, 'duct': 2000, 'module': 1500}.items():
+        for name, budget in {'detector': 3000, 'sprinkler': 3000, 'duct': 2000}.items():
             with self.subTest(name=name):
                 bpy.ops.wm.read_factory_settings(use_empty=True)
                 bpy.ops.import_scene.gltf(filepath=str(ROOT / f'assets/props/ceiling/{name}.glb'))
@@ -47,6 +47,39 @@ class CeilingPropsTest(unittest.TestCase):
                     self.assertGreaterEqual(len(flat_body), 8)
                     for face in flat_body:
                         self.assertAlmostEqual(max(abs(v) for v in face.normal), 1, places=5)
+
+    def test_generated_fixture_has_metric_mount_and_separate_textured_glass(self):
+        bpy.ops.wm.read_factory_settings(use_empty=True)
+        path = ROOT / 'assets/props/ceiling/fixture.glb'
+        bpy.ops.import_scene.gltf(filepath=str(path))
+        meshes = [obj for obj in bpy.context.scene.objects if obj.type == 'MESH']
+        self.assertEqual(len(meshes), 4)
+        self.assertFalse(any(obj.type in ('LIGHT', 'CAMERA') for obj in bpy.context.scene.objects))
+        points = [obj.matrix_world @ vertex.co for obj in meshes for vertex in obj.data.vertices]
+        # Native Blender +Z is exported glTF +Y. The top seats directly at zero.
+        for axis, limits in enumerate([(-.55, .55), (-.11, .11), (-.10, 0)]):
+            self.assertAlmostEqual(min(p[axis] for p in points), limits[0], places=5)
+            self.assertAlmostEqual(max(p[axis] for p in points), limits[1], places=5)
+        triangles = 0
+        glass = []
+        for obj in meshes:
+            obj.data.calc_loop_triangles()
+            triangles += len(obj.data.loop_triangles)
+            self.assertEqual(len(obj.data.materials), 1)
+            material = obj.data.materials[0]
+            if material.name == 'RecessedFrostedGlass':
+                glass.append(obj)
+                shader = material.node_tree.nodes.get('Principled BSDF')
+                self.assertTrue(shader.inputs['Emission Color'].is_linked)
+                self.assertEqual(shader.inputs['Emission Strength'].default_value, 3)
+                self.assertLess(max((obj.matrix_world @ v.co).z for v in obj.data.vertices), -.08)
+        self.assertEqual(triangles, 2664)
+        self.assertLessEqual(triangles, 3000)
+        self.assertEqual(len(glass), 1)
+        manifest = json.loads((ROOT / 'assets/props/ceiling/manifest.json').read_text())
+        self.assertEqual(manifest['fixture']['triangles'], triangles)
+        self.assertNotIn('module', manifest)
+        self.assertFalse((path.parent / 'module.glb').exists())
 
 
 if __name__ == '__main__':

@@ -105,7 +105,6 @@ class DressingSpec:
 	var rib_pitch: float = ShipLayout.DRESSING_RIB_PITCH
 	var panel_pitch := ShipLayout.DRESSING_PANEL_PITCH
 	var rib_stations: Array[float] = []
-	var pipe_paths: Array[PackedVector3Array] = []
 	var kick_rail_paths: Array[PackedVector3Array] = []
 	var grate_footprint: AABB
 	var floor_patches: Array[AABB] = []
@@ -170,7 +169,8 @@ class SectionSpec:
 		var pitch := _bounds.size.x / 4
 		for station: int in range(4):
 			for side: int in [-1, 1]:
-				frames.append(Transform3D(Basis(), Vector3(_bounds.position.x + (station + 0.5) * pitch, _bounds.position.y + 2.65, _bounds.get_center().z + side * (_bounds.size.z / 2 - 0.10))))
+				# Seat the entire fixture inward of the continuous wall-top services.
+				frames.append(Transform3D(Basis(), Vector3(_bounds.position.x + (station + 0.5) * pitch, _bounds.position.y + 2.65, _bounds.get_center().z + side * (_bounds.size.z / 2 - 0.20))))
 		return frames
 	func regular_light_frames() -> Array[Transform3D]:
 		var frames: Array[Transform3D] = []
@@ -265,7 +265,9 @@ class ConnectorSpec:
 	func emergency_fixture_frames() -> Array[Transform3D]:
 		var frames: Array[Transform3D] = []
 		for side: int in [-1, 1]:
-			frames.append(Transform3D(Basis(), Vector3(_bounds.get_center().x + side * _bounds.size.x / 4, _bounds.position.y + 1.75, side * (_bounds.size.z / 2 - 0.30))))
+			# The positive-side duct requires the complete fixture, including its stem, farther inboard.
+			var z := side * (_bounds.size.z / 2 - 0.30) - (0.80 if side > 0 else 0.0)
+			frames.append(Transform3D(Basis(), Vector3(_bounds.get_center().x + side * _bounds.size.x / 4, _bounds.position.y + 1.75, z)))
 		frames.append(Transform3D(Basis(), landing_key_position()))
 		return frames
 	func service_reservations() -> Array[ServiceReservation]:
@@ -545,13 +547,11 @@ class BaySpec:
 		return result
 	func regular_light_frames() -> Array[Transform3D]:
 		var frames: Array[Transform3D] = []
-		# These six strips sit in the ceiling's service openings. The panel grid
-		# uses 1.2 x 0.6 m cells, with fixture frames 100 mm below the rails.
+		# Center each generated 1.10 m beam over a 1.18 m panel service area.
+		# Keep the fixture frame at the existing beam's authored ceiling mount plane.
 		for x: float in [-4.2, -0.6, 4.2]:
 			for z: float in [-1.5, 1.5]:
-				# The 1.15 m housing is 5 mm wider than the 1.145 m rail opening.
-				# Drop its frame 100 mm below the 3.12 m rails to clear that edge overlap.
-				frames.append(Transform3D(Basis(), Vector3(x, 3.02, z)))
+				frames.append(Transform3D(Basis(), Vector3(x, 3.12, z)))
 		return frames
 	func emergency_fixtures(registry: Pods.PodRegistry) -> Array[EmergencyFixtureSpec]:
 		var fixtures: Array[EmergencyFixtureSpec] = []

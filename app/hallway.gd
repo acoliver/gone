@@ -79,9 +79,6 @@ const FIXTURE_STATIONS_X: Array[float] = [9.0, 15.0, 21.0, POWER_DOOR_X]
 ## then the corridor's light — dim but ordinary — while the red
 ## emergency pair at every station hands off to them.
 const REGULAR_STATIONS_X: Array[float] = [9.0, 15.0, 21.0, POWER_DOOR_X]
-const REGULAR_LENS_SIZE: Vector3 = Vector3(1.15, 0.05, 0.18)
-const REGULAR_LENS_BASE_COLOR: Color = Color(0.72, 0.72, 0.70)
-const REGULAR_MOUNT_Y: float = HALL_CEILING_HEIGHT - 0.08
 
 const SIDE_DOOR_SHADE: float = HatchModel.DOOR_SHADE
 
@@ -99,7 +96,6 @@ var _white_fade: Intensity.FixtureFade = null
 var _white_lights: Array[OmniLight3D] = []
 var _white_end_fill: Lighting.RegularEndFill
 var _white_lenses: Array[MeshInstance3D] = []
-var _white_lens_mesh: BoxMesh = null
 var _white_lens_material: StandardMaterial3D = null
 var _remainder: float = 0.0
 
@@ -209,17 +205,12 @@ static func build(game: Game) -> Hallway:
 		hallway.add_child(hallway._fixture(fixture_transform, level))
 
 	var white_level := 1.0 if game.power_active else 0.0
-	hallway._white_lens_mesh = BoxMesh.new()
-	hallway._white_lens_mesh.size = REGULAR_LENS_SIZE
-	hallway._white_lens_material = Surfaces.light_glass_material()
-	hallway._white_lens_material.emission = Lighting.REGULAR_WHITE * Lighting.REGULAR_EMISSIVE * white_level
-	hallway._white_lens_mesh.material = hallway._white_lens_material
+	hallway._white_lens_material = CeilingFixture.glass_material(white_level)
 	var white_held: Intensity.Result = Intensity.FixtureFade.holding(white_level)
 	assert(white_held.is_ok(), "the white strip level maps to a valid fade")
 	hallway._white_fade = white_held.fade
 	for frame: Transform3D in game.layout.section(&"D14-S-041").regular_light_frames():
-		var fixture := hallway._white_fixture(frame.origin.x, white_level)
-		fixture.transform = frame
+		var fixture := hallway._white_fixture(frame, white_level)
 		hallway.add_child(fixture)
 	var section := game.layout.section(&"D14-S-041")
 	for position: Vector3 in section.emergency_fill_positions():
@@ -266,10 +257,10 @@ func _fixture(fixture_transform: Transform3D, level: float) -> Node3D:
 ## One regular-service strip: a ceiling lens down the centerline with
 ## its light just beneath, dead until the secondary power hands the
 ## corridor over from emergency red.
-func _white_fixture(station_x: float, level: float) -> Node3D:
+func _white_fixture(frame: Transform3D, level: float) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "HallRegularStrip"
-	fixture.position = Vector3(station_x, REGULAR_MOUNT_Y, 0.0)
+	fixture.transform = frame
 	var light := OmniLight3D.new()
 	light.light_color = Lighting.REGULAR_WHITE
 	light.light_energy = Lighting.regular_energy() * level
@@ -278,14 +269,7 @@ func _white_fixture(station_x: float, level: float) -> Node3D:
 	light.shadow_enabled = false
 	light.position = Vector3(0.0, -0.12, 0.0)
 	fixture.add_child(light)
-	DressingMounts.ceiling_stem(fixture, HALL_CEILING_HEIGHT, Surfaces.surface_frame(_game.layout, &"D14-S-041", &"CEILING"))
-	var lens := MeshInstance3D.new()
-	lens.name = "Lens"
-	lens.set_meta(&"lamp_circuit", "white")
-	lens.mesh = _white_lens_mesh
-	lens.position.y = 0.012
-	fixture.add_child(lens)
-	CeilingProps.armour(fixture, _game.layout, &"D14-S-041")
+	var lens := CeilingFixture.mount(fixture, _game.layout.section(&"D14-S-041").bounds().end.y, Lighting.architectural_mask(_game.layout, &"D14-S-041"), _white_lens_material)
 	_white_lights.append(light)
 	_white_lenses.append(lens)
 	return fixture

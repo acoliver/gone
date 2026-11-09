@@ -103,8 +103,6 @@ const RED_FIXTURE_POSITIONS: Array[Vector3] = [
 	Vector3(24.5, FIXTURE_WALL_MOUNT_Y, ROOM_END_Z + FIXTURE_STANDOFF),
 	Vector3(29.5, FIXTURE_WALL_MOUNT_Y, ROOM_END_Z + FIXTURE_STANDOFF),
 ]
-const REGULAR_LENS_SIZE: Vector3 = Vector3(1.15, 0.05, 0.18)
-const REGULAR_LENS_BASE_COLOR: Color = Color(0.72, 0.72, 0.70)
 const REGULAR_MOUNT_Y: float = ROOM_CEILING - 0.08
 const REGULAR_STATIONS_X: Array[float] = [24.0, ROOM_CENTER_X, 30.0]
 const REGULAR_STATIONS_Z: Array[float] = [-3.7, -7.7]
@@ -125,7 +123,6 @@ var _lens_mesh: BoxMesh = null
 var _lens_material: StandardMaterial3D = null
 var _white_lights: Array[OmniLight3D] = []
 var _white_lenses: Array[MeshInstance3D] = []
-var _white_lens_mesh: BoxMesh = null
 var _white_lens_material: StandardMaterial3D = null
 var _generator_light: OmniLight3D = null
 var _generator_ring_material: StandardMaterial3D = null
@@ -269,11 +266,7 @@ static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 	for position: Vector3 in RED_FIXTURE_POSITIONS:
 		room.add_child(room._fixture(position, level))
 
-	room._white_lens_mesh = BoxMesh.new()
-	room._white_lens_mesh.size = REGULAR_LENS_SIZE
-	room._white_lens_material = Surfaces.light_glass_material()
-	room._white_lens_material.emission = Lighting.REGULAR_WHITE * Lighting.REGULAR_EMISSIVE * white_level
-	room._white_lens_mesh.material = room._white_lens_material
+	room._white_lens_material = CeilingFixture.glass_material(white_level)
 	var white_held: Intensity.Result = Intensity.FixtureFade.holding(white_level)
 	assert(white_held.is_ok(), "the white strip level maps to a valid fade")
 	room._white_fade = white_held.fade
@@ -398,6 +391,12 @@ func _build_generator(glow_level: float) -> Node3D:
 	column.material_override = shell
 	column.position = Vector3(0.0, GENERATOR_HEIGHT / 2.0, 0.0)
 	group.add_child(column)
+	var collar := MeshInstance3D.new()
+	collar.name = "CeilingCollar"
+	collar.mesh = HatchModel.cylinder(GENERATOR_RADIUS + 0.08, 0.08)
+	collar.position.y = GENERATOR_HEIGHT - 0.04
+	collar.material_override = shell
+	group.add_child(collar)
 	_generator_ring_material = StandardMaterial3D.new()
 	_generator_ring_material.albedo_color = Color(0.07, 0.07, 0.08)
 	_generator_ring_material.metallic = 0.6
@@ -421,7 +420,7 @@ func _build_generator(glow_level: float) -> Node3D:
 	_generator_light.omni_range = 6.5
 	_generator_light.light_cull_mask = 1
 	_generator_light.shadow_enabled = false
-	_generator_light.position = Vector3(0.0, GENERATOR_HEIGHT - 0.7, 0.0)
+	_generator_light.position = Vector3(0.0, 1.9, 0.0)
 	group.add_child(_generator_light)
 	var glow_held: Intensity.Result = Intensity.FixtureFade.holding(glow_level)
 	assert(glow_held.is_ok(), "the generator's glow level maps to a valid fade")
@@ -451,7 +450,6 @@ func _white_fixture(station_x: float, station_z: float, level: float) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "PowerRegularStrip"
 	fixture.position = Vector3(station_x, REGULAR_MOUNT_Y, station_z)
-	DressingMounts.ceiling_stem(fixture, ROOM_CEILING, Surfaces.surface_frame(_game.layout, ShipLayout.POWER_ID, &"CEILING"))
 	var light := OmniLight3D.new()
 	light.light_color = Lighting.REGULAR_WHITE
 	light.light_energy = Lighting.regular_energy() * level
@@ -460,13 +458,7 @@ func _white_fixture(station_x: float, station_z: float, level: float) -> Node3D:
 	light.shadow_enabled = false
 	light.position = Vector3(0.0, -0.12, 0.0)
 	fixture.add_child(light)
-	var lens := MeshInstance3D.new()
-	lens.name = "Lens"
-	lens.set_meta(&"lamp_circuit", "white")
-	lens.mesh = _white_lens_mesh
-	lens.position.y = 0.012
-	fixture.add_child(lens)
-	CeilingProps.armour(fixture, _game.layout, ShipLayout.POWER_ID)
+	var lens := CeilingFixture.mount(fixture, ROOM_CEILING, 1 | Lighting.POWER_FILL_MASK, _white_lens_material)
 	_white_lights.append(light)
 	_white_lenses.append(lens)
 	return fixture

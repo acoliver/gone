@@ -1,0 +1,57 @@
+{
+  "objects": {
+    "Seed720_CleanedGeneratedBeam": 1258,
+    "GeneratedUnderside_ArmouredGrille": 992,
+    "RaisedRails_Rivets_GravityFasteners": 672,
+    "RecessedGlass_13mm": 12
+  },
+  "source_seed": 720,
+  "source_round": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round2/fixture.blend",
+  "louvre_thickness_m": 0.0095,
+  "louvre_edge_bevel_m": 0.00065,
+  "bent_louvre_centres_x_m": [
+    -0.14,
+    0.28
+  ],
+  "dent_depths_m": [
+    0.0014,
+    0.0019
+  ],
+  "body_bevel_m": 0.00085,
+  "body_bevel_segments": 2,
+  "channel_dimensions_m": [
+    1.014,
+    0.116,
+    0.024
+  ],
+  "side_shadow_gap_m": 0.01,
+  "rail_dimensions_m": [
+    0.985,
+    0.008,
+    0.0078
+  ],
+  "rail_chamfer_m": 0.00085,
+  "side_fasteners": [
+    {
+      "x": -0.3199999928474426,
+      "y": 0.0035191476345062256,
+      "z": -0.04500000178813934
+    },
+    {
+      "x": -0.3199999928474426,
+      "y": 0.10348322987556458,
+      "z": -0.04500000178813934
+    },
+    {
+      "x": 0.3199999928474426,
+      "y": -0.030014872550964355,
+      "z": -0.04500000178813934
+    },
+    {
+      "x": 0.3199999928474426,
+      "y": 0.10307016968727112,
+      "z": -0.04500000178813934
+    }
+  ],
+  "method": "Retained round-2 seed-720 body and perforated generated lower skin; wider body pocket, thick dented/chamfered louvres, raised rails, faired lower lip"
+}

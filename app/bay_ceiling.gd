@@ -44,13 +44,31 @@ static func service_bounds() -> Array[AABB]:
 	for fixture: ShipLayout.EmergencyFixtureSpec in ship.bay().emergency_fixtures(ship.bay().template()):
 		boxes.append(fixture.frame * AABB(-Lighting.LENS_SIZE / 2, Lighting.LENS_SIZE))
 		boxes.append(fixture.frame * AABB(Vector3(-0.0225, 0, -0.0225), Vector3(0.045, 3.2 - fixture.frame.origin.y, 0.045)))
+	var fixture_bounds: Array[AABB] = []
+	var fixture_asset := CeilingFixture.ASSET.instantiate() as Node3D
+	_collect_fixture_bounds(fixture_asset, Transform3D.IDENTITY, fixture_bounds)
+	fixture_asset.free()
+	assert(not fixture_bounds.is_empty(), "generated ceiling fixture has rendered mesh bounds")
+	var fixture_box := fixture_bounds[0]
+	for box: AABB in fixture_bounds.slice(1): fixture_box = fixture_box.merge(box)
 	for frame: Transform3D in ship.bay().regular_light_frames():
-		boxes.append(frame * AABB(Vector3(-0.575, -0.013, -0.09), Vector3(1.15, 0.05, 0.18)))
-		boxes.append(frame * AABB(Vector3(-0.0225, 0, -0.0225), Vector3(0.045, 0.18, 0.045)))
-		for pose: Transform3D in CeilingServices.module_poses(): boxes.append(frame * pose * CeilingProps.mesh(&"module").get_aabb())
+		var mount := frame
+		mount.origin.y = Pods.ROOM_CEILING_HEIGHT
+		var body := mount * fixture_box
+		boxes.append(body)
+		# Reserve the sightline beneath the slab-mounted beam as a fitted service aperture.
+		boxes.append(AABB(Vector3(body.position.x, PANEL_Y - 0.06, body.position.z), Vector3(body.size.x, body.position.y - PANEL_Y + 0.06, body.size.z)))
 	# CeilingVent nodes are audio emitters in the plenum, not solid housings.
 	# Air passes through the normal perforated panels at those four cells.
 	return boxes
+
+static func _collect_fixture_bounds(node: Node, parent: Transform3D, bounds: Array[AABB]) -> void:
+	var pose := parent
+	if node is Node3D: pose *= (node as Node3D).transform
+	if node is MeshInstance3D:
+		var mesh_node := node as MeshInstance3D
+		bounds.append(pose * mesh_node.mesh.get_aabb())
+	for child: Node in node.get_children(): _collect_fixture_bounds(child, pose, bounds)
 
 static func _clear(box: AABB, obstacles: Array[AABB]) -> bool:
 	for obstacle: AABB in obstacles:

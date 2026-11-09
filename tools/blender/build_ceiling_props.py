@@ -10,7 +10,7 @@ from mathutils import Vector
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / 'art-source/ceiling-props'
 OUTPUT = ROOT / 'assets/props/ceiling'
-BUDGETS = {'detector': 3000, 'sprinkler': 3000, 'duct': 2000, 'module': 1500}
+BUDGETS = {'detector': 3000, 'sprinkler': 3000, 'duct': 2000}
 
 
 
@@ -102,8 +102,6 @@ def build(name, budget):
     points = [Vector((v.co.x, v.co.z, -v.co.y)) for v in obj.data.vertices]
     if name == 'duct':
         points = [Vector((p.z, p.y, -p.x)) for p in points]
-    elif name == 'module':
-        points = [Vector((p.x, -p.z, p.y)) for p in points]
     low = Vector(tuple(min(p[a] for p in points) for a in range(3)))
     high = Vector(tuple(max(p[a] for p in points) for a in range(3)))
     extent = high - low
@@ -112,22 +110,6 @@ def build(name, budget):
         if name in ('detector', 'sprinkler') and p.z < -.40:
             p.z = -.5
         vertex.co = p
-    if name == 'module':
-        # Cut the generated glass backing out of the armour. Runtime glass
-        # retains the existing circuit and lens dimensions behind these slots.
-        import bmesh
-        bm = bmesh.new()
-        bm.from_mesh(obj.data)
-        remove = []
-        for face in bm.faces:
-            center = face.calc_center_median()
-            frame = abs(center.x) >= .43 or abs(center.z) >= .36
-            louvre = any(abs(center.x - x) < .018 for x in [-.30, -.10, .10, .30])
-            if not frame and not louvre:
-                remove.append(face)
-        bmesh.ops.delete(bm, geom=remove, context='FACES')
-        bm.to_mesh(obj.data)
-        bm.free()
     modifier = obj.modifiers.new('Budget', 'DECIMATE')
     modifier.ratio = min(1.0, (budget - 16) / max(1, len(obj.data.polygons)))
     bpy.context.view_layer.objects.active = obj
@@ -165,7 +147,8 @@ def build(name, budget):
 
 
 def main():
-    rows = {name: build(name, budget) for name, budget in BUDGETS.items()}
+    rows = json.loads((OUTPUT / 'manifest.json').read_text())
+    rows.update({name: build(name, budget) for name, budget in BUDGETS.items()})
     (OUTPUT / 'manifest.json').write_text(json.dumps(rows, indent=2) + '\n')
     print(json.dumps(rows, indent=2), flush=True)
 

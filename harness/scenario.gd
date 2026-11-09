@@ -104,6 +104,11 @@ static func parse(text: String) -> Dictionary:
 			if not (distance is int or distance is float) or not is_finite(float(distance)) or float(distance) < 0:
 				return {"scenario": null, "error": "beat camera_back must be a finite nonnegative distance"}
 			beat.camera_back = float(distance)
+		if entry.has("camera_pitch_up"):
+			var angle: Variant = entry.camera_pitch_up
+			if not (angle is int or angle is float) or not is_finite(float(angle)) or float(angle) < 0 or float(angle) > 90:
+				return {"scenario": null, "error": "beat camera_pitch_up must be a finite angle from zero to ninety degrees"}
+			beat.camera_pitch_up = float(angle)
 		scenario.beats.append(beat)
 	scenario.beats.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
 		return a.tick < b.tick)

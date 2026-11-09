@@ -121,8 +121,9 @@ func test_console_census_reads_exactly_one_working_screen() -> void:
 
 func test_generator_hull_guards_the_room_center() -> void:
 	var hull := PowerRoom.generator_solid()
-	assert_vec3_equal(hull.center, Vector3(27.0, 1.3, -5.7), "the generator's hull centers on the room")
-	assert_vec3_equal(hull.size, Vector3(1.6, 2.6, 1.6), "the hull is the column's conservative square")
+	# The column now meets the 3.2 m ceiling; its footprint and hull count stay fixed.
+	assert_vec3_equal(hull.center, Vector3(27.0, 1.6, -5.7), "the full-height generator's hull centers on the room")
+	assert_vec3_equal(hull.size, Vector3(1.6, 3.2, 1.6), "the hull follows the ceiling-height column")
 
 func test_collider_sets_extend_the_hallways_both_doors() -> void:
 	var registry := Pods.PodRegistry.frozen()

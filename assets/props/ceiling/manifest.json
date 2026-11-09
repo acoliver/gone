@@ -54,21 +54,23 @@
     ],
     "source": "tools/blender/build_ceiling_props.py"
   },
-  "module": {
-    "triangles": 1468,
-    "surfaces": 1,
+  "fixture": {
+    "triangles": 2664,
+    "surfaces": 4,
     "bounds": [
       [
-        -0.5,
-        -0.5,
-        -0.5
+        -0.550000011920929,
+        -0.10000000149011612,
+        -0.10999999940395355
       ],
       [
-        0.5,
-        0.5,
-        0.5
+        0.5499999821186066,
+        0.0,
+        0.10999999940395355
       ]
     ],
-    "source": "art-source/ceiling-props/module/mesh.glb"
+    "source": "art-source/ceiling-props/fixture/round6/fixture.blend",
+    "seed": 720,
+    "slot_count": 14
   }
 }
