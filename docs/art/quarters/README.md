@@ -283,6 +283,16 @@ Generated-face inspection found no apparent hardware, perspective objects or rep
 
 The fitted source is `tools/blender/quarters/sofa/sofa-working.blend`, and the game asset is `assets/props/quarters/sofa.glb`. The cushions and throw are baked Blender cloth meshes with no live modifiers. Authoring uses Blender Z up and front -Y. Export uses `export_yup=True`, giving the game +Y up and front +Z.
 
+### Material pilot: pass 10 accepted with known geometry failures
+
+Geometry iteration stops at pass 10 by Andrew's decision. The anchored comparison against `sheets/sofa/aged-target.png` rated pass 10 at 60% shape/damage match, versus 38–55% for pass 11. Much of the remaining difference concerns dusty faded fabric, grime and brown debris contrast, so this pilot proceeds to materials without changing geometry thresholds.
+
+A Hunyuan mesh generated from the aged target was tried as a shape guide under `tmp/hy/aged/`. It did not improve on pass 10 and is not used for the pilot.
+
+The accepted source is `tmp/age/pass10/sofa-preview.blend` and its candidate GLB, recorded by `e691a80`. `sofa_pass10_remeasure.py` applies pass 11's combined R+G antialiased coverage and open-lip metrics to the pass-10 camera diagnostics, plus a matching arm-crease close camera. Physical pass-10 panel boundaries select tear contours; seam gape/fringe requirements remain in force. Full per-outline measurements are saved in `tools/blender/quarters/sofa/pass10-material-pilot-gates.json`.
+
+Known pilot limitations remain: G1 right-back sharp adjacency is **9.426987%**, above **8%**; G3 straight runs reach **47.942674 px**, above **12 px**; G4 includes width CV **0.016485**, below **0.35**; G6 resolved contour dimensions span **1.030141–1.202918**, outside **1.15–1.40**. The centre/left backs and throw have no qualifying 64 px contour for G6 and fail rather than being omitted. G1, G3, G4 and G6 fail; the other 18 of 22 gates retain their measured passing results. Publication is allowed only by the explicit pilot geometry exception, not by a claim that these gates pass.
+
 ### Pass 11: visible-boundary controls, candidate in progress
 
 The fixed target is `sheets/sofa/aged-target.png`, depicting 1000 years of
