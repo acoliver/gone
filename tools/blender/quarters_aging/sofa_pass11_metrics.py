@@ -52,6 +52,7 @@ def visible_gashes(cloth, segments, radius=12., occluded=None):
                     widths = 2*distances[skeleton]
                     width = float(widths.std()/widths.mean())
             result.append(dict(length_px=length, longest_straight_run_px=longest,
+                               maximum_extent_px=float(np.ptp(run, axis=0).max()),
                                contour_dimension=contour_dimension(run), width_cv=width,
                                closed=closed, bounds_px=[run.min(0).tolist(), run.max(0).tolist()],
                                points=run))

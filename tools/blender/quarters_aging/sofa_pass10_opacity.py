@@ -87,14 +87,15 @@ def opening_for(obj):
     return {'centre': np.array(hit), 'tangent': np.array(tangent), 'across': np.array(across)}
 
 
-def opacity(obj, out, seed, size=2048):
+def opacity(obj, out, seed, size=2048, coverage=None, opening_factory=None):
     samples = boundary_samples(boundary_segments(obj), .00025)
     tree = KDTree(len(samples))
     for index, p in enumerate(samples):
         tree.insert(p, index)
     tree.balance()
     positions = np.array([obj.matrix_world@v.co for v in obj.data.vertices])
-    opening = opening_for(obj)
+    opening = (opening_factory or opening_for)(obj)
+    coverage = coverage or torn_coverage
     obj.data.calc_loop_triangles()
     uv = obj.data.uv_layers['BakeUV'].data
     mask = np.ones((size, size), dtype=np.float32)
@@ -121,7 +122,7 @@ def opacity(obj, out, seed, size=2048):
         roots = np.array([q[0] for q in nearest])
         distances = np.array([q[2] for q in nearest])
         tile = mask[low[1]:high[1]+1, low[0]:high[0]+1]
-        tile[inside] = torn_coverage(p, distances, roots, seed, opening)
+        tile[inside] = coverage(p, distances, roots, seed, opening)
     rgba = np.ones((size, size, 4), dtype=np.float32)
     rgba[:, :, :3] = mask[:, :, None]
     out = Path(out)

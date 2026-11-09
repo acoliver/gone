@@ -82,7 +82,8 @@ def opening_sources(obj):
 
 
 def deposit(source, out, library, seed=9666, visible_deposits=False,
-            nonfloor_median=None, deck_target=20):
+            nonfloor_median=None, deck_target=20, floor_counts=(2, 2, 1, 1, 0),
+            floor_radius=.24, floor_spacing=.024, floor_median=.005, front_lip_target=12):
     bpy.ops.wm.open_mainfile(filepath=str(source))
     record = json.loads(bpy.context.scene['sofa_decay_record'])
     rng = np.random.default_rng(seed)
@@ -102,7 +103,7 @@ def deposit(source, out, library, seed=9666, visible_deposits=False,
         nonlocal rejected
         index = len(pieces)
         template, points, faces = templates[index % len(templates)]
-        median = .011 if visible_deposits and not floor else .005
+        median = .011 if visible_deposits and not floor else floor_median
         if not floor and nonfloor_median is not None:
             median = nonfloor_median
         size = float(np.clip(rng.lognormal(np.log(median), .55), .002, .025))
@@ -150,15 +151,15 @@ def deposit(source, out, library, seed=9666, visible_deposits=False,
         # Most foam stays on the deck. Only the leaking front lips seed a
         # sparse floor tail; the powder drift belongs under those openings.
         cx = float(np.mean([middle.x for middle, _ in lips]))
-        radii = np.linspace(0, .24, 6)
-        for band, target in enumerate((2, 2, 1, 1, 0)):
+        radii = np.linspace(0, floor_radius, 6)
+        for band, target in enumerate(floor_counts):
             count, attempts = 0, 0
             while count < target and attempts < 10000:
                 attempts += 1
                 radius = np.sqrt(rng.uniform(radii[band]**2, radii[band+1]**2))
                 angle = rng.uniform(-np.pi/2, np.pi/2)
                 xy = np.array([cx+radius*np.sin(angle), -.478-radius*np.cos(angle)])
-                if floor_positions and min(np.linalg.norm(xy-p) for p in floor_positions) < .024:
+                if floor_positions and min(np.linalg.norm(xy-p) for p in floor_positions) < floor_spacing:
                     continue
                 count += int(place(xy, True, source_index))
             if count != target:
@@ -176,7 +177,7 @@ def deposit(source, out, library, seed=9666, visible_deposits=False,
             x = rng.uniform(cx-.20, cx+.20)
             y = rng.uniform(-.420, -.345)
             lip_accepted += int(place((x, y), False, source_index))
-            if lip_accepted >= 12:
+            if lip_accepted >= front_lip_target:
                 break
         powder = powder_card('PowderSpill_'+name, (cx, -.325, .3912),
                              (.20+source_index*.027, .018+source_index*.001),
@@ -226,7 +227,7 @@ def deposit(source, out, library, seed=9666, visible_deposits=False,
                          'support_objects': [o.name for o in support_objects],
                          'seed': seed, 'templates': [t[0] for t in templates], 'placements': placements,
                          'spills': spills, 'rejected_contacts': rejected,
-                         'floor_minimum_spacing_m': .024, 'powder_support_clearance_m': .0005,
+                         'floor_minimum_spacing_m': floor_spacing, 'powder_support_clearance_m': .0005,
                          'crumb_support_clearance_m': .0007,
                          'powder_note': 'Sub-millimetre powder represented by alpha cards; fragments clear their geometric card planes.'}
     checkpoint(out, record, 'deposited.blend')
