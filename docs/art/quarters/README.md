@@ -496,6 +496,12 @@ The lit captures are `tmp/fit/sofa/cloth2/compare-hero.png`, `compare-detail.png
 
 The tunic now comes from Blender cloth simulation. The hand-modelled pilot rated 2/10: its waist was pinched, its sleeves were detached cylinders, and its collar and shoulders had visible voids. A sewn pattern lets gravity and fabric strain produce the hanging shape. The design remains `docs/art/quarters/sheets/dress_uniform/hero.png`; the filled Hunyuan torso is only a silhouette reference.
 
+### Tunic9: open-lip measurement and material diagnosis
+
+This pass starts from the settled tunic8 checkpoint, without rerunning or replacing its solve. The armhole opening intentionally connects to the exterior. By the gate author's decision, G3, G4 and G6 now trace each visible tear lip as an open polyline in both the hero and close cameras, regardless of whether the gap is enclosed. G3 still limits straight runs to 12 px; G4 still requires width CV of at least 0.35 along each gap; G6 still requires dimension 1.15 to 1.40 on lip contours at least 64 px long. Endpoints are not joined by an artificial closing edge. Cloth silhouettes are selected near projected physical tear lips after alpha testing, so an unrelated garment outline is not a tear.
+
+The cards-only controls are under `tmp/age/tunic9/diagnosis/`. The exported fringe has linked alpha, two-sided rendering and a non-colour normal map. Disconnecting that normal map leaves the dark strands. Its median RGB bytes represent sRGB 0.067/0.075/0.094, far darker in linear light than the wool's 0.025/0.043/0.080 albedo. A fixed-linear-colour control lightens those same cards without changing their geometry or alpha. The image-comparer confirms the spikes in the isolated original cards and their persistence with the rim hidden. It also identifies a residual narrow seam at the collar/shoulder junction; the material control alone does not resolve that geometry.
+
 ### Tunic8: 16 of 19 gates pass, not shipped
 
 The candidate and checkpoints stay under `tmp/age/tunic8/final/`. G3, G4 and G6 fail, so the shipped tunic and textures are unchanged. This pass retains the source-grid rest carrier, attachment frames and curled fallen strips. No shared aging module was edited.

@@ -17,8 +17,10 @@ sys.path.insert(0, str(ROOT / 'tools/blender/quarters_aging'))
 from seat_image_gates import evaluate, visible_dihedrals
 
 THRESHOLDS = {'G1': '<= 0.06 visible sharp adjacency', 'G2': '<= 0.02 normal-jump pixels',
-              'G3': '<= 12 px longest straight opening contour', 'G4': '>= 0.35 opening width CV',
-              'G5': '>= 0.30 lip length lifted >3 mm', 'G6': '1.15..1.40 contour dimension',
+              'G3': '<= 12 px straight runs on visible open tear lips, hero and close',
+              'G4': '>= 0.35 width CV along each visible tear gap, hero and close',
+              'G5': '>= 0.30 lip length lifted >3 mm',
+              'G6': '1.15..1.40 dimension on visible open lip contours of length >=64 px',
               'G20': '<= 0.10 sharp adjacency within 120 mm of hanger',
               'G21': '0 hanger pixels outside split hull inside unaged cloth mask',
               'G22': '<= 0.45 maximum camera-depth / camera-width at 25%, 50%, 75% sleeve length',
@@ -174,10 +176,19 @@ def measure(out, images):
         from diagnostic_labels import decode_labels
         labels = decode_labels(rgb)
         measures = evaluate(labels, np.array(Image.open(images / 'tunic-normals.png').convert('RGB')))
-        for key in ['G2', 'G3', 'G4', 'G6']:
-            item = measures[key]
-            put(key, item.get('value', item.get('fraction')), item['pass'])
-        gates['opening_measurements'] = measures['openings']
+        put('G2', measures['G2']['fraction'], measures['G2']['pass'])
+        from lip_metrics import evaluate_lips
+        cameras = json.loads((images / 'tunic-cameras.json').read_text())
+        views = []
+        for camera in ['hero-labels', 'labels']:
+            picture = np.array(Image.open(images / f'tunic-{camera}.png').convert('RGB'))
+            decoded = decode_labels(picture)
+            views.append((camera, (decoded == 1) | (decoded == 2), cameras[camera]['tear_lips']))
+        lips = evaluate_lips(views)
+        for key in ['G3', 'G4', 'G6']:
+            item = lips[key]
+            put(key, item['value'], item['pass_gate'])
+        gates['opening_measurements'] = lips['openings']
     if (images / 'visible-faces.npz').exists() and (images / 'tunic-faces.png').exists():
         source = np.load(images / 'visible-faces.npz')
         views = [images / 'tunic-faces.png']+sorted(images.glob('tunic-faces-*.png'))

@@ -15,8 +15,47 @@ from render import aim, render
 from seat_render import diagnostic_material
 
 
+def lip_seeds(sheet, scene, camera):
+    vertices, faces, uv = sheet['vertices'], sheet['faces'], sheet['uv']
+    edges = {}
+    for face, pattern in zip(faces, uv):
+        for i, j in [(0, 1), (1, 2), (2, 0)]:
+            edges.setdefault(tuple(sorted((int(face[i]), int(face[j])))), []).append(pattern[[i, j]])
+    groups = {'shoulder': {'front': [], 'back': []}, 'armhole': {'body': [], 'sleeve': []}}
+    for edge, patterns in edges.items():
+        if len(patterns) != 1:
+            continue
+        pattern = patterns[0]
+        points = vertices[list(edge)]
+        if points[:, 0].min() <= .075:
+            continue
+        u, v = pattern[:, 0], pattern[:, 1]
+        group = None
+        if u.max() < 1. and np.max(np.abs(v-.94)) < .001:
+            group = groups['shoulder']['front' if u.mean() < .48 else 'back']
+        elif u.min() > 1.09 and u.max() < 1.56 and v.max() < .001:
+            group = groups['armhole']['sleeve']
+        elif (u.max() < 1. and v.min() > .66 and v.max() < .96 and
+              min(np.max(np.abs(u-.46)), np.max(np.abs(u-.97))) < .003):
+            group = groups['armhole']['body']
+        if group is not None:
+            pixels = [world_to_camera_view(scene, camera, Vector(p)) for p in points]
+            group.append([[(1-p.y)*1422, p.x*1600] for p in pixels])
+    result = {}
+    for tear, sides in groups.items():
+        result[tear] = {}
+        for side, segments in sides.items():
+            target = Vector((.23, 0., -.25))
+            a = world_to_camera_view(scene, camera, target)
+            b = world_to_camera_view(scene, camera, target+Vector((.008, 0, 0)))
+            radius = max(3., float(np.hypot((b.x-a.x)*1600, (b.y-a.y)*1422)))
+            result[tear][side] = dict(segments_yx=segments, radius_px=radius)
+    return result
+
+
 def diagnostics(asset, out):
     record = {}
+    sheet = np.load(asset.parent / 'game-sheet.npz')
     for mode in ['labels', 'normals', 'faces', 'faces-30', 'faces-120', 'faces-210',
                  'faces-300', 'hero-labels', 'hero-before']:
         bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -93,6 +132,8 @@ def diagnostics(asset, out):
         record[mode] = dict(distance_m=float((camera.location-target).length), lens_mm=data.lens,
                             position_blender_m=list(camera.location), look_at_blender_m=list(target),
                             projection=data.type, resolution=[1600, 1422])
+        if mode in ['labels', 'hero-labels']:
+            record[mode]['tear_lips'] = lip_seeds(sheet, scene, camera)
         bpy.ops.render.render(write_still=True)
     (out / 'tunic-cameras.json').write_text(json.dumps(record, indent=2)+'\n')
 
