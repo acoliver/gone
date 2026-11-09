@@ -25,7 +25,7 @@ def control_setup(asset, mode, setup):
                 for link in list(shader.inputs['Alpha'].links):
                     mat.node_tree.links.remove(link)
                 shader.inputs['Alpha'].default_value = 0
-            if mode == 'hard-alpha' and mat.name.startswith('WoolFringeShoulderSoft'):
+            if mode == 'hard-alpha' and mat.name.startswith(('WoolFringeShoulderSoft', 'WoolCutEdgeShoulderSoft')):
                 alpha = shader.inputs['Alpha'].links[0].from_socket
                 cutoff = mat.node_tree.nodes.new('ShaderNodeMath')
                 cutoff.operation = 'ROUND'
