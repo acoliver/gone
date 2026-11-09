@@ -23,10 +23,15 @@ def key(obj, face):
 
 
 supports = {key(body, face) for face in body.data.polygons if any(i in protected for i in face.vertices)}
+uv = body.data.uv_layers[0].data
+sleeves = {key(body, face) for face in body.data.polygons
+           if any(uv[i].uv.x > 1. for i in face.loop_indices)}
 original = {tuple(v.co) for v in body.data.vertices}
 low, report = reduce_body(body, 7100)
-assert supports <= {key(low, face) for face in low.data.polygons}
+result = {key(low, face) for face in low.data.polygons}
+assert supports <= result
+assert sleeves <= result, 'Panel reduction must not retessellate the settled sleeves'
 assert {tuple(v.co) for v in low.data.vertices} <= original
 assert report['triangles'] <= 7100
 assert report['boundary_hausdorff_upper_m'] <= .000126
-print('PASS: exact support faces, no vertex motion, preserved boundary and the wool triangle budget')
+print('PASS: exact support and sleeve faces, no vertex motion, preserved boundary and wool triangle budget')

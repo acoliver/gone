@@ -14,11 +14,22 @@ bpy.ops.wm.open_mainfile(filepath=str(ROOT/'tmp/age/tunic11/visible/baked.blend'
 body = bpy.data.objects['TunicBody']
 pattern = vertex_pattern(body)
 before = np.array([v.co[:] for v in body.data.vertices])
+from mathutils.bvhtree import BVHTree
+board = bpy.data.objects['ShoulderBoard_L']
+tree = BVHTree.FromObject(board, bpy.context.evaluated_depsgraph_get())
+distance = np.array([tree.find_nearest(board.matrix_world.inverted() @ (body.matrix_world @ v.co))[3]
+                     for v in body.data.vertices])
 open_shoulder(body)
 after = np.array([v.co[:] for v in body.data.vertices])
-np.testing.assert_array_equal(before[pattern[:, 0] < .48], after[pattern[:, 0] < .48])
+front = pattern[:, 0] < .48
+np.testing.assert_array_equal(before[front & (distance <= .008)], after[front & (distance <= .008)])
+np.testing.assert_array_equal(before[front & (pattern[:, 1] < .88)], after[front & (pattern[:, 1] < .88)])
+free_front = front & (pattern[:, 1] > .93) & (before[:, 0] > .18) & (before[:, 0] < .235)
+free_front &= distance > .014
+assert free_front.any()
+assert np.median((after-before)[free_front, 1]) < -.005, 'The free front lip must emerge in front of the board'
 rear = (pattern[:, 0] > .48) & (pattern[:, 0] < 1) & (pattern[:, 1] > .93)
 rear &= (before[:, 0] > .18) & (before[:, 0] < .235) & (before[:, 1] > .008)
 assert rear.any()
 assert np.median((after-before)[rear, 1]) > .003
-print('PASS: rear shoulder lip opens while the front fitting-support ply is unchanged')
+print('PASS: both free shoulder lips open while actual front fitting-support cloth stays fixed')

@@ -29,11 +29,20 @@ def open_shoulder(body):
     support_back = max((board.matrix_world @ vertex.co).y for vertex in board.data.vertices)+.002
     protected &= points[:, 1] <= support_back
     fade[protected] = 0.
-    for vertex, weight in zip(body.data.vertices, fade):
-        vertex.co.y += .008*weight
-        vertex.co.z += .004*weight
+    from mathutils.bvhtree import BVHTree
+    tree = BVHTree.FromObject(board, bpy.context.evaluated_depsgraph_get())
+    inverse = board.matrix_world.inverted()
+    clearance = np.array([tree.find_nearest(inverse @ (body.matrix_world @ vertex.co))[3]
+                          for vertex in body.data.vertices])
+    front = smoothstep((points[:, 0]-.165)/.025)*smoothstep((.255-points[:, 0])/.025)
+    front *= smoothstep((v-.88)/.06)*(u < .48)*smoothstep((clearance-.008)/.006)
+    for vertex, weight, forward in zip(body.data.vertices, fade, front):
+        vertex.co.y += .008*weight-.012*forward
+        vertex.co.z += .004*weight+.002*forward
     recalc(body)
     return dict(maximum_rear_lip_motion_m=float(fade.max()*np.hypot(.008, .004)),
+                maximum_front_lip_motion_m=float(front.max()*np.hypot(.012, .002)),
+                fitting_support_clearance_limit_m=.008,
                 retained_binding_and_fitting_supports_unchanged=True)
 
 
