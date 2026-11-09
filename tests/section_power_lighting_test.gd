@@ -65,7 +65,7 @@ func test_quarters_reveal_bounce_is_local_and_follows_the_same_power_handoff() -
 			assert_int_equal(light.light_cull_mask, Lighting.QUARTERS_MASK, "bounce cannot illuminate corridor surfaces without the quarters receiver layer")
 			assert_true(is_equal_approx(light.omni_range, 1.8), "bounce remains local to the entrance hardware")
 		for light: OmniLight3D in regular:
-			assert_true(is_equal_approx(light.light_energy, Lighting.regular_energy() * Lighting.REGULAR_END_FILL_SHARE if active else 0.0), "regular end-bounce profile follows secondary")
+			assert_true(is_equal_approx(light.light_energy, Lighting.regular_energy() * 0.72 if active else 0.0), "local reveal-bounce energy follows secondary")
 		for light: OmniLight3D in emergency:
 			assert_true(is_equal_approx(light.light_energy, 0.0 if active else Lighting.emergency_energy() * Lighting.EMERGENCY_END_FILL_SHARE), "emergency end-bounce profile follows emergency")
 	section.free()
