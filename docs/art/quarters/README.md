@@ -496,6 +496,50 @@ The lit captures are `tmp/fit/sofa/cloth2/compare-hero.png`, `compare-detail.png
 
 The tunic now comes from Blender cloth simulation. The hand-modelled pilot rated 2/10: its waist was pinched, its sleeves were detached cylinders, and its collar and shoulders had visible voids. A sewn pattern lets gravity and fabric strain produce the hanging shape. The design remains `docs/art/quarters/sheets/dress_uniform/hero.png`; the filled Hunyuan torso is only a silhouette reference.
 
+### Tunic8: 16 of 19 gates pass, not shipped
+
+The candidate and checkpoints stay under `tmp/age/tunic8/final/`. G3, G4 and G6 fail, so the shipped tunic and textures are unchanged. This pass retains the source-grid rest carrier, attachment frames and curled fallen strips. No shared aging module was edited.
+
+The source retained an upper-back arc that held the sleeve at the shoulder. Its permanent holds are on the opposite shoulder. The armhole split now releases the upper cap and retains the low underarm bridge. The pressed rest lets free cap material fall 60 mm and move outward 25 mm, fading over 100 mm of geodesic distance from the retained stitches. An intermediate vertical-only drop produced a median opening of 16.430 mm, below the required 25 mm; lowering the cap alone left its edge beside the body outline. The physical opening audit uses the median continuous lip clearance, so a single wide sample cannot pass it. The isolated capsule control implicates coupled cap/body loading in G22; it does not isolate the contribution of each new setting.
+
+The dark shoulder triangles had several causes. Independent per-triangle attachment frames folded the board facings into themselves and through the wool. Coherent board poses followed by paired normal-ray columns remove tangential point snapping while allowing the sewn boards to bend. The released board slips 20 mm down the front ply. The retained board keeps its source frame, seats 10 mm inward and bends across a 9.5 mm transverse radius. A separate rim defect assumed Solidify appended one copy per original vertex. Rim-only Solidify copies boundary vertices only; a preserved source-ID attribute now identifies the correct base for compression. A finite 0.1 mm minimum keeps unresolved overpacking detectable by SAT. The rim also inherited a tangent-space normal map despite its collapsed UVs. Its material now uses geometric normals while retaining alpha; the broad wool sheet keeps its normal map. The normal-input regression fails before this change and passes afterward.
+
+The regular hem came from three horizontal cuts at the same 38 mm pattern height, with vertical ends. Unequal scalloped runs now use varying 12 to 49 mm pattern heights and sloped end cuts. The mound had enough mass but spread it over too broad a footprint. A narrower smooth deposition envelope concentrates the same lost wool into a taller central mound. The three fallen strips retain their cloth solve and curl. The separate eight-triangle dust backing card was a flat decal and is removed. These changes pass the geometric hem and mound gates but do not establish their visual success.
+
+Mass, springs, pin stiffness and material damping are co-scaled by 0.05; air damping stays at 10. The settled 200 mm swatch control differs by 0.0371 mm against a 3 mm limit. The coupled garment uses 2 mm self/object contacts, quality 30, and a 150-frame temporary shoulder-pin release. Persistent motion is checked before freezing. This addresses the underdamped motion behind the lumpy torso folds. The image-comparer describes shallow longitudinal folds and still rejects the broad fabric as too smooth and clean to convey aged wool.
+
+Post-reduction push-out measures actual triangle crossings against the hanger, collar and sewn fittings. Medal metal is seated rigidly; its ribbon follows paired flexible columns over both wool and ribbon bar. The final seating runs after the wool rim is built. The retained neckline hold now reaches x = -0.085 m rather than stopping at -0.100 m. A ray probe located two intermediate G21 pixels at x about -0.097 m, beside the unheld neckline. Extending the hold shifted the two pixels but did not eliminate them. At their final positions, geometry intercepted both rays ahead of the wire, but the exported wool alpha was zero. The lip-opacity pass had also perforated the reinforced neckline. Keeping that sewn binding opaque restores G21 to zero; a regression fails on both texels before the fix and passes afterward. The camera and zero-pixel threshold are unchanged.
+
+The final dense solve settles at frame 600 with zero strict self contacts, zero exclusions and 0.160899 mm motion over its last five frames. The exported armhole has 33.3266 mm median clearance and 46.0313 mm maximum clearance, against a 25 mm median minimum. This opening does not supply an enclosed contour: all 108 projected mid-gap samples land in exterior-connected background in the close-camera label mask. The only enclosed alpha openings have extents of 26, 26 and 17 px. None reaches G6's existing 64 px minimum. G3 and G4 also reject two of those small openings. Their thresholds remain unchanged.
+
+| Gate | Measured | Requirement | Result |
+| --- | --- | --- | --- |
+| G1 | 1.752678% visible sharp adjacency | At most 6% | Pass |
+| G2 | 0.154702% normal-jump pixels | At most 2% | Pass |
+| G3 | 14.0000, 15.1327, 10.5119 px straight runs | At most 12 px each | Fail |
+| G4 | 0.335645, 0.255459, 0.435631 width CV | At least 0.35 each | Fail |
+| G5 | 55.642448% lifted lip length | At least 30% lifted over 3 mm | Pass |
+| G6 | No closed contour at least 64 px across | Dimension 1.15 to 1.40 on a resolved contour | Fail |
+| G20 | 2.741058% near-hanger sharp adjacency | At most 10% | Pass |
+| G21 | 0 outside-split hanger pixels | Zero | Pass |
+| G22 | 0.169362 maximum depth/width; sections 0.169362, 0.142632, 0.121686 | At most 0.45 | Pass |
+| G23 | 36.004298% retained arc; 89.662785% released-edge fringe | At least 35%; at least 70% | Pass |
+| G24 | 99.852815% chest width | 92% to 108% | Pass |
+| G25 | 84.951440% open-hem fringe | At least 70% | Pass |
+| G26 | 0.0 hem autocorrelation peak | Below 0.30 at 20 to 120 mm lags | Pass |
+| G27 | 32.961250 mm mound height | 15 to 35 mm | Pass |
+| G28 | 3 fallen cloth pieces | At least 2 | Pass |
+| G29 | 115.465441 cm³ mound; 5.866407 cm³ lost wool; 5.080660% inferred packing | Factor 0.5 to 2 of volume at 5% to 15% packing | Pass |
+| G30 | 0 changed crossings; exact hanger geometry and 28/28 baseline contacts | Zero changed/new-part SAT crossings | Pass |
+| G31 | 16,889 / 13,768 triangles, ratio 1.226685 | At most 20,652 triangles, ratio 1.5 | Pass |
+| G32 | 0.623974 mm boundary Hausdorff | At most 1.5 mm | Pass |
+
+The medal metal and ribbon bases seat within 1.184369 and 1.802257 mm, respectively, against 2 mm. The independent attachment audit still rejects board base gaps of 2.417948 and 3.124559 mm. Board self/body and collar/body SAT crossings are zero; proximity and crossing tests measure different defects. Placket, buttons, ribbon bar and collar stars pass their 2 mm base-distance checks. Saved-blend re-export is byte-identical. All 35 original local test scripts pass, as do the added retained-neckline, opacity and rim-normal regressions, for 38 passing scripts. The rim-thickness, opposing-rim and rim-normal tests also pass after the final material change. Scratch logs remain in `tmp/age/tunic8/`.
+
+The image-comparer inspected all six tunic7/tunic8 full-resolution captures. It confirms a more legible shoulder opening and a sleeve hanging away, but judges that sleeve too detached and straight. It rejects the noisy shoulder edge, block-like hem losses, smooth broad fabric and angular debris that still fails to read as a soft mound. It also reports a flat ground patch despite removal of the separate dust card; the remaining ground appearance is unresolved. Those observations prevent visual acceptance independently of G3, G4 and G6. The assessment is in `tmp/age/tunic8/image-review-final.log`.
+
+The final images are `tmp/age/tunic8/tunic-before-after.png`, `tunic-turntable.png` and `tunic-closeup.png`. Their camera distance, lens, position, aim, projection and resolution match tunic7. The close camera remains 0.5 m away. Complete measurements are in `tmp/age/tunic8/final/gates.json`, `dense-control.json` and `attachment-audit.json`. The scratch GLB is `tmp/age/tunic8/final/candidate.glb`; it is rejected for delivery.
+
 ### Tunic7 continuation: not shipped
 
 The capsule candidate passes 14 of 19 gates and has not replaced the shipped tunic. Its repaired source-grid carrier uses no contact exclusions. The dense control settles at frame 875 with one strict self contact and 0.6629 mm final-five-frame motion, meeting the fewer-than-50 / under-1-mm control. G1 is 2.8565% against 6%; G20 is 8.4250% against 10%; G24 preserves 97.6960% of chest width against 92% to 108%. The scratch GLB is `tmp/age/tunic7/capsule/candidate.glb`.

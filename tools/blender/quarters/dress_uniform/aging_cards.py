@@ -13,7 +13,6 @@ from fabric_mesh import material, new_object
 from fringe_cards import fringe_material, image_from_array, strand_atlas
 from fringe_boundary import spaced_cards
 from tear_opacity import wool_opacity
-from powder_cards import powder_card
 
 
 def edge_groups(body):
@@ -161,6 +160,9 @@ def rim_modifier(obj, blockers):
     rim_mat = obj.data.materials[0].copy()
     rim_mat.name = 'WoolCutEdge'
     rim_mat.use_backface_culling = False
+    # Rim UVs collapse onto the lip line and have no tangent-space basis.
+    for link in list(rim_mat.node_tree.nodes['Principled BSDF'].inputs['Normal'].links):
+        rim_mat.node_tree.links.remove(link)
     obj.data.materials.append(rim_mat)
     source = obj.data.attributes.new(name='Wool rim source', type='INT', domain='POINT')
     source.data.foreach_set('value', np.arange(len(obj.data.vertices), dtype=np.int32))
@@ -207,21 +209,6 @@ def thickness_weights(obj, blockers):
     return group.name
 
 
-def floor_skirt(out):
-    obj = powder_card('FloorDustSkirt', (0, 0, -.9498), (.20, .15), out / 'textures', 9521)
-    angle = np.arange(8)*math.tau/8
-    vertices = [(0, 0, -.9498)]+[(.20*math.cos(a), .15*math.sin(a), -.9498) for a in angle]
-    faces = [(0, 1+i, 1+(i+1)%8) for i in range(8)]
-    obj.data.clear_geometry()
-    obj.data.from_pydata(vertices, [], faces)
-    obj.data.update()
-    uv = obj.data.uv_layers.active or obj.data.uv_layers.new(name='DustUV')
-    for loop in obj.data.loops:
-        point = obj.data.vertices[loop.vertex_index].co
-        uv.data[loop.index].uv = (point.x/.4+.5, point.y/.3+.5)
-    return obj
-
-
 def finish_cards(out, record):
     body = bpy.data.objects['TunicBody']
     categories = edge_groups(body)
@@ -248,9 +235,6 @@ def finish_cards(out, record):
         rim_proxies.append(proxy)
     from detail_clearance import seat_details
     record['rim_detail_clearance'] = seat_details(rim_proxies[0], record['bindings'])
-    skirt = floor_skirt(out)
-    skirt['aged_export'] = True
-    record['floor_skirt'] = {'size_xy_m': [.4, .3], 'floor_height_m': -.9498, 'triangles': 8}
     objects = [o for o in bpy.context.scene.objects if o.type == 'MESH' and o.get('aged_export') and o not in sheets]+rim_proxies
     objects.append(bpy.data.objects['AgingFloorCollider'])
     for number, name in enumerate(categories):
@@ -285,7 +269,7 @@ def finish_cards(out, record):
     mound = bpy.data.objects['FibreDust']
     tree = surface_tree(mound)
     print('FRINGE', record['fringe'], record['fallen_fringe'], flush=True)
-    print('CARD BLOCKERS', [(o.name, len(o.data.polygons)) for o in objects+[skirt]], flush=True)
+    print('CARD BLOCKERS', [(o.name, len(o.data.polygons)) for o in objects], flush=True)
     contacts = CardContacts(objects)
     rng = np.random.default_rng(9521)
     vertices, faces, patterns = [], [], []
