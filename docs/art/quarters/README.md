@@ -198,16 +198,26 @@ walks out and back in. The separate `d16_route_test.gd` follows ordinary input
 from the D14 stasis start through the aft well to this door. Run the full suite
 with `godot --headless --path . -s tests/run_tests.gd`.
 
-The demo4 pass verified 900 headless tests and nine locker-material Python
-tests with zero failures. The full suite ran under `nohup` and exited 0.
-The seven existing windowed routes (`gameplay-full`, `rod-pickup`,
+The demo5 pass verified **906 headless tests, zero failures**, including six
+new furniture tests. The focused quarters subset passed all 26 tests. Nine
+locker-material Python tests also passed in the existing Hunyuan environment.
+The full suite and all eight windowed routes ran under `nohup` and exited 0.
+The seven existing routes (`gameplay-full`, `rod-pickup`,
 `gameplay-keyboard-turn`, `hallway`, `power-room`, `connector-route` and
-`click-route`) passed their machine checks, as did the eight-beat quarters-demo
-scenario and its final-atlas capture run. Logs and captures are under
-`tmp/demo4/`; the final full-suite log is `full-suite-final.log`.
-Harness visual verdict fields remain pending; targeted image-comparer controls
-cover the entrance lining and stile. Existing ObjectDB, resource and allocator
-teardown warnings remain after the passing tests.
+`click-route`) passed their machine checks, as did all ten quarters-demo beats.
+Logs and captures are under `tmp/demo5/`; the full-suite log is
+`full-suite.log` and route logs are `route-<scenario>.log`.
+
+Harness visual verdict fields remain pending. An enlarged image-comparer crop
+confirms that the console message stays inside the blue display. Its rendered
+label bounds are 0.637 by 0.123 m inside the 0.874 by 0.238 m display; all 451
+sampled rays behind the text rectangle hit the visible imported `Display`.
+The initial full-frame image judgment incorrectly reported text overflow;
+the crop and geometric check agree that no placement correction is needed.
+The broad room comparison also misidentified the already accepted collapsed
+sofa as a floating bed; sofa geometry was not changed in this pass. Existing
+ObjectDB, resource and allocator teardown warnings remain after the passing
+tests.
 
 ## Plan view
 
