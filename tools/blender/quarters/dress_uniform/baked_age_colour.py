@@ -11,16 +11,20 @@ from fringe_cards import image_from_array
 def surface_fields(obj):
     points = np.array([obj.matrix_world @ v.co for v in obj.data.vertices])
     normals = np.array([(obj.matrix_world.to_3x3() @ v.normal).normalized() for v in obj.data.vertices])
-    sums = np.zeros_like(points)
-    counts = np.zeros(len(points))
+    squared_lengths = np.zeros(len(points))
+    normal_offsets = np.zeros(len(points))
     for edge in obj.data.edges:
         a, b = edge.vertices
-        sums[a] += points[b]
-        sums[b] += points[a]
-        counts[[a, b]] += 1
-    mean = sums/np.maximum(counts[:, None], 1)
-    curvature = np.einsum('ij,ij->i', points-mean, normals)
-    crest = np.clip(curvature/.0015, 0, 1)
+        delta = points[a]-points[b]
+        squared_lengths[[a, b]] += delta @ delta
+        normal_offsets[a] += delta @ normals[a]
+        normal_offsets[b] -= delta @ normals[b]
+    if np.any(squared_lengths == 0):
+        raise ValueError(f'{obj.name}: exposure bake requires connected surface vertices')
+    # The old displacement Laplacian grew with edge length squared, painting
+    # coarse triangles lighter than equally curved, finely sampled wool.
+    curvature = 2*normal_offsets/squared_lengths
+    crest = np.clip(curvature/10., 0, 1)
     up = np.clip(normals[:, 2], 0, 1)
     upper = np.clip((points[:, 2]+.48)/.30, 0, 1)
     # Broad, irregular exposure is independent of the old stress-thinning map.
