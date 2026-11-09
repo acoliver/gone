@@ -15,6 +15,7 @@ var pipes: Array[Transform3D] = []
 var tees: Array[Transform3D] = []
 var clips: Array[Transform3D] = []
 var ducts: Array[Transform3D] = []
+var spine: SpineServices
 var modules: Array[Transform3D] = []
 
 static func build(layout: ShipLayout, space: ShipLayout.Spec) -> CeilingServices:
@@ -51,7 +52,7 @@ static func build(layout: ShipLayout, space: ShipLayout.Spec) -> CeilingServices
 	# Side-wall conduit is continuous at this height in the corridor template.
 	if space is ShipLayout.SectionSpec or space is ShipLayout.ConnectorSpec:
 		for side: int in [-1, 1]:
-			result.detector_exclusions.append(AABB(Vector3(b.position.x, b.end.y - 0.658, b.get_center().z + side * (b.size.z / 2 - 0.018) - 0.018), Vector3(b.size.x, 0.036, 0.036)))
+			result.detector_exclusions.append(AABB(Vector3(b.position.x, b.end.y - SpineServices.SIDE_DROP - 0.018, b.get_center().z + side * (b.size.z / 2 - SpineServices.SIDE_INSET) - 0.018), Vector3(b.size.x, 0.036, 0.036)))
 	var sight_blockers: Array[AABB] = []
 	if space is ShipLayout.BaySpec:
 		for pod: Pods.Pod in space.template().pods():
@@ -95,7 +96,9 @@ static func build(layout: ShipLayout, space: ShipLayout.Spec) -> CeilingServices
 	var into := -1.0 if space is ShipLayout.LiftSpec else 1.0
 	var wall_z := b.end.z if space is ShipLayout.LiftSpec else b.position.z
 	var pipe_z := wall_z + into * 0.10
-	result.pipes.append(_pose(Vector3(b.get_center().x, pipe_y, pipe_z), Vector3(b.size.x, PIPE_RADIUS * 2, PIPE_RADIUS * 2)))
+	var spine_space := space is ShipLayout.SectionSpec or space is ShipLayout.ConnectorSpec
+	var pipe_center := b.get_center().x + (ShipLayout.WALL / 2 if spine_space else 0.0)
+	result.pipes.append(_pose(Vector3(pipe_center, pipe_y, pipe_z), Vector3(b.size.x, PIPE_RADIUS * 2, PIPE_RADIUS * 2)))
 	for index: int in range(count):
 		var x := b.position.x + (index + 0.5) * pitch
 		var head := _pose(Vector3(x, pipe_y - HEAD_SIZE.y / 2 + PIPE_RADIUS, wall_z + into * HEAD_SIZE.z / 2), HEAD_SIZE)
@@ -104,11 +107,9 @@ static func build(layout: ShipLayout, space: ShipLayout.Spec) -> CeilingServices
 		result.tees.append(_pose(Vector3(x, pipe_y, pipe_z), Vector3(0.10, 0.064, 0.064)))
 		result.tees.append(Transform3D(Basis(Vector3.BACK, PI / 2).scaled_local(Vector3(0.08, 0.032, 0.032)), Vector3(x + into * 0.012, pipe_y - 0.04, pipe_z - into * 0.02)))
 		result.clips.append(_pose(Vector3(x + 0.18, pipe_y, wall_z + into * 0.065), Vector3(0.035, 0.075, 0.13)))
-	if space is ShipLayout.SectionSpec:
-		var segments := ceili(b.size.x / 0.8)
-		var length := b.size.x / segments
-		for index: int in range(segments):
-			result.ducts.append(_pose(Vector3(b.position.x + (index + 0.5) * length, b.end.y - 0.175, b.end.z - 0.45), Vector3(length, 0.35, 0.44)))
+	if space is ShipLayout.SectionSpec or space is ShipLayout.ConnectorSpec:
+		result.spine = SpineServices.build(b)
+		result.ducts = result.spine.ducts
 	var frames: Array[Transform3D] = []
 	if space is ShipLayout.BaySpec or space is ShipLayout.SectionSpec: frames = space.regular_light_frames()
 	if space is ShipLayout.PowerRoomSpec:
@@ -132,6 +133,7 @@ func reservations() -> Array[ShipLayout.DressingClearance]:
 	var result: Array[ShipLayout.DressingClearance] = []
 	for row: Dictionary in detectors:
 		result.append(ShipLayout.DressingClearance.new(&"FIRE_DETECTOR", row.bounds.grow(0.002)))
-	for pose: Transform3D in heads + pipes + tees + clips + ducts:
+	for pose: Transform3D in heads + pipes + tees + clips:
 		result.append(ShipLayout.DressingClearance.new(&"CEILING_SERVICE", (pose * ShipDressing.UNIT).grow(0.002)))
+	if spine != null: result.append_array(spine.reservations())
 	return result

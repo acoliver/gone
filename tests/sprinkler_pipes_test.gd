@@ -39,8 +39,9 @@ func test_supply_is_continuous_to_both_room_corners_and_clipped_to_wall() -> voi
 		var drawn := node.get_node("SprinklerPipes") as MultiMeshInstance3D
 		var run := (drawn.get_meta(&"instance_poses") as Array[Transform3D])[0]
 		var box := run * drawn.multimesh.mesh.get_aabb()
-		assert_true(absf(box.position.x - spec.bounds.position.x) <= CONTACT, "unbroken supply starts at the room corner")
-		assert_true(absf(box.end.x - spec.bounds.end.x) <= CONTACT, "unbroken supply ends at the opposite corner")
+		var wall_midpoint := ShipLayout.WALL / 2 if spec.spine != null else 0.0
+		assert_true(absf(box.position.x - spec.bounds.position.x - wall_midpoint) <= CONTACT, "unbroken supply starts at the wall datum")
+		assert_true(absf(box.end.x - spec.bounds.end.x - wall_midpoint) <= CONTACT, "unbroken supply ends at the opposite wall datum")
 		assert_true(drawn.multimesh.instance_count >= 1 + spec.heads.size() * 2, "each head hangs from a drawn tee sleeve and drop")
 		var clips := node.get_node("PipeClips") as MultiMeshInstance3D
 		assert_int_equal(clips.multimesh.instance_count, spec.heads.size(), "clips at each head station, no more than 3 m apart")

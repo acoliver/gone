@@ -32,7 +32,13 @@ static func build(layout: ShipLayout, id: StringName) -> Node3D:
 	_add(root, layout, id, &"Sprinklers", mesh(&"sprinkler"), spec.heads, &"corroded_brass", &"WALL")
 	_add(root, layout, id, &"SprinklerPipes", _pipe_mesh(), spec.pipes + spec.tees, &"weathered_red", &"WALL")
 	_add(root, layout, id, &"PipeClips", CorridorDressing._mesh(&"box"), spec.clips, &"pipe", &"WALL")
-	if not spec.ducts.is_empty(): _add(root, layout, id, &"CeilingDucts", mesh(&"duct"), spec.ducts, &"wall", &"CEILING")
+	if spec.spine != null:
+		_add(root, layout, id, &"OverheadPipes", CorridorDressing._mesh(&"cylinder"), spec.spine.pipes + spec.spine.pipe_collars, &"collar_steel", &"CEILING")
+		_add(root, layout, id, &"SideConduits", CorridorDressing._mesh(&"cylinder"), spec.spine.side_conduits + spec.spine.service_collars, &"collar_steel", &"WALL")
+		_add(root, layout, id, &"PipeBrackets", CorridorDressing._mesh(&"box"), spec.spine.brackets + spec.spine.bolts, &"collar_steel", &"CEILING")
+		_add(root, layout, id, &"DuctFrames", CorridorDressing._mesh(&"box"), spec.spine.duct_collars, &"weathered_red", &"CEILING")
+		_add(root, layout, id, &"CeilingDucts", mesh(&"duct"), spec.ducts, &"wall", &"CEILING")
+		_add(root, layout, id, &"DuctFlanges", CorridorDressing._mesh(&"box"), spec.spine.duct_flanges, &"weathered_red", &"CEILING")
 	return root
 
 static func _pipe_mesh() -> Mesh:

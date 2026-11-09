@@ -398,6 +398,12 @@ func _build_generator(glow_level: float) -> Node3D:
 	column.material_override = shell
 	column.position = Vector3(0.0, GENERATOR_HEIGHT / 2.0, 0.0)
 	group.add_child(column)
+	var collar := MeshInstance3D.new()
+	collar.name = "CeilingCollar"
+	collar.mesh = HatchModel.cylinder(GENERATOR_RADIUS + 0.08, 0.08)
+	collar.position.y = GENERATOR_HEIGHT - 0.04
+	collar.material_override = shell
+	group.add_child(collar)
 	_generator_ring_material = StandardMaterial3D.new()
 	_generator_ring_material.albedo_color = Color(0.07, 0.07, 0.08)
 	_generator_ring_material.metallic = 0.6
@@ -421,7 +427,7 @@ func _build_generator(glow_level: float) -> Node3D:
 	_generator_light.omni_range = 6.5
 	_generator_light.light_cull_mask = 1
 	_generator_light.shadow_enabled = false
-	_generator_light.position = Vector3(0.0, GENERATOR_HEIGHT - 0.7, 0.0)
+	_generator_light.position = Vector3(0.0, 1.9, 0.0)
 	group.add_child(_generator_light)
 	var glow_held: Intensity.Result = Intensity.FixtureFade.holding(glow_level)
 	assert(glow_held.is_ok(), "the generator's glow level maps to a valid fade")
