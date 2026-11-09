@@ -5,7 +5,7 @@ func test_streaming_hides_only_explicit_d14_presenters() -> void:
 	var global_before := Node3D.new()
 	root.add_child(global_before)
 	var game := Game.new(0)
-	var scene := ShipScene.build_into(root, game, false)
+	var scene := ShipScene.build_into(root, game)
 	var global_after := DoorAudio.build(game.layout)
 	root.add_child(global_after)
 	scene.prepare_near(Vector3(26, 0.305, 0))
@@ -38,7 +38,7 @@ func _opening_owner(scene: ShipScene, node: Node3D) -> Node3D:
 
 func test_opening_does_no_remote_work() -> void:
 	var root := Node3D.new()
-	var scene := ShipScene.build_into(root, Game.new(0), false)
+	var scene := ShipScene.build_into(root, Game.new(0))
 	assert_true(scene.stream.resident_ids().is_empty(), "no remote trees at startup")
 	assert_int_equal(scene.stream.shaft_count(), 0, "no shaft before its approach")
 	scene.prepare_near(Vector3(18, 0.305, 0))
@@ -49,7 +49,7 @@ func test_opening_does_no_remote_work() -> void:
 func test_residency_clips_to_limits_and_only_occupied_well() -> void:
 	var root := Node3D.new()
 	var game := Game.new(0)
-	var scene := ShipScene.build_into(root, game, false)
+	var scene := ShipScene.build_into(root, game)
 	for deck: int in [1, 14, 30]:
 		scene.stream.focus(&"C-001-LADDER", deck)
 		for _frame: int in range(6):
@@ -67,7 +67,7 @@ func test_residency_clips_to_limits_and_only_occupied_well() -> void:
 func test_remote_rooms_share_labels_masks_and_persistent_refusals() -> void:
 	var root := Node3D.new()
 	var game := Game.new(0)
-	var scene := ShipScene.build_into(root, game, false)
+	var scene := ShipScene.build_into(root, game)
 	scene.stream.focus(&"C-000-LADDER", 1)
 	for _frame: int in range(5):
 		scene.stream.build_next()
@@ -120,7 +120,7 @@ func test_shaft_is_full_height_instanced_and_open_at_every_landing() -> void:
 func test_returning_climber_restores_d14_before_dismount_commits_deck() -> void:
 	var root := Node3D.new()
 	var game := Game.new(0)
-	var scene := ShipScene.build_into(root, game, false)
+	var scene := ShipScene.build_into(root, game)
 	scene.prepare_near(Vector3(26, 0.305, 0))
 	game.phase.wake_complete()
 	game.phase.request_pod_exit(Phase.InputEdge.RISING)
@@ -155,7 +155,7 @@ func test_returning_climber_restores_d14_before_dismount_commits_deck() -> void:
 func test_remote_hatch_label_is_not_occluded_by_reserved_swing_clearance() -> void:
 	var root := Node3D.new()
 	var game := Game.new(0)
-	var scene := ShipScene.build_into(root, game, false)
+	var scene := ShipScene.build_into(root, game)
 	scene.stream.focus(&"C-001-LADDER", 1)
 	for _frame: int in range(3):
 		scene.stream.build_next()
@@ -174,7 +174,7 @@ func test_ladder_results_are_identical_with_presentation_forced_out_between_tick
 	var plain := Game.new(0)
 	var presented := Game.new(0)
 	var root := Node3D.new()
-	var scene := ShipScene.build_into(root, presented, false)
+	var scene := ShipScene.build_into(root, presented)
 	var capsule := Resolve.Capsule.new()
 	capsule.foot = Vector3(34.5, 0.305, -2.9)
 	capsule.head = capsule.foot + Vector3.UP * 1.15

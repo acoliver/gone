@@ -545,10 +545,13 @@ class BaySpec:
 		return result
 	func regular_light_frames() -> Array[Transform3D]:
 		var frames: Array[Transform3D] = []
-		for x: float in [-4.0, 0.0, 4.0]:
-			# #88: the ceiling strips retain their offset from the shifted pod rows.
-			for z: float in [-1.6 + Pods.ROW_WALL_OFFSET, 1.6 - Pods.ROW_WALL_OFFSET]:
-				frames.append(Transform3D(Basis(), Vector3(x, Pods.ROOM_CEILING_HEIGHT - 0.08, z)))
+		# These six strips sit in the ceiling's service openings. The panel grid
+		# uses 1.2 x 0.6 m cells, with fixture frames 100 mm below the rails.
+		for x: float in [-4.2, -0.6, 4.2]:
+			for z: float in [-1.5, 1.5]:
+				# The 1.15 m housing is 5 mm wider than the 1.145 m rail opening.
+				# Drop its frame 100 mm below the 3.12 m rails to clear that edge overlap.
+				frames.append(Transform3D(Basis(), Vector3(x, 3.02, z)))
 		return frames
 	func emergency_fixtures(registry: Pods.PodRegistry) -> Array[EmergencyFixtureSpec]:
 		var fixtures: Array[EmergencyFixtureSpec] = []

@@ -107,7 +107,7 @@ func _build_scene() -> void:
 	game = Game.new(scenario.seed)
 	var scene := Node3D.new()
 	scene.name = "CaptureRoot"
-	var ship := ShipScene.build_into(scene, game, false)
+	var ship := ShipScene.build_into(scene, game)
 	pods_node = ship.pods_node
 	stasis_lighting = ship.lighting
 	rod = ship.rod
