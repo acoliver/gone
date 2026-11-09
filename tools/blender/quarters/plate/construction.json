@@ -1,0 +1,26 @@
+{
+  "id": "plate",
+  "bounds_gltf": [
+    [
+      -0.125,
+      0.0,
+      -0.125
+    ],
+    [
+      0.125,
+      0.026000000536441803,
+      0.125
+    ]
+  ],
+  "triangle_limit": 1500,
+  "required_nodes": [
+    "Dish"
+  ],
+  "axis_contract": "Blender +Z up/-Y front, export_yup=True -> glTF +Y up/+Z front",
+  "age_years": 1000,
+  "base_origin": [
+    0,
+    0,
+    0
+  ]
+}
