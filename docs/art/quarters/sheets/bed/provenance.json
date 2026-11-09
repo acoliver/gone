@@ -1,0 +1,27 @@
+{
+  "command": "env HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 /Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-z-image-turbo --model filipstrand/Z-Image-Turbo-mflux-4bit --quantize 4 --steps 8 --seed 216 --width 1024 --height 1024 --output /Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/tmp/props/contacts/bed/hero-s216.png --prompt 'Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish. A double bed frame for officers quarters on a military warship, 1.6 metres wide and 2.2 metres long. One continuous flat solid steel mattress support platform is exposed at 0.40 metres above the deck. Sturdy grey-green satin painted steel side rails reach 0.55 metres high, on four short integrated feet. A broad solid grey-green steel headboard rises to 1.1 metres at the rear, twice the side rail height. Neat folded panel edges, rounded headboard top corners, small round rivets along the rails and headboard edges, a low foot end. The bare rigid frame with its continuous exposed support plate is the whole object; no mattress or bedding. Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.'",
+  "prompt": "Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish. A double bed frame for officers quarters on a military warship, 1.6 metres wide and 2.2 metres long. One continuous flat solid steel mattress support platform is exposed at 0.40 metres above the deck. Sturdy grey-green satin painted steel side rails reach 0.55 metres high, on four short integrated feet. A broad solid grey-green steel headboard rises to 1.1 metres at the rear, twice the side rail height. Neat folded panel edges, rounded headboard top corners, small round rivets along the rails and headboard edges, a low foot end. The bare rigid frame with its continuous exposed support plate is the whole object; no mattress or bedding. Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.",
+  "seed": 216,
+  "model_id": "filipstrand/Z-Image-Turbo-mflux-4bit",
+  "sha256": "72b0b5349fc36629f7155c541b50cc585d0f778d7c7e04871ead1a841e862cbb",
+  "elapsed_seconds": 68.91,
+  "selection": {
+    "chosen_seed": 216,
+    "rating": 8,
+    "approved": true,
+    "observations": "All six panels are visible. Panel A shows the approved room context. Panel B shows the accepted locker style. Panels C1 (215), C2 (216), C3 (217), and C4 (218) show candidate bed frames. Seed 216 (C2) presents the most coherent interpretation of the brief: a solid flat support platform, a broad headboard with rounded top corners, and a low foot end. The grey-green satin finish matches the reference style.",
+    "defects": [
+      "The side rails are rendered as thin vertical posts rather than the 'sturdy' solid steel rails specified in the brief.",
+      "The 'small round rivets' along the edges are not clearly visible or distinct in the render.",
+      "The headboard appears to be a single flat sheet without the 'neat folded panel edges' described."
+    ],
+    "fitting_landmarks": {
+      "platform": "Continuous flat solid steel mattress support, exposed at the top of the frame.",
+      "headboard": "Broad solid grey-green steel panel rising to the rear, with rounded top corners.",
+      "side_rails": "Vertical supports connecting the platform to the feet; currently thin posts in the render.",
+      "feet": "Four short integrated feet supporting the frame.",
+      "foot_end": "Low profile, consistent with the side rail height."
+    }
+  },
+  "inputs_policy": "Single approved hero; no independently hallucinated side/back views."
+}

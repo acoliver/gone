@@ -1,0 +1,179 @@
+{
+  "bounds_gltf": [
+    [
+      -0.8,
+      0,
+      -1.1
+    ],
+    [
+      0.8,
+      1.1,
+      1.1
+    ]
+  ],
+  "required_nodes": [
+    "Bed",
+    "Frame",
+    "Headboard",
+    "MattressPlatform",
+    "FrameSide_L",
+    "FrameSide_R"
+  ],
+  "parents": {
+    "Frame": "Bed",
+    "Headboard": "Bed",
+    "MattressPlatform": "Frame",
+    "FrameSide_L": "Frame",
+    "FrameSide_R": "Frame"
+  },
+  "pivots_gltf": {
+    "Bed": [
+      0,
+      0,
+      0
+    ]
+  },
+  "materials": [
+    "PaintedSteel",
+    "BareSteel",
+    "DarkSteel"
+  ],
+  "visible_details": [
+    "MattressPlatform",
+    "HeadboardRivets",
+    "FootRivets"
+  ],
+  "hero_camera_native": [
+    -4,
+    -4.6,
+    2.4
+  ],
+  "hero_camera_gltf": [
+    -4,
+    2.4,
+    4.6
+  ],
+  "hero_target_native": [
+    0,
+    0,
+    0.5
+  ],
+  "triangle_limit": 15000,
+  "layout_frame_height_m": 0.55,
+  "layout_headboard_height_m": 1.1,
+  "platform_range_m": [
+    0.5,
+    0.52
+  ],
+  "fit_notes": "The generated continuous platform, thin side rails and open legs are faired into folded steel parts. The platform and rail upper edge share the layout .55 m frame height; the separate rounded headboard remains 1.10 m tall. The thin faired rail replaces the scan lower skirt, preserving the approved open silhouette. No soft parts or textures are included.",
+  "guide": {
+    "source_bounds_native": [
+      [
+        -0.5172174572944641,
+        -0.99256831407547,
+        -0.7816575169563293
+      ],
+      [
+        0.5110798478126526,
+        0.9991401433944702,
+        0.7735756635665894
+      ]
+    ],
+    "carcass_fitting_bounds_native": [
+      [
+        -0.5172174572944641,
+        -0.99256831407547,
+        -0.7816575169563293
+      ],
+      [
+        0.5110798478126526,
+        0.9991401433944702,
+        0.7735756635665894
+      ]
+    ],
+    "fitted_size_whd": [
+      1.6,
+      1.1,
+      2.2
+    ],
+    "sections": [
+      {
+        "height_m": 0.11000000000000001,
+        "vertices": 702,
+        "xy_min": [
+          -0.7668936848640442,
+          -1.0817854404449463
+        ],
+        "xy_max": [
+          0.7704457640647888,
+          1.089392066001892
+        ]
+      },
+      {
+        "height_m": 0.275,
+        "vertices": 45803,
+        "xy_min": [
+          -0.7710025906562805,
+          -1.0904501676559448
+        ],
+        "xy_max": [
+          0.7736656069755554,
+          1.090353012084961
+        ]
+      },
+      {
+        "height_m": 0.55,
+        "vertices": 1690,
+        "xy_min": [
+          -0.7683596014976501,
+          1.0144414901733398
+        ],
+        "xy_max": [
+          0.772275984287262,
+          1.0904392004013062
+        ]
+      },
+      {
+        "height_m": 0.8250000000000001,
+        "vertices": 1699,
+        "xy_min": [
+          -0.7683610320091248,
+          1.0144339799880981
+        ],
+        "xy_max": [
+          0.7724721431732178,
+          1.0901505947113037
+        ]
+      },
+      {
+        "height_m": 0.9900000000000001,
+        "vertices": 1693,
+        "xy_min": [
+          -0.7684516906738281,
+          1.0144740343093872
+        ],
+        "xy_max": [
+          0.773087203502655,
+          1.0905152559280396
+        ]
+      }
+    ],
+    "mesh_triangles": 368948,
+    "platform_fit": {
+      "sample_count": 71989,
+      "guide_median_height_m": 0.260800302028656,
+      "fitted_height_m": 0.5,
+      "allowed_support_height_m": [
+        0.5,
+        0.52
+      ]
+    },
+    "side_rail_fit": {
+      "sample_count": 8317,
+      "guide_lower_edge_m": 0.20846689701080323,
+      "fitted_lower_edge_m": 0.485
+    },
+    "source": "tmp/props/bed/guide.glb"
+  },
+  "id": "bed"
+}

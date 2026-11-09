@@ -1256,16 +1256,21 @@ Verification reads the exported GLB through trimesh. It checks the layout envelo
 | Prop | Picked seed | Hunyuan wall seconds | Triangles | Export checks | Fit rating | Status | Remaining visual defects |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | wardrobe | 203 | 187.81 | 9,056 | Pass | 6/10 | Not accepted | Top surface material mismatch: B is white, A is grey-green.; Door louvre count mismatch: B has 3 louvres, A has 4.; Missing rivet detail on the door in B. |
+| bed | 216 | 177.60 | 3,512 | Pass | 9/10 | Accepted fit | In image B, the rivets on the headboard appear slightly irregular in spacing and size, potentially looking like noise rather than precise manufacturing details.; The 'folded panel edges' mentioned in the brief are not clearly distinct in B; the edges look flat rather than folded over. |
 | desk_chair | 244 | 175.21 | 2,032 | Pass | 8/10 | Accepted fit | The small bare steel rivets on the corner plates in B are less distinct than in A, potentially due to lighting or resolution.; The fabric texture on the seat pad in B appears slightly smoother and less detailed than in A. |
 
 ### Rebuilding and checking
 
 For example, run Blender with `--background --factory-startup --python-exit-code 1 --python tools/blender/quarters/wardrobe/build.py -- --assemble` to fit from `tmp/props/wardrobe/guide.glb`. Each prop's default guide has the same scratch path pattern. Omit `--assemble` to export directly from the committed `.blend` without scratch inputs. Supply `--output tmp/props/wardrobe/reexport.glb` for an independent second export, then run the local Hunyuan Python on `tools/blender/quarters/wardrobe/verify.py --reexport tmp/props/wardrobe/reexport.glb`. Run `tools/blender/quarters/wardrobe/test_verify.py` for the seven gate controls. Other props use the wardrobe's shared construction and verification helpers. `construction.json` records cameras, guide landmarks and part hierarchies.
 
+### Bed platform
+
+The selected seed 216 shows thin rails, an exposed continuous plate and open legs. The fit keeps the layout frame top at .55 m and the separate headboard at 1.10 m, with the platform at .50 to .52 m to preserve that selected silhouette. This differs from the generation prompt's .40 m platform request, which the selected image did not reproduce. The platform range is a recorded fitting choice, separate from the layout height check; build and verification read the same value from `construction.json`.
+
 ### Wardrobe placement
 
 The single right-hinged door is parked at 100 degrees in the asset used for both room states. At room origin (7.675, 0, 3.6), with Y rotation -90 degrees, its barrel axis lies at room X/Z (7.335, 4.1). The barrel axis is 15 mm forward of the plan's closed-carcass hinge line. The parked leaf and hardware extend outside the closed footprint. The generated hero is left-hinged; the fitted assembly and hidden guide are reflected in X with face winding corrected and positive node scales retained. `hero.png` remains the original generated image and `fit-reference.png` is the reflected fitting target.
 
-Not yet accepted: wardrobe, bed, desk, console, dining_table, dining_chair, bedside, view_screen, media_cabinet, lockers_over_bed.
+Not yet accepted: wardrobe, desk, console, dining_table, dining_chair, bedside, view_screen, media_cabinet, lockers_over_bed.
 
 Batch sheets: [`sheets/batch1-heroes.png`](sheets/batch1-heroes.png) and [`sheets/batch1-fitted-turntables.png`](sheets/batch1-fitted-turntables.png). Unaccepted fits are labelled as unfinished work. Per-prop `fit-review.json` retains the reviewer observations.
