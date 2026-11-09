@@ -15,6 +15,7 @@ class Target:
 	extends RefCounted
 	var id: StringName
 	var door_id: StringName
+	var face_id: StringName
 	var kind: int = Kind.DOOR
 	var policy: int = Selection.LEGACY_PROXIMITY
 	var priority: int = 0
@@ -60,6 +61,17 @@ func _init(layout: ShipLayout, solids: Array[AABB] = []) -> void:
 	for id: StringName in layout.door_ids():
 		if id not in [ShipLayout.BAY_DOOR_ID, ShipLayout.POWER_DOOR_ID]:
 			register_door(id)
+	var release := Target.new()
+	release.id = QuartersLayout.RELEASE
+	release.door_id = QuartersLayout.DOOR
+	release.face_id = layout.door(QuartersLayout.DOOR).face_ids()[0]
+	release.policy = Selection.FACE_RAY
+	release.deck = QuartersLayout.DECK
+	release.center = QuartersLayout.release_frame().origin
+	release.size = QuartersLayout.RELEASE_SIZE
+	release.frame = QuartersLayout.release_frame() * Transform3D(Basis(), Vector3(0, -release.size.y / 2, 0.08))
+	release.bounds = QuartersLayout.release_frame() * AABB(Vector3(-release.size.x / 2, -release.size.y / 2, -0.015), Vector3(release.size.x, release.size.y, 0.095))
+	_targets.append(release)
 
 func register_door(id: StringName) -> void:
 	var door := _layout.door(id)
@@ -67,6 +79,7 @@ func register_door(id: StringName) -> void:
 		var target := Target.new()
 		target.id = face_id
 		target.door_id = id
+		target.face_id = face_id
 		target.policy = Selection.FACE_RAY
 		target.deck = door.deck_number()
 		target.frame = door.frame() * _layout.face(face_id).surface_frame()
@@ -225,7 +238,7 @@ func _dispatch(target: Target, context: Context) -> bool:
 		Kind.DOOR:
 			var press := Doors.Context.new()
 			press.rod_carried = motion.rod_carried
-			press.face_id = target.id if target.policy == Selection.FACE_RAY else _layout.door(target.door_id).face_ids()[0]
+			press.face_id = target.face_id if target.policy == Selection.FACE_RAY else _layout.door(target.door_id).face_ids()[0]
 			return game.doors.press(target.door_id, press).accepted()
 		_:
 			assert(false, "interaction kind has a dispatcher")

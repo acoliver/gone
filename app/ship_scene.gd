@@ -358,11 +358,10 @@ func ensure_d16() -> void:
 	quarters = QuartersRoom.build(_game)
 	quarters_shell.add_child(quarters)
 	_parent.add_child(quarters_shell)
-	var release := HatchModel.control_panel()
-	release.name = "ManualRelease"
-	release.transform = Transform3D(Basis(Vector3.UP, PI), Vector3(44.1, -9.7, 1.48))
-	Lighting.mesh_layers(release, Lighting.space_mask(_game.layout, spec.id()))
+	var release := QuartersRelease.build(_game.layout)
 	d16_section.add_child(release)
+	var term := ShipText.message("navigation.hatch")
+	_add_label(QuartersLayout.RELEASE, 16, spec.id(), release.transform * QuartersRelease.LABEL_FRAME, QuartersRelease.LABEL_SIZE, ShipText.LabelText.new(term.native, term.perceived_es), release, QuartersRelease.LABEL_FRAME)
 	_spaces[spec.id()] = true
 	_spaces[ShipLayout.QUARTERS_ID] = true
 	_sync_sliding_labels()

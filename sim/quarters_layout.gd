@@ -14,6 +14,12 @@ const WALL := 0.2
 const ENTRANCE_Z := 1.7
 const CONSOLE: StringName = &"D16-QUARTERS-CONSOLE"
 
+const RELEASE: StringName = &"D16-QUARTERS-RELEASE"
+const RELEASE_SIZE := Vector2(0.26, 0.44)
+
+static func release_frame() -> Transform3D:
+	return Transform3D(Basis(Vector3.UP, PI), Vector3(44.1, -9.7, 1.48))
+
 static func to_world(point: Vector3) -> Vector3:
 	return Vector3(49.0 - point.x, FLOOR_Y + point.y, ENTRANCE_Z + point.z)
 
