@@ -42,9 +42,13 @@ frame with headboard, desk, console, desk chair, dining table, dining chair,
 bedside, view screen, media cabinet and over-bed lockers. The dining chair and
 bedside asset each appear twice. The existing locker modules, sofa and hanging
 tunic also remain real assets. Footprints and facing follow the layout; the
-bed asset includes the separate 1.10 m headboard. Its mattress, quilt and two pillows
-remain under `Standin_bed_soft`, with the mattress seated on the real platform.
-The redundant headboard box is gone. The wardrobe uses the documented room
+bed asset includes the separate 1.10 m headboard. Remembered now uses
+`bed_soft.glb`; Present uses `bed_soft_aged.glb`, including its collapsed mattress,
+torn quilt, flattened pillows, foam crust, powder and crumbs. Each imported
+`bed_soft` root copies the bed frame's exact transform rather than fitting its
+changed bounds independently. The soft goods retain their imported cotton,
+wool and foam materials, without furniture-steel overrides. The redundant
+headboard and soft-goods stand-in boxes are gone. The wardrobe uses the documented room
 origin (7.675, 0, 3.6), room Y rotation -90 degrees and the exported 100-degree
 parked door. The room-to-ship mapping mirrors X, including the hinge placement.
 The old tunic preview turn protruded through the real carcass. Its hook now
@@ -80,10 +84,9 @@ applying it to this closed imported slab would need mesh changes. The wall
 screen starts at room Y 1.00 m; the real over-bed lockers start at 1.90 m.
 Tests cover shell, bed and mutual clearance in both states.
 
-Bed soft parts, storage drawer/shelf modules, leftover storage infill, small
-items and her dresses remain stand-ins. Their node names begin with
-`Standin_<id>`; bed soft parts are under `Standin_bed_soft`. Storage subslots
-add `_slot_<index>` or `_infill`.
+Storage drawer/shelf modules, leftover storage infill, small items and her
+dresses remain stand-ins. Their node names begin with `Standin_<id>`.
+Storage subslots add `_slot_<index>` or `_infill`.
 Locker tiles occupy complete 0.6 m slots inside the approved footprints;
 leftover widths remain stand-in infill. The footprint takes precedence where a
 module description suggests more tiles than will fit. Shared footprint
@@ -161,7 +164,8 @@ bands, without overlapping geometry. That stile now takes a matching-scale
 The three pale floor spots are the sofa's authored `FineFloorPowder_SeatCushion_*`
 deposits, confirmed by a removal control. They remain beneath the sofa seats.
 The demo5 standard captures, two desk/console close-ups and console message
-frame remain under `tmp/demo5/`. The owner presentation pass is in `tmp/demo6/`.
+frame remain under `tmp/demo5/`. The owner presentation cleanup is in
+`tmp/demo6/`; the real bed soft-goods captures are in `tmp/demo7/`.
 
 D16's corridor now switches all eight red keys by their circuit metadata,
 not their display names, which Godot renames when siblings share a name. The
@@ -175,14 +179,15 @@ Regenerate the ordinary-input scenario and run its windowed capture lane with:
 
 ```sh
 godot --headless --path . -s tools/build_quarters_scenario.gd
-godot --headless --path . -s harness/run.gd -- scenarios/quarters-demo.json --out tmp/demo5/routes/quarters-demo
+godot --headless --path . -s harness/run.gd -- scenarios/quarters-demo.json --out tmp/demo7/routes/quarters-demo
 ```
 
-The harness writes ten beats and a report under the printed run directory.
-The five presentation captures are copied into `tmp/demo5/` as
-`corridor-door.png`, `remembered-doorway.png`, `remembered-wide.png`,
-`present-doorway.png` and `present-wide.png`. The extra captures are
-`remembered-console.png`, `present-console.png` and `console-message.png`.
+The harness writes twelve beats and a report under the printed run directory.
+Use `tools/quarters_presentation.gd` as shown in the demo7 section below to
+make the five standard copies in `tmp/demo7/`: `corridor-door.png`,
+`remembered-doorway.png`, `remembered-wide.png`, `present-doorway.png` and
+`present-wide.png`. Extra captures include both bed and console close-ups and
+the three console-playback phases.
 The shared console close-up camera uses room-local (6.1, 1.6, 2.6), aimed at
 (7.65, 1.05, 2.0), with a 65-degree horizontal field.
 The doorway pair uses the exact camera in `layout.json`; the wider pair uses
@@ -255,6 +260,58 @@ Logs are `tmp/demo6/full-suite-final.log`, `routes-final.log` and
 below the cropped protocol band. Image-comparer confirms storage colour
 agreement, readable message/fault text and visible block corruption. Existing
 ObjectDB/resource/allocator teardown warnings remain. D14 is unchanged.
+
+### Real bed soft goods (demo7)
+
+The `issue-95-props` merge supplies both bed soft-goods exports, their textures
+and editable Blender sources. `Placement_bed/bed_soft` contains the matching
+state asset beside `Placement_bed/bed`. The four main parts are `Mattress`,
+`Quilt`, `Pillow_L` and `Pillow_R`; Present also retains the authored crust,
+platform/floor powder and crumbs. These materials are provisional as described
+in **Batch 2: bed soft goods** below. No new colliders are added, including for
+floor powder; the existing shared bed collider remains.
+
+Regression tests check both GLB paths, exact frame transforms, absence of the
+old soft-goods stand-in, unchanged imported materials, the shared collider and
+mesh-pair clearance from both bedside units and the over-bed lockers. The
+remembered mattress still satisfies the existing 1 mm platform-contact limit.
+That sub-millimetre measurement translates the shared frame to zero inside the
+test fixture, avoiding float cancellation at ship Y = -11 m; placement is
+checked separately without changing either transform.
+
+The quarters scenario now captures twelve beats. Its two added bed views share
+room-local eye (2.5, 2.4, 2.25), target (4.0, 0.3, 4.6) and an 80-degree
+horizontal field. Both states' soft-goods mesh bounds, including floor debris,
+fit the existing 1.5% frame margin at 1536 by 864. The camera does not move the
+player or alter the console sequence.
+
+Regenerate and capture with:
+
+```sh
+godot --headless --path . -s tools/build_quarters_scenario.gd
+nohup godot --headless --path . -s harness/run.gd -- scenarios/quarters-demo.json --out tmp/demo7/routes/quarters-demo > tmp/demo7/route-quarters-demo.log 2>&1 &
+godot --headless --path . -s tools/quarters_presentation.gd -- tmp/demo7/routes/quarters-demo/run-<id> tmp/demo7
+```
+
+The chip-free presentation files are `tmp/demo7/corridor-door.png`,
+`remembered-doorway.png`, `remembered-wide.png`, `present-doorway.png` and
+`present-wide.png`, plus `remembered-bed.png` and `present-bed.png`. The five
+console/playback copies are also retained. All presentation images are 1536
+by 824, cropped only below the unchanged 40-pixel protocol band. Harness
+originals remain in the run directory.
+
+Demo7 passed **916 headless tests, zero failures**, including four new bed
+soft-goods regressions. The full suite and all eight windowed scenarios ran
+under `nohup` and exited 0: `quarters-demo`, `gameplay-full`, `rod-pickup`,
+`gameplay-keyboard-turn`, `hallway`, `power-room`, `connector-route` and
+`click-route`. All twelve quarters beats passed their machine checks. All
+twelve presentation copies match their source pixels below the cropped band.
+Logs are `tmp/demo7/full-suite.log`, `routes.log`, `route-<scenario>.log`,
+`presentation.log` and `presentation-check.log`. The raw quarters run is
+`tmp/demo7/routes/quarters-demo/run-1794261519/`. D14 code and lighting are
+unchanged. ObjectDB/resource/allocator and renderer teardown warnings remain;
+harness visual verdicts are pending, and no visual-quality review was performed
+in this integration pass.
 
 ## Plan view
 
@@ -1609,4 +1666,4 @@ The remembered mattress volume is 0.427450 m³. The aged crust and cover occupy 
 
 The local `image-comparer` route (`qwen38-llamacpp`) reviewed the labelled concept/design comparisons and both full-resolution captures, with GPU requests serialized. Remembered scored **8/10**, accepted for interim materials. It identified two pillows, the turned cuff, a stuffed mattress and soft gravity drape. Remaining defects: the fine wool weave is difficult to resolve, and the drape is more casual than a strict military bed. Aged scored **8/10**, also accepted. It identified the low brown crust, flattened pillows, split and slumped quilt, and platform/floor deposits. Remaining defects: the crust is somewhat uniform, the powder patch still reads decal-like, and some torn edges remain geometric. These are recorded in [`remembered-review.json`](sheets/bed_soft/remembered-review.json) and [`aged-review.json`](sheets/bed_soft/aged-review.json), alongside the review prompts.
 
-Captures: [remembered doorway](sheets/bed_soft/remembered-doorway.png), [remembered three-quarter](sheets/bed_soft/remembered-three_quarter.png), [aged doorway](sheets/bed_soft/aged-doorway.png), and [aged three-quarter](sheets/bed_soft/aged-three_quarter.png). The [remembered comparison](sheets/bed_soft/remembered-comparison.png) and [aged comparison](sheets/bed_soft/aged-comparison.png) retain the relevant reference crops. Godot scene integration is left to the separate demo worktree.
+Captures: [remembered doorway](sheets/bed_soft/remembered-doorway.png), [remembered three-quarter](sheets/bed_soft/remembered-three_quarter.png), [aged doorway](sheets/bed_soft/aged-doorway.png), and [aged three-quarter](sheets/bed_soft/aged-three_quarter.png). The [remembered comparison](sheets/bed_soft/remembered-comparison.png) and [aged comparison](sheets/bed_soft/aged-comparison.png) retain the relevant reference crops. The playable demo now integrates both exports as described above.

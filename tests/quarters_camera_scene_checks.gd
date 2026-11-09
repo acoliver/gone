@@ -36,6 +36,21 @@ func _run() -> void:
 		var uv := camera.unproject_position(point) / viewport.size
 		check.assert_float_in_range(uv.x, 0.015, 0.985, "whole sofa and ceiling fixtures inside horizontal frame: " + str(uv))
 		check.assert_float_in_range(uv.y, 0.015, 0.985, "whole sofa and ceiling fixtures inside vertical frame: " + str(uv))
+	QuartersCapture.pose(camera, "bed")
+	check.assert_close(camera.global_position, QuartersLayout.to_world(Vector3(2.5, 2.4, 2.25)), "matched bed close eye")
+	check.assert_float_equal(camera.fov, 80.0, "bed horizontal field")
+	for state: StringName in QuartersProps.STATES:
+		var furnishings := QuartersFurnishings.build(state)
+		var soft := furnishings.get_node("Placement_bed/bed_soft")
+		for mesh: MeshInstance3D in soft.find_children("*", "MeshInstance3D", true, false):
+			var bounds := ShipScene._world_frame(mesh) * mesh.get_aabb()
+			for corner: int in range(8):
+				var point := bounds.get_endpoint(corner)
+				check.assert_false(camera.is_position_behind(point), "bed part in front of close camera")
+				var uv := camera.unproject_position(point) / viewport.size
+				check.assert_float_in_range(uv.x, 0.015, 0.985, "bed part inside horizontal frame: " + str(uv))
+				check.assert_float_in_range(uv.y, 0.015, 0.985, "bed part inside vertical frame: " + str(uv))
+		furnishings.free()
 	room.free()
 	if not check.failure.is_empty():
 		printerr(check.failure)

@@ -4,6 +4,7 @@ extends SceneTree
 const BEATS := [
 	"corridor-door", "remembered-doorway", "remembered-wide", "present-doorway", "present-wide",
 	"remembered-console", "present-console", "console-corruption", "console-message", "console-fault",
+	"remembered-bed", "present-bed",
 ]
 
 func _initialize() -> void:

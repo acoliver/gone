@@ -1,7 +1,7 @@
 class_name QuartersCapture
 extends RefCounted
 
-const REQUIRED: Array[String] = ["corridor-door", "remembered-doorway", "remembered-wide", "remembered-console", "console-corruption", "console-message", "console-fault", "present-doorway", "present-wide", "present-console"]
+const REQUIRED: Array[String] = ["corridor-door", "remembered-doorway", "remembered-wide", "remembered-console", "remembered-bed", "console-corruption", "console-message", "console-fault", "present-doorway", "present-wide", "present-console", "present-bed"]
 
 static func pose(camera: Camera3D, view: String) -> void:
 	var plan := QuartersInventory.plan()
@@ -13,11 +13,14 @@ static func pose(camera: Camera3D, view: String) -> void:
 	elif view == "console":
 		point = Vector3(6.1, 1.6, 2.6)
 		target = Vector3(7.65, 1.05, 2.0)
+	elif view == "bed":
+		point = Vector3(2.5, 2.4, 2.25)
+		target = Vector3(4.0, 0.3, 4.6)
 	else:
 		point = Vector3(0.75, 2.2, 0.10)
 		target = Vector3(4.0, 1.15, 3.6)
 	camera.keep_aspect = Camera3D.KEEP_WIDTH
-	camera.fov = float(plan.camera.horizontal_fov_deg) if view == "doorway" else (65.0 if view == "console" else 132.0)
+	camera.fov = {"doorway": float(plan.camera.horizontal_fov_deg), "console": 65.0, "bed": 80.0, "wide": 132.0}[view]
 	camera.global_position = QuartersLayout.to_world(point)
 	camera.look_at(QuartersLayout.to_world(target))
 

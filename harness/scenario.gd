@@ -114,8 +114,8 @@ static func parse(text: String) -> Dictionary:
 				return {"scenario": null, "error": "beat camera_pitch_up must be a finite angle from zero to ninety degrees"}
 			beat.camera_pitch_up = float(angle)
 		if entry.has("quarters_view"):
-			if scenario.start != "quarters" or entry.quarters_view not in ["doorway", "wide", "console"]:
-				return {"scenario": null, "error": "quarters_view requires quarters start and doorway, wide or console"}
+			if scenario.start != "quarters" or entry.quarters_view not in ["doorway", "wide", "console", "bed"]:
+				return {"scenario": null, "error": "quarters_view requires quarters start and doorway, wide, console or bed"}
 			beat.quarters_view = entry.quarters_view
 		scenario.beats.append(beat)
 	scenario.beats.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
