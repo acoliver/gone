@@ -10,6 +10,15 @@ from atlas_layout import rectangles
 
 
 class SofaMaterials(unittest.TestCase):
+    def test_dust_scan_controls_deposit_variation(self):
+        base = np.full((3, 3), .4)
+        masks = np.array([[1, 1, 1], [1, 1, 1], [1, 1, 0]])
+        dust = np.array([[.95, .91, .83], [.58, .56, .52], [.95, .91, .83]])
+        result = finish_colour(base, masks, True, 'fabric', dust)
+        self.assertGreater(result[0].mean(), result[1].mean() + .2)
+        np.testing.assert_allclose(result[2], base[2])
+        np.testing.assert_array_equal(finish_colour(base, masks, False, 'fabric', dust), base)
+
     def test_tiles_are_disjoint_and_padded(self):
         tiles = rectangles([(str(i), 1024, 1024) for i in range(13)] +
                            [('fringe', 512, 1024), ('wool', 512, 1024)] +

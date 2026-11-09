@@ -33,14 +33,16 @@ def tileable(image):
     return result
 
 
-def finish_colour(base, masks, aged, kind):
+def finish_colour(base, masks, aged, kind, dust_scan=None):
     if not aged: return base.copy()
     cavity, up = masks[..., 1:2], masks[..., 2:3]
     crease = .10 * masks[..., :1] + .90 * cavity
     grime = (.55 if kind in {'fabric', 'throw'} else .18) * (1 - crease)
     dirty = base * (1 - grime)
-    dust = (.60 if kind in {'fabric', 'throw'} else (.06 if kind == 'foam' else .18)) * up
-    return dirty * (1 - dust) + np.array([.78, .74, .66]) * dust
+    dust = (.85 if kind in {'fabric', 'throw'} else (.06 if kind == 'foam' else .18)) * up
+    pigment = np.array([.86, .82, .74]) if dust_scan is None else dust_scan
+    coverage = .3 + .7 * np.clip((np.mean(pigment, axis=-1, keepdims=True) - .5) / .45, 0, 1)
+    return dirty * (1 - dust * coverage) + pigment * dust * coverage
 
 
 def read(path):
@@ -143,8 +145,8 @@ def sources(state):
         orm = read(ROOT / 'assets/props/quarters/storage_locker_module/as_built_orm.png')
         painted = (orm[..., 2] < .1) & (clean.max(2) > .05)
         bare = (orm[..., 2] > .3) & (orm[..., 1] < .45) & (clean.max(2) > .05)
-        for kind, selected in [('paint', painted), ('steel', bare)]:
-            palette = clean[selected]
+        for kind, role_mask in [('paint', painted), ('steel', bare)]:
+            palette = clean[role_mask]
             if not len(palette): raise ValueError('Missing locker clean role: ' + kind)
             mean = palette.mean(0)
             scan = images[kind]
@@ -157,7 +159,11 @@ def sources(state):
     if aged:
         for kind in ['paint', 'steel']:
             mean = images[kind].mean((0, 1))
-            images[kind] = mean + (images[kind] - mean) * .35
+            images[kind] = mean + (images[kind] - mean) * .10
+    dust, plane = flatten_illumination(read(SOURCE / selected['dust']))
+    gain = linear(np.array([.86, .82, .74])) / linear(dust).mean((0, 1))
+    images['dust'] = tileable(np.clip(srgb(linear(dust) * gain), 0, 1))
+    calibration['dust'] = dict(illumination=plane, linear_rgb_gain=gain.tolist(), calibrated=statistics(images['dust']))
     for kind, image in images.items():
         Image.fromarray(np.round(image * 255).astype(np.uint8)).save(SOURCE / (state + '-' + kind + '-source.png'))
     return images, calibration
@@ -203,18 +209,24 @@ def build(state):
                 base = sample(texture, material_uv)
             else:
                 base = sample(texture, physical_uv, True)
-            colour = finish_colour(base, masks[yy, xx], state == 'aged', kind)
+            dust_scan = sample(surfaces['dust'], physical_uv, True)
+            colour = finish_colour(base, masks[yy, xx], state == 'aged', kind, dust_scan)
             alpha = sample(original['albedo'], bary @ old)[..., 3] if 'albedo' in original else np.ones(len(xx))
             albedo[yy, xx, :3], albedo[yy, xx, 3] = colour, alpha
             without_dust = masks[yy, xx, :3].copy()
             without_dust[:, 2] = 0
-            nodust[yy, xx, :3] = finish_colour(base, without_dust, state == 'aged', kind)
+            nodust[yy, xx, :3] = finish_colour(base, without_dust, state == 'aged', kind, dust_scan)
             nodust[yy, xx, 3] = alpha
             masks[yy, xx, 3] = {'fabric': .1, 'throw': .3, 'foam': .5, 'paint': .7, 'steel': .9}[kind]
             if 'normal' in original:
                 normal[yy, xx] = sample(original['normal'], bary @ old)[..., :3]
-            orm[yy, xx, 0] = .55 + .45 * masks[yy, xx, 0] if kind == 'foam' else masks[yy, xx, 0]
-            orm[yy, xx, 1] = .98 if kind in {'fabric', 'throw', 'foam'} else (.91 if state == 'aged' else (.35 if kind == 'steel' else .45))
+            if kind in {'fabric', 'throw'}:
+                orm[yy, xx, 0] = folds[yy, xx]
+            elif kind == 'foam':
+                orm[yy, xx, 0] = .75 + .25 * masks[yy, xx, 0]
+            else:
+                orm[yy, xx, 0] = masks[yy, xx, 0]
+            orm[yy, xx, 1] = .98 if kind in {'fabric', 'throw', 'foam'} else (.96 if state == 'aged' else (.35 if kind == 'steel' else .45))
             orm[yy, xx, 2] = 0 if state == 'aged' or kind in {'fabric', 'throw', 'foam'} else (.45 if kind == 'steel' else .02)
             occupied[yy, xx] = True
         x, y, w, h = group['rectangle']

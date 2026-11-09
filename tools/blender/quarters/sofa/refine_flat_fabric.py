@@ -31,6 +31,7 @@ def main():
         selected[name] = output.name
         print('FLAT', name, flush=True)
     selected['weave'] = 'upholstery-clean.png'
+    selected['dust'] = 'dust.png'
     (SOURCE / 'selected.json').write_text(json.dumps(selected, indent=2) + '\n')
 
 

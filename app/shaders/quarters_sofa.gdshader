@@ -58,13 +58,6 @@ void fragment() {
 		vec3 scan = aged_finish ? oxide : (masks.a > 0.8 ? steel : paint);
 		float grain = clamp(dot(scan, vec3(0.2126, 0.7152, 0.0722)) * 3.0, 0.0, 1.0);
 		ALBEDO *= 0.97 + grain * 0.06;
-		float height = dot(colour.rgb, vec3(0.2126, 0.7152, 0.0722)) * (aged_finish ? 0.0001 : 0.00008);
-		vec3 dx = dFdx(VERTEX);
-		vec3 dy = dFdy(VERTEX);
-		vec3 r1 = cross(dy, NORMAL);
-		vec3 r2 = cross(NORMAL, dx);
-		vec3 gradient = (r1 * dFdx(height) + r2 * dFdy(height)) / dot(dx, r1);
-		NORMAL = normalize(NORMAL - gradient);
 	}
 	if (diagnostic != 0) {
 		vec3 value = colour.rgb;

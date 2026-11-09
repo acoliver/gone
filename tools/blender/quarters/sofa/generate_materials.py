@@ -16,6 +16,7 @@ REFERENCES = {
     'throw-aged': ('aged-target.png', [805, 555, 895, 690], 'Old faded dusty taupe wool blanket fabric with dry brown grime, muted mauve-brown and warm grey yarns.'),
     'foam': ('aged-target.png', [160, 790, 365, 860], 'Continuous crumbly tan-brown oxidised polyurethane foam crust. Fine friable ochre-brown granules and tiny broken pores; dry material only, filling all gaps with the same material.'),
     'weave': ('hero.png', [490, 590, 610, 625], 'Seamlessly tileable macro scan of fine plain-woven oatmeal upholstery yarns, alternating warp and weft, homogeneous fine weave at equal scale across the whole image.'),
+    'dust': ('aged-target.png', [275, 380, 410, 475], 'A flat material scan of dry pale warm-grey mineral dust accumulated over taupe fabric. Fine granular powder, tiny irregular light-grey aggregates, uneven thin deposits with small gaps exposing the darker taupe substrate. Fine particulate texture, not smooth cloth. No large clumps, pebbles, cracked mud, clouds or stripes. Low saturation warm grey, never yellow or green.'),
 }
 
 
