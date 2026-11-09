@@ -6,7 +6,7 @@
         "base_vertices": 425,
         "minimum_base_distance_m": 0.00034943377249874175,
         "maximum_base_distance_m": 0.0012995307333767414,
-        "normal_error_degrees": 1.7534518275764228,
+        "normal_error_degrees": 1.748373183887841,
         "within_2mm": true
       }
     ],
@@ -19,7 +19,7 @@
         "base_vertices": 425,
         "minimum_base_distance_m": 0.0004920142819173634,
         "maximum_base_distance_m": 0.0014212342211976647,
-        "normal_error_degrees": 3.146451905811117,
+        "normal_error_degrees": 2.026235080080506,
         "within_2mm": true
       }
     ],

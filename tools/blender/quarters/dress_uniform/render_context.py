@@ -110,6 +110,7 @@ def render_context(asset, out, state, body_base=None, views=None, dust_controls=
             camera.location = (.82, -2.9, 1.48)
             camera.data.type = 'ORTHO'
             camera.data.ortho_scale = 1.85
+            camera.data.lens = 50
         elif view == 'closeup':
             target = origin+rotation @ Vector((.235, -.01, -.285))
             # A face-normal approach to the diagonally hung garment crosses
