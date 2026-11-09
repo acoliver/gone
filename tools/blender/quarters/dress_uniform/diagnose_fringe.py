@@ -49,7 +49,8 @@ def setup(asset):
 def controls(asset, out):
     out.mkdir(parents=True, exist_ok=True)
     report = {}
-    for mode in ['cards-original', 'cards-no-normal', 'cards-linear-color', 'full-no-cards', 'full-no-rim']:
+    for mode in ['cards-original', 'cards-no-normal', 'cards-linear-color',
+                 'full-no-cards', 'full-no-rim', 'full-original']:
         scene = setup(asset)
         for obj in scene.objects:
             if obj.type != 'MESH':

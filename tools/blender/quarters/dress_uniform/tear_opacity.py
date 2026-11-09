@@ -37,7 +37,7 @@ def wool_opacity(obj, out, size=2048, seed=9521):
     starts = np.concatenate([p[:-1] for p in paths])
     deltas = np.concatenate([np.diff(p, axis=0) for p in paths])
     length2 = np.sum(deltas**2, axis=1)
-    from tear_boundaries import labelled_samples
+    from tear_boundaries import labelled_samples, lip_opacity, retained_binding
     samples, erodible = labelled_samples(obj)
     tree = KDTree(len(samples))
     for index, point in enumerate(samples):
@@ -82,17 +82,23 @@ def wool_opacity(obj, out, size=2048, seed=9521):
         missed_lip_texels += int(np.sum((distance < .003) & (interpolated >= .003)))
         maximum_distance_error = max(maximum_distance_error, float(np.max(np.abs(interpolated-distance))))
         coordinates = np.c_[pattern*pattern_scale, np.zeros(len(pattern))]
-        noise = sum(weight*value_noise(coordinates, wavelength, seed+octave)
-                    for octave, (weight, wavelength) in enumerate(zip([.5, .25, .15, .1], [.002, .001, .0007, .0005])))
-        opaque = (distance >= .003) | (distance/.003+noise*3.5 >= .35)
+        # One erosion depth per boundary station avoids opaque islands over the dark inner ply.
+        opaque = lip_opacity(distance, np.array([hit[0] for hit in nearest_lip]), seed)
         # The sewn collar binding stays intact; only released lips break up.
         opaque |= ~allowed
-        opaque |= (np.abs(p[:, 0]) < .12) & (p[:, 2] > -.18)
+        binding = retained_binding(p)
+        opaque |= binding
         delta = coordinates[:, None, :2]-starts
         t = np.clip(np.sum(delta*deltas, axis=2)/length2, 0, 1)
-        nearest = np.linalg.norm(delta-t[:, :, None]*deltas, axis=2).min(1)
+        distances = np.linalg.norm(delta-t[:, :, None]*deltas, axis=2)
+        closest = distances.argmin(1)
+        nearest = distances[np.arange(len(p)), closest]
+        on_path = starts[closest]+t[np.arange(len(p)), closest, None]*deltas[closest]
+        channel_noise = value_noise(np.c_[on_path, np.zeros(len(p))], .0025, seed+13)
+        half_width = np.clip(.00065+.0014*channel_noise, .00015, .00135)
         # Branch openings remain sub-3 mm; the main gaping lips are geometry.
-        crack = (nearest < .00065) & (pattern[:, 0] < .48) & (pattern[:, 1] > .84) & allowed
+        crack = ((nearest < half_width) & (pattern[:, 0] < .48) & (pattern[:, 1] > .84) &
+                 allowed & ~binding)
         tile = pixels[lo[1]:hi[1]+1, lo[0]:hi[0]+1, :3]
         before = tile[inside, 0].copy()
         tile[inside] = (opaque & ~crack)[:, None]
@@ -118,8 +124,9 @@ def wool_opacity(obj, out, size=2048, seed=9521):
     report.update(distance_method='per-texel nearest physical lip, sampled at 0.25 mm; no vertex-distance interpolation',
                   grain_paths_m=[p.tolist() for p in paths], pattern_scale_m=pattern_scale.tolist(),
                   branch_length_m=.018,
-                  crack_width_m=.0013, changed_texels=changed,
-                  retained_crest='physical Lip shrink release labels; intact upper binding is opaque',
+                  crack_width_m=.0013, crack_width_range_m=[.0003, .0027], changed_texels=changed,
+                  erosion_method='boundary-station noise with monotone inward opacity, 0.15 to 2.85 mm',
+                  retained_crest='release labels plus the collar-side binding (abs x <160 mm, z >-190 mm); no grain perforations',
                   missed_lip_texels_by_vertex_interpolation=missed_lip_texels,
                   maximum_distance_interpolation_error_m=maximum_distance_error,
                   transparent_texels=int((pixels[:, :, 0] < .5).sum()))

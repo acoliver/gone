@@ -21,6 +21,11 @@ class Labels(unittest.TestCase):
             self.assertTrue((labels[10:90, 10:90] != 0).all(), color)
             self.assertEqual(opening_metrics(labels != 0), [])
 
+    def test_fittings_are_not_fringe(self):
+        image = np.array([[(255, 0, 0), (0, 255, 0), (255, 0, 255),
+                           (255, 255, 255), (255, 0, 128), (0, 0, 255), (0, 0, 0)]], dtype=np.uint8)
+        np.testing.assert_array_equal(decode_labels(image), [[1, 2, 5, 4, 5, 0, 0]])
+
     def test_true_openings_and_hanger_are_not_filled(self):
         image = np.full((100, 100, 3), (255, 0, 0), np.uint8)
         image[20:80, 40:45] = 0

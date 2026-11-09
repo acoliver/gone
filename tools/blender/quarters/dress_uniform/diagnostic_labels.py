@@ -11,4 +11,8 @@ def decode_labels(rgb):
     labels = np.zeros(rgb.shape[:2], np.uint8)
     labels[coverage] = 2
     labels[coverage & (red > 230) & (green < 20) & (blue < 20)] = 1
+    # Fittings occlude a tear; their perimeter is not a wool lip.
+    labels[coverage & (blue > (red+green)*.25)] = 5
+    white = (red >= 127.5) & (green >= 127.5) & (blue >= 127.5) & (abs(red-green) < 32)
+    labels[coverage & white] = 4
     return labels

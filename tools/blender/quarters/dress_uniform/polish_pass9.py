@@ -147,10 +147,9 @@ def crumple_strip(obj, number, supports):
                 lift_range_m=[float(lift.min()), float(lift.max())], vertices=len(points))
 
 
-def soften_debris(record, out):
+def rebuild_mound(record, out):
     from bake_down import decimate
     from fabric_mesh import new_object
-    report = {}
     lost = sum(piece['lost_area_m2'] for piece in record['fallen'])
     subprocess.run(['/Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python',
                     str(Path(__file__).with_name('build_fibre_heap.py')), '--lost-area', str(lost),
@@ -167,7 +166,7 @@ def soften_debris(record, out):
     apply(dense, modifier)
     old = bpy.data.objects['FibreDust']
     bpy.data.objects.remove(old, do_unlink=True)
-    mound, reduction = decimate(dense, 900, protect=0.)
+    mound, reduction = decimate(dense, 800, protect=0.)
     mound.name = 'FibreDust'
     mound['aged_export'] = True
     mound.hide_render = False
@@ -176,7 +175,13 @@ def soften_debris(record, out):
     dense.hide_render = True
     dense.hide_set(True)
     record['heap_reduction'] = reduction
-    report['mound'] = dict(method='compact-support SDF deposit, faired before reduction and normal bake', reduction=reduction)
+    return dense, mound
+
+
+def soften_debris(record, out):
+    _, mound = rebuild_mound(record, out)
+    report = dict(mound=dict(method='compact-support SDF deposit, faired before reduction and normal bake',
+                             reduction=record['heap_reduction']))
     supports = [mound]
     for number, piece in enumerate(record['fallen']):
         obj = bpy.data.objects[piece['name']]
@@ -207,11 +212,32 @@ def boards(out):
     save_checkpoint(out, 'baked', record)
 
 
+def refresh_mound(base, out):
+    from bake_down import bake, material_maps
+    from wool_material import wool_material
+    bpy.ops.wm.open_mainfile(filepath=str(base/'baked.blend'))
+    record = json.loads(bpy.context.scene['tunic5_record'])
+    dense, mound = rebuild_mound(record, out)
+    mat, record['bakes']['FibreDust'] = bake(dense, mound, out/'textures', size=512)
+    material_maps(mat, (.19, .18, .16))
+    record['heap_material'] = wool_material(mound, out/'textures', color=(.19, .18, .16))
+    record['pass9']['debris']['mound'] = dict(method='compact SDF footprint survives positive meshing isovalue',
+                                            reduction=record['heap_reduction'])
+    dense.hide_render = True
+    dense.hide_set(True)
+    save_checkpoint(out, 'baked', record)
+
+
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--base', type=Path, default=ROOT/'tmp/age/tunic8/final')
     p.add_argument('--out', type=Path, required=True)
-    p.add_argument('--stage', choices=['prepare', 'boards'], required=True)
+    p.add_argument('--stage', choices=['prepare', 'boards', 'mound'], required=True)
     a = p.parse_args(sys.argv[sys.argv.index('--')+1:])
     a.out.mkdir(parents=True, exist_ok=True)
-    prepare(a.base.resolve(), a.out.resolve()) if a.stage == 'prepare' else boards(a.out.resolve())
+    if a.stage == 'prepare':
+        prepare(a.base.resolve(), a.out.resolve())
+    elif a.stage == 'boards':
+        boards(a.out.resolve())
+    else:
+        refresh_mound(a.base.resolve(), a.out.resolve())

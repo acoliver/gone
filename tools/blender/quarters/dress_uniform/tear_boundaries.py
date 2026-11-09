@@ -3,6 +3,20 @@ import bmesh
 import numpy as np
 
 
+def retained_binding(points):
+    points = np.asarray(points)
+    return (np.abs(points[:, 0]) < .16) & (points[:, 2] > -.19)
+
+
+def lip_opacity(distance, boundary_points, seed):
+    from opacity_bake import value_noise
+    noise = sum(weight*value_noise(boundary_points, wavelength, seed+octave)
+                for octave, (weight, wavelength) in enumerate(zip([.5, .25, .15, .1],
+                                                                 [.002, .001, .0007, .0005])))
+    erosion = np.clip(.0014+.0028*noise, .00015, .00285)
+    return np.asarray(distance) >= erosion
+
+
 def release_weights(obj):
     group = obj.vertex_groups['Lip shrink'].index
     return np.array([next((g.weight for g in v.groups if g.group == group), 0.)

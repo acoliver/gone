@@ -34,6 +34,9 @@ def build(lost_area, out):
     target_volume = lost_area*.0035/.06
     h *= target_volume/(h.sum()*voxel**2)
     sdf = np.maximum(z[None, None, :]-h[:, :, None], -z[None, None, :])
+    # The shared mesher's positive isovalue thickens even zero-height columns.
+    # Intersect the volume with the same compact footprint, not just its top.
+    sdf = np.maximum(sdf, ((radius-outline)*.04)[:, :, None])
     sdf[[0, -1], :, :] = .01
     sdf[:, [0, -1], :] = .01
     sdf[:, :, [0, -1]] = .01

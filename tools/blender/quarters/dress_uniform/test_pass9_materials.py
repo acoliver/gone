@@ -15,7 +15,10 @@ from wool_material import wool_material
 out = ROOT/'tmp/age/tunic9/material-control'
 out.mkdir(parents=True, exist_ok=True)
 bpy.ops.wm.read_factory_settings(use_empty=True)
-wool_fringe(out)
+fringe = wool_fringe(out)
+assert fringe.surface_render_method == 'BLENDED', 'Subpixel wool needs fractional coverage, not alpha clipping'
+alpha = fringe.node_tree.nodes['Principled BSDF'].inputs['Alpha']
+assert alpha.links[0].from_node.type == 'TEX_IMAGE', 'A ROUND node discards fractional fibre coverage'
 pixels = np.array(bpy.data.images['Tunic wool fibres'].pixels[:]).reshape(-1, 4)
 color = np.median(pixels[pixels[:, 3] > .5, :3], axis=0)
 linear = np.where(color <= .04045, color/12.92, ((color+.055)/1.055)**2.4)

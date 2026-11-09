@@ -23,4 +23,12 @@ for ids in categories.values():
     for i in ids:
         point = body.data.vertices[i].co
         assert not (abs(point.x) < .075 and point.z > -.24), 'Fringe grew on retained neck binding'
-print('PASS: retained upper binding is opaque and card-free; released lips remain erodible')
+from tear_boundaries import lip_opacity
+distance = np.linspace(0., .004, 80)
+boundary = np.zeros((24, 80, 3))
+boundary[:, :, 0] = np.linspace(0., .04, 24)[:, None]
+opaque = lip_opacity(np.tile(distance, 24), boundary.reshape(-1, 3), 9521).reshape(24, 80)
+assert not opaque[:, 0].any()
+assert opaque[:, -1].all()
+assert (np.diff(opaque.astype(int), axis=1) >= 0).all(), 'Lip erosion created floating opaque islands or inward pinholes'
+print('PASS: retained binding stays intact; released-lip erosion is monotone inward and card classification agrees')

@@ -143,8 +143,8 @@ def wool_fringe(out):
     padded = np.pad(alpha, ((0, 0), (7, 7)))
     root = np.maximum.reduce([padded[:, i:i+1024] for i in range(15)])
     tips = np.maximum.reduce([padded[:, i:i+1024] for i in range(5, 10)])
-    # Bundled roots remain visible under alpha-scissor minification; single
-    # texel strands average below 0.5 and disappear from the close camera.
+    # Bundled roots stay legible; fractional alpha preserves the thinner
+    # tips instead of discarding their subpixel coverage.
     blend = np.clip(1-(np.arange(len(alpha)) % 128)/40., 0, 1)[:, None]
     rgba[:, :, 3] = tips+(root-tips)*blend
     gy, gx = np.gradient(rgba[:, :, 3])
@@ -157,6 +157,8 @@ def wool_fringe(out):
     rgba[:, :, :3] *= srgb/np.array([.42, .36, .26])
     shader = mat.node_tree.nodes['Principled BSDF']
     shader.inputs['Sheen Weight'].default_value = 0.
+    shader.inputs['Specular IOR Level'].default_value = .15
+    mat.surface_render_method = 'BLENDED'
     for node in mat.node_tree.nodes:
         if node.type == 'NORMAL_MAP':
             node.inputs['Strength'].default_value = .25
@@ -165,6 +167,8 @@ def wool_fringe(out):
     for node in mat.node_tree.nodes:
         if node.type == 'TEX_IMAGE':
             node.image = images[1 if 'Normal' in node.image.name else 0]
+            if node.image == images[0]:
+                mat.node_tree.links.new(node.outputs['Alpha'], shader.inputs['Alpha'])
     return mat
 
 
