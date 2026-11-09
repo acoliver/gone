@@ -46,8 +46,19 @@ def prepare(state):
     records = []
     saved_images = {}
     for obj in objects:
-        obj.data.calc_loop_triangles()
         old_name = 'BakeUV' if 'BakeUV' in obj.data.uv_layers else obj.data.uv_layers[0].name
+        metal = all(role(material.name) in {'paint', 'steel'} for material in obj.data.materials)
+        if metal:
+            bpy.ops.object.select_all(action='DESELECT')
+            obj.select_set(True)
+            bpy.context.view_layer.objects.active = obj
+            obj.data.uv_layers.active = obj.data.uv_layers[old_name]
+            bpy.ops.object.mode_set(mode='EDIT')
+            bpy.ops.mesh.select_all(action='SELECT')
+            bpy.ops.uv.smart_project(angle_limit=1.151917, island_margin=.012,
+                                     correct_aspect=True, scale_to_bounds=False)
+            bpy.ops.object.mode_set(mode='OBJECT')
+        obj.data.calc_loop_triangles()
         atlas = obj.data.uv_layers.new(name='MaterialAtlas')
         old = obj.data.uv_layers[old_name]
         atlas.active_render = True
@@ -61,7 +72,8 @@ def prepare(state):
             x, y, w, h = layout[identity]
             low, high = source_uv.reshape(-1, 2).min(0), source_uv.reshape(-1, 2).max(0)
             if np.any(high <= low): raise ValueError('Degenerate sofa UV bounds: ' + identity)
-            uv = ((source_uv - low) / (high - low) * [w - 16, h - 16] + [x + 8, y + 8]) / size
+            span = np.full(2, (high - low).max()) if metal else high - low
+            uv = ((source_uv - low) / span * [w - 16, h - 16] + [x + 8, y + 8]) / size
             for indices, coords in zip(loop_ids, uv):
                 for i, co in zip(indices, coords): atlas.data[i].uv = co
             points = np.array([[obj.matrix_world @ obj.data.vertices[i].co for i in t.vertices] for t in triangles])
@@ -215,7 +227,9 @@ if __name__ == '__main__':
     parser.add_argument('--stage', choices=['prepare', 'assemble', 'export'], required=True)
     parser.add_argument('--state', choices=['as_built', 'aged'], required=True)
     parser.add_argument('--output', type=Path)
+    parser.add_argument('--scratch', type=Path, default=SCRATCH)
     args = parser.parse_args(sys.argv[sys.argv.index('--') + 1:])
+    SCRATCH = args.scratch.resolve()
     if args.stage == 'prepare': prepare(args.state)
     elif args.stage == 'assemble': assemble(args.state)
     else: export(args.state, args.output)
