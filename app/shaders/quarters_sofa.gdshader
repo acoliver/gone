@@ -46,7 +46,7 @@ void fragment() {
 	ROUGHNESS = orm.g;
 	METALLIC = orm.b;
 	AO = orm.r;
-	AO_LIGHT_AFFECT = 0.65;
+	AO_LIGHT_AFFECT = masks.a > 0.6 ? 0.0 : 0.65;
 	if (masks.a > 0.6) {
 		vec3 n = normalize(surface_normal);
 		vec3 weights = pow(abs(n), vec3(4.0));

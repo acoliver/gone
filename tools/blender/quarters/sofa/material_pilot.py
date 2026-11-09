@@ -38,7 +38,7 @@ def prepare(state):
             kind = role(material.name)
             fringe = 'Fringe' in material.name
             powder = material.name.startswith('FloorDust')
-            width, height = (256, 256) if powder else ((256, 512) if fringe else ((512, 512) if kind == 'foam' or obj.name in {'Feet', 'Rivets'} else (1024, 1024)))
+            width, height = (256, 256) if powder else ((512, 1024) if fringe else ((512, 512) if kind == 'foam' or obj.name in {'Feet', 'Rivets'} else (1024, 1024)))
             if state == 'as_built': width = height = 512
             sizes.append((identity, width, height))
             groups.append((identity, obj, slot, material, kind))
