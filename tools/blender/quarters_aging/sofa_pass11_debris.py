@@ -26,15 +26,14 @@ def powder(out, record):
     for index, name in enumerate(ORDER[:3]):
         spec = record['pass11']['parts'][name]['gash']['spec']
         x = spec['centre'][0]
-        placements = [(x-.07, -.34, .42, .095, .035, False),
-                      (x+.07, -.35, .42, .090, .035, False),
-                      (x, -.17, .42, .105, .045, False),
-                      (x-.03, -.56, .0005, .175, .065, True),
-                      (x+.04, -.67, .0005, .150, .080, True)]
+        placements = [(x+dx, -.365, .42, .026, .014, False) for dx in [-.09, -.03, .03, .09]]
+        placements += [(x+dx, -.235, .42, .025, .014, False) for dx in [-.06, 0., .06]]
+        placements += [(x-.03, -.55, .0005, .195, .060, True),
+                       (x+.04, -.70, .0005, .175, .080, True)]
         for item, (px, py, z, rx, ry, floor) in enumerate(placements):
             seed = 10010+index*37+item
             card = powder_card(f'Pass11Powder_{name}_{item}', (px, py, z), (rx, ry),
-                               out/'textures/fine-powder', seed, sectors=16)
+                               out/'textures/fine-powder', seed, sectors=16 if floor else 8)
             unsupported = set()
             if not floor:
                 for vertex in card.data.vertices:
@@ -52,6 +51,8 @@ def powder(out, record):
 
 
 def finish(source, out, library):
+    from sofa_pass11_fragments import library as compact_library
+    library = compact_library(library, out/'compact-fragments')
     record = deposit(source, out, library, seed=10011, visible_deposits=True,
                      nonfloor_median=.0075, deck_target=36, floor_counts=(3, 5, 3, 2, 1),
                      floor_radius=.30, floor_spacing=.030, floor_median=.0085, front_lip_target=16)

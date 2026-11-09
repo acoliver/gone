@@ -14,7 +14,7 @@ def aim(obj, target):
     obj.rotation_euler = (Vector(target) - obj.location).to_track_quat('-Z', 'Y').to_euler()
 
 
-def render(prop, out, aged_path=None):
+def render(prop, out, aged_path=None, preserve_materials=False):
     out.mkdir(parents=True, exist_ok=True)
     sofa = prop == 'sofa'
     target = (0, 0, .40 if sofa else -.44)
@@ -34,7 +34,7 @@ def render(prop, out, aged_path=None):
         scene.render.resolution_y = 1422
         scene.view_settings.view_transform = 'AgX'
         for mat in bpy.data.materials:
-            if not mat.use_nodes:
+            if preserve_materials or not mat.use_nodes:
                 continue
             shader = mat.node_tree.nodes.get('Principled BSDF')
             if shader is None:

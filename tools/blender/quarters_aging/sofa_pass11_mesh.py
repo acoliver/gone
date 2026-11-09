@@ -6,6 +6,53 @@ from mathutils import Vector
 from common import recalc
 from sofa_pass9_finish import points
 
+
+def clean_degenerate(obj):
+    bm = bmesh.new()
+    bm.from_mesh(obj.data)
+    before = len(bm.faces)
+    bmesh.ops.dissolve_degenerate(bm, dist=.000002, edges=list(bm.edges))
+    bmesh.ops.triangulate(bm, faces=list(bm.faces))
+    invalid = [face for face in bm.faces if face.calc_area() == 0.]
+    if invalid:
+        raise ValueError(f'{obj.name}: {len(invalid)} zero-area faces remain after degenerate dissolution')
+    bm.to_mesh(obj.data)
+    bm.free()
+    recalc(obj)
+    return dict(degenerate_faces_removed=before-len(obj.data.polygons))
+
+
+def triangle_weights(point, triangle):
+    a, b, c = np.asarray(triangle, dtype=np.float64)
+    point = np.asarray(point, dtype=np.float64)
+    normal = np.cross(b-a, c-a)
+    denominator = float(normal@normal)
+    if denominator == 0:
+        raise ValueError('Cannot transfer clearance through a zero-area triangle')
+    u = float(np.cross(point-a, c-a)@normal)/denominator
+    v = float(np.cross(b-a, point-a)@normal)/denominator
+    return np.array([1-u-v, u, v])
+
+
+def transfer_clearance(dense, low, original):
+    from mathutils.bvhtree import BVHTree
+    low.data.calc_loop_triangles()
+    faces = np.array([t.vertices[:] for t in low.data.loop_triangles])
+    tree = BVHTree.FromPolygons(original.tolist(), faces.tolist(), all_triangles=True)
+    displacement = points(low)-original
+    inverse = dense.matrix_world.inverted()
+    maximum = 0.
+    for vertex in dense.data.vertices:
+        world = dense.matrix_world@vertex.co
+        nearest, _, index, _ = tree.find_nearest(world)
+        ids = faces[index]
+        shift = triangle_weights(tuple(nearest), original[ids])@displacement[ids]
+        vertex.co = inverse@(world+Vector(shift))
+        maximum = max(maximum, float(np.linalg.norm(shift)))
+    recalc(dense)
+    return dict(method='float64 cross-product barycentric clearance field', maximum_dense_displacement_m=maximum)
+
+
 def simplify_boundary(obj, tolerance=.0004):
     bm = bmesh.new()
     bm.from_mesh(obj.data)
@@ -66,7 +113,9 @@ def seat_bowl(positions, centre, amount):
     y = np.clip((result[:, 1]+.08)/.36, -1., 1.)
     # Leave the already collapsed middle above its support. Lift the loose
     # perimeter into a separate shallow bowl for each seat instead of flattening it.
-    result[:, 2] += amount*(.8*x*x+.2*y*y)
+    rear = np.clip((result[:, 1]+.12)/.30, 0, 1)
+    rear = rear*rear*(3-2*rear)
+    result[:, 2] += amount*(.8*x*x+.2*y*y)*(1-rear)
     return result
 
 
@@ -125,8 +174,10 @@ def fill_small_wear(obj):
 
 
 def gash_field(positions, spec):
-    delta = np.asarray(positions)-np.asarray(spec['centre'])
-    u, v = delta@spec['tangent'], delta@spec['across']
+    positions = np.asarray(positions, dtype=np.float64)
+    delta = positions-np.asarray(spec['centre'])
+    u = np.einsum('ij,j->i', delta, spec['tangent'])
+    v = np.einsum('ij,j->i', delta, spec['across'])
     along = u/spec['half_length']
     phase = spec['seed']*.137
     taper = np.sqrt(np.maximum(0., 1.-along*along))
@@ -135,7 +186,9 @@ def gash_field(positions, spec):
     width = np.maximum(.001, spec['half_width']*broad+rag*spec.get('rag_scale', 1.))*taper
     field = np.maximum(np.abs(u)-spec['half_length'], np.abs(v)-width)
     if 'depth_max' in spec:
-        field = np.maximum(field, np.asarray(positions)[:, 1]-spec['depth_max'])
+        field = np.maximum(field, positions[:, 1]-spec['depth_max'])
+    if 'height_min' in spec:
+        field = np.maximum(field, spec['height_min']-positions[:, 2])
     return field
 
 

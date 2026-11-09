@@ -48,6 +48,8 @@ def visible_gashes(cloth, segments, radius=12., occluded=None):
                 ids, counts = np.unique(candidates[candidates > 0], return_counts=True)
                 if len(ids):
                     mask = holes == ids[counts.argmax()]
+                    if mask.sum() < 128:
+                        continue
                     skeleton, distances = medial_axis(mask, return_distance=True, rng=95)
                     widths = 2*distances[skeleton]
                     width = float(widths.std()/widths.mean())

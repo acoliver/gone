@@ -17,9 +17,9 @@ from fabric_mesh import join, material, new_object
 from sofa_decay_policy import ORDER
 from sofa_full_decay import ROOT, checkpoint
 from sofa_pass8_finish import clearance, save_lip_classes
-from sofa_pass9_finish import carry_clearance, points
+from sofa_pass9_finish import points
 from sofa_pass10_mesh import fair_interior
-from sofa_pass11_mesh import cut_gash, curl_gashes, fill_small_wear, gash_field, lean_back, seat_bowl, set_points, simplify_boundary, surface_area
+from sofa_pass11_mesh import cut_gash, curl_gashes, fill_small_wear, gash_field, lean_back, seat_bowl, set_points, simplify_boundary, surface_area, transfer_clearance, clean_degenerate
 
 
 def reduce_cover(dense, target):
@@ -27,7 +27,8 @@ def reduce_cover(dense, target):
     working.data = dense.data.copy()
     bpy.context.collection.objects.link(working)
     simplification = simplify_boundary(working)
-    low, report = decimate(working, target, protect=.001, keep_factor=15)
+    low, report = decimate(working, target, protect=.003, keep_factor=100)
+    report['cleanup'] = clean_degenerate(low)
     bpy.data.objects.remove(working, do_unlink=True)
     report['boundary_simplification'] = simplification
     report['boundary_hausdorff_upper_m'] = boundary_hausdorff(dense, low)
@@ -52,6 +53,7 @@ def remove_specks(obj):
         if sum(f.calc_area() for f in component) < .001:
             remove.extend(component)
     bmesh.ops.delete(bm, geom=remove, context='FACES')
+    bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context='VERTS')
     bm.to_mesh(obj.data)
     bm.free()
     return len(remove)
@@ -62,7 +64,7 @@ def gash_spec(name, obj, index):
     if name.startswith('Seat'):
         return dict(centre=[cx+(-.025, .055, -.045)[index], -.295, .43],
                     tangent=[1, 0, 0], across=[0, 1, 0], half_length=(.118, .090, .125)[index],
-                    half_width=(.048, .038, .052)[index], seed=9801+index*37)
+                    half_width=(.048, .038, .052)[index], seed=9801+index*37, height_min=.408)
     centre = Vector((cx+(-.07, .13, -.10)[index], -.4, .535))
     hit, _, _, _ = surface_tree(obj).ray_cast(centre, Vector((0, 1, 0)))
     if hit is None:
@@ -74,7 +76,8 @@ def gash_spec(name, obj, index):
 
 def foam_core(name, spec, reference):
     rng = np.random.default_rng(spec['seed'])
-    sectors, rings = 28, 3
+    sectors, rings = 24, 3
+    profile = {key: value for key, value in spec.items() if key not in {'depth_max', 'height_min'}}
     front = []
     for ring in range(rings+1):
         radius = ring/rings*.82
@@ -82,12 +85,12 @@ def foam_core(name, spec, reference):
         for angle in angles:
             u = spec['half_length']*radius*np.cos(angle)
             centre = np.array(spec['centre'])+np.array(spec['tangent'])*u
-            width = -gash_field([centre], spec)[0]
-            position = centre+np.array(spec['across'])*width*radius*np.sin(angle)*.72
-            hit, _, _, _ = reference.ray_cast(Vector((position[0], -.6, position[2])), Vector((0, 1, 0)))
-            if hit is None:
-                raise ValueError(f'{name}: exposed foam has no cover depth reference')
-            position[1] = hit.y+.009+rng.uniform(.001, .005)
+            width = -gash_field([centre], profile)[0]
+            position = centre+np.array(spec['across'])*width*radius*np.sin(angle)*.82
+            if name.startswith('Seat'):
+                position[2] = .424+.003*(1-radius*radius)+rng.uniform(-.003, .003)
+            else:
+                position[1] = spec['centre'][1]+.006+rng.uniform(.001, .004)
             front.append(position)
     faces = [(0, 1+i, 1+(i+1)%sectors) for i in range(sectors)]
     for ring in range(1, rings):
@@ -98,7 +101,12 @@ def foam_core(name, spec, reference):
     vertices = list(front)
     outer = 1+(rings-1)*sectors
     back = len(vertices)
-    vertices.append(np.array(spec['centre'])+[0, .035, 0])
+    cap = np.array(spec['centre']).copy()
+    if name.startswith('Seat'):
+        cap[2] = .4105
+    else:
+        cap[1] = spec['depth_max']-.003
+    vertices.append(cap)
     for i in range(sectors):
         j = (i+1)%sectors
         faces.append((outer+j, outer+i, back))
@@ -164,28 +172,44 @@ def geometry(source, out):
         if name.startswith('Seat'):
             set_points(low, seat_bowl(points(low), low.matrix_world.translation.x, (.026, .034, .029)[i]))
         else:
-            item['lean'] = lean_back(low, (15, 14, 12)[i-3], floor=.416)
+            item['lean'] = lean_back(low, (15, 14, 12)[i-3], floor=.438)
+            rotation = np.array(item['lean']['matrix'])
+            translation = np.array(item['lean']['translation'])
+            for suffix in ['_Residue', '_DenseResidue']:
+                residue = bpy.data.objects[name+suffix]
+                set_points(residue, np.einsum('ij,kj->ik', points(residue), rotation)+translation)
+        movable = {v.index for v, p in zip(low.data.vertices, points(low)) if p[1] < .26} if i >= 3 else None
         item['fairing'] = fair_interior(low, maximum=.010 if name.startswith('Back') else .003,
-                                        iterations=12 if name.startswith('Back') else 4, nonshrinking=True)
+                                        iterations=12 if name.startswith('Back') else 4,
+                                        nonshrinking=True, movable=movable)
         reference = surface_tree(low)
         spec = gash_spec(name, low, i%3)
         item['gash'] = cut_gash(low, spec, spacing=.010 if i >= 3 else .008)
-        item['curl'] = curl_gashes(low)
+        item['removed_cut_specks'] = remove_specks(low)
+        item['curl'] = curl_gashes(low, amplitude=.008)
         print('GASH_BEFORE_REDUCTION', name, json.dumps(item), flush=True)
         dense = replace_dense(name, low)
         low.name = name+'_CutSource'
         bpy.data.objects.remove(low, do_unlink=True)
         reduced, reduction = reduce_cover(dense, 1900 if i < 3 else 2600)
+        original_reduced = points(reduced)
+        item['game_fairing'] = fair_interior(reduced, maximum=.003, iterations=6, nonshrinking=True)
+        transfer_clearance(dense, reduced, original_reduced)
         reduced.name = name+'_GameContact'
         reduced['aged_export'] = False
         record['cushions'][name]['cover_decimation'] = reduction
-        if i >= 3:
-            foam = foam_core(name, spec, reference)
-            dense_foam = foam.copy()
-            dense_foam.data = foam.data.copy()
-            bpy.context.collection.objects.link(dense_foam)
-            join(bpy.data.objects[name+'_Residue'], [foam])
-            join(bpy.data.objects[name+'_DenseResidue'], [dense_foam])
+        if i < 3:
+            residue = bpy.data.objects[name+'_Residue']
+            compact_residue, item['residue_reduction'] = decimate(residue, 500)
+            bpy.data.objects.remove(residue, do_unlink=True)
+            compact_residue.name = name+'_Residue'
+        foam = foam_core(name, spec, reference)
+        dense_foam = foam.copy()
+        dense_foam.data = foam.data.copy()
+        bpy.context.collection.objects.link(dense_foam)
+        join(bpy.data.objects[name+'_Residue'], [foam])
+        join(bpy.data.objects[name+'_DenseResidue'], [dense_foam])
+        item['exposed_foam'] = dict(method='crumbly closed core inside the physical opening, in front of retained rear plies', triangles=144)
         item['area_ratio_after_cut_and_finish'] = surface_area(dense)/area
         record['pass11']['parts'][name] = item
         print('PASS11_PART', name, json.dumps(item), flush=True)
@@ -193,9 +217,14 @@ def geometry(source, out):
     low.modifiers.clear()
     if low.vertex_groups.get('Keep'):
         low.vertex_groups.remove(low.vertex_groups['Keep'])
+    original = points(low)
+    carried = seat_bowl(original, bpy.data.objects['SeatCushion_R_GameContact'].matrix_world.translation.x, .029)
+    contact = np.clip((original[:, 2]-.35)/.06, 0, 1)*np.clip((.63-original[:, 2])/.08, 0, 1)
+    set_points(low, original+(carried-original)*contact[:, None])
     crease = dict(centre=[1.085, .035, .747], tangent=[0, 1, 0], across=[0, 0, 1],
-                  half_length=.085, half_width=.009, seed=9967)
+                  half_length=.070, half_width=.0075, seed=9967)
     record['pass11']['throw_crease'] = cut_gash(low, crease, spacing=.006)
+    record['pass11']['throw_removed_cut_specks'] = remove_specks(low)
     record['pass11']['throw_curl'] = curl_gashes(low, amplitude=.0035)
     dense = replace_dense('Throw', low)
     bpy.data.objects.remove(low, do_unlink=True)
@@ -210,7 +239,7 @@ def geometry(source, out):
     checkpoint(out, record, 'geometry-preclearance.blend')
     record['pass11']['clearance'] = clearance(supports+covers, {o.name for o in covers}, maximum=.008, iterations=12)
     for name in [*ORDER, 'Throw']:
-        report = carry_clearance(bpy.data.objects[name], bpy.data.objects[name+'_GameContact'], originals[name+'_GameContact'])
+        report = transfer_clearance(bpy.data.objects[name], bpy.data.objects[name+'_GameContact'], originals[name+'_GameContact'])
         print('DENSE_TRANSFER', name, report, flush=True)
         if not np.isfinite(points(bpy.data.objects[name])).all():
             raise ValueError(f'{name}: dense clearance transfer generated non-finite positions')

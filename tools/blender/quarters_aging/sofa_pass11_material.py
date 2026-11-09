@@ -42,6 +42,8 @@ def finish(source, out):
             record['materials'][name]['cover']['opacity'] = report
             dense, low = [bpy.data.objects[name+'_'+level] for level in ['DenseResidue', 'Residue']]
             record['materials'][name]['residue'] = tan_residue(dense, low, out/'textures'/name.lower()/'residue')
+    from sofa_pass11_fringe import finish as finish_fringe
+    finish_fringe(out, record)
     checkpoint(out, record, 'throw-detailed.blend')
 
 

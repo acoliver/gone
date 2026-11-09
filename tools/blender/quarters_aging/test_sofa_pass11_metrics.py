@@ -37,6 +37,13 @@ class VisibleGashTests(unittest.TestCase):
         self.assertGreater(max(v['longest_straight_run_px'] for v in values), 12)
         self.assertTrue(any(not v['closed'] for v in values))
 
+    def test_subresolution_closed_fringe_interstice_is_not_a_gash(self):
+        mask = np.zeros((100, 120), bool)
+        mask[10:90, 10:110] = True
+        mask[40:44, 40:60] = False
+        seeds = np.array([[[40, 40], [40, 60]], [[44, 40], [44, 60]]])
+        self.assertEqual(visible_gashes(mask, seeds), [])
+
     def test_other_object_silhouette_is_not_a_cloth_lip(self):
         rgb = np.array([[[255, 0, 255], [255, 255, 255], [0, 0, 255], [255, 0, 0], [0, 255, 0]]], dtype=np.uint8)
         np.testing.assert_array_equal(cloth_coverage(rgb), [[False, False, False, True, True]])

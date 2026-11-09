@@ -61,9 +61,16 @@ class GashTests(unittest.TestCase):
     def test_back_cut_does_not_perforate_hidden_rear_folds(self):
         spec = dict(centre=[0, 0, 0], tangent=[0, 0, 1], across=[1, 0, 0],
                     half_length=.07, half_width=.035, seed=9912, depth_max=.028)
-        result = gash_field(np.array([[0, 0, 0], [0, .04, 0]]), spec)
+        result = gash_field([[0, 0, 0], [0, .04, 0]], spec)
         self.assertLess(result[0], 0.)
         self.assertGreater(result[1], 0.)
+
+    def test_skinny_boundary_triangle_transfers_a_finite_clearance_field(self):
+        from sofa_pass11_mesh import triangle_weights
+        triangle = np.array([[0., 0., .5], [.02, 0., .5], [.020001, .000001, .5]])
+        weights = triangle_weights(triangle[2]*.5+triangle[0]*.5, triangle)
+        np.testing.assert_allclose(weights, [.5, 0., .5], atol=1e-9)
+        self.assertTrue(np.isfinite(weights).all())
 
     def test_edge_fraying_does_not_add_interior_wear_holes(self):
         from sofa_pass11_material import frayed_coverage

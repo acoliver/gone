@@ -32,6 +32,34 @@ def connected_segments(segments):
         yield segments[sorted(component)]
 
 
+def fragment_gate(path, record):
+    from scipy.spatial import cKDTree
+    from visible_gates import load
+    from verify import clean
+    parts, _ = load(path)
+    pieces = clean(parts['FoamDebris']).split(only_watertight=False)
+    placements = record['debris']['placements']
+    centres = np.array([p['centre_blender_m'] for p in placements])
+    centres = centres[:, [0, 2, 1]]*np.array([1, 1, -1])
+    tree = cKDTree(centres)
+    measured, matched = {}, set()
+    passed = len(pieces) == len(placements)
+    for piece in pieces:
+        distance, index = tree.query(piece.centroid)
+        template = placements[index]['template']
+        points = piece.vertices-piece.vertices.mean(0)
+        axes = np.linalg.svd(points, full_matrices=False)[2]
+        extents = np.sort(np.ptp(points@axes.T, axis=0))
+        ratio = float(extents[0]/extents[-1])
+        valid = 14 <= len(piece.faces) <= 40 and len(piece.faces) != 20 and .25 <= ratio <= .7 and distance < .00001
+        passed &= valid and int(index) not in matched
+        matched.add(int(index))
+        measured.setdefault(template, []).append(dict(triangles=len(piece.faces), thickness_width=ratio, **{'pass': bool(valid)}))
+    passed &= len(measured) >= 8 and len(matched) == len(placements)
+    return dict(templates=measured, used=len(measured), instances=len(pieces),
+                method='actual exported connected crumbs, PCA dimensions and area-centroid identity against placements', **{'pass': bool(passed)})
+
+
 def measure(args):
     result = previous_measure(args)
     cameras = json.loads((args.renders/'diagnostics/cameras.json').read_text())['parts']
@@ -39,15 +67,17 @@ def measure(args):
     for name in [*ORDER, 'Throw']:
         stem = 'throw' if name == 'Throw' else name
         segments = np.load(args.out/(stem+'-gash-seeds.npz'))['segments']
-        rgb = np.array(Image.open(args.renders/'diagnostics'/name/'labels.png').convert('RGB'))
-        cloth = cloth_coverage(rgb)
-        occluded = (rgb[:, :, 0] > 180) & (rgb[:, :, 2] > 180)
         outlines = []
-        for index, component in enumerate(connected_segments(segments)):
-            projected = project(component.reshape(-1, 3), cameras[name]['labels']).reshape(-1, 2, 2)[:, :, ::-1]
-            for outline in visible_gashes(cloth, projected, radius=16., occluded=occluded):
-                outline['physical_lip_component'] = index
-                outlines.append(outline)
+        components = list(connected_segments(segments))
+        for view in ['labels', 'crease-labels'] if name == 'Throw' else ['labels']:
+            rgb = np.array(Image.open(args.renders/'diagnostics'/name/(view+'.png')).convert('RGB'))
+            cloth = cloth_coverage(rgb)
+            occluded = (rgb[:, :, 0] > 180) & (rgb[:, :, 2] > 180)
+            for index, component in enumerate(components):
+                projected = project(component.reshape(-1, 3), cameras[name][view]).reshape(-1, 2, 2)[:, :, ::-1]
+                for outline in visible_gashes(cloth, projected, radius=32., occluded=occluded):
+                    outline.update(physical_lip_component=index, camera=view)
+                    outlines.append(outline)
         resolved = [o for o in outlines if o['maximum_extent_px'] >= 64]
         values['G3'][name] = dict(value=[o['longest_straight_run_px'] for o in outlines], outlines=outlines,
                                   **{'pass': bool(outlines) and all(o['longest_straight_run_px'] <= 12 for o in outlines)})
@@ -61,6 +91,8 @@ def measure(args):
         result['gates'][key]['method'] = 'combined antialiased cloth/fringe coverage; actual alpha/lip contours near each physical tear component, no synthetic endpoint closure'
     result['gates']['G1']['method'] = 'first-hit face IDs in the unchanged close and hero cameras'
     record = json.loads((args.out/'simulation.json').read_text())
+    fragments = fragment_gate(args.input, record)
+    result['gates']['G9'].update(value=fragments, status='measured', **{'pass': fragments['pass']})
     ratios = {name: item['area_ratio_after_cut_and_finish'] for name, item in record['pass11']['parts'].items() if name.startswith('Back')}
     result['back_area_control'] = dict(reference='retained pass-10 cover, before local cutting and finishing', values=ratios, limits=[.97, 1.03])
     result['invariants']['back_area_97_to_103_percent'] = all(.97 <= value <= 1.03 for value in ratios.values())

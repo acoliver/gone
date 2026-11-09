@@ -50,13 +50,14 @@ def break_planar_patches(obj, lift=.0012, maximum_faces=64):
             'lift_m': lift, 'faces_refined': len(selected), 'triangles_added': len(selected)*2,
             'maximum_faces': maximum_faces}
 
-def fair_interior(obj, maximum=.006, iterations=10, nonshrinking=False):
+def fair_interior(obj, maximum=.006, iterations=10, nonshrinking=False, movable=None):
     bm = bmesh.new()
     bm.from_mesh(obj.data)
+    bm.verts.index_update()
     original = {v: v.co.copy() for v in bm.verts}
     coordinates = np.array([tuple(v.co) for v in bm.verts])
     lower, upper = coordinates.min(0), coordinates.max(0)
-    fixed = {v for v in bm.verts if v.is_boundary}
+    fixed = {v for v in bm.verts if v.is_boundary or (movable is not None and v.index not in movable)}
     layer = bm.verts.layers.deform.active
     hold = obj.vertex_groups.get('Retained stitches')
     if hold:
