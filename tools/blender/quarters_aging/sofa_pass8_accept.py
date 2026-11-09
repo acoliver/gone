@@ -55,6 +55,12 @@ def box_walls(vertices, faces):
     return selected
 
 
+def residue_opening_counts(before, after, cover_ids, residue_ids):
+    through_cover = np.isin(before, cover_ids)
+    visible = np.bincount(after[through_cover], minlength=int(residue_ids.max())+1)
+    return visible[residue_ids]
+
+
 def visibility_gates(directory):
     records = {label: json.loads((directory/(label+'.json')).read_text()) for label in ['before', 'after']}
     maps = {label: {view: encoded(directory/(label+'-'+view+'.png')) for view in ['hero', 'front']}
@@ -77,8 +83,10 @@ def visibility_gates(directory):
         mesh = trimesh.Trimesh(d['vertices'], f, process=False)
         mesh.merge_vertices(digits_vertex=7)
         fractions = np.zeros(len(f))
+        before = data['before']
+        cover_ids = before['ids'][before['kinds'] == 'cover']
         for view, camera in records['after']['cameras'].items():
-            counts = np.bincount(maps['after'][view].ravel(), minlength=int(d['ids'].max())+1)[ids]
+            counts = residue_opening_counts(maps['before'][view], maps['after'][view], cover_ids, ids)
             projected = project(d['vertices'], camera)[f]
             a, b = projected[:, 1]-projected[:, 0], projected[:, 2]-projected[:, 0]
             area_px = np.abs(a[:, 0]*b[:, 1]-a[:, 1]*b[:, 0])/2
@@ -94,7 +102,7 @@ def visibility_gates(directory):
         value = float(planar/total) if total else 0.
         residue[name] = {'visible_area_m2': total, 'visible_large_planar_area_m2': float(planar),
                          'fraction': value, 'pass': value <= .05,
-                         'visibility': 'union of first-hit hero/front fractions; hidden residue contributes zero'}
+                         'visibility': 'first-hit hero/front union within the original cover silhouette; hidden and outside residue contributes zero'}
     return {'G12': {'value': walls, 'pass': all(v['pass'] for v in walls.values())},
             'G7': {'value': residue, 'pass': all(v['pass'] for v in residue.values())}}
 

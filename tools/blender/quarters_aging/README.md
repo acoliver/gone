@@ -21,7 +21,8 @@ relax contact checks, geometry invariants, or the other thresholds.
   Released stitched seams may follow a straight seam line. Their lips still
   need to gape under G5 and carry fringe. G4 and G6 keep their thresholds.
 - **G7:** measure coplanar residue only where first-hit camera visibility
-  shows it through openings. Hidden residue cannot contribute visible facets.
+  shows it through openings inside that part's original cover silhouette.
+  Hidden residue and exposed residue outside that silhouette contribute zero.
 - **G19:** accept one connected throw from its pinned arm corner to within
   100 mm of the floor. Keep the 250 mm footprint-distance limit, the three
   folds with at least 10 mm prominence, and at most one detached remnant.
@@ -103,6 +104,13 @@ physical hold. Production therefore retains the ties and the static
 lower-return residue, without an animated back envelope. This is a change
 from the proposed shape driver, based on the controlled result. The seat
 envelopes are unchanged. Failed probes remain under `tmp/age/pass8/`.
+
+The back solve also uses the actual fitted throw as a contact surface.
+Without that surface, the right back entered the throw's future starting
+pose, and the throw's C5 check stopped before frame one. The throw's cap
+will remain pinned in that region. Using its existing geometry during the
+back solve fixes the missing interaction without another partition or a
+post-solve pose edit.
 
 
 ## Sofa pass 6: fitted six-cover collapse

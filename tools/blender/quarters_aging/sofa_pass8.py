@@ -142,6 +142,8 @@ def stage(out, record, back=False):
         clear_partitions()
         for name in ORDER[:3]:
             collision(bpy.data.objects[name+'_GameContact'], .001)
+        collision(bpy.data.objects['Throw'], .001)
+        record['back_throw_contact'] = 'fitted throw: the cap stays pinned during its later solve'
     states = [prepare(name, out) for name in names]
     joint, reference, pins = combine(states, 'JointBacks' if back else 'JointSeats')
     bpy.context.view_layer.update()

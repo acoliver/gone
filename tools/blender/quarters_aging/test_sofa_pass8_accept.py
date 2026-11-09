@@ -6,7 +6,7 @@ import unittest
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from sofa_pass8_accept import box_walls, project
+from sofa_pass8_accept import box_walls, project, residue_opening_counts
 
 
 class CameraGateTests(unittest.TestCase):
@@ -24,6 +24,11 @@ class CameraGateTests(unittest.TestCase):
         vertices = np.array([[-.2, -.3, .4], [.2, -.3, .4], [.2, -.3, .43], [-.2, -.3, .43]])
         result = box_walls(vertices, [[0, 1, 2], [0, 2, 3]])
         self.assertFalse(result.any())
+
+    def test_residue_outside_cover_openings_is_not_counted(self):
+        before = np.array([[1, 0, 2], [1, 0, 2]])
+        after = np.array([[3, 3, 3], [3, 4, 4]])
+        np.testing.assert_array_equal(residue_opening_counts(before, after, [1], np.array([3, 4])), [2, 0])
 
     def test_fixed_camera_target_projects_to_image_centre(self):
         camera = dict(eye_blender_m=[0, -3, .8], target_blender_m=[0, 0, .4],
