@@ -33,7 +33,7 @@ def tileable(image):
     return result
 
 
-def finish_colour(base, masks, aged, kind, dust_scan=None):
+def finish_colour(base, masks, aged, kind, dust_scan=None, dust_density=None):
     if not aged: return base.copy()
     cavity, up = masks[..., 1:2], masks[..., 2:3]
     crease = .10 * masks[..., :1] + .90 * cavity
@@ -41,7 +41,8 @@ def finish_colour(base, masks, aged, kind, dust_scan=None):
     dirty = base * (1 - grime)
     dust = (.85 if kind in {'fabric', 'throw'} else (.06 if kind == 'foam' else .18)) * up
     pigment = np.array([.86, .82, .74]) if dust_scan is None else dust_scan
-    coverage = .3 + .7 * np.clip((np.mean(pigment, axis=-1, keepdims=True) - .5) / .45, 0, 1)
+    density = pigment if dust_density is None else dust_density
+    coverage = .3 + .7 * np.clip((np.mean(density, axis=-1, keepdims=True) - .5) / .45, 0, 1)
     return dirty * (1 - dust * coverage) + pigment * dust * coverage
 
 
@@ -162,7 +163,9 @@ def sources(state):
         images['steel'] = clean_metal_scan(images['steel'], palette.mean(0))
     for kind in ['fabric', 'throw']:
         images[kind] = gaussian_filter(images[kind], (6, 6, 0), mode='wrap')
-        calibration[kind].update(base_colour_lowpass_sigma_px=6, calibrated=statistics(images[kind]))
+        fit = fitted[state + '_' + kind]
+        images[kind] = calibrated_scan(images[kind], fit['linear_albedo'])
+        calibration[kind].update(base_colour_lowpass_sigma_px=6, display_fit=fit, calibrated=statistics(images[kind]))
     if aged:
         mean = images['steel'].mean((0, 1))
         images['steel'] = mean + (images['steel'] - mean) * .10
@@ -177,6 +180,8 @@ def sources(state):
     gain = linear(np.array([.86, .82, .74])) / linear(dust).mean((0, 1))
     images['dust'] = tileable(np.clip(srgb(linear(dust) * gain), 0, 1))
     calibration['dust'] = dict(illumination=plane, linear_rgb_gain=gain.tolist(), calibrated=statistics(images['dust']))
+    images['cloth_dust'] = calibrated_scan(images['dust'], fitted['cloth_dust']['linear_albedo'])
+    calibration['cloth_dust'] = dict(display_fit=fitted['cloth_dust'], calibrated=statistics(images['cloth_dust']))
     for kind, image in images.items():
         Image.fromarray(np.round(image * 255).astype(np.uint8)).save(SOURCE / (state + '-' + kind + '-source.png'))
     return images, calibration
@@ -234,8 +239,9 @@ def build(state):
                 base = sample(texture, physical_uv, True)
             if kind in {'fabric', 'throw'}:
                 masks[yy, xx, 1] = .35 * cloth_cavity[yy, xx] + .65 * folds[yy, xx]
-            dust_scan = sample(surfaces['dust'], physical_uv, True)
-            colour = finish_colour(base, masks[yy, xx], state == 'aged', kind, dust_scan)
+            dust_scan = sample(surfaces['cloth_dust' if kind in {'fabric', 'throw'} else 'dust'], physical_uv, True)
+            dust_density = sample(surfaces['dust'], physical_uv, True)
+            colour = finish_colour(base, masks[yy, xx], state == 'aged', kind, dust_scan, dust_density)
             if edge_distance is not None:
                 distance = sample(edge_distance, bary @ old)[..., 0]
                 colour = tear_edge_colour(colour, distance, foam_mean)
