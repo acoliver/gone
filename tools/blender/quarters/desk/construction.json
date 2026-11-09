@@ -1,0 +1,195 @@
+{
+  "bounds_gltf": [
+    [
+      -0.8,
+      0,
+      -0.35
+    ],
+    [
+      0.8,
+      0.76,
+      0.35
+    ]
+  ],
+  "required_nodes": [
+    "Desk",
+    "Body",
+    "Worktop",
+    "Drawers",
+    "Drawer_0",
+    "Drawer_1",
+    "Drawer_2",
+    "EndSupport",
+    "EndPanel",
+    "PedestalKick",
+    "RearUpstand",
+    "ModestyPanel"
+  ],
+  "parents": {
+    "Body": "Desk",
+    "Drawers": "Desk",
+    "Worktop": "Body",
+    "Drawer_0": "Drawers",
+    "Drawer_1": "Drawers",
+    "Drawer_2": "Drawers"
+  },
+  "pivots_gltf": {
+    "Desk": [
+      0,
+      0,
+      0
+    ],
+    "Drawer_0": [
+      -0.5198240248858929,
+      0.17,
+      0.325
+    ],
+    "Drawer_1": [
+      -0.5198240248858929,
+      0.36,
+      0.325
+    ],
+    "Drawer_2": [
+      -0.5198240248858929,
+      0.55,
+      0.325
+    ]
+  },
+  "materials": [
+    "PaintedSteel",
+    "BareSteel",
+    "DarkSteel"
+  ],
+  "visible_details": [
+    "DrawerPull_1",
+    "WorktopRivets",
+    "PedestalKick",
+    "ModestyPanel"
+  ],
+  "hero_camera_native": [
+    -0.8,
+    -5,
+    1.8
+  ],
+  "hero_camera_gltf": [
+    -0.8,
+    1.8,
+    5
+  ],
+  "hero_target_native": [
+    0,
+    0,
+    0.38
+  ],
+  "triangle_limit": 15000,
+  "drawer_motion_axis_gltf": [
+    0,
+    0,
+    1
+  ],
+  "fit_notes": "The generated left pedestal inner wall sets drawer width. Seed 227 has a thin solid right end panel. Guide edge samples reach .76 m while the central worktop reaches .705 m. The fitted top is .70 m; the rear lip remains 60 mm and side returns are reduced to 20 mm to follow the flatter approved image. The kick face and rear plate have capture-matched first-hit gates. A studio-only low fill reveals the plate beneath the overhanging top; it is not exported. Each drawer is a separate open-top five-panel tray under its own slide origin.",
+  "guide": {
+    "source_bounds_native": [
+      [
+        -0.9992843270301819,
+        -0.5837000012397766,
+        -0.6993138790130615
+      ],
+      [
+        0.9930084943771362,
+        0.6309763789176941,
+        0.6839542388916016
+      ]
+    ],
+    "carcass_fitting_bounds_native": [
+      [
+        -0.9992843270301819,
+        -0.5837000012397766,
+        -0.6993138790130615
+      ],
+      [
+        0.9930084943771362,
+        0.6309763789176941,
+        0.6839542388916016
+      ]
+    ],
+    "fitted_size_whd": [
+      1.6,
+      0.76,
+      0.7
+    ],
+    "sections": [
+      {
+        "height_m": 0.07600000000000001,
+        "vertices": 4441,
+        "xy_min": [
+          -0.7896796464920044,
+          -0.3146628439426422
+        ],
+        "xy_max": [
+          0.7897813320159912,
+          0.3477516174316406
+        ]
+      },
+      {
+        "height_m": 0.19,
+        "vertices": 5384,
+        "xy_min": [
+          -0.789602518081665,
+          -0.3217044770717621
+        ],
+        "xy_max": [
+          0.7895721793174744,
+          0.3483310639858246
+        ]
+      },
+      {
+        "height_m": 0.38,
+        "vertices": 5386,
+        "xy_min": [
+          -0.7896214723587036,
+          -0.3217916786670685
+        ],
+        "xy_max": [
+          0.789581298828125,
+          0.3483029305934906
+        ]
+      },
+      {
+        "height_m": 0.5700000000000001,
+        "vertices": 5634,
+        "xy_min": [
+          -0.7896742224693298,
+          -0.34555134177207947
+        ],
+        "xy_max": [
+          0.7898324728012085,
+          0.3483274281024933
+        ]
+      },
+      {
+        "height_m": 0.684,
+        "vertices": 4036,
+        "xy_min": [
+          -0.800000011920929,
+          -0.32861393690109253
+        ],
+        "xy_max": [
+          0.800000011920929,
+          0.3498021960258484
+        ]
+      }
+    ],
+    "mesh_triangles": 916124,
+    "pedestal_fit": {
+      "sample_count": 55340,
+      "inner_wall_measured_m": -0.26964804977178575,
+      "inner_wall_fitted_m": -0.26964804977178575
+    },
+    "end_support_fit": {
+      "design": "The approved seed 227 and its generated guide have a continuous thin end panel, not an open tube frame. Its closed sheet cage retains the knee well, raised rear lip and below-top rear plate within the layout envelope."
+    },
+    "source": "tmp/props/desk/guide.glb"
+  },
+  "id": "desk"
+}

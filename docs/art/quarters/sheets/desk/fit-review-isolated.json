@@ -1,0 +1,21 @@
+{
+  "images_seen": [
+    "image-left",
+    "image-right"
+  ],
+  "rating": 4,
+  "ready": false,
+  "observations": "Image-left (A) displays a grey-green steel desk with a broad flat worktop. A left pedestal contains three drawers with horizontal bar pulls. A rear structural plate is visible behind the knee well. The worktop features a distinct raised lip or guard rail along the rear edge. Image-right (B) displays a similar grey-green desk. The left pedestal has three drawers with horizontal bar pulls. The rear structural plate is visible. The worktop features a raised lip along the rear edge. Comparison: The two images show significant discrepancies in the worktop geometry. Image-left has a raised rear lip that is angled and integrated into the side frames, whereas image-right has a raised rear lip that is a separate, straight, flat bar. The side frames in image-left are angled, while in image-right they are vertical. The drawer pulls in image-left are long bars, while in image-right they are shorter. The overall proportions and silhouette of the worktop differ between the two images.",
+  "defects": [
+    "Worktop rear lip geometry mismatch: Image-left has an angled integrated lip, image-right has a straight separate bar.",
+    "Side frame angle mismatch: Image-left has angled side frames, image-right has vertical side frames.",
+    "Drawer pull length mismatch: Image-left has long bar pulls, image-right has shorter bar pulls.",
+    "Worktop silhouette mismatch: The overall shape and proportions of the worktop differ between the two images."
+  ],
+  "fixes": [
+    "Align the worktop rear lip geometry between image-left and image-right.",
+    "Align the side frame angles between image-left and image-right.",
+    "Align the drawer pull lengths between image-left and image-right.",
+    "Align the worktop silhouette and proportions between image-left and image-right."
+  ]
+}

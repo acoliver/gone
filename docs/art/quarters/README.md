@@ -1257,6 +1257,7 @@ Verification reads the exported GLB through trimesh. It checks the layout envelo
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | wardrobe | 203 | 187.81 | 11,016 | Pass | 7/10 | Accepted fit | Hinge handedness is inverted between A and B (A: viewer's right, B: viewer's left).; Top surface of B is beveled, while A is flat.; Viewing angle of B is more oblique, showing the right side panel, while A is more frontal.; Reviewer marked not ready to show. |
 | bed | 216 | 177.60 | 3,512 | Pass | 9/10 | Accepted fit | In image B, the rivets on the headboard appear slightly irregular in spacing and size, potentially looking like noise rather than precise manufacturing details.; The 'folded panel edges' mentioned in the brief are not clearly distinct in B; the edges look flat rather than folded over. |
+| desk | 227 | 327.56 | 4,704 | Pass | 8/10 | Accepted fit | The design (A) features a distinct metallic trim or bevel along the front edge of the top surface, which is missing in the fitted asset (B).; The design (A) shows a small, dark rectangular opening or cutout on the right side panel, which is not present in the fit (B).; The rivets or fasteners visible on the side panels in the design are less prominent or absent in the fit. |
 | desk_chair | 244 | 175.21 | 2,032 | Pass | 8/10 | Accepted fit | The small bare steel rivets on the corner plates in B are less distinct than in A, potentially due to lighting or resolution.; The fabric texture on the seat pad in B appears slightly smoother and less detailed than in A. |
 | dining_table | 251 | 2004.80 | 3,728 | Pass | 8/10 | Accepted fit | None observed. |
 | dining_chair | 263 | 181.26 | 3,780 | Pass | 8/10 | Accepted fit | The seat pad in image-right appears slightly thicker or more pronounced than in image-left, though this may be due to lighting and angle.; The rivet heads on the seat frame are less visible in image-right compared to image-left, possibly due to the viewing angle. |
@@ -1273,6 +1274,16 @@ The selected seed 216 shows thin rails, an exposed continuous plate and open leg
 
 The single right-hinged door is parked at 100 degrees in the asset used for both room states. At room origin (7.675, 0, 3.6), with Y rotation -90 degrees, its barrel axis lies at room X/Z (7.335, 4.1). The barrel axis is 15 mm forward of the plan's closed-carcass hinge line. The parked leaf and hardware extend outside the closed footprint. The generated hero is left-hinged; the fitted assembly and hidden guide are reflected in X with face winding corrected and positive node scales retained. `hero.png` remains the original generated image and `fit-reference.png` is the reflected fitting target. The hanging rail is faired to a 32 mm diameter at 1.82 m, below the opening head so it reads as separate hardware. The guide's measured rail median was 1.986 m. The 7/10 review reports inverse handedness, while the exported axis and room placement checks agree with the layout. That visual disagreement remains recorded; the model has not been flipped away from the required hinge. The small roof bevel follows the batch's clean-edge requirement.
 
-Not yet accepted: desk, console, bedside, view_screen, media_cabinet, lockers_over_bed.
+### Visual review calibration
+
+Continued fits include a full-scope paired comparison with the dining-table design and fitted asset, using the same criteria for both pairs. No score is inferred from export checks. The table above uses the paired score; `fit-review-calibrated.json` retains both paired judgments. Where an isolated review exists, `fit-review-isolated.json` retains it and the captures are unchanged between those reviews.
+
+desk: isolated 4/10; paired 8/10; reference table in that comparison 9/10.
+
+### Fitting corrections
+
+**desk:** The earlier builder used an open tube end frame against a solid end panel in seed 227. Raised edge returns and the inset kick plate also differed in the captures.
+
+Not yet accepted: console, bedside, view_screen, media_cabinet, lockers_over_bed.
 
 Batch sheets: [`sheets/batch1-heroes.png`](sheets/batch1-heroes.png) and [`sheets/batch1-fitted-turntables.png`](sheets/batch1-fitted-turntables.png). Unaccepted fits are labelled as unfinished work. Per-prop `fit-review.json` retains the reviewer observations.
