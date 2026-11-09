@@ -19,12 +19,12 @@ SPEC={
     'hero_camera_native':[-1.4,-4.0,1.5],'hero_camera_gltf':[-1.4,1.5,4.0],
     'hero_target_native':[0,0,.525],'triangle_limit':15000,
     'room_mount_height_m':1.0,
-    'fit_notes':'The earlier capture was front-facing but its missing dark bezel and bright cover made it read as a back panel. A separate inset dark bezel now surrounds the glass and display. Its lower rail is broader than its upper rail, following seed 283. Four faired housing rails leave a real aperture; glass and emissive screen are separate closed parts. Local origin becomes room y=1.0 when wall mounted.',
+    'fit_notes':'The earlier fit lacked its dark bezel and looked like a rear panel. Its earlier image also showed a deep box, incompatible with the required .08 m wall-panel depth. The replacement source explicitly targets the shallow envelope and four corner rivets. A separate inset dark bezel surrounds the glass and display; four faired housing rails leave a real aperture. Glass and emissive screen are separate closed parts. Local origin becomes room y=1.0 when wall mounted.',
 }
 
 
 def assemble(guide):
-    mats=materials(); paint=mats['PaintedSteel']; bare=mats['BareSteel']; dark=mats['DarkSteel']
+    mats=materials(paint_color=(.065,.085,.082,1)); paint=mats['PaintedSteel']; bare=mats['BareSteel']; dark=mats['DarkSteel']
     display=material('Display',(.001,.002,.003,1),0,.40)
     display.node_tree.nodes['Principled BSDF'].inputs['Emission Strength'].default_value=.08
     glass=material('Glass',(.10,.12,.13,.18),0,.08)
@@ -55,7 +55,7 @@ def assemble(guide):
     panel('ScreenBacking',(1.548,.008,.748),(0,-.018,.545),dark,.001,parent=housing)
     panel('Display',(1.546,.004,.746),(0,-.025,.545),display,.0005,parent=root)
     panel('Glass',(1.548,.004,.748),(0,-.034,.545),glass,.0005,parent=root)
-    rivets('HousingRivets',[(x,-.0403,z) for x in (-.865,.865) for z in (.10,.30,.525,.75,.95)],bare,radius=.004,parent=housing)
+    rivets('HousingRivets',[(x,-.0403,z) for x in (-.865,.865) for z in (.04,1.01)],bare,radius=.004,parent=housing)
 
 
 if __name__=='__main__':
