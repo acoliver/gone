@@ -433,7 +433,10 @@ func test_generated_console_models_and_wall_mounts_are_present() -> void:
 	var first_hit := _test_first_triangle_hit(room, eye, target)
 	assert_true(first_hit == surface, "capture-height eye ray reaches live text before the terminal shell: " + str(first_hit))
 	var busted_tray := busted_station.get_node("KeyboardTray") as Node3D
-	assert_float_in_range(rad_to_deg(absf(busted_tray.rotation.x)), 6.9, 7.1, "busted tray droops seven degrees")
+	assert_float_in_range(rad_to_deg(busted_tray.rotation.x), 6.9, 7.1, "busted tray droops seven degrees toward the player")
+	var front_edge := busted_tray.position + busted_tray.basis * Vector3(0.0, 0.0, 0.2)
+	var rear_edge := busted_tray.position + busted_tray.basis * Vector3(0.0, 0.0, -0.2)
+	assert_true(front_edge.y < rear_edge.y, "busted tray droop lowers the front edge")
 	assert_false(busted_tray.get_node("Keycap 03 onset p").visible, "busted station is missing an onset keycap")
 	assert_false(busted_tray.get_node("Keycap 24 control number").visible, "busted station is missing a control keycap")
 	var dead_station: Node3D = stations[0]

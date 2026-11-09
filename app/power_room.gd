@@ -270,11 +270,11 @@ func _build_console(station: ConsoleStation) -> Node3D:
 	group.add_child(keyboard)
 	if station.health == CONSOLE_HEALTHS["dead_busted"]:
 		var hinge := Vector3(0.0, -0.85, 1.10)
-		var droop := deg_to_rad(-7.0)
+		var droop := deg_to_rad(7.0)
 		var hinge_rotation := Basis(Vector3.RIGHT, droop)
 		keyboard.position = hinge + hinge_rotation * (keyboard.position - hinge)
 		keyboard.rotation.x = droop
-		assert(is_equal_approx(absf(rad_to_deg(keyboard.rotation.x)), 7.0), "busted tray droops seven degrees around its flange hinge")
+		assert(is_equal_approx(rad_to_deg(keyboard.rotation.x), 7.0), "busted tray droops seven degrees around its flange hinge")
 		for cap_name: String in ["Keycap 03 onset p", "Keycap 24 control number"]:
 			var missing_cap := keyboard.find_child(cap_name, true, false) as MeshInstance3D
 			assert(missing_cap != null, "busted keyboard contains " + cap_name)
