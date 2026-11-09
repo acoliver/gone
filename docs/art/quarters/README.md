@@ -1244,3 +1244,25 @@ The exported asset is `assets/props/quarters/dress_uniform.glb`. It has 13,768 t
 Node and mesh names are `TunicBody`, `Collar`, `ShoulderBoard_L`, `ShoulderBoard_R`, `Placket`, `Buttons`, `CollarInsignia_L`, `CollarInsignia_R`, `RibbonBar`, `Medal` and `Hanger`. Materials are `NaturalFabric`, `Brass`, `RibbonFabric` and `BareSteel`.
 
 The neutral, light-grey comparison sheets are in `tmp/fit/tunic/sim/`: `compare-hero.png`, `turntable.png` and `compare-detail.png`. The hero uses a front-left orthographic view, and the turntable shows 30°, 120°, 210° and 300°. Four area lights illuminate the navy cloth, brass and steel from both sides. The PNG files were rendered and validated, but visual sign-off remains unavailable: the configured Qwen image endpoint refused connections, and the installed local alternative returned HTTP 500.
+
+## Batch 1
+
+The wardrobe is checkpointed as unfinished work. Its exported geometry checks pass, but visual fit has not passed the required 7/10 threshold. No Batch 1 prop is marked ready in this checkpoint.
+
+| Prop | Hero seed | Hunyuan wall seconds | Triangles | Export checks | Visual fit | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| wardrobe | 203 | 187.81 | 9,056 | Pass | 6/10 | Not accepted |
+
+The source is `tools/blender/quarters/wardrobe/wardrobe-working.blend`; the game export is `assets/props/quarters/wardrobe.glb`. The hidden Hunyuan guide is retained in the editable source. `build.py`, `verify.py`, `construction.json`, `verify.json` and `result.json` record the fit and its checks. `prompts/batch1.json` contains the rigid-furniture contact prompts using the pilot style and tail. The selected image and generation provenance are in `sheets/wardrobe/`.
+
+The wardrobe carcass is 1.00 m wide, .65 m deep and 2.20 m high, with a floor-centred origin. Blender authoring is Z-up, front -Y; glTF export is +Y-up, front +Z. Its separate right-hinged door is parked at 100 degrees, with a shared hinge-axis origin. Closed-carcass bounds exclude the parked leaf and mating hinge hardware. The barrel axis is 15 mm forward of the carcass front. At room origin (7.675, 0, 3.6), with Y rotation -90 degrees, it lies at room X/Z (7.335, 4.1). The original generated hero is left-hinged; `fit-reference.png` reflects it to match the layout hinge.
+
+The frame, door, clear hanging rail, two-sided latch and louvres, barrel hinges and rivet rows are separate fitted parts. The steel material classes are `PaintedSteel`, `BareSteel` and `DarkSteel`. No texture maps or aging are applied. The UV atlas has no overlapping triangles and is checked for consistent physical texel density.
+
+Verification reads the exported GLB with trimesh. It checks the layout bounds within 10 mm, floor origin, named nodes, hierarchy and pivots, positive closed shells and winding, inward shell rays, hero first-hit visibility, UV overlap and density, the 15,000-triangle budget, and byte-identical re-export. The wardrobe adds five-face carcass rays, a clear hanging-envelope test and a 0.5-degree sweep from 0 to 100 degrees. Seven positive and negative controls exercise shell closure, winding, UV overlap and occlusion.
+
+Use Blender with `--background --factory-startup --python-exit-code 1 --python tools/blender/quarters/wardrobe/build.py -- --assemble` to fit from `tmp/props/wardrobe/guide.glb`. Omit `--assemble` to export the saved source without requiring scratch files. Supply `--output tmp/props/wardrobe/reexport.glb` for an independent second export, then run the local Hunyuan Python on `tools/blender/quarters/wardrobe/verify.py --reexport tmp/props/wardrobe/reexport.glb`. Run `test_verify.py` for the seven gate controls.
+
+Remaining visual findings are retained in `sheets/wardrobe/fit-review.json`. This checkpoint does not claim visual acceptance. Other Batch 1 props remain in progress or have not been reached.
+
+Batch contact paths: [`sheets/batch1-heroes.png`](sheets/batch1-heroes.png) and [`sheets/batch1-fitted-turntables.png`](sheets/batch1-fitted-turntables.png). The fitted turntable is unaccepted work, not a finished art preview.

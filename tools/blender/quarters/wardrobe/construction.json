@@ -1,0 +1,249 @@
+{
+  "bounds_gltf": [
+    [
+      -0.5,
+      0,
+      -0.325
+    ],
+    [
+      0.5,
+      2.2,
+      0.325
+    ]
+  ],
+  "bounds_exclude": [
+    "Hinges",
+    "HingeMount_0",
+    "HingeMount_1",
+    "HingeMount_2",
+    "Door",
+    "DoorLatchPocket",
+    "DoorLatch",
+    "DoorVent_0",
+    "DoorVent_1",
+    "DoorVent_2",
+    "DoorRivets",
+    "DoorReturn_L",
+    "DoorReturn_R",
+    "DoorReturn_T",
+    "DoorReturn_B",
+    "LatchRim_L",
+    "LatchRim_R",
+    "DoorLatchOuter",
+    "InnerLatchPocket",
+    "VentBacking_0",
+    "InnerVentBacking_0",
+    "InnerDoorVent_0",
+    "VentBacking_1",
+    "InnerVentBacking_1",
+    "InnerDoorVent_1",
+    "VentBacking_2",
+    "InnerVentBacking_2",
+    "InnerDoorVent_2",
+    "DoorHingeLeaf_0",
+    "DoorHingeLeaf_1",
+    "DoorHingeLeaf_2"
+  ],
+  "required_nodes": [
+    "Carcass",
+    "Door",
+    "Rail",
+    "SidePanel_L",
+    "SidePanel_R",
+    "BackPanel",
+    "TopPanel",
+    "BottomPanel",
+    "KickPlate",
+    "DoorLatch",
+    "Hinges"
+  ],
+  "parents": {
+    "Door": "Wardrobe",
+    "Rail": "Carcass",
+    "SidePanel_L": "Carcass",
+    "SidePanel_R": "Carcass",
+    "BackPanel": "Carcass",
+    "TopPanel": "Carcass",
+    "BottomPanel": "Carcass",
+    "KickPlate": "Carcass",
+    "Hinges": "Carcass",
+    "DoorLatchPocket": "Door",
+    "DoorLatch": "Door",
+    "DoorRivets": "Door"
+  },
+  "pivots_gltf": {
+    "Wardrobe": [
+      0,
+      0,
+      0
+    ],
+    "Door": [
+      0.5,
+      0.12,
+      0.34
+    ]
+  },
+  "materials": [
+    "PaintedSteel",
+    "BareSteel",
+    "DarkSteel"
+  ],
+  "visible_details": [
+    "Rail",
+    "DoorLatch",
+    "Hinges"
+  ],
+  "hero_camera_native": [
+    -1.1,
+    -4.0,
+    1.65
+  ],
+  "hero_camera_gltf": [
+    -1.1,
+    1.65,
+    4.0
+  ],
+  "capture_scale": 1.25,
+  "hero_target_native": [
+    0.1,
+    -0.25,
+    1.1
+  ],
+  "triangle_limit": 15000,
+  "parked_open_degrees": 100,
+  "guide_body_bounds_native": [
+    [
+      -0.34,
+      -0.1717951745,
+      -0.9990821481
+    ],
+    [
+      0.5261281133,
+      0.5815733075,
+      0.993057847
+    ]
+  ],
+  "room_facing": "-x",
+  "room_origin": [
+    7.675,
+    0,
+    3.6
+  ],
+  "room_rotation_y_degrees": -90,
+  "room_hinge_xz": [
+    7.335,
+    4.1
+  ],
+  "layout_hinge_xz": [
+    7.35,
+    4.1
+  ],
+  "hinge_handedness": "Right-hand in asset front view. Asset +X maps to room +Z, matching the layout hinge at z=4.1. Barrel axis is 15 mm forward of the closed carcass footprint.",
+  "fit_notes": "The generated carcass and door planes are faired to the selected hero silhouette, with their exterior constrained to the 1.00 x .65 x 2.20 m layout envelope. The image rail and panel boundaries set the internal split; scan lumps are discarded. Door and hardware are separate closed cages. Interior stays clear for the pilot tunic.",
+  "guide": {
+    "source_bounds_native": [
+      [
+        -0.5305495858192444,
+        -0.5789714455604553,
+        -0.9990821480751038
+      ],
+      [
+        0.5261281132698059,
+        0.5815733075141907,
+        0.9930578470230103
+      ]
+    ],
+    "carcass_fitting_bounds_native": [
+      [
+        -0.3400000035762787,
+        -0.17179517447948456,
+        -0.9990821480751038
+      ],
+      [
+        0.5261281132698059,
+        0.5815733075141907,
+        0.9930578470230103
+      ]
+    ],
+    "fitted_size_whd": [
+      1.0,
+      2.2,
+      0.65
+    ],
+    "sections": [
+      {
+        "height_m": 0.22000000000000003,
+        "vertices": 5793,
+        "xy_min": [
+          -0.7194786667823792,
+          -0.6751421093940735
+        ],
+        "xy_max": [
+          0.4971390664577484,
+          0.32331109046936035
+        ]
+      },
+      {
+        "height_m": 0.55,
+        "vertices": 6690,
+        "xy_min": [
+          -0.7195611596107483,
+          -0.6753550171852112
+        ],
+        "xy_max": [
+          0.4973754584789276,
+          0.32319045066833496
+        ]
+      },
+      {
+        "height_m": 1.1,
+        "vertices": 6826,
+        "xy_min": [
+          -0.719374418258667,
+          -0.6756207346916199
+        ],
+        "xy_max": [
+          0.49725034832954407,
+          0.3231793940067291
+        ]
+      },
+      {
+        "height_m": 1.6500000000000001,
+        "vertices": 6762,
+        "xy_min": [
+          -0.7192986607551575,
+          -0.6752588152885437
+        ],
+        "xy_max": [
+          0.4965803325176239,
+          0.3232666552066803
+        ]
+      },
+      {
+        "height_m": 1.9800000000000002,
+        "vertices": 7937,
+        "xy_min": [
+          -0.7193154692649841,
+          -0.6752071976661682
+        ],
+        "xy_max": [
+          0.4969177544116974,
+          0.3234860897064209
+        ]
+      }
+    ],
+    "mesh_triangles": 719576,
+    "rail_fitting": {
+      "sample_count": 1760,
+      "centre_native": [
+        0,
+        -0.003035596586414613,
+        1.9859039783477783
+      ],
+      "method": "Median of generated interior rail vertices; symmetry and manufactured circular section imposed after sparse fitting."
+    },
+    "asset_x_reflected_to_match_layout_hinge": true,
+    "source": "tmp/props/wardrobe/guide.glb"
+  },
+  "id": "wardrobe"
+}

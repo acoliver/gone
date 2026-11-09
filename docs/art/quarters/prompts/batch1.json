@@ -1,0 +1,241 @@
+{
+  "version": 1,
+  "issue": 95,
+  "style": "Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish.",
+  "tail": "Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.",
+  "views": {
+    "front": "The exact same object, unchanged in shape, colour and every detail, seen straight from the front at eye level, orthographic, same plain light grey background and soft even lighting.",
+    "left": "The exact same object, unchanged in shape, colour and every detail, turned 90 degrees so that only its narrow plain left side panel faces the camera straight on, orthographic elevation, same plain light grey background and soft even lighting.",
+    "right": "The exact same object, unchanged in shape, colour and every detail, turned 90 degrees the other way so that only its narrow plain right side panel faces the camera straight on, orthographic elevation, same plain light grey background and soft even lighting.",
+    "back": "The exact same object, unchanged in shape and colour, turned around 180 degrees so that its plain flat rear panel faces the camera straight on, orthographic elevation, same plain light grey background and soft even lighting."
+  },
+  "view_policy": "Hunyuan's primary input is the hero view alone. A generated view is passed to Hunyuan only if the reviewer confirms it shows the same object at the requested angle; a view that disagrees is dropped, because disagreeing views damaged meshes in the Battlestar work.",
+  "note": "Batch 1 rigid furniture. Size is asset-local width, height, depth in metres. Floor-centred origins; wall/table mounting is applied by the room. Layout rev 3 controls dimensions. Wardrobe parked-open envelope is deliberately larger than its closed carcass footprint. Bed height includes its separate layout headboard.",
+  "props": [
+    {
+      "id": "wardrobe",
+      "size_m": [
+        1,
+        2.2,
+        0.65
+      ],
+      "materials": [
+        "PaintedSteel",
+        "BareSteel",
+        "DarkSteel"
+      ],
+      "prompt": "A freestanding officers wardrobe for a military warship cabin, 1.0 metre wide, 0.65 metres deep and 2.2 metres tall. Grey-green satin painted steel, riveted folded panel edges matching the tall locker modules. One full-height door on its own visible left-edge steel barrel hinges is parked open outward 100 degrees. A broad unobstructed empty hanging compartment with a single horizontal bare steel clothes rail near the top. The open door has a recessed rectangular latch and three small horizontal louvres near its top. A closed inset dark kick plate sits flat on the floor. Solid steel back, roof, sides and bottom. Plain interior with room for hanging tunics, fresh even paint.",
+      "seeds": [
+        201,
+        202,
+        203,
+        204
+      ]
+    },
+    {
+      "id": "bed",
+      "size_m": [
+        1.6,
+        1.1,
+        2.2
+      ],
+      "materials": [
+        "PaintedSteel",
+        "BareSteel",
+        "DarkSteel"
+      ],
+      "prompt": "A double bed frame for officers quarters on a military warship, 1.6 metres wide and 2.2 metres long. One continuous flat solid steel mattress support platform is exposed at 0.40 metres above the deck. Sturdy grey-green satin painted steel side rails reach 0.55 metres high, on four short integrated feet. A broad solid grey-green steel headboard rises to 1.1 metres at the rear, twice the side rail height. Neat folded panel edges, rounded headboard top corners, small round rivets along the rails and headboard edges, a low foot end. The bare rigid frame with its continuous exposed support plate is the whole object; no mattress or bedding.",
+      "seeds": [
+        215,
+        216,
+        217,
+        218
+      ]
+    },
+    {
+      "id": "desk",
+      "size_m": [
+        1.6,
+        0.76,
+        0.7
+      ],
+      "materials": [
+        "PaintedSteel",
+        "BareSteel",
+        "DarkSteel"
+      ],
+      "prompt": "A built-in military warship cabin desk, 1.6 metres wide, 0.70 metres deep, 0.76 metres tall. The broad flat worktop is the highest point, with nothing rising above it. Grey-green satin painted steel, a left pedestal with three separate equal-width drawers and recessed bare steel pulls, a slender steel right end frame, and a rear structural closing plate below the worktop behind the knees. A clear open knee well fills the right two thirds. Folded steel worktop edges, small round rivets down corners, dark inset kick plate below the drawer bank, fresh even paint.",
+      "seeds": [
+        225,
+        226,
+        227,
+        228
+      ]
+    },
+    {
+      "id": "console",
+      "size_m": [
+        1.1,
+        0.69,
+        0.55
+      ],
+      "materials": [
+        "PaintedSteel",
+        "BareSteel",
+        "DarkSteel",
+        "Display"
+      ],
+      "prompt": "A broad horizontal desktop computer terminal for an officers warship desk. A low, wide tabletop unit, much wider than it is tall: 1.1 metres wide, 0.55 metres deep and 0.69 metres high. One compact grey-green satin painted steel armoured housing rests directly on its flat base, with chamfered shoulders and riveted corner plates. A deep armoured rectangular bezel surrounds a broad dark teal illuminated display facing forward, above an angled lower key deck with three rows of eight chunky dark square keys and three tall bare steel toggle switches. Factory fresh, restrained utilitarian warship hardware. A desktop terminal only, without a floor-standing pedestal or legs.",
+      "seeds": [
+        235,
+        236,
+        237,
+        238
+      ]
+    },
+    {
+      "id": "desk_chair",
+      "size_m": [
+        0.5,
+        0.95,
+        0.5
+      ],
+      "materials": [
+        "PaintedSteel",
+        "BareSteel",
+        "DarkSteel",
+        "Fabric"
+      ],
+      "prompt": "A compact fixed military starship desk chair, 0.50 metres wide and deep, 0.95 metres tall. A grey-green satin painted steel frame with four sturdy legs, transverse braces and an upright gently raked steel back plate. A separate thin charcoal fabric seat pad at normal sitting height, bolted onto its steel pan. Small bare steel rivets on corner plates. Compact angular industrial furniture, fresh even paint.",
+      "seeds": [
+        241,
+        242,
+        243,
+        244
+      ]
+    },
+    {
+      "id": "dining_table",
+      "size_m": [
+        0.9,
+        0.75,
+        0.9
+      ],
+      "materials": [
+        "PaintedSteel",
+        "BareSteel",
+        "DarkSteel"
+      ],
+      "prompt": "A small round dining table for military starship officers quarters, precisely 0.9 metres in diameter and 0.75 metres tall. One round flat grey-green satin painted steel tabletop with a neatly rolled thick rim and a sparse ring of small round rivet heads. A sturdy central steel pedestal rises from a broad circular bolted deck base. Restrained utilitarian industrial furniture, factory fresh even paint.",
+      "seeds": [
+        251,
+        252,
+        253,
+        254
+      ]
+    },
+    {
+      "id": "dining_chair",
+      "size_m": [
+        0.5,
+        0.9,
+        0.45
+      ],
+      "materials": [
+        "PaintedSteel",
+        "BareSteel",
+        "DarkSteel",
+        "Fabric"
+      ],
+      "prompt": "A compact military starship dining chair, 0.50 metres wide, 0.45 metres deep and 0.90 metres tall. Four grey-green satin painted steel legs, cross braces, a broad flat steel seat pan and a plain slightly reclined steel backrest with rounded corners. One separate thin charcoal fabric seat pad. Small bare steel rivet heads on the frame corners. Sturdy utilitarian cabin furniture, fresh even paint.",
+      "seeds": [
+        261,
+        262,
+        263,
+        264
+      ]
+    },
+    {
+      "id": "bedside",
+      "size_m": [
+        0.5,
+        0.6,
+        0.45
+      ],
+      "materials": [
+        "PaintedSteel",
+        "BareSteel",
+        "DarkSteel"
+      ],
+      "prompt": "A bedside cabinet for military starship officers quarters, 0.50 metres wide, 0.45 metres deep and 0.60 metres tall including its compact built-in lamp. Grey-green satin painted steel carcass with two separate shallow drawers and recessed bare steel pulls, riveted corners, a dark inset kick plate, and a flat top at 0.45 metres. A small fixed steel reading lamp has a narrow upright stem and a compact downward-facing hood above the top. Utilitarian factory fresh hardware.",
+      "seeds": [
+        271,
+        272,
+        273,
+        274
+      ]
+    },
+    {
+      "id": "view_screen",
+      "size_m": [
+        1.8,
+        1.05,
+        0.08
+      ],
+      "materials": [
+        "PaintedSteel",
+        "BareSteel",
+        "DarkSteel",
+        "Glass",
+        "Display"
+      ],
+      "prompt": "A thin wall-mounted military starship viewing screen, 1.8 metres wide, 1.05 metres tall, 0.08 metres deep. Rectangular grey-green satin painted steel housing with narrow chamfered corners and small round rivets along the edges, a dark inset bezel, a flat glass cover, and a blank dark display surface. A horizontal utilitarian screen with a smooth broad uninterrupted front and solid shallow back. Fresh even paint.",
+      "seeds": [
+        281,
+        282,
+        283,
+        284
+      ]
+    },
+    {
+      "id": "media_cabinet",
+      "size_m": [
+        2.2,
+        0.6,
+        0.45
+      ],
+      "materials": [
+        "PaintedSteel",
+        "BareSteel",
+        "DarkSteel"
+      ],
+      "prompt": "A low wide storage cabinet beneath a military starship cabin viewing screen, 2.2 metres wide, 0.45 metres deep and 0.60 metres tall. Grey-green satin painted steel carcass with a flat top, three separate front hinged doors with recessed bare steel latches, riveted folded edge rails and a dark continuous inset kick plate. Plain broad painted door panels, fresh even factory paint.",
+      "seeds": [
+        291,
+        292,
+        293,
+        294
+      ]
+    },
+    {
+      "id": "lockers_over_bed",
+      "size_m": [
+        2.7,
+        0.6,
+        0.4
+      ],
+      "materials": [
+        "PaintedSteel",
+        "BareSteel",
+        "DarkSteel"
+      ],
+      "prompt": "A modular horizontal bank of three overhead wall lockers for a military starship cabin, total width 2.7 metres, height 0.60 metres and depth 0.40 metres. Three identical joined grey-green satin painted steel bays, each with a separate rectangular hinged front door, recessed bare steel latch and small exposed barrel hinges. Small round rivets along the fixed surrounds and panel edges. Solid backs and bases, plain broad door panels, fresh even paint.",
+      "seeds": [
+        301,
+        302,
+        303,
+        304
+      ]
+    }
+  ]
+}
