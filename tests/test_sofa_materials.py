@@ -75,5 +75,19 @@ class SofaMaterials(unittest.TestCase):
         self.assertLess(abs(np.dot(row - row.mean(), np.sin(np.arange(256) * 2 * np.pi / 128))) / 128, .015)
         self.assertGreater(row.std(), .015)
 
+    def test_clean_metal_keeps_fine_grain_without_aged_source_bands(self):
+        from finish_materials import clean_metal_scan
+        yy, xx = np.mgrid[:256, :256]
+        band = .12 * np.sin(xx * 2 * np.pi / 128)
+        grain = .04 * np.sin(xx * 2 * np.pi / 4)
+        image = np.repeat((.5 + band + grain)[..., None], 3, axis=2)
+        palette = np.array([.4, .5, .6])
+        result = clean_metal_scan(image, palette)
+        row = result[128, :, 0]
+        amplitude = abs(np.dot(row - row.mean(), np.sin(np.arange(256) * 2 * np.pi / 128))) / 128
+        self.assertLess(amplitude, .002)
+        self.assertGreater(row.std(), .002)
+        np.testing.assert_allclose(result.mean((0, 1)), palette, atol=.001)
+
 if __name__ == '__main__':
     unittest.main()

@@ -76,6 +76,12 @@ def weave_tile(image):
     return tileable(np.clip(srgb(fine), 0, 1))
 
 
+def clean_metal_scan(image, palette):
+    grain = luminance(weave_tile(image))
+    variation = 1 + .12 * (grain / grain.mean() - 1)
+    return np.clip(palette * variation[..., None], 0, 1)
+
+
 def sample(image, uv, repeat=False):
     h, w = image.shape[:2]
     uv = uv % 1 if repeat else np.clip(uv, 0, 1)
@@ -148,11 +154,7 @@ def sources(state):
         for kind, role_mask in [('paint', painted), ('steel', bare)]:
             palette = clean[role_mask]
             if not len(palette): raise ValueError('Missing locker clean role: ' + kind)
-            mean = palette.mean(0)
-            scan = images[kind]
-            variation = luminance(scan)
-            variation = np.clip(variation / max(variation.mean(), 1e-6), .75, 1.25)
-            images[kind] = np.clip(mean * variation[..., None], 0, 1)
+            images[kind] = clean_metal_scan(images[kind], palette.mean(0))
     for kind in ['fabric', 'throw']:
         images[kind] = gaussian_filter(images[kind], (6, 6, 0), mode='wrap')
         calibration[kind].update(base_colour_lowpass_sigma_px=6, calibrated=statistics(images[kind]))
