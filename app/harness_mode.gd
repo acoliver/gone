@@ -139,6 +139,9 @@ func _build_scene() -> void:
 func _boot() -> void:
 	for _warmup: int in range(WARMUP_FRAMES):
 		await process_frame
+	if scenario.start == "quarters":
+		DemoStart.quarters(game, player)
+		DemoStart.prepare_ship(game_step.ship_scene, player)
 	var wake_pass := WakePass.build()
 	root.get_node("CaptureRoot").add_child(wake_pass)
 	var wake_present := WakePresent.build(game, player.camera, wake_pass, player)
@@ -372,14 +375,16 @@ func capture_next_beat() -> void:
 	chip.set_code(pinned_tick, pinned_frame)
 	var camera_pose := player.camera.transform
 	var capture_camera := player.camera
-	if beat.has("camera_pitch_up"):
+	if beat.has("camera_pitch_up") or beat.has("quarters_view"):
 		# The wake presenter owns the player rig; capture-only tilts need an independent camera.
 		capture_camera = player.camera.duplicate() as Camera3D
 		root.add_child(capture_camera)
 		capture_camera.global_transform = player.camera.global_transform
 		capture_camera.make_current()
 	capture_camera.global_position += capture_camera.global_basis.z * float(beat.get("camera_back", 0.0))
-	if capture_camera != player.camera:
+	if beat.has("quarters_view"):
+		QuartersCapture.pose(capture_camera, beat.quarters_view)
+	elif capture_camera != player.camera:
 		capture_camera.rotate_object_local(Vector3.RIGHT, deg_to_rad(float(beat.camera_pitch_up)))
 	if connector_evidence != null:
 		print("GONE_CONNECTOR_CAPTURE %s tick=%d frame=%d" % [beat.name, pinned_tick, pinned_frame])
@@ -396,6 +401,19 @@ func capture_next_beat() -> void:
 	var request_id: int = report.beats.size() + 1
 	report.beats[beat.name] = {"file": file, "tick": pinned_tick,
 		"frame": pinned_frame, "request_id": request_id}
+	if scenario.start == "quarters":
+		var room := game_step.ship_scene.quarters
+		var foot := player.motion.capsule().foot
+		var evidence := {
+			"state": int(game.quarters.state), "elapsed": game.quarters.elapsed,
+			"door_open": game.doors.snapshot(QuartersLayout.DOOR).state == Doors.State.OPEN,
+			"deck": player.motion.deck(), "power_active": game.power_active,
+			"remembered_visible": room.remembered.visible, "present_visible": room.present.visible,
+			"console_presses": player.motion.console_presses,
+			"foot": [foot.x, foot.y, foot.z],
+			"camera_eye": [capture_camera.global_position.x, capture_camera.global_position.y, capture_camera.global_position.z],
+		}
+		report.add_event({"kind": "quarters", "name": beat.name, "tick": pinned_tick, "frame": pinned_frame, "evidence": evidence})
 	if beat.get("light", "red") == "white" or beat.name in ["power-active", "hall-white"]:
 		report.beats[beat.name].lamps = lamp_samples.record(root.get_node("CaptureRoot"), capture_camera, image.get_size())
 	var capture_eye := capture_camera.global_position

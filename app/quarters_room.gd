@@ -20,6 +20,14 @@ static func build(game: Game) -> QuartersRoom:
 	for state: Node3D in [room.remembered, room.present]:
 		room.add_child(state)
 		room._screen(state)
+		var probe := ReflectionProbe.new()
+		probe.name = "QuartersReflection"
+		probe.position = QuartersLayout.bounds().get_center()
+		probe.size = QuartersLayout.bounds().size
+		probe.cull_mask = Lighting.QUARTERS_MASK
+		probe.box_projection = true
+		probe.interior = true
+		state.add_child(probe)
 		Lighting.mesh_layers(state, Lighting.QUARTERS_MASK)
 	room._lights()
 	room.process_frame()

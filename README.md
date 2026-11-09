@@ -48,6 +48,17 @@ command prompt:
 The first run imports the project's resources before the window opens, so
 expect it to take longer than later runs.
 
+### Quarters demo
+
+Run `godot --path . -- --start quarters` to start in the D16 corridor facing
+the protagonist's quarters, with secondary power active. Space opens the
+manual-release door. Walk inside, then use the desk console on the right.
+Its placeholder message switches the room from Remembered to Present.
+Re-entering keeps Present. Without the option, the game still starts in stasis.
+The full route reaches the same room through the aft ladder well on D16.
+See [the quarters README](docs/art/quarters/README.md) for the real assets,
+stand-ins, capture command and layout frame.
+
 ## Controls
 
 - **Arrow keys** move.
