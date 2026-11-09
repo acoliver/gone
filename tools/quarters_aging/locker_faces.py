@@ -77,6 +77,15 @@ def eligible(row, hardware=False):
             and (hardware or row['edge_broad_ratio'] >= 1.8))
 
 
+def face_image(name, selection):
+    if name == 'stile-right':
+        # A 40 mm door-paint strip replaces the banded concept crop without
+        # changing the stile's physical scale or its padded atlas allocation.
+        door = Image.open(SOURCE / selection['door']['chosen']).convert('RGB')
+        return door.crop((380, 0, 420, 2200)).resize(image_size(FACES[name]), Image.Resampling.LANCZOS)
+    return Image.open(SOURCE / selection[name]['chosen']).convert('RGB')
+
+
 def pack(selection, output=SOURCE):
     atlas = np.zeros((ATLAS[1], ATLAS[0], 4), np.uint8)
     normal = np.zeros_like(atlas)
@@ -84,7 +93,7 @@ def pack(selection, output=SOURCE):
     orm = np.zeros_like(atlas)
     orm[:] = [255,230,0,0]
     for name, face in FACES.items():
-        image = Image.open(SOURCE / selection[name]['chosen']).convert('RGB')
+        image = face_image(name, selection)
         if image.size != image_size(face):
             raise ValueError(f'wrong face size: {name}')
         colour, paint = paint_fields(image)
@@ -117,7 +126,10 @@ def pack(selection, output=SOURCE):
 
 def manifest():
     rows = {}
-    for name, face in FACES.items():
+    for name, source in FACES.items():
+        face = dict(source)
+        if name == 'stile-right':
+            face['material_source'] = 'door image pixels [380, 0, 420, 2200], a 40 mm strip at matching physical scale; replaces the banded concept swatch'
         x0,y0,x1,y1 = face['rect']
         rows[name] = dict(face, uv_rectangle=[x0/ATLAS[0], y0/ATLAS[1], x1/ATLAS[0], y1/ATLAS[1]],
                           pixels_per_metre=[(x1-x0)/face['size'][0],(y1-y0)/face['size'][1]])
