@@ -663,6 +663,55 @@ The lit captures are `tmp/fit/sofa/cloth2/compare-hero.png`, `compare-detail.png
 
 The tunic now comes from Blender cloth simulation. The hand-modelled pilot rated 2/10: its waist was pinched, its sleeves were detached cylinders, and its collar and shoulders had visible voids. A sewn pattern lets gravity and fabric strain produce the hanging shape. The design remains `docs/art/quarters/sheets/dress_uniform/hero.png`; the filled Hunyuan torso is only a silhouette reference.
 
+### Tunic15: remove baked torso crests; full-frame shading remains disputed
+
+The torso's baked curvature contribution is removed. The unchanged geometric folds still produce broad shading. The isolated neutral-crop review describes elongated vertical bands without isolated rounded spots; the full shoulder-frame review still calls the result cloudy. These observations do not establish a complete visual fix for the garment. The numerical result below concerns the identified baked contribution, not acceptance of every remaining tonal feature.
+
+**Layer controls.** `tmp/age/tunic15/` contains matched 160 mm-square, 400 by 400 neutral chest/torso captures. Luminance is the sRGB-byte weighted sum 0.2126 R + 0.7152 G + 0.0722 B. Spectra use a fitted-plane subtraction, Hann window and radial power histogram. Frequency is in camera-plane cycles per 100 mm; the 160 mm frame has 0.625-cycle frequency resolution. Listed frequencies are histogram-bin centres, not exact wavelengths. The table reports raw luminance standard deviation and median spectral power frequency. All six controls retain the same geometry, camera and light.
+
+| Control | Blender luminance std | Godot luminance std | Median frequency, both engines |
+|---|---:|---:|---:|
+| Shipped baseline | 14.262 | 6.385 | 1.56 |
+| AO set to one | 14.141 | 6.278 | 1.56 |
+| Fade fixed to its atlas mean | 13.068 | 5.990 | 1.56 |
+| Dust disabled | 14.121 | 6.362 | 1.56 |
+| Curvature crest contribution disabled | 12.361 | 4.746 | 1.56 |
+| Broad pigment fixed to 0.5; grain fixed to one | 14.590 | 6.599 | 1.56 |
+| Roughness one; specular zero | 14.263 | 6.367 | 1.56 |
+
+There is no spatial roughness/ORM texture on the body: its roughness is the constant 0.97. Controls can change the displayed mean, so a lower raw standard deviation alone is not visual acceptance. The reconstructed Blender baseline differs by only 0.000081 RGB levels on average. Removing crests changes Blender RGB by 7.861 levels on average; AO, dust and base pigment controls change it by 0.197, 0.219 and 0.650 respectively. After removing a fitted plane, the crest-control difference has luminance std 3.826, against 0.356 for AO and 0.677 for pigment. The normal-map control does not remove the dominant broad pattern.
+
+The Blender ON-minus-OFF difference spectra isolate each contribution more directly than the full rendered frame. Their fitted-plane-removed luminance std and median frequency are:
+
+| Removed contribution | Difference std | Difference median cycles/100 mm |
+|---|---:|---:|
+| AO | 0.356 | 17.81 |
+| Fade variation | 1.750 | 1.56 |
+| Dust | 0.473 | 2.81 |
+| Curvature crest | 3.826 | 1.56 |
+| Base pigment variation | 0.677 | 0.94 |
+| Roughness/specular response | 0.498 | 14.06 |
+
+**Source defect and density.** The old normal-displacement Laplacian divided by 1.5 mm grows with squared edge length. The same 100 mm-radius cylinder sampled at 2.5, 5, 10 and 20 mm gave crest values 0.0104, 0.0417, 0.1665 and 0.6644. The normalised estimator stays near 0.5 across those spacings. On the torso the old crest/edge-spacing correlation was 0.359. Its median longest triangle edge is 18.1 mm and maximum 103.2 mm, so interpolating that vertex signal paints broad brightness patches.
+
+The colour atlas is 4096 square, with median torso density 2.60 px/mm, range 2.28 to 2.63. The current-cloth 60 mm AO bake is 2048 square and is resampled twofold by nearest neighbour. The crest mask is calculated on the reduced garment and rasterised by barycentric interpolation; it is not transferred from the dense simulation. No mask blur was found in this path. Increasing atlas resolution would not correct the mesh-spacing bias. Density normalisation and a directional-curvature experiment did not visibly resolve the broad pattern, so the latter is retained only in scratch, not in shipping source.
+
+The persistent 1.56-cycle band corresponds approximately to 64 mm. Real wool does not supply a universal permissible fade frequency. A [Smithsonian wool tunic photograph](https://ids.si.edu/ids/manifest/NMAH-AHB2010ps03351), object AF.59195-N(2-B), provides a measured 762 mm padded height. Its clean red-wool crop has an approximate 125 mm width, low-frequency peak 0.94 cycles/100 mm and median power frequency 58.44 cycles/100 mm, including nap and photographic noise. Its review sees directional folds, not round clouds, but cannot separate illumination from dye fading. The scale excludes dark collar/hem and is approximate. This comparison supports examining spatial structure rather than treating the tunic's 1.56-cycle band as proof of an artefact. [CCI textile guidance](https://www.canada.ca/en/conservation-institute/services/preventive-conservation/guidelines-collections/textiles-costumes.html) describes exposure-dependent light damage; this photograph does not establish a quantitative faded-wool standard.
+
+**Source correction.** `aged_linear(..., crest_fade=False)` keeps the main drape's fade on exposure, height, orientation and AO instead of adding a second curvature-painted fold highlight. `bake_colour()` uses this policy for `TunicBody`, including its dust-off control. `rebake_pilot_crest.py` applies the linear-light difference to the existing body pixels, preserving the other baked contributions and alpha. Lighting and AO still darken real recesses. Normal maps, roughness, dust boundaries, debris, facings, fittings and their textures are unchanged. The separate density regression retains the corrected physical estimator for callers that still use a crest term.
+
+The final Blender torso std is 12.354, against 14.262 before; Godot is approximately 4.74, against 6.385. Median frequency remains 1.56 in both engines because broad geometric shading remains. A brightness-comparable constant-albedo Godot control has std 3.861, or 3.248 with tangent normals disabled. The accepted mesh also retains `polish_pass9.py:broad_folds()`, an authored product-of-sinusoids normal displacement of at most 1.8 mm below the attachments; this pass does not alter that geometry. The final colour bake matches the independent no-crest control within 0.23 RGB levels on average. The isolated review also reports weak visible wool microtexture; that is not corrected by this pass.
+
+**Colour and retained contracts.** The six calibrated displayed role means remain within 0.969 sRGB levels of `target-colours.json`; the palette and Godot pigment gains are unchanged. The actual garment crop remains darker than the generated target, as documented in Tunic14. The neutral chest mean is RGB 70.279/75.651/86.148 in Blender and 71.557/76.710/87.449 in the actual Godot-imported asset, maximum error 1.301 levels. The wider torso crop's maximum error is 2.937 levels. Both remain below the six-level limit. `final-measurements.json` records these actual means, separately from the flat-role calibration.
+
+All 19 numbered thresholds are unchanged: 17 pass, with only the accepted G3/G6 failures. G1 is 0.040589; G2 is 0.000776; G5 is 0.322459; G30 has zero changed crossings; G31 is 20,305 triangles, ratio 1.47480; G32 is 0.62324 mm. Armhole median clearance remains 33.155 mm and all attachment bases remain within 2 mm. Over 105,985 visible upper-cloth pixels, dust raises mean RGB by 23.232 levels, and 98.066% brighten by at least eight levels. The eight-level and majority-coverage requirements are unchanged.
+
+`test_crest_export.py` verifies exact geometry, bounds, hierarchy, names, pivots, all alpha, normals, material roles and every non-body image. Only one embedded image payload changes. The saved candidate and pruned standalone source re-export byte-identically. The focused run passes 24 Godot tests; the full guarded headless run passes 812, with zero failures. Twenty focused tunic scripts pass, including the density, exposure-policy and exported-asset regressions; the existing suites pass 19 sofa and 51 locker tests. All 91 locker PNG controls remain byte-identical to `tmp/mat/tunic/locker-before/`. No sofa/locker assets, shared aging code, application shaders or `app/quarters_props.gd` change. OCR review is skipped per Andrew 2026-10-09.
+
+Matched images under `tmp/age/tunic15/` are `torso-before-after.png`, `blender-closeup-pair.png` and `godot-shoulder-pair.png`. `blender-control-sheet.png` and `godot-control-sheet.png` contain the individual layer controls. `blender-before/` and `blender-after/` retain full-resolution source frames. `godot-before/` and `godot-after/` use `tools/quarters_pilot_preview.gd` cameras, including `neutral-pair.png`, `closeup.png` and `in-locker-neutral.png`; the after capture loads the published GLB without the diagnostic texture substitution. Complete numerical results are in `layer-measurements.json`, `final-measurements.json`, `palette-colour-check.json`, `candidate/gates.json` and `dust-lit-difference.json`.
+
+Rebuild with Blender `rebake_pilot_crest.py -- --out tmp/age/tunic15/candidate`, starting from `tmp/age/tunic14/short-fibres`. `test_crest_export.py --out tmp/age/tunic15/candidate --baseline tmp/age/tunic15/before.glb` checks the exported contract. The existing `publish_pilot.py` performs candidate/pruned-source repeat checks and retains the G3/G6 pilot exceptions. The checked drivers are `final-source-check.sh`, `tests.sh`, `verify-gates.sh`, `dust-check.sh` and `publish-and-capture.sh` under the scratch directory. The full suite runs with `nohup godot --headless --path . -s tests/run_tests.gd`, with its output retained under the same scratch directory.
+
 ### Godot tunic integration (2026-11-09)
 
 `QuartersProps.material(&"dress_uniform", state, part, surface)` and `apply(root, &"dress_uniform", state)` now support both tunic assets. The default material is the state's `TunicBody` surface zero. Instantiate `dress_uniform.glb` for `as_built` and `dress_uniform_aged.glb` for `aged`; each retains its own geometry. Applying a finish preserves all imported nodes, names, transforms, meshes and bounds. Materials are constructed once per state and shared by imported material identity, including across instances. There is no per-frame material work.
