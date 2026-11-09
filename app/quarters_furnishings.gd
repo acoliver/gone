@@ -38,7 +38,7 @@ static func build(state: StringName) -> Node3D:
 		elif prop.id == "headboard":
 			continue
 		elif prop.id.begins_with("storage_"):
-			_storage(group, prop, bounds, state, finish)
+			_storage(group, prop, bounds, state, QuartersProps.interim_material(&"PaintedSteel", state))
 		else:
 			group.add_child(box("Standin_" + prop.id, bounds, finish))
 	# The plan's .76 m desk envelope includes a .06 m rear upstand.
@@ -130,6 +130,10 @@ static func _storage(group: Node3D, prop: Dictionary, bounds: AABB, state: Strin
 			slot.position.z += count * 0.6
 			slot.size.z = remainder
 		group.add_child(box("Standin_" + prop.id + "_infill", slot, finish))
+	if state == &"aged":
+		for mesh: MeshInstance3D in group.find_children("Standin_*", "MeshInstance3D", false, false):
+			mesh.set_instance_shader_parameter(&"floor_datum", QuartersLayout.FLOOR_Y)
+			mesh.set_instance_shader_parameter(&"lateral_bounds", Vector4(41, 49, 1.7, 7.7))
 
 static func _bed_soft(group: Node3D, bed: Node3D, bounds: AABB, finish: Material) -> void:
 	var soft := Node3D.new()
