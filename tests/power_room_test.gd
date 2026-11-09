@@ -447,3 +447,31 @@ func _mesh_triangle_count(node: Node) -> int:
 	for child: Node in node.get_children():
 		total += _mesh_triangle_count(child)
 	return total
+
+func test_status_board_screen_faces_into_room_and_has_schematic_content() -> void:
+	var game := _awake_game()
+	var room := PowerRoom.build(game)
+	var panel: Node3D = room.get_node("StatusPanelMount/StatusPanelModel")
+	var socket := panel.find_child("ScreenSocket", true, false) as Node3D
+	var screen := panel.find_child("DisplayPlane", true, false) as MeshInstance3D
+	var board: MeshInstance3D = room.status_board
+	assert_true(socket != null and screen != null and board != null, "the panel exports its screen and the room builds its status board")
+	assert_true(socket.basis.z.is_equal_approx(Vector3(0.0, 0.0, 1.0)), "the screen socket faces into the room")
+	assert_true(screen.basis.z.is_equal_approx(Vector3(0.0, 0.0, 1.0)), "the panel glass faces into the room")
+	assert_true(board.basis.z.is_equal_approx(Vector3(0.0, 0.0, 1.0)), "the board quad faces into the room")
+	assert_true(board.position.z > screen.position.z, "the board quad sits in front of the panel glass")
+	var board_texture := load("res://assets/props/status_panel/board-native.png") as Texture2D
+	assert_true(board_texture != null, "the native board schematic texture loads")
+	var image := board_texture.get_image()
+	assert_true(image.get_width() > 0 and image.get_height() > 0, "the board schematic texture is decoded")
+	var first := image.get_pixel(0, 0)
+	var has_schematic_detail := false
+	for y: int in range(0, image.get_height(), 16):
+		for x: int in range(0, image.get_width(), 16):
+			if (absf(image.get_pixel(x, y).r - first.r) + absf(image.get_pixel(x, y).g - first.g) + absf(image.get_pixel(x, y).b - first.b)) > 0.15:
+				has_schematic_detail = true
+				break
+		if has_schematic_detail:
+			break
+	assert_true(has_schematic_detail, "the board image contains schematic detail, not a blank fill")
+	room.free()
