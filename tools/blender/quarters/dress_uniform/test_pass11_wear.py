@@ -10,6 +10,14 @@ from wear_pass11 import body_wear, lip_loss, wool_displacement
 
 
 class Pass11Wear(unittest.TestCase):
+    def test_fading_is_distributed_without_punching_new_holes(self):
+        pattern = np.array([[.18, .4], [.28, .7], [1.3, .6], [.6, .8]])
+        wear = body_wear(pattern)
+        self.assertFalse(wear['hole'].any())
+        self.assertTrue((wear['fade'] >= .03).all())
+        self.assertTrue((wear['fade'] <= .35).all())
+        self.assertGreater(np.ptp(wear['fade']), .04)
+
     def test_curled_bundle_atlas_is_deterministic_and_soft_edged(self):
         from soft_wool_atlas import bundle_alpha
         alpha = bundle_alpha(9521)
@@ -36,6 +44,7 @@ class Pass11Wear(unittest.TestCase):
         self.assertGreater(len(hole), 50)
         ratio = np.ptp(hole, axis=0)[1]/np.ptp(hole, axis=0)[0]
         self.assertLess(ratio, 2.8)
+        self.assertGreater(np.ptp(hole[:, 0]), .007)
         self.assertGreater(np.sum((result['thinning'] > .15) & ~result['hole']), len(hole))
 
     def test_no_losses_in_collar_or_sleeve(self):

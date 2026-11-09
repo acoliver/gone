@@ -241,10 +241,16 @@ def finish_cards(out, record):
     record['fringe'] = {}
     sheets = [body]+[bpy.data.objects[p['name']] for p in record['fallen']]
     from wool_material import wool_material
-    record['wool_materials'] = {
-        sheet.name: wool_material(sheet, out / 'textures', opacity if sheet == body else None,
-                                  color=(.045, .061, .085) if 'pass10' in record and sheet != body else (.025, .043, .08))
-        for sheet in sheets}
+    record['wool_materials'] = {}
+    record['fallen_opacity'] = {}
+    for index, sheet in enumerate(sheets):
+        sheet_opacity = opacity if sheet == body else None
+        if sheet != body and body.get('pass11_wear'):
+            from fallen_wear import fray
+            sheet_opacity, record['fallen_opacity'][sheet.name] = fray(sheet, out/'textures', 9650+index)
+        record['wool_materials'][sheet.name] = wool_material(
+            sheet, out/'textures', sheet_opacity,
+            color=(.045, .061, .085) if 'pass10' in record and sheet != body else (.025, .043, .08))
     # Test placements against the actual rim geometry without losing the open
     # midsurface from which the cards and their UV categories are constructed.
     rim_proxies = []
@@ -295,7 +301,9 @@ def finish_cards(out, record):
     if 'stress_wear' in report:
         worn_area = report['stress_wear']['lost_area_m2']
         record['heap']['stress_wear_area_m2'] = worn_area
-        record['heap']['lost_area_m2'] += worn_area
+        fray_area = sum(item['lost_area_m2'] for item in record['fallen_opacity'].values())
+        record['heap']['fallen_fray_area_m2'] = fray_area
+        record['heap']['lost_area_m2'] += worn_area+fray_area
         expected = record['heap']['lost_area_m2']*.0035/record['heap']['packing_fraction']
         record['heap']['expected_volume_m3'] = expected
         record['heap']['ratio'] = record['heap']['measured_volume_m3']/expected

@@ -13,9 +13,9 @@ def body_wear(pattern):
             (.325, .24, .0034, .0024), (.075, .58, .0028, .0021),
             (.425, .46, .0032, .0023), (.77, .43, .0044, .0027),
             (.92, .64, .0034, .0022)]):
-        along = (v-height)/length
-        center = x+.0006*np.sin(along*2.1+number)
-        across = (u-center)/width
+        along = (v-height)/(length*1.5)
+        center = x+.0009*np.sin(along*2.1+number)
+        across = (u-center)/(width*1.5)
         angle = np.arctan2(along, across)
         radius = np.sqrt(across**2+along**2)
         edge = 1+.17*np.sin(angle*5+number)+.10*np.sin(angle*9+number*.7)
@@ -25,7 +25,8 @@ def body_wear(pattern):
     fold = np.exp(-((u-(.23+.008*np.sin(v*18)))/.012)**2)*np.exp(-((v-.52)/.25)**4)
     thinning = np.maximum(thinning, .65*np.maximum(seam, fold))
     allowed = (u < 1.) & (v > .12) & (v < .78)
-    return dict(hole=hole & allowed, thinning=thinning*allowed)
+    fade = .16+.10*np.sin(u*53+v*5)*(.4+.6*np.sin(v*8)**2)+.035*np.sin(u*91-v*17)
+    return dict(hole=hole & allowed, thinning=thinning*allowed, fade=np.clip(fade, .03, .35))
 
 
 def wool_displacement(points, pattern):
@@ -35,8 +36,8 @@ def wool_displacement(points, pattern):
     mask *= smoothstep((abs(x)-.03)/.035)*(pattern[:, 0] < 1.)
     phase = x*47+z*16+.42*np.sin(z*24)
     delta = np.zeros_like(points)
-    delta[:, 1] = mask*(.0012*np.sin(phase)+.00055*np.sin(x*81-z*33))
-    delta[:, 2] = -mask*.0007*(.5+.5*np.sin(x*31+z*18))
+    delta[:, 1] = mask*(.0017*np.sin(phase)+.00065*np.sin(x*81-z*33))
+    delta[:, 2] = -mask*.00085*(.5+.5*np.sin(x*31+z*18))
     return delta
 
 

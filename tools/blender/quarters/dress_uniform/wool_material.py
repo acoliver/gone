@@ -27,8 +27,12 @@ def wool_material(obj, out, opacity=None, color=(.025, .043, .08)):
             raise ValueError('Stress thinning and wool base must share BakeUV texel density')
         mask = np.empty(width*height*4, np.float32)
         wear.pixels.foreach_get(mask)
-        mask = mask.reshape(height, width, 4)[:, :, :1]
+        fields = mask.reshape(height, width, 4)
+        mask = fields[:, :, :1]
         linear = linear*(1-mask*.5)+np.array([.062, .072, .096])*values[:, :, :3]*mask*.5
+        if obj.get('pass11_wear'):
+            fade = fields[:, :, 1:2]*.8
+            linear = linear*(1-fade)+np.array([.075, .082, .096])*values[:, :, :3]*fade
     rgba = np.ones_like(values)
     rgba[:, :, :3] = np.where(linear <= .0031308, linear*12.92,
                               1.055*linear**(1/2.4)-.055)

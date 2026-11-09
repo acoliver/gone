@@ -49,6 +49,7 @@ def wool_opacity(obj, out, size=2048, seed=9521):
     pixels = pixels.reshape(size, size, 4)
     pass10 = bool(obj.get('pass10_wear'))
     thinning = np.zeros((size, size), np.float32) if pass10 else None
+    fading = np.zeros((size, size), np.float32) if obj.get('pass11_wear') else None
     worn_texels = 0
     worn_area = 0.
     obj.data.calc_loop_triangles()
@@ -96,6 +97,8 @@ def wool_opacity(obj, out, size=2048, seed=9521):
                 from wear_pass10 import body_wear
             wear = body_wear(pattern)
             thinning[lo[1]:hi[1]+1, lo[0]:hi[0]+1][inside] = wear['thinning']
+            if fading is not None:
+                fading[lo[1]:hi[1]+1, lo[0]:hi[0]+1][inside] = wear['fade']
             count = int(wear['hole'].sum())
             worn_texels += count
             world = positions[ids]
@@ -131,6 +134,8 @@ def wool_opacity(obj, out, size=2048, seed=9521):
         from fringe_cards import image_from_array
         rgba = np.ones((size, size, 4), np.float32)
         rgba[:, :, :3] = thinning[:, :, None]
+        if fading is not None:
+            rgba[:, :, 1] = fading
         wear_image = image_from_array('TunicStressThinning', rgba, out.with_name('tunic_thinning.png'), True)
         wear_image.use_fake_user = True
         obj['pass10_thinning_image'] = wear_image.name
