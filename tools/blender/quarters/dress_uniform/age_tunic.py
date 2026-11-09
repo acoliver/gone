@@ -60,7 +60,7 @@ def prepare(out):
     pins = {}
     for vertex in body.data.vertices:
         p = vertex.co
-        if -.245 < p.x < -.10 and p.z > -.22 and abs(p.y) < .003:
+        if -.245 < p.x < -.085 and p.z > -.22 and abs(p.y) < .003:
             point, _, _, _ = tree.ray_cast(Vector((p.x, p.y, .1)), Vector((0, 0, -1)))
             if point is None:
                 raise ValueError('Retained shoulder strip misses hanger wire')
