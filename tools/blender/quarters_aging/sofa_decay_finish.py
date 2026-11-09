@@ -57,7 +57,7 @@ def detail(source, out, size=2048):
         residue.hide_render = False
         residue['aged_export'] = True
         fringe, report = cards(low, fringe_mat, record['cushions'][name]['plan']['seed'],
-                               spacing=.005, boundary_group='Lip shrink', blockers=game_surfaces())
+                               spacing=.012, boundary_group='Lip shrink', blockers=game_surfaces())
         fringe.name = name+'_Fringe'
         record['materials'][name] = {'cover': maps, 'residue': residue_maps,
                                      'residue_baked': residue_paths, 'fringe': report}
@@ -85,7 +85,7 @@ def throw_detail(source, out, size=2048):
     low.hide_render = False
     low['aged_export'] = True
     fringe, fringe_report = cards(low, fabric_fringe(out/'textures/wool-fringe', 9699, (.56, .48, .35), wool=True),
-                                  9699, wool=True, spacing=.009, boundary_group='Lip shrink', blockers=game_surfaces())
+                                  9699, wool=True, spacing=.012, boundary_group=None, blockers=game_surfaces())
     fringe.name = 'Throw_Fringe'
     record['throw']['materials'] = {'maps': maps, 'baked': paths, 'opacity': alpha_report, 'fringe': fringe_report}
     checkpoint(out, record, 'throw-detailed.blend')

@@ -25,7 +25,8 @@ def tune(obj, mod, config, kind, pressure=.01):
     settings.tension_damping = settings.compression_damping = settings.shear_damping = damping
     settings.bending_damping = .3
     air = settings.air_damping
-    for frame, factor in [(1, 1.), (300, 1.), (600, 6.)]:
+    late_air = 6.
+    for frame, factor in [(1, 1.), (300, 1.), (600, late_air)]:
         settings.air_damping = air*factor
         settings.keyframe_insert(data_path='air_damping', frame=frame)
     if kind == 'backs':
@@ -41,7 +42,7 @@ def tune(obj, mod, config, kind, pressure=.01):
     linear_keys(obj)
     mod.point_cache.frame_end = 2400
     config.update(pass9_bending=bending, structural_damping=damping, bending_damping=.3,
-                  late_air_multiplier=6., late_air_ramp_frames=[300, 600], frames=2400)
+                  late_air_multiplier=late_air, late_air_ramp_frames=[300, 600], frames=2400)
     if kind == 'backs':
         config.update(volume_loss='zero-target uniform inward pressure', vacuum_kpa=pressure,
                       vacuum_ramp_frames=[1, 40], automatic_volume_term=False)

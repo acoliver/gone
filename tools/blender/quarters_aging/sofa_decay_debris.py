@@ -81,7 +81,7 @@ def opening_sources(obj):
     return points
 
 
-def deposit(source, out, library, seed=9666):
+def deposit(source, out, library, seed=9666, visible_deposits=False):
     bpy.ops.wm.open_mainfile(filepath=str(source))
     record = json.loads(bpy.context.scene['sofa_decay_record'])
     rng = np.random.default_rng(seed)
@@ -89,6 +89,8 @@ def deposit(source, out, library, seed=9666):
     solids = [o for o in bpy.context.scene.objects if o.type == 'MESH' and o.get('aged_export')]
     contacts = DepositContacts(solids)
     support_objects = [bpy.data.objects['Frame'], bpy.data.objects['Feet']]+[bpy.data.objects[n+'_Residue'] for n in ORDER]
+    if visible_deposits:
+        support_objects += [bpy.data.objects[n+'_GameContact'] for n in ORDER[:3]]
     supports = [surface_tree(o) for o in support_objects]
     foam_mat = material('Foam_Debris', FOAM)
     pieces, placements = [], []
@@ -99,7 +101,8 @@ def deposit(source, out, library, seed=9666):
         nonlocal rejected
         index = len(pieces)
         template, points, faces = templates[index % len(templates)]
-        size = float(np.clip(rng.lognormal(np.log(.005), .55), .002, .025))
+        median = .011 if visible_deposits and not floor else .005
+        size = float(np.clip(rng.lognormal(np.log(median), .55), .002, .025))
         points = points*(size/np.ptp(points, axis=0).max())
         yaw = rng.uniform(0, 2*np.pi)
         rotation = np.array([[np.cos(yaw), -np.sin(yaw), 0], [np.sin(yaw), np.cos(yaw), 0], [0, 0, 1]])
@@ -215,6 +218,9 @@ def deposit(source, out, library, seed=9666):
     debris.name = 'FoamDebris'
     join(debris, pieces[1:])
     record['debris'] = {'method': 'contact-free residue skin templates; opening-led deck deposits and front-lip drifts, sparse floor tails',
+                         'visible_deposits': visible_deposits,
+                         'nonfloor_size_median_m': .011 if visible_deposits else .005,
+                         'support_objects': [o.name for o in support_objects],
                          'seed': seed, 'templates': [t[0] for t in templates], 'placements': placements,
                          'spills': spills, 'rejected_contacts': rejected,
                          'floor_minimum_spacing_m': .024, 'powder_support_clearance_m': .0005,

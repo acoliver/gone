@@ -14,10 +14,10 @@ from seat_render import diagnostic_material
 from sofa_decay_policy import ORDER
 
 
-def diagnostics(asset, out):
+def diagnostics(asset, out, names=(*ORDER, 'Throw')):
     out.mkdir(parents=True, exist_ok=True)
     record = {'input': str(asset.resolve()), 'parts': {}}
-    for name in [*ORDER, 'Throw']:
+    for name in names:
         part_dir = out/name
         part_dir.mkdir(parents=True, exist_ok=True)
         cameras = {}

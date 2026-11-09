@@ -37,7 +37,8 @@ def front_folds(mesh):
         origins = np.c_[np.full(len(z), x), np.full(len(z), y0-.1), z]
         hits, rays, _ = mesh.ray.intersects_location(origins, np.tile([0, 1, 0], (len(z), 1)), multiple_hits=True)
         front = np.full(len(z), np.inf)
-        np.minimum.at(front, rays, hits[:, 1])
+        if len(hits):
+            np.minimum.at(front, rays, hits[:, 1])
         valid = np.isfinite(front)
         if valid.sum() < 8:
             counts.append(0)

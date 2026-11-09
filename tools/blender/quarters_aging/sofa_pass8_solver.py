@@ -88,7 +88,8 @@ def solve(obj, mod, out, label, frames=900, collapse_frames=180, settle=True):
                     selected = mask[face_ids].all(1)
                     area = float(areas[selected].sum())
                     initial_parts.setdefault(name, area)
-                    value = {'area_ratio': area/initial_parts[name]}
+                    value = {'area_ratio': area/initial_parts[name],
+                             'last_five_frames_motion_m': float(np.linalg.norm(p[mask]-recent[0][mask], axis=1).max())}
                     if name.startswith('Seat'):
                         from mathutils import Vector
                         from mathutils.bvhtree import BVHTree
@@ -108,8 +109,11 @@ def solve(obj, mod, out, label, frames=900, collapse_frames=180, settle=True):
                 if initial_area is None:
                     initial_area = metrics['area_m2']
                 ratio = metrics['area_m2']/initial_area
+                motion_index = int(np.linalg.norm(p-recent[0], axis=1).argmax())
                 samples[str(frame)] = dict(metrics, max_speed_m_s=speed, substep_motion_m=speed*substep,
-                                           area_ratio=ratio, last_five_frames_motion_m=motion)
+                                           area_ratio=ratio, last_five_frames_motion_m=motion,
+                                           max_motion_vertex=motion_index, max_motion_world_m=p[motion_index].tolist(),
+                                           max_motion_groups=[obj.vertex_groups[g.group].name for g in obj.data.vertices[motion_index].groups if g.weight > .5])
                 check = {'frame': frame, 'C3_area_ratio': ratio, 'C3_part_ratios': {n: v['area_ratio'] for n, v in per_part.items()},
                          'C3_pass': abs(ratio-1) <= .03 and all(abs(v['area_ratio']-1) <= .03 for v in per_part.values()),
                          'C4_motion_per_substep_m': speed*substep, 'C4_pass': speed*substep <= .0015}
