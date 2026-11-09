@@ -283,6 +283,24 @@ Generated-face inspection found no apparent hardware, perspective objects or rep
 
 The fitted source is `tools/blender/quarters/sofa/sofa-working.blend`, and the game asset is `assets/props/quarters/sofa.glb`. The cushions and throw are baked Blender cloth meshes with no live modifiers. Authoring uses Blender Z up and front -Y. Export uses `export_yup=True`, giving the game +Y up and front +Z.
 
+### Pass 11: visible-boundary controls, candidate in progress
+
+The fixed target is `sheets/sofa/aged-target.png`, depicting 1000 years of
+aging. The shipped sofa remains unchanged while this candidate is measured.
+The target calls for broad gashes and exposed tan foam, individual seat sag
+and much more debris. Small repeated holes do not meet that target.
+
+The pass-10 G3 wrapper accepted only nearly pure red or green diagnostic
+pixels. It discarded 5,499 to 18,166 cloth-coverage pixels per cushion,
+including antialiased cloth/fringe mixtures. On the centre back this created
+11 enclosed diagnostic holes where coverage decoding finds two. Neither
+result makes the old tears acceptable: their remaining longest runs still
+exceed 12 px. The new sofa-local measurements decode combined coverage and
+trace visible alpha outlines near physical lips, including open gashes,
+without adding a closing segment. G3's 12 px maximum, G4's 0.35 minimum and
+G6's 1.15 to 1.40 range are unchanged. Four controls cover mixed coverage,
+constant slots, exterior-connected tears and other-object silhouettes.
+
 ### Pass 10: rejected, 18 of 22 gates pass
 
 Pass 10 continues the pass-9 solve (`bdd5171`). G5 lip lift, G7 residue
