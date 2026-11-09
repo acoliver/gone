@@ -1,6 +1,8 @@
 class_name QuartersRoom
 extends Node3D
 
+const TEXT_WIDTH_PX := 1024.0
+const TEXT_FONT_SIZE := 32
 const CORRUPTION_COLORS: Array[Color] = [Color(0.004, 0.008, 0.012), Color(0.02, 0.10, 0.14), Color(0.12, 0.72, 0.82), Color(0.82, 0.94, 1.0), Color(0.08, 0.28, 0.34)]
 
 var remembered: Node3D
@@ -13,6 +15,7 @@ var entrance_bounces: Array[OmniLight3D] = []
 var white_finish: StandardMaterial3D
 var white_fade: Intensity.FixtureFade
 var _game: Game
+var _screen_text := ""
 
 static func build(game: Game) -> QuartersRoom:
 	var room := QuartersRoom.new()
@@ -51,8 +54,9 @@ func _screen(state: Node3D) -> void:
 	var label := Label3D.new()
 	label.name = "PlaceholderText"
 	label.position = bounds.get_center() + Vector3(0, 0, bounds.size.z / 2 + 0.0017)
-	label.pixel_size = bounds.size.x / (64.0 * 16.0)
-	label.font_size = 32
+	label.pixel_size = bounds.size.x / TEXT_WIDTH_PX
+	label.font_size = TEXT_FONT_SIZE
+	label.font = ThemeDB.fallback_font
 	label.outline_size = 0
 	label.shaded = false
 	label.modulate = Color(0.86, 0.98, 1.0)
@@ -147,9 +151,11 @@ func process_frame() -> void:
 	for bounce: OmniLight3D in entrance_bounces: bounce.light_energy = Lighting.regular_energy() * 0.35 * level
 	for lamp: OmniLight3D in white_lights: lamp.light_energy = Lighting.regular_energy() * level
 	white_finish.emission = Lighting.REGULAR_WHITE * Lighting.REGULAR_EMISSIVE * level
-	var text := _wrapped(_game.quarters.screen_text())
-	for label: Label3D in screen_labels:
-		if label.text != text: label.text = text
+	var source := _game.quarters.screen_text()
+	if source != _screen_text:
+		_screen_text = source
+		var text := _wrapped(source)
+		for label: Label3D in screen_labels: label.text = text
 	corruption.visible = _game.quarters.state == QuartersMemory.State.PLAYING and _game.quarters.elapsed < QuartersMemory.CORRUPT_TICKS
 	if corruption.visible:
 		for index: int in range(corruption.get_child_count()):
@@ -161,9 +167,12 @@ static func _wrapped(text: String) -> String:
 	for paragraph: String in text.split("\n"):
 		var line := ""
 		for word: String in paragraph.split(" "):
-			if line.length() + word.length() > 64:
+			var candidate := line + ("" if line == "" else " ") + word
+			var width := ThemeDB.fallback_font.get_string_size(candidate, HORIZONTAL_ALIGNMENT_LEFT, -1, TEXT_FONT_SIZE).x
+			if width > TEXT_WIDTH_PX * 0.92:
 				lines.append(line)
-				line = ""
-			line += ("" if line == "" else " ") + word
+				line = word
+			else:
+				line = candidate
 		lines.append(line)
 	return "\n".join(lines)

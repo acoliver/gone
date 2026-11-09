@@ -44,3 +44,12 @@ func test_corruption_contains_bright_and_dark_blocks_and_changes_over_time() -> 
 	room.process_frame()
 	assert_true("MAIN SYSTEM FAULT" in room.screen_labels[0].text, "fault text retained")
 	room.free()
+
+func test_all_console_phases_wrap_to_actual_glyph_width() -> void:
+	var room := QuartersRoom.build(Game.new(114))
+	var label := room.screen_labels[0]
+	var width := room.screens[0].get_aabb().size.x * .92 / label.pixel_size
+	for text: String in [QuartersMemory.MESSAGE, QuartersMemory.FAULT, QuartersMemory.PLACEHOLDER, "PERSONAL MESSAGE / PRESS TO PLAY", "VIDEO DATA CORRUPTED"]:
+		for line: String in QuartersRoom._wrapped(text).split("\n"):
+			assert_true(ThemeDB.fallback_font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, label.font_size).x <= width, "console line fits display with margin: " + line)
+	room.free()
