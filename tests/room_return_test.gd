@@ -62,3 +62,19 @@ func test_density_and_handoff_do_not_multiply_return_or_change_emitters() -> voi
 	red.free()
 	white.free()
 	probe.free()
+
+func test_unfilled_rooms_supply_readable_return_without_changing_their_keys() -> void:
+	var parent := Node3D.new()
+	var key := Lighting.switched_key(ShipLayout.EmergencyLightRole.BAY_POOL, 1.0)
+	parent.add_child(key)
+	var energy := key.light_energy
+	RoomReturn.steady(parent, AABB(Vector3.ZERO, Vector3(6, 3.2, 3)), 8192)
+	var probe := parent.get_node("RoomReturn") as RoomReturn
+	assert_float_equal(probe.ambient_color_energy, energy, "unfilled-room return is bounded by mean key radiance")
+	assert_float_equal(key.light_energy, energy, "the architectural source is untouched")
+	assert_true(key.light_color == Lighting.EMERGENCY_RED, "independent room keeps its red circuit")
+	key.light_energy = 0.0
+	probe.refresh()
+	assert_float_equal(probe.ambient_color_energy, 0.0, "unfilled-room blackout has zero return")
+	assert_true(probe.ambient_color == Color.BLACK, "unfilled-room blackout has no stale colour")
+	parent.free()

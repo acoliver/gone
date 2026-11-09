@@ -4,10 +4,14 @@ extends ReflectionProbe
 ## No sky, capture, emission or extra source participates in this approximation.
 
 const RETURN_SHARE := 0.1
+# Independent spine circuits have no fixture fills. Their closed end faces
+# need more return to remain readable against the directly lit ceiling sheet.
+const UNFILLED_RETURN_SHARE := 1.0
 var _emergency: Array[OmniLight3D] = []
 var _regular: Array[OmniLight3D] = []
+var _share: float = RETURN_SHARE
 
-static func build(bounds: AABB, emergency: Array[OmniLight3D], regular: Array[OmniLight3D], mask: int) -> RoomReturn:
+static func build(bounds: AABB, emergency: Array[OmniLight3D], regular: Array[OmniLight3D], mask: int, share: float = RETURN_SHARE) -> RoomReturn:
 	var probe := RoomReturn.new()
 	probe.name = "RoomReturn"
 	probe.position = bounds.get_center()
@@ -19,6 +23,7 @@ static func build(bounds: AABB, emergency: Array[OmniLight3D], regular: Array[Om
 	probe.reflection_mask = mask
 	probe._emergency = emergency.duplicate()
 	probe._regular = regular.duplicate()
+	probe._share = share
 	probe.refresh()
 	return probe
 
@@ -26,7 +31,7 @@ static func steady(parent: Node3D, bounds: AABB, mask: int) -> void:
 	var keys: Array[OmniLight3D] = []
 	for key: Node in parent.find_children("*", "OmniLight3D", true, false): keys.append(key)
 	# The continuous opening hall shell also borders the connector volumes.
-	parent.add_child(build(bounds, keys, [], mask | 1))
+	parent.add_child(build(bounds, keys, [], mask | 1, UNFILLED_RETURN_SHARE))
 
 static func _mean_radiance(keys: Array[OmniLight3D]) -> Color:
 	var result := Color(0, 0, 0, 1)
@@ -37,7 +42,7 @@ static func _mean_radiance(keys: Array[OmniLight3D]) -> Color:
 func refresh() -> void:
 	# Average each circuit separately so fixture density does not brighten the
 	# return, and a red-to-white crossfade remains linear in emitted radiance.
-	var radiance := (_mean_radiance(_emergency) + _mean_radiance(_regular)) * RETURN_SHARE
+	var radiance := (_mean_radiance(_emergency) + _mean_radiance(_regular)) * _share
 	var energy := maxf(radiance.r, maxf(radiance.g, radiance.b))
 	var colour := (radiance / energy).linear_to_srgb() if energy > 0 else Color.BLACK
 	colour.a = 1.0
