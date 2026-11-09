@@ -34,7 +34,7 @@ def open_shoulder(body):
     inverse = board.matrix_world.inverted()
     clearance = np.array([tree.find_nearest(inverse @ (body.matrix_world @ vertex.co))[3]
                           for vertex in body.data.vertices])
-    front = smoothstep((points[:, 0]-.165)/.025)*smoothstep((.255-points[:, 0])/.025)
+    front = smoothstep((points[:, 0]-.180)/.020)*smoothstep((.255-points[:, 0])/.025)
     front *= smoothstep((v-.88)/.06)*(u < .48)*smoothstep((clearance-.008)/.006)
     for vertex, weight, forward in zip(body.data.vertices, fade, front):
         vertex.co.y += .008*weight-.012*forward

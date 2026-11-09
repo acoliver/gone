@@ -37,10 +37,15 @@ assert opaque.any() and (~opaque).any(), 'The body must retain both cloth and it
 colour = wool[:, :, :3][opaque]
 assert np.all(colour[:, 2] >= colour[:, 1]) and np.all(colour[:, 1] >= colour[:, 0]), 'Wool acquired a green hue'
 for material in gltf['materials']:
-    if material['name'] in ['WoolFringe', 'Loose pale wool fibres']:
+    fine_fringe = material['name'].startswith('WoolFringe') and 'SurvivingYarn' not in material['name']
+    if fine_fringe or material['name'].startswith('Loose pale wool'):
         assert material['alphaMode'] == 'MASK', 'Fine wool tufts must preserve scissor semantics'
         pixels = texture(material)
         assert np.sum((pixels[:, :, 3] > 0) & (pixels[:, :, 3] < 255)) > 1000
+        if material['name'].startswith('Loose pale wool'):
+            root = pixels[-9, :, 3] >= 128
+            edges = np.flatnonzero(np.diff(np.r_[False, root, False]))
+            assert len(edges) == 8, 'The actual mound material must export four resolved bundles, not the fine edge atlas'
     if 'DullBrownBrass' in material['name']:
         pixels = texture(material)[:, :, :3]
         assert np.mean(pixels[:, :, 0]) > np.mean(pixels[:, :, 2]), 'Brass must be brown, not blue wool'
