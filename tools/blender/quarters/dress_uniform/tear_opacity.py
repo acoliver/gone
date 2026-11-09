@@ -5,7 +5,6 @@ import bmesh
 import numpy as np
 from mathutils.kdtree import KDTree
 
-from bake_down import boundary_samples, boundary_segments
 from opacity_bake import opacity_bake, value_noise
 from tear_paths import grain_walk
 
@@ -38,7 +37,8 @@ def wool_opacity(obj, out, size=2048, seed=9521):
     starts = np.concatenate([p[:-1] for p in paths])
     deltas = np.concatenate([np.diff(p, axis=0) for p in paths])
     length2 = np.sum(deltas**2, axis=1)
-    samples = boundary_samples(boundary_segments(obj), .00025)
+    from tear_boundaries import labelled_samples
+    samples, erodible = labelled_samples(obj)
     tree = KDTree(len(samples))
     for index, point in enumerate(samples):
         tree.insert(point, index)
@@ -75,7 +75,9 @@ def wool_opacity(obj, out, size=2048, seed=9521):
         bary = np.c_[u[inside], v[inside], w[inside]]
         p = np.einsum('ij,jk->ik', bary, positions[ids])
         pattern = np.einsum('ij,jk->ik', bary, np.array([pattern_uv[i].uv[:] for i in triangle.loops]))
-        distance = np.array([tree.find(point)[2] for point in p])
+        nearest_lip = [tree.find(point) for point in p]
+        distance = np.array([hit[2] for hit in nearest_lip])
+        allowed = erodible[[hit[1] for hit in nearest_lip]]
         interpolated = np.einsum('ij,j->i', bary, vertex_distance[ids])
         missed_lip_texels += int(np.sum((distance < .003) & (interpolated >= .003)))
         maximum_distance_error = max(maximum_distance_error, float(np.max(np.abs(interpolated-distance))))
@@ -84,12 +86,13 @@ def wool_opacity(obj, out, size=2048, seed=9521):
                     for octave, (weight, wavelength) in enumerate(zip([.5, .25, .15, .1], [.002, .001, .0007, .0005])))
         opaque = (distance >= .003) | (distance/.003+noise*3.5 >= .35)
         # The sewn collar binding stays intact; only released lips break up.
+        opaque |= ~allowed
         opaque |= (np.abs(p[:, 0]) < .12) & (p[:, 2] > -.18)
         delta = coordinates[:, None, :2]-starts
         t = np.clip(np.sum(delta*deltas, axis=2)/length2, 0, 1)
         nearest = np.linalg.norm(delta-t[:, :, None]*deltas, axis=2).min(1)
         # Branch openings remain sub-3 mm; the main gaping lips are geometry.
-        crack = (nearest < .00065) & (pattern[:, 0] < .48) & (pattern[:, 1] > .84)
+        crack = (nearest < .00065) & (pattern[:, 0] < .48) & (pattern[:, 1] > .84) & allowed
         tile = pixels[lo[1]:hi[1]+1, lo[0]:hi[0]+1, :3]
         before = tile[inside, 0].copy()
         tile[inside] = (opaque & ~crack)[:, None]
@@ -99,9 +102,24 @@ def wool_opacity(obj, out, size=2048, seed=9521):
     image.save()
     image.reload()
     image.pack()
+    density = []
+    for triangle in obj.data.loop_triangles:
+        pattern = np.array([pattern_uv[i].uv[:] for i in triangle.loops])
+        if pattern[:, 0].max() >= 1. or pattern[:, 1].max() >= .06:
+            continue
+        tex = np.array([bake_uv[i].uv[:] for i in triangle.loops])*size
+        edges = np.array([tex[1]-tex[0], tex[2]-tex[0]])
+        if abs(np.linalg.det(edges)) < 1e-12:
+            continue
+        world = positions[np.array(triangle.vertices)]
+        jacobian = np.linalg.solve(edges, np.array([world[1]-world[0], world[2]-world[0]]))
+        density.extend(np.linalg.svd(jacobian, compute_uv=False).tolist())
+    report['hem_texel_m_quantiles'] = np.quantile(density, [0., .5, .95, 1.]).tolist()
     report.update(distance_method='per-texel nearest physical lip, sampled at 0.25 mm; no vertex-distance interpolation',
-                  grain_paths_m=[p.tolist() for p in paths], branch_length_m=.018,
+                  grain_paths_m=[p.tolist() for p in paths], pattern_scale_m=pattern_scale.tolist(),
+                  branch_length_m=.018,
                   crack_width_m=.0013, changed_texels=changed,
+                  retained_crest='physical Lip shrink release labels; intact upper binding is opaque',
                   missed_lip_texels_by_vertex_interpolation=missed_lip_texels,
                   maximum_distance_interpolation_error_m=maximum_distance_error,
                   transparent_texels=int((pixels[:, :, 0] < .5).sum()))

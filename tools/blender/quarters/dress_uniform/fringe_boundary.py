@@ -111,6 +111,8 @@ def spaced_cards(obj, mat, seed, wool, blockers, group_name=None):
             minimum_length = .003 if wool else .002
             extent = float(np.clip(rng.lognormal(np.log(.007 if wool else .004), .4),
                                    minimum_length, .018 if wool else .006))
+            if group_name == 'Long wool fringe' and point.z > -.4:
+                extent = min(extent, .006)
             droop = float(rng.uniform(0, math.radians(35)))
             twist = float(rng.uniform(-.15, .15))
             direction = (outward*math.cos(droop)+Vector((0, 0, -1))*math.sin(droop)).normalized()

@@ -35,6 +35,15 @@ class LipMetrics(unittest.TestCase):
             self.assertTrue(runs, exterior)
             self.assertGreater(max(polyline_metrics(r)['length_px'] for r in runs), 64)
 
+    def test_attachment_occlusion_is_not_a_tear_lip(self):
+        cloth = np.ones((160, 160), bool)
+        attachment = np.zeros_like(cloth)
+        attachment[20:140, 60:80] = True
+        cloth[attachment] = False
+        seed = np.array([[20., 60.], [139., 60.]])
+        self.assertTrue(contour_runs(cloth, [seed], 3.))
+        self.assertEqual(contour_runs(cloth, [seed], 3., occluded=attachment), [])
+
     def test_unrelated_outline_is_not_a_tear(self):
         cloth = np.zeros((200, 200), bool)
         cloth[20:180, 20:180] = True

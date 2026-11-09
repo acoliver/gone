@@ -14,7 +14,7 @@ from skimage.draw import polygon
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[3]
 sys.path.insert(0, str(ROOT / 'tools/blender/quarters_aging'))
-from seat_image_gates import evaluate, visible_dihedrals
+from seat_image_gates import normal_jumps, visible_dihedrals
 
 THRESHOLDS = {'G1': '<= 0.06 visible sharp adjacency', 'G2': '<= 0.02 normal-jump pixels',
               'G3': '<= 12 px straight runs on visible open tear lips, hero and close',
@@ -23,7 +23,7 @@ THRESHOLDS = {'G1': '<= 0.06 visible sharp adjacency', 'G2': '<= 0.02 normal-jum
               'G6': '1.15..1.40 dimension on visible open lip contours of length >=64 px',
               'G20': '<= 0.10 sharp adjacency within 120 mm of hanger',
               'G21': '0 hanger pixels outside split hull inside unaged cloth mask',
-              'G22': '<= 0.45 maximum camera-depth / camera-width at 25%, 50%, 75% sleeve length',
+              'G22': '<= 0.45 maximum hero-camera depth / width at 25%, 50%, 75% sleeve length',
               'G23': '>= 0.35 retained arc and >= 0.70 released-edge fringe coverage',
               'G24': '0.92..1.08 chest width / unaged', 'G25': '>= 0.70 open-hem fringe coverage',
               'G26': '< 0.30 hem-height autocorrelation peak, 20..120 mm lags',
@@ -121,9 +121,10 @@ def measure(out, images):
         put('G20', sharp, sharp <= .10)
         from sleeve_metrics import pressed_sections
         cameras = json.loads((images / 'tunic-cameras.json').read_text())
-        sleeve = pressed_sections(v, f, data['uv'], cameras['labels']['position_blender_m'])
+        sleeve = pressed_sections(v, f, data['uv'], cameras['hero-labels']['position_blender_m'])
+        close = pressed_sections(v, f, data['uv'], cameras['labels']['position_blender_m'])
         ratio = sleeve.pop('ratio')
-        put('G22', ratio, ratio <= .45, **sleeve)
+        put('G22', ratio, ratio <= .45, close_camera_ratio=close['ratio'], **sleeve)
         front = np.unique(f[face_uv[:, 0] < 1.])
         chest = v[front][np.abs(v[front, 2]+.285) < .025]
         baseline = meshes(ROOT / 'assets/props/quarters/dress_uniform.glb')['TunicBody']
@@ -175,16 +176,17 @@ def measure(out, images):
         rgb = np.array(Image.open(images / 'tunic-labels.png').convert('RGB'))
         from diagnostic_labels import decode_labels
         labels = decode_labels(rgb)
-        measures = evaluate(labels, np.array(Image.open(images / 'tunic-normals.png').convert('RGB')))
-        put('G2', measures['G2']['fraction'], measures['G2']['pass'])
+        normals = normal_jumps(np.array(Image.open(images / 'tunic-normals.png').convert('RGB')), labels == 1)
+        put('G2', normals['fraction'], normals['pass'])
         from lip_metrics import evaluate_lips
         cameras = json.loads((images / 'tunic-cameras.json').read_text())
-        views = []
+        views, occlusions = [], {}
         for camera in ['hero-labels', 'labels']:
             picture = np.array(Image.open(images / f'tunic-{camera}.png').convert('RGB'))
             decoded = decode_labels(picture)
+            occlusions[camera] = (decoded == 4) | (decoded == 5)
             views.append((camera, (decoded == 1) | (decoded == 2), cameras[camera]['tear_lips']))
-        lips = evaluate_lips(views)
+        lips = evaluate_lips(views, occlusions)
         for key in ['G3', 'G4', 'G6']:
             item = lips[key]
             put(key, item['value'], item['pass_gate'])

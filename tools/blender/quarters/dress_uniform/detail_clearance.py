@@ -71,6 +71,8 @@ def seat_details(body, bindings):
         if not binding['rigid']:
             continue
         obj = bpy.data.objects[name]
+        if obj.get('surface_seated_board'):
+            continue
         original = np.array(binding['original'])
         destination = np.array([obj.matrix_world @ v.co for v in obj.data.vertices])
         shifts = []

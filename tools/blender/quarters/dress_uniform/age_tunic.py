@@ -226,7 +226,8 @@ def reduce_and_bake(out):
     names = ['TunicBody']+[p['name'] for p in record['fallen']]
     for name in names:
         dense = bpy.data.objects[name]
-        low, report = reduce_game(dense, 10800 if name == 'TunicBody' else 250)
+        target = record.get('reduction_targets', {}).get(name, 10800 if name == 'TunicBody' else 250)
+        low, report = reduce_game(dense, target)
         if not report['pass']:
             raise ValueError(f'{name}: boundary fidelity failed: {report}')
         if name == 'TunicBody':

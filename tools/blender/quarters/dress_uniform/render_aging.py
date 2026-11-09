@@ -15,7 +15,38 @@ from render import aim, render
 from seat_render import diagnostic_material
 
 
-def lip_seeds(sheet, scene, camera):
+def lift_grain_lips(sheet, opacity):
+    positions, faces, uv = sheet['vertices'], sheet['faces'], sheet['uv']
+    groups = {}
+    scale = np.asarray(opacity['pattern_scale_m'])
+    low, high = uv.min(1), uv.max(1)
+    def lift(point):
+        candidates = np.flatnonzero(np.all((low <= point+1e-8) & (high >= point-1e-8), axis=1))
+        for i in candidates:
+            a, b, c = uv[i]
+            matrix = np.array([b-a, c-a]).T
+            if abs(np.linalg.det(matrix)) < 1e-12:
+                continue
+            v, w = np.linalg.solve(matrix, point-a)
+            if min(v, w, 1-v-w) >= -1e-6:
+                return np.array([1-v-w, v, w]) @ positions[faces[i]]
+        return None
+    for index, path in enumerate(opacity['grain_paths_m']):
+        path = np.asarray(path)
+        groups[f'grain-crack-{index+1}'] = {}
+        for sign, side in [(-1, 'left'), (1, 'right')]:
+            segments = []
+            for a, b in zip(path, path[1:]):
+                tangent = (b-a)/np.linalg.norm(b-a)
+                normal = np.array([-tangent[1], tangent[0]])
+                samples = [lift((p+normal*sign*.00065)/scale)
+                           for p in np.linspace(a, b, max(2, int(np.linalg.norm(b-a)/.001)+1))]
+                segments += [[p, q] for p, q in zip(samples, samples[1:]) if p is not None and q is not None]
+            groups[f'grain-crack-{index+1}'][side] = segments
+    return groups
+
+
+def lip_seeds(sheet, scene, camera, opacity):
     vertices, faces, uv = sheet['vertices'], sheet['faces'], sheet['uv']
     edges = {}
     for face, pattern in zip(faces, uv):
@@ -31,7 +62,8 @@ def lip_seeds(sheet, scene, camera):
             continue
         u, v = pattern[:, 0], pattern[:, 1]
         group = None
-        if u.max() < 1. and np.max(np.abs(v-.94)) < .001:
+        if (u.max() < 1. and np.max(np.abs(v-.94)) < .001 and
+                np.all(sheet['released'][list(edge)] >= .5)):
             group = groups['shoulder']['front' if u.mean() < .48 else 'back']
         elif u.min() > 1.09 and u.max() < 1.56 and v.max() < .001:
             group = groups['armhole']['sleeve']
@@ -41,14 +73,23 @@ def lip_seeds(sheet, scene, camera):
         if group is not None:
             pixels = [world_to_camera_view(scene, camera, Vector(p)) for p in points]
             group.append([[(1-p.y)*1422, p.x*1600] for p in pixels])
+    grain = lift_grain_lips(sheet, opacity)
+    for tear, sides in grain.items():
+        groups[tear] = {}
+        for side, segments in sides.items():
+            groups[tear][side] = []
+            for points in segments:
+                pixels = [world_to_camera_view(scene, camera, Vector(p)) for p in points]
+                groups[tear][side].append([[(1-p.y)*1422, p.x*1600] for p in pixels])
     result = {}
     for tear, sides in groups.items():
         result[tear] = {}
         for side, segments in sides.items():
             target = Vector((.23, 0., -.25))
             a = world_to_camera_view(scene, camera, target)
-            b = world_to_camera_view(scene, camera, target+Vector((.008, 0, 0)))
-            radius = max(3., float(np.hypot((b.x-a.x)*1600, (b.y-a.y)*1422)))
+            band = .002 if tear.startswith('grain-crack') else .008
+            b = world_to_camera_view(scene, camera, target+Vector((band, 0, 0)))
+            radius = max(2., float(np.hypot((b.x-a.x)*1600, (b.y-a.y)*1422)))
             result[tear][side] = dict(segments_yx=segments, radius_px=radius)
     return result
 
@@ -56,6 +97,7 @@ def lip_seeds(sheet, scene, camera):
 def diagnostics(asset, out):
     record = {}
     sheet = np.load(asset.parent / 'game-sheet.npz')
+    opacity = json.loads((asset.parent / 'finished.json').read_text())['opacity']
     for mode in ['labels', 'normals', 'faces', 'faces-30', 'faces-120', 'faces-210',
                  'faces-300', 'hero-labels', 'hero-before']:
         bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -133,7 +175,7 @@ def diagnostics(asset, out):
                             position_blender_m=list(camera.location), look_at_blender_m=list(target),
                             projection=data.type, resolution=[1600, 1422])
         if mode in ['labels', 'hero-labels']:
-            record[mode]['tear_lips'] = lip_seeds(sheet, scene, camera)
+            record[mode]['tear_lips'] = lip_seeds(sheet, scene, camera, opacity)
         bpy.ops.render.render(write_still=True)
     (out / 'tunic-cameras.json').write_text(json.dumps(record, indent=2)+'\n')
 

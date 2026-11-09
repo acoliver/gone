@@ -23,9 +23,15 @@ def build(lost_area, out):
     # Loose fibres have a peaked deposit, unlike a uniform foam-residue slab.
     envelope = np.exp(-((xx/.085)**2+(yy/.042)**2)*1.8)
     h = np.maximum(h, 0)*envelope
-    # Concentrate the same lost wool into a soft central deposit.
+    # A Gaussian alone never reaches zero at the rectangular grid border.
+    # A compact, uneven footprint removes the raised rectangular floor film.
+    radius = np.sqrt((xx/.140)**2+(yy/.069)**2)
+    angle = np.arctan2(yy/.069, xx/.140)
+    outline = 1.+.065*np.sin(3*angle+.4)+.035*np.sin(7*angle-1.)
+    fade = np.clip((outline-radius)/.30, 0, 1)
+    h *= fade*fade*(3-2*fade)
     h *= np.exp(-((xx/.070)**2+(yy/.034)**2)*.50)
-    target_volume = lost_area*.0035/.05
+    target_volume = lost_area*.0035/.06
     h *= target_volume/(h.sum()*voxel**2)
     sdf = np.maximum(z[None, None, :]-h[:, :, None], -z[None, None, :])
     sdf[[0, -1], :, :] = .01
@@ -37,7 +43,8 @@ def build(lost_area, out):
         f = f[:, ::-1]
         mesh = trimesh.Trimesh(v, f, process=False)
     np.savez_compressed(out, vertices=v, faces=f)
-    report = dict(lost_area_m2=lost_area, wool_thickness_m=.0035, packing_fraction=.05,
+    report = dict(lost_area_m2=lost_area, wool_thickness_m=.0035, packing_fraction=.06,
+                  footprint='compact irregular elliptical support; zero height outside the deposit',
                   expected_volume_m3=target_volume, measured_volume_m3=float(mesh.volume),
                   ratio=float(mesh.volume/target_volume), height_m=float(np.ptp(v[:, 2])),
                   source='shared residue_sdf.height_field and mesh_sdf; tunic-local deposition envelope')

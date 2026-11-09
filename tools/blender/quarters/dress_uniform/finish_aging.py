@@ -19,7 +19,9 @@ def finish(out):
     record = json.loads(bpy.context.scene['tunic5_record'])
     body = bpy.data.objects['TunicBody']
     body.data.calc_loop_triangles()
+    from tear_boundaries import release_weights
     np.savez_compressed(out / 'game-sheet.npz',
+                        released=release_weights(body),
                         vertices=np.array([body.matrix_world @ v.co for v in body.data.vertices]),
                         faces=np.array([t.vertices[:] for t in body.data.loop_triangles]),
                         uv=np.array([[body.data.uv_layers[0].data[i].uv[:] for i in t.loops]

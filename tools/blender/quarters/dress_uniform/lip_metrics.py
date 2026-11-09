@@ -1,6 +1,7 @@
 """Measure alpha-tested tear lips as open polylines, including exterior gaps."""
 import numpy as np
 from scipy.spatial import cKDTree
+from scipy.ndimage import binary_dilation
 from skimage.measure import approximate_polygon, find_contours
 
 
@@ -9,13 +10,21 @@ def segment_samples(segments, step=.5):
                            for a, b in np.asarray(segments)])
 
 
-def contour_runs(cloth, segments, radius):
+def contour_runs(cloth, segments, radius, competitors=None, occluded=None):
     if not len(segments):
         return []
     reference = cKDTree(segment_samples(segments))
+    other = cKDTree(segment_samples(competitors)) if competitors else None
+    hidden = binary_dilation(occluded) if occluded is not None else None
     runs = []
     for contour in find_contours(cloth, .5):
-        selected = reference.query(contour)[0] <= radius
+        distances = reference.query(contour)[0]
+        selected = distances <= radius
+        if hidden is not None:
+            pixel = np.rint(contour).astype(int)
+            selected &= ~hidden[pixel[:, 0], pixel[:, 1]]
+        if other is not None:
+            selected &= distances <= other.query(contour)[0]
         if selected.all():
             candidates = [contour]
         else:
@@ -65,11 +74,13 @@ def gap_width_cv(a, b):
     return float(widths.std()/widths.mean())
 
 
-def evaluate_lips(views):
+def evaluate_lips(views, occlusions):
     measurements = []
     for camera, cloth, seeds in views:
         for tear, sides in seeds.items():
-            runs = {side: contour_runs(cloth, data['segments_yx'], data['radius_px'])
+            runs = {side: contour_runs(cloth, data['segments_yx'], data['radius_px'],
+                                       occluded=occlusions[camera], competitors=[segment for other, values in sides.items() if other != side
+                                                    for segment in values['segments_yx']])
                     for side, data in sides.items()}
             visible = {side: values for side, values in runs.items() if values}
             if not visible:

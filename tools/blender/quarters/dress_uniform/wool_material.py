@@ -10,10 +10,15 @@ def wool_material(obj, out, opacity=None, color=(.025, .043, .08)):
     mat = obj.data.materials[0]
     nodes, links = mat.node_tree.nodes, mat.node_tree.links
     ao = nodes['AO'].image
-    width, height = ao.size
-    values = np.empty(width*height*4, np.float32)
+    ao_width, ao_height = ao.size
+    values = np.empty(ao_width*ao_height*4, np.float32)
     ao.pixels.foreach_get(values)
-    values = values.reshape(height, width, 4)
+    values = values.reshape(ao_height, ao_width, 4)
+    width, height = opacity.size if opacity is not None else ao.size
+    if (width, height) != (ao_width, ao_height):
+        rows = np.minimum((np.arange(height)*ao_height/height).astype(int), ao_height-1)
+        columns = np.minimum((np.arange(width)*ao_width/width).astype(int), ao_width-1)
+        values = values[rows[:, None], columns[None, :]]
     linear = np.clip(values[:, :, :3]*np.array(color), 0, 1)
     rgba = np.ones_like(values)
     rgba[:, :, :3] = np.where(linear <= .0031308, linear*12.92,

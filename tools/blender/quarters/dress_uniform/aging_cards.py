@@ -20,9 +20,14 @@ def edge_groups(body):
     bm.from_mesh(body.data)
     bm.verts.ensure_lookup_table()
     uv = bm.loops.layers.uv[0]
+    deform = bm.verts.layers.deform.active
+    released = body.vertex_groups['Lip shrink'].index
     categories = {'Hem fringe': set(), 'Seam allowance': set(), 'Long wool fringe': set()}
     for edge in bm.edges:
         if not edge.is_boundary:
+            continue
+        if (min(v.co.z for v in edge.verts) > -.24 and
+                not all(v[deform].get(released, 0.) >= .5 for v in edge.verts)):
             continue
         pattern = np.array([loop[uv].uv[:] for v in edge.verts for loop in v.link_loops])
         seam = (pattern[:, 0].min() > 1.09 and pattern[:, 0].max() < 1.56 and pattern[:, 1].max() < .08)
@@ -146,7 +151,15 @@ def wool_fringe(out):
     normals = np.stack([-gx*.7, -gy*.7, np.ones_like(gx)], axis=2)
     normals /= np.linalg.norm(normals, axis=2, keepdims=True)
     normal[:, :, :3] = normals*.5+.5
-    rgba[:, :, :3] *= np.array([.07, .08, .10])/np.array([.42, .36, .26])
+    # Atlas RGB is sRGB, while the wool recipe is linear reflectance.
+    linear = np.array([.033, .054, .095])
+    srgb = np.where(linear <= .0031308, linear*12.92, 1.055*linear**(1/2.4)-.055)
+    rgba[:, :, :3] *= srgb/np.array([.42, .36, .26])
+    shader = mat.node_tree.nodes['Principled BSDF']
+    shader.inputs['Sheen Weight'].default_value = 0.
+    for node in mat.node_tree.nodes:
+        if node.type == 'NORMAL_MAP':
+            node.inputs['Strength'].default_value = .25
     images = [image_from_array('Tunic wool fibres', rgba, out / 'woolfringe_rgba.png'),
               image_from_array('Tunic wool fibre normals', normal, out / 'woolfringe_normal.png', True)]
     for node in mat.node_tree.nodes:
@@ -212,7 +225,8 @@ def thickness_weights(obj, blockers):
 def finish_cards(out, record):
     body = bpy.data.objects['TunicBody']
     categories = edge_groups(body)
-    opacity, report = wool_opacity(body, out / 'textures/tunic_opacity.png', size=2048, seed=9521)
+    opacity, report = wool_opacity(body, out / 'textures/tunic_opacity.png',
+                                   size=record.get('finish_opacity_size', 2048), seed=9521)
     report['stitch_holes'] = stitch_holes(body, opacity)
     material_maps(body.data.materials[0], (.025, .043, .08), opacity_image=opacity)
     fringe = wool_fringe(out / 'textures')
@@ -280,8 +294,9 @@ def finish_cards(out, record):
             continue
         center = hit+normal*.0005
         angle = rng.uniform(0, math.tau)
-        side = Vector((math.cos(angle), math.sin(angle), 0))*.0007
-        rise = Vector((rng.normal(0, .001), rng.normal(0, .001), rng.uniform(.003, .009)))
+        side = Vector((-math.sin(angle), math.cos(angle), 0))*.0007
+        length = rng.uniform(.003, .008)
+        rise = Vector((math.cos(angle)*length, math.sin(angle)*length, rng.uniform(.0007, .002)))
         quad = [center-side, center+side, center+side+rise, center-side+rise]
         if not contacts.clear(quad):
             continue
