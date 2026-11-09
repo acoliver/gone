@@ -49,6 +49,12 @@ static var _materials: Dictionary = {}
 static var _face_layout: Dictionary = {}
 static var _hinge_mesh: Mesh
 
+const TUNIC_SCENES := {
+	&"as_built": "res://assets/props/quarters/dress_uniform.glb",
+	&"aged": "res://assets/props/quarters/dress_uniform_aged.glb",
+}
+static var _tunic_materials: Dictionary = {}
+
 static func prepare_geometry(root: Node3D) -> void:
 	if _hinge_mesh == null:
 		var scene: PackedScene = load(FACE_ROOT + "hinges.glb")
@@ -59,7 +65,10 @@ static func prepare_geometry(root: Node3D) -> void:
 		(node as MeshInstance3D).mesh = _hinge_mesh
 
 
-static func material(prop: StringName, state: StringName) -> ShaderMaterial:
+static func material(prop: StringName, state: StringName, part: StringName = &"TunicBody", surface: int = 0) -> ShaderMaterial:
+	if prop == &"dress_uniform":
+		assert(STATES.has(state), "unknown quarters finish: %s" % state)
+		return _tunic_material(state, part, surface)
 	assert(prop == &"sofa" or PROPS.has(prop), "unknown quarters prop: %s" % prop)
 	assert(STATES.has(state), "unknown quarters finish: %s" % state)
 	var identity := StringName("%s/%s" % [prop, state])
@@ -106,6 +115,11 @@ static func _sofa_powder_material(state: StringName) -> ShaderMaterial:
 	return result
 
 static func apply(root: Node3D, prop: StringName, state: StringName) -> void:
+	if prop == &"dress_uniform":
+		for node: MeshInstance3D in root.find_children("*", "MeshInstance3D", true, false):
+			for surface: int in range(node.mesh.get_surface_count()):
+				node.set_surface_override_material(surface, material(prop, state, node.name, surface))
+		return
 	if prop == &"sofa":
 		var finish := material(prop, state)
 		for node: Node in root.find_children("*", "MeshInstance3D", true, false):
@@ -158,3 +172,45 @@ static func _set_face(node: MeshInstance3D, prop_from_node: Transform3D) -> void
 	node.set_instance_shader_parameter(&"face_rectangle", Vector4(rectangle[0], rectangle[1], rectangle[2], rectangle[3]))
 	node.set_instance_shader_parameter(&"face_projection", Vector4(axes[0], axes[1], low[0], low[1]))
 	node.set_instance_shader_parameter(&"face_size", Vector4(size[0], size[1], 1.0 if node.name == &"Hinges" else 0.0, 2.0 if node.name == &"Handle" else (1.0 if hardware else (-1.0 if identity == "top" else 0.0))))
+
+
+static func _tunic_material(state: StringName, part: StringName, surface: int) -> ShaderMaterial:
+	if not _tunic_materials.has(state):
+		var scene: PackedScene = load(TUNIC_SCENES[state])
+		var source := scene.instantiate()
+		var parts := {}
+		var shared := {}
+		for node: MeshInstance3D in source.find_children("*", "MeshInstance3D", true, false):
+			var slots: Array[ShaderMaterial] = []
+			for index: int in range(node.mesh.get_surface_count()):
+				var imported := node.mesh.surface_get_material(index) as StandardMaterial3D
+				assert(imported != null, "tunic requires imported PBR surfaces")
+				if not shared.has(imported): shared[imported] = _tunic_finish(imported, state)
+				slots.append(shared[imported])
+			parts[node.name] = slots
+		source.free()
+		_tunic_materials[state] = parts
+	assert(_tunic_materials[state].has(part), "unknown tunic part: %s" % part)
+	assert(surface >= 0 and surface < _tunic_materials[state][part].size(), "unknown tunic surface")
+	return _tunic_materials[state][part][surface]
+
+static func _tunic_finish(imported: StandardMaterial3D, state: StringName) -> ShaderMaterial:
+	var result := ShaderMaterial.new()
+	var alpha := "opaque"
+	if imported.transparency == BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR: alpha = "mask"
+	if imported.transparency in [BaseMaterial3D.TRANSPARENCY_ALPHA, BaseMaterial3D.TRANSPARENCY_ALPHA_DEPTH_PRE_PASS]: alpha = "blend"
+	result.shader = load("res://app/shaders/quarters_tunic_%s.gdshader" % alpha)
+	result.set_shader_parameter(&"base_colour", imported.albedo_color)
+	result.set_shader_parameter(&"albedo_texture", imported.albedo_texture)
+	result.set_shader_parameter(&"has_albedo", imported.albedo_texture != null)
+	result.set_shader_parameter(&"normal_texture", imported.normal_texture)
+	result.set_shader_parameter(&"has_normal", imported.normal_enabled)
+	result.set_shader_parameter(&"normal_scale", imported.normal_scale)
+	result.set_shader_parameter(&"metallic", imported.metallic)
+	result.set_shader_parameter(&"roughness", imported.roughness)
+	result.set_shader_parameter(&"alpha_cutoff", imported.alpha_scissor_threshold)
+	result.set_shader_parameter(&"vertex_colour", imported.vertex_color_use_as_albedo)
+	# Godot omits glTF specularFactor; aged Blender cloth/brass uses .12.
+	var aged_pigment := state == &"aged" and imported.resource_name != "BareSteel" and imported.resource_name != "RibbonFabric"
+	result.set_shader_parameter(&"specular", .12 if aged_pigment else imported.metallic_specular)
+	return result
