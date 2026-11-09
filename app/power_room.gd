@@ -269,9 +269,15 @@ func _build_console(station: ConsoleStation) -> Node3D:
 	keyboard.name = "KeyboardTray"
 	group.add_child(keyboard)
 	if station.health == CONSOLE_HEALTHS["dead_busted"]:
-		keyboard.rotation.x = deg_to_rad(-5.0)
+		keyboard.rotation.x = deg_to_rad(-7.0)
+		for cap_name: String in ["Keycap 03 onset p", "Keycap 24 control number"]:
+			var missing_cap := keyboard.find_child(cap_name, true, false) as MeshInstance3D
+			assert(missing_cap != null, "busted keyboard contains " + cap_name)
+			missing_cap.visible = false
 	var socket := terminal.find_child("ScreenSocket", true, false) as Node3D
 	assert(socket != null, "terminal GLB exports its screen socket")
+	var display_plane := terminal.find_child("DisplayPlane", true, false) as MeshInstance3D
+	assert(display_plane != null, "terminal GLB exports its display plane")
 	if station.health == CONSOLE_HEALTHS["active"]:
 		_screen_material = StandardMaterial3D.new()
 		_screen_material.albedo_color = Color(0.025, 0.035, 0.04)
@@ -283,19 +289,29 @@ func _build_console(station: ConsoleStation) -> Node3D:
 		screen.mesh = _box_mesh(Vector3(0.54, 0.28, 0.008))
 		screen.material_override = _screen_material
 		screen.transform = socket.transform
+		screen.visible = false
 		group.add_child(screen)
+		var terminal_fit := terminal.find_child("Terminal_GeneratedFit", true, false) as MeshInstance3D
+		assert(terminal_fit != null, "terminal GLB exports its fitted housing")
+		terminal_fit.visible = false
+		var plane_transform := display_plane.transform
+		var plane_bounds := display_plane.mesh.get_aabb()
+		var plane_size := Vector2(plane_bounds.size.x, plane_bounds.size.y)
+		var plane_center := plane_transform * plane_bounds.get_center()
+		assert(plane_transform.basis.z.dot(Vector3.BACK) > 0.0, "terminal display plane faces out from its screen")
+		display_plane.visible = false
 		console_display = ShipDisplay.build(_game.writing_memory, _text_cache)
-		console_display.position = socket.position
-		console_display.rotation = socket.rotation
+		console_display.transform = plane_transform
+		console_display.position = plane_center + plane_transform.basis.z * 0.003
 		var text_quad := console_display.get_node("TextSurface") as MeshInstance3D
-		(text_quad.mesh as QuadMesh).size = Vector2(0.54, 0.28)
+		(text_quad.mesh as QuadMesh).size = plane_size
 		group.add_child(console_display)
 	else:
 		var glass := StandardMaterial3D.new()
 		glass.albedo_color = Color(0.018, 0.02, 0.025)
 		glass.roughness = 0.38
 		if station.health == CONSOLE_HEALTHS["dead_busted"]:
-			glass.albedo_color = Color(0.32, 0.28, 0.28)
+			glass.albedo_color = Color.WHITE
 			glass.albedo_texture = _crack_texture()
 		var dead_screen := MeshInstance3D.new()
 		dead_screen.name = "ScreenGlass"
@@ -327,9 +343,9 @@ static func _crack_texture() -> Texture2D:
 			var steps := maxi(absi(finish.x - start.x), absi(finish.y - start.y))
 			for step: int in range(steps + 1):
 				var point := Vector2i(roundi(lerpf(start.x, finish.x, float(step) / steps)), roundi(lerpf(start.y, finish.y, float(step) / steps)))
-				image.set_pixel(point.x, point.y, Color(0.42, 0.47, 0.50, 1.0))
+				image.set_pixel(point.x, point.y, Color(0.92, 0.96, 1.0, 1.0))
 				if point.y + 1 < image.get_height():
-					image.set_pixel(point.x, point.y + 1, Color(0.12, 0.13, 0.14, 1.0))
+					image.set_pixel(point.x, point.y + 1, Color(0.30, 0.38, 0.44, 1.0))
 	_crack_texture_cache = ImageTexture.create_from_image(image)
 	return _crack_texture_cache
 

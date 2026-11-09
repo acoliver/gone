@@ -402,6 +402,19 @@ func test_generated_console_models_and_wall_mounts_are_present() -> void:
 	assert_true((active_station.get_node("ShipDisplay/TextSurface").mesh as QuadMesh).size.is_equal_approx(Vector2(0.54, 0.28)), "live text fits the terminal screen")
 	var busted_station: Node3D = stations[2]
 	assert_true(busted_station.get_node("ScreenGlass").material_override.albedo_texture != null, "busted screen uses procedural crack glass")
+	var active_plane := active_station.get_node("TerminalModel/DisplayPlane") as MeshInstance3D
+	var active_quad := active_station.get_node("ShipDisplay") as Node3D
+	assert_false(active_plane.visible, "active station hides the imported pale display surface")
+	assert_false(active_station.get_node("TerminalModel/Terminal_GeneratedFit").visible, "active station removes the fitted shell that occludes its screen")
+	assert_false(active_station.get_node("ScreenGlass").visible, "active station does not put a second glass pane over its display")
+	assert_float_in_range(active_quad.position.distance_to(active_plane.transform * active_plane.mesh.get_aabb().get_center()), 0.003 - 0.0001, 0.003 + 0.0001, "live display sits 3 mm ahead of the imported screen face")
+	assert_true(active_station.basis.z.dot(Vector3(27.0, 1.65, -5.8) - active_station.position) > 0.0, "imported screen normal points into the room")
+	var busted_tray := busted_station.get_node("KeyboardTray") as Node3D
+	assert_float_in_range(rad_to_deg(absf(busted_tray.rotation.x)), 6.9, 7.1, "busted tray droops seven degrees")
+	assert_false(busted_tray.get_node("Keycap 03 onset p").visible, "busted station is missing an onset keycap")
+	assert_false(busted_tray.get_node("Keycap 24 control number").visible, "busted station is missing a control keycap")
+	var dead_station: Node3D = stations[0]
+	assert_true(dead_station.get_node("ScreenGlass").material_override.albedo_texture == null, "dead station remains dark glass without cracks")
 	var mount := room.get_node("StatusPanelMount") as Node3D
 	assert_vec3_equal(mount.position, Vector3(27, 1.4, PowerRoom.ROOM_END_Z), "panel is centered on north wall with 2.10 m screen center")
 	assert_true(mount.has_node("StatusPanelModel"), "status panel shell loads")
