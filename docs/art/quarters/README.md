@@ -30,9 +30,9 @@ Present.
 Increasing only the room's remembered keys makes the memory warm and brighter
 without changing corridor strips, other rooms, or exposure. Their shared-range
 ceiling keys also give an RGB-weighted light-energy contrast above 1.25:1.
-Matched captures at unchanged exposure measure mean linear luminance of
-0.175012 / 0.085375 for Remembered / Present at the doorway and
-0.120309 / 0.072199 for the wide view. Present is 48.8% and 60.0% of the
+Batch-1 captures at unchanged exposure measure mean linear luminance of
+0.153123 / 0.076009 for Remembered / Present at the doorway and
+0.139794 / 0.086268 for the wide view. Present is 49.6% and 61.7% of the
 corresponding remembered image; these image means include the changed finishes.
 Without the start option, play still begins in stasis. The aft ladder well
 reaches D16, where `D16-C-001-H-AFT` cranks open onto the quarters corridor.
@@ -98,8 +98,29 @@ raster was ready by frame 21, but emission-only ink contributed no visible
 pixels; adding albedo produced native glyphs. This override is local to the
 release; existing labels retain their original material defaults.
 The Present wardrobe's named `FibreDust` mesh and detached hem fragments are
-seated from their visible bounds against the actual shelf top, with 0.5 mm
-clearance. Their former preview offset left the heap 64.984 mm above the shelf.
+seated from their visible bounds against the real bottom panel, with 0.5 mm
+clearance. The original preview offset left the heap 64.984 mm above the old
+stand-in shelf; the accepted wardrobe has a raised floor at room Y 0.144 m.
+
+The black region along the wide view's upper-left storage edge was unlit solid
+furniture. At the unchanged 1536 by 864 camera, rays through pixels (200, 250),
+(225, 350) and (250, 400) hit `Standin_storage_left_near_infill`, on its
+entrance-facing surface at ship Z 2.5. Adjacent black pixels hit the locker's
+side panel and surround. All those normals face ship -Z, away from the room's
+ceiling keys. Shell-only rays also hit the wall or ceiling behind them.
+The apparent cutout therefore required lighting rather than a shell patch.
+Two local diffuse bounce proxies sit at room (0.9, 2.6, 0.05) and
+(7.1, 2.6, 0.05), range 3.2 m, on the quarters receiver mask only. Both follow
+secondary power's existing fade at 0.35 of regular energy each, with no
+point-source specular contribution, ambient change or D14 change. A matched
+left-bounce control changes pixel (200, 250) from RGB (0, 0, 0) to (74, 66, 53),
+and adjacent rusty steel at (100, 250) to (181, 123, 81). The ray regression
+checks opaque front-facing triangles, positive light incidence, range and
+receiver mask; a separate check covers both power handoffs. Image-comparer's
+matched left-edge crop also distinguishes the formerly black region from the
+now visible textured surface. A separate dark region at the wide view's right
+edge traces to the corridor-owned `D16-S-042/STARBOARD/001` wall, outside the
+quarters receiver mask. That entrance-wall shading is unchanged in this pass.
 
 D16's corridor now switches all eight red keys by their circuit metadata,
 not their display names, which Godot renames when siblings share a name. The
@@ -113,14 +134,13 @@ Regenerate the ordinary-input scenario and run its windowed capture lane with:
 
 ```sh
 godot --headless --path . -s tools/build_quarters_scenario.gd
-godot --headless --path . -s harness/run.gd -- scenarios/quarters-demo.json --out tmp/demo2/routes/quarters-demo
+godot --headless --path . -s harness/run.gd -- scenarios/quarters-demo.json --out tmp/demo3/routes/quarters-demo
 ```
 
 The harness writes eight beats and a report under the printed run directory.
-The five presentation captures are copied into `tmp/demo2/` as
+The five presentation captures are copied into `tmp/demo3/` as
 `corridor-door.png`, `remembered-doorway.png`, `remembered-wide.png`,
-`present-doorway.png` and `present-wide.png`. A separate wardrobe-floor contact
-close-up is `tmp/demo2/wardrobe-contact-detail.png`.
+`present-doorway.png` and `present-wide.png`.
 The doorway pair uses the exact camera in `layout.json`; the wider pair uses
 room-local position (0.75, 2.2, 0.10), aimed at (4.0, 1.15, 3.6), with a
 132-degree horizontal field. Frustum tests use the actual 1536 by 864 capture
@@ -134,12 +154,13 @@ walks out and back in. The separate `d16_route_test.gd` follows ordinary input
 from the D14 stasis start through the aft well to this door. Run the full suite
 with `godot --headless --path . -s tests/run_tests.gd`.
 
-This demo pass verified 889 headless tests with zero failures. The seven
+The Batch-1 demo pass verified 897 headless tests with zero failures and exit 0,
+including eight new furniture and storage-light regressions. The seven existing
 windowed routes (`gameplay-full`, `rod-pickup`, `gameplay-keyboard-turn`,
 `hallway`, `power-room`, `connector-route` and `click-route`) all passed their
 machine checks, as did the eight-beat quarters-demo scenario. The focused
-fix checks passed 16 tests, and the 1536 by 864 camera check passed separately.
-These runs used `nohup`; logs and captures are under `tmp/demo2/`. Existing
+quarters run passed 22 tests with zero failures and no script errors.
+These runs used `nohup`; logs and captures are under `tmp/demo3/`. Existing
 ObjectDB, resource and allocator teardown warnings remain in the full-suite
 output after the passing tests.
 
