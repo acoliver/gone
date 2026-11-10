@@ -70,6 +70,15 @@ static func _asset(path: String, prop: StringName, state: StringName) -> Node3D:
 	var asset := scene.instantiate() as Node3D
 	asset.name = String(prop)
 	QuartersProps.apply(asset, prop, state)
+	# The atlas router preserves display roles; the demo owns their optics.
+	if prop in [&"console", &"view_screen", &"bedside"]:
+		for piece: MeshInstance3D in asset.find_children("*", "MeshInstance3D", true, false):
+			for surface: int in range(piece.mesh.get_surface_count()):
+				var slot := StringName(piece.mesh.surface_get_material(surface).resource_name)
+				if slot in [&"Display", &"Glass"]:
+					piece.set_surface_override_material(surface, QuartersProps.interim_material(slot, state))
+			if prop == &"bedside" and piece.name == &"LampLens":
+				piece.material_override = QuartersProps.bedside_lens(state)
 	return asset
 
 static func _bounds(node: Node3D, parent: Transform3D = Transform3D.IDENTITY, visible_only: bool = false) -> AABB:

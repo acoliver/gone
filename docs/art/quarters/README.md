@@ -57,14 +57,18 @@ The old tunic preview turn protruded through the real carcass. Its hook now
 sits on the real 1.82 m rail, with its width aligned along the rail; both the
 hanging garment and fallen fibres fit inside the actual panel interior.
 
-Batch-1 materials are **interim**, pending each prop's texture/material pass.
-`QuartersProps.interim_material` caches resources by imported material slot
-and state, shared across all props and instances. Remembered painted steel
-uses the locker's as-built grey-green, sRGB (97, 118, 115)/255, with separate
-bare and dark steel. Present metal uses the ship's existing world-space
-weathered steel scans, without a prop bake or architectural panel seams.
-Fabric pads, wood, Display and Glass slots have simple matching finishes.
-The pilot lockers, sofa and tunic retain their existing material paths.
+Ten batch-1 props now use the accepted per-prop atlases from the shared
+steel-face library: desk, console, bed, over-bed lockers, bedside, media
+cabinet, dining table, dining chair, desk chair and view screen. Remembered
+selects `as_built`; Present selects `aged`. `QuartersProps.material` routes
+each prop/state to one cached `QuartersSteelLibrary` material shared across
+instances. The wardrobe keeps its cached per-face interim finish in both
+states because its library candidate remains below matched-review parity.
+These routes replace the demo's shared slot steel on the real furniture,
+including its fabric and wood surfaces. Storage stand-ins retain the shared
+slot finish. Display/glass optics, bedside lens emission and console playback
+remain demo-owned; the pilot lockers, sofa and tunic keep their existing
+material paths. See **Batch 1 materials** below for acceptance and atlas details.
 
 The console sequence now uses the imported `Display` mesh under `ScreenPlane`
 in both states. Its emissive finish, text and corruption blocks follow that
@@ -517,6 +521,93 @@ or establish contact from these stills. It also flags possible apparent overlaps
 and conspicuously ragged Present silhouettes. The triangle-clearance and support
 tests pass independently; this integration does not claim a visual-quality pass
 for the imported clothing. The harness's broader visual verdicts remain pending.
+
+### Finished furniture materials (demo11)
+
+Merge `22cb2df` brings in `issue-95-props` at `489a538`. The two conflicts
+were in `app/quarters_props.gd` and this README. The resolution retains the
+props branch's per-prop factory, accepted-library routing and per-face
+wardrobe mapping, alongside the demo's shared-slot helpers and documentation
+for bed soft goods, belongings and clothing. Placement, support offsets,
+state transitions, colliders and the console sequence retain the demo behavior.
+Godot re-import ran under `nohup`; its log is `tmp/demo11/import.log`,
+and `import.exit` records exit 0.
+
+The ten accepted props now use their routed `as_built` / `aged` finishes in
+Remembered / Present. Wardrobe retains its per-face interim material. The demo
+furniture builder separately restores the existing display/glass optics and
+warm Remembered bedside lenses; Present lenses remain dead. Pilot locker,
+sofa and tunic factories, textures and shaders are unchanged.
+
+The final guarded full suite passes **942 headless tests, zero failures** under
+`nohup`: 812 shared tests, 115 from the demo branch, 11 from the props branch
+and four new integration regressions. All 28 focused material tests also pass.
+The four new regressions cover every furniture instance in both states,
+shared cache identities, every pilot material and shader parameter, and
+front/back visibility under reflected transforms.
+The old slot-assignment test now checks active routed finishes in both states,
+while retaining its shared-slot cache and ship-steel checks. The first full
+run found that the cabinet ray helper recognized only the old steel shaders.
+Its exact-resource list now includes the library and wardrobe shaders; its
+opacity and back-face-culling assertions and all 500 cabinet rays are unchanged.
+
+All eight windowed scenarios ran under `nohup`, exited 0 and report machine
+PASS: `quarters-demo`, `gameplay-full`, `rod-pickup`, `gameplay-keyboard-turn`,
+`hallway`, `power-room`, `connector-route` and `click-route`. All twenty-four
+quarters beats pass. The connector route also passes its D14-return and replay
+digest checks. D14 production code and lighting are unchanged. The two existing
+click-route lamp diagnostics retain exactly the demo10 sample pixels and values;
+they still print FAIL independently of the passing machine verdict.
+
+The raw quarters capture is
+`tmp/demo11/routes/quarters-demo/run-1794288367/`. Regenerate the scenario and
+copy a completed run with:
+
+```sh
+godot --headless --path . -s tools/build_quarters_scenario.gd
+nohup godot --headless --path . -s harness/run.gd -- scenarios/quarters-demo.json --out tmp/demo11/routes/quarters-demo > tmp/demo11/route-quarters-demo.log 2>&1 &
+godot --headless --path . -s tools/quarters_presentation.gd -- tmp/demo11/routes/quarters-demo/run-<id> tmp/demo11
+```
+
+All twenty-four chip-free copies are in `tmp/demo11/`. The five standard files
+are `corridor-door.png`, `remembered-doorway.png`, `remembered-wide.png`,
+`present-doorway.png` and `present-wide.png`. Both states also have
+`<state>-desk.png`, `<state>-bedside.png`, `<state>-table.png`,
+`<state>-wardrobe.png` and `<state>-bed.png`, where state is `remembered` or
+`present`. Console, playback, boots and jacket views are retained too. Every
+copy is 1536 by 824 and matches the source RGB pixels below the unchanged
+40-row protocol band. `presentation.log` records that comparison. Harness
+visual verdicts remain pending; this pass does not claim a new art-quality review.
+
+The frozen `perf-smoke` policy measures a stasis-room orbit, not the quarters.
+The separate quarters diagnostic uses the existing wide camera at 1536 by 864,
+vsync disabled, 60 warmup frames and 300 measured frames per state. It does not
+change or replace the frozen policy. `tmp/demo11/quarters_perf.gd` records
+wall-clock frame intervals and texture memory in `quarters-perf.json`.
+On this machine's Apple M4 Max, Metal 4.0 / Forward+ produced:
+
+| State | Mean frame interval | p95 frame interval | Whole-scene renderer texture memory |
+| --- | ---: | ---: | ---: |
+| Remembered | 4.148 ms | 12.159 ms | 3260.161 MiB |
+| Present | 4.672 ms | 12.705 ms | 3260.161 MiB |
+
+Both quarters states remain resident, with only the selected state visible.
+Their 257 unique source and active material textures total **2,492,261,065
+bytes (2376.805 MiB)**. This deduplicated payload includes shared wall/steel
+scans and imported materials retained beneath overrides, while excluding fonts,
+reflection/render targets and driver allocation overhead. The accepted library's
+70 compressed atlases account for **1,096,113,312 bytes (1045.335 MiB)**.
+The renderer counter is **3,418,526,720 bytes (3260.161 MiB)** for the entire
+loaded ship scene, including other resident rooms and rendering resources.
+These are observed stationary-view timings and memory totals, without a
+quarters-specific performance threshold.
+
+Final logs are `tmp/demo11/full-suite-final.log`, `focused-final.log`,
+`routes.log`, `route-<scenario>.log`, `presentation.log` and
+`quarters-perf.log`. The first full run's guard failure remains in
+`full-suite.log`; `full-suite-final.exit` records 0 after the shader adapter
+correction. Existing Godot ObjectDB, resource, allocator and renderer teardown
+warnings remain. No test thresholds or production lighting settings changed.
 
 ## Plan view
 

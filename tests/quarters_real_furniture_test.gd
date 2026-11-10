@@ -97,15 +97,21 @@ func test_interim_slot_materials_are_shared_and_state_specific() -> void:
 		if slot in [&"PaintedSteel", &"BareSteel", &"DarkSteel"]:
 			assert_true(aged is ShaderMaterial and aged.shader == Surfaces.STEEL, "unbaked ship steel shader")
 			assert_false(aged.get_shader_parameter(&"baked_hatch") == true, "no prop bake")
-	var furnishings := QuartersFurnishings.build(&"as_built")
-	for id: String in REPLACED:
-		var asset := furnishings.get_node("Placement_" + id).get_node_or_null(REPLACED[id])
-		if asset == null: continue
-		for mesh: MeshInstance3D in asset.find_children("*", "MeshInstance3D", true, false):
-			for surface: int in range(mesh.mesh.get_surface_count()):
-				var slot := StringName(mesh.mesh.surface_get_material(surface).resource_name)
-				assert_true(mesh.get_surface_override_material(surface) == QuartersProps.interim_material(slot, &"as_built"), "slot assignment " + String(slot))
-	furnishings.free()
+	for state: StringName in QuartersProps.STATES:
+		var furnishings := QuartersFurnishings.build(state)
+		for id: String in REPLACED:
+			var prop := StringName(REPLACED[id])
+			var asset := furnishings.get_node("Placement_%s/%s" % [id, prop])
+			for mesh: MeshInstance3D in asset.find_children("*", "MeshInstance3D", true, false):
+				for surface: int in range(mesh.mesh.get_surface_count()):
+					var slot := StringName(mesh.mesh.surface_get_material(surface).resource_name)
+					var expected: Material = QuartersProps.material(prop, state)
+					if prop == &"bedside" and mesh.name == &"LampLens":
+						expected = QuartersProps.bedside_lens(state)
+					elif slot in [&"Display", &"Glass"]:
+						expected = QuartersProps.interim_material(slot, state)
+					assert_true(mesh.get_active_material(surface) == expected, "routed slot assignment %s/%s/%s" % [state, id, slot])
+		furnishings.free()
 
 func test_soft_bed_parts_rest_on_real_platform() -> void:
 	var furnishings := QuartersFurnishings.build(&"as_built")

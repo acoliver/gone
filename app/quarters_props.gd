@@ -232,9 +232,8 @@ static func _tunic_finish(imported: StandardMaterial3D, state: StringName) -> Sh
 	result.set_shader_parameter(&"pigment_gain", TUNIC_AGED_WOOL_GAIN if aged_pigment and is_zero_approx(imported.metallic) else Vector3.ONE)
 	return result
 
-# Interim batch-1 finishes, until each prop gets its own material pass. Slot
-# resources are shared across every prop and instance; Present uses the ship's
-# existing world-space steel scans rather than a per-prop UV bake.
+# Shared slot finishes remain for storage stand-ins and demo display/glass
+# optics. Rigid batch-1 surfaces use the routed per-prop materials above.
 static var _interim_materials: Dictionary = {}
 
 static func interim_material(slot: StringName, state: StringName) -> Material:
