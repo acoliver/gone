@@ -1,0 +1,863 @@
+{
+  "images": {
+    "broad-00": {
+      "delta_e": {
+        "value": 2.581234275720634,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_mean_delta_e": {
+        "value": 0.36248747875150533,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_std_delta_e": {
+        "value": 4.157852260192429,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_mean_delta_e": {
+        "value": 4.153959530901687,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_std_delta_e": {
+        "value": 4.920596447616816,
+        "threshold": 8,
+        "passed": true
+      },
+      "planar_light_gradient": {
+        "value": 0.00012251075665841026,
+        "threshold": 0.06,
+        "passed": true
+      },
+      "secondary_autocorrelation": {
+        "value": 0.3556252865083285,
+        "threshold": 0.5,
+        "passed": true
+      },
+      "no_green": {
+        "value": 0.0,
+        "threshold": 0.005,
+        "passed": true
+      },
+      "edge_broad_ratio": {
+        "value": 36.60688668313454,
+        "threshold": 1.8,
+        "passed": true
+      },
+      "pixels_per_metre": {
+        "value": 768.0,
+        "threshold": 600,
+        "passed": true
+      },
+      "broad_rust": {
+        "value": 0.005529514578533407,
+        "threshold": 0.2,
+        "passed": true
+      }
+    },
+    "broad-01": {
+      "delta_e": {
+        "value": 2.657852350328178,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_mean_delta_e": {
+        "value": 0.7833901215330955,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_std_delta_e": {
+        "value": 5.668379806101908,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_mean_delta_e": {
+        "value": 4.319264658629872,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_std_delta_e": {
+        "value": 1.97777945923152,
+        "threshold": 8,
+        "passed": true
+      },
+      "planar_light_gradient": {
+        "value": 0.00016467987490507914,
+        "threshold": 0.06,
+        "passed": true
+      },
+      "secondary_autocorrelation": {
+        "value": 0.27854654854735156,
+        "threshold": 0.5,
+        "passed": true
+      },
+      "no_green": {
+        "value": 0.0,
+        "threshold": 0.005,
+        "passed": true
+      },
+      "edge_broad_ratio": {
+        "value": 4611.27124035172,
+        "threshold": 1.8,
+        "passed": true
+      },
+      "pixels_per_metre": {
+        "value": 768.0,
+        "threshold": 600,
+        "passed": true
+      },
+      "broad_rust": {
+        "value": 1.0592939805619555e-05,
+        "threshold": 0.2,
+        "passed": true
+      }
+    },
+    "broad-02": {
+      "delta_e": {
+        "value": 2.0011078364011463,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_mean_delta_e": {
+        "value": 0.5485466823485938,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_std_delta_e": {
+        "value": 5.100209868950059,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_mean_delta_e": {
+        "value": 2.6802626044144513,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_std_delta_e": {
+        "value": 2.7213512681739105,
+        "threshold": 8,
+        "passed": true
+      },
+      "planar_light_gradient": {
+        "value": 0.0007024360688762582,
+        "threshold": 0.06,
+        "passed": true
+      },
+      "secondary_autocorrelation": {
+        "value": 0.2813580851491277,
+        "threshold": 0.5,
+        "passed": true
+      },
+      "no_green": {
+        "value": 0.0,
+        "threshold": 0.005,
+        "passed": true
+      },
+      "edge_broad_ratio": {
+        "value": 28669.333333333332,
+        "threshold": 1.8,
+        "passed": true
+      },
+      "pixels_per_metre": {
+        "value": 640.0,
+        "threshold": 600,
+        "passed": true
+      },
+      "broad_rust": {
+        "value": 7.62939453125e-06,
+        "threshold": 0.2,
+        "passed": true
+      }
+    },
+    "broad-03": {
+      "delta_e": {
+        "value": 2.501451707900559,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_mean_delta_e": {
+        "value": 0.6351295164844587,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_std_delta_e": {
+        "value": 4.350068363313531,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_mean_delta_e": {
+        "value": 3.4596958729453124,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_std_delta_e": {
+        "value": 3.24472596084606,
+        "threshold": 8,
+        "passed": true
+      },
+      "planar_light_gradient": {
+        "value": 0.00046358790842296793,
+        "threshold": 0.06,
+        "passed": true
+      },
+      "secondary_autocorrelation": {
+        "value": 0.17924740274990503,
+        "threshold": 0.5,
+        "passed": true
+      },
+      "no_green": {
+        "value": 0.0,
+        "threshold": 0.005,
+        "passed": true
+      },
+      "edge_broad_ratio": {
+        "value": 7.900351748396441,
+        "threshold": 1.8,
+        "passed": true
+      },
+      "pixels_per_metre": {
+        "value": 640.0,
+        "threshold": 600,
+        "passed": true
+      },
+      "broad_rust": {
+        "value": 0.010242462158203125,
+        "threshold": 0.2,
+        "passed": true
+      }
+    },
+    "broad-04": {
+      "delta_e": {
+        "value": 0.9453742494648738,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_mean_delta_e": {
+        "value": 1.8733330790615386,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_std_delta_e": {
+        "value": 2.0826398905655092,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_mean_delta_e": {
+        "value": 3.8343861993610453,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_std_delta_e": {
+        "value": 4.809496981855505,
+        "threshold": 8,
+        "passed": true
+      },
+      "planar_light_gradient": {
+        "value": 0.003367878510903669,
+        "threshold": 0.06,
+        "passed": true
+      },
+      "secondary_autocorrelation": {
+        "value": 0.30914540097059034,
+        "threshold": 0.5,
+        "passed": true
+      },
+      "no_green": {
+        "value": 0.0,
+        "threshold": 0.005,
+        "passed": true
+      },
+      "edge_broad_ratio": {
+        "value": 13.384620748847523,
+        "threshold": 1.8,
+        "passed": true
+      },
+      "pixels_per_metre": {
+        "value": 768.0,
+        "threshold": 600,
+        "passed": true
+      },
+      "broad_rust": {
+        "value": 0.020290776197664256,
+        "threshold": 0.2,
+        "passed": true
+      }
+    },
+    "broad-05": {
+      "delta_e": {
+        "value": 2.3043195308939843,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_mean_delta_e": {
+        "value": 0.5798920984802264,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_std_delta_e": {
+        "value": 3.4636562768075474,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_mean_delta_e": {
+        "value": 3.0321367329069537,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_std_delta_e": {
+        "value": 3.2171531081107863,
+        "threshold": 8,
+        "passed": true
+      },
+      "planar_light_gradient": {
+        "value": 0.0003081957891114061,
+        "threshold": 0.06,
+        "passed": true
+      },
+      "secondary_autocorrelation": {
+        "value": 0.0,
+        "threshold": 0.5,
+        "passed": true
+      },
+      "no_green": {
+        "value": 0.0,
+        "threshold": 0.005,
+        "passed": true
+      },
+      "edge_broad_ratio": {
+        "value": 162.53581701968707,
+        "threshold": 1.8,
+        "passed": true
+      },
+      "pixels_per_metre": {
+        "value": 768.0,
+        "threshold": 600,
+        "passed": true
+      },
+      "broad_rust": {
+        "value": 0.001001032811631048,
+        "threshold": 0.2,
+        "passed": true
+      }
+    },
+    "strip-01": {
+      "delta_e": {
+        "value": 4.546560123576243,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_mean_delta_e": {
+        "value": 1.626865508827742,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_std_delta_e": {
+        "value": 7.753660315683561,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_mean_delta_e": {
+        "value": 2.521447004416972,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_std_delta_e": {
+        "value": 3.8403188063733746,
+        "threshold": 8,
+        "passed": true
+      },
+      "planar_light_gradient": {
+        "value": 0.01030935615590539,
+        "threshold": 0.06,
+        "passed": true
+      },
+      "secondary_autocorrelation": {
+        "value": 0.3875249531581946,
+        "threshold": 0.5,
+        "passed": true
+      },
+      "no_green": {
+        "value": 0.0,
+        "threshold": 0.005,
+        "passed": true
+      },
+      "edge_broad_ratio": {
+        "value": 7.416215695250946,
+        "threshold": 1.8,
+        "passed": true
+      },
+      "pixels_per_metre": {
+        "value": 768.0,
+        "threshold": 600,
+        "passed": true
+      },
+      "broad_rust": {
+        "value": 0.05021520803443329,
+        "threshold": 0.2,
+        "passed": true
+      }
+    },
+    "strip-02": {
+      "delta_e": {
+        "value": 4.127935879336898,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_mean_delta_e": {
+        "value": 0.5270431408442946,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_std_delta_e": {
+        "value": 7.168965981850909,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_mean_delta_e": {
+        "value": 2.708665533355826,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_std_delta_e": {
+        "value": 0.32294521657640973,
+        "threshold": 8,
+        "passed": true
+      },
+      "planar_light_gradient": {
+        "value": 0.009457864372139475,
+        "threshold": 0.06,
+        "passed": true
+      },
+      "secondary_autocorrelation": {
+        "value": 0.315328444667342,
+        "threshold": 0.5,
+        "passed": true
+      },
+      "no_green": {
+        "value": 0.0,
+        "threshold": 0.005,
+        "passed": true
+      },
+      "edge_broad_ratio": {
+        "value": 3.573243965926263,
+        "threshold": 1.8,
+        "passed": true
+      },
+      "pixels_per_metre": {
+        "value": 768.0,
+        "threshold": 600,
+        "passed": true
+      },
+      "broad_rust": {
+        "value": 0.14946720340989816,
+        "threshold": 0.2,
+        "passed": true
+      }
+    },
+    "strip-03": {
+      "delta_e": {
+        "value": 3.9400886528516508,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_mean_delta_e": {
+        "value": 2.7507994582472524,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_std_delta_e": {
+        "value": 7.116099329020361,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_mean_delta_e": {
+        "value": 4.509876664250727,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_std_delta_e": {
+        "value": 2.9921285708350456,
+        "threshold": 8,
+        "passed": true
+      },
+      "planar_light_gradient": {
+        "value": 0.0018629257393365515,
+        "threshold": 0.06,
+        "passed": true
+      },
+      "secondary_autocorrelation": {
+        "value": 0.3325946161567098,
+        "threshold": 0.5,
+        "passed": true
+      },
+      "no_green": {
+        "value": 0.0,
+        "threshold": 0.005,
+        "passed": true
+      },
+      "edge_broad_ratio": {
+        "value": 3.5675714295625323,
+        "threshold": 1.8,
+        "passed": true
+      },
+      "pixels_per_metre": {
+        "value": 768.0,
+        "threshold": 600,
+        "passed": true
+      },
+      "broad_rust": {
+        "value": 0.09223656942451777,
+        "threshold": 0.2,
+        "passed": true
+      }
+    },
+    "strip-04": {
+      "delta_e": {
+        "value": 5.025129602017801,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_mean_delta_e": {
+        "value": 3.2335904971620004,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_std_delta_e": {
+        "value": 2.9057479812039833,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_mean_delta_e": {
+        "value": 5.622494470718187,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_std_delta_e": {
+        "value": 1.1011545686864723,
+        "threshold": 8,
+        "passed": true
+      },
+      "planar_light_gradient": {
+        "value": 0.00037653594749645445,
+        "threshold": 0.06,
+        "passed": true
+      },
+      "secondary_autocorrelation": {
+        "value": 0.4681774875726772,
+        "threshold": 0.5,
+        "passed": true
+      },
+      "no_green": {
+        "value": 0.0,
+        "threshold": 0.005,
+        "passed": true
+      },
+      "edge_broad_ratio": {
+        "value": 2.5746949745497414,
+        "threshold": 1.8,
+        "passed": true
+      },
+      "pixels_per_metre": {
+        "value": 768.0,
+        "threshold": 600,
+        "passed": true
+      },
+      "broad_rust": {
+        "value": 0.1817823032599258,
+        "threshold": 0.2,
+        "passed": true
+      }
+    },
+    "top-00": {
+      "delta_e": {
+        "value": 2.787760897632013,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_mean_delta_e": {
+        "value": 0.7657632777798576,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_std_delta_e": {
+        "value": 4.804347053044997,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_mean_delta_e": {
+        "value": 4.406711514024715,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_std_delta_e": {
+        "value": 2.5778114174087388,
+        "threshold": 8,
+        "passed": true
+      },
+      "planar_light_gradient": {
+        "value": 0.00017232417321873185,
+        "threshold": 0.06,
+        "passed": true
+      },
+      "secondary_autocorrelation": {
+        "value": 0.3621803633367076,
+        "threshold": 0.5,
+        "passed": true
+      },
+      "no_green": {
+        "value": 0.0,
+        "threshold": 0.005,
+        "passed": true
+      },
+      "edge_broad_ratio": {
+        "value": 3310139.9739583335,
+        "threshold": 1.8,
+        "passed": true
+      },
+      "pixels_per_metre": {
+        "value": 640.0,
+        "threshold": 600,
+        "passed": true
+      },
+      "broad_rust": {
+        "value": 0.0,
+        "threshold": 0.2,
+        "passed": true
+      }
+    },
+    "top-01": {
+      "delta_e": {
+        "value": 3.0220080136024787,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_mean_delta_e": {
+        "value": 0.6184121131764482,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_std_delta_e": {
+        "value": 4.164929182823556,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_mean_delta_e": {
+        "value": 4.4325487281783085,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_std_delta_e": {
+        "value": 1.3933662814770227,
+        "threshold": 8,
+        "passed": true
+      },
+      "planar_light_gradient": {
+        "value": 0.000992967396059646,
+        "threshold": 0.06,
+        "passed": true
+      },
+      "secondary_autocorrelation": {
+        "value": 0.050264027258980985,
+        "threshold": 0.5,
+        "passed": true
+      },
+      "no_green": {
+        "value": 0.0,
+        "threshold": 0.005,
+        "passed": true
+      },
+      "edge_broad_ratio": {
+        "value": 3398479.6832320495,
+        "threshold": 1.8,
+        "passed": true
+      },
+      "pixels_per_metre": {
+        "value": 768.0,
+        "threshold": 600,
+        "passed": true
+      },
+      "broad_rust": {
+        "value": 0.0,
+        "threshold": 0.2,
+        "passed": true
+      }
+    },
+    "top-02": {
+      "delta_e": {
+        "value": 2.5538596909611178,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_mean_delta_e": {
+        "value": 1.0257231493644576,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_std_delta_e": {
+        "value": 4.706699737278919,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_mean_delta_e": {
+        "value": 1.2237915713704768,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_std_delta_e": {
+        "value": 1.1785031438749276,
+        "threshold": 8,
+        "passed": true
+      },
+      "planar_light_gradient": {
+        "value": 0.001168738962373925,
+        "threshold": 0.06,
+        "passed": true
+      },
+      "secondary_autocorrelation": {
+        "value": 0.22896315152996533,
+        "threshold": 0.5,
+        "passed": true
+      },
+      "no_green": {
+        "value": 0.0,
+        "threshold": 0.005,
+        "passed": true
+      },
+      "edge_broad_ratio": {
+        "value": 3814202.3277644846,
+        "threshold": 1.8,
+        "passed": true
+      },
+      "pixels_per_metre": {
+        "value": 768.0,
+        "threshold": 600,
+        "passed": true
+      },
+      "broad_rust": {
+        "value": 0.0,
+        "threshold": 0.2,
+        "passed": true
+      }
+    },
+    "top-03": {
+      "delta_e": {
+        "value": 2.641985351234844,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_mean_delta_e": {
+        "value": 0.7706830472815336,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_std_delta_e": {
+        "value": 3.633843432669815,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_mean_delta_e": {
+        "value": 1.397433565575668,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_std_delta_e": {
+        "value": 0.9128029232931627,
+        "threshold": 8,
+        "passed": true
+      },
+      "planar_light_gradient": {
+        "value": 0.0010895499702752727,
+        "threshold": 0.06,
+        "passed": true
+      },
+      "secondary_autocorrelation": {
+        "value": 0.0,
+        "threshold": 0.5,
+        "passed": true
+      },
+      "no_green": {
+        "value": 0.0,
+        "threshold": 0.005,
+        "passed": true
+      },
+      "edge_broad_ratio": {
+        "value": 8283.09514695249,
+        "threshold": 1.8,
+        "passed": true
+      },
+      "pixels_per_metre": {
+        "value": 768.0,
+        "threshold": 600,
+        "passed": true
+      },
+      "broad_rust": {
+        "value": 7.93178663493952e-06,
+        "threshold": 0.2,
+        "passed": true
+      }
+    }
+  },
+  "rejected": {
+    "strip-00": {
+      "delta_e": {
+        "value": 5.051275247936403,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_mean_delta_e": {
+        "value": 1.773727983146402,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_std_delta_e": {
+        "value": 5.440353949402092,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_mean_delta_e": {
+        "value": 4.346430669402749,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_std_delta_e": {
+        "value": 1.5415483954416012,
+        "threshold": 8,
+        "passed": true
+      },
+      "planar_light_gradient": {
+        "value": 0.012592647565539457,
+        "threshold": 0.06,
+        "passed": true
+      },
+      "secondary_autocorrelation": {
+        "value": 0.7537714597336996,
+        "threshold": 0.5,
+        "passed": false
+      },
+      "no_green": {
+        "value": 0.0,
+        "threshold": 0.005,
+        "passed": true
+      },
+      "edge_broad_ratio": {
+        "value": 2.447649576735757,
+        "threshold": 1.8,
+        "passed": true
+      },
+      "pixels_per_metre": {
+        "value": 768.0,
+        "threshold": 600,
+        "passed": true
+      },
+      "broad_rust": {
+        "value": 0.09982464530527659,
+        "threshold": 0.2,
+        "passed": true
+      }
+    }
+  },
+  "passed": 154,
+  "failed": 0
+}

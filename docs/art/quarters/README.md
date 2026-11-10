@@ -1393,7 +1393,15 @@ Captures: [remembered doorway](sheets/bed_soft/remembered-doorway.png), [remembe
 
 ## Batch 1 materials
 
-### Wardrobe
+### Shared steel-face library decision
+
+The per-prop generation approach at `0c99445` used 13 generated face images for the wardrobe. That run took about 2.5 hours and scored 6/10 aged against the finished locker's 7/10 in the same matched review. All batch-1 rigid furniture uses the same grey-green painted warship steel. We therefore generate one reusable library of broad panels, narrow strips and dusty upward faces, then map those images automatically onto each prop's fitted UVs. This keeps pigment and wear treatment consistent without paying the generation cost again for each prop. The pilot locker, sofa and tunic retain their existing finishes.
+
+`art-source/quarters/steel_library/` contains 14 usable FLUX.2-klein-4B edits: six broad panels, four strips and four tops, with multiple aspect ratios and seeds. All 154 selected-image gates pass. A fifteenth candidate, `strip-00`, failed the unchanged autocorrelation limit (0.754 against 0.5) and is excluded from mapping; its pixels, provenance and failed gate remain recorded under `rejected`. The library retains the same concept-now and rusted-hatch crops, edit inputs, prompts, raw images and calibration lineage. Clean pigment comes from the pilot's as-built paint. Hardware reuses the wardrobe's measured corrosion image; fabric reuses a faded copy of the approved sofa weave without modifying that source. Image gates retain the wardrobe's colour, lighting-gradient, autocorrelation, edge/broad rust, no-green and source-density limits, with an added 20% maximum broad-field rust fraction.
+
+`tools/quarters_aging/map_library.py` reads any fitted `.blend` through Blender, joins adjacent coplanar polygons for mapping, classifies faces by physical area, aspect and world orientation, and chooses images with seeded variation. It rasterizes those complete images into the original UVs. Relief and roughness come from the same `paint_fields()` pigment classification. The source blend and GLB remain unchanged. Display and glass slots are excluded from steel mapping. Per-prop numeric gates and matched neutral-light reviews determine acceptance independently of the library gates.
+
+### Wardrobe per-prop pass at 0c99445
 
 **The wardrobe material pass is committed but not visually accepted.** Its numeric gates pass; its aged finish remains below the finished locker in the matched review. No other batch-1 prop received a material pass.
 
