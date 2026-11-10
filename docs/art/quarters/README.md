@@ -313,6 +313,14 @@ unchanged. ObjectDB/resource/allocator and renderer teardown warnings remain;
 harness visual verdicts are pending, and no visual-quality review was performed
 in this integration pass.
 
+### Small belongings and dry bed decay (demo8)
+
+The demo branch includes batch 3 from `issue-95-small-items` and only the
+`c09d3ea` and `82bcbf3` bed refinements from `issue-95-props`. The unfinished
+furniture-material branch is not merged. Godot reimport ran under `nohup`;
+its log is `tmp/demo8/import.log`. This retains the existing batch-1 furniture
+finishes and the improved aged bed's authored dry-decay materials.
+
 ## Plan view
 
 Regenerate `plan.png` and its check report from the repository root with `/Volumes/XS1000/tools/mlximg-venv/bin/python tools/art/quarters_plan.py --layout docs/art/quarters/layout.json --out docs/art/quarters/plan.png --report docs/art/quarters/plan-checks.json`. The checks cover room bounds, intersecting floor footprints, player reachability and route clearance, entrance-wall storage, and the clear doorway opening. The command exits with a nonzero status when a check fails.
