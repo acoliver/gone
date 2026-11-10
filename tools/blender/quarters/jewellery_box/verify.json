@@ -1,0 +1,276 @@
+{
+  "item": "jewellery_box",
+  "states": {
+    "remembered": {
+      "bounds_gltf_m": [
+        [
+          -0.07500000298023224,
+          0.0,
+          -0.05174999916926026
+        ],
+        [
+          0.07500000298023224,
+          0.05000000074505806,
+          0.05175000231247395
+        ]
+      ],
+      "max_bounds_delta_m": 1.7462298274040222e-09,
+      "bounds_pass": true,
+      "design_size_pass": true,
+      "base_origin_pass": true,
+      "base_center_pass": true,
+      "root_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "triangles": 820,
+      "triangle_limit": 1500,
+      "topology": {
+        "Lid": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 236,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "Hinge_1": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 44,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "Hinge_0": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 44,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "ClaspLever": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 108,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "Clasp": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 108,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "BrassRim": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 92,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "Body": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 188,
+          "missed_probes": 0,
+          "pass": true
+        }
+      },
+      "degenerate_faces": 0,
+      "uv": {
+        "overlapping_triangle_pairs": 0,
+        "max_overlap_area_uv2": 0.0,
+        "out_of_unit_square_coordinates": 0,
+        "linear_texel_density_p05_p50_p95": [
+          2.718618660459181,
+          2.8478140771695974,
+          2.9227731798958536
+        ],
+        "density_p95_p05_ratio": 1.0750949452403857,
+        "pass": true
+      },
+      "byte_identical_reexport": true,
+      "required_parts_pass": true,
+      "pass": true
+    },
+    "aged": {
+      "bounds_gltf_m": [
+        [
+          -0.07500000298023224,
+          0.0,
+          -0.05174999916926026
+        ],
+        [
+          0.07500000298023224,
+          0.05000000074505806,
+          0.05175000231247395
+        ]
+      ],
+      "max_bounds_delta_m": 1.7462298274040222e-09,
+      "bounds_pass": true,
+      "design_size_pass": true,
+      "base_origin_pass": true,
+      "base_center_pass": true,
+      "root_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "triangles": 820,
+      "triangle_limit": 1500,
+      "topology": {
+        "Lid": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 236,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "Hinge_1": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 44,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "Hinge_0": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 44,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "ClaspLever": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 108,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "Clasp": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 108,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "BrassRim": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 92,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "Body": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 188,
+          "missed_probes": 0,
+          "pass": true
+        }
+      },
+      "degenerate_faces": 0,
+      "uv": {
+        "overlapping_triangle_pairs": 0,
+        "max_overlap_area_uv2": 0.0,
+        "out_of_unit_square_coordinates": 0,
+        "linear_texel_density_p05_p50_p95": [
+          2.718618660459181,
+          2.8478140771695974,
+          2.9227731798958536
+        ],
+        "density_p95_p05_ratio": 1.0750949452403857,
+        "pass": true
+      },
+      "byte_identical_reexport": true,
+      "required_parts_pass": true,
+      "pass": true
+    }
+  },
+  "design_size_whd_m": [
+    0.15,
+    0.05,
+    0.1
+  ],
+  "rigid_geometry_identical": true,
+  "axis_contract": "Blender +Z up/-Y front, export_yup=True -> glTF +Y up/+Z front",
+  "dust_visibility": {
+    "mean_absolute_linear_rgb": 0.03534605283785326,
+    "pixels_above_0_01_fraction": 0.2794731987847222,
+    "minimum_mean": 0.001,
+    "minimum_changed_fraction": 0.01,
+    "pass": true
+  },
+  "pass": true
+}

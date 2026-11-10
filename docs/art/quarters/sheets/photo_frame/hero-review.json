@@ -1,0 +1,12 @@
+{
+  "images_seen": 3,
+  "id_photo_frame": "bedside_photo_frame_hero",
+  "hero_rating": 9,
+  "approved": true,
+  "visible_description": "A small, rectangular standing photo frame with a matte grey-green metal finish. The frame is positioned at an angle on a plain light grey surface. Inside the frame, under a clear protective cover, is a photograph of an adult man and woman standing close together. The man is on the left wearing a dark grey t-shirt, and the woman is on the right wearing an olive-green t-shirt. A rear easel stand is visible, supporting the frame in an upright position. The object appears to be a manufactured product with clean edges and no visible digital screen elements.",
+  "defects": [
+    "Slight reflection on the clear cover over the top right corner of the photograph, though the image remains readable."
+  ],
+  "frame_ready_as_reference": true,
+  "id": "photo_frame"
+}

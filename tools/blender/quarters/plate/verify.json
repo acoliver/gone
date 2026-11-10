@@ -1,0 +1,168 @@
+{
+  "item": "plate",
+  "states": {
+    "remembered": {
+      "bounds_gltf_m": [
+        [
+          -0.125,
+          0.0,
+          -0.125
+        ],
+        [
+          0.125,
+          0.026000000536441803,
+          0.125
+        ]
+      ],
+      "max_bounds_delta_m": 0.0,
+      "bounds_pass": true,
+      "design_size_pass": true,
+      "base_origin_pass": true,
+      "base_center_pass": true,
+      "root_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "triangles": 1440,
+      "triangle_limit": 1500,
+      "topology": {
+        "Dish": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 131,
+          "missed_probes": 0,
+          "pass": true
+        }
+      },
+      "degenerate_faces": 0,
+      "uv": {
+        "overlapping_triangle_pairs": 0,
+        "max_overlap_area_uv2": 0.0,
+        "out_of_unit_square_coordinates": 0,
+        "linear_texel_density_p05_p50_p95": [
+          2.150666161949073,
+          2.1848948646169988,
+          2.221062346336721
+        ],
+        "density_p95_p05_ratio": 1.032732269486144,
+        "pass": true
+      },
+      "byte_identical_reexport": true,
+      "required_parts_pass": true,
+      "pass": true
+    },
+    "aged": {
+      "bounds_gltf_m": [
+        [
+          -0.125,
+          0.0,
+          -0.125
+        ],
+        [
+          0.125,
+          0.026000000536441803,
+          0.125
+        ]
+      ],
+      "max_bounds_delta_m": 0.0,
+      "bounds_pass": true,
+      "design_size_pass": true,
+      "base_origin_pass": true,
+      "base_center_pass": true,
+      "root_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "triangles": 1440,
+      "triangle_limit": 1500,
+      "topology": {
+        "Dish": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 131,
+          "missed_probes": 0,
+          "pass": true
+        }
+      },
+      "degenerate_faces": 0,
+      "uv": {
+        "overlapping_triangle_pairs": 0,
+        "max_overlap_area_uv2": 0.0,
+        "out_of_unit_square_coordinates": 0,
+        "linear_texel_density_p05_p50_p95": [
+          2.150666161949073,
+          2.1848948646169988,
+          2.221062346336721
+        ],
+        "density_p95_p05_ratio": 1.032732269486144,
+        "pass": true
+      },
+      "byte_identical_reexport": true,
+      "required_parts_pass": true,
+      "pass": true
+    }
+  },
+  "design_size_whd_m": [
+    0.25,
+    0.026,
+    0.25
+  ],
+  "rigid_geometry_identical": true,
+  "axis_contract": "Blender +Z up/-Y front, export_yup=True -> glTF +Y up/+Z front",
+  "dust_visibility": {
+    "mean_absolute_linear_rgb": 0.01789077003868442,
+    "pixels_above_0_01_fraction": 0.2300906711154514,
+    "minimum_mean": 0.001,
+    "minimum_changed_fraction": 0.01,
+    "pass": true
+  },
+  "pass": true
+}

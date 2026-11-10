@@ -1,0 +1,41 @@
+{
+  "id": "data_tablet",
+  "bounds_gltf": [
+    [
+      -0.09050000458955765,
+      0.0,
+      -0.12999999523162842
+    ],
+    [
+      0.09050000458955765,
+      0.017500000074505806,
+      0.12999999523162842
+    ]
+  ],
+  "triangle_limit": 1500,
+  "required_nodes": [
+    "Shell",
+    "ScreenBezel",
+    "DarkScreen",
+    "CornerBumper_0",
+    "Screw_0",
+    "ScrewSlot_0",
+    "CornerBumper_1",
+    "Screw_1",
+    "ScrewSlot_1",
+    "CornerBumper_2",
+    "Screw_2",
+    "ScrewSlot_2",
+    "CornerBumper_3",
+    "Screw_3",
+    "ScrewSlot_3",
+    "PowerButton"
+  ],
+  "axis_contract": "Blender +Z up/-Y front, export_yup=True -> glTF +Y up/+Z front",
+  "age_years": 1000,
+  "base_origin": [
+    0,
+    0,
+    0
+  ]
+}

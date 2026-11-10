@@ -1,0 +1,438 @@
+{
+  "item": "data_tablet",
+  "states": {
+    "remembered": {
+      "bounds_gltf_m": [
+        [
+          -0.09050000458955765,
+          0.0,
+          -0.12999999523162842
+        ],
+        [
+          0.09050000261049718,
+          0.017500000743893906,
+          0.12999999523162842
+        ]
+      ],
+      "max_bounds_delta_m": 1.979060471057892e-09,
+      "bounds_pass": true,
+      "design_size_pass": true,
+      "base_origin_pass": true,
+      "base_center_pass": true,
+      "root_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "triangles": 1296,
+      "triangle_limit": 1500,
+      "topology": {
+        "Shell": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 150,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "ScrewSlot_3": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 12,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "ScrewSlot_2": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 12,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "ScrewSlot_1": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 12,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "ScrewSlot_0": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 12,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "Screw_3": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 44,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "Screw_2": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 44,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "Screw_1": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 44,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "Screw_0": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 44,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "ScreenBezel": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 188,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "PowerButton": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 44,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "DarkScreen": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 108,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "CornerBumper_3": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 108,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "CornerBumper_2": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 108,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "CornerBumper_1": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 108,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "CornerBumper_0": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 108,
+          "missed_probes": 0,
+          "pass": true
+        }
+      },
+      "degenerate_faces": 0,
+      "uv": {
+        "overlapping_triangle_pairs": 0,
+        "max_overlap_area_uv2": 0.0,
+        "out_of_unit_square_coordinates": 0,
+        "linear_texel_density_p05_p50_p95": [
+          1.7165310096337623,
+          1.7876790967856957,
+          1.8618066724923714
+        ],
+        "density_p95_p05_ratio": 1.084633287743287,
+        "pass": true
+      },
+      "byte_identical_reexport": true,
+      "required_parts_pass": true,
+      "pass": true
+    },
+    "aged": {
+      "bounds_gltf_m": [
+        [
+          -0.09050000458955765,
+          0.0,
+          -0.12999999523162842
+        ],
+        [
+          0.09050000261049718,
+          0.017500000743893906,
+          0.12999999523162842
+        ]
+      ],
+      "max_bounds_delta_m": 1.979060471057892e-09,
+      "bounds_pass": true,
+      "design_size_pass": true,
+      "base_origin_pass": true,
+      "base_center_pass": true,
+      "root_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "triangles": 1296,
+      "triangle_limit": 1500,
+      "topology": {
+        "Shell": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 150,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "ScrewSlot_3": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 12,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "ScrewSlot_2": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 12,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "ScrewSlot_1": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 12,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "ScrewSlot_0": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 12,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "Screw_3": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 44,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "Screw_2": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 44,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "Screw_1": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 44,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "Screw_0": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 44,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "ScreenBezel": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 188,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "PowerButton": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 44,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "DarkScreen": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 108,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "CornerBumper_3": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 108,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "CornerBumper_2": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 108,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "CornerBumper_1": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 108,
+          "missed_probes": 0,
+          "pass": true
+        },
+        "CornerBumper_0": {
+          "closed": true,
+          "winding": true,
+          "positive_shells": true,
+          "shells": 1,
+          "inward_probes": 108,
+          "missed_probes": 0,
+          "pass": true
+        }
+      },
+      "degenerate_faces": 0,
+      "uv": {
+        "overlapping_triangle_pairs": 0,
+        "max_overlap_area_uv2": 0.0,
+        "out_of_unit_square_coordinates": 0,
+        "linear_texel_density_p05_p50_p95": [
+          1.7165310096337623,
+          1.7876790967856957,
+          1.8618066724923714
+        ],
+        "density_p95_p05_ratio": 1.084633287743287,
+        "pass": true
+      },
+      "byte_identical_reexport": true,
+      "required_parts_pass": true,
+      "pass": true
+    }
+  },
+  "design_size_whd_m": [
+    0.18,
+    0.018,
+    0.26
+  ],
+  "rigid_geometry_identical": true,
+  "axis_contract": "Blender +Z up/-Y front, export_yup=True -> glTF +Y up/+Z front",
+  "dust_visibility": {
+    "mean_absolute_linear_rgb": 0.0037171717429621415,
+    "pixels_above_0_01_fraction": 0.07934739854600695,
+    "minimum_mean": 0.001,
+    "minimum_changed_fraction": 0.01,
+    "pass": true
+  },
+  "pass": true
+}
