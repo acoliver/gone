@@ -69,8 +69,14 @@
         0.10999999940395355
       ]
     ],
-    "source": "art-source/ceiling-props/fixture/round6/fixture.blend",
+    "source": "art-source/ceiling-props/fixture/aging/fixture.blend",
     "seed": 720,
-    "slot_count": 14
+    "slot_count": 14,
+    "weathering": {
+      "age_years": 1000,
+      "accepted_art_round": 7,
+      "record": "art-source/ceiling-props/fixture/aging/downward.json",
+      "gate": "assets/props/ceiling/fixture-weather-gates.json"
+    }
   }
 }

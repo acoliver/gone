@@ -2,6 +2,41 @@ extends SimTestCase
 
 const ASSET := "res://assets/props/ceiling/fixture.glb"
 
+func test_weather_masks_occlude_batched_surroundings_without_removing_fixtures() -> void:
+	var root := Node3D.new()
+	var fixture := MeshInstance3D.new()
+	var surface := MeshInstance3D.new()
+	var bolts := MultiMeshInstance3D.new()
+	var original := StandardMaterial3D.new()
+	bolts.material_override = original
+	for piece: GeometryInstance3D in [fixture, surface, bolts]: root.add_child(piece)
+	var capture := preload("res://tools/capture_fixture_weather.gd")
+	var surrounding: Dictionary = capture.surrounding_geometry(root, {fixture: StandardMaterial3D.new()})
+	assert_int_equal(surrounding.size(), 2, "both regular and batched surroundings must be black occluders in masks")
+	assert_true(surrounding.has(surface) and surrounding.has(bolts), "lit batched bolts cannot contaminate feature masks")
+	assert_true(surrounding.get(bolts) == original, "beauty captures restore the authored batched finish")
+	assert_true(not surrounding.has(fixture), "fixture diagnostic materials stay selected")
+	root.free()
+
+func test_runtime_calibration_preserves_authored_metal_weather_maps() -> void:
+	var parent := Node3D.new()
+	CeilingFixture.mount(parent, 3.2, 1, CeilingFixture.glass_material(1.0))
+	var checked := 0
+	for piece: MeshInstance3D in parent.find_children("*", "MeshInstance3D", true, false):
+		var authored := piece.mesh.surface_get_material(0) as StandardMaterial3D
+		if authored.resource_name == CeilingFixture.GLASS: continue
+		var active := piece.get_active_material(0) as StandardMaterial3D
+		assert_true(active.albedo_texture == authored.albedo_texture, "runtime keeps authored chips, dust and soot")
+		assert_true(active.roughness_texture == authored.roughness_texture, "runtime keeps chalk and dust roughness")
+		assert_true(active.metallic_texture == authored.metallic_texture, "runtime keeps paint/oxide metallic variation")
+		assert_true(active.albedo_texture != null and active.roughness_texture != null, "weather maps remain textured")
+		assert_int_equal(active.specular_mode, BaseMaterial3D.SPECULAR_DISABLED, "old matte painted metal must not form a shiny rim")
+		if authored.resource_name == "DarkArmouredSteel":
+			assert_true(active.albedo_color == Color(0.35, 0.35, 0.35), "aging does not restore bright louvre faces")
+		checked += 1
+	assert_int_equal(checked, 3, "all three metal finishes are checked")
+	parent.free()
+
 func test_runtime_glass_preserves_texture_variation_without_a_second_warm_tint() -> void:
 	var material := CeilingFixture.glass_material(1.0)
 	var image := material.emission_texture.get_image()
