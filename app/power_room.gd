@@ -293,7 +293,6 @@ func _build_console(station: ConsoleStation, keyboard_missing: bool) -> Node3D:
 		_screen_material.metallic_specular = 0.0
 		_screen_material.emission_enabled = true
 		_screen_material.emission = Lighting.REGULAR_WHITE * 0.10
-		_screen_material.emission_energy_multiplier = 0.05
 		var screen := MeshInstance3D.new()
 		screen.name = "ScreenGlass"
 		screen.material_override = _screen_material
@@ -563,6 +562,13 @@ func _apply_console_state(state: int) -> void:
 		return
 	_console_state = state
 	console_display.set_messages(HEADING_ID, _state_message_id(state))
+	var emission: float = 0.0
+	match state:
+		Game.ConsoleState.INACTIVE:
+			emission = 0.30
+		Game.ConsoleState.ACTIVE:
+			emission = 0.45
+	_screen_material.emission = Lighting.REGULAR_WHITE * emission
 
 ## The door leaf's animated offset from its authored pose, in world
 ## space: the deterministic projection this module's leaf renders.

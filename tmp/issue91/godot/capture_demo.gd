@@ -53,6 +53,8 @@ func _run() -> void:
 	var console_eye := active.global_transform * Vector3(0, 1.65, 1.10)
 	var display_target: Vector3 = active.get_node("ShipDisplay").global_position
 	assert(game.console_state == GameModule.ConsoleState.INACTIVE, "inactive captures happen before generator activation")
+	ship.power_room.console_display.perception.perceive = 1.0
+	ship.power_room.console_display._apply_perception()
 	print("CONSOLE_CAPTURE_STATE active-console-inactive ", game.console_state)
 	await _shot("active-console-inactive", console_eye, display_target, 60.0, "TextSurface")
 	ship.power_room.console_display.perception.perceive = 0.0
@@ -132,8 +134,9 @@ func _shot(name: String, eye: Vector3, target: Vector3, fov: float, intended: St
 	var error := image.save_png(path)
 	assert(error == OK, "PNG save succeeds for " + name)
 	if name.begins_with("active-console"):
+		print("CONSOLE_MEASUREMENT ", name)
 		var checked: bool = load("res://tests/console_screen_capture.gd").check_background(image, camera, ship.power_room.get_node("ConsoleStation1"))
-		assert(checked, "captured active console has dark glass behind its text")
+		assert(checked, "captured console text contrasts with its lit glass, distinct from the body")
 	capture_names.append(path)
 	print("CAPTURE ", name, " camera_transform=", camera.global_transform)
 

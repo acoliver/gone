@@ -423,7 +423,7 @@ func test_generated_console_models_and_wall_mounts_are_present() -> void:
 	var expected := active_plane.transform * active_plane.mesh.get_aabb().get_center() + active_plane.basis.z * 0.003
 	assert_float_in_range(display.position.distance_to(expected), 0, 0.0001, "live display sits 3 mm ahead of DisplayPlane")
 	var live_glass := active_station.get_node("ScreenGlass") as MeshInstance3D
-	assert_true(live_glass.visible, "opaque dark glass backs the transparent live text")
+	assert_true(live_glass.visible, "opaque lit glass backs the transparent live text")
 	assert_true(display.position.z > live_glass.position.z + (live_glass.mesh as BoxMesh).size.z * 0.5, "text stays ahead of the glass front")
 	var eye := active_station.transform * Vector3(0, 1.65, 1.10)
 	var first_hit := _test_first_triangle_hit(room, eye, text_frame.origin)
@@ -725,6 +725,23 @@ func _check_status_board_attention() -> void:
 	for _tick: int in range(DisplayPerception.DECAY):
 		board.tick_attention(away, Vector3(0.0, 0.0, -1.0))
 	assert_float_in_range(board.perception.perceive, 0.0, 0.0, "ignoring the board returns it to native text")
+	room.free()
+
+func test_working_screen_emission_tracks_console_state_and_dead_glass_stays_unlit() -> void:
+	var game := _awake_game()
+	var room := PowerRoom.build(game)
+	var glass := room.get_node("ConsoleStation1/ScreenGlass") as MeshInstance3D
+	var material := glass.material_override as StandardMaterial3D
+	assert_true(material.emission_enabled, "working glass emits light behind the text")
+	assert_true(material.emission.is_equal_approx(Lighting.REGULAR_WHITE * 0.30), "inactive screen retains the original pale emission")
+	assert_float_in_range(material.emission_energy_multiplier, 1.0, 1.0, "screen emission uses the original energy multiplier")
+	assert_float_in_range(material.metallic_specular, 0.0, 0.0, "working glass has no specular hotspot")
+	game.press_console()
+	room.process_frame(DT)
+	assert_true(material.emission.is_equal_approx(Lighting.REGULAR_WHITE * 0.45), "running screen retains the original brighter emission")
+	for index in [0, 2, 3, 4, 5]:
+		var dead := room.get_node("ConsoleStation%d/ScreenGlass" % index) as MeshInstance3D
+		assert_false((dead.material_override as StandardMaterial3D).emission_enabled, "dead station glass stays unlit")
 	room.free()
 
 func test_all_console_screen_samples_have_opaque_glass_before_the_body() -> void:
