@@ -1,0 +1,71 @@
+{
+  "reference_paint_median_srgb_255": [
+    117.0,
+    125.0,
+    80.0
+  ],
+  "reference_selected_pixels": 15327,
+  "reference_mask": "reference-paint-mask.png",
+  "reference_selection": "Connected lit yellow-green pixels: G 102..174, G-R >=2, R/G >0.80, B/G 0.50..0.80, image interior; connected patches >=12 pixels. Excludes dark screen, brown background, deep shadows and neutral highlights.",
+  "resolved_paint_median_srgb_255": [
+    116.99999999999999,
+    124.99999999999997,
+    79.99999999999999
+  ],
+  "edge_chip_coverage": 0.0899999193693609,
+  "steel_fraction_of_chips": 0.05002090425849609,
+  "rust_fraction_of_chips": 0.5999820820641462,
+  "undercoat_fraction_of_chips": 0.3499970136773577,
+  "rust_median_srgb_255": [
+    110.07531569234855,
+    58.043738058789806,
+    36.0303782907457
+  ],
+  "steel_median_srgb_255": [
+    104.40709586911836,
+    103.40364663489582,
+    87.34845888733476
+  ],
+  "streaks": [
+    {
+      "seam_x_m": -0.36,
+      "start_z_m": 0.684,
+      "length_m": 0.23,
+      "nominal_width_mm": 8.0,
+      "maximum_blend": 0.13
+    },
+    {
+      "seam_x_m": -0.19,
+      "start_z_m": 0.553,
+      "length_m": 0.17,
+      "nominal_width_mm": 5.0,
+      "maximum_blend": 0.15
+    },
+    {
+      "seam_x_m": 0.025,
+      "start_z_m": 0.683,
+      "length_m": 0.31,
+      "nominal_width_mm": 6.4,
+      "maximum_blend": 0.1
+    },
+    {
+      "seam_x_m": 0.225,
+      "start_z_m": 0.553,
+      "length_m": 0.21,
+      "nominal_width_mm": 9.0,
+      "maximum_blend": 0.11
+    },
+    {
+      "seam_x_m": 0.375,
+      "start_z_m": 0.688,
+      "length_m": 0.26,
+      "nominal_width_mm": 5.6,
+      "maximum_blend": 0.14
+    }
+  ],
+  "streak_affected_texels": 7410,
+  "resolution": [
+    2048,
+    2048
+  ]
+}

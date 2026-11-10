@@ -1,0 +1,182 @@
+{
+  "raw_meshes": [
+    {
+      "local_path": "/Volumes/XS1000/acoliver/projects/gone/branch-3/tmp/issue91/console2/meshes/console-s510-rgba-410.glb",
+      "bytes": 17759792,
+      "sha256": "1de64802af9a22d2d2d2f30c63a30c29f1275e5e04794e1f173cca9f2d9d82e6",
+      "repository_path": "art-source/terminal/generated/console2/meshes/console-s510-rgba-410.glb"
+    },
+    {
+      "local_path": "/Volumes/XS1000/acoliver/projects/gone/branch-3/tmp/issue91/console2/kb3/shape-410.glb",
+      "bytes": 6670824,
+      "sha256": "529c2e4e2b6d33a6df088dc39edcc31b787e768aa0fb9d7c5455b701f5d0b27f",
+      "repository_path": "art-source/terminal/generated/console2/kb3/shape-410.glb"
+    }
+  ],
+  "source_delivery": "tmp/issue91/console2/final",
+  "coordinate_system": "glTF Y-up, roomward +Z, wall back Z=0, floor Y=0",
+  "modifications": {
+    "console": "48,000 body triangles after weighted Blender decimation; original standing body 68,810. Deck and lip protected against collapse. Display adds two triangles.",
+    "keyboard": "Byte-identical to source delivery. Apply keyboard-placement.json to KeyboardBase.",
+    "license_files": "LICENSE and Notice unchanged."
+  },
+  "models": {
+    "flux": {
+      "repository": "black-forest-labs/FLUX.2-klein-4B",
+      "revision": "e7b7dc27f91deacad38e78976d1f2b499d76a294",
+      "quantization_bits": 4,
+      "steps": 8,
+      "guidance": 1.0,
+      "image_seeds": {
+        "console": 510,
+        "keyboard": 531
+      }
+    },
+    "shape": {
+      "repository": "tencent/Hunyuan3D-2mv",
+      "revision": "3a761b539b29fe4ff64714813aa9560fd66f5de0",
+      "subfolder": "hunyuan3d-dit-v2-mv",
+      "checkpoint_sha256": "d36f5881bcdc56726b73e517cd444c13c60732431622da7268145355c8d38e9c",
+      "steps": 30,
+      "guidance": 5.0,
+      "octree_resolution": 384,
+      "dtype": "float16",
+      "seeds": {
+        "console": 410,
+        "keyboard": 410
+      }
+    },
+    "paint": {
+      "repository": "tencent/Hunyuan3D-2",
+      "revision": "9cd649ba6913f7a852e3286bad86bfa9a2d83dcf",
+      "subfolders": [
+        "hunyuan3d-paint-v2-0-turbo",
+        "hunyuan3d-delight-v2-0"
+      ],
+      "keyboard_seed": 531,
+      "historical_console_seed": null,
+      "console_final_finish": "Deterministic object-space recipe retained in generated/console2/final/textures.py. Historical paint atlas is not used."
+    }
+  },
+  "revision_evidence": "Revisions read from local Hugging Face refs and download metadata for the installed model files. Original generation logs did not embed revision IDs.",
+  "tools": {
+    "blender": "4.5.11 LTS",
+    "godot": "4.7.2",
+    "shape_port": "/Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d (local MLX port, no git revision available)"
+  },
+  "metadata_note": "Selected FLUX metadata JSON files contain null. Settings are retained in generation scripts and run records.",
+  "shipped": [
+    {
+      "path": "assets/props/terminal/console.glb",
+      "bytes": 8441956,
+      "sha256": "3245d72650b77d80104954690950dc18a42ceddd6cc82592cf5a637ec0542707"
+    },
+    {
+      "path": "assets/props/terminal/keyboard.glb",
+      "bytes": 5428480,
+      "sha256": "481ce2f97a115cdd6ad420b2ed9eda1ed3e51ec39b112eecfc8e1ceabea0554d"
+    },
+    {
+      "path": "assets/props/terminal/keyboard-placement.json",
+      "bytes": 1270,
+      "sha256": "57fc3b5bf7fda184fb8bcb9a1d1014fb781d7278c75748a6d753da30f891fb06"
+    }
+  ],
+  "inputs": [
+    {
+      "path": "art-source/terminal/generated/console2/assembly3/console-with-keyboard.blend",
+      "bytes": 16914876,
+      "sha256": "9d943da9007c21393a249a2a219b45bcfb92ad7b0af631213e4372d0faeb4448"
+    },
+    {
+      "path": "art-source/terminal/generated/console2/assembly3/keyboard.glb",
+      "bytes": 5428480,
+      "sha256": "481ce2f97a115cdd6ad420b2ed9eda1ed3e51ec39b112eecfc8e1ceabea0554d"
+    },
+    {
+      "path": "art-source/terminal/generated/console2/assembly3/source-vertices.npy",
+      "bytes": 819008,
+      "sha256": "dfa3be74f27f88f8d80fdec359ad9e029fc6c4621dc51e4aef0c48baabac0ab3"
+    },
+    {
+      "path": "art-source/terminal/generated/console2/final/console.glb",
+      "bytes": 10027900,
+      "sha256": "79e07b1b5d01d8b604e138b318a940b3c0880f16e258ae4430d368b1c2582236"
+    },
+    {
+      "path": "art-source/terminal/generated/console2/inputs/console-s510-rgba.png",
+      "bytes": 778196,
+      "sha256": "78de56efdadfbd53232338a45a92bc0229102204e40edac04f346c9904581aa9"
+    },
+    {
+      "path": "art-source/terminal/generated/console2/inputs/ref-console-crop.png",
+      "bytes": 297660,
+      "sha256": "d4e7be21043f075c83288485ac04151be13bd4b53ecb013d385401d4b9f99ef1"
+    },
+    {
+      "path": "art-source/terminal/generated/console2/kb3/flux-531.png",
+      "bytes": 317245,
+      "sha256": "f5aa174ad3c80e17c547a02831f78bca1920bb2f3a7dae56a74262feaef28779"
+    },
+    {
+      "path": "art-source/terminal/generated/console2/kb3/prompt.txt",
+      "bytes": 409,
+      "sha256": "6b941bbf80557f38658c13dfdc00064df1a7fecee57086da926469738d345089"
+    },
+    {
+      "path": "art-source/terminal/generated/console2/kb3/reference-rgba.png",
+      "bytes": 350975,
+      "sha256": "5ef0fa0cac4b6b35d53fcf5f6c98320dd218d29101701dce9e1da42aa780a307"
+    },
+    {
+      "path": "art-source/terminal/generated/console2/kb3/reference.png",
+      "bytes": 300092,
+      "sha256": "b7b1fc0bea4ae27c925cec07ddc21520be03f4a483e1aa1336ae065647bb18e6"
+    },
+    {
+      "path": "art-source/terminal/generated/console2/kb3/shape-410.glb",
+      "bytes": 6670824,
+      "sha256": "529c2e4e2b6d33a6df088dc39edcc31b787e768aa0fb9d7c5455b701f5d0b27f"
+    },
+    {
+      "path": "art-source/terminal/generated/console2/meshes/console-s510-rgba-410.glb",
+      "bytes": 17759792,
+      "sha256": "1de64802af9a22d2d2d2f30c63a30c29f1275e5e04794e1f173cca9f2d9d82e6"
+    },
+    {
+      "path": "art-source/terminal/generated/console2/outputs/console-s510.png",
+      "bytes": 687177,
+      "sha256": "530e2ef8dca975f0ae34c970368d06d4ae477b3bdcd6f729418012590b23808e"
+    },
+    {
+      "path": "art-source/terminal/generated/console2/prompts/console-front.txt",
+      "bytes": 1128,
+      "sha256": "2473265615d84156ca1fab65881f7f717965c7f98cd702e08dd0ec7d03326a29"
+    },
+    {
+      "path": "art-source/terminal/generated/console2/prompts/keyboard-front.txt",
+      "bytes": 769,
+      "sha256": "e0d1f6781886c40e2ba5460b38e4ff1d9ab1640f95d3ad2638a0c90642cc31f0"
+    },
+    {
+      "path": "art-source/terminal/generated/for-andrew-v8/03-west.png",
+      "bytes": 1140465,
+      "sha256": "8621a6cfc4239b545abbd16ec9979edc9dcfa8c9cd309136aacd01f726830e0e"
+    },
+    {
+      "path": "art-source/terminal/generated/kbmodel/render-front.png",
+      "bytes": 2158340,
+      "sha256": "778e1a3be66a3902820346339a72846b413640083adc637504643727f3d5f8f7"
+    },
+    {
+      "path": "art-source/terminal/generated/kbmodel/render-top.png",
+      "bytes": 2102304,
+      "sha256": "4885a8876d645f6aad111094070590d18d1b497710a5b19db96af67b1dc497be"
+    },
+    {
+      "path": "art-source/terminal/generated/room9/ref-console-design.png",
+      "bytes": 157955,
+      "sha256": "e56788c13f945e63d646a521c096a62e880c1ddfc1ec4d5d8122394e18738a1a"
+    }
+  ]
+}
