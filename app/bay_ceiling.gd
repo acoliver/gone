@@ -44,9 +44,6 @@ static func service_bounds() -> Array[AABB]:
 	for pose: Transform3D in services.pipes + services.tees: boxes.append(pose * pipe_bounds)
 	for pose: Transform3D in services.clips: boxes.append(pose * AABB(-Vector3.ONE / 2, Vector3.ONE))
 	for row: Dictionary in services.detectors: boxes.append(row.bounds)
-	for fixture: ShipLayout.EmergencyFixtureSpec in ship.bay().emergency_fixtures(ship.bay().template()):
-		boxes.append(fixture.frame * AABB(-Lighting.LENS_SIZE / 2, Lighting.LENS_SIZE))
-		boxes.append(fixture.frame * AABB(Vector3(-0.0225, 0, -0.0225), Vector3(0.045, 3.2 - fixture.frame.origin.y, 0.045)))
 	var fixture_bounds: Array[AABB] = []
 	var fixture_asset := CeilingFixture.ASSET.instantiate() as Node3D
 	_collect_fixture_bounds(fixture_asset, Transform3D.IDENTITY, fixture_bounds)

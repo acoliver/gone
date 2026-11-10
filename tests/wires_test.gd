@@ -33,7 +33,10 @@ func test_hazards_bind_to_tip_positions_without_changing_three_effects() -> void
 	assert_int_equal(groups.size(),3,"exactly three existing spark groups")
 	for index in range(3):
 		assert_vec3_equal(groups[index].position,EXPECTED[index],"actual emitter is on real tip")
-		assert_int_equal(groups[index].get_child_count(),2,"one light and one spray remain")
+		assert_int_equal(groups[index].get_child_count(),3,"one light, one spray and their visible spark arc")
+		assert_int_equal(groups[index].find_children("*","OmniLight3D",true,false).size(),1,"one physical spark light")
+		assert_true(groups[index].get_node("SparkSpray") is GPUParticles3D,"existing spark spray remains")
+		assert_true(groups[index].get_node("SparkArc") is MeshInstance3D,"visible arc seats the light at the installed copper tip")
 	assert_float_equal(hazards._next_burst_in,1.5,"initial timing unchanged")
 	hazards.free()
 

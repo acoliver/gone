@@ -13,8 +13,8 @@ func test_authored_layout_is_dense_flat_and_limits_damage_to_one_cluster() -> vo
 		var pose: Transform3D = row.pose
 		assert_float_in_range(pose.origin.y, 2.98999, 2.99001, "all panel flanges share the captured mechanical seat plane")
 		assert_true(pose.basis.is_equal_approx(Basis.IDENTITY), "grid panels stay aligned to the captured frame")
-	assert_int_equal(first.size(), 111, "111 perforated panels plus eight fitted service cassettes fill 119 cells")
-	assert_int_equal(counts.get(&"intact", 0), 109, "more than 90 percent of all 120 cells retain normal intact panels")
+	assert_int_equal(first.size(), 113, "113 perforated panels plus six beam cassettes fill 119 cells")
+	assert_int_equal(counts.get(&"intact", 0), 111, "more than 90 percent of all 120 cells retain normal intact panels")
 	assert_int_equal(damaged.size(), 2, "only two adjacent panels carry localized mechanical damage")
 	assert_true(damaged.has(Vector2i(4, 5)) and damaged.has(Vector2i(3, 4)), "damage stays beside the one missing tile")
 	assert_true(not occupied.has(Vector2i(4, 4)), "one failed panel exposes a localized frame opening")
@@ -35,7 +35,7 @@ func _check_formed_source_cache_bounds_and_real_bearing_faces() -> void:
 	var samples := 0
 	var max_gap := 0.0
 	var cache_size := BayCeiling.SeatMesh.cache_size()
-	assert_int_equal(cache_size,5,"three source-clipped span meshes plus the two retained source ends")
+	assert_int_equal(cache_size,3,"one full span mesh plus the two retained source ends; wall lamps need no ceiling cuts")
 	for child: MultiMeshInstance3D in batches.get_children():
 		var batch := child.multimesh
 		var bounds := batch.mesh.get_aabb()
@@ -54,8 +54,8 @@ func _check_formed_source_cache_bounds_and_real_bearing_faces() -> void:
 					max_gap=maxf(max_gap,absf(underside+0.0025))
 					samples += 1
 			count += 1
-	assert_int_equal(count,130,"all healthy production cross spans use the shared formed source")
-	assert_int_equal(samples,1170,"nine physical top-skin rays for each of 130 installed spans")
+	assert_int_equal(count,129,"all healthy production cross spans use the shared formed source without the old lamp-stem splits")
+	assert_int_equal(samples,1161,"nine physical top-skin rays for each of 129 installed spans")
 	var again := BayCeiling.build()
 	assert_int_equal(BayCeiling.SeatMesh.cache_size(),cache_size,"building another ceiling adds no mesh variants")
 	again.free()
@@ -139,8 +139,8 @@ func _check_actual_panel_bodies_clear_services_and_light_cells_have_fitted_infil
 			for obstacle: AABB in obstacles:
 				assert_true(not box.grow(-0.00001).intersects(obstacle), "panel body clears a measured fixture/service housing: %s vs %s" % [box, obstacle])
 	var trims := root.get_node("ServiceCassettes")
-	assert_int_equal(trims.get_child_count(), 8, "six beam apertures and two emergency-light stem cells have fitted cassettes")
-	assert_true(trims.has_node("Cassette_9_5") and trims.has_node("Cassette_9_6"), "the stem no longer deletes two whole cells")
+	assert_int_equal(trims.get_child_count(), 6, "only the six real beam apertures need fitted cassettes")
+	assert_false(trims.has_node("Cassette_9_5") or trims.has_node("Cassette_9_6"), "wall-mounted lamps leave no phantom ceiling-stem holes")
 	for trim: MultiMeshInstance3D in trims.get_children():
 		var sheet_area := 0.0
 		for index in range(trim.multimesh.instance_count):
@@ -148,10 +148,7 @@ func _check_actual_panel_bodies_clear_services_and_light_cells_have_fitted_infil
 			if box.size.y < 0.003: sheet_area += box.size.x * box.size.z
 			for obstacle: AABB in obstacles:
 				assert_true(not box.grow(-0.000001).intersects(obstacle), "cassette solid clears measured service housing: %s %s vs %s" % [trim.name, box, obstacle])
-		if String(trim.name).begins_with("Cassette_9_"):
-			assert_true(sheet_area > 0.67, "stem cassette retains its small service cutout")
-		else:
-			assert_float_in_range(sheet_area, 0.4343, 0.4346, "beam cassette fills the cell except the 1.106 by 0.226 m aperture")
+		assert_float_in_range(sheet_area, 0.4343, 0.4346, "beam cassette fills the cell except the 1.106 by 0.226 m aperture")
 	assert_int_equal(BayCeiling.layout().size() + trims.get_child_count(), 119, "only the explicitly failed cell is empty")
 	_beam_visibility_and_cassette_bearings(root, fixtures)
 	fixtures.free()
@@ -196,7 +193,7 @@ func _beam_visibility_and_cassette_bearings(root: Node3D, fixtures: Node3D) -> v
 				if sheet.grow(0.000001).has_point(point) and absf(sheet.position.y - point.y) < 0.000001: filled = true
 			assert_true(seated and filled, "service sheet bears on the shared frame at all four edges")
 			contacts += 1
-	assert_int_equal(contacts,32,"all eight service cassettes retain four healthy edge bearings")
+	assert_int_equal(contacts,24,"all six service cassettes retain four healthy edge bearings")
 	print("CEILING_BEAM_VISIBILITY fixtures=%d unobstructed_whole_footprints=%d aperture_m=1.106x0.226 clearance_per_side_m=0.003 cassette_edge_contacts=%d" % [visible, visible, contacts])
 
 func _check_actual_ledger_surfaces_have_one_owner_at_every_junction() -> void:
@@ -292,7 +289,7 @@ func _check_actual_panel_undersides_rest_on_continuous_ledge_faces() -> void:
 			assert_true(nearest < 0.00001, "exported flange ray rests on actual ledge face at %s, gap=%s" % [point, nearest])
 			max_gap = maxf(max_gap, nearest)
 			contacts += 1
-	assert_int_equal(contacts, 7531, "17 real mesh bearing samples on each retained side of 111 fitted panels")
+	assert_int_equal(contacts, 7667, "17 real mesh bearing samples on each retained side of 113 fitted panels")
 	var failure := root.get_node("CarrierGrid/BrokenEdgeFrameRail") as Node3D
 	assert_vec3_equal(failure.position,Vector3(-0.6,2.988,-0.6),"#110 actual source failure frame")
 	var joined_ends := 0

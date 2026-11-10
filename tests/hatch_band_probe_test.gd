@@ -46,3 +46,16 @@ func test_close_camera_visible_reveal_and_threshold_have_outward_normals() -> vo
 			assert_true(production.key_dot > 0 and production.blocker == "", "threshold faces production key without self-shadow")
 		samples += 1
 	assert_int_equal(samples, 4, "all fixed band rays tested")
+
+func test_steel_occlusion_probe_omits_the_glass_containing_the_source() -> void:
+	var probe := Probe.new()
+	var steel := HatchModel.mesh_piece(HatchModel.box_mesh(Vector3.ONE), Transform3D.IDENTITY, 1, Surfaces.material(&"frame"))
+	probe.collect(steel)
+	var count := probe.provenance.size()
+	assert_true(count > 0, "opaque steel is still collected")
+	var glass := HatchModel.mesh_piece(HatchModel.box_mesh(Vector3.ONE), Transform3D.IDENTITY, 1, Lighting.emergency_lens_material(1.0))
+	glass.set_meta(&"lamp_circuit", "emergency")
+	probe.collect(glass)
+	assert_int_equal(probe.provenance.size(), count, "a source's own emitter does not falsely occlude its steel test ray")
+	glass.free()
+	steel.free()

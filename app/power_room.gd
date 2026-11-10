@@ -81,9 +81,8 @@ var _generator_fade: Intensity.FixtureFade = null
 var _lights: Array[OmniLight3D] = []
 var _fill_lights: Array[Lighting.EmergencyFill] = []
 var _lenses: Array[MeshInstance3D] = []
-var _lens_mesh: BoxMesh = null
 var _lens_material: StandardMaterial3D = null
-var _white_lights: Array[OmniLight3D] = []
+var _white_lights: Array[SpotLight3D] = []
 var _white_lenses: Array[MeshInstance3D] = []
 var _white_lens_material: StandardMaterial3D = null
 var _generator_light: OmniLight3D = null
@@ -225,10 +224,7 @@ static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 
 	room.add_child(room._build_generator(glow_level))
 
-	room._lens_mesh = BoxMesh.new()
-	room._lens_mesh.size = Lighting.LENS_SIZE
 	room._lens_material = Lighting.emergency_lens_material(level)
-	room._lens_mesh.material = room._lens_material
 	var held: Intensity.Result = Intensity.FixtureFade.holding(level)
 	assert(held.is_ok(), "the power room's level maps to a valid fade")
 	room._fade = held.fade
@@ -243,10 +239,14 @@ static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 	for station_x: float in REGULAR_STATIONS_X:
 		for station_z: float in REGULAR_STATIONS_Z:
 			room.add_child(room._white_fixture(station_x, station_z, white_level))
-			var fill := Lighting.emergency_fill(fill_positions[room._fill_lights.size()], level, Lighting.POWER_FILL_MASK)
-			fill.name = "EmergencyFill%d" % room._fill_lights.size()
-			room.add_child(fill)
-			room._fill_lights.append(fill)
+	for position: Vector3 in fill_positions:
+		var index := room._fill_lights.size()
+		var fill := Lighting.emergency_fill(position, level, Lighting.POWER_FILL_MASK, 0.6)
+		EmergencyFixtureProfile.apply(fill, EmergencyFixtureProfile.POWER[6 + index], level, 0.0)
+		fill.name = "EmergencyFill%d" % index
+		FixtureEmitter.wall_source(fill, Surfaces.surface_frame(game.layout, ShipLayout.POWER_ID, &"STARBOARD"), "emergency", fill.lens_material, 0.0)
+		room.add_child(fill)
+		room._fill_lights.append(fill)
 
 	room._apply_console_state(game.console_state)
 	Lighting.mesh_layers(room, 1 | Lighting.POWER_FILL_MASK)
@@ -401,6 +401,7 @@ func _build_generator(glow_level: float) -> Node3D:
 	_generator_ring_material.roughness = 0.3
 	_generator_ring_material.emission_enabled = true
 	_generator_ring_material.emission = GENERATOR_GLOW * GENERATOR_EMISSIVE * glow_level
+	var middle_ring: MeshInstance3D
 	for ring_y: float in GENERATOR_RING_RADII_Y:
 		var ring := MeshInstance3D.new()
 		ring.name = "Ring"
@@ -411,6 +412,7 @@ func _build_generator(glow_level: float) -> Node3D:
 		ring.material_override = _generator_ring_material
 		ring.position = Vector3(0.0, ring_y, 0.0)
 		group.add_child(ring)
+		if ring_y == 1.5: middle_ring = ring
 	_generator_light = OmniLight3D.new()
 	_generator_light.name = "Glow"
 	_generator_light.light_color = GENERATOR_GLOW
@@ -418,8 +420,9 @@ func _build_generator(glow_level: float) -> Node3D:
 	_generator_light.omni_range = 6.5
 	_generator_light.light_cull_mask = 1
 	_generator_light.shadow_enabled = false
-	_generator_light.position = Vector3(0.0, 1.9, 0.0)
+	_generator_light.position = Vector3(0.0, 1.5, 0.0)
 	group.add_child(_generator_light)
+	FixtureEmitter.bind(_generator_light, middle_ring, column)
 	var glow_held: Intensity.Result = Intensity.FixtureFade.holding(glow_level)
 	assert(glow_held.is_ok(), "the generator's glow level maps to a valid fade")
 	_generator_fade = glow_held.fade
@@ -431,14 +434,12 @@ func _fixture(position: Vector3, level: float) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "PowerFixture"
 	fixture.position = position
-	DressingMounts.ceiling_stem(fixture, ROOM_CEILING, Surfaces.surface_frame(_game.layout, ShipLayout.POWER_ID, &"CEILING"))
 	var light := Lighting.switched_key(_game.layout.power_room().emergency_light_role(), level)
+	EmergencyFixtureProfile.apply(light, EmergencyFixtureProfile.POWER[_lights.size()], level)
 	fixture.add_child(light)
-	var lens := MeshInstance3D.new()
-	lens.name = "Lens"
-	lens.set_meta(&"lamp_circuit", "emergency")
-	lens.mesh = _lens_mesh
-	fixture.add_child(lens)
+	var yaw := -PI / 2 if is_equal_approx(position.x, ROOM_START_X + FIXTURE_STANDOFF) else (PI / 2 if is_equal_approx(position.x, ROOM_END_X - FIXTURE_STANDOFF) else PI)
+	var lens := FixtureEmitter.cage(fixture, 1 | Lighting.POWER_FILL_MASK, Surfaces.surface_frame(_game.layout, ShipLayout.POWER_ID, &"CEILING"), _lens_material, Basis(Vector3.UP, yaw))
+	FixtureEmitter.bind(light, lens, fixture.get_node("Steel"))
 	_lights.append(light)
 	_lenses.append(lens)
 	return fixture
@@ -448,15 +449,16 @@ func _white_fixture(station_x: float, station_z: float, level: float) -> Node3D:
 	var fixture := Node3D.new()
 	fixture.name = "PowerRegularStrip"
 	fixture.position = Vector3(station_x, REGULAR_MOUNT_Y, station_z)
-	var light := OmniLight3D.new()
+	var light := SpotLight3D.new()
 	light.light_color = Lighting.REGULAR_WHITE
 	light.light_energy = Lighting.regular_energy() * level
-	light.omni_range = Lighting.REGULAR_RANGE
+	light.spot_range = Lighting.REGULAR_RANGE
 	light.light_cull_mask = 1
 	light.shadow_enabled = false
 	light.position = Vector3(0.0, -0.12, 0.0)
 	fixture.add_child(light)
 	var lens := CeilingFixture.mount(fixture, ROOM_CEILING, 1 | Lighting.POWER_FILL_MASK, _white_lens_material)
+	FixtureEmitter.beam(light, lens, Surfaces.surface_frame(_game.layout, ShipLayout.POWER_ID, &"CEILING"))
 	_white_lights.append(light)
 	_white_lenses.append(lens)
 	return fixture
@@ -494,8 +496,7 @@ func process_frame(delta_secs: float) -> void:
 func _apply_level(level: float) -> void:
 	var energy: float = Lighting.emergency_energy() * level
 	for light: OmniLight3D in _lights:
-		if light.light_energy != energy:
-			light.light_energy = energy
+		light.light_energy = energy * light.get_meta(&"energy_share")
 	for fill: Lighting.EmergencyFill in _fill_lights:
 		fill.apply_level(level)
 	var emissive := Lighting.emergency_emission(level)
@@ -504,7 +505,7 @@ func _apply_level(level: float) -> void:
 
 func _apply_white_level(level: float) -> void:
 	var energy: float = Lighting.regular_energy() * level
-	for light: OmniLight3D in _white_lights:
+	for light: SpotLight3D in _white_lights:
 		if light.light_energy != energy:
 			light.light_energy = energy
 	var emissive := Lighting.REGULAR_WHITE * Lighting.REGULAR_EMISSIVE * level
@@ -567,7 +568,7 @@ func lenses() -> Array[MeshInstance3D]:
 func lens_material() -> StandardMaterial3D:
 	return _lens_material
 
-func white_lights() -> Array[OmniLight3D]:
+func white_lights() -> Array[SpotLight3D]:
 	return _white_lights
 
 func white_lenses() -> Array[MeshInstance3D]:

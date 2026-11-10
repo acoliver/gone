@@ -94,6 +94,16 @@ func _spark_spot(spot: Vector3, spark_material: StandardMaterial3D) -> Node3D:
 	light.omni_range = SPARK_RANGE
 	light.shadow_enabled = false
 	group.add_child(light)
+	var arc := MeshInstance3D.new()
+	arc.name = "SparkArc"
+	arc.mesh = _arc_mesh()
+	arc.material_override = _spark_material()
+	arc.material_override.billboard_mode = BaseMaterial3D.BILLBOARD_DISABLED
+	arc.visible = false
+	arc.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	group.add_child(arc)
+	light.set_meta(&"spark_emitter", arc)
+	light.set_meta(&"fixture_emitter", arc)
 	var particles := GPUParticles3D.new()
 	particles.name = "SparkSpray"
 	particles.one_shot = true
@@ -148,6 +158,7 @@ func _physics_process(delta: float) -> void:
 		_flash_remaining = maxf(_flash_remaining - delta, 0.0)
 		if _flash_remaining == 0.0:
 			_spark_lights[_active_index].light_energy = 0.0
+			_spark_lights[_active_index].get_meta(&"spark_emitter").visible = false
 		else:
 			_strobe()
 	if not auto_bursts:
@@ -174,6 +185,9 @@ func _strobe() -> void:
 	_spark_lights[_active_index].light_energy = _rng.randf_range(
 		SPARK_MIN_ENERGY, SPARK_MAX_ENERGY
 	)
+	var arc: MeshInstance3D = _spark_lights[_active_index].get_meta(&"spark_emitter")
+	arc.visible = true
+	arc.material_override.emission = SPARK_LIGHT_COLOR * _spark_lights[_active_index].light_energy
 
 static func _spark_process() -> ParticleProcessMaterial:
 	var process := ParticleProcessMaterial.new()
@@ -214,3 +228,15 @@ static func _smoke_material() -> ShaderMaterial:
 	Lighting.bind_smoke_emission(material)
 	material.set_shader_parameter("opacity", SMOKE_OPACITY)
 	return material
+
+static func _arc_mesh() -> ArrayMesh:
+	var tool := SurfaceTool.new()
+	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var path: Array[Vector3] = [Vector3(-0.024, -0.009, 0), Vector3(-0.008, 0.006, 0.002), Vector3.ZERO, Vector3(0.008, -0.006, -0.002), Vector3(0.024, 0.009, 0)]
+	for index: int in range(path.size() - 1):
+		var a := path[index]
+		var b := path[index + 1]
+		var rod := HatchModel.cylinder(0.0018, a.distance_to(b))
+		tool.append_from(rod, 0, Transform3D(Basis(Quaternion(Vector3.UP, (b - a).normalized())), (a + b) / 2))
+	tool.index()
+	return tool.commit()

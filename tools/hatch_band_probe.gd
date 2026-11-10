@@ -29,6 +29,8 @@ func add_triangle(a: Vector3, b: Vector3, c: Vector3, node: String, part: String
 func collect(node: Node3D, path: String = "") -> void:
 	path += "/" + String(node.name)
 	if node is MeshInstance3D:
+		# The key now sits inside its glass. Emitting glass cannot be a steel self-occluder.
+		if node.has_meta(&"lamp_circuit"): return
 		_append(node.mesh, Surfaces.world_frame(node), path)
 	elif node is MultiMeshInstance3D:
 		var poses: Array = node.multimesh.get_meta(&"instance_poses")
