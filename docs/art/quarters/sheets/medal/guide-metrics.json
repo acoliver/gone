@@ -1,0 +1,120 @@
+{
+  "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/c-machined-rim-seed130303-hunyuan-full-seed0-oct320-guide.glb",
+  "sha256": "cf71dd7144f44bc91e0867ec56f8d23b0289ebf9bf91ec135559f577f4ac26a8",
+  "raw_vertices": 147450,
+  "unique_exact_positions": 147450,
+  "triangles": 294904,
+  "finite_vertices": true,
+  "bounds_raw_xyz": [
+    [
+      -0.7298988103866577,
+      -0.9989646077156067,
+      -0.26777446269989014
+    ],
+    [
+      0.7233985066413879,
+      0.9924863576889038,
+      0.26133787631988525
+    ]
+  ],
+  "extents_raw_xyz": [
+    1.4532973170280457,
+    1.9914509654045105,
+    0.5291123390197754
+  ],
+  "coordinate_convention": "Unmodified Hunyuan export; expected +Y up, +Z front, X horizontal. Front identity awaits parent image review.",
+  "topology_method": "Exact identical positions welded in memory for analysis only; no processing, repairs or exports.",
+  "watertight": true,
+  "winding_consistent": true,
+  "is_volume": true,
+  "signed_volume_raw": 0.1620752999614006,
+  "euler_number": -2,
+  "boundary_edges": 0,
+  "nonmanifold_edges": 0,
+  "zero_area_faces": 0,
+  "face_adjacency_angle_degrees_p50_p90_p99_max": [
+    0.4067005741852463,
+    7.726118330183715,
+    20.354315989440614,
+    127.79199506628301
+  ],
+  "components": [
+    {
+      "index": 0,
+      "triangles": 294904,
+      "vertices": 147450,
+      "bounds_raw_xyz": [
+        [
+          -0.7298988103866577,
+          -0.9989646077156067,
+          -0.26777446269989014
+        ],
+        [
+          0.7233985066413879,
+          0.9924863576889038,
+          0.26133787631988525
+        ]
+      ],
+      "extents_if_32mm_body_xyz_mm": [
+        32.0,
+        43.8495482970155,
+        11.650468662019879
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "signed_volume_raw": 0.1620752999614006,
+      "euler_number": -2
+    }
+  ],
+  "normalization_estimate": {
+    "method": "Assume circular body diameter equals complete guide X span; use this as 32 mm. Body extends from minimum Y to minimum Y plus that diameter; vertices above this cutoff are an attachment-region estimate, not a semantic segmentation. No geometry scaled or modified on disk.",
+    "mm_per_raw_unit": 22.018894293040567,
+    "body_diameter_assumed_mm": 32.0,
+    "estimated_body_center_raw_xy": [
+      -0.0032501518726348877,
+      -0.27231594920158386
+    ],
+    "body_top_cutoff_raw_y": 0.45433270931243896,
+    "overall_extents_xyz_mm": [
+      32.0,
+      43.8495482970155,
+      11.650468662019879
+    ],
+    "body_region_vertex_count": 118845,
+    "body_region_bounds_raw_xyz": [
+      [
+        -0.7298988103866577,
+        -0.9989646077156067,
+        -0.05144893750548363
+      ],
+      [
+        0.7233985066413879,
+        0.4542083144187927,
+        0.15447980165481567
+      ]
+    ],
+    "body_region_extents_xyz_mm": [
+      32.0,
+      31.99726096198621,
+      4.534323139469754
+    ],
+    "body_pca_depth_normal_raw_xyz": [
+      3.123499450446242e-05,
+      0.0005851126787784072,
+      0.9999998283337495
+    ],
+    "body_pca_depth_span_mm": 4.524609641013708,
+    "attachment_region_vertex_count": 28605,
+    "attachment_extension_above_estimated_body_mm": 11.849548297015502,
+    "attachment_region_extents_xyz_mm": [
+      6.427182557105092,
+      11.845200221816802,
+      11.650468662019879
+    ],
+    "limitations": "Single frontal concept does not constrain reverse or depth; estimated body cutoff cannot identify an eyelet/bail joint or certify a practical hole. PCA span includes relief, rear curvature and noise, not a fitted manufacturing thickness."
+  },
+  "limitations": [
+    "Watertight and winding checks do not certify absence of self-intersections.",
+    "Generated guide is untextured shape evidence, not production geometry; no visual judgment made by leaf worker."
+  ]
+}

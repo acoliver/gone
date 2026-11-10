@@ -80,8 +80,16 @@ func test_brass_ribbon_and_soft_shoulder_remain_separate() -> void:
 		var model := _model(state)
 		QuartersProps.apply(model, &"dress_uniform", state)
 		var medal := model.find_child("Medal", true, false) as MeshInstance3D
-		assert_int_equal(medal.mesh.get_surface_count(), 2, "medal and ribbon are distinct surfaces")
+		assert_int_equal(medal.mesh.get_surface_count(), 3, "issue #130 keeps brass, enamel and sewn ribbon distinct")
 		assert_true(medal.get_surface_override_material(0) != medal.get_surface_override_material(1), "brass never replaces ribbon")
+		var enamel := medal.get_surface_override_material(1) as ShaderMaterial
+		var ribbon := medal.get_surface_override_material(2) as ShaderMaterial
+		var blue := (enamel.get_shader_parameter("base_colour") as Color).srgb_to_linear()
+		assert_true(blue.b > blue.r * 4.0, "issue #130 enamel remains navy in both states")
+		_near(enamel.get_shader_parameter("roughness"), .38 if state == &"aged" else .22, .00001, "enamel has its own dry aging")
+		_near(enamel.get_shader_parameter("metallic"), 0, .00001, "enamel remains dielectric")
+		assert_true(enamel.get_shader_parameter("pigment_gain") == Vector3.ONE, "wool calibration never tints enamel")
+		assert_true(ribbon.get_shader_parameter("vertex_colour"), "woven ribbon retains authored colours")
 		var brass := medal.get_surface_override_material(0) as ShaderMaterial
 		_near(brass.get_shader_parameter("metallic"), .15 if state == &"aged" else .8, .00001, "bright/dull brass")
 		if state == &"aged":
@@ -118,7 +126,7 @@ func test_wool_display_calibration_does_not_tint_brass_or_clean_wool() -> void:
 				var finish := piece.get_surface_override_material(surface) as ShaderMaterial
 				var gain: Vector3 = finish.get_shader_parameter(&"pigment_gain")
 				var source := piece.mesh.surface_get_material(surface) as StandardMaterial3D
-				var wool := state == &"aged" and is_zero_approx(source.metallic) and source.resource_name != "RibbonFabric"
+				var wool := state == &"aged" and is_zero_approx(source.metallic) and source.resource_name != "RibbonFabric" and not source.resource_name.begins_with("MedalEnamel")
 				assert_true(gain == (QuartersProps.TUNIC_AGED_WOOL_GAIN if wool else Vector3.ONE), "calibration is confined to aged wool/dust/fibres")
 				assert_true(finish.get_shader_parameter(&"albedo_texture") == source.albedo_texture, "no texture is copied or recoloured")
 				_near(finish.get_shader_parameter(&"normal_scale"), source.normal_scale, .00001, "normal strength retained")

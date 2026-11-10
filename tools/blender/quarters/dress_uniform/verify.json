@@ -46,12 +46,12 @@
         "pass": true
       },
       "Placket": {
-        "attachment_gap_max_m": 0.0009001523752592942,
+        "attachment_gap_max_m": 0.0005001323063451042,
         "inward_penetration_max_m": 0.0,
         "pass": true
       },
       "Buttons": {
-        "attachment_gap_max_m": 0.0013181797916967703,
+        "attachment_gap_max_m": 0.0010192290976130261,
         "inward_penetration_max_m": 0.0,
         "pass": true
       },
@@ -71,8 +71,8 @@
         "pass": true
       },
       "Medal": {
-        "attachment_gap_max_m": 0.0019706959493428176,
-        "inward_penetration_max_m": 0.0009212129171995777,
+        "attachment_gap_max_m": 0.0017430923358833584,
+        "inward_penetration_max_m": 0.0,
         "pass": true
       }
     },
@@ -81,20 +81,23 @@
         0.0429999977350235,
         0.0429999977350235
       ],
-      "button_count": 6,
+      "button_count": 8,
       "button_diameters_m": [
-        0.014008955805397554,
-        0.014008949512626984,
-        0.014008956311627624,
-        0.014008980647299602,
-        0.01400897662218586,
-        0.014008976703157107
+        0.014008933401172225,
+        0.014008946592440613,
+        0.014008942792669746,
+        0.01400895195347144,
+        0.014008995417408214,
+        0.014008956415587033,
+        0.014008970664086845,
+        0.014008975403732159
       ],
       "emblem_circumscribed_diameters_m": {
         "CollarInsignia_L": 0.020121577059058877,
         "CollarInsignia_R": 0.02000541634936162
       },
-      "medal_diameter_m": 0.03200393084032435,
+      "medal_diameter_m": 0.0320000227569017,
+      "medal_body_depth_m": 0.003970846537570773,
       "collar_facing_slot_radii_min_max_m": [
         0.0037965247344989832,
         0.00400354589791753
@@ -124,9 +127,9 @@
     "front": "+Z",
     "origin_at_hook_top_error_m": 0.0,
     "front_detail_centroids_z_m": {
-      "Buttons": 0.07595341508700089,
+      "Buttons": 0.07390780308283866,
       "RibbonBar": 0.05225122301942772,
-      "Medal": 0.0508116196584085
+      "Medal": 0.05160273305620208
     },
     "pass": true
   },
@@ -172,10 +175,11 @@
   "materials": [
     "BareSteel",
     "Brass",
+    "MedalEnamel",
     "NaturalFabric",
     "RibbonFabric"
   ],
-  "triangles": 13768,
+  "triangles": 13894,
   "triangle_limit_exclusive": 15000,
   "byte_identical_reexport": true,
   "garment_watertight": true,

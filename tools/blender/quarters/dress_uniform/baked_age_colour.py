@@ -215,6 +215,8 @@ def apply_colours(out, record, palette_path):
                 continue
             if 'Brass' in material.name:
                 obj.data.materials[index] = aged_brass(obj, material, out/'textures', palette)
+            elif material.name.startswith('MedalEnamel'):
+                obj.data.materials[index] = aged_enamel(material)
             elif obj.name.startswith(('Collar', 'ShoulderBoard', 'Placket')) and 'Fringe' not in material.name:
                 obj.data.materials[index] = material.copy()
                 if index == 0:
@@ -265,6 +267,17 @@ def recolour_fibres(out, palette):
             mat.node_tree.links.new(cutoff.outputs[0], shader.inputs['Alpha'])
         changed.append(mat.name)
     return changed
+
+
+def aged_enamel(source):
+    """#130: vitrified enamel retains blue while brass tarnishes in dry storage."""
+    mat = source.copy()
+    mat.name = 'MedalEnamel_Aged'
+    shader = mat.node_tree.nodes['Principled BSDF']
+    shader.inputs['Base Color'].default_value = (.006, .019, .066, 1)
+    shader.inputs['Roughness'].default_value = .38
+    shader.inputs['Specular IOR Level'].default_value = .12
+    return mat
 
 
 def aged_brass(obj, source, out, palette):

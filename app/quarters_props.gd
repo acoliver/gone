@@ -229,7 +229,8 @@ static func _tunic_finish(imported: StandardMaterial3D, state: StringName) -> Sh
 	# Godot omits glTF specularFactor; aged Blender cloth/brass uses .12.
 	var aged_pigment := state == &"aged" and imported.resource_name != "BareSteel" and imported.resource_name != "RibbonFabric"
 	result.set_shader_parameter(&"specular", .12 if aged_pigment else imported.metallic_specular)
-	result.set_shader_parameter(&"pigment_gain", TUNIC_AGED_WOOL_GAIN if aged_pigment and is_zero_approx(imported.metallic) else Vector3.ONE)
+	var aged_wool := aged_pigment and is_zero_approx(imported.metallic) and not imported.resource_name.begins_with("MedalEnamel")
+	result.set_shader_parameter(&"pigment_gain", TUNIC_AGED_WOOL_GAIN if aged_wool else Vector3.ONE)
 	return result
 
 # Shared slot finishes remain for storage stand-ins and demo display/glass

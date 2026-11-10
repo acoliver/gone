@@ -12,6 +12,7 @@ from mathutils import Vector
 from mathutils.bvhtree import BVHTree
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
 ROOT = HERE.parents[3]
 SOURCE = HERE / 'tunic-working.blend'
 OUT = ROOT / 'assets/props/quarters/dress_uniform.glb'
@@ -371,6 +372,12 @@ def assemble(args):
     for obj in bpy.context.scene.objects:
         if obj.type == 'MESH' and not obj.get('export', False):
             obj.hide_render = True
+    # Issue #130 details reuse the saved generated fitting and cloth support.
+    from tunic_details import row_details, replace_medal
+    row_details(body)
+    replace_medal(body, json.loads((HERE / 'medal-fit.json').read_text()), False)
+    for name in ('Placket', 'Buttons', 'Medal'):
+        ATTACHMENTS[name] = json.loads(bpy.data.objects[name]['attachment'])
     # Record non-exported collision geometry for exported-surface verification.
     colliders = {}
     for name in ['ShoulderChestForm', 'Hanger']:
@@ -384,6 +391,7 @@ def assemble(args):
         'colliders_blender': colliders, 'attachments': ATTACHMENTS, 'thickness_m': .0035,
         'simulation': {'body': body_trial, 'sleeves': sleeve_trial},
         'armhole_fairing': {'factor': .35, 'iterations': 12},
+        'issue130_medal_frame': json.loads(bpy.data.objects['Medal']['medal_frame']),
     }
     (HERE / 'construction.json').write_text(json.dumps(construction, separators=(',', ':')) + '\n')
     bpy.context.scene.frame_set(1)
@@ -456,10 +464,8 @@ def main():
     if args.aged:
         if args.assemble:
             parser.error('--aged exports the baked source; use quarters_aging/build.py to regenerate it')
-        sys.path.insert(0, str(ROOT / 'tools/blender/quarters_aging'))
-        from common import export as export_aged
-        bpy.ops.wm.open_mainfile(filepath=str(SOURCE.with_name('tunic-aged.blend')))
-        export_aged(args.output or OUT.with_name('dress_uniform_aged.glb'))
+        from publish_pilot import export_source
+        export_source(args.output or OUT.with_name('dress_uniform_aged.glb'))
         if args.render:
             import render as aged_render
             aged_render.render('dress_uniform', ROOT / 'tmp/age')
