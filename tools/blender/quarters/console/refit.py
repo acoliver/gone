@@ -21,6 +21,32 @@ HEIGHT = WIDTH * 10 / 16
 DELTA = HEIGHT - .238
 SLOPE = .6
 RISE = DELTA / math.sqrt(1 + SLOPE**2)
+UPPER_BORDER_TRIM = .018
+HOUSING_TRIM = UPPER_BORDER_TRIM / math.sqrt(1 + SLOPE**2)
+HEIGHT_AFTER_TRIM = .69 + RISE - HOUSING_TRIM
+REFIT_VERSION = 1292
+
+
+def trim_upper_border():
+    objects = bpy.data.objects
+    top = objects['BezelTop']
+    top.location.z -= UPPER_BORDER_TRIM / 2
+    for vertex in top.data.vertices:
+        vertex.co.z *= (.030 - UPPER_BORDER_TRIM) / .030
+    # Keep the glass, gasket, rivets and lower border fixed. Only the metal
+    # above the glass changes, leaving a 12 mm top bar and 1 mm gasket gap.
+    for name in ['BezelLeft', 'BezelRight']:
+        for vertex in objects[name].data.vertices:
+            above = max(0, vertex.co.z - HEIGHT / 2)
+            vertex.co.z -= above * UPPER_BORDER_TRIM / .031
+    for vertex in objects['ArmouredHousing'].data.vertices:
+        x, y, z = vertex.co
+        fraction = max(0, (z - .925) / (.69 + RISE - .925))
+        front = -.045 + SLOPE * (z - .42) - .0256 * fraction
+        front_weight = (.275 - y) / (.275 - front)
+        vertex.co.z -= HOUSING_TRIM * fraction
+        vertex.co.y -= SLOPE * HOUSING_TRIM * fraction * front_weight
+    bpy.context.scene['console_refit'] = REFIT_VERSION
 
 
 def apply_refit():
@@ -61,30 +87,36 @@ def apply_refit():
         if z > .925:
             y -= .0256 * (z - .925) / (.69 + RISE - .925) * front_weight
         vertex.co = (x, y, z)
-    bpy.context.scene['console_refit'] = 129
+    trim_upper_border()
 
 
 def refit():
     source = HERE / 'console-working.blend'
     bpy.ops.wm.open_mainfile(filepath=str(source))
-    if bpy.context.scene.get('console_refit') == 129:
+    version = bpy.context.scene.get('console_refit')
+    if version == REFIT_VERSION:
         print('Console #129 saved-source refit already applied')
         return
-    apply_refit()
+    if version == 129:
+        trim_upper_border()
+    else:
+        apply_refit()
     asset = [o for o in bpy.context.scene.objects if o.get('quarters_prop') == 'console']
     unwrap([o for o in asset if o.type == 'MESH'])
-    bpy.context.scene['console_refit'] = 129
+    bpy.context.scene['console_refit'] = REFIT_VERSION
     bpy.context.preferences.filepaths.save_version = 0
     bpy.ops.wm.save_as_mainfile(filepath=str(source))
     spec = json.loads((HERE / 'construction.json').read_text())
-    spec['bounds_gltf'][1][1] = .69 + RISE
+    spec['bounds_gltf'][1][1] = HEIGHT_AFTER_TRIM
     spec['display_size_m'] = [WIDTH, HEIGHT]
     spec['refit'] = dict(issue=129, source='tracked console-working.blend cages',
                          old_display_m=[.874, .238], old_height_m=.69,
                          native_rise_m=RISE, fixed_parts=['LowerDeckHousing', 'DesktopSupport',
                          'BaseShoe', 'ControlPanel', 'Keys', 'Toggles', 'HousingRivets'],
-                         cap_transition_height_m=.925, cap_front_inset_m=.0256)
-    spec['fit_notes'] += ' Issue #129 grows the saved head, bezel and glass to 16:10 above the fixed lower glass edge; the rear and entire lower deck stay fixed. The top 29 mm transitions inward to retain a closed metal cap within the original depth. UVs are repacked at uniform physical density for both finish atlases.'
+                         cap_transition_height_m=.925, cap_front_inset_m=.0256,
+                         upper_border_trim_m=UPPER_BORDER_TRIM, housing_trim_m=HOUSING_TRIM,
+                         top_bar_height_m=.030 - UPPER_BORDER_TRIM)
+    spec['fit_notes'] += ' The upper metal border is shortened by 18 mm along the screen plane, leaving a 12 mm top bar and retaining the complete 16:10 glass. The closed housing cap follows this trim above .925 m; all lower parts stay fixed. UVs are repacked at uniform physical density for both finish atlases.'
     (HERE / 'construction.json').write_text(json.dumps(spec, indent=2)+'\n')
 
 

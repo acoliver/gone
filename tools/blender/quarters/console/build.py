@@ -12,10 +12,10 @@ sys.path.insert(0,str(HERE))
 sys.path.insert(0,str(HERE.parent/'wardrobe'))
 from batch_tools import attach, build_main, cage, cylinder, empty, material, materials, panel, rivets
 
-from refit import apply_refit, RISE
+from refit import apply_refit, HEIGHT_AFTER_TRIM
 
 SPEC={
-    'bounds_gltf':[[-.55,0,-.275],[.55,.69+RISE,.275]],
+    'bounds_gltf':[[-.55,0,-.275],[.55,HEIGHT_AFTER_TRIM,.275]],
     'required_nodes':['Console','ArmouredHousing','LowerDeckHousing','DesktopSupport','Bezel','Display','ControlPanel','Keys','Toggles'],
     'parents':{'ArmouredHousing':'Console','LowerDeckHousing':'Console','DesktopSupport':'Console','Bezel':'ScreenPlane','Display':'ScreenPlane',
                'ScreenPlane':'Console','ControlPanel':'Console','Keys':'ControlPanel','Toggles':'ControlPanel'},

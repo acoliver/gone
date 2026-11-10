@@ -10,12 +10,18 @@ func test_taller_console_retains_desk_pose_and_cabinet_clearance_in_both_states(
 		assert_float_in_range(console.basis.y.length(), .999999, 1.000001, "layout must not shrink the refitted source height")
 		var bounds := QuartersFurnishings._bounds(console)
 		var cabinet := QuartersFurnishings._bounds(furnishings.get_node("Placement_lockers_over_bed/lockers_over_bed"))
-		assert_float_in_range(cabinet.position.y - bounds.end.y, .24, .25, "measured vertical clearance below actual cabinet bottom")
+		assert_float_in_range(cabinet.position.y - bounds.end.y, .2610, .2612, "trimmed upper cap increases measured cabinet clearance")
 		assert_false(bounds.intersects(cabinet), "console clears upper cabinet mesh envelope")
 		var key := console.find_child("Key_0_0", true, false) as MeshInstance3D
 		assert_close(key.position, Vector3(-.425, .016, .0675), "keyboard remains at accepted deck-local position")
 		assert_int_equal(console.find_children("Key_*", "MeshInstance3D", true, false).size(), 24, "24 keys retained")
 		furnishings.free()
+
+func test_entire_console_fits_unchanged_close_camera_with_margin() -> void:
+	var output: Array = []
+	var code := OS.execute(OS.get_executable_path(), ["--headless", "--path", ProjectSettings.globalize_path("res://"), "-s", "tests/quarters_console_frame_checks.gd"], output, true)
+	assert_int_equal(code, 0, "console vertex projection: " + str(output))
+	assert_true("CONSOLE FRAME PASS" in str(output), "projection check completed")
 
 func test_baked_key_inventory_matches_production_native_stroke_expansion() -> void:
 	var document: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://tools/blender/quarters/console/legends.json"))

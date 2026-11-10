@@ -33,6 +33,29 @@ class ConsoleTests(unittest.TestCase):
                                    [[-.342223912, .018, -.204474777], [.342223912, .32, .15447478]], atol=1e-6)
         self.assertEqual(len([n for n in scene.graph.nodes_geometry if n.startswith('Toggle_')]), 3)
 
+    def test_trimmed_top_bar_preserves_glass_gap_and_side_rail_contact(self):
+        scene = trimesh.load(ROOT / 'assets/props/quarters/console.glb', force='scene')
+        frame, key = scene.graph['BezelTop']
+        bar = scene.geometry[key]
+        np.testing.assert_allclose(bar.extents, [.89, .012, .030], atol=1e-6)
+        display, key = scene.graph['Display']
+        glass = scene.geometry[key]
+        relative = np.linalg.inv(display) @ frame
+        gap = relative[1, 3] - bar.extents[1]/2 - glass.extents[1]/2
+        self.assertAlmostEqual(gap, .001, places=6)
+        for name, sign in [('BezelLeft', -1), ('BezelRight', 1)]:
+            side, key = scene.graph[name]
+            point = trimesh.transform_points([[sign*bar.extents[0]/2, 0, 0]], np.linalg.inv(side) @ frame)
+            distance = trimesh.proximity.closest_point(scene.geometry[key], point)[1]
+            self.assertLess(float(distance[0]), 1e-6, name)
+        _, key = scene.graph['ArmouredHousing']
+        housing = scene.geometry[key].copy()
+        # glTF splits shared positions at UV seams and normal boundaries.
+        housing.merge_vertices(merge_tex=True, merge_norm=True, digits_vertex=7)
+        self.assertTrue(housing.is_watertight and housing.is_winding_consistent)
+        self.assertGreater(housing.volume, 0)
+        self.assertAlmostEqual(float(housing.bounds[1, 1]), .9388873216880659, places=6)
+
     def test_every_key_has_native_ink_in_both_state_atlases(self):
         mapping = json.loads((ROOT / 'assets/props/quarters/steel/console/mapping.json').read_text())
         legends = mapping['native_legends']

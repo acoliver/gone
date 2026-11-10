@@ -1,6 +1,6 @@
 # Taller quarters console and native keys (#129)
 
-The accepted fitted console now has a 16:10 display and 24 Naleya key legends.
+The fitted console now has a 16:10 display and 24 Naleya key legends.
 The saved source is `tools/blender/quarters/console/console-working.blend`.
 This changes the console only. Room furniture, cameras, lighting, clothes,
 interaction dispatch, the idle underscore, message wording and the
@@ -13,7 +13,7 @@ interaction dispatch, the idle underscore, message wording and the
 | Active display width | 0.874 m | 0.874 m |
 | Active display height | 0.238 m | 0.54625 m |
 | Active aspect | 3.672:1 | 1.600:1 |
-| Console height | 0.690 m | 0.9543222 m |
+| Console height | 0.690 m | 0.9388873 m |
 | Width | 1.100 m | 1.100 m |
 | Exported depth including front rivets | 0.55310 m | 0.55310 m |
 | Screen backward tilt from vertical | 30.9638 degrees | 30.9638 degrees |
@@ -23,13 +23,21 @@ interaction dispatch, the idle underscore, message wording and the
 `refit.py` deforms the saved head cages rather than generating a replacement.
 The glass lower edge remains at exported glTF `(0, 0.454878712, 0.062092286)`.
 The bezel sides, upper trim, gasket, glass and upper rivets extend together.
-The last 29 mm of housing height transitions inward by 25.6 mm to keep a
+The cap transitions inward by 25.6 mm above source height 0.925 m to keep a
 closed upper cap within the existing rear depth at the retained tilt.
+The initial taller version clipped the unchanged close camera. Trimming
+18 mm of upper metal border along the screen plane reduces the top bar from
+30 to 12 mm and the cap height by 15.4349 mm. Its 30 mm depth, 1 mm gap above
+the glass and contacts with both side rails remain intact. The glass, gasket,
+upper rivets and lower border do not change. No display height is sacrificed.
+The final cap transition occupies 13.8873 mm of vertical height.
 An independent comparison with the baseline GLB found identical world-space
 vertices for all 35 lower parts: lower housing, support, shoe, control panel,
-24 keys, three toggles, three sockets and lower housing rivets.
+24 keys, three toggles, three sockets and lower housing rivets. Relative to
+`0f26ad0`, only the housing, left/right rails and top bar change; the other
+39 mesh parts have identical world-space point sets.
 
-The layout's nominal console top changes from 1.45 to 1.7143222 m. This is
+The layout's nominal console top changes from 1.45 to 1.6988873 m. This is
 its existing 0.76 m datum plus the new source height. It prevents the runtime
 fitter from compressing the new screen back to the old height. It does not
 move the desk or console base. The existing fitter still seats the console
@@ -77,6 +85,35 @@ using the smaller width/height pixel scale. Type grows from 32 to 48 pixels.
 Width wrapping retains the 92% margin, and a new test checks physical width
 and total font line height for all three playback phases in both states.
 The message/fault source and simulation timing are not edited.
+
+## Black terminal diagnosis
+
+Baseline `56a656b` already renders the powered terminal as an unshaded dark
+panel. Its exported Display material matches the taller asset:
+
+| Property | Baseline and current |
+| --- | --- |
+| Base color, linear RGBA | (0.002, 0.018, 0.019, 1) |
+| Roughness / metallic | 0.65 / 0 |
+| Exported specular factor | 0 |
+| Emissive factor | (0.0003, 0.0027, 0.00285) |
+| Glass depth | 0.004 m |
+
+Both versions then replace this material in `QuartersRoom._screen()` with
+the same opaque, unshaded terminal material: albedo `(0.004, 0.012, 0.018)`,
+emission `(0.008, 0.035, 0.05)` at energy `0.4`, metallic `0.02` and specular
+`0.5`. Remembered roughness is `0.45`; Present roughness is `0.9`. These
+roughness/specular values do not create reflections under unshaded rendering.
+There is no separate reflective glass overlay. The unchanged scanline quad
+sits 0.3 mm in front of the 4 mm panel, with black lines at alpha 0.14; text
+sits 1.7 mm forward. The room's interior box-projected ReflectionProbes are
+unchanged, as are the black background, disabled ambient source, exposure and
+lights in `Lighting`. They cannot add reflections to this unshaded surface.
+
+No glass brightness, finish, probe, light or global optics change was made.
+The larger dark area can make the existing treatment more conspicuous, but
+whether that treatment looks appropriate is for parent image review. Numeric
+material equality does not establish visible reflection quality.
 
 ## Reproduction
 
@@ -131,12 +168,12 @@ The imported Remembered and Present states produce the same measurements:
 | Actual room measurement | Metres |
 | --- | ---: |
 | Worktop top / console bottom above floor | 0.700000763 |
-| Console top above floor | 1.654322624 |
+| Console top above floor | 1.638887405 |
 | Cabinet bank bottom above floor | 1.899999619 |
-| Vertical gap from console top to cabinet-bottom datum | 0.245676994 |
+| Vertical gap from console top to cabinet-bottom datum | 0.261112213 |
 | Console-to-worktop contact gap | 0.000000000 |
 | Rendered display width along its tilted plane | 0.873999894 |
-| Rendered display height along its tilted plane | 0.545440912 |
+| Rendered display height along its tilted plane | 0.545440674 |
 
 The existing room fitter retains its depth factor of 0.994394 to include
 the front rivet projection inside the 0.55 m desk footprint. Height and
@@ -149,62 +186,103 @@ length in the room. No furniture or camera moved. The actual worktop is
 
 The unchanged `console` camera projects the active Display vertices to pixels
 `(399.83, 15.10)` through `(1025.95, 390.69)` in the 1536 by 864 raw frame.
-The glass is inside that frame. The taller housing vertices reach 8.4 pixels
-above the raw frame; the camera has deliberately not been moved. The existing
-presentation helper crops 40 pixels from the top to remove the harness chip,
-which also removes about 25 pixels from the glass in this close view. Use the
-`*-fullframe.jpg` console/playback copies for screen-height review, and the
-unchanged wide views for the full housing in room context. This framing limit
-is retained for parent art review rather than changing the camera or reducing
-the requested 16:10 glass.
+Those coordinates are identical before and after the upper-border trim.
+Fresh imported baseline `56a656b` puts the housing at 157.9838 pixels and
+the glass at 191.8835 pixels below the top boundary in this same camera.
+The taller geometry introduced the clipping. At `0f26ad0`, the housing,
+left rail and top bar reached respectively -8.3947, -6.3190 and -6.0202
+pixels. After trimming their surplus upper metal, they start at 3.3367,
+5.0741 and 5.2475 pixels. Every console mesh vertex now
+has at least a two-pixel margin in both states. This check uses actual vertices,
+not projected AABB corners. The complete 0.874 by 0.54625 m display remains.
+
+The existing presentation helper crops 40 pixels from the top to remove the
+harness chip, which also removes about 25 pixels from the glass in this close
+view. Framing review must use full frames including the chip band. Comparisons
+retain that band and put baseline `56a656b` on the left and current on the
+right. Remembered and Present are finish states, not before/after versions.
+The earlier review images used the same refitted source for both states and
+therefore could not establish whether clipping was inherited from `56a656b`.
+No camera, room light, environment, simulation sequence or other furniture
+has changed.
 
 The supplementary keyboard camera is recorded in
-`tools/blender/quarters/console/capture_keys.gd`. It uses the actual ship scene,
-room lights and state materials. Its initial setup omitted the D16 aft hatch;
-that setup error is fixed. The final run has no script errors, but Godot still
-reports particle-shader/texture RID cleanup warnings on exit after saving the
-two detail images. The main 24-beat quarters harness reports machine PASS.
-No visual approval is claimed for either capture lane.
+`tools/blender/quarters/console/capture_keys.gd`. Its earlier detail images
+passed the parent keyboard review in `tmp/issue129/keys-visual-review.md`.
+That review predates the upper-border trim and associated UV repack. The
+current build still requires parent image judgment.
 
 ## Verification results
 
-The new independent Python regression initially failed on the old 0.238 m
-display height and absent native-legend metadata. The delivered asset passes
-both tests. The guarded focused lane passes 107 tests; the unchanged full
-runner passes 1013 tests with zero failures (baseline 1010, plus three new
-console test methods). The existing aging suite passes 89 tests and the
-fixture-weather suite passes 11 tests. No existing assertions or guards were
-weakened. The full Godot run exits successfully while reporting resource
-cleanup diagnostics at shutdown.
+The initial independent Python regression failed on the old 0.238 m display
+height and absent native-legend metadata. The final asset passes all three
+Python checks, including the new top-bar thickness, glass-gap, rail-contact
+and cap-closure test. The framing check failed on the clipped geometry before
+the trim and now passes for every mesh vertex in both finish states. The
+guarded focused lane passes 108 tests; the unchanged full runner passes
+1014 tests with zero failures. This adds one framing regression to the
+previous 1013/0 result, which included three new console tests. The existing
+aging suite passes 89 tests and the fixture-weather suite passes 11 tests.
+No existing assertions or guards were weakened. The full Godot run exits
+successfully while reporting resource cleanup diagnostics at shutdown.
 
 The independent trimesh verifier passes bounds, +Y-up/+Z-front orientation,
 closed geometry, consistent winding, positive volume, zero degenerate faces,
 5,112 triangles against 15,000, zero UV overlaps/out-of-range coordinates,
-and UV density p95/p05 1.097056 against 1.25. Saved-source GLB repeat exports
+and UV density p95/p05 1.097039 against 1.25. Saved-source GLB repeat exports
 are byte-identical. Independent repeats of all seven state atlas images and
 mapping metadata are also byte-identical. The final key-top raster uses the
-largest planar cap face, not a bevel; all 24 signs have 135 to 259 ink texels.
+largest planar cap face, not a bevel; all 24 signs have 120 to 223 ink texels.
 
-The editor import and final hash check pass. The imported console native
-`.md5` records source MD5 `913fb86db733e5cbb306c7c275713869`, matching the
-changed GLB before captures. All seven changed PNG source hashes also match
-their native imported hash records.
+Both projects completed fresh editor imports. Immediately before each
+capture run, all 38 quarters GLBs and the seven console PNGs passed native
+`.md5` source-hash checks. The current console source and native record both
+have MD5 `00717379118e28c5c940fd1381367746`; the isolated baseline project
+has `d0f2e4aee8627f4d5a8b59ad7773cd83`. No source assets were swapped in the
+working project to capture the baseline.
 
-Verification logs are under `tmp/issue129/`: `test-before.log`,
-`test-console.log`, `verify-export.log`, `repeat-bake-check.log`,
+New verification logs are under `tmp/issue129-visualfix/`:
+`test-console.log`, `test-frame-before.log`, `test-frame-after.log`,
 `test-focused.log`, `test-full.log`, `test-aging.log`,
-`test-fixtureweather.log`, `room-measurements.json`, `import-final.log`,
-`import-hashes-before-captures.log`, `harness.log` and
-`capture-keys-final.log`.
+`test-fixtureweather.log`, `verify-export.log`, `atlas-repeat-check.log`,
+`room-measurements.json`, `source-measurements.json`, `current-before.json`,
+`current-after.json`, `baseline-projection-and-materials.json`,
+`baseline-import.log`, `current-import.log`,
+`baseline-native-before-capture.log` and `current-native-before-capture.log`.
 
-Actual windowed raw captures are in
-`tmp/issue129/harness/run-1794340030/beats/` (24 beats, machine PASS).
-Standard 40-pixel-cropped presentation PNGs are in
-`tmp/issue129/presentation/`. The two actual-room key detail PNGs are
-`tmp/issue129/details/remembered-keys.png` and `present-keys.png`.
-JPEG review copies are in `tmp/issue129/review/`; use
-`remembered-console-fullframe.jpg`, `present-console-fullframe.jpg`,
-`console-message-fullframe.jpg`, `console-fault-fullframe.jpg`,
-`remembered-wide-fullframe.jpg`, `present-wide-fullframe.jpg`,
-`remembered-keys.jpg` and `present-keys.jpg` for console review.
+## Actual before/after capture set
+
+The serialized actual-windowed capture runs both pass the unchanged machine
+checks on all 24 beats:
+
+- Before, source `56a656b`: `tmp/issue129-visualfix/captures-baseline/run-1794352179/`.
+- After, taller console with trimmed cap: `tmp/issue129-visualfix/captures-current/run-1794352211/`.
+
+An inventory-only subclass of the production harness records each console
+mesh's resource, vertex-position hash, bounds, transform and material override
+before calling the unchanged parent capture method. It also records the other
+instanced room assets and their source hashes. These inventories prove which
+native mesh resources were loaded. For all six comparison beats, before/after
+camera eyes and ticks match, Display material overrides match in both finish
+states, and all other instanced room asset sources/hashes match. No rendering
+or simulation behavior was added by the inventory hook.
+
+`tmp/issue129-visualfix/capture-manifest.json` records raw PNG paths/hashes,
+reports, inventories, source provenance and JPEG paths. All comparisons retain
+the complete raw 1536 by 864 frame, including the 40-pixel protocol band.
+They are uniformly scaled for delivery, without cropping or masking. Baseline
+is on the left and current is on the right. Under
+`tmp/issue129-visualfix/review/`, the individual 1400 by 426 JPEGs are:
+
+- `remembered-console-before-after.jpg`
+- `present-console-before-after.jpg`
+- `remembered-wide-before-after.jpg`
+- `present-wide-before-after.jpg`
+- `console-message-before-after.jpg`
+- `console-fault-before-after.jpg`
+
+The single 1400 by 639 contact sheet is `all-six-before-after.jpg`.
+The `singles/` subdirectory contains full-frame baseline/current JPEGs at
+1400 by 788. The capture lanes report particle-shader/texture RID cleanup
+diagnostics at shutdown, after successful capture and machine verification.
 These scratch outputs are not committed. Parent visual judgment remains pending.
