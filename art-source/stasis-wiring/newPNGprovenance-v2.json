@@ -1,0 +1,36 @@
+{
+  "generator": "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-z-image-turbo",
+  "model": "filipstrand/Z-Image-Turbo-mflux-4bit",
+  "quantize": 4,
+  "steps": 8,
+  "width": 1024,
+  "height": 768,
+  "offline_environment": {
+    "HF_HOME": "/Volumes/XS1000/hf-cache",
+    "HF_HUB_OFFLINE": "1"
+  },
+  "visual_review": "Not reviewed or approved by generator worker; parent image-comparer review pending.",
+  "images": [
+    {
+      "file": "/Volumes/XS1000/acoliver/projects/gone/branch-4/art-source/stasis-wiring/installed-routing-concept-v2.png",
+      "seed": 11101,
+      "exit_status": 0,
+      "log": "/Volumes/XS1000/acoliver/projects/gone/branch-4/tmp/verify-stasis-wiring/concept/installed-routing-concept-v2.log",
+      "prompt": "Engineering concept illustration of a real installed shipboard electrical and data service route, not a room-wide scene. Close three-metre view of an industrial ceiling and wall service run; only a slim edge of a smooth white stasis pod base appears along the bottom for scale. Two thick black factory-jacketed power cables run parallel directly under a slotted perforated metal ceiling grid. Beside them, exactly six much finer dark-grey data cables form one compact tied bunch; each data cable is about one quarter the diameter of a power cable. Healthy black insulation is matte and evenly lit, durable and intact. Repeated bolted steel saddles grip the true underside rim of the ceiling grid every 40 cm; no deep hanging suspension bars. Both looms make gentle service bends into one bolted sealed termination enclosure, then route into two separate rigid steel conduits, one 60 mm and one 25 mm diameter, vertically fixed to the back wall by three clamps and disappearing into the floor beside the hidden pod base. Floor-fed infrastructure, no connection or port on the pod shell. Hardware is aged charcoal and olive with rust only on metal. Clearly readable practical installation, realistic scale. No umbilical plugs, no wires attached to pod, no foreground curtain of hanging wires, no thick brown plumbing pipe over the pod, no random branching, no exposed copper in this healthy section, no room-wide composition, no people, no text, no logos."
+    },
+    {
+      "file": "/Volumes/XS1000/acoliver/projects/gone/branch-4/art-source/stasis-wiring/coordinated-failure-concept-v2.png",
+      "seed": 11102,
+      "exit_status": 0,
+      "log": "/Volumes/XS1000/acoliver/projects/gone/branch-4/tmp/verify-stasis-wiring/concept/coordinated-failure-concept-v2.log",
+      "prompt": "Engineering incident concept image of one localized mechanical frame fracture and its limited electrical consequence in a ship ceiling, presented as a clear paired technical composition with an upper ceiling close-up and a separate lower floor fragment inset. Upper view: one 600 by 1200 mm ceiling tile is open; the remaining perforated ceiling grid is filled and intact. A single rectangular steel carrier beam, 55 mm square hollow profile, has one missing one-metre segment with matching jagged fracture faces at each end; all other frame rails remain continuous. Exactly two insulated black power leads droop only a short distance from surviving clamps into the opening. Their cut ends hang about 0.5 m below the ceiling and remain far above standing head height; small copper conductors are visible only at the damaged cut tips, never along the intact jacket. Exactly six much thinner dark data lines stay tied together along the nearest intact beam, still clamped and orderly, not dangling separately. This is a single local mechanical break; durable insulation elsewhere stays intact, oxidation limited to steel. Lower inset on the floor: one detached straight one-metre rusty rectangular hollow steel bar, 55 mm square, matching the exact beam profile and jagged fracture. It lies separately on the floor, with clear visible space between it and every cable; this is only a fallen structural frame piece, never an electrical component. Camera wide enough to show correspondence between the ceiling gap and separate matching floor bar. Muted realistic shipboard lighting, aged charcoal and olive metal, no whole-ceiling collapse, no wires touching floor, no cables connected to the fragment, no plug or umbilical on a pod, no round disc, lid, plate or pipe, no multiple failures, no sparks, no blanket insulation damage, no people, no text, no logos."
+    },
+    {
+      "file": "/Volumes/XS1000/acoliver/projects/gone/branch-4/art-source/stasis-wiring/sealed-harness-enclosure-reference.png",
+      "seed": 11103,
+      "exit_status": 0,
+      "log": "/Volumes/XS1000/acoliver/projects/gone/branch-4/tmp/verify-stasis-wiring/concept/sealed-harness-enclosure-reference.log",
+      "prompt": "A single rugged industrial electrical junction box for a protected shipboard cable termination, a compact vintage aerospace-style manufactured fitting, not plumbing. One broad rounded-rectangular cast olive-metal body with a clearly visible lid seam and low rounded ribbed back, approximately 28 by 18 cm proportions. Four flat bolting ears extend from its back mounting flange, each with a distinct bolt hole. On one end face, two short black compression cable glands for thick power cables, visibly large and separate. On an adjacent face, exactly one smaller black compression gland for a thin data cable. Every gland has distinct nut shapes and a small circular open bore visible inside; each passes through the substantial case flange, with the power ports obviously larger than the data port. The cast housing is smooth and manufactured with restrained age; weathered olive metal, no corrosion on black glands. Entire compact object visible, centered on plain neutral grey studio background, soft even light, three-quarter view showing front and side faces, slight elevated camera, realistic product reference geometry, no cables attached. No pipe, no plumbing tee, no branching tube tree, no extra adapters, no loose wires, no glass, no text, no logos, no neon, no wheels, no suitcase or floor boiler."
+    }
+  ]
+}

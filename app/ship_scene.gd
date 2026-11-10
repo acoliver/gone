@@ -44,6 +44,7 @@ static func build_into(parent: Node3D, game: Game) -> ShipScene:
 	scene.lighting = Lighting.build(game)
 	scene.bay_root.add_child(scene.lighting)
 	scene.bay_root.add_child(BayCeiling.build())
+	scene.bay_root.add_child(StasisWiring.installation())
 	scene.hazards = Hazards.build(game.ventilation, game.layout.bay())
 	scene.bay_root.add_child(scene.hazards)
 	scene.rod = Rod.build()

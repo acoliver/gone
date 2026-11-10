@@ -55,13 +55,14 @@ func test_bay_has_no_suspended_trays_hangers_or_recipes() -> void:
 	assert_false(mounts.has_method(&"tray_hangers"), "removed trays leave no hanger recipe")
 	room.free()
 
-func test_bay_tray_removal_preserves_wire_spark_positions() -> void:
+func test_bay_fault_sparks_attach_to_the_three_installed_power_tips() -> void:
 	var hazards := Hazards.build()
-	var spots: Array[Vector3] = [Vector3(-0.5, 3.2 - 0.15, 0.35), Vector3(0.9, 3.2 - 0.15 - 0.04, -0.7), Vector3(1.6, 3.2 - 0.15 + 0.05, 1.1)]
-	for index: int in range(spots.size()): spots[index] += Vector3(0, -0.2, 0)
-	assert_int_equal(hazards._spark_lights.size(), spots.size(), "all three wire spark clusters remain")
-	for index: int in range(spots.size()):
-		assert_vec3_equal(hazards._spark_lights[index].get_parent().position, spots[index], "tray removal does not move spark cluster %d" % index)
+	var spots: Array[Vector3] = [Vector3(-.77,2.486,-.587), Vector3(-.83,2.556,-.613), Vector3(-.35,2.526,-.613)]
+	assert_int_equal(hazards._spark_lights.size(),3,"exactly three physical power tips")
+	for index: int in range(3):
+		var group := hazards._spark_lights[index].get_parent() as Node3D
+		assert_vec3_equal(group.position,spots[index],"spark attaches to physical copper tip %d" % [index+1])
+		assert_true(String(group.name)=="SparkSpot_power_tip_%d" % [index+1],"specific tip identity is retained")
 	hazards.free()
 
 func test_bay_and_power_dressing_connects_to_structure() -> void:
