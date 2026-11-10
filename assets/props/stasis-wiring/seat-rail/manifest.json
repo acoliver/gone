@@ -1,0 +1,323 @@
+{
+  "source_identity": {
+    "left": {
+      "vertex_count": 168,
+      "body_source_face_count": 168,
+      "source_vertex_max_error_m": 0.0,
+      "source_uv_max_error": 0.0,
+      "source_face_max_error_m": 0.0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume_m3": 1.9298036749051136e-05,
+      "bounds_m": [
+        [
+          -0.6,
+          -0.018,
+          -0.021
+        ],
+        [
+          -0.4980143931807611,
+          0.0,
+          0.021
+        ]
+      ]
+    },
+    "middle": {
+      "vertex_count": 756,
+      "body_source_face_count": 1360,
+      "source_vertex_max_error_m": 0.0,
+      "source_uv_max_error": 0.0,
+      "source_face_max_error_m": 0.0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume_m3": 0.0001914591006006073,
+      "bounds_m": [
+        [
+          -0.5014976011365399,
+          -0.018,
+          -0.021
+        ],
+        [
+          0.5014976011365399,
+          0.0,
+          0.021
+        ]
+      ]
+    },
+    "right": {
+      "vertex_count": 168,
+      "body_source_face_count": 168,
+      "source_vertex_max_error_m": 0.0,
+      "source_uv_max_error": 0.0,
+      "source_face_max_error_m": 0.0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume_m3": 1.9298036749051163e-05,
+      "bounds_m": [
+        [
+          0.4980143931807611,
+          -0.018,
+          -0.021
+        ],
+        [
+          0.6,
+          0.0,
+          0.021
+        ]
+      ]
+    }
+  },
+  "paired_cuts": {
+    "left": {
+      "retained_sha256": "97e895c2eae608809a02df661a7fd9d2bfe9c775a66eb193fb118b2a5d6592aa",
+      "fragment_sha256": "97e895c2eae608809a02df661a7fd9d2bfe9c775a66eb193fb118b2a5d6592aa",
+      "triangle_plane_max_gap_m": 1.1113066979184075e-16,
+      "opposing_normal_max_dot": -0.9999999999999996
+    },
+    "right": {
+      "retained_sha256": "3a9cfa7a241c807f73c3b2b6d30721f34ff23f728a65fdabadd28ac620f76ef2",
+      "fragment_sha256": "3a9cfa7a241c807f73c3b2b6d30721f34ff23f728a65fdabadd28ac620f76ef2",
+      "triangle_plane_max_gap_m": 1.1113066979184075e-16,
+      "opposing_normal_max_dot": -0.9999999999999996
+    }
+  },
+  "actual_top_return_lip_ray_gauges_m": [
+    0.0025000000000000005,
+    0.0025000000000000022,
+    0.0025000000000000022,
+    0.0024999999999999988
+  ],
+  "exported_gltf_axes_and_bounds": {
+    "full": {
+      "bounds_m": [
+        [
+          -0.6000000238418579,
+          -0.017999999225139618,
+          -0.020999999716877937
+        ],
+        [
+          0.6000000238418579,
+          0.0,
+          0.020999999716877937
+        ]
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "actual_exported_uv_source_max_error": 5.615931097935345e-08,
+      "actual_exported_vertex_source_max_error_m": 2.8203818825476872e-08
+    },
+    "left": {
+      "bounds_m": [
+        [
+          -0.6000000238418579,
+          -0.017999999225139618,
+          -0.020999999716877937
+        ],
+        [
+          -0.4980143904685974,
+          0.0,
+          0.020999999716877937
+        ]
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "actual_exported_uv_source_max_error": 5.615931097935345e-08,
+      "actual_exported_vertex_source_max_error_m": 2.8203818825476872e-08
+    },
+    "middle": {
+      "bounds_m": [
+        [
+          -0.5014976263046265,
+          -0.017999999225139618,
+          -0.020999999716877937
+        ],
+        [
+          0.5014976263046265,
+          0.0,
+          0.020999999716877937
+        ]
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "actual_exported_uv_source_max_error": 5.615931097935345e-08,
+      "actual_exported_vertex_source_max_error_m": 2.8203818825476872e-08
+    },
+    "right": {
+      "bounds_m": [
+        [
+          0.4980143904685974,
+          -0.017999999225139618,
+          -0.020999999716877937
+        ],
+        [
+          0.6000000238418579,
+          0.0,
+          0.020999999716877937
+        ]
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "actual_exported_uv_source_max_error": 5.615931097935345e-08,
+      "actual_exported_vertex_source_max_error_m": 2.8203818825476872e-08
+    }
+  },
+  "slenderness": 23.88083814935904,
+  "floor_pose_bay_local": [
+    [
+      0.9902680687415704,
+      -0.1261336651461452,
+      0.05881709400880572,
+      -0.6
+    ],
+    [
+      0.0,
+      -0.42261826174069933,
+      -0.90630778703665,
+      0.018042830046183175
+    ],
+    [
+      0.13917310096006547,
+      0.8974876619542299,
+      -0.4185053698688818,
+      -1.4
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "floor_roll_degrees": 115.0,
+  "floor_min_y_m": 0.0,
+  "floor_max_y_m": 0.04369278880369894,
+  "floor_opening_direction_bay": [
+    0.1261336651461452,
+    0.42261826174069933,
+    -0.8974876619542299
+  ],
+  "bay_local_long_axis": [
+    0.9902680687415704,
+    0.0,
+    0.13917310096006547
+  ],
+  "world_long_axis": [
+    0.13917310096006547,
+    0.0,
+    -0.9902680687415704
+  ],
+  "world_picker_proxy_size_m": [
+    0.22,
+    0.1,
+    1.15
+  ],
+  "world_picker_min_margin_m": [
+    0.016447005877890622,
+    0.0,
+    0.07536463403066318
+  ],
+  "floor_proxy_headroom_m": 0.05630721119630107,
+  "floor_center_bay_xz_m": [
+    -0.6,
+    -1.4
+  ],
+  "pickup_reach_m": 1.3,
+  "inverse_floor_pose_max_error_m": 3.3306690738754696e-16,
+  "panel_contact": {
+    "panel_asset_sha256": "5646be010925a5e668c743ba98459572e6108a97214bd1a9a4676afb4c6e691e",
+    "actual_edge_intersections_below_bearing": 0,
+    "actual_contained_vertices": 0,
+    "actual_flange_contact_samples": 9,
+    "flange_to_bearing_max_gap_m": 9.499468693547473e-11,
+    "lower_rim_to_outer_return_lateral_clearance_m": 0.017959133625030505,
+    "bearing_top_y_m": 2.988
+  },
+  "prototype_frame": {
+    "frame_components": 28,
+    "duplicated_frame_components": 0,
+    "replaced_flat_cross_ledger_count": 0,
+    "intact_upper_carrier_at_failure_count": 1,
+    "intact_upper_carrier_bounds_m": [
+      [
+        -2.4000000953674316,
+        3.0924999713897705,
+        -0.6274999976158142
+      ],
+      [
+        1.2000000476837158,
+        3.1475000381469727,
+        -0.5724999904632568
+      ]
+    ],
+    "long_flat_ledger_count": 12
+  },
+  "material": {
+    "source_scan": "art-source/steel/rusty_metal_04_albedo.jpg",
+    "image_derived_not_noise": true,
+    "largest_connected_rust_patch_axial_m": 0.1400390625,
+    "rust_edge_band_sigma_m": 0.0007,
+    "clip_scar_axial_sigma_m": 0.006,
+    "atlas_physical_size_m": [
+      1.2,
+      0.12
+    ],
+    "pixel_size_m": [
+      0.0005859375,
+      0.00046875
+    ],
+    "rust_mask_over_0_25_fraction": 0.023426055908203125,
+    "gray_body_fraction": 0.9355602264404297,
+    "albedo_std": 0.06834545984867267,
+    "normal_convention": "OpenGL +Y; 25 micrometre image-derived grain height",
+    "roughness_range": [
+      0.7512,
+      0.8488000000000001
+    ]
+  },
+  "sources_sha256": {
+    "art-source/stasis-wiring/seat-rail/concept.png": "d957e7d0403122119fcf54bec928af5cea3434a08c5fe9ec37db05b00659a2ef",
+    "art-source/stasis-wiring/seat-rail/guide.glb": "0e13f5c9e464fc26d26e5d6731c1d38e413fcdfb388d2101ae554e5e28326e41",
+    "art-source/stasis-wiring/seat-rail/guide-aligned.glb": "0d6baa41f981aae1b19ff746d689fbefaa5f432d15eddb1567f37da736d958bb",
+    "art-source/stasis-wiring/seat-rail/fit.json": "39ece9cc33e924ca6c20dba083800052b4508741b2b358882380acbcea0c0523",
+    "art-source/stasis-wiring/seat-rail/source-cage.npz": "ccfb0cf9b8ba2a062ace106f80c78b3f5950ea525c07c0d44c351f0b55fd1c91",
+    "tools/seat_rail.py": "405da4cb75b902ffce2120e2e3b7efffb8841098e098c3c292def65bd6212c5e",
+    "tools/build_seat_rail.py": "5ffa2b60b7e560fef447a643a8c51847dc3cbf4eba82e2317a4b162a66897696",
+    "tools/seat_rail_proof.py": "6602d23d7d52109bfbd2bec13f510b015a0ec82b3529d07702ccc564c46060a4",
+    "tools/blender/seat_rail.py": "031a4eca2fafef074c3c1be12f85506ba842557921ec179cf4ccba8670e63025",
+    "assets/props/stasis-wiring/seat-rail/left.glb": "4ba93de361e867fa77eb92e26eee92784a200921d9beac9f9a14ffd61b42e73f",
+    "assets/props/stasis-wiring/seat-rail/middle.glb": "0ae3c5995a5ab374e7e5c5f03de0d3609c06da9324eddbd0159680e0fb5f1d41",
+    "assets/props/stasis-wiring/seat-rail/full.glb": "89d47842e4f667648b6fadf40c54feb09466cac3eca7e53c45a76d4185fcfecf",
+    "assets/props/stasis-wiring/seat-rail/right.glb": "3ca2893253d6beb835cc5556d8af2af389d6eaefcbf84113654515945a620954",
+    "assets/props/stasis-wiring/seat-rail/study.glb": "b53a451e015f5b1f80d6ab2b1041b61b3477774279cd165ad06f840bafd153b6",
+    "assets/props/stasis-wiring/seat-rail/steel-orm.png": "44ad17caa8d073639c352fe7518550b00dfb554bdb6976ad483f1fe75dbf1267",
+    "assets/props/stasis-wiring/seat-rail/steel-albedo.png": "2c1a822362d904a48b537942fa55e604306d6b6acd6002011277409cf954edbf",
+    "assets/props/stasis-wiring/seat-rail/right_Image_2.png": "0ab4f4aba5b10d494e5930324b9ecd4d6dd10dc19107308bf78c4ba50b25a715",
+    "assets/props/stasis-wiring/seat-rail/right_Image_1.png": "9ba2e6778905221e31cb92f41b001b81ec0b13913fe8874c257523ccb425a9a9",
+    "assets/props/stasis-wiring/seat-rail/right_Image_0.png": "2c1a822362d904a48b537942fa55e604306d6b6acd6002011277409cf954edbf",
+    "assets/props/stasis-wiring/seat-rail/full_Image_0.png": "2c1a822362d904a48b537942fa55e604306d6b6acd6002011277409cf954edbf",
+    "assets/props/stasis-wiring/seat-rail/middle_Image_1.png": "9ba2e6778905221e31cb92f41b001b81ec0b13913fe8874c257523ccb425a9a9",
+    "assets/props/stasis-wiring/seat-rail/left_Image_0.png": "2c1a822362d904a48b537942fa55e604306d6b6acd6002011277409cf954edbf",
+    "assets/props/stasis-wiring/seat-rail/left_Image_1.png": "9ba2e6778905221e31cb92f41b001b81ec0b13913fe8874c257523ccb425a9a9",
+    "assets/props/stasis-wiring/seat-rail/middle_Image_0.png": "2c1a822362d904a48b537942fa55e604306d6b6acd6002011277409cf954edbf",
+    "assets/props/stasis-wiring/seat-rail/study_Image_2.png": "0ab4f4aba5b10d494e5930324b9ecd4d6dd10dc19107308bf78c4ba50b25a715",
+    "assets/props/stasis-wiring/seat-rail/full_Image_1.png": "9ba2e6778905221e31cb92f41b001b81ec0b13913fe8874c257523ccb425a9a9",
+    "assets/props/stasis-wiring/seat-rail/study_Image_0.png": "2c1a822362d904a48b537942fa55e604306d6b6acd6002011277409cf954edbf",
+    "assets/props/stasis-wiring/seat-rail/middle_Image_2.png": "0ab4f4aba5b10d494e5930324b9ecd4d6dd10dc19107308bf78c4ba50b25a715",
+    "assets/props/stasis-wiring/seat-rail/left_Image_2.png": "0ab4f4aba5b10d494e5930324b9ecd4d6dd10dc19107308bf78c4ba50b25a715",
+    "assets/props/stasis-wiring/seat-rail/study_Image_1.png": "9ba2e6778905221e31cb92f41b001b81ec0b13913fe8874c257523ccb425a9a9",
+    "assets/props/stasis-wiring/seat-rail/full_Image_2.png": "0ab4f4aba5b10d494e5930324b9ecd4d6dd10dc19107308bf78c4ba50b25a715",
+    "assets/props/stasis-wiring/seat-rail/steel-normal.png": "f4177ae635e7bda6f077b0e4c15b4845bcb7d0d26d4d69ebdfc54518774f8932",
+    "art-source/stasis-wiring/seat-rail/seat-rail.blend": "db73f782f6cbff33e0c3bd2a925ffb21eed6a47e44d725f0ae98d25a6b5bec0d"
+  },
+  "proof_context_revision": {
+    "failed_seat_center_m": [
+      -0.6,
+      2.988,
+      -0.6
+    ],
+    "reason": "Standalone context now uses the production lower-seat failure; profile, PBR and floor pose unchanged.",
+    "previous_source_sha256": "0e4395db6908f06537fad387a4e4b36eaf83ed9381acde0dff014a5f79266b67",
+    "context_glb_sha256": "7d4e45037dbd8c049ca295f25b94a8e9328a6a6abf25ae80f6d9de837be15da3",
+    "archived_manifest": "tmp/verify-stasis-wiring/production-corrected/historical-manifests/manifest.json"
+  }
+}

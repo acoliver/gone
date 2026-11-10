@@ -164,3 +164,7 @@ deviations, is in [docs/dev/godot-port.md](docs/dev/godot-port.md).
 The `godot` commands above were verified on macOS with Godot 4.7.2.stable.
 The Windows and Linux invocations follow Godot's documented CLI
 conventions and have not been run by this project.
+
+## Power-room hardware demo
+
+Run the game with `godot --path .`, then wake, take the metal rod, pry open the stasis-bay hatch, cross the hallway, open the power-room door, and enter the room. The six stations line its side and north walls. The active secondary-power terminal is the second station along the west wall. Use Space or click when in reach to activate it. The ship status board is centered on the north wall between the two north-wall terminals. Hold your view on either display to read the native Naleya writing resolve into Spanish.

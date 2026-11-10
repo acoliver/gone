@@ -1,0 +1,23 @@
+{
+  "source_scan": "art-source/steel/rusty_metal_04_albedo.jpg",
+  "image_derived_not_noise": true,
+  "largest_connected_rust_patch_axial_m": 0.1400390625,
+  "rust_edge_band_sigma_m": 0.0007,
+  "clip_scar_axial_sigma_m": 0.006,
+  "atlas_physical_size_m": [
+    1.2,
+    0.12
+  ],
+  "pixel_size_m": [
+    0.0005859375,
+    0.00046875
+  ],
+  "rust_mask_over_0_25_fraction": 0.023426055908203125,
+  "gray_body_fraction": 0.9355602264404297,
+  "albedo_std": 0.06834545984867267,
+  "normal_convention": "OpenGL +Y; 25 micrometre image-derived grain height",
+  "roughness_range": [
+    0.7512,
+    0.8488000000000001
+  ]
+}

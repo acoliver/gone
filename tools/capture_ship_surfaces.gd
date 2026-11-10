@@ -9,7 +9,7 @@ static func capture_identity() -> Dictionary:
 		for suffix: String in ["", ".import"]:
 			var path := "assets/surfaces/steel/" + file + suffix
 			hashes[path] = FileAccess.get_sha256("res://" + path)
-	for path: String in ["app/surfaces.gd", "app/lighting.gd", "app/hallway.gd", "app/power_room.gd", "app/ship_scene.gd", "tools/capture_ship_surfaces.gd", "app/shaders/weathered_steel.gdshader", "app/shaders/steel_sampling.gdshaderinc", "app/shaders/weathered_tape.gdshader", "assets/surfaces/steel/manifest.json", "assets/surfaces/hatch/leaf-weather.png", "assets/surfaces/hatch/leaf-weather.png.import"]:
+	for path: String in ["app/surfaces.gd", "app/lighting.gd", "app/emergency_fixture_profile.gd", "app/hallway.gd", "app/power_room.gd", "app/ship_scene.gd", "tools/capture_ship_surfaces.gd", "app/shaders/weathered_steel.gdshader", "app/shaders/steel_sampling.gdshaderinc", "app/shaders/weathered_tape.gdshader", "assets/surfaces/steel/manifest.json", "assets/surfaces/hatch/leaf-weather.png", "assets/surfaces/hatch/leaf-weather.png.import"]:
 		hashes[path] = FileAccess.get_sha256("res://" + path)
 	for file: String in DirAccess.get_files_at("res://assets/props/ceiling"):
 		if not file.begins_with("fixture_") or not file.ends_with(".png"): continue
@@ -29,16 +29,17 @@ static func capture_identity() -> Dictionary:
 		"fill_color": [Lighting.EMERGENCY_FILL_COLOR.r, Lighting.EMERGENCY_FILL_COLOR.g, Lighting.EMERGENCY_FILL_COLOR.b],
 		"lens_base_color": str(Lighting.LENS_BASE_COLOR), "lens_emission": str(Lighting.emergency_emission(1.0)),
 		"key_energy": Lighting.emergency_energy(), "fill_energy": Lighting.emergency_energy() * Lighting.EMERGENCY_FILL_SHARE,
-		"fill_counts": [6, 8, 6],
+		"fill_counts": [0, 1, 3],
 		"key_range": Lighting.EMERGENCY_POOL_RANGE, "key_attenuation": Lighting.FIXTURE_ATTENUATION,
 		"bay_key_range": Lighting.BAY_POOL_RANGE, "bay_key_attenuation": Lighting.BAY_POOL_ATTENUATION,
 		"bay_hatch_range": Lighting.BAY_HATCH_POOL_RANGE, "bay_hatch_attenuation": Lighting.BAY_HATCH_ATTENUATION,
 		"smoke_emission": [Lighting.SMOKE_EMISSION.r, Lighting.SMOKE_EMISSION.g, Lighting.SMOKE_EMISSION.b],
-		"bay_fill_energy": Lighting.emergency_energy() * Lighting.EMERGENCY_BAY_FILL_SHARE,
-		"end_fill_energy": Lighting.emergency_energy() * Lighting.EMERGENCY_END_FILL_SHARE,
-		"end_fill_color": [Lighting.EMERGENCY_END_FILL_COLOR.r, Lighting.EMERGENCY_END_FILL_COLOR.g, Lighting.EMERGENCY_END_FILL_COLOR.b],
-		"no_fill_multiplier": Lighting.EMERGENCY_NO_FILL_KEY_MULTIPLIER, "fill_range": Lighting.EMERGENCY_FILL_RANGE,
-		"fill_ceiling_drop": ShipLayout.EMERGENCY_FILL_CEILING_DROP,
+		"bay_wall_profiles": str(EmergencyFixtureProfile.BAY),
+		"hall_wall_profiles": str(EmergencyFixtureProfile.HALL),
+		"power_wall_profiles": str(EmergencyFixtureProfile.POWER),
+		"minimum_live_share": "one third of room circuit median",
+		"no_fill_multiplier": Lighting.EMERGENCY_NO_FILL_KEY_MULTIPLIER,
+		"emergency_mounting": "wall brackets; no ceiling drops",
 		"key_shadows": false, "fill_shadows": false,
 		"fill_masks": [Lighting.BAY_FILL_MASK, Lighting.HALL_FILL_MASK, Lighting.POWER_FILL_MASK],
 		"fill_rooms": "D14 bay/hall/power only; remote connectors remain independent under secondary power",

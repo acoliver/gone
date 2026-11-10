@@ -20,7 +20,7 @@ func test_bay_handoff_matches_hallway_without_darkness() -> void:
 		assert_float_equal(bay.level() + bay.white_level(), 1.0, "no blackout in handoff")
 	_assert_output(bay, 0.0)
 	assert_float_equal(bay.white_level(), 1.0, "white settles lit")
-	for light: OmniLight3D in bay.white_lights():
+	for light: SpotLight3D in bay.white_lights():
 		assert_true(light.light_color == Lighting.REGULAR_WHITE, "regular white color")
 		assert_true(is_equal_approx(light.light_energy, Lighting.regular_energy()), "regular white energy")
 	assert_true(bay.white_lens_material().emission == Lighting.REGULAR_WHITE * Lighting.REGULAR_EMISSIVE, "white lenses glow")
@@ -50,27 +50,16 @@ func test_connectors_and_outer_sections_keep_their_steady_red_circuits() -> void
 			assert_true(light.light_cull_mask != 1, "independent circuit stays isolated from bay")
 		node.free()
 
-func test_fixture_inventory_places_eight_red_lights_from_registry() -> void:
+func test_fixture_inventory_places_mirrored_wall_rows_independent_of_pods() -> void:
 	var game := Game.new(0)
 	var lighting := Lighting.build(game)
 	var fixtures: Array[Node3D] = lighting.fixtures()
 	var lights: Array[OmniLight3D] = lighting.lights()
-	assert_int_equal(fixtures.size(), 8, "seven wall fixtures and one over the hatch")
-	assert_int_equal(lights.size(), 8, "one light per fixture")
-	var registry_pods: Array[Pods.Pod] = game.registry.pods()
-	for index: int in range(registry_pods.size()):
-		var placement := registry_pods[index].placement()
-		var side := signf(placement.center.y)
-		var expected := Vector3(
-			placement.center.x,
-			2.65,
-			side * (Pods.ROOM_WIDTH / 2.0 - 0.10)
-		)
-		assert_vec3_equal(
-			fixtures[index].position,
-			expected,
-			"architectural fixture %d stays on the wall; separate pod keys follow #88's inset" % index
-		)
+	assert_int_equal(fixtures.size(), 9, "eight mirrored wall fixtures and one over the hatch")
+	assert_int_equal(lights.size(), 9, "one light per fixture")
+	for index: int in range(8):
+		var expected := Vector3([-4.5, -1.5, 1.5, 4.5][index % 4], 2.5, (-1.0 if index < 4 else 1.0) * (Pods.ROOM_WIDTH / 2.0 - 0.10))
+		assert_vec3_equal(fixtures[index].position, expected, "architectural fixture %d belongs to its mirrored wall station" % index)
 	var lintel: Placement.SolidPlacement = Placement.hatch_solids()[2]
 	assert_vec3_equal(
 		lighting.fixture(ShipLayout.BAY_HATCH_KEY_ID).position,
@@ -78,50 +67,53 @@ func test_fixture_inventory_places_eight_red_lights_from_registry() -> void:
 		"hatch fixture uses the lintel placement at 2.70 m"
 	)
 	for light: OmniLight3D in lights:
-		assert_true(light.light_color == Color(1.0, 0.28, 0.12), "fixture color is the approved red-orange")
-		assert_float_equal(light.omni_range, 5.5 if light.get_parent() == lighting.fixture(ShipLayout.BAY_HATCH_KEY_ID) else 3.5, "bay keys have local wall pools and one longer hatch spill")
+		assert_float_equal(light.light_color.r, 1.0, "merged source retains full red output")
+		var index := lights.find(light)
+		assert_float_equal(light.omni_range, EmergencyFixtureProfile.BAY_HATCH.z if index == 8 else EmergencyFixtureProfile.BAY.z, "throw belongs to the consolidated wall profile")
 		assert_false(light.shadow_enabled, "fixture shadows are disabled")
 		assert_true(
-			absf(light.light_energy - Lighting.FIXTURE_ENERGY) < 1e-4,
+			absf(light.light_energy - Lighting.FIXTURE_ENERGY * float(light.get_meta(&"energy_share"))) < 1e-4,
 			"opening energy translates the authored 45 lumens"
 		)
 	for fixture: Node3D in fixtures:
 		assert_true(fixture.position.y > 2.4, "fixtures sit outside the walking envelope")
-	assert_int_equal(_count_class(lighting, "OmniLight3D"), 28 + 6 * Pods.POD_COUNT, "eight architectural keys, eight pod-only keys, six regular strips, six warm fills and six status spill samples per pod")
-	for light: OmniLight3D in lighting.white_lights():
+	assert_int_equal(_count_class(lighting, "OmniLight3D"), 9 + 6 * Pods.POD_COUNT, "nine single-source wall keys and six status spill samples per pod")
+	assert_int_equal(lighting.find_children("*", "Light3D", true, false).size(), 15 + 6 * Pods.POD_COUNT, "nine single-source cages, six regular beams and status-belt samples")
+	for light: SpotLight3D in lighting.white_lights():
 		assert_float_equal(light.light_energy, 0.0, "regular strips start dark")
 	assert_int_equal(_count_class(lighting, "DirectionalLight3D"), 0, "no directional light is authored")
-	assert_int_equal(_count_class(lighting, "SpotLight3D"), 0, "no spot light is authored")
+	assert_int_equal(_count_class(lighting, "SpotLight3D"), 6, "six unchanged downward regular beams")
 
-func test_lenses_share_one_cuboid_and_never_ride_the_light_node() -> void:
+func test_lenses_share_rounded_glass_inside_weathered_cages() -> void:
 	var lighting := Lighting.build(Game.new(0))
-	var lenses: Array[MeshInstance3D] = lighting.lenses()
-	assert_int_equal(lenses.size(), 8, "one lens per fixture")
-	var shared_mesh: BoxMesh = lenses[0].mesh
-	assert_vec3_equal(shared_mesh.size, Vector3(0.42, 0.16, 0.12), "lens cuboid is 0.42 x 0.16 x 0.12")
+	var lenses := lighting.lenses()
+	assert_int_equal(lenses.size(), 9, "one lens per fixture")
+	var shared_mesh := lenses[0].mesh
+	assert_false(shared_mesh is BoxMesh, "a bare cuboid cannot stand in for a lamp")
+	assert_close(shared_mesh.get_aabb().size, Vector3(0.26, 0.16, 0.07), "rounded hatch glass dimensions")
 	for lens: MeshInstance3D in lenses:
-		assert_true(lens.mesh == shared_mesh, "all lenses share one mesh resource")
-		assert_true(
-			shared_mesh.material == lighting.lens_material(),
-			"all lenses share one material resource"
-		)
-		assert_false(
-			lens.get_parent() is OmniLight3D,
-			"a lens mesh never rides the light node itself"
-		)
-		assert_int_equal(
-			lens.get_parent().get_child_count(),
-			3,
-			"fixture groups carry a light, its new ceiling mount, and a lens"
-		)
-		assert_true(lens.get_parent().get_child(0) is OmniLight3D, "the fixture's light remains its first child")
-		assert_true(lens.get_parent().get_node("CeilingMount") is MeshInstance3D, "the added child is the physical support")
-	var expected_emission := Color(1.0, 0.28, 0.12) * Lighting.FIXTURE_EMISSIVE
-	expected_emission.a = 1.0
-	assert_true(
-		lighting.lens_material().emission == expected_emission,
-		"full-power lens emission matches the emergency palette"
-	)
+		assert_true(lens.mesh == shared_mesh, "all cages reuse the same glass geometry")
+		assert_true(lens.material_override == lighting.lens_material(), "cages share their circuit material")
+		assert_false(lens.get_parent() is OmniLight3D, "wall glass and key remain siblings")
+		assert_int_equal(lens.get_parent().get_child_count(), 3, "light, rounded glass and caged housing with integrated stock")
+		assert_true(lens.get_parent().get_child(0) is OmniLight3D, "key remains first child")
+		assert_true(_wall_contact(lens.get_parent().get_node("Steel"), lighting._game.layout), "native hatch bracket reaches the wall")
+		assert_true(lens.get_parent().get_node("Steel") is MeshInstance3D, "rounded housing and protective grille are present")
+	var expected := Lighting.EMERGENCY_RED * Lighting.FIXTURE_EMISSIVE
+	expected.a = 1.0
+	assert_true(lighting.lens_material().emission == expected, "full-power lens retains the approved output")
+	lighting.free()
+
+func test_cage_and_its_mount_share_one_weathered_draw_surface() -> void:
+	var lighting := Lighting.build(Game.new(0))
+	for lens: MeshInstance3D in lighting.lenses():
+		var fixture := lens.get_parent()
+		var steel: MeshInstance3D = fixture.get_node("Steel")
+		assert_int_equal(steel.mesh.get_surface_count(), 1, "cage and stock share one draw surface")
+		assert_true(steel.mesh.has_meta(&"service_bounds"), "housing retains each wall fitting's physical bounds")
+		assert_true(_wall_contact(steel, lighting._game.layout), "one weathered draw includes the physical wall bracket")
+		assert_false(fixture.has_node("CeilingMount"), "stock is rendered in the housing, not a second draw")
+	lighting.free()
 
 func test_bridge_follows_sim_fade_and_repeated_dead_does_not_restart() -> void:
 	var game := Game.new(0)
@@ -236,7 +228,7 @@ func _assert_output(lighting: Lighting, level: float) -> void:
 	var emission_red: float = Lighting.FIXTURE_EMISSIVE * level
 	for light: OmniLight3D in lighting.lights():
 		assert_true(
-			absf(light.light_energy - energy) < 1e-4,
+			absf(light.light_energy - energy * float(light.get_meta(&"energy_share"))) < 1e-4,
 			"light energy tracks the fade: expected %.5f, got %.5f"
 			% [energy, light.light_energy]
 		)
@@ -276,7 +268,7 @@ func test_bay_reflections_cover_the_room_without_adding_light() -> void:
 	assert_int_equal(probe.cull_mask, 1 | Lighting.POD_STATUS_MASK, "probe captures bay architecture and the isolated pod receivers")
 	assert_false(probe.enable_shadows, "reflection capture needs no shadow pass")
 	assert_int_equal(probe.ambient_mode, ReflectionProbe.AMBIENT_DISABLED, "probe adds no ambient fill")
-	assert_int_equal(_count_class(lighting, "OmniLight3D"), 28 + 6 * Pods.POD_COUNT, "reflections add no lights beyond architectural keys, isolated pod keys, regular strips, fills and status spill")
+	assert_int_equal(_count_class(lighting, "OmniLight3D") + _count_class(lighting, "SpotLight3D"), 15 + 6 * Pods.POD_COUNT, "reflections add no lights beyond consolidated wall keys, regular strips and status spill")
 	assert_int_equal(_count_class(lighting, "CollisionShape3D"), 0, "reflections add no colliders")
 	lighting.free()
 
@@ -304,3 +296,7 @@ func test_reflections_refresh_once_after_power_handoff_or_blackout() -> void:
 			assert_int_equal(lighting.get_node("BayReflections").get_instance_id(), settled_id,
 				"steady lighting retains its reflection capture")
 		lighting.free()
+
+func _wall_contact(steel: MeshInstance3D, layout: ShipLayout) -> bool:
+	var mounting: SimTestCase = load("res://tests/light_mounting_test.gd").new()
+	return mounting._wall_contact(steel, mounting._walls(layout, 14), layout.bay_to_world())

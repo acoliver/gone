@@ -183941,26 +183941,28 @@
 			"tick": 3054.0
 		},
 		{
+			"camera_pitch_up": 30.0,
 			"light": "white",
 			"name": "power-active",
-			"camera_pitch_up": 30.0,
 			"tick": 3108.0
 		},
 		{
-			"light": "white",
-			"name": "hall-white",
 			"camera_back": 2.0,
 			"camera_pitch_up": 15.0,
+			"light": "white",
+			"name": "hall-white",
 			"tick": 3711.0
 		},
 		{
-			"camera_back": 4.5,
+			"camera_back": 9.0,
+			"camera_pitch_up": 15.0,
 			"light": "white",
 			"name": "fore-inner-closed",
 			"tick": 4994
 		},
 		{
-			"camera_back": 4.5,
+			"camera_back": 9.0,
+			"camera_pitch_up": 15.0,
 			"light": "white",
 			"name": "fore-inner-mid-crank",
 			"tick": 5031

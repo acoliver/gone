@@ -9,9 +9,12 @@ const PANEL_SCALE := Vector3.ONE
 const PANEL_Y := 2.99
 const PANEL_LENGTH := 1.18
 const PANEL_WIDTH := 0.58
-const EMPTY_CELLS := [Vector2i(3, 8)]
+const SeatMesh = preload("res://app/seat_rail_mesh.gd")
+# The north boundary adjoins brokenedge (4,5); the south boundary is a beam cassette.
+const FAILED_SEAT_CENTER := Vector3(-0.6, 2.988, -0.6)
+const EMPTY_CELLS := [Vector2i(4, 4)]
 const DAMAGE := {
-Vector2i(3, 9): &"brokenedge", Vector2i(2, 8): &"sag"
+Vector2i(4, 5): &"brokenedge", Vector2i(3, 4): &"sag"
 }
 
 static func layout() -> Array[Dictionary]:
@@ -41,9 +44,6 @@ static func service_bounds() -> Array[AABB]:
 	for pose: Transform3D in services.pipes + services.tees: boxes.append(pose * pipe_bounds)
 	for pose: Transform3D in services.clips: boxes.append(pose * AABB(-Vector3.ONE / 2, Vector3.ONE))
 	for row: Dictionary in services.detectors: boxes.append(row.bounds)
-	for fixture: ShipLayout.EmergencyFixtureSpec in ship.bay().emergency_fixtures(ship.bay().template()):
-		boxes.append(fixture.frame * AABB(-Lighting.LENS_SIZE / 2, Lighting.LENS_SIZE))
-		boxes.append(fixture.frame * AABB(Vector3(-0.0225, 0, -0.0225), Vector3(0.045, 3.2 - fixture.frame.origin.y, 0.045)))
 	var fixture_bounds: Array[AABB] = []
 	var fixture_asset := CeilingFixture.ASSET.instantiate() as Node3D
 	_collect_fixture_bounds(fixture_asset, Transform3D.IDENTITY, fixture_bounds)
@@ -102,7 +102,7 @@ static func build() -> BayCeiling:
 			target[at] = arrays
 			target[at + 1] = transform
 		assert(meshes.size() == 5 and panel_arrays.size() > 0 and hardware_arrays.size() == 8, "each fitted panel must provide one body and four mount heads")
-		panels[variant] = _merge_surfaces(panel_arrays, BayCeilingMaterial.material_for_variant(variant))
+		panels[variant] = _merge_surfaces(panel_arrays, BayCeilingMaterial.material_for_variant(variant), true)
 		hardware[variant] = _merge_surfaces(hardware_arrays, metal_material)
 		for mesh_node: MeshInstance3D in meshes: mesh_node.free()
 		imported.free()
@@ -125,7 +125,7 @@ static func _collect_meshes(node: Node, parent_transform: Transform3D, result: A
 		result.append(copy)
 	for child: Node in node.get_children(): _collect_meshes(child, local, result)
 
-static func _merge_surfaces(parts: Array, material: Material) -> ArrayMesh:
+static func _merge_surfaces(parts: Array, material: Material, restore_bearing: bool = false) -> ArrayMesh:
 	var output := ArrayMesh.new()
 	for part_index in range(0, parts.size(), 2):
 		var arrays: Array = parts[part_index]
@@ -135,12 +135,26 @@ static func _merge_surfaces(parts: Array, material: Material) -> ArrayMesh:
 		for index in range(vertices.size()):
 			vertices[index] = transform * vertices[index]
 			if normals.size() == vertices.size(): normals[index] = transform.basis.inverse().transposed() * normals[index]
+		if restore_bearing: _restore_bearing_plane(vertices, arrays[Mesh.ARRAY_INDEX])
 		arrays[Mesh.ARRAY_VERTEX] = vertices
 		arrays[Mesh.ARRAY_NORMAL] = normals
 		output.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 		output.surface_set_material(output.get_surface_count() - 1, material)
 	assert(output.get_surface_count() > 0, "merged bay ceiling mesh has surfaces")
 	return output
+
+static func _restore_bearing_plane(vertices: PackedVector3Array, indices: PackedInt32Array) -> void:
+	# Imported position compression shifts the export's -2mm flange by up to 0.4um.
+	# Restore only measured horizontal bearing planes, keeping the rim and UVs.
+	var planes := {}
+	var count := vertices.size() if indices.is_empty() else indices.size()
+	for offset in range(0, count, 3):
+		var a := vertices[offset if indices.is_empty() else indices[offset]].y
+		var b := vertices[offset+1 if indices.is_empty() else indices[offset+1]].y
+		var c := vertices[offset+2 if indices.is_empty() else indices[offset+2]].y
+		if absf(a + 0.002) < 0.000001 and a == b and b == c: planes[a] = true
+	for index in range(vertices.size()):
+		if planes.has(vertices[index].y): vertices[index].y = -0.002
 
 static func _add_instances(parent: Node3D, node_name: String, mesh: Mesh, cells: Array[Dictionary]) -> void:
 	var poses: Array[Transform3D] = []
@@ -192,7 +206,7 @@ static func _carrier(material: StandardMaterial3D, placements: Array[Dictionary]
 		cross.append_array(_rail_segments(Vector3(0, 3.12, z), Vector3(12, 0.055, 0.055), 0, obstacles))
 		seat_cross_webs.append_array(_rail_segments(Vector3(0, 3.04025, z), Vector3(12, 0.1045, 0.016), 0, obstacles))
 		var cross_spans: Array[Vector2] = [Vector2(-6.0, 6.0)]
-		if iz == 9: cross_spans = [Vector2(-6.0, -2.4), Vector2(-1.2, 6.0)]
+		if iz == 5: cross_spans = [Vector2(-6.0, -1.2), Vector2(0.0, 6.0)]
 		seat_cross_ledges.append_array(_cross_ledge_segments(z, cross_spans, obstacles))
 		for ix in range(11):
 			var x := clampf(-6.0 + ix * CELL_X, -5.9725, 5.9725)
@@ -213,11 +227,16 @@ static func _carrier(material: StandardMaterial3D, placements: Array[Dictionary]
 	_batch(root, "RailSlabHangers", mesh, slab)
 	_batch(root, "SeatCrossWebs", mesh, seat_cross_webs)
 	_batch(root, "SeatLongWebs", mesh, seat_long_webs)
-	_batch(root, "PanelSupportLedgersCross", mesh, seat_cross_ledges)
+	_formed_cross_seats(root, seat_cross_ledges)
 	_batch(root, "PanelSupportLedgersLong", mesh, seat_long_ledges)
-	var failure := MeshInstance3D.new()
+	var failure := Node3D.new()
 	failure.name = "BrokenEdgeFrameRail"
-	failure.mesh = _failed_ledge(material)
+	failure.position = FAILED_SEAT_CENTER
+	for part: StringName in [&"left", &"right"]:
+		var retained := MeshInstance3D.new()
+		retained.name = "SeatRail_" + String(part)
+		retained.mesh = SeatMesh.clipped(part, -0.582, 0.582)
+		failure.add_child(retained)
 	root.add_child(failure)
 	return root
 
@@ -241,34 +260,22 @@ static func _cross_ledge_segments(z: float, spans: Array[Vector2], obstacles: Ar
 	for span: Vector2 in spans:
 		var center := (span.x + span.y) / 2
 		var size := span.y - span.x
-		result.append_array(_rail_segments(Vector3(center, 2.9865, z), Vector3(size, 0.003, 0.036), 0, obstacles))
+		result.append_array(_rail_segments(Vector3(center, 2.979, z), Vector3(size, 0.018, 0.042), 0, obstacles))
 	return result
 
-static func _failed_ledge(material: Material) -> ArrayMesh:
-	# A torn lower lip bows between retained ends. The upper carrier stays connected.
-	var sections: Array[Vector3] = []
-	for index in range(61):
-		# Long ledgers own the junction footprint; flat end caps butt against their sides.
-		var x := clampf(-0.6 + index * 0.02, -CELL_X / 2 + 0.018, CELL_X / 2 - 0.018)
-		var bow := pow(maxf(0.0, 1.0 - pow(x / 0.22, 2)), 2) * 0.038
-		for corner: Vector2 in [Vector2(-0.018, 0), Vector2(0.018, 0), Vector2(0.018, -0.003), Vector2(-0.018, -0.003)]:
-			sections.append(Vector3(-1.8 + x, 2.988 - bow + corner.y, 1.8 + corner.x))
-	var surface := SurfaceTool.new()
-	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
-	surface.set_material(material)
-	for index in range(60):
-		for side in range(4):
-			var a := index * 4 + side
-			var b := index * 4 + (side + 1) % 4
-			for vertex: int in [a, b, b + 4, a, b + 4, a + 4]:
-				surface.set_uv(Vector2(sections[vertex].x / 1.18, sections[vertex].z / 0.58))
-				surface.add_vertex(sections[vertex])
-	for vertex: int in [0, 2, 1, 0, 3, 2, 240, 241, 242, 240, 242, 243]:
-		surface.set_uv(Vector2(sections[vertex].y, sections[vertex].z))
-		surface.add_vertex(sections[vertex])
-	surface.generate_normals()
-	surface.index()
-	return surface.commit()
+static func _formed_cross_seats(parent: Node3D, ledges: Array[Transform3D]) -> void:
+	var root := Node3D.new()
+	root.name = "PanelSupportLedgersCross"
+	var groups: Dictionary = {}
+	for ledge: Transform3D in ledges:
+		var length := snappedf(ledge.basis.x.length(), 0.000001)
+		if not groups.has(length): groups[length] = []
+		groups[length].append(Transform3D(Basis.IDENTITY, Vector3(ledge.origin.x, 2.988, ledge.origin.z)))
+	for length: float in groups:
+		var poses: Array[Transform3D] = []
+		poses.assign(groups[length])
+		_batch(root, "SeatSpan_%0.7f" % length, SeatMesh.span(length), poses)
+	parent.add_child(root)
 
 static func _rail_segments(center: Vector3, size: Vector3, axis: int, obstacles: Array[AABB]) -> Array[Transform3D]:
 	var intervals: Array[Vector2] = [Vector2(center[axis] - size[axis] / 2, center[axis] + size[axis] / 2)]

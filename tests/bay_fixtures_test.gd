@@ -60,7 +60,8 @@ func test_presenters_use_bay_fixture_frames_under_one_transform() -> void:
 		var fixture: Node3D = lighting.white_lights()[index].get_parent()
 		assert_true(fixture.transform == frames[index], "regular fixture consumes local frame")
 		assert_true(root.transform * lighting.transform * fixture.transform == game.layout.bay_to_world() * frames[index], "regular fixture transformed once")
-		assert_close(lighting.white_lights()[index].position, Vector3(0, -0.12, 0), "light mesh-relative offset unchanged")
+		var emitter: MeshInstance3D = lighting.white_lights()[index].get_meta(&"fixture_emitter")
+		assert_close(Surfaces.world_frame(lighting.white_lights()[index]).origin, Surfaces.world_frame(emitter) * emitter.mesh.get_aabb().get_center(), "regular source sits at imported glass centre")
 	frames = bay.ceiling_vent_frames()
 	for index: int in range(frames.size()):
 		assert_true(hazards._vents[index].transform == frames[index], "vent consumes local frame")

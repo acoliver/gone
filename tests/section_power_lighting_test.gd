@@ -33,6 +33,16 @@ func test_d16_matches_d14_profiles_and_levels_through_both_power_handoffs() -> v
 		assert_float_equal(fills[index].light_energy, hallway._fill_lights[index].light_energy, "same emergency fill energy")
 	var end_fills := section.find_children("RegularFillEnd*", "OmniLight3D", true, false)
 	assert_int_equal(end_fills.size(), 1, "regular end bounce exists")
+	var emergency_end := section.get_node("PowerLighting/EmergencyFillEnd") as OmniLight3D
+	assert_true(emergency_end.has_meta(&"fixture_emitter") and emergency_end.has_meta(&"fixture_housing"), "emergency end fill has its physical-source binding")
+	assert_true(circuit._white_end_fill.has_meta(&"fixture_emitter") and circuit._white_end_fill.has_meta(&"fixture_housing"), "regular end fill has its physical-source binding")
+	assert_true(is_equal_approx(circuit._white_end_fill.position.z, spec.emergency_end_fill_position().z - 2.6), "regular end source occupies the opposite wall position")
+	for key: OmniLight3D in circuit._red_lights:
+		assert_true(key.has_meta(&"fixture_emitter") and key.has_meta(&"fixture_housing"), "adapted emergency key retains its caged-source binding")
+		assert_true(key.get_meta(&"energy_share") > 0.0, "emergency profile share remains present")
+	for strip: SpotLight3D in circuit._white_lights:
+		assert_true(strip.spot_angle == 90.0 and strip.spot_angle_attenuation == 0.0, "regular strip uses the mounted downward beam")
+		assert_true(strip.has_meta(&"fixture_emitter") and strip.has_meta(&"fixture_housing"), "regular strip is seated in its fixture")
 	for active: bool in [true, false]:
 		game.power_active = active
 		for tick: int in range(Lighting.FIXTURE_SETTLE_TICKS + 1):
@@ -42,6 +52,8 @@ func test_d16_matches_d14_profiles_and_levels_through_both_power_handoffs() -> v
 			assert_float_equal(circuit.white_level(), hallway.white_level(), "same regular fade at each logical tick")
 			_check_lights(_red_keys(section), hallway.lights(), "handoff emergency keys")
 			_check_lights(circuit._white_lights, hallway.white_lights(), "handoff regular strips")
+			for lens: StandardMaterial3D in circuit._red_lenses:
+				assert_true(is_equal_approx(lens.emission.r, Lighting.emergency_emission(circuit.red_level()).r), "caged emergency lens follows the electrical fade")
 			for fill: OmniLight3D in end_fills:
 				assert_float_equal(fill.light_energy, hallway._white_end_fill.light_energy, "same regular end bounce")
 	section.free()
@@ -73,14 +85,22 @@ func test_quarters_reveal_bounce_is_local_and_follows_the_same_power_handoff() -
 func _check_lights(actual: Array, expected: Array, context: String) -> void:
 	assert_int_equal(actual.size(), expected.size(), context + " count")
 	for index: int in range(mini(actual.size(), expected.size())):
-		assert_float_equal(actual[index].light_energy, expected[index].light_energy, context + " energy")
-		assert_float_equal(actual[index].omni_range, expected[index].omni_range, context + " range")
-		assert_float_equal(actual[index].omni_attenuation, expected[index].omni_attenuation, context + " attenuation")
-		assert_true(actual[index].light_color == expected[index].light_color, context + " colour")
+		var actual_light: Light3D = actual[index]
+		var expected_light: Light3D = expected[index]
+		assert_float_equal(actual_light.light_energy, expected_light.light_energy, context + " energy")
+		if actual_light is OmniLight3D and expected_light is OmniLight3D:
+			assert_float_equal(actual_light.omni_range, expected_light.omni_range, context + " range")
+			assert_float_equal(actual_light.omni_attenuation, expected_light.omni_attenuation, context + " attenuation")
+		elif actual_light is SpotLight3D and expected_light is SpotLight3D:
+			assert_float_equal(actual_light.spot_range, expected_light.spot_range, context + " range")
+			assert_float_equal(actual_light.spot_attenuation, expected_light.spot_attenuation, context + " attenuation")
+		else:
+			assert_true(false, context + " matching light types")
+		assert_true(actual_light.light_color == expected_light.light_color, context + " colour")
 
 func _red_keys(section: Node3D) -> Array[OmniLight3D]:
 	var result: Array[OmniLight3D] = []
 	for fixture: Node in section.get_children():
 		for child: Node in fixture.get_children():
-			if child is OmniLight3D and child.light_color == Lighting.EMERGENCY_RED: result.append(child)
+			if child is OmniLight3D and child.has_meta(&"energy_share"): result.append(child)
 	return result

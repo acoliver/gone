@@ -1,0 +1,41 @@
+{
+  "coordinate_system": "Blender right-handed Z-up, operator -Y, units metres",
+  "quaternion_order": "w,x,y,z",
+  "location": [
+    -7.282633305294439e-05,
+    -0.6110982894897461,
+    0.583321750164032
+  ],
+  "rotation_quaternion": [
+    0.9741373062133789,
+    0.22593756020069122,
+    0.0028766575269401073,
+    0.0007245384622365236
+  ],
+  "scale": [
+    0.516013503074646,
+    0.516013503074646,
+    0.516013503074646
+  ],
+  "glTF_y_up": {
+    "location": [
+      -7.282633305294439e-05,
+      0.583321750164032,
+      0.6110982894897461
+    ],
+    "quaternion_order": "x,y,z,w",
+    "rotation_quaternion": [
+      0.22593756020069122,
+      0.0007245384622365236,
+      -0.0028766575269401073,
+      0.9741373062133789
+    ],
+    "scale": [
+      0.516013503074646,
+      0.516013503074646,
+      0.516013503074646
+    ]
+  },
+  "application": "Apply this transform to KeyboardBase of the unchanged local-space keyboard.glb, relative to console origin.",
+  "support_plane_note": "Generated underside is planar but slightly tilted in source local coordinates. Placement aligns that measured support plane to the measured deck plane with 0.5 mm normal clearance. Geometry and source KeyboardBase remain unchanged."
+}

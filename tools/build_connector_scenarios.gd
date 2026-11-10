@@ -100,6 +100,10 @@ func _build_connector() -> void:
 			if beat.name not in ["power-active", "hall-white"]:
 				# Keep the nearest regular strip below the top edge of the player lens.
 				beat.camera_back = 4.5
+		if beat.name in ["fore-inner-closed", "fore-inner-mid-crank"]:
+			# Pendants occlude the first recessed beam at the old 4.5 m view. Include the next beam and the whole hatch.
+			beat.camera_back = 9.0
+			beat.camera_pitch_up = 15.0
 	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://scenarios/connector-route.json"))
 	assert(route.tick < int(data.max_frames), "connector route preserves its scenario budget")
 	data.actions = route.actions

@@ -22,7 +22,7 @@ func test_status_spill_is_local_symmetric_and_red() -> void:
 			else:
 				belt_positions.append(light.position)
 		for side: float in [-1.0,1.0]:
-			assert_true(Vector3(side*.38,.42,-1.30) in head_positions,"both sides of the attached head roll receive the wall bounce")
+			assert_true(Vector3(side*.38,.28,-0.80) in head_positions,"both sides of the attached head roll receive the wall bounce")
 			for station: float in [-.45,.45]:
 				assert_true(Vector3(side*.52,.28,station) in belt_positions,"the belt spill is mirrored at the existing belt height")
 	lighting.free()
@@ -68,24 +68,22 @@ func test_pod_receiver_layer_is_disjoint_from_every_architectural_circuit() -> v
 		for section: int in [40, 41, 42]:
 			assert_int_equal(Lighting.space_mask(layout, ShipLayout.section_id(deck, section)) & Lighting.POD_STATUS_MASK, 0, "section keys cannot illuminate pods")
 
-func test_pod_keys_keep_main_profile_and_follow_the_existing_fade() -> void:
+func test_pod_key_output_is_merged_into_the_existing_wall_source_and_follows_its_fade() -> void:
 	var game := Game.new(0)
 	var lighting := Lighting.build(game)
-	var frames := Lighting.fixture_transforms(game.registry)
-	assert_int_equal(lighting._pod_keys.size(), 8, "seven pod wall keys plus main's lintel key")
-	for index: int in range(8):
-		var key := lighting._pod_keys[index]
-		assert_true(key.transform.is_equal_approx(frames[index]), "main's fixture placement stays unchanged for pods")
-		assert_true(key.light_color == Color.RED, "main's pure-red pod keys")
-		assert_float_equal(key.omni_range, 6.0, "main's long throw reaches fitted pod padding")
-		assert_float_equal(key.omni_attenuation, 1.0, "main's default falloff")
-		assert_int_equal(key.light_cull_mask, Lighting.POD_STATUS_MASK, "pod keys cannot change walls or hatch steel")
-		assert_false(key.shadow_enabled, "no added shadow work")
+	assert_int_equal(lighting.lights().size(), 9, "eight wall keys plus the hatch key")
+	assert_int_equal(lighting.find_children("PodEmergencyKey*", "Light3D", true, false).size(), 0, "no second light in a cage")
+	for key: OmniLight3D in lighting.lights():
+		var emitter: MeshInstance3D = key.get_meta(&"fixture_emitter")
+		assert_close(Surfaces.world_frame(key).origin, Surfaces.world_frame(emitter) * emitter.mesh.get_aabb().get_center(), "one source at its glass centre")
+		assert_true((key.light_cull_mask & Lighting.POD_STATUS_MASK) != 0, "one wall source now reaches the pod receiver")
+		assert_false(key.shadow_enabled, "no shadow work added")
 	game.press_console()
 	for tick: int in range(Lighting.FIXTURE_SETTLE_TICKS):
 		lighting.process_frame(Sim.LOGICAL_TICK_SECS)
-		for key: OmniLight3D in lighting._pod_keys:
-			assert_float_equal(key.light_energy, PackedFloat32Array([Lighting.FIXTURE_ENERGY * lighting.level()])[0], "pod keys use the existing emergency fade at native light-property precision")
-	for white: OmniLight3D in lighting.white_lights():
+		for key: OmniLight3D in lighting.lights():
+			var share: float = key.get_meta(&"energy_share")
+			assert_float_equal(key.light_energy, PackedFloat32Array([Lighting.FIXTURE_ENERGY * share * lighting.level()])[0], "summed share follows the existing fade")
+	for white: SpotLight3D in lighting.white_lights():
 		assert_true((white.light_cull_mask & Lighting.POD_STATUS_MASK) != 0, "regular white still lights the pods")
 	lighting.free()

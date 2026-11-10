@@ -1,0 +1,211 @@
+{
+  "definition": "Depth relative to the local lower head face extrapolated down at dy/dz=0.13. Opening measured where depth exceeds 1 mm, restricted to the connected deck joint below z=0.70 m. Front rays use 1 mm vertical pitch. Above-front rays point (0,1,-0.8).",
+  "samples": [
+    {
+      "x": -0.4,
+      "before_front_depth_mm": 45.28499999999991,
+      "before_front_opening_z_mm": 54.00000000000005,
+      "before_front_opening_z_m": [
+        0.621,
+        0.674
+      ],
+      "before_above_front_depth_mm": 39.946690000000004,
+      "after_front_residual_undercut_mm": 0.03953926086419646,
+      "after_above_front_residual_undercut_mm": 0.04070733070371535
+    },
+    {
+      "x": -0.35,
+      "before_front_depth_mm": 45.36499999999999,
+      "before_front_opening_z_mm": 54.00000000000005,
+      "before_front_opening_z_m": [
+        0.621,
+        0.674
+      ],
+      "before_above_front_depth_mm": 40.30478999999998,
+      "after_front_residual_undercut_mm": 0.0,
+      "after_above_front_residual_undercut_mm": 0.0
+    },
+    {
+      "x": -0.3,
+      "before_front_depth_mm": 45.47000000000006,
+      "before_front_opening_z_mm": 54.00000000000005,
+      "before_front_opening_z_m": [
+        0.621,
+        0.674
+      ],
+      "before_above_front_depth_mm": 40.38149000000008,
+      "after_front_residual_undercut_mm": 0.014956321716330656,
+      "after_above_front_residual_undercut_mm": 0.01642528533940535
+    },
+    {
+      "x": -0.25,
+      "before_front_depth_mm": 45.45599999999994,
+      "before_front_opening_z_mm": 54.00000000000005,
+      "before_front_opening_z_m": [
+        0.621,
+        0.674
+      ],
+      "before_above_front_depth_mm": 39.80589000000001,
+      "after_front_residual_undercut_mm": 0.0,
+      "after_above_front_residual_undercut_mm": 0.0
+    },
+    {
+      "x": -0.2,
+      "before_front_depth_mm": 45.463000000000086,
+      "before_front_opening_z_mm": 54.00000000000005,
+      "before_front_opening_z_m": [
+        0.621,
+        0.674
+      ],
+      "before_above_front_depth_mm": 39.823540000000044,
+      "after_front_residual_undercut_mm": 0.0012506179810634066,
+      "after_above_front_residual_undercut_mm": 0.0011996345520293161
+    },
+    {
+      "x": -0.15,
+      "before_front_depth_mm": 45.53700000000005,
+      "before_front_opening_z_mm": 54.00000000000005,
+      "before_front_opening_z_m": [
+        0.621,
+        0.674
+      ],
+      "before_above_front_depth_mm": 39.82623000000007,
+      "after_front_residual_undercut_mm": 0.0010282821655271945,
+      "after_above_front_residual_undercut_mm": 0.000891153335569328
+    },
+    {
+      "x": -0.1,
+      "before_front_depth_mm": 45.459999999999944,
+      "before_front_opening_z_mm": 54.00000000000005,
+      "before_front_opening_z_m": [
+        0.621,
+        0.674
+      ],
+      "before_above_front_depth_mm": 39.79318999999998,
+      "after_front_residual_undercut_mm": 0.0002747726439711329,
+      "after_above_front_residual_undercut_mm": 0.0003380966185906331
+    },
+    {
+      "x": -0.05,
+      "before_front_depth_mm": 45.437000000000005,
+      "before_front_opening_z_mm": 54.00000000000005,
+      "before_front_opening_z_m": [
+        0.621,
+        0.674
+      ],
+      "before_above_front_depth_mm": 39.79662999999994,
+      "after_front_residual_undercut_mm": 0.006538467407168902,
+      "after_above_front_residual_undercut_mm": 0.0063989543914733105
+    },
+    {
+      "x": -0.0,
+      "before_front_depth_mm": 45.44700000000002,
+      "before_front_opening_z_mm": 54.00000000000005,
+      "before_front_opening_z_m": [
+        0.621,
+        0.674
+      ],
+      "before_above_front_depth_mm": 39.782459999999965,
+      "after_front_residual_undercut_mm": 0.000337722778298577,
+      "after_above_front_residual_undercut_mm": 0.00024570274359536626
+    },
+    {
+      "x": 0.05,
+      "before_front_depth_mm": 45.43400000000003,
+      "before_front_opening_z_mm": 54.00000000000005,
+      "before_front_opening_z_m": [
+        0.621,
+        0.674
+      ],
+      "before_above_front_depth_mm": 39.777810000000024,
+      "after_front_residual_undercut_mm": 0.0005368957519680251,
+      "after_above_front_residual_undercut_mm": 0.0006278667450398956
+    },
+    {
+      "x": 0.1,
+      "before_front_depth_mm": 45.433999999999976,
+      "before_front_opening_z_mm": 54.00000000000005,
+      "before_front_opening_z_m": [
+        0.621,
+        0.674
+      ],
+      "before_above_front_depth_mm": 39.75794999999999,
+      "after_front_residual_undercut_mm": 0.006857635498014325,
+      "after_above_front_residual_undercut_mm": 0.007018043518103312
+    },
+    {
+      "x": 0.15,
+      "before_front_depth_mm": 45.489000000000054,
+      "before_front_opening_z_mm": 54.00000000000005,
+      "before_front_opening_z_m": [
+        0.621,
+        0.674
+      ],
+      "before_above_front_depth_mm": 39.69001000000005,
+      "after_front_residual_undercut_mm": 0.0011569595337324046,
+      "after_above_front_residual_undercut_mm": 0.0008565521241177265
+    },
+    {
+      "x": 0.2,
+      "before_front_depth_mm": 45.406999999999975,
+      "before_front_opening_z_mm": 54.00000000000005,
+      "before_front_opening_z_m": [
+        0.621,
+        0.674
+      ],
+      "before_above_front_depth_mm": 39.69269999999992,
+      "after_front_residual_undercut_mm": 0.0006505584716487434,
+      "after_above_front_residual_undercut_mm": 0.0007791709899507282
+    },
+    {
+      "x": 0.25,
+      "before_front_depth_mm": 45.38100000000001,
+      "before_front_opening_z_mm": 54.00000000000005,
+      "before_front_opening_z_m": [
+        0.621,
+        0.674
+      ],
+      "before_above_front_depth_mm": 39.67140999999991,
+      "after_front_residual_undercut_mm": 0.003147491455024465,
+      "after_above_front_residual_undercut_mm": 0.003025859832694877
+    },
+    {
+      "x": 0.3,
+      "before_front_depth_mm": 45.38900000000001,
+      "before_front_opening_z_mm": 54.00000000000005,
+      "before_front_opening_z_m": [
+        0.621,
+        0.674
+      ],
+      "before_above_front_depth_mm": 39.537929999999946,
+      "after_front_residual_undercut_mm": 0.0004857101439936784,
+      "after_above_front_residual_undercut_mm": 0.000616640090878029
+    },
+    {
+      "x": 0.35,
+      "before_front_depth_mm": 45.351000000000084,
+      "before_front_opening_z_mm": 54.00000000000005,
+      "before_front_opening_z_m": [
+        0.621,
+        0.674
+      ],
+      "before_above_front_depth_mm": 39.56344000000001,
+      "after_front_residual_undercut_mm": 0.008624931335465824,
+      "after_above_front_residual_undercut_mm": 0.008720260620154185
+    },
+    {
+      "x": 0.4,
+      "before_front_depth_mm": 45.123999999999995,
+      "before_front_opening_z_mm": 53.00000000000005,
+      "before_front_opening_z_m": [
+        0.622,
+        0.674
+      ],
+      "before_above_front_depth_mm": 39.383270000000024,
+      "after_front_residual_undercut_mm": 0.0,
+      "after_above_front_residual_undercut_mm": 0.0
+    }
+  ],
+  "source_boundary_edges": 0,
+  "source_nonmanifold_edges": 0
+}

@@ -213,7 +213,7 @@ func test_generator_reaches_ceiling_with_unchanged_bands_and_light() -> void:
 		assert_vec3_equal(bands[index].position, Vector3(0, [0.7, 1.5, 2.3][index], 0), "band positions unchanged")
 		assert_vec3_equal(Vector3(bands[index].mesh.inner_radius, bands[index].mesh.outer_radius, 0), Vector3(0.66, 0.84, 0), "band inner and outer radii unchanged")
 		assert_true(bands[index].material_override == room._generator_ring_material, "bands keep their switched glow")
-	assert_vec3_equal(generator.get_node("Glow").position, Vector3(0, 1.9, 0), "body growth must not move the generator light")
+	assert_vec3_equal(generator.get_node("Glow").position, Vector3(0, 1.5, 0), "generator light sits at the middle luminous ring")
 	room.free()
 
 func test_extreme_runs_terminate_inside_the_actual_ship_end_walls() -> void:
