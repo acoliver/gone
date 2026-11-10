@@ -13,9 +13,11 @@ from PIL import Image, ImageDraw, ImageFilter
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tools/blender/quarters/wardrobe'))
-from materials import measure, face_passes, mute_green, design_paint
+from materials import measure, mute_green as float_mute_green, design_paint
+from locker_gates import hsv
+from locker_faces import paint_fields
 from select_locker_faces import calibrate, from_lab
-from colour import lab
+from colour import lab, delta_e_2000
 
 LIBRARY = ROOT / 'art-source/quarters/steel_library'
 SCRATCH = ROOT / 'tmp/mat2/library'
@@ -27,6 +29,26 @@ SIZES = {
 CROPS = {'broad': ('docs/art/corridors/hatch-concept-rusted.png', [817, 119, 890, 352]),
          'strip': ('docs/art/quarters/concept-now.png', [438, 259, 459, 319]),
          'top': ('docs/art/quarters/concept-now.png', [656, 272, 720, 304])}
+
+
+def mute_green(image):
+    colour = np.asarray(float_mute_green(image)).copy()
+    hue, saturation, _ = hsv(colour.astype(float)/255)
+    selected = (hue >= 70) & (hue <= 170) & (saturation > .23)
+    # Quantised dark pixels need an integer lower bound; a float saturation
+    # cap can round back above the biological-green limit at low byte values.
+    minimum = np.ceil(colour.max(-1)*.78).astype(np.uint8)
+    colour[selected] = np.maximum(colour[selected], minimum[selected, None])
+    return Image.fromarray(colour)
+
+
+def align_paint(image, target):
+    colour, paint = paint_fields(image)
+    selected = paint >= .5
+    values = lab(colour)
+    shift = (lab(np.array(target))-values[selected].mean(0))/paint[selected].mean()
+    corrected = values+paint[..., None]*shift
+    return mute_green(Image.fromarray(np.uint8(np.round(from_lab(corrected)*255))))
 
 
 def prepare():
@@ -127,6 +149,10 @@ def gate_image(image, reference, row):
     limits['pixels_per_metre'] = (600, values['pixels_per_metre'] >= 600)
     # Keep the wardrobe findings observable, in addition to its existing gates.
     limits['broad_rust'] = (.20, values['broad_rust'] <= .20)
+    if 'neutral_paint_target' in row:
+        colour, paint = paint_fields(image)
+        values['pilot_pigment_delta_e'] = float(delta_e_2000(lab(colour[paint >= .5]).mean(0), lab(np.array(row['neutral_paint_target']))))
+        limits['pilot_pigment_delta_e'] = (6, values['pilot_pigment_delta_e'] <= 6)
     return values, {key: dict(value=values[key], threshold=limit, passed=bool(passed))
                     for key, (limit, passed) in limits.items()}
 
@@ -142,8 +168,17 @@ def select():
             values, image_gates = gate_image(Image.open(LIBRARY / row['image']), reference, row)
             row['scores'] = values
             row['passed'] = all(g['passed'] for g in image_gates.values())
+            if not row['passed'] and values.get('pilot_pigment_delta_e', 0) > 6:
+                corrected = align_paint(Image.open(LIBRARY / row['image']), row['neutral_paint_target'])
+                corrected_values, corrected_gates = gate_image(corrected, reference, row)
+                if all(g['passed'] for g in corrected_gates.values()):
+                    corrected.save(LIBRARY / row['image'])
+                    values, image_gates = corrected_values, corrected_gates
+                    row['scores'], row['passed'] = values, True
+                    row['treatment']['post_align_paint'] = row['neutral_paint_target']
             all_gates[row['id']] = image_gates
-            continue
+            if row['passed']:
+                continue
         candidates = []
         for amount in (0., .33, .67, 1.):
             image = raw
@@ -154,6 +189,8 @@ def select():
                                                 np.quantile(b[..., c], q)) for c in range(3)], -1)
                 image = Image.fromarray(np.uint8(np.round(from_lab(a+(corrected-a)*amount)*255)))
             image, calibration = calibrate(image, reference)
+            if 'neutral_paint_target' in row:
+                image = align_paint(image, row['neutral_paint_target'])
             for radius in (0., .6, 1.):
                 result = mute_green(image.filter(ImageFilter.GaussianBlur(radius))) if radius else mute_green(image)
                 values, gates = gate_image(result, reference, row)
@@ -171,9 +208,6 @@ def select():
     rejected = [row for row in manifest['faces'] if not row['passed']]
     manifest['faces'] = [row for row in manifest['faces'] if row['passed']]
     manifest['rejected'] = rejected
-    for kind in SIZES:
-        if sum(row['kind'] == kind for row in manifest['faces']) < 4:
-            raise ValueError(f'fewer than four passing {kind} variants; generate more candidates')
     accepted = {row['id']: all_gates[row['id']] for row in manifest['faces']}
     report = dict(images=accepted, rejected={row['id']: all_gates[row['id']] for row in rejected},
                   passed=sum(g['passed'] for rows in accepted.values() for g in rows.values()),
@@ -191,6 +225,9 @@ def select():
             sheet.paste(image, (x, y+25))
             draw.text((x, y+5), row['id'], fill='white')
     sheet.save(LIBRARY / 'contact-sheet.png')
+    for kind in SIZES:
+        if sum(row['kind'] == kind for row in manifest['faces']) < 4:
+            raise ValueError(f'fewer than four passing {kind} variants; generate more candidates')
     if report['failed']:
         raise SystemExit(f"{report['failed']} library gates failed")
 

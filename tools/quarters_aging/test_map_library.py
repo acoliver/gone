@@ -54,11 +54,11 @@ class LibraryMappingTests(unittest.TestCase):
         scratch.mkdir(parents=True, exist_ok=True)
         with tempfile.TemporaryDirectory(dir=scratch) as name:
             library = Path(name)
-            pixels = np.zeros((16, 16, 3), np.uint8)+[90, 100, 95]
-            pixels[:2, :, :] = [85, 35, 20]
+            pixels = np.zeros((640, 640, 3), np.uint8)+[90, 100, 95]
+            pixels[:80, :, :] = [85, 35, 20]
             Image.fromarray(pixels.astype(np.uint8)).save(library / 'panel.png')
             Image.new('RGB', (4, 4), (90, 100, 95)).save(library / 'clean.png')
-            manifest = dict(faces=[dict(id='panel', kind='broad', pixels=[16, 16],
+            manifest = dict(faces=[dict(id='panel', kind='broad', pixels=[640, 640],
                                        image='panel.png', passed=True)],
                             clean='clean.png', hardware='panel.png', fabric='panel.png')
             (library / 'manifest.json').write_text(json.dumps(manifest))
@@ -83,6 +83,15 @@ class LibraryMappingTests(unittest.TestCase):
                                      dict(face, id='right/0', uv=right.tolist())]
                 result = map_prop(document, 'fixture', library/'shared-edge', 32, 95)
                 self.assertEqual(result['uv_overlap_texels'], 0)
+
+    def test_selection_requires_source_density_at_the_actual_face_size(self):
+        rows = [dict(id='thin', kind='top', pixels=[1536, 512]),
+                dict(id='supported', kind='top', pixels=[1536, 1024])]
+        for seed in range(16):
+            chosen = choose_face(rows, 'top', [2.14, 1.04], seed, 'tabletop', set())
+            self.assertEqual(chosen['id'], 'supported')
+        with self.assertRaisesRegex(ValueError, 'source density'):
+            choose_face(rows[:1], 'top', [2.14, 1.04], 95, 'tabletop', set())
 
     def test_projection_uses_world_up_on_vertical_panel(self):
         points = np.array([[0, 0, 0], [1, 0, 0], [1, 0, 2], [0, 0, 2]])

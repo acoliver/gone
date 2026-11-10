@@ -35,6 +35,9 @@ def choose_face(rows, kind, size, seed, identity, neighbors):
     candidates = [row for row in rows if row['kind'] == kind]
     if not candidates:
         raise ValueError(f'library lacks {kind} faces')
+    candidates = [row for row in candidates if min(np.array(row['pixels'])/size) >= 600]
+    if not candidates:
+        raise ValueError(f'library lacks {kind} source density >=600 pixels/metre for {size}')
     aspect = size[0] / size[1]
     distance = {row['id']: abs(np.log((row['pixels'][0]/row['pixels'][1])/aspect)) for row in candidates}
     closest = min(distance.values())
