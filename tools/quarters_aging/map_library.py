@@ -16,6 +16,7 @@ from scipy.ndimage import distance_transform_edt, map_coordinates
 from steel_library import ROOT, LIBRARY
 from locker_faces import paint_fields
 from colour import linear
+from library_projection import cylinders, cylindrical_frame
 
 BLENDER = '/Volumes/XS1000/acoliver/projects/threedee/branch-1/.tools/Blender-4.5.11.app/Contents/MacOS/Blender'
 PROPS = ['wardrobe', 'desk', 'console', 'bed', 'lockers_over_bed', 'bedside', 'media_cabinet',
@@ -37,7 +38,8 @@ def choose_face(rows, kind, size, seed, identity, neighbors):
     aspect = size[0] / size[1]
     distance = {row['id']: abs(np.log((row['pixels'][0]/row['pixels'][1])/aspect)) for row in candidates}
     closest = min(distance.values())
-    suitable = [row for row in candidates if distance[row['id']] <= closest + .45]
+    tolerance = .8 if kind == 'strip' else .45
+    suitable = [row for row in candidates if distance[row['id']] <= closest + tolerance]
     varied = [row for row in suitable if row['id'] not in neighbors]
     suitable = varied or suitable
     return min(suitable, key=lambda row: hashlib.sha256(f"{seed}/{identity}/{row['id']}".encode()).digest())
@@ -103,6 +105,7 @@ def map_prop(document, prop, output, resolution, seed):
         images[kind] = np.asarray(Image.open(LIBRARY / manifest[kind]).convert('RGB'), float)/255
     shape = (resolution, resolution)
     owner = np.full(shape, -1, np.int32)
+    interior_owner = np.zeros(shape, bool)
     region = np.zeros((*shape, 3), np.uint8)
     albedo = np.zeros((*shape, 3), np.float32)
     clean = np.zeros_like(albedo)
@@ -113,6 +116,8 @@ def map_prop(document, prop, output, resolution, seed):
     records, densities = [], []
     fields = {}
     recent = {}
+    round_parts = cylinders(document['faces'])
+    round_images = {}
     for index, face in enumerate(document['faces']):
         role = material_role(face['material'])
         if role == 'preserved':
@@ -120,15 +125,25 @@ def map_prop(document, prop, output, resolution, seed):
             continue
         triangles = np.array(face['triangles'], float)
         points = triangles.reshape(-1, 3)
-        coordinates, size = projection_frame(points, face['normal'])
-        coordinates = coordinates.reshape(-1, 3, 2)
+        cylinder = round_parts.get(face['part'])
+        cylindrical = cylinder is not None and abs(np.dot(face['normal'], cylinder['axis'])) < .7
+        if cylindrical:
+            coordinates, size = cylindrical_frame(points, cylinder)
+        else:
+            coordinates, size = projection_frame(points, face['normal'])
+            coordinates = coordinates.reshape(-1, 3, 2)
         areas = np.linalg.norm(np.cross(triangles[:, 1]-triangles[:, 0], triangles[:, 2]-triangles[:, 0]), axis=-1)/2
         area = float(areas.sum())
-        kind = classify_face(face['normal'], size, area)
+        kind = classify_face(face['normal'], size, area if not cylindrical else float(np.prod(size)))
         if role == 'paint':
-            chosen = choose_face(manifest['faces'], kind, size, seed, face['id'], set(recent.get(kind, [])))
+            identity = face['part']+'/tube/'+kind if cylindrical else face['id']
+            if cylindrical and identity in round_images:
+                chosen = round_images[identity]
+            else:
+                chosen = choose_face(manifest['faces'], kind, size, seed, identity, set(recent.get(kind, [])))
+                if cylindrical: round_images[identity] = chosen
+                recent[kind] = [chosen['id']]
             image_id = chosen['id']
-            recent[kind] = [image_id]
         else:
             image_id = role
         if image_id not in fields:
@@ -145,21 +160,32 @@ def map_prop(document, prop, output, resolution, seed):
         field = fields[image_id]
         record = dict(id=face['id'], part=face['part'], material=face['material'], role=role,
                       kind=kind, image=image_id, size_m=size.tolist(), area_m2=area,
-                      upward=bool(face['normal'][2] > .7))
+                      upward=bool(face['normal'][2] > .7), projection='cylindrical' if cylindrical else 'planar')
+        if role in ('hardware', 'fabric'):
+            record['pitch_m'] = .2 if role == 'hardware' else .1
+            record['source_pixels_per_metre'] = min(images[image_id].shape[:2])/record['pitch_m']
+        else:
+            record['source_pixels_per_metre'] = float(np.min(np.array(images[image_id].shape[:2][::-1])/size))
         records.append(record)
         for ti, uv in enumerate(np.array(face['uv'], float)):
             x, y, weights = triangle_samples(uv, resolution)
             if len(x) == 0:
                 continue
-            overlap = (owner[y, x] >= 0) & (owner[y, x] != index)
-            # Shared triangle edges can include pixel centres. Only a different
-            # plane at the same UV interior constitutes atlas overlap.
+            interior = np.min(weights, axis=1) > 1e-8
+            overlap = (owner[y, x] >= 0) & (owner[y, x] != index) & interior & interior_owner[y, x]
             if overlap.any():
                 prior = np.unique(owner[y[overlap], x[overlap]])
                 raise ValueError(f'UV overlap {face["id"]} with {prior.tolist()}')
+            # A pixel centre exactly on a shared UV edge belongs to either
+            # face. Preserve interior samples over boundary-only ownership.
+            keep = (owner[y, x] < 0) | interior | ~interior_owner[y, x]
+            x, y, weights, interior = x[keep], y[keep], weights[keep], interior[keep]
             owner[y, x] = index
+            interior_owner[y, x] = interior
             local = weights @ coordinates[ti]
-            sampled = sample_image(field, local)
+            if cylindrical: local[:, 0] %= 1
+            texture_coordinates = np.mod(local*size/record['pitch_m'], 1) if role in ('hardware', 'fabric') else local
+            sampled = sample_image(field, texture_coordinates)
             albedo[y, x] = sampled[:, :3]
             relief[y, x] = sampled[:, 3]
             roughness[y, x] = sampled[:, 4] if role != 'fabric' else .94
@@ -167,7 +193,7 @@ def map_prop(document, prop, output, resolution, seed):
             if role == 'hardware':
                 pigment = np.array([.60, .63, .65]) if face['material'] == 'BareSteel' else np.array([.17, .20, .19])
             if role == 'fabric':
-                pigment = np.array([.24, .29, .25])
+                pigment = sampled[:, :3] * np.array([.24, .29, .25]) / [.43, .45, .41]
             clean[y, x] = pigment
             clean_roughness[y, x] = .45 if role == 'paint' else (.87 if role == 'fabric' else .35)
             clean_metallic[y, x] = .45 if role == 'hardware' else .02
@@ -197,7 +223,7 @@ def map_prop(document, prop, output, resolution, seed):
         orm = np.dstack([np.ones(shape), clean_roughness if state == 'as_built' else roughness,
                          clean_metallic if state == 'as_built' else np.zeros(shape)])
         normals = np.zeros((*shape, 3), np.float32)+[.5, .5, 1] if state == 'as_built' else normal*.5+.5
-        for name, field in [('albedo', rgb[y, x]), ('normal', normals if state == 'aged' else normals), ('orm', orm[y, x])]:
+        for name, field in [('albedo', rgb[y, x]), ('normal', normals), ('orm', orm[y, x])]:
             Image.fromarray(np.uint8(np.round(np.clip(field, 0, 1)*255))).save(output / f'{state}_{name}.png')
     Image.fromarray(region).save(output / 'regions.png')
     metadata = dict(prop=prop, seed=seed, atlas_size=resolution, uv_method='original fitted UVs; no repack',
@@ -228,6 +254,9 @@ def main():
     document = json.loads(faces.read_text())
     output = args.output or ROOT / f'assets/props/quarters/steel/{args.prop}'
     map_prop(document, args.prop, output, args.resolution, args.seed)
+    from library_imports import configure
+    for path in sorted(output.glob('*.png')):
+        configure(path)
 
 
 if __name__ == '__main__':
