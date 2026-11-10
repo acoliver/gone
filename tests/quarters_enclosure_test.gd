@@ -1,9 +1,15 @@
 extends SimTestCase
 
-func _lit(hit: Dictionary, lights: Array[OmniLight3D], mask: int) -> bool:
-	for lamp: OmniLight3D in lights:
-		var toward := ShipScene._world_frame(lamp).origin - Vector3(hit.position)
-		if (lamp.light_cull_mask & mask) != 0 and toward.length() < lamp.omni_range and toward.dot(hit.normal) > 0: return true
+func _lit(hit: Dictionary, lights: Array[Light3D], mask: int) -> bool:
+	for lamp: Light3D in lights:
+		var frame := ShipScene._world_frame(lamp)
+		var toward := frame.origin - Vector3(hit.position)
+		var radius: float = lamp.omni_range if lamp is OmniLight3D else lamp.spot_range
+		if (lamp.light_cull_mask & mask) == 0 or toward.length() >= radius or toward.dot(hit.normal) <= 0: continue
+		if lamp is SpotLight3D:
+			var cosine := (-frame.basis.z).normalized().dot(-toward.normalized())
+			if cosine <= cos(deg_to_rad(lamp.spot_angle)): continue
+		return true
 	return false
 
 func test_every_capture_pixel_hits_lit_room_shell_or_the_open_doorway() -> void:
@@ -26,10 +32,10 @@ func test_every_capture_pixel_hits_lit_room_shell_or_the_open_doorway() -> void:
 		var mesh := TriangleMesh.new()
 		assert_true(mesh.create_from_faces(faces), "room-owned opaque front-facing shell")
 		var state := room.present if view.begins_with("present") else room.remembered
-		var lights: Array[OmniLight3D] = []
-		lights.append_array(room.entrance_bounces)
+		var lights: Array[Light3D] = []
+		for bounce: OmniLight3D in room.entrance_bounces: lights.append(bounce)
 		for source: Node3D in [state, section]:
-			for lamp: OmniLight3D in source.find_children("*", "OmniLight3D", true, false):
+			for lamp: Node in source.find_children("*", "Light3D", true, false):
 				if lamp.light_energy > 0: lights.append(lamp)
 		var corridor_faces := PackedVector3Array()
 		var corridor_masks: Array[int] = []
