@@ -78,6 +78,10 @@ func _run() -> void:
 	assert(game.console_state == GameModule.ConsoleState.ACTIVE, "running perceived capture follows generator activation")
 	print("CONSOLE_CAPTURE_STATE active-console-running ", game.console_state)
 	await _shot("active-console-running", console_eye, display_target, 60.0, "TextSurface")
+	var active_glass := active.get_node("ScreenGlass") as MeshInstance3D
+	await _shot("active-console-oblique-left", _oblique_eye(active_glass, -1.0), display_target, 60.0, "TextSurface")
+	var dead_glass := ship.power_room.get_node("ConsoleStation0/ScreenGlass") as MeshInstance3D
+	await _shot("dead-console-oblique-right", _oblique_eye(dead_glass, 1.0), dead_glass.global_position, 60.0, "ScreenGlass")
 	await _shot("west-wall", Vector3(25.0, 1.65, -5.7), Vector3(21.5, 1.35, -5.7), 84.0, "PowerWallWest")
 	await _shot("east-wall", Vector3(29.0, 1.65, -5.7), Vector3(32.5, 1.35, -5.7), 84.0, "PowerWallEast")
 	var keyboard_eye := lip + facing * 0.45
@@ -120,7 +124,7 @@ func _teardown() -> void:
 
 func _shot(name: String, eye: Vector3, target: Vector3, fov: float, intended: String = "") -> void:
 	_assert_eye_clear(eye)
-	var hit := _first_mesh_hit(eye, target)
+	var hit := _first_mesh_hit(eye, eye + (target - eye) * 1.02)
 	print("RAY_HIT ", name, " eye=", eye, " target=", target, " first=", hit)
 	assert(not hit.is_empty(), "camera ray reaches visible geometry for " + name)
 	if intended != "":
@@ -261,3 +265,9 @@ func _settle() -> void:
 	for i in range(8):
 		await process_frame
 	await RenderingServer.frame_post_draw
+
+func _oblique_eye(glass: MeshInstance3D, side: float) -> Vector3:
+	var normal_distance := cos(deg_to_rad(50.0))
+	var up_distance := (1.65 - glass.global_position.y - glass.global_basis.z.y * normal_distance) / glass.global_basis.y.y
+	var right_distance := side * sqrt(pow(sin(deg_to_rad(50.0)), 2) - up_distance * up_distance)
+	return glass.global_position + glass.global_basis.z * normal_distance + glass.global_basis.y * up_distance + glass.global_basis.x * right_distance

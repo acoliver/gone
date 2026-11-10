@@ -424,7 +424,8 @@ func test_generated_console_models_and_wall_mounts_are_present() -> void:
 		var glass := station.get_node("ScreenGlass") as MeshInstance3D
 		var glass_frame := _test_transform_in_room(glass, room)
 		assert_true(glass_frame.basis.y.dot(Vector3.UP) > 0.99, "screen glass is upright")
-		assert_true(glass_frame.basis.z.dot(station.basis.z) > 0.999, "glass faces the room")
+		assert_true(glass.basis.z.is_equal_approx(plane.basis.z), "glass follows the exported recess normal")
+		assert_float_in_range(glass_frame.basis.z.dot(station.basis.z), 0.991, 0.994, "glass tilts back with the recessed screen")
 		if index in [2, 4]:
 			assert_true(glass.material_override.albedo_texture != null, "both busted stations use cracked glass")
 		elif index != 1:
@@ -436,14 +437,14 @@ func test_generated_console_models_and_wall_mounts_are_present() -> void:
 	var surface := display.get_node("TextSurface") as MeshInstance3D
 	var text_frame := _test_transform_in_room(surface, room)
 	assert_true(text_frame.basis.y.dot(Vector3.UP) > 0.99, "live text is upright")
-	assert_true(text_frame.basis.z.dot(active_station.basis.z) > 0.999, "live text faces the room")
+	assert_true(display.basis.is_equal_approx(active_plane.basis), "live text uses the exported tilted screen frame")
 	var plane_size := active_plane.mesh.get_aabb().size
 	assert_true((surface.mesh as QuadMesh).size.is_equal_approx(Vector2(plane_size.x, plane_size.y)), "text exactly covers DisplayPlane")
-	var expected := active_plane.transform * active_plane.mesh.get_aabb().get_center() + active_plane.basis.z * 0.003
-	assert_float_in_range(display.position.distance_to(expected), 0, 0.0001, "live display sits 3 mm ahead of DisplayPlane")
+	var expected := active_plane.transform * active_plane.mesh.get_aabb().get_center() + active_plane.basis.z * 0.001
+	assert_float_in_range(display.position.distance_to(expected), 0, 0.0001, "live display sits 1 mm ahead of the exported glass front")
 	var live_glass := active_station.get_node("ScreenGlass") as MeshInstance3D
 	assert_true(live_glass.visible, "opaque lit glass backs the transparent live text")
-	assert_true(display.position.z > live_glass.position.z + (live_glass.mesh as BoxMesh).size.z * 0.5, "text stays ahead of the glass front")
+	assert_float_in_range((display.position - live_glass.position).dot(live_glass.basis.z) - (live_glass.mesh as BoxMesh).size.z * 0.5, 0.00099, 0.00101, "text stays 1 mm ahead of the tilted glass front")
 	var eye := active_station.transform * Vector3(0, 1.65, 1.10)
 	var first_hit := _test_first_triangle_hit(room, eye, text_frame.origin)
 	assert_true(first_hit == surface, "capture-height eye ray hits live text before the console body: " + str(first_hit))
