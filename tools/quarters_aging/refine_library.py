@@ -7,9 +7,17 @@ import subprocess
 from steel_library import ROOT, LIBRARY, SCRATCH, wait_for_gpu
 
 INSTRUCTIONS = {
+    'strip': ('Refine this narrow grey-green painted-steel trim texture at its native aspect ratio. '
+              'Retain the quiet central paint and break up the corrosion along the long outside edges '
+              'into irregular small chips and separated oxide scars with unequal spacing and scale. '
+              'Preserve fine photographic detail, softly feathered oxide rims and thin ragged paint edges. '
+              'A few tapered rust trails must have different lengths, widths and intensity. '
+              'No continuous rust outline, parallel stripes, coarse blocks, broad pale flaking or new hardware.'),
     'top': ('Refine this flat horizontal painted-steel texture with clearly visible fine soft settled dust. '
             'A thin diffuse warm-grey powder veil covers the quiet central paint, with delicate fine particulate '
-            'detail and soft irregular settling. It must read as dry matte dust, not fresh pale paint. '
+            'detail and soft irregular settling. Remove large mottled patches and block-shaped changes '
+            'from the central dust: use a continuous softly settled powder tone with much finer variation '
+            'than the edge chips. It must read as dry matte dust, not fresh pale paint. '
             'Keep the existing sparse edge corrosion and most underlying grey-green paint. '
             'No blotchy patches, repeated marks, swirls, tracks, flakes, sand, grit piles or vertical rust runs.'),
     'broad': ('Refine this flat vertical grey-green painted-steel texture. Retain most broad central paint. '
@@ -23,12 +31,18 @@ INSTRUCTIONS = {
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--kind', choices=tuple(INSTRUCTIONS), action='append')
+    parser.add_argument('--face', action='append', help='refine only these library image IDs')
     parser.add_argument('--label', default='finish2')
     parser.add_argument('--seed-offset', type=int, default=600000)
     args = parser.parse_args()
     path = LIBRARY / 'manifest.json'
     manifest = json.loads(path.read_text())
+    unknown = set(args.face or ()) - {row['id'] for row in manifest['faces']}
+    if unknown:
+        parser.error('unknown library faces: ' + ', '.join(sorted(unknown)))
     for row in manifest['faces']:
+        if args.face and row['id'] not in args.face:
+            continue
         if row['kind'] not in (args.kind or INSTRUCTIONS) or row.get('refinement') == args.label:
             continue
         name = row['id']

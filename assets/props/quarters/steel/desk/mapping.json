@@ -612,7 +612,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.45735192298889155,
         0.0011480429703553674
@@ -663,7 +663,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.45735192298889155,
         0.0011480429703553952
@@ -918,7 +918,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.4573519229888916,
         0.011000007390975952
@@ -1530,7 +1530,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.45735192298889155,
         0.001148031565530172
@@ -1581,7 +1581,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.45735192298889155,
         0.0011480315655301443
@@ -1836,7 +1836,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.4573519229888916,
         0.011000007390975952
@@ -2448,7 +2448,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.45735192298889155,
         0.001148042970355423
@@ -2499,7 +2499,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.45735192298889155,
         0.0011480429703553934
@@ -2754,7 +2754,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.4573519229888916,
         0.011000007390975952
@@ -3366,7 +3366,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.4573519229888916,
         0.001148081419875796
@@ -3417,7 +3417,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.4573519229888916,
         0.001148081419875796
@@ -4284,7 +4284,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.4573519229888916,
         0.0011480842710133166
@@ -4335,7 +4335,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.4573519229888916,
         0.0011480842710133027
@@ -5202,7 +5202,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.4573519229888916,
         0.0011480842710133027
@@ -5253,7 +5253,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.4573519229888916,
         0.0011480842710133027
@@ -6120,7 +6120,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.48535192012786865,
         0.0011480292034708184
@@ -6171,7 +6171,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.48535192012786865,
         0.0011480292034709016
@@ -6426,7 +6426,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.48535192012786865,
         0.021000027656555176
@@ -6443,7 +6443,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.12000000476837158,
         0.011999964714050293
@@ -6452,7 +6452,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 12799.999491373717
+      "source_pixels_per_metre": 10666.698032047525
     },
     {
       "id": "DrawerFront_0/56",
@@ -7123,7 +7123,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.48535192012786865,
         0.0011480292034708184
@@ -7174,7 +7174,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.48535192012786865,
         0.0011480292034709016
@@ -7429,7 +7429,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.48535192012786865,
         0.021000027656555176
@@ -7446,7 +7446,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.12000000476837158,
         0.011999964714050293
@@ -7455,7 +7455,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 12799.999491373717
+      "source_pixels_per_metre": 10666.698032047525
     },
     {
       "id": "DrawerFront_1/56",
@@ -8126,7 +8126,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.48535192012786865,
         0.0011480292034708323
@@ -8177,7 +8177,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.48535192012786865,
         0.0011480292034709016
@@ -8432,7 +8432,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.48535192012786865,
         0.021000027656555176
@@ -8449,7 +8449,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.12000000476837158,
         0.011999964714050293
@@ -8458,7 +8458,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 12799.999491373717
+      "source_pixels_per_metre": 10666.698032047525
     },
     {
       "id": "DrawerFront_2/56",
@@ -18417,7 +18417,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.01100003719329834,
         0.0011480842710042682
@@ -18426,7 +18426,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 139635.89149823895
+      "source_pixels_per_metre": 111490.07371038543
     },
     {
       "id": "DrawerSide_L_0/36",
@@ -18468,7 +18468,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.01100003719329834,
         0.0011480842710042405
@@ -18477,7 +18477,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 139635.89149823895
+      "source_pixels_per_metre": 111490.07371038814
     },
     {
       "id": "DrawerSide_L_0/39",
@@ -19335,7 +19335,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.01100003719329834,
         0.0011480728664956252
@@ -19344,7 +19344,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 139635.89149823895
+      "source_pixels_per_metre": 111491.18120934856
     },
     {
       "id": "DrawerSide_L_1/36",
@@ -19386,7 +19386,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.01100003719329834,
         0.0011480728664956044
@@ -19395,7 +19395,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 139635.89149823895
+      "source_pixels_per_metre": 111491.18120935059
     },
     {
       "id": "DrawerSide_L_1/39",
@@ -20253,7 +20253,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.01100003719329834,
         0.0011480842710042613
@@ -20262,7 +20262,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 139635.89149823895
+      "source_pixels_per_metre": 111490.07371038612
     },
     {
       "id": "DrawerSide_L_2/36",
@@ -20304,7 +20304,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.01100003719329834,
         0.001148084271004237
@@ -20313,7 +20313,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 139635.89149823895
+      "source_pixels_per_metre": 111490.07371038847
     },
     {
       "id": "DrawerSide_L_2/39",
@@ -21171,7 +21171,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.010999977588653564,
         0.0011480842710042682
@@ -21180,7 +21180,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 139636.64813139057
+      "source_pixels_per_metre": 111490.07371038543
     },
     {
       "id": "DrawerSide_R_0/36",
@@ -21222,7 +21222,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.010999977588653564,
         0.0011480842710042405
@@ -21231,7 +21231,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 139636.64813139057
+      "source_pixels_per_metre": 111490.07371038814
     },
     {
       "id": "DrawerSide_R_0/39",
@@ -22089,7 +22089,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.010999977588653564,
         0.0011480728664956252
@@ -22098,7 +22098,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 139636.64813139057
+      "source_pixels_per_metre": 111491.18120934856
     },
     {
       "id": "DrawerSide_R_1/36",
@@ -22140,7 +22140,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.010999977588653564,
         0.0011480728664956044
@@ -22149,7 +22149,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 139636.64813139057
+      "source_pixels_per_metre": 111491.18120935059
     },
     {
       "id": "DrawerSide_R_1/39",
@@ -23007,7 +23007,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.010999977588653564,
         0.0011480842710042613
@@ -23016,7 +23016,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 139636.64813139057
+      "source_pixels_per_metre": 111490.07371038612
     },
     {
       "id": "DrawerSide_R_2/36",
@@ -23058,7 +23058,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.010999977588653564,
         0.001148084271004237
@@ -23067,7 +23067,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 139636.64813139057
+      "source_pixels_per_metre": 111490.07371038847
     },
     {
       "id": "DrawerSide_R_2/39",
@@ -23925,7 +23925,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.029000043869018555,
         0.00229608594081198
@@ -23976,7 +23976,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.029000043869018555,
         0.00229608594081198
@@ -25815,7 +25815,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.018000006675720215,
         0.0022960859407807083
@@ -25824,7 +25824,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 85333.30168548628
+      "source_pixels_per_metre": 55747.04227163109
     },
     {
       "id": "LeftUpstand/36",
@@ -25866,7 +25866,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.018000006721503814,
         0.002296086299698172
@@ -25875,7 +25875,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 85333.30146843827
+      "source_pixels_per_metre": 55747.03355741726
     },
     {
       "id": "LeftUpstand/39",
@@ -26733,7 +26733,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         1.01364803314209,
         0.002296099707648158
@@ -26784,7 +26784,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         1.01364803314209,
         0.002296113474498972
@@ -27039,7 +27039,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         1.0136480331420898,
         0.018000006675720215
@@ -27651,7 +27651,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.49435198307037354,
         0.002296113474498984
@@ -27702,7 +27702,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.49435198307037354,
         0.0022961134744989703
@@ -27957,7 +27957,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.49435198307037354,
         0.018000006675720215
@@ -31809,7 +31809,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.018000006675720215,
         0.0022960859408119733
@@ -31818,7 +31818,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 85333.30168548628
+      "source_pixels_per_metre": 55747.04227087201
     },
     {
       "id": "PedestalSide_L/36",
@@ -31860,7 +31860,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.018000006675720215,
         0.0022960859408119733
@@ -31869,7 +31869,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 85333.30168548628
+      "source_pixels_per_metre": 55747.04227087201
     },
     {
       "id": "PedestalSide_L/39",
@@ -32727,7 +32727,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.018000006675720215,
         0.0022960859408119733
@@ -32736,7 +32736,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 85333.30168548628
+      "source_pixels_per_metre": 55747.04227087201
     },
     {
       "id": "PedestalSide_R/36",
@@ -32778,7 +32778,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.018000006675720215,
         0.0022960859408119733
@@ -32787,7 +32787,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 85333.30168548628
+      "source_pixels_per_metre": 55747.04227087201
     },
     {
       "id": "PedestalSide_R/39",
@@ -33645,7 +33645,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         1.5940001010894775,
         0.002296090664801742
@@ -33696,7 +33696,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         1.5940001010894775,
         0.002296091382581633
@@ -33951,7 +33951,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         1.593999981880188,
         0.018000006675720215
@@ -34563,7 +34563,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.018000006675720215,
         0.0022960859407807083
@@ -34572,7 +34572,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 85333.30168548628
+      "source_pixels_per_metre": 55747.04227163109
     },
     {
       "id": "RightUpstand/36",
@@ -34614,7 +34614,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.018000006721503814,
         0.002296086299698172
@@ -34623,7 +34623,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 85333.30146843827
+      "source_pixels_per_metre": 55747.03355741726
     },
     {
       "id": "RightUpstand/39",
@@ -35481,7 +35481,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         1.5940001010894773,
         0.0022960631308680465
@@ -35532,7 +35532,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         1.5940001010894773,
         0.0022960631308680465
@@ -35787,7 +35787,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-02",
+      "image": "top-03",
       "size_m": [
         1.593999981880188,
         0.6940000057220459
@@ -35796,7 +35796,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 963.6135617694458
+      "source_pixels_per_metre": 737.7521553005018
     },
     {
       "id": "WorktopFrontReturn/0",
@@ -36399,7 +36399,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         1.5940001010894775,
         0.002296085971488379
@@ -36450,7 +36450,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         1.594000101089478,
         0.0022960862688761186
@@ -36705,7 +36705,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         1.593999981880188,
         0.012000024318695068
@@ -37317,7 +37317,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.011999964714050293,
         0.0022960859407807066
@@ -37326,7 +37326,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 128000.37638457029
+      "source_pixels_per_metre": 55747.04227163114
     },
     {
       "id": "WorktopLeftReturn/36",

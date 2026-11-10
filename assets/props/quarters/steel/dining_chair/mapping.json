@@ -119,7 +119,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.013614987141851886,
         0.0018790383511685382
@@ -128,7 +128,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 112816.85278118272
+      "source_pixels_per_metre": 68119.95078248362
     },
     {
       "id": "BackPlate/7",
@@ -153,7 +153,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.013650709004810725,
         0.0011548923493823193
@@ -162,7 +162,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 112521.62795783643
+      "source_pixels_per_metre": 110832.84088639024
     },
     {
       "id": "BackPlate/9",
@@ -187,7 +187,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.3899999856948852,
         0.000765381059465553
@@ -221,7 +221,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.013650709004810725,
         0.0011548923493823193
@@ -230,7 +230,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 112521.62795783643
+      "source_pixels_per_metre": 110832.84088639024
     },
     {
       "id": "BackPlate/13",
@@ -1156,7 +1156,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.013611491973423373,
         0.001993843546329699
@@ -1165,7 +1165,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 112845.8219715415
+      "source_pixels_per_metre": 64197.61482069372
     },
     {
       "id": "BackPlate/68",
@@ -1190,7 +1190,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.013649231153111414,
         0.0012040690009373356
@@ -1199,7 +1199,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 112533.81108208874
+      "source_pixels_per_metre": 106306.1999772068
     },
     {
       "id": "BackPlate/70",
@@ -1224,7 +1224,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.38999998569488525,
         0.000765374691464038
@@ -1258,7 +1258,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.013649231153111414,
         0.0012040690009373356
@@ -1267,7 +1267,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 112533.81108208874
+      "source_pixels_per_metre": 106306.1999772068
     },
     {
       "id": "BackPlate/74",
@@ -1479,7 +1479,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.38999998569488525,
         0.03299999407146876
@@ -1488,7 +1488,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 3938.461682923452
+      "source_pixels_per_metre": 3878.788575621795
     },
     {
       "id": "BackPlate/87",
@@ -3710,7 +3710,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.005756508970556351,
         0.0006785700850532317
@@ -3719,7 +3719,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 266828.386415517
+      "source_pixels_per_metre": 188631.95242383666
     },
     {
       "id": "BackUpright_L/40",
@@ -3982,7 +3982,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.005756445515494341,
         0.000684335157163457
@@ -3991,7 +3991,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 266831.3277465451
+      "source_pixels_per_metre": 187042.85270181805
     },
     {
       "id": "BackUpright_L/56",
@@ -4016,7 +4016,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-02",
+      "image": "top-03",
       "size_m": [
         0.005344425154531752,
         0.0030094301615793684
@@ -4025,7 +4025,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 287402.28473357216
+      "source_pixels_per_metre": 170131.87630554585
     },
     {
       "id": "BackUpright_L/58",
@@ -4050,7 +4050,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-01",
+      "image": "top-02",
       "size_m": [
         0.004119604299086477,
         0.004693607276090153
@@ -4084,7 +4084,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-02",
+      "image": "top-01",
       "size_m": [
         0.0023483460442420556,
         0.0055506575223646425
@@ -4118,7 +4118,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-00",
+      "image": "top-02",
       "size_m": [
         0.000869541256912354,
         0.005750695425952856
@@ -4127,7 +4127,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 222581.7758011261
+      "source_pixels_per_metre": 178065.42064090088
     },
     {
       "id": "BackUpright_L/64",
@@ -4424,7 +4424,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-02",
+      "image": "top-01",
       "size_m": [
         0.027889209878763366,
         0.02788920890014837
@@ -4985,7 +4985,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-00",
+      "image": "top-02",
       "size_m": [
         0.004215810231932737,
         0.004612431933550806
@@ -4994,7 +4994,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 277510.87028282986
+      "source_pixels_per_metre": 222008.6962262639
     },
     {
       "id": "BackUpright_R/33",
@@ -5036,7 +5036,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-01",
+      "image": "top-00",
       "size_m": [
         0.002468227551307267,
         0.005521250930307408
@@ -5045,7 +5045,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 185465.21665570932
+      "source_pixels_per_metre": 231831.52081963664
     },
     {
       "id": "BackUpright_R/36",
@@ -5206,7 +5206,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.005756508970205326,
         0.0006785701119690901
@@ -5215,7 +5215,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 266828.38643178786
+      "source_pixels_per_metre": 188631.94494164604
     },
     {
       "id": "BackUpright_R/46",
@@ -5478,7 +5478,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.0057564455148527705,
         0.0006843352026645877
@@ -5487,7 +5487,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 266831.3277762841
+      "source_pixels_per_metre": 187042.84026542542
     },
     {
       "id": "BackUpright_R/62",
@@ -15174,8 +15174,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -15184,7 +15184,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/1",
@@ -15225,8 +15225,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -15235,7 +15235,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/4",
@@ -15259,8 +15259,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -15269,7 +15269,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/6",
@@ -15293,8 +15293,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -15303,7 +15303,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/8",
@@ -15327,8 +15327,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -15337,7 +15337,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/10",
@@ -15361,8 +15361,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -15371,7 +15371,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/12",
@@ -15395,8 +15395,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -15405,7 +15405,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/14",
@@ -15429,8 +15429,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -15439,7 +15439,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/16",
@@ -15463,8 +15463,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -15473,7 +15473,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/18",
@@ -15497,8 +15497,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -15507,7 +15507,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/20",
@@ -15531,8 +15531,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -15541,7 +15541,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/22",
@@ -15565,8 +15565,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -15575,7 +15575,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/24",
@@ -15599,8 +15599,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -15609,7 +15609,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/26",
@@ -15633,8 +15633,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -15643,7 +15643,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/28",
@@ -15667,8 +15667,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -15677,7 +15677,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/30",
@@ -15701,8 +15701,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -15711,7 +15711,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/32",
@@ -15735,8 +15735,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -15745,15 +15745,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/34",
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -15762,7 +15762,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/35",
@@ -15786,8 +15786,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -15796,7 +15796,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/37",
@@ -15820,8 +15820,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -15830,7 +15830,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/39",
@@ -15854,8 +15854,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -15864,7 +15864,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/41",
@@ -15888,8 +15888,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -15898,7 +15898,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/43",
@@ -15922,8 +15922,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -15932,7 +15932,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/45",
@@ -15956,8 +15956,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -15966,7 +15966,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/47",
@@ -15990,8 +15990,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -16000,7 +16000,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/49",
@@ -16024,8 +16024,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -16034,7 +16034,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/51",
@@ -16058,8 +16058,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -16068,7 +16068,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/53",
@@ -16092,8 +16092,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -16102,7 +16102,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/55",
@@ -16126,8 +16126,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -16136,7 +16136,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/57",
@@ -16160,8 +16160,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -16170,7 +16170,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/59",
@@ -16194,8 +16194,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -16204,7 +16204,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/61",
@@ -16228,8 +16228,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -16238,7 +16238,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/63",
@@ -16262,8 +16262,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -16272,7 +16272,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/65",
@@ -16296,8 +16296,8 @@
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -16306,15 +16306,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/67",
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -16323,15 +16323,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/68",
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -16340,15 +16340,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/69",
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -16357,15 +16357,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/70",
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -16374,15 +16374,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/71",
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -16391,15 +16391,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/72",
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -16408,15 +16408,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/73",
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -16425,15 +16425,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/74",
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -16442,15 +16442,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/75",
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -16459,15 +16459,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/76",
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -16476,15 +16476,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/77",
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -16493,15 +16493,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/78",
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -16510,15 +16510,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/79",
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -16527,15 +16527,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/80",
       "part": "Leg_LB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -16544,7 +16544,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_LB/81",
@@ -16568,8 +16568,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -16578,7 +16578,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/1",
@@ -16619,8 +16619,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -16629,7 +16629,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/4",
@@ -16653,8 +16653,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -16663,7 +16663,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/6",
@@ -16687,8 +16687,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -16697,7 +16697,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/8",
@@ -16721,8 +16721,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -16731,7 +16731,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/10",
@@ -16755,8 +16755,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -16765,7 +16765,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/12",
@@ -16789,8 +16789,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -16799,7 +16799,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/14",
@@ -16823,8 +16823,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -16833,7 +16833,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/16",
@@ -16857,8 +16857,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -16867,7 +16867,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/18",
@@ -16891,8 +16891,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -16901,7 +16901,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/20",
@@ -16925,8 +16925,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -16935,7 +16935,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/22",
@@ -16959,8 +16959,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -16969,7 +16969,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/24",
@@ -16993,8 +16993,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17003,7 +17003,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/26",
@@ -17027,8 +17027,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17037,7 +17037,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/28",
@@ -17061,8 +17061,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17071,7 +17071,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/30",
@@ -17095,8 +17095,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17105,7 +17105,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/32",
@@ -17129,8 +17129,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17139,15 +17139,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/34",
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17156,7 +17156,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/35",
@@ -17180,8 +17180,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17190,7 +17190,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/37",
@@ -17214,8 +17214,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17224,7 +17224,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/39",
@@ -17248,8 +17248,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17258,7 +17258,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/41",
@@ -17282,8 +17282,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17292,7 +17292,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/43",
@@ -17316,8 +17316,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17326,7 +17326,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/45",
@@ -17350,8 +17350,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17360,7 +17360,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/47",
@@ -17384,8 +17384,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17394,7 +17394,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/49",
@@ -17418,8 +17418,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17428,7 +17428,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/51",
@@ -17452,8 +17452,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17462,7 +17462,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/53",
@@ -17486,8 +17486,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17496,7 +17496,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/55",
@@ -17520,8 +17520,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17530,7 +17530,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/57",
@@ -17554,8 +17554,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17564,7 +17564,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/59",
@@ -17588,8 +17588,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17598,7 +17598,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/61",
@@ -17622,8 +17622,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17632,7 +17632,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/63",
@@ -17656,8 +17656,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17666,7 +17666,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/65",
@@ -17690,8 +17690,8 @@
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17700,15 +17700,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/67",
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17717,15 +17717,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/68",
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17734,15 +17734,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/69",
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17751,15 +17751,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/70",
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17768,15 +17768,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/71",
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17785,15 +17785,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/72",
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17802,15 +17802,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/73",
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17819,15 +17819,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/74",
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17836,15 +17836,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/75",
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17853,15 +17853,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/76",
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17870,15 +17870,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/77",
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17887,15 +17887,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/78",
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17904,15 +17904,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/79",
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17921,15 +17921,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/80",
       "part": "Leg_LF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577514521371,
         0.422922808392605
@@ -17938,7 +17938,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868439155238
+      "source_pixels_per_metre": 1164.1043849761968
     },
     {
       "id": "Leg_LF/81",
@@ -17962,8 +17962,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -17972,7 +17972,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/1",
@@ -17980,7 +17980,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-04",
       "size_m": [
         0.006011458801251979,
         0.003885611877424533
@@ -17989,7 +17989,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 32942.04466063171
+      "source_pixels_per_metre": 65884.08932126343
     },
     {
       "id": "Leg_RB/2",
@@ -17997,7 +17997,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-04",
+      "image": "strip-03",
       "size_m": [
         0.00667459198476647,
         0.00146729196221132
@@ -18006,15 +18006,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 174471.07092046537
+      "source_pixels_per_metre": 87235.53546023268
     },
     {
       "id": "Leg_RB/3",
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18023,7 +18023,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/4",
@@ -18031,7 +18031,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-04",
       "size_m": [
         0.006536201376632272,
         0.0023860178365835427
@@ -18040,15 +18040,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 53645.86887719113
+      "source_pixels_per_metre": 107291.73775438227
     },
     {
       "id": "Leg_RB/5",
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18057,7 +18057,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/6",
@@ -18065,7 +18065,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-04",
+      "image": "strip-03",
       "size_m": [
         0.005558867389266087,
         0.004596989919444794
@@ -18074,15 +18074,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 55688.61461217184
+      "source_pixels_per_metre": 27844.30730608592
     },
     {
       "id": "Leg_RB/7",
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18091,7 +18091,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/8",
@@ -18115,8 +18115,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18125,7 +18125,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/10",
@@ -18149,8 +18149,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18159,7 +18159,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/12",
@@ -18183,8 +18183,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18193,7 +18193,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/14",
@@ -18217,8 +18217,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18227,7 +18227,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/16",
@@ -18251,8 +18251,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18261,7 +18261,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/18",
@@ -18285,8 +18285,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18295,7 +18295,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/20",
@@ -18319,8 +18319,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18329,7 +18329,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/22",
@@ -18353,8 +18353,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18363,7 +18363,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/24",
@@ -18387,8 +18387,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18397,7 +18397,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/26",
@@ -18421,8 +18421,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18431,7 +18431,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/28",
@@ -18455,8 +18455,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18465,7 +18465,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/30",
@@ -18489,8 +18489,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18499,7 +18499,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/32",
@@ -18523,8 +18523,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18533,15 +18533,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/34",
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18550,7 +18550,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/35",
@@ -18574,8 +18574,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18584,7 +18584,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/37",
@@ -18608,8 +18608,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18618,7 +18618,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/39",
@@ -18642,8 +18642,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18652,7 +18652,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/41",
@@ -18676,8 +18676,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18686,7 +18686,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/43",
@@ -18710,8 +18710,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18720,7 +18720,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/45",
@@ -18744,8 +18744,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18754,7 +18754,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/47",
@@ -18778,8 +18778,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18788,7 +18788,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/49",
@@ -18812,8 +18812,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18822,7 +18822,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/51",
@@ -18846,8 +18846,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18856,7 +18856,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/53",
@@ -18880,8 +18880,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18890,7 +18890,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/55",
@@ -18914,8 +18914,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18924,7 +18924,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/57",
@@ -18948,8 +18948,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18958,7 +18958,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/59",
@@ -18982,8 +18982,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -18992,7 +18992,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/61",
@@ -19016,8 +19016,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -19026,7 +19026,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/63",
@@ -19050,8 +19050,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -19060,7 +19060,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/65",
@@ -19084,8 +19084,8 @@
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -19094,15 +19094,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/67",
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -19111,15 +19111,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/68",
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -19128,15 +19128,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/69",
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -19145,15 +19145,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/70",
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -19162,15 +19162,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/71",
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -19179,15 +19179,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/72",
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -19196,15 +19196,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/73",
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -19213,15 +19213,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/74",
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -19230,15 +19230,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/75",
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -19247,15 +19247,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/76",
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -19264,15 +19264,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/77",
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -19281,15 +19281,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/78",
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -19298,15 +19298,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/79",
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -19315,15 +19315,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/80",
       "part": "Leg_RB",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
         0.10995580985733443,
         0.42292280798173326
@@ -19332,7 +19332,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.868442683617
+      "source_pixels_per_metre": 2328.208034956544
     },
     {
       "id": "Leg_RB/81",
@@ -19356,8 +19356,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -19366,7 +19366,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/1",
@@ -19374,7 +19374,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-01",
+      "image": "strip-04",
       "size_m": [
         0.004165177250715468,
         0.0058530063896408135
@@ -19383,7 +19383,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 30730.98509265433
+      "source_pixels_per_metre": 43738.20613848846
     },
     {
       "id": "Leg_RF/2",
@@ -19391,7 +19391,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-02",
+      "image": "strip-01",
       "size_m": [
         0.001952599479653816,
         0.006604678969910044
@@ -19400,15 +19400,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 131107.2765651803
+      "source_pixels_per_metre": 65553.63828259015
     },
     {
       "id": "Leg_RF/3",
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -19417,7 +19417,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/4",
@@ -19425,7 +19425,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-01",
+      "image": "strip-02",
       "size_m": [
         0.001631944767318927,
         0.006650020170557797
@@ -19434,15 +19434,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 78434.02703529444
+      "source_pixels_per_metre": 156868.05407058887
     },
     {
       "id": "Leg_RF/5",
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -19451,7 +19451,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/6",
@@ -19459,7 +19459,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-02",
+      "image": "strip-01",
       "size_m": [
         0.0038201905654038637,
         0.00604532198738153
@@ -19468,15 +19468,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 67012.36381199642
+      "source_pixels_per_metre": 33506.18190599821
     },
     {
       "id": "Leg_RF/7",
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -19485,7 +19485,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/8",
@@ -19509,8 +19509,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -19519,7 +19519,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/10",
@@ -19543,8 +19543,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -19553,7 +19553,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/12",
@@ -19577,8 +19577,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -19587,7 +19587,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/14",
@@ -19611,8 +19611,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -19621,7 +19621,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/16",
@@ -19645,8 +19645,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -19655,7 +19655,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/18",
@@ -19679,8 +19679,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -19689,7 +19689,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/20",
@@ -19713,8 +19713,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -19723,7 +19723,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/22",
@@ -19747,8 +19747,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -19757,7 +19757,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/24",
@@ -19781,8 +19781,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -19791,7 +19791,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/26",
@@ -19815,8 +19815,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -19825,7 +19825,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/28",
@@ -19849,8 +19849,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -19859,7 +19859,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/30",
@@ -19883,8 +19883,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -19893,7 +19893,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/32",
@@ -19917,8 +19917,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -19927,15 +19927,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/34",
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -19944,7 +19944,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/35",
@@ -19968,8 +19968,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -19978,7 +19978,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/37",
@@ -20002,8 +20002,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20012,7 +20012,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/39",
@@ -20036,8 +20036,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20046,7 +20046,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/41",
@@ -20070,8 +20070,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20080,7 +20080,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/43",
@@ -20104,8 +20104,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20114,7 +20114,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/45",
@@ -20138,8 +20138,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20148,7 +20148,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/47",
@@ -20172,8 +20172,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20182,7 +20182,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/49",
@@ -20206,8 +20206,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20216,7 +20216,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/51",
@@ -20240,8 +20240,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20250,7 +20250,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/53",
@@ -20274,8 +20274,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20284,7 +20284,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/55",
@@ -20308,8 +20308,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20318,7 +20318,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/57",
@@ -20342,8 +20342,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20352,7 +20352,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/59",
@@ -20376,8 +20376,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20386,7 +20386,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/61",
@@ -20410,8 +20410,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20420,7 +20420,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/63",
@@ -20444,8 +20444,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20454,7 +20454,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/65",
@@ -20478,8 +20478,8 @@
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20488,15 +20488,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/67",
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20505,15 +20505,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/68",
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20522,15 +20522,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/69",
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20539,15 +20539,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/70",
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20556,15 +20556,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/71",
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20573,15 +20573,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/72",
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20590,15 +20590,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/73",
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20607,15 +20607,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/74",
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20624,15 +20624,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/75",
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20641,15 +20641,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/76",
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20658,15 +20658,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/77",
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20675,15 +20675,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/78",
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20692,15 +20692,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/79",
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20709,15 +20709,15 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/80",
       "part": "Leg_RF",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "broad",
-      "image": "broad-00",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
         0.10995577623696864,
         0.42292280839263185
@@ -20726,7 +20726,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "cylindrical",
-      "source_pixels_per_metre": 3631.8684391550073
+      "source_pixels_per_metre": 1164.1043734177617
     },
     {
       "id": "Leg_RF/81",
@@ -21346,7 +21346,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.4959999918937683,
         0.00153073550042232
@@ -21397,7 +21397,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.4959999918937683,
         0.00153073550042232
@@ -21652,7 +21652,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.4959999918937683,
         0.007999986410140991
@@ -22264,7 +22264,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.007999986410140991,
         0.001530707966589405
@@ -22273,7 +22273,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 192000.32615717026
+      "source_pixels_per_metre": 83621.4371348696
     },
     {
       "id": "SeatLip_L/36",
@@ -26044,7 +26044,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.4880000352859497,
         0.004592213182093394
@@ -26095,7 +26095,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         0.4880000352859497,
         0.004592213346166045
@@ -26282,7 +26282,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "broad",
-      "image": "broad-02",
+      "image": "broad-03",
       "size_m": [
         0.4880000054836273,
         0.4230000078678131

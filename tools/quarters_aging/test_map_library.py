@@ -21,6 +21,13 @@ class LibraryMappingTests(unittest.TestCase):
         self.assertEqual(classify_face([0, -1, 0], [.05, .05], .0025), 'strip')
         self.assertEqual(classify_face([0, -1, 0], [.5, 1], .5), 'broad')
 
+    def test_tube_classification_uses_diameter_not_unwrapped_circumference(self):
+        circumference, length = np.pi*.04, .4
+        self.assertEqual(classify_face([0, -1, 0], [circumference, length],
+                                       circumference*length, cylindrical=True), 'strip')
+        self.assertEqual(classify_face([0, 0, 1], [circumference, length],
+                                       circumference*length, cylindrical=True), 'top')
+
     def test_seeded_choice_avoids_neighbor_and_prefers_aspect(self):
         rows = [dict(id='a', kind='broad', pixels=[400, 800]),
                 dict(id='b', kind='broad', pixels=[400, 800]),

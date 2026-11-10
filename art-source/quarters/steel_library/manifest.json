@@ -540,22 +540,22 @@
         319
       ],
       "image": "strip-01.png",
-      "raw": "strip-01-native-raw.png",
+      "raw": "strip-01-trim-detail-raw.png",
       "scores": {
-        "delta_e": 6.301692929721932,
-        "planar_light_gradient": 0.0008717667248805034,
-        "secondary_autocorrelation": 0.46638792606479545,
-        "edge_rust": 0.18104568629411177,
-        "broad_rust": 0.0020381239779756217,
-        "edge_broad_ratio": 88.82957477097955,
-        "paint_mean_delta_e": 2.275487906115391,
-        "paint_std_delta_e": 5.6730676041518215,
-        "rust_mean_delta_e": 3.310368017190362,
-        "rust_std_delta_e": 3.1309317808346564,
+        "delta_e": 7.220439977743445,
+        "planar_light_gradient": 0.0014046190841428342,
+        "secondary_autocorrelation": 0.3089208210984424,
+        "edge_rust": 0.09304351551677353,
+        "broad_rust": 8.68967587508986e-05,
+        "edge_broad_ratio": 1070.7363180656191,
+        "paint_mean_delta_e": 1.8313882453601866,
+        "paint_std_delta_e": 5.339439166367302,
+        "rust_mean_delta_e": 1.9842537002058995,
+        "rust_std_delta_e": 2.5556405553003225,
         "no_green": 0.0,
         "pixels_per_metre": 1536.0,
-        "broad_high_frequency": 0.006806989204692324,
-        "pilot_pigment_delta_e": 0.394243069411549
+        "broad_high_frequency": 0.009372063174707386,
+        "pilot_pigment_delta_e": 0.7611879417529982
       },
       "passed": true,
       "raw_reference": "strip-source.png",
@@ -564,130 +564,45 @@
         0.4827450704574585,
         0.4709803652763367
       ],
-      "parent_raw": "strip-01-raw.png",
+      "parent_raw": "strip-01-native-raw.png",
       "native_input": "strip-01-native-input.png",
       "resolution_stage": "native-2x",
       "palette_reference_reason": "Broad panels and narrow strips share the same painted steel and oxide palette; trim crop remains the edit-layout source.",
+      "refinement": "trim-detail",
       "treatment": {
         "quantile_amount": 0.0,
         "calibration": {
           "flatten_log_linear_plane": true,
           "lab_affine_matrix": [
             [
-              1.7890826250598995,
-              3.152244196727167,
-              -6.399414804502777
+              1.3748096433054344,
+              3.164304800141209,
+              -3.2409695765563025
             ],
             [
-              -0.6223914727345129,
-              -0.647782836084901,
-              1.468508870196175
+              -0.42409714754716965,
+              -0.8453829338593623,
+              1.2161039355305625
             ],
             [
-              -0.9247670280309143,
-              -1.5972091248324818,
-              3.3403439404849142
+              -0.6219850458974525,
+              -1.74018585237889,
+              1.9427948367368544
             ]
           ],
           "lab_input_centre": [
-            45.12190734805293,
-            -4.15043102068488,
-            6.8135213530706125
+            52.949691588066386,
+            -8.79175994189606,
+            -1.8937787086679032
           ],
           "lab_output_centre": [
-            46.00091775571256,
-            -5.943322344503452,
-            1.3013120670397114
+            46.70676134863001,
+            -6.212395293191274,
+            0.8946294304024429
           ],
           "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
         },
         "denoise_px": 1.0,
-        "green_saturation_ceiling": 0.18
-      }
-    },
-    {
-      "id": "strip-02",
-      "kind": "strip",
-      "pixels": [
-        256,
-        1536
-      ],
-      "size_m": [
-        0.16666666666666666,
-        1.0
-      ],
-      "seed": 195008,
-      "reference": "broad-neutral-source.png",
-      "source": "docs/art/quarters/concept-now.png",
-      "crop": [
-        438,
-        259,
-        459,
-        319
-      ],
-      "image": "strip-02.png",
-      "raw": "strip-02-native-raw.png",
-      "scores": {
-        "delta_e": 6.339839698527934,
-        "planar_light_gradient": 0.0008207444195588478,
-        "secondary_autocorrelation": 0.4696367301364713,
-        "edge_rust": 0.19587884279151418,
-        "broad_rust": 0.0005596459544741908,
-        "edge_broad_ratio": 350.00492941211377,
-        "paint_mean_delta_e": 2.421755659904669,
-        "paint_std_delta_e": 0.7358294923836113,
-        "rust_mean_delta_e": 2.2966522875345867,
-        "rust_std_delta_e": 0.728686623938304,
-        "no_green": 0.0,
-        "pixels_per_metre": 1536.0,
-        "broad_high_frequency": 0.06228075053216269,
-        "pilot_pigment_delta_e": 0.17134636500084144
-      },
-      "passed": true,
-      "raw_reference": "strip-source.png",
-      "neutral_paint_target": [
-        0.40039213418960573,
-        0.4827450704574585,
-        0.4709803652763367
-      ],
-      "parent_raw": "strip-02-raw.png",
-      "native_input": "strip-02-native-input.png",
-      "resolution_stage": "native-2x",
-      "palette_reference_reason": "Broad panels and narrow strips share the same painted steel and oxide palette; trim crop remains the edit-layout source.",
-      "treatment": {
-        "quantile_amount": 0.67,
-        "calibration": {
-          "flatten_log_linear_plane": true,
-          "lab_affine_matrix": [
-            [
-              0.45060525509192606,
-              -1.628364515900704,
-              0.538502245781173
-            ],
-            [
-              -0.08739024070069862,
-              0.8912766891043772,
-              0.18667222605957742
-            ],
-            [
-              -0.2936597872078938,
-              -0.2846582624057445,
-              0.8497791966475656
-            ]
-          ],
-          "lab_input_centre": [
-            42.62695259921738,
-            -3.856338587286025,
-            3.1185442866255797
-          ],
-          "lab_output_centre": [
-            45.127742438747404,
-            -5.276130326972519,
-            1.481885343281613
-          ],
-          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
-        },
-        "denoise_px": 0.0,
         "green_saturation_ceiling": 0.18
       }
     },
@@ -712,22 +627,22 @@
         319
       ],
       "image": "strip-03.png",
-      "raw": "strip-03-native-raw.png",
+      "raw": "strip-03-trim-detail-raw.png",
       "scores": {
-        "delta_e": 7.09498482617493,
-        "planar_light_gradient": 0.003213559408065835,
-        "secondary_autocorrelation": 0.23198557627113164,
-        "edge_rust": 0.048728238671255766,
-        "broad_rust": 0.0022198172008184094,
-        "edge_broad_ratio": 21.951464586043606,
-        "paint_mean_delta_e": 1.1979199957321114,
-        "paint_std_delta_e": 1.7141029882555467,
-        "rust_mean_delta_e": 3.150192595989589,
-        "rust_std_delta_e": 1.439002461995344,
+        "delta_e": 7.329699686256759,
+        "planar_light_gradient": 0.01071142096509909,
+        "secondary_autocorrelation": 0.3928457077309621,
+        "edge_rust": 0.09052998386198426,
+        "broad_rust": 0.00394985267049539,
+        "edge_broad_ratio": 22.919838134274002,
+        "paint_mean_delta_e": 1.8822656091474155,
+        "paint_std_delta_e": 1.259512355980957,
+        "rust_mean_delta_e": 3.7303372624417004,
+        "rust_std_delta_e": 2.184104885673905,
         "no_green": 0.0,
         "pixels_per_metre": 1536.0,
-        "broad_high_frequency": 0.009250808497015739,
-        "pilot_pigment_delta_e": 1.404959773769803
+        "broad_high_frequency": 0.00854121237662291,
+        "pilot_pigment_delta_e": 0.7539961977121049
       },
       "passed": true,
       "raw_reference": "strip-source.png",
@@ -736,40 +651,41 @@
         0.4827450704574585,
         0.4709803652763367
       ],
-      "parent_raw": "strip-03-raw.png",
+      "parent_raw": "strip-03-native-raw.png",
       "native_input": "strip-03-native-input.png",
       "resolution_stage": "native-2x",
       "palette_reference_reason": "Broad panels and narrow strips share the same painted steel and oxide palette; trim crop remains the edit-layout source.",
+      "refinement": "trim-detail",
       "treatment": {
-        "quantile_amount": 0.33,
+        "quantile_amount": 0.0,
         "calibration": {
           "flatten_log_linear_plane": true,
           "lab_affine_matrix": [
             [
-              1.1168337368349293,
-              -0.006001276851918491,
-              0.24642500193686415
+              1.1965187479546993,
+              1.3849605994669194,
+              -1.0657413255653765
             ],
             [
-              0.22576384317782683,
-              0.7696301829729961,
-              0.7240226331131915
+              -0.35610217952318196,
+              -0.5175540555502287,
+              0.9424977831231415
             ],
             [
-              -0.16215077710423678,
-              -0.3878999523855691,
-              1.1333699560140382
+              -0.37740380656169253,
+              -0.8078934020120789,
+              1.068007931690418
             ]
           ],
           "lab_input_centre": [
-            47.603751628461126,
-            -6.301969029562361,
-            3.794246840589343
+            51.09870230708154,
+            -4.798570280993985,
+            1.5635723527501995
           ],
           "lab_output_centre": [
-            45.99529530870348,
-            -5.587463486008427,
-            0.9854446362621528
+            46.67188092639422,
+            -6.08967887493478,
+            0.6784884038174508
           ],
           "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
         },
@@ -798,22 +714,22 @@
         319
       ],
       "image": "strip-04.png",
-      "raw": "strip-04-native-raw.png",
+      "raw": "strip-04-trim-detail-raw.png",
       "scores": {
-        "delta_e": 4.86104339150006,
-        "planar_light_gradient": 0.004299142545542244,
-        "secondary_autocorrelation": 0.42064349408223917,
-        "edge_rust": 0.21700136616856963,
-        "broad_rust": 0.029772370953978052,
-        "edge_broad_ratio": 7.2886827355472965,
-        "paint_mean_delta_e": 1.9369239935954865,
-        "paint_std_delta_e": 0.799522776414566,
-        "rust_mean_delta_e": 2.486611080906781,
-        "rust_std_delta_e": 2.3734616645075817,
+        "delta_e": 6.908606877332071,
+        "planar_light_gradient": 0.0027634169578118215,
+        "secondary_autocorrelation": 0.13912609958022196,
+        "edge_rust": 0.12137664488819361,
+        "broad_rust": 0.02490622953422374,
+        "edge_broad_ratio": 4.873344828104532,
+        "paint_mean_delta_e": 1.9985136509543644,
+        "paint_std_delta_e": 0.4570997199534466,
+        "rust_mean_delta_e": 7.922702727403614,
+        "rust_std_delta_e": 5.701386851545582,
         "no_green": 0.0,
         "pixels_per_metre": 1536.0,
-        "broad_high_frequency": 0.006026827756021662,
-        "pilot_pigment_delta_e": 0.6820341432295025
+        "broad_high_frequency": 0.012898685076207585,
+        "pilot_pigment_delta_e": 0.584852624141348
       },
       "passed": true,
       "raw_reference": "strip-source.png",
@@ -822,40 +738,41 @@
         0.4827450704574585,
         0.4709803652763367
       ],
-      "parent_raw": "strip-04-raw.png",
+      "parent_raw": "strip-04-native-raw.png",
       "native_input": "strip-04-native-input.png",
       "resolution_stage": "native-2x",
       "palette_reference_reason": "Broad panels and narrow strips share the same painted steel and oxide palette; trim crop remains the edit-layout source.",
+      "refinement": "trim-detail",
       "treatment": {
-        "quantile_amount": 1.0,
+        "quantile_amount": 0.33,
         "calibration": {
           "flatten_log_linear_plane": true,
           "lab_affine_matrix": [
             [
-              0.8204692086173528,
-              -0.4855448827776367,
-              0.36496907181219607
+              1.8278331716646325,
+              1.7875622671021503,
+              -0.22969510069293986
             ],
             [
-              -0.33033702340412263,
-              0.2834892589004857,
-              0.12489345951317701
+              0.012868213449359258,
+              0.4659986429314317,
+              0.7620830023036821
             ],
             [
-              -0.11990935073748347,
-              0.05280946056533836,
-              0.7087757510602903
+              0.12207838479999489,
+              -0.05419371968008279,
+              1.2051141663221363
             ]
           ],
           "lab_input_centre": [
-            43.18802561096232,
-            -3.736729755431069,
-            2.4387889204337614
+            49.14766606548912,
+            -5.200221707144835,
+            3.122479474128104
           ],
           "lab_output_centre": [
-            44.4335982631418,
-            -4.898688723618859,
-            1.7579572412450255
+            45.95610795526789,
+            -5.824482896838742,
+            1.0378493798999477
           ],
           "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
         },
@@ -970,22 +887,22 @@
         304
       ],
       "image": "top-01.png",
-      "raw": "top-01-finish2-raw.png",
+      "raw": "top-01-fine-powder-raw.png",
       "scores": {
-        "delta_e": 6.467848464864228,
-        "planar_light_gradient": 0.0038362970643815567,
-        "secondary_autocorrelation": 0.3970461303677122,
-        "edge_rust": 0.026374107604805117,
-        "broad_rust": 3.973966545162639e-06,
-        "edge_broad_ratio": 6636.721095931049,
-        "paint_mean_delta_e": 3.694998020621788,
-        "paint_std_delta_e": 4.588858306328888,
-        "rust_mean_delta_e": 5.769516117680964,
-        "rust_std_delta_e": 2.2118644621625414,
+        "delta_e": 6.519070677509771,
+        "planar_light_gradient": 0.0024064052165429896,
+        "secondary_autocorrelation": 0.14038942268208934,
+        "edge_rust": 0.019068960098037657,
+        "broad_rust": 0.0,
+        "edge_broad_ratio": 1906896.0098037657,
+        "paint_mean_delta_e": 3.7340508230370046,
+        "paint_std_delta_e": 3.0801748602031527,
+        "rust_mean_delta_e": 3.87387333891816,
+        "rust_std_delta_e": 2.3335612826196943,
         "no_green": 0.0,
         "pixels_per_metre": 1536.0,
-        "broad_high_frequency": 0.019021799081816605,
-        "pilot_pigment_delta_e": 0.21777481767190401
+        "broad_high_frequency": 0.02046793771589071,
+        "pilot_pigment_delta_e": 0.1922605850465923
       },
       "passed": true,
       "raw_reference": "top-source.png",
@@ -994,40 +911,40 @@
         0.58,
         0.54
       ],
-      "parent_raw": "top-01-native-raw.png",
+      "parent_raw": "top-01-finish2-raw.png",
       "native_input": "top-01-native-input.png",
       "resolution_stage": "native-2x",
-      "refinement": "finish2",
+      "refinement": "fine-powder",
       "treatment": {
         "quantile_amount": 0.0,
         "calibration": {
           "flatten_log_linear_plane": true,
           "lab_affine_matrix": [
             [
-              1.4845346111151791,
-              -1.3967963504513907,
-              1.2035787955006234
+              0.4372246851919155,
+              -4.530429264470859,
+              2.528049999897046
             ],
             [
-              0.6431588456333095,
-              0.15827167948989607,
-              1.5020226041482694
+              0.16292931526540796,
+              0.26401108434968723,
+              1.0958663143382041
             ],
             [
-              0.7686571721512973,
-              0.14864447136098274,
-              1.6360827776269071
+              0.2381436301520739,
+              0.24836639331692287,
+              1.1850257357954248
             ]
           ],
           "lab_input_centre": [
-            59.18408694919536,
-            -0.41294384851886884,
-            4.7020206192267455
+            57.36027388355796,
+            -1.4720611778474368,
+            5.506990072216454
           ],
           "lab_output_centre": [
-            56.176020870888905,
-            -3.4508957308056782,
-            5.750938801070787
+            56.15970159267889,
+            -3.477867127460486,
+            5.735684823622159
           ],
           "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
         },
@@ -1206,12 +1123,262 @@
         "denoise_px": 1.0,
         "green_saturation_ceiling": 0.18
       }
+    },
+    {
+      "id": "strip-02",
+      "kind": "strip",
+      "pixels": [
+        256,
+        1536
+      ],
+      "size_m": [
+        0.16666666666666666,
+        1.0
+      ],
+      "seed": 195008,
+      "reference": "broad-neutral-source.png",
+      "source": "docs/art/quarters/concept-now.png",
+      "crop": [
+        438,
+        259,
+        459,
+        319
+      ],
+      "image": "strip-02.png",
+      "raw": "strip-02-native-raw.png",
+      "scores": {
+        "delta_e": 6.339839698527934,
+        "planar_light_gradient": 0.0008207444195588478,
+        "secondary_autocorrelation": 0.4696367301364713,
+        "edge_rust": 0.19587884279151418,
+        "broad_rust": 0.0005596459544741908,
+        "edge_broad_ratio": 350.00492941211377,
+        "paint_mean_delta_e": 2.421755659904669,
+        "paint_std_delta_e": 0.7358294923836113,
+        "rust_mean_delta_e": 2.2966522875345867,
+        "rust_std_delta_e": 0.728686623938304,
+        "no_green": 0.0,
+        "pixels_per_metre": 1536.0,
+        "broad_high_frequency": 0.06228075053216269,
+        "pilot_pigment_delta_e": 0.17134636500084144
+      },
+      "passed": true,
+      "raw_reference": "strip-source.png",
+      "neutral_paint_target": [
+        0.40039213418960573,
+        0.4827450704574585,
+        0.4709803652763367
+      ],
+      "parent_raw": "strip-02-raw.png",
+      "native_input": "strip-02-native-input.png",
+      "resolution_stage": "native-2x",
+      "palette_reference_reason": "Broad panels and narrow strips share the same painted steel and oxide palette; trim crop remains the edit-layout source.",
+      "treatment": {
+        "quantile_amount": 0.67,
+        "calibration": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              0.45060525509192606,
+              -1.628364515900704,
+              0.538502245781173
+            ],
+            [
+              -0.08739024070069862,
+              0.8912766891043772,
+              0.18667222605957742
+            ],
+            [
+              -0.2936597872078938,
+              -0.2846582624057445,
+              0.8497791966475656
+            ]
+          ],
+          "lab_input_centre": [
+            42.62695259921738,
+            -3.856338587286025,
+            3.1185442866255797
+          ],
+          "lab_output_centre": [
+            45.127742438747404,
+            -5.276130326972519,
+            1.481885343281613
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "denoise_px": 0.0,
+        "green_saturation_ceiling": 0.18
+      },
+      "retained_after_rejected_refinement": "strip-02-trim-detail: secondary autocorrelation 0.727274 exceeded the unchanged 0.5 limit"
+    },
+    {
+      "id": "top-04",
+      "kind": "top",
+      "pixels": [
+        1536,
+        128
+      ],
+      "size_m": [
+        1,
+        0.08333333333333333
+      ],
+      "seed": 895014,
+      "reference": "top-neutral-source.png",
+      "source": "art-source/quarters/steel_library/top-03.png",
+      "image": "top-04.png",
+      "raw": "top-04-raw.png",
+      "neutral_paint_target": [
+        0.56,
+        0.58,
+        0.54
+      ],
+      "resolution_stage": "native-generated",
+      "variant_reason": "Native narrow upward ledge image avoids compressing a 3:1 roof image onto a 22:1 screen housing",
+      "scores": {
+        "delta_e": 6.198142416425801,
+        "planar_light_gradient": 0.0020648221214923015,
+        "secondary_autocorrelation": 0.1779254681283723,
+        "edge_rust": 0.07010753916682139,
+        "broad_rust": 0.0,
+        "edge_broad_ratio": 7010753.916682138,
+        "paint_mean_delta_e": 3.908998951630246,
+        "paint_std_delta_e": 2.9750093296567095,
+        "rust_mean_delta_e": 5.119109853544237,
+        "rust_std_delta_e": 4.008080260304787,
+        "no_green": 0.0,
+        "pixels_per_metre": 1536.0,
+        "broad_high_frequency": 0.017318099594420423,
+        "pilot_pigment_delta_e": 0.07686031280915333
+      },
+      "passed": true,
+      "treatment": {
+        "calibration": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              0.7174605917801127,
+              2.038968233371215,
+              -0.9949732567085104
+            ],
+            [
+              0.052792209800447465,
+              1.4961589194694564,
+              0.2322815028554295
+            ],
+            [
+              -0.5451712078447184,
+              -1.3769570862987486,
+              1.3171684095814196
+            ]
+          ],
+          "lab_input_centre": [
+            54.09057599870888,
+            -2.4155574621380067,
+            5.509150829441156
+          ],
+          "lab_output_centre": [
+            56.268749768815866,
+            -3.0858458252590357,
+            5.890589041874704
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "denoise_px": 0,
+        "green_saturation_ceiling": 0.18
+      }
     }
   ],
   "clean": "as_built_paint.png",
   "hardware": "hardware.png",
   "fabric": "fabric.png",
   "rejected": [
+    {
+      "id": "strip-02-trim-detail",
+      "kind": "strip",
+      "pixels": [
+        256,
+        1536
+      ],
+      "size_m": [
+        0.16666666666666666,
+        1.0
+      ],
+      "seed": 195008,
+      "reference": "broad-neutral-source.png",
+      "source": "docs/art/quarters/concept-now.png",
+      "crop": [
+        438,
+        259,
+        459,
+        319
+      ],
+      "image": "strip-02-trim-detail.png",
+      "raw": "strip-02-trim-detail-raw.png",
+      "scores": {
+        "delta_e": 7.4118054497448345,
+        "planar_light_gradient": 0.0008780232506938853,
+        "secondary_autocorrelation": 0.7272741901577133,
+        "edge_rust": 0.09960996949126148,
+        "broad_rust": 0.00015876480977991227,
+        "edge_broad_ratio": 627.4058440868969,
+        "paint_mean_delta_e": 2.065545997720206,
+        "paint_std_delta_e": 4.347175903921074,
+        "rust_mean_delta_e": 2.4051019300316487,
+        "rust_std_delta_e": 3.8534722661782346,
+        "no_green": 0.0,
+        "pixels_per_metre": 1536.0,
+        "broad_high_frequency": 0.015277892653981887,
+        "pilot_pigment_delta_e": 0.5698168854924247
+      },
+      "passed": false,
+      "raw_reference": "strip-source.png",
+      "neutral_paint_target": [
+        0.40039213418960573,
+        0.4827450704574585,
+        0.4709803652763367
+      ],
+      "parent_raw": "strip-02-native-raw.png",
+      "native_input": "strip-02-native-input.png",
+      "resolution_stage": "native-2x",
+      "palette_reference_reason": "Broad panels and narrow strips share the same painted steel and oxide palette; trim crop remains the edit-layout source.",
+      "refinement": "trim-detail",
+      "treatment": {
+        "quantile_amount": 0.0,
+        "calibration": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              1.2801552571478465,
+              3.1221336460009104,
+              -2.885551100177267
+            ],
+            [
+              -0.5680340936130399,
+              -1.01119254256269,
+              1.1577160197546374
+            ],
+            [
+              -0.6761306887759482,
+              -1.5929325930254439,
+              1.483024261376141
+            ]
+          ],
+          "lab_input_centre": [
+            50.07037220572891,
+            -4.875998566545617,
+            2.38586589058955
+          ],
+          "lab_output_centre": [
+            46.29844778620918,
+            -5.941134831493068,
+            1.018273435601643
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "denoise_px": 1.0,
+        "green_saturation_ceiling": 0.18
+      }
+    },
     {
       "id": "strip-00",
       "kind": "strip",

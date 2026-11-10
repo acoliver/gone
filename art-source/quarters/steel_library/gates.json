@@ -374,37 +374,37 @@
     },
     "strip-01": {
       "delta_e": {
-        "value": 6.301692929721932,
+        "value": 7.220439977743445,
         "threshold": 8,
         "passed": true
       },
       "paint_mean_delta_e": {
-        "value": 2.275487906115391,
+        "value": 1.8313882453601866,
         "threshold": 8,
         "passed": true
       },
       "paint_std_delta_e": {
-        "value": 5.6730676041518215,
+        "value": 5.339439166367302,
         "threshold": 8,
         "passed": true
       },
       "rust_mean_delta_e": {
-        "value": 3.310368017190362,
+        "value": 1.9842537002058995,
         "threshold": 8,
         "passed": true
       },
       "rust_std_delta_e": {
-        "value": 3.1309317808346564,
+        "value": 2.5556405553003225,
         "threshold": 8,
         "passed": true
       },
       "planar_light_gradient": {
-        "value": 0.0008717667248805034,
+        "value": 0.0014046190841428342,
         "threshold": 0.06,
         "passed": true
       },
       "secondary_autocorrelation": {
-        "value": 0.46638792606479545,
+        "value": 0.3089208210984424,
         "threshold": 0.5,
         "passed": true
       },
@@ -414,7 +414,7 @@
         "passed": true
       },
       "edge_broad_ratio": {
-        "value": 88.82957477097955,
+        "value": 1070.7363180656191,
         "threshold": 1.8,
         "passed": true
       },
@@ -424,111 +424,49 @@
         "passed": true
       },
       "broad_rust": {
-        "value": 0.0020381239779756217,
+        "value": 8.68967587508986e-05,
         "threshold": 0.2,
         "passed": true
       },
       "pilot_pigment_delta_e": {
-        "value": 0.394243069411549,
-        "threshold": 6,
-        "passed": true
-      }
-    },
-    "strip-02": {
-      "delta_e": {
-        "value": 6.339839698527934,
-        "threshold": 8,
-        "passed": true
-      },
-      "paint_mean_delta_e": {
-        "value": 2.421755659904669,
-        "threshold": 8,
-        "passed": true
-      },
-      "paint_std_delta_e": {
-        "value": 0.7358294923836113,
-        "threshold": 8,
-        "passed": true
-      },
-      "rust_mean_delta_e": {
-        "value": 2.2966522875345867,
-        "threshold": 8,
-        "passed": true
-      },
-      "rust_std_delta_e": {
-        "value": 0.728686623938304,
-        "threshold": 8,
-        "passed": true
-      },
-      "planar_light_gradient": {
-        "value": 0.0008207444195588478,
-        "threshold": 0.06,
-        "passed": true
-      },
-      "secondary_autocorrelation": {
-        "value": 0.4696367301364713,
-        "threshold": 0.5,
-        "passed": true
-      },
-      "no_green": {
-        "value": 0.0,
-        "threshold": 0.005,
-        "passed": true
-      },
-      "edge_broad_ratio": {
-        "value": 350.00492941211377,
-        "threshold": 1.8,
-        "passed": true
-      },
-      "pixels_per_metre": {
-        "value": 1536.0,
-        "threshold": 600,
-        "passed": true
-      },
-      "broad_rust": {
-        "value": 0.0005596459544741908,
-        "threshold": 0.2,
-        "passed": true
-      },
-      "pilot_pigment_delta_e": {
-        "value": 0.17134636500084144,
+        "value": 0.7611879417529982,
         "threshold": 6,
         "passed": true
       }
     },
     "strip-03": {
       "delta_e": {
-        "value": 7.09498482617493,
+        "value": 7.329699686256759,
         "threshold": 8,
         "passed": true
       },
       "paint_mean_delta_e": {
-        "value": 1.1979199957321114,
+        "value": 1.8822656091474155,
         "threshold": 8,
         "passed": true
       },
       "paint_std_delta_e": {
-        "value": 1.7141029882555467,
+        "value": 1.259512355980957,
         "threshold": 8,
         "passed": true
       },
       "rust_mean_delta_e": {
-        "value": 3.150192595989589,
+        "value": 3.7303372624417004,
         "threshold": 8,
         "passed": true
       },
       "rust_std_delta_e": {
-        "value": 1.439002461995344,
+        "value": 2.184104885673905,
         "threshold": 8,
         "passed": true
       },
       "planar_light_gradient": {
-        "value": 0.003213559408065835,
+        "value": 0.01071142096509909,
         "threshold": 0.06,
         "passed": true
       },
       "secondary_autocorrelation": {
-        "value": 0.23198557627113164,
+        "value": 0.3928457077309621,
         "threshold": 0.5,
         "passed": true
       },
@@ -538,7 +476,7 @@
         "passed": true
       },
       "edge_broad_ratio": {
-        "value": 21.951464586043606,
+        "value": 22.919838134274002,
         "threshold": 1.8,
         "passed": true
       },
@@ -548,49 +486,49 @@
         "passed": true
       },
       "broad_rust": {
-        "value": 0.0022198172008184094,
+        "value": 0.00394985267049539,
         "threshold": 0.2,
         "passed": true
       },
       "pilot_pigment_delta_e": {
-        "value": 1.404959773769803,
+        "value": 0.7539961977121049,
         "threshold": 6,
         "passed": true
       }
     },
     "strip-04": {
       "delta_e": {
-        "value": 4.86104339150006,
+        "value": 6.908606877332071,
         "threshold": 8,
         "passed": true
       },
       "paint_mean_delta_e": {
-        "value": 1.9369239935954865,
+        "value": 1.9985136509543644,
         "threshold": 8,
         "passed": true
       },
       "paint_std_delta_e": {
-        "value": 0.799522776414566,
+        "value": 0.4570997199534466,
         "threshold": 8,
         "passed": true
       },
       "rust_mean_delta_e": {
-        "value": 2.486611080906781,
+        "value": 7.922702727403614,
         "threshold": 8,
         "passed": true
       },
       "rust_std_delta_e": {
-        "value": 2.3734616645075817,
+        "value": 5.701386851545582,
         "threshold": 8,
         "passed": true
       },
       "planar_light_gradient": {
-        "value": 0.004299142545542244,
+        "value": 0.0027634169578118215,
         "threshold": 0.06,
         "passed": true
       },
       "secondary_autocorrelation": {
-        "value": 0.42064349408223917,
+        "value": 0.13912609958022196,
         "threshold": 0.5,
         "passed": true
       },
@@ -600,7 +538,7 @@
         "passed": true
       },
       "edge_broad_ratio": {
-        "value": 7.2886827355472965,
+        "value": 4.873344828104532,
         "threshold": 1.8,
         "passed": true
       },
@@ -610,12 +548,12 @@
         "passed": true
       },
       "broad_rust": {
-        "value": 0.029772370953978052,
+        "value": 0.02490622953422374,
         "threshold": 0.2,
         "passed": true
       },
       "pilot_pigment_delta_e": {
-        "value": 0.6820341432295025,
+        "value": 0.584852624141348,
         "threshold": 6,
         "passed": true
       }
@@ -684,37 +622,37 @@
     },
     "top-01": {
       "delta_e": {
-        "value": 6.467848464864228,
+        "value": 6.519070677509771,
         "threshold": 8,
         "passed": true
       },
       "paint_mean_delta_e": {
-        "value": 3.694998020621788,
+        "value": 3.7340508230370046,
         "threshold": 8,
         "passed": true
       },
       "paint_std_delta_e": {
-        "value": 4.588858306328888,
+        "value": 3.0801748602031527,
         "threshold": 8,
         "passed": true
       },
       "rust_mean_delta_e": {
-        "value": 5.769516117680964,
+        "value": 3.87387333891816,
         "threshold": 8,
         "passed": true
       },
       "rust_std_delta_e": {
-        "value": 2.2118644621625414,
+        "value": 2.3335612826196943,
         "threshold": 8,
         "passed": true
       },
       "planar_light_gradient": {
-        "value": 0.0038362970643815567,
+        "value": 0.0024064052165429896,
         "threshold": 0.06,
         "passed": true
       },
       "secondary_autocorrelation": {
-        "value": 0.3970461303677122,
+        "value": 0.14038942268208934,
         "threshold": 0.5,
         "passed": true
       },
@@ -724,7 +662,7 @@
         "passed": true
       },
       "edge_broad_ratio": {
-        "value": 6636.721095931049,
+        "value": 1906896.0098037657,
         "threshold": 1.8,
         "passed": true
       },
@@ -734,12 +672,12 @@
         "passed": true
       },
       "broad_rust": {
-        "value": 3.973966545162639e-06,
+        "value": 0.0,
         "threshold": 0.2,
         "passed": true
       },
       "pilot_pigment_delta_e": {
-        "value": 0.21777481767190401,
+        "value": 0.1922605850465923,
         "threshold": 6,
         "passed": true
       }
@@ -867,9 +805,195 @@
         "threshold": 6,
         "passed": true
       }
+    },
+    "strip-02": {
+      "delta_e": {
+        "value": 6.339839698527934,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_mean_delta_e": {
+        "value": 2.421755659904669,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_std_delta_e": {
+        "value": 0.7358294923836113,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_mean_delta_e": {
+        "value": 2.2966522875345867,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_std_delta_e": {
+        "value": 0.728686623938304,
+        "threshold": 8,
+        "passed": true
+      },
+      "planar_light_gradient": {
+        "value": 0.0008207444195588478,
+        "threshold": 0.06,
+        "passed": true
+      },
+      "secondary_autocorrelation": {
+        "value": 0.4696367301364713,
+        "threshold": 0.5,
+        "passed": true
+      },
+      "no_green": {
+        "value": 0.0,
+        "threshold": 0.005,
+        "passed": true
+      },
+      "edge_broad_ratio": {
+        "value": 350.00492941211377,
+        "threshold": 1.8,
+        "passed": true
+      },
+      "pixels_per_metre": {
+        "value": 1536.0,
+        "threshold": 600,
+        "passed": true
+      },
+      "broad_rust": {
+        "value": 0.0005596459544741908,
+        "threshold": 0.2,
+        "passed": true
+      },
+      "pilot_pigment_delta_e": {
+        "value": 0.17134636500084144,
+        "threshold": 6,
+        "passed": true
+      }
+    },
+    "top-04": {
+      "delta_e": {
+        "value": 6.198142416425801,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_mean_delta_e": {
+        "value": 3.908998951630246,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_std_delta_e": {
+        "value": 2.9750093296567095,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_mean_delta_e": {
+        "value": 5.119109853544237,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_std_delta_e": {
+        "value": 4.008080260304787,
+        "threshold": 8,
+        "passed": true
+      },
+      "planar_light_gradient": {
+        "value": 0.0020648221214923015,
+        "threshold": 0.06,
+        "passed": true
+      },
+      "secondary_autocorrelation": {
+        "value": 0.1779254681283723,
+        "threshold": 0.5,
+        "passed": true
+      },
+      "no_green": {
+        "value": 0.0,
+        "threshold": 0.005,
+        "passed": true
+      },
+      "edge_broad_ratio": {
+        "value": 7010753.916682138,
+        "threshold": 1.8,
+        "passed": true
+      },
+      "pixels_per_metre": {
+        "value": 1536.0,
+        "threshold": 600,
+        "passed": true
+      },
+      "broad_rust": {
+        "value": 0.0,
+        "threshold": 0.2,
+        "passed": true
+      },
+      "pilot_pigment_delta_e": {
+        "value": 0.07686031280915333,
+        "threshold": 6,
+        "passed": true
+      }
     }
   },
   "rejected": {
+    "strip-02-trim-detail": {
+      "delta_e": {
+        "value": 7.4118054497448345,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_mean_delta_e": {
+        "value": 2.065545997720206,
+        "threshold": 8,
+        "passed": true
+      },
+      "paint_std_delta_e": {
+        "value": 4.347175903921074,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_mean_delta_e": {
+        "value": 2.4051019300316487,
+        "threshold": 8,
+        "passed": true
+      },
+      "rust_std_delta_e": {
+        "value": 3.8534722661782346,
+        "threshold": 8,
+        "passed": true
+      },
+      "planar_light_gradient": {
+        "value": 0.0008780232506938853,
+        "threshold": 0.06,
+        "passed": true
+      },
+      "secondary_autocorrelation": {
+        "value": 0.7272741901577133,
+        "threshold": 0.5,
+        "passed": false
+      },
+      "no_green": {
+        "value": 0.0,
+        "threshold": 0.005,
+        "passed": true
+      },
+      "edge_broad_ratio": {
+        "value": 627.4058440868969,
+        "threshold": 1.8,
+        "passed": true
+      },
+      "pixels_per_metre": {
+        "value": 1536.0,
+        "threshold": 600,
+        "passed": true
+      },
+      "broad_rust": {
+        "value": 0.00015876480977991227,
+        "threshold": 0.2,
+        "passed": true
+      },
+      "pilot_pigment_delta_e": {
+        "value": 0.5698168854924247,
+        "threshold": 6,
+        "passed": true
+      }
+    },
     "strip-00": {
       "delta_e": {
         "value": 5.051275247936403,
@@ -928,6 +1052,6 @@
       }
     }
   },
-  "passed": 168,
+  "passed": 180,
   "failed": 0
 }

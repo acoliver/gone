@@ -24,10 +24,13 @@ PROPS = ['wardrobe', 'desk', 'console', 'bed', 'lockers_over_bed', 'bedside', 'm
 PRESERVED = {'Display', 'Glass', 'ScreenGlass', 'Screen', 'DisplayGlass'}
 
 
-def classify_face(normal, size, area):
+def classify_face(normal, size, area, cylindrical=False):
     if normal[2] > .7:
         return 'top'
-    aspect = max(size) / min(size)
+    # A slender tube remains trim even when its unwrapped circumference
+    # makes the source rectangle look like a broad panel.
+    dimensions = [size[0]/np.pi, size[1]] if cylindrical else size
+    aspect = max(dimensions) / min(dimensions)
     return 'strip' if aspect >= 4 or area < .004 else 'broad'
 
 
@@ -139,7 +142,7 @@ def map_prop(document, prop, output, resolution, seed):
         area = float(areas.sum())
         disc = role == 'paint' and not cylindrical and is_disc(coordinates, size, area)
         source_scale = DISC_SOURCE_SCALE if disc else 1.
-        kind = classify_face(face['normal'], size, area if not cylindrical else float(np.prod(size)))
+        kind = classify_face(face['normal'], size, area if not cylindrical else float(np.prod(size)), cylindrical)
         if role == 'paint':
             identity = face['part']+'/tube/'+kind if cylindrical else face['id']
             if cylindrical and identity in round_images:

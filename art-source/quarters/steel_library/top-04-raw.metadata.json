@@ -1,0 +1,34 @@
+{
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/steel_library/top-04-input.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/steel_library/top-04-prompt.txt",
+    "--seed",
+    "895014",
+    "--width",
+    "1536",
+    "--height",
+    "128",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/steel_library/top-04-raw.png"
+  ],
+  "prompt": "Refine this flat horizontal upward-facing narrow painted-steel ledge texture at its native long narrow aspect ratio. A visibly settled fine soft warm grey dust veil covers the central muted grey-green paint, with delicate diffuse fine particulate detail. Dust is matte powder, not new paint, with softly irregular settling but no blotchy patches or coarse mottling. Retain most paint and small separated irregular dark reddish brown corrosion chips along the long outside edges. The edge chips have unequal widths, spacing and lengths, leaving many painted gaps. No continuous rust outline, broad pale flaking, vertical runs, stripes, tracks, swirls, grit heaps or repeated markings. 1000 years of dry sterile oxygenated ship aging. Shadowless edge-to-edge orthographic flat material only; no object, frame, lighting gradient, perspective, cast shadows or biological growth.\n",
+  "input": "top-04-input.png",
+  "parent": "top-03.png",
+  "model": "FLUX.2-klein-4B",
+  "quantize": 4,
+  "steps": 4,
+  "seed": 895014,
+  "pixels": [
+    1536,
+    128
+  ]
+}
