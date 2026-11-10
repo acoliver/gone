@@ -46,7 +46,8 @@ const GENERATOR_RING_RADII_Y: Array[float] = [0.7, 1.5, 2.3]
 const GENERATOR_RING_INNER: float = 0.66
 const GENERATOR_RING_OUTER: float = 0.84
 const GENERATOR_GLOW: Color = Color(0.80, 0.90, 1.00)
-const GENERATOR_EMISSIVE: float = 2.4
+# Linear tonemapping at exposure 2 needs headroom for the rings' reflected light.
+const GENERATOR_EMISSIVE: float = 0.24
 const GENERATOR_LIGHT_ENERGY: float = 1.2
 
 ## The room's fixtures mirror the hallway's pair of circuits: red

@@ -125,6 +125,25 @@ func test_generator_hull_guards_the_room_center() -> void:
 	assert_vec3_equal(hull.center, Vector3(27.0, 1.6, -5.7), "the full-height generator's hull centers on the room")
 	assert_vec3_equal(hull.size, Vector3(1.6, 3.2, 1.6), "the hull follows the ceiling-height column")
 
+func test_generator_band_emission_leaves_headroom_at_room_exposure() -> void:
+	var game := _awake_game()
+	game.light_hallway()
+	var room := PowerRoom.build(game)
+	var material: StandardMaterial3D = room.get_node("Generator/Ring").material_override
+	assert_true(material.emission == Color(0, 0, 0, 0), "emergency-powered bands have no emission")
+	assert_true(game.press_console(), "the console activates secondary power")
+	for _tick: int in range(Lighting.FIXTURE_SETTLE_TICKS):
+		room.process_frame(Sim.LOGICAL_TICK_SECS)
+	var exposed := material.emission * Lighting.EXPOSURE_MULTIPLIER
+	assert_float_in_range(exposed.b, 0.1, 0.75, "the brightest band channel leaves headroom for reflected light under linear tonemapping")
+	assert_true(material.emission.is_equal_approx(PowerRoom.GENERATOR_GLOW * PowerRoom.GENERATOR_EMISSIVE), "settled bands use their authored emission")
+	assert_float_in_range(room.get_node("Generator/Glow").light_energy, 1.1999, 1.2001, "band brightness does not reduce the room's generator light")
+	var active_room := PowerRoom.build(game)
+	var active_material: StandardMaterial3D = active_room.get_node("Generator/Ring").material_override
+	assert_true(active_material.emission.is_equal_approx(material.emission), "an already-active build matches the settled activation")
+	active_room.free()
+	room.free()
+
 func test_collider_sets_extend_the_hallways_both_doors() -> void:
 	var registry := Pods.PodRegistry.frozen()
 	var shut := PowerRoom.scene_collider_set(registry, false, false)
