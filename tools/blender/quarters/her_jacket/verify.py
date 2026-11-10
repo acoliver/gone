@@ -80,7 +80,9 @@ def state_report(prop,state):
             hanger=parts[name+'_Hanger']
             gaps[name+'/hanger']=near_gap(parts[name],hanger)
             gaps[name+'_Hanger/rail']=near_gap(hanger,supports['Rail'])
-            if state=='aged':gaps[name+'_FibreHeap/shelf']=near_gap(parts[name+'_FibreHeap'],supports['BottomPanel'])
+            if state=='aged':
+                gaps[name+'_FibreHeap/shelf']=near_gap(parts[name+'_FibreHeap'],supports['BottomPanel'])
+                gaps[name+'_FibreHeap_Base/shelf']=near_gap(parts[name+'_FibreHeap_Base'],supports['BottomPanel'])
     source_record=json.loads((HERE.parent/prop/f'{state}.json').read_text())
     native=np.asarray(source_record['bounds_blender_native_m'])
     expected=np.array([[native[0,0],native[0,2],-native[1,1]],

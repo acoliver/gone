@@ -1415,3 +1415,41 @@ The jacket starts as separate flat T-cut front/back panels with an open neck and
 Sources are `tools/blender/quarters/her_jacket/her_jacket-{remembered,aged}.blend`, with retained cut patterns, real support meshes and packed textures. Retinted yarn comes from the approved generated sofa weave; the fine normal comes from the bed wool. Re-export each saved source with Blender 4.5.11 using `--background --factory-startup --threads 2 --python-exit-code 1 --python tools/blender/quarters/her_jacket/build.py -- --state remembered|aged --output tmp/clothes/her_jacket-<state>-repeat.glb`, then run `tools/blender/quarters/her_jacket/verify.py her_jacket` with the local Hunyuan Python. Use the actual state word in each command. The builder's `--assemble` option reconstructs cloth, remembered first, then aged; it is not needed for a repeat export.
 
 The standalone prompt and seed are in `prompts/batch2.json` and `sheets/her_jacket/hero.json`. `tools/blender/quarters/her_jacket/concept.py her_jacket --output tmp/clothes/her_jacket-guide.png` regenerates a guide with the installed local model after waiting for the shared GPU; it does not prepend the bed-specific prompt. `render.py -- --prop her_jacket --state <state>` under Blender renders the exported GLBs on CPU. `sheets.py her_jacket` under the local Python assembles the comparison. Seven collision/support controls in `test_verify.py` and two Blender construction regressions in `test_build.py` pass. Blender authors height along +Z and front toward -Y; the exporter performs the Y-up conversion, which is checked independently with trimesh rather than inferred from Blender bounds alone.
+
+
+### Her dresses
+
+The [dress comparison](sheets/her_dresses/comparison.png) places the generated guide beside separate broadside captures of the remembered and aged exports. The lower row shows their actual wardrobe placement with the existing tunic, plus isolated shoulders and floor fibres. The pair consists of a dusty-rose cap-sleeved dress and a grey-blue sleeveless dress. Both remain empty garments on steel wire hangers.
+
+`her_dresses.glb` and `her_dresses_aged.glb` use the wardrobe's floor-centre origin and complete transform, with no extra rail-height offset. The hooks meet the real rail at 1.82 m. The tunic transform comes from the Playable demo on local branch `issue-114-quarters-demo`: reflect the tunic's local X, then place its hook at wardrobe-local glTF `(0, 1.82, 0.003038027)` m. Its aged debris is separately seated on the 0.144 m wardrobe shelf. The tunic occupies most of the rail width. The dresses therefore hang with their broad hanger axes front-to-back, rose at X=-0.451 m and blue at X=0.438 m. The left hook neck offsets 26 mm inward to clear the rail socket. Neither the wardrobe nor the tunic is included in these exports.
+
+Each dress starts as retained flat front/back patterns, sewn at the sides and shoulders with open necks and armholes. After sewing closure, gravity settles the garment on its hanger and a temporary upper-chest form, following the tunic method. There are no waist or hem pins. A post-simulation fit blends width and length toward the sewn pattern measurements, preserving simulated depth and folds; projection into the real free hang space then removes collider crossings. The saved sources retain both raw simulations and the cut patterns.
+
+A height-dependent envelope reserves the union of both existing tunic states, with 8 mm lateral clearance, rather than squeezing the entire dress into the clearance beside the tunic's widest sleeve. For the aged state, the chest form is removed, a front shoulder splits and irregular hem losses open before gravity resimulation. Two rose and three blue outer shoulder stitches release; the inner stitches remain supported. The aged length fit preserves 75% of the simulated vertical sag while retaining the skirt's width. Faded brittle wool keeps a recognisable waist and flared skirt, with frayed hems and cut edges. Two low heaps of dry fibres sit below the garments on the wardrobe floor. The environment is sealed, sterile, dry and oxygenated after 1000 years; there is no mould, rot or other biological decay.
+
+Sources are `tools/blender/quarters/her_dresses/her_dresses-{remembered,aged}.blend`. The builder and repeat-export arguments match the jacket commands above, replacing its directory and prop name with `her_dresses`; run `her_jacket/verify.py her_dresses` for the independent exported-mesh gates. Reconstruct with `her_dresses/build.py -- --assemble --state remembered`, then `--state aged`. `her_dresses/finish.py -- --state <state>` repeats the saved-source silhouette and clearance fit without accumulating deformation. `her_dresses/space.py` regenerates the tunic envelope from the two shipped tunic GLBs. The standalone generated guide and seed are recorded in `prompts/batch2.json` and `sheets/her_dresses/hero.json`; it does not use the bed-specific prompt suffix. The texture sources are the same generated weave and bed-wool normal used for the jacket. The shared CPU renderer accepts `--prop her_dresses`, and `her_jacket/sheets.py her_dresses` assembles the comparison and matched fibres-disabled control.
+
+
+| Dress-pair gate | Remembered | Aged 1000 years |
+| --- | ---: | ---: |
+| Exported triangles, limit 10,000 | 6,544 | 9,430 |
+| Exact triangle crossings against wardrobe | 0 | 0 |
+| Crossings against corresponding tunic state / other dress | 0 / 0 | 0 / 0 |
+| Rose / blue cloth-to-hanger support gaps | 0.044 / 0.661 mm | 0.044 / 0.661 mm |
+| Each hanger-to-rail gap | 0.807 mm | 0.807 mm |
+| Each fibre-heap-to-shelf gap | n/a | 0.800 mm |
+| Byte-identical saved-source re-export | Pass | Pass |
+| Native Z-up to glTF Y-up/front +Z bounds | Pass | Pass |
+| Degenerate triangles / identity root | 0 / Pass | 0 / Pass |
+| Independent image-comparer rating | 7.5/10 | 6/10 |
+
+The [measured dress gates](../../../tools/blender/quarters/her_dresses/verify.json) include every exported hanger, fringe and heap in the furniture and tunic collision tests. Their support limit remains 3 mm. Eight Blender construction controls pass, covering seam closure, separate plies, nonzero triangle area, retained flat patterns, outward pattern normals, repeatable silhouette fitting with locked support stitches, retained aged sag, the height-dependent hang space, and a starting cloth shape centred beneath its hanger. The hanger-centre control first reproduced a 237 mm lower-cloth displacement toward the free bay centre. Keeping the starting cloth beneath the hook, with a shallower chest form, removes that source of distortion. The sag regression first reproduced the loss of 65% of the simulated drop during fitting. The seven shared crossing/support controls and two jacket construction tests also pass.
+
+
+The final aged surface reduces specular and sheen, strengthens the generated weave's fine contrast and uses a 0.65-strength wool normal. Roughness remains 0.98. Each loose-fibre scatter now sits over a compact, irregular 14 mm-high volume rather than representing the whole heap with separated particles. Both volumes are independently seated 0.800 mm above the shelf and included in the collision and triangle-budget checks. `her_dresses/brittle.py` owns this finish and heap construction; the builder and saved-source finishing command both use it.
+
+
+The final [lit fibres-disabled control](sheets/her_dresses/fibre-visibility.json) changes 0.968% of paired broadside pixels by more than 0.01 in a linear RGB channel, including fibre shadows. Presence alone is not treated as visual acceptance. Earlier `review-*-trial.json` and `review-initial.json` responses refer to discarded builds; the current captures show the delivered meshes. Godot 4.7.2 imports and instantiates all four final clothing GLBs with identity roots, PBR surfaces and the triangle counts in these tables. The final run passes 17 construction and geometry-control tests. Application placement and material override code are unchanged; use the chair and wardrobe transforms described above.
+
+
+The [final independent image review](sheets/her_dresses/review.json) rates the remembered pair 7.5/10 and the aged pair 6/10. It confirms recognisable aged silhouettes. The raw response records its remaining visual qualifications separately from the numerical gates.

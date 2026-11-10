@@ -23,6 +23,17 @@
       "generation": {"model": "filipstrand/Z-Image-Turbo-mflux-4bit", "steps": 8, "quantize": 4, "width": 1024, "height": 1024},
       "method": "Sewn flat T pattern, simulated on dining_chair.glb. Lay the jacket across the back with collar toward the seat. The generated hero is a design guide, not a source mesh. Use this complete prompt without the bed-specific global style/tail.",
       "aging": "1000 years, sealed sterile dry oxygenated; faded brittle wool, split folds, resimulated slump, frayed yarns and seat/floor fibre dust. No biological decay."
+    },
+    {
+      "id": "her_dresses",
+      "size_m": [0.944, 1.842, 0.584],
+      "materials": ["RoseDressWool", "BlueDressWool", "RoseDressBrittleFaded", "BlueDressBrittleFaded", "DryFadedDressFibres"],
+      "standalone_prompt": true,
+      "prompt": "Product concept render. Exactly two adult woman's civilian dresses on thin steel wire hangers beside each other on a horizontal wardrobe rail, isolated on light grey studio background. One muted dusty rose short sleeved dress with modest scoop neck, fitted waist and softly pleated A-line midi skirt. One muted warm grey blue sleeveless dress with modest round neck and gently flared midi skirt. New carefully sewn wool fabric with fine weave, understated utilitarian spacecraft civilian clothing, believable soft folds, empty garments, no people, no body inside, not military tunics, no decoration or logos. Full length including hangers in frame, three quarter almost frontal orthographic view, soft diffuse light.",
+      "seeds": [95272],
+      "generation": {"model": "filipstrand/Z-Image-Turbo-mflux-4bit", "steps": 8, "quantize": 4, "width": 1024, "height": 1024},
+      "method": "Flat front/back patterns, sewing closure before gravity drape on a wire hanger and temporary upper-chest form, as in the tunic pass. Reserve both real tunic envelopes by height, rather than flattening the whole dress to the sleeve clearance. Remove the form before aged resimulation. Use this complete prompt without the bed-specific global style/tail.",
+      "aging": "1000 years, sealed sterile dry oxygenated; pigment fade, brittle shoulder and skirt-fold splits, sag, frayed hems and fibre heaps on the wardrobe floor. No biological decay."
     }
   ]
 }

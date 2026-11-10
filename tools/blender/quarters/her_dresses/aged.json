@@ -1,0 +1,124 @@
+{
+  "age_years": 1000,
+  "environment": "sealed sterile dry oxygenated; no biology",
+  "dresses": {
+    "RoseDress": {
+      "cuts": {
+        "removed_faces": 34,
+        "lost_area_m2": 0.031164906569756567
+      },
+      "released_outer_support_stitches": 2,
+      "gravity_resimulation": {
+        "frames": 130,
+        "quality": 14,
+        "time_scale": 0.25,
+        "sewing": false,
+        "sewing_force_max": 6.0,
+        "bending_stiffness": 0.550000011920929,
+        "pin_count": 6,
+        "self_collision_distance_m": 0.0010000000474974513,
+        "colliders_active": true,
+        "self_collision_active": true,
+        "last_five_frames_motion_m": 0.00972692327694906
+      },
+      "silhouette_fit": {
+        "reference_weight": 0.65,
+        "length_reference_weight": 0.25,
+        "locked_support_stitches": 6,
+        "maximum_fit_m": 0.041486999242788015,
+        "raw_simulation_object": "RoseDress_RawSimulationAged",
+        "method": "Keep simulated depth and folds; blend width and length toward the sewn pattern measurements to preserve the A-line silhouette"
+      },
+      "collider_fit": {
+        "projected_vertices": 52,
+        "maximum_projection_m": 0.002249091814466485,
+        "constraint": "measured tunic envelope and wardrobe side/front/back interior faces"
+      }
+    },
+    "BlueDress": {
+      "cuts": {
+        "removed_faces": 36,
+        "lost_area_m2": 0.030460612440947443
+      },
+      "released_outer_support_stitches": 3,
+      "gravity_resimulation": {
+        "frames": 130,
+        "quality": 14,
+        "time_scale": 0.25,
+        "sewing": false,
+        "sewing_force_max": 6.0,
+        "bending_stiffness": 0.550000011920929,
+        "pin_count": 7,
+        "self_collision_distance_m": 0.0010000000474974513,
+        "colliders_active": true,
+        "self_collision_active": true,
+        "last_five_frames_motion_m": 0.002841443394845432
+      },
+      "silhouette_fit": {
+        "reference_weight": 0.65,
+        "length_reference_weight": 0.25,
+        "locked_support_stitches": 7,
+        "maximum_fit_m": 0.027101936376738904,
+        "raw_simulation_object": "BlueDress_RawSimulationAged",
+        "method": "Keep simulated depth and folds; blend width and length toward the sewn pattern measurements to preserve the A-line silhouette"
+      },
+      "collider_fit": {
+        "projected_vertices": 12,
+        "maximum_projection_m": 0.0016922950744628906,
+        "constraint": "measured tunic envelope and wardrobe side/front/back interior faces"
+      }
+    }
+  },
+  "bays": [
+    {
+      "name": "RoseDress",
+      "x": -0.451,
+      "x_limits": [
+        -0.473,
+        -0.428
+      ],
+      "color": [
+        0.235,
+        0.118,
+        0.115
+      ],
+      "aged_color": [
+        0.34,
+        0.275,
+        0.25
+      ],
+      "hem": 0.48
+    },
+    {
+      "name": "BlueDress",
+      "x": 0.438,
+      "x_limits": [
+        0.397,
+        0.473
+      ],
+      "color": [
+        0.125,
+        0.17,
+        0.19
+      ],
+      "aged_color": [
+        0.27,
+        0.3,
+        0.3
+      ],
+      "hem": 0.57
+    }
+  ],
+  "bounds_blender_native_m": [
+    [
+      -0.4728829264640808,
+      -0.25219446420669556,
+      0.14480000734329224
+    ],
+    [
+      0.47296687960624695,
+      0.23214325308799744,
+      1.8417737483978271
+    ]
+  ]
+}
