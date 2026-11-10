@@ -109,26 +109,28 @@
     "pass": true
   },
   "aged": {
-    "triangles": 9430,
+    "triangles": 8706,
     "triangle_limit": 10000,
     "collider_triangle_crossings": {
-      "BlueDress_FrayedYarns": 0,
+      "BlueDress_FibreHeap_Yarns": 0,
       "BlueDress_FibreHeap_Base": 0,
-      "RoseDress_FrayedYarns": 0,
-      "RoseDress_FibreHeap_Base": 0,
       "BlueDress_FibreHeap": 0,
+      "BlueDress_FrayedYarns": 0,
+      "RoseDress_FibreHeap_Yarns": 0,
+      "RoseDress_FibreHeap_Base": 0,
       "RoseDress_FibreHeap": 0,
+      "RoseDress_FrayedYarns": 0,
       "BlueDress": 0,
       "BlueDress_Hanger": 0,
       "RoseDress": 0,
       "RoseDress_Hanger": 0
     },
     "support_gaps_m": {
-      "RoseDress/hanger": 9.137761838097726e-05,
+      "RoseDress/hanger": 3.083507830499392e-05,
       "RoseDress_Hanger/rail": 0.0008069058855299698,
       "RoseDress_FibreHeap/shelf": 0.0008000079542398453,
       "RoseDress_FibreHeap_Base/shelf": 0.0008000079542398453,
-      "BlueDress/hanger": 0.0006407483090295489,
+      "BlueDress/hanger": 7.529433755815293e-05,
       "BlueDress_Hanger/rail": 0.0008069058855297495,
       "BlueDress_FibreHeap/shelf": 0.0008000079542398453,
       "BlueDress_FibreHeap_Base/shelf": 0.0008000079542398453
@@ -136,99 +138,123 @@
     "support_limit_m": 0.003,
     "bounds_gltf_m": [
       [
-        -0.45340055227279663,
+        -0.45273616909980774,
         0.14480000734329224,
-        -0.20885203778743744
+        -0.04562830924987793
       ],
       [
-        0.4600980281829834,
+        0.4565831124782562,
         1.8417737483978271,
-        0.22816848754882812
+        0.2674121856689453
       ]
     ],
     "part_bounds_gltf_m": {
-      "BlueDress_FrayedYarns": [
+      "BlueDress_FibreHeap_Yarns": [
         [
-          0.11629801243543625,
-          0.5520148873329163,
-          0.0980711504817009
+          0.21090078353881836,
+          0.14560000598430634,
+          -0.022328076884150505
         ],
         [
-          0.45823463797569275,
-          1.6678335666656494,
-          0.18900375068187714
+          0.40772998332977295,
+          0.1573241800069809,
+          0.23024863004684448
         ]
       ],
       "BlueDress_FibreHeap_Base": [
         [
-          0.33358335494995117,
+          0.1850000023841858,
           0.14480000734329224,
-          -0.2057504504919052
+          -0.019999999552965164
         ],
         [
-          0.44498583674430847,
+          0.39500001072883606,
           0.15880000591278076,
-          0.18955226242542267
-        ]
-      ],
-      "RoseDress_FrayedYarns": [
-        [
-          -0.45283856987953186,
-          0.4592692255973816,
-          0.08803467452526093
-        ],
-        [
-          -0.10566619783639908,
-          1.6680480241775513,
-          0.15492095053195953
-        ]
-      ],
-      "RoseDress_FibreHeap_Base": [
-        [
-          -0.4464166462421417,
-          0.14480000734329224,
-          -0.2057504504919052
-        ],
-        [
-          -0.3350141644477844,
-          0.15880000591278076,
-          0.18955226242542267
+          0.23999999463558197
         ]
       ],
       "BlueDress_FibreHeap": [
         [
-          0.3251536786556244,
+          0.15651214122772217,
           0.14480000734329224,
-          -0.20267564058303833
+          -0.0417807400226593
         ],
         [
-          0.45315688848495483,
-          0.16367390751838684,
-          0.22816848754882812
+          0.42048975825309753,
+          0.14480000734329224,
+          0.2621244490146637
+        ]
+      ],
+      "BlueDress_FrayedYarns": [
+        [
+          0.12326589971780777,
+          0.5852775573730469,
+          0.09900502860546112
+        ],
+        [
+          0.44639214873313904,
+          1.6855376958847046,
+          0.18305471539497375
+        ]
+      ],
+      "RoseDress_FibreHeap_Yarns": [
+        [
+          -0.40514686703681946,
+          0.14560000598430634,
+          0.03728024661540985
+        ],
+        [
+          -0.20075243711471558,
+          0.15660199522972107,
+          0.2305799275636673
+        ]
+      ],
+      "RoseDress_FibreHeap_Base": [
+        [
+          -0.39500001072883606,
+          0.14480000734329224,
+          -0.019999999552965164
+        ],
+        [
+          -0.1850000023841858,
+          0.15880000591278076,
+          0.23999999463558197
         ]
       ],
       "RoseDress_FibreHeap": [
         [
-          -0.4533948600292206,
+          -0.4223118722438812,
           0.14480000734329224,
-          -0.20885203778743744
+          -0.04562830924987793
         ],
         [
-          -0.3258605897426605,
-          0.16271471977233887,
-          0.209737628698349
+          -0.15813884139060974,
+          0.14480000734329224,
+          0.2674121856689453
+        ]
+      ],
+      "RoseDress_FrayedYarns": [
+        [
+          -0.44430023431777954,
+          0.49447309970855713,
+          0.105531245470047
+        ],
+        [
+          -0.11397633701562881,
+          1.677050232887268,
+          0.1624593436717987
         ]
       ],
       "BlueDress": [
         [
-          0.1136140376329422,
-          0.5728933215141296,
+          0.11741232872009277,
+          0.5958455801010132,
           0.0990380272269249
         ],
         [
-          0.4600980281829834,
+          0.4565831124782562,
           1.6753000020980835,
-          0.1849014014005661
+          0.18275773525238037
         ]
       ],
       "BlueDress_Hanger": [
@@ -245,12 +271,12 @@
       ],
       "RoseDress": [
         [
-          -0.45340055227279663,
-          0.48172980546951294,
-          0.08594556152820587
+          -0.45008859038352966,
+          0.5066995024681091,
+          0.08835123479366302
         ],
         [
-          -0.10313267260789871,
+          -0.10723267495632172,
           1.6753000020980835,
           0.15403802692890167
         ]
@@ -272,12 +298,14 @@
     "axes_y_up_front_z": true,
     "axis_bounds_max_error_m": 0.0,
     "degenerate_triangles": {
-      "BlueDress_FrayedYarns": 0,
+      "BlueDress_FibreHeap_Yarns": 0,
       "BlueDress_FibreHeap_Base": 0,
-      "RoseDress_FrayedYarns": 0,
-      "RoseDress_FibreHeap_Base": 0,
       "BlueDress_FibreHeap": 0,
+      "BlueDress_FrayedYarns": 0,
+      "RoseDress_FibreHeap_Yarns": 0,
+      "RoseDress_FibreHeap_Base": 0,
       "RoseDress_FibreHeap": 0,
+      "RoseDress_FrayedYarns": 0,
       "BlueDress": 0,
       "BlueDress_Hanger": 0,
       "RoseDress": 0,
@@ -296,12 +324,14 @@
       ]
     },
     "tunic_triangle_crossings": {
-      "BlueDress_FrayedYarns": 0,
+      "BlueDress_FibreHeap_Yarns": 0,
       "BlueDress_FibreHeap_Base": 0,
-      "RoseDress_FrayedYarns": 0,
-      "RoseDress_FibreHeap_Base": 0,
       "BlueDress_FibreHeap": 0,
+      "BlueDress_FrayedYarns": 0,
+      "RoseDress_FibreHeap_Yarns": 0,
+      "RoseDress_FibreHeap_Base": 0,
       "RoseDress_FibreHeap": 0,
+      "RoseDress_FrayedYarns": 0,
       "BlueDress": 0,
       "BlueDress_Hanger": 0,
       "RoseDress": 0,

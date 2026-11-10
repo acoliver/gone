@@ -19,9 +19,17 @@ def restore_inputs():
         source=bpy.data.objects.get(name)
         if source is None:
             source=retain_pattern(obj);source.name=name;source.data.name=name
-        obj.data=source.data.copy()
     for obj in list(bpy.context.scene.objects):
         if obj.get('finish_generated'):bpy.data.objects.remove(obj,do_unlink=True)
+    for source in list(bpy.context.scene.objects):
+        if not source.name.endswith('_FinishInput'):continue
+        name=source.name.removesuffix('_FinishInput')
+        obj=bpy.data.objects.get(name)
+        if obj is None:
+            obj=source.copy();obj.name=name;bpy.context.collection.objects.link(obj)
+        obj.data=source.data.copy()
+        obj['aged_export']=True;obj.hide_render=False;obj.hide_set(False)
+    bpy.data.orphans_purge(do_recursive=True)
 
 
 def finish(state,arrangement_only=False):
@@ -34,8 +42,16 @@ def finish(state,arrangement_only=False):
             if obj is not None:
                 placement=arrange.apply(obj,name)
         record['dresses'][name]['arrangement']=placement
+    if state=='aged' and not arrangement_only:
+        import refine
+        record['dry_finish']=refine.apply()
+    for obj in bpy.context.scene.objects:
+        if obj.type=='MESH' and obj.get('aged_export'):
+            for mat in obj.data.materials:mat.use_backface_culling=True
+    record['sidedness']='Single-sided materials for the reflected room; cloth retains both sewn plies and fringe has explicit opposite faces'
     record['finish_input']='Retained *_FinishInput mesh per exported component; all finishes restart from these fitted inputs'
     save_state(HERE,'her_dresses',state,record)
+    bpy.ops.wm.save_as_mainfile(filepath=bpy.data.filepath,compress=True)
 
 
 if __name__=='__main__':

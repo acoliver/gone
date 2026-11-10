@@ -164,5 +164,6 @@
       1.8417737483978271
     ]
   ],
-  "finish_input": "Retained *_FinishInput mesh per exported component; all finishes restart from these fitted inputs"
+  "finish_input": "Retained *_FinishInput mesh per exported component; all finishes restart from these fitted inputs",
+  "sidedness": "Single-sided materials for the reflected room; cloth retains both sewn plies and fringe has explicit opposite faces"
 }

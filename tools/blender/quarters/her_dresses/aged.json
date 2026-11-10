@@ -125,15 +125,130 @@
   ],
   "bounds_blender_native_m": [
     [
-      -0.45340055227279663,
-      -0.22816848754882812,
+      -0.45273616909980774,
+      -0.2674121856689453,
       0.14480000734329224
     ],
     [
-      0.4600980281829834,
-      0.20885203778743744,
+      0.4565831124782562,
+      0.04562830924987793,
       1.8417737483978271
     ]
   ],
-  "finish_input": "Retained *_FinishInput mesh per exported component; all finishes restart from these fitted inputs"
+  "finish_input": "Retained *_FinishInput mesh per exported component; all finishes restart from these fitted inputs",
+  "dry_finish": {
+    "RoseDress": {
+      "tear_lips": {
+        "refined_boundary_edges": 104,
+        "boundary_subdivisions": 3,
+        "hem_vertical_grain_variation_m": 0.005,
+        "shoulder_variation_scale": 0.6,
+        "local_grain_losses_m": [
+          [
+            -0.1,
+            0.01,
+            0.018
+          ],
+          [
+            0.065,
+            0.006,
+            0.01
+          ]
+        ],
+        "locked_support_stitches": 6
+      },
+      "stiff_folds": {
+        "method": "Reduce depth slack below the chest by 15 percent and retain two narrow grain-aligned creases; upper support band unchanged",
+        "maximum_displacement_m": 0.006849274039268494,
+        "unchanged_above_m": 1.55
+      },
+      "fabric": {
+        "atlas_size": 1536,
+        "upward_dust_pixels": 435926,
+        "maximum_dust_mix": 0.949999988079071,
+        "roughness": 0.99,
+        "normal_strength": 0.4,
+        "method": "Physical sewn-pattern UV atlas, pigment fade and interpolated upward-fold normals; separate repeating weave UV"
+      },
+      "fringe": {
+        "cards": 181,
+        "triangles": 362,
+        "boundary_length_m": 1.2783752561707074,
+        "authored_coverage": 0.6245108120980395,
+        "coverage_pass": true,
+        "omitted_contacts": 17,
+        "maximum_root_offset_m": 0.0028530838367700753,
+        "sat_checked": true,
+        "intact_hem_intervals_m": [
+          [
+            -0.12,
+            -0.09
+          ],
+          [
+            0.055,
+            0.08
+          ]
+        ],
+        "explicit_front_back_triangles": 724
+      },
+      "deposit": "Alpha-scissor granular powder, 14 mm rounded core, 12 fine settled fibre cards per dress, 0.800 mm shelf gap"
+    },
+    "BlueDress": {
+      "tear_lips": {
+        "refined_boundary_edges": 101,
+        "boundary_subdivisions": 3,
+        "hem_vertical_grain_variation_m": 0.005,
+        "shoulder_variation_scale": 0.6,
+        "local_grain_losses_m": [
+          [
+            -0.06,
+            0.006,
+            0.014
+          ],
+          [
+            0.12,
+            0.011,
+            0.023
+          ]
+        ],
+        "locked_support_stitches": 7
+      },
+      "stiff_folds": {
+        "method": "Reduce depth slack below the chest by 15 percent and retain two narrow grain-aligned creases; upper support band unchanged",
+        "maximum_displacement_m": 0.00821898877620697,
+        "unchanged_above_m": 1.55
+      },
+      "fabric": {
+        "atlas_size": 1536,
+        "upward_dust_pixels": 411368,
+        "maximum_dust_mix": 0.949999988079071,
+        "roughness": 0.99,
+        "normal_strength": 0.4,
+        "method": "Physical sewn-pattern UV atlas, pigment fade and interpolated upward-fold normals; separate repeating weave UV"
+      },
+      "fringe": {
+        "cards": 168,
+        "triangles": 336,
+        "boundary_length_m": 1.3662369330419766,
+        "authored_coverage": 0.6130713099868506,
+        "coverage_pass": true,
+        "omitted_contacts": 15,
+        "maximum_root_offset_m": 0.003051182281617583,
+        "sat_checked": true,
+        "intact_hem_intervals_m": [
+          [
+            -0.075,
+            -0.05
+          ],
+          [
+            0.1,
+            0.13
+          ]
+        ],
+        "explicit_front_back_triangles": 672
+      },
+      "deposit": "Alpha-scissor granular powder, 14 mm rounded core, 12 fine settled fibre cards per dress, 0.800 mm shelf gap"
+    }
+  },
+  "sidedness": "Single-sided materials for the reflected room; cloth retains both sewn plies and fringe has explicit opposite faces"
 }

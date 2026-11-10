@@ -32,12 +32,14 @@ func _capture() -> void:
 		ship.quarters.process_frame()
 		for view: String in ["wardrobe", "doorway"]:
 			QuartersCapture.pose(camera, view)
-			for frame: int in range(35):
-				await process_frame
-			RenderingServer.call_deferred("force_draw", false)
+			await process_frame
+			RenderingServer.force_draw()
 			await RenderingServer.frame_post_draw
+
 			var image := root.get_texture().get_image()
-			assert(image.save_png(output.path_join(state + "-" + view + ".png")) == OK)
+			var top := HarnessProtocol.chip_size().y
+			var crop := image.get_region(Rect2i(0, top, image.get_width(), image.get_height() - top))
+			assert(crop.save_png(output.path_join(state + "-" + view + ".png")) == OK)
 	owner.queue_free()
 	await process_frame
 	quit()
