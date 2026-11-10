@@ -1,15 +1,15 @@
 {
   "prop": "console",
   "seed": 9502,
-  "atlas_size": 3072,
+  "atlas_size": 4096,
   "uv_method": "original fitted UVs; no repack",
-  "texels_per_metre": 936.9720382465866,
+  "texels_per_metre": 1199.5474593667534,
   "density_range": [
-    876.3739226526645,
-    991.2951134556891
+    1106.6130035284195,
+    1269.1134915928008
   ],
   "uv_overlap_texels": 0,
-  "occupied_texels": 5023394,
+  "occupied_texels": 9965504,
   "faces": [
     {
       "id": "ArmouredHousing/0",
@@ -19,14 +19,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.005258861375165125,
-        0.004348689642116432
+        0.006378065598875382,
+        0.00897607808089157
       ],
-      "area_m2": 1.5311379053994867e-05,
+      "area_m2": 3.152160750113894e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 48679.73915588558
+      "source_pixels_per_metre": 40137.561464582526
     },
     {
       "id": "ArmouredHousing/1",
@@ -36,14 +36,14 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.0068936917683442706,
-        0.004148231994839935
+        0.008881979665389991,
+        0.008045096668974405
       ],
-      "area_m2": 1.641001789233446e-05,
+      "area_m2": 3.178216286499184e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 61713.03830606468
+      "source_pixels_per_metre": 31820.624478914444
     },
     {
       "id": "ArmouredHousing/2",
@@ -53,14 +53,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.004656606985793399,
-        0.005497119159510122
+        0.0070137354877362335,
+        0.005670812905590239
       ],
-      "area_m2": 1.531129442045387e-05,
+      "area_m2": 1.9001345746772456e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 54975.65089366939
+      "source_pixels_per_metre": 36499.808190318145
     },
     {
       "id": "ArmouredHousing/3",
@@ -68,16 +68,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-01",
       "size_m": [
-        0.0045881457188428065,
-        0.004548692647301511
+        0.004580882214457571,
+        0.008554060729589863
       ],
-      "area_m2": 1.6579481562074724e-05,
+      "area_m2": 3.143789478988336e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 28139.953592145943
+      "source_pixels_per_metre": 27942.215932997235
     },
     {
       "id": "ArmouredHousing/4",
@@ -85,16 +85,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-01",
+      "image": "strip-02",
       "size_m": [
-        0.0045881457188428065,
-        0.0045486926473015665
+        0.005990276168005182,
+        0.007019074139797188
       ],
-      "area_m2": 1.6579481562074724e-05,
+      "area_m2": 2.11148815030328e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 27897.980544585527
+      "source_pixels_per_metre": 42735.92616102212
     },
     {
       "id": "ArmouredHousing/5",
@@ -102,33 +102,33 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-02",
+      "image": "strip-01",
       "size_m": [
-        0.0045882107759942364,
-        0.004548702792321224
+        0.004544345094134386,
+        0.008557428432467318
       ],
-      "area_m2": 1.6579567567229436e-05,
+      "area_m2": 3.126181090419954e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 55795.169947162336
+      "source_pixels_per_metre": 28166.874950851776
     },
     {
       "id": "ArmouredHousing/6",
       "part": "ArmouredHousing",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "top",
-      "image": "top-00",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
-        0.0045881552405447334,
-        0.004548701909369292
+        0.004290854213455264,
+        0.00513452410731452
       ],
-      "area_m2": 1.657945475908242e-05,
-      "upward": true,
+      "area_m2": 1.1025308344933784e-05,
+      "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 278979.2264849414
+      "source_pixels_per_metre": 59661.77997780372
     },
     {
       "id": "ArmouredHousing/7",
@@ -136,16 +136,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-04",
+      "image": "strip-01",
       "size_m": [
-        0.0045881452896816,
-        0.004548637160503688
+        0.004249143708339065,
+        0.008400198594259223
       ],
-      "area_m2": 1.6579368752812877e-05,
+      "area_m2": 2.9134935231133065e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 56280.59371780099
+      "source_pixels_per_metre": 30123.71639697579
     },
     {
       "id": "ArmouredHousing/8",
@@ -153,16 +153,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-02",
       "size_m": [
-        0.0045882103441160504,
-        0.0045486473061912
+        0.002521227678304039,
+        0.008426785489985988
       ],
-      "area_m2": 1.657945475908242e-05,
+      "area_m2": 1.1468501373135e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 28140.23409240329
+      "source_pixels_per_metre": 101537.8350011627
     },
     {
       "id": "ArmouredHousing/9",
@@ -170,33 +170,33 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-02",
+      "image": "strip-01",
       "size_m": [
-        0.00510050082664959,
-        0.005547946351558641
+        0.004402936873548757,
+        0.008642436918904428
       ],
-      "area_m2": 1.9523957776390827e-05,
+      "area_m2": 2.709582494192543e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 50191.14959504103
+      "source_pixels_per_metre": 29071.50469700745
     },
     {
       "id": "ArmouredHousing/10",
       "part": "ArmouredHousing",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "top",
-      "image": "top-01",
+      "kind": "strip",
+      "image": "strip-04",
       "size_m": [
-        0.004653516787487932,
-        0.0053899364621720625
+        0.004376281959315942,
+        0.004664108275268752
       ],
-      "area_m2": 1.9523978940519077e-05,
-      "upward": true,
+      "area_m2": 8.107616022536439e-06,
+      "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 189983.68666990622
+      "source_pixels_per_metre": 54887.23350558343
     },
     {
       "id": "ArmouredHousing/11",
@@ -204,16 +204,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-02",
       "size_m": [
-        0.006157337846075306,
-        0.004638222229306932
+        0.0033649025748283545,
+        0.008133403687229479
       ],
-      "area_m2": 1.8095150905453876e-05,
+      "area_m2": 1.0277801860921668e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 27596.7803334698
+      "source_pixels_per_metre": 76079.46866427736
     },
     {
       "id": "ArmouredHousing/12",
@@ -223,14 +223,14 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.005258861816794469,
-        0.0043486891080549706
+        0.006378067134191867,
+        0.008976076989952786
       ],
-      "area_m2": 1.531138118090607e-05,
+      "area_m2": 3.152161163791012e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 58868.31494250013
+      "source_pixels_per_metre": 28520.254481612523
     },
     {
       "id": "ArmouredHousing/13",
@@ -238,16 +238,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-01",
+      "image": "strip-02",
       "size_m": [
-        0.004656606952653908,
-        0.0054971193036067595
+        0.007013735587479503,
+        0.0056708117473350805
       ],
-      "area_m2": 1.531128723993655e-05,
+      "area_m2": 1.9001339984537962e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 27487.82564245622
+      "source_pixels_per_metre": 36499.8076712495
     },
     {
       "id": "ArmouredHousing/14",
@@ -257,14 +257,14 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.006893688276944976,
-        0.0041482321086858676
+        0.008881976095042016,
+        0.008045096667568585
       ],
-      "area_m2": 1.641001172789747e-05,
+      "area_m2": 3.1782150334478076e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 61713.03661238452
+      "source_pixels_per_metre": 31820.624484474858
     },
     {
       "id": "ArmouredHousing/15",
@@ -272,16 +272,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-02",
       "size_m": [
-        0.0045881457188428065,
-        0.0045486926473015665
+        0.005990276168005182,
+        0.007019074139797188
       ],
-      "area_m2": 1.6579481562074724e-05,
+      "area_m2": 2.11148815030328e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 28139.9535921456
+      "source_pixels_per_metre": 42735.92616102212
     },
     {
       "id": "ArmouredHousing/16",
@@ -289,16 +289,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-02",
+      "image": "strip-01",
       "size_m": [
-        0.0045881457188428065,
-        0.004548692647301511
+        0.004580882214457571,
+        0.008554060729589863
       ],
-      "area_m2": 1.6579481562074724e-05,
+      "area_m2": 3.143789478988336e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 55795.961089171054
+      "source_pixels_per_metre": 27942.215932997235
     },
     {
       "id": "ArmouredHousing/17",
@@ -306,16 +306,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-04",
+      "image": "strip-02",
       "size_m": [
-        0.0045882107759942364,
-        0.004548702792321224
+        0.004544345094134386,
+        0.008557428432467318
       ],
-      "area_m2": 1.6579567567229436e-05,
+      "area_m2": 3.126181090419954e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 56279.78166262255
+      "source_pixels_per_metre": 56333.74990170355
     },
     {
       "id": "ArmouredHousing/18",
@@ -323,33 +323,33 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-01",
       "size_m": [
-        0.0045881452896816,
-        0.004548637160503688
+        0.004249143708339065,
+        0.008400198594259223
       ],
-      "area_m2": 1.6579368752812877e-05,
+      "area_m2": 2.9134935231133065e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 28140.296858900496
+      "source_pixels_per_metre": 30123.71639697579
     },
     {
       "id": "ArmouredHousing/19",
       "part": "ArmouredHousing",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "top",
-      "image": "top-00",
+      "kind": "strip",
+      "image": "strip-04",
       "size_m": [
-        0.0045881552405447334,
-        0.004548701909369292
+        0.004290854213455264,
+        0.00513452410731452
       ],
-      "area_m2": 1.657945475908242e-05,
-      "upward": true,
+      "area_m2": 1.1025308344933784e-05,
+      "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 278979.2264849414
+      "source_pixels_per_metre": 49858.564230969045
     },
     {
       "id": "ArmouredHousing/20",
@@ -357,16 +357,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-04",
+      "image": "strip-01",
       "size_m": [
-        0.0045882103441160504,
-        0.0045486473061912
+        0.002521227678304039,
+        0.008426785489985988
       ],
-      "area_m2": 1.657945475908242e-05,
+      "area_m2": 1.1468501373135e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 56280.46818480658
+      "source_pixels_per_metre": 50768.91750058135
     },
     {
       "id": "ArmouredHousing/21",
@@ -376,14 +376,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.005100507828027734,
-        0.005547944974914176
+        0.004402936873548757,
+        0.008642436918904428
       ],
-      "area_m2": 1.952396861754235e-05,
+      "area_m2": 2.709582494192543e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 50191.0806985253
+      "source_pixels_per_metre": 58143.0093940149
     },
     {
       "id": "ArmouredHousing/22",
@@ -391,33 +391,33 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-01",
       "size_m": [
-        0.006157337846075306,
-        0.004638222229306932
+        0.0033649025748283545,
+        0.008133403687229479
       ],
-      "area_m2": 1.8095150905453876e-05,
+      "area_m2": 1.0277801860921668e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 27596.7803334698
+      "source_pixels_per_metre": 38039.73433213868
     },
     {
       "id": "ArmouredHousing/23",
       "part": "ArmouredHousing",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "top",
-      "image": "top-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
-        0.004653516842096639,
-        0.0053899437131468275
+        0.004376281959315942,
+        0.004664108275268752
       ],
-      "area_m2": 1.9523993561649752e-05,
-      "upward": true,
+      "area_m2": 8.107616022536439e-06,
+      "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 189983.43108895936
+      "source_pixels_per_metre": 58497.14492345357
     },
     {
       "id": "ArmouredHousing/24",
@@ -427,14 +427,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.07784358329386365,
-        0.2939028242177302
+        0.004580035888040457,
+        0.019838414022724016
       ],
-      "area_m2": 0.0014099061445800739,
+      "area_m2": 8.243242566507636e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 1644.3230717783536
+      "source_pixels_per_metre": 27947.37926273414
     },
     {
       "id": "ArmouredHousing/25",
@@ -444,14 +444,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.15044668466840735,
-        0.2644234321411399
+        0.0033201456179962063,
+        0.018884265317538396
       ],
-      "area_m2": 0.001334827967247345,
+      "area_m2": 3.403226949274686e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 1701.5994773446678
+      "source_pixels_per_metre": 77105.0518424257
     },
     {
       "id": "ArmouredHousing/26",
@@ -461,14 +461,14 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.14860283104938182,
-        0.004606734776481158
+        0.022177984444025967,
+        0.008585301643307175
       ],
-      "area_m2": 0.0006658361127309716,
+      "area_m2": 0.00017710899204463924,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 10336.276833713726
+      "source_pixels_per_metre": 29818.404831421314
     },
     {
       "id": "ArmouredHousing/27",
@@ -478,14 +478,14 @@
       "kind": "top",
       "image": "top-00",
       "size_m": [
-        0.004662101853550149,
-        0.14666215377176592
+        0.005713026491192624,
+        0.023149949481155452
       ],
-      "area_m2": 0.0006771332993232818,
+      "area_m2": 0.00012658794809644952,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 8727.54127143068
+      "source_pixels_per_metre": 55291.697333592325
     },
     {
       "id": "ArmouredHousing/28",
@@ -495,14 +495,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.004592226949002486,
-        0.2580000162124634
+        0.0018625631996264103,
+        0.01744926452989748
       ],
-      "area_m2": 0.0011847946272939534,
+      "area_m2": 3.191131313395487e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 5953.487997981759
+      "source_pixels_per_metre": 68722.50027578877
     },
     {
       "id": "ArmouredHousing/29",
@@ -512,14 +512,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.004592160476622809,
-        0.2580000162124634
+        0.004249098627516101,
+        0.017448436989547123
       ],
-      "area_m2": 0.0011847774774189058,
+      "area_m2": 7.41171132072521e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 5953.487997981759
+      "source_pixels_per_metre": 60248.07198924683
     },
     {
       "id": "ArmouredHousing/30",
@@ -529,14 +529,14 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.3063409676166832,
-        0.004606619658353184
+        0.3052947251124069,
+        0.008585718328990133
       ],
-      "area_m2": 0.0013752992102057167,
+      "area_m2": 0.00254461429306687,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 5014.020853789162
+      "source_pixels_per_metre": 5031.203861889386
     },
     {
       "id": "ArmouredHousing/31",
@@ -546,14 +546,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.004662096551458106,
-        0.3080000053644202
+        0.005712904338079583,
+        0.3080194545968367
       ],
-      "area_m2": 0.0014214541823041342,
+      "area_m2": 0.0017172930413000096,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 4987.012900154439
+      "source_pixels_per_metre": 4986.698005846591
     },
     {
       "id": "ArmouredHousing/32",
@@ -563,14 +563,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.15044665467903057,
-        0.2644234464937724
+        0.0033201456179962063,
+        0.018884265317538396
       ],
-      "area_m2": 0.0013348275247331994,
+      "area_m2": 3.403565053980416e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 1701.59981653405
+      "source_pixels_per_metre": 77105.0518424257
     },
     {
       "id": "ArmouredHousing/33",
@@ -580,14 +580,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.07784358329386365,
-        0.29390282113818755
+        0.004580035888040457,
+        0.019838414022724016
       ],
-      "area_m2": 0.0014099067345683747,
+      "area_m2": 8.243277680717199e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 1644.3230717783536
+      "source_pixels_per_metre": 27947.37926273414
     },
     {
       "id": "ArmouredHousing/34",
@@ -597,14 +597,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.004662096551458106,
-        0.3080000053644202
+        0.005712904338079583,
+        0.3080194545968367
       ],
-      "area_m2": 0.00142145653059594,
+      "area_m2": 0.0017173017122596066,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 4987.012900154439
+      "source_pixels_per_metre": 4986.698005846591
     },
     {
       "id": "ArmouredHousing/35",
@@ -614,14 +614,14 @@
       "kind": "strip",
       "image": "strip-03",
       "size_m": [
-        0.3063409638913929,
-        0.004606619658353184
+        0.30529472138711666,
+        0.008585718328990133
       ],
-      "area_m2": 0.001375299982836841,
+      "area_m2": 0.0025446151267573954,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 5014.02091476267
+      "source_pixels_per_metre": 5031.2039232815205
     },
     {
       "id": "ArmouredHousing/36",
@@ -631,14 +631,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.004592160476622809,
-        0.2580000162124634
+        0.004249098627516101,
+        0.017448436989547123
       ],
-      "area_m2": 0.0011847774774189058,
+      "area_m2": 7.411711334137855e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 5953.487997981759
+      "source_pixels_per_metre": 30124.035994623417
     },
     {
       "id": "ArmouredHousing/37",
@@ -648,14 +648,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.004592226949002486,
-        0.2580000162124634
+        0.0018625631996264103,
+        0.01744926452989748
       ],
-      "area_m2": 0.0011847946272939534,
+      "area_m2": 3.191133104932943e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 5953.487997981759
+      "source_pixels_per_metre": 88026.63271957541
     },
     {
       "id": "ArmouredHousing/38",
@@ -665,14 +665,14 @@
       "kind": "top",
       "image": "top-01",
       "size_m": [
-        0.004662101853550149,
-        0.14666215377176592
+        0.005713026491192624,
+        0.023149949481155452
       ],
-      "area_m2": 0.0006771342343854519,
+      "area_m2": 0.00012658453357378347,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 6982.033017144545
+      "source_pixels_per_metre": 44233.35786687386
     },
     {
       "id": "ArmouredHousing/39",
@@ -682,14 +682,14 @@
       "kind": "strip",
       "image": "strip-03",
       "size_m": [
-        0.14860283104938182,
-        0.004606734776481158
+        0.022177984444025967,
+        0.008585301643307175
       ],
-      "area_m2": 0.0006658366428927084,
+      "area_m2": 0.00017710867871981737,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 10336.276833713726
+      "source_pixels_per_metre": 14909.202415710657
     },
     {
       "id": "ArmouredHousing/40",
@@ -699,14 +699,14 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        1.0880000591286447,
-        0.0038858852571936053
+        1.0880000591318262,
+        0.003896811323280569
       ],
-      "area_m2": 0.004227841230346966,
+      "area_m2": 0.00423972823477751,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 1411.7646291583371
+      "source_pixels_per_metre": 1411.764629154209
     },
     {
       "id": "ArmouredHousing/41",
@@ -716,14 +716,14 @@
       "kind": "strip",
       "image": "strip-03",
       "size_m": [
-        1.0880000591290613,
-        0.0038859123098323733
+        1.0880000591327619,
+        0.008117978426724848
       ],
-      "area_m2": 0.004227872437865424,
+      "area_m2": 0.008832360263610145,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 1411.7646291577967
+      "source_pixels_per_metre": 1411.7646291529948
     },
     {
       "id": "ArmouredHousing/42",
@@ -734,9 +734,9 @@
       "image": "strip-04",
       "size_m": [
         1.0880000591278076,
-        0.004592215544138023
+        0.008576865925329358
       ],
-      "area_m2": 0.004996330783549795,
+      "area_m2": 0.009331630633889634,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -750,28 +750,28 @@
       "kind": "strip",
       "image": "strip-03",
       "size_m": [
-        1.0880000591278076,
-        0.004592215544138023
+        1.0880000591278074,
+        0.005490286462808913
       ],
-      "area_m2": 0.004996330783549795,
+      "area_m2": 0.005973431996164758,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 1411.7646291594233
+      "source_pixels_per_metre": 1411.7646291594237
     },
     {
       "id": "ArmouredHousing/44",
       "part": "ArmouredHousing",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "top",
-      "image": "top-04",
+      "kind": "strip",
+      "image": "strip-04",
       "size_m": [
         1.0880000591278074,
-        0.0045922269490024665
+        0.003544400793994318
       ],
-      "area_m2": 0.00499634319204302,
-      "upward": true,
+      "area_m2": 0.0038563082734384283,
+      "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
       "source_pixels_per_metre": 1411.7646291594237
@@ -782,12 +782,12 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-04",
+      "image": "strip-03",
       "size_m": [
         1.0880000591278076,
-        0.0045921604766226976
+        0.008400235961911195
       ],
-      "area_m2": 0.004996270870089945,
+      "area_m2": 0.009139457223246926,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -798,34 +798,34 @@
       "part": "ArmouredHousing",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "top",
-      "image": "top-04",
+      "kind": "strip",
+      "image": "strip-04",
       "size_m": [
-        1.0880000591539694,
-        0.00541295869396774
+        1.0880000591278074,
+        0.007767295275503128
       ],
-      "area_m2": 0.005889287907317591,
-      "upward": true,
+      "area_m2": 0.008450817719010486,
+      "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 1411.7646291254764
+      "source_pixels_per_metre": 1411.7646291594237
     },
     {
       "id": "ArmouredHousing/47",
       "part": "ArmouredHousing",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "top",
-      "image": "top-04",
+      "kind": "strip",
+      "image": "strip-03",
       "size_m": [
-        1.088000059128973,
-        0.005412961744555689
+        1.0880000591278076,
+        0.002631731181324315
       ],
-      "area_m2": 0.005889298514414134,
-      "upward": true,
+      "area_m2": 0.0028633236808893753,
+      "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 1411.7646291579113
+      "source_pixels_per_metre": 1411.7646291594233
     },
     {
       "id": "ArmouredHousing/48",
@@ -835,14 +835,14 @@
       "kind": "broad",
       "image": "broad-04",
       "size_m": [
-        1.0880000601550015,
-        0.3028714218418441
+        1.0880000591278076,
+        0.5770523594634135
       ],
-      "area_m2": 0.3295241227867389,
+      "area_m2": 0.6278330012160347,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 1411.7646278265595
+      "source_pixels_per_metre": 1330.9017585755025
     },
     {
       "id": "ArmouredHousing/49",
@@ -850,16 +850,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "broad",
-      "image": "broad-02",
+      "image": "broad-00",
       "size_m": [
-        0.303402841091156,
-        0.2580000162124634
+        0.3053453117609024,
+        0.5105745494365692
       ],
-      "area_m2": 0.058308735987411264,
+      "area_m2": 0.07815118990478731,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 4218.813493626547
+      "source_pixels_per_metre": 2515.185170425589
     },
     {
       "id": "ArmouredHousing/50",
@@ -883,17 +883,17 @@
       "part": "ArmouredHousing",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "strip",
-      "image": "strip-04",
+      "kind": "broad",
+      "image": "broad-05",
       "size_m": [
         1.0880000591278076,
-        0.2580000162124634
+        0.5105745494365692
       ],
-      "area_m2": 0.2807040328941355,
+      "area_m2": 0.555505139976141,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 992.2479996636265
+      "source_pixels_per_metre": 1411.7646291594233
     },
     {
       "id": "ArmouredHousing/52",
@@ -901,12 +901,12 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-03",
+      "image": "top-04",
       "size_m": [
         1.0880000591278076,
-        0.1459999978542328
+        0.023107439279556274
       ],
-      "area_m2": 0.15884800629806506,
+      "area_m2": 0.02514089530244945,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -918,16 +918,169 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "broad",
-      "image": "broad-05",
+      "image": "broad-00",
       "size_m": [
-        0.303402841091156,
-        0.2580000162124634
+        0.3053453117609024,
+        0.5105745494365692
       ],
-      "area_m2": 0.058308735987411264,
+      "area_m2": 0.07815118990478731,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 2976.7439989908794
+      "source_pixels_per_metre": 2515.185170425589
+    },
+    {
+      "id": "ArmouredHousing/54",
+      "part": "ArmouredHousing",
+      "material": "PaintedSteel",
+      "role": "paint",
+      "kind": "strip",
+      "image": "strip-02",
+      "size_m": [
+        0.005645214786873756,
+        0.493135376643813
+      ],
+      "area_m2": 0.001567742629080096,
+      "upward": false,
+      "source_density_scale": 1.0,
+      "projection": "planar",
+      "source_pixels_per_metre": 3114.7633545452127
+    },
+    {
+      "id": "ArmouredHousing/55",
+      "part": "ArmouredHousing",
+      "material": "PaintedSteel",
+      "role": "paint",
+      "kind": "strip",
+      "image": "strip-01",
+      "size_m": [
+        0.004521235312142935,
+        0.4931279417162803
+      ],
+      "area_m2": 0.0021774226139897827,
+      "upward": false,
+      "source_density_scale": 1.0,
+      "projection": "planar",
+      "source_pixels_per_metre": 3114.8103160695223
+    },
+    {
+      "id": "ArmouredHousing/56",
+      "part": "ArmouredHousing",
+      "material": "PaintedSteel",
+      "role": "paint",
+      "kind": "strip",
+      "image": "strip-02",
+      "size_m": [
+        0.08693615196488225,
+        0.5710807781050857
+      ],
+      "area_m2": 0.0025641043159674785,
+      "upward": false,
+      "source_density_scale": 1.0,
+      "projection": "planar",
+      "source_pixels_per_metre": 2689.6370161444265
+    },
+    {
+      "id": "ArmouredHousing/57",
+      "part": "ArmouredHousing",
+      "material": "PaintedSteel",
+      "role": "paint",
+      "kind": "strip",
+      "image": "strip-02",
+      "size_m": [
+        0.24493329426430716,
+        0.5209148793878089
+      ],
+      "area_m2": 0.0017802243619486325,
+      "upward": false,
+      "source_density_scale": 1.0,
+      "projection": "planar",
+      "source_pixels_per_metre": 1045.1825292634605
+    },
+    {
+      "id": "ArmouredHousing/60",
+      "part": "ArmouredHousing",
+      "material": "PaintedSteel",
+      "role": "paint",
+      "kind": "strip",
+      "image": "strip-01",
+      "size_m": [
+        0.004521235312142935,
+        0.4931279417162803
+      ],
+      "area_m2": 0.0021774229992957343,
+      "upward": false,
+      "source_density_scale": 1.0,
+      "projection": "planar",
+      "source_pixels_per_metre": 3114.8103160695223
+    },
+    {
+      "id": "ArmouredHousing/61",
+      "part": "ArmouredHousing",
+      "material": "PaintedSteel",
+      "role": "paint",
+      "kind": "strip",
+      "image": "strip-02",
+      "size_m": [
+        0.005645214786873756,
+        0.493135376643813
+      ],
+      "area_m2": 0.0015677561176286273,
+      "upward": false,
+      "source_density_scale": 1.0,
+      "projection": "planar",
+      "source_pixels_per_metre": 3114.7633545452127
+    },
+    {
+      "id": "ArmouredHousing/63",
+      "part": "ArmouredHousing",
+      "material": "PaintedSteel",
+      "role": "paint",
+      "kind": "strip",
+      "image": "strip-02",
+      "size_m": [
+        0.24493329734631009,
+        0.5209148800478266
+      ],
+      "area_m2": 0.0017816627772989373,
+      "upward": false,
+      "source_density_scale": 1.0,
+      "projection": "planar",
+      "source_pixels_per_metre": 1045.1825161118977
+    },
+    {
+      "id": "ArmouredHousing/64",
+      "part": "ArmouredHousing",
+      "material": "PaintedSteel",
+      "role": "paint",
+      "kind": "strip",
+      "image": "strip-01",
+      "size_m": [
+        0.08693615196488225,
+        0.5710807781050857
+      ],
+      "area_m2": 0.0025644431118091084,
+      "upward": false,
+      "source_density_scale": 1.0,
+      "projection": "planar",
+      "source_pixels_per_metre": 1472.3449003322053
+    },
+    {
+      "id": "ArmouredHousing/65",
+      "part": "ArmouredHousing",
+      "material": "PaintedSteel",
+      "role": "paint",
+      "kind": "strip",
+      "image": "strip-03",
+      "size_m": [
+        1.0880000591278078,
+        0.019841218852561293
+      ],
+      "area_m2": 0.021587247284754363,
+      "upward": false,
+      "source_density_scale": 1.0,
+      "projection": "planar",
+      "source_pixels_per_metre": 1411.764629159423
     },
     {
       "id": "BaseShoe/0",
@@ -1907,7 +2060,7 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-01",
       "size_m": [
         0.0023627509083020137,
         0.0022915784811377016
@@ -1916,7 +2069,7 @@
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 55856.69487368015
+      "source_pixels_per_metre": 54174.140638458986
     },
     {
       "id": "BezelBottom/1",
@@ -1926,10 +2079,10 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.002692636841966689,
+        0.002692630183779132,
         0.002928695050858132
       ],
-      "area_m2": 4.144883064910072e-06,
+      "area_m2": 4.144873623796057e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -1943,7 +2096,7 @@
       "kind": "strip",
       "image": "strip-03",
       "size_m": [
-        0.0026755110004305083,
+        0.0026755110004305638,
         0.002459891688905924
       ],
       "area_m2": 4.144867714863635e-06,
@@ -1960,14 +2113,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.002362753419472119,
+        0.0023627509582050954,
         0.002291578494632518
       ],
-      "area_m2": 4.144853775782389e-06,
+      "area_m2": 4.1448494679387315e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 54174.083061362144
+      "source_pixels_per_metre": 54174.139494260286
     },
     {
       "id": "BezelBottom/4",
@@ -1978,13 +2131,13 @@
       "image": "strip-04",
       "size_m": [
         0.002675511307459799,
-        0.0024598919711918965
+        0.002459891971191952
       ],
       "area_m2": 4.144867714863635e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 104069.61077886676
+      "source_pixels_per_metre": 104069.61077886441
     },
     {
       "id": "BezelBottom/5",
@@ -1994,14 +2147,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.0026926368580661164,
-        0.00292869469557977
+        0.0026926301998793645,
+        0.002928695068369347
       ],
-      "area_m2": 4.144880854288759e-06,
+      "area_m2": 4.144873623796057e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 47537.04518920205
+      "source_pixels_per_metre": 47537.16273617323
     },
     {
       "id": "BezelBottom/6",
@@ -2011,14 +2164,14 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.002887755317654006,
-        0.002655000556479492
+        0.00288775531765402,
+        0.002655000556479381
       ],
       "area_m2": 4.144866622374177e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 96421.82536468233
+      "source_pixels_per_metre": 96421.82536468636
     },
     {
       "id": "BezelBottom/7",
@@ -2028,14 +2181,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.002675511194946245,
+        0.002675511194946134,
         0.002459901021485078
       ],
       "area_m2": 4.144869103931799e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 95682.64953761235
+      "source_pixels_per_metre": 95682.64953761632
     },
     {
       "id": "BezelBottom/8",
@@ -2045,14 +2198,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.0023627459104480497,
+        0.0023627459104479387,
         0.00229158328582299
       ],
       "area_m2": 4.144847648533953e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 54174.255231586554
+      "source_pixels_per_metre": 54174.2552315891
     },
     {
       "id": "BezelBottom/9",
@@ -2062,7 +2215,7 @@
       "kind": "strip",
       "image": "strip-03",
       "size_m": [
-        0.002675511194946245,
+        0.002675511194946134,
         0.002459901021485078
       ],
       "area_m2": 4.144869103931799e-06,
@@ -2079,14 +2232,14 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.002887755317654006,
-        0.002655000556479492
+        0.00288775531765402,
+        0.002655000556479381
       ],
       "area_m2": 4.144866622374177e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 96421.82536468233
+      "source_pixels_per_metre": 96421.82536468636
     },
     {
       "id": "BezelBottom/11",
@@ -2096,7 +2249,7 @@
       "kind": "strip",
       "image": "strip-03",
       "size_m": [
-        0.0023627459104480497,
+        0.0023627459104479387,
         0.00229158328582299
       ],
       "area_m2": 4.144847648533953e-06,
@@ -2113,14 +2266,14 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.002887759013928775,
-        0.0026550009703853183
+        0.0028877590139287767,
+        0.0026550001425735548
       ],
-      "area_m2": 4.144869133253824e-06,
+      "area_m2": 4.144873992345775e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 96421.81033284026
+      "source_pixels_per_metre": 96421.84039653312
     },
     {
       "id": "BezelBottom/13",
@@ -2131,9 +2284,9 @@
       "image": "top-00",
       "size_m": [
         0.002675511194946162,
-        0.0024599040175895537
+        0.002459898025380547
       ],
-      "area_m2": 4.144874568276526e-06,
+      "area_m2": 4.144867001931487e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -2148,13 +2301,13 @@
       "image": "top-02",
       "size_m": [
         0.002362745910447994,
-        0.0022915832858229623
+        0.00229158328582299
       ],
-      "area_m2": 4.144843379690694e-06,
+      "area_m2": 4.144851917377794e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 446852.62208667974
+      "source_pixels_per_metre": 446852.6220866743
     },
     {
       "id": "BezelBottom/15",
@@ -2165,13 +2318,13 @@
       "image": "top-01",
       "size_m": [
         0.002675511194946162,
-        0.0024599040175895537
+        0.002459898025380547
       ],
-      "area_m2": 4.144874568276526e-06,
+      "area_m2": 4.144867001931487e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 416276.40455801686
+      "source_pixels_per_metre": 416277.4185899787
     },
     {
       "id": "BezelBottom/16",
@@ -2181,14 +2334,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.002887759013928775,
-        0.0026550009703853183
+        0.0028877590139287767,
+        0.0026550001425735548
       ],
-      "area_m2": 4.144869133253824e-06,
+      "area_m2": 4.144873992345775e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 88650.05658893741
+      "source_pixels_per_metre": 88650.05658893735
     },
     {
       "id": "BezelBottom/17",
@@ -2199,9 +2352,9 @@
       "image": "top-00",
       "size_m": [
         0.002362745910447994,
-        0.0022915832858229623
+        0.00229158328582299
       ],
-      "area_m2": 4.144843379690694e-06,
+      "area_m2": 4.144851917377794e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -2215,7 +2368,7 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.0026926335128729106,
+        0.0026926335128729384,
         0.0029286950508580767
       ],
       "area_m2": 4.144878344351968e-06,
@@ -2232,14 +2385,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.002675512700603566,
+        0.0026755127006035107,
         0.002459891867745645
       ],
       "area_m2": 4.144870595953898e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 95682.59569175255
+      "source_pixels_per_metre": 95682.59569175453
     },
     {
       "id": "BezelBottom/20",
@@ -2249,14 +2402,14 @@
       "kind": "strip",
       "image": "strip-03",
       "size_m": [
-        0.002362752063608975,
-        0.0022915790869483255
+        0.0023627520636089194,
+        0.00229157908694827
       ],
       "area_m2": 4.144851045334057e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 55856.68010719037
+      "source_pixels_per_metre": 55856.68010719172
     },
     {
       "id": "BezelBottom/21",
@@ -2266,14 +2419,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.0026926335128729106,
-        0.0029286948644635102
+        0.0026926335128729384,
+        0.0029286948644634547
       ],
       "area_m2": 4.144877239040962e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 95074.2084936989
+      "source_pixels_per_metre": 95074.20849369792
     },
     {
       "id": "BezelBottom/22",
@@ -2284,13 +2437,13 @@
       "image": "strip-04",
       "size_m": [
         0.002362752138934998,
-        0.002291578481137646
+        0.0022915784811377016
       ],
       "area_m2": 4.144851621855344e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 111713.389747363
+      "source_pixels_per_metre": 111713.3897473603
     },
     {
       "id": "BezelBottom/23",
@@ -2300,14 +2453,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.0026755110004305083,
+        0.0026755110004305638,
         0.002459891688905924
       ],
       "area_m2": 4.144867714863635e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 95682.65649395865
+      "source_pixels_per_metre": 95682.65649395667
     },
     {
       "id": "BezelBottom/24",
@@ -2351,14 +2504,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.021378413147462645,
-        0.014997403974800982
+        0.02137841314746264,
+        0.014997404484405008
       ],
-      "area_m2": 5.5106491960457246e-05,
+      "area_m2": 5.510645679721133e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 11974.696074688969
+      "source_pixels_per_metre": 11974.69607468897
     },
     {
       "id": "BezelBottom/27",
@@ -2403,7 +2556,7 @@
       "image": "strip-04",
       "size_m": [
         0.8840000033378599,
-        0.0022960969171049728
+        0.002296096917104959
       ],
       "area_m2": 0.0020297496824558145,
       "upward": false,
@@ -2419,14 +2572,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.0076087795783847945,
+        0.0076087795783846834,
         0.023905146356689277
       ],
       "area_m2": 5.510597649702959e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 16822.671583709103
+      "source_pixels_per_metre": 16822.671583709347
     },
     {
       "id": "BezelBottom/31",
@@ -2437,13 +2590,13 @@
       "image": "strip-04",
       "size_m": [
         0.021378412817205376,
-        0.014997404534130454
+        0.014997405043734702
       ],
-      "area_m2": 5.510649196045724e-05,
+      "area_m2": 5.510645679721133e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 17069.62024111613
+      "source_pixels_per_metre": 17069.619661099056
     },
     {
       "id": "BezelBottom/32",
@@ -2454,13 +2607,13 @@
       "image": "top-01",
       "size_m": [
         0.00760877993254816,
-        0.023905146308186243
+        0.023905146308186298
       ],
       "area_m2": 5.510597649702959e-05,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 42835.96455752853
+      "source_pixels_per_metre": 42835.96455752844
     },
     {
       "id": "BezelBottom/33",
@@ -2470,10 +2623,10 @@
       "kind": "strip",
       "image": "strip-03",
       "size_m": [
-        0.021378416508780057,
+        0.021378409221839895,
         0.014997404707461803
       ],
-      "area_m2": 5.510649929514952e-05,
+      "area_m2": 5.5106449462519046e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -2505,7 +2658,7 @@
       "image": "top-04",
       "size_m": [
         0.8840000033378599,
-        0.002296096917104945
+        0.0022960969171049728
       ],
       "area_m2": 0.0020297496824558145,
       "upward": true,
@@ -2521,10 +2674,10 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.021378416790932775,
+        0.0213784095039925,
         0.01499740422960305
       ],
-      "area_m2": 5.510649929514952e-05,
+      "area_m2": 5.5106449462519046e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -2556,7 +2709,7 @@
       "image": "strip-03",
       "size_m": [
         0.8840000033388606,
-        0.002296109369172905
+        0.0022961093691728496
       ],
       "area_m2": 0.0020297593692445853,
       "upward": false,
@@ -2590,7 +2743,7 @@
       "image": "strip-02",
       "size_m": [
         0.007608780969969753,
-        0.023905122868144557
+        0.0239051228681445
       ],
       "area_m2": 5.510590315018351e-05,
       "upward": false,
@@ -2606,14 +2759,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.013643914036891594,
-        0.02210391310807802
+        0.013643921057746852,
+        0.02210391359907432
       ],
-      "area_m2": 5.5106489508416654e-05,
+      "area_m2": 5.510649830995157e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 9381.472182681782
+      "source_pixels_per_metre": 9381.467355186958
     },
     {
       "id": "BezelBottom/42",
@@ -2623,14 +2776,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.013643907128141175,
-        0.02210391305378101
+        0.013643921169851816,
+        0.022103913544777254
       ],
-      "area_m2": 5.510641427772172e-05,
+      "area_m2": 5.510649830995157e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 18762.953866197786
+      "source_pixels_per_metre": 18762.934556208693
     },
     {
       "id": "BezelBottom/43",
@@ -2641,9 +2794,9 @@
       "image": "strip-01",
       "size_m": [
         0.007608781312892998,
-        0.023905119632255944
+        0.02390512282118079
       ],
-      "area_m2": 5.5105928088414085e-05,
+      "area_m2": 5.510590315018351e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -2658,7 +2811,7 @@
       "image": "strip-02",
       "size_m": [
         0.013643918267118083,
-        0.02210391325044564
+        0.02210391325044575
       ],
       "area_m2": 5.510646069467568e-05,
       "upward": false,
@@ -2691,14 +2844,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.007608782590349528,
+        0.007608782590349472,
         0.02390512127368205
       ],
       "area_m2": 5.510593248913742e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 33645.329848784655
+      "source_pixels_per_metre": 33645.3298487849
     },
     {
       "id": "BezelBottom/47",
@@ -2708,14 +2861,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.013643914036891608,
+        0.01364391403689158,
         0.02210391359907432
       ],
       "area_m2": 5.5106423079332016e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 9381.472182681773
+      "source_pixels_per_metre": 9381.472182681793
     },
     {
       "id": "BezelBottom/48",
@@ -2743,7 +2896,7 @@
       "image": "strip-03",
       "size_m": [
         0.8840000033378601,
-        0.024000004127583963
+        0.024000004127583907
       ],
       "area_m2": 0.021216003728893734,
       "upward": false,
@@ -2759,14 +2912,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.032927725464105606,
+        0.0329277329146862,
         0.032927751541137695
       ],
-      "area_m2": 0.0005760003667888425,
+      "area_m2": 0.0005760004587879175,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 3887.3016036146296
+      "source_pixels_per_metre": 3887.300724032243
     },
     {
       "id": "BezelBottom/51",
@@ -2776,14 +2929,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.032927725464105606,
+        0.0329277329146862,
         0.032927751541137695
       ],
-      "area_m2": 0.0005760003667888425,
+      "area_m2": 0.0005760004587879175,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 7774.603207229259
+      "source_pixels_per_metre": 7774.601448064486
     },
     {
       "id": "BezelBottom/52",
@@ -2825,16 +2978,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-02",
       "size_m": [
-        0.0023627812078487187,
-        0.0022916091259619353
+        0.0027748900459786396,
+        0.0043573454407102585
       ],
-      "area_m2": 4.144964422465433e-06,
+      "area_m2": 8.055601044592448e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 55855.94792317394
+      "source_pixels_per_metre": 92255.9077146117
     },
     {
       "id": "BezelLeft/1",
@@ -2844,14 +2997,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.002692616975548151,
-        0.0029286952316880943
+        0.003527100303043762,
+        0.004781790575036693
       ],
-      "area_m2": 4.144855812567434e-06,
+      "area_m2": 8.05545896042454e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 47537.396206878744
+      "source_pixels_per_metre": 36290.433784812005
     },
     {
       "id": "BezelLeft/2",
@@ -2859,16 +3012,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-02",
       "size_m": [
-        0.0026755402702297038,
-        0.0024599010348127504
+        0.0027685968395815275,
+        0.0032770172700274935
       ],
-      "area_m2": 4.144940514822957e-06,
+      "area_m2": 5.350567178195039e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 52034.613664749915
+      "source_pixels_per_metre": 92465.61158348151
     },
     {
       "id": "BezelLeft/3",
@@ -2876,16 +3029,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-04",
+      "image": "strip-01",
       "size_m": [
-        0.0023627812078487187,
-        0.0022916091259619353
+        0.0027748900459786396,
+        0.004357345440710314
       ],
-      "area_m2": 4.1449061426268395e-06,
+      "area_m2": 8.055479887194927e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 111711.89584634788
+      "source_pixels_per_metre": 46127.95385730585
     },
     {
       "id": "BezelLeft/4",
@@ -2893,16 +3046,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-04",
       "size_m": [
-        0.0026755402702297038,
-        0.0024598867184706386
+        0.002768596839581583,
+        0.0032770066707516476
       ],
-      "area_m2": 4.144882236317899e-06,
+      "area_m2": 5.350516639563148e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 52034.916502000626
+      "source_pixels_per_metre": 78120.07289606195
     },
     {
       "id": "BezelLeft/5",
@@ -2912,14 +3065,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.0026926303500316995,
-        0.002928695231688039
+        0.0035271115317171697,
+        0.004781790575036693
       ],
-      "area_m2": 4.144869213720492e-06,
+      "area_m2": 8.055477052178061e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 95074.32017060426
+      "source_pixels_per_metre": 72580.63650608937
     },
     {
       "id": "BezelLeft/6",
@@ -2927,16 +3080,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-04",
+      "image": "strip-01",
       "size_m": [
-        0.0028877583639189686,
-        0.002655013652696492
+        0.003936872578138184,
+        0.00411562354237327
       ],
-      "area_m2": 4.144890336005816e-06,
+      "area_m2": 8.05547789499947e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 96421.34975087628
+      "source_pixels_per_metre": 32513.117318247936
     },
     {
       "id": "BezelLeft/7",
@@ -2944,16 +3097,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-02",
       "size_m": [
-        0.002675537502394021,
-        0.002459917458484291
+        0.0028119185018687376,
+        0.004699033624696536
       ],
-      "area_m2": 4.144961419030103e-06,
+      "area_m2": 8.055612424975124e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 52034.26625496158
+      "source_pixels_per_metre": 91041.0454036517
     },
     {
       "id": "BezelLeft/8",
@@ -2963,14 +3116,14 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.0023627738636130546,
-        0.002291583535042746
+        0.0026047966153136537,
+        0.002817848415299168
       ],
-      "area_m2": 4.14493412984627e-06,
+      "area_m2": 5.350546199478727e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 111713.14337237316
+      "source_pixels_per_metre": 90849.45755423851
     },
     {
       "id": "BezelLeft/9",
@@ -2978,16 +3131,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-01",
       "size_m": [
-        0.002675537502394104,
-        0.002459903142095987
+        0.0028118647398749363,
+        0.004699033624696564
       ],
-      "area_m2": 4.144903139628629e-06,
+      "area_m2": 8.055491267366204e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 52034.5690891456
+      "source_pixels_per_metre": 45521.39304029719
     },
     {
       "id": "BezelLeft/10",
@@ -2997,14 +3150,14 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.002887758363918964,
-        0.002655026840254593
+        0.003936872578138177,
+        0.004115632787032586
       ],
-      "area_m2": 4.1449037369727995e-06,
+      "area_m2": 8.055495986120915e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 96420.8708245872
+      "source_pixels_per_metre": 62201.856493756495
     },
     {
       "id": "BezelLeft/11",
@@ -3014,14 +3167,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.002362773863612999,
-        0.002291583535042746
+        0.0026047966153136815,
+        0.0028178509895648626
       ],
-      "area_m2": 4.144875850756299e-06,
+      "area_m2": 5.350495660539789e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 54173.61431460511
+      "source_pixels_per_metre": 49140.11299288549
     },
     {
       "id": "BezelLeft/12",
@@ -3031,31 +3184,31 @@
       "kind": "strip",
       "image": "strip-03",
       "size_m": [
-        0.00288776575646682,
-        0.002655013859653166
+        0.003936872578138184,
+        0.004115567536156273
       ],
-      "area_m2": 4.144890263717783e-06,
+      "area_m2": 8.055357278774355e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 48210.67111744611
+      "source_pixels_per_metre": 31101.421341160978
     },
     {
       "id": "BezelLeft/13",
       "part": "BezelLeft",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "top",
-      "image": "top-02",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
-        0.0026755375023940486,
-        0.0024599012586911106
+        0.0028119217189173096,
+        0.0046990570152453115
       ],
-      "area_m2": 4.144948880555046e-06,
-      "upward": true,
+      "area_m2": 8.055642438345884e-06,
+      "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 416276.871432173
+      "source_pixels_per_metre": 45520.47062294628
     },
     {
       "id": "BezelLeft/14",
@@ -3065,31 +3218,31 @@
       "kind": "top",
       "image": "top-01",
       "size_m": [
-        0.002362783708655447,
-        0.002291588546947443
+        0.0026048119262390562,
+        0.002817845290009835
       ],
-      "area_m2": 4.144948307512291e-06,
+      "area_m2": 5.350567745347291e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 446851.59618380887
+      "source_pixels_per_metre": 363398.2332636956
     },
     {
       "id": "BezelLeft/15",
       "part": "BezelLeft",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "top",
-      "image": "top-00",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
-        0.002675537502394132,
-        0.002459886942302869
+        0.002811867956923453,
+        0.0046990570152452005
       ],
-      "area_m2": 4.144890601221336e-06,
-      "upward": true,
+      "area_m2": 8.0555212806813e-06,
+      "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 478408.54364950105
+      "source_pixels_per_metre": 91042.68191885408
     },
     {
       "id": "BezelLeft/16",
@@ -3097,16 +3250,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-02",
+      "image": "strip-03",
       "size_m": [
-        0.002887765756466827,
-        0.0026550270472112114
+        0.003936872578138156,
+        0.004115576780815644
       ],
-      "area_m2": 4.1449036641837855e-06,
+      "area_m2": 8.055375370492432e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 88649.84960318085
+      "source_pixels_per_metre": 31101.35147925302
     },
     {
       "id": "BezelLeft/17",
@@ -3116,14 +3269,14 @@
       "kind": "top",
       "image": "top-02",
       "size_m": [
-        0.0023627837086555026,
-        0.0022915885469474394
+        0.00260481192623907,
+        0.0028178478642755245
       ],
-      "area_m2": 4.144890027696233e-06,
+      "area_m2": 5.350517207346805e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 446851.5961838095
+      "source_pixels_per_metre": 363397.90127856063
     },
     {
       "id": "BezelLeft/18",
@@ -3133,14 +3286,14 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.0026926302794020307,
-        0.002928694845290236
+        0.003527093416075572,
+        0.0047818201862915855
       ],
-      "area_m2": 4.144872484283547e-06,
+      "area_m2": 8.055497506004394e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 87410.950448349
+      "source_pixels_per_metre": 53536.09923139625
     },
     {
       "id": "BezelLeft/19",
@@ -3148,16 +3301,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-02",
       "size_m": [
-        0.002675537173746134,
-        0.002459909056377052
+        0.0027685968051976984,
+        0.0032769629795101896
       ],
-      "area_m2": 4.14495723883792e-06,
+      "area_m2": 5.3504877348064826e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 52034.44398408699
+      "source_pixels_per_metre": 92465.61273183284
     },
     {
       "id": "BezelLeft/20",
@@ -3167,14 +3320,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.0023627810722635645,
-        0.0022916090899721686
+        0.0027748841614019804,
+        0.004357340851549374
       ],
-      "area_m2": 4.144974069721226e-06,
+      "area_m2": 8.055648349248782e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 54173.449035367
+      "source_pixels_per_metre": 46128.05167885977
     },
     {
       "id": "BezelLeft/21",
@@ -3184,14 +3337,14 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.0026926370082109297,
-        0.00292869523168815
+        0.0035271046301987297,
+        0.004781760612850849
       ],
-      "area_m2": 4.144878654881094e-06,
+      "area_m2": 8.055410835101573e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 87410.9389157701
+      "source_pixels_per_metre": 53536.7662095018
     },
     {
       "id": "BezelLeft/22",
@@ -3201,14 +3354,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.0023627812078487187,
-        0.0022916091259619353
+        0.0027748846904311897,
+        0.004357340809842292
       ],
-      "area_m2": 4.144915860996957e-06,
+      "area_m2": 8.055491034415243e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 54173.44592669345
+      "source_pixels_per_metre": 46128.04288458922
     },
     {
       "id": "BezelLeft/23",
@@ -3218,14 +3371,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.0026755402702297038,
-        0.0024598907684091342
+        0.0027685968395815275,
+        0.003276952420918078
       ],
-      "area_m2": 4.144901679347186e-06,
+      "area_m2": 5.350437196202442e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 95681.6097475601
+      "source_pixels_per_metre": 92465.61158348151
     },
     {
       "id": "BezelLeft/24",
@@ -3236,9 +3389,9 @@
       "image": "strip-03",
       "size_m": [
         0.06899997591972351,
-        0.0022960828206055606
+        0.002770170166878194
       ],
-      "area_m2": 0.00015842965933195077,
+      "area_m2": 0.00019114167480815654,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -3253,9 +3406,9 @@
       "image": "strip-04",
       "size_m": [
         0.06899997591972351,
-        0.0022961223152238586
+        0.004389820418140733
       ],
-      "area_m2": 0.00015843238445931046,
+      "area_m2": 0.000302897503143637,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -3269,14 +3422,14 @@
       "kind": "strip",
       "image": "strip-03",
       "size_m": [
-        0.021378425979234273,
-        0.014997382497377476
+        0.022759645793012304,
+        0.01627750481980128
       ],
-      "area_m2": 5.510674009523497e-05,
+      "area_m2": 0.00010535581714822423,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 8534.822661379929
+      "source_pixels_per_metre": 7863.613091626328
     },
     {
       "id": "BezelLeft/27",
@@ -3284,16 +3437,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-02",
+      "image": "strip-04",
       "size_m": [
-        0.007608750971676792,
-        0.023905163388662942
+        0.0194382884891732,
+        0.018397687287785125
       ],
-      "area_m2": 5.5106654910088905e-05,
+      "area_m2": 6.648405073213161e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 33645.4696641995
+      "source_pixels_per_metre": 13914.792440785068
     },
     {
       "id": "BezelLeft/28",
@@ -3301,12 +3454,12 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-04",
+      "image": "strip-03",
       "size_m": [
         0.06899997591972351,
-        0.0022961082085458107
+        0.004389829410336499
       ],
-      "area_m2": 0.00015843141109896235,
+      "area_m2": 0.00030289812360550486,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -3318,12 +3471,12 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-04",
       "size_m": [
         0.06899997591972346,
-        0.0022960969170822826
+        0.0027701609328867685
       ],
-      "area_m2": 0.00015843063199513387,
+      "area_m2": 0.00019114103766661828,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -3335,16 +3488,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-01",
+      "image": "strip-03",
       "size_m": [
-        0.00760875097167682,
-        0.023905163388662887
+        0.019438288489173172,
+        0.01839768728778514
       ],
-      "area_m2": 5.510665491008891e-05,
+      "area_m2": 6.648405073213161e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 16822.73483209969
+      "source_pixels_per_metre": 6957.396220392528
     },
     {
       "id": "BezelLeft/31",
@@ -3352,33 +3505,33 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-02",
       "size_m": [
-        0.021378419767537737,
-        0.0149973729326075
+        0.022759642677643882,
+        0.016277499732599232
       ],
-      "area_m2": 5.510646638063226e-05,
+      "area_m2": 0.00010535567398116397,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 8534.828104574275
+      "source_pixels_per_metre": 11247.979751960744
     },
     {
       "id": "BezelLeft/32",
       "part": "BezelLeft",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "top",
-      "image": "top-00",
+      "kind": "strip",
+      "image": "strip-03",
       "size_m": [
-        0.007608738008787197,
-        0.023905140800300484
+        0.019438275076505154,
+        0.01839771053565048
       ],
-      "area_m2": 5.510656689389627e-05,
-      "upward": true,
+      "area_m2": 6.648401634649681e-05,
+      "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 53544.968033985
+      "source_pixels_per_metre": 6957.387428830658
     },
     {
       "id": "BezelLeft/33",
@@ -3388,28 +3541,28 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.02137843690132622,
-        0.014997353595033125
+        0.0227596458043601,
+        0.016277534156394324
       ],
-      "area_m2": 5.510656666582243e-05,
+      "area_m2": 0.00010535588445820144,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 11974.682769446019
+      "source_pixels_per_metre": 11247.978206715225
     },
     {
       "id": "BezelLeft/34",
       "part": "BezelLeft",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "top",
-      "image": "top-04",
+      "kind": "strip",
+      "image": "strip-04",
       "size_m": [
         0.06899997591972351,
-        0.0022960874730797998
+        0.004389829410336499
       ],
-      "area_m2": 0.00015842998036190683,
-      "upward": true,
+      "area_m2": 0.00030289812360550486,
+      "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
       "source_pixels_per_metre": 22260.87733403016
@@ -3423,9 +3576,9 @@
       "image": "top-04",
       "size_m": [
         0.06899997591972346,
-        0.002296101303524343
+        0.002770165626033938
       ],
-      "area_m2": 0.0001584309346533242,
+      "area_m2": 0.0001911413614918582,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -3439,31 +3592,31 @@
       "kind": "strip",
       "image": "strip-03",
       "size_m": [
-        0.021378423411010594,
-        0.014997344016161263
+        0.02275964267764391,
+        0.016277529092654897
       ],
-      "area_m2": 5.510624311781873e-05,
+      "area_m2": 0.00010535574129104971,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 8534.844560614609
+      "source_pixels_per_metre": 7863.601365502026
     },
     {
       "id": "BezelLeft/37",
       "part": "BezelLeft",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "top",
-      "image": "top-02",
+      "kind": "strip",
+      "image": "strip-04",
       "size_m": [
-        0.0076087380087872525,
-        0.023905140800300484
+        0.019438275782861336,
+        0.018397709764690018
       ],
-      "area_m2": 5.510657716232913e-05,
-      "upward": true,
+      "area_m2": 6.648401634649681e-05,
+      "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 42835.974427188
+      "source_pixels_per_metre": 13914.775440763311
     },
     {
       "id": "BezelLeft/38",
@@ -3471,16 +3624,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-04",
+      "image": "strip-03",
       "size_m": [
-        0.06899997592826912,
-        0.002296111458545025
+        0.06899997592767171,
+        0.0027701470425570696
       ],
-      "area_m2": 0.00015843161762975347,
+      "area_m2": 0.00019114006557645566,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 22260.877331273165
+      "source_pixels_per_metre": 22260.8773314659
     },
     {
       "id": "BezelLeft/39",
@@ -3488,16 +3641,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-04",
       "size_m": [
-        0.06899997592401402,
-        0.002296122444158777
+        0.0689999759406314,
+        0.004389815792959939
       ],
-      "area_m2": 0.00015843238445931046,
+      "area_m2": 0.0003028971613316925,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 22260.87733264595
+      "source_pixels_per_metre": 22260.877327284827
     },
     {
       "id": "BezelLeft/40",
@@ -3507,14 +3660,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.06803133906582709,
-        0.28705743304247594
+        0.1356341237800897,
+        0.5814809592519601
       ],
-      "area_m2": 0.0006750566458739451,
+      "area_m2": 0.001368677333079735,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 1881.485823410697
+      "source_pixels_per_metre": 943.7153161215736
     },
     {
       "id": "BezelLeft/41",
@@ -3524,14 +3677,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.1445458779356602,
-        0.2582493810099556
+        0.29100336345614974,
+        0.5224567886339586
       ],
-      "area_m2": 0.0006750557511832743,
+      "area_m2": 0.0013686671638003323,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 1771.0639947404788
+      "source_pixels_per_metre": 879.7149179293789
     },
     {
       "id": "BezelLeft/42",
@@ -3539,16 +3692,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-01",
+      "image": "strip-02",
       "size_m": [
-        0.14454586796081037,
-        0.2582493754806211
+        0.29100335348130074,
+        0.5224567831046244
       ],
-      "area_m2": 0.0006750523981694435,
+      "area_m2": 0.001368660365522488,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 885.5320584792066
+      "source_pixels_per_metre": 879.7149480837512
     },
     {
       "id": "BezelLeft/43",
@@ -3556,16 +3709,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-02",
+      "image": "strip-01",
       "size_m": [
-        0.06803133906582709,
-        0.28705743304247594
+        0.13563412378008977,
+        0.5814809592519603
       ],
-      "area_m2": 0.0006750566458739451,
+      "area_m2": 0.0013686773330797352,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 3762.971646821394
+      "source_pixels_per_metre": 943.7153161215732
     },
     {
       "id": "BezelLeft/44",
@@ -3573,16 +3726,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-01",
+      "image": "strip-02",
       "size_m": [
-        0.14454588969129495,
-        0.258249376238719
+        0.29100339131790964,
+        0.5224567810100884
       ],
-      "area_m2": 0.0006750566188494071,
+      "area_m2": 0.0013686790764288095,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 885.5319253516525
+      "source_pixels_per_metre": 879.7148337021619
     },
     {
       "id": "BezelLeft/45",
@@ -3590,16 +3743,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-02",
+      "image": "strip-01",
       "size_m": [
-        0.0680312830504472,
-        0.28705741962881126
+        0.13563401301344635,
+        0.5814809659027536
       ],
-      "area_m2": 0.000675056769095707,
+      "area_m2": 0.001368673853025177,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 3762.974745164933
+      "source_pixels_per_metre": 943.7160868145254
     },
     {
       "id": "BezelLeft/46",
@@ -3607,16 +3760,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-01",
+      "image": "strip-02",
       "size_m": [
-        0.06803134068619532,
-        0.2870574068221975
+        0.1356341302615623,
+        0.5814809918501076
       ],
-      "area_m2": 0.000675056769095707,
+      "area_m2": 0.0013686774093608152,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 1881.4857785975298
+      "source_pixels_per_metre": 1887.4305420495516
     },
     {
       "id": "BezelLeft/47",
@@ -3626,14 +3779,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.14454587147124304,
-        0.2582493752351284
+        0.29100336752303146,
+        0.5224567831046244
       ],
-      "area_m2": 0.000675053265839886,
+      "area_m2": 0.0013686638927210934,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 1771.0640739464525
+      "source_pixels_per_metre": 879.7149056350314
     },
     {
       "id": "BezelLeft/48",
@@ -3644,9 +3797,9 @@
       "image": "strip-01",
       "size_m": [
         0.06899997591972351,
-        0.29400002309097356
+        0.5960850265324459
       ],
-      "area_m2": 0.020285994513675343,
+      "area_m2": 0.04112985247684653,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -3661,13 +3814,13 @@
       "image": "strip-04",
       "size_m": [
         0.06899997591972351,
-        0.024000007321993977
+        0.023999988794414784
       ],
-      "area_m2": 0.0016559999272908064,
+      "area_m2": 0.0016559986488887523,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 10666.663412448113
+      "source_pixels_per_metre": 10666.671646929088
     },
     {
       "id": "BezelLeft/50",
@@ -3677,14 +3830,14 @@
       "kind": "broad",
       "image": "broad-03",
       "size_m": [
-        0.1718415915966034,
-        0.2644507884979248
+        0.32726307213306427,
+        0.5234865844249725
       ],
-      "area_m2": 0.007055997092993094,
+      "area_m2": 0.014306043097169763,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 4840.220017003445
+      "source_pixels_per_metre": 2445.1438452926636
     },
     {
       "id": "BezelLeft/51",
@@ -3694,14 +3847,14 @@
       "kind": "broad",
       "image": "broad-02",
       "size_m": [
-        0.1718415915966034,
-        0.2644507884979248
+        0.32726307213306427,
+        0.5234865844249725
       ],
-      "area_m2": 0.007055997092993094,
+      "area_m2": 0.014306043097169763,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 4840.220017003445
+      "source_pixels_per_metre": 2445.1438452926636
     },
     {
       "id": "BezelLeft/52",
@@ -3712,9 +3865,9 @@
       "image": "strip-01",
       "size_m": [
         0.06899997591972351,
-        0.29399997198041317
+        0.5960850341990305
       ],
-      "area_m2": 0.02028599098704794,
+      "area_m2": 0.041129853005840704,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -3729,13 +3882,13 @@
       "image": "top-03",
       "size_m": [
         0.06899997591972351,
-        0.023999988794414784
+        0.024000006683112973
       ],
-      "area_m2": 0.0016559986488887523,
+      "area_m2": 0.0016559998832103185,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 21333.343293858175
+      "source_pixels_per_metre": 21333.32739279012
     },
     {
       "id": "BezelRight/0",
@@ -3743,16 +3896,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-04",
+      "image": "strip-02",
       "size_m": [
-        0.0023627812078487187,
-        0.0022916091259619353
+        0.0027748900459786396,
+        0.004357345440710314
       ],
-      "area_m2": 4.1449061426268395e-06,
+      "area_m2": 8.055479887194927e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 111711.89584634788
+      "source_pixels_per_metre": 92255.9077146117
     },
     {
       "id": "BezelRight/1",
@@ -3762,14 +3915,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.0026926303500316995,
-        0.002928695231688039
+        0.0035271115317171697,
+        0.004781790575036693
       ],
-      "area_m2": 4.144869213720492e-06,
+      "area_m2": 8.055477052178061e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 47537.16008530213
+      "source_pixels_per_metre": 36290.31825304469
     },
     {
       "id": "BezelRight/2",
@@ -3779,14 +3932,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.0026755402702297038,
-        0.0024598867184706386
+        0.002768596839581583,
+        0.0032770066707516476
       ],
-      "area_m2": 4.144882236317899e-06,
+      "area_m2": 5.350516639563148e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 95681.6097475601
+      "source_pixels_per_metre": 92465.61158347967
     },
     {
       "id": "BezelRight/3",
@@ -3796,14 +3949,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.0023627812078487187,
-        0.0022916091259619353
+        0.0027748900459786396,
+        0.0043573454407102585
       ],
-      "area_m2": 4.144964422465433e-06,
+      "area_m2": 8.055601044592448e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 54173.44592669345
+      "source_pixels_per_metre": 46127.95385730585
     },
     {
       "id": "BezelRight/4",
@@ -3813,14 +3966,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.0026755402702297038,
-        0.0024599010348127504
+        0.0027685968395815275,
+        0.0032770172700274935
       ],
-      "area_m2": 4.144940514822957e-06,
+      "area_m2": 5.350567178195039e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 95681.6097475601
+      "source_pixels_per_metre": 92465.61158348151
     },
     {
       "id": "BezelRight/5",
@@ -3830,14 +3983,14 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.002692616975548151,
-        0.0029286952316880943
+        0.003527100303043762,
+        0.004781790575036693
       ],
-      "area_m2": 4.144855812567434e-06,
+      "area_m2": 8.05545896042454e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 87410.93891577175
+      "source_pixels_per_metre": 53536.43075387834
     },
     {
       "id": "BezelRight/6",
@@ -3847,14 +4000,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.002887758363918964,
-        0.002655026840254593
+        0.003936872578138177,
+        0.004115632787032586
       ],
-      "area_m2": 4.1449037369727995e-06,
+      "area_m2": 8.055495986120915e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 88650.07654331008
+      "source_pixels_per_metre": 65026.23463649599
     },
     {
       "id": "BezelRight/7",
@@ -3862,16 +4015,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-01",
       "size_m": [
-        0.002675537502394104,
-        0.002459903142095987
+        0.0028118647398749363,
+        0.004699033624696564
       ],
-      "area_m2": 4.144903139628629e-06,
+      "area_m2": 8.055491267366204e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 52034.5690891456
+      "source_pixels_per_metre": 45521.39304029719
     },
     {
       "id": "BezelRight/8",
@@ -3881,14 +4034,14 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.002362773863612999,
-        0.002291583535042746
+        0.0026047966153136815,
+        0.0028178509895648626
       ],
-      "area_m2": 4.144875850756299e-06,
+      "area_m2": 5.350495660539789e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 111713.14337237316
+      "source_pixels_per_metre": 90849.3745581387
     },
     {
       "id": "BezelRight/9",
@@ -3898,14 +4051,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.002675537502394021,
-        0.002459917458484291
+        0.0028119185018687376,
+        0.004699033624696536
       ],
-      "area_m2": 4.144961419030103e-06,
+      "area_m2": 8.055612424975124e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 95681.70872990417
+      "source_pixels_per_metre": 91041.0454036517
     },
     {
       "id": "BezelRight/10",
@@ -3915,14 +4068,14 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.0028877583639189686,
-        0.002655013652696492
+        0.003936872578138184,
+        0.00411562354237327
       ],
-      "area_m2": 4.144890336005816e-06,
+      "area_m2": 8.05547789499947e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 96421.34975087628
+      "source_pixels_per_metre": 62201.99621376883
     },
     {
       "id": "BezelRight/11",
@@ -3930,16 +4083,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-02",
       "size_m": [
-        0.0023627738636130546,
-        0.002291583535042746
+        0.0026047966153136537,
+        0.002817848415299168
       ],
-      "area_m2": 4.14493412984627e-06,
+      "area_m2": 5.350546199478727e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 55856.57168618658
+      "source_pixels_per_metre": 98280.22598577203
     },
     {
       "id": "BezelRight/12",
@@ -3947,33 +4100,33 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-02",
+      "image": "strip-01",
       "size_m": [
-        0.002887765756466827,
-        0.0026550270472112114
+        0.003936872578138156,
+        0.004115576780815644
       ],
-      "area_m2": 4.1449036641837855e-06,
+      "area_m2": 8.055375370492432e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 88649.84960318085
+      "source_pixels_per_metre": 32513.117318248165
     },
     {
       "id": "BezelRight/13",
       "part": "BezelRight",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "top",
-      "image": "top-01",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
-        0.002675537502394132,
-        0.002459886942302869
+        0.002811867956923453,
+        0.0046990570152452005
       ],
-      "area_m2": 4.144890601221336e-06,
-      "upward": true,
+      "area_m2": 8.0555212806813e-06,
+      "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 416279.2941375441
+      "source_pixels_per_metre": 91042.68191885408
     },
     {
       "id": "BezelRight/14",
@@ -3981,33 +4134,33 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-00",
+      "image": "top-01",
       "size_m": [
-        0.0023627837086555026,
-        0.0022915885469474394
+        0.00260481192623907,
+        0.0028178478642755245
       ],
-      "area_m2": 4.144890027696233e-06,
+      "area_m2": 5.350517207346805e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 541733.8858868127
+      "source_pixels_per_metre": 363397.90127856063
     },
     {
       "id": "BezelRight/15",
       "part": "BezelRight",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "top",
-      "image": "top-02",
+      "kind": "strip",
+      "image": "strip-01",
       "size_m": [
-        0.0026755375023940486,
-        0.0024599012586911106
+        0.0028119217189173096,
+        0.0046990570152453115
       ],
-      "area_m2": 4.144948880555046e-06,
-      "upward": true,
+      "area_m2": 8.055642438345884e-06,
+      "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 416276.871432173
+      "source_pixels_per_metre": 45520.47062294628
     },
     {
       "id": "BezelRight/16",
@@ -4015,16 +4168,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-04",
+      "image": "strip-02",
       "size_m": [
-        0.00288776575646682,
-        0.002655013859653166
+        0.003936872578138184,
+        0.004115567536156273
       ],
-      "area_m2": 4.144890263717783e-06,
+      "area_m2": 8.055357278774355e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 96421.34223489222
+      "source_pixels_per_metre": 65026.23463649587
     },
     {
       "id": "BezelRight/17",
@@ -4032,16 +4185,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "top",
-      "image": "top-01",
+      "image": "top-02",
       "size_m": [
-        0.002362783708655447,
-        0.002291588546947443
+        0.0026048119262390562,
+        0.002817845290009835
       ],
-      "area_m2": 4.144948307512291e-06,
+      "area_m2": 5.350567745347291e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 446851.59618380887
+      "source_pixels_per_metre": 363398.2332636956
     },
     {
       "id": "BezelRight/18",
@@ -4049,16 +4202,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-02",
+      "image": "strip-04",
       "size_m": [
-        0.0026926436538805554,
-        0.002928694845290236
+        0.0035271046447428733,
+        0.004781820186291474
       ],
-      "area_m2": 4.144885885342107e-06,
+      "area_m2": 8.055515598347691e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 95073.85042616414
+      "source_pixels_per_metre": 53536.099231397486
     },
     {
       "id": "BezelRight/19",
@@ -4066,16 +4219,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-01",
       "size_m": [
-        0.0026755371737461897,
-        0.002459894740034385
+        0.0027685968051976984,
+        0.0032769523802260725
       ],
-      "area_m2": 4.144898959549115e-06,
+      "area_m2": 5.350437196202442e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 52034.746819374384
+      "source_pixels_per_metre": 46232.80636591642
     },
     {
       "id": "BezelRight/20",
@@ -4083,16 +4236,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-01",
+      "image": "strip-02",
       "size_m": [
-        0.0023627810722635645,
-        0.0022916090899721686
+        0.002774884161401925,
+        0.004357340851549374
       ],
-      "area_m2": 4.144915790570243e-06,
+      "area_m2": 8.055527191906978e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 54173.449035367
+      "source_pixels_per_metre": 92256.10335772138
     },
     {
       "id": "BezelRight/21",
@@ -4100,16 +4253,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-04",
+      "image": "strip-01",
       "size_m": [
-        0.0026926236337273812,
-        0.002928695231688039
+        0.003527093401525308,
+        0.004781760612850738
       ],
-      "area_m2": 4.144865253704693e-06,
+      "area_m2": 8.055392743268039e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 87410.93891577341
+      "source_pixels_per_metre": 36290.50479486758
     },
     {
       "id": "BezelRight/22",
@@ -4119,14 +4272,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.0023627812078487187,
-        0.0022916091259619353
+        0.0027748846904310787,
+        0.004357340809842292
       ],
-      "area_m2": 4.144974139978563e-06,
+      "area_m2": 8.05561219037071e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 108346.8918533869
+      "source_pixels_per_metre": 92256.08576918213
     },
     {
       "id": "BezelRight/23",
@@ -4134,16 +4287,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-04",
       "size_m": [
-        0.0026755402702297038,
-        0.002459905084751246
+        0.0027685968395815275,
+        0.0032769630201939792
       ],
-      "area_m2": 4.1449599587046034e-06,
+      "area_m2": 5.3504877348064826e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 52034.52799600347
+      "source_pixels_per_metre": 78121.11348905186
     },
     {
       "id": "BezelRight/24",
@@ -4151,12 +4304,12 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-04",
+      "image": "strip-03",
       "size_m": [
         0.06899997591972351,
-        0.0022960828206055606
+        0.002770170166878194
       ],
-      "area_m2": 0.00015842965933195077,
+      "area_m2": 0.00019114167480815654,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -4168,12 +4321,12 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-04",
       "size_m": [
         0.06899997591972351,
-        0.0022961223152238586
+        0.004389820418140733
       ],
-      "area_m2": 0.00015843238445931046,
+      "area_m2": 0.000302897503143637,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -4185,16 +4338,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-04",
+      "image": "strip-02",
       "size_m": [
-        0.021378419767537737,
-        0.0149973729326075
+        0.022759642677643882,
+        0.016277499732599232
       ],
-      "area_m2": 5.510646638063226e-05,
+      "area_m2": 0.00010535567398116397,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 17069.65620914855
+      "source_pixels_per_metre": 11247.979751960744
     },
     {
       "id": "BezelRight/27",
@@ -4202,16 +4355,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-01",
+      "image": "strip-04",
       "size_m": [
-        0.00760875097167682,
-        0.023905163388662887
+        0.019438288489173172,
+        0.01839768728778514
       ],
-      "area_m2": 5.5106654910088905e-05,
+      "area_m2": 6.648405073213161e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 16822.73483209969
+      "source_pixels_per_metre": 13914.792440785057
     },
     {
       "id": "BezelRight/28",
@@ -4219,12 +4372,12 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-04",
+      "image": "strip-03",
       "size_m": [
         0.06899997591972351,
-        0.0022961082085458107
+        0.004389829410336499
       ],
-      "area_m2": 0.00015843141109896235,
+      "area_m2": 0.00030289812360550486,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -4236,12 +4389,12 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-04",
       "size_m": [
         0.06899997591972346,
-        0.0022960969170822826
+        0.0027701609328867685
       ],
-      "area_m2": 0.00015843063199513387,
+      "area_m2": 0.00019114103766661828,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -4255,14 +4408,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.007608750971676792,
-        0.023905163388662942
+        0.0194382884891732,
+        0.018397687287785125
       ],
-      "area_m2": 5.510665491008891e-05,
+      "area_m2": 6.648405073213161e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 33645.4696641995
+      "source_pixels_per_metre": 13169.883765362763
     },
     {
       "id": "BezelRight/31",
@@ -4272,31 +4425,31 @@
       "kind": "strip",
       "image": "strip-03",
       "size_m": [
-        0.021378425979234273,
-        0.014997382497377476
+        0.022759645793012304,
+        0.01627750481980128
       ],
-      "area_m2": 5.510674009523497e-05,
+      "area_m2": 0.00010535581714822423,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 8534.822661379929
+      "source_pixels_per_metre": 7863.613091626328
     },
     {
       "id": "BezelRight/32",
       "part": "BezelRight",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "top",
-      "image": "top-00",
+      "kind": "strip",
+      "image": "strip-02",
       "size_m": [
-        0.0076087380087872525,
-        0.023905140800300484
+        0.01943827507650514,
+        0.018397710535650424
       ],
-      "area_m2": 5.510656689389627e-05,
-      "upward": true,
+      "area_m2": 6.648401634649681e-05,
+      "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 53544.968033985
+      "source_pixels_per_metre": 13169.892852757535
     },
     {
       "id": "BezelRight/33",
@@ -4304,30 +4457,30 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-02",
+      "image": "strip-03",
       "size_m": [
-        0.021378430689629663,
-        0.014997344030263648
+        0.022759642688991943,
+        0.016277529069192664
       ],
-      "area_m2": 5.510629295053317e-05,
+      "area_m2": 0.00010535574129104971,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 11974.686248798493
+      "source_pixels_per_metre": 7863.601376836526
     },
     {
       "id": "BezelRight/34",
       "part": "BezelRight",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "top",
-      "image": "top-04",
+      "kind": "strip",
+      "image": "strip-04",
       "size_m": [
         0.06899997591972351,
-        0.0022960874730797998
+        0.004389829410336499
       ],
-      "area_m2": 0.00015842998036190683,
-      "upward": true,
+      "area_m2": 0.00030289812360550486,
+      "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
       "source_pixels_per_metre": 22260.87733403016
@@ -4341,9 +4494,9 @@
       "image": "top-04",
       "size_m": [
         0.06899997591972346,
-        0.002296101303524343
+        0.002770165626033938
       ],
-      "area_m2": 0.0001584309346533242,
+      "area_m2": 0.0001911413614918582,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -4355,33 +4508,33 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-04",
+      "image": "strip-02",
       "size_m": [
-        0.021378429622707133,
-        0.014997353580931239
+        0.02275964579301229,
+        0.016277534179857
       ],
-      "area_m2": 5.5106516833282643e-05,
+      "area_m2": 0.00010535588445820143,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 17069.678234798546
+      "source_pixels_per_metre": 11247.978212323393
     },
     {
       "id": "BezelRight/37",
       "part": "BezelRight",
       "material": "PaintedSteel",
       "role": "paint",
-      "kind": "top",
-      "image": "top-01",
+      "kind": "strip",
+      "image": "strip-03",
       "size_m": [
-        0.007608738008787197,
-        0.023905140800300484
+        0.019438275782861378,
+        0.018397709764690018
       ],
-      "area_m2": 5.510657716232913e-05,
-      "upward": true,
+      "area_m2": 6.648401634649681e-05,
+      "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 42835.974427188
+      "source_pixels_per_metre": 6957.3877203816555
     },
     {
       "id": "BezelRight/38",
@@ -4389,16 +4542,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-03",
+      "image": "strip-04",
       "size_m": [
-        0.06899997592826912,
-        0.0022961114585450804
+        0.06899997592767165,
+        0.0027701470425570696
       ],
-      "area_m2": 0.00015843161762975347,
+      "area_m2": 0.00019114006557645566,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 22260.877331273165
+      "source_pixels_per_metre": 22260.87733146592
     },
     {
       "id": "BezelRight/39",
@@ -4406,16 +4559,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-04",
+      "image": "strip-03",
       "size_m": [
-        0.06899997592401402,
-        0.002296122444158777
+        0.06899997594063151,
+        0.004389815792959939
       ],
-      "area_m2": 0.00015843238445931046,
+      "area_m2": 0.0003028971613316925,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 22260.87733264595
+      "source_pixels_per_metre": 22260.87732728479
     },
     {
       "id": "BezelRight/40",
@@ -4425,14 +4578,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.06803133906582709,
-        0.28705743304247594
+        0.13563412378008977,
+        0.5814809592519603
       ],
-      "area_m2": 0.0006750566458739451,
+      "area_m2": 0.001368677333079735,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 3762.971646821394
+      "source_pixels_per_metre": 1887.4306322431464
     },
     {
       "id": "BezelRight/41",
@@ -4440,16 +4593,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-01",
+      "image": "strip-02",
       "size_m": [
-        0.14454586796081037,
-        0.2582493754806211
+        0.29100335348130074,
+        0.5224567831046244
       ],
-      "area_m2": 0.0006750523981694435,
+      "area_m2": 0.001368660365522488,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 885.5320584792066
+      "source_pixels_per_metre": 879.7149480837512
     },
     {
       "id": "BezelRight/42",
@@ -4459,14 +4612,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.1445458779356602,
-        0.2582493810099556
+        0.29100336345614974,
+        0.5224567886339586
       ],
-      "area_m2": 0.0006750557511832743,
+      "area_m2": 0.0013686671638003325,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 1771.0639947404788
+      "source_pixels_per_metre": 879.7149179293789
     },
     {
       "id": "BezelRight/43",
@@ -4476,14 +4629,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.06803133906582709,
-        0.28705743304247594
+        0.1356341237800897,
+        0.5814809592519601
       ],
-      "area_m2": 0.0006750566458739451,
+      "area_m2": 0.0013686773330797352,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 1881.485823410697
+      "source_pixels_per_metre": 943.7153161215736
     },
     {
       "id": "BezelRight/44",
@@ -4493,14 +4646,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.14454587971644972,
-        0.2582493707093871
+        0.29100338134306447,
+        0.522456775480756
       ],
-      "area_m2": 0.000675053265839886,
+      "area_m2": 0.0013686722782106314,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 1771.063972921163
+      "source_pixels_per_metre": 879.7148638565168
     },
     {
       "id": "BezelRight/45",
@@ -4510,14 +4663,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.0680312830504472,
-        0.2870574196288113
+        0.1356340130134463,
+        0.5814809659027534
       ],
-      "area_m2": 0.000675056769095707,
+      "area_m2": 0.001368673853025177,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 1881.4873725824666
+      "source_pixels_per_metre": 943.7160868145257
     },
     {
       "id": "BezelRight/46",
@@ -4527,14 +4680,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.06803134068619532,
-        0.2870574068221975
+        0.13563413026156218,
+        0.5814809918501076
       ],
-      "area_m2": 0.000675056769095707,
+      "area_m2": 0.0013686774093608152,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 3762.9715571950596
+      "source_pixels_per_metre": 1887.4305420495532
     },
     {
       "id": "BezelRight/47",
@@ -4542,16 +4695,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-01",
+      "image": "strip-02",
       "size_m": [
-        0.14454588144609287,
-        0.2582493807644629
+        0.2910033774978805,
+        0.5224567886339586
       ],
-      "area_m2": 0.0006750566188494071,
+      "area_m2": 0.0013686706909815053,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 885.5319758642621
+      "source_pixels_per_metre": 879.7148754806618
     },
     {
       "id": "BezelRight/48",
@@ -4559,16 +4712,16 @@
       "material": "PaintedSteel",
       "role": "paint",
       "kind": "strip",
-      "image": "strip-02",
+      "image": "strip-01",
       "size_m": [
         0.06899997591972351,
-        0.29400002309097356
+        0.5960850265324459
       ],
-      "area_m2": 0.020285994513675343,
+      "area_m2": 0.04112985247684653,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 3710.14622233836
+      "source_pixels_per_metre": 1855.07311116918
     },
     {
       "id": "BezelRight/49",
@@ -4579,13 +4732,13 @@
       "image": "strip-04",
       "size_m": [
         0.06899997591972351,
-        0.024000007321993977
+        0.023999988794414784
       ],
-      "area_m2": 0.0016559999272908064,
+      "area_m2": 0.0016559986488887523,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 10666.663412448113
+      "source_pixels_per_metre": 10666.671646929088
     },
     {
       "id": "BezelRight/50",
@@ -4595,14 +4748,14 @@
       "kind": "broad",
       "image": "broad-00",
       "size_m": [
-        0.1718415915966034,
-        0.2644507884979248
+        0.32726307213306427,
+        0.5234865844249725
       ],
-      "area_m2": 0.007055997092993094,
+      "area_m2": 0.014306043097169763,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 4469.232348609021
+      "source_pixels_per_metre": 2346.7358996365265
     },
     {
       "id": "BezelRight/51",
@@ -4612,14 +4765,14 @@
       "kind": "broad",
       "image": "broad-01",
       "size_m": [
-        0.1718415915966034,
-        0.2644507884979248
+        0.32726307213306427,
+        0.5234865844249725
       ],
-      "area_m2": 0.007055997092993094,
+      "area_m2": 0.014306043097169763,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 4469.232348609021
+      "source_pixels_per_metre": 2346.7358996365265
     },
     {
       "id": "BezelRight/52",
@@ -4630,9 +4783,9 @@
       "image": "strip-01",
       "size_m": [
         0.06899997591972351,
-        0.29399997198041317
+        0.5960850341990305
       ],
-      "area_m2": 0.02028599098704794,
+      "area_m2": 0.041129853005840704,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -4647,13 +4800,13 @@
       "image": "top-03",
       "size_m": [
         0.06899997591972351,
-        0.023999988794414784
+        0.024000006683112973
       ],
-      "area_m2": 0.0016559986488887523,
+      "area_m2": 0.0016559998832103185,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 21333.343293858175
+      "source_pixels_per_metre": 21333.32739279012
     },
     {
       "id": "BezelRivets/0",
@@ -4664,9 +4817,9 @@
       "image": "hardware",
       "size_m": [
         0.008000016212463379,
-        0.008000010320210582
+        0.007999980931636674
       ],
-      "area_m2": 4.5254856164334725e-05,
+      "area_m2": 4.525479604070171e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -4682,9 +4835,9 @@
       "image": "hardware",
       "size_m": [
         0.00279998779296875,
-        0.0028000103203357773
+        0.002799992431638587
       ],
-      "area_m2": 5.5436994913203105e-06,
+      "area_m2": 5.543687148554871e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -4699,10 +4852,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0030819983636672516,
-        0.003458764081603949
+        0.00308200357491175,
+        0.0034587384031573576
       ],
-      "area_m2": 5.6147579822006895e-06,
+      "area_m2": 5.614717894635531e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -4717,10 +4870,10 @@
       "kind": "top",
       "image": "hardware",
       "size_m": [
-        0.0032157613400587426,
-        0.0024980061833218686
+        0.0032157603713175442,
+        0.0024980008218865313
       ],
-      "area_m2": 5.614736249532905e-06,
+      "area_m2": 5.614734818526375e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -4735,10 +4888,10 @@
       "kind": "top",
       "image": "hardware",
       "size_m": [
-        0.0032157613400586316,
-        0.0024980061833218548
+        0.0032157603713175997,
+        0.0024980008218865313
       ],
-      "area_m2": 5.614736249532905e-06,
+      "area_m2": 5.614734818526376e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -4753,10 +4906,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0030819983636672516,
-        0.0034587640816040044
+        0.00308200357491175,
+        0.003458738403157441
       ],
-      "area_m2": 5.61475798220069e-06,
+      "area_m2": 5.614717894635532e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -4771,10 +4924,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0032699951798373927,
-        0.003474971663732229
+        0.0032699974395421216,
+        0.003475000065263467
       ],
-      "area_m2": 5.61472499088317e-06,
+      "area_m2": 5.614771143999531e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -4789,10 +4942,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0034394111308028164,
-        0.0030067932766300043
+        0.0034394046490263674,
+        0.003006789937510357
       ],
-      "area_m2": 5.6147425613870554e-06,
+      "area_m2": 5.614728723750333e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -4807,10 +4960,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0034394111308028164,
-        0.003006793276630032
+        0.003439404649026423,
+        0.0030067899375103846
       ],
-      "area_m2": 5.614742561387058e-06,
+      "area_m2": 5.614728723750335e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -4825,10 +4978,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0032699951798374205,
-        0.0034749716637322847
+        0.0032699974395421216,
+        0.0034750000652635227
       ],
-      "area_m2": 5.61472499088317e-06,
+      "area_m2": 5.614771143999531e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -4843,10 +4996,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.002482072470570751,
-        0.002691871907179011
+        0.002482063780655852,
+        0.0026918469866177297
       ],
-      "area_m2": 4.532954707271387e-06,
+      "area_m2": 4.53289342301943e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -4861,10 +5014,10 @@
       "kind": "top",
       "image": "hardware",
       "size_m": [
-        0.002629857624127596,
-        0.002758844581865094
+        0.0026298574195310342,
+        0.0027588416632741836
       ],
-      "area_m2": 4.532918058741664e-06,
+      "area_m2": 4.532911848963047e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -4879,10 +5032,10 @@
       "kind": "top",
       "image": "hardware",
       "size_m": [
-        0.0026298576241276517,
-        0.0027588445818650664
+        0.0026298574195310342,
+        0.0027588416632741974
       ],
-      "area_m2": 4.532918058741664e-06,
+      "area_m2": 4.532911848963048e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -4897,10 +5050,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0024820724705706954,
-        0.002691871907178872
+        0.0024820637806559076,
+        0.0026918469866176464
       ],
-      "area_m2": 4.532954707271387e-06,
+      "area_m2": 4.53289342301943e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -4915,10 +5068,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0030534932983788954,
-        0.002931657743663607
+        0.0030534973421629807,
+        0.0029316573051854644
       ],
-      "area_m2": 4.532943357185933e-06,
+      "area_m2": 4.532962531712893e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -4933,10 +5086,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.002569096203008603,
-        0.002892378727005651
+        0.0025690994432188696,
+        0.002892378985974997
       ],
-      "area_m2": 4.532943930036009e-06,
+      "area_m2": 4.532948051301606e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -4951,10 +5104,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0025690962030085474,
-        0.002892378727005651
+        0.0025690994432188696,
+        0.002892378985974997
       ],
-      "area_m2": 4.532943930036009e-06,
+      "area_m2": 4.532948051301606e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -4969,10 +5122,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0030534932983788954,
-        0.0029316577436636626
+        0.0030534973421629807,
+        0.00293165730518552
       ],
-      "area_m2": 4.532943357185933e-06,
+      "area_m2": 4.532962531712892e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -4988,9 +5141,9 @@
       "image": "hardware",
       "size_m": [
         0.008000016212463379,
-        0.00800000648691912
+        0.008000014153501378
       ],
-      "area_m2": 4.5254758435406456e-05,
+      "area_m2": 4.525478011922772e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5006,9 +5159,9 @@
       "image": "hardware",
       "size_m": [
         0.00279998779296875,
-        0.0027999592097711634
+        0.002800002653749578
       ],
-      "area_m2": 5.5436077509609836e-06,
+      "area_m2": 5.543650758850345e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5023,10 +5176,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.003082001425960483,
-        0.0034587371282335244
+        0.0030820032723112845,
+        0.0034587383594391063
       ],
-      "area_m2": 5.614715372736446e-06,
+      "area_m2": 5.614705940821586e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5041,10 +5194,10 @@
       "kind": "top",
       "image": "hardware",
       "size_m": [
-        0.003215771876750262,
-        0.0024979971916569282
+        0.003215771880684448,
+        0.0024980007878890563
       ],
-      "area_m2": 5.614756691922438e-06,
+      "area_m2": 5.614749443540907e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5059,10 +5212,10 @@
       "kind": "top",
       "image": "hardware",
       "size_m": [
-        0.0032157718767502064,
-        0.0024979971916569144
+        0.003215771880684379,
+        0.0024980007878890875
       ],
-      "area_m2": 5.614756691922438e-06,
+      "area_m2": 5.614749443540908e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5077,10 +5230,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.003082001425960483,
-        0.003458737128233469
+        0.0030820032723112567,
+        0.0034587383594389953
       ],
-      "area_m2": 5.61471537273645e-06,
+      "area_m2": 5.6147059408215895e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5095,10 +5248,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0032699952543920607,
-        0.003474971358552348
+        0.0032699906860823025,
+        0.0034749711703514485
       ],
-      "area_m2": 5.614720830551392e-06,
+      "area_m2": 5.614712358028797e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5113,10 +5266,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0034394044397623724,
-        0.0030067913408140523
+        0.0034394065051249756,
+        0.0030067857623508054
       ],
-      "area_m2": 5.614731905252146e-06,
+      "area_m2": 5.614726973372843e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5131,10 +5284,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0034394044397623724,
-        0.003006791340813997
+        0.0034394065051248646,
+        0.00300678576235075
       ],
-      "area_m2": 5.614731905252149e-06,
+      "area_m2": 5.6147269733728445e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5149,10 +5302,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0032699952543920607,
-        0.003474971358552348
+        0.003269990686082333,
+        0.0034749711703514485
       ],
-      "area_m2": 5.6147208305513915e-06,
+      "area_m2": 5.614712358028797e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5167,10 +5320,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0024820746943662875,
-        0.0026918735951679817
+        0.002482075669202083,
+        0.002691873845246162
       ],
-      "area_m2": 4.532902307584769e-06,
+      "area_m2": 4.532911549345385e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5185,10 +5338,10 @@
       "kind": "top",
       "image": "hardware",
       "size_m": [
-        0.002629857459444551,
-        0.002758853742428402
+        0.002629857482013054,
+        0.00275886720652041
       ],
-      "area_m2": 4.5329356697233246e-06,
+      "area_m2": 4.532960234745691e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5203,10 +5356,10 @@
       "kind": "top",
       "image": "hardware",
       "size_m": [
-        0.002629857459444551,
-        0.0027588537424284576
+        0.002629857482013137,
+        0.00275886720652041
       ],
-      "area_m2": 4.5329356697233246e-06,
+      "area_m2": 4.532960234745717e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5221,10 +5374,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.002482074694366232,
-        0.0026918735951679817
+        0.0024820756692021106,
+        0.002691873845246162
       ],
-      "area_m2": 4.5329023075847655e-06,
+      "area_m2": 4.532911549345384e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5239,10 +5392,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0030534891738104863,
-        0.002931686672714817
+        0.0030534932002633797,
+        0.0029316847055740336
       ],
-      "area_m2": 4.5329810248812245e-06,
+      "area_m2": 4.532985772850086e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5257,10 +5410,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0025690961556222303,
-        0.002892378698735487
+        0.002569094376301928,
+        0.0028923786272171403
       ],
-      "area_m2": 4.532958633671266e-06,
+      "area_m2": 4.532956082773522e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5275,10 +5428,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0025690961556222303,
-        0.002892378698735376
+        0.0025690943763019836,
+        0.0028923786272171403
       ],
-      "area_m2": 4.532958633671267e-06,
+      "area_m2": 4.532956082773521e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5293,10 +5446,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0030534891738104863,
-        0.002931686672714817
+        0.003053493200263324,
+        0.0029316847055740336
       ],
-      "area_m2": 4.5329810248812245e-06,
+      "area_m2": 4.532985772850086e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5312,9 +5465,9 @@
       "image": "hardware",
       "size_m": [
         0.008000016212463379,
-        0.00799998859821982
+        0.008000012236855203
       ],
-      "area_m2": 4.525478705885328e-05,
+      "area_m2": 4.5254846252132474e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5330,9 +5483,9 @@
       "image": "hardware",
       "size_m": [
         0.00279998779296875,
-        0.0027999847650533316
+        0.0027999847650539977
       ],
-      "area_m2": 5.543757638747757e-06,
+      "area_m2": 5.543752272063672e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5347,10 +5500,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0030819995608019693,
-        0.003458765164320282
+        0.0030820010980271637,
+        0.003458765519564616
       ],
-      "area_m2": 5.6147515387776035e-06,
+      "area_m2": 5.614737827974304e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5365,10 +5518,10 @@
       "kind": "top",
       "image": "hardware",
       "size_m": [
-        0.003215761343993151,
-        0.002498006190539276
+        0.0032157740905902066,
+        0.0024980012419561215
       ],
-      "area_m2": 5.614731909817908e-06,
+      "area_m2": 5.614730653730561e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5383,10 +5536,10 @@
       "kind": "top",
       "image": "hardware",
       "size_m": [
-        0.003215761343993151,
-        0.0024980061905393036
+        0.003215774090590151,
+        0.0024980012419561215
       ],
-      "area_m2": 5.614731909817909e-06,
+      "area_m2": 5.614730653730562e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5401,10 +5554,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0030819995608019762,
-        0.00345876516432031
+        0.0030820010980271567,
+        0.0034587655195645883
       ],
-      "area_m2": 5.6147515387776035e-06,
+      "area_m2": 5.614737827974302e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5419,10 +5572,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0032699942905793644,
-        0.0034749717489866994
+        0.00326998087172084,
+        0.0034750012051025236
       ],
-      "area_m2": 5.614726642230408e-06,
+      "area_m2": 5.614751360780206e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5437,10 +5590,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0034394113629039325,
-        0.003006789830174744
+        0.003439405172181831,
+        0.0030067832469162226
       ],
-      "area_m2": 5.614736198323779e-06,
+      "area_m2": 5.6147356646108865e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5455,10 +5608,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0034394113629039325,
-        0.003006789830174772
+        0.003439405172181831,
+        0.003006783246916167
       ],
-      "area_m2": 5.61473619832378e-06,
+      "area_m2": 5.6147356646108865e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5473,10 +5626,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0032699942905793644,
-        0.0034749717489866994
+        0.003269980871720868,
+        0.003475001205102579
       ],
-      "area_m2": 5.614726642230409e-06,
+      "area_m2": 5.614751360780206e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5491,10 +5644,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0024820710103605204,
-        0.002691871996829104
+        0.002482076163428437,
+        0.002691877153989719
       ],
-      "area_m2": 4.532919891618588e-06,
+      "area_m2": 4.532903892052156e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5509,10 +5662,10 @@
       "kind": "top",
       "image": "hardware",
       "size_m": [
-        0.00262985705053842,
-        0.002758842791975441
+        0.0026298566437120696,
+        0.0027588660120164143
       ],
-      "area_m2": 4.532942468453823e-06,
+      "area_m2": 4.532980474830608e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5527,10 +5680,10 @@
       "kind": "top",
       "image": "hardware",
       "size_m": [
-        0.002629857050538309,
-        0.002758842791975427
+        0.0026298566437120696,
+        0.0027588660120164143
       ],
-      "area_m2": 4.532942468453823e-06,
+      "area_m2": 4.532980474830608e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5545,10 +5698,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0024820710103605204,
-        0.002691871996829076
+        0.0024820761634283817,
+        0.0026918771539896635
       ],
-      "area_m2": 4.5329198916185955e-06,
+      "area_m2": 4.532903892052157e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5563,10 +5716,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.003053468504500001,
-        0.0029316291281265006
+        0.0030534643605216183,
+        0.0029316550998778057
       ],
-      "area_m2": 4.5328642368890734e-06,
+      "area_m2": 4.532910663159084e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5581,10 +5734,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0025690960658281137,
-        0.0028923789247523035
+        0.0025690993572861642,
+        0.0028923494384489046
       ],
-      "area_m2": 4.532968339716164e-06,
+      "area_m2": 4.5329342123473295e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5599,10 +5752,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.002569096065828058,
-        0.0028923789247523035
+        0.0025690993572861087,
+        0.00289234943844896
       ],
-      "area_m2": 4.532968339716164e-06,
+      "area_m2": 4.5329342123473295e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5617,10 +5770,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.003053468504500001,
-        0.0029316291281265006
+        0.0030534643605216183,
+        0.002931655099877861
       ],
-      "area_m2": 4.532864236889075e-06,
+      "area_m2": 4.5329106631590885e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5636,9 +5789,9 @@
       "image": "hardware",
       "size_m": [
         0.008000016212463379,
-        0.008000006486919564
+        0.008000014153501378
       ],
-      "area_m2": 4.5254758435406456e-05,
+      "area_m2": 4.525478011922772e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5654,9 +5807,9 @@
       "image": "hardware",
       "size_m": [
         0.00279998779296875,
-        0.0027999592097711634
+        0.0028000026537503553
       ],
-      "area_m2": 5.543691196248069e-06,
+      "area_m2": 5.543734205432185e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5671,10 +5824,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.003082006371650306,
-        0.003458738216046864
+        0.0030820032723112567,
+        0.0034587383594389953
       ],
-      "area_m2": 5.614715372736446e-06,
+      "area_m2": 5.614705940821586e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5689,10 +5842,10 @@
       "kind": "top",
       "image": "hardware",
       "size_m": [
-        0.0032157718806844204,
-        0.0024979971988651206
+        0.0032157718806844343,
+        0.0024980007878890598
       ],
-      "area_m2": 5.614756691922438e-06,
+      "area_m2": 5.614749443540907e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5708,9 +5861,9 @@
       "image": "hardware",
       "size_m": [
         0.003215771880684448,
-        0.0024979971988651206
+        0.0024980007878890563
       ],
-      "area_m2": 5.614756691922438e-06,
+      "area_m2": 5.614749443540908e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5725,10 +5878,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.003082006371650306,
-        0.0034587382160469193
+        0.0030820032723112845,
+        0.0034587383594388843
       ],
-      "area_m2": 5.61471537273645e-06,
+      "area_m2": 5.6147059408215895e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5743,10 +5896,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.003269994358445494,
-        0.0034749714444576307
+        0.003269990686082333,
+        0.0034749711703514485
       ],
-      "area_m2": 5.614720830551392e-06,
+      "area_m2": 5.614712358028797e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5761,10 +5914,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0034394046718631555,
-        0.003006792137449088
+        0.0034394065051248646,
+        0.00300678576235075
       ],
-      "area_m2": 5.614731905252146e-06,
+      "area_m2": 5.614726973372843e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5779,10 +5932,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0034394046718631555,
-        0.0030067921374491435
+        0.0034394065051249756,
+        0.0030067857623508054
       ],
-      "area_m2": 5.614731905252149e-06,
+      "area_m2": 5.6147269733728445e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5797,10 +5950,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.003269994358445466,
-        0.0034749714444576307
+        0.0032699906860823025,
+        0.0034749711703514485
       ],
-      "area_m2": 5.6147208305513915e-06,
+      "area_m2": 5.614712358028797e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5815,10 +5968,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0024820731740678448,
-        0.0026918736885032657
+        0.002482079865683884,
+        0.0026918735876287903
       ],
-      "area_m2": 4.532867491231466e-06,
+      "area_m2": 4.532876732951626e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5833,10 +5986,10 @@
       "kind": "top",
       "image": "hardware",
       "size_m": [
-        0.0026298568898232566,
-        0.0027588519435935988
+        0.0026298570966483414,
+        0.002758864993292587
       ],
-      "area_m2": 4.5329600796074575e-06,
+      "area_m2": 4.5329846438680935e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5851,10 +6004,10 @@
       "kind": "top",
       "image": "hardware",
       "size_m": [
-        0.002629856889823312,
-        0.0027588519435936543
+        0.0026298570966484247,
+        0.002758864993292476
       ],
-      "area_m2": 4.5329600796074575e-06,
+      "area_m2": 4.532984643868114e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5869,10 +6022,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0024820731740677893,
-        0.002691873688503321
+        0.0024820798656839393,
+        0.0026918735876289013
       ],
-      "area_m2": 4.532867491231469e-06,
+      "area_m2": 4.532876732951629e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5887,10 +6040,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.003053464380410209,
-        0.00293168707952729
+        0.003053468502444756,
+        0.002931685737745493
       ],
-      "area_m2": 4.532946208451533e-06,
+      "area_m2": 4.532950956483562e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5905,10 +6058,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0025690960173371247,
-        0.0028923788958223895
+        0.002569094292507068,
+        0.002892378856806377
       ],
-      "area_m2": 4.5329830436866244e-06,
+      "area_m2": 4.532980492939655e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5923,10 +6076,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0025690960173371247,
-        0.0028923788958225005
+        0.002569094292507068,
+        0.002892378856806266
       ],
-      "area_m2": 4.5329830436866244e-06,
+      "area_m2": 4.532980492939653e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5941,10 +6094,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0030534643804102646,
-        0.002931687079527401
+        0.0030534685024448116,
+        0.002931685737745382
       ],
-      "area_m2": 4.5329462084515365e-06,
+      "area_m2": 4.532950956483565e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -5959,14 +6112,14 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.002362752138934998,
-        0.00229160780657911
+        0.002362755830834007,
+        0.002291610312563308
       ],
-      "area_m2": 4.144886657556751e-06,
+      "area_m2": 4.144890672492026e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 111711.96016396642
+      "source_pixels_per_metre": 111711.83800165751
     },
     {
       "id": "BezelTop/1",
@@ -5976,14 +6129,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.0026926335128729106,
-        0.002928635631442078
+        0.002692643500154246,
+        0.0029286358178367555
       ],
-      "area_m2": 4.144817074228209e-06,
+      "area_m2": 4.144833448563272e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 95074.2084936989
+      "source_pixels_per_metre": 95073.8558540465
     },
     {
       "id": "BezelTop/2",
@@ -5993,14 +6146,14 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.0026755110004305638,
-        0.002459843751243862
+        0.002675517023056795,
+        0.002459847801193793
       ],
-      "area_m2": 4.144774382593039e-06,
+      "area_m2": 4.144790776137256e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 104071.65083983453
+      "source_pixels_per_metre": 104071.4794938777
     },
     {
       "id": "BezelTop/3",
@@ -6010,14 +6163,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.0023627521888385794,
-        0.00229160782007487
+        0.0023627558807391424,
+        0.0022916103260565146
       ],
-      "area_m2": 4.144886657556751e-06,
+      "area_m2": 4.144890813304874e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 108348.22255559432
+      "source_pixels_per_metre": 108348.05325716313
     },
     {
       "id": "BezelTop/4",
@@ -6027,14 +6180,14 @@
       "kind": "strip",
       "image": "strip-03",
       "size_m": [
-        0.002675511307459799,
-        0.002459844033512515
+        0.0026755173300912483,
+        0.0024598399835659146
       ],
-      "area_m2": 4.144774382593039e-06,
+      "area_m2": 4.14478286453592e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 52035.81944877351
+      "source_pixels_per_metre": 52035.90512194391
     },
     {
       "id": "BezelTop/5",
@@ -6044,14 +6197,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.0026926335289727543,
-        0.002928635648953626
+        0.0026926301998793645,
+        0.0029286358353484143
       ],
-      "area_m2": 4.144817074228209e-06,
+      "area_m2": 4.144813459178873e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 47537.10396261473
+      "source_pixels_per_metre": 47537.16273617323
     },
     {
       "id": "BezelTop/6",
@@ -6061,14 +6214,14 @@
       "kind": "strip",
       "image": "strip-03",
       "size_m": [
-        0.0028877590139287784,
-        0.002654973468111277
+        0.0028877664064782815,
+        0.002654974295922985
       ],
-      "area_m2": 4.144822955508978e-06,
+      "area_m2": 4.144828115825957e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 48211.40457236207
+      "source_pixels_per_metre": 48211.38954021459
     },
     {
       "id": "BezelTop/7",
@@ -6079,9 +6232,9 @@
       "image": "strip-02",
       "size_m": [
         0.002675511194946134,
-        0.00245988182558865
+        0.0024598878177976014
       ],
-      "area_m2": 4.1448475268973835e-06,
+      "area_m2": 4.144850993408128e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -6095,14 +6248,14 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.0023627557555055967,
-        0.0022915882977994693
+        0.0023627557555054857,
+        0.002291595629159468
       ],
-      "area_m2": 4.144864818885671e-06,
+      "area_m2": 4.1448687188280265e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 111712.91119169517
+      "source_pixels_per_metre": 111712.55379549575
     },
     {
       "id": "BezelTop/9",
@@ -6113,9 +6266,9 @@
       "image": "strip-02",
       "size_m": [
         0.002675511194946134,
-        0.00245988182558865
+        0.0024598878177976014
       ],
-      "area_m2": 4.1448475268973835e-06,
+      "area_m2": 4.144850993408128e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -6129,14 +6282,14 @@
       "kind": "strip",
       "image": "strip-03",
       "size_m": [
-        0.0028877590139287784,
-        0.002654973468111277
+        0.0028877664064782815,
+        0.002654974295922985
       ],
-      "area_m2": 4.144822955508978e-06,
+      "area_m2": 4.144828115825957e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 48211.40457236207
+      "source_pixels_per_metre": 48211.38954021459
     },
     {
       "id": "BezelTop/11",
@@ -6146,14 +6299,14 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.0023627557555055967,
-        0.0022915882977994693
+        0.0023627557555054857,
+        0.002291595629159468
       ],
-      "area_m2": 4.144864818885671e-06,
+      "area_m2": 4.1448687188280265e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 111712.91119169517
+      "source_pixels_per_metre": 111712.55379549575
     },
     {
       "id": "BezelTop/12",
@@ -6163,14 +6316,14 @@
       "kind": "strip",
       "image": "strip-03",
       "size_m": [
-        0.0028877590139287923,
-        0.0026549734681113324
+        0.0028877664064783093,
+        0.002654974295923096
       ],
-      "area_m2": 4.144822955508978e-06,
+      "area_m2": 4.144828115825957e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 48211.40457236106
+      "source_pixels_per_metre": 48211.38954021258
     },
     {
       "id": "BezelTop/13",
@@ -6181,9 +6334,9 @@
       "image": "top-00",
       "size_m": [
         0.002675511194946162,
-        0.00245988182558865
+        0.0024598878177977124
       ],
-      "area_m2": 4.1448475268973835e-06,
+      "area_m2": 4.144850993408128e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -6198,13 +6351,13 @@
       "image": "top-01",
       "size_m": [
         0.0023627557555054857,
-        0.002291588297799463
+        0.002291595629159461
       ],
-      "area_m2": 4.144864818885671e-06,
+      "area_m2": 4.1448687188280265e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 446851.6447667819
+      "source_pixels_per_metre": 446850.21518198436
     },
     {
       "id": "BezelTop/15",
@@ -6215,13 +6368,13 @@
       "image": "top-02",
       "size_m": [
         0.002675511194946162,
-        0.00245988182558865
+        0.0024598878177977124
       ],
-      "area_m2": 4.1448475268973835e-06,
+      "area_m2": 4.144850993408128e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 416280.160025556
+      "source_pixels_per_metre": 416279.14598022867
     },
     {
       "id": "BezelTop/16",
@@ -6231,14 +6384,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.0028877590139287923,
-        0.0026549734681113324
+        0.0028877664064783093,
+        0.002654974295923096
       ],
-      "area_m2": 4.144822955508978e-06,
+      "area_m2": 4.144828115825957e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 88650.05658893687
+      "source_pixels_per_metre": 88649.82964885906
     },
     {
       "id": "BezelTop/17",
@@ -6249,9 +6402,9 @@
       "image": "top-00",
       "size_m": [
         0.0023627557555054857,
-        0.002291588297799463
+        0.002291595629159461
       ],
-      "area_m2": 4.144864818885671e-06,
+      "area_m2": 4.1448687188280265e-06,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -6265,14 +6418,14 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.002692630183779132,
-        0.0029286358178367555
+        0.002692630183779146,
+        0.0029286365634152434
       ],
-      "area_m2": 4.144813459178873e-06,
+      "area_m2": 4.144818988362584e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 87412.71223989027
+      "source_pixels_per_metre": 87412.68998617718
     },
     {
       "id": "BezelTop/19",
@@ -6283,13 +6436,13 @@
       "image": "strip-03",
       "size_m": [
         0.002675511194946134,
-        0.0024598439300736463
+        0.0024598560799176106
       ],
-      "area_m2": 4.144774382593039e-06,
+      "area_m2": 4.144785336757562e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 52035.82163693115
+      "source_pixels_per_metre": 52035.56461900291
     },
     {
       "id": "BezelTop/20",
@@ -6299,14 +6452,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.0023627508329767677,
-        0.0022916077858911033
+        0.002362745910447994,
+        0.0022916052799030195
       ],
-      "area_m2": 4.144884503612425e-06,
+      "area_m2": 4.1448781941035136e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 108348.28473109554
+      "source_pixels_per_metre": 108348.51046317565
     },
     {
       "id": "BezelTop/21",
@@ -6316,14 +6469,14 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.002692630183779132,
-        0.0029286358178367555
+        0.002692630183779146,
+        0.0029286365634152434
       ],
-      "area_m2": 4.144813459178873e-06,
+      "area_m2": 4.144818988362584e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 87412.71223989027
+      "source_pixels_per_metre": 87412.68998617718
     },
     {
       "id": "BezelTop/22",
@@ -6333,14 +6486,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.0023627509083020137,
-        0.00229160780657911
+        0.002362745985770076,
+        0.002291605300594912
       ],
-      "area_m2": 4.144884503612425e-06,
+      "area_m2": 4.1448781941035136e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 108348.28127691797
+      "source_pixels_per_metre": 108348.50700912879
     },
     {
       "id": "BezelTop/23",
@@ -6351,13 +6504,13 @@
       "image": "strip-04",
       "size_m": [
         0.0026755110004305083,
-        0.0024598437512439175
+        0.002459855901093766
       ],
-      "area_m2": 4.144774382593039e-06,
+      "area_m2": 4.144785336757562e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 104071.65083983219
+      "source_pixels_per_metre": 104071.13680365201
     },
     {
       "id": "BezelTop/24",
@@ -6368,9 +6521,9 @@
       "image": "strip-03",
       "size_m": [
         0.8840000033395277,
-        0.0022960595170065656
+        0.002296063952565097
       ],
-      "area_m2": 0.002029716053301788,
+      "area_m2": 0.002029719974404372,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -6385,9 +6538,9 @@
       "image": "strip-04",
       "size_m": [
         0.884000003337994,
-        0.002296121270201623
+        0.0022961234633971372
       ],
-      "area_m2": 0.0020297711649386783,
+      "area_m2": 0.0020297731037294702,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -6401,14 +6554,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.02137840950399253,
-        0.014997432381617437
+        0.0213784095039925,
+        0.014997431617211454
       ],
-      "area_m2": 5.510648466901987e-05,
+      "area_m2": 5.510653741405647e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 11974.698115507173
+      "source_pixels_per_metre": 11974.69811550719
     },
     {
       "id": "BezelTop/27",
@@ -6418,14 +6571,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.007608788583663761,
-        0.023905159654413047
+        0.00760878858366365,
+        0.02390515309934163
       ],
-      "area_m2": 5.510601170329602e-05,
+      "area_m2": 5.510599703412034e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 16822.651673463348
+      "source_pixels_per_metre": 16822.651673463595
     },
     {
       "id": "BezelTop/28",
@@ -6436,9 +6589,9 @@
       "image": "strip-03",
       "size_m": [
         0.8840000033378601,
-        0.0022961229575806374
+        0.0022961169711813723
       ],
-      "area_m2": 0.002029772702295763,
+      "area_m2": 0.0020297674103668837,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -6453,9 +6606,9 @@
       "image": "strip-04",
       "size_m": [
         0.8840000033378599,
-        0.002296101303514368
+        0.0022961086729522545
       ],
-      "area_m2": 0.002029753559991099,
+      "area_m2": 0.0020297600745700934,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -6470,9 +6623,9 @@
       "image": "strip-01",
       "size_m": [
         0.0076087925414111135,
-        0.023905159112394284
+        0.023905152557322548
       ],
-      "area_m2": 5.510601170329602e-05,
+      "area_m2": 5.510599703412034e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -6486,14 +6639,14 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.02137840917373532,
-        0.01499743294094602
+        0.02137840917373529,
+        0.014997432176539593
       ],
-      "area_m2": 5.510648466901987e-05,
+      "area_m2": 5.510653741405648e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 17069.587909346024
+      "source_pixels_per_metre": 17069.588779368478
     },
     {
       "id": "BezelTop/32",
@@ -6503,14 +6656,14 @@
       "kind": "top",
       "image": "top-02",
       "size_m": [
-        0.007608792895575436,
-        0.02390515906389068
+        0.007608792895575438,
+        0.023905139398675224
       ],
-      "area_m2": 5.510601170329602e-05,
+      "area_m2": 5.5105947157922e-05,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 42835.941700416326
+      "source_pixels_per_metre": 42835.976938781125
     },
     {
       "id": "BezelTop/33",
@@ -6520,14 +6673,14 @@
       "kind": "strip",
       "image": "strip-03",
       "size_m": [
-        0.0213784092218399,
-        0.01499743311427748
+        0.021378409221839895,
+        0.014997433114277592
       ],
-      "area_m2": 5.5106467087346676e-05,
+      "area_m2": 5.510646708739208e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 8534.793856032913
+      "source_pixels_per_metre": 8534.79385603285
     },
     {
       "id": "BezelTop/34",
@@ -6538,9 +6691,9 @@
       "image": "top-04",
       "size_m": [
         0.8840000033378601,
-        0.002296122957580693
+        0.00229611697118115
       ],
-      "area_m2": 0.002029772702295763,
+      "area_m2": 0.0020297674103668837,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -6555,9 +6708,9 @@
       "image": "top-04",
       "size_m": [
         0.8840000033378599,
-        0.002296101303514382
+        0.0022961086729522545
       ],
-      "area_m2": 0.002029753559991099,
+      "area_m2": 0.0020297600745700934,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -6571,14 +6724,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.021378409503992505,
-        0.014997432636419339
+        0.0213784095039925,
+        0.014997432636419394
       ],
-      "area_m2": 5.5106467087346676e-05,
+      "area_m2": 5.510646708739208e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 11974.698115507188
+      "source_pixels_per_metre": 11974.69811550719
     },
     {
       "id": "BezelTop/37",
@@ -6588,14 +6741,14 @@
       "kind": "top",
       "image": "top-01",
       "size_m": [
-        0.007608788583663678,
-        0.02390515965441309
+        0.007608788583663683,
+        0.023905139989198798
       ],
-      "area_m2": 5.510601170329602e-05,
+      "area_m2": 5.5105947157922e-05,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 42835.94064225215
+      "source_pixels_per_metre": 42835.97588061312
     },
     {
       "id": "BezelTop/38",
@@ -6606,9 +6759,9 @@
       "image": "strip-04",
       "size_m": [
         0.8840000033388606,
-        0.0022960592602079277
+        0.002296063695767403
       ],
-      "area_m2": 0.002029716053301788,
+      "area_m2": 0.002029719974404372,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -6623,9 +6776,9 @@
       "image": "strip-03",
       "size_m": [
         0.8840000033380611,
-        0.002296121295985998
+        0.0022961191027844885
       ],
-      "area_m2": 0.0020297711649386783,
+      "area_m2": 0.0020297692262315208,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -6639,14 +6792,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.007608780969969753,
-        0.023905147493970547
+        0.007608777729210314,
+        0.023905145899508096
       ],
-      "area_m2": 5.5105974297587644e-05,
+      "area_m2": 5.510595302672188e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 33645.33701395503
+      "source_pixels_per_metre": 33645.35134430445
     },
     {
       "id": "BezelTop/41",
@@ -6656,14 +6809,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.013643917547319223,
-        0.022103913353576088
+        0.01364390701603635,
+        0.02210391310807802
       ],
-      "area_m2": 5.510635325659719e-05,
+      "area_m2": 5.510627362514866e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 9381.46976893375
+      "source_pixels_per_metre": 9381.477010181567
     },
     {
       "id": "BezelTop/42",
@@ -6673,14 +6826,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.013643917659424132,
-        0.022103913299279077
+        0.013643907128141175,
+        0.02210391305378101
       ],
-      "area_m2": 5.510635325659719e-05,
+      "area_m2": 5.510627362514866e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 18762.939383702276
+      "source_pixels_per_metre": 18762.953866197786
     },
     {
       "id": "BezelTop/43",
@@ -6690,14 +6843,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.007608781312893054,
-        0.023905147447007113
+        0.007608778072133338,
+        0.023905145852544663
       ],
-      "area_m2": 5.5105974297587644e-05,
+      "area_m2": 5.510595302672188e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 16822.667748789736
+      "source_pixels_per_metre": 16822.674913964413
     },
     {
       "id": "BezelTop/44",
@@ -6707,14 +6860,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.013643921777545913,
-        0.022103913250445695
+        0.01364392177754592,
+        0.022103913741441716
       ],
-      "area_m2": 5.5106357657350924e-05,
+      "area_m2": 5.5106291228163313e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 18762.93372051609
+      "source_pixels_per_metre": 18762.933720516077
     },
     {
       "id": "BezelTop/45",
@@ -6724,14 +6877,14 @@
       "kind": "strip",
       "image": "strip-01",
       "size_m": [
-        0.00760877669179133,
-        0.023905149674331994
+        0.00760877993254816,
+        0.023905152863258006
       ],
-      "area_m2": 5.510596182825159e-05,
+      "area_m2": 5.510597062978462e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 16822.67796584066
+      "source_pixels_per_metre": 16822.670800669766
     },
     {
       "id": "BezelTop/46",
@@ -6741,14 +6894,14 @@
       "kind": "strip",
       "image": "strip-02",
       "size_m": [
-        0.007608780969969753,
-        0.023905149088432998
+        0.007608784210729191,
+        0.02390515227735801
       ],
-      "area_m2": 5.510596182825159e-05,
+      "area_m2": 5.510597062978462e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
-      "source_pixels_per_metre": 33645.33701395503
+      "source_pixels_per_metre": 33645.32268361782
     },
     {
       "id": "BezelTop/47",
@@ -6759,9 +6912,9 @@
       "image": "strip-01",
       "size_m": [
         0.013643921057746838,
-        0.022103913599074376
+        0.02210391409007073
       ],
-      "area_m2": 5.510635765735092e-05,
+      "area_m2": 5.5106291228163313e-05,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -6776,9 +6929,9 @@
       "image": "strip-03",
       "size_m": [
         0.8840000033378601,
-        0.023999987516651555
+        0.023999983683359205
       ],
-      "area_m2": 0.021215989044829825,
+      "area_m2": 0.02121598565619825,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -6809,10 +6962,10 @@
       "kind": "strip",
       "image": "strip-03",
       "size_m": [
-        0.0329277329146862,
+        0.0329277366399765,
         0.032927751541137695
       ],
-      "area_m2": 0.0005760001981243157,
+      "area_m2": 0.000576000320789305,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -6826,10 +6979,10 @@
       "kind": "strip",
       "image": "strip-04",
       "size_m": [
-        0.0329277329146862,
+        0.0329277366399765,
         0.032927751541137695
       ],
-      "area_m2": 0.0005760001981243157,
+      "area_m2": 0.000576000320789305,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -6844,9 +6997,9 @@
       "image": "strip-03",
       "size_m": [
         0.8840000033378601,
-        0.023999987516651555
+        0.023999991349943905
       ],
-      "area_m2": 0.021215989044829825,
+      "area_m2": 0.021215992433462904,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -6861,9 +7014,9 @@
       "image": "top-04",
       "size_m": [
         0.8840000033378601,
-        0.024000019460753086
+        0.024000006683112973
       ],
-      "area_m2": 0.02121601728343387,
+      "area_m2": 0.021216005988010257,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -7785,6 +7938,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
+      "dust_finish": "3 mm physical low-pass separation; broad contrast .15, fine detail .8; oxide unchanged",
       "source_pixels_per_metre": 1514.7929905874032
     },
     {
@@ -8703,6 +8857,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
+      "dust_finish": "3 mm physical low-pass separation; broad contrast .15, fine detail .8; oxide unchanged",
       "source_pixels_per_metre": 1882.352838879231
     },
     {
@@ -33864,6 +34019,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
+      "dust_finish": "3 mm physical low-pass separation; broad contrast .15, fine detail .8; oxide unchanged",
       "source_pixels_per_metre": 1411.7646291594233
     },
     {
@@ -33881,6 +34037,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
+      "dust_finish": "3 mm physical low-pass separation; broad contrast .15, fine detail .8; oxide unchanged",
       "source_pixels_per_metre": 1411.7646291594233
     },
     {
@@ -33908,10 +34065,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0007875753797881857,
-        0.0007638374539167825
+        0.0009575438903812183,
+        0.001613366148111306
       ],
-      "area_m2": 4.605134406939908e-07,
+      "area_m2": 9.962833801630457e-07,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -33926,10 +34083,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0008975587653973771,
-        0.0009762130061258811
+        0.0012409581684304921,
+        0.0017379812067774836
       ],
-      "area_m2": 4.6054186945618815e-07,
+      "area_m2": 9.963583948550003e-07,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -33944,10 +34101,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0008918330176241329,
-        0.0008199514720168555
+        0.0009254017381221114,
+        0.0011638908877923404
       ],
-      "area_m2": 4.6052009477404806e-07,
+      "area_m2": 6.319774790436777e-07,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -33962,10 +34119,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0007875753797881857,
-        0.0007638374539167825
+        0.0009575438903812183,
+        0.001613366148111306
       ],
-      "area_m2": 4.605134406939908e-07,
+      "area_m2": 9.962833801630457e-07,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -33980,10 +34137,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0008918330176241329,
-        0.0008199514720168555
+        0.0009254017381221114,
+        0.0011638908877923404
       ],
-      "area_m2": 4.6052009477404806e-07,
+      "area_m2": 6.319774790436777e-07,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -33998,10 +34155,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0008975587653973771,
-        0.0009762130061258811
+        0.0012409581684304921,
+        0.0017379812067774836
       ],
-      "area_m2": 4.6054186945618815e-07,
+      "area_m2": 9.963583948550003e-07,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34016,10 +34173,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0009625825029427187,
-        0.0008850163021444368
+        0.0013931324675944545,
+        0.0014877761487215313
       ],
-      "area_m2": 4.605489692338132e-07,
+      "area_m2": 9.963418243694997e-07,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34034,10 +34191,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0008918275998184289,
-        0.0008199456229311952
+        0.0009641517320542747,
+        0.0017258592442693232
       ],
-      "area_m2": 4.6051554342980736e-07,
+      "area_m2": 9.962774696727843e-07,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34052,10 +34209,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0007875745256830102,
-        0.0007638673894602016
+        0.0009023428470260608,
+        0.0009953322511476528
       ],
-      "area_m2": 4.605241960152347e-07,
+      "area_m2": 6.319742754429016e-07,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34070,10 +34227,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0008918275998184289,
-        0.0008199456229311952
+        0.0009641517320542747,
+        0.0017258592442693232
       ],
-      "area_m2": 4.6051554342980736e-07,
+      "area_m2": 9.962774696727843e-07,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34088,10 +34245,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0009625825029427187,
-        0.0008850163021444368
+        0.0013931324675944545,
+        0.0014877761487215313
       ],
-      "area_m2": 4.605489692338132e-07,
+      "area_m2": 9.963418243694997e-07,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34106,10 +34263,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0007875745256830102,
-        0.0007638673894602016
+        0.0009023428470260608,
+        0.0009953322511476528
       ],
-      "area_m2": 4.605241960152347e-07,
+      "area_m2": 6.319742754429016e-07,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34124,10 +34281,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0009625825029427326,
-        0.0008849894212065723
+        0.0013931215777065464,
+        0.0014877487701231429
       ],
-      "area_m2": 4.6053532124282993e-07,
+      "area_m2": 9.963078183785232e-07,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34139,14 +34296,14 @@
       "part": "ScreenGasket",
       "material": "DarkSteel",
       "role": "hardware",
-      "kind": "top",
+      "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0008918155541906281,
-        0.0008199264274407758
+        0.0009641549164204899,
+        0.0017258829413976384
       ],
-      "area_m2": 4.605007919634114e-07,
-      "upward": true,
+      "area_m2": 9.96295750358221e-07,
+      "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
       "pitch_m": 0.2,
@@ -34160,10 +34317,10 @@
       "kind": "top",
       "image": "hardware",
       "size_m": [
-        0.0007875646801305258,
-        0.0007638687352492374
+        0.0009023590075726284,
+        0.0009953174710120027
       ],
-      "area_m2": 4.605172835278685e-07,
+      "area_m2": 6.319724314799841e-07,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34175,14 +34332,14 @@
       "part": "ScreenGasket",
       "material": "DarkSteel",
       "role": "hardware",
-      "kind": "top",
+      "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0008918155541906281,
-        0.0008199264274407758
+        0.0009641549164204899,
+        0.0017258829413976384
       ],
-      "area_m2": 4.605007919634114e-07,
-      "upward": true,
+      "area_m2": 9.96295750358221e-07,
+      "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
       "pitch_m": 0.2,
@@ -34196,10 +34353,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0009625825029427326,
-        0.0008849894212065723
+        0.0013931215777065464,
+        0.0014877487701231429
       ],
-      "area_m2": 4.6053532124282993e-07,
+      "area_m2": 9.963078183785232e-07,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34214,10 +34371,10 @@
       "kind": "top",
       "image": "hardware",
       "size_m": [
-        0.0007875646801305258,
-        0.0007638687352492374
+        0.0009023590075726284,
+        0.0009953174710120027
       ],
-      "area_m2": 4.605172835278685e-07,
+      "area_m2": 6.319724314799841e-07,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34232,10 +34389,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0008975554363687965,
-        0.0009762722390854739
+        0.001240944319261937,
+        0.0017380111675412424
       ],
-      "area_m2": 4.605702538062973e-07,
+      "area_m2": 9.963606249054884e-07,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34250,10 +34407,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.000891834523339019,
-        0.0008199534969221545
+        0.000925395476766816,
+        0.0011638874323405268
       ],
-      "area_m2": 4.605271809608833e-07,
+      "area_m2": 6.319790606562992e-07,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34268,10 +34425,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0007875766104701865,
-        0.0007638674058757511
+        0.0009575438903812183,
+        0.00161336493678077
       ],
-      "area_m2": 4.605451604149392e-07,
+      "area_m2": 9.962841385483043e-07,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34286,10 +34443,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0008975554363687965,
-        0.0009762722390854739
+        0.001240944319261937,
+        0.0017380111675412424
       ],
-      "area_m2": 4.605702538062973e-07,
+      "area_m2": 9.963606249054884e-07,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34304,10 +34461,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0007875766104701865,
-        0.0007638674058757511
+        0.0009575438903812183,
+        0.00161336493678077
       ],
-      "area_m2": 4.605451604149392e-07,
+      "area_m2": 9.962841385483043e-07,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34322,10 +34479,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.000891834523339019,
-        0.0008199534969221545
+        0.000925395476766816,
+        0.0011638874323405268
       ],
-      "area_m2": 4.605271809608833e-07,
+      "area_m2": 6.319790606562992e-07,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34340,10 +34497,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.8920000195503234,
-        0.0007653717292520068
+        0.8920000195503235,
+        0.0009692768158078846
       ],
-      "area_m2": 0.0006827115746646348,
+      "area_m2": 0.0008645949097636691,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34359,9 +34516,9 @@
       "image": "hardware",
       "size_m": [
         0.8920000195503235,
-        0.0007653433479662408
+        0.0016269673880826008
       ],
-      "area_m2": 0.0006826862585399263,
+      "area_m2": 0.0014512548935549652,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34376,10 +34533,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.005448798824128659,
-        0.003909864837988941
+        0.005969506643837493,
+        0.004513405348394284
       ],
-      "area_m2": 4.592212638777636e-06,
+      "area_m2": 9.761802868559287e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34394,10 +34551,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0020887581216991746,
-        0.00601909116821811
+        0.005149680491028014,
+        0.004685311197019981
       ],
-      "area_m2": 4.5919982314513266e-06,
+      "area_m2": 5.815495031799297e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34413,9 +34570,9 @@
       "image": "hardware",
       "size_m": [
         0.8920000195503235,
-        0.0007653456742946207
+        0.0016269590168454529
       ],
-      "area_m2": 0.0006826883337798622,
+      "area_m2": 0.0014512474263692018,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34431,9 +34588,9 @@
       "image": "hardware",
       "size_m": [
         0.8920000195503235,
-        0.0007653737692243645
+        0.0009692846812996911
       ],
-      "area_m2": 0.0006827133944760345,
+      "area_m2": 0.0008646019258114746,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34448,10 +34605,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0020887581216991746,
-        0.00601909116821811
+        0.005149680491028014,
+        0.004685311197019981
       ],
-      "area_m2": 4.5919982314513266e-06,
+      "area_m2": 5.815495031799297e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34466,10 +34623,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.005448798824128659,
-        0.003909864837988941
+        0.005969506643837493,
+        0.004513405348394284
       ],
-      "area_m2": 4.592212638777636e-06,
+      "area_m2": 9.761802868559287e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34481,14 +34638,14 @@
       "part": "ScreenGasket",
       "material": "DarkSteel",
       "role": "hardware",
-      "kind": "top",
+      "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.002088732193660986,
-        0.0060190878906689615
+        0.0051496935546830064,
+        0.004685292429461307
       ],
-      "area_m2": 4.591925371483798e-06,
-      "upward": true,
+      "area_m2": 5.815492555978546e-06,
+      "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
       "pitch_m": 0.2,
@@ -34502,10 +34659,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0054487951806767125,
-        0.0039098932445249535
+        0.0059695214793619444,
+        0.004513376119076762
       ],
-      "area_m2": 4.592343672011228e-06,
+      "area_m2": 9.76173577122384e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34517,14 +34674,14 @@
       "part": "ScreenGasket",
       "material": "DarkSteel",
       "role": "hardware",
-      "kind": "top",
+      "kind": "strip",
       "image": "hardware",
       "size_m": [
         0.8920000195503235,
-        0.0007653486675036625
+        0.0016269838546676407
       ],
-      "area_m2": 0.0006826910037673879,
-      "upward": true,
+      "area_m2": 0.001451269581868705,
+      "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
       "pitch_m": 0.2,
@@ -34539,9 +34696,9 @@
       "image": "hardware",
       "size_m": [
         0.8920000195503235,
-        0.0007653744705071602
+        0.0009692737574288346
       ],
-      "area_m2": 0.000682714019940062,
+      "area_m2": 0.0008645921817386427,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34556,10 +34713,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0054487951806767125,
-        0.0039098932445249535
+        0.0059695214793619444,
+        0.004513376119076762
       ],
-      "area_m2": 4.592343672011228e-06,
+      "area_m2": 9.76173577122384e-06,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34571,14 +34728,14 @@
       "part": "ScreenGasket",
       "material": "DarkSteel",
       "role": "hardware",
-      "kind": "top",
+      "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.002088732193660986,
-        0.0060190878906689615
+        0.0051496935546830064,
+        0.004685292429461307
       ],
-      "area_m2": 4.591925371483819e-06,
-      "upward": true,
+      "area_m2": 5.815492555978547e-06,
+      "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
       "pitch_m": 0.2,
@@ -34592,10 +34749,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.8920000195503234,
-        0.0007653978928223171
+        0.8920000195503235,
+        0.0009692737574291677
       ],
-      "area_m2": 0.000682734912792549,
+      "area_m2": 0.0008645921817386428,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34611,9 +34768,9 @@
       "image": "hardware",
       "size_m": [
         0.8920000195503235,
-        0.0007653733740222712
+        0.0016269660778219786
       ],
-      "area_m2": 0.0006827130417824208,
+      "area_m2": 0.0014512537248352823,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34628,10 +34785,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0549052444150851,
-        0.23603303490584687
+        0.12332579106353503,
+        0.5340017934396029
       ],
-      "area_m2": 0.00018520791112662397,
+      "area_m2": 0.0004191850046251479,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34646,10 +34803,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.11799484666894511,
-        0.21202821241050335
+        0.2662143932644421,
+        0.47941881011517556
       ],
-      "area_m2": 0.00018522295009746638,
+      "area_m2": 0.0004192124439499731,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34664,10 +34821,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.11799484666894511,
-        0.21202821241050335
+        0.2662143932644421,
+        0.47941881011517556
       ],
-      "area_m2": 0.00018522295009746638,
+      "area_m2": 0.0004192124439499731,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34682,10 +34839,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.0549052444150851,
-        0.23603303490584687
+        0.12332579106353503,
+        0.5340017934396029
       ],
-      "area_m2": 0.00018520791112662397,
+      "area_m2": 0.00041918500462514795,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34700,10 +34857,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.11799484315855716,
-        0.21202818343719565
+        0.26621439677483005,
+        0.47941883957956577
       ],
-      "area_m2": 0.00018522221634447263,
+      "area_m2": 0.0004192202043156788,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34718,10 +34875,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.054905242794632825,
-        0.23603300709106367
+        0.12332578944308292,
+        0.5340018180655199
       ],
-      "area_m2": 0.00018520859035970702,
+      "area_m2": 0.00041918502271641017,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34736,10 +34893,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.054905242794632825,
-        0.23603300709106367
+        0.12332578944308292,
+        0.5340018180655199
       ],
-      "area_m2": 0.00018520859035970705,
+      "area_m2": 0.00041918502271641017,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34754,10 +34911,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.11799484315855716,
-        0.21202818343719565
+        0.26621439677483005,
+        0.47941883957956577
       ],
-      "area_m2": 0.00018522221634447263,
+      "area_m2": 0.00041922020431567884,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34773,9 +34930,9 @@
       "image": "hardware",
       "size_m": [
         0.8920000195503235,
-        0.24200001542563954
+        0.547723339501758
       ],
-      "area_m2": 0.2158640184908492,
+      "area_m2": 0.48856922954373827,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34791,9 +34948,9 @@
       "image": "hardware",
       "size_m": [
         0.8920000195503235,
-        0.00600000486518798
+        0.006000001670777966
       ],
-      "area_m2": 0.005352004457054876,
+      "area_m2": 0.005352001607643665,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34808,10 +34965,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.1296529397368431,
-        0.21060025691986084
+        0.2869463339447975,
+        0.47275587916374207
       ],
-      "area_m2": 0.001452001508871259,
+      "area_m2": 0.003286340482270833,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34826,10 +34983,10 @@
       "kind": "strip",
       "image": "hardware",
       "size_m": [
-        0.1296529397368431,
-        0.21060025691986084
+        0.2869463339447975,
+        0.47275587916374207
       ],
-      "area_m2": 0.001452001508871259,
+      "area_m2": 0.003286340482270833,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34845,9 +35002,9 @@
       "image": "hardware",
       "size_m": [
         0.8920000195503235,
-        0.2419999879537132
+        0.5477233650570386
       ],
-      "area_m2": 0.21586399398589026,
+      "area_m2": 0.48856925233904813,
       "upward": false,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -34863,9 +35020,9 @@
       "image": "hardware",
       "size_m": [
         0.8920000195503235,
-        0.005999971004441218
+        0.006000014448418245
       ],
-      "area_m2": 0.005351974253387201,
+      "area_m2": 0.005352013005291788,
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
@@ -43297,15 +43454,299 @@
       "source_pixels_per_metre": 2560.0
     }
   ],
-  "source_blend": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/tools/blender/quarters/console/console-working.blend",
+  "source_blend": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-129/tools/blender/quarters/console/console-working.blend",
   "preserved_materials": [
     "Display"
   ],
-  "exported_uv_density_min": 815.8632822800407,
-  "resize": {
-    "from_resolution": 4096,
-    "to_resolution": 3072,
-    "minimum_exported_pixels_per_metre": 815.8632822800407,
-    "geometry_and_uvs_unchanged": true
-  }
+  "native_legends": [
+    {
+      "key": "Key_0_0",
+      "input": "0",
+      "sign": "mo",
+      "key_top_face": "Key_0_0/53",
+      "height_m": 0.024,
+      "ink_texels": 239,
+      "ink_probe_pixel": [
+        3168,
+        2961
+      ]
+    },
+    {
+      "key": "Key_0_1",
+      "input": "1",
+      "sign": "na",
+      "key_top_face": "Key_0_1/53",
+      "height_m": 0.024,
+      "ink_texels": 186,
+      "ink_probe_pixel": [
+        3104,
+        2966
+      ]
+    },
+    {
+      "key": "Key_0_2",
+      "input": "2",
+      "sign": "mu",
+      "key_top_face": "Key_0_2/53",
+      "height_m": 0.024,
+      "ink_texels": 183,
+      "ink_probe_pixel": [
+        3053,
+        2961
+      ]
+    },
+    {
+      "key": "Key_0_3",
+      "input": "3",
+      "sign": "shi",
+      "key_top_face": "Key_0_3/53",
+      "height_m": 0.024,
+      "ink_texels": 210,
+      "ink_probe_pixel": [
+        2954,
+        1694
+      ]
+    },
+    {
+      "key": "Key_0_4",
+      "input": "4",
+      "sign": "le",
+      "key_top_face": "Key_0_4/53",
+      "height_m": 0.024,
+      "ink_texels": 166,
+      "ink_probe_pixel": [
+        1083,
+        1025
+      ]
+    },
+    {
+      "key": "Key_0_5",
+      "input": "5",
+      "sign": "chi",
+      "key_top_face": "Key_0_5/53",
+      "height_m": 0.024,
+      "ink_texels": 154,
+      "ink_probe_pixel": [
+        1083,
+        911
+      ]
+    },
+    {
+      "key": "Key_1_0",
+      "input": "6",
+      "sign": "wi",
+      "key_top_face": "Key_1_0/53",
+      "height_m": 0.024,
+      "ink_texels": 185,
+      "ink_probe_pixel": [
+        1210,
+        1256
+      ]
+    },
+    {
+      "key": "Key_1_1",
+      "input": "7",
+      "sign": "shu",
+      "key_top_face": "Key_1_1/53",
+      "height_m": 0.024,
+      "ink_texels": 216,
+      "ink_probe_pixel": [
+        1281,
+        876
+      ]
+    },
+    {
+      "key": "Key_1_2",
+      "input": "a",
+      "sign": "a",
+      "key_top_face": "Key_1_2/53",
+      "height_m": 0.024,
+      "ink_texels": 166,
+      "ink_probe_pixel": [
+        2972,
+        2961
+      ]
+    },
+    {
+      "key": "Key_1_3",
+      "input": "e",
+      "sign": "e",
+      "key_top_face": "Key_1_3/53",
+      "height_m": 0.024,
+      "ink_texels": 164,
+      "ink_probe_pixel": [
+        1751,
+        1083
+      ]
+    },
+    {
+      "key": "Key_1_4",
+      "input": "i",
+      "sign": "i",
+      "key_top_face": "Key_1_4/53",
+      "height_m": 0.024,
+      "ink_texels": 151,
+      "ink_probe_pixel": [
+        876,
+        693
+      ]
+    },
+    {
+      "key": "Key_1_5",
+      "input": "o",
+      "sign": "o",
+      "key_top_face": "Key_1_5/53",
+      "height_m": 0.024,
+      "ink_texels": 185,
+      "ink_probe_pixel": [
+        812,
+        698
+      ]
+    },
+    {
+      "key": "Key_2_0",
+      "input": "u",
+      "sign": "u",
+      "key_top_face": "Key_2_0/53",
+      "height_m": 0.024,
+      "ink_texels": 135,
+      "ink_probe_pixel": [
+        2833,
+        1694
+      ]
+    },
+    {
+      "key": "Key_2_1",
+      "input": "pa",
+      "sign": "pa",
+      "key_top_face": "Key_2_1/53",
+      "height_m": 0.024,
+      "ink_texels": 185,
+      "ink_probe_pixel": [
+        2695,
+        1550
+      ]
+    },
+    {
+      "key": "Key_2_2",
+      "input": "pe",
+      "sign": "pe",
+      "key_top_face": "Key_2_2/53",
+      "height_m": 0.024,
+      "ink_texels": 216,
+      "ink_probe_pixel": [
+        3237,
+        2961
+      ]
+    },
+    {
+      "key": "Key_2_3",
+      "input": "pi",
+      "sign": "pi",
+      "key_top_face": "Key_2_3/53",
+      "height_m": 0.024,
+      "ink_texels": 194,
+      "ink_probe_pixel": [
+        2828,
+        1579
+      ]
+    },
+    {
+      "key": "Key_2_4",
+      "input": "po",
+      "sign": "po",
+      "key_top_face": "Key_2_4/53",
+      "height_m": 0.024,
+      "ink_texels": 259,
+      "ink_probe_pixel": [
+        1210,
+        767
+      ]
+    },
+    {
+      "key": "Key_2_5",
+      "input": "pu",
+      "sign": "pu",
+      "key_top_face": "Key_2_5/53",
+      "height_m": 0.024,
+      "ink_texels": 207,
+      "ink_probe_pixel": [
+        3376,
+        1147
+      ]
+    },
+    {
+      "key": "Key_3_0",
+      "input": "ta",
+      "sign": "ta",
+      "key_top_face": "Key_3_0/53",
+      "height_m": 0.024,
+      "ink_texels": 151,
+      "ink_probe_pixel": [
+        3363,
+        825
+      ]
+    },
+    {
+      "key": "Key_3_1",
+      "input": "te",
+      "sign": "te",
+      "key_top_face": "Key_3_1/53",
+      "height_m": 0.024,
+      "ink_texels": 162,
+      "ink_probe_pixel": [
+        1152,
+        1377
+      ]
+    },
+    {
+      "key": "Key_3_2",
+      "input": "ti",
+      "sign": "ti",
+      "key_top_face": "Key_3_2/53",
+      "height_m": 0.024,
+      "ink_texels": 167,
+      "ink_probe_pixel": [
+        3375,
+        1516
+      ]
+    },
+    {
+      "key": "Key_3_3",
+      "input": "to",
+      "sign": "to",
+      "key_top_face": "Key_3_3/53",
+      "height_m": 0.024,
+      "ink_texels": 247,
+      "ink_probe_pixel": [
+        3375,
+        2126
+      ]
+    },
+    {
+      "key": "Key_3_4",
+      "input": "tu",
+      "sign": "tu",
+      "key_top_face": "Key_3_4/53",
+      "height_m": 0.024,
+      "ink_texels": 175,
+      "ink_probe_pixel": [
+        1221,
+        1372
+      ]
+    },
+    {
+      "key": "Key_3_5",
+      "input": "ka",
+      "sign": "ka",
+      "key_top_face": "Key_3_5/53",
+      "height_m": 0.024,
+      "ink_texels": 205,
+      "ink_probe_pixel": [
+        2759,
+        1693
+      ]
+    }
+  ],
+  "legend_source": "tools/blender/quarters/console/legends.json via production Naleya"
 }

@@ -1,4 +1,5 @@
 """Fit an armoured display, key deck and tapered support over the generated console."""
+import json
 import math
 from pathlib import Path
 import sys
@@ -7,11 +8,14 @@ import bpy
 import numpy as np
 
 HERE=Path(__file__).resolve().parent
+sys.path.insert(0,str(HERE))
 sys.path.insert(0,str(HERE.parent/'wardrobe'))
 from batch_tools import attach, build_main, cage, cylinder, empty, material, materials, panel, rivets
 
+from refit import apply_refit, RISE
+
 SPEC={
-    'bounds_gltf':[[-.55,0,-.275],[.55,.69,.275]],
+    'bounds_gltf':[[-.55,0,-.275],[.55,.69+RISE,.275]],
     'required_nodes':['Console','ArmouredHousing','LowerDeckHousing','DesktopSupport','Bezel','Display','ControlPanel','Keys','Toggles'],
     'parents':{'ArmouredHousing':'Console','LowerDeckHousing':'Console','DesktopSupport':'Console','Bezel':'ScreenPlane','Display':'ScreenPlane',
                'ScreenPlane':'Console','ControlPanel':'Console','Keys':'ControlPanel','Toggles':'ControlPanel'},
@@ -21,7 +25,7 @@ SPEC={
     'hero_camera_native':[-1.4,-4,1.8],'hero_camera_gltf':[-1.4,1.8,4],
     'hero_target_native':[0,0,.34],'triangle_limit':15000,
     'display_states':['remembered','present'],
-    'fit_notes':'Seed 351 has a broad head carried on a narrower tapered support, not the full-width solid wedge described by the prompt. Guide sections below .32 m determine the support widths. The selected image supports a 4-by-6 key grid instead of the prompted 3-by-8 grid; the verified total remains 24 keys and three separate toggles. The support and head remain inside the .69 m asset-local height and are mounted on the desk by room placement. The display is an independent emissive part in both states.',
+    'fit_notes':'Seed 351 has a broad head carried on a narrower tapered support, not the full-width solid wedge described by the prompt. Guide sections below .32 m determine the support widths. The selected image supports a 4-by-6 key grid instead of the prompted 3-by-8 grid; the verified total remains 24 keys and three separate toggles. The original .69 m head is extended to 16:10 by refit.py for issue #129, retaining the support and deck pose. The display is an independent emissive part in both states.',
 }
 
 
@@ -95,7 +99,10 @@ def assemble(guide):
         local(cylinder(f'ToggleSocket_{i}',.012,.008,(0,0,0),dark,sides=12),toggles,(.34,y,.014))
         local(cylinder(f'Toggle_{i}',.004,.052,(0,0,0),bare,sides=12),toggles,(.34,y,.041),(math.radians(-18),0,0))
     rivets('HousingRivets',[(x,-.2753,.335) for x in (-.48,.48)],bare,radius=.004,parent=root)
+    apply_refit()
 
 
 if __name__=='__main__':
+    # Keep provenance and constraints with the saved-source construction record.
+    SPEC.update(json.loads((HERE/'construction.json').read_text()))
     build_main(__file__,'console',assemble,SPEC,(1.1,.69,.55))

@@ -2,7 +2,9 @@ class_name QuartersRoom
 extends Node3D
 
 const TEXT_WIDTH_PX := 1024.0
-const TEXT_FONT_SIZE := 32
+# #129: a 16:10 text space and larger type use the taller physical display.
+const TEXT_HEIGHT_PX := 640.0
+const TEXT_FONT_SIZE := 48
 const CORRUPTION_COLORS: Array[Color] = [Color(0.004, 0.008, 0.012), Color(0.02, 0.10, 0.14), Color(0.12, 0.72, 0.82), Color(0.82, 0.94, 1.0), Color(0.08, 0.28, 0.34)]
 
 var remembered: Node3D
@@ -54,7 +56,7 @@ func _screen(state: Node3D) -> void:
 	var label := Label3D.new()
 	label.name = "ConsoleText"
 	label.position = bounds.get_center() + Vector3(0, 0, bounds.size.z / 2 + 0.0017)
-	label.pixel_size = bounds.size.x / TEXT_WIDTH_PX
+	label.pixel_size = minf(bounds.size.x / TEXT_WIDTH_PX, bounds.size.y / TEXT_HEIGHT_PX)
 	label.font_size = TEXT_FONT_SIZE
 	label.font = ThemeDB.fallback_font
 	label.outline_size = 0

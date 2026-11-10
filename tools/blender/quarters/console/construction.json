@@ -7,7 +7,7 @@
     ],
     [
       0.55,
-      0.69,
+      0.9543221943508917,
       0.275
     ]
   ],
@@ -72,7 +72,7 @@
     "remembered",
     "present"
   ],
-  "fit_notes": "Seed 351 has a broad head carried on a narrower tapered support, not the full-width solid wedge described by the prompt. Guide sections below .32 m determine the support widths. The selected image supports a 4-by-6 key grid instead of the prompted 3-by-8 grid; the verified total remains 24 keys and three separate toggles. The support and head remain inside the .69 m asset-local height and are mounted on the desk by room placement. The display is an independent emissive part in both states.",
+  "fit_notes": "Seed 351 has a broad head carried on a narrower tapered support, not the full-width solid wedge described by the prompt. Guide sections below .32 m determine the support widths. The selected image supports a 4-by-6 key grid instead of the prompted 3-by-8 grid; the verified total remains 24 keys and three separate toggles. The support and head remain inside the .69 m asset-local height and are mounted on the desk by room placement. The display is an independent emissive part in both states. Issue #129 grows the saved head, bezel and glass to 16:10 above the fixed lower glass edge; the rear and entire lower deck stay fixed. The top 29 mm transitions inward to retain a closed metal cap within the original depth. UVs are repacked at uniform physical density for both finish atlases.",
   "guide": {
     "source_bounds_native": [
       [
@@ -185,5 +185,30 @@
     },
     "source": "tmp/props/console/guide.glb"
   },
-  "id": "console"
+  "id": "console",
+  "display_size_m": [
+    0.874,
+    0.54625
+  ],
+  "refit": {
+    "issue": 129,
+    "source": "tracked console-working.blend cages",
+    "old_display_m": [
+      0.874,
+      0.238
+    ],
+    "old_height_m": 0.69,
+    "native_rise_m": 0.26432219435089177,
+    "fixed_parts": [
+      "LowerDeckHousing",
+      "DesktopSupport",
+      "BaseShoe",
+      "ControlPanel",
+      "Keys",
+      "Toggles",
+      "HousingRivets"
+    ],
+    "cap_transition_height_m": 0.925,
+    "cap_front_inset_m": 0.0256
+  }
 }
