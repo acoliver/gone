@@ -1,19 +1,25 @@
 {
   "crust": {
-    "plates": 22,
-    "upper_surface_max_m": 0.5466865136232709,
+    "plates": 21,
+    "upper_surface_max_m": 0.5474448017660104,
     "rail_top_m": 0.55,
-    "support_z_m": 0.501,
-    "footprints_from_existing_plates": true
+    "support_z_m": 0.5001,
+    "footprints_from_existing_plates": true,
+    "missing_foot_corner_x_minus_y_m": 1.35,
+    "plate_offset_range_m": [
+      -0.001774145756902371,
+      0.003557498456673511
+    ],
+    "plate_offset_area_weighted_mean_m": -5.379909932485023e-21
   },
   "cover": {
-    "smoothed_boundary_vertices": 397,
+    "smoothed_boundary_vertices": 376,
     "detached_unsupported_scraps_removed": 0,
-    "max_contour_displacement_m": 0.04,
+    "max_contour_displacement_m": 0.028,
     "long_grain_axis_blender": "+Y",
     "opened_central_cover": {
-      "removed_faces": 135,
-      "removed_area_m2": 0.34640976518858224,
+      "removed_faces": 164,
+      "removed_area_m2": 0.3830537348985672,
       "boundary_noise_amplitude_m": 0,
       "octaves": 0,
       "point_fan_clearance_m": 0.002
@@ -27,23 +33,29 @@
   "tears": {
     "smoothed_boundary_vertices": 1074,
     "detached_unsupported_scraps_removed": 8,
-    "max_contour_displacement_m": 0.04,
+    "max_contour_displacement_m": 0.085,
     "long_grain_axis_blender": "+Y"
   },
   "rail_wrap_finish": {
     "outside_x_m": -0.8055,
     "rail_clear_top_m": 0.5525,
-    "fitted_vertices": 102
+    "fitted_vertices": 105
   },
   "fringe": {
-    "cards": 141,
-    "triangles": 282,
-    "boundary_length_m": 2.6594422184710043,
-    "authored_coverage": 0.5231585850332379,
+    "cards": 197,
+    "triangles": 394,
+    "boundary_length_m": 3.02436513923253,
+    "authored_coverage": 0.6225707711324306,
     "coverage_pass": true,
-    "omitted_contacts": 8,
-    "maximum_root_offset_m": 0.0017696889949300723,
-    "sat_checked": true
+    "omitted_contacts": 4,
+    "maximum_root_offset_m": 0.0034894017328594377,
+    "sat_checked": true,
+    "maximum_root_gap_m": 0.0026055907364934683,
+    "uvs_follow_authored_roots": true,
+    "alpha_mode": "BLEND",
+    "minimum_4px_root_alpha": 0.8732458353042603,
+    "mean_4px_tip_alpha": 0.03206142038106918,
+    "root_groups_per_card": 8
   },
   "powder": [
     {
@@ -51,20 +63,34 @@
       "mean_alpha": 0.1936188042163849,
       "max_alpha": 0.7891361713409424,
       "extent_xy_m": [
-        0.225,
-        0.65
+        0.33,
+        0.7
       ],
-      "soft_edge_width_fraction": 0.31
+      "soft_edge_width_fraction": 0.31,
+      "relief": {
+        "grid_cells": [
+          10,
+          16
+        ],
+        "max_relief_m": 0.0022525960206985474
+      }
     },
     {
       "name": "FibreFoamPowder_Platform",
       "mean_alpha": 0.19360587000846863,
       "max_alpha": 0.7898715138435364,
       "extent_xy_m": [
-        0.012,
-        0.82
+        0.06,
+        0.04
       ],
-      "soft_edge_width_fraction": 0.31
+      "soft_edge_width_fraction": 0.31,
+      "relief": {
+        "grid_cells": [
+          10,
+          16
+        ],
+        "max_relief_m": 0.0021526131033897666
+      }
     },
     {
       "name": "FibreFoamPowder_Foot",
@@ -74,21 +100,28 @@
         0.64,
         0.0045
       ],
-      "soft_edge_width_fraction": 0.31
+      "soft_edge_width_fraction": 0.31,
+      "relief": {
+        "grid_cells": [
+          10,
+          16
+        ],
+        "max_relief_m": 0.0021760869026183904
+      }
     }
   ],
   "exact_face_contact_fit": {
     "Pillow_L": {
       "back_m": -1.2874603271505192e-08,
-      "up_m": 0.0025994680519976455
+      "up_m": 0.0030706231243381515
     },
     "Pillow_R": {
       "back_m": -1.2874603271505192e-08,
-      "up_m": 0.0033391513085642274
+      "up_m": 0.004372269009795191
     },
     "Quilt": {
       "back_m": 0,
-      "up_m": 0.016115942798971106
+      "up_m": 0.01661511028373655
     }
   },
   "materials": {
@@ -96,17 +129,17 @@
       "mask_channels": {
         "R": "45 mm local fold occlusion",
         "G": "world upward normal",
-        "B": "32/m pigment variation"
+        "B": "110/m porous variation"
       },
       "linear_color_min": [
-        0.03983222209133927,
-        0.016691597828751695,
-        0.004552253953295917
+        0.014617536341832407,
+        0.006125917156870694,
+        0.0016709991114091916
       ],
       "linear_color_max": [
-        0.13881925261444467,
-        0.06827585892753844,
-        0.024945681095282054
+        0.14684312529817042,
+        0.07179426243740528,
+        0.025962071827428476
       ]
     },
     "Mattress/cotton": {
@@ -116,14 +149,14 @@
         "B": "32/m pigment variation"
       },
       "linear_color_min": [
-        0.052895866844813885,
-        0.03778276203200992,
-        0.019042512064133
+        0.022203730157838317,
+        0.015859807746683496,
+        0.007993343678225566
       ],
       "linear_color_max": [
-        0.20162683519377736,
-        0.15203479606945194,
-        0.0859928533112565
+        0.23952599177997463,
+        0.17923285159497854,
+        0.09984935758200106
       ]
     },
     "Quilt/wool": {
@@ -133,14 +166,14 @@
         "B": "32/m pigment variation"
       },
       "linear_color_min": [
-        0.03418467968583429,
-        0.02467242145004018,
-        0.011890324242150162
+        0.0148035503821466,
+        0.01068430158015798,
+        0.005149061002485773
       ],
       "linear_color_max": [
-        0.15618969646953204,
-        0.12022658815354546,
-        0.06864175095325181
+        0.1800641525442057,
+        0.13739890732483262,
+        0.07677127381700202
       ]
     },
     "Pillow_L/cotton": {
@@ -150,14 +183,14 @@
         "B": "32/m pigment variation"
       },
       "linear_color_min": [
-        0.05209976917100642,
-        0.03721412083643316,
-        0.018755916901562312
+        0.022527141885875256,
+        0.01609081563276804,
+        0.008109771078915093
       ],
       "linear_color_max": [
-        0.20200254305767087,
-        0.1524303882219044,
-        0.0863409160419717
+        0.24057353436946868,
+        0.17878676746084404,
+        0.09962453117839727
       ]
     },
     "Pillow_R/cotton": {
@@ -167,14 +200,14 @@
         "B": "32/m pigment variation"
       },
       "linear_color_min": [
-        0.052821274472723015,
-        0.037729495025518166,
-        0.019015680988083167
+        0.022839174883832376,
+        0.016313709604881994,
+        0.008222125136082538
       ],
       "linear_color_max": [
-        0.20092646704526515,
-        0.15166176249875746,
-        0.08595352867750564
+        0.23452990789021919,
+        0.1756642202451532,
+        0.0980507673816891
       ]
     }
   }

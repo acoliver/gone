@@ -11,7 +11,7 @@ from shapely.strtree import STRtree
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[3]
-sys.path.insert(0, str(HERE.parents[1] / 'quarters_aging'))
+sys.path.append(str(HERE.parents[1] / 'quarters_aging'))
 from triangle_contacts import intersect
 
 PARTS = ('Mattress', 'Quilt', 'Pillow_L', 'Pillow_R')

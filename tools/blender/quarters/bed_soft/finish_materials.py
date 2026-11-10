@@ -39,7 +39,7 @@ def bake_masks(obj, size):
         geometry = nodes.new('ShaderNodeNewGeometry')
         normal = nodes.new('ShaderNodeSeparateXYZ')
         noise = nodes.new('ShaderNodeTexNoise')
-        noise.inputs['Scale'].default_value = 32
+        noise.inputs['Scale'].default_value = 110 if role == 'foam' else 32
         noise.inputs['Detail'].default_value = 2
         links.new(geometry.outputs['Position'], noise.inputs['Vector'])
         links.new(geometry.outputs['Normal'], normal.inputs[0])
@@ -67,8 +67,9 @@ def finish(mat, mask, role, obj_name):
     pixels = np.array(mask.pixels[:], dtype=np.float32).reshape(size, size, 4)
     ao, up, variation = [np.clip(pixels[:, :, i], 0, 1) for i in range(3)]
     if role == 'foam':
-        color = np.array([.105, .044, .012]) * (.68 + .64 * variation[:, :, None])
-        color *= (.55 + .45 * ao[:, :, None])
+        pores = np.clip((.50 - variation) * 8, 0, 1)
+        color = np.array([.105, .044, .012]) * (.55 + .90 * variation[:, :, None])
+        color *= (.55 + .45 * ao[:, :, None]) * (1 - .55 * pores[:, :, None])
         dust = up * ao * .18
         color = color * (1 - dust[:, :, None]) + np.array([.21, .145, .075]) * dust[:, :, None]
     else:
@@ -108,12 +109,13 @@ def finish(mat, mask, role, obj_name):
         geometry = nodes.new('ShaderNodeNewGeometry')
         links.new(geometry.outputs['Position'], noise.inputs['Vector'])
         bump = nodes.new('ShaderNodeBump')
-        bump.inputs['Distance'].default_value = .0018
-        bump.inputs['Strength'].default_value = .55
+        bump.inputs['Distance'].default_value = .0022
+        bump.inputs['Strength'].default_value = .8
         links.new(noise.outputs['Fac'], bump.inputs['Height'])
         links.new(bump.outputs['Normal'], shader.inputs['Normal'])
     valid = ao > .001
-    return {'mask_channels': {'R': '45 mm local fold occlusion', 'G': 'world upward normal', 'B': '32/m pigment variation'},
+    return {'mask_channels': {'R': '45 mm local fold occlusion', 'G': 'world upward normal',
+                             'B': '110/m porous variation' if role == 'foam' else '32/m pigment variation'},
             'linear_color_min': color[valid].min(axis=0).tolist(),
             'linear_color_max': color[valid].max(axis=0).tolist()}
 
