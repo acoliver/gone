@@ -52,7 +52,7 @@ func test_spot_illuminance_clips_at_the_aperture_plane_and_preserves_lower_hemis
 
 func test_beam_tops_touch_the_rendered_ceiling_without_drops() -> void:
 	var world := Node3D.new()
-	var ship := ShipScene.build_into(world, Game.new(91), false)
+	var ship := ShipScene.build_into(world, Game.new(91))
 	var rays := Rays.new()
 	var count := 0
 	for room: Node3D in [ship.lighting, ship.hallway, ship.power_room]:

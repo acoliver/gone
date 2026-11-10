@@ -1,7 +1,7 @@
 extends SimTestCase
 
 const Inventory := preload("res://tools/light_inventory.gd")
-const BASELINE := "res://tests/fixtures/illuminance-217355c.json"
+const BASELINE := "res://tests/fixtures/illuminance-1aeb2a4.json"
 static var _inventory: Dictionary
 
 func _ship() -> Dictionary:

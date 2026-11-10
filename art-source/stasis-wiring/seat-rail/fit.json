@@ -1,0 +1,48 @@
+{
+  "guide_sha256": "0e13f5c9e464fc26d26e5d6731c1d38e413fcdfb388d2101ae554e5e28326e41",
+  "concept_sha256": "d957e7d0403122119fcf54bec928af5cea3434a08c5fe9ec37db05b00659a2ef",
+  "generated_section_metal_area_fraction": 0.2660630763530805,
+  "clean_profile_metal_area_fraction": 0.2543818056643624,
+  "clean_profile_to_guide_rms_m": 0.0017716799791074112,
+  "clean_profile_to_guide_max_m": 0.004415575990048583,
+  "source_section_fit": "Generated section is already a hollow C (measured occupancy); fair its skew and lumps to a symmetric constant-gauge rolled profile while preserving its open underside and return layout.",
+  "guide_vertices": 75030,
+  "guide_faces": 150068,
+  "principal_axes_columns": [
+    [
+      -0.0034351771944222975,
+      0.9967479802154657,
+      -0.08050877898734111
+    ],
+    [
+      0.00010784928708629238,
+      0.0805096228238784,
+      0.9967538256767761
+    ],
+    [
+      0.9999940939456464,
+      0.00341534319600008,
+      -0.0003840633793268515
+    ]
+  ],
+  "generated_robust_extents": [
+    1.9892984617808978,
+    0.24409992994362256,
+    0.29497380369759213
+  ],
+  "engineering_fit_extents_m": [
+    0.32,
+    0.018,
+    0.042
+  ],
+  "central_section_sample_count": 4352,
+  "method": "Sparse manufactured C-section cage aligned to the generated longitudinal/broad-face axes; hollow thin-sheet topology, 36 mm bearing and continuous gauge corrected explicitly. No dense projection onto generated noise.",
+  "bearing_width_m": 0.036,
+  "total_width_m": 0.042,
+  "depth_m": 0.018,
+  "gauge_m": 0.0025,
+  "outer_fold_radius_m": 0.003,
+  "inner_fold_radius_m": 0.0005,
+  "returned_lip_m": 0.003,
+  "width_decision": "36 mm flat bearing retained; each rounded fold adds 3 mm outside it. Shrinking the flat seat to 30 mm would change the accepted bearing."
+}

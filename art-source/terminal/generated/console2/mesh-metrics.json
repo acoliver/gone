@@ -1,0 +1,104 @@
+[
+  {
+    "mesh": "console-s510-rgba-410.glb",
+    "vertices": 493301,
+    "triangles": 986616,
+    "bounds_min": [
+      -0.863395,
+      -1.000026,
+      -0.579064
+    ],
+    "bounds_max": [
+      0.857925,
+      0.994932,
+      0.569136
+    ],
+    "components": 19,
+    "watertight": false
+  },
+  {
+    "mesh": "console-s510-rgba-411.glb",
+    "vertices": 581785,
+    "triangles": 1163600,
+    "bounds_min": [
+      -0.836583,
+      -1.000557,
+      -0.791623
+    ],
+    "bounds_max": [
+      0.831483,
+      0.995048,
+      0.785997
+    ],
+    "components": 35,
+    "watertight": false
+  },
+  {
+    "mesh": "console-s510-rgba-412.glb",
+    "vertices": 578853,
+    "triangles": 1157764,
+    "bounds_min": [
+      -0.775766,
+      -1.0004,
+      -0.838036
+    ],
+    "bounds_max": [
+      0.770541,
+      0.99495,
+      0.803712
+    ],
+    "components": 65,
+    "watertight": false
+  },
+  {
+    "mesh": "console-s513-rgba-410.glb",
+    "vertices": 631321,
+    "triangles": 1262696,
+    "bounds_min": [
+      -0.975293,
+      -1.000516,
+      -0.581125
+    ],
+    "bounds_max": [
+      0.969297,
+      0.994906,
+      0.567403
+    ],
+    "components": 48,
+    "watertight": false
+  },
+  {
+    "mesh": "keyboard-s520-rgba-410.glb",
+    "vertices": 180295,
+    "triangles": 360660,
+    "bounds_min": [
+      -0.999989,
+      -0.366481,
+      -0.124611
+    ],
+    "bounds_max": [
+      0.995131,
+      0.363809,
+      0.116464
+    ],
+    "components": 30,
+    "watertight": false
+  },
+  {
+    "mesh": "keyboard-s520-rgba-411.glb",
+    "vertices": 187490,
+    "triangles": 375008,
+    "bounds_min": [
+      -1.000083,
+      -0.374144,
+      -0.163177
+    ],
+    "bounds_max": [
+      0.99532,
+      0.370951,
+      0.136752
+    ],
+    "components": 22,
+    "watertight": false
+  }
+]

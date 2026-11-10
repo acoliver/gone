@@ -1,0 +1,67 @@
+{
+  "input_triangles": 986598,
+  "triangles": 39000,
+  "uniform_scale": 0.6390445747477264,
+  "width_m": 1.1,
+  "height_m": 1.2748844623565674,
+  "depth_m": 0.7000625612163276,
+  "depth_y_factor": 0.9540024183011049,
+  "cleaned_components": 1,
+  "component_threshold_area_fraction": 0.01,
+  "screen_recess": {
+    "bounds_x_m": [
+      -0.31,
+      0.31
+    ],
+    "bounds_z_m": [
+      0.78,
+      1.08
+    ],
+    "plane_y_m": -0.6940318765640259,
+    "centre_m": [
+      0.0,
+      -0.6940318765640259,
+      0.93
+    ]
+  },
+  "keyboard_deck": {
+    "plane_z_m": 0.7,
+    "extent_x_m": [
+      -0.34,
+      0.34
+    ],
+    "extent_y_m": [
+      -0.27,
+      -0.08
+    ],
+    "front_lip_top_z_m": 0.67,
+    "centre_m": [
+      0,
+      -0.17500000000000002,
+      0.7
+    ]
+  },
+  "sockets": [
+    "ScreenSocket",
+    "DisplayPlane",
+    "KeyboardSocket"
+  ],
+  "silhouette_iou_front": "not measured",
+  "silhouette_iou_side": "not measured",
+  "textures": {
+    "resolution": 2048,
+    "maps": [
+      "2048 albedo atlas used by material",
+      "normal and ORM PNGs generated but not connected to exported materials"
+    ],
+    "approach_a": "Hunyuan3D paint attempted; failed because required Hunyuan3D-Delight VAE checkpoint is missing; fallback palette atlas used",
+    "approach_b": "2048 palette atlas from sampled photo colors; camera projection and true baked maps not completed"
+  },
+  "incomplete": [
+    "silhouette IoU target unverified",
+    "paint model unavailable due missing checkpoint",
+    "front camera projection and baking not completed",
+    "dim red lighting comparison not rendered",
+    "model is not watertight verified"
+  ]
+}

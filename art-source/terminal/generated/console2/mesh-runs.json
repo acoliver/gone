@@ -1,0 +1,56 @@
+[
+  {
+    "name": "console-s510-rgba-410",
+    "input": "console-s510-rgba.png",
+    "seed": 410,
+    "seconds": 482.28,
+    "returncode": 0,
+    "mesh": "meshes/console-s510-rgba-410.glb",
+    "log": "logs/mesh-console-s510-rgba-410.log"
+  },
+  {
+    "name": "console-s510-rgba-411",
+    "input": "console-s510-rgba.png",
+    "seed": 411,
+    "seconds": 362.33,
+    "returncode": 0,
+    "mesh": "meshes/console-s510-rgba-411.glb",
+    "log": "logs/mesh-console-s510-rgba-411.log"
+  },
+  {
+    "name": "console-s510-rgba-412",
+    "input": "console-s510-rgba.png",
+    "seed": 412,
+    "seconds": 331.84,
+    "returncode": 0,
+    "mesh": "meshes/console-s510-rgba-412.glb",
+    "log": "logs/mesh-console-s510-rgba-412.log"
+  },
+  {
+    "name": "console-s513-rgba-410",
+    "input": "console-s513-rgba.png",
+    "seed": 410,
+    "seconds": 330.28,
+    "returncode": 0,
+    "mesh": "meshes/console-s513-rgba-410.glb",
+    "log": "logs/mesh-console-s513-rgba-410.log"
+  },
+  {
+    "name": "keyboard-s520-rgba-410",
+    "input": "keyboard-s520-rgba.png",
+    "seed": 410,
+    "seconds": 277.8,
+    "returncode": 0,
+    "mesh": "meshes/keyboard-s520-rgba-410.glb",
+    "log": "logs/mesh-keyboard-s520-rgba-410.log"
+  },
+  {
+    "name": "keyboard-s520-rgba-411",
+    "input": "keyboard-s520-rgba.png",
+    "seed": 411,
+    "seconds": 278.63,
+    "returncode": 0,
+    "mesh": "meshes/keyboard-s520-rgba-411.glb",
+    "log": "logs/mesh-keyboard-s520-rgba-411.log"
+  }
+]

@@ -81,7 +81,7 @@ func _run() -> void:
 			for tick: int in range(BayVentilation.CLEAR_TICKS): game.ventilation.tick(true)
 		world = Node3D.new()
 		root.add_child(world)
-		scene = ShipScene.build_into(world, game, false)
+		scene = ShipScene.build_into(world, game)
 		# Compare settled circuits, never an unscheduled spark flash lighting the haze.
 		scene.hazards.auto_bursts = false
 		scene.prepare_near(Vector3(10, 0, 0))

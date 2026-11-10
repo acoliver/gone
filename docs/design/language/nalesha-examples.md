@@ -24,6 +24,7 @@ These translation examples illustrate grammar and do not establish plot facts. T
 | Genocide is wrong. | `Shapi makuta loka.` | People-as-a-group eradication PRESENT wrong. |
 | I cannot kill billions of people. | `Ko na cha pe kuta lu naki mali.` | Speaker, one, PRESENT NOT CAN kill multiple naki of people. |
 | The ship is damaged. | `Malu lokemi.` | Ship PRESENT damaged. |
+| An electrical fire is in the stasis bay. | `Kelo kelawa to tala pama.` | Electric current fire PRESENT at stasis room. |
 
 ### Impact, loss and inability
 

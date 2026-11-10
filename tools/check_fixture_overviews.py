@@ -5,7 +5,7 @@ import json
 
 from PIL import Image, ImageStat
 
-BASELINE = Path(__file__).resolve().parents[1] / 'tests/fixtures/overviews-219a257.json'
+BASELINE = Path(__file__).resolve().parents[1] / 'tests/fixtures/overviews-219a257-main-1aeb2a4.json'
 
 
 def within_limit(actual, reference):
@@ -27,14 +27,14 @@ def check(directory, baseline=BASELINE):
             failures.append(f'{name}: missing view')
             continue
         if any(views[name][field] != expected[field] for field in ['eye', 'target']):
-            failures.append(f'{name}: camera differs from 219a257')
+            failures.append(f'{name}: camera differs from reference')
         path = directory / (name + '.png')
         if not path.is_file():
             failures.append(f'{name}: missing image')
             continue
         with Image.open(path) as image:
             if list(image.size) != reference['resolution']:
-                failures.append(f'{name}: resolution differs from 219a257')
+                failures.append(f'{name}: resolution differs from reference')
                 continue
             luma = ImageStat.Stat(image.convert('L')).mean[0]
         before = expected['mean_display_luma']

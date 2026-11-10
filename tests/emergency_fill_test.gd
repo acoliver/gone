@@ -8,8 +8,8 @@ func test_bay_hatch_lamp_is_layout_owned_and_reuses_its_existing_key() -> void:
 		if service.kind == &"Lamp": lamp_frame = spec.frame() * service.frame
 	assert_true(lamp_frame.origin.is_equal_approx(Vector3(15, 2.56, 1.81)), "bay cage is centered over its hatch in layout data")
 	var root := Node3D.new()
-	var scene := ShipScene.build_into(root, game, false)
-	assert_int_equal(scene.lighting.lights().size(), 9, "doorway reuses an existing key")
+	var scene := ShipScene.build_into(root, game)
+	assert_int_equal(scene.lighting.lights().size(), 9, "eight mirrored wall keys plus the existing doorway key")
 	var key := scene.lighting.fixture(ShipLayout.BAY_HATCH_KEY_ID).get_child(0) as OmniLight3D
 	var expected := lamp_frame.origin - lamp_frame.basis.z * 0.20
 	assert_true(Surfaces.world_frame(key).origin.is_equal_approx(expected), "production key is seated in the layout-owned cage")
@@ -76,7 +76,7 @@ func test_fills_never_cast_shadows() -> void:
 func test_real_scene_fills_only_reach_their_own_room_layers() -> void:
 	var root := Node3D.new()
 	var game := Game.new(91)
-	var scene := ShipScene.build_into(root, game, false)
+	var scene := ShipScene.build_into(root, game)
 	var rooms: Array[Node3D] = [scene.bay_root, scene.hallway, scene.power_room]
 	var surfaces: Array[Node3D] = [scene.room, scene.hallway, scene.power_room]
 	for source: int in range(rooms.size()):

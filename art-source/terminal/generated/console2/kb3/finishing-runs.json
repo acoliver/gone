@@ -1,0 +1,27 @@
+[
+  {
+    "stage": "paint",
+    "exit": 0,
+    "seconds": 102.0
+  },
+  {
+    "stage": "prepare",
+    "exit": 0,
+    "seconds": 138.9
+  },
+  {
+    "stage": "atlas",
+    "exit": 0,
+    "seconds": 10.4
+  },
+  {
+    "stage": "finish",
+    "exit": 0,
+    "seconds": 23.3
+  },
+  {
+    "stage": "contact",
+    "exit": 0,
+    "seconds": 2.4
+  }
+]

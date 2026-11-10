@@ -46,7 +46,7 @@ class FixtureOverviewTest(unittest.TestCase):
             self.assertTrue(any('missing image' in error for error in check(root, baseline)[1]))
 
     @unittest.skipUnless(os.environ.get('FIXTURE_OVERVIEW_CAPTURES'), 'requires native overview captures')
-    def test_native_overviews_retain_219a257_display_brightness(self):
+    def test_native_overviews_retain_reference_display_brightness(self):
         rows, failures = check(Path(os.environ['FIXTURE_OVERVIEW_CAPTURES']))
         self.assertEqual(len(rows), 10)
         self.assertEqual(failures, [])

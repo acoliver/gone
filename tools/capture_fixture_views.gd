@@ -16,6 +16,7 @@ func _run() -> void:
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 	root.msaa_3d = Viewport.MSAA_2X
 	for white: bool in [false, true]:
+		Engine.time_scale = 1.0
 		var game := Game.new(91)
 		game.light_hallway()
 		if white: game.press_console()
@@ -26,10 +27,17 @@ func _run() -> void:
 		ship.prepare_near(Vector3(26, 0, 0))
 		ship.hazards.auto_bursts = false
 		ship.hazards.set_physics_process(false)
+		ship.hazards._smoke_field.use_fixed_seed = true
+		ship.hazards._smoke_field.seed = 91
+		ship.hazards._smoke_field.restart()
 		camera = Camera3D.new()
 		camera.current = true
 		camera.fov = 55
 		world.add_child(camera)
+		# Keep the full smoke field while pinning its random and animated capture inputs.
+		for frame: int in range(30): await process_frame
+		ship.hazards._smoke_field.speed_scale = 0.0
+		Engine.time_scale = 0.0
 		var circuit := "white" if white else "emergency"
 		await _shot(circuit + "-hall-overview", Vector3(6.8, 1.65, 0), Vector3(25, 2.05, 0))
 		await _shot(circuit + "-hall-eye-height", Vector3(10, 1.65, 0), Vector3(29, 1.65, 0))

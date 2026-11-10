@@ -22,7 +22,7 @@ func test_bay_side_wall_caps_do_not_compete_with_the_hall_facing_wall() -> void:
 func test_bay_shell_weather_uses_the_layout_frame_exactly_once() -> void:
 	var root := Node3D.new()
 	var game := Game.new(0)
-	var scene := ShipScene.build_into(root, game, false)
+	var scene := ShipScene.build_into(root, game)
 	var wall: GeometryInstance3D = scene.room.get_child(2)
 	var frame: Surfaces.SurfaceFrame = wall.get_meta(&"surface_frame")
 	assert_true(frame.world_from_surface == game.layout.bay_to_world(), "weather follows the same bay-local frame as geometry")

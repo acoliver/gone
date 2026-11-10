@@ -3,7 +3,7 @@ extends SimTestCase
 func test_rebuilding_an_open_hatch_keeps_leaf_local_writing_and_face_identity() -> void:
 	var game := Game.new(0)
 	var root := Node3D.new()
-	var scene := ShipScene.build_into(root, game, false)
+	var scene := ShipScene.build_into(root, game)
 	scene.prepare_near(Vector3(28.5, 0, 0))
 	var id: StringName = &"D14-C-001-H-FORE"
 	var face: StringName = &"D14-C-001-H-FORE/FORE"
@@ -17,7 +17,7 @@ func test_rebuilding_an_open_hatch_keeps_leaf_local_writing_and_face_identity() 
 	var local: Transform3D = scene.labels[face].transform
 	root.free()
 	root = Node3D.new()
-	scene = ShipScene.build_into(root, game, false)
+	scene = ShipScene.build_into(root, game)
 	scene.prepare_near(Vector3(28.5, 0, 0))
 	assert_true(scene.labels[face].transform.is_equal_approx(local), "reload must not counter-rotate the ink back into the closed plane")
 	assert_true(ShipScene._world_frame(scene.labels[face]).basis.z.dot(Vector3.LEFT) < 0.01, "rebuilt ink remains on the open leaf")
@@ -73,7 +73,7 @@ func test_repeated_labels_share_pixels_without_sharing_material_or_blend() -> vo
 func test_built_d14_faces_generate_labels_without_remote_or_startup_jobs() -> void:
 	var parent := Node3D.new()
 	var game := Game.new(0)
-	var scene := ShipScene.build_into(parent, game, false)
+	var scene := ShipScene.build_into(parent, game)
 	assert_int_equal(scene.text_cache.pending_count(), 1, "arrival console queues its inactive text")
 	scene.prepare_near(Vector3(18, 0, 0))
 	# The regular-door design adds five side plates and both power-door faces.

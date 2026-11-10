@@ -1,5 +1,61 @@
 # Consolidated wall fixtures (#111)
 
+## Merged with main 1aeb2a4
+
+Main adds the standing consoles and live status board, protected stasis wiring, a formed ceiling seat and lower generator-band emission. Those assets, screen transforms, wiring routes, spark-tip positions and the 0.24 generator material emission remain as main authored them. Main adds no Light3D sources. Its displays remain visible surfaces in their housings; they add no ambient or fill lighting.
+
+The textual conflict in `emergency_fill_test.gd` keeps main's two-argument `ShipScene.build_into` API and this branch's nine bay emergency keys: eight mirrored wall cages plus the hatch key. The beam mounting test also drops the retired wiring argument. Main's bay beam stations remain at local X=-4.2, -0.6 and 4.2 m, Z=±1.5 m. Imported housings still meet the slab at Y=3.2 m, with each source seated at its glass.
+
+The ceiling integration previously reserved the removed pendant lenses and stems. Removing those obsolete reservations restores two ordinary panels, leaving 113 panels and six beam cassettes across the same 119 non-failed cells. The formed seat source, missing seat, failure location and protected wiring remain unchanged. Exact geometry tests now measure the stem-free layout: 129 cross-seat spans, three cached source meshes, 1,161 gauge rays, 7,667 panel-bearing samples and 24 cassette-edge contacts. All clearance, contact and dimensional tolerances remain unchanged. The wiring test now checks the existing three spark groups for one light, one spray and the visible arc required by #111, instead of rejecting that arc as a third child.
+
+### Main's baseline drift
+
+Plain main was measured with the same inventory code before any retuning. Of 370 space/circuit rows, only these two changed; all 185 emergency rows and the other 183 white rows are unchanged. Values are renderer-proxy units. The complete per-space table is in `tmp/sync/main-drift.md` and its numeric form is in `tmp/sync/main-drift.json`.
+
+| Space and circuit | Total before → main | Floor before → main | Ceiling before → main | Walls before → main |
+|---|---:|---:|---:|---:|
+| White bay | 60.241950 → 60.163235 (-0.131%) | 13.660420 → 13.278352 (-2.797%) | 2.700538 → 2.688465 (-0.447%) | 43.880993 → 44.196417 (+0.719%) |
+| White D14-S-041 | 46.228707 → 46.590436 (+0.782%) | 9.887813 → 10.040320 (+1.542%) | 3.388807 → 3.411179 (+0.660%) | 32.952087 → 33.138937 (+0.567%) |
+
+The illuminance fixture is regenerated from plain `1aeb2a4` as `illuminance-1aeb2a4.json`. The 10% limit and the same three white-ceiling exceptions are unchanged.
+
+Only bay and power overview references are refreshed, using scratch `219a257` with main merged in. The reference retains the original emergency fixture layout; the removed `Lighting.LENS_SIZE` constant is represented by its original 0.42 × 0.16 × 0.12 m value in that scratch merge. The six hall/connector reference values, all ten cameras, resolution, FOV and the 15% limit remain unchanged. The mixed reference is `overviews-219a257-main-1aeb2a4.json`.
+
+| Changed overview | Original 219a257 luma | Main-merged reference luma | Drift |
+|---|---:|---:|---:|
+| Emergency bay | 52.964048 | 63.109877 | +19.156% |
+| White bay | 80.590340 | 52.335891 | -35.059% |
+| Emergency power | 35.783815 | 37.556665 | +4.954% |
+| White power | 42.720111 | 42.661029 | -0.138% |
+
+These overview differences include capture-input normalization as well as main's content. Unlike the deterministic incident proxy, the old bay capture left the smoke seed and animation time uncontrolled. The first merged bay image measured 48.7377 against an uncontrolled 59.3791 reference. A constrained tuning trial then measured 52.2000 in one capture and 44.3463 in another with the same lamp settings, so those images could not establish a lighting change.
+
+The capture tool now retains all 144 smoke particles and the production seven-second preprocessing, sets particle seed 91, warms for 30 frames and freezes the particle transforms and shader time using the project's existing `pod_captures.gd` pattern. Captures use `--fixed-fps 60`. The four main-changed references use these same inputs; the other six numeric references remain untouched. Repeated controlled captures reproduce the bay images byte for byte. The original, untuned profile passes all ten views: emergency bay 66.9335 versus 63.1099 (+6.06%), white bay 52.1733 versus 52.3359 (-0.31%). The tuning trial is discarded. The integration retains #111's fixture profiles and energy budget, with no additional material-output change.
+
+The first guarded run recorded 895 passes and two failures. One was the stale two-child spark assertion described above. The unchanged lift-writing native check reported a Metal fence timeout rather than a gameplay assertion; the same check subsequently passed on both plain main and the merged tree. The original failure log is retained at `tmp/sync/111/guarded-first.log`.
+
+### Verification after integration
+
+The final guarded suite ran alone among this worker's verification jobs and passed 897 tests with zero failures. Python passed 32 tests, including all ten saved overview views. The eight offline tool modules passed 44 tests with a freshly dumped native wiring context. They run in separate interpreters because the ceiling-bake importer prepends the Blender directory and otherwise shadows the Python seat module. Thirteen Blender suites passed 87 tests; the separate enclosure hardware geometry contract also passed. Protected wiring provenance was not rewritten.
+
+All 572 light observations have valid housed emitters, with maximum gap 0.000003815 m. The two circuit inventories contain the same 240 standalone fixtures, with zero close wall pairs and zero live-lamp glow failures. All 370 incident-light rows pass. Collider counts match plain main exactly: D14 has 1,024 closed, 1,023 with the bay open and 1,022 with both doors open; every other deck has 542.
+
+All nine native functional machine lanes pass: calibration-move, calibration-step, click-route, connector-route, gameplay-full, gameplay-keyboard-turn, hallway, power-room and rod-pickup. The three negative controls fail for their intended assertions: exposure does not converge with adaptation disabled, the requested beat exceeds the deadline, and emergency lenses remain lit without a handoff. Native colour checks pass. Seal rendering passes 1,230 checks over 28,369,212 samples with zero green leaks. The current verification logs contain zero light/geometry pairing errors.
+
+The complete AB/BA/AB comparison against plain main retains all eighteen runs and 5,400 measured frames. Every phase has three repetitions with 60 warm-up and 300 measured frames at 1152×648. There is no idle wait, load gate or discarded phase.
+
+| Pair / order | Main phase mean ms | Merged phase mean ms | Change |
+|---|---:|---:|---:|
+| 1 / AB | 12.495999 | 3.249608 | -73.995% |
+| 2 / BA | 2.985187 | 2.872340 | -3.780% |
+| 3 / AB | 2.940069 | 2.747401 | -6.553% |
+
+Median paired cost is -6.553%, passing the unchanged +10% limit. One-minute host load spans 5.61–9.33. The first baseline phase is much slower than the later phases; these shared-load measurements do not establish a stable speed improvement. Raw results and host snapshots are in `tmp/sync/111/perf/`.
+
+Sixteen final captures and their manifest are in `tmp/sync/111/`: the ten fixed views and west, east and north power-room wall rows in both circuits, including main's consoles. `CAPTURES_READY` marks the completed set. They are quantitative capture evidence, not an independent visual-review verdict. Both the requested working-tree `git diff --check` and the complete PR diff against `origin/main` pass. The broader first-parent diff includes whitespace already present in main's unchanged vendor text; those files are preserved. Review skipped per Andrew 2026-10-09.
+
+The sections below record the earlier branch states and their original baselines.
+
 ## Mirrored bay rows after 4797e81
 
 The bay wall cages now belong to the room layout rather than the seven-pod registry. Each long wall has four cages at world Z=3.2, 6.2, 9.2 and 12.2 m, on a 3 m pitch at Y=2.5 m. West source centres are at X=11.1 m and east centres at X=18.9 m. The rows mirror across X=15 m. Their housings clear the services and hatch exclusions, and remain above the standing envelope.
