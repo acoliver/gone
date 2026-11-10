@@ -147,9 +147,9 @@ length in the room. No furniture or camera moved. The actual worktop is
 
 ## Capture framing and review status
 
-The unchanged `console` camera projects the active Display AABB to pixels
-`(399.60, 14.70)` through `(1026.46, 390.98)` in the 1536 by 864 raw frame.
-The glass is inside that frame. The taller housing reaches about 16 pixels
+The unchanged `console` camera projects the active Display vertices to pixels
+`(399.83, 15.10)` through `(1025.95, 390.69)` in the 1536 by 864 raw frame.
+The glass is inside that frame. The taller housing vertices reach 8.4 pixels
 above the raw frame; the camera has deliberately not been moved. The existing
 presentation helper crops 40 pixels from the top to remove the harness chip,
 which also removes about 25 pixels from the glass in this close view. Use the
