@@ -1,0 +1,912 @@
+{
+  "prop": "bedside",
+  "gates": {
+    "broad-02_delta_e": {
+      "value": 7.3092879142249,
+      "threshold": 8,
+      "passed": true
+    },
+    "broad-02_paint_mean_delta_e": {
+      "value": 2.3216195763471235,
+      "threshold": 8,
+      "passed": true
+    },
+    "broad-02_paint_std_delta_e": {
+      "value": 6.201512889862628,
+      "threshold": 8,
+      "passed": true
+    },
+    "broad-02_rust_mean_delta_e": {
+      "value": 2.7604106446518677,
+      "threshold": 8,
+      "passed": true
+    },
+    "broad-02_rust_std_delta_e": {
+      "value": 1.9441104658710409,
+      "threshold": 8,
+      "passed": true
+    },
+    "broad-02_planar_light_gradient": {
+      "value": 0.001345044803123342,
+      "threshold": 0.06,
+      "passed": true
+    },
+    "broad-02_secondary_autocorrelation": {
+      "value": 0.33067903753567196,
+      "threshold": 0.5,
+      "passed": true
+    },
+    "broad-02_no_green": {
+      "value": 0.0,
+      "threshold": 0.005,
+      "passed": true
+    },
+    "broad-02_edge_broad_ratio": {
+      "value": 2313.4591194968552,
+      "threshold": 1.8,
+      "passed": true
+    },
+    "broad-02_pixels_per_metre": {
+      "value": 1280.0,
+      "threshold": 600,
+      "passed": true
+    },
+    "broad-02_broad_rust": {
+      "value": 5.054473876953125e-05,
+      "threshold": 0.2,
+      "passed": true
+    },
+    "broad-02_pilot_pigment_delta_e": {
+      "value": 0.24753485508437492,
+      "threshold": 6,
+      "passed": true
+    },
+    "broad-03_delta_e": {
+      "value": 6.693152110256875,
+      "threshold": 8,
+      "passed": true
+    },
+    "broad-03_paint_mean_delta_e": {
+      "value": 2.166419944914953,
+      "threshold": 8,
+      "passed": true
+    },
+    "broad-03_paint_std_delta_e": {
+      "value": 5.661058441557638,
+      "threshold": 8,
+      "passed": true
+    },
+    "broad-03_rust_mean_delta_e": {
+      "value": 2.530117366801348,
+      "threshold": 8,
+      "passed": true
+    },
+    "broad-03_rust_std_delta_e": {
+      "value": 1.2666164135124554,
+      "threshold": 8,
+      "passed": true
+    },
+    "broad-03_planar_light_gradient": {
+      "value": 6.090101797649259e-05,
+      "threshold": 0.06,
+      "passed": true
+    },
+    "broad-03_secondary_autocorrelation": {
+      "value": 0.33879130012660386,
+      "threshold": 0.5,
+      "passed": true
+    },
+    "broad-03_no_green": {
+      "value": 0.0,
+      "threshold": 0.005,
+      "passed": true
+    },
+    "broad-03_edge_broad_ratio": {
+      "value": 118.05618071184462,
+      "threshold": 1.8,
+      "passed": true
+    },
+    "broad-03_pixels_per_metre": {
+      "value": 1280.0,
+      "threshold": 600,
+      "passed": true
+    },
+    "broad-03_broad_rust": {
+      "value": 0.0012712478637695312,
+      "threshold": 0.2,
+      "passed": true
+    },
+    "broad-03_pilot_pigment_delta_e": {
+      "value": 0.41409364895695444,
+      "threshold": 6,
+      "passed": true
+    },
+    "broad-04_delta_e": {
+      "value": 6.482363242846337,
+      "threshold": 8,
+      "passed": true
+    },
+    "broad-04_paint_mean_delta_e": {
+      "value": 1.9513853449561462,
+      "threshold": 8,
+      "passed": true
+    },
+    "broad-04_paint_std_delta_e": {
+      "value": 2.753599143722423,
+      "threshold": 8,
+      "passed": true
+    },
+    "broad-04_rust_mean_delta_e": {
+      "value": 1.0092345277917427,
+      "threshold": 8,
+      "passed": true
+    },
+    "broad-04_rust_std_delta_e": {
+      "value": 1.6510070295775117,
+      "threshold": 8,
+      "passed": true
+    },
+    "broad-04_planar_light_gradient": {
+      "value": 0.0018483636065202208,
+      "threshold": 0.06,
+      "passed": true
+    },
+    "broad-04_secondary_autocorrelation": {
+      "value": 0.4330401605718072,
+      "threshold": 0.5,
+      "passed": true
+    },
+    "broad-04_no_green": {
+      "value": 0.0,
+      "threshold": 0.005,
+      "passed": true
+    },
+    "broad-04_edge_broad_ratio": {
+      "value": 55.93902395759007,
+      "threshold": 1.8,
+      "passed": true
+    },
+    "broad-04_pixels_per_metre": {
+      "value": 1536.0,
+      "threshold": 600,
+      "passed": true
+    },
+    "broad-04_broad_rust": {
+      "value": 0.002655341443569033,
+      "threshold": 0.2,
+      "passed": true
+    },
+    "broad-04_pilot_pigment_delta_e": {
+      "value": 0.8060349100210367,
+      "threshold": 6,
+      "passed": true
+    },
+    "broad-05_delta_e": {
+      "value": 6.254897289599075,
+      "threshold": 8,
+      "passed": true
+    },
+    "broad-05_paint_mean_delta_e": {
+      "value": 2.4452670469904922,
+      "threshold": 8,
+      "passed": true
+    },
+    "broad-05_paint_std_delta_e": {
+      "value": 3.5447906568827445,
+      "threshold": 8,
+      "passed": true
+    },
+    "broad-05_rust_mean_delta_e": {
+      "value": 1.020596308167127,
+      "threshold": 8,
+      "passed": true
+    },
+    "broad-05_rust_std_delta_e": {
+      "value": 0.2224045991648309,
+      "threshold": 8,
+      "passed": true
+    },
+    "broad-05_planar_light_gradient": {
+      "value": 0.0047513810749749835,
+      "threshold": 0.06,
+      "passed": true
+    },
+    "broad-05_secondary_autocorrelation": {
+      "value": 0.4528354436906195,
+      "threshold": 0.5,
+      "passed": true
+    },
+    "broad-05_no_green": {
+      "value": 0.0,
+      "threshold": 0.005,
+      "passed": true
+    },
+    "broad-05_edge_broad_ratio": {
+      "value": 35.76344095155175,
+      "threshold": 1.8,
+      "passed": true
+    },
+    "broad-05_pixels_per_metre": {
+      "value": 1536.0,
+      "threshold": 600,
+      "passed": true
+    },
+    "broad-05_broad_rust": {
+      "value": 0.00555676834229693,
+      "threshold": 0.2,
+      "passed": true
+    },
+    "broad-05_pilot_pigment_delta_e": {
+      "value": 0.24562571664830213,
+      "threshold": 6,
+      "passed": true
+    },
+    "strip-01_delta_e": {
+      "value": 6.301692929721932,
+      "threshold": 8,
+      "passed": true
+    },
+    "strip-01_paint_mean_delta_e": {
+      "value": 2.275487906115391,
+      "threshold": 8,
+      "passed": true
+    },
+    "strip-01_paint_std_delta_e": {
+      "value": 5.6730676041518215,
+      "threshold": 8,
+      "passed": true
+    },
+    "strip-01_rust_mean_delta_e": {
+      "value": 3.310368017190362,
+      "threshold": 8,
+      "passed": true
+    },
+    "strip-01_rust_std_delta_e": {
+      "value": 3.1309317808346564,
+      "threshold": 8,
+      "passed": true
+    },
+    "strip-01_planar_light_gradient": {
+      "value": 0.0008717667248805034,
+      "threshold": 0.06,
+      "passed": true
+    },
+    "strip-01_secondary_autocorrelation": {
+      "value": 0.46638792606479545,
+      "threshold": 0.5,
+      "passed": true
+    },
+    "strip-01_no_green": {
+      "value": 0.0,
+      "threshold": 0.005,
+      "passed": true
+    },
+    "strip-01_edge_broad_ratio": {
+      "value": 88.82957477097955,
+      "threshold": 1.8,
+      "passed": true
+    },
+    "strip-01_pixels_per_metre": {
+      "value": 1536.0,
+      "threshold": 600,
+      "passed": true
+    },
+    "strip-01_broad_rust": {
+      "value": 0.0020381239779756217,
+      "threshold": 0.2,
+      "passed": true
+    },
+    "strip-01_pilot_pigment_delta_e": {
+      "value": 0.394243069411549,
+      "threshold": 6,
+      "passed": true
+    },
+    "strip-02_delta_e": {
+      "value": 6.339839698527934,
+      "threshold": 8,
+      "passed": true
+    },
+    "strip-02_paint_mean_delta_e": {
+      "value": 2.421755659904669,
+      "threshold": 8,
+      "passed": true
+    },
+    "strip-02_paint_std_delta_e": {
+      "value": 0.7358294923836113,
+      "threshold": 8,
+      "passed": true
+    },
+    "strip-02_rust_mean_delta_e": {
+      "value": 2.2966522875345867,
+      "threshold": 8,
+      "passed": true
+    },
+    "strip-02_rust_std_delta_e": {
+      "value": 0.728686623938304,
+      "threshold": 8,
+      "passed": true
+    },
+    "strip-02_planar_light_gradient": {
+      "value": 0.0008207444195588478,
+      "threshold": 0.06,
+      "passed": true
+    },
+    "strip-02_secondary_autocorrelation": {
+      "value": 0.4696367301364713,
+      "threshold": 0.5,
+      "passed": true
+    },
+    "strip-02_no_green": {
+      "value": 0.0,
+      "threshold": 0.005,
+      "passed": true
+    },
+    "strip-02_edge_broad_ratio": {
+      "value": 350.00492941211377,
+      "threshold": 1.8,
+      "passed": true
+    },
+    "strip-02_pixels_per_metre": {
+      "value": 1536.0,
+      "threshold": 600,
+      "passed": true
+    },
+    "strip-02_broad_rust": {
+      "value": 0.0005596459544741908,
+      "threshold": 0.2,
+      "passed": true
+    },
+    "strip-02_pilot_pigment_delta_e": {
+      "value": 0.17134636500084144,
+      "threshold": 6,
+      "passed": true
+    },
+    "strip-03_delta_e": {
+      "value": 7.09498482617493,
+      "threshold": 8,
+      "passed": true
+    },
+    "strip-03_paint_mean_delta_e": {
+      "value": 1.1979199957321114,
+      "threshold": 8,
+      "passed": true
+    },
+    "strip-03_paint_std_delta_e": {
+      "value": 1.7141029882555467,
+      "threshold": 8,
+      "passed": true
+    },
+    "strip-03_rust_mean_delta_e": {
+      "value": 3.150192595989589,
+      "threshold": 8,
+      "passed": true
+    },
+    "strip-03_rust_std_delta_e": {
+      "value": 1.439002461995344,
+      "threshold": 8,
+      "passed": true
+    },
+    "strip-03_planar_light_gradient": {
+      "value": 0.003213559408065835,
+      "threshold": 0.06,
+      "passed": true
+    },
+    "strip-03_secondary_autocorrelation": {
+      "value": 0.23198557627113164,
+      "threshold": 0.5,
+      "passed": true
+    },
+    "strip-03_no_green": {
+      "value": 0.0,
+      "threshold": 0.005,
+      "passed": true
+    },
+    "strip-03_edge_broad_ratio": {
+      "value": 21.951464586043606,
+      "threshold": 1.8,
+      "passed": true
+    },
+    "strip-03_pixels_per_metre": {
+      "value": 1536.0,
+      "threshold": 600,
+      "passed": true
+    },
+    "strip-03_broad_rust": {
+      "value": 0.0022198172008184094,
+      "threshold": 0.2,
+      "passed": true
+    },
+    "strip-03_pilot_pigment_delta_e": {
+      "value": 1.404959773769803,
+      "threshold": 6,
+      "passed": true
+    },
+    "strip-04_delta_e": {
+      "value": 4.86104339150006,
+      "threshold": 8,
+      "passed": true
+    },
+    "strip-04_paint_mean_delta_e": {
+      "value": 1.9369239935954865,
+      "threshold": 8,
+      "passed": true
+    },
+    "strip-04_paint_std_delta_e": {
+      "value": 0.799522776414566,
+      "threshold": 8,
+      "passed": true
+    },
+    "strip-04_rust_mean_delta_e": {
+      "value": 2.486611080906781,
+      "threshold": 8,
+      "passed": true
+    },
+    "strip-04_rust_std_delta_e": {
+      "value": 2.3734616645075817,
+      "threshold": 8,
+      "passed": true
+    },
+    "strip-04_planar_light_gradient": {
+      "value": 0.004299142545542244,
+      "threshold": 0.06,
+      "passed": true
+    },
+    "strip-04_secondary_autocorrelation": {
+      "value": 0.42064349408223917,
+      "threshold": 0.5,
+      "passed": true
+    },
+    "strip-04_no_green": {
+      "value": 0.0,
+      "threshold": 0.005,
+      "passed": true
+    },
+    "strip-04_edge_broad_ratio": {
+      "value": 7.2886827355472965,
+      "threshold": 1.8,
+      "passed": true
+    },
+    "strip-04_pixels_per_metre": {
+      "value": 1536.0,
+      "threshold": 600,
+      "passed": true
+    },
+    "strip-04_broad_rust": {
+      "value": 0.029772370953978052,
+      "threshold": 0.2,
+      "passed": true
+    },
+    "strip-04_pilot_pigment_delta_e": {
+      "value": 0.6820341432295025,
+      "threshold": 6,
+      "passed": true
+    },
+    "top-00_delta_e": {
+      "value": 6.488480999754062,
+      "threshold": 8,
+      "passed": true
+    },
+    "top-00_paint_mean_delta_e": {
+      "value": 3.6714683619426185,
+      "threshold": 8,
+      "passed": true
+    },
+    "top-00_paint_std_delta_e": {
+      "value": 4.313183525895888,
+      "threshold": 8,
+      "passed": true
+    },
+    "top-00_rust_mean_delta_e": {
+      "value": 4.442055734797821,
+      "threshold": 8,
+      "passed": true
+    },
+    "top-00_rust_std_delta_e": {
+      "value": 2.5739841856189245,
+      "threshold": 8,
+      "passed": true
+    },
+    "top-00_planar_light_gradient": {
+      "value": 0.0009127691463843618,
+      "threshold": 0.06,
+      "passed": true
+    },
+    "top-00_secondary_autocorrelation": {
+      "value": 0.3137328858470483,
+      "threshold": 0.5,
+      "passed": true
+    },
+    "top-00_no_green": {
+      "value": 0.0,
+      "threshold": 0.005,
+      "passed": true
+    },
+    "top-00_edge_broad_ratio": {
+      "value": 1641167.5347222222,
+      "threshold": 1.8,
+      "passed": true
+    },
+    "top-00_pixels_per_metre": {
+      "value": 1280.0,
+      "threshold": 600,
+      "passed": true
+    },
+    "top-00_broad_rust": {
+      "value": 0.0,
+      "threshold": 0.2,
+      "passed": true
+    },
+    "top-00_pilot_pigment_delta_e": {
+      "value": 0.23176235739986598,
+      "threshold": 6,
+      "passed": true
+    },
+    "top-01_delta_e": {
+      "value": 6.467848464864228,
+      "threshold": 8,
+      "passed": true
+    },
+    "top-01_paint_mean_delta_e": {
+      "value": 3.694998020621788,
+      "threshold": 8,
+      "passed": true
+    },
+    "top-01_paint_std_delta_e": {
+      "value": 4.588858306328888,
+      "threshold": 8,
+      "passed": true
+    },
+    "top-01_rust_mean_delta_e": {
+      "value": 5.769516117680964,
+      "threshold": 8,
+      "passed": true
+    },
+    "top-01_rust_std_delta_e": {
+      "value": 2.2118644621625414,
+      "threshold": 8,
+      "passed": true
+    },
+    "top-01_planar_light_gradient": {
+      "value": 0.0038362970643815567,
+      "threshold": 0.06,
+      "passed": true
+    },
+    "top-01_secondary_autocorrelation": {
+      "value": 0.3970461303677122,
+      "threshold": 0.5,
+      "passed": true
+    },
+    "top-01_no_green": {
+      "value": 0.0,
+      "threshold": 0.005,
+      "passed": true
+    },
+    "top-01_edge_broad_ratio": {
+      "value": 6636.721095931049,
+      "threshold": 1.8,
+      "passed": true
+    },
+    "top-01_pixels_per_metre": {
+      "value": 1536.0,
+      "threshold": 600,
+      "passed": true
+    },
+    "top-01_broad_rust": {
+      "value": 3.973966545162639e-06,
+      "threshold": 0.2,
+      "passed": true
+    },
+    "top-01_pilot_pigment_delta_e": {
+      "value": 0.21777481767190401,
+      "threshold": 6,
+      "passed": true
+    },
+    "top-02_delta_e": {
+      "value": 6.259924785586906,
+      "threshold": 8,
+      "passed": true
+    },
+    "top-02_paint_mean_delta_e": {
+      "value": 3.6887559100884095,
+      "threshold": 8,
+      "passed": true
+    },
+    "top-02_paint_std_delta_e": {
+      "value": 6.436039081025442,
+      "threshold": 8,
+      "passed": true
+    },
+    "top-02_rust_mean_delta_e": {
+      "value": 6.596026500345675,
+      "threshold": 8,
+      "passed": true
+    },
+    "top-02_rust_std_delta_e": {
+      "value": 2.363137498676563,
+      "threshold": 8,
+      "passed": true
+    },
+    "top-02_planar_light_gradient": {
+      "value": 0.0022939827377044856,
+      "threshold": 0.06,
+      "passed": true
+    },
+    "top-02_secondary_autocorrelation": {
+      "value": 0.22364160457214005,
+      "threshold": 0.5,
+      "passed": true
+    },
+    "top-02_no_green": {
+      "value": 0.0,
+      "threshold": 0.005,
+      "passed": true
+    },
+    "top-02_edge_broad_ratio": {
+      "value": 599.8643197313147,
+      "threshold": 1.8,
+      "passed": true
+    },
+    "top-02_pixels_per_metre": {
+      "value": 1536.0,
+      "threshold": 600,
+      "passed": true
+    },
+    "top-02_broad_rust": {
+      "value": 6.557044799518355e-05,
+      "threshold": 0.2,
+      "passed": true
+    },
+    "top-02_pilot_pigment_delta_e": {
+      "value": 0.28793266575331894,
+      "threshold": 6,
+      "passed": true
+    },
+    "top-03_delta_e": {
+      "value": 5.955409523001489,
+      "threshold": 8,
+      "passed": true
+    },
+    "top-03_paint_mean_delta_e": {
+      "value": 3.6434843330090922,
+      "threshold": 8,
+      "passed": true
+    },
+    "top-03_paint_std_delta_e": {
+      "value": 6.438290882441402,
+      "threshold": 8,
+      "passed": true
+    },
+    "top-03_rust_mean_delta_e": {
+      "value": 2.3472415116727237,
+      "threshold": 8,
+      "passed": true
+    },
+    "top-03_rust_std_delta_e": {
+      "value": 0.9960059839148346,
+      "threshold": 8,
+      "passed": true
+    },
+    "top-03_planar_light_gradient": {
+      "value": 0.0009604273368210226,
+      "threshold": 0.06,
+      "passed": true
+    },
+    "top-03_secondary_autocorrelation": {
+      "value": 0.1902039707123624,
+      "threshold": 0.5,
+      "passed": true
+    },
+    "top-03_no_green": {
+      "value": 0.0,
+      "threshold": 0.005,
+      "passed": true
+    },
+    "top-03_edge_broad_ratio": {
+      "value": 7174799.39810622,
+      "threshold": 1.8,
+      "passed": true
+    },
+    "top-03_pixels_per_metre": {
+      "value": 1536.0,
+      "threshold": 600,
+      "passed": true
+    },
+    "top-03_broad_rust": {
+      "value": 0.0,
+      "threshold": 0.2,
+      "passed": true
+    },
+    "top-03_pilot_pigment_delta_e": {
+      "value": 0.2537327832071717,
+      "threshold": 6,
+      "passed": true
+    },
+    "runtime_uv_overlap_texels": {
+      "value": 0,
+      "threshold": "0",
+      "passed": true
+    },
+    "fitted_atlas_pixels_per_metre": {
+      "value": 786.3680389831561,
+      "threshold": ">=600",
+      "passed": true
+    },
+    "mapped_source_pixels_per_metre": {
+      "value": 1929.6482319585127,
+      "threshold": ">=600",
+      "passed": true
+    },
+    "hardware_physical_pitch_m": {
+      "value": [
+        0.2
+      ],
+      "threshold": "0.2",
+      "passed": true
+    },
+    "fabric_physical_pitch_m": {
+      "value": [],
+      "threshold": "0.1",
+      "passed": true
+    },
+    "mask_bake_overlap_texels": {
+      "value": 0,
+      "threshold": "0",
+      "passed": true
+    },
+    "mask_bake_density_ratio": {
+      "value": 1.0010276892151202,
+      "threshold": "<=1.015",
+      "passed": true
+    },
+    "mask_bake_finite": {
+      "value": true,
+      "threshold": "finite positions, normals and density",
+      "passed": true
+    },
+    "original_fitted_uvs": {
+      "value": {
+        "overlapping_triangle_pairs": 0,
+        "max_overlap_area_uv2": 0.0,
+        "out_of_unit_square_coordinates": 0,
+        "linear_texel_density_p05_p50_p95": [
+          0.3840907108172009,
+          0.407726629551611,
+          0.4226786911503935
+        ],
+        "density_p95_p05_ratio": 1.100465799475056,
+        "pass": true
+      },
+      "threshold": "no overlap, coordinates in atlas, density p95/p05<=1.25",
+      "passed": true
+    },
+    "as_built_rust": {
+      "value": 0.0,
+      "threshold": "<0.01",
+      "passed": true
+    },
+    "as_built_locker_paint_delta_e": {
+      "value": 1.9531287982569225e-06,
+      "threshold": "<=6 D65 Lab",
+      "passed": true
+    },
+    "aged_hardware_rust": {
+      "value": 0.6356849670410156,
+      "threshold": ">=0.30",
+      "passed": true
+    },
+    "as_built_albedo_atlas": {
+      "value": [
+        2048,
+        2048
+      ],
+      "threshold": "square built atlas matching fitted UVs",
+      "passed": true
+    },
+    "as_built_normal_atlas": {
+      "value": [
+        2048,
+        2048
+      ],
+      "threshold": "square built atlas matching fitted UVs",
+      "passed": true
+    },
+    "as_built_orm_atlas": {
+      "value": [
+        2048,
+        2048
+      ],
+      "threshold": "square built atlas matching fitted UVs",
+      "passed": true
+    },
+    "aged_albedo_atlas": {
+      "value": [
+        2048,
+        2048
+      ],
+      "threshold": "square built atlas matching fitted UVs",
+      "passed": true
+    },
+    "aged_normal_atlas": {
+      "value": [
+        2048,
+        2048
+      ],
+      "threshold": "square built atlas matching fitted UVs",
+      "passed": true
+    },
+    "aged_orm_atlas": {
+      "value": [
+        2048,
+        2048
+      ],
+      "threshold": "square built atlas matching fitted UVs",
+      "passed": true
+    },
+    "as_built_hero_albedo_rust": {
+      "value": 0.0,
+      "threshold": "<0.01",
+      "passed": true
+    },
+    "as_built_hero_neutral_rust": {
+      "value": 0.0,
+      "threshold": "<0.01",
+      "passed": true
+    },
+    "aged_hero_albedo_edge_broad_ratio": {
+      "value": 54.49632671993297,
+      "threshold": ">=1.8",
+      "passed": true
+    },
+    "aged_hero_albedo_no_green": {
+      "value": 0.0,
+      "threshold": "<0.005",
+      "passed": true
+    },
+    "aged_hero_neutral_edge_broad_ratio": {
+      "value": 54.9209397455864,
+      "threshold": ">=1.8",
+      "passed": true
+    },
+    "aged_hero_neutral_no_green": {
+      "value": 0.0,
+      "threshold": "<0.005",
+      "passed": true
+    },
+    "as_built_front_albedo_rust": {
+      "value": 0.0,
+      "threshold": "<0.01",
+      "passed": true
+    },
+    "as_built_front_neutral_rust": {
+      "value": 0.0,
+      "threshold": "<0.01",
+      "passed": true
+    },
+    "aged_front_albedo_edge_broad_ratio": {
+      "value": 40.95614470419224,
+      "threshold": ">=1.8",
+      "passed": true
+    },
+    "aged_front_albedo_no_green": {
+      "value": 0.0,
+      "threshold": "<0.005",
+      "passed": true
+    },
+    "aged_front_neutral_edge_broad_ratio": {
+      "value": 40.22046988781957,
+      "threshold": ">=1.8",
+      "passed": true
+    },
+    "aged_front_neutral_no_green": {
+      "value": 0.0,
+      "threshold": "<0.005",
+      "passed": true
+    }
+  },
+  "age_years": 1000,
+  "rendered": true,
+  "passed": 174,
+  "failed": 0,
+  "atlas_texels_per_metre": 835.03839527941,
+  "note": "Source image density and fitted-UV atlas density are distinct. No geometry or UV repack."
+}

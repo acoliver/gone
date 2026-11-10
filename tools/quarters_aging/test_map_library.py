@@ -84,6 +84,38 @@ class LibraryMappingTests(unittest.TestCase):
                 result = map_prop(document, 'fixture', library/'shared-edge', 32, 95)
                 self.assertEqual(result['uv_overlap_texels'], 0)
 
+    def test_round_panel_keeps_corrosion_around_its_physical_rim(self):
+        with tempfile.TemporaryDirectory(dir=ROOT/'tmp/mat2') as name:
+            library = Path(name)
+            pixels = np.zeros((800, 800, 3), np.uint8)+[90, 100, 95]
+            pixels[:80] = pixels[-80:] = [85, 35, 20]
+            pixels[:, :80] = pixels[:, -80:] = [85, 35, 20]
+            Image.fromarray(pixels.astype(np.uint8)).save(library/'panel.png')
+            Image.new('RGB', (4, 4), (90, 100, 95)).save(library/'clean.png')
+            manifest = dict(faces=[dict(id='panel', kind='broad', pixels=[800, 800],
+                                       image='panel.png', passed=True)],
+                            clean='clean.png', hardware='panel.png', fabric='panel.png')
+            (library/'manifest.json').write_text(json.dumps(manifest))
+            angles = np.arange(96)*2*np.pi/96
+            ring = np.stack([.5+.5*np.cos(angles), np.zeros(96), .5+.5*np.sin(angles)], -1)
+            centre = [.5, 0, .5]
+            triangles = np.array([[centre, ring[i], ring[(i+1)%96]] for i in range(96)])
+            face = dict(id='round/0', part='round', material='PaintedSteel', normal=[0, -1, 0],
+                        triangles=triangles.tolist(), uv=triangles[..., [0, 2]].tolist())
+            document = dict(blend='round.blend', materials=['PaintedSteel'], faces=[face])
+            with patch('map_library.LIBRARY', library):
+                result = map_prop(document, 'round', library/'bake', 64, 95)
+            self.assertEqual(result['faces'][0]['projection'], 'disc')
+            yy, xx = np.mgrid[:64, :64]
+            radius = np.hypot((xx+.5)/64-.5, (yy+.5)/64-.5)
+            regions = np.asarray(Image.open(library/'bake/regions.png'))
+            rim = (radius > .45) & (regions[..., 0] > 0)
+            from locker_faces import paint_fields
+            rust = paint_fields(Image.open(library/'bake/aged_albedo.png'))[1] < .5
+            self.assertTrue(rim.any())
+            self.assertGreater(float(rust[rim].mean()), .95)
+            self.assertGreaterEqual(result['faces'][0]['source_pixels_per_metre'], 600)
+
     def test_selection_requires_source_density_at_the_actual_face_size(self):
         rows = [dict(id='thin', kind='top', pixels=[1536, 512]),
                 dict(id='supported', kind='top', pixels=[1536, 1024])]

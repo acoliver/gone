@@ -1,0 +1,70 @@
+{
+  "images_seen": [
+    "hero",
+    "front",
+    "top",
+    "detail"
+  ],
+  "ratings": {
+    "candidate_as_built": {
+      "score": 9,
+      "explanation": "The grey-green paint is uniform and clean across all views, with sharp edges and clear hardware definition in the detail block."
+    },
+    "candidate_aged": {
+      "score": 8,
+      "explanation": "The aged state shows convincing broad paint retention with irregular edge corrosion and downward rust runs, though the top surface dust is slightly patchy."
+    },
+    "locker_as_built": {
+      "score": 9,
+      "explanation": "The reference locker presents a consistent, high-quality grey-green finish with clean lines and well-defined hardware."
+    },
+    "locker_aged": {
+      "score": 8,
+      "explanation": "The aged locker displays realistic weathering with significant edge wear and rust streaking that matches the brief's requirements."
+    }
+  },
+  "features": {
+    "grey-green_paint": {
+      "achieved": true,
+      "observations": "The base color is a consistent desaturated grey-green across both candidate and reference objects in the as-built state."
+    },
+    "bare_hardware": {
+      "achieved": true,
+      "observations": "Handles and latches appear as distinct metallic elements that contrast with the painted surfaces in the detail view."
+    },
+    "dark_trim": {
+      "achieved": true,
+      "observations": "Dark accents are visible on the locker's handle and the desk's drawer pulls in the as-built state."
+    },
+    "edge_corrosion": {
+      "achieved": true,
+      "observations": "The aged state shows concentrated rust and paint loss specifically along the vertical edges and corners of the furniture."
+    },
+    "rust_runs": {
+      "achieved": true,
+      "observations": "Narrow, vertical rust streaks are visible on the front faces of the aged desk and locker, simulating water or oxygen exposure."
+    },
+    "settled_dust": {
+      "achieved": true,
+      "observations": "A soft, light-colored overlay is present on the top surfaces of the aged objects, particularly visible in the top view block."
+    },
+    "no_biological_growth": {
+      "achieved": true,
+      "observations": "The textures are limited to rust and dust, with no green or organic patterns visible in any of the aged views."
+    }
+  },
+  "findings": [
+    "The rust texture on the locker's aged state in the detail view appears slightly more saturated than the desk, creating a minor inconsistency in the weathering profile.",
+    "The dust on the top surface of the candidate desk in the top view is slightly uneven, with some areas appearing more transparent than others."
+  ],
+  "ready": true,
+  "limitations": "The orthographic views make it difficult to judge the exact depth of the corrosion relief, and the small scale of the hero view limits the visibility of fine texture details.",
+  "acceptance": {
+    "accepted": true,
+    "candidate_aged": 8,
+    "locker_aged": 8,
+    "numeric_failed": 0,
+    "scope_complete": true,
+    "rule": "candidate aged >= locker aged in this review, numeric gates pass, all four view blocks inspected"
+  }
+}

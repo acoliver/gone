@@ -1,0 +1,70 @@
+{
+  "images_seen": [
+    "hero",
+    "front",
+    "top",
+    "detail"
+  ],
+  "ratings": {
+    "candidate_as_built": {
+      "score": 9,
+      "explanation": "The grey-green paint is uniform and clean across all views, with sharp edges and clear hardware details that match the 'new' brief perfectly."
+    },
+    "candidate_aged": {
+      "score": 8,
+      "explanation": "The aged state shows convincing broad paint retention with irregular edge corrosion and downward rust runs, though the top surface dust appears slightly blotchy in the top view."
+    },
+    "locker_as_built": {
+      "score": 9,
+      "explanation": "The reference locker presents a consistent, high-quality grey-green finish with well-defined hardware and panel lines in the as-built state."
+    },
+    "locker_aged": {
+      "score": 8,
+      "explanation": "The aged locker displays realistic weathering with significant edge rust and paint chipping that aligns with the 1000-year sterile environment description."
+    }
+  },
+  "features": {
+    "grey-green_paint": {
+      "achieved": true,
+      "observations": "The base color is a consistent desaturated grey-green across both candidate and reference objects in the as-built state."
+    },
+    "bare_hardware": {
+      "achieved": true,
+      "observations": "Handles and latches appear as distinct metallic elements that contrast with the painted surfaces in the as-built views."
+    },
+    "dark_trim": {
+      "achieved": true,
+      "observations": "Dark accents are visible on the locker's handle and the desk's drawer pulls, providing the requested contrast."
+    },
+    "edge_corrosion": {
+      "achieved": true,
+      "observations": "The aged state shows concentrated rust and paint loss specifically along the vertical edges and corners of the furniture."
+    },
+    "rust_runs": {
+      "achieved": true,
+      "observations": "Narrow, vertical streaks of rust are visible on the front faces of the aged desk and locker, simulating water or oxidation flow."
+    },
+    "settled_dust": {
+      "achieved": true,
+      "observations": "Upward-facing surfaces in the aged state show a lighter, soft-textured overlay that suggests fine dust accumulation."
+    },
+    "no_biological_growth": {
+      "achieved": true,
+      "observations": "The weathering is limited to rust and paint degradation, with no green or organic textures present on the aged surfaces."
+    }
+  },
+  "findings": [
+    "The dust texture on the top surface of the aged desk in the 'top' view appears slightly mottled rather than uniformly soft.",
+    "The transition between the painted surface and the rusted edges in the 'detail' view is very sharp, which could benefit from a slightly softer gradient for realism."
+  ],
+  "ready": true,
+  "limitations": "The orthographic views make it difficult to judge the exact depth of the corrosion relief, and the small scale of the 'hero' view limits the visibility of fine surface details.",
+  "acceptance": {
+    "accepted": false,
+    "candidate_aged": 8,
+    "locker_aged": 8,
+    "numeric_failed": 2,
+    "scope_complete": true,
+    "rule": "candidate aged >= locker aged in this review, numeric gates pass, all four view blocks inspected"
+  }
+}

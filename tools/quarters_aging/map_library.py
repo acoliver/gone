@@ -16,7 +16,7 @@ from scipy.ndimage import distance_transform_edt, map_coordinates
 from steel_library import ROOT, LIBRARY
 from locker_faces import paint_fields
 from colour import linear
-from library_projection import cylinders, cylindrical_frame
+from library_projection import cylinders, cylindrical_frame, is_disc, disc_to_square, DISC_SOURCE_SCALE
 
 BLENDER = '/Volumes/XS1000/acoliver/projects/threedee/branch-1/.tools/Blender-4.5.11.app/Contents/MacOS/Blender'
 PROPS = ['wardrobe', 'desk', 'console', 'bed', 'lockers_over_bed', 'bedside', 'media_cabinet',
@@ -137,13 +137,15 @@ def map_prop(document, prop, output, resolution, seed):
             coordinates = coordinates.reshape(-1, 3, 2)
         areas = np.linalg.norm(np.cross(triangles[:, 1]-triangles[:, 0], triangles[:, 2]-triangles[:, 0]), axis=-1)/2
         area = float(areas.sum())
+        disc = role == 'paint' and not cylindrical and is_disc(coordinates, size, area)
+        source_scale = DISC_SOURCE_SCALE if disc else 1.
         kind = classify_face(face['normal'], size, area if not cylindrical else float(np.prod(size)))
         if role == 'paint':
             identity = face['part']+'/tube/'+kind if cylindrical else face['id']
             if cylindrical and identity in round_images:
                 chosen = round_images[identity]
             else:
-                chosen = choose_face(manifest['faces'], kind, size, seed, identity, set(recent.get(kind, [])))
+                chosen = choose_face(manifest['faces'], kind, size/source_scale, seed, identity, set(recent.get(kind, [])))
                 if cylindrical: round_images[identity] = chosen
                 recent[kind] = [chosen['id']]
             image_id = chosen['id']
@@ -163,12 +165,13 @@ def map_prop(document, prop, output, resolution, seed):
         field = fields[image_id]
         record = dict(id=face['id'], part=face['part'], material=face['material'], role=role,
                       kind=kind, image=image_id, size_m=size.tolist(), area_m2=area,
-                      upward=bool(face['normal'][2] > .7), projection='cylindrical' if cylindrical else 'planar')
+                      upward=bool(face['normal'][2] > .7), source_density_scale=float(source_scale),
+                      projection='cylindrical' if cylindrical else ('disc' if disc else 'planar'))
         if role in ('hardware', 'fabric'):
             record['pitch_m'] = .2 if role == 'hardware' else .1
             record['source_pixels_per_metre'] = min(images[image_id].shape[:2])/record['pitch_m']
         else:
-            record['source_pixels_per_metre'] = float(np.min(np.array(images[image_id].shape[:2][::-1])/size))
+            record['source_pixels_per_metre'] = float(np.min(np.array(images[image_id].shape[:2][::-1])/size)*source_scale)
         records.append(record)
         for ti, uv in enumerate(np.array(face['uv'], float)):
             x, y, weights = triangle_samples(uv, resolution)
@@ -187,6 +190,7 @@ def map_prop(document, prop, output, resolution, seed):
             interior_owner[y, x] = interior
             local = weights @ coordinates[ti]
             if cylindrical: local[:, 0] %= 1
+            if disc: local = disc_to_square(local)
             texture_coordinates = np.mod(local*size/record['pitch_m'], 1) if role in ('hardware', 'fabric') else local
             sampled = sample_image(field, texture_coordinates)
             albedo[y, x] = sampled[:, :3]

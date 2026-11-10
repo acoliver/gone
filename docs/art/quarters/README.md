@@ -1411,6 +1411,30 @@ With the installed Hunyuan Python, the source stages are `tools/quarters_aging/s
 
 The auxiliary mask checks reproduce the earlier wardrobe method with Blender's `tools/blender/quarters_aging/library_masks.py -- --prop <prop>`. This triangulates and isometrically repacks a scratch copy only. Its density-ratio limit remains 1.015. The separate original-fitted-UV check retains its existing density p95/p05 limit of 1.25; these are different UV sets. The runtime atlas never uses the auxiliary pack. `review_library.py` sends one labelled composite containing all four matched views to the installed local image-comparer endpoint and retains its exact input, unedited response, prompt, scores and findings. The wardrobe also includes its per-face finish in the same views. Acceptance requires aged score at least the locker score in that review, passing numeric gates and confirmed coverage of all four views; the wardrobe must also match or exceed its per-face finish. Earlier scores and their actual input images are archived before sheets change. Scratch outputs and long-job logs stay under `tmp/mat2/`.
 
+### Recovered shared-library review results
+
+The later source-refinement pass improved the broad-panel rust variation and dusty-top images. Desk, dining chair and view screen initially failed rendered no-green checks: their source pigment was near the saturation limit, and interpolation, byte rounding and BC7 compression pushed a small fraction over it. The source correction leaves headroom below the unchanged rendered threshold. All current numeric gates pass.
+
+Circular table and chair panels now map the complete square image around their physical rim. The previous rectangular projection sampled the clean interior at much of the circular edge, causing the dining table's two rendered edge/broad rust-ratio failures. The radial mapping accounts for its minimum local source density. Both planar and circular mapping retain the fitted UVs.
+
+The latest recovered matched reviews are below. Scores compare aged candidate and aged locker in the same review. Wardrobe also matches its per-face reference at 8/10. Dining chair and view screen remain below parity and keep their interim runtime finishes pending further work. The review inputs, findings and earlier results are retained under `art-source/quarters/steel_library/props/<prop>/`.
+
+| Prop | Aged candidate / locker | Numeric gates passed / failed | Accepted |
+|---|---:|---:|---|
+| wardrobe | 8 / 8 | 174 / 0 | Yes |
+| desk | 8 / 8 | 198 / 0 | Yes |
+| console | 8 / 8 | 198 / 0 | Yes |
+| bed | 8 / 8 | 162 / 0 | Yes |
+| lockers_over_bed | 7 / 7 | 198 / 0 | Yes |
+| bedside | 8 / 8 | 174 / 0 | Yes |
+| media_cabinet | 8 / 8 | 198 / 0 | Yes |
+| dining_table | 8 / 8 | 163 / 0 | Yes |
+| dining_chair | 7 / 8 | 188 / 0 | No |
+| desk_chair | 9 / 8 | 150 / 0 | Yes |
+| view_screen | 6 / 7 | 198 / 0 | No |
+
+Recovery verification passed 28 Python library/mapper/review tests and 34 focused Godot material tests. The historical per-face wardrobe report below describes its earlier isolated pass; the shared-library table above supersedes its batch-wide status.
+
 ### Wardrobe per-prop pass at 0c99445
 
 **The wardrobe material pass is committed but not visually accepted.** Its numeric gates pass; its aged finish remains below the finished locker in the matched review. No other batch-1 prop received a material pass.

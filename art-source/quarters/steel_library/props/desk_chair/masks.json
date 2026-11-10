@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "seed": 9502,
+  "atlas_size": [
+    2048,
+    2048
+  ],
+  "texels_per_metre": 792.2841655679072,
+  "density_range_px_m": [
+    792.2329191238215,
+    792.3448106968765
+  ],
+  "uv_overlap_texels": 0,
+  "uv_method": "isometric planar face islands, shared pack, 3 px margin",
+  "occupied_texels": 1361952,
+  "ao_method": "Cycles geometry AO, 16 samples, CPU",
+  "channels": {
+    "geometry_masks.png": {
+      "R": "ambient occlusion (1 = open)",
+      "G": "cavity (1 = recessed)",
+      "B": "edge curvature proximity (12 mm falloff)",
+      "A": "surface coverage"
+    },
+    "weather_masks.png": {
+      "R": "up-facing exposure times AO",
+      "G": "gravity streak field",
+      "B": "contact with other parts (5 mm falloff, 25 mm search)",
+      "A": "material class / 4: PaintedSteel=1, BareSteel=2, DarkSteel=3, other=4"
+    }
+  },
+  "parts": [
+    "BackPlate",
+    "BackUpright_L",
+    "BackUpright_R",
+    "CrossBrace_B",
+    "CrossBrace_F",
+    "DeckShoe_LB",
+    "DeckShoe_LF",
+    "DeckShoe_RB",
+    "DeckShoe_RF",
+    "FrameRivets",
+    "Leg_LB",
+    "Leg_LF",
+    "Leg_RB",
+    "Leg_RF",
+    "SeatMountingPlate",
+    "SeatPad",
+    "SeatPan",
+    "SideBrace_L",
+    "SideBrace_R"
+  ],
+  "sources": [
+    {
+      "part": "FrameRivets",
+      "position_blender": [
+        -0.1811659187078476,
+        -0.20075425505638123,
+        0.4000000059604645
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          -0.186165913939476,
+          -0.20240426063537598,
+          0.4000000059604645
+        ],
+        [
+          -0.17616592347621918,
+          -0.19910424947738647,
+          0.4099999964237213
+        ]
+      ]
+    },
+    {
+      "part": "FrameRivets",
+      "position_blender": [
+        0.1811659187078476,
+        -0.20075425505638123,
+        0.4000000059604645
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          0.17616592347621918,
+          -0.20240426063537598,
+          0.4000000059604645
+        ],
+        [
+          0.186165913939476,
+          -0.19910424947738647,
+          0.4099999964237213
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "images_seen": [
+    "hero",
+    "front",
+    "top",
+    "detail"
+  ],
+  "ratings": {
+    "candidate_as_built": {
+      "score": 9,
+      "explanation": "The grey-green paint is uniform and clean across all views, with sharp edges and clear material separation for the dark display and hardware."
+    },
+    "candidate_aged": {
+      "score": 8,
+      "explanation": "The aged state shows convincing broad paint retention with irregular edge corrosion and downward rust runs, though the dust on upward faces is subtle."
+    },
+    "locker_as_built": {
+      "score": 9,
+      "explanation": "The reference locker presents a consistent, high-quality grey-green finish with clean geometry and distinct hardware details."
+    },
+    "locker_aged": {
+      "score": 8,
+      "explanation": "The aged locker features realistic weathering with significant edge rust and paint loss that matches the brief's requirements for a 1000-year environment."
+    }
+  },
+  "features": {
+    "grey-green_paint": {
+      "achieved": true,
+      "observations": "The base color is a consistent grey-green across both the candidate and the reference locker in the as-built state."
+    },
+    "bare_hardware": {
+      "achieved": true,
+      "observations": "Hardware elements like the locker handle and console keys are distinct from the painted surfaces in the as-built views."
+    },
+    "dark_trim": {
+      "achieved": true,
+      "observations": "The display area and key sections are rendered in a dark color that contrasts with the grey-green body."
+    },
+    "edge_corrosion": {
+      "achieved": true,
+      "observations": "The aged state shows concentrated rust and paint loss along the vertical edges and corners of the locker and console."
+    },
+    "rust_runs": {
+      "achieved": true,
+      "observations": "Narrow, vertical rust streaks are visible on the vertical faces of the aged locker and console."
+    },
+    "settled_dust": {
+      "achieved": true,
+      "observations": "A fine, soft layer of dust is visible on the top surfaces of the aged console and locker, particularly in the top and detail views."
+    },
+    "faded_fabric": {
+      "achieved": false,
+      "observations": "No fabric pads are visible on the console or locker in any of the provided views."
+    },
+    "display_finish": {
+      "achieved": true,
+      "observations": "The dark display area retains its original finish and does not appear to be affected by the aging process."
+    }
+  },
+  "findings": [
+    "The dust on upward-facing surfaces in the aged state could be slightly more pronounced to better match the 'fine soft settled dust' description.",
+    "The transition between the painted surface and the rusted edges in the aged state is very sharp in some areas, which could be softened for a more natural look."
+  ],
+  "ready": true,
+  "limitations": "The provided views do not show any fabric pads, so their faded appearance cannot be evaluated.",
+  "acceptance": {
+    "accepted": true,
+    "candidate_aged": 8,
+    "locker_aged": 8,
+    "numeric_failed": 0,
+    "scope_complete": true,
+    "rule": "candidate aged >= locker aged in this review, numeric gates pass, all four view blocks inspected"
+  }
+}

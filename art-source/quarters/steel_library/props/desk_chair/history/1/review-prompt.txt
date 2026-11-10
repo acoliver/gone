@@ -1,0 +1,21 @@
+You are the image-comparer visual reviewer. Inspect every supplied image directly.
+These are four neutral-light matched sheets for the Godot game's desk_chair furniture finish.
+Images in order: hero, front, top, detail. Each is a 2 by 2 grid: candidate LEFT,
+finished reference storage locker RIGHT, AS-BUILT on TOP, AGED on BOTTOM.
+Both columns share white lighting, orthographic physical image scale and view direction;
+cameras are translated to each object's centre. Geometry differs. Judge materials, not matching silhouettes.
+The material brief is grey-green painted warship steel, with bare hardware and dark trim when new.
+Aged means 1000 years aboard a sealed sterile dry oxygenated ship: most broad paint retained,
+irregular edge/corner/fixture corrosion, a few narrow downward rust runs on vertical faces,
+corroded hardware, and fine soft settled dust on upward faces. No biological growth or new bright green.
+Fabric pads, if present, should be faded woven fabric. Displays and glass retain their original finish.
+Evaluate the complete material/rendering result, including stretching, repeating marks, seams,
+blocky or blurry wear, lighting, relief, dust softness and material-role clarity. Distinguish
+observations from hypotheses. Report cropping and visibility limitations instead of assuming unseen features.
+Rate the candidate and the finished locker in BOTH states on the SAME 1-10 scale in this review.
+Use 1 for unusable/material failure and 10 for a convincing finished presentation.
+Do not infer ratings from numeric checks. Explain each score with locations in the images.
+Return JSON only with keys: images_seen; ratings (candidate_as_built, candidate_aged,
+locker_as_built, locker_aged, each an object with score and explanation); features (each requested
+feature with achieved and observations); findings (ordered by severity with concrete fixes);
+ready (boolean); limitations. Assess all four sheets. Do not edit images or source files.

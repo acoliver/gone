@@ -71,6 +71,8 @@ static func prepare_geometry(root: Node3D) -> void:
 
 
 static func material(prop: StringName, state: StringName, part: StringName = &"TunicBody", surface: int = 0) -> ShaderMaterial:
+	if QuartersSteelLibrary.ACCEPTED.has(prop):
+		return QuartersSteelLibrary.material(prop, state)
 	if prop == &"wardrobe":
 		assert(STATES.has(state), "unknown quarters finish: %s" % state)
 		return _wardrobe_material(state)
@@ -123,6 +125,9 @@ static func _sofa_powder_material(state: StringName) -> ShaderMaterial:
 	return result
 
 static func apply(root: Node3D, prop: StringName, state: StringName) -> void:
+	if QuartersSteelLibrary.ACCEPTED.has(prop):
+		QuartersSteelLibrary.apply(root, prop, state)
+		return
 	if prop == &"wardrobe":
 		_apply_wardrobe(root, state)
 		return
@@ -249,7 +254,7 @@ static func _wardrobe_rectangle(face: String) -> Vector4:
 
 
 static func _apply_wardrobe(root: Node3D, state: StringName) -> void:
-	var finish := material(&"wardrobe", state)
+	var finish := _wardrobe_material(state)
 	if _wardrobe_layout.is_empty():
 		_wardrobe_layout = JSON.parse_string(FileAccess.get_file_as_string(WARDROBE_ROOT + "material-layout.json"))["faces"]
 	var panels := {&"Door": "door-outer", &"SidePanel_L": "left-inner", &"SidePanel_R": "right", &"BackPanel": "back", &"TopPanel": "top", &"BottomPanel": "bottom", &"SurroundHead": "header", &"DoorReturn_T": "header", &"DoorReturn_B": "header"}

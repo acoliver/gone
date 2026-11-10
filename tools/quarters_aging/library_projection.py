@@ -1,5 +1,24 @@
-"""Recognise round fitted rails so polygon facets share one continuous face image."""
+"""Keep whole-face wear continuous on round rails and circular panels."""
 import numpy as np
+
+
+# Minimum singular value of the radial disc-to-square map. Source resolution
+# must account for its local contraction rather than just the face bounds.
+DISC_SOURCE_SCALE = np.sqrt(.75)
+
+
+def is_disc(coordinates, size, area):
+    relative_area = area/np.prod(size)
+    radius = np.linalg.norm(np.asarray(coordinates).reshape(-1, 2)*2-1, axis=1)
+    return abs(relative_area-np.pi/4) < .03 and radius.max() <= 1.02
+
+
+def disc_to_square(coordinates):
+    delta = np.asarray(coordinates)*2-1
+    radius = np.linalg.norm(delta, axis=-1)
+    longest = np.max(np.abs(delta), axis=-1)
+    scale = np.divide(radius, longest, out=np.ones_like(radius), where=longest != 0)
+    return (delta*scale[..., None]+1)*.5
 
 
 def cylinders(faces):
