@@ -1,0 +1,79 @@
+{
+  "images_seen": [
+    "hero",
+    "front",
+    "top",
+    "detail"
+  ],
+  "ratings": {
+    "candidate_as_built": {
+      "score": 9,
+      "explanation": "The grey-green paint is uniform and clean across all views, with sharp edges and clear hardware details in the detail block."
+    },
+    "candidate_aged": {
+      "score": 8,
+      "explanation": "The aged state shows convincing broad paint retention with irregular edge corrosion and rust runs, though the top face dust is slightly patchy."
+    },
+    "locker_as_built": {
+      "score": 9,
+      "explanation": "The reference locker presents a clean, consistent grey-green finish with well-defined vents and hardware."
+    },
+    "locker_aged": {
+      "score": 8,
+      "explanation": "The aged locker shows realistic weathering with rust concentrated on edges and hardware, matching the brief's requirements."
+    },
+    "legacy_as_built": {
+      "score": 9,
+      "explanation": "The legacy finish is a solid grey-green with a clean, unblemished appearance across all visible surfaces."
+    },
+    "legacy_aged": {
+      "score": 8,
+      "explanation": "The aged legacy finish displays appropriate wear with rust streaks and edge corrosion, though the interior wear is slightly more uniform than ideal."
+    }
+  },
+  "features": {
+    "grey-green_paint": {
+      "achieved": true,
+      "observations": "Consistent grey-green tone in as-built states across all blocks."
+    },
+    "bare_hardware": {
+      "achieved": true,
+      "observations": "Hardware is visible and distinct in the detail block, appearing bare in as-built states."
+    },
+    "dark_trim": {
+      "achieved": true,
+      "observations": "Dark trim is visible at the base of the lockers in the hero and front blocks."
+    },
+    "edge_corrosion": {
+      "achieved": true,
+      "observations": "Irregular corrosion is clearly visible on edges and corners in the aged states."
+    },
+    "rust_runs": {
+      "achieved": true,
+      "observations": "Narrow downward rust runs are present on vertical faces in the aged states."
+    },
+    "settled_dust": {
+      "achieved": true,
+      "observations": "Soft dust is visible on upward-facing surfaces in the top block aged state."
+    },
+    "faded_fabric": {
+      "achieved": false,
+      "observations": "No fabric pads are visible in the provided views."
+    }
+  },
+  "findings": [
+    "The dust on the top face in the aged state appears slightly patchy rather than uniformly soft.",
+    "The interior wear in the legacy aged state is slightly more uniform than the irregular wear seen in the candidate."
+  ],
+  "ready": true,
+  "limitations": "The detail block is cropped, limiting the view of the full hardware context.",
+  "acceptance": {
+    "accepted": true,
+    "candidate_aged": 8,
+    "locker_aged": 8,
+    "numeric_failed": 0,
+    "scope_complete": true,
+    "rule": "candidate aged >= locker aged in this review, numeric gates pass, all four view blocks inspected; wardrobe must also match or exceed its per-face finish in this review",
+    "legacy_aged": 8
+  }
+}

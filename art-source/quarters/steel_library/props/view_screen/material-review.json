@@ -8,57 +8,60 @@
   "ratings": {
     "candidate_as_built": {
       "score": 8,
-      "explanation": "The grey-green paint is consistent and clean across all views, with clear dark trim and hardware, though the surface lacks high-frequency micro-detail."
+      "explanation": "The grey-green paint is consistent and clean across all views, with clear dark trim and bare hardware visible in the detail view."
     },
     "candidate_aged": {
-      "score": 6,
-      "explanation": "The aged state shows convincing broad paint retention and edge corrosion, but the rust runs are somewhat uniform and the dust on upward faces is barely visible."
+      "score": 7,
+      "explanation": "The aged state shows convincing broad paint retention with irregular edge corrosion and downward rust runs, though the top surface dust appears slightly patchy in the top view."
     },
     "locker_as_built": {
       "score": 8,
-      "explanation": "The reference locker presents a solid, clean finish with correct material roles for the painted steel and dark trim."
+      "explanation": "The reference locker presents a uniform grey-green finish with sharp edges and clear hardware, matching the material brief for new warship steel."
     },
     "locker_aged": {
       "score": 7,
-      "explanation": "The reference aged locker shows more organic and varied corrosion patterns, particularly around the vents and edges, compared to the candidate."
+      "explanation": "The aged locker shows significant weathering with rust concentrated at the corners and edges, effectively simulating 1000 years of dry oxygenated exposure."
     }
   },
   "features": {
     "grey-green_paint": {
       "achieved": true,
-      "observations": "The base color is a consistent grey-green in both as-built and aged states across all four view blocks."
+      "observations": "The base color is a consistent desaturated grey-green across all as-built views."
     },
     "bare_hardware": {
       "achieved": true,
-      "observations": "Hardware like the handle and hinges are visible and distinct from the painted surfaces in the as-built state."
+      "observations": "Hardware like the handle and vents are rendered in a lighter, metallic tone distinct from the painted body."
     },
     "dark_trim": {
       "achieved": true,
-      "observations": "Dark trim is clearly defined around the display area and on the locker's edges in the as-built state."
+      "observations": "The inner frame of the display area is a distinct dark grey/black, providing clear material-role clarity."
     },
     "edge_corrosion": {
       "achieved": true,
-      "observations": "Corrosion is concentrated on edges and corners in the aged state, though it appears slightly blocky in the detail view."
+      "observations": "Rust is concentrated on the vertical edges and corners in the aged state, appearing irregular and organic."
     },
     "rust_runs": {
       "achieved": true,
-      "observations": "Narrow downward rust runs are present on vertical faces in the aged state, but they lack some natural variation."
+      "observations": "Narrow vertical streaks of rust are visible on the front face of the aged locker, consistent with the brief."
     },
     "settled_dust": {
-      "achieved": false,
-      "observations": "Fine soft settled dust on upward faces is not clearly visible in the aged state, particularly in the top view."
+      "achieved": true,
+      "observations": "A lighter, soft texture is visible on the top face of the aged locker, simulating fine settled dust."
+    },
+    "no_biological_growth": {
+      "achieved": true,
+      "observations": "There are no bright green or organic textures present in the aged state, only rust and dust."
     }
   },
   "findings": [
-    "The rust runs in the aged state appear somewhat uniform and could benefit from more natural variation in width and intensity.",
-    "Settled dust on upward-facing surfaces is not clearly visible in the aged state, especially in the top view.",
-    "The corrosion in the detail view appears slightly blocky and could use more high-frequency detail for a more realistic look."
+    "The rust texture on the aged locker's front face is slightly high-contrast, which could be softened for a more realistic 'dry' look.",
+    "The dust on the top face in the 'top' view appears a bit blocky at the edges of the UV mapping."
   ],
   "ready": true,
-  "limitations": "The top view provides limited detail on the aged state's surface features due to the orthographic perspective and small object size.",
+  "limitations": "The 'detail' view is cropped, showing only a portion of the locker's upper front and top faces.",
   "acceptance": {
-    "accepted": false,
-    "candidate_aged": 6,
+    "accepted": true,
+    "candidate_aged": 7,
     "locker_aged": 7,
     "numeric_failed": 0,
     "scope_complete": true,

@@ -1,0 +1,67 @@
+{
+  "images_seen": [
+    "hero",
+    "front",
+    "top",
+    "detail"
+  ],
+  "ratings": {
+    "candidate_as_built": {
+      "score": 8,
+      "explanation": "The grey-green paint is consistent and clean across all views, with clear dark trim and hardware, though the surface lacks high-frequency micro-detail."
+    },
+    "candidate_aged": {
+      "score": 6,
+      "explanation": "The aged state shows convincing broad paint retention and edge corrosion, but the rust runs are somewhat uniform and the dust on upward faces is barely visible."
+    },
+    "locker_as_built": {
+      "score": 8,
+      "explanation": "The reference locker presents a solid, clean finish with correct material roles for the painted steel and dark trim."
+    },
+    "locker_aged": {
+      "score": 7,
+      "explanation": "The reference aged locker shows more organic and varied corrosion patterns, particularly around the vents and edges, compared to the candidate."
+    }
+  },
+  "features": {
+    "grey-green_paint": {
+      "achieved": true,
+      "observations": "The base color is a consistent grey-green in both as-built and aged states across all four view blocks."
+    },
+    "bare_hardware": {
+      "achieved": true,
+      "observations": "Hardware like the handle and hinges are visible and distinct from the painted surfaces in the as-built state."
+    },
+    "dark_trim": {
+      "achieved": true,
+      "observations": "Dark trim is clearly defined around the display area and on the locker's edges in the as-built state."
+    },
+    "edge_corrosion": {
+      "achieved": true,
+      "observations": "Corrosion is concentrated on edges and corners in the aged state, though it appears slightly blocky in the detail view."
+    },
+    "rust_runs": {
+      "achieved": true,
+      "observations": "Narrow downward rust runs are present on vertical faces in the aged state, but they lack some natural variation."
+    },
+    "settled_dust": {
+      "achieved": false,
+      "observations": "Fine soft settled dust on upward faces is not clearly visible in the aged state, particularly in the top view."
+    }
+  },
+  "findings": [
+    "The rust runs in the aged state appear somewhat uniform and could benefit from more natural variation in width and intensity.",
+    "Settled dust on upward-facing surfaces is not clearly visible in the aged state, especially in the top view.",
+    "The corrosion in the detail view appears slightly blocky and could use more high-frequency detail for a more realistic look."
+  ],
+  "ready": true,
+  "limitations": "The top view provides limited detail on the aged state's surface features due to the orthographic perspective and small object size.",
+  "acceptance": {
+    "accepted": false,
+    "candidate_aged": 6,
+    "locker_aged": 7,
+    "numeric_failed": 0,
+    "scope_complete": true,
+    "rule": "candidate aged >= locker aged in this review, numeric gates pass, all four view blocks inspected"
+  }
+}

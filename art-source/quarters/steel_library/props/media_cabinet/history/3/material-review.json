@@ -1,0 +1,74 @@
+{
+  "images_seen": [
+    "hero",
+    "front",
+    "top",
+    "detail"
+  ],
+  "ratings": {
+    "candidate_as_built": {
+      "score": 9,
+      "explanation": "The grey-green paint is uniform and clean across all views, with sharp edges and clear hardware details visible in the detail block."
+    },
+    "candidate_aged": {
+      "score": 8,
+      "explanation": "The aged state shows convincing broad paint retention with irregular edge corrosion and downward rust runs, though the top surface dust appears slightly patchy in the top view."
+    },
+    "locker_as_built": {
+      "score": 9,
+      "explanation": "The reference locker presents a clean, consistent grey-green finish with well-defined vents and handles in the front and detail views."
+    },
+    "locker_aged": {
+      "score": 8,
+      "explanation": "The aged locker exhibits realistic weathering with significant rust on edges and hardware, matching the brief for a 1000-year sealed environment."
+    }
+  },
+  "features": {
+    "grey-green_paint": {
+      "achieved": true,
+      "observations": "The base color is a consistent grey-green across all as-built views, matching the warship steel brief."
+    },
+    "bare_hardware": {
+      "achieved": true,
+      "observations": "Handles and latches appear as distinct metallic elements in the as-built state, clearly visible in the detail block."
+    },
+    "dark_trim": {
+      "achieved": true,
+      "observations": "Dark trim is visible along the bottom edges and corners in the as-built views, providing a grounded look."
+    },
+    "edge_corrosion": {
+      "achieved": true,
+      "observations": "The aged state shows significant rust and corrosion concentrated on edges and corners, particularly in the hero and front views."
+    },
+    "rust_runs": {
+      "achieved": true,
+      "observations": "Narrow downward rust runs are visible on vertical faces in the aged state, adding to the weathered appearance."
+    },
+    "settled_dust": {
+      "achieved": true,
+      "observations": "A fine layer of dust is visible on upward-facing surfaces in the aged state, though it appears slightly uneven in the top view."
+    },
+    "faded_fabric": {
+      "achieved": false,
+      "observations": "No fabric pads are visible in any of the views, so this feature cannot be assessed."
+    },
+    "glass_retention": {
+      "achieved": false,
+      "observations": "No glass displays are visible in any of the views, so this feature cannot be assessed."
+    }
+  },
+  "findings": [
+    "The dust on the top surface in the aged state appears slightly patchy and could be more uniform to better simulate settled dust.",
+    "The rust runs on the vertical faces could be slightly more varied in width and intensity to enhance the natural weathering effect."
+  ],
+  "ready": true,
+  "limitations": "The absence of fabric pads and glass displays in the views limits the assessment of those specific material features.",
+  "acceptance": {
+    "accepted": true,
+    "candidate_aged": 8,
+    "locker_aged": 8,
+    "numeric_failed": 0,
+    "scope_complete": true,
+    "rule": "candidate aged >= locker aged in this review, numeric gates pass, all four view blocks inspected"
+  }
+}

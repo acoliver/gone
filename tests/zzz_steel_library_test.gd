@@ -1,5 +1,30 @@
 extends SimTestCase
 
+func test_runtime_acceptance_matches_all_matched_review_and_numeric_gates() -> void:
+	for prop: StringName in QuartersSteelLibrary.PROPS:
+		var path := "res://art-source/quarters/steel_library/props/%s/" % prop
+		var review: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(path + "material-review.json"))
+		var gates: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(path + "gates.json"))
+		var accepted: bool = review["acceptance"]["accepted"]
+		assert_true(QuartersSteelLibrary.ACCEPTED.has(prop) == accepted, "runtime follows matched acceptance: " + prop)
+		if accepted:
+			assert_int_equal(gates["failed"], 0, "accepted prop passes numeric gates: " + prop)
+			assert_true(review["acceptance"]["scope_complete"], "all matched views reviewed: " + prop)
+			assert_true(review["acceptance"]["candidate_aged"] >= review["acceptance"]["locker_aged"], "aged parity: " + prop)
+		else:
+			var model := (load("res://assets/props/quarters/%s.glb" % prop) as PackedScene).instantiate() as Node3D
+			if prop == &"wardrobe":
+				for state: StringName in QuartersProps.STATES:
+					var finish := QuartersProps.material(prop, state)
+					assert_true(finish == QuartersProps._wardrobe_material(state), "unaccepted wardrobe keeps its per-face finish")
+					QuartersProps.apply(model, prop, state)
+					for piece: MeshInstance3D in model.find_children("*", "MeshInstance3D", true, false):
+						assert_true(piece.material_override == finish, "interim wardrobe reaches every part")
+			else:
+				for piece: MeshInstance3D in model.find_children("*", "MeshInstance3D", true, false):
+					assert_true(piece.material_override == null, "unaccepted prop retains its imported interim finish: " + prop)
+			model.free()
+
 func test_all_batch_finishes_are_built_distinct_and_cached() -> void:
 	var count := QuartersProps.cache_size()
 	for prop: StringName in QuartersSteelLibrary.PROPS:

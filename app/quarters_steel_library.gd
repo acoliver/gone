@@ -7,8 +7,8 @@ const PROPS: Array[StringName] = [
 	&"media_cabinet", &"dining_table", &"dining_chair", &"desk_chair", &"view_screen",
 ]
 const ACCEPTED: Array[StringName] = [
-	&"wardrobe", &"desk", &"console", &"bed", &"lockers_over_bed", &"bedside",
-	&"media_cabinet", &"dining_table", &"desk_chair",
+	&"desk", &"console", &"bed", &"lockers_over_bed", &"bedside",
+	&"media_cabinet", &"dining_table", &"dining_chair", &"desk_chair", &"view_screen",
 ]
 const SHADER := preload("res://app/shaders/quarters_library.gdshader")
 const ROOT := "res://assets/props/quarters/steel/"

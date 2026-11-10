@@ -1,0 +1,69 @@
+{
+  "images_seen": [
+    "hero",
+    "front",
+    "top",
+    "detail"
+  ],
+  "ratings": {
+    "candidate_as_built": {
+      "score": 9,
+      "explanation": "The grey-green paint is uniform and clean across all views, with the fabric pad in the detail view showing a clear, high-quality woven texture."
+    },
+    "candidate_aged": {
+      "score": 9,
+      "explanation": "The aged state convincingly shows broad paint retention with irregular edge corrosion and downward rust runs, while the fabric pad is appropriately faded."
+    },
+    "locker_as_built": {
+      "score": 9,
+      "explanation": "The reference locker presents a clean, consistent grey-green finish with sharp edges and clear hardware details."
+    },
+    "locker_aged": {
+      "score": 9,
+      "explanation": "The aged locker displays realistic, heavy weathering with significant rust and paint loss that matches the intended 1000-year decay profile."
+    }
+  },
+  "features": {
+    "grey-green_paint": {
+      "achieved": true,
+      "observations": "The base color is a consistent grey-green across both the candidate chair and the reference locker in the as-built state."
+    },
+    "bare_hardware": {
+      "achieved": true,
+      "observations": "Hardware elements like the locker handle and hinges appear as distinct, unpainted metal in the as-built views."
+    },
+    "dark_trim": {
+      "achieved": true,
+      "observations": "Subtle dark trim is visible on the locker's base and edges in the as-built state."
+    },
+    "edge_corrosion": {
+      "achieved": true,
+      "observations": "The aged state shows clear, irregular rust and paint loss concentrated on the corners and edges of both objects."
+    },
+    "rust_runs": {
+      "achieved": true,
+      "observations": "Narrow, vertical rust streaks are visible on the vertical faces of the aged locker and chair back."
+    },
+    "settled_dust": {
+      "achieved": true,
+      "observations": "A fine, soft layer of dust is visible on the upward-facing surfaces of the aged chair seat and locker top."
+    },
+    "faded_fabric": {
+      "achieved": true,
+      "observations": "The chair's seat pad transitions from a dark grey-green to a faded, lighter grey in the aged state while retaining its woven texture."
+    }
+  },
+  "findings": [
+    "The aged locker's texture is very dense, which may appear slightly noisy at a distance, but it is appropriate for the close-up detail view."
+  ],
+  "ready": true,
+  "limitations": "The orthographic views make it difficult to judge the exact depth of the corrosion relief, though the lighting suggests a good level of detail.",
+  "acceptance": {
+    "accepted": true,
+    "candidate_aged": 9,
+    "locker_aged": 9,
+    "numeric_failed": 0,
+    "scope_complete": true,
+    "rule": "candidate aged >= locker aged in this review, numeric gates pass, all four view blocks inspected"
+  }
+}

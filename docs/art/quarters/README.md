@@ -1421,7 +1421,7 @@ The later source-refinement pass improved the broad-panel rust variation and dus
 
 Circular table and chair panels now map the complete square image around their physical rim. The previous rectangular projection sampled the clean interior at much of the circular edge, causing the dining table's two rendered edge/broad rust-ratio failures. The radial mapping accounts for its minimum local source density. Both planar and circular mapping retain the fitted UVs.
 
-The latest recovered matched reviews are below. Scores compare aged candidate and aged locker in the same review. Wardrobe also matches its per-face reference at 8/10. Dining chair and view screen remain below parity and keep their interim runtime finishes pending further work. The review inputs, findings and earlier results are retained under `art-source/quarters/steel_library/props/<prop>/`.
+The recovered matched reviews are below. Scores compare aged candidate and aged locker in the same review. Wardrobe also matched its per-face reference at 8/10. At recovery, dining chair and view screen were below parity and retained their interim runtime finishes. The review inputs, findings and earlier results are retained under `art-source/quarters/steel_library/props/<prop>/`.
 
 | Prop | Aged candidate / locker | Numeric gates passed / failed | Accepted |
 |---|---:|---:|---|
@@ -1437,7 +1437,33 @@ The latest recovered matched reviews are below. Scores compare aged candidate an
 | desk_chair | 9 / 8 | 150 / 0 | Yes |
 | view_screen | 6 / 7 | 198 / 0 | No |
 
-Recovery verification passed 28 Python library/mapper/review tests and 34 focused Godot material tests. The historical per-face wardrobe report below describes its earlier isolated pass; the shared-library table above supersedes its batch-wide status.
+Recovery verification passed 28 Python library/mapper/review tests and 34 focused Godot material tests. The final results below supersede this recovery snapshot and the older batch-wide status in the per-face wardrobe report.
+
+### Final shared-library results
+
+**Ten of 11 props meet matched-review parity and use the shared finishes. Wardrobe remains below parity and keeps its per-face finish.** All five props accepted at handoff remain accepted. Desk, console, media cabinet, dining chair and view screen now also pass. The final library clears 180 source-image gates, and all 2,073 per-prop numeric gates pass without changing thresholds or the acceptance rule.
+
+| Prop | Aged candidate / locker | Numeric gates passed / failed | Accepted |
+|---|---:|---:|---|
+| wardrobe | 7 / 8 | 186 / 0 | No: per-face interim |
+| desk | 8 / 8 | 210 / 0 | Yes |
+| console | 7 / 7 | 210 / 0 | Yes |
+| bed | 7 / 7 | 162 / 0 | Yes |
+| lockers_over_bed | 7 / 7 | 210 / 0 | Yes |
+| bedside | 8 / 8 | 186 / 0 | Yes |
+| media_cabinet | 8 / 8 | 210 / 0 | Yes |
+| dining_table | 8 / 8 | 163 / 0 | Yes |
+| dining_chair | 8 / 8 | 188 / 0 | Yes |
+| desk_chair | 8 / 8 | 150 / 0 | Yes |
+| view_screen | 7 / 7 | 198 / 0 | Yes |
+
+Wardrobe's candidate scores 7/10 against the locker's 8/10 and its per-face reference's 6/10 in the final review. Its roof dust still appears slightly blocky after the targeted source edit, so the shared candidate is not enabled at runtime. Accepted props retain some review findings: media-cabinet dust is slightly repetitive, dining-chair fabric could show more fading, and screen-top dust has slightly blocky edges. Their complete matched results meet the unchanged acceptance rule. Each review covers hero, front, top and detail views; scores compare candidate and reference within that review. The wardrobe's unchanged per-face reference pixels received different scores between reviews, so absolute scores should not be compared across review runs.
+
+`QuartersProps` routes the ten accepted props to cached `as_built` and `aged` materials in `QuartersSteelLibrary`. Both atlas states are built and cached for all 11 candidates, for 22 distinct material resources. Wardrobe's public factory and state swaps retain its per-face materials. Display/glass roles and fitted geometry remain unchanged. The pilot locker, sofa and tunic assets and shaders are untouched.
+
+The final Python aging suite passes 84 tests. All 35 focused Godot material tests pass, covering both cached states for every prop, public accepted routing, review/numeric acceptance consistency, wardrobe interim routing, geometry and display preservation, imports and pilot isolation. The cylindrical classification regression failed before implementation and passes after the diameter-based fix. Targeted-refinement tests verify that other source variants stay unchanged and unknown face IDs fail before generation.
+
+The final guarded full Godot suite, run under `nohup`, passes 823 tests with zero failures. An earlier run caught four script errors in the new interim-material test: it called the atlas factory for props that retain imported materials. The corrected test checks the actual imported/per-face interim contract; the guard and all existing assertions remain in force. Godot retains its existing resource, ObjectDB and allocator teardown warnings. OCR review skipped per Andrew 2026-10-09.
 
 ### Wardrobe per-prop pass at 0c99445
 

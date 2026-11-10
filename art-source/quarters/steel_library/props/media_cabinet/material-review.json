@@ -16,49 +16,49 @@
     },
     "locker_as_built": {
       "score": 9,
-      "explanation": "The reference locker presents a consistent, high-quality grey-green finish with well-defined panel lines and hardware."
+      "explanation": "The reference locker presents a consistent, high-quality finish with clear panel lines and hardware that matches the material brief."
     },
     "locker_aged": {
       "score": 8,
-      "explanation": "The reference aged locker displays realistic weathering with heavy edge rust and paint flaking that matches the brief's requirements for a 1000-year environment."
+      "explanation": "The aged locker shows realistic weathering with a good balance of retained paint and corrosion, particularly around the vents and edges."
     }
   },
   "features": {
     "grey-green_paint": {
       "achieved": true,
-      "observations": "The base color is a consistent desaturated grey-green across all as-built views."
+      "observations": "The base color is a consistent grey-green across all as-built views, matching the warship steel brief."
     },
     "bare_hardware": {
       "achieved": true,
-      "observations": "Handles and latches appear as distinct metallic elements in the as-built detail view."
+      "observations": "Handles and latches are rendered in a distinct metallic tone that contrasts with the painted body."
     },
     "dark_trim": {
       "achieved": true,
-      "observations": "Dark trim is visible along the bottom edges and panel seams in the as-built state."
+      "observations": "Dark trim is visible along the base and edges of the as-built units, providing a grounded look."
     },
     "edge_corrosion": {
       "achieved": true,
-      "observations": "Rust is concentrated on corners and edges in the aged state, particularly visible in the hero and detail blocks."
+      "observations": "The aged state features heavy, irregular rust along the vertical edges and corners of the cabinet."
     },
     "rust_runs": {
       "achieved": true,
-      "observations": "Narrow vertical rust streaks are present on the vertical faces of the aged candidate and locker."
+      "observations": "Narrow, downward-streaking rust marks are clearly visible on the vertical faces of the aged candidate."
     },
     "settled_dust": {
       "achieved": true,
-      "observations": "A soft, light-colored overlay is visible on the upward-facing top surfaces in the aged top view."
+      "observations": "A soft, light-colored overlay is present on the upward-facing surfaces of the aged units, simulating settled dust."
     },
-    "no_biological_growth": {
+    "corroded_hardware": {
       "achieved": true,
-      "observations": "The textures show only mineral-based rust and dust, with no green or organic patterns."
+      "observations": "Hardware in the aged state shows a shift toward a rusted, brownish tone compared to the clean metal of the as-built version."
     }
   },
   "findings": [
-    "The rust texture on the aged locker's side panel in the hero view appears slightly more saturated than the candidate, though both are within acceptable range.",
-    "Dust distribution on the top view of the candidate is slightly more mottled than the reference locker's smoother dust layer."
+    "The dust pattern on the top surface of the aged candidate appears slightly repetitive in the top view.",
+    "The transition between the paint and the heavy rust on the vertical edges could be slightly more gradual for a more organic look."
   ],
   "ready": true,
-  "limitations": "The orthographic views limit the ability to judge the depth of the rust relief, and the small scale of the top view makes fine dust softness difficult to evaluate.",
+  "limitations": "The orthographic views limit the ability to judge the depth of the corrosion relief, and the small scale of the top view makes it difficult to assess the fine details of the dust texture.",
   "acceptance": {
     "accepted": true,
     "candidate_aged": 8,
