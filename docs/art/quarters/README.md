@@ -86,10 +86,11 @@ applying it to this closed imported slab would need mesh changes. The wall
 screen starts at room Y 1.00 m; the real over-bed lockers start at 1.90 m.
 Tests cover shell, bed and mutual clearance in both states.
 
-Storage drawer/shelf modules, leftover storage infill, her jacket and her
-dresses remain stand-ins. Their node names begin with `Standin_<id>`.
-Storage subslots add `_slot_<index>` or `_infill`. The eleven small-belonging
-instances now use the eight real asset pairs described in demo8 below.
+Only storage drawer/shelf modules and leftover storage infill remain stand-ins.
+Their node names begin with `Standin_storage_`; subslots add `_slot_<index>`
+or `_infill`. Her jacket and both dresses now use their real clean/aged asset
+pairs, as described in demo10 below. The eleven small-belonging instances use
+the eight real asset pairs described in demo8 below.
 Locker tiles occupy complete 0.6 m slots inside the approved footprints;
 leftover widths remain stand-in infill. The footprint takes precedence where a
 module description suggests more tiles than will fit. Shared footprint
@@ -446,6 +447,76 @@ state. The corridor-door copy is pixel-identical to demo8. D14 is unchanged;
 the connector lane also passes its D14-return and replay-digest checks. Existing
 Godot resource/renderer teardown warnings remain, and the harness's broader
 visual verdict fields are still pending.
+
+### Her jacket and dresses (demo10)
+
+The `issue-95-small-items` merge adds the four clothing exports described in
+**Batch 2b: her clothes** below. `Item_her_jacket` copies the complete transform
+of `Placement_dining_chair_1/dining_chair`. `Placement_wardrobe/her_dresses`
+copies the wardrobe's complete transform, including the room-to-ship reflection.
+Neither receives an extra height offset. Remembered uses `her_jacket.glb` and
+`her_dresses.glb`; Present uses the `_aged.glb` pair. Their imported wool,
+steel hangers, buttons, tears and fibre deposits retain their authored materials.
+The tunic and its separately seated debris keep their existing placements.
+Only storage drawer/shelf modules and leftover infill remain stand-ins.
+
+The clothing regressions check state paths, exact furniture transforms,
+removal of every `Standin_her_*` node, preserved imported materials and
+bidirectional triangle-edge clearance against the chair, wardrobe and visible
+tunic meshes. A crossing-box control checks the collision test itself. Support
+rays check the aged jacket's seat deposit and both dresses' loose fibres and
+compact heap bases against the real seat and bottom panel, within the asset's
+3 mm contact limit. The jacket's floor deposit is checked against the room floor.
+
+The scenario now has twenty-four beats, adding `remembered-jacket`,
+`present-jacket`, `remembered-wardrobe` and `present-wardrobe`. Each state's
+jacket view uses room-local eye (4.05, 1.25, 0.20), aimed at (5.15, 0.48, 1.02).
+The open-wardrobe view uses eye (4.0, 1.5, 3.05), aimed at (7.3, 1.17, 3.6).
+Both use an 88-degree horizontal field, framing the furniture and all clothing,
+including the floor scatter and open door. Frustum tests retain the existing
+1.5% margin and require the content to remain below the protocol crop.
+Cameras do not move the player or change the console sequence.
+
+Regenerate the scenario, run the windowed lane and copy the presentation images:
+
+```sh
+godot --headless --path . -s tools/build_quarters_scenario.gd
+nohup godot --headless --path . -s harness/run.gd -- scenarios/quarters-demo.json --out tmp/demo10/routes/quarters-demo > tmp/demo10/route-quarters-demo.log 2>&1 &
+godot --headless --path . -s tools/quarters_presentation.gd -- tmp/demo10/routes/quarters-demo/run-<id> tmp/demo10
+```
+
+The nine requested chip-free files in `tmp/demo10/` are `corridor-door.png`,
+`remembered-doorway.png`, `remembered-wide.png`, `present-doorway.png`,
+`present-wide.png`, `remembered-jacket.png`, `present-jacket.png`,
+`remembered-wardrobe.png` and `present-wardrobe.png`. The fifteen existing
+close-up and playback copies are retained. Each is 1536 by 824, cropped only
+below the unchanged 40-row protocol band; harness originals stay in the run
+directory.
+
+Demo10 passed **927 headless tests, zero failures**, including five new clothing
+regressions. The focused clothing, furniture, inventory and capture subset
+passed all 23 tests. All twenty-four quarters beats passed machine checks, and
+all twenty-four presentation copies match the source RGB pixels below the
+protocol band. The raw quarters run is
+`tmp/demo10/routes/quarters-demo/run-1794281047/`. Logs include
+`tmp/demo10/import.log`, `full-suite.log`, `focused-final.log`, `routes.log`,
+`route-<scenario>.log`, `presentation.log` and `image-comparer.log`.
+The full suite and all eight windowed scenarios ran under `nohup` and exited
+0: `quarters-demo`, `gameplay-full`, `rod-pickup`, `gameplay-keyboard-turn`,
+`hallway`, `power-room`, `connector-route` and `click-route`. Each scenario's
+machine verdict is PASS. The connector route passes its D14-return and replay
+digest checks; D14 production code and lighting are unchanged. Two click-route
+lamp-sample diagnostics still print FAIL with the exact demo9 pixel samples
+and luminance values, while its machine verdict passes. Existing Godot
+ObjectDB/resource/allocator teardown warnings also remain.
+
+Image-comparer sees the jacket on its chair, the remembered/present condition
+change and pale deposits on the seat and floor. It cannot distinguish both
+partly occluded dresses clearly, identify the shelf fragments as a fibre heap,
+or establish contact from these stills. It also flags possible apparent overlaps
+and conspicuously ragged Present silhouettes. The triangle-clearance and support
+tests pass independently; this integration does not claim a visual-quality pass
+for the imported clothing. The harness's broader visual verdicts remain pending.
 
 ## Plan view
 

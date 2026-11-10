@@ -10,9 +10,8 @@ func test_both_states_cover_approved_inventory_and_share_placements() -> void:
 		if prop.id == "sofa":
 			assert_true(clean.get_child(0).transform == aged.get_child(0).transform, "aged sofa keeps clean source fit, including collapsed mesh")
 	for item: Dictionary in QuartersInventory.small_items():
-		var prefix := "Standin_" if item.id == "her_jacket" else "Item_"
-		assert_true(room.remembered.has_node(prefix + item.id), "remembered small item " + item.id)
-		assert_true(room.present.has_node(prefix + item.id), "present small item " + item.id)
+		assert_true(room.remembered.has_node("Item_" + item.id), "remembered small item " + item.id)
+		assert_true(room.present.has_node("Item_" + item.id), "present small item " + item.id)
 	assert_true(room.remembered.has_node("Placement_wardrobe/wardrobe"), "wardrobe uses the accepted carcass")
 	assert_true(room.present.has_node("Placement_wardrobe/HangingUniform") and room.present.has_node("Placement_wardrobe/UniformFragments"), "aged hanging uniform and detached fragments")
 	for screen: MeshInstance3D in room.screens:

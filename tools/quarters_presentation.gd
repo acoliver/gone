@@ -7,6 +7,7 @@ const BEATS := [
 	"remembered-bed", "present-bed",
 	"remembered-bedside", "present-bedside", "remembered-table", "present-table", "remembered-desk", "present-desk",
 	"remembered-boots", "present-boots",
+	"remembered-jacket", "present-jacket", "remembered-wardrobe", "present-wardrobe",
 ]
 
 func _initialize() -> void:

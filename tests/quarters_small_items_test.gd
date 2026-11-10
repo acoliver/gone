@@ -28,9 +28,9 @@ func test_small_items_use_real_state_assets_and_shared_placements() -> void:
 			var asset := pair[0].get_child(0) as Node3D
 			assert_true(asset.scene_file_path == QuartersFurnishings.ROOT + ITEMS[id] + pair[1], "correct state GLB: " + id)
 			assert_true(asset.scale.is_equal_approx(Vector3.ONE), "real asset dimensions retained: " + id)
-	assert_true(clean.has_node("Standin_her_jacket") and aged.has_node("Standin_her_jacket"), "jacket stand-in retained")
 	for root: Node3D in [clean, aged]:
-		assert_true(root.has_node("Placement_wardrobe/Standin_her_dress_1") and root.has_node("Placement_wardrobe/Standin_her_dress_2"), "dress stand-ins retain names")
+		assert_true(root.has_node("Item_her_jacket") and root.has_node("Placement_wardrobe/her_dresses"), "real clothing remains beside small items")
+		assert_true(root.find_children("Standin_her_*", "", true, false).is_empty(), "no clothing stand-ins remain")
 		assert_false(root.find_children("Standin_storage_*", "", true, false).is_empty(), "storage stand-in names retained")
 	clean.free()
 	aged.free()

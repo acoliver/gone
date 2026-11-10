@@ -65,6 +65,20 @@ func _run() -> void:
 					check.assert_float_in_range(uv.x, 0.015, 0.985, "small item inside horizontal frame: " + id)
 					check.assert_float_in_range(uv.y, 0.0613, 0.985, "small item below presentation crop and inside frame: " + id)
 		furnishings.free()
+	for state: StringName in QuartersProps.STATES:
+		var furnishings := QuartersFurnishings.build(state)
+		for view: String in ["jacket", "wardrobe"]:
+			QuartersCapture.pose(camera, view)
+			var paths := ["Item_her_jacket", "Placement_dining_chair_1"] if view == "jacket" else ["Placement_wardrobe"]
+			for path: String in paths:
+				var bounds := QuartersFurnishings._bounds(furnishings.get_node(path), Transform3D.IDENTITY, true)
+				for corner: int in range(8):
+					var point := bounds.get_endpoint(corner)
+					check.assert_false(camera.is_position_behind(point), "clothes and support in front of close camera")
+					var uv := camera.unproject_position(point) / viewport.size
+					check.assert_float_in_range(uv.x, 0.015, 0.985, "clothing and furniture inside horizontal frame: " + path + str(uv))
+					check.assert_float_in_range(uv.y, 0.0613, 0.985, "clothing and furniture below presentation crop: " + path + str(uv))
+		furnishings.free()
 	room.free()
 	if not check.failure.is_empty():
 		printerr(check.failure)

@@ -18,9 +18,8 @@ func test_accepted_furniture_uses_real_assets_in_both_states() -> void:
 			if asset != null:
 				assert_true(asset.scene_file_path == QuartersFurnishings.ROOT + REPLACED[id] + ".glb", "real imported GLB " + id)
 		for item: Dictionary in QuartersInventory.small_items():
-			var prefix := "Standin_" if item.id == "her_jacket" else "Item_"
-			assert_true(furnishings.has_node(prefix + item.id), "small item retains its placement: " + item.id)
-			if prefix == "Item_": assert_false(furnishings.has_node("Standin_" + item.id), "small stand-in replaced: " + item.id)
+			assert_true(furnishings.has_node("Item_" + item.id), "small item retains its placement: " + item.id)
+			assert_false(furnishings.has_node("Standin_" + item.id), "small stand-in replaced: " + item.id)
 		assert_true(furnishings.get_node("Placement_bed/bed_soft").find_child("Mattress", true, false) is MeshInstance3D, "real mattress remains with bed")
 		furnishings.free()
 

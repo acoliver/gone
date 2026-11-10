@@ -27,7 +27,7 @@ static func build(state: StringName) -> Node3D:
 			_fit(sofa, bounds, prop.faces, "sofa.glb")
 			group.add_child(sofa)
 		elif prop.id == "wardrobe":
-			_wardrobe(group, state, finish)
+			_wardrobe(group, state)
 		elif REAL_FURNITURE.has(prop.id):
 			var source: String = REAL_FURNITURE[prop.id]
 			var asset := _asset(source + ".glb", StringName(source), state)
@@ -50,10 +50,20 @@ static func build(state: StringName) -> Node3D:
 	var console := root.get_node("Placement_console/console") as Node3D
 	console.position.y += worktop.end.y - _bounds(console).position.y
 	SMALL_ITEMS.add_to(root, state)
+	var jacket := _clothing("her_jacket", state)
+	jacket.name = "Item_her_jacket"
+	jacket.transform = (root.get_node("Placement_dining_chair_1/dining_chair") as Node3D).transform
+	root.add_child(jacket)
 	for item: Dictionary in QuartersInventory.small_items():
-		if not SMALL_ITEMS.PLACEMENTS.has(item.id):
+		if not SMALL_ITEMS.PLACEMENTS.has(item.id) and item.id != "her_jacket":
 			root.add_child(box("Standin_" + item.id, item.bounds, finish))
 	return root
+
+static func _clothing(source: String, state: StringName) -> Node3D:
+	var suffix := ".glb" if state == &"as_built" else "_aged.glb"
+	var asset := (load(ROOT + source + suffix) as PackedScene).instantiate() as Node3D
+	asset.name = source
+	return asset
 
 static func _asset(path: String, prop: StringName, state: StringName) -> Node3D:
 	var scene: PackedScene = load(ROOT + path)
@@ -147,7 +157,7 @@ static func _bed_soft(group: Node3D, bed: Node3D, state: StringName) -> void:
 	soft.transform = bed.transform
 	group.add_child(soft)
 
-static func _wardrobe(group: Node3D, state: StringName, finish: Material) -> void:
+static func _wardrobe(group: Node3D, state: StringName) -> void:
 	var wardrobe := _asset("wardrobe.glb", &"wardrobe", state)
 	# The plan's X axis is mirrored in ship space. Preserve the documented
 	# room -90 degree rotation and hinge handedness across that mapping.
@@ -172,5 +182,6 @@ static func _wardrobe(group: Node3D, state: StringName, finish: Material) -> voi
 			var visible_bounds := _bounds(garment, Transform3D.IDENTITY, true)
 			garment.position.y += shelf_top + 0.0005 - visible_bounds.position.y
 		group.add_child(garment)
-	for index: int in range(2):
-		group.add_child(box("Standin_her_dress_%d" % (index + 1), AABB(Vector3(7.67, 0.45, 3.17 + index * 0.17), Vector3(0.08, 1.12, 0.12)), finish))
+	var dresses := _clothing("her_dresses", state)
+	dresses.transform = wardrobe.transform
+	group.add_child(dresses)
