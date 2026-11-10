@@ -1,0 +1,25 @@
+{
+  "frames": 300,
+  "quality": 24,
+  "time_scale": 0.25,
+  "sewing": true,
+  "sewing_force_max": 6.0,
+  "bending_stiffness": 0.25,
+  "pin_count": 20,
+  "last_five_frames_motion_m": 0.0033732404853862004,
+  "seam_gap_before_weld_m": 1.6133712316285928e-05,
+  "method": "Flat T-cut front and back, open front and neck, shoulder/underarm/side sewing springs; jacket laid across the back with collar toward seat, then gravity-draped on imported dining_chair.glb.",
+  "bounds_blender_native_m": [
+    [
+      -0.4117646813392639,
+      0.05773517116904259,
+      0.27056992053985596
+    ],
+    [
+      0.4892588257789612,
+      0.4072751998901367,
+      0.9769047498703003
+    ]
+  ],
+  "tailoring": "UV-fitted lapel facings and four dark 8 mm buttons, added to the baked front surface"
+}

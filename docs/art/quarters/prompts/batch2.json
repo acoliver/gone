@@ -12,6 +12,17 @@
       "materials": ["CottonTicking", "WovenWool", "CottonPillow", "Foam"],
       "prompt": "A neatly made military double bed, 1.6 metres wide and 2.2 metres long, a low thin grey painted steel frame on open legs with a simple rounded steel headboard. A substantial softly rounded cotton ticking mattress fits inside its rails. A muted warm taupe woven wool quilt drapes softly over the mattress and falls a short distance down each side and foot. Its head edge folds back in a generous soft doubled cuff. Two separate plump ivory cotton pillows rest side by side on the mattress against the headboard. Fine natural fabric texture, small believable creases, soft pressure-filled forms and carefully tucked corners; understated intimate domestic comfort within utilitarian ship furniture. The quilt is a plain woven wool blanket, with no patchwork or printed motifs.",
       "seeds": [241, 242, 243, 244]
+    },
+    {
+      "id": "her_jacket",
+      "size_m": [0.92, 0.98, 0.55],
+      "materials": ["SlateWool", "SlateCollarCuffs", "FadedBrittleSlate", "PaleDryFibres"],
+      "standalone_prompt": true,
+      "prompt": "Product concept render. A woman's slate blue grey wool uniform jacket casually draped over the back of a simple 0.9 metre tall grey-green steel dining chair with black seat pad, the jacket has a tailored short body, two long empty sleeves hanging down either side, open front, notched collar, small dark buttons, subtle seam tailoring. New, cared for and softly folded fabric, not leather. Military starship domestic setting, understated Battlestar Galactica design language. Entire chair and jacket visible, isolated light grey studio background, soft diffuse illumination, three quarter view from behind the chair showing the jacket's open front. No text, people or logos.",
+      "seeds": [95271],
+      "generation": {"model": "filipstrand/Z-Image-Turbo-mflux-4bit", "steps": 8, "quantize": 4, "width": 1024, "height": 1024},
+      "method": "Sewn flat T pattern, simulated on dining_chair.glb. Lay the jacket across the back with collar toward the seat. The generated hero is a design guide, not a source mesh. Use this complete prompt without the bed-specific global style/tail.",
+      "aging": "1000 years, sealed sterile dry oxygenated; faded brittle wool, split folds, resimulated slump, frayed yarns and seat/floor fibre dust. No biological decay."
     }
   ]
 }

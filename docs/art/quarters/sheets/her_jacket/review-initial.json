@@ -1,0 +1,36 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "```json\n{\n  \"remembered_score\": 6,\n  \"aged_score\": 7,\n  \"aged_silhouette_recognisable\": true,\n  \"visible_damage_and_fibre_dust\": true,\n  \"defects\": [\n    {\n      \"severity\": \"medium\",\n      \"location\": \"Aged mesh (C), upper backrest\",\n      \"description\": \"The aged jacket geometry is extremely crumpled and compressed, making the specific tailoring (collar, cuffs) difficult to distinguish from a generic rag, though the sleeve extension remains visible.\"\n    },\n    {\n      \"severity\": \"low\",\n      \"location\": \"Aged mesh (C), seat and floor\",\n      \"description\": \"Fibre dust is visible on the seat and floor, but the distribution appears somewhat sparse and static rather than a heavy accumulation of decay.\"\n    }\n  ],\n  \"verdict\": \"The remembered state (B) successfully depicts a jacket draped over the chair with gravity-driven slumping, though the cloth simulation appears slightly stiff compared to the design guide. The aged state (C) effectively conveys the 1000-year decay with a slumped, torn silhouette and visible fibre dust, maintaining recognisability as a jacket.\"\n}\n```"
+      }
+    }
+  ],
+  "created": 1794271787,
+  "model": "qwen3.8-27b",
+  "system_fingerprint": "b1-6d05498",
+  "object": "chat.completion",
+  "usage": {
+    "completion_tokens": 278,
+    "prompt_tokens": 4288,
+    "total_tokens": 4566,
+    "prompt_tokens_details": {
+      "cached_tokens": 43
+    }
+  },
+  "id": "chatcmpl-CGhBJCdwhlF9ET1Vf8Wvsbr7cTp8vVhQ",
+  "timings": {
+    "cache_n": 43,
+    "prompt_n": 4245,
+    "prompt_ms": 33247.148,
+    "prompt_per_token_ms": 7.832072555948175,
+    "prompt_per_second": 127.68012462302029,
+    "predicted_n": 278,
+    "predicted_ms": 20236.991,
+    "predicted_per_token_ms": 73.05772924187727,
+    "predicted_per_second": 13.687805662412954
+  }
+}
