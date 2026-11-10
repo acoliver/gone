@@ -1,15 +1,15 @@
 {
   "prop": "media_cabinet",
   "seed": 9502,
-  "atlas_size": 4096,
+  "atlas_size": 3072,
   "uv_method": "original fitted UVs; no repack",
-  "texels_per_metre": 916.4437255316684,
+  "texels_per_metre": 687.3327941487513,
   "density_range": [
-    863.1451035382271,
-    973.7689355927715
+    647.3588276536703,
+    730.3267016945787
   ],
   "uv_overlap_texels": 0,
-  "occupied_texels": 11384870,
+  "occupied_texels": 6405743,
   "faces": [
     {
       "id": "Bay_0_Back/0",
@@ -39256,5 +39256,12 @@
     }
   ],
   "source_blend": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/tools/blender/quarters/media_cabinet/media_cabinet-working.blend",
-  "preserved_materials": []
+  "preserved_materials": [],
+  "exported_uv_density_min": 608.8128804318809,
+  "resize": {
+    "from_resolution": 4096,
+    "to_resolution": 3072,
+    "minimum_exported_pixels_per_metre": 608.8128804318809,
+    "geometry_and_uvs_unchanged": true
+  }
 }

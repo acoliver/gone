@@ -1,15 +1,15 @@
 {
   "prop": "console",
   "seed": 9502,
-  "atlas_size": 4096,
+  "atlas_size": 3072,
   "uv_method": "original fitted UVs; no repack",
-  "texels_per_metre": 1249.296050995449,
+  "texels_per_metre": 936.9720382465866,
   "density_range": [
-    1168.498563536886,
-    1321.7268179409189
+    876.3739226526645,
+    991.2951134556891
   ],
   "uv_overlap_texels": 0,
-  "occupied_texels": 8932121,
+  "occupied_texels": 5023394,
   "faces": [
     {
       "id": "ArmouredHousing/0",
@@ -43300,5 +43300,12 @@
   "source_blend": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/tools/blender/quarters/console/console-working.blend",
   "preserved_materials": [
     "Display"
-  ]
+  ],
+  "exported_uv_density_min": 815.8632822800407,
+  "resize": {
+    "from_resolution": 4096,
+    "to_resolution": 3072,
+    "minimum_exported_pixels_per_metre": 815.8632822800407,
+    "geometry_and_uvs_unchanged": true
+  }
 }

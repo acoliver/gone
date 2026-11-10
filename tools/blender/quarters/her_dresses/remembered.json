@@ -93,7 +93,14 @@
         "maximum_projection_m": 0.002862811165503255,
         "constraint": "measured tunic envelope and wardrobe side/front/back interior faces"
       },
-      "method": "Flat front/back patterns sewn at sides and shoulders, open neck/armholes, shaped upper chest only as in the tunic pass; waist/hem free, height-dependent union of both tunic envelopes reserved. Chest form is removed before aged resimulation."
+      "method": "Flat front/back patterns sewn at sides and shoulders, open neck/armholes, shaped upper chest only as in the tunic pass; waist/hem free, height-dependent union of both tunic envelopes reserved. Chest form is removed before aged resimulation.",
+      "arrangement": {
+        "rail_x_m": -0.21,
+        "front_offset_m": 0.21,
+        "width_scale": 0.75,
+        "hanger_yaw_deg": 90,
+        "hook": "Original rail-wrapping hook retained; neck turns into the offset display shoulder below 1.758 m"
+      }
     },
     "BlueDress": {
       "sewing_stage": {
@@ -135,19 +142,28 @@
         "maximum_projection_m": 0.0019999743040848474,
         "constraint": "measured tunic envelope and wardrobe side/front/back interior faces"
       },
-      "method": "Flat front/back patterns sewn at sides and shoulders, open neck/armholes, shaped upper chest only as in the tunic pass; waist/hem free, height-dependent union of both tunic envelopes reserved. Chest form is removed before aged resimulation."
+      "method": "Flat front/back patterns sewn at sides and shoulders, open neck/armholes, shaped upper chest only as in the tunic pass; waist/hem free, height-dependent union of both tunic envelopes reserved. Chest form is removed before aged resimulation.",
+      "arrangement": {
+        "rail_x_m": 0.29,
+        "front_offset_m": 0.21,
+        "width_scale": 0.75,
+        "hanger_yaw_deg": 90,
+        "hook": "Original rail-wrapping hook retained; neck turns into the offset display shoulder below 1.758 m"
+      }
     }
   },
   "bounds_blender_native_m": [
     [
-      -0.47200000286102295,
-      -0.23466384410858154,
+      -0.38556697964668274,
+      -0.26953232288360596,
       0.48362186551094055
     ],
     [
-      0.47200000286102295,
-      0.23141150176525116,
+      0.4579640030860901,
+      0.018745165318250656,
       1.8417737483978271
     ]
-  ]
+  ],
+  "finish_input": "Retained *_FinishInput mesh per exported component; all finishes restart from these fitted inputs",
+  "sidedness": "Single-sided materials for the reflected room; cloth retains both sewn plies and fringe has explicit opposite faces"
 }

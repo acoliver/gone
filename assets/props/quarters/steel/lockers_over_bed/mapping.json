@@ -1,15 +1,15 @@
 {
   "prop": "lockers_over_bed",
   "seed": 9502,
-  "atlas_size": 4096,
+  "atlas_size": 3072,
   "uv_method": "original fitted UVs; no repack",
-  "texels_per_metre": 917.4621608559855,
+  "texels_per_metre": 688.0966206419891,
   "density_range": [
-    864.0505856122521,
-    974.966431173068
+    648.0379392091891,
+    731.224823379801
   ],
   "uv_overlap_texels": 0,
-  "occupied_texels": 11709885,
+  "occupied_texels": 6587778,
   "faces": [
     {
       "id": "Bay_0_Back/0",
@@ -37312,5 +37312,12 @@
     }
   ],
   "source_blend": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/tools/blender/quarters/lockers_over_bed/lockers_over_bed-working.blend",
-  "preserved_materials": []
+  "preserved_materials": [],
+  "exported_uv_density_min": 609.371068937763,
+  "resize": {
+    "from_resolution": 4096,
+    "to_resolution": 3072,
+    "minimum_exported_pixels_per_metre": 609.371068937763,
+    "geometry_and_uvs_unchanged": true
+  }
 }

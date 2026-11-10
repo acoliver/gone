@@ -1,0 +1,44 @@
+{
+  "room_cameras": {
+    "wardrobe": {
+      "eye": [
+        4.0,
+        1.5,
+        3.05
+      ],
+      "target": [
+        7.3,
+        1.17,
+        3.6
+      ],
+      "hfov": 88.0
+    },
+    "doorway": {
+      "eye": [
+        4.0,
+        1.65,
+        0.15
+      ],
+      "target": [
+        4.0,
+        1.25,
+        6.0
+      ],
+      "hfov": 100.0
+    }
+  },
+  "wardrobe_room_origin": [
+    7.675,
+    0,
+    3.6
+  ],
+  "wardrobe_room_yaw_deg": -90,
+  "resolution": [
+    1920,
+    1080
+  ],
+  "blender_conversion": "(room z-3.6, room x-7.675, room y)",
+  "perspective": true,
+  "room_to_ship_reflection": "horizontal compositor reflection, matching the game world handedness",
+  "lighting": "unchanged neutral CPU Cycles studio; game lighting requires game captures"
+}

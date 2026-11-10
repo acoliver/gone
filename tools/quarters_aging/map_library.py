@@ -17,6 +17,7 @@ from steel_library import ROOT, LIBRARY
 from locker_faces import paint_fields
 from colour import linear
 from library_projection import cylinders, cylindrical_frame, is_disc, disc_to_square, DISC_SOURCE_SCALE
+from settled_dust import soften_dust
 
 BLENDER = '/Volumes/XS1000/acoliver/projects/threedee/branch-1/.tools/Blender-4.5.11.app/Contents/MacOS/Blender'
 PROPS = ['wardrobe', 'desk', 'console', 'bed', 'lockers_over_bed', 'bedside', 'media_cabinet',
@@ -154,22 +155,28 @@ def map_prop(document, prop, output, resolution, seed):
             image_id = chosen['id']
         else:
             image_id = role
-        if image_id not in fields:
+        fine_dust = role == 'paint' and kind == 'top' and area >= .1
+        field_key = (image_id, tuple(size) if fine_dust else None)
+        if field_key not in fields:
             image = images[image_id]
             source_image = Image.fromarray(np.uint8(np.round(image*255)))
             _, paint = paint_fields(source_image)
+            if fine_dust:
+                image = np.asarray(soften_dust(source_image, size), float)/255
             if role == 'hardware':
                 height = (linear(image) @ [.2126, .7152, .0722])*.0003
             elif role == 'fabric':
                 height = image.mean(-1)*.0002
             else:
                 height = paint*.0015
-            fields[image_id] = np.dstack([image, height, .91*(1-paint)+.69*paint])
-        field = fields[image_id]
+            fields[field_key] = np.dstack([image, height, .91*(1-paint)+.69*paint])
+        field = fields[field_key]
         record = dict(id=face['id'], part=face['part'], material=face['material'], role=role,
                       kind=kind, image=image_id, size_m=size.tolist(), area_m2=area,
                       upward=bool(face['normal'][2] > .7), source_density_scale=float(source_scale),
                       projection='cylindrical' if cylindrical else ('disc' if disc else 'planar'))
+        if fine_dust:
+            record['dust_finish'] = '3 mm physical low-pass separation; broad contrast .15, fine detail .8; oxide unchanged'
         if role in ('hardware', 'fabric'):
             record['pitch_m'] = .2 if role == 'hardware' else .1
             record['source_pixels_per_metre'] = min(images[image_id].shape[:2])/record['pitch_m']

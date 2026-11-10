@@ -1,15 +1,15 @@
 {
   "prop": "view_screen",
   "seed": 9502,
-  "atlas_size": 4096,
+  "atlas_size": 3072,
   "uv_method": "original fitted UVs; no repack",
-  "texels_per_metre": 986.260082544647,
+  "texels_per_metre": 739.6950619084853,
   "density_range": [
-    928.5987305887953,
-    1026.2208605884691
+    696.4490479415965,
+    769.6656454413519
   ],
   "uv_overlap_texels": 0,
-  "occupied_texels": 7723270,
+  "occupied_texels": 4338216,
   "faces": [
     {
       "id": "BezelBottom/0",
@@ -11194,5 +11194,12 @@
   "preserved_materials": [
     "Display",
     "Glass"
-  ]
+  ],
+  "exported_uv_density_min": 655.2999898662409,
+  "resize": {
+    "from_resolution": 4096,
+    "to_resolution": 3072,
+    "minimum_exported_pixels_per_metre": 655.2999898662409,
+    "geometry_and_uvs_unchanged": true
+  }
 }

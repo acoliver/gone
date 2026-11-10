@@ -907,7 +907,7 @@
       "passed": true
     },
     "fitted_atlas_pixels_per_metre": {
-      "value": 901.8281345449418,
+      "value": 676.370194382073,
       "threshold": ">=600",
       "passed": true
     },
@@ -976,48 +976,48 @@
     },
     "as_built_albedo_atlas": {
       "value": [
-        4096,
-        4096
+        3072,
+        3072
       ],
       "threshold": "square built atlas matching fitted UVs",
       "passed": true
     },
     "as_built_normal_atlas": {
       "value": [
-        4096,
-        4096
+        3072,
+        3072
       ],
       "threshold": "square built atlas matching fitted UVs",
       "passed": true
     },
     "as_built_orm_atlas": {
       "value": [
-        4096,
-        4096
+        3072,
+        3072
       ],
       "threshold": "square built atlas matching fitted UVs",
       "passed": true
     },
     "aged_albedo_atlas": {
       "value": [
-        4096,
-        4096
+        3072,
+        3072
       ],
       "threshold": "square built atlas matching fitted UVs",
       "passed": true
     },
     "aged_normal_atlas": {
       "value": [
-        4096,
-        4096
+        3072,
+        3072
       ],
       "threshold": "square built atlas matching fitted UVs",
       "passed": true
     },
     "aged_orm_atlas": {
       "value": [
-        4096,
-        4096
+        3072,
+        3072
       ],
       "threshold": "square built atlas matching fitted UVs",
       "passed": true
@@ -1087,6 +1087,6 @@
   "rendered": true,
   "passed": 210,
   "failed": 0,
-  "atlas_texels_per_metre": 957.5853636132704,
+  "atlas_texels_per_metre": 718.2211078239025,
   "note": "Source image density and fitted-UV atlas density are distinct. No geometry or UV repack."
 }

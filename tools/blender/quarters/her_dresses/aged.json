@@ -33,6 +33,13 @@
         "projected_vertices": 52,
         "maximum_projection_m": 0.002249091814466485,
         "constraint": "measured tunic envelope and wardrobe side/front/back interior faces"
+      },
+      "arrangement": {
+        "rail_x_m": -0.21,
+        "front_offset_m": 0.21,
+        "width_scale": 0.75,
+        "hanger_yaw_deg": 90,
+        "hook": "Original rail-wrapping hook retained; neck turns into the offset display shoulder below 1.758 m"
       }
     },
     "BlueDress": {
@@ -66,6 +73,13 @@
         "projected_vertices": 12,
         "maximum_projection_m": 0.0016922950744628906,
         "constraint": "measured tunic envelope and wardrobe side/front/back interior faces"
+      },
+      "arrangement": {
+        "rail_x_m": 0.29,
+        "front_offset_m": 0.21,
+        "width_scale": 0.75,
+        "hanger_yaw_deg": 90,
+        "hook": "Original rail-wrapping hook retained; neck turns into the offset display shoulder below 1.758 m"
       }
     }
   },
@@ -111,14 +125,136 @@
   ],
   "bounds_blender_native_m": [
     [
-      -0.4728829264640808,
-      -0.25219446420669556,
+      -0.43211275339126587,
+      -0.2674121856689453,
       0.14480000734329224
     ],
     [
-      0.47296687960624695,
-      0.23214325308799744,
+      0.4565831124782562,
+      0.04813266545534134,
       1.8417737483978271
     ]
-  ]
+  ],
+  "finish_input": "Retained *_FinishInput mesh per exported component; all finishes restart from these fitted inputs",
+  "dry_finish": {
+    "RoseDress": {
+      "tear_lips": {
+        "refined_boundary_edges": 104,
+        "shoulder_post_refinement_passes": 8,
+        "boundary_subdivisions": 4,
+        "hem_vertical_grain_variation_m": 0.001,
+        "shoulder_variation_scale": 0.6,
+        "shoulder_gap_reduction": 0.3,
+        "softened_boundary_passes": 6,
+        "local_grain_losses_m": [
+          [
+            -0.1,
+            0.025,
+            0.006
+          ],
+          [
+            0.065,
+            0.02,
+            0.003
+          ]
+        ],
+        "locked_support_stitches": 6
+      },
+      "stiff_folds": {
+        "method": "Reduce depth slack below the chest by 15 percent and retain two narrow grain-aligned creases; upper support band unchanged",
+        "maximum_displacement_m": 0.006849274039268494,
+        "unchanged_above_m": 1.55
+      },
+      "fabric": {
+        "atlas_size": 1536,
+        "upward_dust_pixels": 989596,
+        "maximum_dust_mix": 0.9499046802520752,
+        "roughness": 0.99,
+        "normal_strength": 0.4,
+        "method": "Physical sewn-pattern UV atlas, pigment fade and grain-clustered upward-fold dust; separate repeating weave UV"
+      },
+      "fringe": {
+        "cards": 225,
+        "triangles": 450,
+        "boundary_length_m": 0.8739875903874306,
+        "authored_coverage": 0.5990289985288424,
+        "coverage_pass": true,
+        "omitted_contacts": 40,
+        "maximum_root_offset_m": 0.0026440331970132374,
+        "sat_checked": true,
+        "intact_hem_intervals_m": [
+          [
+            -0.12,
+            -0.09
+          ],
+          [
+            0.055,
+            0.08
+          ]
+        ],
+        "explicit_front_back_triangles": 900
+      },
+      "deposit": "Alpha-scissor granular powder, asymmetric 26 mm core, 18 fine settled fibre cards per dress, 0.800 mm shelf gap"
+    },
+    "BlueDress": {
+      "tear_lips": {
+        "refined_boundary_edges": 101,
+        "shoulder_post_refinement_passes": 8,
+        "boundary_subdivisions": 4,
+        "hem_vertical_grain_variation_m": 0.001,
+        "shoulder_variation_scale": 0.6,
+        "shoulder_gap_reduction": 0.3,
+        "softened_boundary_passes": 6,
+        "local_grain_losses_m": [
+          [
+            -0.06,
+            0.02,
+            0.004
+          ],
+          [
+            0.12,
+            0.028,
+            0.007
+          ]
+        ],
+        "locked_support_stitches": 7
+      },
+      "stiff_folds": {
+        "method": "Reduce depth slack below the chest by 15 percent and retain two narrow grain-aligned creases; upper support band unchanged",
+        "maximum_displacement_m": 0.00821898877620697,
+        "unchanged_above_m": 1.55
+      },
+      "fabric": {
+        "atlas_size": 1536,
+        "upward_dust_pixels": 877088,
+        "maximum_dust_mix": 0.949923574924469,
+        "roughness": 0.99,
+        "normal_strength": 0.4,
+        "method": "Physical sewn-pattern UV atlas, pigment fade and grain-clustered upward-fold dust; separate repeating weave UV"
+      },
+      "fringe": {
+        "cards": 231,
+        "triangles": 462,
+        "boundary_length_m": 0.9136373712241901,
+        "authored_coverage": 0.6719182519747705,
+        "coverage_pass": true,
+        "omitted_contacts": 9,
+        "maximum_root_offset_m": 0.0025402220179773843,
+        "sat_checked": true,
+        "intact_hem_intervals_m": [
+          [
+            -0.075,
+            -0.05
+          ],
+          [
+            0.1,
+            0.13
+          ]
+        ],
+        "explicit_front_back_triangles": 924
+      },
+      "deposit": "Alpha-scissor granular powder, asymmetric 26 mm core, 18 fine settled fibre cards per dress, 0.800 mm shelf gap"
+    }
+  },
+  "sidedness": "Single-sided materials for the reflected room; cloth retains both sewn plies and fringe has explicit opposite faces"
 }

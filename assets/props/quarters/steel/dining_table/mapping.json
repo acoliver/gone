@@ -8075,6 +8075,7 @@
       "upward": true,
       "source_density_scale": 0.8660254037844386,
       "projection": "disc",
+      "dust_finish": "3 mm physical low-pass separation; broad contrast .15, fine detail .8; oxide unchanged",
       "source_pixels_per_metre": 2083.7079437959223
     },
     {
@@ -21939,6 +21940,7 @@
       "upward": true,
       "source_density_scale": 0.8660254037844386,
       "projection": "disc",
+      "dust_finish": "3 mm physical low-pass separation; broad contrast .15, fine detail .8; oxide unchanged",
       "source_pixels_per_metre": 1251.153432593859
     },
     {
@@ -25974,6 +25976,7 @@
       "source_pixels_per_metre": 2560.0
     }
   ],
-  "source_blend": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/tools/blender/quarters/dining_table/dining_table-working.blend",
-  "preserved_materials": []
+  "source_blend": "tools/blender/quarters/dining_table/dining_table-working.blend",
+  "preserved_materials": [],
+  "exported_uv_density_min": 988.0945559129607
 }

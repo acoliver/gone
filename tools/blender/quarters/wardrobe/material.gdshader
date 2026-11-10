@@ -40,7 +40,14 @@ void fragment() {
     vec4 rectangle = n[thickness] >= 0.0 ? face_front : face_back;
     vec2 uv = vec2(normalized[horizontal], normalized[vertical]);
     bool hardware = projection.w > 1.5;
-    if (hardware) {
+    if (projection.w < .5) {
+        // Storage infill boxes have no thin panel axis: project every broad
+        // face independently instead of stretching a frame strip over a side.
+        vec3 absolute = abs(n);
+        uv = absolute.x > max(absolute.y, absolute.z) ? normalized.zy :
+             (absolute.y > absolute.z ? normalized.xz : normalized.xy);
+        rectangle = absolute.y > max(absolute.x, absolute.z) ? face_dust : face_front;
+    } else if (hardware) {
         vec3 absolute = abs(n);
         vec2 metres = absolute.x > max(absolute.y, absolute.z) ? point.zy :
                       (absolute.y > absolute.z ? point.xz : point.xy);
