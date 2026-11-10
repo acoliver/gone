@@ -1,15 +1,15 @@
 {
   "prop": "bed",
   "seed": 9502,
-  "atlas_size": 4096,
+  "atlas_size": 3072,
   "uv_method": "original fitted UVs; no repack",
-  "texels_per_metre": 919.1640155297061,
+  "texels_per_metre": 689.3730116472796,
   "density_range": [
-    859.389645020455,
-    962.3103412363519
+    644.5422337653413,
+    721.732755927264
   ],
   "uv_overlap_texels": 0,
-  "occupied_texels": 11321370,
+  "occupied_texels": 6374272,
   "faces": [
     {
       "id": "CrossMember_0/0",
@@ -28209,5 +28209,12 @@
     }
   ],
   "source_blend": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/tools/blender/quarters/bed/bed-working.blend",
-  "preserved_materials": []
+  "preserved_materials": [],
+  "exported_uv_density_min": 600.3004974494326,
+  "resize": {
+    "from_resolution": 4096,
+    "to_resolution": 3072,
+    "minimum_exported_pixels_per_metre": 600.3004974494326,
+    "geometry_and_uvs_unchanged": true
+  }
 }

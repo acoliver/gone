@@ -162,8 +162,11 @@ def remembered():
 
 def aged():
     bpy.ops.wm.open_mainfile(filepath=str(HERE/'her_dresses-remembered.blend'))
+    from dress_finish import restore_inputs
+    restore_inputs()
     for obj in list(bpy.context.scene.objects):
-        if obj.get('construction_form'):bpy.data.objects.remove(obj,do_unlink=True)
+        if obj.get('construction_form') or obj.name.endswith('_FinishInput'):
+            bpy.data.objects.remove(obj,do_unlink=True)
     for obj in bpy.context.scene.objects:
         if obj.get('support') or obj.get('placement_only') or obj.name.endswith('_Hanger'):
             collision(obj,.0005)
@@ -202,7 +205,10 @@ def main():
     p.add_argument('--state',choices=['remembered','aged'],default='remembered')
     p.add_argument('--output',type=Path)
     a=p.parse_args(sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else [])
-    if a.assemble:remembered() if a.state=='remembered' else aged()
+    if a.assemble:
+        remembered() if a.state=='remembered' else aged()
+        from dress_finish import finish
+        finish(a.state)
     else:
         bpy.ops.wm.open_mainfile(filepath=str(HERE/f'her_dresses-{a.state}.blend'))
         export(a.output or ASSETS/f'her_dresses{"_aged" if a.state=="aged" else ""}.glb')

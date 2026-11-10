@@ -1,15 +1,15 @@
 {
   "prop": "desk",
   "seed": 9502,
-  "atlas_size": 4096,
+  "atlas_size": 3072,
   "uv_method": "original fitted UVs; no repack",
-  "texels_per_metre": 957.5853636132704,
+  "texels_per_metre": 718.2211078239025,
   "density_range": [
-    901.8281345449418,
-    1017.7047068374499
+    676.370194382073,
+    763.1320635334257
   ],
   "uv_overlap_texels": 0,
-  "occupied_texels": 10939611,
+  "occupied_texels": 6161598,
   "faces": [
     {
       "id": "DrawerBack_0/0",
@@ -3681,6 +3681,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
+      "dust_finish": "3 mm physical low-pass separation; broad contrast .15, fine detail .8; oxide unchanged",
       "source_pixels_per_metre": 1872.0292814632712
     },
     {
@@ -4599,6 +4600,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
+      "dust_finish": "3 mm physical low-pass separation; broad contrast .15, fine detail .8; oxide unchanged",
       "source_pixels_per_metre": 1872.0292814632712
     },
     {
@@ -5517,6 +5519,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
+      "dust_finish": "3 mm physical low-pass separation; broad contrast .15, fine detail .8; oxide unchanged",
       "source_pixels_per_metre": 2340.036601829089
     },
     {
@@ -35796,6 +35799,7 @@
       "upward": true,
       "source_density_scale": 1.0,
       "projection": "planar",
+      "dust_finish": "3 mm physical low-pass separation; broad contrast .15, fine detail .8; oxide unchanged",
       "source_pixels_per_metre": 737.7521553005018
     },
     {
@@ -39201,6 +39205,7 @@
       "source_pixels_per_metre": 2560.0
     }
   ],
-  "source_blend": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/tools/blender/quarters/desk/desk-working.blend",
-  "preserved_materials": []
+  "source_blend": "tools/blender/quarters/desk/desk-working.blend",
+  "preserved_materials": [],
+  "exported_uv_density_min": 636.7061496702572
 }

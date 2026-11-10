@@ -65,8 +65,9 @@ each prop/state to one cached `QuartersSteelLibrary` material shared across
 instances. The wardrobe keeps its cached per-face interim finish in both
 states because its library candidate remains below matched-review parity.
 These routes replace the demo's shared slot steel on the real furniture,
-including its fabric and wood surfaces. Storage stand-ins retain the shared
-slot finish. Display/glass optics, bedside lens emission and console playback
+including its fabric and wood surfaces. Storage stand-ins use the pilot face
+finish in Present and keep the shared as-built paint in Remembered.
+Display/glass optics, bedside lens emission and console playback
 remain demo-owned; the pilot lockers, sofa and tunic keep their existing
 material paths. See **Batch 1 materials** below for acceptance and atlas details.
 
@@ -608,6 +609,240 @@ Final logs are `tmp/demo11/full-suite-final.log`, `focused-final.log`,
 `full-suite.log`; `full-suite-final.exit` records 0 after the shader adapter
 correction. Existing Godot ObjectDB, resource, allocator and renderer teardown
 warnings remain. No test thresholds or production lighting settings changed.
+
+### Rendering corrections and atlas reduction (demo12)
+
+The doorway rectangle raycasts to
+`Placement_storage_left_far/Standin_storage_left_far_slot_0`. Its shared
+PaintedSteel fallback was dark raw ship steel. Geometry and normals were
+present; shadows and SSAO were disabled. Storage now has its own cached finish
+using the pilot locker's accepted door and dust images. Box faces project across
+their actual bounds, rather than a narrow frame strip. Remembered storage and
+the generic ship-steel slot materials retain their existing behavior.
+
+The wardrobe's black lower corners raycast to the blue and rose dress fibre-heap
+bases. Their source normals point upward. The reflected wardrobe placement made
+the imported two-sided clothing's front/back normal handling produce black
+reverse faces, also visible at garment edges. `QuartersClothing` reflects each
+imported mesh's local X coordinates and normals, reverses triangle winding and
+tangent handedness, and compensates its draw transform. World positions, normals, UVs,
+materials and the wardrobe support transform are preserved. Every triangle and
+both cloth sides remain; the fix does not enable back-face culling or remove
+heap cards. The regression covers both states and packed-normal round-trip
+precision.
+
+The desk Worktop maps library `top-03` (1536 by 512) over approximately
+1.594 by 0.694 m, giving 964 by 738 source px/m. Its source aspect is 3:1,
+against the face's 2.30:1. The dining tabletop maps `top-00` (1280 square)
+onto the 0.886 m disc, with a 1251 px/m minimum after disc projection.
+Whole-face clouds consequently became furniture-sized stains. These faces now
+use a mapper treatment that separates detail at a physical 3 mm scale, retains
+80% of fine variation and 15% of broad paint variation, and leaves source oxide
+pixels unchanged. Corrosion placement, UVs, geometry and normal/roughness
+derivation are retained.
+The treatment applies to painted top faces of at least 0.1 square metre; only
+desk and dining-table atlases were remapped in this pass.
+
+Remembered paint is unchanged. Library, wardrobe and pilot paint sources all
+contain sRGB `[97,118,115]`. Two coplanar material samples under the same warm
+Remembered lights render desk `[133,116,70]` and pilot `[135,117,70]` in the
+same frame (`tmp/demo12/remembered-paint-control.png`). Both acquire the warm
+shift. No furniture recoloring or D14 lighting change was made.
+
+Unchanged 4096 UV atlases cannot be halved to 2048 while keeping 600 px/m:
+the weakest exported directions would be 400.2 to 543.9 px/m. Six accepted
+props instead use 3072, preserving all geometry and UVs:
+
+| Prop | Minimum exported px/m at 3072 |
+| --- | ---: |
+| Bed | 600.300 |
+| Console | 815.863 |
+| Desk | 636.706 |
+| Over-bed lockers | 609.371 |
+| Media cabinet | 608.813 |
+| View screen | 655.300 |
+
+These figures use singular values of each exported triangle's physical-to-UV
+mapping, including the weakest direction, rather than only an area-density
+estimate. Fitting does not enlarge the bed; the other fitted scales leave their
+600 px/m margins intact. Existing 2048 atlases remain 2048. Resize preserves
+mipmaps and compressed data roles, renormalizes normal maps and samples region
+labels with nearest-neighbor filtering. All original gate thresholds remain
+unchanged. Fresh checks pass all 180 source-image gates and 63 exported-density,
+atlas-size and mapped corrosion checks for the seven rebuilt or resized props.
+
+The same 1536 by 864 stationary-view memory probe measures the following,
+with both states resident, 257 unique quarters textures and 70 library atlases:
+
+| Texture measure | Demo11 MiB | Demo12 MiB | Saved MiB |
+| --- | ---: | ---: | ---: |
+| Deduplicated quarters material payload | 2376.805 | 1984.806 | 391.999 |
+| Accepted library atlases | 1045.335 | 653.336 | 391.999 |
+| Whole-scene renderer counter, either state | 3260.161 | 2870.349 | 389.813 |
+
+The quarters payload falls from 2,492,261,065 to 2,081,220,169 bytes, saving
+411,040,896 bytes (16.49%). The library reduction is 37.50%. These scopes and
+mipmap accounting match demo11; renderer allocation totals are separate from
+the deduplicated material payload. `tmp/demo12/quarters-perf.json` records the
+measurements. Observed mean frame intervals are 3.742 ms Remembered and 3.350 ms
+Present, with p95 9.553 and 8.445 ms. These remain diagnostic observations,
+without a quarters performance threshold or a change to the frozen policy.
+
+Final verification passes **944 guarded headless tests, zero failures**, all
+89 quarters-aging Python tests and 14 focused furniture/clothing tests. All eight
+windowed scenarios ran under `nohup`, exited 0 and report machine PASS. All
+24 quarters beats pass, including state swaps and the console sequence.
+D14-return and replay checks remain in the connector route. Existing click-route
+lamp diagnostics and Godot teardown warnings remain; no quality thresholds,
+shader-recognition rules or test-runner guards were relaxed.
+
+All 24 chip-free copies are in `tmp/demo12/`, at 1536 by 824. The standard five
+are `corridor-door.png`, `remembered-doorway.png`, `remembered-wide.png`,
+`present-doorway.png` and `present-wide.png`. Both states' `desk`, `wardrobe`
+and `table` close-ups are included. `presentation.log` confirms that every RGB
+pixel below the 40-row protocol band matches the original windowed capture.
+The raw quarters run is
+`tmp/demo12/routes/quarters-demo/run-1794293838/`. Logs are `full-suite.log`,
+`full-suite.exit`, `python-suite.log`, `focused-final.log`, `finish-gates.log`,
+`routes.log`, `route-<scenario>.log`, `presentation.log` and `quarters-perf.log`
+under `tmp/demo12/`.
+
+Image-comparer findings are in `image-final.log`. Garment-edge lines now read
+as ordinary separations, and resized furniture wear remains legible at gameplay
+distance. The review also notes that the lit fibre-heap bases remain conspicuously
+pale and the tabletop is more uniform. At the former black wardrobe samples,
+`(700,588)` and `(865,588)`, RGB changes from `[0,0,0]` to `[217,201,174]` and
+`[215,199,173]`. These are existing cloth bases with their authored materials
+retained. Storage finish changes expose existing faces; no locker panels were
+added. Harness visual verdicts remain pending; automated machine PASS does not
+claim final art approval.
+
+Finish-source changes on this demo branch are in
+`tools/quarters_aging/map_library.py`, `settled_dust.py`, `resize_library.py`
+and `tools/blender/quarters/wardrobe/material.gdshader`, with runtime atlases,
+mapping records and measured atlas gates updated here. Library source images
+and source prop GLBs and UVs are unchanged. Reconcile these changes into the
+props branch later; no other worktree was modified.
+
+### Combined dress integration (demo13)
+
+The playable branch `issue-114-quarters-demo` retains the accepted demo12 defect
+corrections and integrates only the changed paths in `c37f530..92d4d45` from
+`issue-95-small-items`: `cbd77c5`, `abe0d09`, `8dabe46`, `f172920` and `92d4d45`.
+That includes both GLBs, packed editable Blender sources, source texture files,
+construction/export tools, tests and dress review sheets. The README was the only
+overlap with dirty tracked files; its Her dresses section was replaced separately,
+retaining the Playable demo history and the other material sections. The source
+worktree was read-only.
+
+The new dresses have single-sided materials with physical front/back plies and
+explicit opposite faces on fibre cards. `QuartersClothing.prepare` now leaves
+those imported meshes and their reflected draw transforms unchanged. It only
+moves reflection into a mesh when that mesh has an active two-sided PBR surface.
+This avoids applying the demo12 two-sided correction redundantly to these exports.
+The three reflection regressions check both states, imported mesh identity,
+backface culling, triangle/surface counts, world vertices and normals, both UV
+sets and authored/active materials. A two-sided control retains the packed-normal
+round-trip coverage and checks idempotence. Existing furniture-transform,
+triangle-clearance and shelf-contact tests remain unchanged. The new single-sided
+regression failed before this policy change and passes afterward.
+
+The combined demo passes **945 guarded headless tests, zero failures**, all
+15 focused furniture/clothing tests, 89 quarters-aging Python tests and all
+31 targeted dress controls. The latter comprise eight Blender construction,
+eleven dry-finish/restoration, three arrangement, two exported pigment/doorway
+and seven shared geometry/support controls. Saved-source exports are byte-identical
+to the delivered GLBs. The complete cloth simulation was not rerun. Independent
+export gates retain 6,544 / 9,387 triangles, zero wardrobe/tunic/pair crossings,
+maximum support gap 0.806906 mm and 0.800008 mm heap clearance. Doorway visible
+projected area is 99.34% / 100% remembered and 99.00% / 100% aged for rose / blue.
+Godot imports both states with backface-culling PBR materials; aged retains eight
+alpha-scissor surfaces. All quality limits and the guarded runner are unchanged.
+
+All eight windowed scenarios have final machine PASS and exit 0:
+`quarters-demo`, `gameplay-full`, `rod-pickup`, `gameplay-keyboard-turn`, `hallway`,
+`power-room`, `connector-route` and `click-route`. All 24 quarters beats pass.
+The first connector run stopped after Metal fence timeouts during unchanged
+remote-hatch streaming, with the sampled main thread waiting in
+`IOSurfaceSharedEvent`; its later captures were invalid. That failed run and log
+remain under `tmp/demo13/routes/connector-route/run-1794320460/` and
+`route-connector-route.log`. One fresh-process run with the same inputs and
+checks passes all 25,213 logical ticks, the compiled replay digest and D14-return
+checks: `routes/connector-route/run-1794320759/`, logged in
+`route-connector-route-final.log`. The underlying renderer fault is unproven;
+no connector code or checks were changed. `routes.log` and `verify.exit` retain
+the initial failure; `routes-final.log` and `complete.exit` record final results.
+The two existing click-route lamp FAIL diagnostics have exactly the demo12
+sample pixels, luminance and RGB values, independently of machine PASS. Existing
+ObjectDB/resource/allocator and renderer teardown warnings also remain.
+
+All 24 chip-free PNG copies are in `tmp/demo13/`, including the standard five
+and both states' wardrobe, desk, jacket and table views. Each is 1536 by 824 and
+matches every original RGB pixel below the 40-row protocol band. Raw captures
+remain in `tmp/demo13/routes/quarters-demo/run-1794320238/`. Twelve 1400-pixel-wide
+JPEG copies are in `tmp/demo13/rv/`: `<state>-<view>.jpg`, where state is
+`remembered` or `present`, and view is `doorway`, `wide`, `wardrobe`, `desk`,
+`table` or `jacket`. Their report events confirm matching ticks/frames, the
+correct visible state and completed playback before Present. Six before/after
+sheets are `tmp/demo13/comparison-<view>.jpg`, with demo12 on the left, demo13
+on the right, remembered above present. The corridor-door PNG remains
+pixel-identical to demo12. The 12 actual-capture JPEGs were inspected across the
+room and details reviews. This is a WIP demo, not a polished showcase: all three
+garments are recognisable in wardrobe close-ups, while the tunic separates less
+clearly from the present doorway view. Wide frames are too small to infer garment
+separation; identifying all three from a wide view was not a requirement. The
+review found no black wardrobe voids or obvious wrong-sided geometry. Remaining
+visible issues are a pale, flat desk, tabletop staining/mottling, dark aged
+bedding, strong rust dominance, and ambiguous angular jacket/chair gaps. Matched
+demo12/13 controls found the jacket body unchanged, so there is no new jacket
+regression; stills do not prove clipping. Issue [#126](https://github.com/acoliver/gone/issues/126)
+tracks jacket polish. The existing click-route lamp diagnostics remain tracked
+by [#117](https://github.com/acoliver/gone/issues/117). The first connector run's
+Metal fence stall is tracked by [#127](https://github.com/acoliver/gone/issues/127);
+a fresh-process pass does not resolve the initial fault. Harness visual verdicts
+for unrelated routes remain pending.
+
+The unchanged 1536 by 864 wide-camera probe, with 60 warmup and 300 sampled
+frames per state and both states resident, reports:
+
+```text
+QUARTERS_TEXTURES count=263 bytes=2144833777 library_bytes=685072416
+renderer_texture_bytes=3073446912 (Remembered and Present)
+```
+
+The deduplicated quarters material payload is **2,144,833,777 bytes
+(2045.473 MiB)**, up 63,613,608 bytes (60.667 MiB) from demo12. The accepted
+library remains **685,072,416 bytes (653.336 MiB)**. The separate whole-scene
+renderer counter is **3,073,446,912 bytes (2931.067 MiB)** in either state,
+up 63,668,224 bytes. Mean/p95 frame intervals are 2.680/3.009 ms remembered
+and 2.915/3.728 ms present. These remain observations rather than a performance
+threshold. Exact samples and texture entries are in `tmp/demo13/quarters-perf.json`;
+raw printed output is in `quarters-perf.log`.
+
+The demo12 storage whole-box finish, settled desk/table dust treatment and six
+3072 atlases are retained. Only storage drawer/shelf modules and leftover infill
+remain stand-ins. D14 lighting, gameplay/capture cameras and pilot asset/material
+sources were not changed by this integration. The matched source dress ratings
+remain 8/10 remembered and 7/10 aged, with subtle upward-fold dust, pale
+patch-like deposits at game distance, unresolved individual fibres and a
+conspicuous rose shoulder opening in close-up. No additional art iteration was
+performed. Launch the combined demo from this worktree with:
+
+```sh
+godot --path . -- --start quarters
+```
+
+Verification logs are `tmp/demo13/import.log`, `full-suite.log`,
+`focused-green.log`, `reflection-red.log`, `python-suite.log`, `dress-test_build.log`,
+`dress-test_refine.log`, `dress-arrangement.log`, `dress-export-tests.log`,
+`clothing-gate-controls.log`, `dress-gates.log`, `dress-runtime.log`,
+`route-<scenario>.log`, `route-connector-route-final.log`, `presentation.log`,
+`review-copies.log` and `quarters-perf.log`. `capture-checks.json` records the
+review frames/states. `integrated-paths.txt` lists the dress integration;
+`new-source-files.txt` lists its 19 required source/code files, and
+`new-dress-assets.txt` lists the 15 source textures packed into the GLBs.
+`finish.py` was replaced by `dress_finish.py`; generated Godot imports and
+extracted GLB textures are local outputs and are not source inputs.
 
 ## Plan view
 
@@ -2063,40 +2298,39 @@ The standalone prompt and seed are in `prompts/batch2.json` and `sheets/her_jack
 
 ### Her dresses
 
-The [dress comparison](sheets/her_dresses/comparison.png) places the generated guide beside separate broadside captures of the remembered and aged exports. The lower row shows their actual wardrobe placement with the existing tunic, plus isolated shoulders and floor fibres. The pair consists of a dusty-rose cap-sleeved dress and a grey-blue sleeveless dress. Both remain empty garments on steel wire hangers.
+Both dresses remain visible beside the fixed tunic in the wardrobe and doorway captures. The [game comparison](sheets/her_dresses/comparison.png) shows the original and delivered wardrobe views, before on the left and after on the right, with remembered above aged. The pair is a dusty-rose cap-sleeved dress and a grey-blue sleeveless dress. Both are empty garments on steel wire hangers. The [decay comparison](sheets/her_dresses/decay-comparison.png) pairs the original and delivered hems, shoulders and shelf deposits. The [camera comparison](sheets/her_dresses/camera-comparison.png) uses the demo's wardrobe and doorway poses in neutral Blender lighting; actual game captures remain the visibility reference.
 
-`her_dresses.glb` and `her_dresses_aged.glb` use the wardrobe's floor-centre origin and complete transform, with no extra rail-height offset. The hooks meet the real rail at 1.82 m. The tunic transform comes from the Playable demo on local branch `issue-114-quarters-demo`: reflect the tunic's local X, then place its hook at wardrobe-local glTF `(0, 1.82, 0.003038027)` m. Its aged debris is separately seated on the 0.144 m wardrobe shelf. The tunic occupies most of the rail width. The dresses therefore hang with their broad hanger axes front-to-back, rose at X=-0.451 m and blue at X=0.438 m. The left hook neck offsets 26 mm inward to clear the rail socket. Neither the wardrobe nor the tunic is included in these exports.
+The dresses use the wardrobe's floor-centre origin and complete transform, with no extra rail-height offset. The rail is 1.82 m high. The Playable demo reflects the fixed tunic's local X and places its hook at wardrobe-local glTF `(0, 1.82, 0.003038027)` m; its aged debris is separately seated on the 0.144 m shelf. The original depth-independent tunic envelope and front-to-back hangers confined the dresses to narrow side slots. A symmetric arrangement still let the wardrobe frame hide roughly half the rose dress's projected area from the doorway. First-hit camera rays isolated that occlusion. The hooks now sit at rail X=-0.210 m and +0.290 m. Their necks turn the shoulders toward the room and offset the cloth 210 mm forward of the rail, retaining the rail-wrapping hook portions. Pattern widths are 75% of their former front-to-back span. Neither the wardrobe nor the tunic is included in the exports. Their transforms and the game cameras are unchanged.
 
-Each dress starts as retained flat front/back patterns, sewn at the sides and shoulders with open necks and armholes. After sewing closure, gravity settles the garment on its hanger and a temporary upper-chest form, following the tunic method. There are no waist or hem pins. A post-simulation fit blends width and length toward the sewn pattern measurements, preserving simulated depth and folds; projection into the real free hang space then removes collider crossings. The saved sources retain both raw simulations and the cut patterns.
+Game A/B captures also isolated the nearly black fronts to two-sided shading in this reflected placement. Backface culling restored colour and fold shading. White pigment, removed normal maps and disabled shadows did not restore the shaded fronts. Both states now export single-sided materials. The cloth already has separate front and back plies; fringe and settled-fibre cards have explicit opposite faces. The underlying renderer mechanism remains unproven. No game lighting, placement or material-override code was changed.
 
-A height-dependent envelope reserves the union of both existing tunic states, with 8 mm lateral clearance, rather than squeezing the entire dress into the clearance beside the tunic's widest sleeve. For the aged state, the chest form is removed, a front shoulder splits and irregular hem losses open before gravity resimulation. Two rose and three blue outer shoulder stitches release; the inner stitches remain supported. The aged length fit preserves 75% of the simulated vertical sag while retaining the skirt's width. Faded brittle wool keeps a recognisable waist and flared skirt, with frayed hems and cut edges. Two low heaps of dry fibres sit below the garments on the wardrobe floor. The environment is sealed, sterile, dry and oxygenated after 1000 years; there is no mould, rot or other biological decay.
+The original hem and shoulder cuts removed whole faces from a coarse sewn grid. Rounding those edges alone produced broad scallops, while fringe along intact necklines produced a repeated serrated border. The dry finish refines and relaxes the damaged boundary, reduces broad hem variation, and adds grain variation of up to 1 mm with a few shallow, rounded losses. A regression reproduced 5.818 mm of sawtooth variation on short straight hem segments; lowering the displacement frequency and refining the edge removes that aliasing. Atlas widening had also merged fibre roots into 78% opaque coverage, so the finish now keeps the strands separate and short. Loose shoulder cut edges move inward and curl slightly. A height-band filter had omitted one adjoining edge at some tear tips, preserving unsupported turns as sharp as 102 degrees; a regression reproduced a 100-degree corner. Using both boundary neighbours and eight relaxation passes after refinement removes unsupported shoulder turns above 35 degrees in the saved meshes. Locked support stitches stay fixed. Intact necklines receive no fringe. Matte faded wool has roughness 0.99, a separate repeating weave UV, and a colour atlas that deposits dust according to upward-facing fold normals.
 
-Sources are `tools/blender/quarters/her_dresses/her_dresses-{remembered,aged}.blend`. The builder and repeat-export arguments match the jacket commands above, replacing its directory and prop name with `her_dresses`; run `her_jacket/verify.py her_dresses` for the independent exported-mesh gates. Reconstruct with `her_dresses/build.py -- --assemble --state remembered`, then `--state aged`. `her_dresses/finish.py -- --state <state>` repeats the saved-source silhouette and clearance fit without accumulating deformation. `her_dresses/space.py` regenerates the tunic envelope from the two shipped tunic GLBs. The standalone generated guide and seed are recorded in `prompts/batch2.json` and `sheets/her_dresses/hero.json`; it does not use the bed-specific prompt suffix. The texture sources are the same generated weave and bed-wool normal used for the jacket. The shared CPU renderer accepts `--prop her_dresses`, and `her_jacket/sheets.py her_dresses` assembles the comparison and matched fibres-disabled control.
+The original opaque heaps and particle pyramids read as hard fragments. An additional packing fault retained the powder helper's brown PNG after a colour edit; a regression test first reproduced the brown pigment in the embedded GLB image. The finish now creates a fresh packed neutral-fibre image. Granular alpha-scissor powder, coherent clump normals, differently skewed 26 mm cores and 18 irregular settled yarn cards form each deposit. The former 14 mm relief projected to roughly three pixels at the wardrobe camera and read as a flat patch. The wider powder halo and raised core retain a shallow deposit while giving that camera more relief to resolve. Dust response also spreads across weakly upward-facing folds, with clustered variation that breaks up otherwise smooth pale patches. Both deposits are seated 0.800 mm above the shelf. The central grey tunic debris is unchanged and is not counted as a dress deposit. The ship has been adrift 1000 years in sealed, sterile, dry, oxygenated conditions; no biological decay is depicted.
 
+Each garment retains its original flat patterns, sewn side and shoulder seams, raw gravity drapes and fitted pre-arrangement inputs. Aging removes the temporary chest form and releases outer shoulder stitches before its original gravity resimulation. The saved-source finish restarts from retained `*_FinishInput` meshes, so changes do not accumulate. Source files are `tools/blender/quarters/her_dresses/her_dresses-{remembered,aged}.blend`, with packed images and lossless file compression. `build.py -- --state <state> --output <path>` re-exports them. `dress_finish.py -- --state <state>` reapplies the rail arrangement and dry finish. The uniquely named module avoids a collision with the jacket's executable `finish.py`.
+
+The full construction entrypoint remains `build.py -- --assemble --state remembered`, followed by the aged state. It restores unarranged fitted inputs before aging and applies the finish after assembly. Saved-source exports and finish-input restoration were tested in this pass; the complete cloth simulation was not rerun. The generated guide and seed remain in `prompts/batch2.json` and `sheets/her_dresses/hero.json`.
 
 | Dress-pair gate | Remembered | Aged 1000 years |
 | --- | ---: | ---: |
-| Exported triangles, limit 10,000 | 6,544 | 9,430 |
+| Exported triangles, limit 10,000 | 6,544 | 9,387 |
 | Exact triangle crossings against wardrobe | 0 | 0 |
-| Crossings against corresponding tunic state / other dress | 0 / 0 | 0 / 0 |
-| Rose / blue cloth-to-hanger support gaps | 0.044 / 0.661 mm | 0.044 / 0.661 mm |
-| Each hanger-to-rail gap | 0.807 mm | 0.807 mm |
+| Crossings against corresponding tunic / other dress | 0 / 0 | 0 / 0 |
+| Rose / blue cloth-to-hanger support gaps | 0.128 / 0.641 mm | 0.128 / 0.641 mm |
+| Each hanger-to-rail gap, limit 3 mm | 0.807 mm | 0.807 mm |
 | Each fibre-heap-to-shelf gap | n/a | 0.800 mm |
 | Byte-identical saved-source re-export | Pass | Pass |
-| Native Z-up to glTF Y-up/front +Z bounds | Pass | Pass |
+| Native Z-up to glTF Y-up/front +Z | Pass | Pass |
 | Degenerate triangles / identity root | 0 / Pass | 0 / Pass |
-| Independent image-comparer rating | 7.5/10 | 6/10 |
+| Doorway visible projected area, rose / blue, minimum 90% | 99.34% / 100% | 99.00% / 100% |
+| Matched image-review overall, before → after | 7 → 8 / 10 | 3 → 7 / 10 |
 
-The [measured dress gates](../../../tools/blender/quarters/her_dresses/verify.json) include every exported hanger, fringe and heap in the furniture and tunic collision tests. Their support limit remains 3 mm. Eight Blender construction controls pass, covering seam closure, separate plies, nonzero triangle area, retained flat patterns, outward pattern normals, repeatable silhouette fitting with locked support stitches, retained aged sag, the height-dependent hang space, and a starting cloth shape centred beneath its hanger. The hanger-centre control first reproduced a 237 mm lower-cloth displacement toward the free bay centre. Keeping the starting cloth beneath the hook, with a shallower chest form, removes that source of distortion. The sag regression first reproduced the loss of 65% of the simulated drop during fitting. The seven shared crossing/support controls and two jacket construction tests also pass.
+The [measured gates](../../../tools/blender/quarters/her_dresses/verify.json) include every exported hanger, yarn card and heap in exact furniture and tunic crossing checks. All original limits remain unchanged. `her_dresses/verify.py her_dresses` runs the shared checker with repeat exports under `tmp/clothes2/`. Thirty-one targeted controls pass: eight construction, eleven dry-finish and restoration, three arrangement, two exported pigment/doorway regressions, and seven shared geometry/support tests. The doorway regression first failed at 47.4% remembered and 49.5% aged rose-dress visibility; it now requires at least 90% unoccluded projected area for each dress in both states. Godot 4.7.2 imports both states with the triangle counts above, identity roots and backface-culling PBR materials. The aged export has eight alpha-scissor surfaces.
 
+`her_dresses/render.py -- --state <state> --out <directory>` renders the matched perspective cameras and close-ups. Its final X reflection matches the room-to-ship handedness; the camera transforms, FOVs and lighting qualification are in [cameras.json](sheets/her_dresses/cameras.json). `capture.gd` records the actual wardrobe and doorway poses in an isolated copy of the Playable demo. `runtime.gd` checks the imported material contract. `controls.py -- --output <path> --no-fold-dust` changes only the cloth's dust atlas; `--no-fibres` removes edge fibres and dress deposits. `sheets.py` publishes the paired captures from `tmp/clothes2/`.
 
-The final aged surface reduces specular and sheen, strengthens the generated weave's fine contrast and uses a 0.65-strength wool normal. Roughness remains 0.98. Each loose-fibre scatter now sits over a compact, irregular 14 mm-high volume rather than representing the whole heap with separated particles. Both volumes are independently seated 0.800 mm above the shelf and included in the collision and triangle-budget checks. `her_dresses/brittle.py` owns this finish and heap construction; the builder and saved-source finishing command both use it.
-
-
-The final [lit fibres-disabled control](sheets/her_dresses/fibre-visibility.json) changes 0.968% of paired broadside pixels by more than 0.01 in a linear RGB channel, including fibre shadows. Presence alone is not treated as visual acceptance. Earlier `review-*-trial.json` and `review-initial.json` responses refer to discarded builds; the current captures show the delivered meshes. Godot 4.7.2 imports and instantiates all four final clothing GLBs with identity roots, PBR surfaces and the triangle counts in these tables. The final run passes 17 construction and geometry-control tests. Application placement and material override code are unchanged; use the chair and wardrobe transforms described above.
-
-
-The [final independent image review](sheets/her_dresses/review.json) rates the remembered pair 7.5/10 and the aged pair 6/10. It confirms recognisable aged silhouettes. The raw response records its remaining visual qualifications separately from the numerical gates.
+The [lit controls](sheets/her_dresses/fibre-visibility.json) measure changed pixels and contrast, including shadows. Disabling fold dust changes 38,398 wardrobe-view pixels by more than 0.01 linear RGB, with a mean 29.37-level sRGB difference across those pixels. Removing dress edge fibres and deposits changes 2,339 pixels, with a mean 11.93-level difference. These are full-frame measurements, not coverage percentages of the fabric. The [independent image review](sheets/her_dresses/review.md) records perceived quality, before/after scores on a common 1–10 scale, and remaining limitations. The reviewer finds all three garments recognisable in both actual game cameras. Aged close-up scores are 7/10 for hems and dry fabric, 6/10 for shoulders and deposits, and 5/10 for upward-fold dust. The rose shoulder opening remains conspicuous in close-up. At game distance, deposits read mainly as pale patches and fold dust is subtle; individual fibres are not resolved. These are remaining visual limitations, not geometric gate failures. The older `review.json`, trial responses and broadside sheets describe earlier builds and remain historical references.
 
 ## Batch 1 materials
 

@@ -295,6 +295,31 @@ static func _wardrobe_material(state: StringName) -> ShaderMaterial:
 	return result
 
 
+static func storage_material(state: StringName) -> Material:
+	assert(STATES.has(state), "unknown storage finish: %s" % state)
+	if state == &"as_built": return interim_material(&"PaintedSteel", state)
+	var identity := StringName("storage/%s" % state)
+	if not _materials.has(identity):
+		var finish := _wardrobe_material(state).duplicate() as ShaderMaterial
+		finish.set_shader_parameter(&"face_albedo", FACE_ALBEDO)
+		finish.set_shader_parameter(&"face_orm", FACE_ORM)
+		_materials[identity] = finish
+	return _materials[identity]
+
+
+static func prepare_storage(piece: MeshInstance3D) -> void:
+	if _face_layout.is_empty():
+		_face_layout = JSON.parse_string(FileAccess.get_file_as_string(FACE_ROOT + "face-layout.json"))["faces"]
+	var front: Array = _face_layout["door"]["uv_rectangle"]
+	var top: Array = _face_layout["top"]["uv_rectangle"]
+	var bounds := piece.get_aabb()
+	piece.set_instance_shader_parameter(&"face_front", Vector4(front[0], front[1], front[2], front[3]))
+	piece.set_instance_shader_parameter(&"face_back", Vector4(front[0], front[1], front[2], front[3]))
+	piece.set_instance_shader_parameter(&"face_dust", Vector4(top[0], top[1], top[2], top[3]))
+	piece.set_instance_shader_parameter(&"local_low", Vector4(bounds.position.x, bounds.position.y, bounds.position.z, 0))
+	piece.set_instance_shader_parameter(&"local_size", Vector4(bounds.size.x, bounds.size.y, bounds.size.z, 0))
+	piece.set_instance_shader_parameter(&"projection", Vector4(2, 0, 1, 0))
+
 static func _wardrobe_rectangle(face: String) -> Vector4:
 	var rectangle: Array = _wardrobe_layout[face]["uv_rectangle"]
 	return Vector4(rectangle[0], rectangle[1], rectangle[2], rectangle[3])
