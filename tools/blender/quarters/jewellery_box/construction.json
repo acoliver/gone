@@ -1,0 +1,32 @@
+{
+  "id": "jewellery_box",
+  "bounds_gltf": [
+    [
+      -0.07500000298023224,
+      0.0,
+      -0.051750000566244125
+    ],
+    [
+      0.07500000298023224,
+      0.05000000074505806,
+      0.051750000566244125
+    ]
+  ],
+  "triangle_limit": 1500,
+  "required_nodes": [
+    "Body",
+    "BrassRim",
+    "Lid",
+    "Hinge_0",
+    "Hinge_1",
+    "Clasp",
+    "ClaspLever"
+  ],
+  "axis_contract": "Blender +Z up/-Y front, export_yup=True -> glTF +Y up/+Z front",
+  "age_years": 1000,
+  "base_origin": [
+    0,
+    0,
+    0
+  ]
+}

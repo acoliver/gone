@@ -1,0 +1,189 @@
+{
+  "bounds_gltf": [
+    [
+      -0.55,
+      0,
+      -0.275
+    ],
+    [
+      0.55,
+      0.69,
+      0.275
+    ]
+  ],
+  "required_nodes": [
+    "Console",
+    "ArmouredHousing",
+    "LowerDeckHousing",
+    "DesktopSupport",
+    "Bezel",
+    "Display",
+    "ControlPanel",
+    "Keys",
+    "Toggles"
+  ],
+  "parents": {
+    "ArmouredHousing": "Console",
+    "LowerDeckHousing": "Console",
+    "DesktopSupport": "Console",
+    "Bezel": "ScreenPlane",
+    "Display": "ScreenPlane",
+    "ScreenPlane": "Console",
+    "ControlPanel": "Console",
+    "Keys": "ControlPanel",
+    "Toggles": "ControlPanel"
+  },
+  "pivots_gltf": {
+    "Console": [
+      0,
+      0,
+      0
+    ]
+  },
+  "materials": [
+    "PaintedSteel",
+    "BareSteel",
+    "DarkSteel",
+    "Display"
+  ],
+  "visible_details": [
+    "Display",
+    "Key_1_4",
+    "Toggle_1",
+    "DesktopSupport"
+  ],
+  "hero_camera_native": [
+    -1.4,
+    -4,
+    1.8
+  ],
+  "hero_camera_gltf": [
+    -1.4,
+    1.8,
+    4
+  ],
+  "hero_target_native": [
+    0,
+    0,
+    0.34
+  ],
+  "triangle_limit": 15000,
+  "display_states": [
+    "remembered",
+    "present"
+  ],
+  "fit_notes": "Seed 351 has a broad head carried on a narrower tapered support, not the full-width solid wedge described by the prompt. Guide sections below .32 m determine the support widths. The selected image supports a 4-by-6 key grid instead of the prompted 3-by-8 grid; the verified total remains 24 keys and three separate toggles. The support and head remain inside the .69 m asset-local height and are mounted on the desk by room placement. The display is an independent emissive part in both states.",
+  "guide": {
+    "source_bounds_native": [
+      [
+        -0.9665955901145935,
+        -0.9924632906913757,
+        -0.843881368637085
+      ],
+      [
+        0.9709720611572266,
+        0.9994921684265137,
+        0.8374409675598145
+      ]
+    ],
+    "carcass_fitting_bounds_native": [
+      [
+        -0.9665955901145935,
+        -0.9924632906913757,
+        -0.843881368637085
+      ],
+      [
+        0.9709720611572266,
+        0.9994921684265137,
+        0.8374409675598145
+      ]
+    ],
+    "fitted_size_whd": [
+      1.1,
+      0.69,
+      0.55
+    ],
+    "sections": [
+      {
+        "height_m": 0.06899999999999999,
+        "vertices": 4470,
+        "xy_min": [
+          -0.3174157738685608,
+          -0.16588526964187622
+        ],
+        "xy_max": [
+          0.3799359202384949,
+          0.20520341396331787
+        ]
+      },
+      {
+        "height_m": 0.1725,
+        "vertices": 4150,
+        "xy_min": [
+          -0.2943122684955597,
+          -0.15392224490642548
+        ],
+        "xy_max": [
+          0.35422953963279724,
+          0.19043274223804474
+        ]
+      },
+      {
+        "height_m": 0.345,
+        "vertices": 6167,
+        "xy_min": [
+          -0.5499932169914246,
+          -0.2749663293361664
+        ],
+        "xy_max": [
+          0.43921419978141785,
+          0.23853056132793427
+        ]
+      },
+      {
+        "height_m": 0.5175,
+        "vertices": 4996,
+        "xy_min": [
+          -0.14118953049182892,
+          -0.09219008684158325
+        ],
+        "xy_max": [
+          0.5081120133399963,
+          0.25994548201560974
+        ]
+      },
+      {
+        "height_m": 0.621,
+        "vertices": 4930,
+        "xy_min": [
+          -0.08980151265859604,
+          -0.06729666888713837
+        ],
+        "xy_max": [
+          0.5435763597488403,
+          0.27292218804359436
+        ]
+      }
+    ],
+    "mesh_triangles": 687488,
+    "support_fit": {
+      "bottom_samples": 20713,
+      "neck_samples": 12223,
+      "bottom_width_m": 0.6859356164932251,
+      "neck_width_m": 0.5716130435466766,
+      "top_height_m": 0.32,
+      "fitting_choice": "The generated pedestal is faired to a symmetric closed manufactured support. The selected head/support junction is near image y=555 of its y=160..910 envelope."
+    },
+    "display_face_fit": {
+      "lower_samples": 64178,
+      "upper_samples": 23182,
+      "guide_dy_dz": 0.6421262803285018,
+      "fitted_dy_dz": 0.6,
+      "lower_deck_height_m": 0.36,
+      "screen_lower_height_m": 0.42,
+      "screen_upper_height_m": 0.69
+    },
+    "source": "tmp/props/console/guide.glb"
+  },
+  "id": "console"
+}

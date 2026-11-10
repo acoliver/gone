@@ -1,0 +1,340 @@
+{
+  "version": 1,
+  "seed": 9502,
+  "atlas_size": [
+    2048,
+    2048
+  ],
+  "texels_per_metre": 296.92585106279046,
+  "density_range_px_m": [
+    296.7096399473978,
+    297.0604799304456
+  ],
+  "uv_overlap_texels": 0,
+  "uv_method": "isometric planar face islands, shared pack, 3 px margin",
+  "occupied_texels": 1053678,
+  "ao_method": "Cycles geometry AO, 16 samples, CPU",
+  "channels": {
+    "geometry_masks.png": {
+      "R": "ambient occlusion (1 = open)",
+      "G": "cavity (1 = recessed)",
+      "B": "edge curvature proximity (12 mm falloff)",
+      "A": "surface coverage"
+    },
+    "weather_masks.png": {
+      "R": "up-facing exposure times AO",
+      "G": "gravity streak field",
+      "B": "contact with other parts (5 mm falloff, 25 mm search)",
+      "A": "material class / 4: PaintedSteel=1, BareSteel=2, DarkSteel=3, other=4"
+    }
+  },
+  "parts": [
+    "DrawerBack_0",
+    "DrawerBack_1",
+    "DrawerBack_2",
+    "DrawerBottom_0",
+    "DrawerBottom_1",
+    "DrawerBottom_2",
+    "DrawerFront_0",
+    "DrawerFront_1",
+    "DrawerFront_2",
+    "DrawerPocket_0",
+    "DrawerPocket_1",
+    "DrawerPocket_2",
+    "DrawerPull_0",
+    "DrawerPull_1",
+    "DrawerPull_2",
+    "DrawerRivets_0",
+    "DrawerRivets_1",
+    "DrawerRivets_2",
+    "DrawerSide_L_0",
+    "DrawerSide_L_1",
+    "DrawerSide_L_2",
+    "DrawerSide_R_0",
+    "DrawerSide_R_1",
+    "DrawerSide_R_2",
+    "EndPanel",
+    "EndShoe",
+    "LeftUpstand",
+    "ModestyPanel",
+    "PedestalBack",
+    "PedestalKick",
+    "PedestalPlinth",
+    "PedestalRivets",
+    "PedestalSide_L",
+    "PedestalSide_R",
+    "RearUpstand",
+    "RightUpstand",
+    "Worktop",
+    "WorktopFrontReturn",
+    "WorktopLeftReturn",
+    "WorktopRightReturn",
+    "WorktopRivets"
+  ],
+  "sources": [
+    {
+      "part": "DrawerRivets_0",
+      "position_blender": [
+        -0.7400000095367432,
+        -0.33865000307559967,
+        0.16500000655651093
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          -0.7450000047683716,
+          -0.3402999937534332,
+          0.16500000655651093
+        ],
+        [
+          -0.7350000143051147,
+          -0.3370000123977661,
+          0.17499999701976776
+        ]
+      ]
+    },
+    {
+      "part": "DrawerRivets_0",
+      "position_blender": [
+        -0.2996480464935303,
+        -0.33865000307559967,
+        0.16499999165534973
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          -0.3046480417251587,
+          -0.3402999937534332,
+          0.16499999165534973
+        ],
+        [
+          -0.29464805126190186,
+          -0.3370000123977661,
+          0.17499999701976776
+        ]
+      ]
+    },
+    {
+      "part": "DrawerRivets_1",
+      "position_blender": [
+        -0.7400000095367432,
+        -0.33865000307559967,
+        0.35500001907348633
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          -0.7450000047683716,
+          -0.3402999937534332,
+          0.35500001907348633
+        ],
+        [
+          -0.7350000143051147,
+          -0.3370000123977661,
+          0.36500000953674316
+        ]
+      ]
+    },
+    {
+      "part": "DrawerRivets_1",
+      "position_blender": [
+        -0.2996480464935303,
+        -0.33865000307559967,
+        0.35500001907348633
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          -0.3046480417251587,
+          -0.3402999937534332,
+          0.35500001907348633
+        ],
+        [
+          -0.29464805126190186,
+          -0.3370000123977661,
+          0.36500000953674316
+        ]
+      ]
+    },
+    {
+      "part": "DrawerRivets_2",
+      "position_blender": [
+        -0.7400000095367432,
+        -0.33865000307559967,
+        0.5450000166893005
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          -0.7450000047683716,
+          -0.3402999937534332,
+          0.5450000166893005
+        ],
+        [
+          -0.7350000143051147,
+          -0.3370000123977661,
+          0.5550000071525574
+        ]
+      ]
+    },
+    {
+      "part": "DrawerRivets_2",
+      "position_blender": [
+        -0.2996480464935303,
+        -0.33865000307559967,
+        0.5450000166893005
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          -0.3046480417251587,
+          -0.3402999937534332,
+          0.5450000166893005
+        ],
+        [
+          -0.29464805126190186,
+          -0.3370000123977661,
+          0.5550000071525574
+        ]
+      ]
+    },
+    {
+      "part": "PedestalRivets",
+      "position_blender": [
+        -0.7879999876022339,
+        -0.32145000994205475,
+        0.11499999463558197
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          -0.7929999828338623,
+          -0.3231000006198883,
+          0.11499999463558197
+        ],
+        [
+          -0.7829999923706055,
+          -0.3198000192642212,
+          0.125
+        ]
+      ]
+    },
+    {
+      "part": "PedestalRivets",
+      "position_blender": [
+        -0.7879999876022339,
+        -0.32145002484321594,
+        0.2750000059604645
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          -0.7929999828338623,
+          -0.3231000304222107,
+          0.2750000059604645
+        ],
+        [
+          -0.7829999923706055,
+          -0.3198000192642212,
+          0.2849999964237213
+        ]
+      ]
+    },
+    {
+      "part": "PedestalRivets",
+      "position_blender": [
+        -0.7879999876022339,
+        -0.3214500695466995,
+        0.4350000023841858
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          -0.7929999828338623,
+          -0.3231000602245331,
+          0.4350000023841858
+        ],
+        [
+          -0.7829999923706055,
+          -0.31980007886886597,
+          0.4449999928474426
+        ]
+      ]
+    },
+    {
+      "part": "PedestalRivets",
+      "position_blender": [
+        -0.7879999876022339,
+        -0.3214500844478607,
+        0.6150000095367432
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          -0.7929999828338623,
+          -0.32310009002685547,
+          0.6150000095367432
+        ],
+        [
+          -0.7829999923706055,
+          -0.31980007886886597,
+          0.625
+        ]
+      ]
+    },
+    {
+      "part": "WorktopRivets",
+      "position_blender": [
+        -0.699999988079071,
+        -0.35145001113414764,
+        0.6740000247955322
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          -0.7059999704360962,
+          -0.3531000018119812,
+          0.6740000247955322
+        ],
+        [
+          -0.6940000057220459,
+          -0.3498000204563141,
+          0.6859999895095825
+        ]
+      ]
+    },
+    {
+      "part": "WorktopRivets",
+      "position_blender": [
+        0.699999988079071,
+        -0.35145001113414764,
+        0.6740000247955322
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          0.6939999461174011,
+          -0.3531000018119812,
+          0.6740000247955322
+        ],
+        [
+          0.706000030040741,
+          -0.3498000204563141,
+          0.6859999895095825
+        ]
+      ]
+    }
+  ]
+}

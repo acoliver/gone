@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/sofa/foam.png",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/sofa/upholstery-aged.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/sofa/foam-flat-prompt.txt",
+    "--seed",
+    "95621",
+    "--width",
+    "768",
+    "--height",
+    "768",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/sofa/foam-flat.png"
+  ],
+  "prompt": "Flatten the first reference into a diffuse albedo scan of dry fine-grained tan-brown oxidised polyurethane crust, with the second reference showing the required flat illumination. Make the granules very fine and shallow. Remove raised clumps, dark holes, cast shadows, highlights, large lumps and directional shading. Warm dull tan-brown material filling the entire square. Shadowless orthographic material only, no geometry, seams, borders, floor, objects or green. No biological growth.",
+  "inputs": [
+    "foam.png",
+    "upholstery-aged.png"
+  ],
+  "seed": 95621,
+  "model": "black-forest-labs/FLUX.2-klein-4B",
+  "steps": 4,
+  "quantize": 4
+}

@@ -1,0 +1,293 @@
+{
+  "asset": "desk_chair",
+  "bounds_gltf": {
+    "actual": [
+      [
+        -0.25,
+        0.0,
+        -0.24855537386544313
+      ],
+      [
+        0.25,
+        0.9488644671986992,
+        0.2500000069849193
+      ]
+    ],
+    "expected": [
+      [
+        -0.25,
+        0.0,
+        -0.25
+      ],
+      [
+        0.25,
+        0.95,
+        0.25
+      ]
+    ],
+    "max_error_m": 0.00144462613455687,
+    "tolerance_m": 0.01,
+    "pass": true
+  },
+  "origin_at_floor": {
+    "min_y_m": 0.0,
+    "pass": true
+  },
+  "required_nodes": {
+    "missing": [],
+    "pass": true
+  },
+  "hierarchy": {
+    "Frame": {
+      "actual": "Chair",
+      "expected": "Chair",
+      "pass": true
+    },
+    "SeatPan": {
+      "actual": "Frame",
+      "expected": "Frame",
+      "pass": true
+    },
+    "SeatPad": {
+      "actual": "Chair",
+      "expected": "Chair",
+      "pass": true
+    },
+    "BackPlate": {
+      "actual": "Frame",
+      "expected": "Frame",
+      "pass": true
+    }
+  },
+  "pivots": {
+    "Chair": {
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "pass": true
+    }
+  },
+  "topology": {
+    "BackPlate": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "BackUpright_L": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "BackUpright_R": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "CrossBrace_B": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "CrossBrace_F": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DeckShoe_LB": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DeckShoe_LF": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DeckShoe_RB": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DeckShoe_RF": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "FrameRivets": {
+      "component_count": 2,
+      "probe_count": 108,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Leg_LB": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Leg_LF": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Leg_RB": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Leg_RF": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "SeatMountingPlate": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "SeatPad": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "SeatPan": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "SideBrace_L": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "SideBrace_R": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    }
+  },
+  "degenerate_faces": 0,
+  "triangle_count": 2032,
+  "triangle_limit": 6000,
+  "material_slots": [
+    "BareSteel",
+    "DarkSteel",
+    "Fabric",
+    "PaintedSteel"
+  ],
+  "required_materials_pass": true,
+  "UV": {
+    "overlapping_triangle_pairs": 0,
+    "max_overlap_area_uv2": 0.0,
+    "out_of_unit_square_coordinates": 0,
+    "linear_texel_density_p05_p50_p95": [
+      0.5278271619456696,
+      0.5582806420595525,
+      0.5799472927666507
+    ],
+    "density_p95_p05_ratio": 1.0987446925407487,
+    "pass": true
+  },
+  "hero_first_hit_visibility": {
+    "SeatPad": {
+      "sample_count": 54,
+      "visible_projected_area_fraction": 0.9993234714959429,
+      "visible_triangle_fraction": 0.9629629629629629,
+      "projection": "orthographic",
+      "minimum": 0.6,
+      "pass": true
+    },
+    "BackPlate": {
+      "sample_count": 54,
+      "visible_projected_area_fraction": 0.9890360383057121,
+      "visible_triangle_fraction": 0.8518518518518519,
+      "projection": "orthographic",
+      "minimum": 0.6,
+      "pass": true
+    }
+  },
+  "byte_identical_reexport": true,
+  "axis_contract": "Blender Z-up/-Y front -> exported glTF +Y up/+Z front; bounds measured outside Blender",
+  "pass": true
+}

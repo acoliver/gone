@@ -40,7 +40,7 @@ func test_duct_frames_fit_below_ceiling_with_fifty_mm_side_and_bottom_lips() -> 
 			assert_true(piece.get_meta(&"role") == &"weathered_red", "duct frame uses the existing contrasting worn red finish")
 			assert_true(piece.material_override != node.get_node("CeilingDucts").material_override, "frame finish differs from the sheet body")
 		node.free()
-	assert_int_equal(faces, 126, "both walls of every built spine space")
+	assert_int_equal(faces, 128, "#114 adds the two D16 section walls to the previous 126 built spine faces")
 
 func _duct_frame(spine: SpineServices, side: int) -> AABB:
 	var result := spine.duct_collars[side * 4] * ShipDressing.UNIT

@@ -1,0 +1,913 @@
+{
+  "named_nodes": {
+    "actual": [
+      "Throw",
+      "Rivets",
+      "BackCushion_R",
+      "BackCushion_C",
+      "BackCushion_L",
+      "SeatCushion_R",
+      "SeatCushion_C",
+      "SeatCushion_L",
+      "Feet",
+      "Frame"
+    ],
+    "pass": true
+  },
+  "unique_geometry": {
+    "geometry_count": 10,
+    "unique_geometry_count": 10,
+    "pass": true
+  },
+  "topology": {
+    "Throw": {
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_component_volumes": true,
+      "triangles": 3476,
+      "components": 1
+    },
+    "Rivets": {
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_component_volumes": true,
+      "triangles": 768,
+      "components": 16
+    },
+    "BackCushion_R": {
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_component_volumes": true,
+      "triangles": 2122,
+      "components": 2
+    },
+    "BackCushion_C": {
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_component_volumes": true,
+      "triangles": 2122,
+      "components": 2
+    },
+    "BackCushion_L": {
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_component_volumes": true,
+      "triangles": 2122,
+      "components": 2
+    },
+    "SeatCushion_R": {
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_component_volumes": true,
+      "triangles": 1968,
+      "components": 2
+    },
+    "SeatCushion_C": {
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_component_volumes": true,
+      "triangles": 1968,
+      "components": 2
+    },
+    "SeatCushion_L": {
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_component_volumes": true,
+      "triangles": 1968,
+      "components": 2
+    },
+    "Feet": {
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_component_volumes": true,
+      "triangles": 420,
+      "components": 4
+    },
+    "Frame": {
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_component_volumes": true,
+      "triangles": 2616,
+      "components": 18
+    }
+  },
+  "topology_pass": true,
+  "seats": {
+    "SeatCushion_R": {
+      "extents_xyz_m": [
+        0.6598861813545227,
+        0.18045393377542496,
+        0.6998462677001953
+      ],
+      "top_center_y_m": 0.5646569180328438,
+      "top_20mm_edge_y_m": [
+        0.5355102249751964,
+        0.5202870670576156,
+        0.5389370180199022,
+        0.5199574171063941
+      ],
+      "crown_m": 0.035983986243066646,
+      "side_bulges_m": [
+        0.0216666449020686,
+        0.022856477949500187,
+        0.0226632558488562,
+        0.017128207186203115
+      ],
+      "pass": true
+    },
+    "SeatCushion_C": {
+      "extents_xyz_m": [
+        0.6598861813545227,
+        0.18045393377542496,
+        0.6998462677001953
+      ],
+      "top_center_y_m": 0.5646569180328438,
+      "top_20mm_edge_y_m": [
+        0.5355102249751964,
+        0.5202870670576156,
+        0.5389370180199022,
+        0.5199574171063941
+      ],
+      "crown_m": 0.035983986243066646,
+      "side_bulges_m": [
+        0.0216666449020686,
+        0.022856477949500187,
+        0.0226632558488562,
+        0.017128207186203115
+      ],
+      "pass": true
+    },
+    "SeatCushion_L": {
+      "extents_xyz_m": [
+        0.6598861813545227,
+        0.18045393377542496,
+        0.6998462677001953
+      ],
+      "top_center_y_m": 0.5646569180328438,
+      "top_20mm_edge_y_m": [
+        0.5355102249751964,
+        0.5202870670576156,
+        0.5389370180199022,
+        0.5199574171063941
+      ],
+      "crown_m": 0.035983986243066646,
+      "side_bulges_m": [
+        0.0216666449020686,
+        0.022856477949500187,
+        0.0226632558488562,
+        0.017128207186203115
+      ],
+      "pass": true
+    }
+  },
+  "mesh_resource_names": {
+    "node_mesh_names": {
+      "Frame": "Frame",
+      "Feet": "Feet",
+      "SeatCushion_L": "SeatCushion_L",
+      "SeatCushion_C": "SeatCushion_C",
+      "SeatCushion_R": "SeatCushion_R",
+      "BackCushion_L": "BackCushion_L",
+      "BackCushion_C": "BackCushion_C",
+      "BackCushion_R": "BackCushion_R",
+      "Rivets": "Rivets",
+      "Throw": "Throw"
+    },
+    "pass": true
+  },
+  "foot_frame_contacts": {
+    "feet": [
+      {
+        "top_y_m": 0.07426325231790543,
+        "nearest_frame_gaps_m": [
+          0.00015000253915786743,
+          0.00015000998973846436,
+          0.0001500062644481659
+        ],
+        "surface_above_foot": true,
+        "pass": true
+      },
+      {
+        "top_y_m": 0.07465771213173866,
+        "nearest_frame_gaps_m": [
+          0.00014999881386756897,
+          0.00014999881386756897,
+          0.00014999881386756897
+        ],
+        "surface_above_foot": true,
+        "pass": true
+      },
+      {
+        "top_y_m": 0.07465771958231926,
+        "nearest_frame_gaps_m": [
+          0.0001500062644481659,
+          0.0001500062644481659
+        ],
+        "surface_above_foot": true,
+        "pass": true
+      },
+      {
+        "top_y_m": 0.07465771958231926,
+        "nearest_frame_gaps_m": [
+          0.0001500062644481659,
+          0.0001500062644481659
+        ],
+        "surface_above_foot": true,
+        "pass": true
+      }
+    ],
+    "pass": true
+  },
+  "rounded_seat_edges": {
+    "SeatCushion_R": {
+      "top_edge_radii_m": [
+        0.05102387296640651,
+        0.05383042242505454,
+        0.05164911365887706,
+        0.0584031967179583
+      ],
+      "convex_sections": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "corners": [
+        {
+          "heights_y_m": [
+            0.5461758979644189,
+            0.5652779804640882,
+            0.566654613585881,
+            0.5680621322857415
+          ],
+          "pass": true
+        },
+        {
+          "heights_y_m": [
+            0.5480007560797191,
+            0.5652745111683628,
+            0.5660880999170126,
+            0.566632206057536
+          ],
+          "pass": true
+        },
+        {
+          "heights_y_m": [
+            0.5455032217358879,
+            0.565275392635868,
+            0.5666197831605182,
+            0.5677574194211168
+          ],
+          "pass": true
+        },
+        {
+          "heights_y_m": [
+            0.5477346783551231,
+            0.5654448196546482,
+            0.567156264577412,
+            0.5675916084999049
+          ],
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    "SeatCushion_C": {
+      "top_edge_radii_m": [
+        0.05102387296640651,
+        0.05383042242505351,
+        0.05164911365887706,
+        0.0584031967179583
+      ],
+      "convex_sections": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "corners": [
+        {
+          "heights_y_m": [
+            0.5461758979644189,
+            0.5652779804640882,
+            0.566654613585881,
+            0.5680621322857415
+          ],
+          "pass": true
+        },
+        {
+          "heights_y_m": [
+            0.5480007560797191,
+            0.5652745111683628,
+            0.5660880999170126,
+            0.566632206057536
+          ],
+          "pass": true
+        },
+        {
+          "heights_y_m": [
+            0.5455032217358879,
+            0.565275392635868,
+            0.5666197831605182,
+            0.5677574194211168
+          ],
+          "pass": true
+        },
+        {
+          "heights_y_m": [
+            0.5477346783551231,
+            0.5654448196546482,
+            0.567156264577412,
+            0.5675916084999049
+          ],
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    "SeatCushion_L": {
+      "top_edge_radii_m": [
+        0.05102387296640651,
+        0.05383042242505351,
+        0.05164911365887706,
+        0.0584031967179583
+      ],
+      "convex_sections": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "corners": [
+        {
+          "heights_y_m": [
+            0.5461758979644189,
+            0.5652779804640882,
+            0.566654613585881,
+            0.5680621322857415
+          ],
+          "pass": true
+        },
+        {
+          "heights_y_m": [
+            0.5480007560797191,
+            0.5652745111683628,
+            0.5660880999170126,
+            0.566632206057536
+          ],
+          "pass": true
+        },
+        {
+          "heights_y_m": [
+            0.5455032217358879,
+            0.565275392635868,
+            0.5666197831605182,
+            0.5677574194211168
+          ],
+          "pass": true
+        },
+        {
+          "heights_y_m": [
+            0.5477346783551231,
+            0.5654448196546482,
+            0.567156264577412,
+            0.5675916084999049
+          ],
+          "pass": true
+        }
+      ],
+      "pass": true
+    }
+  },
+  "backs": {
+    "BackCushion_R": {
+      "extents_xyz_m": [
+        0.6599253714084625,
+        0.4200378656387329,
+        0.19998425245285034
+      ],
+      "front_crown_m": 0.04163307373093428,
+      "top_edge_radii_m": [
+        0.04830264317235772,
+        0.05179264098598956,
+        0.06899717656728516,
+        0.04940997566608525
+      ],
+      "pass": true
+    },
+    "BackCushion_C": {
+      "extents_xyz_m": [
+        0.6599253714084625,
+        0.4200378656387329,
+        0.19998425245285034
+      ],
+      "front_crown_m": 0.04163307373093428,
+      "top_edge_radii_m": [
+        0.04830264317235772,
+        0.05179264098598956,
+        0.06899717656728516,
+        0.04940997566608525
+      ],
+      "pass": true
+    },
+    "BackCushion_L": {
+      "extents_xyz_m": [
+        0.6599253714084625,
+        0.4200378656387329,
+        0.19998425245285034
+      ],
+      "front_crown_m": 0.04163307373093428,
+      "top_edge_radii_m": [
+        0.04830264317235772,
+        0.05179264098598956,
+        0.06899717656728516,
+        0.04940997566608525
+      ],
+      "pass": true
+    }
+  },
+  "throw_folds": {
+    "section_y_m": 0.56,
+    "section_z_range_m": [
+      -0.1313258272409439,
+      0.4401944291591644
+    ],
+    "section_samples": 180,
+    "best_fit_plane_deviation_m": 0.022049638444534114,
+    "fold_peak_count": 3,
+    "fold_peak_z_m": [
+      -0.04559778878092767,
+      0.10998272546132404,
+      0.2687383522391319
+    ],
+    "right_seat_top_coverage_fraction": 0.08562212882416186,
+    "sheet_components": 1,
+    "pass": true
+  },
+  "arm_roll": {
+    "sections": [
+      {
+        "z_m": 0.0,
+        "samples": 30,
+        "radius_m": 0.03489252048721431,
+        "max_radial_error_m": 0.002051092410349613,
+        "pass": true
+      },
+      {
+        "z_m": 0.1,
+        "samples": 30,
+        "radius_m": 0.03488430603031759,
+        "max_radial_error_m": 0.0021069567134649955,
+        "pass": true
+      },
+      {
+        "z_m": 0.2,
+        "samples": 18,
+        "radius_m": 0.03491689106683689,
+        "max_radial_error_m": 0.002013984891454268,
+        "pass": true
+      }
+    ],
+    "pass": true
+  },
+  "rivets": {
+    "rivets": [
+      {
+        "plate": "LF",
+        "diameter_m": 0.01199999451637268,
+        "dome_height_m": 0.003000020980834961,
+        "pass": true
+      },
+      {
+        "plate": "LF",
+        "diameter_m": 0.01199999451637268,
+        "dome_height_m": 0.003000020980834961,
+        "pass": true
+      },
+      {
+        "plate": "LF",
+        "diameter_m": 0.01199999451637268,
+        "dome_height_m": 0.003000020980834961,
+        "pass": true
+      },
+      {
+        "plate": "LF",
+        "diameter_m": 0.01199999451637268,
+        "dome_height_m": 0.003000020980834961,
+        "pass": true
+      },
+      {
+        "plate": "LB",
+        "diameter_m": 0.01199999451637268,
+        "dome_height_m": 0.003000020980834961,
+        "pass": true
+      },
+      {
+        "plate": "LB",
+        "diameter_m": 0.01199999451637268,
+        "dome_height_m": 0.003000020980834961,
+        "pass": true
+      },
+      {
+        "plate": "LB",
+        "diameter_m": 0.01199999451637268,
+        "dome_height_m": 0.003000020980834961,
+        "pass": true
+      },
+      {
+        "plate": "LB",
+        "diameter_m": 0.01199999451637268,
+        "dome_height_m": 0.003000020980834961,
+        "pass": true
+      },
+      {
+        "plate": "RF",
+        "diameter_m": 0.01199999451637268,
+        "dome_height_m": 0.003000020980834961,
+        "pass": true
+      },
+      {
+        "plate": "RF",
+        "diameter_m": 0.01199999451637268,
+        "dome_height_m": 0.003000020980834961,
+        "pass": true
+      },
+      {
+        "plate": "RF",
+        "diameter_m": 0.01199999451637268,
+        "dome_height_m": 0.003000020980834961,
+        "pass": true
+      },
+      {
+        "plate": "RF",
+        "diameter_m": 0.01199999451637268,
+        "dome_height_m": 0.003000020980834961,
+        "pass": true
+      },
+      {
+        "plate": "RB",
+        "diameter_m": 0.01199999451637268,
+        "dome_height_m": 0.003000020980834961,
+        "pass": true
+      },
+      {
+        "plate": "RB",
+        "diameter_m": 0.01199999451637268,
+        "dome_height_m": 0.003000020980834961,
+        "pass": true
+      },
+      {
+        "plate": "RB",
+        "diameter_m": 0.01199999451637268,
+        "dome_height_m": 0.003000020980834961,
+        "pass": true
+      },
+      {
+        "plate": "RB",
+        "diameter_m": 0.01199999451637268,
+        "dome_height_m": 0.003000020980834961,
+        "pass": true
+      }
+    ],
+    "counts_per_plate": {
+      "LF": 4,
+      "LB": 4,
+      "RF": 4,
+      "RB": 4
+    },
+    "pass": true
+  },
+  "seat_top_normals": {
+    "SeatCushion_R": {
+      "upward_faces": 460,
+      "max_top_normal_y": 0.999999727164256,
+      "pass": true
+    },
+    "SeatCushion_C": {
+      "upward_faces": 460,
+      "max_top_normal_y": 0.999999727164256,
+      "pass": true
+    },
+    "SeatCushion_L": {
+      "upward_faces": 460,
+      "max_top_normal_y": 0.999999727164256,
+      "pass": true
+    }
+  },
+  "welts": {
+    "BackCushion_R": {
+      "rings": 76,
+      "vertices_per_ring": [
+        6
+      ],
+      "max_surface_gap_m": 0.0006965668685659635,
+      "diameter_range_m": [
+        0.007999988424754861,
+        0.008000059452559122
+      ],
+      "max_penetration_m": 0.00030526079900898914,
+      "pass": true
+    },
+    "BackCushion_C": {
+      "rings": 76,
+      "vertices_per_ring": [
+        6
+      ],
+      "max_surface_gap_m": 0.0006965668685659635,
+      "diameter_range_m": [
+        0.007999988424754861,
+        0.008000059452559122
+      ],
+      "max_penetration_m": 0.0003052607990089888,
+      "pass": true
+    },
+    "BackCushion_L": {
+      "rings": 76,
+      "vertices_per_ring": [
+        6
+      ],
+      "max_surface_gap_m": 0.0006965668685658544,
+      "diameter_range_m": [
+        0.007999988424754861,
+        0.008000059452559122
+      ],
+      "max_penetration_m": 0.0003052607990089888,
+      "pass": true
+    },
+    "SeatCushion_R": {
+      "rings": 44,
+      "vertices_per_ring": [
+        6
+      ],
+      "max_surface_gap_m": 0.000918253699737733,
+      "diameter_range_m": [
+        0.007999996460570582,
+        0.008000025798825448
+      ],
+      "max_penetration_m": 0.00029232274705289304,
+      "pass": true
+    },
+    "SeatCushion_C": {
+      "rings": 44,
+      "vertices_per_ring": [
+        6
+      ],
+      "max_surface_gap_m": 0.000918253699737733,
+      "diameter_range_m": [
+        0.007999996460570582,
+        0.008000025798825448
+      ],
+      "max_penetration_m": 0.00029232274705289033,
+      "pass": true
+    },
+    "SeatCushion_L": {
+      "rings": 44,
+      "vertices_per_ring": [
+        6
+      ],
+      "max_surface_gap_m": 0.000918253699737733,
+      "diameter_range_m": [
+        0.007999996460570582,
+        0.008000025798825448
+      ],
+      "max_penetration_m": 0.00029232274705289304,
+      "pass": true
+    }
+  },
+  "neighbour_gaps": {
+    "SeatLC": {
+      "gap_m": 0.010113835334777832,
+      "pass": true
+    },
+    "SeatCR": {
+      "gap_m": 0.010113835334777832,
+      "pass": true
+    },
+    "BackLC": {
+      "gap_m": 0.010074645280838013,
+      "pass": true
+    },
+    "BackCR": {
+      "gap_m": 0.010074645280838013,
+      "pass": true
+    }
+  },
+  "cushion_contacts": {
+    "BackCushion_R/SeatCushion_R": {
+      "max_penetration_m": 0.0,
+      "pass": true
+    },
+    "BackCushion_R/Frame": {
+      "max_penetration_m": 0.0,
+      "pass": true
+    },
+    "BackCushion_C/SeatCushion_C": {
+      "max_penetration_m": 0.0,
+      "pass": true
+    },
+    "BackCushion_C/Frame": {
+      "max_penetration_m": 0.0,
+      "pass": true
+    },
+    "BackCushion_L/SeatCushion_L": {
+      "max_penetration_m": 0.0,
+      "pass": true
+    },
+    "BackCushion_L/Frame": {
+      "max_penetration_m": 0.0,
+      "pass": true
+    },
+    "SeatCushion_R/Frame": {
+      "max_penetration_m": 0.0,
+      "pass": true
+    },
+    "SeatCushion_C/Frame": {
+      "max_penetration_m": 0.0,
+      "pass": true
+    },
+    "SeatCushion_L/Frame": {
+      "max_penetration_m": 0.0,
+      "pass": true
+    }
+  },
+  "seat_deck_gaps": {
+    "SeatCushion_R": {
+      "gaps_m": [
+        0.00044282461148786867,
+        0.00033339356447964485,
+        0.0002494718587153222
+      ],
+      "pass": true
+    },
+    "SeatCushion_C": {
+      "gaps_m": [
+        0.000320554542209861,
+        0.0002623088745760116,
+        0.000371741985355889
+      ],
+      "pass": true
+    },
+    "SeatCushion_L": {
+      "gaps_m": [
+        0.00027514388364413556,
+        0.0003845790012165784,
+        0.0004940121119965113
+      ],
+      "pass": true
+    }
+  },
+  "throw": {
+    "bounds_xyz_m": [
+      [
+        0.9252339601516724,
+        0.373504638671875,
+        -0.1613258272409439
+      ],
+      [
+        1.1478215456008911,
+        0.8139999508857727,
+        0.47019442915916443
+      ]
+    ],
+    "outside_hang_m": 0.433995361328125,
+    "outward_extension_m": 0.047821545600891024,
+    "cap_gap_m": 0.0019494541486104744,
+    "penetration_m": {
+      "Frame": 0.0,
+      "SeatCushion_R": 0.0,
+      "SeatCushion_C": 0.0,
+      "BackCushion_R": 0.0
+    },
+    "triangles": 3476,
+    "pass": true
+  },
+  "bounds": {
+    "xyz_m": [
+      [
+        -1.1004999876022339,
+        0.0003040693700313568,
+        -0.4749999940395355
+      ],
+      [
+        1.1478215456008911,
+        0.8496577739715576,
+        0.4749999940395355
+      ]
+    ],
+    "pass": true
+  },
+  "triangle_budget": {
+    "triangles": 19550,
+    "limit": 20000,
+    "pass": true
+  },
+  "pass": true,
+  "intersections": {
+    "self_triangle_crossings": {
+      "Throw": [
+        0
+      ],
+      "Rivets": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "BackCushion_R": [
+        0,
+        0
+      ],
+      "BackCushion_C": [
+        0,
+        0
+      ],
+      "BackCushion_L": [
+        0,
+        0
+      ],
+      "SeatCushion_R": [
+        0,
+        0
+      ],
+      "SeatCushion_C": [
+        0,
+        0
+      ],
+      "SeatCushion_L": [
+        0,
+        0
+      ],
+      "Feet": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "Frame": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "part_triangle_crossings": {
+      "BackCushion_R/Frame": 0,
+      "BackCushion_C/Frame": 0,
+      "BackCushion_L/Frame": 0,
+      "SeatCushion_R/Frame": 0,
+      "SeatCushion_C/Frame": 0,
+      "SeatCushion_L/Frame": 0,
+      "BackCushion_R/BackCushion_C": 0,
+      "BackCushion_R/BackCushion_L": 0,
+      "BackCushion_R/SeatCushion_R": 0,
+      "BackCushion_R/SeatCushion_C": 0,
+      "BackCushion_R/SeatCushion_L": 0,
+      "BackCushion_C/BackCushion_L": 0,
+      "BackCushion_C/SeatCushion_R": 0,
+      "BackCushion_C/SeatCushion_C": 0,
+      "BackCushion_C/SeatCushion_L": 0,
+      "BackCushion_L/SeatCushion_R": 0,
+      "BackCushion_L/SeatCushion_C": 0,
+      "BackCushion_L/SeatCushion_L": 0,
+      "SeatCushion_R/SeatCushion_C": 0,
+      "SeatCushion_R/SeatCushion_L": 0,
+      "SeatCushion_C/SeatCushion_L": 0,
+      "Throw/Frame": 0,
+      "Throw/BackCushion_R": 0,
+      "Throw/BackCushion_C": 0,
+      "Throw/BackCushion_L": 0,
+      "Throw/SeatCushion_R": 0,
+      "Throw/SeatCushion_C": 0,
+      "Throw/SeatCushion_L": 0
+    },
+    "throw_ply_crossings": {},
+    "pass": true
+  },
+  "byte_identical_reexport": true
+}

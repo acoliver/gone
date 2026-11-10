@@ -21,6 +21,8 @@ const HATCH_LABEL_OUTSET: float = 0.04
 const HATCH_LABEL_SIZE := Vector2(0.92, 0.46)
 const BAY_ID: StringName = &"D14-BAY"
 const POWER_ID: StringName = &"D14-POWER"
+const QUARTERS_ID: StringName = &"D16-QUARTERS"
+const QUARTERS_DOOR_ID: StringName = &"D16-S-042-SIDE-009-STARBOARD"
 const BAY_DOOR_ID: StringName = &"D14-BAY-DOOR"
 const BAY_HATCH_KEY_ID: StringName = &"D14-BAY-HATCH-KEY"
 const POWER_DOOR_ID: StringName = &"D14-POWER-DOOR"
@@ -178,6 +180,8 @@ class SectionSpec:
 		for station: int in range(4):
 			frames.append(Transform3D(Basis(), Vector3(_bounds.position.x + (station + 0.5) * pitch, _bounds.end.y - 0.08, _bounds.get_center().z)))
 		return frames
+	func emergency_fill_positions() -> Array[Vector3]:
+		return []
 	func emergency_end_fill_position() -> Vector3:
 		return Vector3(_bounds.end.x - 0.9, _bounds.position.y + 1.7, _bounds.get_center().z + 1.3)
 
@@ -603,6 +607,18 @@ class PowerRoomSpec:
 		result["generator_anchor"] = _generator_anchor
 		return result
 
+class QuartersSpec:
+	extends Spec
+	func _init() -> void:
+		_id = ShipLayout.QUARTERS_ID
+		_deck = 16
+	func bounds() -> AABB:
+		return QuartersLayout.bounds()
+	func data() -> Dictionary:
+		var result := super.data()
+		result["bounds"] = bounds()
+		return result
+
 class LayoutError:
 	extends RefCounted
 	enum Kind { DUPLICATE_ID, INVALID_DECK, INVALID_DIMENSIONS, BAD_REFERENCE, BAD_FACES, OVERLAPPING_APERTURES, ROOM_COUNT, OPENABILITY }
@@ -675,7 +691,7 @@ static func try_new(specs: Array[Spec]) -> Result:
 				return _failure(LayoutError.Kind.OVERLAPPING_APERTURES, second.id())
 	if layout._ids_of(BaySpec).size() != 1 or layout._ids_of(PowerRoomSpec).size() != 1:
 		return _failure(LayoutError.Kind.ROOM_COUNT, &"rooms")
-	var expected_cranks: Array[StringName] = [&"D14-C-000-H-FORE", &"D14-C-000-H-AFT", &"D14-C-001-H-FORE", &"D14-C-001-H-AFT"]
+	var expected_cranks: Array[StringName] = [&"D14-C-000-H-FORE", &"D14-C-000-H-AFT", &"D14-C-001-H-FORE", &"D14-C-001-H-AFT", &"D16-C-001-H-AFT"]
 	for id: StringName in door_ids:
 		var door_spec := layout.door(id)
 		var expected := Policy.NEVER_OPENS
@@ -683,16 +699,22 @@ static func try_new(specs: Array[Spec]) -> Result:
 			expected = Policy.CRANK
 		elif id == BAY_DOOR_ID:
 			expected = Policy.ROD_PRY
-		elif id == POWER_DOOR_ID:
+		elif id in [POWER_DOOR_ID, QUARTERS_DOOR_ID]:
 			expected = Policy.PRESS_SLIDE
 		if door_spec.policy() != expected:
 			return _failure(LayoutError.Kind.OPENABILITY, id)
-	for id: StringName in expected_cranks + [BAY_DOOR_ID, POWER_DOOR_ID]:
+	for id: StringName in expected_cranks + [BAY_DOOR_ID, POWER_DOOR_ID, QUARTERS_DOOR_ID]:
 		if not id in door_ids:
 			return _failure(LayoutError.Kind.OPENABILITY, id)
 	layout._anchors[&"D14-HALL-SWITCH"] = authored_hall_switch_frame()
 	layout._anchors[&"D14-BAY-ROD"] = layout.bay_to_world() * layout.bay().rod_local()
 	layout._anchors[&"D14-POWER-CONSOLE"] = Transform3D(Basis(), Vector3(22.05, 0, -7.5))
+	var quarters_bounds := QuartersLayout.envelope()
+	for id: StringName in layout.deck(16).connector_ids():
+		var connector := layout.connector(id)
+		assert(not quarters_bounds.intersects(connector.bounds()), "#114 quarters clear connector")
+		assert(not quarters_bounds.intersects(layout.lift(connector.lift_id()).bounds()), "#114 quarters clear lift")
+		assert(not quarters_bounds.intersects(layout.well(connector.well_id()).bounds()), "#114 quarters clear well")
 	var result := Result.new()
 	result.layout = layout
 	return result
@@ -858,7 +880,7 @@ func floor_y(deck_number: int) -> float:
 	return deck(deck_number).floor_y()
 
 func has_space(id: StringName) -> bool:
-	return _records.has(id) and (_records[id] is SectionSpec or _records[id] is ConnectorSpec or _records[id] is BaySpec or _records[id] is PowerRoomSpec or _records[id] is LiftSpec)
+	return _records.has(id) and (_records[id] is SectionSpec or _records[id] is ConnectorSpec or _records[id] is BaySpec or _records[id] is PowerRoomSpec or _records[id] is LiftSpec or _records[id] is QuartersSpec)
 
 func _ids_of(type: GDScript) -> Array[StringName]:
 	var ids: Array[StringName] = []
@@ -903,7 +925,7 @@ static func _add_door(specs: Array[Spec], id: StringName, deck: int, kind: int, 
 	var animation := AnimationRecipe.HINGE if kind == DoorKind.HATCH else AnimationRecipe.FIXED
 	if kind == DoorKind.BAY:
 		animation = AnimationRecipe.HINGE
-	elif kind == DoorKind.POWER:
+	elif policy == Policy.PRESS_SLIDE:
 		animation = AnimationRecipe.SLIDE
 	specs.append(DoorSpec.new(id, deck, kind, policy, frame, aperture, spaces, faces, owner, animation, kind in [DoorKind.HATCH, DoorKind.BAY], slide_sign))
 	for index: int in range(2):
@@ -941,7 +963,8 @@ static func _authored_records() -> Array[Spec]:
 			var start: float = 30 * (number - 41) + 6
 			var side_ids: Array[StringName] = []
 			var openings: Array[StringName] = []
-			if d == 14:
+			var built := d == 14 or (d == 16 and number == 42)
+			if built:
 				built_sections.append(id)
 				for offset: int in [3, 9, 15]:
 					for side: String in ["PORT", "STARBOARD"]:
@@ -953,9 +976,10 @@ static func _authored_records() -> Array[Spec]:
 						if side == "PORT":
 							frame.basis = Basis(Vector3(-1, 0, 0), Vector3.UP, Vector3(0, 0, -1))
 						# The outer side is an unbuilt space, not a playable room.
-						var outside := StringName("%s/UNBUILT" % side_id)
-						specs.append(SectionSpec.new(outside, d, number, AABB(Vector3(start + offset - 0.5, y, -2 if side == "PORT" else 1.7), Vector3(1, CLEAR_HEIGHT, 0.3)), [], [], &"emergency", false))
-						_add_door(specs, side_id, d, DoorKind.SIDE, Policy.NEVER_OPENS, frame, Vector2(1, 2.2), [id, outside], id, Vector2i(number, number), [&"HALL", &"OUTER"], (1 if number == 41 and offset == 15 else -1) if side == "PORT" else 1)
+						var quarters := side_id == QUARTERS_DOOR_ID
+						var outside := QUARTERS_ID if quarters else StringName("%s/UNBUILT" % side_id)
+						if not quarters: specs.append(SectionSpec.new(outside, d, number, AABB(Vector3(start + offset - 0.5, y, -2 if side == "PORT" else 1.7), Vector3(1, CLEAR_HEIGHT, 0.3)), [], [], &"emergency", false))
+						_add_door(specs, side_id, d, DoorKind.SIDE, Policy.PRESS_SLIDE if quarters else Policy.NEVER_OPENS, frame, Vector2(1.2, 2.4) if quarters else Vector2(1, 2.2), [id, outside], id, Vector2i(number, number), [&"HALL", &"OUTER"], (1 if number == 41 and offset == 15 else -1) if side == "PORT" else 1)
 				var fore_hatch := StringName("%s-H-AFT" % connector_id(d, number - 41))
 				var aft_hatch := StringName("%s-H-FORE" % connector_id(d, number - 40))
 				openings.append(fore_hatch)
@@ -964,11 +988,11 @@ static func _authored_records() -> Array[Spec]:
 				if number == 41:
 					openings.append_array([BAY_DOOR_ID, POWER_DOOR_ID])
 			var services := SectionServices.new()
-			if d == 14 and number == 41:
-				services.switch_frames = [authored_hall_switch_frame()]
+			if (d == 14 and number == 41) or (d == 16 and number == 42):
+				if d == 14: services.switch_frames = [authored_hall_switch_frame()]
 				services.regular_strips = true
 				services.light_role = ArchitecturalLightRole.HALL_FILL
-			specs.append(SectionSpec.new(id, d, number, AABB(Vector3(start, y, -1.5), Vector3(24, CLEAR_HEIGHT, 3)), openings, side_ids, &"opening" if number == 41 else &"emergency", d == 14, services))
+			specs.append(SectionSpec.new(id, d, number, AABB(Vector3(start, y, -1.5), Vector3(24, CLEAR_HEIGHT, 3)), openings, side_ids, &"opening" if number == 41 else &"emergency", built, services))
 		for n: int in range(2):
 			var id := connector_id(d, n)
 			var start: float = 30 * n
@@ -980,7 +1004,8 @@ static func _authored_records() -> Array[Spec]:
 			specs.append(ConnectorSpec.new(id, d, n, AABB(Vector3(start, y, -1.5), Vector3(6, CLEAR_HEIGHT, 3)), hatches, well_id, lift_id, Transform3D(Basis(), Vector3(well_x, y, -1.5)), id, true))
 			var policy := Policy.CRANK if d == 14 else Policy.NEVER_OPENS
 			_add_door(specs, hatches[0], d, DoorKind.HATCH, policy, _frame_x(Vector3(start, y, 0)), Vector2(HATCH_WIDTH, HATCH_HEIGHT), [section_id(d, n + 40), id], id, Vector2i(n + 41, n + 40), [&"FORE", &"AFT"])
-			_add_door(specs, hatches[1], d, DoorKind.HATCH, policy, _frame_x(Vector3(start + 6, y, 0)), Vector2(HATCH_WIDTH, HATCH_HEIGHT), [id, section_id(d, n + 41)], id, Vector2i(n + 41, n + 40), [&"FORE", &"AFT"])
+			# #114 opens only the D16 aft route to the quarters.
+			_add_door(specs, hatches[1], d, DoorKind.HATCH, Policy.CRANK if d == 16 and n == 1 else policy, _frame_x(Vector3(start + 6, y, 0)), Vector2(HATCH_WIDTH, HATCH_HEIGHT), [id, section_id(d, n + 41)], id, Vector2i(n + 41, n + 40), [&"FORE", &"AFT"])
 			var lift_frame := Transform3D(Basis(), Vector3(start + 3, y, 1.5))
 			specs.append(LiftSpec.new(lift_id, d, id, lift_door, AABB(Vector3(start + 2.1, y, 1.5), Vector3(1.8, CLEAR_HEIGHT, 3)), Transform3D(Basis(Vector3.LEFT, Vector3.UP, Vector3.FORWARD), Vector3(start + 3, y + DOOR_LABEL_HEIGHT, 1.488))))
 			_add_door(specs, lift_door, d, DoorKind.LIFT, Policy.NEVER_OPENS, lift_frame, Vector2(1.8, 2.4), [id, lift_id], id, Vector2i(n + 41, n + 41), [&"HALL", &"LIFT"])
@@ -993,6 +1018,10 @@ static func _authored_records() -> Array[Spec]:
 		if n == -1:
 			spaces.assign([id, section_id(14, 40)])
 		_add_door(specs, hatch_id, 14, DoorKind.HATCH, Policy.NEVER_OPENS, _frame_x(Vector3(-24 if n == -1 else 60, 0, 0)), Vector2(HATCH_WIDTH, HATCH_HEIGHT), spaces, id, Vector2i(n + 41, n + 40), [&"FORE", &"AFT"])
+	var boundary := connector_id(16, 2)
+	var boundary_hatch := StringName("%s-H-FORE" % boundary)
+	specs.append(ConnectorSpec.new(boundary, 16, 2, AABB(Vector3(60, -11, -1.5), Vector3(6, CLEAR_HEIGHT, 3)), [boundary_hatch], &"", &"", Transform3D.IDENTITY, boundary, false))
+	_add_door(specs, boundary_hatch, 16, DoorKind.HATCH, Policy.NEVER_OPENS, _frame_x(Vector3(60, -11, 0)), Vector2(HATCH_WIDTH, HATCH_HEIGHT), [section_id(16, 42), boundary], boundary, Vector2i(43, 42), [&"FORE", &"AFT"])
 	for n: int in range(2):
 		var x: float = 3 if n == 0 else 34.5
 		var landings: Array[Transform3D] = []
@@ -1002,6 +1031,7 @@ static func _authored_records() -> Array[Spec]:
 			landings.append(Transform3D(Basis(), Vector3(x, y, -2.9)))
 			paths.append(PackedVector3Array([Vector3(x, y, -2.9), Vector3(x, y, -4.3)]))
 		specs.append(LadderWellSpec.new(StringName("C-%03d-LADDER" % n), AABB(Vector3(x - 0.85, -88, -5.8), Vector3(1.7, 162.7, 4.3)), Transform3D(Basis(), Vector3(x, 0, -4.3)), landings, paths))
+	specs.append(QuartersSpec.new())
 	specs.append(BaySpec.new(BAY_ID, 14, &"D14-S-041", Transform3D(Basis(Vector3(0, 0, -1), Vector3.UP, Vector3.RIGHT), Vector3(15, 0, 7.7))))
 	var consoles: Array[Transform3D] = []
 	var positions := power_console_positions()

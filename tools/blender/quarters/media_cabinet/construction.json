@@ -1,0 +1,184 @@
+{
+  "bounds_gltf": [
+    [
+      -1.1,
+      0,
+      -0.225
+    ],
+    [
+      1.1,
+      0.6,
+      0.225
+    ]
+  ],
+  "required_nodes": [
+    "MediaCabinet",
+    "Carcass",
+    "Door_0",
+    "Door_1",
+    "Door_2"
+  ],
+  "parents": {
+    "Carcass": "MediaCabinet",
+    "Door_0": "MediaCabinet",
+    "Door_1": "MediaCabinet",
+    "Door_2": "MediaCabinet"
+  },
+  "pivots_gltf": {
+    "MediaCabinet": [
+      0,
+      0,
+      0
+    ],
+    "Door_0": [
+      -1.082,
+      0.081,
+      0.228
+    ],
+    "Door_1": [
+      -0.3486666666666667,
+      0.081,
+      0.228
+    ],
+    "Door_2": [
+      0.3846666666666667,
+      0.081,
+      0.228
+    ]
+  },
+  "materials": [
+    "PaintedSteel",
+    "BareSteel",
+    "DarkSteel"
+  ],
+  "visible_details": [
+    "Latch_0",
+    "Latch_1",
+    "DoorRivets_0"
+  ],
+  "hero_camera_native": [
+    -2.8,
+    -4.0,
+    2.1
+  ],
+  "hero_camera_gltf": [
+    -2.8,
+    2.1,
+    4
+  ],
+  "hero_target_native": [
+    0,
+    0,
+    0.3
+  ],
+  "triangle_limit": 15000,
+  "room_mount_height_m": 0,
+  "fit_notes": "Three faired folded-steel bays retain the generated low cabinet silhouette and layout envelope. Separate closed door leaves have barrel-axis pivots; recessed latches, rivets and kick plates remain independent clean parts.",
+  "guide": {
+    "source_bounds_native": [
+      [
+        -0.998932957649231,
+        -0.4396968483924866,
+        -0.5156533718109131
+      ],
+      [
+        0.9928074479103088,
+        0.43836212158203125,
+        0.509590208530426
+      ]
+    ],
+    "carcass_fitting_bounds_native": [
+      [
+        -0.998932957649231,
+        -0.4396968483924866,
+        -0.5156533718109131
+      ],
+      [
+        0.9928074479103088,
+        0.43836212158203125,
+        0.509590208530426
+      ]
+    ],
+    "fitted_size_whd": [
+      2.2,
+      0.6,
+      0.45
+    ],
+    "sections": [
+      {
+        "height_m": 0.06,
+        "vertices": 6613,
+        "xy_min": [
+          -1.099768877029419,
+          -0.20494787395000458
+        ],
+        "xy_max": [
+          1.100000023841858,
+          0.22487539052963257
+        ]
+      },
+      {
+        "height_m": 0.15,
+        "vertices": 2784,
+        "xy_min": [
+          -1.0990853309631348,
+          -0.211843803524971
+        ],
+        "xy_max": [
+          1.0989041328430176,
+          0.2247570902109146
+        ]
+      },
+      {
+        "height_m": 0.3,
+        "vertices": 2889,
+        "xy_min": [
+          -1.0992238521575928,
+          -0.22412006556987762
+        ],
+        "xy_max": [
+          1.099371075630188,
+          0.22477039694786072
+        ]
+      },
+      {
+        "height_m": 0.44999999999999996,
+        "vertices": 2713,
+        "xy_min": [
+          -1.0991110801696777,
+          -0.20496056973934174
+        ],
+        "xy_max": [
+          1.0990121364593506,
+          0.22480028867721558
+        ]
+      },
+      {
+        "height_m": 0.54,
+        "vertices": 3035,
+        "xy_min": [
+          -1.0990771055221558,
+          -0.20617477595806122
+        ],
+        "xy_max": [
+          1.0988645553588867,
+          0.22494083642959595
+        ]
+      }
+    ],
+    "mesh_triangles": 472944,
+    "bay_fitting": {
+      "front_samples": 39858,
+      "front_x_quantiles_m": [
+        -1.100000023841858,
+        -0.4171418249607086,
+        0.4169570207595825,
+        1.0998318195343018
+      ],
+      "fitted_equal_bays_m": 0.7333333333333334,
+      "constraint": "Three equal manufactured bays follow the approved image; raw scan seam noise is faired."
+    },
+    "source": "tmp/props/media_cabinet/guide.glb"
+  },
+  "id": "media_cabinet"
+}

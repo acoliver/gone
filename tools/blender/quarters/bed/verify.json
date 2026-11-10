@@ -1,0 +1,346 @@
+{
+  "asset": "bed",
+  "bounds_gltf": {
+    "actual": [
+      [
+        -0.8031001212075349,
+        0.0,
+        -1.100000023841858
+      ],
+      [
+        0.8031001212075349,
+        1.100000023841858,
+        1.1030999550225968
+      ]
+    ],
+    "expected": [
+      [
+        -0.8,
+        0.0,
+        -1.1
+      ],
+      [
+        0.8,
+        1.1,
+        1.1
+      ]
+    ],
+    "max_error_m": 0.0031001212075348894,
+    "tolerance_m": 0.01,
+    "pass": true
+  },
+  "origin_at_floor": {
+    "min_y_m": 0.0,
+    "pass": true
+  },
+  "required_nodes": {
+    "missing": [],
+    "pass": true
+  },
+  "hierarchy": {
+    "Frame": {
+      "actual": "Bed",
+      "expected": "Bed",
+      "pass": true
+    },
+    "Headboard": {
+      "actual": "Bed",
+      "expected": "Bed",
+      "pass": true
+    },
+    "MattressPlatform": {
+      "actual": "Frame",
+      "expected": "Frame",
+      "pass": true
+    },
+    "FrameSide_L": {
+      "actual": "Frame",
+      "expected": "Frame",
+      "pass": true
+    },
+    "FrameSide_R": {
+      "actual": "Frame",
+      "expected": "Frame",
+      "pass": true
+    }
+  },
+  "pivots": {
+    "Bed": {
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "pass": true
+    }
+  },
+  "topology": {
+    "CrossMember_0": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "CrossMember_1": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "CrossMember_2": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "CrossMember_3": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DeckShoe_0": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DeckShoe_1": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DeckShoe_2": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DeckShoe_3": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "FootRivets": {
+      "component_count": 5,
+      "probe_count": 270,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "FrameFootRail": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "FrameHeadRail": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "FrameSide_L": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "FrameSide_R": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Headboard": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "HeadboardRivets": {
+      "component_count": 15,
+      "probe_count": 810,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Leg_0": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Leg_1": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Leg_2": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Leg_3": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "MattressPlatform": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "SideRivets_L": {
+      "component_count": 6,
+      "probe_count": 324,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "SideRivets_R": {
+      "component_count": 6,
+      "probe_count": 324,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    }
+  },
+  "degenerate_faces": 0,
+  "triangle_count": 3512,
+  "triangle_limit": 15000,
+  "material_slots": [
+    "BareSteel",
+    "DarkSteel",
+    "PaintedSteel"
+  ],
+  "required_materials_pass": true,
+  "UV": {
+    "overlapping_triangle_pairs": 0,
+    "max_overlap_area_uv2": 0.0,
+    "out_of_unit_square_coordinates": 0,
+    "linear_texel_density_p05_p50_p95": [
+      0.2120169258213995,
+      0.22440700954382428,
+      0.23432320038370377
+    ],
+    "density_p95_p05_ratio": 1.1052098764090883,
+    "pass": true
+  },
+  "hero_first_hit_visibility": {
+    "MattressPlatform": {
+      "sample_count": 54,
+      "visible_projected_area_fraction": 0.9309446057711925,
+      "visible_triangle_fraction": 0.07407407407407407,
+      "projection": "orthographic",
+      "minimum": 0.6,
+      "pass": true
+    },
+    "HeadboardRivets": {
+      "sample_count": 480,
+      "visible_projected_area_fraction": 0.7333332727008842,
+      "visible_triangle_fraction": 0.7333333333333333,
+      "projection": "orthographic",
+      "minimum": 0.6,
+      "pass": true
+    },
+    "FootRivets": {
+      "sample_count": 160,
+      "visible_projected_area_fraction": 1.0,
+      "visible_triangle_fraction": 1.0,
+      "projection": "orthographic",
+      "minimum": 0.6,
+      "pass": true
+    }
+  },
+  "byte_identical_reexport": true,
+  "axis_contract": "Blender Z-up/-Y front -> exported glTF +Y up/+Z front; bounds measured outside Blender",
+  "pass": true,
+  "frame_and_platform": {
+    "frame_top_m": 0.5499999821186066,
+    "layout_frame_top_m": 0.55,
+    "platform_height_m": 0.5000000018626451,
+    "platform_probe_count": 315,
+    "platform_ray_misses": 0,
+    "soft_part_nodes": [],
+    "platform_design": "A continuous solid exposed steel support plate follows the approved source; crossmembers reinforce its underside.",
+    "platform_design_range_m": [
+      0.5,
+      0.52
+    ],
+    "pass": true
+  }
+}

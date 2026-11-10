@@ -142,6 +142,8 @@ class Store:
 	func press(id: StringName, context: Context) -> PressResult:
 		var record := _record(id)
 		assert(record.spec.face_ids().has(context.face_id), "press face belongs to door")
+		if id == ShipLayout.QUARTERS_DOOR_ID and context.face_id != record.spec.face_ids()[0]:
+			return PressResult.new(Outcome.NOT_APPLICABLE)
 		if record.state in [State.OPENING, State.OPEN]:
 			return PressResult.new(Outcome.NOT_APPLICABLE)
 		if record.spec.policy() == Policy.CRANK and record.work == record.schedule.total_weight:
@@ -245,5 +247,5 @@ class Store:
 		result.leaf_fraction = progress * progress * (3.0 - 2.0 * progress)
 		match record.spec.animation():
 			ShipLayout.AnimationRecipe.SLIDE:
-				result.offset = record.spec.frame().basis.x * record.spec.slide_sign() * POWER_SLIDE * progress
+				result.offset = record.spec.frame().basis.x * record.spec.slide_sign() * SlidingDoorParts.stroke(record.spec) * progress
 		return result

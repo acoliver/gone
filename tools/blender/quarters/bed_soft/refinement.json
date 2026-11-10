@@ -1,0 +1,214 @@
+{
+  "crust": {
+    "plates": 21,
+    "upper_surface_max_m": 0.5474448017660104,
+    "rail_top_m": 0.55,
+    "support_z_m": 0.5001,
+    "footprints_from_existing_plates": true,
+    "missing_foot_corner_x_minus_y_m": 1.35,
+    "plate_offset_range_m": [
+      -0.001774145756902371,
+      0.003557498456673511
+    ],
+    "plate_offset_area_weighted_mean_m": -5.379909932485023e-21
+  },
+  "cover": {
+    "smoothed_boundary_vertices": 376,
+    "detached_unsupported_scraps_removed": 0,
+    "max_contour_displacement_m": 0.028,
+    "long_grain_axis_blender": "+Y",
+    "opened_central_cover": {
+      "removed_faces": 164,
+      "removed_area_m2": 0.3830537348985672,
+      "boundary_noise_amplitude_m": 0,
+      "octaves": 0,
+      "point_fan_clearance_m": 0.002
+    }
+  },
+  "crust_crumbs": {
+    "chips": 24,
+    "support_gap_m": 0.0008,
+    "seed": 95263
+  },
+  "tears": {
+    "smoothed_boundary_vertices": 1074,
+    "detached_unsupported_scraps_removed": 8,
+    "max_contour_displacement_m": 0.085,
+    "long_grain_axis_blender": "+Y"
+  },
+  "rail_wrap_finish": {
+    "outside_x_m": -0.8055,
+    "rail_clear_top_m": 0.5525,
+    "fitted_vertices": 105
+  },
+  "fringe": {
+    "cards": 197,
+    "triangles": 394,
+    "boundary_length_m": 3.02436513923253,
+    "authored_coverage": 0.6225707711324306,
+    "coverage_pass": true,
+    "omitted_contacts": 4,
+    "maximum_root_offset_m": 0.0034894017328594377,
+    "sat_checked": true,
+    "maximum_root_gap_m": 0.0026055907364934683,
+    "uvs_follow_authored_roots": true,
+    "alpha_mode": "BLEND",
+    "minimum_4px_root_alpha": 0.8732458353042603,
+    "mean_4px_tip_alpha": 0.03206142038106918,
+    "root_groups_per_card": 8
+  },
+  "powder": [
+    {
+      "name": "FibreFoamPowder_Floor",
+      "mean_alpha": 0.1936188042163849,
+      "max_alpha": 0.7891361713409424,
+      "extent_xy_m": [
+        0.33,
+        0.7
+      ],
+      "soft_edge_width_fraction": 0.31,
+      "relief": {
+        "grid_cells": [
+          10,
+          16
+        ],
+        "max_relief_m": 0.0022525960206985474
+      }
+    },
+    {
+      "name": "FibreFoamPowder_Platform",
+      "mean_alpha": 0.19360587000846863,
+      "max_alpha": 0.7898715138435364,
+      "extent_xy_m": [
+        0.06,
+        0.04
+      ],
+      "soft_edge_width_fraction": 0.31,
+      "relief": {
+        "grid_cells": [
+          10,
+          16
+        ],
+        "max_relief_m": 0.0021526131033897666
+      }
+    },
+    {
+      "name": "FibreFoamPowder_Foot",
+      "mean_alpha": 0.1936449408531189,
+      "max_alpha": 0.7891976833343506,
+      "extent_xy_m": [
+        0.64,
+        0.0045
+      ],
+      "soft_edge_width_fraction": 0.31,
+      "relief": {
+        "grid_cells": [
+          10,
+          16
+        ],
+        "max_relief_m": 0.0021760869026183904
+      }
+    }
+  ],
+  "exact_face_contact_fit": {
+    "Pillow_L": {
+      "back_m": -1.2874603271505192e-08,
+      "up_m": 0.0030706231243381515
+    },
+    "Pillow_R": {
+      "back_m": -1.2874603271505192e-08,
+      "up_m": 0.004372269009795191
+    },
+    "Quilt": {
+      "back_m": 0,
+      "up_m": 0.01661511028373655
+    }
+  },
+  "materials": {
+    "Mattress/foam": {
+      "mask_channels": {
+        "R": "45 mm local fold occlusion",
+        "G": "world upward normal",
+        "B": "110/m porous variation"
+      },
+      "linear_color_min": [
+        0.014617536341832407,
+        0.006125917156870694,
+        0.0016709991114091916
+      ],
+      "linear_color_max": [
+        0.14684312529817042,
+        0.07179426243740528,
+        0.025962071827428476
+      ]
+    },
+    "Mattress/cotton": {
+      "mask_channels": {
+        "R": "45 mm local fold occlusion",
+        "G": "world upward normal",
+        "B": "32/m pigment variation"
+      },
+      "linear_color_min": [
+        0.022203730157838317,
+        0.015859807746683496,
+        0.007993343678225566
+      ],
+      "linear_color_max": [
+        0.23952599177997463,
+        0.17923285159497854,
+        0.09984935758200106
+      ]
+    },
+    "Quilt/wool": {
+      "mask_channels": {
+        "R": "45 mm local fold occlusion",
+        "G": "world upward normal",
+        "B": "32/m pigment variation"
+      },
+      "linear_color_min": [
+        0.0148035503821466,
+        0.01068430158015798,
+        0.005149061002485773
+      ],
+      "linear_color_max": [
+        0.1800641525442057,
+        0.13739890732483262,
+        0.07677127381700202
+      ]
+    },
+    "Pillow_L/cotton": {
+      "mask_channels": {
+        "R": "45 mm local fold occlusion",
+        "G": "world upward normal",
+        "B": "32/m pigment variation"
+      },
+      "linear_color_min": [
+        0.022527141885875256,
+        0.01609081563276804,
+        0.008109771078915093
+      ],
+      "linear_color_max": [
+        0.24057353436946868,
+        0.17878676746084404,
+        0.09962453117839727
+      ]
+    },
+    "Pillow_R/cotton": {
+      "mask_channels": {
+        "R": "45 mm local fold occlusion",
+        "G": "world upward normal",
+        "B": "32/m pigment variation"
+      },
+      "linear_color_min": [
+        0.022839174883832376,
+        0.016313709604881994,
+        0.008222125136082538
+      ],
+      "linear_color_max": [
+        0.23452990789021919,
+        0.1756642202451532,
+        0.0980507673816891
+      ]
+    }
+  }
+}

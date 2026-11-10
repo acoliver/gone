@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/sofa/weave.png",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/sofa/upholstery-clean.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/sofa/weave-flat-prompt.txt",
+    "--seed",
+    "95622",
+    "--width",
+    "768",
+    "--height",
+    "768",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/sofa/weave-flat.png"
+  ],
+  "prompt": "Convert the second reference into a perfectly homogeneous fine plain-woven oatmeal upholstery material scan. The first reference shows yarn intersections only; remove its horizontal band, block pattern and stripes. Equal thread scale and equal brightness everywhere, fine warp and weft, continuous edge-to-edge material, seamlessly tileable. Shadowless orthographic material only, no geometry, seams, borders, floor, objects or green. No biological growth.",
+  "inputs": [
+    "weave.png",
+    "upholstery-clean.png"
+  ],
+  "seed": 95622,
+  "model": "black-forest-labs/FLUX.2-klein-4B",
+  "steps": 4,
+  "quantize": 4
+}

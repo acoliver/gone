@@ -1,0 +1,48 @@
+{
+  "method": "generated FLUX.2-klein class-conditioned pigment layers; physical broken edge loss and small blisters; derivative-sharpened coverage and hatch detail scans",
+  "colour_source": "art-source/quarters/locker/albedo-calibration.json",
+  "swatches": {
+    "panel": "panel-95031.png",
+    "loss": "loss-95132.png",
+    "dust": "dust-95332.png"
+  },
+  "swatch_pixels_per_metre": 300,
+  "gravity_direction_prop": [
+    0,
+    -1,
+    0
+  ],
+  "gravity_source_count": 85,
+  "age_years": {
+    "as_built": 0,
+    "aged": 1000
+  },
+  "seed": 9501,
+  "as_built_paint_srgb": [
+    0.3803921341896057,
+    0.4627450704574585,
+    0.45098036527633667
+  ],
+  "design_roi_xyxy": [
+    460,
+    440,
+    550,
+    600
+  ],
+  "design_median_linear": [
+    0.11953843384981155,
+    0.1811642348766327,
+    0.17144109308719635
+  ],
+  "channels": {
+    "*_albedo.png": "RGB sRGB undusted reflectance, A oxide coverage",
+    "*_normal.png": "RGB OpenGL tangent normal, A=1",
+    "*_orm.png": "R AO, G undusted roughness, B undusted metallic, A dust",
+    "aged_paint.png": "RGB class-conditioned panel pigment; grey steel on hardware",
+    "aged_oxide.png": "RGB class-conditioned oxide pigment; no baked paint boundary",
+    "aged_dust.png": "RGB calibrated generated dust, smoothed over 80 mm before physical projection",
+    "aged_rust.png": "RGB calibrated heavy-loss swatch for translucent runoff colour",
+    "region_masks.png": "R edge/fixture band <=25 mm, G broad >=60 mm, B BareSteel, A coverage"
+  },
+  "detail_scans": "shared CC0 hatch steel/paint/oxide albedo grain, normals and ORM at 0.20 m pitch; clean finish unchanged"
+}

@@ -1,0 +1,89 @@
+{
+  "images_seen": [
+    "hero",
+    "front"
+  ],
+  "ratings": {
+    "candidate_as_built": {
+      "score": 6,
+      "explanation": "The as-built state (top-left of both sheets) presents a clean, uniform grey-green finish that matches the 'warship steel' brief. The geometry is simple and the lighting is neutral. However, the material appears somewhat flat and lacks the subtle surface variation or 'bare hardware' distinction mentioned in the brief, making it look slightly like a placeholder rather than a finished asset."
+    },
+    "candidate_aged": {
+      "score": 4,
+      "explanation": "The aged state (bottom-left) shows significant distressing. While the intent is clear, the execution is problematic. The rust appears as a uniform brownish overlay rather than irregular edge corrosion. There is a lack of the specified 'narrow downward rust runs' on vertical faces; instead, the wear looks like a general grunge map. The 'fine soft settled dust' is not clearly distinguishable from the rust texture, and the overall look is muddy rather than the specific 'sealed sterile dry' aging described."
+    },
+    "locker_as_built": {
+      "score": 7,
+      "explanation": "The reference locker (top-right) provides a better baseline. It shows clear panel lines and a more defined surface. The grey-green color is consistent. It serves as a good reference for the 'new' state, though it also lacks the specific 'bare hardware' contrast, appearing as a monolithic painted object."
+    },
+    "locker_aged": {
+      "score": 5,
+      "explanation": "The aged locker (bottom-right) demonstrates a more complex weathering pattern than the chair. It shows patchy paint loss and rust that feels more organic. However, it still suffers from a lack of directional rust runs and the dust layer is not clearly separated from the corrosion. It is a better example of aging than the chair but still falls short of the specific brief requirements for a 1000-year sterile environment."
+    }
+  },
+  "features": {
+    "grey-green_painted_warship_steel": {
+      "achieved": true,
+      "observations": "The base color is correctly identified as a desaturated grey-green in both as-built states. The tone is consistent across the chair and locker."
+    },
+    "bare_hardware": {
+      "achieved": false,
+      "observations": "In the as-built state, hardware (like the chair legs or locker handles) is not visually distinct from the painted body. It lacks the metallic contrast of 'bare' metal."
+    },
+    "dark_trim": {
+      "achieved": false,
+      "observations": "No distinct dark trim is visible on the edges or corners in the as-built state. The edges are the same color as the faces."
+    },
+    "irregular_edge_corrosion": {
+      "achieved": false,
+      "observations": "In the aged state, the corrosion is too uniform and blotchy. It does not specifically target edges and corners as the primary failure points."
+    },
+    "narrow_downward_rust_runs": {
+      "achieved": false,
+      "observations": "There are no visible vertical streaks or runs on the vertical faces of the chair or locker in the aged state. The rust is horizontal or patchy."
+    },
+    "corroded_hardware": {
+      "achieved": false,
+      "observations": "Hardware does not appear to have a distinct corrosion state separate from the main body. It is obscured by the general grunge."
+    },
+    "fine_soft_settled_dust": {
+      "achieved": false,
+      "observations": "Upward-facing surfaces (like the chair seat or locker top) do not show a distinct layer of fine dust. The texture is too rough and mixed with rust to read as settled dust."
+    },
+    "no_biological_growth": {
+      "achieved": true,
+      "observations": "There are no green or organic textures present, adhering to the 'sterile' constraint."
+    }
+  },
+  "findings": [
+    {
+      "severity": "high",
+      "issue": "Aged state lacks directional rust runs.",
+      "fix": "Add vertical streaking masks to the aged texture, specifically on vertical faces, to simulate gravity-driven rust flow."
+    },
+    {
+      "severity": "high",
+      "issue": "Dust and rust are not visually distinct.",
+      "fix": "Create a separate, softer, lighter-colored mask for dust on upward-facing normals, distinct from the rougher, darker rust mask."
+    },
+    {
+      "severity": "medium",
+      "issue": "As-built state lacks material role clarity (hardware/trim).",
+      "fix": "Introduce a secondary material or mask for 'bare hardware' and 'dark trim' to provide contrast and detail in the new state."
+    },
+    {
+      "severity": "medium",
+      "issue": "Aged corrosion is too uniform.",
+      "fix": "Refine the noise pattern in the aged texture to be more irregular and concentrated on edges and high-wear areas."
+    }
+  ],
+  "ready": false,
+  "limitations": "Only the 'hero' and 'front' sheets were provided. The 'top' and 'detail' sheets are missing, so the quality of UV mapping, texture stretching on complex curves, and close-up surface detail cannot be fully evaluated.",
+  "acceptance": {
+    "accepted": false,
+    "candidate_aged": 4,
+    "locker_aged": 5,
+    "numeric_failed": 1,
+    "rule": "candidate aged >= locker aged in this review, and numeric gates pass"
+  }
+}

@@ -39,6 +39,9 @@ func _ready() -> void:
 	hallway = ship.hallway
 	power_room = ship.power_room
 	_add_player()
+	if DemoStart.selected(OS.get_cmdline_user_args()) == "quarters":
+		DemoStart.quarters(game, player)
+		DemoStart.prepare_ship(ship, player)
 	_add_wake_presentation()
 	_add_wake_audio()
 	_add_smoke_symptoms()

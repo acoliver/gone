@@ -1,0 +1,1258 @@
+{
+  "G1": {
+    "value": 0.04058853373921867,
+    "threshold": "<= 0.06 visible sharp adjacency",
+    "status": "pass",
+    "pass_gate": true,
+    "visible_pairs": 7884,
+    "views": [
+      "tunic-faces.png",
+      "tunic-faces-120.png",
+      "tunic-faces-210.png",
+      "tunic-faces-30.png",
+      "tunic-faces-300.png"
+    ]
+  },
+  "G2": {
+    "value": 0.0007759104243663235,
+    "threshold": "<= 0.02 normal-jump pixels",
+    "status": "pass",
+    "pass_gate": true
+  },
+  "G3": {
+    "value": [
+      8.06225774829855,
+      19.313207915827967,
+      17.804493814764857,
+      8.06225774829855,
+      4.301162633521313,
+      6.0,
+      8.631338250816034,
+      6.96419413859206,
+      9.300537618869138,
+      26.076809620810597,
+      13.601470508735444,
+      4.47213595499958,
+      10.44030650891055,
+      9.848857801796104,
+      7.648529270389178,
+      17.11724276862369,
+      11.510864433221338,
+      11.40175425099138,
+      5.830951894845301,
+      19.557607215607945,
+      7.810249675906654,
+      5.0990195135927845,
+      7.516648189186454,
+      35.014282800023196,
+      7.211102550927978,
+      14.317821063276353,
+      8.514693182963201,
+      6.082762530298219,
+      9.486832980505138,
+      19.557607215607945,
+      4.949747468305833,
+      6.670832032063167,
+      7.648529270389178,
+      33.97793401606401,
+      6.082762530298219,
+      3.8078865529319543,
+      10.44030650891055,
+      26.476404589747453,
+      11.597413504743201,
+      17.564168070250297,
+      4.949747468305833,
+      6.519202405202649,
+      5.385164807134504,
+      9.433981132056603,
+      23.323807579381203,
+      16.1245154965971,
+      8.06225774829855,
+      5.70087712549569,
+      14.916433890176299,
+      4.527692569068709,
+      19.1049731745428,
+      10.198039027185569
+    ],
+    "threshold": "<= 12 px straight runs on visible open tear lips, hero and close",
+    "status": "fail",
+    "pass_gate": false
+  },
+  "G4": {
+    "value": [
+      0.7269403741031163,
+      0.7573968986832734,
+      0.985330893757968,
+      0.7130868087773231,
+      0.44715259347163694
+    ],
+    "threshold": ">= 0.35 width CV along each visible tear gap, hero and close",
+    "status": "pass",
+    "pass_gate": true
+  },
+  "G5": {
+    "value": 0.32245908938899454,
+    "threshold": ">= 0.30 lip length lifted >3 mm",
+    "status": "pass",
+    "pass_gate": true
+  },
+  "G6": {
+    "value": [
+      0.9935547107819157,
+      1.052936610172411,
+      1.1125719580658833,
+      1.0872141856766924,
+      1.1256344368942113,
+      1.002259888979951,
+      1.1718884014220263,
+      1.050945422732782,
+      1.1495992410292082,
+      1.1042834741138312,
+      1.0695065426317347,
+      1.0843752047806658,
+      1.0280976558105792
+    ],
+    "threshold": "1.15..1.40 dimension on visible open lip contours of length >=64 px",
+    "status": "fail",
+    "pass_gate": false
+  },
+  "G20": {
+    "value": 0.05242668050869452,
+    "threshold": "<= 0.10 sharp adjacency within 120 mm of hanger",
+    "status": "pass",
+    "pass_gate": true
+  },
+  "G21": {
+    "value": 0,
+    "threshold": "0 hanger pixels outside split hull inside unaged cloth mask",
+    "status": "pass",
+    "pass_gate": true
+  },
+  "G22": {
+    "value": 0.42557089315647945,
+    "threshold": "<= 0.45 maximum hero-camera depth / width at 25%, 50%, 75% sleeve length",
+    "status": "pass",
+    "pass_gate": true,
+    "close_camera_ratio": 0.23593447220754768,
+    "sections": [
+      {
+        "width_m": 0.14759800991539598,
+        "depth_m": 0.04488374222359233,
+        "ratio": 0.30409449456208754,
+        "pattern_station": 0.25,
+        "origin_m": [
+          0.34557796807752716,
+          -0.011416684011237521,
+          -0.5884288926091459
+        ]
+      },
+      {
+        "width_m": 0.1337220387793242,
+        "depth_m": 0.054741823005946974,
+        "ratio": 0.4093702392339761,
+        "pattern_station": 0.5,
+        "origin_m": [
+          0.34391313562026393,
+          -0.023384874435858086,
+          -0.6994282282315768
+        ]
+      },
+      {
+        "width_m": 0.12241170725958643,
+        "depth_m": 0.0520948595912717,
+        "ratio": 0.42557089315647945,
+        "pattern_station": 0.75,
+        "origin_m": [
+          0.3332323580980301,
+          -0.0291531914845109,
+          -0.812933993836244
+        ]
+      }
+    ],
+    "camera_position_blender_m": [
+      1.7207293510437012,
+      -2.457456111907959,
+      0.07999999821186066
+    ],
+    "method": "maximum camera-ray depth / width of transverse sections at 25%, 50%, 75% pattern length"
+  },
+  "G23": {
+    "value": {
+      "retained_arc": 0.3600429767616323,
+      "fringe_coverage": 0.7039849375862601
+    },
+    "threshold": ">= 0.35 retained arc and >= 0.70 released-edge fringe coverage",
+    "status": "pass",
+    "pass_gate": true
+  },
+  "G24": {
+    "value": 1.0141389925002504,
+    "threshold": "0.92..1.08 chest width / unaged",
+    "status": "pass",
+    "pass_gate": true
+  },
+  "G25": {
+    "value": 0.8212197794756648,
+    "threshold": ">= 0.70 open-hem fringe coverage",
+    "status": "pass",
+    "pass_gate": true
+  },
+  "G26": {
+    "value": 0.0,
+    "threshold": "< 0.30 hem-height autocorrelation peak, 20..120 mm lags",
+    "status": "pass",
+    "pass_gate": true,
+    "correlations": [
+      [
+        0.9269767114901611,
+        0.9202785448655332,
+        0.9133509728258737,
+        0.906202939485522,
+        0.8988427701315903,
+        0.8912785239938015,
+        0.8835182137589533,
+        0.875569971318116,
+        0.8674422528717673,
+        0.8591434839470649,
+        0.8506826284576852,
+        0.8420669902401873,
+        0.8333035722102088,
+        0.8243984578702251,
+        0.8153569473071662,
+        0.8061841744004219,
+        0.7968849093445661,
+        0.7874629148463825,
+        0.7779218051490503,
+        0.7682653455812465,
+        0.7584977650652104,
+        0.748623936615893,
+        0.7386494557630335,
+        0.7285803698404613,
+        0.7184227375607557,
+        0.7081813010531027,
+        0.6978599278602349,
+        0.6874627202237462,
+        0.6769937169079849,
+        0.6664551826260628,
+        0.6558484958258654,
+        0.6451748212876525,
+        0.6344348856171244,
+        0.6236294342715751,
+        0.6127566399475469,
+        0.6018134985822794,
+        0.5908007182323777,
+        0.5797197951752875,
+        0.568571025507894,
+        0.5573543609588903,
+        0.546071387277872,
+        0.534724460847402,
+        0.5233061812142624,
+        0.5118168028161618,
+        0.5002595801921825,
+        0.48863761494903807,
+        0.4769536053861676,
+        0.4652105981622021,
+        0.4534119611632326,
+        0.4415610973591214,
+        0.4296614887956795,
+        0.41771875619015797,
+        0.40573650644715126,
+        0.39371848458266046,
+        0.38166845763440554,
+        0.3695897892490926,
+        0.3574856418659591,
+        0.34537304857669426,
+        0.3332581098950393,
+        0.32114347656503256,
+        0.3090313247529855,
+        0.2969238522136056,
+        0.2848236853464117,
+        0.2727339965228356,
+        0.26065777912768817,
+        0.2485979674365618,
+        0.23655741958688506,
+        0.22453888892941,
+        0.21254505291110762,
+        0.20057764318681834,
+        0.18863921458117697,
+        0.17673379790812066,
+        0.16486480317355265,
+        0.15303569706913625,
+        0.14125247038139294,
+        0.12951966259033493,
+        0.11784148716206617,
+        0.10622116381589289,
+        0.09466186397437035,
+        0.08316683527949845,
+        0.07173950819907994,
+        0.060383017141282545,
+        0.04909537699879662,
+        0.037874502947676754,
+        0.026722025750144464,
+        0.015639515711537096,
+        0.004628334748038463,
+        -0.006309571758807447,
+        -0.017172285663845512,
+        -0.027958109374685777,
+        -0.03865599249879712,
+        -0.04925858979247397,
+        -0.05976655256464371,
+        -0.07017820221349774,
+        -0.08049070968702686,
+        -0.0907020494665381,
+        -0.1008098211146373,
+        -0.1108115564771508,
+        -0.12070504908296516,
+        -0.13048399791784876,
+        -0.14014872297057712
+      ]
+    ]
+  },
+  "G27": {
+    "value": 0.03305758237838741,
+    "threshold": "0.015..0.035 m heap height",
+    "status": "pass",
+    "pass_gate": true
+  },
+  "G28": {
+    "value": 6,
+    "threshold": ">= 2 fallen cloth pieces",
+    "status": "pass",
+    "pass_gate": true
+  },
+  "G29": {
+    "value": {
+      "volume_m3": 0.00035150886018289794,
+      "lost_wool_m3": 5.0184711654998304e-05,
+      "inferred_packing": 0.14276940737393098
+    },
+    "threshold": "0.5..2 mound volume / lost wool at packing 0.05..0.15",
+    "status": "pass",
+    "pass_gate": true
+  },
+  "G30": {
+    "value": {
+      "changed_intersections": 0,
+      "hanger": 28,
+      "unaged_hanger": 28,
+      "hanger_geometry_exact": true,
+      "pass": true
+    },
+    "threshold": "0 changed/new-part SAT crossings; exact unchanged hanger baseline",
+    "status": "pass",
+    "pass_gate": true
+  },
+  "G31": {
+    "value": {
+      "triangles": 20305,
+      "unaged_triangles": 13768,
+      "ratio": 1.4747966298663568
+    },
+    "threshold": "<= 1.5 x unaged triangles",
+    "status": "pass",
+    "pass_gate": true
+  },
+  "G32": {
+    "value": 0.0006232401733286679,
+    "threshold": "<= 0.0015 m boundary Hausdorff",
+    "status": "pass",
+    "pass_gate": true,
+    "extended_hem": {
+      "method": "Bidirectional boundary samples at <=0.1 mm; split reference segments exactly at extension root before applying the same affine extension",
+      "baseline_hem_distance_m": 0.0,
+      "extended_hem_sampled_distance_m": 1.559269894503179e-07,
+      "upper_bound_m": 5.015592698945032e-05,
+      "unchanged_remainder_bound_m": 0.0006232401733286679,
+      "threshold_m": 0.0015,
+      "pass": true
+    }
+  },
+  "armhole_opening": {
+    "maximum_clear_gap_m": 0.04195814763473842,
+    "p90_clear_gap_m": 0.039536843070421934,
+    "median_clear_gap_m": 0.033155388181366104,
+    "threshold_m": 0.025,
+    "pass_gap": true,
+    "method": "sleeve-cap boundary samples to continuous reduced body-lip segments"
+  },
+  "opening_measurements": [
+    {
+      "camera": "hero-labels",
+      "tear": "shoulder",
+      "lips": [
+        {
+          "side": "front",
+          "length_px": 14.071067811865476,
+          "longest_straight_run_px": 8.06225774829855,
+          "contour_dimension": 0.8663408027110677,
+          "bounds_px": [
+            [
+              403.5,
+              978.5
+            ],
+            [
+              407.5,
+              990.0
+            ]
+          ]
+        },
+        {
+          "side": "back",
+          "length_px": 70.06244584051394,
+          "longest_straight_run_px": 19.313207915827967,
+          "contour_dimension": 0.9935547107819157,
+          "bounds_px": [
+            [
+              376.5,
+              931.0
+            ],
+            [
+              403.0,
+              981.5
+            ]
+          ]
+        },
+        {
+          "side": "back",
+          "length_px": 123.78174593052026,
+          "longest_straight_run_px": 17.804493814764857,
+          "contour_dimension": 1.052936610172411,
+          "bounds_px": [
+            [
+              403.5,
+              990.5
+            ],
+            [
+              456.0,
+              1059.5
+            ]
+          ]
+        }
+      ],
+      "width_cv": 0.7269403741031163
+    },
+    {
+      "camera": "hero-labels",
+      "tear": "armhole",
+      "lips": [
+        {
+          "side": "body",
+          "length_px": 135.39696961967002,
+          "longest_straight_run_px": 8.06225774829855,
+          "contour_dimension": 1.1125719580658833,
+          "bounds_px": [
+            [
+              472.0,
+              1047.5
+            ],
+            [
+              553.0,
+              1070.5
+            ]
+          ]
+        },
+        {
+          "side": "body",
+          "length_px": 13.19238815542512,
+          "longest_straight_run_px": 4.301162633521313,
+          "contour_dimension": 0.8571428571428573,
+          "bounds_px": [
+            [
+              562.5,
+              1044.0
+            ],
+            [
+              568.5,
+              1052.5
+            ]
+          ]
+        },
+        {
+          "side": "body",
+          "length_px": 30.556349186104043,
+          "longest_straight_run_px": 6.0,
+          "contour_dimension": 1.1010259046387432,
+          "bounds_px": [
+            [
+              530.5,
+              1054.5
+            ],
+            [
+              541.5,
+              1062.0
+            ]
+          ]
+        },
+        {
+          "side": "body",
+          "length_px": 27.31370849898476,
+          "longest_straight_run_px": 8.631338250816034,
+          "contour_dimension": 1.0397492608588903,
+          "bounds_px": [
+            [
+              514.5,
+              1064.5
+            ],
+            [
+              526.5,
+              1067.5
+            ]
+          ]
+        },
+        {
+          "side": "sleeve",
+          "length_px": 44.16295090390226,
+          "longest_straight_run_px": 6.96419413859206,
+          "contour_dimension": 1.0926589143437702,
+          "bounds_px": [
+            [
+              542.0,
+              1053.0
+            ],
+            [
+              562.5,
+              1069.5
+            ]
+          ]
+        },
+        {
+          "side": "sleeve",
+          "length_px": 90.54772721475253,
+          "longest_straight_run_px": 9.300537618869138,
+          "contour_dimension": 1.0872141856766924,
+          "bounds_px": [
+            [
+              541.0,
+              1062.5
+            ],
+            [
+              566.5,
+              1106.0
+            ]
+          ]
+        }
+      ],
+      "width_cv": 0.7573968986832734
+    },
+    {
+      "camera": "labels",
+      "tear": "shoulder",
+      "lips": [
+        {
+          "side": "front",
+          "length_px": 27.798989873223327,
+          "longest_straight_run_px": 26.076809620810597,
+          "contour_dimension": 0.9239566162031607,
+          "bounds_px": [
+            [
+              222.5,
+              461.0
+            ],
+            [
+              236.5,
+              483.0
+            ]
+          ]
+        },
+        {
+          "side": "front",
+          "length_px": 29.849242404917494,
+          "longest_straight_run_px": 13.601470508735444,
+          "contour_dimension": 1.1121375001030227,
+          "bounds_px": [
+            [
+              296.5,
+              621.5
+            ],
+            [
+              309.5,
+              630.0
+            ]
+          ]
+        },
+        {
+          "side": "front",
+          "length_px": 15.19238815542512,
+          "longest_straight_run_px": 4.47213595499958,
+          "contour_dimension": 0.8981310716552209,
+          "bounds_px": [
+            [
+              285.5,
+              658.5
+            ],
+            [
+              289.5,
+              664.5
+            ]
+          ]
+        },
+        {
+          "side": "front",
+          "length_px": 50.334523779156065,
+          "longest_straight_run_px": 10.44030650891055,
+          "contour_dimension": 1.1575947095132166,
+          "bounds_px": [
+            [
+              281.5,
+              675.0
+            ],
+            [
+              296.0,
+              702.5
+            ]
+          ]
+        },
+        {
+          "side": "front",
+          "length_px": 60.81980515339464,
+          "longest_straight_run_px": 9.848857801796104,
+          "contour_dimension": 1.006118656680339,
+          "bounds_px": [
+            [
+              300.5,
+              709.0
+            ],
+            [
+              318.0,
+              752.5
+            ]
+          ]
+        },
+        {
+          "side": "front",
+          "length_px": 32.62741699796952,
+          "longest_straight_run_px": 7.648529270389178,
+          "contour_dimension": 1.119128046626146,
+          "bounds_px": [
+            [
+              315.5,
+              754.5
+            ],
+            [
+              324.0,
+              769.5
+            ]
+          ]
+        },
+        {
+          "side": "front",
+          "length_px": 129.2253967444162,
+          "longest_straight_run_px": 17.11724276862369,
+          "contour_dimension": 1.1256344368942113,
+          "bounds_px": [
+            [
+              326.5,
+              767.0
+            ],
+            [
+              364.5,
+              811.5
+            ]
+          ]
+        },
+        {
+          "side": "front",
+          "length_px": 26.89949493661166,
+          "longest_straight_run_px": 11.510864433221338,
+          "contour_dimension": 1.0789677904649433,
+          "bounds_px": [
+            [
+              366.5,
+              809.0
+            ],
+            [
+              373.5,
+              821.5
+            ]
+          ]
+        },
+        {
+          "side": "front",
+          "length_px": 29.970562748477136,
+          "longest_straight_run_px": 11.40175425099138,
+          "contour_dimension": 0.9842586702013435,
+          "bounds_px": [
+            [
+              380.5,
+              827.0
+            ],
+            [
+              391.5,
+              844.5
+            ]
+          ]
+        },
+        {
+          "side": "front",
+          "length_px": 14.778174593052023,
+          "longest_straight_run_px": 5.830951894845301,
+          "contour_dimension": 0.9099892859203306,
+          "bounds_px": [
+            [
+              398.5,
+              860.0
+            ],
+            [
+              403.5,
+              865.5
+            ]
+          ]
+        },
+        {
+          "side": "front",
+          "length_px": 56.648232278140824,
+          "longest_straight_run_px": 19.557607215607945,
+          "contour_dimension": 1.1348818221399444,
+          "bounds_px": [
+            [
+              402.0,
+              861.5
+            ],
+            [
+              425.5,
+              882.0
+            ]
+          ]
+        },
+        {
+          "side": "front",
+          "length_px": 43.4558441227157,
+          "longest_straight_run_px": 7.810249675906654,
+          "contour_dimension": 1.2060307415911136,
+          "bounds_px": [
+            [
+              271.5,
+              671.5
+            ],
+            [
+              280.5,
+              683.5
+            ]
+          ]
+        },
+        {
+          "side": "front",
+          "length_px": 12.485281374238571,
+          "longest_straight_run_px": 5.0990195135927845,
+          "contour_dimension": 0.7622771430219787,
+          "bounds_px": [
+            [
+              290.5,
+              636.5
+            ],
+            [
+              295.5,
+              639.5
+            ]
+          ]
+        },
+        {
+          "side": "front",
+          "length_px": 16.828427124746188,
+          "longest_straight_run_px": 7.516648189186454,
+          "contour_dimension": 0.7996588854752844,
+          "bounds_px": [
+            [
+              305.5,
+              741.5
+            ],
+            [
+              306.5,
+              749.5
+            ]
+          ]
+        },
+        {
+          "side": "back",
+          "length_px": 225.9863273947651,
+          "longest_straight_run_px": 35.014282800023196,
+          "contour_dimension": 1.002259888979951,
+          "bounds_px": [
+            [
+              222.5,
+              461.0
+            ],
+            [
+              293.0,
+              612.5
+            ]
+          ]
+        },
+        {
+          "side": "back",
+          "length_px": 64.18376618407358,
+          "longest_straight_run_px": 7.211102550927978,
+          "contour_dimension": 1.1718884014220263,
+          "bounds_px": [
+            [
+              292.5,
+              632.0
+            ],
+            [
+              309.5,
+              659.5
+            ]
+          ]
+        },
+        {
+          "side": "back",
+          "length_px": 39.72792206135785,
+          "longest_straight_run_px": 14.317821063276353,
+          "contour_dimension": 1.0904587108286377,
+          "bounds_px": [
+            [
+              289.0,
+              664.5
+            ],
+            [
+              308.5,
+              674.5
+            ]
+          ]
+        },
+        {
+          "side": "back",
+          "length_px": 16.192388155425117,
+          "longest_straight_run_px": 8.514693182963201,
+          "contour_dimension": 0.920154910053715,
+          "bounds_px": [
+            [
+              296.5,
+              698.5
+            ],
+            [
+              304.0,
+              708.5
+            ]
+          ]
+        },
+        {
+          "side": "back",
+          "length_px": 31.970562748477132,
+          "longest_straight_run_px": 6.082762530298219,
+          "contour_dimension": 1.0199915065715068,
+          "bounds_px": [
+            [
+              373.5,
+              809.5
+            ],
+            [
+              384.5,
+              826.0
+            ]
+          ]
+        },
+        {
+          "side": "back",
+          "length_px": 34.970562748477136,
+          "longest_straight_run_px": 9.486832980505138,
+          "contour_dimension": 1.1184795171542308,
+          "bounds_px": [
+            [
+              391.5,
+              832.5
+            ],
+            [
+              399.5,
+              846.0
+            ]
+          ]
+        },
+        {
+          "side": "back",
+          "length_px": 31.92031021678297,
+          "longest_straight_run_px": 19.557607215607945,
+          "contour_dimension": 1.0285330515882587,
+          "bounds_px": [
+            [
+              404.5,
+              865.5
+            ],
+            [
+              425.5,
+              882.0
+            ]
+          ]
+        },
+        {
+          "side": "back",
+          "length_px": 13.899494936611667,
+          "longest_straight_run_px": 4.949747468305833,
+          "contour_dimension": 0.8982089773214772,
+          "bounds_px": [
+            [
+              305.5,
+              649.5
+            ],
+            [
+              309.5,
+              654.5
+            ]
+          ]
+        },
+        {
+          "side": "back",
+          "length_px": 16.242640687119284,
+          "longest_straight_run_px": 6.670832032063167,
+          "contour_dimension": 0.8571428571428575,
+          "bounds_px": [
+            [
+              310.5,
+              669.5
+            ],
+            [
+              317.5,
+              671.5
+            ]
+          ]
+        },
+        {
+          "side": "back",
+          "length_px": 21.72792206135785,
+          "longest_straight_run_px": 7.648529270389178,
+          "contour_dimension": 0.9859140950978026,
+          "bounds_px": [
+            [
+              388.5,
+              859.5
+            ],
+            [
+              397.0,
+              864.5
+            ]
+          ]
+        }
+      ],
+      "width_cv": 0.985330893757968
+    },
+    {
+      "camera": "labels",
+      "tear": "armhole",
+      "lips": [
+        {
+          "side": "body",
+          "length_px": 242.69343417595167,
+          "longest_straight_run_px": 33.97793401606401,
+          "contour_dimension": 1.050945422732782,
+          "bounds_px": [
+            [
+              466.5,
+              905.0
+            ],
+            [
+              635.5,
+              930.5
+            ]
+          ]
+        },
+        {
+          "side": "body",
+          "length_px": 30.142135623730947,
+          "longest_straight_run_px": 6.082762530298219,
+          "contour_dimension": 1.1024275000206052,
+          "bounds_px": [
+            [
+              504.5,
+              929.5
+            ],
+            [
+              511.5,
+              938.5
+            ]
+          ]
+        },
+        {
+          "side": "body",
+          "length_px": 14.485281374238571,
+          "longest_straight_run_px": 3.8078865529319543,
+          "contour_dimension": 0.8440422927124733,
+          "bounds_px": [
+            [
+              523.5,
+              934.5
+            ],
+            [
+              528.5,
+              938.5
+            ]
+          ]
+        },
+        {
+          "side": "body",
+          "length_px": 41.21320343559643,
+          "longest_straight_run_px": 10.44030650891055,
+          "contour_dimension": 1.22103433185775,
+          "bounds_px": [
+            [
+              536.5,
+              901.5
+            ],
+            [
+              549.5,
+              910.5
+            ]
+          ]
+        },
+        {
+          "side": "body",
+          "length_px": 313.0279579551077,
+          "longest_straight_run_px": 26.476404589747453,
+          "contour_dimension": 1.1495992410292082,
+          "bounds_px": [
+            [
+              552.5,
+              888.5
+            ],
+            [
+              669.0,
+              927.5
+            ]
+          ]
+        },
+        {
+          "side": "body",
+          "length_px": 35.55634918610404,
+          "longest_straight_run_px": 11.597413504743201,
+          "contour_dimension": 1.1625542748017794,
+          "bounds_px": [
+            [
+              566.5,
+              902.5
+            ],
+            [
+              578.5,
+              908.5
+            ]
+          ]
+        },
+        {
+          "side": "body",
+          "length_px": 354.79751057680824,
+          "longest_straight_run_px": 17.564168070250297,
+          "contour_dimension": 1.1042834741138312,
+          "bounds_px": [
+            [
+              629.5,
+              826.5
+            ],
+            [
+              757.5,
+              905.5
+            ]
+          ]
+        },
+        {
+          "side": "body",
+          "length_px": 20.14213562373095,
+          "longest_straight_run_px": 4.949747468305833,
+          "contour_dimension": 1.001487017009999,
+          "bounds_px": [
+            [
+              659.5,
+              851.5
+            ],
+            [
+              666.5,
+              857.5
+            ]
+          ]
+        },
+        {
+          "side": "body",
+          "length_px": 18.485281374238568,
+          "longest_straight_run_px": 6.519202405202649,
+          "contour_dimension": 0.9344107994138546,
+          "bounds_px": [
+            [
+              678.5,
+              841.5
+            ],
+            [
+              682.5,
+              848.5
+            ]
+          ]
+        },
+        {
+          "side": "body",
+          "length_px": 29.556349186104043,
+          "longest_straight_run_px": 5.385164807134504,
+          "contour_dimension": 1.054575622769193,
+          "bounds_px": [
+            [
+              700.5,
+              840.5
+            ],
+            [
+              709.5,
+              849.5
+            ]
+          ]
+        },
+        {
+          "side": "body",
+          "length_px": 40.04163056034262,
+          "longest_straight_run_px": 9.433981132056603,
+          "contour_dimension": 1.1834010329445697,
+          "bounds_px": [
+            [
+              722.5,
+              836.5
+            ],
+            [
+              734.5,
+              845.5
+            ]
+          ]
+        },
+        {
+          "side": "sleeve",
+          "length_px": 247.37972567696693,
+          "longest_straight_run_px": 23.323807579381203,
+          "contour_dimension": 1.0695065426317347,
+          "bounds_px": [
+            [
+              654.0,
+              938.5
+            ],
+            [
+              738.0,
+              1012.5
+            ]
+          ]
+        },
+        {
+          "side": "sleeve",
+          "length_px": 109.1335136523794,
+          "longest_straight_run_px": 16.1245154965971,
+          "contour_dimension": 1.0843752047806658,
+          "bounds_px": [
+            [
+              654.0,
+              910.0
+            ],
+            [
+              700.5,
+              944.5
+            ]
+          ]
+        },
+        {
+          "side": "sleeve",
+          "length_px": 14.363961030678928,
+          "longest_straight_run_px": 8.06225774829855,
+          "contour_dimension": 0.8863507630563674,
+          "bounds_px": [
+            [
+              743.5,
+              826.5
+            ],
+            [
+              751.0,
+              833.5
+            ]
+          ]
+        },
+        {
+          "side": "sleeve",
+          "length_px": 12.36396103067893,
+          "longest_straight_run_px": 5.70087712549569,
+          "contour_dimension": 0.763406367410266,
+          "bounds_px": [
+            [
+              743.5,
+              845.0
+            ],
+            [
+              752.0,
+              851.5
+            ]
+          ]
+        },
+        {
+          "side": "sleeve",
+          "length_px": 235.65180361560908,
+          "longest_straight_run_px": 14.916433890176299,
+          "contour_dimension": 1.0280976558105792,
+          "bounds_px": [
+            [
+              675.0,
+              853.5
+            ],
+            [
+              761.5,
+              935.5
+            ]
+          ]
+        },
+        {
+          "side": "sleeve",
+          "length_px": 14.485281374238571,
+          "longest_straight_run_px": 4.527692569068709,
+          "contour_dimension": 0.7715016827128605,
+          "bounds_px": [
+            [
+              728.5,
+              863.5
+            ],
+            [
+              731.5,
+              868.5
+            ]
+          ]
+        }
+      ],
+      "width_cv": 0.7130868087773231
+    },
+    {
+      "camera": "labels",
+      "tear": "grain-crack-3",
+      "lips": [
+        {
+          "side": "left",
+          "length_px": 30.192388155425114,
+          "longest_straight_run_px": 19.1049731745428,
+          "contour_dimension": 1.0199915065715068,
+          "bounds_px": [
+            [
+              285.5,
+              661.5
+            ],
+            [
+              308.5,
+              670.0
+            ]
+          ]
+        },
+        {
+          "side": "right",
+          "length_px": 31.192388155425114,
+          "longest_straight_run_px": 10.198039027185569,
+          "contour_dimension": 0.9828654401698241,
+          "bounds_px": [
+            [
+              281.5,
+              670.5
+            ],
+            [
+              308.0,
+              679.0
+            ]
+          ]
+        }
+      ],
+      "width_cv": 0.44715259347163694
+    }
+  ],
+  "nineteen_gates_pass": false,
+  "pass": false,
+  "pilot_publication": {
+    "allowed": true,
+    "exceptions": [
+      "G3",
+      "G6"
+    ],
+    "authority": "Andrew accepts pass12 geometry as the pilot; thresholds unchanged",
+    "byte_identical": true
+  }
+}

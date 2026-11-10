@@ -1,0 +1,239 @@
+{
+  "Mattress": {
+    "frames": 160,
+    "retained_pins": 268,
+    "pressure": 0,
+    "strength_groups": {
+      "structural": "",
+      "shear": "",
+      "bending": ""
+    },
+    "last_five_frames_motion_m": 7.453147922695384e-05,
+    "trace": [
+      {
+        "frame": 50,
+        "bounds_blender_m": [
+          [
+            -0.7017061710357666,
+            -1.0159848928451538,
+            0.5080326199531555
+          ],
+          [
+            0.6987012624740601,
+            0.962414026260376,
+            0.582011878490448
+          ]
+        ]
+      },
+      {
+        "frame": 100,
+        "bounds_blender_m": [
+          [
+            -0.7017061710357666,
+            -1.0159848928451538,
+            0.5080326199531555
+          ],
+          [
+            0.6987012624740601,
+            0.962414026260376,
+            0.5820780396461487
+          ]
+        ]
+      },
+      {
+        "frame": 150,
+        "bounds_blender_m": [
+          [
+            -0.7017061710357666,
+            -1.0159848928451538,
+            0.5080326199531555
+          ],
+          [
+            0.6987012624740601,
+            0.962414026260376,
+            0.5822250247001648
+          ]
+        ]
+      }
+    ],
+    "post_reduction_clearance_fit_max_m": 0.009188540016157697,
+    "decimation_support_fit_z_m": 3.260374069213867e-05,
+    "seed": 95240,
+    "voronoi_plates": 22,
+    "height_ratio": 0.34,
+    "crack_width_m": 0.006,
+    "cover_finish": {
+      "point_fans_separated_before_thickness": true,
+      "cover_support_translation_m": 0.001560551881790162
+    }
+  },
+  "Pillow_L": {
+    "removed_faces": 18,
+    "removed_area_m2": 0.02027159190038219,
+    "boundary_noise_amplitude_m": 0.006,
+    "octaves": 4,
+    "point_fan_clearance_m": 0.002,
+    "height_ratio": 0.08,
+    "support_translation_m": -0.1063315143585205,
+    "finished_height_m": 0.01945638656616211,
+    "exact_face_contact_translation_m": 0.002406146123240859,
+    "headboard_translation_y_m": 0.0949976315498352
+  },
+  "Pillow_R": {
+    "removed_faces": 11,
+    "removed_area_m2": 0.02408963651396334,
+    "boundary_noise_amplitude_m": 0.006,
+    "octaves": 4,
+    "point_fan_clearance_m": 0.002,
+    "height_ratio": 0.08,
+    "support_translation_m": -0.10406272315979004,
+    "finished_height_m": 0.01794832944869995,
+    "exact_face_contact_translation_m": 0.0015359307349310227,
+    "headboard_translation_y_m": 0.07125346565246582
+  },
+  "Quilt": {
+    "frames": 260,
+    "retained_pins": 0,
+    "pressure": {
+      "enabled": false,
+      "uniform_force": 0.0,
+      "scale": 1.0
+    },
+    "strength_groups": {
+      "structural": "",
+      "shear": "",
+      "bending": ""
+    },
+    "last_five_frames_motion_m": 0.009589093800399434,
+    "trace": [
+      {
+        "frame": 50,
+        "bounds_blender_m": [
+          [
+            -1.0213314294815063,
+            -1.1057051420211792,
+            0.23176135122776031
+          ],
+          [
+            0.46993309259414673,
+            0.406022846698761,
+            0.6307917237281799
+          ]
+        ]
+      },
+      {
+        "frame": 100,
+        "bounds_blender_m": [
+          [
+            -0.9529675245285034,
+            -1.09561288356781,
+            0.1939346194267273
+          ],
+          [
+            0.44037100672721863,
+            0.4194281995296478,
+            0.633853554725647
+          ]
+        ]
+      },
+      {
+        "frame": 150,
+        "bounds_blender_m": [
+          [
+            -0.9498154520988464,
+            -1.1504074335098267,
+            0.15060830116271973
+          ],
+          [
+            0.39478468894958496,
+            0.46217936277389526,
+            0.6610943675041199
+          ]
+        ]
+      },
+      {
+        "frame": 200,
+        "bounds_blender_m": [
+          [
+            -1.0789068937301636,
+            -1.1750396490097046,
+            0.0628812313079834
+          ],
+          [
+            0.3756304681301117,
+            0.4841201603412628,
+            0.6607545018196106
+          ]
+        ]
+      },
+      {
+        "frame": 250,
+        "bounds_blender_m": [
+          [
+            -1.1098427772521973,
+            -1.1976326704025269,
+            0.0019502479117363691
+          ],
+          [
+            0.3444907069206238,
+            0.4764435887336731,
+            0.6644429564476013
+          ]
+        ]
+      }
+    ],
+    "coarse_cuts_before_gravity": {
+      "removed_faces": 105,
+      "removed_area_m2": 0.26528138061985373,
+      "boundary_noise_amplitude_m": 0,
+      "octaves": 0,
+      "point_fan_clearance_m": 0.006
+    },
+    "initial_collision_clear": true,
+    "initial_nearest_support_m": 0.03935559466481209,
+    "initial_whole_sheet_lift_m": 0.20069768428802492,
+    "cuts": {
+      "removed_faces": 231,
+      "removed_area_m2": 0.29013672820292413,
+      "boundary_noise_amplitude_m": 0.006,
+      "octaves": 4,
+      "point_fan_clearance_m": 0.002
+    },
+    "side_slide_m": -0.31,
+    "rail_wrap_finish": {
+      "outside_x_m": -0.8055,
+      "rail_clear_top_m": 0.5525,
+      "fitted_vertices": 193
+    },
+    "exact_face_contact_translation_m": -1.3151763789999438e-08,
+    "headboard_translation_y_m": 0
+  },
+  "debris": [
+    {
+      "pieces": 37,
+      "seed": 95244,
+      "floor_z_m": 0.0,
+      "templates": 3
+    },
+    {
+      "pieces": 32,
+      "seed": 95245,
+      "floor_z_m": 0.5,
+      "templates": 3
+    },
+    {
+      "name": "FibreFoamPowder_Floor",
+      "opaque_grain_fraction": 0.16775798797607422
+    },
+    {
+      "name": "FibreFoamPowder_Platform",
+      "opaque_grain_fraction": 0.14601421356201172
+    }
+  ],
+  "fine_weave": {
+    "source": "assets/props/quarters/sofa/weave.png",
+    "median_tile_pitch_m": 0.12,
+    "normal_height_scale_m": 0.0004,
+    "geometry_unchanged": true
+  }
+}

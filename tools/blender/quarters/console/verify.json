@@ -1,0 +1,565 @@
+{
+  "asset": "console",
+  "bounds_gltf": {
+    "actual": [
+      [
+        -0.550000011920929,
+        0.0,
+        -0.2750000059604645
+      ],
+      [
+        0.550000011920929,
+        0.6899999976158142,
+        0.27809999650982575
+      ]
+    ],
+    "expected": [
+      [
+        -0.55,
+        0.0,
+        -0.275
+      ],
+      [
+        0.55,
+        0.69,
+        0.275
+      ]
+    ],
+    "max_error_m": 0.003099996509825731,
+    "tolerance_m": 0.01,
+    "pass": true
+  },
+  "origin_at_floor": {
+    "min_y_m": 0.0,
+    "pass": true
+  },
+  "required_nodes": {
+    "missing": [],
+    "pass": true
+  },
+  "hierarchy": {
+    "ArmouredHousing": {
+      "actual": "Console",
+      "expected": "Console",
+      "pass": true
+    },
+    "LowerDeckHousing": {
+      "actual": "Console",
+      "expected": "Console",
+      "pass": true
+    },
+    "DesktopSupport": {
+      "actual": "Console",
+      "expected": "Console",
+      "pass": true
+    },
+    "Bezel": {
+      "actual": "ScreenPlane",
+      "expected": "ScreenPlane",
+      "pass": true
+    },
+    "Display": {
+      "actual": "ScreenPlane",
+      "expected": "ScreenPlane",
+      "pass": true
+    },
+    "ScreenPlane": {
+      "actual": "Console",
+      "expected": "Console",
+      "pass": true
+    },
+    "ControlPanel": {
+      "actual": "Console",
+      "expected": "Console",
+      "pass": true
+    },
+    "Keys": {
+      "actual": "ControlPanel",
+      "expected": "ControlPanel",
+      "pass": true
+    },
+    "Toggles": {
+      "actual": "ControlPanel",
+      "expected": "ControlPanel",
+      "pass": true
+    }
+  },
+  "pivots": {
+    "Console": {
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "pass": true
+    }
+  },
+  "topology": {
+    "ArmouredHousing": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "BaseShoe": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "BezelBottom": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "BezelLeft": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "BezelRight": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "BezelRivets": {
+      "component_count": 4,
+      "probe_count": 216,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "BezelTop": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "ControlPanel": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DesktopSupport": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Display": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "HousingRivets": {
+      "component_count": 2,
+      "probe_count": 108,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Key_0_0": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Key_0_1": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Key_0_2": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Key_0_3": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Key_0_4": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Key_0_5": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Key_1_0": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Key_1_1": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Key_1_2": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Key_1_3": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Key_1_4": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Key_1_5": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Key_2_0": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Key_2_1": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Key_2_2": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Key_2_3": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Key_2_4": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Key_2_5": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Key_3_0": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Key_3_1": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Key_3_2": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Key_3_3": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Key_3_4": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Key_3_5": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "LowerDeckHousing": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "ScreenGasket": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "ToggleSocket_0": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "ToggleSocket_1": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "ToggleSocket_2": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Toggle_0": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Toggle_1": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Toggle_2": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    }
+  },
+  "degenerate_faces": 0,
+  "triangle_count": 5088,
+  "triangle_limit": 15000,
+  "material_slots": [
+    "BareSteel",
+    "DarkSteel",
+    "Display",
+    "PaintedSteel"
+  ],
+  "required_materials_pass": true,
+  "UV": {
+    "overlapping_triangle_pairs": 0,
+    "max_overlap_area_uv2": 0.0,
+    "out_of_unit_square_coordinates": 0,
+    "linear_texel_density_p05_p50_p95": [
+      0.28874949925910903,
+      0.30500219447484433,
+      0.3168045808915054
+    ],
+    "density_p95_p05_ratio": 1.0971606243625767,
+    "pass": true
+  },
+  "hero_first_hit_visibility": {
+    "Display": {
+      "sample_count": 54,
+      "visible_projected_area_fraction": 1.0,
+      "visible_triangle_fraction": 1.0,
+      "projection": "orthographic",
+      "minimum": 0.6,
+      "pass": true
+    },
+    "Key_1_4": {
+      "sample_count": 54,
+      "visible_projected_area_fraction": 0.8471480021961956,
+      "visible_triangle_fraction": 0.9074074074074074,
+      "projection": "orthographic",
+      "minimum": 0.6,
+      "pass": true
+    },
+    "Toggle_1": {
+      "sample_count": 102,
+      "visible_projected_area_fraction": 0.9934320565548946,
+      "visible_triangle_fraction": 0.803921568627451,
+      "projection": "orthographic",
+      "minimum": 0.6,
+      "pass": true
+    },
+    "DesktopSupport": {
+      "sample_count": 57,
+      "visible_projected_area_fraction": 0.7957501427552774,
+      "visible_triangle_fraction": 0.49122807017543857,
+      "projection": "orthographic",
+      "minimum": 0.6,
+      "pass": true
+    }
+  },
+  "byte_identical_reexport": true,
+  "axis_contract": "Blender Z-up/-Y front -> exported glTF +Y up/+Z front; bounds measured outside Blender",
+  "pass": true,
+  "console_parts": {
+    "display_material": "Display",
+    "display_emissive_factor": [
+      0.0003000000261701649,
+      0.0026999999910592987,
+      0.00285000002160668
+    ],
+    "key_count": 24,
+    "toggle_count": 3,
+    "single_shared_asset_states": [
+      "remembered",
+      "present"
+    ],
+    "pass": true
+  }
+}

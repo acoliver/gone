@@ -1,0 +1,17 @@
+{
+  "images_seen": [
+    "image-left",
+    "image-right"
+  ],
+  "rating": 8,
+  "ready": true,
+  "observations": "Image-left (A approved design) shows a compact chair with a grey-green satin finish. It features a flat steel seat pan, a slightly reclined backrest with rounded corners, and four legs connected by cross braces. A distinct, thin charcoal fabric pad sits on the seat. Small rivet heads are visible on the backrest and seat frame. The overall form is utilitarian and sturdy. Image-right (B fitted hero) displays the same chair from a slightly different angle. The grey-green finish, flat seat pan, reclined backrest, and cross-braced legs are consistent with the left image. The charcoal seat pad is present. Rivets are visible on the backrest. The chair appears complete and structurally coherent. Comparison: The two images show the same object with high consistency in shape, silhouette, and material. The proportions and separate parts (legs, braces, seat, back, pad) match. The manufacturing coherence is maintained. The style matches the brief for a military starship dining chair. The fit is strong, with only minor differences in lighting and angle.",
+  "defects": [
+    "The seat pad in image-right appears slightly thicker or more pronounced than in image-left, though this may be due to lighting and angle.",
+    "The rivet heads on the seat frame are less visible in image-right compared to image-left, possibly due to the viewing angle."
+  ],
+  "fixes": [
+    "Verify the thickness of the seat pad in the 3D model to ensure it matches the approved design exactly.",
+    "Adjust the lighting or angle in the hero capture to better highlight the rivet heads on the seat frame, ensuring all hardware is clearly visible."
+  ]
+}

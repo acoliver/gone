@@ -1,0 +1,184 @@
+{
+  "bounds_gltf": [
+    [
+      -0.25,
+      0,
+      -0.225
+    ],
+    [
+      0.25,
+      0.6,
+      0.225
+    ]
+  ],
+  "required_nodes": [
+    "Bedside",
+    "Carcass",
+    "Drawers",
+    "Drawer_0",
+    "Drawer_1",
+    "Lamp",
+    "LampStem",
+    "LampHood"
+  ],
+  "parents": {
+    "Carcass": "Bedside",
+    "Drawers": "Bedside",
+    "Drawer_0": "Drawers",
+    "Drawer_1": "Drawers",
+    "Lamp": "Bedside",
+    "LampStem": "Lamp",
+    "LampHood": "Lamp"
+  },
+  "pivots_gltf": {
+    "Bedside": [
+      0,
+      0,
+      0
+    ],
+    "Drawer_0": [
+      0,
+      0.159,
+      0.213
+    ],
+    "Drawer_1": [
+      0,
+      0.339,
+      0.213
+    ]
+  },
+  "materials": [
+    "PaintedSteel",
+    "BareSteel",
+    "DarkSteel"
+  ],
+  "visible_details": [
+    "DrawerPull_0",
+    "LampHood",
+    "KickPlate"
+  ],
+  "hero_camera_native": [
+    -1.0,
+    -2.5,
+    1.1
+  ],
+  "hero_camera_gltf": [
+    -1.0,
+    1.1,
+    2.5
+  ],
+  "hero_target_native": [
+    0,
+    0,
+    0.3
+  ],
+  "triangle_limit": 6000,
+  "fit_notes": "The generated cabinet-top patch measures .441 m and is faired to the requested .45 m top while the total lamp height retains the .60 m layout envelope. Separate drawer trays and handles remain independent parts. The curved lamp canopy has rounded ends and a satin bare-steel finish so its silhouette remains visible rather than clipping to a white block. This single asset is used on both sides of the bed.",
+  "guide": {
+    "source_bounds_native": [
+      [
+        -0.7061570286750793,
+        -0.6710182428359985,
+        -0.9991609454154968
+      ],
+      [
+        0.6979197263717651,
+        0.6789317727088928,
+        0.9928921461105347
+      ]
+    ],
+    "carcass_fitting_bounds_native": [
+      [
+        -0.7061570286750793,
+        -0.6710182428359985,
+        -0.9991609454154968
+      ],
+      [
+        0.6979197263717651,
+        0.6789317727088928,
+        0.9928921461105347
+      ]
+    ],
+    "fitted_size_whd": [
+      0.5,
+      0.6,
+      0.45
+    ],
+    "sections": [
+      {
+        "height_m": 0.06,
+        "vertices": 5746,
+        "xy_min": [
+          -0.24424713850021362,
+          -0.21877233684062958
+        ],
+        "xy_max": [
+          0.23858217895030975,
+          0.21589654684066772
+        ]
+      },
+      {
+        "height_m": 0.15,
+        "vertices": 5950,
+        "xy_min": [
+          -0.24458502233028412,
+          -0.2187669724225998
+        ],
+        "xy_max": [
+          0.23853014409542084,
+          0.21589119732379913
+        ]
+      },
+      {
+        "height_m": 0.3,
+        "vertices": 5942,
+        "xy_min": [
+          -0.24437882006168365,
+          -0.2190684825181961
+        ],
+        "xy_max": [
+          0.2386041283607483,
+          0.21581999957561493
+        ]
+      },
+      {
+        "height_m": 0.44999999999999996,
+        "vertices": 1328,
+        "xy_min": [
+          -0.14516514539718628,
+          -0.06080284342169762
+        ],
+        "xy_max": [
+          -0.04423355683684349,
+          0.03724735230207443
+        ]
+      },
+      {
+        "height_m": 0.54,
+        "vertices": 96,
+        "xy_min": [
+          -0.09806930273771286,
+          -0.02220790460705757
+        ],
+        "xy_max": [
+          -0.0889769196510315,
+          -0.013808888383209705
+        ]
+      }
+    ],
+    "mesh_triangles": 550700,
+    "carcass_top_fit": {
+      "sample_count": 52477,
+      "guide_height_m": 0.4409244477748871,
+      "fitted_height_m": 0.45
+    },
+    "lamp_hood_fit": {
+      "shape": "Closed ellipsoidal steel canopy with a separate downward lens.",
+      "width_m": 0.08,
+      "depth_m": 0.06,
+      "rise_m": 0.015
+    },
+    "source": "tmp/props/bedside/guide.glb"
+  },
+  "id": "bedside"
+}

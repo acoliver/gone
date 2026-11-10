@@ -1,0 +1,4909 @@
+{
+  "input": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/tmp/age/pass10/sofa-preview.glb",
+  "gates": {
+    "G1": {
+      "measure": "visible cloth dihedral >30 degrees",
+      "threshold": "covers <=0.08; throw <=0.09",
+      "value": {
+        "SeatCushion_C": {
+          "fraction": 0.050079491255961846,
+          "sharp_pairs": 63,
+          "visible_pairs": 1258,
+          "views": [
+            {
+              "visible_faces": 949,
+              "visible_pairs": 1241
+            },
+            {
+              "visible_faces": 271,
+              "visible_pairs": 273
+            }
+          ],
+          "all_sheet_fraction": 0.07615407233166716,
+          "threshold": 0.08,
+          "pass": true
+        },
+        "SeatCushion_L": {
+          "fraction": 0.06874427131072411,
+          "sharp_pairs": 75,
+          "visible_pairs": 1091,
+          "views": [
+            {
+              "visible_faces": 851,
+              "visible_pairs": 1071
+            },
+            {
+              "visible_faces": 248,
+              "visible_pairs": 249
+            }
+          ],
+          "all_sheet_fraction": 0.11019688510138113,
+          "threshold": 0.08,
+          "pass": true
+        },
+        "SeatCushion_R": {
+          "fraction": 0.03955696202531646,
+          "sharp_pairs": 50,
+          "visible_pairs": 1264,
+          "views": [
+            {
+              "visible_faces": 937,
+              "visible_pairs": 1241
+            },
+            {
+              "visible_faces": 161,
+              "visible_pairs": 167
+            }
+          ],
+          "all_sheet_fraction": 0.078777189888301,
+          "threshold": 0.08,
+          "pass": true
+        },
+        "BackCushion_C": {
+          "fraction": 0.06782945736434108,
+          "sharp_pairs": 35,
+          "visible_pairs": 516,
+          "views": [
+            {
+              "visible_faces": 408,
+              "visible_pairs": 484
+            },
+            {
+              "visible_faces": 157,
+              "visible_pairs": 148
+            }
+          ],
+          "all_sheet_fraction": 0.1709103592605511,
+          "threshold": 0.08,
+          "pass": true
+        },
+        "BackCushion_L": {
+          "fraction": 0.07872696817420435,
+          "sharp_pairs": 47,
+          "visible_pairs": 597,
+          "views": [
+            {
+              "visible_faces": 464,
+              "visible_pairs": 561
+            },
+            {
+              "visible_faces": 165,
+              "visible_pairs": 167
+            }
+          ],
+          "all_sheet_fraction": 0.14584787159804605,
+          "threshold": 0.08,
+          "pass": true
+        },
+        "BackCushion_R": {
+          "fraction": 0.09426987060998152,
+          "sharp_pairs": 51,
+          "visible_pairs": 541,
+          "views": [
+            {
+              "visible_faces": 448,
+              "visible_pairs": 536
+            },
+            {
+              "visible_faces": 98,
+              "visible_pairs": 96
+            }
+          ],
+          "all_sheet_fraction": 0.17591623036649215,
+          "threshold": 0.08,
+          "pass": false
+        },
+        "Throw": {
+          "fraction": 0.07059874888293119,
+          "sharp_pairs": 79,
+          "visible_pairs": 1119,
+          "views": [
+            {
+              "visible_faces": 770,
+              "visible_pairs": 1056
+            },
+            {
+              "visible_faces": 108,
+              "visible_pairs": 63
+            }
+          ],
+          "all_sheet_fraction": 0.08222126560482135,
+          "threshold": 0.09,
+          "pass": true
+        }
+      },
+      "status": "measured",
+      "pass": false,
+      "method": "All-sheet adjacency diagnostic; visible-face measurement remains pending"
+    },
+    "G2": {
+      "measure": "normal-pass interior pixels with >10 degree neighbour change",
+      "threshold": "<=0.02",
+      "value": {
+        "SeatCushion_C": {
+          "fraction": 0.006053723980267116,
+          "interior_pixels": 664880,
+          "threshold": 0.02,
+          "pass": true
+        },
+        "SeatCushion_L": {
+          "fraction": 0.0065900110937726864,
+          "interior_pixels": 709407,
+          "threshold": 0.02,
+          "pass": true
+        },
+        "SeatCushion_R": {
+          "fraction": 0.006274081247649255,
+          "interior_pixels": 675318,
+          "threshold": 0.02,
+          "pass": true
+        },
+        "BackCushion_C": {
+          "fraction": 0.018457042714708632,
+          "interior_pixels": 706993,
+          "threshold": 0.02,
+          "pass": true
+        },
+        "BackCushion_L": {
+          "fraction": 0.019024486233722535,
+          "interior_pixels": 665721,
+          "threshold": 0.02,
+          "pass": true
+        },
+        "BackCushion_R": {
+          "fraction": 0.015575139133203384,
+          "interior_pixels": 694119,
+          "threshold": 0.02,
+          "pass": true
+        },
+        "Throw": {
+          "fraction": 0.00036845265480859956,
+          "interior_pixels": 512956,
+          "threshold": 0.02,
+          "pass": true
+        }
+      },
+      "status": "measured",
+      "pass": true
+    },
+    "G3": {
+      "measure": "panel-tear straight runs only; seam failures still require gape and fringe",
+      "threshold": "<=12 px / 4.5 mm",
+      "value": {
+        "SeatCushion_C": {
+          "value": [
+            14.0,
+            5.70087712549569,
+            6.519202405202649,
+            5.522680508593631,
+            6.519202405202649,
+            19.72308292331602,
+            9.192388155425117,
+            13.152946437965905,
+            9.924716620639604,
+            14.035668847618199,
+            4.949747468305833,
+            11.180339887498949,
+            7.211102550927978,
+            5.522680508593631,
+            10.51189802081432,
+            4.743416490252569,
+            7.3824115301167,
+            9.82344135219425,
+            8.514693182963201,
+            4.743416490252569,
+            11.423659658795863,
+            6.041522986797286,
+            37.0,
+            5.70087712549569,
+            5.1478150704935,
+            7.211102550927978,
+            6.519202405202649,
+            8.276472678623424,
+            12.98075498574717,
+            7.516648189186454,
+            12.083045973594572,
+            4.527692569068709,
+            11.510864433221338,
+            6.519202405202649,
+            6.519202405202649,
+            7.0,
+            8.74642784226795,
+            11.180339887498949,
+            10.124228365658293,
+            4.527692569068709,
+            10.700467279516348,
+            14.0,
+            9.848857801796104,
+            10.198039027185569,
+            24.331050121192877,
+            31.016124838541646,
+            14.230249470757707,
+            8.0,
+            8.74642784226795,
+            6.519202405202649,
+            8.06225774829855,
+            5.1478150704935,
+            7.106335201775948,
+            7.0,
+            5.1478150704935
+          ],
+          "outlines": [
+            {
+              "length_px": 172.12489168102786,
+              "longest_straight_run_px": 14.0,
+              "maximum_extent_px": 48.0,
+              "contour_dimension": 1.2776431735663178,
+              "width_cv": 0.5539291593761401,
+              "closed": false,
+              "bounds_px": [
+                [
+                  334.5,
+                  613.5
+                ],
+                [
+                  361.5,
+                  661.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 23.606601717798213,
+              "longest_straight_run_px": 5.70087712549569,
+              "maximum_extent_px": 7.0,
+              "contour_dimension": 1.043695000370881,
+              "width_cv": 0.25318426980144104,
+              "closed": false,
+              "bounds_px": [
+                [
+                  341.5,
+                  622.5
+                ],
+                [
+                  348.5,
+                  629.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 23.313708498984752,
+              "longest_straight_run_px": 6.519202405202649,
+              "maximum_extent_px": 9.0,
+              "contour_dimension": 0.9885021658510147,
+              "width_cv": 0.4617890127489279,
+              "closed": true,
+              "bounds_px": [
+                [
+                  344.5,
+                  630.5
+                ],
+                [
+                  348.5,
+                  639.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 15.65685424949238,
+              "longest_straight_run_px": 5.522680508593631,
+              "maximum_extent_px": 6.0,
+              "contour_dimension": 0.8406304218906518,
+              "width_cv": 0.4617890127489279,
+              "closed": true,
+              "bounds_px": [
+                [
+                  349.5,
+                  626.5
+                ],
+                [
+                  352.5,
+                  632.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 18.14213562373095,
+              "longest_straight_run_px": 6.519202405202649,
+              "maximum_extent_px": 7.0,
+              "contour_dimension": 0.9693534685301687,
+              "width_cv": 0.4617890127489279,
+              "closed": true,
+              "bounds_px": [
+                [
+                  351.5,
+                  643.5
+                ],
+                [
+                  356.5,
+                  650.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 333.29141392239836,
+              "longest_straight_run_px": 19.72308292331602,
+              "maximum_extent_px": 114.0,
+              "contour_dimension": 1.1384110097430828,
+              "width_cv": 0.5612211992977302,
+              "closed": false,
+              "bounds_px": [
+                [
+                  357.5,
+                  619.5
+                ],
+                [
+                  471.5,
+                  706.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 105.8111831820431,
+              "longest_straight_run_px": 9.192388155425117,
+              "maximum_extent_px": 38.0,
+              "contour_dimension": 1.1585627967076917,
+              "width_cv": 0.47081264557598534,
+              "closed": false,
+              "bounds_px": [
+                [
+                  362.5,
+                  601.5
+                ],
+                [
+                  400.5,
+                  628.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 333.8477631085024,
+              "longest_straight_run_px": 13.152946437965905,
+              "maximum_extent_px": 79.0,
+              "contour_dimension": 1.1943004531242212,
+              "width_cv": 0.42462153338831016,
+              "closed": false,
+              "bounds_px": [
+                [
+                  402.5,
+                  615.5
+                ],
+                [
+                  481.5,
+                  664.0
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 104.5685424949238,
+              "longest_straight_run_px": 9.924716620639604,
+              "maximum_extent_px": 30.0,
+              "contour_dimension": 1.371513921119476,
+              "width_cv": 0.45392498955573785,
+              "closed": false,
+              "bounds_px": [
+                [
+                  367.5,
+                  611.5
+                ],
+                [
+                  383.5,
+                  641.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 457.2619766708755,
+              "longest_straight_run_px": 14.035668847618199,
+              "maximum_extent_px": 154.5,
+              "contour_dimension": 1.127275186604898,
+              "width_cv": 0.12127012557739723,
+              "closed": false,
+              "bounds_px": [
+                [
+                  374.5,
+                  1006.5
+                ],
+                [
+                  437.5,
+                  1161.0
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 20.72792206135785,
+              "longest_straight_run_px": 4.949747468305833,
+              "maximum_extent_px": 7.0,
+              "contour_dimension": 0.978941210795674,
+              "width_cv": 0.7829948869107967,
+              "closed": true,
+              "bounds_px": [
+                [
+                  383.5,
+                  644.5
+                ],
+                [
+                  388.5,
+                  651.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 25.89949493661166,
+              "longest_straight_run_px": 11.180339887498949,
+              "maximum_extent_px": 11.0,
+              "contour_dimension": 0.9766439515859052,
+              "width_cv": 0.84823117212274,
+              "closed": true,
+              "bounds_px": [
+                [
+                  386.5,
+                  1089.5
+                ],
+                [
+                  389.5,
+                  1100.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 26.97056274847714,
+              "longest_straight_run_px": 7.211102550927978,
+              "maximum_extent_px": 9.0,
+              "contour_dimension": 1.0811453504454085,
+              "width_cv": 0.7829948869107967,
+              "closed": true,
+              "bounds_px": [
+                [
+                  387.5,
+                  619.5
+                ],
+                [
+                  393.5,
+                  628.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 15.656854249492381,
+              "longest_straight_run_px": 5.522680508593631,
+              "maximum_extent_px": 7.0,
+              "contour_dimension": 0.869637548750049,
+              "width_cv": 0.84823117212274,
+              "closed": true,
+              "bounds_px": [
+                [
+                  387.5,
+                  1067.5
+                ],
+                [
+                  389.5,
+                  1074.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 30.72792206135785,
+              "longest_straight_run_px": 10.51189802081432,
+              "maximum_extent_px": 12.0,
+              "contour_dimension": 1.0966229715004217,
+              "width_cv": 0.84823117212274,
+              "closed": true,
+              "bounds_px": [
+                [
+                  387.5,
+                  1106.5
+                ],
+                [
+                  391.5,
+                  1118.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 17.899494936611664,
+              "longest_straight_run_px": 4.743416490252569,
+              "maximum_extent_px": 7.0,
+              "contour_dimension": 0.9238392877790296,
+              "width_cv": 0.7829948869107967,
+              "closed": true,
+              "bounds_px": [
+                [
+                  388.5,
+                  652.5
+                ],
+                [
+                  392.5,
+                  659.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 30.97056274847713,
+              "longest_straight_run_px": 7.3824115301167,
+              "maximum_extent_px": 11.0,
+              "contour_dimension": 1.1024275000206052,
+              "width_cv": 0.84823117212274,
+              "closed": true,
+              "bounds_px": [
+                [
+                  390.5,
+                  1042.5
+                ],
+                [
+                  397.5,
+                  1053.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 46.62741699796952,
+              "longest_straight_run_px": 9.82344135219425,
+              "maximum_extent_px": 12.0,
+              "contour_dimension": 1.2264417497892093,
+              "width_cv": 0.7829948869107967,
+              "closed": true,
+              "bounds_px": [
+                [
+                  391.5,
+                  650.5
+                ],
+                [
+                  401.5,
+                  662.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 22.485281374238568,
+              "longest_straight_run_px": 8.514693182963201,
+              "maximum_extent_px": 9.0,
+              "contour_dimension": 0.9476730447333805,
+              "width_cv": 0.7829948869107967,
+              "closed": true,
+              "bounds_px": [
+                [
+                  395.5,
+                  626.5
+                ],
+                [
+                  398.5,
+                  635.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 18.485281374238568,
+              "longest_straight_run_px": 4.743416490252569,
+              "maximum_extent_px": 5.0,
+              "contour_dimension": 0.9356975020441395,
+              "width_cv": 0.7829948869107967,
+              "closed": true,
+              "bounds_px": [
+                [
+                  401.5,
+                  626.5
+                ],
+                [
+                  406.5,
+                  631.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 41.45584412271571,
+              "longest_straight_run_px": 11.423659658795863,
+              "maximum_extent_px": 12.0,
+              "contour_dimension": 1.1659380822357766,
+              "width_cv": 0.7829948869107967,
+              "closed": true,
+              "bounds_px": [
+                [
+                  404.5,
+                  653.5
+                ],
+                [
+                  414.5,
+                  665.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 23.556349186104036,
+              "longest_straight_run_px": 6.041522986797286,
+              "maximum_extent_px": 9.0,
+              "contour_dimension": 1.0011730579884488,
+              "width_cv": 0.84823117212274,
+              "closed": true,
+              "bounds_px": [
+                [
+                  406.5,
+                  1108.5
+                ],
+                [
+                  411.5,
+                  1117.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 500.0315292925759,
+              "longest_straight_run_px": 37.0,
+              "maximum_extent_px": 145.0,
+              "contour_dimension": 1.1279647458887334,
+              "width_cv": 0.7555530031472335,
+              "closed": true,
+              "bounds_px": [
+                [
+                  408.5,
+                  900.5
+                ],
+                [
+                  464.5,
+                  1045.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 16.72792206135786,
+              "longest_straight_run_px": 5.70087712549569,
+              "maximum_extent_px": 6.0,
+              "contour_dimension": 0.9356975020441395,
+              "width_cv": 0.7829948869107967,
+              "closed": true,
+              "bounds_px": [
+                [
+                  412.5,
+                  633.5
+                ],
+                [
+                  418.5,
+                  638.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 14.485281374238571,
+              "longest_straight_run_px": 5.1478150704935,
+              "maximum_extent_px": 6.0,
+              "contour_dimension": 0.7940474889271857,
+              "width_cv": 0.7555530031472335,
+              "closed": true,
+              "bounds_px": [
+                [
+                  412.5,
+                  993.5
+                ],
+                [
+                  415.5,
+                  999.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 24.142135623730944,
+              "longest_straight_run_px": 7.211102550927978,
+              "maximum_extent_px": 9.0,
+              "contour_dimension": 0.9824238389486986,
+              "width_cv": 0.84823117212274,
+              "closed": true,
+              "bounds_px": [
+                [
+                  413.5,
+                  1102.5
+                ],
+                [
+                  419.5,
+                  1111.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 30.142135623730947,
+              "longest_straight_run_px": 6.519202405202649,
+              "maximum_extent_px": 12.0,
+              "contour_dimension": 1.0944466939299062,
+              "width_cv": 0.7829948869107967,
+              "closed": true,
+              "bounds_px": [
+                [
+                  415.5,
+                  662.5
+                ],
+                [
+                  420.5,
+                  674.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 25.556349186104043,
+              "longest_straight_run_px": 8.276472678623424,
+              "maximum_extent_px": 9.0,
+              "contour_dimension": 1.0000465171616182,
+              "width_cv": 0.7555530031472335,
+              "closed": true,
+              "bounds_px": [
+                [
+                  420.5,
+                  969.5
+                ],
+                [
+                  426.5,
+                  978.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 60.18376618407357,
+              "longest_straight_run_px": 12.98075498574717,
+              "maximum_extent_px": 15.0,
+              "contour_dimension": 1.3374936795223824,
+              "width_cv": 0.7555530031472335,
+              "closed": true,
+              "bounds_px": [
+                [
+                  424.5,
+                  934.5
+                ],
+                [
+                  436.5,
+                  949.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 33.55634918610405,
+              "longest_straight_run_px": 7.516648189186454,
+              "maximum_extent_px": 11.0,
+              "contour_dimension": 1.1267025002266495,
+              "width_cv": 0.7555530031472335,
+              "closed": true,
+              "bounds_px": [
+                [
+                  424.5,
+                  951.5
+                ],
+                [
+                  430.5,
+                  962.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 176.7523086789974,
+              "longest_straight_run_px": 12.083045973594572,
+              "maximum_extent_px": 36.0,
+              "contour_dimension": 1.352778296605602,
+              "width_cv": 0.7829948869107967,
+              "closed": true,
+              "bounds_px": [
+                [
+                  426.5,
+                  673.5
+                ],
+                [
+                  462.5,
+                  696.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 13.65685424949238,
+              "longest_straight_run_px": 4.527692569068709,
+              "maximum_extent_px": 5.0,
+              "contour_dimension": 0.756228082153359,
+              "width_cv": 0.7829948869107967,
+              "closed": true,
+              "bounds_px": [
+                [
+                  428.5,
+                  655.5
+                ],
+                [
+                  433.5,
+                  658.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 31.31370849898476,
+              "longest_straight_run_px": 11.510864433221338,
+              "maximum_extent_px": 12.0,
+              "contour_dimension": 1.1071427801621558,
+              "width_cv": 0.7555530031472335,
+              "closed": true,
+              "bounds_px": [
+                [
+                  428.5,
+                  913.5
+                ],
+                [
+                  434.5,
+                  925.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 27.556349186104043,
+              "longest_straight_run_px": 6.519202405202649,
+              "maximum_extent_px": 9.0,
+              "contour_dimension": 1.0944466939299062,
+              "width_cv": 0.7555530031472335,
+              "closed": true,
+              "bounds_px": [
+                [
+                  438.5,
+                  915.5
+                ],
+                [
+                  447.5,
+                  921.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 20.142135623730947,
+              "longest_straight_run_px": 6.519202405202649,
+              "maximum_extent_px": 7.0,
+              "contour_dimension": 0.9710838665813916,
+              "width_cv": 0.7829948869107967,
+              "closed": true,
+              "bounds_px": [
+                [
+                  440.5,
+                  646.5
+                ],
+                [
+                  447.5,
+                  652.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 32.72792206135785,
+              "longest_straight_run_px": 7.0,
+              "maximum_extent_px": 14.0,
+              "contour_dimension": 1.0816965420692721,
+              "width_cv": 0.7555530031472335,
+              "closed": true,
+              "bounds_px": [
+                [
+                  442.5,
+                  970.5
+                ],
+                [
+                  445.5,
+                  984.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 21.31370849898476,
+              "longest_straight_run_px": 8.74642784226795,
+              "maximum_extent_px": 8.0,
+              "contour_dimension": 0.920154910053715,
+              "width_cv": 0.7555530031472335,
+              "closed": true,
+              "bounds_px": [
+                [
+                  445.5,
+                  962.5
+                ],
+                [
+                  450.5,
+                  970.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 48.769552621700484,
+              "longest_straight_run_px": 11.180339887498949,
+              "maximum_extent_px": 13.0,
+              "contour_dimension": 1.2344286947521004,
+              "width_cv": 0.7829948869107967,
+              "closed": true,
+              "bounds_px": [
+                [
+                  451.5,
+                  636.5
+                ],
+                [
+                  464.5,
+                  645.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 34.14213562373095,
+              "longest_straight_run_px": 10.124228365658293,
+              "maximum_extent_px": 13.0,
+              "contour_dimension": 1.1099243149849196,
+              "width_cv": 0.7829948869107967,
+              "closed": true,
+              "bounds_px": [
+                [
+                  461.5,
+                  658.5
+                ],
+                [
+                  466.5,
+                  671.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 13.65685424949238,
+              "longest_straight_run_px": 4.527692569068709,
+              "maximum_extent_px": 6.0,
+              "contour_dimension": 0.797836095910808,
+              "width_cv": 0.7829948869107967,
+              "closed": true,
+              "bounds_px": [
+                [
+                  469.5,
+                  642.5
+                ],
+                [
+                  471.5,
+                  648.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 144.76093065034894,
+              "longest_straight_run_px": 10.700467279516348,
+              "maximum_extent_px": 48.0,
+              "contour_dimension": 1.3063300008519603,
+              "width_cv": 0.36430199472941005,
+              "closed": false,
+              "bounds_px": [
+                [
+                  586.5,
+                  788.5
+                ],
+                [
+                  600.5,
+                  836.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 28.77817459305202,
+              "longest_straight_run_px": 14.0,
+              "maximum_extent_px": 14.0,
+              "contour_dimension": 1.100984370801218,
+              "width_cv": 0.41914142592839404,
+              "closed": false,
+              "bounds_px": [
+                [
+                  594.5,
+                  838.5
+                ],
+                [
+                  598.5,
+                  852.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 16.192388155425117,
+              "longest_straight_run_px": 9.848857801796104,
+              "maximum_extent_px": 13.0,
+              "contour_dimension": 0.8809058028346949,
+              "width_cv": 0.45582056078965255,
+              "closed": false,
+              "bounds_px": [
+                [
+                  614.5,
+                  847.5
+                ],
+                [
+                  618.5,
+                  860.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 29.142135623730944,
+              "longest_straight_run_px": 10.198039027185569,
+              "maximum_extent_px": 10.5,
+              "contour_dimension": 1.0559342922100927,
+              "width_cv": 0.3878021976354605,
+              "closed": false,
+              "bounds_px": [
+                [
+                  610.5,
+                  843.0
+                ],
+                [
+                  616.5,
+                  853.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 37.89949493661166,
+              "longest_straight_run_px": 24.331050121192877,
+              "maximum_extent_px": 24.0,
+              "contour_dimension": 1.0775122366528245,
+              "width_cv": 0.4178381417695953,
+              "closed": false,
+              "bounds_px": [
+                [
+                  614.0,
+                  802.5
+                ],
+                [
+                  623.0,
+                  826.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 688.2985565973347,
+              "longest_straight_run_px": 31.016124838541646,
+              "maximum_extent_px": 192.0,
+              "contour_dimension": 1.1909802891925765,
+              "width_cv": 0.6235404677799052,
+              "closed": false,
+              "bounds_px": [
+                [
+                  609.5,
+                  720.5
+                ],
+                [
+                  653.5,
+                  912.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 41.74873734152916,
+              "longest_straight_run_px": 14.230249470757707,
+              "maximum_extent_px": 16.0,
+              "contour_dimension": 1.114438499574499,
+              "width_cv": 0.43073382631682305,
+              "closed": false,
+              "bounds_px": [
+                [
+                  615.5,
+                  853.5
+                ],
+                [
+                  625.5,
+                  869.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 38.55634918610404,
+              "longest_straight_run_px": 8.0,
+              "maximum_extent_px": 16.0,
+              "contour_dimension": 1.0823570722325293,
+              "width_cv": 0.43842519565182136,
+              "closed": false,
+              "bounds_px": [
+                [
+                  616.5,
+                  816.5
+                ],
+                [
+                  621.5,
+                  832.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 44.99137802864845,
+              "longest_straight_run_px": 8.74642784226795,
+              "maximum_extent_px": 12.0,
+              "contour_dimension": 1.2274254805281997,
+              "width_cv": 0.45141694175078934,
+              "closed": false,
+              "bounds_px": [
+                [
+                  621.5,
+                  862.5
+                ],
+                [
+                  633.5,
+                  873.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 38.627416997969526,
+              "longest_straight_run_px": 6.519202405202649,
+              "maximum_extent_px": 13.0,
+              "contour_dimension": 1.1525919610309812,
+              "width_cv": 0.8725172534757564,
+              "closed": true,
+              "bounds_px": [
+                [
+                  626.5,
+                  877.5
+                ],
+                [
+                  634.5,
+                  890.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 37.79898987322332,
+              "longest_straight_run_px": 8.06225774829855,
+              "maximum_extent_px": 13.0,
+              "contour_dimension": 1.1654585533850144,
+              "width_cv": 0.8725172534757564,
+              "closed": true,
+              "bounds_px": [
+                [
+                  628.5,
+                  891.5
+                ],
+                [
+                  635.5,
+                  904.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 12.485281374238571,
+              "longest_straight_run_px": 5.1478150704935,
+              "maximum_extent_px": 5.0,
+              "contour_dimension": 0.8082668708630307,
+              "width_cv": 0.8725172534757564,
+              "closed": true,
+              "bounds_px": [
+                [
+                  630.5,
+                  860.5
+                ],
+                [
+                  633.5,
+                  865.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 29.213203435596423,
+              "longest_straight_run_px": 7.106335201775948,
+              "maximum_extent_px": 10.0,
+              "contour_dimension": 1.0879033096994604,
+              "width_cv": 0.8725172534757564,
+              "closed": true,
+              "bounds_px": [
+                [
+                  631.5,
+                  855.5
+                ],
+                [
+                  637.5,
+                  865.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 71.25483399593907,
+              "longest_straight_run_px": 7.0,
+              "maximum_extent_px": 22.0,
+              "contour_dimension": 1.2982653268333537,
+              "width_cv": 0.8725172534757564,
+              "closed": true,
+              "bounds_px": [
+                [
+                  633.5,
+                  726.5
+                ],
+                [
+                  642.5,
+                  748.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 13.313708498984763,
+              "longest_straight_run_px": 5.1478150704935,
+              "maximum_extent_px": 5.0,
+              "contour_dimension": 0.7564445511139722,
+              "width_cv": 0.8725172534757564,
+              "closed": true,
+              "bounds_px": [
+                [
+                  641.5,
+                  876.5
+                ],
+                [
+                  645.5,
+                  881.5
+                ]
+              ],
+              "camera": "labels"
+            }
+          ],
+          "seam_fringe_and_gape_pass": false,
+          "pass": false
+        },
+        "SeatCushion_L": {
+          "value": [
+            16.0312195418814,
+            7.905694150420948,
+            5.522680508593631,
+            10.198039027185569,
+            8.06225774829855,
+            6.041522986797286,
+            5.522680508593631,
+            11.40175425099138,
+            12.041594578792296,
+            20.8806130178211,
+            9.82344135219425,
+            4.123105625617661,
+            6.96419413859206,
+            6.324555320336759,
+            4.301162633521313,
+            4.949747468305833,
+            4.301162633521313,
+            12.747548783981962,
+            7.648529270389178,
+            9.513148795220223,
+            9.219544457292887,
+            6.670832032063167,
+            7.0710678118654755,
+            8.276472678623424,
+            13.038404810405298,
+            5.70087712549569,
+            6.0,
+            17.0,
+            10.04987562112089,
+            10.51189802081432,
+            5.0,
+            10.63014581273465,
+            11.045361017187261,
+            9.513148795220223,
+            10.816653826391969,
+            6.041522986797286,
+            6.041522986797286,
+            11.180339887498949,
+            13.209844813622906,
+            25.179356624028344,
+            4.743416490252569,
+            11.045361017187261,
+            4.301162633521313,
+            47.94267410147248
+          ],
+          "outlines": [
+            {
+              "length_px": 74.87005768508882,
+              "longest_straight_run_px": 16.0312195418814,
+              "maximum_extent_px": 31.0,
+              "contour_dimension": 1.3218629101293855,
+              "width_cv": 0.38929258315817616,
+              "closed": true,
+              "bounds_px": [
+                [
+                  393.5,
+                  508.5
+                ],
+                [
+                  401.5,
+                  539.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 75.59797974644668,
+              "longest_straight_run_px": 7.905694150420948,
+              "maximum_extent_px": 29.0,
+              "contour_dimension": 1.2644576840193023,
+              "width_cv": 0.3807032961509252,
+              "closed": false,
+              "bounds_px": [
+                [
+                  424.5,
+                  463.0
+                ],
+                [
+                  453.5,
+                  483.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 13.65685424949238,
+              "longest_straight_run_px": 5.522680508593631,
+              "maximum_extent_px": 10.0,
+              "contour_dimension": 0.8154708641410453,
+              "width_cv": 0.43603318336541264,
+              "closed": false,
+              "bounds_px": [
+                [
+                  459.5,
+                  487.5
+                ],
+                [
+                  462.5,
+                  497.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 316.2914139223984,
+              "longest_straight_run_px": 10.198039027185569,
+              "maximum_extent_px": 83.0,
+              "contour_dimension": 1.1772877582551966,
+              "width_cv": 0.35866437402716816,
+              "closed": false,
+              "bounds_px": [
+                [
+                  403.5,
+                  459.5
+                ],
+                [
+                  479.5,
+                  542.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 33.79898987322333,
+              "longest_straight_run_px": 8.06225774829855,
+              "maximum_extent_px": 12.0,
+              "contour_dimension": 1.1570501297177107,
+              "width_cv": 0.6647858603073457,
+              "closed": true,
+              "bounds_px": [
+                [
+                  411.5,
+                  467.5
+                ],
+                [
+                  418.5,
+                  479.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 28.970562748477136,
+              "longest_straight_run_px": 6.041522986797286,
+              "maximum_extent_px": 10.0,
+              "contour_dimension": 1.0741582646624175,
+              "width_cv": 0.6647858603073457,
+              "closed": true,
+              "bounds_px": [
+                [
+                  416.5,
+                  500.5
+                ],
+                [
+                  426.5,
+                  505.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 12.828427124746192,
+              "longest_straight_run_px": 5.522680508593631,
+              "maximum_extent_px": 6.0,
+              "contour_dimension": 0.7286342454487277,
+              "width_cv": 0.6647858603073457,
+              "closed": true,
+              "bounds_px": [
+                [
+                  419.5,
+                  473.5
+                ],
+                [
+                  420.5,
+                  479.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 125.0330085889911,
+              "longest_straight_run_px": 11.40175425099138,
+              "maximum_extent_px": 95.5,
+              "contour_dimension": 1.0325728732170671,
+              "width_cv": 0.367218651987497,
+              "closed": false,
+              "bounds_px": [
+                [
+                  460.5,
+                  743.0
+                ],
+                [
+                  493.5,
+                  838.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 38.071067811865476,
+              "longest_straight_run_px": 12.041594578792296,
+              "maximum_extent_px": 36.0,
+              "contour_dimension": 0.904977193790647,
+              "width_cv": 0.23099853769194414,
+              "closed": false,
+              "bounds_px": [
+                [
+                  458.5,
+                  847.0
+                ],
+                [
+                  462.5,
+                  883.0
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 599.4909447527599,
+              "longest_straight_run_px": 20.8806130178211,
+              "maximum_extent_px": 256.0,
+              "contour_dimension": 1.1084019693137674,
+              "width_cv": 0.3302269360916501,
+              "closed": false,
+              "bounds_px": [
+                [
+                  424.5,
+                  678.5
+                ],
+                [
+                  501.5,
+                  934.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 26.606601717798213,
+              "longest_straight_run_px": 9.82344135219425,
+              "maximum_extent_px": 21.5,
+              "contour_dimension": 0.9234457172370545,
+              "width_cv": 0.36598778309966445,
+              "closed": false,
+              "bounds_px": [
+                [
+                  494.5,
+                  719.5
+                ],
+                [
+                  503.5,
+                  741.0
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 17.899494936611664,
+              "longest_straight_run_px": 4.123105625617661,
+              "maximum_extent_px": 6.0,
+              "contour_dimension": 0.9245542860439575,
+              "width_cv": 0.6647858603073457,
+              "closed": true,
+              "bounds_px": [
+                [
+                  427.5,
+                  500.5
+                ],
+                [
+                  431.5,
+                  506.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 28.142135623730947,
+              "longest_straight_run_px": 6.96419413859206,
+              "maximum_extent_px": 9.0,
+              "contour_dimension": 1.0726137212839022,
+              "width_cv": 0.6647858603073457,
+              "closed": true,
+              "bounds_px": [
+                [
+                  430.5,
+                  479.5
+                ],
+                [
+                  437.5,
+                  488.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 30.970562748477136,
+              "longest_straight_run_px": 6.324555320336759,
+              "maximum_extent_px": 9.0,
+              "contour_dimension": 1.1007887109811139,
+              "width_cv": 0.6647858603073457,
+              "closed": true,
+              "bounds_px": [
+                [
+                  437.5,
+                  484.5
+                ],
+                [
+                  443.5,
+                  493.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 19.31370849898476,
+              "longest_straight_run_px": 4.301162633521313,
+              "maximum_extent_px": 6.0,
+              "contour_dimension": 0.9998887038913419,
+              "width_cv": 0.6647858603073457,
+              "closed": true,
+              "bounds_px": [
+                [
+                  437.5,
+                  507.5
+                ],
+                [
+                  443.5,
+                  513.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 12.778174593052023,
+              "longest_straight_run_px": 4.949747468305833,
+              "maximum_extent_px": 5.0,
+              "contour_dimension": 0.8440422927124733,
+              "width_cv": 0.20065869244598225,
+              "closed": false,
+              "bounds_px": [
+                [
+                  446.5,
+                  491.5
+                ],
+                [
+                  450.5,
+                  496.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 19.31370849898476,
+              "longest_straight_run_px": 4.301162633521313,
+              "maximum_extent_px": 7.0,
+              "contour_dimension": 0.947439635994859,
+              "width_cv": 0.6647858603073457,
+              "closed": true,
+              "bounds_px": [
+                [
+                  447.5,
+                  512.5
+                ],
+                [
+                  451.5,
+                  519.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 44.62741699796952,
+              "longest_straight_run_px": 12.747548783981962,
+              "maximum_extent_px": 13.0,
+              "contour_dimension": 1.231506787984881,
+              "width_cv": 0.7616353458381836,
+              "closed": true,
+              "bounds_px": [
+                [
+                  447.5,
+                  749.5
+                ],
+                [
+                  457.5,
+                  762.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 23.89949493661166,
+              "longest_straight_run_px": 7.648529270389178,
+              "maximum_extent_px": 10.0,
+              "contour_dimension": 1.0183579485195506,
+              "width_cv": 0.7616353458381836,
+              "closed": true,
+              "bounds_px": [
+                [
+                  449.5,
+                  787.5
+                ],
+                [
+                  453.5,
+                  797.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 38.72792206135785,
+              "longest_straight_run_px": 9.513148795220223,
+              "maximum_extent_px": 11.0,
+              "contour_dimension": 1.1811001945278197,
+              "width_cv": 0.7616353458381836,
+              "closed": true,
+              "bounds_px": [
+                [
+                  450.5,
+                  767.5
+                ],
+                [
+                  456.5,
+                  778.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 25.798989873223327,
+              "longest_straight_run_px": 9.219544457292887,
+              "maximum_extent_px": 9.0,
+              "contour_dimension": 1.0718564117998448,
+              "width_cv": 0.6647858603073457,
+              "closed": true,
+              "bounds_px": [
+                [
+                  451.5,
+                  518.5
+                ],
+                [
+                  458.5,
+                  527.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 17.656854249492376,
+              "longest_straight_run_px": 6.670832032063167,
+              "maximum_extent_px": 7.0,
+              "contour_dimension": 0.869637548750049,
+              "width_cv": 0.7616353458381836,
+              "closed": true,
+              "bounds_px": [
+                [
+                  452.5,
+                  875.5
+                ],
+                [
+                  455.5,
+                  882.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 17.48528137423857,
+              "longest_straight_run_px": 7.0710678118654755,
+              "maximum_extent_px": 7.5,
+              "contour_dimension": 0.9198457992902282,
+              "width_cv": 0.3692136570237941,
+              "closed": false,
+              "bounds_px": [
+                [
+                  453.5,
+                  483.0
+                ],
+                [
+                  458.5,
+                  490.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 47.21320343559643,
+              "longest_straight_run_px": 8.276472678623424,
+              "maximum_extent_px": 14.0,
+              "contour_dimension": 1.2145835355240997,
+              "width_cv": 0.7616353458381836,
+              "closed": true,
+              "bounds_px": [
+                [
+                  458.5,
+                  692.5
+                ],
+                [
+                  468.5,
+                  706.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 80.87005768508882,
+              "longest_straight_run_px": 13.038404810405298,
+              "maximum_extent_px": 24.0,
+              "contour_dimension": 1.3216005411621594,
+              "width_cv": 0.6647858603073457,
+              "closed": true,
+              "bounds_px": [
+                [
+                  464.5,
+                  502.5
+                ],
+                [
+                  473.5,
+                  526.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 25.313708498984756,
+              "longest_straight_run_px": 5.70087712549569,
+              "maximum_extent_px": 7.0,
+              "contour_dimension": 1.0458147927179646,
+              "width_cv": 0.7616353458381836,
+              "closed": true,
+              "bounds_px": [
+                [
+                  469.5,
+                  691.5
+                ],
+                [
+                  476.5,
+                  698.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 13.65685424949238,
+              "longest_straight_run_px": 6.0,
+              "maximum_extent_px": 6.0,
+              "contour_dimension": 0.7715016827128605,
+              "width_cv": 0.7616353458381836,
+              "closed": true,
+              "bounds_px": [
+                [
+                  480.5,
+                  692.5
+                ],
+                [
+                  486.5,
+                  694.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 180.95331880577407,
+              "longest_straight_run_px": 17.0,
+              "maximum_extent_px": 61.0,
+              "contour_dimension": 1.3278469108239948,
+              "width_cv": 0.44932529474379646,
+              "closed": true,
+              "bounds_px": [
+                [
+                  490.5,
+                  385.5
+                ],
+                [
+                  508.5,
+                  446.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 47.33452377915607,
+              "longest_straight_run_px": 10.04987562112089,
+              "maximum_extent_px": 28.5,
+              "contour_dimension": 1.1510958011985075,
+              "width_cv": 0.25757867971472126,
+              "closed": false,
+              "bounds_px": [
+                [
+                  697.5,
+                  775.5
+                ],
+                [
+                  709.0,
+                  804.0
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 20.192388155425117,
+              "longest_straight_run_px": 10.51189802081432,
+              "maximum_extent_px": 10.5,
+              "contour_dimension": 0.9805152208881237,
+              "width_cv": 0.191606987184087,
+              "closed": false,
+              "bounds_px": [
+                [
+                  643.5,
+                  864.5
+                ],
+                [
+                  650.0,
+                  875.0
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 26.849242404917497,
+              "longest_straight_run_px": 5.0,
+              "maximum_extent_px": 12.5,
+              "contour_dimension": 1.1050693149437107,
+              "width_cv": 0.33541649145643254,
+              "closed": false,
+              "bounds_px": [
+                [
+                  653.5,
+                  852.5
+                ],
+                [
+                  666.0,
+                  862.0
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 192.4091629284898,
+              "longest_straight_run_px": 10.63014581273465,
+              "maximum_extent_px": 97.0,
+              "contour_dimension": 1.0490582603282594,
+              "width_cv": 0.4291303133852045,
+              "closed": false,
+              "bounds_px": [
+                [
+                  664.5,
+                  757.5
+                ],
+                [
+                  702.0,
+                  854.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 392.031529292576,
+              "longest_straight_run_px": 11.045361017187261,
+              "maximum_extent_px": 63.0,
+              "contour_dimension": 1.3357961546152675,
+              "width_cv": 0.5090471953177802,
+              "closed": true,
+              "bounds_px": [
+                [
+                  603.5,
+                  812.5
+                ],
+                [
+                  661.5,
+                  875.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 207.42997820866108,
+              "longest_straight_run_px": 9.513148795220223,
+              "maximum_extent_px": 40.0,
+              "contour_dimension": 1.2559180777153856,
+              "width_cv": 0.43762765559969746,
+              "closed": false,
+              "bounds_px": [
+                [
+                  640.5,
+                  737.5
+                ],
+                [
+                  675.5,
+                  777.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 89.84062043356596,
+              "longest_straight_run_px": 10.816653826391969,
+              "maximum_extent_px": 19.0,
+              "contour_dimension": 1.3746512646077953,
+              "width_cv": 0.4437810335995554,
+              "closed": true,
+              "bounds_px": [
+                [
+                  650.5,
+                  776.5
+                ],
+                [
+                  665.5,
+                  795.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 36.384776310850235,
+              "longest_straight_run_px": 6.041522986797286,
+              "maximum_extent_px": 12.0,
+              "contour_dimension": 1.1476215695313177,
+              "width_cv": 0.5096150496165597,
+              "closed": true,
+              "bounds_px": [
+                [
+                  652.5,
+                  766.5
+                ],
+                [
+                  664.5,
+                  773.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 35.62741699796952,
+              "longest_straight_run_px": 6.041522986797286,
+              "maximum_extent_px": 12.5,
+              "contour_dimension": 1.130020446795549,
+              "width_cv": 0.43743201307433804,
+              "closed": false,
+              "bounds_px": [
+                [
+                  674.5,
+                  721.0
+                ],
+                [
+                  683.5,
+                  733.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 88.79036790187182,
+              "longest_straight_run_px": 11.180339887498949,
+              "maximum_extent_px": 27.0,
+              "contour_dimension": 1.2668640937078957,
+              "width_cv": 0.5610737974593027,
+              "closed": false,
+              "bounds_px": [
+                [
+                  667.5,
+                  699.5
+                ],
+                [
+                  684.5,
+                  726.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 62.04163056034262,
+              "longest_straight_run_px": 13.209844813622906,
+              "maximum_extent_px": 26.0,
+              "contour_dimension": 1.2442348530672636,
+              "width_cv": 0.4712034224770059,
+              "closed": true,
+              "bounds_px": [
+                [
+                  677.5,
+                  622.5
+                ],
+                [
+                  686.5,
+                  648.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 126.91168824543144,
+              "longest_straight_run_px": 25.179356624028344,
+              "maximum_extent_px": 51.0,
+              "contour_dimension": 1.2573990352397126,
+              "width_cv": 0.3892009649576274,
+              "closed": true,
+              "bounds_px": [
+                [
+                  679.5,
+                  444.5
+                ],
+                [
+                  691.5,
+                  495.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 13.071067811865476,
+              "longest_straight_run_px": 4.743416490252569,
+              "maximum_extent_px": 5.0,
+              "contour_dimension": 0.7940474889271857,
+              "width_cv": 0.4712034224770059,
+              "closed": true,
+              "bounds_px": [
+                [
+                  682.5,
+                  629.5
+                ],
+                [
+                  684.5,
+                  634.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 79.7695526217005,
+              "longest_straight_run_px": 11.045361017187261,
+              "maximum_extent_px": 35.5,
+              "contour_dimension": 1.0905077249238104,
+              "width_cv": 0.5318946112890539,
+              "closed": false,
+              "bounds_px": [
+                [
+                  695.5,
+                  628.5
+                ],
+                [
+                  716.5,
+                  664.0
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 12.071067811865477,
+              "longest_straight_run_px": 4.301162633521313,
+              "maximum_extent_px": 5.0,
+              "contour_dimension": 0.8416811250417382,
+              "width_cv": 0.2005004176630814,
+              "closed": false,
+              "bounds_px": [
+                [
+                  712.5,
+                  619.5
+                ],
+                [
+                  717.0,
+                  624.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 226.45941546018395,
+              "longest_straight_run_px": 47.94267410147248,
+              "maximum_extent_px": 105.5,
+              "contour_dimension": 1.1614829487697744,
+              "width_cv": 0.4960938448219812,
+              "closed": false,
+              "bounds_px": [
+                [
+                  696.5,
+                  509.5
+                ],
+                [
+                  720.0,
+                  615.0
+                ]
+              ],
+              "camera": "labels"
+            }
+          ],
+          "seam_fringe_and_gape_pass": false,
+          "pass": false
+        },
+        "SeatCushion_R": {
+          "value": [
+            11.853269591129697,
+            11.045361017187261,
+            21.095023109728988,
+            7.0710678118654755,
+            6.519202405202649,
+            7.905694150420948,
+            5.70087712549569,
+            11.40175425099138,
+            7.106335201775948,
+            7.905694150420948,
+            8.514693182963201,
+            4.0,
+            8.06225774829855,
+            5.70087712549569,
+            5.830951894845301,
+            21.0,
+            29.154759474226502,
+            7.905694150420948,
+            9.617692030835672,
+            10.124228365658293,
+            8.514693182963201,
+            7.0,
+            6.041522986797286,
+            7.905694150420948,
+            4.301162633521313,
+            8.631338250816034,
+            7.0710678118654755,
+            9.192388155425117,
+            5.70087712549569,
+            7.106335201775948,
+            12.0,
+            5.70087712549569,
+            7.648529270389178,
+            11.180339887498949,
+            6.670832032063167,
+            8.06225774829855,
+            5.0,
+            16.1245154965971,
+            4.47213595499958,
+            16.0312195418814,
+            15.0,
+            11.853269591129697,
+            9.82344135219425,
+            7.648529270389178,
+            6.670832032063167,
+            6.519202405202649,
+            12.509996003196804,
+            4.743416490252569,
+            4.527692569068709,
+            7.905694150420948,
+            5.522680508593631,
+            4.527692569068709,
+            9.300537618869138,
+            3.5355339059327378,
+            4.301162633521313,
+            4.527692569068709,
+            7.0,
+            7.0710678118654755,
+            6.082762530298219,
+            11.0,
+            8.48528137423857,
+            12.041594578792296
+          ],
+          "outlines": [
+            {
+              "length_px": 155.95331880577407,
+              "longest_straight_run_px": 11.853269591129697,
+              "maximum_extent_px": 76.0,
+              "contour_dimension": 1.0898051591334168,
+              "width_cv": 0.314667550654008,
+              "closed": false,
+              "bounds_px": [
+                [
+                  414.5,
+                  1037.0
+                ],
+                [
+                  465.5,
+                  1113.0
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 255.13708498984766,
+              "longest_straight_run_px": 11.045361017187261,
+              "maximum_extent_px": 127.0,
+              "contour_dimension": 1.196056089205067,
+              "width_cv": 0.3804296116606703,
+              "closed": false,
+              "bounds_px": [
+                [
+                  399.5,
+                  982.0
+                ],
+                [
+                  428.5,
+                  1109.0
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 497.3954903232549,
+              "longest_straight_run_px": 21.095023109728988,
+              "maximum_extent_px": 179.0,
+              "contour_dimension": 1.0917753979612055,
+              "width_cv": 0.5139187404077064,
+              "closed": false,
+              "bounds_px": [
+                [
+                  431.5,
+                  855.5
+                ],
+                [
+                  491.5,
+                  1034.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 32.97056274847714,
+              "longest_straight_run_px": 7.0710678118654755,
+              "maximum_extent_px": 9.0,
+              "contour_dimension": 1.1059071869108503,
+              "width_cv": 0.8417727600916898,
+              "closed": true,
+              "bounds_px": [
+                [
+                  419.5,
+                  1007.5
+                ],
+                [
+                  427.5,
+                  1016.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 17.31370849898476,
+              "longest_straight_run_px": 6.519202405202649,
+              "maximum_extent_px": 7.0,
+              "contour_dimension": 0.8738560714491762,
+              "width_cv": 0.8417727600916898,
+              "closed": true,
+              "bounds_px": [
+                [
+                  422.5,
+                  998.5
+                ],
+                [
+                  426.5,
+                  1005.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 21.31370849898476,
+              "longest_straight_run_px": 7.905694150420948,
+              "maximum_extent_px": 8.0,
+              "contour_dimension": 0.9713172753199132,
+              "width_cv": 0.8417727600916898,
+              "closed": true,
+              "bounds_px": [
+                [
+                  425.5,
+                  1073.5
+                ],
+                [
+                  429.5,
+                  1081.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 17.899494936611664,
+              "longest_straight_run_px": 5.70087712549569,
+              "maximum_extent_px": 6.0,
+              "contour_dimension": 0.8738560714491762,
+              "width_cv": 0.8417727600916898,
+              "closed": true,
+              "bounds_px": [
+                [
+                  428.5,
+                  986.5
+                ],
+                [
+                  433.5,
+                  992.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 43.1126983722081,
+              "longest_straight_run_px": 11.40175425099138,
+              "maximum_extent_px": 16.0,
+              "contour_dimension": 1.0840802706849448,
+              "width_cv": 0.8417727600916898,
+              "closed": true,
+              "bounds_px": [
+                [
+                  435.5,
+                  1056.5
+                ],
+                [
+                  444.5,
+                  1072.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 19.31370849898476,
+              "longest_straight_run_px": 7.106335201775948,
+              "maximum_extent_px": 7.0,
+              "contour_dimension": 0.8863507630563674,
+              "width_cv": 0.8417727600916898,
+              "closed": true,
+              "bounds_px": [
+                [
+                  446.5,
+                  1054.5
+                ],
+                [
+                  451.5,
+                  1061.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 25.556349186104047,
+              "longest_straight_run_px": 7.905694150420948,
+              "maximum_extent_px": 9.0,
+              "contour_dimension": 1.051652367950063,
+              "width_cv": 0.8417727600916898,
+              "closed": true,
+              "bounds_px": [
+                [
+                  447.5,
+                  941.5
+                ],
+                [
+                  453.5,
+                  950.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 43.45584412271571,
+              "longest_straight_run_px": 8.514693182963201,
+              "maximum_extent_px": 14.0,
+              "contour_dimension": 1.228460132462771,
+              "width_cv": 0.8417727600916898,
+              "closed": true,
+              "bounds_px": [
+                [
+                  451.5,
+                  924.5
+                ],
+                [
+                  458.5,
+                  938.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 15.656854249492381,
+              "longest_straight_run_px": 4.0,
+              "maximum_extent_px": 6.0,
+              "contour_dimension": 0.8273290784061549,
+              "width_cv": 0.8417727600916898,
+              "closed": true,
+              "bounds_px": [
+                [
+                  452.5,
+                  1048.5
+                ],
+                [
+                  455.5,
+                  1054.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 26.14213562373095,
+              "longest_straight_run_px": 8.06225774829855,
+              "maximum_extent_px": 9.0,
+              "contour_dimension": 1.0534943058959334,
+              "width_cv": 0.8417727600916898,
+              "closed": true,
+              "bounds_px": [
+                [
+                  456.5,
+                  868.5
+                ],
+                [
+                  463.5,
+                  877.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 14.485281374238571,
+              "longest_straight_run_px": 5.70087712549569,
+              "maximum_extent_px": 5.0,
+              "contour_dimension": 0.8698383278041619,
+              "width_cv": 0.8417727600916898,
+              "closed": true,
+              "bounds_px": [
+                [
+                  465.5,
+                  869.5
+                ],
+                [
+                  469.5,
+                  874.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 20.485281374238568,
+              "longest_straight_run_px": 5.830951894845301,
+              "maximum_extent_px": 9.0,
+              "contour_dimension": 0.9200792080287497,
+              "width_cv": 0.8417727600916898,
+              "closed": true,
+              "bounds_px": [
+                [
+                  465.5,
+                  927.5
+                ],
+                [
+                  468.5,
+                  936.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 370.714249456123,
+              "longest_straight_run_px": 21.0,
+              "maximum_extent_px": 144.0,
+              "contour_dimension": 1.1539056651089568,
+              "width_cv": 0.6661791188578521,
+              "closed": false,
+              "bounds_px": [
+                [
+                  490.5,
+                  529.5
+                ],
+                [
+                  541.5,
+                  673.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 654.1772362537752,
+              "longest_straight_run_px": 29.154759474226502,
+              "maximum_extent_px": 141.0,
+              "contour_dimension": 1.1761082043758782,
+              "width_cv": 0.526996000418972,
+              "closed": false,
+              "bounds_px": [
+                [
+                  468.5,
+                  570.5
+                ],
+                [
+                  541.5,
+                  711.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 22.142135623730944,
+              "longest_straight_run_px": 7.905694150420948,
+              "maximum_extent_px": 9.0,
+              "contour_dimension": 0.9176975851075361,
+              "width_cv": 0.8417727600916898,
+              "closed": true,
+              "bounds_px": [
+                [
+                  469.5,
+                  915.5
+                ],
+                [
+                  474.5,
+                  924.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 52.041630560342625,
+              "longest_straight_run_px": 9.617692030835672,
+              "maximum_extent_px": 14.0,
+              "contour_dimension": 1.297566952784738,
+              "width_cv": 0.8417727600916898,
+              "closed": true,
+              "bounds_px": [
+                [
+                  472.5,
+                  871.5
+                ],
+                [
+                  484.5,
+                  885.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 73.25483399593907,
+              "longest_straight_run_px": 10.124228365658293,
+              "maximum_extent_px": 27.0,
+              "contour_dimension": 1.2873657426929284,
+              "width_cv": 0.7852136325044031,
+              "closed": true,
+              "bounds_px": [
+                [
+                  479.5,
+                  664.5
+                ],
+                [
+                  492.5,
+                  691.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 26.14213562373095,
+              "longest_straight_run_px": 8.514693182963201,
+              "maximum_extent_px": 9.0,
+              "contour_dimension": 1.0183579485195506,
+              "width_cv": 0.8417727600916898,
+              "closed": true,
+              "bounds_px": [
+                [
+                  479.5,
+                  903.5
+                ],
+                [
+                  485.5,
+                  912.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 24.142135623730944,
+              "longest_straight_run_px": 7.0,
+              "maximum_extent_px": 9.0,
+              "contour_dimension": 1.0043637819065498,
+              "width_cv": 0.7852136325044031,
+              "closed": true,
+              "bounds_px": [
+                [
+                  483.5,
+                  657.5
+                ],
+                [
+                  487.5,
+                  666.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 26.72792206135785,
+              "longest_straight_run_px": 6.041522986797286,
+              "maximum_extent_px": 11.0,
+              "contour_dimension": 1.0342195645750858,
+              "width_cv": 0.7852136325044031,
+              "closed": true,
+              "bounds_px": [
+                [
+                  486.5,
+                  632.5
+                ],
+                [
+                  490.5,
+                  643.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 32.142135623730944,
+              "longest_straight_run_px": 7.905694150420948,
+              "maximum_extent_px": 11.0,
+              "contour_dimension": 1.1283933174056293,
+              "width_cv": 0.7852136325044031,
+              "closed": true,
+              "bounds_px": [
+                [
+                  487.5,
+                  591.5
+                ],
+                [
+                  494.5,
+                  602.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 14.485281374238571,
+              "longest_straight_run_px": 4.301162633521313,
+              "maximum_extent_px": 5.0,
+              "contour_dimension": 0.8857142857142858,
+              "width_cv": 0.7852136325044031,
+              "closed": true,
+              "bounds_px": [
+                [
+                  488.5,
+                  690.5
+                ],
+                [
+                  493.5,
+                  694.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 49.698484809834994,
+              "longest_straight_run_px": 8.631338250816034,
+              "maximum_extent_px": 13.0,
+              "contour_dimension": 1.2693649942357004,
+              "width_cv": 0.7852136325044031,
+              "closed": true,
+              "bounds_px": [
+                [
+                  493.5,
+                  688.5
+                ],
+                [
+                  506.5,
+                  701.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 21.89949493661166,
+              "longest_straight_run_px": 7.0710678118654755,
+              "maximum_extent_px": 9.0,
+              "contour_dimension": 0.9525680562801631,
+              "width_cv": 0.7852136325044031,
+              "closed": true,
+              "bounds_px": [
+                [
+                  506.5,
+                  691.5
+                ],
+                [
+                  510.5,
+                  700.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 37.21320343559643,
+              "longest_straight_run_px": 9.192388155425117,
+              "maximum_extent_px": 11.0,
+              "contour_dimension": 1.1643869802215008,
+              "width_cv": 0.7852136325044031,
+              "closed": true,
+              "bounds_px": [
+                [
+                  513.5,
+                  633.5
+                ],
+                [
+                  521.5,
+                  644.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 16.071067811865476,
+              "longest_straight_run_px": 5.70087712549569,
+              "maximum_extent_px": 8.5,
+              "contour_dimension": 0.8971534797884232,
+              "width_cv": 0.40016971965981335,
+              "closed": false,
+              "bounds_px": [
+                [
+                  514.5,
+                  658.0
+                ],
+                [
+                  517.5,
+                  666.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 27.798989873223327,
+              "longest_straight_run_px": 7.106335201775948,
+              "maximum_extent_px": 9.0,
+              "contour_dimension": 1.0922570818196073,
+              "width_cv": 0.7852136325044031,
+              "closed": true,
+              "bounds_px": [
+                [
+                  518.5,
+                  547.5
+                ],
+                [
+                  524.5,
+                  556.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 40.627416997969526,
+              "longest_straight_run_px": 12.0,
+              "maximum_extent_px": 14.0,
+              "contour_dimension": 1.2027745159477885,
+              "width_cv": 0.7852136325044031,
+              "closed": true,
+              "bounds_px": [
+                [
+                  521.5,
+                  603.5
+                ],
+                [
+                  527.5,
+                  617.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 13.899494936611667,
+              "longest_straight_run_px": 5.70087712549569,
+              "maximum_extent_px": 5.0,
+              "contour_dimension": 0.8982089773214772,
+              "width_cv": 0.7852136325044031,
+              "closed": true,
+              "bounds_px": [
+                [
+                  526.5,
+                  553.5
+                ],
+                [
+                  530.5,
+                  558.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 18.242640687119284,
+              "longest_straight_run_px": 7.648529270389178,
+              "maximum_extent_px": 8.0,
+              "contour_dimension": 0.8807028590839739,
+              "width_cv": 0.7852136325044031,
+              "closed": true,
+              "bounds_px": [
+                [
+                  528.5,
+                  591.5
+                ],
+                [
+                  530.5,
+                  599.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 144.50966799187813,
+              "longest_straight_run_px": 11.180339887498949,
+              "maximum_extent_px": 29.0,
+              "contour_dimension": 1.434504589152808,
+              "width_cv": 0.4516611636935607,
+              "closed": true,
+              "bounds_px": [
+                [
+                  647.5,
+                  805.5
+                ],
+                [
+                  667.5,
+                  834.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 53.21320343559643,
+              "longest_straight_run_px": 6.670832032063167,
+              "maximum_extent_px": 28.0,
+              "contour_dimension": 1.1796268083295331,
+              "width_cv": 0.30756936611929037,
+              "closed": false,
+              "bounds_px": [
+                [
+                  723.5,
+                  801.5
+                ],
+                [
+                  735.5,
+                  829.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 28.26345596729059,
+              "longest_straight_run_px": 8.06225774829855,
+              "maximum_extent_px": 14.0,
+              "contour_dimension": 1.1226204012171688,
+              "width_cv": 0.19092679420169553,
+              "closed": false,
+              "bounds_px": [
+                [
+                  721.5,
+                  834.5
+                ],
+                [
+                  728.5,
+                  848.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 16.31370849898476,
+              "longest_straight_run_px": 5.0,
+              "maximum_extent_px": 11.0,
+              "contour_dimension": 0.929352855621925,
+              "width_cv": 0.23905008665338648,
+              "closed": false,
+              "bounds_px": [
+                [
+                  711.5,
+                  859.0
+                ],
+                [
+                  722.5,
+                  864.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 126.51828996322965,
+              "longest_straight_run_px": 16.1245154965971,
+              "maximum_extent_px": 47.5,
+              "contour_dimension": 1.284664495903802,
+              "width_cv": 0.4363686072048018,
+              "closed": false,
+              "bounds_px": [
+                [
+                  688.5,
+                  866.0
+                ],
+                [
+                  703.5,
+                  913.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 15.778174593052023,
+              "longest_straight_run_px": 4.47213595499958,
+              "maximum_extent_px": 10.0,
+              "contour_dimension": 0.8847366938474887,
+              "width_cv": 0.49857620050436346,
+              "closed": false,
+              "bounds_px": [
+                [
+                  686.5,
+                  881.5
+                ],
+                [
+                  693.0,
+                  891.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 784.6244584051394,
+              "longest_straight_run_px": 16.0312195418814,
+              "maximum_extent_px": 222.0,
+              "contour_dimension": 1.202917725703192,
+              "width_cv": 0.38318234520819733,
+              "closed": false,
+              "bounds_px": [
+                [
+                  655.5,
+                  663.5
+                ],
+                [
+                  737.5,
+                  885.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 176.26702730475884,
+              "longest_straight_run_px": 15.0,
+              "maximum_extent_px": 49.0,
+              "contour_dimension": 1.280514411567697,
+              "width_cv": 0.5408461088532498,
+              "closed": true,
+              "bounds_px": [
+                [
+                  657.5,
+                  744.5
+                ],
+                [
+                  675.5,
+                  793.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 54.526911934581186,
+              "longest_straight_run_px": 11.853269591129697,
+              "maximum_extent_px": 16.0,
+              "contour_dimension": 1.1874733829502409,
+              "width_cv": 0.680877673899263,
+              "closed": true,
+              "bounds_px": [
+                [
+                  658.5,
+                  853.5
+                ],
+                [
+                  670.5,
+                  869.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 32.384776310850235,
+              "longest_straight_run_px": 9.82344135219425,
+              "maximum_extent_px": 10.0,
+              "contour_dimension": 1.0932734422430062,
+              "width_cv": 0.680877673899263,
+              "closed": true,
+              "bounds_px": [
+                [
+                  680.5,
+                  830.5
+                ],
+                [
+                  687.5,
+                  840.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 18.242640687119284,
+              "longest_straight_run_px": 7.648529270389178,
+              "maximum_extent_px": 8.0,
+              "contour_dimension": 0.8451282162886447,
+              "width_cv": 0.680877673899263,
+              "closed": true,
+              "bounds_px": [
+                [
+                  681.5,
+                  817.5
+                ],
+                [
+                  683.5,
+                  825.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 24.142135623730944,
+              "longest_straight_run_px": 6.670832032063167,
+              "maximum_extent_px": 8.0,
+              "contour_dimension": 1.0191087247047417,
+              "width_cv": 0.680877673899263,
+              "closed": true,
+              "bounds_px": [
+                [
+                  683.5,
+                  839.5
+                ],
+                [
+                  688.5,
+                  847.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 15.313708498984763,
+              "longest_straight_run_px": 6.519202405202649,
+              "maximum_extent_px": 6.0,
+              "contour_dimension": 0.9092742876554027,
+              "width_cv": 0.680877673899263,
+              "closed": true,
+              "bounds_px": [
+                [
+                  686.5,
+                  829.5
+                ],
+                [
+                  690.5,
+                  835.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 38.798989873223334,
+              "longest_straight_run_px": 12.509996003196804,
+              "maximum_extent_px": 18.0,
+              "contour_dimension": 1.0772962758349882,
+              "width_cv": 0.20157778389094716,
+              "closed": false,
+              "bounds_px": [
+                [
+                  688.5,
+                  849.5
+                ],
+                [
+                  692.5,
+                  867.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 12.485281374238571,
+              "longest_straight_run_px": 4.743416490252569,
+              "maximum_extent_px": 5.0,
+              "contour_dimension": 0.7940474889271857,
+              "width_cv": 0.680877673899263,
+              "closed": true,
+              "bounds_px": [
+                [
+                  690.5,
+                  827.5
+                ],
+                [
+                  692.5,
+                  832.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 14.485281374238571,
+              "longest_straight_run_px": 4.527692569068709,
+              "maximum_extent_px": 5.0,
+              "contour_dimension": 0.8082668708630307,
+              "width_cv": 0.680877673899263,
+              "closed": true,
+              "bounds_px": [
+                [
+                  690.5,
+                  870.5
+                ],
+                [
+                  693.5,
+                  875.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 28.72792206135785,
+              "longest_straight_run_px": 7.905694150420948,
+              "maximum_extent_px": 12.0,
+              "contour_dimension": 1.0508989936488948,
+              "width_cv": 0.680877673899263,
+              "closed": true,
+              "bounds_px": [
+                [
+                  696.5,
+                  787.5
+                ],
+                [
+                  701.5,
+                  799.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 16.48528137423857,
+              "longest_straight_run_px": 5.522680508593631,
+              "maximum_extent_px": 7.0,
+              "contour_dimension": 0.8814178573489021,
+              "width_cv": 0.680877673899263,
+              "closed": true,
+              "bounds_px": [
+                [
+                  700.5,
+                  774.5
+                ],
+                [
+                  703.5,
+                  781.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 12.65685424949238,
+              "longest_straight_run_px": 4.527692569068709,
+              "maximum_extent_px": 4.5,
+              "contour_dimension": 0.8298229107766286,
+              "width_cv": 0.2554840657168117,
+              "closed": false,
+              "bounds_px": [
+                [
+                  705.5,
+                  856.5
+                ],
+                [
+                  709.5,
+                  861.0
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 43.45584412271572,
+              "longest_straight_run_px": 9.300537618869138,
+              "maximum_extent_px": 18.0,
+              "contour_dimension": 1.1123504449248938,
+              "width_cv": 0.28537745181011065,
+              "closed": false,
+              "bounds_px": [
+                [
+                  708.5,
+                  839.5
+                ],
+                [
+                  716.5,
+                  857.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 14.606601717798213,
+              "longest_straight_run_px": 3.5355339059327378,
+              "maximum_extent_px": 7.5,
+              "contour_dimension": 0.8724129422297886,
+              "width_cv": 0.4043121048893401,
+              "closed": false,
+              "bounds_px": [
+                [
+                  713.5,
+                  817.5
+                ],
+                [
+                  718.5,
+                  825.0
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 12.485281374238571,
+              "longest_straight_run_px": 4.301162633521313,
+              "maximum_extent_px": 6.0,
+              "contour_dimension": 0.8145493102171268,
+              "width_cv": 0.333922368592589,
+              "closed": false,
+              "bounds_px": [
+                [
+                  717.0,
+                  810.5
+                ],
+                [
+                  721.5,
+                  816.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 14.485281374238571,
+              "longest_straight_run_px": 4.527692569068709,
+              "maximum_extent_px": 6.0,
+              "contour_dimension": 0.8406304218906518,
+              "width_cv": 0.680877673899263,
+              "closed": true,
+              "bounds_px": [
+                [
+                  717.5,
+                  707.5
+                ],
+                [
+                  719.5,
+                  713.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 18.242640687119284,
+              "longest_straight_run_px": 7.0,
+              "maximum_extent_px": 8.0,
+              "contour_dimension": 0.8952678592076007,
+              "width_cv": 0.680877673899263,
+              "closed": true,
+              "bounds_px": [
+                [
+                  717.5,
+                  720.5
+                ],
+                [
+                  719.5,
+                  728.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 27.899494936611664,
+              "longest_straight_run_px": 7.0710678118654755,
+              "maximum_extent_px": 13.5,
+              "contour_dimension": 1.0719807046819514,
+              "width_cv": 0.16359816303875466,
+              "closed": false,
+              "bounds_px": [
+                [
+                  719.5,
+                  786.0
+                ],
+                [
+                  723.5,
+                  799.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 30.142135623730944,
+              "longest_straight_run_px": 6.082762530298219,
+              "maximum_extent_px": 12.0,
+              "contour_dimension": 1.128124546301237,
+              "width_cv": 0.680877673899263,
+              "closed": true,
+              "bounds_px": [
+                [
+                  720.5,
+                  759.5
+                ],
+                [
+                  726.5,
+                  771.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 24.020815280171306,
+              "longest_straight_run_px": 11.0,
+              "maximum_extent_px": 18.5,
+              "contour_dimension": 0.870937367747314,
+              "width_cv": 0.4371534924570869,
+              "closed": false,
+              "bounds_px": [
+                [
+                  727.5,
+                  859.0
+                ],
+                [
+                  737.0,
+                  877.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 16.020815280171313,
+              "longest_straight_run_px": 8.48528137423857,
+              "maximum_extent_px": 11.5,
+              "contour_dimension": 0.8959828574725288,
+              "width_cv": 0.28486848607751186,
+              "closed": false,
+              "bounds_px": [
+                [
+                  729.5,
+                  851.5
+                ],
+                [
+                  741.0,
+                  857.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 94.54772721475251,
+              "longest_straight_run_px": 12.041594578792296,
+              "maximum_extent_px": 70.5,
+              "contour_dimension": 1.030140689684237,
+              "width_cv": 0.1620641013712024,
+              "closed": false,
+              "bounds_px": [
+                [
+                  741.5,
+                  665.0
+                ],
+                [
+                  756.0,
+                  735.5
+                ]
+              ],
+              "camera": "labels"
+            }
+          ],
+          "seam_fringe_and_gape_pass": false,
+          "pass": false
+        },
+        "BackCushion_C": {
+          "value": [
+            7.0710678118654755,
+            10.124228365658293,
+            6.324555320336759
+          ],
+          "outlines": [
+            {
+              "length_px": 72.18376618407358,
+              "longest_straight_run_px": 7.0710678118654755,
+              "maximum_extent_px": 44.0,
+              "contour_dimension": 1.0753340319712192,
+              "width_cv": 0.4694444775071039,
+              "closed": false,
+              "bounds_px": [
+                [
+                  588.5,
+                  619.0
+                ],
+                [
+                  609.5,
+                  663.0
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 29.97056274847714,
+              "longest_straight_run_px": 10.124228365658293,
+              "maximum_extent_px": 12.0,
+              "contour_dimension": 1.104408117771018,
+              "width_cv": 0.17825420966801692,
+              "closed": false,
+              "bounds_px": [
+                [
+                  595.0,
+                  675.5
+                ],
+                [
+                  606.5,
+                  687.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 16.363961030678926,
+              "longest_straight_run_px": 6.324555320336759,
+              "maximum_extent_px": 8.0,
+              "contour_dimension": 0.9163240190409214,
+              "width_cv": 0.6319617246110409,
+              "closed": false,
+              "bounds_px": [
+                [
+                  610.5,
+                  618.0
+                ],
+                [
+                  618.5,
+                  623.5
+                ]
+              ],
+              "camera": "labels"
+            }
+          ],
+          "seam_fringe_and_gape_pass": false,
+          "pass": false
+        },
+        "BackCushion_L": {
+          "value": [
+            11.180339887498949,
+            3.8078865529319543,
+            5.830951894845301
+          ],
+          "outlines": [
+            {
+              "length_px": 26.727922061357855,
+              "longest_straight_run_px": 11.180339887498949,
+              "maximum_extent_px": 20.0,
+              "contour_dimension": 1.0000000000000004,
+              "width_cv": 0.28075592859659465,
+              "closed": false,
+              "bounds_px": [
+                [
+                  602.0,
+                  619.5
+                ],
+                [
+                  622.0,
+                  630.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 12.535533905932738,
+              "longest_straight_run_px": 3.8078865529319543,
+              "maximum_extent_px": 5.0,
+              "contour_dimension": 0.7787738883676841,
+              "width_cv": 0.09491817231072076,
+              "closed": false,
+              "bounds_px": [
+                [
+                  599.0,
+                  646.5
+                ],
+                [
+                  602.5,
+                  651.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 16.313708498984763,
+              "longest_straight_run_px": 5.830951894845301,
+              "maximum_extent_px": 10.0,
+              "contour_dimension": 0.8847366938474887,
+              "width_cv": 0.2112499798125384,
+              "closed": false,
+              "bounds_px": [
+                [
+                  612.0,
+                  605.5
+                ],
+                [
+                  622.0,
+                  612.5
+                ]
+              ],
+              "camera": "labels"
+            }
+          ],
+          "seam_fringe_and_gape_pass": false,
+          "pass": false
+        },
+        "BackCushion_R": {
+          "value": [
+            8.48528137423857,
+            16.32482771731451,
+            17.7341478509682,
+            5.0,
+            14.300349646075091,
+            12.509996003196804,
+            17.7341478509682
+          ],
+          "outlines": [
+            {
+              "length_px": 23.970562748477132,
+              "longest_straight_run_px": 8.48528137423857,
+              "maximum_extent_px": 12.0,
+              "contour_dimension": 1.0508989936488948,
+              "width_cv": 0.37742501107515186,
+              "closed": false,
+              "bounds_px": [
+                [
+                  587.5,
+                  670.5
+                ],
+                [
+                  594.5,
+                  682.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 112.44722215136417,
+              "longest_straight_run_px": 16.32482771731451,
+              "maximum_extent_px": 35.0,
+              "contour_dimension": 1.1999461208874418,
+              "width_cv": 0.6278698245913186,
+              "closed": false,
+              "bounds_px": [
+                [
+                  581.5,
+                  681.5
+                ],
+                [
+                  603.5,
+                  716.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 200.23759005323598,
+              "longest_straight_run_px": 17.7341478509682,
+              "maximum_extent_px": 118.0,
+              "contour_dimension": 1.0394029448042703,
+              "width_cv": 0.5209270647640833,
+              "closed": false,
+              "bounds_px": [
+                [
+                  587.0,
+                  547.5
+                ],
+                [
+                  622.5,
+                  665.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 20.485281374238568,
+              "longest_straight_run_px": 5.0,
+              "maximum_extent_px": 8.0,
+              "contour_dimension": 0.9805152208881237,
+              "width_cv": 0.7278171607122647,
+              "closed": true,
+              "bounds_px": [
+                [
+                  607.5,
+                  620.5
+                ],
+                [
+                  611.5,
+                  628.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 80.08326112068526,
+              "longest_straight_run_px": 14.300349646075091,
+              "maximum_extent_px": 20.0,
+              "contour_dimension": 1.2754835915705518,
+              "width_cv": 0.5611939100678556,
+              "closed": true,
+              "bounds_px": [
+                [
+                  611.5,
+                  667.5
+                ],
+                [
+                  631.5,
+                  684.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 166.5096679918781,
+              "longest_straight_run_px": 12.509996003196804,
+              "maximum_extent_px": 42.0,
+              "contour_dimension": 1.2906835330063837,
+              "width_cv": 0.4402374180303524,
+              "closed": true,
+              "bounds_px": [
+                [
+                  614.5,
+                  619.5
+                ],
+                [
+                  638.5,
+                  661.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 195.13708498984766,
+              "longest_straight_run_px": 17.7341478509682,
+              "maximum_extent_px": 40.0,
+              "contour_dimension": 1.164325207157927,
+              "width_cv": 0.47808332031106454,
+              "closed": true,
+              "bounds_px": [
+                [
+                  632.5,
+                  564.5
+                ],
+                [
+                  666.5,
+                  604.5
+                ]
+              ],
+              "camera": "labels"
+            }
+          ],
+          "seam_fringe_and_gape_pass": false,
+          "pass": false
+        },
+        "Throw": {
+          "value": [
+            6.363961030678928,
+            7.648529270389178,
+            8.514693182963201,
+            14.142135623730951,
+            14.849242404917497,
+            19.091883092036785,
+            8.94427190999916
+          ],
+          "outlines": [
+            {
+              "length_px": 12.020815280171309,
+              "longest_straight_run_px": 6.363961030678928,
+              "maximum_extent_px": 5.0,
+              "contour_dimension": 0.7414140136377557,
+              "width_cv": 0.0199312747947976,
+              "closed": false,
+              "bounds_px": [
+                [
+                  528.5,
+                  674.5
+                ],
+                [
+                  533.5,
+                  679.0
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 16.828427124746188,
+              "longest_straight_run_px": 7.648529270389178,
+              "maximum_extent_px": 8.0,
+              "contour_dimension": 0.833985000288463,
+              "width_cv": 0.04797971741115815,
+              "closed": false,
+              "bounds_px": [
+                [
+                  605.5,
+                  684.5
+                ],
+                [
+                  613.5,
+                  686.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 15.121320343559642,
+              "longest_straight_run_px": 8.514693182963201,
+              "maximum_extent_px": 8.5,
+              "contour_dimension": 0.7871641938680928,
+              "width_cv": 0.022542233440783373,
+              "closed": false,
+              "bounds_px": [
+                [
+                  705.0,
+                  720.5
+                ],
+                [
+                  713.5,
+                  722.0
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 19.26345596729059,
+              "longest_straight_run_px": 14.142135623730951,
+              "maximum_extent_px": 14.5,
+              "contour_dimension": 0.8438415136583604,
+              "width_cv": 0.6681755040449459,
+              "closed": false,
+              "bounds_px": [
+                [
+                  477.5,
+                  681.0
+                ],
+                [
+                  489.0,
+                  695.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 30.2842712474619,
+              "longest_straight_run_px": 14.849242404917497,
+              "maximum_extent_px": 11.0,
+              "contour_dimension": 0.9919751124202386,
+              "width_cv": 0.17462598453508232,
+              "closed": false,
+              "bounds_px": [
+                [
+                  472.5,
+                  681.0
+                ],
+                [
+                  483.5,
+                  691.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 19.09188309203678,
+              "longest_straight_run_px": 19.091883092036785,
+              "maximum_extent_px": 13.5,
+              "contour_dimension": 0.8131096964703098,
+              "width_cv": 0.6892617700895179,
+              "closed": false,
+              "bounds_px": [
+                [
+                  478.5,
+                  681.0
+                ],
+                [
+                  492.0,
+                  694.5
+                ]
+              ],
+              "camera": "labels"
+            },
+            {
+              "length_px": 18.435028842544405,
+              "longest_straight_run_px": 8.94427190999916,
+              "maximum_extent_px": 8.0,
+              "contour_dimension": 0.8571428571428573,
+              "width_cv": 0.01648490107198752,
+              "closed": false,
+              "bounds_px": [
+                [
+                  554.5,
+                  690.5
+                ],
+                [
+                  559.5,
+                  698.5
+                ]
+              ],
+              "camera": "labels"
+            }
+          ],
+          "seam_fringe_and_gape_pass": true,
+          "pass": false
+        }
+      },
+      "status": "measured",
+      "pass": false,
+      "method": "pass-11 combined R+G antialiased coverage and open-lip metrics; physical pass-10 panel boundaries; seam checks retained"
+    },
+    "G4": {
+      "measure": "opening medial-axis width coefficient of variation",
+      "threshold": ">=0.35 each opening",
+      "value": {
+        "SeatCushion_C": {
+          "value": [
+            0.5539291593761401,
+            0.25318426980144104,
+            0.4617890127489279,
+            0.4617890127489279,
+            0.4617890127489279,
+            0.5612211992977302,
+            0.47081264557598534,
+            0.42462153338831016,
+            0.45392498955573785,
+            0.12127012557739723,
+            0.7829948869107967,
+            0.84823117212274,
+            0.7829948869107967,
+            0.84823117212274,
+            0.84823117212274,
+            0.7829948869107967,
+            0.84823117212274,
+            0.7829948869107967,
+            0.7829948869107967,
+            0.7829948869107967,
+            0.7829948869107967,
+            0.84823117212274,
+            0.7555530031472335,
+            0.7829948869107967,
+            0.7555530031472335,
+            0.84823117212274,
+            0.7829948869107967,
+            0.7555530031472335,
+            0.7555530031472335,
+            0.7555530031472335,
+            0.7829948869107967,
+            0.7829948869107967,
+            0.7555530031472335,
+            0.7555530031472335,
+            0.7829948869107967,
+            0.7555530031472335,
+            0.7555530031472335,
+            0.7829948869107967,
+            0.7829948869107967,
+            0.7829948869107967,
+            0.36430199472941005,
+            0.41914142592839404,
+            0.45582056078965255,
+            0.3878021976354605,
+            0.4178381417695953,
+            0.6235404677799052,
+            0.43073382631682305,
+            0.43842519565182136,
+            0.45141694175078934,
+            0.8725172534757564,
+            0.8725172534757564,
+            0.8725172534757564,
+            0.8725172534757564,
+            0.8725172534757564,
+            0.8725172534757564
+          ],
+          "pass": false
+        },
+        "SeatCushion_L": {
+          "value": [
+            0.38929258315817616,
+            0.3807032961509252,
+            0.43603318336541264,
+            0.35866437402716816,
+            0.6647858603073457,
+            0.6647858603073457,
+            0.6647858603073457,
+            0.367218651987497,
+            0.23099853769194414,
+            0.3302269360916501,
+            0.36598778309966445,
+            0.6647858603073457,
+            0.6647858603073457,
+            0.6647858603073457,
+            0.6647858603073457,
+            0.20065869244598225,
+            0.6647858603073457,
+            0.7616353458381836,
+            0.7616353458381836,
+            0.7616353458381836,
+            0.6647858603073457,
+            0.7616353458381836,
+            0.3692136570237941,
+            0.7616353458381836,
+            0.6647858603073457,
+            0.7616353458381836,
+            0.7616353458381836,
+            0.44932529474379646,
+            0.25757867971472126,
+            0.191606987184087,
+            0.33541649145643254,
+            0.4291303133852045,
+            0.5090471953177802,
+            0.43762765559969746,
+            0.4437810335995554,
+            0.5096150496165597,
+            0.43743201307433804,
+            0.5610737974593027,
+            0.4712034224770059,
+            0.3892009649576274,
+            0.4712034224770059,
+            0.5318946112890539,
+            0.2005004176630814,
+            0.4960938448219812
+          ],
+          "pass": false
+        },
+        "SeatCushion_R": {
+          "value": [
+            0.314667550654008,
+            0.3804296116606703,
+            0.5139187404077064,
+            0.8417727600916898,
+            0.8417727600916898,
+            0.8417727600916898,
+            0.8417727600916898,
+            0.8417727600916898,
+            0.8417727600916898,
+            0.8417727600916898,
+            0.8417727600916898,
+            0.8417727600916898,
+            0.8417727600916898,
+            0.8417727600916898,
+            0.8417727600916898,
+            0.6661791188578521,
+            0.526996000418972,
+            0.8417727600916898,
+            0.8417727600916898,
+            0.7852136325044031,
+            0.8417727600916898,
+            0.7852136325044031,
+            0.7852136325044031,
+            0.7852136325044031,
+            0.7852136325044031,
+            0.7852136325044031,
+            0.7852136325044031,
+            0.7852136325044031,
+            0.40016971965981335,
+            0.7852136325044031,
+            0.7852136325044031,
+            0.7852136325044031,
+            0.7852136325044031,
+            0.4516611636935607,
+            0.30756936611929037,
+            0.19092679420169553,
+            0.23905008665338648,
+            0.4363686072048018,
+            0.49857620050436346,
+            0.38318234520819733,
+            0.5408461088532498,
+            0.680877673899263,
+            0.680877673899263,
+            0.680877673899263,
+            0.680877673899263,
+            0.680877673899263,
+            0.20157778389094716,
+            0.680877673899263,
+            0.680877673899263,
+            0.680877673899263,
+            0.680877673899263,
+            0.2554840657168117,
+            0.28537745181011065,
+            0.4043121048893401,
+            0.333922368592589,
+            0.680877673899263,
+            0.680877673899263,
+            0.16359816303875466,
+            0.680877673899263,
+            0.4371534924570869,
+            0.28486848607751186,
+            0.1620641013712024
+          ],
+          "pass": false
+        },
+        "BackCushion_C": {
+          "value": [
+            0.4694444775071039,
+            0.17825420966801692,
+            0.6319617246110409
+          ],
+          "pass": false
+        },
+        "BackCushion_L": {
+          "value": [
+            0.28075592859659465,
+            0.09491817231072076,
+            0.2112499798125384
+          ],
+          "pass": false
+        },
+        "BackCushion_R": {
+          "value": [
+            0.37742501107515186,
+            0.6278698245913186,
+            0.5209270647640833,
+            0.7278171607122647,
+            0.5611939100678556,
+            0.4402374180303524,
+            0.47808332031106454
+          ],
+          "pass": true
+        },
+        "Throw": {
+          "value": [
+            0.0199312747947976,
+            0.04797971741115815,
+            0.022542233440783373,
+            0.6681755040449459,
+            0.17462598453508232,
+            0.6892617700895179,
+            0.01648490107198752
+          ],
+          "pass": false
+        }
+      },
+      "status": "measured",
+      "pass": false,
+      "method": "pass-11 combined R+G antialiased coverage and open-lip metrics; physical pass-10 panel boundaries; seam checks retained"
+    },
+    "G5": {
+      "measure": "lip length lifted >3 mm",
+      "threshold": ">=0.30",
+      "value": {
+        "SeatCushion_C": 0.30921156471412486,
+        "SeatCushion_L": 0.45143969837488507,
+        "SeatCushion_R": 0.5260224119161561,
+        "BackCushion_C": 0.30573679872538095,
+        "BackCushion_L": 0.4674874519253074,
+        "BackCushion_R": 0.4339291968389893
+      },
+      "status": "measured",
+      "pass": true
+    },
+    "G6": {
+      "measure": "opening contour box-counting dimension at 1..32 px",
+      "threshold": "1.15..1.40",
+      "value": {
+        "SeatCushion_C": {
+          "value": [
+            1.1384110097430828,
+            1.1943004531242212,
+            1.127275186604898,
+            1.1279647458887334,
+            1.1909802891925765
+          ],
+          "minimum_extent_px": 64,
+          "pass": false
+        },
+        "SeatCushion_L": {
+          "value": [
+            1.1772877582551966,
+            1.0325728732170671,
+            1.1084019693137674,
+            1.0490582603282594,
+            1.1614829487697744
+          ],
+          "minimum_extent_px": 64,
+          "pass": false
+        },
+        "SeatCushion_R": {
+          "value": [
+            1.0898051591334168,
+            1.196056089205067,
+            1.0917753979612055,
+            1.1539056651089568,
+            1.1761082043758782,
+            1.202917725703192,
+            1.030140689684237
+          ],
+          "minimum_extent_px": 64,
+          "pass": false
+        },
+        "BackCushion_C": {
+          "value": [],
+          "minimum_extent_px": 64,
+          "pass": false
+        },
+        "BackCushion_L": {
+          "value": [],
+          "minimum_extent_px": 64,
+          "pass": false
+        },
+        "BackCushion_R": {
+          "value": [
+            1.0394029448042703
+          ],
+          "minimum_extent_px": 64,
+          "pass": false
+        },
+        "Throw": {
+          "value": [],
+          "minimum_extent_px": 64,
+          "pass": false
+        }
+      },
+      "status": "measured",
+      "pass": false,
+      "method": "pass-11 combined R+G antialiased coverage and open-lip metrics; physical pass-10 panel boundaries; seam checks retained"
+    },
+    "G7": {
+      "measure": "visible residue in >10 cm2 coplanar facets, first-hit hero/front union",
+      "threshold": "<=0.05 each residue",
+      "value": {
+        "SeatCushion_C": {
+          "visible_area_m2": 0.060311275013782535,
+          "visible_large_planar_area_m2": 0.0,
+          "fraction": 0.0,
+          "pass": true,
+          "visibility": "first-hit hero/front union within the original cover silhouette; hidden and outside residue contributes zero"
+        },
+        "SeatCushion_L": {
+          "visible_area_m2": 0.04444213387167641,
+          "visible_large_planar_area_m2": 0.0,
+          "fraction": 0.0,
+          "pass": true,
+          "visibility": "first-hit hero/front union within the original cover silhouette; hidden and outside residue contributes zero"
+        },
+        "SeatCushion_R": {
+          "visible_area_m2": 0.10225982845497376,
+          "visible_large_planar_area_m2": 0.0,
+          "fraction": 0.0,
+          "pass": true,
+          "visibility": "first-hit hero/front union within the original cover silhouette; hidden and outside residue contributes zero"
+        },
+        "BackCushion_C": {
+          "visible_area_m2": 6.384789736927401e-05,
+          "visible_large_planar_area_m2": 0.0,
+          "fraction": 0.0,
+          "pass": true,
+          "visibility": "first-hit hero/front union within the original cover silhouette; hidden and outside residue contributes zero"
+        },
+        "BackCushion_L": {
+          "visible_area_m2": 5.8831850506137e-05,
+          "visible_large_planar_area_m2": 0.0,
+          "fraction": 0.0,
+          "pass": true,
+          "visibility": "first-hit hero/front union within the original cover silhouette; hidden and outside residue contributes zero"
+        },
+        "BackCushion_R": {
+          "visible_area_m2": 0.0,
+          "visible_large_planar_area_m2": 0.0,
+          "fraction": 0.0,
+          "pass": true,
+          "visibility": "first-hit hero/front union within the original cover silhouette; hidden and outside residue contributes zero"
+        }
+      },
+      "status": "measured",
+      "pass": true
+    },
+    "G8": {
+      "measure": "20 mm dense crust plane-fit RMS and normal map",
+      "threshold": ">=0.0015 m and map present",
+      "value": {
+        "SeatCushion_C": {
+          "rms_m": 0.0018596086012127038,
+          "patches": 1000,
+          "quantiles_m": [
+            0.0014037875483532618,
+            0.0017858329597706798,
+            0.0023037953965645373
+          ],
+          "normal_map_present": true
+        },
+        "SeatCushion_L": {
+          "rms_m": 0.001677981424142606,
+          "patches": 1000,
+          "quantiles_m": [
+            0.001321865760129882,
+            0.0015244418031295402,
+            0.00205375180674351
+          ],
+          "normal_map_present": true
+        },
+        "SeatCushion_R": {
+          "rms_m": 0.0019259259123938727,
+          "patches": 1000,
+          "quantiles_m": [
+            0.0014463614902300267,
+            0.0018338452904465754,
+            0.002401604393305548
+          ],
+          "normal_map_present": true
+        },
+        "BackCushion_C": {
+          "rms_m": 0.002935221608106888,
+          "patches": 1000,
+          "quantiles_m": [
+            0.002202265448401988,
+            0.0028478954725832716,
+            0.0036485978227354856
+          ],
+          "normal_map_present": true
+        },
+        "BackCushion_L": {
+          "rms_m": 0.0029480458226634775,
+          "patches": 1000,
+          "quantiles_m": [
+            0.002250681461215537,
+            0.0028669604784266525,
+            0.003644149515082985
+          ],
+          "normal_map_present": true
+        },
+        "BackCushion_R": {
+          "rms_m": 0.0029766558585346873,
+          "patches": 999,
+          "quantiles_m": [
+            0.0022275573697283237,
+            0.002908122454847666,
+            0.0037183281333321772
+          ],
+          "normal_map_present": true
+        }
+      },
+      "status": "measured",
+      "pass": true
+    },
+    "G9": {
+      "measure": "cut-residue fragment templates",
+      "threshold": ">=8; thickness/width 0.25..0.7; 14..40 triangles; not 20-face icosahedra",
+      "value": {
+        "templates": {
+          "fragment-00": {
+            "triangles": 24,
+            "thickness_width": 0.30338680028331144
+          },
+          "fragment-01": {
+            "triangles": 24,
+            "thickness_width": 0.45920134325628253
+          },
+          "fragment-02": {
+            "triangles": 24,
+            "thickness_width": 0.266295474508952
+          },
+          "fragment-03": {
+            "triangles": 24,
+            "thickness_width": 0.36118624203314176
+          },
+          "fragment-04": {
+            "triangles": 24,
+            "thickness_width": 0.29849811084210887
+          },
+          "fragment-06": {
+            "triangles": 24,
+            "thickness_width": 0.29187511969989466
+          },
+          "fragment-07": {
+            "triangles": 24,
+            "thickness_width": 0.38128066884672823
+          },
+          "fragment-08": {
+            "triangles": 24,
+            "thickness_width": 0.4300242404126863
+          }
+        },
+        "used": 8,
+        "pass": true
+      },
+      "status": "measured",
+      "pass": true
+    },
+    "G10": {
+      "measure": "floor Clark-Evans R and largest DBSCAN cluster",
+      "threshold": "R 0.8..1.4; cluster <=0.20",
+      "value": {
+        "R": 1.007235451726885,
+        "largest_cluster": 0.0,
+        "count": 18
+      },
+      "status": "measured",
+      "pass": true
+    },
+    "G11": {
+      "measure": "five-bin spill radial density Spearman rho",
+      "threshold": "<=-0.6 each source; powder card per spill",
+      "value": {
+        "sources": [
+          {
+            "source": "SeatCushion_C",
+            "rho": -0.9999999999999999,
+            "bins_m": [
+              0.0,
+              0.03075971410058611,
+              0.06151942820117222,
+              0.09227914230175832,
+              0.12303885640234444,
+              0.15379857050293055
+            ],
+            "counts": [
+              1,
+              2,
+              1,
+              1,
+              1
+            ],
+            "density_per_m2": [
+              336.42289073536716,
+              224.28192715691142,
+              67.28457814707346,
+              48.060412962195294,
+              37.38032119281855
+            ],
+            "powder_present": true,
+            "pass": true
+          },
+          {
+            "source": "SeatCushion_L",
+            "rho": -0.9999999999999999,
+            "bins_m": [
+              0.0,
+              0.03164958901734992,
+              0.06329917803469984,
+              0.09494876705204976,
+              0.12659835606939968,
+              0.1582479450867496
+            ],
+            "counts": [
+              1,
+              2,
+              1,
+              1,
+              1
+            ],
+            "density_per_m2": [
+              317.7707928107858,
+              211.8471952071905,
+              63.55415856215716,
+              45.39582754439797,
+              35.307865867865054
+            ],
+            "powder_present": true,
+            "pass": true
+          },
+          {
+            "source": "SeatCushion_R",
+            "rho": -0.9999999999999999,
+            "bins_m": [
+              0.0,
+              0.03711289809174973,
+              0.07422579618349946,
+              0.1113386942752492,
+              0.14845159236699892,
+              0.18556449045874865
+            ],
+            "counts": [
+              2,
+              1,
+              1,
+              1,
+              1
+            ],
+            "density_per_m2": [
+              462.20047214971567,
+              77.0334120249526,
+              46.220047214971544,
+              33.014319439265414,
+              25.67780400831753
+            ],
+            "powder_present": true,
+            "pass": true
+          }
+        ],
+        "pass": true
+      },
+      "status": "measured",
+      "pass": true
+    },
+    "G12": {
+      "measure": "visible upright box-wall pixels relative to unaged, hero and front",
+      "threshold": "<=0.25 each seat",
+      "value": {
+        "SeatCushion_C": {
+          "box_wall_pixels": {
+            "before": {
+              "hero": 14732,
+              "front": 17657
+            },
+            "after": {
+              "hero": 0,
+              "front": 0
+            }
+          },
+          "ratios": {
+            "hero": 0.0,
+            "front": 0.0
+          },
+          "ratio": 0.0,
+          "pass": true
+        },
+        "SeatCushion_L": {
+          "box_wall_pixels": {
+            "before": {
+              "hero": 15844,
+              "front": 18839
+            },
+            "after": {
+              "hero": 1644,
+              "front": 1191
+            }
+          },
+          "ratios": {
+            "hero": 0.10376167634435748,
+            "front": 0.06321991613142948
+          },
+          "ratio": 0.10376167634435748,
+          "pass": true
+        },
+        "SeatCushion_R": {
+          "box_wall_pixels": {
+            "before": {
+              "hero": 13045,
+              "front": 17820
+            },
+            "after": {
+              "hero": 461,
+              "front": 374
+            }
+          },
+          "ratios": {
+            "hero": 0.035339210425450365,
+            "front": 0.020987654320987655
+          },
+          "ratio": 0.035339210425450365,
+          "pass": true
+        }
+      },
+      "status": "measured",
+      "pass": true
+    },
+    "G13": {
+      "measure": "seat rounded-box fit RMS",
+      "threshold": ">=0.012 m each seat",
+      "value": {
+        "SeatCushion_C": 0.013162428361440694,
+        "SeatCushion_L": 0.018251605756356825,
+        "SeatCushion_R": 0.018521554646086517
+      },
+      "status": "measured",
+      "pass": true
+    },
+    "G14": {
+      "measure": "seat centre height above deck relative to unaged",
+      "threshold": "0.10..0.25 each seat",
+      "value": {
+        "SeatCushion_C": 0.17318465020169427,
+        "SeatCushion_L": 0.12128995168422226,
+        "SeatCushion_R": 0.1117755071100943
+      },
+      "status": "measured",
+      "pass": true
+    },
+    "G15": {
+      "measure": "back top height retained",
+      "threshold": "0.40..0.65 each back",
+      "value": {
+        "BackCushion_C": 0.6479312099531919,
+        "BackCushion_L": 0.583900590685542,
+        "BackCushion_R": 0.5968306526432419
+      },
+      "status": "measured",
+      "pass": true
+    },
+    "G16": {
+      "measure": "back residue volume in lowest third",
+      "threshold": ">=0.60 each back",
+      "value": {
+        "BackCushion_C": 1.0000000000000004,
+        "BackCushion_L": 1.0000000000000004,
+        "BackCushion_R": 1.0000000000000018
+      },
+      "status": "measured",
+      "pass": true
+    },
+    "G17": {
+      "measure": "back horizontal front folds with >=8 mm prominence",
+      "threshold": ">=2 each back",
+      "value": {
+        "BackCushion_C": {
+          "folds": 2,
+          "profile_counts": [
+            1,
+            2,
+            2,
+            2,
+            2
+          ],
+          "profiles": [
+            {
+              "x_m": -0.2236413463950157,
+              "fold_z_m": [
+                0.49713263511657724
+              ],
+              "prominences_m": [
+                0.1505022070387384
+              ]
+            },
+            {
+              "x_m": -0.1078687585890293,
+              "fold_z_m": [
+                0.49713263511657724,
+                0.6471326351165774
+              ],
+              "prominences_m": [
+                0.05882770708191369,
+                0.008524649480553675
+              ]
+            },
+            {
+              "x_m": 0.007903829216957092,
+              "fold_z_m": [
+                0.5261326351165773,
+                0.6131326351165773
+              ],
+              "prominences_m": [
+                0.06607962871069079,
+                0.013814684072914918
+              ]
+            },
+            {
+              "x_m": 0.12367641702294346,
+              "fold_z_m": [
+                0.5071326351165772,
+                0.6031326351165773
+              ],
+              "prominences_m": [
+                0.06706076828570298,
+                0.012505359790476456
+              ]
+            },
+            {
+              "x_m": 0.2394490048289299,
+              "fold_z_m": [
+                0.4301326351165772,
+                0.5201326351165773
+              ],
+              "prominences_m": [
+                0.00856920663917049,
+                0.07979065589362014
+              ]
+            }
+          ],
+          "minimum_prominence_m": 0.008
+        },
+        "BackCushion_L": {
+          "folds": 2,
+          "profile_counts": [
+            1,
+            1,
+            2,
+            3,
+            2
+          ],
+          "profiles": [
+            {
+              "x_m": -0.9073754325509071,
+              "fold_z_m": [
+                0.45565683484077457
+              ],
+              "prominences_m": [
+                0.03294726055052222
+              ]
+            },
+            {
+              "x_m": -0.7901973240077496,
+              "fold_z_m": [
+                0.4726568348407746
+              ],
+              "prominences_m": [
+                0.052620122192083396
+              ]
+            },
+            {
+              "x_m": -0.673019215464592,
+              "fold_z_m": [
+                0.4966568348407746,
+                0.6196568348407747
+              ],
+              "prominences_m": [
+                0.09980592252203085,
+                0.008313735609944084
+              ]
+            },
+            {
+              "x_m": -0.5558411069214344,
+              "fold_z_m": [
+                0.4616568348407746,
+                0.5026568348407746,
+                0.5996568348407747
+              ],
+              "prominences_m": [
+                0.009177605521684784,
+                0.05541114178582851,
+                0.01570323113897104
+              ]
+            },
+            {
+              "x_m": -0.4386629983782768,
+              "fold_z_m": [
+                0.4896568348407746,
+                0.5186568348407746
+              ],
+              "prominences_m": [
+                0.13757720005147855,
+                0.043129947998019946
+              ]
+            }
+          ],
+          "minimum_prominence_m": 0.008
+        },
+        "BackCushion_R": {
+          "folds": 2,
+          "profile_counts": [
+            0,
+            1,
+            3,
+            2,
+            2
+          ],
+          "profiles": [
+            {
+              "x_m": 0.449187296628952,
+              "fold_z_m": [
+                0.5077565310001374
+              ],
+              "prominences_m": [
+                0.05971843704897355
+              ]
+            },
+            {
+              "x_m": 0.5931129455566406,
+              "fold_z_m": [
+                0.4897565310001374,
+                0.5517565310001374,
+                0.5827565310001375
+              ],
+              "prominences_m": [
+                0.16657705662445005,
+                0.11836408609730459,
+                0.0202433166958797
+              ]
+            },
+            {
+              "x_m": 0.7370385944843292,
+              "fold_z_m": [
+                0.4777565310001374,
+                0.5697565310001375
+              ],
+              "prominences_m": [
+                0.008041621924247927,
+                0.03837803049778998
+              ]
+            },
+            {
+              "x_m": 0.8809642434120178,
+              "fold_z_m": [
+                0.46875653100013737,
+                0.5577565310001374
+              ],
+              "prominences_m": [
+                0.060982066633627985,
+                0.009384275305260092
+              ]
+            }
+          ],
+          "minimum_prominence_m": 0.008
+        }
+      },
+      "status": "measured",
+      "pass": true
+    },
+    "G18": {
+      "measure": "arm-cap crest split share",
+      "threshold": "0.60..0.90",
+      "value": 0.8929778400580692,
+      "status": "measured",
+      "pass": true
+    },
+    "G19": {
+      "measure": "fallen throw distance, folds and continuity",
+      "threshold": "<=0.250 m from arm; >=3 folds >=10 mm; one connected pinned-corner hang to <=100 mm from floor; <=1 detached remnant",
+      "value": {
+        "components": 1,
+        "arm_to_floor_components": 0,
+        "continuous_arm_to_floor": false,
+        "distance_m": 0.0,
+        "folds": 4,
+        "profiles": [
+          {
+            "axis": 0,
+            "fold_positions_m": [],
+            "prominences_m": []
+          },
+          {
+            "axis": 1,
+            "fold_positions_m": [
+              -0.050733305345800575,
+              0.012143663557848544,
+              0.13160990447478188,
+              0.17143198478042632
+            ],
+            "prominences_m": [
+              0.02918043263002129,
+              0.09957701669560032,
+              0.09245331765965603,
+              0.051995002498559484
+            ]
+          }
+        ],
+        "fallen_centroid_blender_m": [
+          1.1070459772903203,
+          0.04980434197645835,
+          0.22213675330335608
+        ],
+        "pass": true,
+        "arm_to_near_floor_components": 1,
+        "floor_limit_m": 0.1,
+        "minimum_z_m": 0.07615259289741516
+      },
+      "status": "measured",
+      "pass": true
+    },
+    "G30": {
+      "measure": "changed-part triangle SAT and unchanged rigid baseline",
+      "threshold": "0 changed intersections; rigid counts exactly equal unaged",
+      "value": {
+        "changed_intersections": 0,
+        "rigid_baseline": {
+          "self/Feet": 0,
+          "self/Frame": 522,
+          "self/Rivets": 0,
+          "Feet/Frame": 0,
+          "Feet/Rivets": 0,
+          "Frame/Rivets": 272
+        },
+        "rigid_actual": {
+          "self/Feet": 0,
+          "self/Frame": 522,
+          "self/Rivets": 0,
+          "Feet/Frame": 0,
+          "Feet/Rivets": 0,
+          "Frame/Rivets": 272
+        },
+        "rigid_baseline_unchanged": true,
+        "pass": true
+      },
+      "status": "measured",
+      "pass": true
+    },
+    "G31": {
+      "measure": "export triangle count",
+      "threshold": "<=29325 and <=1.5x unaged",
+      "value": {
+        "aged": 28958,
+        "unaged": 19550,
+        "ratio": 1.481227621483376
+      },
+      "status": "measured",
+      "pass": true
+    },
+    "G32": {
+      "measure": "decimated/dense open-boundary Hausdorff distance",
+      "threshold": "<=0.0015 m",
+      "value": {
+        "SeatCushion_C": 0.00012500375428133026,
+        "SeatCushion_L": 0.0001250298023223877,
+        "SeatCushion_R": 0.00012504470348358155,
+        "BackCushion_C": 0.00012500372529029846,
+        "BackCushion_L": 0.000125,
+        "BackCushion_R": 0.000125,
+        "Throw": 0.00012505674193204186
+      },
+      "status": "measured",
+      "pass": true
+    }
+  },
+  "invariants": {
+    "fixed_geometry_bytes": true,
+    "origins_and_pivots": true,
+    "byte_identical_reexport": true,
+    "all_six_covers_simulated": true,
+    "all_cloth_settled": true,
+    "no_self_collision_exclusions": true,
+    "exported_fringe_nodes": true,
+    "fringe_visible_in_lit_hero": true,
+    "crumbs_visible_in_lit_hero": true,
+    "crumbs_visible_at_seat_front": true
+  },
+  "pass": false,
+  "not_applicable": {
+    "G20": "tunic-specific; outside the sofa assignment",
+    "G21": "tunic-specific; outside the sofa assignment",
+    "G22": "tunic-specific; outside the sofa assignment",
+    "G23": "tunic-specific; outside the sofa assignment",
+    "G24": "tunic-specific; outside the sofa assignment",
+    "G25": "tunic-specific; outside the sofa assignment",
+    "G26": "tunic-specific; outside the sofa assignment",
+    "G27": "tunic-specific; outside the sofa assignment",
+    "G28": "tunic-specific; outside the sofa assignment",
+    "G29": "tunic-specific; outside the sofa assignment"
+  },
+  "publication_allowed": true,
+  "visibility": {
+    "close_fringe_pixels": {
+      "SeatCushion_C": 240,
+      "SeatCushion_L": 212,
+      "SeatCushion_R": 333,
+      "BackCushion_C": 97,
+      "BackCushion_L": 109,
+      "BackCushion_R": 267,
+      "Throw": 2024
+    },
+    "fringe": {
+      "hero_first_hit_pixels": 22,
+      "lit_pixels_changed_by_at_least_8_levels": 2316,
+      "lit_first_hit_pixels_changed_by_at_least_8_levels": 17,
+      "pass": true
+    },
+    "crumbs": {
+      "hero_first_hit_pixels": 42,
+      "lit_pixels_changed_by_at_least_8_levels": 675,
+      "lit_first_hit_pixels_changed_by_at_least_8_levels": 42,
+      "pass": true,
+      "region": "sofa crumbs at height >=0.25 m; cyan is seat front y<-0.24 m",
+      "seat_front_first_hit_pixels": 17,
+      "lit_seat_front_pixels_changed_by_at_least_8_levels": 17
+    }
+  },
+  "pilot_exception": "Andrew accepted pass 10 for the material pilot; failed thresholds remain unchanged.",
+  "source": "tmp/age/pass10/sofa-preview.glb"
+}

@@ -7,7 +7,7 @@ static func _opaque_cull_mode(material: Material) -> int:
 	if material is BaseMaterial3D:
 		assert(material.transparency == BaseMaterial3D.TRANSPARENCY_DISABLED, "seal steel must be opaque")
 		return material.cull_mode
-	assert(material is ShaderMaterial and material.shader in [Surfaces.STEEL, Surfaces.TAPE, preload("res://app/shaders/fixture_steel.gdshader")], "seal queries require a known opaque steel shader")
+	assert(material is ShaderMaterial and material.shader in [Surfaces.STEEL, Surfaces.TAPE, QuartersSteelLibrary.SHADER, preload("res://tools/blender/quarters/wardrobe/material.gdshader"), preload("res://app/shaders/fixture_steel.gdshader")], "seal queries require a known opaque steel shader")
 	var code: String = material.shader.code
 	assert(code.contains("render_mode cull_back;"), "steel shader must retain back-face culling")
 	assert(not code.contains("ALPHA") and not code.contains("discard"), "seal shader must retain opaque depth-writing surfaces")

@@ -1,0 +1,349 @@
+{
+  "atlas": [
+    2048,
+    4096
+  ],
+  "faces": {
+    "door": {
+      "part": "Door",
+      "size": [
+        0.514,
+        2.22
+      ],
+      "axes": [
+        0,
+        1
+      ],
+      "low": [
+        -0.257,
+        0.11
+      ],
+      "rect": [
+        8,
+        8,
+        520,
+        2248
+      ],
+      "crop": [
+        817,
+        119,
+        890,
+        352
+      ],
+      "concept": "docs/art/corridors/hatch-concept-rusted.png",
+      "uv_rectangle": [
+        0.00390625,
+        0.001953125,
+        0.25390625,
+        0.548828125
+      ],
+      "pixels_per_metre": [
+        996.1089494163424,
+        1009.0090090090089
+      ]
+    },
+    "left": {
+      "part": "SidePanel_L",
+      "size": [
+        0.56,
+        2.295
+      ],
+      "axes": [
+        2,
+        1
+      ],
+      "low": [
+        -0.28,
+        0.105
+      ],
+      "rect": [
+        696,
+        8,
+        888,
+        776
+      ],
+      "crop": [
+        445,
+        338,
+        535,
+        411
+      ],
+      "uv_rectangle": [
+        0.33984375,
+        0.001953125,
+        0.43359375,
+        0.189453125
+      ],
+      "pixels_per_metre": [
+        342.85714285714283,
+        334.640522875817
+      ]
+    },
+    "right": {
+      "part": "SidePanel_R",
+      "size": [
+        0.56,
+        2.295
+      ],
+      "axes": [
+        2,
+        1
+      ],
+      "low": [
+        -0.28,
+        0.105
+      ],
+      "rect": [
+        904,
+        8,
+        1096,
+        776
+      ],
+      "crop": [
+        704,
+        273,
+        831,
+        319
+      ],
+      "uv_rectangle": [
+        0.44140625,
+        0.001953125,
+        0.53515625,
+        0.189453125
+      ],
+      "pixels_per_metre": [
+        342.85714285714283,
+        334.640522875817
+      ]
+    },
+    "top": {
+      "part": "TopPanel",
+      "size": [
+        0.556,
+        0.58
+      ],
+      "axes": [
+        0,
+        2
+      ],
+      "low": [
+        -0.278,
+        -0.29
+      ],
+      "rect": [
+        1112,
+        8,
+        1624,
+        552
+      ],
+      "crop": [
+        656,
+        272,
+        720,
+        304
+      ],
+      "uv_rectangle": [
+        0.54296875,
+        0.001953125,
+        0.79296875,
+        0.134765625
+      ],
+      "pixels_per_metre": [
+        920.863309352518,
+        937.9310344827587
+      ]
+    },
+    "stile-left": {
+      "part": "SurroundStile_L",
+      "size": [
+        0.04,
+        2.18
+      ],
+      "axes": [
+        0,
+        1
+      ],
+      "low": [
+        -0.3,
+        0.21
+      ],
+      "rect": [
+        536,
+        8,
+        600,
+        3496
+      ],
+      "crop": [
+        438,
+        259,
+        459,
+        319
+      ],
+      "uv_rectangle": [
+        0.26171875,
+        0.001953125,
+        0.29296875,
+        0.853515625
+      ],
+      "pixels_per_metre": [
+        1600.0,
+        1599.9999999999998
+      ]
+    },
+    "stile-right": {
+      "part": "SurroundStile_R",
+      "size": [
+        0.04,
+        2.18
+      ],
+      "axes": [
+        0,
+        1
+      ],
+      "low": [
+        0.26,
+        0.21
+      ],
+      "rect": [
+        616,
+        8,
+        680,
+        3496
+      ],
+      "crop": [
+        810,
+        259,
+        831,
+        319
+      ],
+      "material_source": "door image pixels [380, 0, 420, 2200], a 40 mm strip at matching physical scale; replaces the banded concept swatch",
+      "uv_rectangle": [
+        0.30078125,
+        0.001953125,
+        0.33203125,
+        0.853515625
+      ],
+      "pixels_per_metre": [
+        1600.0,
+        1599.9999999999998
+      ]
+    },
+    "header": {
+      "part": "SurroundHead",
+      "size": [
+        0.52,
+        0.055
+      ],
+      "axes": [
+        0,
+        1
+      ],
+      "low": [
+        -0.26,
+        2.335
+      ],
+      "rect": [
+        696,
+        792,
+        1656,
+        904
+      ],
+      "crop": [
+        438,
+        259,
+        841,
+        274
+      ],
+      "uv_rectangle": [
+        0.33984375,
+        0.193359375,
+        0.80859375,
+        0.220703125
+      ],
+      "pixels_per_metre": [
+        1846.1538461538462,
+        2036.3636363636363
+      ]
+    },
+    "kick": {
+      "part": "KickPlate",
+      "size": [
+        0.52,
+        0.105
+      ],
+      "axes": [
+        0,
+        1
+      ],
+      "low": [
+        -0.26,
+        0
+      ],
+      "rect": [
+        696,
+        920,
+        1336,
+        1048
+      ],
+      "crop": [
+        604,
+        563,
+        735,
+        624
+      ],
+      "uv_rectangle": [
+        0.33984375,
+        0.224609375,
+        0.65234375,
+        0.255859375
+      ],
+      "pixels_per_metre": [
+        1230.7692307692307,
+        1219.047619047619
+      ]
+    },
+    "hardware": {
+      "part": "Hinges,Handle,DoorVents,Rivets,HandlePocket",
+      "size": [
+        0.2,
+        0.2
+      ],
+      "axes": [
+        0,
+        1
+      ],
+      "low": [
+        0,
+        0
+      ],
+      "rect": [
+        696,
+        1064,
+        1720,
+        2088
+      ],
+      "crop": [
+        550,
+        814,
+        806,
+        1032
+      ],
+      "concept": "docs/art/corridors/hatch-concept-rusted.png",
+      "uv_rectangle": [
+        0.33984375,
+        0.259765625,
+        0.83984375,
+        0.509765625
+      ],
+      "pixels_per_metre": [
+        5120.0,
+        5120.0
+      ]
+    }
+  },
+  "paint_height_m": 0.0015,
+  "mapping": "one full image per face, clamped direct physical projection; hardware cylindrical/dominant planar projection",
+  "procedural_islands": false,
+  "procedural_streaks": false,
+  "supplemental_runoff_opacity": 0
+}

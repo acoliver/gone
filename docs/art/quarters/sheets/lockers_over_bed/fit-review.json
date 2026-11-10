@@ -1,0 +1,19 @@
+{
+  "rating": 8,
+  "ready": true,
+  "observations": "Both A and B display a long, low, three-door cabinet with a grey-green matte finish. The design (A) and fit (B) share the same rigid geometry: a rectangular box with three distinct door panels. Hardware is consistent across both, featuring vertical pull handles and visible hinges on the outer edges. The 'military' aesthetic is maintained through the flat, untextured surfaces and the presence of small rivets or fasteners along the door perimeters. The camera angle in B is more oblique and elevated compared to A, but the underlying manufactured shape remains identical.",
+  "defects": [
+    "In the fit (B), the top surface appears slightly lighter in tone than the front face, which may be a lighting artifact rather than a material defect, but it breaks the uniformity seen in A.",
+    "The rivets on the doors in B appear slightly less defined than in A, potentially due to the viewing distance or resolution."
+  ],
+  "fixes": [
+    "Verify that the material shading on the top face in B matches the front face to ensure a uniform 'named material' appearance.",
+    "Increase the contrast or size of the rivet details in the fit asset to match the clarity of the design asset."
+  ],
+  "images_seen": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "panel": {
+    "source": "docs/art/quarters/concept-now.png",
+    "xyxy": [
+      475,
+      348,
+      525,
+      398
+    ],
+    "reason": "Interior of generation input, excluding the bright lamp-facing corner and crop edges. Generation input and its coordinates remain saved separately."
+  }
+}

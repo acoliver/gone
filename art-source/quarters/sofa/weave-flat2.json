@@ -1,0 +1,30 @@
+{
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/sofa/weave-yarn-reference.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/sofa/weave-flat2-prompt.txt",
+    "--seed",
+    "95631",
+    "--width",
+    "768",
+    "--height",
+    "768",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/sofa/weave-flat2.png"
+  ],
+  "prompt": "A uniformly flat seamless fine plain-woven cotton upholstery textile scan. Eighty thin vertical oatmeal cotton yarns interlace with eighty thin horizontal oatmeal cotton yarns at right angles, with tiny equal-size tight alternating over-under intersections. Uniform yarn scale, uniform oatmeal beige, flat shadowless illumination. Entire square is filled with the same fine continuous weave.",
+  "input": "weave-yarn-reference.png",
+  "seed": 95631,
+  "model": "black-forest-labs/FLUX.2-klein-4B",
+  "quantize": 4,
+  "steps": 4,
+  "colour_reference": "upholstery-clean.png"
+}

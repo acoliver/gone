@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "issue": 95,
+  "note": "Stage 1 pilot props. The style prefix and tail are shared. Each prompt describes the object directly; negatives are kept to people/text/background because naming unwanted objects tended to add them. Each prop is shown brand new (the remembered state); its aged state is derived later from the model.",
+  "style": "Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish.",
+  "tail": "Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.",
+  "views": {
+    "front": "The exact same object, unchanged in shape, colour and every detail, seen straight from the front at eye level, orthographic, same plain light grey background and soft even lighting.",
+    "left": "The exact same object, unchanged in shape, colour and every detail, turned 90 degrees so that only its narrow plain left side panel faces the camera straight on, orthographic elevation, same plain light grey background and soft even lighting.",
+    "right": "The exact same object, unchanged in shape, colour and every detail, turned 90 degrees the other way so that only its narrow plain right side panel faces the camera straight on, orthographic elevation, same plain light grey background and soft even lighting.",
+    "back": "The exact same object, unchanged in shape and colour, turned around 180 degrees so that its plain flat rear panel faces the camera straight on, orthographic elevation, same plain light grey background and soft even lighting."
+  },
+  "props": [
+    {
+      "id": "storage_locker_module",
+      "size_m": [
+        0.6,
+        2.4,
+        0.6
+      ],
+      "materials": [
+        "PaintedSteel",
+        "BareSteel"
+      ],
+      "prompt": "A tall freestanding steel storage locker module for a warship cabin, 0.6 metres wide, 0.6 metres deep and 2.4 metres tall, a narrow upright box sitting flat on the floor. Grey-green satin painted steel. Rows of small round rivet heads run along every vertical and horizontal edge of the cabinet. A recessed dark steel kick plate is set back along the bottom edge. One full-height hinged door fills the front, framed by a fixed steel surround. A recessed rectangular latch pocket with a short steel lever sits in the door's right edge at waist height. A single group of three small horizontal louvred vent slots sits near the top of the door; the rest of the door is a plain smooth steel panel. Fresh, even paint.",
+      "seeds": [
+        105,
+        106,
+        107,
+        108
+      ]
+    },
+    {
+      "id": "sofa",
+      "size_m": [
+        2.2,
+        0.85,
+        0.95
+      ],
+      "materials": [
+        "PaintedSteel",
+        "Foam",
+        "SyntheticFabric",
+        "NaturalFabric"
+      ],
+      "prompt": "A three-seat sofa for officers' quarters on a military starship, 2.2 metres long. A sturdy low frame of grey-green painted steel with riveted corner plates and short steel feet, holding three plump separate seat cushions and three separate back cushions upholstered in warm charcoal-grey woven fabric with neat welted seams, and a folded oatmeal-coloured wool throw blanket draped over the right arm.",
+      "seeds": [
+        111,
+        112,
+        113,
+        114
+      ]
+    },
+    {
+      "id": "dress_uniform",
+      "size_m": [
+        0.55,
+        0.95,
+        0.25
+      ],
+      "materials": [
+        "NaturalFabric",
+        "Brass",
+        "BareSteel"
+      ],
+      "prompt": "A men's military dress uniform tunic hanging alone on one plain steel coat hanger, its hook visible at the top, nothing else on the hanger: a dark navy-blue wool tunic with a high standing collar, a single row of polished brass buttons down the front, two small brass collar insignia, a short row of coloured ribbon bars with one brass medal on the left breast, and stiff shoulder boards. Long sleeves hang straight down. Crisp, pressed, brand new cloth, filled out by its own tailoring.",
+      "seeds": [
+        125,
+        126,
+        127,
+        128
+      ],
+      "note": "Tunic only. The image model kept hanging the trousers on a separate clip hanger; the trousers become their own small prop. The tunic is what reads as his uniform in the wardrobe."
+    }
+  ],
+  "view_policy": "Hunyuan's primary input is the hero view alone. A generated view is passed to Hunyuan only if the reviewer confirms it shows the same object at the requested angle; a view that disagrees is dropped, because disagreeing views damaged meshes in the Battlestar work."
+}

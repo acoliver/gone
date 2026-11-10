@@ -6,7 +6,7 @@ Keep the opening's authored bay in a local frame, give the playable ship one pur
 
 This is an architecture and implementation contract, not a claim that the feature is built or tested. Implementation starts from `main`. The inspected `art-corridor-hatches` checkout supplies the art references. No game code changes accompany this document.
 
-The 21 decisions in `tmp/connectors/build-brief.md` govern this feature. In particular, all four internal D14 hatches open by cranking, regardless of the older map's rust mark at X=0; other-deck hatches never open. The map's example D13 opening and four side-door stations in neighboring sections are superseded by the brief's closed other-deck hatches and three stations. Do not import additional rooms, radiation, atlas trunks, powered lifts, card readers, or story revelations.
+The 21 decisions in `tmp/connectors/build-brief.md` govern this feature. In particular, all four internal D14 hatches open by cranking, regardless of the older map's rust mark at X=0; other-deck hatches never open except `D16-C-001-H-AFT`, added for the quarters route in #114. The map's example D13 opening and four side-door stations in neighboring sections are superseded by the brief's closed other-deck hatches and three stations. Apart from the quarters in #114, do not import additional rooms, radiation, atlas trunks, powered lifts, card readers, or story revelations.
 
 References are `docs/art/corridors/README.md`, `d14-local-plan.png`, `connector-section.png`, their metric source `build-connector-maps.py`, and `docs/art/ship/3d/ship_atlas.json`. The map builder establishes the quarter-turn and aft ladder clearance used below. This design uses the source geometry and accompanying text; it does not claim an independent visual inspection of the PNGs. The atlas supplies axes and deck datums, not a runtime level or confirmed exterior sensor data.
 
@@ -382,7 +382,7 @@ Write failing tests before implementing each contract. The existing runner auto-
 
 | Test file | Required cases |
 | --- | --- |
-| `ship_layout_test.gd` | Exact coordinate anchors independently pinned, 30 floors, three D14 sections, two wells, 60 connectors/lifts, unique ids, references, four CRANK ids only, all face destination numbers, aft-well clearance, malformed records. |
+| `ship_layout_test.gd` | Exact coordinate anchors independently pinned, 30 floors, three D14 sections and D16 section 42, two wells, 60 connectors/lifts, unique ids, references, four D14 CRANK ids plus the #114 D16 aft hatch, all face destination numbers, aft-well clearance, malformed records. |
 | `ship_geometry_test.gd` | Render/collider solid identity, no double shared walls, both portal faces, exact apertures, open/closed blocker membership, landing floor holes, immutable ordering, all required wall pieces. |
 | `bay_frame_test.gd` | T/inverse and quarter-turn basis, all seven pods and five exit poses, rod/hatch/switch pins, local route covariance, camera and light orientations, smoke inside/outside, one-time bay crossing. |
 | `portal_crossing_test.gd` | Correct/incorrect direction, wall-band faces, out-of-aperture plane crossing, closed door, wrong deck, repeated crossing and first-event latch. |
@@ -491,6 +491,37 @@ Main risks are concrete:
 
 No product-direction question blocks implementation. The brief settles deck availability, hatches, labels, movement limits and audio source. Sound quality remains for Andrew's listening judgment after assets exist. Frame-time parity, raster clarity at capture resolution, and swing/landing clearance require measured runtime evidence. These are acceptance tasks, not reasons to reopen decisions 1 through 21. Crew counts, remote rooms, radiation causes and future lift behavior remain outside this feature.
 
+## D16 quarters route (#114)
+
+D16 section 42 is built from X 36 to 60 at floor Y -11. Its corridor has the
+same paired side-door stations as D14 section 42 and regular white strips
+under secondary power. The aft ladder well reaches the D16 aft connector.
+`D16-C-001-H-AFT` is the only off-D14 hatch with CRANK policy, so that landing
+can reach the quarters corridor. Every other off-D14 hatch remains
+NEVER_OPENS, including the corridor's aft boundary at X 60. This deliberate
+exception is the location decision in issue #114.
+
+The quarters door is `D16-S-042-SIDE-009-STARBOARD`, centred at
+(45, -11, 1.5), with a 1.2 by 2.4 m clear opening. It uses the existing
+PRESS_SLIDE policy and a corridor-face manual release. The leaf travels 1.35 m
+into its shared sliding-door pocket. No tool, badge or local-power gate is used.
+All other D16 side doors remain NEVER_OPENS.
+
+The room interior is X 41..49, Y -11..-7.8, Z 1.7..7.7, with 0.2 m shell walls.
+`QuartersLayout.to_world(x, y, z)` maps the approved room-local frame to
+(49 - x, -11 + y, 1.7 + z). The room-side doorway centre is (45, -11, 1.7).
+The far left and right floor corners are (49, -11, 7.7) and (41, -11, 7.7).
+The complete shell envelope is asserted clear of both connectors, lifts and
+ladder wells. The corridor owns the pierced entrance wall; shell and furniture
+collision come from the shared pure geometry recipes.
+
+`Game.quarters` owns the persistent first-entry and console sequence state.
+Accepted walking across the open threshold on D16 triggers Remembered. The
+console uses `Interactions.Kind.CONSOLE`. GameStep advances corruption for
+60 ticks, the placeholder message for 180 ticks and the fault for 60 ticks.
+Present then replaces Remembered in the same presentation tick. Re-entry does
+not reset it. This persistence lasts for the current Game instance; no save
+system is introduced by the demo.
 ## Power room terminal and status panel
 
 The six power-room stations use the generated standing console and keyboard in `assets/props/terminal/`. The housing sits flush on the wall and floor, with its integrated keyboard deck at Y=1.00 m and screen centre at Y=1.40 m. Keyboard placement comes from `keyboard-placement.json`. The active station renders its existing Naleya/Spanish state on `DisplayPlane`; dead screens are dark and both busted screens are cracked. One busted station is missing its keyboard. The collision hulls cover 1.10 m width, 0.73 m depth and 1.70 m height, with the activation point reachable in front. The north-wall status panel remains centered at X=27 m, with its screen at Y=2.10 m. Its board shows the ship profile, current location, damage status and system state. The native and perceived Spanish board layers crossfade using the shared writing-memory attention timing. See `art-source/terminal/` and `art-source/status_panel/` for generation records.

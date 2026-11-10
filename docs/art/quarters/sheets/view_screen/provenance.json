@@ -1,0 +1,27 @@
+{
+  "command": "env HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 /Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-z-image-turbo --model filipstrand/Z-Image-Turbo-mflux-4bit --quantize 4 --steps 8 --seed 363 --width 1024 --height 1024 --output /Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/tmp/props/contacts/view_screen/hero-s363.png --prompt 'Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish. A very thin wall-mounted military display panel, a flat horizontal steel frame with a blank black glass screen. Overall width 1.8 metres and height 1.05 metres, but only eight centimetres thick: the edge thickness is less than one twentieth of the width. A shallow solid back, not a deep box or cabinet. A narrow grey-green satin painted steel outer rim surrounds a separate recessed dark inner bezel and one broad flat black glass display face. Small chamfers and one small bare-steel rivet at each of the four front corners. Fresh even factory paint. The entire object is just the thin wall-hung display panel, no stand, legs, base, bracket or furniture. Nearly frontal view with only a narrow side edge visible. Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.'",
+  "prompt": "Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish. A very thin wall-mounted military display panel, a flat horizontal steel frame with a blank black glass screen. Overall width 1.8 metres and height 1.05 metres, but only eight centimetres thick: the edge thickness is less than one twentieth of the width. A shallow solid back, not a deep box or cabinet. A narrow grey-green satin painted steel outer rim surrounds a separate recessed dark inner bezel and one broad flat black glass display face. Small chamfers and one small bare-steel rivet at each of the four front corners. Fresh even factory paint. The entire object is just the thin wall-hung display panel, no stand, legs, base, bracket or furniture. Nearly frontal view with only a narrow side edge visible. Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.",
+  "seed": 363,
+  "model_id": "filipstrand/Z-Image-Turbo-mflux-4bit",
+  "sha256": "180c3d8e528058dd8ee89c674b29eefd97ba1b35d7a5a1f111a3a34534cee0a1",
+  "elapsed_seconds": 74.75,
+  "selection": {
+    "chosen_seed": 363,
+    "rating": 8,
+    "approved": true,
+    "observations": "Panel A shows the approved room context with the display mounted on a wall. Panel B shows the accepted locker style, which is a tall vertical cabinet and not the target object. Panels C1, C2, C3, and C4 show variations of the wall-mounted display panel. C3 (seed 363) presents the most accurate nearly frontal view with a visible narrow side edge, matching the brief's requirement for a thin profile.",
+    "defects": [
+      "The side edge thickness in C3 appears slightly thicker than the 'less than one twentieth of the width' constraint, though it is the thinnest among the candidates.",
+      "The 'small bare-steel rivet' at the corners is not clearly distinguishable from the painted surface in the current resolution.",
+      "The 'recessed dark inner bezel' is present but the depth of the recess is subtle."
+    ],
+    "fitting_landmarks": {
+      "outer_rim": "Grey-green satin painted steel frame surrounding the entire unit",
+      "inner_bezel": "Recessed dark frame immediately surrounding the glass",
+      "display_face": "Broad flat black glass surface",
+      "side_profile": "Narrow vertical edge visible on the right side, indicating shallow depth",
+      "corner_hardware": "Small fasteners visible at the four corners of the outer rim"
+    }
+  },
+  "inputs_policy": "Single approved hero; no independently hallucinated side/back views."
+}

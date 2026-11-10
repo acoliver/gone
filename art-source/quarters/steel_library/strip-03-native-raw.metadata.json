@@ -1,0 +1,34 @@
+{
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/steel_library/strip-03-native-input.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/steel_library/strip-03-native-prompt.txt",
+    "--seed",
+    "695009",
+    "--width",
+    "1536",
+    "--height",
+    "128",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/steel_library/strip-03-native-raw.png"
+  ],
+  "prompt": "Edit the reference into one flat shadowless edge-to-edge painted warship steel material face. Muted medium grey-green paint and dark reddish brown iron oxides; preserve reference pigment colours. After 1000 years in a dry sterile sealed oxygenated ship. Most of the paint is still intact: broad centre is quiet solid muted grey-green steel paint, with gentle natural pigment variation. Small thin ragged chips and dark iron oxide concentrate at outer edges and corners, plus a few isolated tiny fastener scars. No broad pale peeling, no white patches, no plaster, no stone, no coarse mottling. No object, hardware, border, frame, seams, perspective, shading, cast shadows or baked illumination. No periodic marks, straight stripes, regular dots, repeated motifs, mould or biological growth. A narrow steel trim face, small broken chips near both long edges, a mostly intact painted middle. No continuous rust border or long stripe. \n\nPreserve the grey-green paint pigment and the sparse irregular edge corrosion of the input. Refine photographic surface detail at higher native resolution. Keep most broad paint intact. Do not add large new chips, pale patches, repeated markings or coarse noise.\n",
+  "input": "strip-03-native-input.png",
+  "parent_raw": "strip-03-raw.png",
+  "model": "FLUX.2-klein-4B",
+  "quantize": 4,
+  "steps": 4,
+  "seed": 695009,
+  "pixels": [
+    1536,
+    128
+  ]
+}

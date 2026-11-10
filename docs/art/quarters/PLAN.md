@@ -1,6 +1,6 @@
 # Protagonist's quarters: plan (#95)
 
-Status: proposal, 2026-11-07. Nothing here is built yet.
+Status: in progress. Layout approved 2026-11-07; stage 1 (contact sheets) is next.
 
 ## What Andrew decided
 
@@ -17,11 +17,28 @@ Status: proposal, 2026-11-07. Nothing here is built yet.
   There are no windows and no books or paper.
 - **Two states:** he enters, sees the room as he remembers it, and looks up from the console into the present.
 - **Age:** about a thousand years in sealed, sterile, oxygenated air (ruling 25 in [`decisions.md`](../../design/decisions.md), #93/#94).
-- **Location:** not fixed. Andrew is thinking about two decks below the opening, which would make it D16. That deck band (D13–16) already lists proposed awake-crew quarters in the [ship atlas notes](../ship/README.md). Both ladder wells reach every deck, so D16 is reachable without new geometry rules. The room design below does not depend on the deck.
+- **Location:** fixed by [issue #114](https://github.com/acoliver/gone/issues/114). The quarters occupy the starboard side of D16 section 42, behind the station-offset-9 door at X 45. The aft ladder well and the cranked D16 aft connector hatch provide the route. This supersedes the D14 placement in the puzzle-progression proposal.
 - **Method:**
   - No prop is modelled by hand or built from primitives in Blender or Godot.
   - Every prop starts as a contact sheet of generated images. The local Hunyuan3D install turns it into a mesh, and the mesh is then fitted and adjusted, following the `concept-to-3d-asset` skill.
   - Build the unaged props first, then build tools that derive the aged versions from them.
+
+## Methods this reuses
+
+These have already been proven in this project, and the plan builds on them rather than inventing new ones.
+
+- **The round hatch** (now merged to `main`):
+  - **Geometry:** generated images of the frame and leaf (`art-source/hatch/`) went through Hunyuan into parts, which were fitted and repaired (`tools/blender/hatch_fit.py`, `hatch_generated_*.py`).
+  - **Paint colour:** generated, shadowless images of the concept paint, packed into an atlas (`tools/prepare_hatch_paint.py`).
+  - **Masks:** baked per model in Blender: ambient occlusion, curvature, coverage and weather (`tools/blender/hatch_bake.py`).
+  - **Material:** the shared, approved `app/shaders/weathered_steel.gdshader` layers paint, bare steel and oxide over the CC0 Poly Haven steel scans already in `art-source/steel` and `assets/surfaces/steel`. The ship's shells and doors use the same shader.
+- **The stasis pods** (#88, on `main`):
+  - **Geometry:** clean-cage fitting.
+  - **Glass:** the thin-glass shader `app/pod_glass.gdshader`. It needs a real opening, a reflection probe and `specular_occlusion_disabled`.
+  - **Plastic:** glossy plastic with its clearcoat restored in code.
+  - **Verification:** the glass gates and the capture and raycast diagnostics.
+
+The quarters props use the hatch's texture and weathering method for everything metal, and the pod glass for every pane: the view screen, the console screen cover and the photo-frame glass. The steel and hatch work is on `main`, so its mask and material methods are available to stage 2.
 
 ## Decisions I made, and why
 
@@ -30,14 +47,25 @@ Status: proposal, 2026-11-07. Nothing here is built yet.
    - **Why:** the rest of the ship already builds rooms this way, and its colliders, streaming and lighting depend on it.
    - **What's new:** a clean "as built" surface set for the remembered state. The existing worn surfaces in `assets/surfaces/` are already aged.
 2. **One base asset per prop; the aged state is derived from it.**
-   - **Decision:** each prop has one unaged GLB, and its aged GLB is produced from it by the aging toolkit. The two keep the same origin, pivots, part names and footprint.
-   - **Why:** the memory transition swaps states in place, so the two must line up exactly, and a second, independent generation would not.
-   - **Asset count:** two per prop, unaged and aged.
-3. **Bake the aging into assets rather than doing it in a runtime shader.**
-   - **Decision:** bake it.
-   - **Why:** the decay changes geometry (collapsed foam, torn cloth, curled boots, dust heaps). A shader can blend colour but cannot do that.
-   - **Later option:** a runtime cross-fade between the two baked states, as a visual effect for the transition.
-4. **Pilot before mass production.**
+   - **Decision:** each prop has one unaged model. Its aged state comes from that model, never from a second, independent generation. Both states keep the same origin, pivots, part names and footprint.
+   - **Why:** the memory transition swaps states in place, so the two must line up exactly.
+3. **How each prop gets its aged state depends on whether its shape changes.**
+   - **Hard props whose shape stays put** (lockers, desk, console, wardrobe, table, chairs, bed frame, screen housing, frame):
+     - one mesh, with the geometry and weather masks baked once;
+     - two baked albedo/normal/ORM sets: "as built" (paint intact, no oxide, no dust) and "after a thousand years" (paint flaked, oxide, streaks, dust).
+     - The transition swaps cached materials. The locker pilot chose separate baked sets so the existing hatch, door and ship-shell shader stays unchanged. A quarters shader reuses the hatch detail scans and scan-sampling include.
+   - **Props whose shape changes** (mattress, quilt, pillows, cushions, throw, garments, jacket, boots, and the dust and debris heaps):
+     - a second mesh produced by the aging toolkit's geometry transforms, baked as its own asset.
+     - A shader can blend colour but cannot collapse foam or tear cloth.
+4. **The photo ages like everything else.** Andrew: the photo doesn't change except for what a thousand years would do.
+   - **Decision:** a printed photo on a durable polymer plate, behind pod-style glass, in a metal frame.
+   - **After a thousand years:**
+     - the dyes have faded and shifted in colour;
+     - the glass is hazed with dust;
+     - the frame has corroded;
+     - the couple are still faintly recognisable.
+   - **Why a print:** a digital frame would simply go dark, which isn't what he described. A single keepsake print fits his "no paper books" rule better than a screen does.
+5. **Pilot before mass production.**
    - **Decision:** take three props through every stage first:
      - a wall locker module (painted steel);
      - the sofa (foam and fabric);
@@ -66,7 +94,7 @@ Every prop's parts are split along the lines the aging toolkit needs (stage 3). 
 | His dress uniform on hanger | hanger, jacket, insignia | | Pilot prop; insignia separate (metal) |
 | Her dresses × 2 on hangers | hanger, garment | | |
 | His boots | pair | | |
-| Digital photo frame | housing, display | | Dead or still on in the present is an open question |
+| Photo frame | frame, glass, photo plate | | Ages physically: faded dyes, hazed glass, corroded frame |
 | Mugs × 2, plates × 2 | each | | Ceramic |
 | Hairbrush, jewellery box, medal case, data tablets × 2 | each | | Small; one contact sheet can hold several |
 
@@ -75,13 +103,20 @@ That is about 25 distinct props, a few of them repeated.
 ## Stage 0: room layout
 
 **Plan view.** Draw a top-down plan from concept B and place each prop with its footprint and its clearance to walk past.
-- Proposed room: about 5.6 m along the hall by 5.0 m deep, with the ship's 3.2 m clear height. The 6 m spacing between side-door stations allows this width.
+- Room: 8.0 m along the hall by 6.0 m deep, with the ship's 3.2 m clear height. Andrew found 5.6 × 5.0 m too small. The quarters are on a deck that isn't built yet, so the 6 m spacing between D14's side doors doesn't constrain them.
 - Entrance in the near wall. Bed centred on the far wall. Living area and screen on the left. Desk, console and wardrobe on the right. Table in the middle-left.
-- Andrew approves the plan view before any prop is generated.
+- Andrew approved the 8 × 6 m plan view on 2026-11-07 (`plan.png`, `layout.json` rev 3).
 
 **Camera.** Record the doorway camera that matches the concept, for later comparison captures.
 
-**Output.** `docs/art/quarters/layout.json` with the room size and every prop's position, footprint and facing, plus a plan image.
+**Output.** `docs/art/quarters/layout.json` holds the room size and every prop's position, footprint and facing. `tools/art/quarters_plan.py` renders `plan.png` from it and checks the layout, writing the results to `plan-checks.json`:
+- footprints inside the room, with no overlaps;
+- every use point reachable by the 0.6 m player capsule;
+- walkways at least 0.9 m wide on the widest route;
+- no storage on the entrance wall;
+- the doorway clear.
+
+One change from the concept: the dining table sits right of the door path. On the left it blocked the aisle beside the bed.
 
 ## Stage 1: contact sheets (unaged)
 
@@ -123,10 +158,12 @@ This stage follows the skill's stages 3 to 8 for each prop:
 5. **UV-unwrap and set materials.**
    - Every surface gets a UV layout at a consistent texel density, because the aging masks live in UV space.
    - Every surface gets a named material class from this list: PaintedSteel, BareSteel, Aluminium, Brass, HardPlastic, Ceramic, Glass, Display, Foam, NaturalFabric, SyntheticFabric, Leather, Rubber.
-6. **Textures.**
-   - **Colour from the sheet:** project it with the local Hunyuan3D-Paint port (`paint.py`, with delighting on; never run two paint jobs at once).
-   - **Authored materials:** tileable, per material class.
-   - **Choosing between them:** test both on the pilot props and keep whichever the reviewer and the measurements favour. The README there says paint is out of scope, but `paint.py` and painted ship artifacts exist, so measure rather than assume.
+6. **Textures.** Use the hatch method.
+   - **Metal:** bake ambient occlusion, curvature, coverage and weather masks into a per-prop atlas, then shade with the hatch scan method. The locker pilot uses `quarters_steel.gdshader` with two baked finish sets, leaving `weathered_steel.gdshader` unchanged.
+   - **Concept colour:** where a prop needs concept colour (painted panels, the console face), generate shadowless paint images and pack them the way `prepare_hatch_paint.py` does.
+   - **Non-metal classes:** fabric, leather, ceramic, plastic and the photo get the same mask atlas and their own small shaders or materials.
+   - **Glass:** every pane uses the pod glass shader.
+   - **Hunyuan's texture painter** (`paint.py`) is a fallback only, if a prop's colour can't be covered this way.
 7. **Export.** Export with a build script and the editable `.blend` in `tools/blender/quarters/<prop>/`. The export must be byte-reproducible.
 8. **Check.** Run the skill's geometry checks: winding, manifoldness, self-intersection, triangle count. Render from fixed cameras, and have the reviewer compare against the contact sheet and concept B.
 
@@ -134,7 +171,7 @@ This stage follows the skill's stages 3 to 8 for each prop:
 
 ## Stage 3: aging toolkit
 
-These are reusable tools, not one-off edits. They run headless (Blender `bpy` plus NumPy/PIL), are seeded and versioned, and take a per-prop parameter file. They read an unaged GLB plus its `.blend` and write the aged GLB with the same origin, pivots and part names.
+These are reusable tools, not one-off edits. They run headless (Blender `bpy` plus NumPy/PIL), are seeded and versioned, and take per-prop parameters. They read the unaged source. Rigid props keep one exported mesh and receive two baked finish sets. Deformed props receive an aged GLB with the same origin, pivots and part names. The locker pilot's reusable baker is `tools/blender/quarters_aging/bake_masks.py`; its two steel finishes come from `tools/quarters_aging/bake_finishes.py`.
 
 **Masks, baked per mesh in UV space:**
 
@@ -146,7 +183,7 @@ These are reusable tools, not one-off edits. They run headless (Blender `bpy` pl
 | Gravity streak fields | Below fasteners, edges and holes | Rust runs down from them |
 | Contact | Where parts touch | Staining and corrosion at joints |
 
-**Material transforms**, one function per material class, all driven by the masks and the age (ruling 25):
+**Material transforms**, one per material class, driven by the masks and the age (ruling 25). Metal reuses the hatch's flaking, oxide, streak fields and detail scans. The locker pilot bakes two atlas sets from those masks, with intact paint and zero oxide or dust in the remembered finish. It does not change the shared shader's output.
 
 | Material class | Change after 1000 years |
 | --- | --- |
@@ -177,7 +214,7 @@ All of these also get matching roughness and normal changes.
 - **Debris.** Fibre and dust heaps go under garments and paint flakes under rusted surfaces. They are scattered as instances of a few generated debris pieces.
 - **Dust.** Dust is mostly texture, plus a thin shell only where heaps need volume.
 
-**The room shell** gets the same material transforms, so the clean "as built" wall set and its aged version agree. Ideally the existing worn surfaces could be reproduced by aging the clean set, which would make the toolkit's look consistent with the corridors.
+**The room shell** uses the same shader as every other ship shell. For the remembered state, its "as built" setting is the shader with paint intact and no oxide. That gives one shared look with the corridors and needs no separate clean wall set.
 
 **Checks for each aged prop:**
 - Measured numbers:
@@ -189,7 +226,20 @@ All of these also get matching roughness and normal changes.
 
 ## Stage 4: room assembly and the two states
 
-1. **Build the room shell.** Build it at the agreed location from `layout.json`, with the clean and aged surface sets.
+Issue #114 puts the playable demo before the remaining asset batches. It uses the
+locker, sofa and tunic pilots as they are, including their recorded limits. Every
+other inventory entry has a plain stand-in. Replace those stand-ins with finished
+props in later batches without changing the approved placements.
+
+`QuartersInventory` reads `layout.json` once for both state roots and collision.
+`QuartersLayout` owns the room-local to world mapping. Missing props and small
+items use `Standin_<id>` names. Mixed storage slots add `_slot_<index>` or
+`_infill` to that prefix. A `Placement_<id>` group keeps each main prop's place in
+both states. The wardrobe carcass and its open door are stand-ins; the hanging
+tunic and its aged fragments are pilot meshes.
+
+
+1. **Build the room shell.** The demo uses the shared room geometry and weathered-steel surfaces at D16, with the interior at X 41..49, Y -11..-7.8, Z 1.7..7.7.
 2. **Place the props.** Place every prop twice under two roots, Remembered and Present, sharing one set of transforms. The transition hides one root and shows the other in the same frame.
 3. **Light both states.**
    - **Remembered:** warm and bright, with the bedside lamps on.
@@ -198,10 +248,11 @@ All of these also get matching roughness and normal changes.
 4. **Add colliders and interactions.**
    - Colliders cover the furniture.
    - The console is the video-message trigger.
-   - The badge sits somewhere in the room.
+   - The badge remains a later gameplay prop and is outside #114.
    - Entry follows puzzle-progression P03: a manual release or the local circuit, never the badge inside.
 
-   These are gameplay slices (puzzle progression "Slice B") with their own issues.
+   Issue #114 implements the manual release and placeholder console sequence.
+   The badge and finished message content remain later gameplay work.
 5. **Verify.**
    - Doorway captures in both states, matched to the concept camera, reviewed against `concept-pair.png`.
    - Perf runs under the unchanged policy.
@@ -213,23 +264,43 @@ Each step gets its own issue under #95 and goes to PRs on issue branches.
 
 1. Stage 0 layout and plan view. Andrew approves.
 2. Contact-sheet tool, plus pilot sheets for the locker module, sofa and uniform.
-3. Pilot meshes through stage 2, including the paint-versus-authored texture test.
+3. Pilot meshes through stage 2, with hatch-method masks and the "as built" end of the weathered-steel range. This step waits for the branch-1 steel and hatch work to merge.
 4. Aging toolkit v1 on the three pilot props.
 5. Pilot review with Andrew: unaged and aged, side by side in the doorway capture.
-6. Remaining inventory in batches, by material class: hard steel, then soft goods, then garments and small items.
-7. Room shell, clean and aged surface sets, and assembly in both states.
-8. Gameplay slice (entry, console video, badge) with the puzzle-progression work.
-9. Update the `concept-to-3d-asset` skill with the contact-sheet and aging lessons.
+6. Playable D16 demo in #114: room shell, both states, manual release and placeholder console sequence, using the three pilots and named stand-ins.
+7. Remaining inventory in batches, by material class: hard steel, then soft goods, then garments and small items.
+8. Later gameplay work: finished message content and the badge.
+9. Update the `concept-to-3d-asset` skill with the hatch texture method, contact sheets and aging lessons.
 
 ## Risks
 
 - **Views that disagree.** Multi-view sheets that disagree can damage meshes; the Battlestar ships melted this way. The single hero view is the fallback, and the reviewer checks agreement before Hunyuan runs.
 - **Thin and soft shapes.** Hunyuan does worst on thin and soft things: garments, quilts, plates. Generating each in its final pose and fitting it as its own closed volume keeps it usable, and cloth simulation does the rest.
-- **Texture painting.** It is the least proven step locally. The pilot measures it before anything depends on it.
+- **"As built" steel.** The weathered-steel shader was tuned for old, worn surfaces. Its clean end is new territory, and the pilot checks it against the remembered concept.
 - **GPU contention.** Other sessions share the GPU, so long jobs queue one at a time, and performance runs wait for an idle machine.
 
-## Open questions for Andrew
+## Location decision
 
-1. **Photo frame in the present:** still faintly showing the two of them, or dead?
-2. **Room size:** is about 5.6 × 5.0 m right, or should the plan view try something else?
-3. **Location:** D16, or another deck once the deck plan is set?
+D16 is settled in issue #114. The room is reached from the aft well through
+`D16-C-001-H-AFT`. No additional location decision is pending.
+
+## Pilot decision: soft props use Blender cloth simulation (2026-11-07)
+
+**What happened.** Hand-shaped cloth in the first pilot passes didn't converge:
+- the tunic rated 2/10 and read as a rigid shell with post-like sleeves;
+- the sofa throw read as a flat sheet;
+- the cushions read as hard slabs.
+
+**Why.** Modelling soft fabric piece by piece produces hard forms.
+
+**Decision.** Soft props are made with Blender's cloth simulator. It is part of the installed Blender and runs headless.
+- **Garments:** flat pattern panels are sewn together and settled on the hanger, using a thin shoulder-form collider that isn't exported.
+- **Throws and bedding:** a sheet is dropped and settled over the furniture's collision shape.
+- **Cushions:** a closed cloth shell with internal pressure, settled on the frame.
+
+**How the Hunyuan guide is still used.** It sets the silhouette and proportions, and the simulation result is checked against it. The baked result is the exported mesh.
+
+**Aging.** The same simulator produces the aged state:
+- lower the pressure to collapse foam;
+- weaken the cloth and release the pins so it slumps;
+- delete faces along stress lines to tear it.

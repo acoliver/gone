@@ -1,0 +1,27 @@
+{
+  "command": "env HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 /Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-z-image-turbo --model filipstrand/Z-Image-Turbo-mflux-4bit --quantize 4 --steps 8 --seed 227 --width 1024 --height 1024 --output /Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/tmp/props/contacts/desk/hero-s227.png --prompt 'Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish. A built-in military warship cabin desk, 1.6 metres wide, 0.70 metres deep, 0.76 metres tall. The broad flat worktop is the highest point, with nothing rising above it. Grey-green satin painted steel, a left pedestal with three separate equal-width drawers and recessed bare steel pulls, a slender steel right end frame, and a rear structural closing plate below the worktop behind the knees. A clear open knee well fills the right two thirds. Folded steel worktop edges, small round rivets down corners, dark inset kick plate below the drawer bank, fresh even paint. Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.'",
+  "prompt": "Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish. A built-in military warship cabin desk, 1.6 metres wide, 0.70 metres deep, 0.76 metres tall. The broad flat worktop is the highest point, with nothing rising above it. Grey-green satin painted steel, a left pedestal with three separate equal-width drawers and recessed bare steel pulls, a slender steel right end frame, and a rear structural closing plate below the worktop behind the knees. A clear open knee well fills the right two thirds. Folded steel worktop edges, small round rivets down corners, dark inset kick plate below the drawer bank, fresh even paint. Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.",
+  "seed": 227,
+  "model_id": "filipstrand/Z-Image-Turbo-mflux-4bit",
+  "sha256": "33622c157dcb3bb205e60f8497f778c34ef2453b70b413038e7fbccf3aa9290d",
+  "elapsed_seconds": 65.482,
+  "selection": {
+    "chosen_seed": 227,
+    "rating": 8,
+    "approved": true,
+    "observations": "All six panels are visible. Panel A shows the approved room context. Panel B shows the accepted locker style. Panels C1 (225), C2 (226), C3 (227), and C4 (228) show desk variations. Seed 227 is the most coherent candidate, featuring a left pedestal with three drawers, a rear closing plate, and a slender right end frame.",
+    "defects": [
+      "The worktop in seed 227 features a raised rear lip, which contradicts the brief's requirement that the flat worktop is the highest point with nothing rising above it.",
+      "The drawer pulls appear to be protruding bars rather than recessed bare steel pulls.",
+      "The right end frame is a solid vertical panel rather than a slender frame, though it is the most slender of the candidates."
+    ],
+    "fitting_landmarks": {
+      "worktop": "Broad flat top surface with folded edges and a rear lip.",
+      "left_pedestal": "Box structure containing three vertically stacked drawers.",
+      "rear_plate": "Solid vertical panel closing the rear of the knee well.",
+      "right_frame": "Vertical panel at the right end supporting the worktop.",
+      "knee_well": "Open space between the left pedestal and right frame."
+    }
+  },
+  "inputs_policy": "Single approved hero; no independently hallucinated side/back views."
+}

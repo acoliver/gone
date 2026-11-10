@@ -1,0 +1,41 @@
+{
+  "id": "medal_case",
+  "bounds_gltf": [
+    [
+      -0.07000000029802322,
+      0.0,
+      -0.07175000011920929
+    ],
+    [
+      0.07000000029802322,
+      0.1210000067949295,
+      0.07175000011920929
+    ]
+  ],
+  "triangle_limit": 1500,
+  "required_nodes": [
+    "CaseFloor",
+    "SideL",
+    "SideR",
+    "Front",
+    "Back",
+    "Lining",
+    "Lid",
+    "LidLining",
+    "Hinge_0",
+    "Hinge_1",
+    "FrontClasp",
+    "Medal",
+    "Ribbon",
+    "RibbonStripe",
+    "RibbonStripe.001",
+    "MedalStar"
+  ],
+  "axis_contract": "Blender +Z up/-Y front, export_yup=True -> glTF +Y up/+Z front",
+  "age_years": 1000,
+  "base_origin": [
+    0,
+    0,
+    0
+  ]
+}

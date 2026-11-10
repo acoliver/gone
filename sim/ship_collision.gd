@@ -60,7 +60,7 @@ func deck_set(deck: int) -> ColliderSet:
 		var solids: Array[ShipGeometry.SolidSpec] = _static[deck].duplicate()
 		for id: StringName in _layout.door_ids():
 			var door := _layout.door(id)
-			if door.deck_number() != deck or door.kind() == ShipLayout.DoorKind.SIDE:
+			if door.deck_number() != deck or (door.kind() == ShipLayout.DoorKind.SIDE and door.policy() == ShipLayout.Policy.NEVER_OPENS):
 				continue
 			if id == ShipLayout.BAY_DOOR_ID:
 				solids.append_array(ShipGeometry.open_door_solids(door, _run_seed) if _open_doors.has(id) else ShipGeometry.door_blockers(door))

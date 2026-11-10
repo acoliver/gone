@@ -1,0 +1,422 @@
+{
+  "asset": "bedside",
+  "bounds_gltf": {
+    "actual": [
+      [
+        -0.25,
+        0.0,
+        -0.22500000521540642
+      ],
+      [
+        0.25,
+        0.6000000238418579,
+        0.22809999937204914
+      ]
+    ],
+    "expected": [
+      [
+        -0.25,
+        0.0,
+        -0.225
+      ],
+      [
+        0.25,
+        0.6,
+        0.225
+      ]
+    ],
+    "max_error_m": 0.0030999993720491337,
+    "tolerance_m": 0.01,
+    "pass": true
+  },
+  "origin_at_floor": {
+    "min_y_m": 0.0,
+    "pass": true
+  },
+  "required_nodes": {
+    "missing": [],
+    "pass": true
+  },
+  "hierarchy": {
+    "Carcass": {
+      "actual": "Bedside",
+      "expected": "Bedside",
+      "pass": true
+    },
+    "Drawers": {
+      "actual": "Bedside",
+      "expected": "Bedside",
+      "pass": true
+    },
+    "Drawer_0": {
+      "actual": "Drawers",
+      "expected": "Drawers",
+      "pass": true
+    },
+    "Drawer_1": {
+      "actual": "Drawers",
+      "expected": "Drawers",
+      "pass": true
+    },
+    "Lamp": {
+      "actual": "Bedside",
+      "expected": "Bedside",
+      "pass": true
+    },
+    "LampStem": {
+      "actual": "Lamp",
+      "expected": "Lamp",
+      "pass": true
+    },
+    "LampHood": {
+      "actual": "Lamp",
+      "expected": "Lamp",
+      "pass": true
+    }
+  },
+  "pivots": {
+    "Bedside": {
+      "actual": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected": [
+        0,
+        0,
+        0
+      ],
+      "pass": true
+    },
+    "Drawer_0": {
+      "actual": [
+        0.0,
+        0.1589999943971634,
+        0.21299999952316284
+      ],
+      "expected": [
+        0,
+        0.159,
+        0.213
+      ],
+      "pass": true
+    },
+    "Drawer_1": {
+      "actual": [
+        0.0,
+        0.33899998664855957,
+        0.21299999952316284
+      ],
+      "expected": [
+        0,
+        0.339,
+        0.213
+      ],
+      "pass": true
+    }
+  },
+  "topology": {
+    "Back": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Bottom": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DrawerBack_0": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DrawerBack_1": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DrawerBottom_0": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DrawerBottom_1": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DrawerFront_0": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DrawerFront_1": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DrawerPocket_0": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DrawerPocket_1": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DrawerPull_0": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DrawerPull_1": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DrawerRivets_0": {
+      "component_count": 2,
+      "probe_count": 108,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DrawerRivets_1": {
+      "component_count": 2,
+      "probe_count": 108,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DrawerSideL_0": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DrawerSideL_1": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DrawerSideR_0": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "DrawerSideR_1": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "KickPlate": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "LampFoot": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "LampHood": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "LampLens": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "LampStem": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Plinth": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Side_L": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Side_R": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "Top": {
+      "component_count": 1,
+      "probe_count": 54,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    },
+    "TopRivets": {
+      "component_count": 2,
+      "probe_count": 108,
+      "missed_rays": 0,
+      "watertight": true,
+      "winding_consistent": true,
+      "positive_volume": true,
+      "pass": true
+    }
+  },
+  "degenerate_faces": 0,
+  "triangle_count": 3430,
+  "triangle_limit": 6000,
+  "material_slots": [
+    "BareSteel",
+    "DarkSteel",
+    "PaintedSteel"
+  ],
+  "required_materials_pass": true,
+  "UV": {
+    "overlapping_triangle_pairs": 0,
+    "max_overlap_area_uv2": 0.0,
+    "out_of_unit_square_coordinates": 0,
+    "linear_texel_density_p05_p50_p95": [
+      0.3840907108172009,
+      0.407726629551611,
+      0.42267869115039425
+    ],
+    "density_p95_p05_ratio": 1.1004657994750577,
+    "pass": true
+  },
+  "hero_first_hit_visibility": {
+    "DrawerPull_0": {
+      "sample_count": 54,
+      "visible_projected_area_fraction": 0.9998920911707044,
+      "visible_triangle_fraction": 0.9259259259259259,
+      "projection": "orthographic",
+      "minimum": 0.6,
+      "pass": true
+    },
+    "LampHood": {
+      "sample_count": 194,
+      "visible_projected_area_fraction": 1.0,
+      "visible_triangle_fraction": 1.0,
+      "projection": "orthographic",
+      "minimum": 0.6,
+      "pass": true
+    },
+    "KickPlate": {
+      "sample_count": 54,
+      "visible_projected_area_fraction": 0.9156591394054678,
+      "visible_triangle_fraction": 0.48148148148148145,
+      "projection": "orthographic",
+      "minimum": 0.6,
+      "pass": true
+    }
+  },
+  "byte_identical_reexport": true,
+  "axis_contract": "Blender Z-up/-Y front -> exported glTF +Y up/+Z front; bounds measured outside Blender",
+  "pass": true
+}

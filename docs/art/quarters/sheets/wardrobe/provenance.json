@@ -1,0 +1,26 @@
+{
+  "command": "env HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 /Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-z-image-turbo --model filipstrand/Z-Image-Turbo-mflux-4bit --quantize 4 --steps 8 --seed 203 --width 1024 --height 1024 --output /Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/tmp/props/contacts/wardrobe/hero-s203.png --prompt 'Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish. A freestanding officers wardrobe for a military warship cabin, 1.0 metre wide, 0.65 metres deep and 2.2 metres tall. Grey-green satin painted steel, riveted folded panel edges matching the tall locker modules. One full-height door on its own visible left-edge steel barrel hinges is parked open outward 100 degrees. A broad unobstructed empty hanging compartment with a single horizontal bare steel clothes rail near the top. The open door has a recessed rectangular latch and three small horizontal louvres near its top. A closed inset dark kick plate sits flat on the floor. Solid steel back, roof, sides and bottom. Plain interior with room for hanging tunics, fresh even paint. Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.'",
+  "prompt": "Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish. A freestanding officers wardrobe for a military warship cabin, 1.0 metre wide, 0.65 metres deep and 2.2 metres tall. Grey-green satin painted steel, riveted folded panel edges matching the tall locker modules. One full-height door on its own visible left-edge steel barrel hinges is parked open outward 100 degrees. A broad unobstructed empty hanging compartment with a single horizontal bare steel clothes rail near the top. The open door has a recessed rectangular latch and three small horizontal louvres near its top. A closed inset dark kick plate sits flat on the floor. Solid steel back, roof, sides and bottom. Plain interior with room for hanging tunics, fresh even paint. Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.",
+  "seed": 203,
+  "model_id": "filipstrand/Z-Image-Turbo-mflux-4bit",
+  "sha256": "77b882a63cbcf45c4f0195718c68fa6ef68f05e4eb68d0b4d475a072a00744fd",
+  "elapsed_seconds": 82.859,
+  "selection": {
+    "chosen_seed": 203,
+    "rating": 9,
+    "approved": true,
+    "observations": "Panel C displays a single, full-height wardrobe unit in a matte grey-green finish. It features one door hinged on the left side, which is shown in an open state. The interior is empty and clearly visible, featuring a horizontal metal clothes rail near the top and a flat base panel. The exterior and interior edges show visible rivets, consistent with a riveted steel construction. The style is coherent with the industrial/military aesthetic of panels A and B, specifically matching the locker design in panel B.",
+    "defects": [
+      "The door handle is a recessed pull rather than a standard external knob, which may require specific fitting verification.",
+      "The ventilation slats on the door are purely decorative in this render but imply a functional requirement for the 3D model."
+    ],
+    "fitting_landmarks": {
+      "door_hinge_side": "left",
+      "door_state": "open",
+      "interior_rail": "present",
+      "interior_state": "empty",
+      "finish": "grey-green riveted steel"
+    }
+  },
+  "inputs_policy": "Single approved hero; no independently hallucinated side/back views."
+}

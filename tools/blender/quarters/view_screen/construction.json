@@ -1,0 +1,173 @@
+{
+  "bounds_gltf": [
+    [
+      -0.9,
+      0,
+      -0.04
+    ],
+    [
+      0.9,
+      1.05,
+      0.04
+    ]
+  ],
+  "required_nodes": [
+    "ViewScreen",
+    "Housing",
+    "Bezel",
+    "Glass",
+    "Display",
+    "HousingBack"
+  ],
+  "parents": {
+    "Housing": "ViewScreen",
+    "Bezel": "ViewScreen",
+    "Glass": "ViewScreen",
+    "Display": "ViewScreen",
+    "HousingBack": "Housing"
+  },
+  "pivots_gltf": {
+    "ViewScreen": [
+      0,
+      0,
+      0
+    ]
+  },
+  "materials": [
+    "PaintedSteel",
+    "BareSteel",
+    "DarkSteel",
+    "Display",
+    "Glass"
+  ],
+  "visible_details": [
+    "Glass",
+    "HousingRivets",
+    "BezelBottom"
+  ],
+  "hero_camera_native": [
+    -1.4,
+    -4.0,
+    1.5
+  ],
+  "hero_camera_gltf": [
+    -1.4,
+    1.5,
+    4.0
+  ],
+  "hero_target_native": [
+    0,
+    0,
+    0.525
+  ],
+  "triangle_limit": 15000,
+  "room_mount_height_m": 1.0,
+  "fit_notes": "The earlier fit lacked its dark bezel and looked like a rear panel. Its earlier image also showed a deep box, incompatible with the required .08 m wall-panel depth. The replacement source explicitly targets the shallow envelope and four corner rivets. A separate inset dark bezel surrounds the glass and display; four faired housing rails leave a real aperture. Glass and emissive screen are separate closed parts. Local origin becomes room y=1.0 when wall mounted.",
+  "guide": {
+    "source_bounds_native": [
+      [
+        -0.9991183876991272,
+        -0.13733313977718353,
+        -0.49411118030548096
+      ],
+      [
+        0.9928107261657715,
+        0.09702973812818527,
+        0.488076388835907
+      ]
+    ],
+    "carcass_fitting_bounds_native": [
+      [
+        -0.9991183876991272,
+        -0.13733313977718353,
+        -0.49411118030548096
+      ],
+      [
+        0.9928107261657715,
+        0.09702973812818527,
+        0.488076388835907
+      ]
+    ],
+    "fitted_size_whd": [
+      1.8,
+      1.05,
+      0.08
+    ],
+    "sections": [
+      {
+        "height_m": 0.10500000000000001,
+        "vertices": 4673,
+        "xy_min": [
+          -0.8998190760612488,
+          -0.0372486412525177
+        ],
+        "xy_max": [
+          0.8999671936035156,
+          0.03990793228149414
+        ]
+      },
+      {
+        "height_m": 0.2625,
+        "vertices": 2194,
+        "xy_min": [
+          -0.8999264240264893,
+          -0.03733363375067711
+        ],
+        "xy_max": [
+          0.8999910950660706,
+          0.03989780321717262
+        ]
+      },
+      {
+        "height_m": 0.525,
+        "vertices": 2219,
+        "xy_min": [
+          -0.8999246954917908,
+          -0.03729534521698952
+        ],
+        "xy_max": [
+          0.8999426960945129,
+          0.03989288583397865
+        ]
+      },
+      {
+        "height_m": 0.7875000000000001,
+        "vertices": 2197,
+        "xy_min": [
+          -0.8999070525169373,
+          -0.03730039671063423
+        ],
+        "xy_max": [
+          0.8997374176979065,
+          0.039877548813819885
+        ]
+      },
+      {
+        "height_m": 0.9450000000000001,
+        "vertices": 5374,
+        "xy_min": [
+          -0.8999943137168884,
+          -0.03723720461130142
+        ],
+        "xy_max": [
+          0.8998413681983948,
+          0.03985024243593216
+        ]
+      }
+    ],
+    "mesh_triangles": 285156,
+    "frame_fit": {
+      "sample_count": 23926,
+      "guide_outer_edge_offset_m": 0.024285817146301292,
+      "fitted_painted_frame_width_m": 0.07,
+      "dark_bezel_sides_top_bottom_m": [
+        0.055,
+        0.06,
+        0.1
+      ],
+      "method": "Outer-edge quantiles locate the silhouette, not the display inset. The approved image supplies the separate dark inner bezel."
+    },
+    "source": "tmp/props/view_screen/guide.glb"
+  },
+  "id": "view_screen"
+}

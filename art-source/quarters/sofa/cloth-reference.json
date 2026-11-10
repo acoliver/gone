@@ -1,0 +1,41 @@
+{
+  "purpose": "Correct the earlier oatmeal-upholstery brief using the approved charcoal hero and aged target version 2. Only the throw is oatmeal. Geometry remains pass 10.",
+  "sampling": "Image-comparer identifies physical cloth/foam/debris regions. Cloth rectangles are narrowed to low-variance interiors; low saturation excludes exposed foam. Dust rectangles select intact upward seat fabric. Coordinates are inclusive original 1024-square pixels.",
+  "swatches": {
+    "as_built_fabric": {
+      "image": "hero.png", "kind": "fabric", "version": 1,
+      "rectangles": [[350, 350, 450, 450], [500, 350, 600, 450], [650, 350, 750, 450]],
+      "position": [0, 0.64, -0.1], "normal": [0, 0, 1], "light": "neutral", "roughness": 0.98, "metallic": 0
+    },
+    "as_built_throw": {
+      "image": "hero.png", "kind": "throw", "version": 1,
+      "rectangles": [[850, 560, 885, 585], [870, 600, 905, 625], [840, 620, 870, 640]],
+      "position": [1.05, 0.5, 0.18], "normal": [0, 0, 1], "light": "neutral", "roughness": 0.98, "metallic": 0
+    },
+    "aged_fabric": {
+      "image": "aged-target.png", "kind": "fabric", "version": 2,
+      "rectangles": [[480, 360, 499, 379], [470, 380, 489, 399], [530, 360, 549, 379]],
+      "position": [-0.18, 0.46, 0.29], "normal": [0, 0, 1], "light": "present", "roughness": 0.98, "metallic": 0
+    },
+    "aged_throw": {
+      "image": "aged-target.png", "kind": "throw", "version": 2,
+      "rectangles": [[850, 560, 885, 585], [870, 600, 905, 625], [840, 620, 870, 640]],
+      "position": [1.05, 0.5, 0.18], "normal": [0, 0, 1], "light": "present", "roughness": 0.98, "metallic": 0
+    },
+    "cloth_dust": {
+      "image": "aged-target.png", "kind": "fabric", "version": 2,
+      "rectangles": [[240, 570, 254, 584], [275, 550, 289, 564]],
+      "position": [-0.18, 0.46, 0.29], "normal": [0, 1, 0], "light": "present", "roughness": 0.98, "metallic": 0
+    },
+    "foam": {
+      "image": "aged-target.png", "kind": "foam", "version": 2,
+      "rectangles": [[320, 320, 420, 420], [350, 550, 450, 650], [550, 550, 650, 650]],
+      "position": [-0.18, 0.43, 0.29], "normal": [0, 1, 0], "light": "present", "roughness": 0.98, "metallic": 0
+    },
+    "crumb": {
+      "image": "aged-target.png", "kind": "crumb", "version": 2,
+      "rectangles": [[200, 800, 300, 900], [400, 800, 500, 900]],
+      "position": [0, 0.012, 0.58], "normal": [0, 1, 0], "light": "present", "roughness": 0.98, "metallic": 0
+    }
+  }
+}

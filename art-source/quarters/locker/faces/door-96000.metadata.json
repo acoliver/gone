@@ -1,0 +1,54 @@
+{
+  "face": "door",
+  "seed": 96000,
+  "model": "black-forest-labs/FLUX.2-klein-4B",
+  "quantize": 4,
+  "steps": 4,
+  "concept": "docs/art/corridors/hatch-concept-rusted.png",
+  "crop": [
+    817,
+    119,
+    890,
+    352
+  ],
+  "input": "door-input.png",
+  "source": "door-source.png",
+  "size": [
+    512,
+    2240
+  ],
+  "prompt": "Edit the reference into a flat, evenly lit, shadowless, edge-to-edge aged painted steel material image. Preserve the reference grey-green paint, reddish-brown rust, irregular paint-loss layout and ragged organic borders. Remove hardware, seams, objects and cast shadows only; fill each removed hardware area with its neighbouring material. Keep all existing paint-loss edges and corrosion variation. Do not draw a panel, frame, border or perspective. Broken edge and corner regions have the most rust. The broad field retains quiet painted areas among differing sizes of irregular corrosion patches. Rust has natural variations of dark oxide and orange pigment. A few narrow rusty runs travel downward with irregular gently wandering paths and tapered ends. No long straight rust stripe, geometric cutout, stamped motif or repeated shape. This image represents the full upright locker door. Include delicate downward rusty runs below the vent positions at 15, 13 and 10 percent from the top, across the middle 60 percent of the width, and below the handle position at 88 percent from the left and 65 percent from the top. Do not draw vents or a handle. \nThe faint marks are placement guides, not hardware: erase them. Retain paint loss and short ragged rust runs below the vent guide rows, the handle guide and the three hinges at the left margin. In this aged material, rust occupies roughly seventy percent of the outer ten percent edge band and roughly twenty percent of the broad middle field. Every corroded margin has changing ragged widths and surviving paint gaps, never a long straight outline. Keep rust patch sizes varied and nonrepeating. Fill the whole image with only the material.\n",
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/door-input.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/door-extra-500-prompt.txt",
+    "--seed",
+    "96000",
+    "--width",
+    "512",
+    "--height",
+    "2240",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/door-96000.png"
+  ],
+  "scores": {
+    "delta_e": 18.413654059897453,
+    "planar_light_gradient": 0.04259270163367277,
+    "secondary_autocorrelation": 0.321706024993901,
+    "edge_rust": 0.29392296691403835,
+    "broad_rust": 0.08269025061124695,
+    "edge_broad_ratio": 3.55450569736284,
+    "paint_mean_delta_e": 18.41569772799058,
+    "paint_std_delta_e": 2.59044802366209,
+    "rust_mean_delta_e": 13.000198922274116,
+    "rust_std_delta_e": 4.217927879687708
+  }
+}

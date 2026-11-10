@@ -1,0 +1,915 @@
+{
+  "paint": {
+    "reference": "hero.png",
+    "selection": "neutral s<.18, 30<v<190",
+    "patches": [
+      {
+        "rectangle": [
+          104,
+          479,
+          218,
+          516
+        ],
+        "pixels": 2020,
+        "median": [
+          30.0,
+          31.0,
+          34.0
+        ]
+      },
+      {
+        "rectangle": [
+          132,
+          651,
+          246,
+          678
+        ],
+        "pixels": 2804,
+        "median": [
+          126.0,
+          130.0,
+          132.0
+        ]
+      },
+      {
+        "rectangle": [
+          360,
+          688,
+          472,
+          713
+        ],
+        "pixels": 2938,
+        "median": [
+          116.0,
+          120.0,
+          122.0
+        ]
+      }
+    ],
+    "target_display_rgb": [
+      117.0,
+      121.0,
+      124.0
+    ],
+    "attempts": [
+      {
+        "linear_albedo": [
+          0.17788841598362912,
+          0.19120168274079138,
+          0.20155625379439707
+        ],
+        "displayed_rgb": [
+          131.0,
+          135.0,
+          139.0
+        ]
+      },
+      {
+        "linear_albedo": [
+          0.13942311261061338,
+          0.1508911759648452,
+          0.15734942496730508
+        ],
+        "displayed_rgb": [
+          117.0,
+          122.0,
+          124.0
+        ]
+      }
+    ],
+    "linear_albedo": [
+      0.13942311261061338,
+      0.1508911759648452,
+      0.15734942496730508
+    ],
+    "displayed_rgb": [
+      117.0,
+      122.0,
+      124.0
+    ],
+    "position": [
+      0,
+      0.24,
+      0.475
+    ],
+    "normal": [
+      0,
+      0,
+      1
+    ],
+    "light": "neutral",
+    "roughness": 0.45,
+    "metallic": 0.02
+  },
+  "foam": {
+    "reference": "aged-target.png",
+    "reference_version": 2,
+    "selection": "warm pixels s>.30, r>1.08g, g>1.08b, 35<v<220",
+    "patches": [
+      {
+        "rectangle": [
+          320,
+          320,
+          420,
+          420
+        ],
+        "pixels": 1955,
+        "median": [
+          176.0,
+          151.0,
+          81.0
+        ]
+      },
+      {
+        "rectangle": [
+          350,
+          550,
+          450,
+          650
+        ],
+        "pixels": 3277,
+        "median": [
+          149.0,
+          126.0,
+          91.0
+        ]
+      },
+      {
+        "rectangle": [
+          550,
+          550,
+          650,
+          650
+        ],
+        "pixels": 6504,
+        "median": [
+          129.0,
+          103.0,
+          68.0
+        ]
+      }
+    ],
+    "target_display_rgb": [
+      142.0,
+      117.0,
+      78.0
+    ],
+    "attempts": [
+      {
+        "linear_albedo": [
+          0.2704977910130658,
+          0.17788841598362912,
+          0.07618538148130785
+        ],
+        "displayed_rgb": [
+          158.0,
+          128.0,
+          83.0
+        ]
+      },
+      {
+        "linear_albedo": [
+          0.21399815162081748,
+          0.14659601235273473,
+          0.06710036241193605
+        ],
+        "displayed_rgb": [
+          142.0,
+          118.0,
+          78.0
+        ]
+      }
+    ],
+    "version2_check": {
+      "reference_version": 2,
+      "patches": [
+        {
+          "rectangle": [
+            320,
+            320,
+            420,
+            420
+          ],
+          "pixels": 1955,
+          "median": [
+            176.0,
+            151.0,
+            81.0
+          ]
+        },
+        {
+          "rectangle": [
+            350,
+            550,
+            450,
+            650
+          ],
+          "pixels": 3277,
+          "median": [
+            149.0,
+            126.0,
+            91.0
+          ]
+        },
+        {
+          "rectangle": [
+            550,
+            550,
+            650,
+            650
+          ],
+          "pixels": 6504,
+          "median": [
+            129.0,
+            103.0,
+            68.0
+          ]
+        }
+      ],
+      "target_display_rgb": [
+        142.0,
+        117.0,
+        78.0
+      ],
+      "previous_displayed_rgb": [
+        121.0,
+        93.0,
+        62.0
+      ],
+      "maximum_channel_delta": 24.0,
+      "adjustment_threshold": 6,
+      "adjusted": true
+    },
+    "linear_albedo": [
+      0.21399815162081748,
+      0.14659601235273473,
+      0.06710036241193605
+    ],
+    "displayed_rgb": [
+      142.0,
+      118.0,
+      78.0
+    ],
+    "position": [
+      -0.18,
+      0.43,
+      0.29
+    ],
+    "normal": [
+      0,
+      1,
+      0
+    ],
+    "light": "present",
+    "roughness": 0.98,
+    "metallic": 0
+  },
+  "crumb": {
+    "reference": "aged-target.png",
+    "reference_version": 2,
+    "selection": "warm pixels s>.30, r>1.08g, g>1.08b, 35<v<220",
+    "patches": [
+      {
+        "rectangle": [
+          200,
+          800,
+          300,
+          900
+        ],
+        "pixels": 2522,
+        "median": [
+          166.0,
+          139.0,
+          90.0
+        ]
+      },
+      {
+        "rectangle": [
+          400,
+          800,
+          500,
+          900
+        ],
+        "pixels": 1453,
+        "median": [
+          171.0,
+          148.0,
+          106.0
+        ]
+      }
+    ],
+    "target_display_rgb": [
+      169.0,
+      143.0,
+      96.0
+    ],
+    "attempts": [
+      {
+        "linear_albedo": [
+          0.39675523072562685,
+          0.27467731206038465,
+          0.11697066775851084
+        ],
+        "displayed_rgb": [
+          189.0,
+          157.0,
+          101.0
+        ]
+      },
+      {
+        "linear_albedo": [
+          0.30933482259416517,
+          0.2237715530185633,
+          0.1051368337597309
+        ],
+        "displayed_rgb": [
+          169.0,
+          143.0,
+          96.0
+        ]
+      }
+    ],
+    "version2_check": {
+      "reference_version": 2,
+      "patches": [
+        {
+          "rectangle": [
+            200,
+            800,
+            300,
+            900
+          ],
+          "pixels": 2522,
+          "median": [
+            166.0,
+            139.0,
+            90.0
+          ]
+        },
+        {
+          "rectangle": [
+            400,
+            800,
+            500,
+            900
+          ],
+          "pixels": 1453,
+          "median": [
+            171.0,
+            148.0,
+            106.0
+          ]
+        }
+      ],
+      "target_display_rgb": [
+        169.0,
+        143.0,
+        96.0
+      ],
+      "previous_displayed_rgb": [
+        125.0,
+        92.0,
+        66.0
+      ],
+      "maximum_channel_delta": 51.0,
+      "adjustment_threshold": 6,
+      "adjusted": true
+    },
+    "linear_albedo": [
+      0.30933482259416517,
+      0.2237715530185633,
+      0.1051368337597309
+    ],
+    "displayed_rgb": [
+      169.0,
+      143.0,
+      96.0
+    ],
+    "position": [
+      0,
+      0.012,
+      0.58
+    ],
+    "normal": [
+      0,
+      1,
+      0
+    ],
+    "light": "present",
+    "roughness": 0.98,
+    "metallic": 0
+  },
+  "scene": {
+    "renderer": "Godot Forward+ Metal",
+    "tone_mapping": "linear",
+    "ambient_present": 0.2,
+    "ambient_neutral": 0.55,
+    "ceiling_position": [
+      -0.6,
+      1.46,
+      1.25
+    ],
+    "note": "Flat swatches fit regional pigment display, not complete target illumination. Cloth uses hero and aged target version 2; frame fit is unchanged. Foam/crumb adjustment requires a difference above six sRGB levels."
+  },
+  "as_built_fabric": {
+    "reference": "hero.png",
+    "reference_version": 1,
+    "selection": "s<.35, 20<v<235",
+    "patches": [
+      {
+        "rectangle": [
+          350,
+          350,
+          450,
+          450
+        ],
+        "pixels": 9819,
+        "median": [
+          110.0,
+          112.0,
+          114.0
+        ]
+      },
+      {
+        "rectangle": [
+          500,
+          350,
+          600,
+          450
+        ],
+        "pixels": 10198,
+        "median": [
+          108.0,
+          109.0,
+          112.0
+        ]
+      },
+      {
+        "rectangle": [
+          650,
+          350,
+          750,
+          450
+        ],
+        "pixels": 10158,
+        "median": [
+          107.0,
+          108.0,
+          111.0
+        ]
+      }
+    ],
+    "target_display_rgb": [
+      108.0,
+      110.0,
+      113.0
+    ],
+    "attempts": [
+      {
+        "linear_albedo": [
+          0.14995978981060856,
+          0.1559264637078274,
+          0.1651321945016676
+        ],
+        "displayed_rgb": [
+          132.0,
+          135.0,
+          138.0
+        ]
+      },
+      {
+        "linear_albedo": [
+          0.09746005820774901,
+          0.10035062507969439,
+          0.10729261048481195
+        ],
+        "displayed_rgb": [
+          109.0,
+          111.0,
+          114.0
+        ]
+      }
+    ],
+    "linear_albedo": [
+      0.09746005820774901,
+      0.10035062507969439,
+      0.10729261048481195
+    ],
+    "displayed_rgb": [
+      109.0,
+      111.0,
+      114.0
+    ],
+    "position": [
+      0,
+      0.64,
+      -0.1
+    ],
+    "normal": [
+      0,
+      0,
+      1
+    ],
+    "light": "neutral",
+    "roughness": 0.98,
+    "metallic": 0
+  },
+  "as_built_throw": {
+    "reference": "hero.png",
+    "reference_version": 1,
+    "selection": "s<.35, 20<v<235",
+    "patches": [
+      {
+        "rectangle": [
+          850,
+          560,
+          885,
+          585
+        ],
+        "pixels": 936,
+        "median": [
+          152.0,
+          134.0,
+          115.0
+        ]
+      },
+      {
+        "rectangle": [
+          870,
+          600,
+          905,
+          625
+        ],
+        "pixels": 898,
+        "median": [
+          158.0,
+          139.0,
+          121.0
+        ]
+      },
+      {
+        "rectangle": [
+          840,
+          620,
+          870,
+          640
+        ],
+        "pixels": 577,
+        "median": [
+          155.0,
+          137.0,
+          117.0
+        ]
+      }
+    ],
+    "target_display_rgb": [
+      153.0,
+      135.0,
+      116.0
+    ],
+    "attempts": [
+      {
+        "linear_albedo": [
+          0.31854677812509186,
+          0.24228112246555486,
+          0.17464740365558504
+        ],
+        "displayed_rgb": [
+          164.0,
+          145.0,
+          125.0
+        ]
+      },
+      {
+        "linear_albedo": [
+          0.2733344571172711,
+          0.20731203753202876,
+          0.14873173172661033
+        ],
+        "displayed_rgb": [
+          153.0,
+          135.0,
+          116.0
+        ]
+      }
+    ],
+    "linear_albedo": [
+      0.2733344571172711,
+      0.20731203753202876,
+      0.14873173172661033
+    ],
+    "displayed_rgb": [
+      153.0,
+      135.0,
+      116.0
+    ],
+    "position": [
+      1.05,
+      0.5,
+      0.18
+    ],
+    "normal": [
+      0,
+      0,
+      1
+    ],
+    "light": "neutral",
+    "roughness": 0.98,
+    "metallic": 0
+  },
+  "aged_fabric": {
+    "reference": "aged-target.png",
+    "reference_version": 2,
+    "selection": "s<.35, 20<v<235",
+    "patches": [
+      {
+        "rectangle": [
+          480,
+          360,
+          499,
+          379
+        ],
+        "pixels": 400,
+        "median": [
+          122.0,
+          118.0,
+          108.0
+        ]
+      },
+      {
+        "rectangle": [
+          470,
+          380,
+          489,
+          399
+        ],
+        "pixels": 400,
+        "median": [
+          116.0,
+          117.0,
+          112.5
+        ]
+      },
+      {
+        "rectangle": [
+          530,
+          360,
+          549,
+          379
+        ],
+        "pixels": 400,
+        "median": [
+          118.0,
+          117.0,
+          112.0
+        ]
+      }
+    ],
+    "target_display_rgb": [
+      119.0,
+      117.0,
+      111.0
+    ],
+    "attempts": [
+      {
+        "linear_albedo": [
+          0.184474994500441,
+          0.17788841598362912,
+          0.1589608350608804
+        ],
+        "displayed_rgb": [
+          135.0,
+          129.0,
+          115.0
+        ]
+      },
+      {
+        "linear_albedo": [
+          0.14046089620860136,
+          0.14414811799315985,
+          0.1473890856699028
+        ],
+        "displayed_rgb": [
+          120.0,
+          118.0,
+          112.0
+        ]
+      }
+    ],
+    "linear_albedo": [
+      0.14046089620860136,
+      0.14414811799315985,
+      0.1473890856699028
+    ],
+    "displayed_rgb": [
+      120.0,
+      118.0,
+      112.0
+    ],
+    "position": [
+      -0.18,
+      0.46,
+      0.29
+    ],
+    "normal": [
+      0,
+      0,
+      1
+    ],
+    "light": "present",
+    "roughness": 0.98,
+    "metallic": 0
+  },
+  "aged_throw": {
+    "reference": "aged-target.png",
+    "reference_version": 2,
+    "selection": "s<.35, 20<v<235",
+    "patches": [
+      {
+        "rectangle": [
+          850,
+          560,
+          885,
+          585
+        ],
+        "pixels": 936,
+        "median": [
+          143.0,
+          132.0,
+          116.0
+        ]
+      },
+      {
+        "rectangle": [
+          870,
+          600,
+          905,
+          625
+        ],
+        "pixels": 936,
+        "median": [
+          146.0,
+          134.0,
+          120.0
+        ]
+      },
+      {
+        "rectangle": [
+          840,
+          620,
+          870,
+          640
+        ],
+        "pixels": 604,
+        "median": [
+          140.0,
+          130.0,
+          114.0
+        ]
+      }
+    ],
+    "target_display_rgb": [
+      143.0,
+      132.0,
+      117.0
+    ],
+    "attempts": [
+      {
+        "linear_albedo": [
+          0.27467731206038465,
+          0.23074004852434915,
+          0.17788841598362912
+        ],
+        "displayed_rgb": [
+          129.0,
+          117.0,
+          98.0
+        ]
+      },
+      {
+        "linear_albedo": [
+          0.34368392407723425,
+          0.2992941934899162,
+          0.2590847112960849
+        ],
+        "displayed_rgb": [
+          143.0,
+          131.0,
+          116.0
+        ]
+      }
+    ],
+    "linear_albedo": [
+      0.34368392407723425,
+      0.2992941934899162,
+      0.2590847112960849
+    ],
+    "displayed_rgb": [
+      143.0,
+      131.0,
+      116.0
+    ],
+    "position": [
+      1.05,
+      0.5,
+      0.18
+    ],
+    "normal": [
+      0,
+      0,
+      1
+    ],
+    "light": "present",
+    "roughness": 0.98,
+    "metallic": 0
+  },
+  "cloth_dust": {
+    "reference": "aged-target.png",
+    "reference_version": 2,
+    "selection": "s<.35, 20<v<235",
+    "patches": [
+      {
+        "rectangle": [
+          240,
+          570,
+          254,
+          584
+        ],
+        "pixels": 225,
+        "median": [
+          145.0,
+          140.0,
+          128.0
+        ]
+      },
+      {
+        "rectangle": [
+          275,
+          550,
+          289,
+          564
+        ],
+        "pixels": 225,
+        "median": [
+          143.0,
+          139.0,
+          129.0
+        ]
+      }
+    ],
+    "target_display_rgb": [
+      144.0,
+      139.0,
+      129.0
+    ],
+    "attempts": [
+      {
+        "linear_albedo": [
+          0.2788942634768104,
+          0.2581828529215958,
+          0.2195261997292692
+        ],
+        "displayed_rgb": [
+          160.0,
+          150.0,
+          131.0
+        ]
+      },
+      {
+        "linear_albedo": [
+          0.22126542548488543,
+          0.21856117440825734,
+          0.2123303896849092
+        ],
+        "displayed_rgb": [
+          144.0,
+          140.0,
+          130.0
+        ]
+      }
+    ],
+    "linear_albedo": [
+      0.22126542548488543,
+      0.21856117440825734,
+      0.2123303896849092
+    ],
+    "displayed_rgb": [
+      144.0,
+      140.0,
+      130.0
+    ],
+    "position": [
+      -0.18,
+      0.46,
+      0.29
+    ],
+    "normal": [
+      0,
+      1,
+      0
+    ],
+    "light": "present",
+    "roughness": 0.98,
+    "metallic": 0
+  }
+}

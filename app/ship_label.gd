@@ -10,6 +10,10 @@ var _size: Vector2
 var _quad: MeshInstance3D
 var _material: ShaderMaterial
 var _rendered_amount: float = -1.0
+var ink_albedo := Color.BLACK:
+	set(value):
+		ink_albedo = value
+		if _material != null: _material.set_shader_parameter("ink_albedo", value)
 
 static func build(cache: ShipTextCache, text: ShipText.LabelText, id: StringName, frame: Transform3D, size: Vector2, state: DisplayPerception) -> ShipLabel:
 	var label := ShipLabel.new()
@@ -33,6 +37,7 @@ func _attach() -> void:
 	assert(_quad == null, "label attaches once after raster completion")
 	_material = ShaderMaterial.new()
 	_material.shader = ShipDisplay.INK_SHADER
+	_material.set_shader_parameter("ink_albedo", ink_albedo)
 	_material.set_shader_parameter("native_ink", pair.native_texture())
 	_material.set_shader_parameter("perceived_ink", pair.perceived_texture())
 	_quad = MeshInstance3D.new()

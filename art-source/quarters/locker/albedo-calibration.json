@@ -1,0 +1,436 @@
+{
+  "method": "sRGB decode, fitted linear RGB multiplicative reflectance factors and mean-preserving linear contrast, then sRGB encode; hatch calibrate_albedo()",
+  "illumination": "Dust log-linear illumination plane is divided out before calibration. Panel paint alone receives a bounded white balance to remove the source lamp cast; rust pigment is unchanged. All final colour scores include these transforms.",
+  "measurement": "D65 Lab class means and standard deviations; classes from unchanged hatch paint_fields chroma rule",
+  "pixels_per_metre": 300,
+  "regions": {
+    "panel": {
+      "seed": 95031,
+      "candidate": "panel-95031.png",
+      "reference": "panel-reference.png",
+      "linear_rgb_factor": [
+        2.023197476921454,
+        2.050549088664767,
+        2.2026618264764997
+      ],
+      "linear_contrast": 1.0287016984041264,
+      "flatten_linear_light": false,
+      "paint_white_balance": [
+        0.9,
+        1.08,
+        1.26
+      ],
+      "scores": {
+        "paint_mean_delta_e": 6.640614790653978,
+        "paint_std_delta_e": 7.289065453828914,
+        "rust_mean_delta_e": 1.2334429223864751,
+        "rust_std_delta_e": 5.626604151233368,
+        "secondary_autocorrelation": 0.1902363868600204,
+        "border_linear_difference": 0.06438811530766875,
+        "planar_light_gradient": 0.059791251974699484,
+        "rust_fraction": 0.1504279242621528,
+        "rank_score": 11.294543894356442
+      }
+    },
+    "loss": {
+      "seed": 95132,
+      "candidate": "loss-95132.png",
+      "reference": "loss-crop.png",
+      "linear_rgb_factor": [
+        0.7885513493811769,
+        0.8308846406119927,
+        0.7268476261479108
+      ],
+      "linear_contrast": 0.6478824452500808,
+      "flatten_linear_light": false,
+      "paint_white_balance": [
+        1,
+        1,
+        1
+      ],
+      "scores": {
+        "paint_mean_delta_e": 3.8295590142519633,
+        "paint_std_delta_e": 2.0023806075537696,
+        "rust_mean_delta_e": 4.989966181545084,
+        "rust_std_delta_e": 3.252099400671297,
+        "secondary_autocorrelation": 0.07038759494330078,
+        "border_linear_difference": 0.008003735094734676,
+        "planar_light_gradient": 0.0014618081481592676,
+        "rust_fraction": 0.6929982503255209,
+        "rank_score": 5.742377805949369
+      }
+    },
+    "dust": {
+      "seed": 95332,
+      "candidate": "dust-95332.png",
+      "reference": "dust-crop.png",
+      "linear_rgb_factor": [
+        1.4331614305627172,
+        1.360765808260559,
+        1.5108957444616713
+      ],
+      "linear_contrast": 1.1574822689209103,
+      "flatten_linear_light": true,
+      "paint_white_balance": [
+        1,
+        1.02,
+        0.96
+      ],
+      "scores": {
+        "paint_mean_delta_e": 3.179011462989761,
+        "paint_std_delta_e": 6.757187970569409,
+        "rust_mean_delta_e": 3.6576500873992503,
+        "rust_std_delta_e": 1.0216110279745918,
+        "secondary_autocorrelation": 0.3755579998982428,
+        "border_linear_difference": 0.05290263435362336,
+        "planar_light_gradient": 0.0055195827509743325,
+        "rust_fraction": 0.02276611328125,
+        "rank_score": 10.930096311847306
+      }
+    }
+  },
+  "candidates": {
+    "panel": [
+      {
+        "seed": 95030,
+        "candidate": "panel-95030.png",
+        "reference": "panel-reference.png",
+        "linear_rgb_factor": [
+          3.072967524873766,
+          2.9356622195484756,
+          2.615478063498258
+        ],
+        "linear_contrast": 0.9169393247989412,
+        "flatten_linear_light": false,
+        "paint_white_balance": [
+          0.9,
+          1.08,
+          1.26
+        ],
+        "scores": {
+          "paint_mean_delta_e": 6.3719061936201475,
+          "paint_std_delta_e": 2.9410653640218096,
+          "rust_mean_delta_e": 6.13119128002689,
+          "rust_std_delta_e": 1.553912827477395,
+          "secondary_autocorrelation": 0.47764465938225475,
+          "border_linear_difference": 0.08400394135250239,
+          "planar_light_gradient": 0.4364319921960804,
+          "rust_fraction": 0.3375379774305556,
+          "rank_score": 20.601782139649842
+        }
+      },
+      {
+        "seed": 95031,
+        "candidate": "panel-95031.png",
+        "reference": "panel-reference.png",
+        "linear_rgb_factor": [
+          2.023197476921454,
+          2.050549088664767,
+          2.2026618264764997
+        ],
+        "linear_contrast": 1.0287016984041264,
+        "flatten_linear_light": false,
+        "paint_white_balance": [
+          0.9,
+          1.08,
+          1.26
+        ],
+        "scores": {
+          "paint_mean_delta_e": 6.640614790653978,
+          "paint_std_delta_e": 7.289065453828914,
+          "rust_mean_delta_e": 1.2334429223864751,
+          "rust_std_delta_e": 5.626604151233368,
+          "secondary_autocorrelation": 0.1902363868600204,
+          "border_linear_difference": 0.06438811530766875,
+          "planar_light_gradient": 0.059791251974699484,
+          "rust_fraction": 0.1504279242621528,
+          "rank_score": 11.294543894356442
+        }
+      },
+      {
+        "seed": 95032,
+        "candidate": "panel-95032.png",
+        "reference": "panel-reference.png",
+        "linear_rgb_factor": [
+          3.562021559491811,
+          3.1270955627708346,
+          2.704811710318768
+        ],
+        "linear_contrast": 0.9059109619828711,
+        "flatten_linear_light": false,
+        "paint_white_balance": [
+          0.9,
+          1.08,
+          1.26
+        ],
+        "scores": {
+          "paint_mean_delta_e": 6.7687262222053075,
+          "paint_std_delta_e": 3.165741842329761,
+          "rust_mean_delta_e": 3.9936633608550545,
+          "rust_std_delta_e": 2.355119096772662,
+          "secondary_autocorrelation": 0.5754364096440188,
+          "border_linear_difference": 0.10512204011048915,
+          "planar_light_gradient": 0.45842020750673484,
+          "rust_fraction": 0.3220570882161458,
+          "rank_score": 22.643062451701937
+        }
+      }
+    ],
+    "loss": [
+      {
+        "seed": 95130,
+        "candidate": "loss-95130.png",
+        "reference": "loss-crop.png",
+        "linear_rgb_factor": [
+          0.47426628103518326,
+          0.521876130110072,
+          0.4675178553021641
+        ],
+        "linear_contrast": 0.825549616715253,
+        "flatten_linear_light": false,
+        "paint_white_balance": [
+          1,
+          1,
+          1
+        ],
+        "scores": {
+          "paint_mean_delta_e": 1.476250366331908,
+          "paint_std_delta_e": 3.049829667740357,
+          "rust_mean_delta_e": 4.551635626920441,
+          "rust_std_delta_e": 2.8275125990349,
+          "secondary_autocorrelation": 0.1877262739314777,
+          "border_linear_difference": 0.0009940995489936613,
+          "planar_light_gradient": 0.011733681535750941,
+          "rust_fraction": 0.8339877658420138,
+          "rank_score": 6.308001440067154
+        }
+      },
+      {
+        "seed": 95131,
+        "candidate": "loss-95131.png",
+        "reference": "loss-crop.png",
+        "linear_rgb_factor": [
+          0.5225681432260093,
+          0.6311908452655334,
+          0.579588612483507
+        ],
+        "linear_contrast": 0.6268803996840097,
+        "flatten_linear_light": false,
+        "paint_white_balance": [
+          1,
+          1,
+          1
+        ],
+        "scores": {
+          "paint_mean_delta_e": 3.367384388111138,
+          "paint_std_delta_e": 3.1338530168370453,
+          "rust_mean_delta_e": 5.725562658141504,
+          "rust_std_delta_e": 3.9106323420616285,
+          "secondary_autocorrelation": 0.13487010874587438,
+          "border_linear_difference": 0.002732302315045204,
+          "planar_light_gradient": 0.009401365736804976,
+          "rust_fraction": 0.8004777696397569,
+          "rank_score": 7.047196889145503
+        }
+      },
+      {
+        "seed": 95132,
+        "candidate": "loss-95132.png",
+        "reference": "loss-crop.png",
+        "linear_rgb_factor": [
+          0.7885513493811769,
+          0.8308846406119927,
+          0.7268476261479108
+        ],
+        "linear_contrast": 0.6478824452500808,
+        "flatten_linear_light": false,
+        "paint_white_balance": [
+          1,
+          1,
+          1
+        ],
+        "scores": {
+          "paint_mean_delta_e": 3.8295590142519633,
+          "paint_std_delta_e": 2.0023806075537696,
+          "rust_mean_delta_e": 4.989966181545084,
+          "rust_std_delta_e": 3.252099400671297,
+          "secondary_autocorrelation": 0.07038759494330078,
+          "border_linear_difference": 0.008003735094734676,
+          "planar_light_gradient": 0.0014618081481592676,
+          "rust_fraction": 0.6929982503255209,
+          "rank_score": 5.742377805949369
+        }
+      }
+    ],
+    "dust": [
+      {
+        "seed": 95230,
+        "candidate": "dust-95230.png",
+        "reference": "dust-crop.png",
+        "linear_rgb_factor": [
+          1.4928725987358806,
+          1.4276429156601362,
+          1.5233378421077937
+        ],
+        "linear_contrast": 0.9953759448347961,
+        "flatten_linear_light": true,
+        "paint_white_balance": [
+          1,
+          1.02,
+          0.96
+        ],
+        "scores": {
+          "paint_mean_delta_e": 3.152765079876645,
+          "paint_std_delta_e": 1.9785361175284886,
+          "rust_mean_delta_e": 3.4302835183241833,
+          "rust_std_delta_e": 1.804921618707888,
+          "secondary_autocorrelation": 0.5515366749631212,
+          "border_linear_difference": 0.08070670161502008,
+          "planar_light_gradient": 0.023042693705448283,
+          "rust_fraction": 0.297149658203125,
+          "rank_score": 9.91756482443852
+        }
+      },
+      {
+        "seed": 95231,
+        "candidate": "dust-95231.png",
+        "reference": "dust-crop.png",
+        "linear_rgb_factor": [
+          1.1763081971438707,
+          1.282504163059249,
+          1.5142984599746654
+        ],
+        "linear_contrast": 1.191737665993521,
+        "flatten_linear_light": true,
+        "paint_white_balance": [
+          1,
+          1.02,
+          0.96
+        ],
+        "scores": {
+          "paint_mean_delta_e": 5.283672401722484,
+          "paint_std_delta_e": 3.2290133827637315,
+          "rust_mean_delta_e": 3.060229965779431,
+          "rust_std_delta_e": 3.0127037006524766,
+          "secondary_autocorrelation": 0.1089058355907346,
+          "border_linear_difference": 0.013681666024523864,
+          "planar_light_gradient": 0.00505926777084228,
+          "rust_fraction": 0.3147328694661458,
+          "rank_score": 6.529737762355683
+        }
+      },
+      {
+        "seed": 95232,
+        "candidate": "dust-95232.png",
+        "reference": "dust-crop.png",
+        "linear_rgb_factor": [
+          1.4491032493605622,
+          1.474422777304086,
+          1.7647939851793935
+        ],
+        "linear_contrast": 1.03467030953117,
+        "flatten_linear_light": true,
+        "paint_white_balance": [
+          1,
+          1.02,
+          0.96
+        ],
+        "scores": {
+          "paint_mean_delta_e": 5.783817586108032,
+          "paint_std_delta_e": 5.786351070493269,
+          "rust_mean_delta_e": 5.42224898759236,
+          "rust_std_delta_e": 1.5993107694693947,
+          "secondary_autocorrelation": 0.3371387164253484,
+          "border_linear_difference": 0.04128695421030579,
+          "planar_light_gradient": 0.00529120729722344,
+          "rust_fraction": 0.3192647298177083,
+          "rank_score": 9.415024032046642
+        }
+      },
+      {
+        "seed": 95330,
+        "candidate": "dust-95330.png",
+        "reference": "dust-crop.png",
+        "linear_rgb_factor": [
+          1.8241325966256354,
+          1.5087824582494667,
+          1.9862524182215202
+        ],
+        "linear_contrast": 1.1918060666504213,
+        "flatten_linear_light": true,
+        "paint_white_balance": [
+          1,
+          1.02,
+          0.96
+        ],
+        "scores": {
+          "paint_mean_delta_e": 1.9365379418915558,
+          "paint_std_delta_e": 4.386753750502614,
+          "rust_mean_delta_e": 5.711366085438223,
+          "rust_std_delta_e": 0.27579365104828374,
+          "secondary_autocorrelation": 0.1474789351312111,
+          "border_linear_difference": 0.04208522355993727,
+          "planar_light_gradient": 0.001367392990160605,
+          "rust_fraction": 0.023503621419270832,
+          "rank_score": 7.760249897489869
+        }
+      },
+      {
+        "seed": 95331,
+        "candidate": "dust-95331.png",
+        "reference": "dust-crop.png",
+        "linear_rgb_factor": [
+          1.6443244978941125,
+          1.6189395835083533,
+          2.00122751352733
+        ],
+        "linear_contrast": 1.323959859916104,
+        "flatten_linear_light": true,
+        "paint_white_balance": [
+          1,
+          1.02,
+          0.96
+        ],
+        "scores": {
+          "paint_mean_delta_e": 2.489755483522136,
+          "paint_std_delta_e": 5.70283328990043,
+          "rust_mean_delta_e": 3.174355316315773,
+          "rust_std_delta_e": 0.9405741037823554,
+          "secondary_autocorrelation": 0.1829978687785648,
+          "border_linear_difference": 0.025280897532060587,
+          "planar_light_gradient": 0.004153697344259694,
+          "rust_fraction": 0.0352783203125,
+          "rank_score": 7.7555081376553545
+        }
+      },
+      {
+        "seed": 95332,
+        "candidate": "dust-95332.png",
+        "reference": "dust-crop.png",
+        "linear_rgb_factor": [
+          1.4331614305627172,
+          1.360765808260559,
+          1.5108957444616713
+        ],
+        "linear_contrast": 1.1574822689209103,
+        "flatten_linear_light": true,
+        "paint_white_balance": [
+          1,
+          1.02,
+          0.96
+        ],
+        "scores": {
+          "paint_mean_delta_e": 3.179011462989761,
+          "paint_std_delta_e": 6.757187970569409,
+          "rust_mean_delta_e": 3.6576500873992503,
+          "rust_std_delta_e": 1.0216110279745918,
+          "secondary_autocorrelation": 0.3755579998982428,
+          "border_linear_difference": 0.05290263435362336,
+          "planar_light_gradient": 0.0055195827509743325,
+          "rust_fraction": 0.02276611328125,
+          "rank_score": 10.930096311847306
+        }
+      }
+    ]
+  }
+}

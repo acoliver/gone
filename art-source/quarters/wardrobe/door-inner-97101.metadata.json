@@ -1,0 +1,38 @@
+{
+  "seed": 97101,
+  "face": "door-inner",
+  "model": "black-forest-labs/FLUX.2-klein-4B",
+  "steps": 4,
+  "quantize": 4,
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/wardrobe/door-inner-input.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/wardrobe/door-inner-prompt.txt",
+    "--seed",
+    "97101",
+    "--width",
+    "736",
+    "--height",
+    "1536",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/wardrobe/door-inner-97101.png"
+  ],
+  "crop": [
+    817,
+    119,
+    890,
+    352
+  ],
+  "prompt": "Edit the reference into a flat, evenly lit, shadowless, edge-to-edge aged painted steel material image. Preserve the reference muted grey-green paint and reddish brown iron oxides. This is one complete face of a wardrobe aboard a sealed sterile dry oxygenated ship after 1000 years. No mould, moss, vegetation or biological decay. Remove hardware, seams, perspective and cast shadows. Do not draw an object, frame or a border. Preserve ragged irregular paint-loss boundaries. Paint fails most at the outer edges and corners, with isolated worn fixture outlets. Keep the broad central painted field quiet, with sparse different-sized irregular corrosion patches. A few narrow rusty trails descend from fixture outlets with gently wandering paths and tapered ends. No straight stripes, geometric cutouts, regular blotches or repeating motifs. This full upright leaf has faint narrow rusty runs under small vent outlets in the upper quarter and one recessed latch near mid-height, without drawing the hardware. \n",
+  "reference": "door-inner-source.png",
+  "input": "door-inner-input.png",
+  "visual_rejection": "Matched neutral review found coarse colour variation and broad rust marks; relief-off controls changed broad-face high-frequency contrast by less than 0.5 percent."
+}

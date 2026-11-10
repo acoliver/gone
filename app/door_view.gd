@@ -114,7 +114,7 @@ func present(snapshot: Doors.Snapshot) -> void:
 	if _offset_sink.is_valid():
 		_offset_sink.call(snapshot.offset)
 	if _leaf != null:
-		_leaf.position = _leaf_base + _spec.frame().basis.z * (snapshot.shudder * 0.012)
+		_leaf.position = _leaf_base + snapshot.offset + _spec.frame().basis.z * (snapshot.shudder * 0.012)
 	if _hinge != null:
 		_hinge.basis = Basis(Vector3.UP, snapshot.open_radians * snapshot.leaf_fraction)
 		_wheel.rotation.z = deg_to_rad(_angle)

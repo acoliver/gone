@@ -1,0 +1,26 @@
+{
+  "command": "env HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 /Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-z-image-turbo --model filipstrand/Z-Image-Turbo-mflux-4bit --quantize 4 --steps 8 --seed 251 --width 1024 --height 1024 --output /Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/tmp/props/contacts/dining_table/hero-s251.png --prompt 'Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish. A small round dining table for military starship officers quarters, precisely 0.9 metres in diameter and 0.75 metres tall. One round flat grey-green satin painted steel tabletop with a neatly rolled thick rim and a sparse ring of small round rivet heads. A sturdy central steel pedestal rises from a broad circular bolted deck base. Restrained utilitarian industrial furniture, factory fresh even paint. Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.'",
+  "prompt": "Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish. A small round dining table for military starship officers quarters, precisely 0.9 metres in diameter and 0.75 metres tall. One round flat grey-green satin painted steel tabletop with a neatly rolled thick rim and a sparse ring of small round rivet heads. A sturdy central steel pedestal rises from a broad circular bolted deck base. Restrained utilitarian industrial furniture, factory fresh even paint. Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.",
+  "seed": 251,
+  "model_id": "filipstrand/Z-Image-Turbo-mflux-4bit",
+  "sha256": "6e19f30b50d6463754c7e859d853c1e8d08e985a8b8c29954b70aedda07aa024",
+  "elapsed_seconds": 68.363,
+  "selection": {
+    "chosen_seed": 251,
+    "rating": 9,
+    "approved": true,
+    "observations": "All six panels are visible. Panel A shows the approved room context with the correct industrial military aesthetic. Panel B shows the accepted locker style, confirming the grey-green satin paint and rivet detailing. Panels C1 (seed 251), C2 (seed 252), C3 (seed 253), and C4 (seed 254) all show a round dining table with a central pedestal and circular base. Seed 251 is the most complete and coherent, showing a clear rolled rim, a distinct ring of rivets on the tabletop edge, and a bolted deck base.",
+    "defects": [
+      "Seed 252 has a slightly less defined rim roll compared to 251.",
+      "Seed 253 and 254 have less distinct rivet detailing on the tabletop edge.",
+      "All candidates are generic 3D renders and require specific dimension scaling during the fitting phase."
+    ],
+    "fitting_landmarks": {
+      "top_surface": "Flat circular disc, grey-green satin finish",
+      "rim": "Rolled edge with a sparse ring of small round rivet heads",
+      "pedestal": "Central cylindrical steel column",
+      "base": "Broad circular deck base with visible bolt heads around the perimeter"
+    }
+  },
+  "inputs_policy": "Single approved hero; no independently hallucinated side/back views."
+}

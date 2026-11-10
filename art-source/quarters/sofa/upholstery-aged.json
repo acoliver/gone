@@ -1,0 +1,35 @@
+{
+  "model": "black-forest-labs/FLUX.2-klein-4B",
+  "seed": 95601,
+  "quantize": 4,
+  "steps": 4,
+  "source": "docs/art/quarters/sheets/sofa/aged-target.png",
+  "crop_xyxy": [
+    275,
+    380,
+    410,
+    475
+  ],
+  "prompt": "Faded dusty oatmeal upholstery fabric, warm grey taupe with uneven dry brown grime and broad subtle mottling. Brittle fine woven yarns, dry mineral dust. Orthographic flat material scan, shadowless even diffuse illumination, edge-to-edge continuous surface. Remove the object shape, folds, cast shadows, floor, hardware, borders and perspective. No green; only warm neutral, tan and brown colours. No biological growth, lettering or objects. Seamless repeating texture.",
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/sofa/upholstery-aged-crop.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/sofa/upholstery-aged-prompt.txt",
+    "--seed",
+    "95601",
+    "--width",
+    "768",
+    "--height",
+    "768",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/sofa/upholstery-aged.png"
+  ]
+}

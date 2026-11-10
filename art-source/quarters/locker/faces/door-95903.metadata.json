@@ -1,0 +1,54 @@
+{
+  "face": "door",
+  "seed": 95903,
+  "model": "black-forest-labs/FLUX.2-klein-4B",
+  "quantize": 4,
+  "steps": 4,
+  "concept": "docs/art/corridors/hatch-concept-rusted.png",
+  "crop": [
+    817,
+    119,
+    890,
+    352
+  ],
+  "input": "door-input.png",
+  "source": "door-source.png",
+  "size": [
+    512,
+    2240
+  ],
+  "prompt": "Remove every hinge, handle, latch, rivet, bolt, seam, frame, object, perspective and cast shadow from this image. Replace all hardware and edges with a continuous aged grey-green painted steel surface matching the surrounding surface. Preserve the paint and rust colour, ragged peeling borders, irregular layout and varied sizes from the reference. Keep most broad central areas as surviving grey-green paint, with about fifteen percent central reddish-brown rust. Concentrate broken irregular corrosion near the image edges and corners, with varied gaps of surviving paint, never a straight outline. Thin rusty runs travel downward from a few of the existing corrosion patches, with varied lengths and soft translucent ends. Fill the entire image edge to edge with only this flat material, lit flat and evenly, shadowless, without seams, borders or hardware. Do not draw a rectangular panel or a frame. No regular repeated spots, stars, crosses, circles or vertical bars. This image represents the full upright locker door. Include delicate downward rusty runs below the vent positions at 15, 13 and 10 percent from the top, across the middle 60 percent of the width, and below the handle position at 88 percent from the left and 65 percent from the top. Do not draw vents or a handle. \nThe faint guide marks indicate future vent and handle locations only: remove the marks themselves. Put a few naturally ragged, downward rust runs just below them. No depicted hardware. Large quiet areas of intact muted grey-green paint should remain. Concentrate irregular organic dark reddish-brown paint loss on broken edge regions and corners, about seventy percent edge corrosion and twenty percent middle-field corrosion. Rust patches have differing sizes and branching ragged contours. Do not make any long straight rust line, rectangular cutout, parallel stripe, vertical bar, repeated spot or geometric pattern. Runs are narrow, tapered, translucent and gently wandering, with irregular ends; vary their lengths and leave paint on either side. Preserve the reference painted-metal and oxide colours. A flat material image only.\n",
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/door-input.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/door-extra-400-prompt.txt",
+    "--seed",
+    "95903",
+    "--width",
+    "512",
+    "--height",
+    "2240",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/door-95903.png"
+  ],
+  "scores": {
+    "delta_e": 24.289982593354846,
+    "planar_light_gradient": 0.04681129783221143,
+    "secondary_autocorrelation": 0.3827562409692446,
+    "edge_rust": 0.08730963976499691,
+    "broad_rust": 0.0068301388403772265,
+    "edge_broad_ratio": 12.78299633513377,
+    "paint_mean_delta_e": 21.130856497053607,
+    "paint_std_delta_e": 3.6279967318293536,
+    "rust_mean_delta_e": 13.566883880710005,
+    "rust_std_delta_e": 0.642756745868952
+  }
+}

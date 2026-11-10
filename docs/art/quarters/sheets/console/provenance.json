@@ -1,0 +1,26 @@
+{
+  "command": "env HF_HOME=/Volumes/XS1000/hf-cache HF_HUB_OFFLINE=1 /Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-z-image-turbo --model filipstrand/Z-Image-Turbo-mflux-4bit --quantize 4 --steps 8 --seed 351 --width 1024 --height 1024 --output /Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/tmp/props/contacts/console/hero-s351.png --prompt 'Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish. A single broad military tabletop control terminal, a landscape-format armoured console made of grey-green satin painted steel. The whole terminal is one and a half times as wide as it is tall, 1.1 metres wide, 0.69 metres tall and 0.55 metres deep. A solid trapezoidal wedge rests directly on its broad flat base. A horizontal dark teal screen is twice as wide as it is tall, recessed inside a thick painted steel bezel on the steep backward-leaning upper face. The shallow sloping lower face has exactly twenty-four large blank square keys in three straight rows of eight, and three long thin bare-steel toggle levers along the back of the keys. A sparse industrial control keypad, not a typewriter keyboard. The lower solid front wall is about one third of the whole height. Small bevels and sparse rivet rows, fresh even factory paint. Only the low wide desktop terminal, no stand, pedestal, legs or separate monitor. Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.'",
+  "prompt": "Product concept render of military starship crew furniture, Battlestar Galactica and Stargate Universe design language, brand new and spotless, factory finish. A single broad military tabletop control terminal, a landscape-format armoured console made of grey-green satin painted steel. The whole terminal is one and a half times as wide as it is tall, 1.1 metres wide, 0.69 metres tall and 0.55 metres deep. A solid trapezoidal wedge rests directly on its broad flat base. A horizontal dark teal screen is twice as wide as it is tall, recessed inside a thick painted steel bezel on the steep backward-leaning upper face. The shallow sloping lower face has exactly twenty-four large blank square keys in three straight rows of eight, and three long thin bare-steel toggle levers along the back of the keys. A sparse industrial control keypad, not a typewriter keyboard. The lower solid front wall is about one third of the whole height. Small bevels and sparse rivet rows, fresh even factory paint. Only the low wide desktop terminal, no stand, pedestal, legs or separate monitor. Single object only, the entire object in frame and centred, isolated on a plain light grey studio background, soft even diffuse lighting with no hard shadows, three-quarter view from the front left and slightly above, orthographic-looking camera with little perspective. No people, no text, no logos.",
+  "seed": 351,
+  "model_id": "filipstrand/Z-Image-Turbo-mflux-4bit",
+  "sha256": "109d9cdf56355073a611c5b25e405c804a054a8c52ba93b57956be1a37f7bce5",
+  "elapsed_seconds": 93.245,
+  "selection": {
+    "chosen_seed": 351,
+    "rating": 8,
+    "approved": true,
+    "observations": "All six panels are visible. Panel A shows the approved room context. Panel B shows the accepted locker style. Panels C1 (seed 351), C2 (seed 352), C3 (seed 353), and C4 (seed 354) show candidate consoles. Seed 351 is the most coherent candidate, featuring a solid trapezoidal base, a broad flat top, a recessed landscape screen, and a sparse keypad layout that aligns with the 'industrial control' brief.",
+    "defects": [
+      "The keypad layout in seed 351 appears to be a 4x6 grid (24 keys) rather than the specified 3x8 grid.",
+      "The toggle levers are positioned to the right of the keypad rather than along the back of the keys.",
+      "The screen bezel is relatively thin compared to the 'thick painted steel bezel' description."
+    ],
+    "fitting_landmarks": {
+      "base": "Solid trapezoidal wedge with a broad flat base and a solid front wall.",
+      "screen": "Landscape-format dark teal screen recessed into the steep backward-leaning upper face.",
+      "keypad": "Sparse industrial control keypad located on the shallow sloping lower face.",
+      "levers": "Bare-steel toggle levers positioned on the sloping face."
+    }
+  },
+  "inputs_policy": "Single approved hero; no independently hallucinated side/back views."
+}

@@ -74,7 +74,7 @@ func _run() -> void:
 	var config_hash := scenario_hash
 	var app_hash := Protocol.app_hash(project_root)
 	var app_script: String = project_root.path_join("app/harness_mode.gd")
-	var resolution: String = "480x270"
+	var resolution: String = "1536x864" if scenario.start == "quarters" else "480x270"
 	var policy_path: String = ""
 	if scenario.mode == "calibration":
 		app_script = project_root.path_join("app/calibration_mode.gd")
@@ -157,7 +157,9 @@ func verify_run(app_hash: String, scenario_hash: String, config_hash: String) ->
 		failures.append(missing)
 	for beat: Dictionary in scenario.beats:
 		verify_beat(report, beat, scenario.mode == "capture")
-	if scenario.mode == "capture":
+	if scenario.mode == "capture" and scenario.start == "quarters":
+		for failure: String in QuartersCapture.verify(report, scenario): failures.append(failure)
+	elif scenario.mode == "capture":
 		verify_wake_progression(report)
 		verify_door_open(report)
 		verify_hallway(report)
@@ -349,6 +351,8 @@ func verify_beat_stats(name: String, image: Image, entry: Dictionary) -> void:
 		return
 	if luma <= LIT_MIN_LUMA:
 		failures.append("beat `%s` is black: luma %.4f" % [name, luma])
+	# Quarters captures have warm memory and white present checks of their own.
+	if scenario is HarnessScenario and scenario.start == "quarters": return
 	var declared_white: bool = scenario.beats.any(func(beat: Dictionary) -> bool: return beat.name == name and beat.get("light", "red") == "white")
 	if WHITE_LIGHT_BEATS.has(name) or declared_white:
 		var lamps := LampSamples.evaluate(image, entry.get("lamps", []))

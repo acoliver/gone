@@ -26,6 +26,10 @@ var hazards: Hazards
 var rod: Rod
 var hallway: Hallway
 var power_room: PowerRoom
+var d16_section: ShipSection
+var d16_lighting: SectionPowerLighting
+var quarters_shell: RoomGeometry
+var quarters: QuartersRoom
 
 static func build_into(parent: Node3D, game: Game) -> ShipScene:
 	var scene := ShipScene.new()
@@ -288,6 +292,8 @@ func build_remote(spec: ShipLayout.ConnectorSpec) -> Node3D:
 				_add_hatch_label(door, face)
 	_seat_connector_lamps(spec, root)
 	_add_lift_label(spec, root.lift_leaf)
+	if spec.deck_number() == 16 and spec.pitch_index() == 1:
+		ensure_d16()
 	return root
 
 func remove_remote(spec: ShipLayout.ConnectorSpec, root: Node3D) -> void:
@@ -335,3 +341,44 @@ func _seat_section_lamps(spec: ShipLayout.SectionSpec, section: ShipSection) -> 
 		var door := _game.layout.door(id)
 		if door.kind() != ShipLayout.DoorKind.HATCH: continue
 		HatchServices.seat_nearest(_hatches[id], door.spaces().find(spec.id()), lights)
+
+func ensure_d16() -> void:
+	if d16_section != null: return
+	var spec := _game.layout.section(&"D16-S-042")
+	d16_section = ShipSection.build(_game.layout, spec)
+	_parent.add_child(d16_section)
+	for piece: MeshInstance3D in d16_section.find_children("*", "MeshInstance3D", true, false):
+		var header: bool = piece.get_meta(&"solid_id", &"") == &"D16-S-042/STARBOARD/002"
+		var trim: bool = piece.has_meta(&"surface_frame") and piece.get_meta(&"surface_frame").key == StringName("%s/FRAME" % QuartersLayout.DOOR)
+		if header or trim: piece.layers |= Lighting.QUARTERS_MASK
+	d16_lighting = SectionPowerLighting.build(_game, spec, d16_section)
+	d16_section.add_child(d16_lighting)
+	for id: StringName in d16_section.side_leaves:
+		var view := DoorView.bind_leaf(_game.layout.door(id), d16_section.side_leaves[id])
+		d16_section.add_child(view)
+		door_views.append(view)
+		view.present(_game.doors.snapshot(id))
+	_add_hatch(&"D16-C-002-H-FORE", d16_section)
+	quarters_shell = RoomGeometry.build_solids(_game.layout, QuartersGeometry.shell())
+	quarters_shell.name = "Quarters"
+	quarters = QuartersRoom.build(_game)
+	quarters_shell.add_child(quarters)
+	_parent.add_child(quarters_shell)
+	var release := QuartersRelease.build(_game.layout)
+	d16_section.add_child(release)
+	var term := ShipText.message("navigation.hatch")
+	_add_label(QuartersLayout.RELEASE, 16, spec.id(), release.transform * QuartersRelease.LABEL_FRAME, QuartersRelease.LABEL_SIZE, ShipText.LabelText.new(term.native, term.perceived_es), release, QuartersRelease.LABEL_FRAME)
+	labels[QuartersLayout.RELEASE].ink_albedo = ShipTextCanvas.STATE_COLOR
+	_spaces[spec.id()] = true
+	_spaces[ShipLayout.QUARTERS_ID] = true
+	_sync_sliding_labels()
+	for id: StringName in spec.opening_ids():
+		var door := _game.layout.door(id)
+		if door.kind() != ShipLayout.DoorKind.HATCH: continue
+		for face_id: StringName in door.face_ids():
+			var face := _game.layout.face(face_id)
+			if face.source_space() == spec.id(): _add_hatch_label(door, face)
+
+func tick_rooms() -> void:
+	if d16_lighting != null: d16_lighting.process_frame()
+	if quarters != null: quarters.process_frame()

@@ -1,0 +1,148 @@
+{
+  "Mattress": {
+    "frames": 80,
+    "uniform_pressure": 0.01,
+    "pressure_factor": 1,
+    "quality": 20,
+    "time_scale": 0.4,
+    "mass": 0.015,
+    "stiffness": 150,
+    "bending": 0.3,
+    "last_five_frames_motion_m": 0.012383074945467866,
+    "support_translation_m": -0.0019784440994262695,
+    "bounds_native_m": [
+      [
+        -0.7017061710357666,
+        -1.0159848928451538,
+        0.5009999871253967
+      ],
+      [
+        0.6987012624740601,
+        0.9624140858650208,
+        0.7298750281333923
+      ]
+    ]
+  },
+  "Pillow_L": {
+    "frames": 80,
+    "uniform_pressure": 0.01,
+    "pressure_factor": 1,
+    "quality": 20,
+    "time_scale": 0.4,
+    "mass": 0.015,
+    "stiffness": 150,
+    "bending": 0.3,
+    "last_five_frames_motion_m": 0.01505954233833885,
+    "support_translation_m": 0.060665441513061524,
+    "bounds_native_m": [
+      [
+        -0.6877654790878296,
+        0.4767182767391205,
+        0.6858024001121521
+      ],
+      [
+        -0.04151737689971924,
+        0.9040023684501648,
+        0.8369881510734558
+      ]
+    ],
+    "exact_face_contact_translation_m": 0.010434078431565907,
+    "headboard_translation_y_m": 0.0949976315498352
+  },
+  "Pillow_R": {
+    "frames": 80,
+    "uniform_pressure": 0.01,
+    "pressure_factor": 1,
+    "quality": 20,
+    "time_scale": 0.4,
+    "mass": 0.015,
+    "stiffness": 150,
+    "bending": 0.3,
+    "last_five_frames_motion_m": 0.01359014367710085,
+    "support_translation_m": 0.026535821914672852,
+    "bounds_native_m": [
+      [
+        0.023483574390411377,
+        0.47345954179763794,
+        0.6773431897163391
+      ],
+      [
+        0.6871618628501892,
+        0.9277465343475342,
+        0.8454456925392151
+      ]
+    ],
+    "exact_face_contact_translation_m": 0.0021466636027858135,
+    "headboard_translation_y_m": 0.07125346565246582
+  },
+  "Quilt": {
+    "frames": 180,
+    "retained_pins": 6,
+    "pressure": {
+      "enabled": false,
+      "uniform_force": 0.0,
+      "scale": 1.0
+    },
+    "strength_groups": {
+      "structural": "",
+      "shear": "",
+      "bending": ""
+    },
+    "last_five_frames_motion_m": 0.0018347938831565019,
+    "trace": [
+      {
+        "frame": 50,
+        "bounds_blender_m": [
+          [
+            -0.7881612181663513,
+            -1.0993629693984985,
+            0.5517622232437134
+          ],
+          [
+            0.7699698209762573,
+            0.4022303819656372,
+            0.7558083534240723
+          ]
+        ]
+      },
+      {
+        "frame": 100,
+        "bounds_blender_m": [
+          [
+            -0.7894688844680786,
+            -1.0984686613082886,
+            0.5519450306892395
+          ],
+          [
+            0.7695375084877014,
+            0.402376264333725,
+            0.7556964159011841
+          ]
+        ]
+      },
+      {
+        "frame": 150,
+        "bounds_blender_m": [
+          [
+            -0.7900258302688599,
+            -1.0964772701263428,
+            0.5518985986709595
+          ],
+          [
+            0.7692431211471558,
+            0.4024488031864166,
+            0.7556869983673096
+          ]
+        ]
+      }
+    ],
+    "exact_face_contact_translation_m": -2.8271453928786772e-08,
+    "headboard_translation_y_m": 0
+  },
+  "fine_weave": {
+    "source": "assets/props/quarters/sofa/weave.png",
+    "median_tile_pitch_m": 0.12,
+    "normal_height_scale_m": 0.0004,
+    "geometry_unchanged": true
+  }
+}

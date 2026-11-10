@@ -1,0 +1,118 @@
+{
+  "trial": "pass2-o",
+  "seed": 9501,
+  "prop": "sofa",
+  "construction": {
+    "SeatCushion_L": {
+      "method": "Zero-pressure height-field drape with retained seam edges, settled inner crust and bounded tears; no cloth simulation claimed.",
+      "original_volume_m3": 0.0751378667946169,
+      "target_volume_ratio": 0.255,
+      "cover_volume_m3": 9.291171807130135e-05,
+      "frays": 6,
+      "split_cells": [
+        [
+          5,
+          8,
+          3
+        ],
+        [
+          12,
+          15,
+          12
+        ]
+      ],
+      "crust_width_fit": 1.0432017260680289
+    },
+    "BackCushion_L": {
+      "method": "Settled lower filling; upper empty sack folds forward without lowering its bottom.",
+      "original_volume_m3": 0.030947778946806597,
+      "target_volume_ratio": 0.255,
+      "cover_volume_m3": 5.865719205038682e-05,
+      "frays": 12,
+      "crust_width_fit": 1.0822731139715325,
+      "crust_top_m": 0.604
+    },
+    "SeatCushion_C": {
+      "method": "Zero-pressure height-field drape with retained seam edges, settled inner crust and bounded tears; no cloth simulation claimed.",
+      "original_volume_m3": 0.0751378667946169,
+      "target_volume_ratio": 0.255,
+      "cover_volume_m3": 9.300893270936513e-05,
+      "frays": 5,
+      "split_cells": [
+        [
+          5,
+          8,
+          3
+        ],
+        [
+          12,
+          15,
+          12
+        ]
+      ],
+      "crust_width_fit": 1.0431821387742188
+    },
+    "BackCushion_C": {
+      "method": "Settled lower filling; upper empty sack folds forward without lowering its bottom.",
+      "original_volume_m3": 0.030947778946806597,
+      "target_volume_ratio": 0.255,
+      "cover_volume_m3": 5.862635422865509e-05,
+      "frays": 10,
+      "crust_width_fit": 1.080080151148641,
+      "crust_top_m": 0.604
+    },
+    "SeatCushion_R": {
+      "method": "Zero-pressure height-field drape with retained seam edges, settled inner crust and bounded tears; no cloth simulation claimed.",
+      "original_volume_m3": 0.0751378667946169,
+      "target_volume_ratio": 0.255,
+      "cover_volume_m3": 9.293659884889183e-05,
+      "frays": 6,
+      "split_cells": [
+        [
+          5,
+          8,
+          3
+        ],
+        [
+          12,
+          15,
+          12
+        ]
+      ],
+      "crust_width_fit": 1.0435371582230704
+    },
+    "BackCushion_R": {
+      "method": "Settled lower filling; upper empty sack folds forward without lowering its bottom.",
+      "original_volume_m3": 0.030947778946806597,
+      "target_volume_ratio": 0.255,
+      "cover_volume_m3": 5.864351940336917e-05,
+      "frays": 10,
+      "crust_width_fit": 1.0809328743323439,
+      "crust_top_m": 0.604
+    },
+    "Throw": {
+      "method": "Continuous cap-to-floor gravity drape, outside the arm collision envelope, with a separate torn floor remnant.",
+      "frays": 79,
+      "arm_cap_z_m": 0.8075
+    },
+    "floor_spill": {
+      "pieces": 36,
+      "floor_gap_m": 0.0002
+    }
+  },
+  "section_repairs": {
+    "Frame": 0,
+    "Feet": 0,
+    "SeatCushion_L": 0,
+    "SeatCushion_C": 0,
+    "SeatCushion_R": 0,
+    "BackCushion_L": 0,
+    "BackCushion_C": 0,
+    "BackCushion_R": 0,
+    "Rivets": 0,
+    "Throw": 0,
+    "ThrowDetachedPiece": 0,
+    "FoamDebris": 0,
+    "FoamFloorDebris": 0
+  }
+}

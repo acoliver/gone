@@ -70,7 +70,7 @@ func test_door_counts_policies_and_reciprocal_faces() -> void:
 			cranks.append(id)
 		if door.kind() == ShipLayout.DoorKind.SIDE:
 			side_count += 1
-			assert_int_equal(door.policy(), ShipLayout.Policy.NEVER_OPENS, "side door stays shut")
+			assert_int_equal(door.policy(), ShipLayout.Policy.PRESS_SLIDE if id == ShipLayout.QUARTERS_DOOR_ID else ShipLayout.Policy.NEVER_OPENS, "#114 quarters manual release; all other side doors stay shut")
 		if door.kind() == ShipLayout.DoorKind.LIFT:
 			lift_count += 1
 		if door.kind() == ShipLayout.DoorKind.HATCH:
@@ -84,11 +84,11 @@ func test_door_counts_policies_and_reciprocal_faces() -> void:
 			if door.kind() == ShipLayout.DoorKind.HATCH:
 				var expected := 41 + layout.connector(door.owner_id()).pitch_index()
 				assert_int_equal(face.destination_section(), expected - index, "face travel destination")
-	assert_true(cranks == [&"D14-C-000-H-AFT", &"D14-C-000-H-FORE", &"D14-C-001-H-AFT", &"D14-C-001-H-FORE"], "exact four crank ids")
-	assert_int_equal(side_count, 17, "seventeen shut side leaves")
+	assert_true(cranks == [&"D14-C-000-H-AFT", &"D14-C-000-H-FORE", &"D14-C-001-H-AFT", &"D14-C-001-H-FORE", &"D16-C-001-H-AFT"], "#114 adds the sole off-D14 crank")
+	assert_int_equal(side_count, 23, "seventeen D14 side leaves and six D16 side leaves")
 	assert_int_equal(lift_count, 60, "sixty lifts")
-	assert_int_equal(hatch_count, 122, "connector and boundary hatches")
-	assert_int_equal(layout.door_ids().size(), 201, "one record per door")
+	assert_int_equal(hatch_count, 123, "connector hatches and three section boundaries")
+	assert_int_equal(layout.door_ids().size(), 208, "one record per door")
 	assert_int_equal(layout.section(&"D14-S-041").side_door_ids().size(), 5, "five shut section41 leaves")
 
 func test_layout_is_repeatable_and_collection_reads_are_copies() -> void:
@@ -96,7 +96,7 @@ func test_layout_is_repeatable_and_collection_reads_are_copies() -> void:
 	assert_true(first.serialize() == _layout().serialize(), "repeatable serialized layout")
 	var ids := first.door_ids()
 	ids.clear()
-	assert_int_equal(first.door_ids().size(), 201, "id collection is a copy")
+	assert_int_equal(first.door_ids().size(), 208, "id collection is a copy")
 	var faces := first.door(&"D14-BAY-DOOR").face_ids()
 	faces.clear()
 	assert_int_equal(first.door(&"D14-BAY-DOOR").face_ids().size(), 2, "record collection is a copy")

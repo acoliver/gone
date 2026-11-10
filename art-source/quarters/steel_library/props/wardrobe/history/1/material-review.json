@@ -1,0 +1,80 @@
+{
+  "images_seen": [
+    "hero",
+    "front",
+    "top",
+    "detail"
+  ],
+  "ratings": {
+    "candidate_as_built": {
+      "score": 8,
+      "explanation": "The grey-green paint is consistent and clean across all views, with correct dark trim and bare hardware, though the surface lacks subtle relief or paneling detail."
+    },
+    "candidate_aged": {
+      "score": 7,
+      "explanation": "Aging is convincing with broad paint retention and edge corrosion, but the rust runs are somewhat sparse and the dust on the top face is very subtle."
+    },
+    "locker_as_built": {
+      "score": 9,
+      "explanation": "The reference locker has a clean, uniform finish with clear hardware and vents, serving as a strong baseline for the 'new' state."
+    },
+    "locker_aged": {
+      "score": 8,
+      "explanation": "The aged locker shows excellent weathering with heavy edge rust and a realistic patina, though the center of the door is slightly less worn than the edges."
+    },
+    "legacy_as_built": {
+      "score": 8,
+      "explanation": "The per-face finish matches the candidate well, with a consistent grey-green tone and appropriate hardware placement."
+    },
+    "legacy_aged": {
+      "score": 7,
+      "explanation": "The aged legacy finish shows good variation in rust and wear, but the transition between painted and rusted areas is slightly abrupt in the detail view."
+    }
+  },
+  "features": {
+    "grey-green_paint": {
+      "achieved": true,
+      "observations": "The base color is a consistent grey-green across all 'as-built' states, matching the warship steel brief."
+    },
+    "bare_hardware": {
+      "achieved": true,
+      "observations": "Hardware like the handle and vents are rendered in a bare metal tone, distinct from the painted body."
+    },
+    "dark_trim": {
+      "achieved": true,
+      "observations": "The bottom edge and door frame show a darker trim color, providing a clear visual boundary."
+    },
+    "edge_corrosion": {
+      "achieved": true,
+      "observations": "In the 'aged' states, rust is concentrated on the corners and edges, simulating wear from handling."
+    },
+    "rust_runs": {
+      "achieved": true,
+      "observations": "Narrow, vertical rust streaks are visible on the front and side faces, indicating water or condensation flow."
+    },
+    "settled_dust": {
+      "achieved": true,
+      "observations": "A fine, light-colored layer is visible on the top face in the 'aged' state, representing settled dust."
+    },
+    "corroded_hardware": {
+      "achieved": true,
+      "observations": "The handle and vents in the 'aged' state show a darker, rusted appearance compared to the clean metal in the 'as-built' state."
+    }
+  },
+  "findings": [
+    "The 'aged' state could benefit from slightly more prominent dust on the top face to better convey the 'settled dust' requirement.",
+    "The rust runs on the vertical faces are a bit thin; slightly wider or more varied streaks would add to the realism of 1000-year aging.",
+    "The transition from paint to rust on the edges is sharp; a slightly softer gradient would look more natural."
+  ],
+  "ready": true,
+  "limitations": "The 'detail' view is a close-up crop, so the overall context of the wear pattern is less clear than in the full-view blocks.",
+  "acceptance": {
+    "accepted": false,
+    "candidate_aged": 7,
+    "locker_aged": 8,
+    "numeric_failed": 0,
+    "scope_complete": true,
+    "rule": "candidate aged >= locker aged in this review, numeric gates pass, all four view blocks inspected; wardrobe must also match or exceed its per-face finish in this review",
+    "legacy_aged": 7
+  }
+}

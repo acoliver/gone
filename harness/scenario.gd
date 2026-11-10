@@ -49,6 +49,7 @@ var beats: Array = []
 var calibration: Dictionary = {}
 var logical_steps_per_present: int = 1
 var connector: Dictionary = {}
+var start: String = "stasis"
 
 const CalibrationModule := preload("res://harness/calibration.gd")
 
@@ -81,6 +82,9 @@ static func parse(text: String) -> Dictionary:
 		if not (data.connector is Dictionary) or not data.connector.has_all(["digest", "route_ticks", "labels", "white_beats"]):
 			return {"scenario": null, "error": "connector scenario needs its compiled evidence contract"}
 		scenario.connector = data.connector
+	scenario.start = String(data.get("start", "stasis"))
+	if scenario.start not in ["stasis", "quarters"] or (scenario.start == "quarters" and (scenario.mode != "capture" or scenario.content != "gameplay" or not scenario.connector.is_empty())):
+		return {"scenario": null, "error": "start must be stasis or a quarters gameplay capture"}
 	scenario.max_frames = int(data.get("max_frames", DEFAULT_MAX_FRAMES))
 	for entry: Dictionary in data.get("actions", []):
 		var action := _parse_action(scenario.scenario_name, entry)
@@ -109,6 +113,10 @@ static func parse(text: String) -> Dictionary:
 			if not (angle is int or angle is float) or not is_finite(float(angle)) or float(angle) < 0 or float(angle) > 90:
 				return {"scenario": null, "error": "beat camera_pitch_up must be a finite angle from zero to ninety degrees"}
 			beat.camera_pitch_up = float(angle)
+		if entry.has("quarters_view"):
+			if scenario.start != "quarters" or entry.quarters_view not in ["doorway", "wide", "console", "bed", "bedside", "table", "desk", "boots", "jacket", "wardrobe"]:
+				return {"scenario": null, "error": "quarters_view requires quarters start and doorway, wide, console, bed, bedside, table, desk, boots, jacket or wardrobe"}
+			beat.quarters_view = entry.quarters_view
 		scenario.beats.append(beat)
 	scenario.beats.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
 		return a.tick < b.tick)

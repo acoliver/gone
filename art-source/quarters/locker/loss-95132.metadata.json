@@ -1,0 +1,41 @@
+{
+  "model": "black-forest-labs/FLUX.2-klein-4B",
+  "quantize": 4,
+  "steps": 4,
+  "seed": 95132,
+  "size": [
+    768,
+    768
+  ],
+  "source_concept": "docs/art/corridors/hatch-concept-rusted.png",
+  "concept_crop_xyxy": [
+    784,
+    132,
+    872,
+    241
+  ],
+  "prompt": "Remove every hinge, handle, latch, rivet, bolt, seam, panel edge and shadow from this image. Replace all hardware, edges and shadows with a continuous rusted, peeling painted steel surface matching the surrounding surface. Preserve the extensive dark reddish-brown rust, flaking orange corrosion and scattered small broken grey-green paint islands from the reference. Most of the surface is exposed rust. Fill the entire image edge to edge with only this continuous flat material surface, lit flat and evenly, without shadows, seams, borders or hardware. No frame, no bevel, no perspective, no objects.",
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/loss-crop.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/loss-prompt.txt",
+    "--seed",
+    "95132",
+    "--width",
+    "768",
+    "--height",
+    "768",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/loss-95132.png"
+  ],
+  "source_crop": "loss-crop.png",
+  "candidate": "loss-95132.png"
+}

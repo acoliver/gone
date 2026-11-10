@@ -1,0 +1,178 @@
+{
+  "bounds_gltf": [
+    [
+      -0.25,
+      0,
+      -0.225
+    ],
+    [
+      0.25,
+      0.9,
+      0.225
+    ]
+  ],
+  "required_nodes": [
+    "Chair",
+    "Frame",
+    "SeatPan",
+    "SeatPad",
+    "BackPlate"
+  ],
+  "parents": {
+    "Frame": "Chair",
+    "SeatPan": "Frame",
+    "SeatPad": "Chair",
+    "BackPlate": "Frame"
+  },
+  "pivots_gltf": {
+    "Chair": [
+      0,
+      0,
+      0
+    ]
+  },
+  "materials": [
+    "PaintedSteel",
+    "BareSteel",
+    "DarkSteel",
+    "Fabric"
+  ],
+  "paint_color": [
+    0.08,
+    0.095,
+    0.07,
+    1
+  ],
+  "round_frame": true,
+  "back_gap_m": 0.08,
+  "pad_height_m": 0.04,
+  "visible_details": [
+    "SeatPad",
+    "BackPlate"
+  ],
+  "hero_camera_native": [
+    -1.5,
+    -2.5,
+    1.6
+  ],
+  "hero_camera_gltf": [
+    -1.5,
+    1.6,
+    2.5
+  ],
+  "hero_target_native": [
+    0,
+    0,
+    0.45
+  ],
+  "triangle_limit": 6000,
+  "fit_notes": "The generated seat patch determines sitting height within an ergonomic .42-.46 m range. Round steel tubes, cylindrical dark shoes, a rounded back plate with visible corner rivets and an 80 mm back gap follow seed 263. The separate 40 mm pad rests inside a folded steel pan lip. No textures or aging.",
+  "guide": {
+    "source_bounds_native": [
+      [
+        -0.7330079674720764,
+        -0.7140222787857056,
+        -0.999231219291687
+      ],
+      [
+        0.717407763004303,
+        0.7548134922981262,
+        0.9926363229751587
+      ]
+    ],
+    "carcass_fitting_bounds_native": [
+      [
+        -0.7330079674720764,
+        -0.7140222787857056,
+        -0.999231219291687
+      ],
+      [
+        0.717407763004303,
+        0.7548134922981262,
+        0.9926363229751587
+      ]
+    ],
+    "fitted_size_whd": [
+      0.5,
+      0.9,
+      0.45
+    ],
+    "sections": [
+      {
+        "height_m": 0.09000000000000001,
+        "vertices": 1540,
+        "xy_min": [
+          -0.24166984856128693,
+          -0.2162608653306961
+        ],
+        "xy_max": [
+          0.24239890277385712,
+          0.21017946302890778
+        ]
+      },
+      {
+        "height_m": 0.225,
+        "vertices": 1781,
+        "xy_min": [
+          -0.23191963136196136,
+          -0.20588424801826477
+        ],
+        "xy_max": [
+          0.2355414479970932,
+          0.19669653475284576
+        ]
+      },
+      {
+        "height_m": 0.45,
+        "vertices": 8040,
+        "xy_min": [
+          -0.21811693906784058,
+          -0.20555943250656128
+        ],
+        "xy_max": [
+          0.2285030037164688,
+          0.18331456184387207
+        ]
+      },
+      {
+        "height_m": 0.675,
+        "vertices": 3638,
+        "xy_min": [
+          -0.23490287363529205,
+          0.050686318427324295
+        ],
+        "xy_max": [
+          0.06696260720491409,
+          0.20819413661956787
+        ]
+      },
+      {
+        "height_m": 0.81,
+        "vertices": 3143,
+        "xy_min": [
+          -0.24468526244163513,
+          0.06499840319156647
+        ],
+        "xy_max": [
+          0.05677679926156998,
+          0.22113581001758575
+        ]
+      }
+    ],
+    "mesh_triangles": 371696,
+    "seat_fit": {
+      "sample_count": 56250,
+      "guide_height_m": 0.4316454231739044,
+      "fitted_seat_height_m": 0.4316454231739044
+    },
+    "back_fit": {
+      "upper_samples": 15076,
+      "lower_samples": 5662,
+      "guide_dy_dz": 0.1437519698251218,
+      "fitted_dy_dz": 0.1437519698251218,
+      "continuous_plate_from_seat": false
+    },
+    "source": "tmp/props/dining_chair/guide.glb"
+  },
+  "id": "dining_chair"
+}

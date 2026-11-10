@@ -61,6 +61,10 @@ func test_repeated_labels_share_pixels_without_sharing_material_or_blend() -> vo
 	var a := first.get_node("TextSurface") as MeshInstance3D
 	var b := second.get_node("TextSurface") as MeshInstance3D
 	assert_true(a.material_override != b.material_override, "unique blend materials")
+	assert_true(a.material_override.get_shader_parameter("ink_albedo") == Color.BLACK, "existing labels retain their original albedo")
+	first.ink_albedo = ShipTextCanvas.STATE_COLOR
+	assert_true(a.material_override.get_shader_parameter("ink_albedo") == ShipTextCanvas.STATE_COLOR, "local ink override updates the attached material")
+	assert_true(b.material_override.get_shader_parameter("ink_albedo") == Color.BLACK, "local release styling cannot change another label")
 	for tick: int in range(168): first.perception.tick(true)
 	first.present()
 	second.present()

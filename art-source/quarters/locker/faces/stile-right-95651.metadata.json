@@ -1,0 +1,54 @@
+{
+  "face": "stile-right",
+  "seed": 95651,
+  "model": "black-forest-labs/FLUX.2-klein-4B",
+  "quantize": 4,
+  "steps": 4,
+  "concept": "docs/art/quarters/concept-now.png",
+  "crop": [
+    810,
+    259,
+    831,
+    319
+  ],
+  "input": "stile-right-input.png",
+  "source": "stile-right-source.png",
+  "size": [
+    64,
+    3488
+  ],
+  "prompt": "Remove every hinge, handle, latch, rivet, bolt, seam, frame, object, perspective and cast shadow from this image. Replace all hardware and edges with a continuous aged grey-green painted steel surface matching the surrounding surface. Preserve the paint and rust colour, ragged peeling borders, irregular layout and varied sizes from the reference. Keep most broad central areas as surviving grey-green paint, with about fifteen percent central reddish-brown rust. Concentrate broken irregular corrosion near the image edges and corners, with varied gaps of surviving paint, never a straight outline. Thin rusty runs travel downward from a few of the existing corrosion patches, with varied lengths and soft translucent ends. Fill the entire image edge to edge with only this flat material, lit flat and evenly, shadowless, without seams, borders or hardware. Do not draw a rectangular panel or a frame. No regular repeated spots, stars, crosses, circles or vertical bars. \nKeep the tall central field as intact mottled muted grey paint, with sparse isolated rust. Strong asymmetrical ragged reddish-brown corrosion occupies most of the outer ten percent on both long sides and the top and bottom corners. The long margins are interrupted by intact paint gaps. The middle eighty percent has very little exposed rust. This is only a flat continuous material image, with no border object or frame, no raised rim, no straight line and no edge shadow.\n",
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/stile-right-input.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/stile-right-extra-100-prompt.txt",
+    "--seed",
+    "95651",
+    "--width",
+    "64",
+    "--height",
+    "3488",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95/art-source/quarters/locker/faces/stile-right-95651.png"
+  ],
+  "scores": {
+    "delta_e": 22.200055591990886,
+    "planar_light_gradient": 0.013831006951122934,
+    "secondary_autocorrelation": 0.38415312811978913,
+    "edge_rust": 0.06446947126379943,
+    "broad_rust": 0.012182013615191688,
+    "edge_broad_ratio": 5.292185126390123,
+    "paint_mean_delta_e": 9.715335750329057,
+    "paint_std_delta_e": 12.86814593342189,
+    "rust_mean_delta_e": 30.88598137923789,
+    "rust_std_delta_e": 4.175218703988017
+  }
+}

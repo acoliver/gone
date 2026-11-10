@@ -1,0 +1,956 @@
+{
+  "prop": "wardrobe",
+  "age_years": 1000,
+  "environment": "sealed sterile dry oxygenated",
+  "gates": {
+    "door-outer_delta_e": {
+      "value": 0.7326268016865725,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "door-outer_paint_mean_delta_e": {
+      "value": 1.1244821109890217,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "door-outer_paint_std_delta_e": {
+      "value": 4.025630546252636,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "door-outer_rust_mean_delta_e": {
+      "value": 0.5769328268767712,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "door-outer_rust_std_delta_e": {
+      "value": 0.47861080142073187,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "door-outer_planar_light_gradient": {
+      "value": 0.0035009477268344233,
+      "threshold": "<0.06",
+      "passed": true
+    },
+    "door-outer_secondary_autocorrelation": {
+      "value": 0.23983170185906605,
+      "threshold": "<=0.5",
+      "passed": true
+    },
+    "door-outer_no_green": {
+      "value": 0.0,
+      "threshold": "<0.005",
+      "passed": true
+    },
+    "door-outer_edge_broad_ratio": {
+      "value": 4.70488113708162,
+      "threshold": ">=1.8",
+      "passed": true
+    },
+    "door-outer_pixels_per_metre": {
+      "value": 774.7368421052632,
+      "threshold": ">=600",
+      "passed": true
+    },
+    "door-outer_direct_rgb": {
+      "value": true,
+      "threshold": "identical selected generated RGB",
+      "passed": true
+    },
+    "door-outer_chroma_relief": {
+      "value": true,
+      "threshold": "alpha derived only from image chroma",
+      "passed": true
+    },
+    "door-outer_generated_candidates": {
+      "value": 6,
+      "threshold": ">=4",
+      "passed": true
+    },
+    "door-inner_delta_e": {
+      "value": 2.3539362565764703,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "door-inner_paint_mean_delta_e": {
+      "value": 0.5669309689649492,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "door-inner_paint_std_delta_e": {
+      "value": 2.530368603020746,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "door-inner_rust_mean_delta_e": {
+      "value": 0.2708030088749135,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "door-inner_rust_std_delta_e": {
+      "value": 1.7225056561418555,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "door-inner_planar_light_gradient": {
+      "value": 0.0004870548517395879,
+      "threshold": "<0.06",
+      "passed": true
+    },
+    "door-inner_secondary_autocorrelation": {
+      "value": 0.3636041067106542,
+      "threshold": "<=0.5",
+      "passed": true
+    },
+    "door-inner_no_green": {
+      "value": 0.0,
+      "threshold": "<0.005",
+      "passed": true
+    },
+    "door-inner_edge_broad_ratio": {
+      "value": 13.991338888180211,
+      "threshold": ">=1.8",
+      "passed": true
+    },
+    "door-inner_pixels_per_metre": {
+      "value": 774.7368421052632,
+      "threshold": ">=600",
+      "passed": true
+    },
+    "door-inner_direct_rgb": {
+      "value": true,
+      "threshold": "identical selected generated RGB",
+      "passed": true
+    },
+    "door-inner_chroma_relief": {
+      "value": true,
+      "threshold": "alpha derived only from image chroma",
+      "passed": true
+    },
+    "door-inner_generated_candidates": {
+      "value": 6,
+      "threshold": ">=4",
+      "passed": true
+    },
+    "left_delta_e": {
+      "value": 5.507248834466193,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "left_paint_mean_delta_e": {
+      "value": 1.1057170585916565,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "left_paint_std_delta_e": {
+      "value": 6.494468514050938,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "left_rust_mean_delta_e": {
+      "value": 6.1533693441689925,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "left_rust_std_delta_e": {
+      "value": 0.23806039709863475,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "left_planar_light_gradient": {
+      "value": 0.006970838974872936,
+      "threshold": "<0.06",
+      "passed": true
+    },
+    "left_secondary_autocorrelation": {
+      "value": 0.26600679394344184,
+      "threshold": "<=0.5",
+      "passed": true
+    },
+    "left_no_green": {
+      "value": 0.0,
+      "threshold": "<0.005",
+      "passed": true
+    },
+    "left_edge_broad_ratio": {
+      "value": 16.722856135139068,
+      "threshold": ">=1.8",
+      "passed": true
+    },
+    "left_pixels_per_metre": {
+      "value": 689.2307692307692,
+      "threshold": ">=600",
+      "passed": true
+    },
+    "left_direct_rgb": {
+      "value": true,
+      "threshold": "identical selected generated RGB",
+      "passed": true
+    },
+    "left_chroma_relief": {
+      "value": true,
+      "threshold": "alpha derived only from image chroma",
+      "passed": true
+    },
+    "left_generated_candidates": {
+      "value": 6,
+      "threshold": ">=4",
+      "passed": true
+    },
+    "right_delta_e": {
+      "value": 2.4389871732992776,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "right_paint_mean_delta_e": {
+      "value": 1.4993033870598198,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "right_paint_std_delta_e": {
+      "value": 3.692257536116015,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "right_rust_mean_delta_e": {
+      "value": 0.6787374178108289,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "right_rust_std_delta_e": {
+      "value": 0.8636103667000584,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "right_planar_light_gradient": {
+      "value": 0.004289272842953842,
+      "threshold": "<0.06",
+      "passed": true
+    },
+    "right_secondary_autocorrelation": {
+      "value": 0.2843826967898345,
+      "threshold": "<=0.5",
+      "passed": true
+    },
+    "right_no_green": {
+      "value": 0.0,
+      "threshold": "<0.005",
+      "passed": true
+    },
+    "right_edge_broad_ratio": {
+      "value": 3.798657262339334,
+      "threshold": ">=1.8",
+      "passed": true
+    },
+    "right_pixels_per_metre": {
+      "value": 689.2307692307692,
+      "threshold": ">=600",
+      "passed": true
+    },
+    "right_direct_rgb": {
+      "value": true,
+      "threshold": "identical selected generated RGB",
+      "passed": true
+    },
+    "right_chroma_relief": {
+      "value": true,
+      "threshold": "alpha derived only from image chroma",
+      "passed": true
+    },
+    "right_generated_candidates": {
+      "value": 6,
+      "threshold": ">=4",
+      "passed": true
+    },
+    "back_delta_e": {
+      "value": 1.0414087074891405,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "back_paint_mean_delta_e": {
+      "value": 0.5346310803155527,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "back_paint_std_delta_e": {
+      "value": 1.432442145165978,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "back_rust_mean_delta_e": {
+      "value": 0.7308861912588842,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "back_rust_std_delta_e": {
+      "value": 1.4105849723297428,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "back_planar_light_gradient": {
+      "value": 0.0017803129162625195,
+      "threshold": "<0.06",
+      "passed": true
+    },
+    "back_secondary_autocorrelation": {
+      "value": 0.1746749955670935,
+      "threshold": "<=0.5",
+      "passed": true
+    },
+    "back_no_green": {
+      "value": 0.0,
+      "threshold": "<0.005",
+      "passed": true
+    },
+    "back_edge_broad_ratio": {
+      "value": 7.223795840977435,
+      "threshold": ">=1.8",
+      "passed": true
+    },
+    "back_pixels_per_metre": {
+      "value": 698.1818181818181,
+      "threshold": ">=600",
+      "passed": true
+    },
+    "back_direct_rgb": {
+      "value": true,
+      "threshold": "identical selected generated RGB",
+      "passed": true
+    },
+    "back_chroma_relief": {
+      "value": true,
+      "threshold": "alpha derived only from image chroma",
+      "passed": true
+    },
+    "back_generated_candidates": {
+      "value": 6,
+      "threshold": ">=4",
+      "passed": true
+    },
+    "top_delta_e": {
+      "value": 2.9049084127656397,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "top_paint_mean_delta_e": {
+      "value": 0.5397913309146367,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "top_paint_std_delta_e": {
+      "value": 7.333283919779199,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "top_rust_mean_delta_e": {
+      "value": 2.0344324862106578,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "top_rust_std_delta_e": {
+      "value": 2.6675710234014085,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "top_planar_light_gradient": {
+      "value": 0.0001661159295634033,
+      "threshold": "<0.06",
+      "passed": true
+    },
+    "top_secondary_autocorrelation": {
+      "value": 0.086200751347327,
+      "threshold": "<=0.5",
+      "passed": true
+    },
+    "top_no_green": {
+      "value": 0.0,
+      "threshold": "<0.005",
+      "passed": true
+    },
+    "top_edge_broad_ratio": {
+      "value": 5415015.747231535,
+      "threshold": ">=1.8",
+      "passed": true
+    },
+    "top_pixels_per_metre": {
+      "value": 705.8823529411765,
+      "threshold": ">=600",
+      "passed": true
+    },
+    "top_direct_rgb": {
+      "value": true,
+      "threshold": "identical selected generated RGB",
+      "passed": true
+    },
+    "top_chroma_relief": {
+      "value": true,
+      "threshold": "alpha derived only from image chroma",
+      "passed": true
+    },
+    "top_generated_candidates": {
+      "value": 6,
+      "threshold": ">=4",
+      "passed": true
+    },
+    "bottom_delta_e": {
+      "value": 2.465993315279986,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "bottom_paint_mean_delta_e": {
+      "value": 1.0086392376059332,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "bottom_paint_std_delta_e": {
+      "value": 4.8828997972778705,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "bottom_rust_mean_delta_e": {
+      "value": 1.7739580784339621,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "bottom_rust_std_delta_e": {
+      "value": 0.7723210381737952,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "bottom_planar_light_gradient": {
+      "value": 0.0033400387608945523,
+      "threshold": "<0.06",
+      "passed": true
+    },
+    "bottom_secondary_autocorrelation": {
+      "value": 0.01169711017449775,
+      "threshold": "<=0.5",
+      "passed": true
+    },
+    "bottom_no_green": {
+      "value": 0.0,
+      "threshold": "<0.005",
+      "passed": true
+    },
+    "bottom_edge_broad_ratio": {
+      "value": 22.76147667824445,
+      "threshold": ">=1.8",
+      "passed": true
+    },
+    "bottom_pixels_per_metre": {
+      "value": 705.8823529411765,
+      "threshold": ">=600",
+      "passed": true
+    },
+    "bottom_direct_rgb": {
+      "value": true,
+      "threshold": "identical selected generated RGB",
+      "passed": true
+    },
+    "bottom_chroma_relief": {
+      "value": true,
+      "threshold": "alpha derived only from image chroma",
+      "passed": true
+    },
+    "bottom_generated_candidates": {
+      "value": 6,
+      "threshold": ">=4",
+      "passed": true
+    },
+    "frame_delta_e": {
+      "value": 5.489687602802476,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "frame_paint_mean_delta_e": {
+      "value": 1.1010417526367957,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "frame_paint_std_delta_e": {
+      "value": 5.117630327813018,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "frame_rust_mean_delta_e": {
+      "value": 1.3285369834810503,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "frame_rust_std_delta_e": {
+      "value": 1.8025000767806183,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "frame_planar_light_gradient": {
+      "value": 0.006820519069070038,
+      "threshold": "<0.06",
+      "passed": true
+    },
+    "frame_secondary_autocorrelation": {
+      "value": 0.005810728378120048,
+      "threshold": "<=0.5",
+      "passed": true
+    },
+    "frame_no_green": {
+      "value": 0.0,
+      "threshold": "<0.005",
+      "passed": true
+    },
+    "frame_edge_broad_ratio": {
+      "value": 3.730236981455676,
+      "threshold": ">=1.8",
+      "passed": true
+    },
+    "frame_pixels_per_metre": {
+      "value": 698.1818181818181,
+      "threshold": ">=600",
+      "passed": true
+    },
+    "frame_direct_rgb": {
+      "value": true,
+      "threshold": "identical selected generated RGB",
+      "passed": true
+    },
+    "frame_chroma_relief": {
+      "value": true,
+      "threshold": "alpha derived only from image chroma",
+      "passed": true
+    },
+    "frame_generated_candidates": {
+      "value": 6,
+      "threshold": ">=4",
+      "passed": true
+    },
+    "hardware_delta_e": {
+      "value": 0.2726912980725959,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "hardware_paint_mean_delta_e": {
+      "value": 0.2404301776631335,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "hardware_paint_std_delta_e": {
+      "value": 0.29248668261501237,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "hardware_rust_mean_delta_e": {
+      "value": 0.1868228498277595,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "hardware_rust_std_delta_e": {
+      "value": 0.09203518560764484,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "hardware_planar_light_gradient": {
+      "value": 2.7397716784762896e-06,
+      "threshold": "<0.06",
+      "passed": true
+    },
+    "hardware_secondary_autocorrelation": {
+      "value": 0.1480053736950446,
+      "threshold": "<=0.5",
+      "passed": true
+    },
+    "hardware_no_green": {
+      "value": 0.0,
+      "threshold": "<0.005",
+      "passed": true
+    },
+    "hardware_pixels_per_metre": {
+      "value": 2560.0,
+      "threshold": ">=600",
+      "passed": true
+    },
+    "hardware_direct_rgb": {
+      "value": true,
+      "threshold": "identical selected generated RGB",
+      "passed": true
+    },
+    "hardware_chroma_relief": {
+      "value": true,
+      "threshold": "alpha derived only from image chroma",
+      "passed": true
+    },
+    "hardware_generated_candidates": {
+      "value": 4,
+      "threshold": ">=4",
+      "passed": true
+    },
+    "left-inner_delta_e": {
+      "value": 5.476905021959718,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "left-inner_paint_mean_delta_e": {
+      "value": 2.18960731204133,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "left-inner_paint_std_delta_e": {
+      "value": 7.613346632188015,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "left-inner_rust_mean_delta_e": {
+      "value": 2.1654993366129496,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "left-inner_rust_std_delta_e": {
+      "value": 1.2007394508895226,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "left-inner_planar_light_gradient": {
+      "value": 0.020190216246021304,
+      "threshold": "<0.06",
+      "passed": true
+    },
+    "left-inner_secondary_autocorrelation": {
+      "value": 0.3181045165752546,
+      "threshold": "<=0.5",
+      "passed": true
+    },
+    "left-inner_no_green": {
+      "value": 0.0,
+      "threshold": "<0.005",
+      "passed": true
+    },
+    "left-inner_edge_broad_ratio": {
+      "value": 10.26936799235652,
+      "threshold": ">=1.8",
+      "passed": true
+    },
+    "left-inner_pixels_per_metre": {
+      "value": 689.2307692307692,
+      "threshold": ">=600",
+      "passed": true
+    },
+    "left-inner_direct_rgb": {
+      "value": true,
+      "threshold": "identical selected generated RGB",
+      "passed": true
+    },
+    "left-inner_chroma_relief": {
+      "value": true,
+      "threshold": "alpha derived only from image chroma",
+      "passed": true
+    },
+    "left-inner_generated_candidates": {
+      "value": 6,
+      "threshold": ">=4",
+      "passed": true
+    },
+    "right-inner_delta_e": {
+      "value": 4.600745117068415,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "right-inner_paint_mean_delta_e": {
+      "value": 1.0783071935295263,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "right-inner_paint_std_delta_e": {
+      "value": 4.938545344252578,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "right-inner_rust_mean_delta_e": {
+      "value": 1.7172643247943995,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "right-inner_rust_std_delta_e": {
+      "value": 1.4091394312189403,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "right-inner_planar_light_gradient": {
+      "value": 0.0013149832050392393,
+      "threshold": "<0.06",
+      "passed": true
+    },
+    "right-inner_secondary_autocorrelation": {
+      "value": 0.1365961889216332,
+      "threshold": "<=0.5",
+      "passed": true
+    },
+    "right-inner_no_green": {
+      "value": 0.0,
+      "threshold": "<0.005",
+      "passed": true
+    },
+    "right-inner_edge_broad_ratio": {
+      "value": 6.29600390198833,
+      "threshold": ">=1.8",
+      "passed": true
+    },
+    "right-inner_pixels_per_metre": {
+      "value": 689.2307692307692,
+      "threshold": ">=600",
+      "passed": true
+    },
+    "right-inner_direct_rgb": {
+      "value": true,
+      "threshold": "identical selected generated RGB",
+      "passed": true
+    },
+    "right-inner_chroma_relief": {
+      "value": true,
+      "threshold": "alpha derived only from image chroma",
+      "passed": true
+    },
+    "right-inner_generated_candidates": {
+      "value": 6,
+      "threshold": ">=4",
+      "passed": true
+    },
+    "ceiling_delta_e": {
+      "value": 1.5510846938343652,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "ceiling_paint_mean_delta_e": {
+      "value": 1.231903108113615,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "ceiling_paint_std_delta_e": {
+      "value": 4.160967792177306,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "ceiling_rust_mean_delta_e": {
+      "value": 0.5609817748462117,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "ceiling_rust_std_delta_e": {
+      "value": 1.2454445977885378,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "ceiling_planar_light_gradient": {
+      "value": 0.003591049599154096,
+      "threshold": "<0.06",
+      "passed": true
+    },
+    "ceiling_secondary_autocorrelation": {
+      "value": 0.4751763705003666,
+      "threshold": "<=0.5",
+      "passed": true
+    },
+    "ceiling_no_green": {
+      "value": 0.0,
+      "threshold": "<0.005",
+      "passed": true
+    },
+    "ceiling_edge_broad_ratio": {
+      "value": 54.69958496601379,
+      "threshold": ">=1.8",
+      "passed": true
+    },
+    "ceiling_pixels_per_metre": {
+      "value": 705.8823529411765,
+      "threshold": ">=600",
+      "passed": true
+    },
+    "ceiling_direct_rgb": {
+      "value": true,
+      "threshold": "identical selected generated RGB",
+      "passed": true
+    },
+    "ceiling_chroma_relief": {
+      "value": true,
+      "threshold": "alpha derived only from image chroma",
+      "passed": true
+    },
+    "ceiling_generated_candidates": {
+      "value": 6,
+      "threshold": ">=4",
+      "passed": true
+    },
+    "header_delta_e": {
+      "value": 1.1218744595555878,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "header_paint_mean_delta_e": {
+      "value": 1.974904111817696,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "header_paint_std_delta_e": {
+      "value": 6.455991684305023,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "header_rust_mean_delta_e": {
+      "value": 2.4139860663402217,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "header_rust_std_delta_e": {
+      "value": 1.857674965159146,
+      "threshold": "<=8 D65 Lab",
+      "passed": true
+    },
+    "header_planar_light_gradient": {
+      "value": 0.004514517466789188,
+      "threshold": "<0.06",
+      "passed": true
+    },
+    "header_secondary_autocorrelation": {
+      "value": 0.0,
+      "threshold": "<=0.5",
+      "passed": true
+    },
+    "header_no_green": {
+      "value": 0.0,
+      "threshold": "<0.005",
+      "passed": true
+    },
+    "header_edge_broad_ratio": {
+      "value": 2.7369928351144153,
+      "threshold": ">=1.8",
+      "passed": true
+    },
+    "header_pixels_per_metre": {
+      "value": 806.7226890756303,
+      "threshold": ">=600",
+      "passed": true
+    },
+    "header_direct_rgb": {
+      "value": true,
+      "threshold": "identical selected generated RGB",
+      "passed": true
+    },
+    "header_chroma_relief": {
+      "value": true,
+      "threshold": "alpha derived only from image chroma",
+      "passed": true
+    },
+    "header_generated_candidates": {
+      "value": 10,
+      "threshold": ">=4",
+      "passed": true
+    },
+    "as_built_rust": {
+      "value": 0.0,
+      "threshold": "<0.01",
+      "passed": true
+    },
+    "as_built_locker_paint_delta_e": {
+      "value": 1.953785398436361e-06,
+      "threshold": "<=6 D65 Lab",
+      "passed": true
+    },
+    "aged_hardware_rust": {
+      "value": 0.6356849670410156,
+      "threshold": ">=0.30",
+      "passed": true
+    },
+    "as_built_hero_albedo_rust": {
+      "value": 0.0,
+      "threshold": "<0.01",
+      "passed": true
+    },
+    "as_built_hero_neutral_rust": {
+      "value": 0.0,
+      "threshold": "<0.01",
+      "passed": true
+    },
+    "aged_hero_albedo_edge_broad_ratio": {
+      "value": 4.977585433746893,
+      "threshold": ">=1.8",
+      "passed": true
+    },
+    "aged_hero_albedo_no_green": {
+      "value": 0.0,
+      "threshold": "<0.005",
+      "passed": true
+    },
+    "aged_hero_neutral_edge_broad_ratio": {
+      "value": 4.937496047742947,
+      "threshold": ">=1.8",
+      "passed": true
+    },
+    "aged_hero_neutral_no_green": {
+      "value": 0.0,
+      "threshold": "<0.005",
+      "passed": true
+    },
+    "as_built_front_albedo_rust": {
+      "value": 0.0,
+      "threshold": "<0.01",
+      "passed": true
+    },
+    "as_built_front_neutral_rust": {
+      "value": 0.0,
+      "threshold": "<0.01",
+      "passed": true
+    },
+    "aged_front_albedo_edge_broad_ratio": {
+      "value": 4.369860063352193,
+      "threshold": ">=1.8",
+      "passed": true
+    },
+    "aged_front_albedo_no_green": {
+      "value": 0.0,
+      "threshold": "<0.005",
+      "passed": true
+    },
+    "aged_front_neutral_edge_broad_ratio": {
+      "value": 4.550032173843642,
+      "threshold": ">=1.8",
+      "passed": true
+    },
+    "aged_front_neutral_no_green": {
+      "value": 0.0,
+      "threshold": "<0.005",
+      "passed": true
+    },
+    "original_fitted_uvs": {
+      "value": {
+        "overlapping_triangle_pairs": 0,
+        "max_overlap_area_uv2": 0.0,
+        "out_of_unit_square_coordinates": 0,
+        "linear_texel_density_p05_p50_p95": [
+          0.18108862427867012,
+          0.19145846027881727,
+          0.2032938165871678
+        ],
+        "density_p95_p05_ratio": 1.1226205809279715,
+        "pass": true
+      },
+      "threshold": "no overlap, no coordinates outside atlas; density p95/p05<=1.25",
+      "passed": true
+    },
+    "mask_bake_finite": {
+      "value": true,
+      "threshold": "finite positions, normals, density",
+      "passed": true
+    },
+    "mask_bake_overlap_texels": {
+      "value": 0,
+      "threshold": "0",
+      "passed": true
+    },
+    "mask_bake_density_ratio": {
+      "value": 1.0031166645092668,
+      "threshold": "<=1.015",
+      "passed": true
+    }
+  },
+  "passed": 187,
+  "failed": 0,
+  "mask_note": "The original fitted UVs and exported GLB stay unchanged. The shared bake uses a triangulated scratch copy; image-owned runtime faces have their own measured projection density."
+}

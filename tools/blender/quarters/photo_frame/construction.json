@@ -1,0 +1,38 @@
+{
+  "id": "photo_frame",
+  "bounds_gltf": [
+    [
+      -0.0949999988079071,
+      0.0,
+      -0.04435988888144493
+    ],
+    [
+      0.0949999988079071,
+      0.17100000381469727,
+      0.04435988888144493
+    ]
+  ],
+  "triangle_limit": 1500,
+  "required_nodes": [
+    "FrameLeft",
+    "FrameRight",
+    "FrameTop",
+    "FrameBottom",
+    "BackPlate",
+    "PhotoPlate",
+    "GlassCover",
+    "EaselLeg",
+    "BaseFoot",
+    "CornerScrew_0",
+    "CornerScrew_1",
+    "CornerScrew_2",
+    "CornerScrew_3"
+  ],
+  "axis_contract": "Blender +Z up/-Y front, export_yup=True -> glTF +Y up/+Z front",
+  "age_years": 1000,
+  "base_origin": [
+    0,
+    0,
+    0
+  ]
+}
