@@ -1,7 +1,7 @@
 class_name QuartersCapture
 extends RefCounted
 
-const REQUIRED: Array[String] = ["corridor-door", "remembered-doorway", "remembered-wide", "remembered-console", "remembered-bed", "console-corruption", "console-message", "console-fault", "present-doorway", "present-wide", "present-console", "present-bed"]
+const REQUIRED: Array[String] = ["corridor-door", "remembered-doorway", "remembered-wide", "remembered-console", "remembered-bed", "console-corruption", "console-message", "console-fault", "present-doorway", "present-wide", "present-console", "present-bed", "remembered-bedside", "present-bedside", "remembered-table", "present-table", "remembered-desk", "present-desk"]
 
 static func pose(camera: Camera3D, view: String) -> void:
 	var plan := QuartersInventory.plan()
@@ -16,11 +16,20 @@ static func pose(camera: Camera3D, view: String) -> void:
 	elif view == "bed":
 		point = Vector3(2.5, 2.4, 2.25)
 		target = Vector3(4.0, 0.3, 4.6)
+	elif view == "bedside":
+		point = Vector3(5.1, 0.95, 5.0)
+		target = Vector3(5.14, 0.53, 5.74)
+	elif view == "table":
+		point = Vector3(4.2, 1.6, 0.9)
+		target = Vector3(5.15, 0.78, 1.7)
+	elif view == "desk":
+		point = Vector3(6.6, 1.65, 3.25)
+		target = Vector3(7.65, 0.9, 2.5)
 	else:
 		point = Vector3(0.75, 2.2, 0.10)
 		target = Vector3(4.0, 1.15, 3.6)
 	camera.keep_aspect = Camera3D.KEEP_WIDTH
-	camera.fov = {"doorway": float(plan.camera.horizontal_fov_deg), "console": 65.0, "bed": 80.0, "wide": 132.0}[view]
+	camera.fov = {"doorway": float(plan.camera.horizontal_fov_deg), "console": 65.0, "bed": 80.0, "wide": 132.0, "bedside": 40.0, "table": 50.0, "desk": 68.0}[view]
 	camera.global_position = QuartersLayout.to_world(point)
 	camera.look_at(QuartersLayout.to_world(target))
 

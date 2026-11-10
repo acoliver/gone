@@ -51,6 +51,20 @@ func _run() -> void:
 				check.assert_float_in_range(uv.x, 0.015, 0.985, "bed part inside horizontal frame: " + str(uv))
 				check.assert_float_in_range(uv.y, 0.015, 0.985, "bed part inside vertical frame: " + str(uv))
 		furnishings.free()
+	var close_items := {"bedside": ["photo_frame"], "table": ["mug_1", "mug_2", "plate_1", "plate_2"], "desk": ["medal_case", "data_tablet_2"]}
+	for state: StringName in QuartersProps.STATES:
+		var furnishings := QuartersFurnishings.build(state)
+		for view: String in close_items:
+			QuartersCapture.pose(camera, view)
+			for id: String in close_items[view]:
+				var bounds := QuartersFurnishings._bounds(furnishings.get_node("Item_" + id))
+				for corner: int in range(8):
+					var point := bounds.get_endpoint(corner)
+					check.assert_false(camera.is_position_behind(point), "small item in front of close camera")
+					var uv := camera.unproject_position(point) / viewport.size
+					check.assert_float_in_range(uv.x, 0.015, 0.985, "small item inside horizontal frame: " + id)
+					check.assert_float_in_range(uv.y, 0.0613, 0.985, "small item below presentation crop and inside frame: " + id)
+		furnishings.free()
 	room.free()
 	if not check.failure.is_empty():
 		printerr(check.failure)

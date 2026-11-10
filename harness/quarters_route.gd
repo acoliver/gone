@@ -18,6 +18,9 @@ func compile() -> void:
 	beats.back().quarters_view = "console"
 	beat("remembered-bed")
 	beats.back().quarters_view = "bed"
+	for view: String in ["bedside", "table", "desk"]:
+		beat("remembered-" + view)
+		beats.back().quarters_view = view
 	_console_path()
 	look_at(QuartersLayout.console_frame().origin, -8)
 	press()
@@ -41,6 +44,9 @@ func compile() -> void:
 	beats.back().quarters_view = "console"
 	beat("present-bed")
 	beats.back().quarters_view = "bed"
+	for view: String in ["bedside", "table", "desk"]:
+		beat("present-" + view)
+		beats.back().quarters_view = view
 	walk_to(QuartersLayout.to_world(Vector3(4, 0.305, -0.6)))
 	walk_to(QuartersLayout.to_world(Vector3(4, 0.305, 0.6)))
 	assert(player.game.quarters.state == QuartersMemory.State.PRESENT, "re-entry remains present")

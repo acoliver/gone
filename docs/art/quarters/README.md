@@ -179,15 +179,15 @@ Regenerate the ordinary-input scenario and run its windowed capture lane with:
 
 ```sh
 godot --headless --path . -s tools/build_quarters_scenario.gd
-godot --headless --path . -s harness/run.gd -- scenarios/quarters-demo.json --out tmp/demo7/routes/quarters-demo
+nohup godot --headless --path . -s harness/run.gd -- scenarios/quarters-demo.json --out tmp/demo8/routes/quarters-demo > tmp/demo8/route-quarters-demo.log 2>&1 &
 ```
 
-The harness writes twelve beats and a report under the printed run directory.
-Use `tools/quarters_presentation.gd` as shown in the demo7 section below to
-make the five standard copies in `tmp/demo7/`: `corridor-door.png`,
+The harness writes eighteen beats and a report under the printed run directory.
+Use `tools/quarters_presentation.gd` as shown in the demo8 section below to
+make the five standard copies in `tmp/demo8/`: `corridor-door.png`,
 `remembered-doorway.png`, `remembered-wide.png`, `present-doorway.png` and
-`present-wide.png`. Extra captures include both bed and console close-ups and
-the three console-playback phases.
+`present-wide.png`. Extra captures include both states' bed, console, right
+bedside, dining-table and desk close-ups and the three console-playback phases.
 The shared console close-up camera uses room-local (6.1, 1.6, 2.6), aimed at
 (7.65, 1.05, 2.0), with a 65-degree horizontal field.
 The doorway pair uses the exact camera in `layout.json`; the wider pair uses
@@ -349,6 +349,45 @@ contact over identical final asset transforms for that one instance.
 Regression tests check the imported state paths, rigid-support transforms,
 remaining stand-in names, support contact within 2 mm, round-table containment,
 furniture-triangle and item clearance, authored materials and console clearance.
+
+The quarters scenario adds matched `bedside`, `table` and `desk` views in
+both states, for eighteen beats total. The bedside view isolates the photo
+frame; the table view contains all four pieces of tableware; the desk view
+contains both belongings beside the console. Frustum tests check all seven
+items below the 40-pixel protocol crop and inside the unchanged 1.5% margins.
+Cameras do not move the player, and the console sequence remains 300 ticks.
+
+After the windowed harness run, make presentation copies with:
+
+```sh
+godot --headless --path . -s tools/quarters_presentation.gd -- tmp/demo8/routes/quarters-demo/run-<id> tmp/demo8
+```
+
+The thirteen requested files are `corridor-door.png`,
+`remembered-doorway.png`, `remembered-wide.png`, `present-doorway.png`,
+`present-wide.png`, `remembered-bed.png`, `present-bed.png`,
+`remembered-bedside.png`, `present-bedside.png`, `remembered-table.png`,
+`present-table.png`, `remembered-desk.png` and `present-desk.png` under
+`tmp/demo8/`. The five console/playback copies are also retained. All copies
+are 1536 by 824, cropped only below the protocol chip; machine originals
+remain in the harness run directory.
+
+Demo8 passed **919 headless tests, zero failures**, including three new
+small-item regressions. The focused placement/material/bed subset passed all
+eight tests. The full suite and all eight windowed scenarios ran under
+`nohup` and exited 0: `quarters-demo`, `gameplay-full`, `rod-pickup`,
+`gameplay-keyboard-turn`, `hallway`, `power-room`, `connector-route` and
+`click-route`. All eighteen quarters beats passed machine checks. The
+connector lane also passed its D14-return state and replay-digest checks.
+All eighteen presentation copies match their source RGB pixels below the
+protocol band. The raw quarters run is
+`tmp/demo8/routes/quarters-demo/run-1794271964/`; logs are
+`tmp/demo8/full-suite.log`, `routes.log`, `route-<scenario>.log`,
+`presentation.log`, `focused-final.log` and `cameras2.log`.
+D14 code and lighting are unchanged. Godot still prints ObjectDB, resource,
+allocator and renderer teardown warnings. Harness visual verdicts remain
+pending; this pass verifies placement geometry, capture framing and pixel
+copying, without claiming a visual-quality review.
 
 ## Plan view
 

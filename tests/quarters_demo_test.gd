@@ -55,6 +55,9 @@ func test_harness_start_and_camera_options_are_scoped() -> void:
 	assert_true(HarnessScenario.parse(JSON.stringify(base)).error == "", "desk close capture view")
 	base.beats[0].quarters_view = "bed"
 	assert_true(HarnessScenario.parse(JSON.stringify(base)).error == "", "bed close capture view")
+	for view: String in ["bedside", "table", "desk"]:
+		base.beats[0].quarters_view = view
+		assert_true(HarnessScenario.parse(JSON.stringify(base)).error == "", "small-item close capture view: " + view)
 	base.beats[0].quarters_view = "missing"
 	assert_true(HarnessScenario.parse(JSON.stringify(base)).error != "", "unknown quarters camera rejected")
 	base.beats[0].quarters_view = "console"
