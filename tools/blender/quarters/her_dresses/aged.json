@@ -35,8 +35,8 @@
         "constraint": "measured tunic envelope and wardrobe side/front/back interior faces"
       },
       "arrangement": {
-        "rail_x_m": -0.29,
-        "front_offset_m": 0.13,
+        "rail_x_m": -0.21,
+        "front_offset_m": 0.21,
         "width_scale": 0.75,
         "hanger_yaw_deg": 90,
         "hook": "Original rail-wrapping hook retained; neck turns into the offset display shoulder below 1.758 m"
@@ -76,7 +76,7 @@
       },
       "arrangement": {
         "rail_x_m": 0.29,
-        "front_offset_m": 0.13,
+        "front_offset_m": 0.21,
         "width_scale": 0.75,
         "hanger_yaw_deg": 90,
         "hook": "Original rail-wrapping hook retained; neck turns into the offset display shoulder below 1.758 m"
@@ -125,13 +125,13 @@
   ],
   "bounds_blender_native_m": [
     [
-      -0.45273616909980774,
+      -0.43211275339126587,
       -0.2674121856689453,
       0.14480000734329224
     ],
     [
       0.4565831124782562,
-      0.04562830924987793,
+      0.04813266545534134,
       1.8417737483978271
     ]
   ],
@@ -140,6 +140,7 @@
     "RoseDress": {
       "tear_lips": {
         "refined_boundary_edges": 104,
+        "shoulder_post_refinement_passes": 8,
         "boundary_subdivisions": 4,
         "hem_vertical_grain_variation_m": 0.001,
         "shoulder_variation_scale": 0.6,
@@ -166,20 +167,20 @@
       },
       "fabric": {
         "atlas_size": 1536,
-        "upward_dust_pixels": 985911,
-        "maximum_dust_mix": 0.949908435344696,
+        "upward_dust_pixels": 989596,
+        "maximum_dust_mix": 0.9499046802520752,
         "roughness": 0.99,
         "normal_strength": 0.4,
         "method": "Physical sewn-pattern UV atlas, pigment fade and grain-clustered upward-fold dust; separate repeating weave UV"
       },
       "fringe": {
-        "cards": 227,
-        "triangles": 454,
-        "boundary_length_m": 0.8832480719177347,
-        "authored_coverage": 0.602008749941753,
+        "cards": 225,
+        "triangles": 450,
+        "boundary_length_m": 0.8739875903874306,
+        "authored_coverage": 0.5990289985288424,
         "coverage_pass": true,
-        "omitted_contacts": 46,
-        "maximum_root_offset_m": 0.0030330274222631075,
+        "omitted_contacts": 40,
+        "maximum_root_offset_m": 0.0026440331970132374,
         "sat_checked": true,
         "intact_hem_intervals_m": [
           [
@@ -191,13 +192,14 @@
             0.08
           ]
         ],
-        "explicit_front_back_triangles": 908
+        "explicit_front_back_triangles": 900
       },
-      "deposit": "Alpha-scissor granular powder, asymmetric 26 mm core, 12 fine settled fibre cards per dress, 0.800 mm shelf gap"
+      "deposit": "Alpha-scissor granular powder, asymmetric 26 mm core, 18 fine settled fibre cards per dress, 0.800 mm shelf gap"
     },
     "BlueDress": {
       "tear_lips": {
         "refined_boundary_edges": 101,
+        "shoulder_post_refinement_passes": 8,
         "boundary_subdivisions": 4,
         "hem_vertical_grain_variation_m": 0.001,
         "shoulder_variation_scale": 0.6,
@@ -224,20 +226,20 @@
       },
       "fabric": {
         "atlas_size": 1536,
-        "upward_dust_pixels": 867444,
-        "maximum_dust_mix": 0.949951708316803,
+        "upward_dust_pixels": 877088,
+        "maximum_dust_mix": 0.949923574924469,
         "roughness": 0.99,
         "normal_strength": 0.4,
         "method": "Physical sewn-pattern UV atlas, pigment fade and grain-clustered upward-fold dust; separate repeating weave UV"
       },
       "fringe": {
-        "cards": 223,
-        "triangles": 446,
-        "boundary_length_m": 0.9191075039485855,
-        "authored_coverage": 0.6421399997831146,
+        "cards": 231,
+        "triangles": 462,
+        "boundary_length_m": 0.9136373712241901,
+        "authored_coverage": 0.6719182519747705,
         "coverage_pass": true,
-        "omitted_contacts": 22,
-        "maximum_root_offset_m": 0.0024890473946729847,
+        "omitted_contacts": 9,
+        "maximum_root_offset_m": 0.0025402220179773843,
         "sat_checked": true,
         "intact_hem_intervals_m": [
           [
@@ -249,9 +251,9 @@
             0.13
           ]
         ],
-        "explicit_front_back_triangles": 892
+        "explicit_front_back_triangles": 924
       },
-      "deposit": "Alpha-scissor granular powder, asymmetric 26 mm core, 12 fine settled fibre cards per dress, 0.800 mm shelf gap"
+      "deposit": "Alpha-scissor granular powder, asymmetric 26 mm core, 18 fine settled fibre cards per dress, 0.800 mm shelf gap"
     }
   },
   "sidedness": "Single-sided materials for the reflected room; cloth retains both sewn plies and fringe has explicit opposite faces"

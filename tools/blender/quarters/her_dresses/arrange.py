@@ -3,8 +3,8 @@ import math
 
 import numpy as np
 
-POSITIONS={'RoseDress':(-.451,-.29),'BlueDress':(.438,.29)}
-FRONT_OFFSET=.13
+POSITIONS={'RoseDress':(-.451,-.21),'BlueDress':(.438,.29)}
+FRONT_OFFSET=.21
 WIDTH_SCALE=.75
 RAIL_Y=-.003038027
 

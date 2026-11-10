@@ -37,6 +37,22 @@ class DryFinishTests(unittest.TestCase):
         self.assertLess(float(np.ptp(lower[:,2])),.004)
         self.assertGreater(float(np.ptp(lower[:,2])),.0002)
 
+    def test_shoulder_tip_is_rounded_across_the_refinement_band_boundary(self):
+        import bmesh
+        import math
+        obj=mesh('ShoulderTip',[(-.1,0,1.43),(0,0,1.55),(.1,0,1.43),(.1,0,1.67),(-.1,0,1.67)],[(0,1,2,3,4)])
+        refine.ragged_edges(obj)
+        bm=bmesh.new();bm.from_mesh(obj.data)
+        turns=[]
+        for vertex in bm.verts:
+            edges=[e for e in vertex.link_edges if e.is_boundary]
+            if len(edges)==2 and 1.51<vertex.co.z<1.62:
+                a,b=[e.other_vert(vertex).co-vertex.co for e in edges]
+                turns.append(180-math.degrees(a.angle(b)))
+        bm.free()
+        self.assertTrue(turns)
+        self.assertLess(max(turns),60)
+
     def test_supported_shoulder_stitches_do_not_move(self):
         obj=mesh('Shoulder',[(-.1,0,1.60),(.1,0,1.60),(.1,0,1.65),(-.1,0,1.65)],[(0,1,2,3)])
         group=obj.vertex_groups.new(name='SupportStitches');group.add([2,3],1.,'REPLACE')

@@ -95,8 +95,8 @@
       },
       "method": "Flat front/back patterns sewn at sides and shoulders, open neck/armholes, shaped upper chest only as in the tunic pass; waist/hem free, height-dependent union of both tunic envelopes reserved. Chest form is removed before aged resimulation.",
       "arrangement": {
-        "rail_x_m": -0.29,
-        "front_offset_m": 0.13,
+        "rail_x_m": -0.21,
+        "front_offset_m": 0.21,
         "width_scale": 0.75,
         "hanger_yaw_deg": 90,
         "hook": "Original rail-wrapping hook retained; neck turns into the offset display shoulder below 1.758 m"
@@ -145,7 +145,7 @@
       "method": "Flat front/back patterns sewn at sides and shoulders, open neck/armholes, shaped upper chest only as in the tunic pass; waist/hem free, height-dependent union of both tunic envelopes reserved. Chest form is removed before aged resimulation.",
       "arrangement": {
         "rail_x_m": 0.29,
-        "front_offset_m": 0.13,
+        "front_offset_m": 0.21,
         "width_scale": 0.75,
         "hanger_yaw_deg": 90,
         "hook": "Original rail-wrapping hook retained; neck turns into the offset display shoulder below 1.758 m"
@@ -154,8 +154,8 @@
   },
   "bounds_blender_native_m": [
     [
-      -0.4655669927597046,
-      -0.1895323246717453,
+      -0.38556697964668274,
+      -0.26953232288360596,
       0.48362186551094055
     ],
     [

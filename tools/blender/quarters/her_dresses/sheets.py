@@ -51,6 +51,9 @@ def main():
     sheet([(before/f'{s}-game-wardrobe.png',OUT/f'{s}-game-wardrobe.png') for s in ('remembered','aged')],OUT/'comparison.png')
     sheet([(before/f'aged-{v}.png',OUT/f'aged-{v}.png') for v in ('detail','shoulder','heap')],OUT/'decay-comparison.png')
     sheet([(before/f'{s}-{v}.png',OUT/f'{s}-{v}.png') for v in ('wardrobe','doorway') for s in ('remembered','aged')],OUT/'camera-comparison.png')
+    sheet([(OUT/'remembered-game-doorway.png',OUT/'aged-game-doorway.png')],OUT/'game-doorway-comparison.png')
+    sheet([(OUT/'aged-wardrobe.png',OUT/'aged-no-fibres-control.png'),
+           (OUT/'aged-shoulder.png',OUT/'aged-no-fold-dust-shoulder.png')],OUT/'controls-comparison.png')
     report={'fibres':measure(OUT/'aged-wardrobe.png',OUT/'aged-no-fibres-control.png'),
             'fold_dust':measure(OUT/'aged-wardrobe.png',OUT/'aged-no-fold-dust-control.png')}
     (OUT/'fibre-visibility.json').write_text(json.dumps(report,indent=2)+'\n')

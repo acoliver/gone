@@ -10,7 +10,7 @@ import numpy as np
 HERE=Path(__file__).resolve().parent
 sys.path[:0]=[str(HERE.parent/'her_jacket'),str(HERE.parents[1]/'quarters_aging')]
 from cloth_tools import ASSETS,mesh
-from arrange import FRONT_OFFSET,RAIL_Y
+from arrange import FRONT_OFFSET,RAIL_Y,POSITIONS
 from common import recalc
 from fringe_cards import cards,fringe_material,image_from_array
 from powder_cards import powder_card
@@ -24,6 +24,8 @@ CORE_RELIEF=.026
 
 def deposit_height(x,y,centre):
     u=(x-centre)/CORE_RADIUS[0];v=(y+.11)/CORE_RADIUS[1]
+    skew=.22 if centre<0 else -.18
+    u+=skew*v;v*=1.08 if centre<0 else .96
     return SHELF_SURFACE+CORE_RELIEF*max(0,1-u*u-v*v)**2*(1+.12*math.sin(u*6+v*4))
 
 
@@ -45,7 +47,7 @@ def ragged_edges(obj,index=0):
     for _ in range(6):
         changes={}
         for vertex in selected-locked:
-            neighbours=[e.other_vert(vertex) for e in vertex.link_edges if e in edges]
+            neighbours=[e.other_vert(vertex) for e in vertex.link_edges if e.is_boundary]
             if len(neighbours)==2:
                 changes[vertex]=vertex.co.lerp((neighbours[0].co+neighbours[1].co)/2,.45)
         for vertex,point in changes.items():vertex.co=point
@@ -69,9 +71,17 @@ def ragged_edges(obj,index=0):
             p.y+=.0015*weight*math.sin((p.z-1.59)*math.pi/.065)
         p.z+=amount*(.0007*math.sin(p.x*137+p.y*37)+.0003*math.sin(p.x*319-p.y*93))
         p.x+=(.0003 if p.z<.90 else .0005)*math.sin(p.z*137+p.x*127)
+    shoulder={v for v in bm.verts if 1.50<v.co.z<1.68 and v not in locked and any(e.is_boundary for e in v.link_edges)}
+    for _ in range(8):
+        changes={}
+        for vertex in shoulder:
+            neighbours=[e.other_vert(vertex) for e in vertex.link_edges if e.is_boundary]
+            if len(neighbours)==2:
+                changes[vertex]=vertex.co.lerp((neighbours[0].co+neighbours[1].co)/2,.5)
+        for vertex,point in changes.items():vertex.co=point
     bm.normal_update();bm.to_mesh(obj.data);bm.free();obj.data.update()
     recalc(obj)
-    return {'refined_boundary_edges':edge_count,'boundary_subdivisions':4,
+    return {'refined_boundary_edges':edge_count,'shoulder_post_refinement_passes':8,'boundary_subdivisions':4,
             'hem_vertical_grain_variation_m':.001,'shoulder_variation_scale':.60,
             'shoulder_gap_reduction':.30,'softened_boundary_passes':6,
             'local_grain_losses_m':[list(loss) for loss in losses],
@@ -148,7 +158,7 @@ def surface(obj,index):
     woven=grain[(z*8*source.size[1]).astype(int)%source.size[1],(u*8*source.size[0]).astype(int)%source.size[0]]
     fade=.88+.08*np.sin(u*37+z*13)+.05*np.sin(z*51-u*11)
     color=np.array((.46,.33,.29) if index==0 else (.33,.40,.44))
-    base=color[None,None,:]*fade[:,:,None]*(.75+.25*woven[:,:,None])
+    base=color[None,None,:]*fade[:,:,None]*(.55+.45*woven[:,:,None])
     mask=.95*(1-np.exp(-dust*10))*np.clip(.35+.9*clump_noise(size,95400+index),0,1)
     rgba=np.ones((size,size,4),dtype=np.float32)
     rgba[:,:,:3]=base
@@ -156,7 +166,7 @@ def surface(obj,index):
     if bpy.data.images.get(control_name):bpy.data.images.remove(bpy.data.images[control_name])
     control=image_from_array(control_name,rgba,TEXTURES/(obj.name.lower()+'_no_fold_dust.png'))
     control.use_fake_user=True
-    rgba[:,:,:3]=base*(1-mask[:,:,None])+np.array((.64,.59,.49))*mask[:,:,None]*(.85+.15*woven[:,:,None])
+    rgba[:,:,:3]=base*(1-mask[:,:,None])+np.array((.78,.74,.65))*mask[:,:,None]*(.65+.35*woven[:,:,None])
     color_tex.image=image_from_array(obj.name+'_DryDustAtlas',rgba,TEXTURES/(obj.name.lower()+'_dry_dust.png'))
     mat['dust_control_image']=control.name
     return {'atlas_size':size,'upward_dust_pixels':int(np.count_nonzero(mask>.1)),
@@ -263,8 +273,8 @@ def interrupt_fringe(obj,centre,index,record):
 def settled_fibres(name,x,material,seed):
     rng=np.random.default_rng(seed)
     vertices=[];faces=[];uv=[]
-    for i in range(12):
-        angle=rng.uniform(0,2*math.pi);radius=rng.uniform(.35,1.12)
+    for i in range(18):
+        angle=rng.uniform(0,2*math.pi);radius=rng.uniform(.35,1.22)
         cx=x+CORE_RADIUS[0]*radius*math.cos(angle);cy=-.11+CORE_RADIUS[1]*radius*math.sin(angle)
         heading=rng.uniform(0,2*math.pi)
         along=np.array((math.cos(heading),math.sin(heading)))*rng.uniform(.003,.007)
@@ -302,7 +312,7 @@ def apply():
     contacts=blockers()
     yarn=fringe_material_for_dresses()
     record={}
-    for index,(name,x) in enumerate([('RoseDress',-.29),('BlueDress',.29)]):
+    for index,(name,(_,x)) in enumerate(POSITIONS.items()):
         for suffix in ('_FrayedYarns','_FibreHeap','_FibreHeap_Base'):
             obj=bpy.data.objects[name+suffix];bpy.data.objects.remove(obj,do_unlink=True)
         obj=bpy.data.objects[name]
@@ -323,11 +333,12 @@ def apply():
         interrupt_fringe(fringe,x,index,fringe_record)
         reverse_faces(fringe)
         fringe_record['explicit_front_back_triangles']=len(fringe.data.polygons)*2
-        card=powder(name+'_FibreHeap',x,95328+index)
-        mound(name+'_FibreHeap_Base',card,x)
-        settled_fibres(name+'_FibreHeap_Yarns',x,yarn,95350+index)
+        deposit_x=(-.29,.29)[index]
+        card=powder(name+'_FibreHeap',deposit_x,95328+index)
+        mound(name+'_FibreHeap_Base',card,deposit_x)
+        settled_fibres(name+'_FibreHeap_Yarns',deposit_x,yarn,95350+index)
         record[name]={'tear_lips':edge,'stiff_folds':folds,'fabric':finish,'fringe':fringe_record,
-                      'deposit':'Alpha-scissor granular powder, asymmetric 26 mm core, 12 fine settled fibre cards per dress, 0.800 mm shelf gap'}
+                      'deposit':'Alpha-scissor granular powder, asymmetric 26 mm core, 18 fine settled fibre cards per dress, 0.800 mm shelf gap'}
     return record
 
 
