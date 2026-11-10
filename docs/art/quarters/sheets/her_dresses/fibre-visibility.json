@@ -1,5 +1,18 @@
 {
-  "comparison": "matched CPU Cycles lit fibre deposits and fringe ON/OFF; includes their shadows",
-  "mean_absolute_linear_rgb_difference": 0.00036907256041926104,
-  "pixel_fraction_difference_over_001": 0.009675
+  "fibres": {
+    "camera": "demo wardrobe perspective, 88 degree horizontal FOV",
+    "effect_pixels_over_0_01_linear_rgb": 2339,
+    "effect_percent_over_0_01_linear_rgb": 0.11279899691358025,
+    "mean_srgb_difference_effect_pixels": 11.934729941570472,
+    "pixels_over_eight_srgb_levels": 1632,
+    "qualification": "Visibility measurement; visual acceptance is judged in the paired image review"
+  },
+  "fold_dust": {
+    "camera": "demo wardrobe perspective, 88 degree horizontal FOV",
+    "effect_pixels_over_0_01_linear_rgb": 38398,
+    "effect_percent_over_0_01_linear_rgb": 1.8517554012345678,
+    "mean_srgb_difference_effect_pixels": 29.369064360991022,
+    "pixels_over_eight_srgb_levels": 35124,
+    "qualification": "Visibility measurement; visual acceptance is judged in the paired image review"
+  }
 }
