@@ -1,5 +1,6 @@
 """Keep the reference bed legible beside both exported-asset render angles."""
 from pathlib import Path
+import sys
 
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
@@ -9,9 +10,10 @@ SHEETS = ART / 'sheets/bed_soft'
 BOXES = {'remembered': (315, 478, 542, 680), 'aged': (315, 478, 535, 728)}
 
 
-def main():
+def main(states):
     font = ImageFont.load_default(size=22)
-    for state, box in BOXES.items():
+    for state in states:
+        box = BOXES[state]
         concept = Image.open(ART / ('concept-now.png' if state == 'aged' else 'concept-remembered.png')).convert('RGB')
         reference = concept.crop(box)
         reference.save(SHEETS / f'{state}-reference-bed.png')
@@ -31,4 +33,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1:] or tuple(BOXES))

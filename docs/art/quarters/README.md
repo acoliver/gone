@@ -1634,37 +1634,72 @@ The soft goods are a separate asset at the fitted bed's origin: `bed_soft.glb` a
 
 `age.py` derives the second state from the baked remembered source. Age is 1000 years in sealed, sterile, dry, oxygenated air, following ruling 25. The shared `foam_collapse` module supplies closed cracked foam plates and a settled upper cover. Point-touching cover panels are separated before thickness is added, keeping the torn cover watertight. The quilt starts clear of the whole rail/crust envelope, slides 0.31 m sideways and settles without suspended stitches. Coarse tears break cloth load paths before the gravity solve; the small triangles at refined tear edges are added after that solve. A retained wrap ridge prevents reduction from replacing the rail turn with a chord through steel. Pillows flatten to roughly 18–19.5 mm and split. The shared cloth attachment-distance helper, stress cuts, debris scatter and powder cards are reused without changing any shared module. There is no mould, vegetation or biological rot.
 
-Materials remain provisional cotton, wool and brown foam slots. The quilt uses fine yarn detail from the sofa's existing generated weave, with a median tile pitch of 0.12 m and 0.4 mm normal-height scale. The remembered quilt has an undyed turned underside and dark binding, with a short drape that exposes the stuffed mattress. The aged quilt is faded, the exposed foam is brown, and the cover and pillows have discoloured. Floor crumbs are 12–35 mm wide and 6–13 mm thick. The shared powder texture is sparsified into individual grains and irregular pools so the support remains visible through it.
+The remembered source and `bed_soft.glb` remain unchanged. Its quilt has an undyed turned underside, dark binding and fine yarn detail from the sofa's generated weave at a median 0.12 m pitch. The original aged simulation is retained in `bed-soft-aged.blend`. The aged-only finishing source is `bed-soft-aged-finished.blend`; `build.py -- --state aged` re-exports that file.
 
-Rebuild from the repository root using the installed Blender 4.5.11 LTS and the existing Hunyuan Python environment. Use Blender flags `--background --factory-startup --threads 6 --python-exit-code 1 --python` for these scripts:
+### Dry-decay causes and changes
 
-1. Run `tools/blender/quarters/bed_soft/build.py -- --assemble`, then run `fit_contacts.py --state remembered` with Python.
-2. Run `age.py` with Blender, then `fit_contacts.py --state aged` with Python.
-3. Run `weave_textures.py` with Python and `apply_weave.py -- --state remembered` and `--state aged` with Blender.
-4. Re-export each retained source with `build.py -- --state remembered|aged --output <file.glb>`, targeting `tmp/bed_soft/remembered-repeat.glb` and `aged-repeat.glb`.
-5. Run `verify.py` and `test_verify.py` with Python. Run `render.py` with Blender, then `comparison.py` with Python.
+Inspection of the retained source found four causes before the finishing pass:
 
-`fit_contacts.py` places each pillow 1 mm from the real headboard, then measures exact projected intersections of exported triangle planes to put quilt and pillow undersides 1 mm above the mattress. Vertex-only sampling missed an interior mattress crest, so the contact test includes a regression for that case. `verify.py` checks the exported GLBs with trimesh and triangle SAT, including both the complete aged mattress and its isolated foam-crust volume. `test_verify.py` has six crossing, contact, headboard-placement, volume-band and axis controls. The determinism gate re-exports each retained `.blend` source. `render.py` uses the exported GLBs on the unchanged frame with CPU Cycles. The doorway camera is at its room-relative doorway position, with a tighter lens for a prop-sized crop; the second camera is an elevated three-quarter view. Scratch and logs stay in `tmp/bed_soft/`.
+| Problem | Cause in the original aged asset | Aged-only change |
+|---|---|---|
+| Intact cream cloth | Cotton slots used uniform colours without fold or top-dust masks; the wool texture only supplied fine weave variation. | `finish_materials.py` bakes local 45 mm fold occlusion, upward normals and pigment variation into masks. The albedos use dusty yellow-brown cotton and faded brown wool, with darker folds and lighter dusty tops. A wider baked pigment range keeps top dust from flattening the variation; the control at mask values 0.2 and 0.8 changes from a 1.132 to a 1.658 red-channel ratio. The concept's dusty grey-brown palette supplies the direction. |
+| Flat exposed mattress | Foam reached 0.579160 m, 29.160 mm above the 0.55 m side rails. Narrow 6 mm gaps were partly covered, and the curved pressure-shell underside retained empty space. | `refine.py` compacts the existing plate footprints onto the platform, retaining 21 after the missing corner. It adds a central depression, opens 0.3831 m² of cover and adds 24 crust chips. Plate tops reach 0.547445 m; the chips remain below 0.549 m. Wider exposed central cracks and plate-level offsets from -1.774 to +3.557 mm reveal fracture edges. Their area-weighted offset is zero, so those height differences do not add filling volume. Surviving cotton rags lie slack above the crust. |
+| Angular tears and hanging fragment | Face-centre cuts followed coarse triangles; decimation followed edge refinement, removing contour detail. There was no alpha fringe. The first finish's 12 mm smoothing limit retained broad corners. Normal recalculation also rotated some fringe quad loops, misaligning the strand roots. At 4 × 4 pixels per card, every original strand variant filtered below 0.169 alpha and disappeared under the 0.5 cutoff. | Finish contours after reduction, allow 28 mm of contour smoothing and up to 85 mm at the low front-left tip, retain grain-directed long splits and remove eight detached unsupported scraps. Add 197 contact-checked alpha-blended fringe cards. Align their UVs by authored corner identity, preserving strand roots at the cloth edge. Group yarns into eight tapering rag roots per card so coverage survives filtering; retain the fine hairs and transparent tips. Keep the measured side and foot rail wraps. |
+| Specks instead of deposits | A second binary random mask sparsified the powder into isolated grains. The platform card was only 18 mm deep. The first continuous deposit used dark pigment without visible grain, so it read as a shadow; the shared normal map also divided millimetre heights by micron-sized texels. ON/OFF controls showed the thin platform strips were unreadable behind the rails and cloth. | Reuse the sofa's powder-card method with continuous irregular density, soft alpha falloff, warm dusty pigment and bilinear grain. Calculate normals with separate physical X/Y texel pitches. Add 2.15–2.25 mm of shallow relief over a 10 × 16 grid. The floor spill covers a 0.66 × 1.40 m card outside the hanging cloth. A 0.12 × 0.08 m deposit sits in a missing foot-right crust corner, where the platform can be seen over the rail; a foot-strip card is also retained. There are no opaque discs. |
+
+The missing corner uses a diagonal cut at Blender `x - y = 1.35 m`, applied to both the crust footprints and cover. The remaining crust underside sits 0.1 mm above the platform instead of 1 mm. This retains filling volume without raising the upper crust or inventing more mattress loft.
+
+Fold masks, albedos, fringe and powder textures are under `assets/props/quarters/bed_soft_aged_textures/`; [`refinement.json`](../../../tools/blender/quarters/bed_soft/refinement.json) records settings and measured values. The wool normal retains its original physical weave UVs on a separate layer. The exported GLB contains the baked pigments and porous foam normal, so the game does not depend on Blender procedural nodes. Floor crumbs remain 12–35 mm wide and 6–13 mm thick. The new crust chips sit 0.8 mm above their supporting plates; fringe roots are at most 2.606 mm from the finished cloth surface, with 62.26% authored boundary coverage. At 4 × 4 pixels per card, the grouped roots retain at least 0.873 alpha while the tips average 0.032; the exported fringe material uses `BLEND`.
+
+`powder_visibility.py` samples 2,000 alpha-weighted points per card and view against the exported blockers. The platform deposit is 96.33% unoccluded from the doorway and 100% from three-quarter; the floor spill is 74.10% and 99.93%. The retained foot strip is hidden in both views and does not establish platform readability. The ON/OFF image review assesses whether the visible deposits actually read as material.
+
+### Reproduce the aged finish
+
+Run from the repository root with the installed Blender 4.5.11 LTS and Hunyuan Python environment. Use Blender flags `--background --factory-startup --threads 6 --python-exit-code 1 --python`. No original remembered simulation or remembered texture regeneration is needed:
+
+1. Run `tools/blender/quarters/bed_soft/refine.py` with Blender. It reads the retained original aged simulation and writes the finished source and GLB.
+2. Run `tools/blender/quarters/bed_soft/fit_contacts.py --state aged` with Python, then `finish_materials.py` with Blender.
+3. Re-export the retained sources with `build.py -- --state remembered --output tmp/bed_soft2/remembered-repeat.glb` and `--state aged --output tmp/bed_soft2/aged-repeat.glb`. These outputs do not replace the remembered game asset.
+4. Run `verify.py --remembered-repeat tmp/bed_soft2/remembered-repeat.glb --aged-repeat tmp/bed_soft2/aged-repeat.glb` and `python -m unittest discover -s tools/blender/quarters/bed_soft -p 'test_*.py'` with the installed Python.
+5. Run `render.py -- aged` with Blender, then `comparison.py aged` and `finish_sheet.py` with Python. The committed `aged-before-*` images are byte-identical to the original `de14030` matched captures.
+6. For the powder control, render with `render.py -- aged --without-powder --out tmp/bed_soft2/powder-off`, then run `finish_sheet.py --powder-control`. The [ON/OFF sheet](sheets/bed_soft/powder-controls.png) changes only the continuous deposits, not the individual crumbs.
+
+Run long commands under `nohup`; scratch and logs stay under `tmp/bed_soft2/`. GPU requests are serialized. Material baking and the matched renders use CPU Cycles. Both views retain the original lights, exposure, 1280 × 1000 dimensions and camera transforms: doorway `(0, -4.75, 1.65)` with a 55 mm lens, and orthographic three-quarter `(-3.1, -3.7, 2.45)` at scale 3.15. The full-resolution before/after sheet does not resize the panels.
+
+`fit_contacts.py` places each pillow 1 mm from the real headboard, then measures exact projected intersections of exported triangle planes to put quilt and pillow undersides 1 mm above the mattress. Vertex-only sampling missed an interior mattress crest, so the contact test includes a regression for that case. `verify.py` checks the exported GLBs with trimesh and triangle SAT, including both the complete aged mattress and its isolated foam-crust volume. The new foot-strip card is included in the existing platform-support check. No existing gate threshold was relaxed. Fourteen tests pass: the original six measurement controls plus plate-footprint, clipped-corner, soft-powder, occluded-card visibility, physical normal-pitch, retained pigment contrast, fringe mip coverage and fold/top-pigment controls. OCR review was skipped per Andrew's instruction.
 
 
 ### Bed soft-goods gates and review
 
-Both states pass the geometry gates and received 8/10 from the local image-comparer for the interim-material stage. Measurements come from the exported GLBs; [`verify.json`](../../../tools/blender/quarters/bed_soft/verify.json) retains the per-part values.
+Both states pass the geometry gates. Measurements come from the exported GLBs; [`verify.json`](../../../tools/blender/quarters/bed_soft/verify.json) retains the per-part values.
 
 | Gate | Remembered | Aged 1000 years |
 |---|---:|---:|
-| Triangles, maximum 15,000 | 10,476 | 14,798 |
+| Triangles, maximum 15,000 | 10,476 | 13,496 |
 | Triangle crossings with frame | 0 | 0 |
 | Crossings between soft-goods parts | 0 | 0 |
-| Support gaps, maximum 3 mm | 1.000 mm | 0.700–1.000 mm |
+| Body/powder support gaps, maximum 3 mm | 1.000 mm | 0.100–1.000 mm |
 | Pillow-to-headboard clearance | 1.000 mm | 1.000 mm |
+| Fringe-root attachment, maximum 3 mm | Not present | 2.606 mm |
 | Byte-identical saved-source re-export | Pass | Pass |
 | Exported +Y up, front +Z | Pass | Pass |
 | Watertight mattress | Pass | Pass, including isolated foam crust |
 
-The remembered mattress volume is 0.427450 m³. The aged crust and cover occupy 0.144110 m³, a ratio of 0.337138; the foam crust alone occupies 0.140953 m³, a ratio of 0.329753. Both ratios are inside the required 0.25–0.40 band. Six measurement-control tests pass. The exported bounds in metres are remembered `[-0.791097, 0.501000, -0.999000]` to `[0.770054, 0.852411, 1.096274]`, and aged `[-1.126975, 0.000700, -0.999000]` to `[0.699097, 0.677207, 1.201491]`. The aged bounds include the floor deposits and hanging quilt.
+The remembered mattress volume remains 0.427450 m³. The aged crust and cover occupy 0.108621 m³, a ratio of 0.254114; the foam crust and its chips occupy 0.107446 m³, a ratio of 0.251365. Both ratios are inside the unchanged 0.25–0.40 band. The original aged ratios were 0.337138 and 0.329753 respectively. The aged bounds include floor deposits, fringe and the hanging quilt; the per-part bounds and zero origins are in `verify.json`. The source is authored Z-up, front -Y, and the exported GLB is measured +Y-up, front +Z outside Blender.
 
-The local `image-comparer` route (`qwen38-llamacpp`) reviewed the labelled concept/design comparisons and both full-resolution captures, with GPU requests serialized. Remembered scored **8/10**, accepted for interim materials. It identified two pillows, the turned cuff, a stuffed mattress and soft gravity drape. Remaining defects: the fine wool weave is difficult to resolve, and the drape is more casual than a strict military bed. Aged scored **8/10**, also accepted. It identified the low brown crust, flattened pillows, split and slumped quilt, and platform/floor deposits. Remaining defects: the crust is somewhat uniform, the powder patch still reads decal-like, and some torn edges remain geometric. These are recorded in [`remembered-review.json`](sheets/bed_soft/remembered-review.json) and [`aged-review.json`](sheets/bed_soft/aged-review.json), alongside the review prompts.
+The local `image-comparer` route (`qwen38-llamacpp`, actual model `qwen3.8-27b`) scored both aged states together in the [matched before/after sheet](sheets/bed_soft/dry-decay-before-after.png). Both states use the same 0–10 dry-decay rubric: 0 absent, 5 partly legible, 7 convincing with visible limitations, 10 fully convincing. These scores assess 1000-year decay, not demo usability. The unchanged remembered asset retains its earlier 8/10 interim-material rating.
+
+| Dry-decay criterion | Original aged | Finished aged |
+|---|---:|---:|
+| Cloth aging | 2 | 6 |
+| Sunken cracked crust | 2 | 6 |
+| Tear silhouettes | 1 | 5 |
+| Powder deposits | 2 | 5 |
+| Overall | 2 | 6 |
+
+The reviewer observed dusty matte folds, a cracked plate-like surface reading as sunken crust, softer tear contours and diffuse powder. It reported no regressions, but did **not** accept the complete visual brief. Remaining concerns are the dark cloth, regular fracture layout, concentrated floor spill and comparatively supple drape. The unedited response and prompt are [retained here](sheets/bed_soft/dry-decay-sheet-review.json).
+
+The separate [powder ON/OFF review](sheets/bed_soft/powder-controls-review.json) scored readability **7/10**. It identified a granular floor deposit and a faint soft-edged platform deposit in both views, rather than hard discs or isolated specks. It still found the platform deposit faint and the floor patch disconnected from the bed. GPU review requests were serialized. The existing geometry, contact, volume and determinism gates remain separate from these visual assessments.
 
 Captures: [remembered doorway](sheets/bed_soft/remembered-doorway.png), [remembered three-quarter](sheets/bed_soft/remembered-three_quarter.png), [aged doorway](sheets/bed_soft/aged-doorway.png), and [aged three-quarter](sheets/bed_soft/aged-three_quarter.png). The [remembered comparison](sheets/bed_soft/remembered-comparison.png) and [aged comparison](sheets/bed_soft/aged-comparison.png) retain the relevant reference crops. The playable demo now integrates both exports as described above.
 

@@ -1,4 +1,5 @@
 """Render each exported state on the unchanged bed at two fixed viewing angles."""
+import argparse
 from pathlib import Path
 import sys
 
@@ -14,10 +15,14 @@ def aim(obj, target):
     obj.rotation_euler = (Vector(target) - obj.location).to_track_quat('-Z', 'Y').to_euler()
 
 
-def render(state):
+def render(state, output=OUT, powder=True):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.gltf(filepath=str(ROOT / 'assets/props/quarters/bed.glb'))
     bpy.ops.import_scene.gltf(filepath=str(ROOT / f'assets/props/quarters/bed_soft{"_aged" if state == "aged" else ""}.glb'))
+    if not powder:
+        for obj in bpy.context.scene.objects:
+            if obj.name.startswith('FibreFoamPowder_'):
+                obj.hide_render = True
     scene = bpy.context.scene
     scene.render.engine = 'CYCLES'
     scene.cycles.device = 'CPU'
@@ -58,12 +63,19 @@ def render(state):
         data.type = 'PERSP' if angle == 'doorway' else 'ORTHO'
         data.lens = 55
         data.ortho_scale = 3.15
-        scene.render.filepath = str(OUT / f'{state}-{angle}.png')
+        scene.render.filepath = str(output / f'{state}-{angle}.png')
         bpy.ops.render.render(write_still=True)
 
 
 if __name__ == '__main__':
-    OUT.mkdir(parents=True, exist_ok=True)
-    states = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else ['remembered', 'aged']
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('states', nargs='*', metavar='STATE')
+    parser.add_argument('--out', type=Path, default=OUT)
+    parser.add_argument('--without-powder', action='store_true')
+    args = parser.parse_args(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else [])
+    states = args.states or ['remembered', 'aged']
+    if any(state not in ('remembered', 'aged') for state in states):
+        parser.error('STATE must be remembered or aged')
+    args.out.mkdir(parents=True, exist_ok=True)
     for state in states:
-        render(state)
+        render(state, args.out, powder=not args.without_powder)

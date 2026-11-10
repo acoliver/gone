@@ -17,7 +17,7 @@ from fabric_mesh import new_object
 from finish_aged import retain_material
 from fringe_cards import cards, fringe_material, image_from_array
 from powder_cards import powder_card
-from refinement_fields import convex_outline, powder_field
+from refinement_fields import convex_outline, powder_field, powder_normals, without_foot_corner, fringe_groups
 from stress_cut import cut_faces
 
 TEXTURES = ASSETS / 'bed_soft_aged_textures'
@@ -53,25 +53,32 @@ def crust_plates(foam):
     bm.from_mesh(foam.data)
     bm.verts.index_update()
     groups = components(bm)
-    vertices, faces, heights = [], [], []
+    vertices, faces, plates = [], [], []
     for index, group in enumerate(groups):
-        outline = convex_outline(np.array([v.co[:2] for v in group]))
+        outline = without_foot_corner(convex_outline(np.array([v.co[:2] for v in group])))
+        if len(outline) < 3:
+            continue
         center = outline.mean(axis=0)
-        # Preserve each simulated plate footprint. Compacting the hollow curved
-        # underside into the platform lets the upper crust sit below the rails.
-        outline = center + (outline - center) * .994
+        scale = .975 if .15 < center[0] < .55 and -.4 < center[1] < .15 else .994
+        outline = center + (outline - center) * scale
         basin = np.exp(-((center[0] - .20) / .40) ** 2 - ((center[1] + .10) / .45) ** 2)
-        top = .5455 - .012 * basin + .0008 * np.sin(index * 2.39)
-        heights.append(top)
+        following = np.roll(outline, -1, axis=0)
+        area = abs((outline[:, 0] * following[:, 1] - outline[:, 1] * following[:, 0]).sum()) / 2
+        plates.append((index, outline, center, basin, area))
+    offsets = np.array([.005 * basin * np.sin(index * 3.1) for index, _, _, basin, _ in plates])
+    # Different plate levels reveal fracture edges without adding filling volume.
+    offsets -= np.average(offsets, weights=[p[4] for p in plates])
+    for offset, (index, outline, center, basin, _) in zip(offsets, plates):
+        top = .5455 - .012 * basin + .0008 * np.sin(index * 2.39) + offset
         n, start = len(outline), len(vertices)
         for point in outline:
-            vertices.append((*point, .501))
+            vertices.append((*point, .5001))
         for point in outline:
             vertices.append((*point, top - .0035))
         inset = center + (outline - center) * .975
         for k, point in enumerate(inset):
-            vertices.append((*point, top + .0007 * np.sin(k * 2.1 + index)))
-        vertices.append((*center, top - .0008))
+            vertices.append((*point, top + .0016 * np.sin(k * 2.1 + index)))
+        vertices.append((*center, top + .0013 * np.sin(index * 8.3) - .0003))
         faces.append(tuple(start + k for k in reversed(range(n))))
         for k in range(n):
             j = (k + 1) % n
@@ -84,8 +91,11 @@ def crust_plates(foam):
     data.materials.append(bpy.data.materials['Foam'])
     foam.data = data
     recalc(foam)
-    return {'plates': len(groups), 'upper_surface_max_m': max(v[2] for v in vertices),
-            'rail_top_m': .55, 'support_z_m': .501, 'footprints_from_existing_plates': True}
+    return {'plates': len(plates), 'upper_surface_max_m': max(v[2] for v in vertices),
+            'rail_top_m': .55, 'support_z_m': .5001, 'footprints_from_existing_plates': True,
+            'missing_foot_corner_x_minus_y_m': 1.35,
+            'plate_offset_range_m': [float(offsets.min()), float(offsets.max())],
+            'plate_offset_area_weighted_mean_m': float(np.average(offsets, weights=[p[4] for p in plates]))}
 
 
 def crust_crumbs(foam):
@@ -130,7 +140,7 @@ def smooth_rims(obj, quilt=False):
     bm.normal_update()
     boundary = {v for e in bm.edges if e.is_boundary for v in e.verts}
     origins = {v: v.co.copy() for v in boundary}
-    for _ in range(12):
+    for _ in range(24 if quilt else 12):
         following = {}
         for v in boundary:
             neighbors = [e.other_vert(v) for e in v.link_edges if e.is_boundary]
@@ -142,7 +152,7 @@ def smooth_rims(obj, quilt=False):
                 continue
             average = (neighbors[0].co + neighbors[1].co) / 2
             candidate = v.co.lerp(average, .34)
-            limit = .040 if quilt and p.x < -.9 and p.z < .25 else .012
+            limit = .085 if quilt and p.x < -.9 and p.z < .25 else .028
             delta = candidate - p
             if delta.length > limit:
                 candidate = p + delta.normalized() * limit
@@ -160,7 +170,7 @@ def smooth_rims(obj, quilt=False):
     bm.free()
     recalc(obj)
     return {'smoothed_boundary_vertices': len(boundary), 'detached_unsupported_scraps_removed': removed,
-            'max_contour_displacement_m': .040, 'long_grain_axis_blender': '+Y'}
+            'max_contour_displacement_m': .085 if quilt else .028, 'long_grain_axis_blender': '+Y'}
 
 
 def refit_cover(cover, foam):
@@ -174,7 +184,8 @@ def refit_cover(cover, foam):
     bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context='VERTS')
     bm.to_mesh(cover.data)
     bm.free()
-    cut = cut_faces(cover, lambda p: -.02 < p.x < .60 and -.67 < p.y < .37, 95260, refine=False)
+    cut = cut_faces(cover, lambda p: (-.02 < p.x < .60 and -.67 < p.y < .37)
+                    or p.x - p.y > 1.35, 95260, refine=False)
     record = smooth_rims(cover)
     tree = surface_tree(foam)
     for v in cover.data.vertices:
@@ -197,22 +208,89 @@ def lower_cloth(obj):
         p.z -= .034 * weight
 
 
+def visible_fringe(mat):
+    shader = mat.node_tree.nodes.get('Principled BSDF')
+    texture = shader.inputs['Base Color'].links[0].from_node
+    image = texture.image
+    rgba = np.array(image.pixels[:], dtype=np.float32).reshape(2048, 1024, 4)
+    groups = fringe_groups(95264)
+    rgba[:, :, 3] = np.maximum(rgba[:, :, 3], groups.reshape(2048, 1024))
+    image.pixels.foreach_set(rgba.ravel())
+    image.save()
+    image.pack()
+    # Sparse hair coverage vanished below MASK's 0.5 cutoff at capture scale.
+    mat.node_tree.links.new(texture.outputs['Alpha'], shader.inputs['Alpha'])
+    mat.surface_render_method = 'DITHERED'
+    mip = rgba[:, :, 3].reshape(8, 4, 64, 4, 256).mean(axis=(2, 4))
+    return {'alpha_mode': 'BLEND', 'minimum_4px_root_alpha': float(mip[:, 0, :].min()),
+            'mean_4px_tip_alpha': float(mip[:, -1, :].mean()), 'root_groups_per_card': 8}
+
+
+def finish_fringe(fringe, quilt):
+    layer = fringe.data.uv_layers.active.data
+    tree = surface_tree(quilt)
+    gaps = []
+    for face in fringe.data.polygons:
+        row = min(layer[i].uv.y for i in face.loop_indices)
+        roots = []
+        for i in face.loop_indices:
+            vertex = fringe.data.loops[i].vertex_index
+            corner = vertex % 4
+            # Normal recalculation can rotate quad loops. Use the authored
+            # corner identity so the strand roots stay on the cloth edge.
+            layer[i].uv = (int(corner in (1, 2)), row + .125 * int(corner in (2, 3)))
+            if corner in (0, 1):
+                roots.append(fringe.matrix_world @ fringe.data.vertices[vertex].co)
+        gaps.append(tree.find_nearest((roots[0] + roots[1]) / 2)[3])
+    maximum = max(gaps)
+    if maximum > .003:
+        raise ValueError(f'Fringe attachment gap {maximum} exceeds 3 mm')
+    return {'maximum_root_gap_m': maximum, 'uvs_follow_authored_roots': True}
+
+
+def powder_relief(obj, center, extent, density):
+    nx, ny = 10, 16
+    vertices, faces = [], []
+    for j, v in enumerate(np.linspace(0, 1, ny + 1)):
+        for i, u in enumerate(np.linspace(0, 1, nx + 1)):
+            alpha = density[round(v * 1023), round(u * 1023)]
+            height = .003 * alpha
+            vertices.append((center[0] + (2*u - 1) * extent[0],
+                             center[1] + (2*v - 1) * extent[1], center[2] + height))
+            if i < nx and j < ny:
+                a = j * (nx + 1) + i
+                faces.append((a, a + 1, a + nx + 2, a + nx + 1))
+    data = bpy.data.meshes.new(obj.name + '_PowderRelief')
+    data.from_pydata(vertices, [], faces)
+    data.materials.append(obj.data.materials[0])
+    uv = data.uv_layers.new(name='PowderUV')
+    for loop in data.loops:
+        j, i = divmod(loop.vertex_index, nx + 1)
+        uv.data[loop.index].uv = (i / nx, j / ny)
+    obj.data = data
+    return {'grid_cells': [nx, ny], 'max_relief_m': max(p[2] for p in vertices) - center[2]}
+
+
 def deposits():
     records = []
     for obj in list(bpy.context.scene.objects):
         if obj.name.startswith('FibreFoamPowder_'):
             bpy.data.objects.remove(obj, do_unlink=True)
     for name, center, extent, seed in (
-        ('FibreFoamPowder_Floor', (-1.04, -.36, .0008), (.225, .65), 95246),
-        ('FibreFoamPowder_Platform', (.714, .02, .5008), (.012, .82), 95247),
+        ('FibreFoamPowder_Floor', (-1.18, -.30, .0008), (.33, .70), 95246),
+        ('FibreFoamPowder_Platform', (.62, -.85, .5008), (.06, .04), 95247),
         ('FibreFoamPowder_Foot', (0, -1.024, .5008), (.64, .0045), 95261),
     ):
         obj = powder_card(name, center, extent, TEXTURES, seed, sectors=24)
         alpha = powder_field(seed)
-        y, x = np.mgrid[-1:1:1024j, -1:1:1024j]
-        pigment = .92 + .08 * np.sin(x * 38 + y * 57)
+        rng = np.random.default_rng(seed + 2)
+        samples = rng.random((256, 256))
+        coordinates = np.linspace(0, 255, 1024)
+        across = np.array([np.interp(coordinates, np.arange(256), row) for row in samples])
+        grain = np.array([np.interp(coordinates, np.arange(256), column) for column in across.T]).T
+        pigment = .55 + .70 * grain
         rgba = np.ones((1024, 1024, 4), dtype=np.float32)
-        rgba[:, :, :3] = np.array([.32, .245, .145]) * pigment[:, :, None]
+        rgba[:, :, :3] = np.array([.43, .34, .19]) * pigment[:, :, None]
         rgba[:, :, 3] = alpha
         mat = obj.data.materials[0]
         nodes, links = mat.node_tree.nodes, mat.node_tree.links
@@ -220,14 +298,23 @@ def deposits():
         texture = shader.inputs['Base Color'].links[0].from_node
         texture.image = image_from_array(name + '_Deposit', rgba, TEXTURES / f'{name.lower()}.png')
         links.new(texture.outputs['Alpha'], shader.inputs['Alpha'])
-        for link in list(shader.inputs['Normal'].links):
-            links.remove(link)
+        # The shared card's millimetre height noise at micron-sized texels
+        # produced near-horizontal normals. Preserve grain at its physical pitch.
+        height = min(.0003, min(extent) * .01) * grain
+        normals = powder_normals(height, extent)
+        normal_rgba = np.ones_like(rgba)
+        normal_rgba[:, :, :3] = normals * .5 + .5
+        normal_map = shader.inputs['Normal'].links[0].from_node
+        normal_texture = normal_map.inputs['Color'].links[0].from_node
+        normal_texture.image = image_from_array(name + '_GrainNormal', normal_rgba,
+                                                TEXTURES / f'{name.lower()}_normal.png', True)
+        relief = powder_relief(obj, center, extent, alpha)
         mat.surface_render_method = 'DITHERED'
         mat.use_backface_culling = False
         obj['aged_export'] = True
         bake_origin(obj)
         records.append({'name': name, 'mean_alpha': float(alpha.mean()), 'max_alpha': float(alpha.max()),
-                        'extent_xy_m': extent, 'soft_edge_width_fraction': .31})
+                        'extent_xy_m': extent, 'soft_edge_width_fraction': .31, 'relief': relief})
     return records
 
 
@@ -251,17 +338,21 @@ def main():
     lower_cloth(quilt)
     record['rail_wrap_finish'] = clear_left_rail(quilt)
     fringe_mat = fringe_material(TEXTURES, 95262, wool=True)
-    # Keep cards near the internal splits; rails and the hanging floor turn
-    # retain their collision-fitted contours without added loose fibres.
+    fringe_visibility = visible_fringe(fringe_mat)
+    # Keep rail contacts bare. Fringe belongs on internal splits and the
+    # low hanging tip, where alpha strands soften its silhouette.
     group = quilt.vertex_groups.new(name='Internal splits')
     for v in quilt.data.vertices:
-        if -.60 < v.co.x < .22 and -.90 < v.co.y < -.20:
+        if ((-.60 < v.co.x < .22 and -.90 < v.co.y < -.20)
+                or (v.co.x < -.9 and v.co.z < .35)):
             group.add([v.index], 1, 'REPLACE')
-    blockers = [o for o in bpy.context.scene.objects if o.type == 'MESH' and o.name != 'SupportFloor']
-    fringe, record['fringe'] = cards(quilt, fringe_mat, 95262, wool=True, spacing=.035,
+    blockers = [o for o in bpy.context.scene.objects if o.type == 'MESH']
+    fringe, record['fringe'] = cards(quilt, fringe_mat, 95262, wool=True, spacing=.022,
                                      boundary_group=group.name, blockers=blockers)
     fringe['aged_export'] = True
     solidify(quilt, .0012)
+    record['fringe'].update(finish_fringe(fringe, quilt))
+    record['fringe'].update(fringe_visibility)
     for name in ('Pillow_L', 'Pillow_R'):
         lower_cloth(bpy.data.objects[name])
     record['powder'] = deposits()
