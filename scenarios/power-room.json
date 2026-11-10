@@ -32211,14 +32211,14 @@
 			"tick": 3054
 		},
 		{
-			"name": "power-active",
 			"camera_pitch_up": 30.0,
+			"name": "power-active",
 			"tick": 3108
 		},
 		{
-			"name": "hall-white",
 			"camera_back": 2.0,
 			"camera_pitch_up": 15.0,
+			"name": "hall-white",
 			"tick": 3711
 		}
 	],

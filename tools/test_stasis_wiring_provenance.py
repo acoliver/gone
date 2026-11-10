@@ -1,5 +1,9 @@
 """Content mutations must invalidate evidence, even with unchanged filenames."""
 import copy
+import json
+import os
+import subprocess
+import sys
 import tempfile
 from pathlib import Path
 import unittest
@@ -8,6 +12,18 @@ from stasis_wiring_provenance import snapshot, verify, verify_capture
 
 
 class ProvenanceTests(unittest.TestCase):
+    def test_independent_results_bind_their_own_native_context(self):
+        tools = Path(__file__).resolve().parent
+        output = 'tmp/verify-stasis-wiring/pr124-integration'
+        result = subprocess.run(
+            [sys.executable, '-c',
+             'import json, stasis_wiring_provenance as p; '
+             'print(json.dumps([str(p.RESULTS.relative_to(p.ROOT)), '
+             'str(p.CONTEXT.relative_to(p.ROOT))]))'],
+            cwd=tools, env={**os.environ, 'STASIS_WIRING_RESULTS': output},
+            check=True, capture_output=True, text=True)
+        self.assertEqual(json.loads(result.stdout), [output, output+'/context.json'])
+
     def setUp(self):
         self.directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.directory.cleanup)

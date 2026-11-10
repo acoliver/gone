@@ -13,8 +13,8 @@ from stasis_wiring_assemblies import (ROOT, OUT, SIDES, annulus, box,
                                      nearest_surface, shaped_path)
 from stasis_wiring_geometry import _frames
 from stasis_wiring_transition import transition, stations, reduce_straights
+from stasis_wiring_provenance import CONTEXT
 
-CONTEXT = ROOT/'tmp/verify-stasis-wiring/production-install/context.json'
 DROP_X = (-4.02, -4.18)
 
 

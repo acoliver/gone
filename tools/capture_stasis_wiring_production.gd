@@ -1,7 +1,7 @@
 extends SceneTree
 ## Native main.tscn opening first, then explicitly separate inspection cameras.
 
-const OUT := "res://tmp/verify-stasis-wiring/production-corrected/"
+var OUT := "res://"+OS.get_environment("STASIS_WIRING_RESULTS")+"/" if OS.has_environment("STASIS_WIRING_RESULTS") else "res://tmp/verify-stasis-wiring/production-corrected/"
 var main: Node3D
 var inspection: Camera3D
 var captures: Array[Dictionary] = []
@@ -50,7 +50,7 @@ func _snapshot_inputs() -> Dictionary:
 	var expected: Dictionary = verified_snapshot.inputs_sha256.duplicate()
 	expected.merge(verified_snapshot.outputs_sha256)
 	expected.merge(verified_snapshot.protected_before)
-	expected["tmp/verify-stasis-wiring/production-corrected/build-snapshot.json"] = FileAccess.get_sha256(OUT+"build-snapshot.json")
+	expected[OUT.trim_prefix("res://")+"build-snapshot.json"] = FileAccess.get_sha256(OUT+"build-snapshot.json")
 	if _fingerprints(expected).is_empty(): return {}
 	var source := "res://assets/props/stasis-wiring/production-installation.glb"
 	var imported := ConfigFile.new()
@@ -212,7 +212,7 @@ func _run() -> void:
 		protected_after[path] = fingerprints_after[path]
 	var readbacks := {}
 	for name: String in ["normal-frame-performance.json","normal-opening-result.json"]:
-		readbacks["tmp/verify-stasis-wiring/production-corrected/"+name] = FileAccess.get_sha256(OUT+name)
+		readbacks[OUT.trim_prefix("res://")+name] = FileAccess.get_sha256(OUT+name)
 	_write("capture-manifest.json",{"root":"res://main.tscn","display":DisplayServer.get_name(),"adapter":RenderingServer.get_video_adapter_name(),
 		"fingerprints_before":fingerprints_before,"fingerprints_after":fingerprints_after,
 		"protected_before":verified_snapshot.protected_before,"protected_after":protected_after,

@@ -27,7 +27,7 @@ def main():
     manifest = {'issue':110,'frame':'bay-local +Y up; metres',
                 'assemblies':{assembly.name:row},
                 'fault_installed':True,'inputs_sha256':inputs,
-                'verification_snapshot':'tmp/verify-stasis-wiring/production-corrected/build-snapshot.json'}
+                'verification_snapshot':str((RESULTS/'build-snapshot.json').relative_to(ROOT))}
     path = OUT/'production-installation.json'
     path.write_text(json.dumps(manifest,indent=2)+'\n')
     subprocess.run([DEFAULT_BLENDER,'--background','--python-exit-code','1','--python',

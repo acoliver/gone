@@ -73,7 +73,9 @@ func test_bay_and_power_dressing_connects_to_structure() -> void:
 	var pieces: Dictionary = {}
 	_collect(scene.lighting, pieces)
 	_collect(scene.hallway, pieces, ["CorridorDressing", "HallSideDoors"])
-	_collect(scene.power_room, pieces)
+	# Furnished terminals and the status panel are wall-mounted equipment,
+	# not the floor/ceiling dressing batches this connectivity graph covers.
+	_collect(scene.power_room, pieces, ["ConsoleStation0", "ConsoleStation1", "ConsoleStation2", "ConsoleStation3", "ConsoleStation4", "ConsoleStation5", "StatusPanelMount"])
 	_check_graph(structure, pieces)
 	world.free()
 

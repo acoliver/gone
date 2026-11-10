@@ -4,10 +4,7 @@ from pathlib import Path
 
 import numpy as np
 from PIL import Image
-from stasis_wiring_provenance import verify_capture, fingerprint
-
-ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT/'tmp/verify-stasis-wiring/production-corrected'
+from stasis_wiring_provenance import RESULTS as OUT, verify_capture, fingerprint
 
 
 def frames(rows):

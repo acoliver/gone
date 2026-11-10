@@ -2,7 +2,7 @@
 
 `ShipScene.build_into()` still installs one `StasisWiring.installation()` beneath `BayRoot`. The installation contains the production network and the separate source enclosure. It does not install a standalone proof, add a carrier grid, create cable physics, or change the collision inventory. The network retains eight material groups, including the released-core insulation.
 
-The corrected evidence directory is `tmp/verify-stasis-wiring/production-corrected/`. Earlier `production-final/` captures and results describe the installation before the junction corrections. They are historical and must not be used to validate the current geometry. Appearance assessment belongs to the separate visual worker. No lighting, pod/lid pose, smoke, eye/wake timing or normal gameplay changes were made for screenshot appearance.
+The PR124 integration evidence directory is `tmp/verify-stasis-wiring/pr124-integration/`. The earlier `production-corrected/` results bind the pre-packaging source bytes; `eof-whitespace-supersession.json` records the later removal of one final LF from `sim/stasis_wiring_routes.gd`. Those results and the older `production-final/` captures are historical. Fresh integration results below bind the merged sources and new captures. The user-approved bay appearance is preserved; no lighting, pod/lid pose, smoke, eye/wake timing or normal gameplay changes were made for screenshot appearance.
 
 ## Buried junctions now have open physical interfaces
 
@@ -67,15 +67,14 @@ From the repository root, use the existing local Python environment and native G
 
 ```sh
 PY=/Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python
-OUT=tmp/verify-stasis-wiring/production-corrected
+export STASIS_WIRING_RESULTS=tmp/verify-stasis-wiring/pr124-integration
+OUT=$STASIS_WIRING_RESULTS
 mkdir -p "$OUT"
+godot --headless --editor --path . --import
 # Establish the unchanged-input baseline before rebuilding outputs.
 "$PY" tools/stasis_wiring_provenance.py
 # Dump production transforms with the native backend, not dummy MultiMeshes.
-godot --path . -s tools/dump_stasis_wiring_context.gd -- tmp/verify-stasis-wiring/production-install/context.json
-"$PY" tools/build_stasis_wiring.py
-"$PY" tools/build_supported_transition.py
-"$PY" tools/refresh_stasis_wiring_proof_context.py
+godot --path . -s tools/dump_stasis_wiring_context.gd -- "$OUT/context.json"
 "$PY" tools/build_stasis_wiring_production.py
 godot --headless --editor --path . --import
 "$PY" -m unittest discover -s tools -p 'test_stasis_wiring_*.py' -v
@@ -90,11 +89,13 @@ godot --path . -s tools/capture_stasis_wiring_production.gd
 git diff --check
 ```
 
-`run-final-verification.sh` in the corrected output directory captures each command's complete stdout/stderr and actual exit status. It does not filter teardown errors or modify the original guarded runner. The full suite, focused tests, native checks and capture retain any ObjectDB/resource/RID or renderer-unpairing diagnostics.
+`STASIS_WIRING_RESULTS` is a repository-relative directory shared by the Python build, native capture and readback checker. When set, its `context.json` is the native context input; otherwise the earlier default paths remain in use. Choose a new directory for each independent run. The PR124 run verified all 33 seat, eight fault-proof and eight transition-proof source fingerprints before building. These unchanged standalone assets did not need another rebuild.
 
-## Completed verification
+`run-final-verification.sh` in the integration output directory captures each command's complete stdout/stderr and actual exit status. It does not filter teardown errors or modify the original guarded runner. The full suite, focused tests, native checks and capture retain any ObjectDB/resource/RID or renderer-unpairing diagnostics.
 
-These results are from the source-stable corrected build. Each named log has a matching `.exit` file in `production-corrected/`.
+## Historical corrected-build verification
+
+These results are from the earlier source-stable corrected build, before EOF packaging and current-main integration. Each named log has a matching `.exit` file in `production-corrected/`. They are not fresh results for PR124.
 
 | Check | Result | Log |
 | --- | --- | --- |
@@ -127,3 +128,31 @@ The first six PNGs follow the actual `main.tscn` camera through natural blink/op
 Only afterward does the harness freeze main processing, hide the eye overlay for an inspection camera and advance the existing console circuit for white diagnostics. The remaining ten PNGs are explicitly labeled diagnostic. No lights or material overrides are added. The hallway view is a limited non-bay snapshot, not a paired appearance baseline.
 
 Frame measurements include forced draws, scheduling and readback. Concurrent sibling jobs are recorded. No isolated performance or visual-appearance approval is claimed.
+
+## PR124 current-main integration
+
+The integration includes main at `ded7dce10c037f1f89d4b35b75fd5d0fb6ecc4a5`, including its power-room terminals, status board, generator-band emission, scenarios and console collision bounds. The shared dressing test retains both the three physical power-tip assertions and upstream's mounted-console/status-panel exclusions. The original guarded runner and its enforcement tests are byte-identical to both the approved issue commit and main.
+
+The fresh production build uses the current route script, including its packaged EOF bytes, and binds 359 implementation inputs, four generated outputs and 150 protected inputs. All protected inputs match before/after build and capture. `audit.log` and `integration-results.json` verify these bindings against the saved files. They also verify that all 72 pre-existing unrelated untracked files and all 200 recorded historical evidence files remain unchanged.
+
+The native bay context, installed GLB and route JSON are byte-identical to the approved snapshot. The existing bay, pod, ceiling, seat/profile/PBR, fixture/light, player, wake, mood and control inputs remain unchanged. The standalone proof source fingerprints also match. The production BLEND was resaved and the production asset manifest was refreshed with current inputs and the new snapshot path. These changes do not alter the exported geometry or materials. All upstream files are retained unchanged except the shared test, which combines both branches' assertions. The user-approved bay appearance therefore remains the applicable judgment; this run does not introduce an art-review cycle or approve upstream non-bay appearance.
+
+| Fresh check | Result |
+| --- | --- |
+| Native context, production build and both imports | Each exit 0 |
+| Python wiring suite, including provenance mutations and independent-output regression | 33 passed, exit 0 |
+| Python shared-seat suite | 6 passed, exit 0 |
+| Guarded Godot wiring / seat contracts | 19 / 42 passed, zero failures, both exit 0 |
+| Native production construction | 8 mesh groups, 7 pods, 1,024 colliders, zero graph errors, exit 0 |
+| Original guarded full suite | 856 passed, zero failures, exit 0 |
+| Native Metal capture / bound readback | 6 ordinary + 10 diagnostic PNGs, both exit 0 |
+| Native fingerprint acceptance / deliberate mismatch | Exit 0 / expected exit 1 |
+| Final provenance/preservation audit / whitespace check | Both exit 0 |
+
+Physical checks rerun against the exported 802,716-triangle installation, not metadata alone. All 494,880 buried jacket edges and reciprocal foreign-wall edges have zero pipe, enclosure or support intersections. The 72 strand-level junctions retain 224 conductor links, and overhead branch-to-continuing clearance remains at least 23 mm. The 330 measured contacts, actual pod-base containment, complete seven-pod lid sweeps, native support/service reservations and source-to-pod physical interfaces pass the unchanged checks. Maximum support/contact gap remains 0.0000287 mm.
+
+The fresh `normal-opening-*.png` captures record wake ticks 112, 196, 280, 288, 302 and 344. The actual `main.tscn` opening reaches Standing through physical Space input with zero direct power calls or teleports, 278 sampled ordinary frames and all 1,024 colliders retained. Only afterward are the separately labeled `diagnostic-emergency-*.png` and `diagnostic-white-*.png` views recorded. Every PNG, readback, current build input/output and actual production import resource is fingerprint-bound through `capture-manifest.json` and `build-snapshot.json`. No old capture is assigned the new source hashes.
+
+These exit statuses do not claim clean shutdown. The focused wiring log retains 93 leaked ObjectDB instances and four resources; the full suite retains 96,143 instances and 329 resources, plus RID/dependency and allocator diagnostics. Native construction and capture retain geometry/light unpairing, an unfreed particle shader and texture/material RID diagnostics. Full logs, individual `.exit` files and `cleanup-diagnostics.json` remain under the integration directory. Attribution of the shutdown leaks remains outside this change, consistent with issue #107.
+
+The staged merge diff against the old issue HEAD reports eight pre-existing trailing-whitespace lines in main's two sourced license files, exit 2 (`merge-parent-whitespace.log/.exit`). Those upstream files remain byte-identical to main. The PR diff against current main passes whitespace checking, exit 0 (`pr-whitespace.log/.exit`), including the packaged GDScript EOF. No whitespace rule or other enforcement was changed.

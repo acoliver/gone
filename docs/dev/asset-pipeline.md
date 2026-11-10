@@ -177,5 +177,11 @@ BLENDER=/Volumes/XS1000/acoliver/projects/threedee/branch-1/.tools/Blender-4.5.1
 - #35 wall textures ride the same validator and import gates: geometry
   first, then PBR from ambientCG CC0 bases plus locally generated
   decals.
-- Hunyuan3D dressing props stay blocked on weights; the survey and the
-  open question for Andrew are on #45.
+- The local Hunyuan3D-2mv MLX output path supplies the #91 terminal and
+  status-panel props. Its license restrictions are recorded below.
+
+## Power-room terminal and status-panel props (#91)
+
+The terminal body and separate keyboard-tray assembly are in `assets/props/terminal/`; the north-wall status panel and its native/perceived board layers are in `assets/props/status_panel/`. The GLBs embed their images and retain their `ScreenSocket` nodes. Triangle totals are 32,506 for the terminal, 43,112 for the keyboard tray, and 44,972 for the status panel, below the 50,000-triangle prop budget per GLB. Source images, builders, export recipes, selection notes and license records are under `art-source/terminal/` and `art-source/status_panel/`.
+
+The active terminal uses the shared console text cache and perception timing. The wall board uses native Naleya and perceived Spanish layers with the same attention memory. The Hunyuan3D-2mv community license excludes the European Union, the United Kingdom and South Korea, and restricts use, distribution and display of outputs outside those territories. These assets must not be treated as unrestricted worldwide content; see the copied license and notice records before distributing them. FLUX.2-klein-4B is Apache-2.0, which does not change Hunyuan's output terms.

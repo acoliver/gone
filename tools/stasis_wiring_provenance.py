@@ -1,10 +1,12 @@
 """Content binding for build inputs, protected baselines and native readbacks."""
 import hashlib
 import json
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-RESULTS = ROOT/'tmp/verify-stasis-wiring/production-corrected'
+RESULTS = ROOT/os.environ.get('STASIS_WIRING_RESULTS','tmp/verify-stasis-wiring/production-corrected')
+CONTEXT = RESULTS/'context.json' if 'STASIS_WIRING_RESULTS' in os.environ else ROOT/'tmp/verify-stasis-wiring/production-install/context.json'
 ASSETS = ROOT/'assets/props/stasis-wiring'
 
 
@@ -39,7 +41,7 @@ def implementation_inputs():
                   ROOT/'tools/build_stasis_wiring.py',ROOT/'tools/build_supported_transition.py',
                   ROOT/'tools/capture_seat_rail_readability.gd', ROOT/'tools/seat_rail_context_checks.py',
                   ASSETS/'proof-assemblies.json',ASSETS/'supported-transition-aligned.json',
-                  ROOT/'tmp/verify-stasis-wiring/production-install/context.json'])
+                  CONTEXT])
     paths.extend(p for p in (ASSETS/'seat-rail').rglob('*') if p.is_file() and p.suffix not in ['.import','.uid'])
     return paths
 
