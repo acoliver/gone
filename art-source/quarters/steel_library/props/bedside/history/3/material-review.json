@@ -1,0 +1,66 @@
+{
+  "images_seen": [
+    "hero",
+    "front",
+    "top",
+    "detail"
+  ],
+  "ratings": {
+    "candidate_as_built": {
+      "score": 9,
+      "explanation": "The grey-green paint is uniform and clean across all views, with sharp edges and clear hardware definition in the detail block."
+    },
+    "candidate_aged": {
+      "score": 8,
+      "explanation": "The aged state shows convincing broad paint retention with irregular edge corrosion and downward rust runs, though the top surface dust is slightly patchy."
+    },
+    "locker_as_built": {
+      "score": 9,
+      "explanation": "The reference locker presents a consistent matte grey-green finish with well-defined dark trim and hardware in the front and detail views."
+    },
+    "locker_aged": {
+      "score": 8,
+      "explanation": "The aged locker exhibits realistic weathering with significant edge rust and vertical streaking, matching the brief for a sealed environment."
+    }
+  },
+  "features": {
+    "grey-green_paint": {
+      "achieved": true,
+      "observations": "Both candidate and locker show a consistent desaturated grey-green tone in the as-built state."
+    },
+    "bare_hardware": {
+      "achieved": true,
+      "observations": "Handles and fixtures appear metallic and distinct from the painted surfaces in the detail block."
+    },
+    "dark_trim": {
+      "achieved": true,
+      "observations": "Dark recessed handles and base trim are visible on the candidate drawers and locker door."
+    },
+    "edge_corrosion": {
+      "achieved": true,
+      "observations": "Aged states show concentrated rust at corners and edges, particularly on the locker's vertical frame."
+    },
+    "rust_runs": {
+      "achieved": true,
+      "observations": "Narrow vertical rust streaks are visible on the front faces of the aged locker and candidate."
+    },
+    "settled_dust": {
+      "achieved": true,
+      "observations": "A soft, light-colored overlay is present on the top surfaces of the aged candidate and locker."
+    }
+  },
+  "findings": [
+    "The aged candidate's top surface dust appears slightly more mottled than the locker's smoother accumulation.",
+    "Rust runs on the candidate's front face are slightly more saturated than the locker's more muted streaks."
+  ],
+  "ready": true,
+  "limitations": "The small scale of the hero and front blocks limits the assessment of fine surface relief and micro-texture.",
+  "acceptance": {
+    "accepted": true,
+    "candidate_aged": 8,
+    "locker_aged": 8,
+    "numeric_failed": 0,
+    "scope_complete": true,
+    "rule": "candidate aged >= locker aged in this review, numeric gates pass, all four view blocks inspected"
+  }
+}

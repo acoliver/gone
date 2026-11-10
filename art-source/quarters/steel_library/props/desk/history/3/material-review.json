@@ -1,0 +1,70 @@
+{
+  "images_seen": [
+    "hero",
+    "front",
+    "top",
+    "detail"
+  ],
+  "ratings": {
+    "candidate_as_built": {
+      "score": 8,
+      "explanation": "The grey-green paint is consistent and clean across all views, with clear hardware and dark trim details visible in the detail block."
+    },
+    "candidate_aged": {
+      "score": 7,
+      "explanation": "The aged state shows convincing broad paint retention with irregular edge corrosion and downward rust runs, though the top surface dust appears slightly patchy."
+    },
+    "locker_as_built": {
+      "score": 8,
+      "explanation": "The reference locker presents a uniform grey-green finish with sharp, clean edges and distinct hardware in the front and detail views."
+    },
+    "locker_aged": {
+      "score": 7,
+      "explanation": "The aged locker exhibits heavy, realistic corrosion on edges and hardware, with a mottled paint texture that matches the brief's 1000-year wear profile."
+    }
+  },
+  "features": {
+    "grey-green_paint": {
+      "achieved": true,
+      "observations": "The base color is a consistent desaturated grey-green across both candidate and reference objects in the as-built state."
+    },
+    "bare_hardware": {
+      "achieved": true,
+      "observations": "Handles and latches are rendered in a distinct metallic tone that contrasts with the painted surfaces in the detail block."
+    },
+    "dark_trim": {
+      "achieved": true,
+      "observations": "Dark accents are visible on the locker's lower section and the desk's base in the as-built views."
+    },
+    "edge_corrosion": {
+      "achieved": true,
+      "observations": "The aged state shows concentrated rust and paint loss specifically along the vertical edges and corners of the furniture."
+    },
+    "rust_runs": {
+      "achieved": true,
+      "observations": "Narrow, vertical streaks of rust are visible on the front faces of the aged desk and locker, simulating water or oxidation flow."
+    },
+    "settled_dust": {
+      "achieved": true,
+      "observations": "A soft, light-colored overlay is present on the top surfaces of the aged objects, particularly visible in the top view block."
+    },
+    "faded_fabric": {
+      "achieved": false,
+      "observations": "No fabric pads are visible on the desk or locker geometry in any of the provided views."
+    }
+  },
+  "findings": [
+    "The aged state's top surface dust in the top view appears slightly blotchy rather than a uniform fine settle.",
+    "The transition between the painted surface and the corroded edges in the detail block is very sharp, which could benefit from a slightly softer gradient."
+  ],
+  "ready": true,
+  "limitations": "The orthographic views limit the ability to judge the depth of the corrosion relief, and the small scale of the hero and front blocks makes fine texture details difficult to assess.",
+  "acceptance": {
+    "accepted": true,
+    "candidate_aged": 7,
+    "locker_aged": 7,
+    "numeric_failed": 0,
+    "scope_complete": true,
+    "rule": "candidate aged >= locker aged in this review, numeric gates pass, all four view blocks inspected"
+  }
+}

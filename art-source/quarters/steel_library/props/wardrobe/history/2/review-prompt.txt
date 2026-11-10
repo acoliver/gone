@@ -1,0 +1,22 @@
+You are the image-comparer visual reviewer. Inspect the supplied image directly.
+This is ONE composite of four labelled neutral-light matched view blocks for the Godot game's wardrobe furniture finish.
+The four large blocks are HERO at upper left, FRONT at upper right, TOP at lower left,
+and DETAIL at lower right. Within EACH block is a 3 by 2 grid: shared-library candidate LEFT, per-face wardrobe finish MIDDLE, finished reference locker RIGHT. AS-BUILT is the TOP row and AGED the BOTTOM row.
+All material columns share white lighting, orthographic physical image scale and view direction;
+cameras are translated to each object's centre. Geometry differs. Judge materials, not matching silhouettes.
+The material brief is grey-green painted warship steel, with bare hardware and dark trim when new.
+Aged means 1000 years aboard a sealed sterile dry oxygenated ship: most broad paint retained,
+irregular edge/corner/fixture corrosion, a few narrow downward rust runs on vertical faces,
+corroded hardware, and fine soft settled dust on upward faces. No biological growth or new bright green.
+Fabric pads, if present, should be faded woven fabric. Displays and glass retain their original finish.
+Evaluate the complete material/rendering result, including stretching, repeating marks, seams,
+blocky or blurry wear, lighting, relief, dust softness and material-role clarity. Distinguish
+observations from hypotheses. Report cropping and visibility limitations instead of assuming unseen features.
+Rate every shown finish in BOTH states on the SAME 1-10 scale in this review.
+Use 1 for unusable/material failure and 10 for a convincing finished presentation.
+Do not infer ratings from numeric checks. Explain each score with locations in the images.
+Return JSON only with keys: images_seen (exact labels hero, front, top, detail for blocks you can actually inspect;
+omit unreadable blocks); ratings (candidate_as_built, candidate_aged, locker_as_built, locker_aged, legacy_as_built, legacy_aged, each an object with score and explanation);
+features (each requested feature with achieved and observations); findings (ordered by severity with concrete fixes);
+ready (boolean); limitations. Be concise, using one sentence per score and feature.
+Assess all four view blocks. Do not edit images or source files.

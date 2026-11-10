@@ -1,0 +1,1122 @@
+{
+  "version": 1,
+  "age_years": 1000,
+  "seed": 9502,
+  "faces": [
+    {
+      "id": "broad-00",
+      "kind": "broad",
+      "pixels": [
+        384,
+        768
+      ],
+      "size_m": [
+        0.5,
+        1.0
+      ],
+      "seed": 195000,
+      "reference": "broad-source.png",
+      "source": "docs/art/corridors/hatch-concept-rusted.png",
+      "crop": [
+        817,
+        119,
+        890,
+        352
+      ],
+      "image": "broad-00.png",
+      "raw": "broad-00-raw.png",
+      "scores": {
+        "delta_e": 2.581234275720634,
+        "planar_light_gradient": 0.00012251075665841026,
+        "secondary_autocorrelation": 0.3556252865083285,
+        "edge_rust": 0.20241831358911289,
+        "broad_rust": 0.005529514578533407,
+        "edge_broad_ratio": 36.60688668313454,
+        "paint_mean_delta_e": 0.36248747875150533,
+        "paint_std_delta_e": 4.157852260192429,
+        "rust_mean_delta_e": 4.153959530901687,
+        "rust_std_delta_e": 4.920596447616816,
+        "no_green": 0.0,
+        "pixels_per_metre": 768.0,
+        "broad_high_frequency": 0.0043893560855811035
+      },
+      "treatment": {
+        "quantile_amount": 0.0,
+        "calibration": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              0.8873122739851376,
+              2.065521294013492,
+              -2.585883349374646
+            ],
+            [
+              0.08993831784234661,
+              0.722686275672625,
+              -0.42628105228674784
+            ],
+            [
+              -0.3275544167473035,
+              -0.8143253181702106,
+              1.056176756720875
+            ]
+          ],
+          "lab_input_centre": [
+            45.90509148325699,
+            -4.8347996330024365,
+            5.780220806862419
+          ],
+          "lab_output_centre": [
+            35.89586587253571,
+            4.625038021759506,
+            7.306531744071017
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "denoise_px": 1.0
+      },
+      "passed": true
+    },
+    {
+      "id": "broad-01",
+      "kind": "broad",
+      "pixels": [
+        384,
+        768
+      ],
+      "size_m": [
+        0.5,
+        1.0
+      ],
+      "seed": 195001,
+      "reference": "broad-source.png",
+      "source": "docs/art/corridors/hatch-concept-rusted.png",
+      "crop": [
+        817,
+        119,
+        890,
+        352
+      ],
+      "image": "broad-01.png",
+      "raw": "broad-01-raw.png",
+      "scores": {
+        "delta_e": 2.657852350328178,
+        "planar_light_gradient": 0.00016467987490507914,
+        "secondary_autocorrelation": 0.27854654854735156,
+        "edge_rust": 0.048846918676430394,
+        "broad_rust": 1.0592939805619555e-05,
+        "edge_broad_ratio": 4611.27124035172,
+        "paint_mean_delta_e": 0.7833901215330955,
+        "paint_std_delta_e": 5.668379806101908,
+        "rust_mean_delta_e": 4.319264658629872,
+        "rust_std_delta_e": 1.97777945923152,
+        "no_green": 0.0,
+        "pixels_per_metre": 768.0,
+        "broad_high_frequency": 0.002551036249290809
+      },
+      "treatment": {
+        "quantile_amount": 0.0,
+        "calibration": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              0.20387504798430886,
+              -1.4624905776083568,
+              1.008955809748726
+            ],
+            [
+              -0.000276160877273352,
+              0.3643194096763723,
+              0.02871922958756675
+            ],
+            [
+              -0.15618628992268035,
+              -0.5445913122726533,
+              0.8791325538136576
+            ]
+          ],
+          "lab_input_centre": [
+            46.55702241452722,
+            -5.647542822857955,
+            2.070714711880882
+          ],
+          "lab_output_centre": [
+            35.750779034579175,
+            4.540208205662279,
+            7.296274581670151
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "denoise_px": 1.0
+      },
+      "passed": true
+    },
+    {
+      "id": "broad-02",
+      "kind": "broad",
+      "pixels": [
+        640,
+        640
+      ],
+      "size_m": [
+        1.0,
+        1.0
+      ],
+      "seed": 195002,
+      "reference": "broad-source.png",
+      "source": "docs/art/corridors/hatch-concept-rusted.png",
+      "crop": [
+        817,
+        119,
+        890,
+        352
+      ],
+      "image": "broad-02.png",
+      "raw": "broad-02-raw.png",
+      "scores": {
+        "delta_e": 2.0011078364011463,
+        "planar_light_gradient": 0.0007024360688762582,
+        "secondary_autocorrelation": 0.2813580851491277,
+        "edge_rust": 0.21872965494791666,
+        "broad_rust": 7.62939453125e-06,
+        "edge_broad_ratio": 28669.333333333332,
+        "paint_mean_delta_e": 0.5485466823485938,
+        "paint_std_delta_e": 5.100209868950059,
+        "rust_mean_delta_e": 2.6802626044144513,
+        "rust_std_delta_e": 2.7213512681739105,
+        "no_green": 0.0,
+        "pixels_per_metre": 640.0,
+        "broad_high_frequency": 0.0030532568968108494
+      },
+      "treatment": {
+        "quantile_amount": 0.0,
+        "calibration": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              0.8385188563649637,
+              2.0667528183795207,
+              -2.470345774549988
+            ],
+            [
+              0.0745648691287083,
+              0.7100974463068113,
+              -0.572165231990394
+            ],
+            [
+              -0.4052154929355421,
+              -0.8822166452350373,
+              1.047047386352575
+            ]
+          ],
+          "lab_input_centre": [
+            42.71803442553396,
+            -4.848294523365268,
+            5.11382525903703
+          ],
+          "lab_output_centre": [
+            35.36031409196956,
+            4.785561025796532,
+            7.57116170677288
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "denoise_px": 1.0
+      },
+      "passed": true
+    },
+    {
+      "id": "broad-03",
+      "kind": "broad",
+      "pixels": [
+        640,
+        640
+      ],
+      "size_m": [
+        1.0,
+        1.0
+      ],
+      "seed": 195003,
+      "reference": "broad-source.png",
+      "source": "docs/art/corridors/hatch-concept-rusted.png",
+      "crop": [
+        817,
+        119,
+        890,
+        352
+      ],
+      "image": "broad-03.png",
+      "raw": "broad-03-raw.png",
+      "scores": {
+        "delta_e": 2.501451707900559,
+        "planar_light_gradient": 0.00046358790842296793,
+        "secondary_autocorrelation": 0.17924740274990503,
+        "edge_rust": 0.08091905381944445,
+        "broad_rust": 0.010242462158203125,
+        "edge_broad_ratio": 7.900351748396441,
+        "paint_mean_delta_e": 0.6351295164844587,
+        "paint_std_delta_e": 4.350068363313531,
+        "rust_mean_delta_e": 3.4596958729453124,
+        "rust_std_delta_e": 3.24472596084606,
+        "no_green": 0.0,
+        "pixels_per_metre": 640.0,
+        "broad_high_frequency": 0.003091727065848053
+      },
+      "treatment": {
+        "quantile_amount": 0.0,
+        "calibration": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              0.7875343441223837,
+              2.5545709860876493,
+              -2.9604522002472744
+            ],
+            [
+              0.18666289174801706,
+              1.087092433906043,
+              -0.7450448628063281
+            ],
+            [
+              -0.36354230677406196,
+              -1.2841915448823413,
+              1.6467651935074918
+            ]
+          ],
+          "lab_input_centre": [
+            48.57978155420765,
+            -5.426526147277971,
+            3.521659386340097
+          ],
+          "lab_output_centre": [
+            35.814609493073654,
+            4.616106221093826,
+            7.361653544054247
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "denoise_px": 1.0
+      },
+      "passed": true
+    },
+    {
+      "id": "broad-04",
+      "kind": "broad",
+      "pixels": [
+        768,
+        384
+      ],
+      "size_m": [
+        1.0,
+        0.5
+      ],
+      "seed": 195004,
+      "reference": "broad-source.png",
+      "source": "docs/art/corridors/hatch-concept-rusted.png",
+      "crop": [
+        817,
+        119,
+        890,
+        352
+      ],
+      "image": "broad-04.png",
+      "raw": "broad-04-raw.png",
+      "scores": {
+        "delta_e": 0.9453742494648738,
+        "planar_light_gradient": 0.003367878510903669,
+        "secondary_autocorrelation": 0.30914540097059034,
+        "edge_rust": 0.27158434410547844,
+        "broad_rust": 0.020290776197664256,
+        "edge_broad_ratio": 13.384620748847523,
+        "paint_mean_delta_e": 1.8733330790615386,
+        "paint_std_delta_e": 2.0826398905655092,
+        "rust_mean_delta_e": 3.8343861993610453,
+        "rust_std_delta_e": 4.809496981855505,
+        "no_green": 0.0,
+        "pixels_per_metre": 768.0,
+        "broad_high_frequency": 0.0036458430034408467
+      },
+      "treatment": {
+        "quantile_amount": 0.67,
+        "calibration": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              1.0111423321402608,
+              0.7159479355074805,
+              0.22793382710872614
+            ],
+            [
+              0.10393048192089059,
+              0.3355330707754506,
+              0.4513656136244444
+            ],
+            [
+              0.011177509352390074,
+              -0.25376960635610823,
+              0.7870736245693046
+            ]
+          ],
+          "lab_input_centre": [
+            37.73381865132777,
+            1.580641383057338,
+            7.92015220147771
+          ],
+          "lab_output_centre": [
+            34.20334547618735,
+            5.164177562241841,
+            7.9438794501094625
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "denoise_px": 1.0
+      },
+      "passed": true
+    },
+    {
+      "id": "broad-05",
+      "kind": "broad",
+      "pixels": [
+        768,
+        384
+      ],
+      "size_m": [
+        1.0,
+        0.5
+      ],
+      "seed": 195005,
+      "reference": "broad-source.png",
+      "source": "docs/art/corridors/hatch-concept-rusted.png",
+      "crop": [
+        817,
+        119,
+        890,
+        352
+      ],
+      "image": "broad-05.png",
+      "raw": "broad-05-raw.png",
+      "scores": {
+        "delta_e": 2.3043195308939843,
+        "planar_light_gradient": 0.0003081957891114061,
+        "secondary_autocorrelation": 0.0,
+        "edge_rust": 0.16270368590196688,
+        "broad_rust": 0.001001032811631048,
+        "edge_broad_ratio": 162.53581701968707,
+        "paint_mean_delta_e": 0.5798920984802264,
+        "paint_std_delta_e": 3.4636562768075474,
+        "rust_mean_delta_e": 3.0321367329069537,
+        "rust_std_delta_e": 3.2171531081107863,
+        "no_green": 0.0,
+        "pixels_per_metre": 768.0,
+        "broad_high_frequency": 0.0037748300025236513
+      },
+      "treatment": {
+        "quantile_amount": 0.0,
+        "calibration": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              1.1555269003767925,
+              2.181709802693857,
+              -3.255100059671418
+            ],
+            [
+              0.24636740511051616,
+              0.8350093517196877,
+              -0.6482832987736505
+            ],
+            [
+              -0.48788453990562475,
+              -0.8674302184236606,
+              1.6786314106534912
+            ]
+          ],
+          "lab_input_centre": [
+            49.239631409784046,
+            -7.773349827315902,
+            4.971691111838052
+          ],
+          "lab_output_centre": [
+            35.65440470398878,
+            4.644331323531888,
+            7.4807807254346175
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "denoise_px": 1.0
+      },
+      "passed": true
+    },
+    {
+      "id": "strip-01",
+      "kind": "strip",
+      "pixels": [
+        64,
+        768
+      ],
+      "size_m": [
+        0.08333333333333333,
+        1.0
+      ],
+      "seed": 195007,
+      "reference": "strip-source.png",
+      "source": "docs/art/quarters/concept-now.png",
+      "crop": [
+        438,
+        259,
+        459,
+        319
+      ],
+      "image": "strip-01.png",
+      "raw": "strip-01-raw.png",
+      "scores": {
+        "delta_e": 4.546560123576243,
+        "planar_light_gradient": 0.01030935615590539,
+        "secondary_autocorrelation": 0.3875249531581946,
+        "edge_rust": 0.37240681396525555,
+        "broad_rust": 0.05021520803443329,
+        "edge_broad_ratio": 7.416215695250946,
+        "paint_mean_delta_e": 1.626865508827742,
+        "paint_std_delta_e": 7.753660315683561,
+        "rust_mean_delta_e": 2.521447004416972,
+        "rust_std_delta_e": 3.8403188063733746,
+        "no_green": 0.0,
+        "pixels_per_metre": 768.0,
+        "broad_high_frequency": 0.02583823583537286
+      },
+      "treatment": {
+        "quantile_amount": 0.67,
+        "calibration": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              1.165956720274062,
+              2.253806491932633,
+              -1.202658546205471
+            ],
+            [
+              0.01757304783052209,
+              0.9600250704128452,
+              0.5095631317259167
+            ],
+            [
+              -0.23762301791170962,
+              0.19826701921152412,
+              0.8877752829809554
+            ]
+          ],
+          "lab_input_centre": [
+            39.94496095281435,
+            3.414715529361477,
+            11.231800182712648
+          ],
+          "lab_output_centre": [
+            38.3814350850993,
+            4.088101581924417,
+            9.008827909610938
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "denoise_px": 1.0
+      },
+      "passed": true
+    },
+    {
+      "id": "strip-02",
+      "kind": "strip",
+      "pixels": [
+        128,
+        768
+      ],
+      "size_m": [
+        0.16666666666666666,
+        1.0
+      ],
+      "seed": 195008,
+      "reference": "strip-source.png",
+      "source": "docs/art/quarters/concept-now.png",
+      "crop": [
+        438,
+        259,
+        459,
+        319
+      ],
+      "image": "strip-02.png",
+      "raw": "strip-02-raw.png",
+      "scores": {
+        "delta_e": 4.127935879336898,
+        "planar_light_gradient": 0.009457864372139475,
+        "secondary_autocorrelation": 0.315328444667342,
+        "edge_rust": 0.534082782688292,
+        "broad_rust": 0.14946720340989816,
+        "edge_broad_ratio": 3.573243965926263,
+        "paint_mean_delta_e": 0.5270431408442946,
+        "paint_std_delta_e": 7.168965981850909,
+        "rust_mean_delta_e": 2.708665533355826,
+        "rust_std_delta_e": 0.32294521657640973,
+        "no_green": 0.0,
+        "pixels_per_metre": 768.0,
+        "broad_high_frequency": 0.017034565262813883
+      },
+      "treatment": {
+        "quantile_amount": 0.67,
+        "calibration": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              0.579871978945323,
+              1.5715647732636298,
+              -1.3684148467952304
+            ],
+            [
+              -0.40999326764613186,
+              -0.010065124710514102,
+              0.39555780118502626
+            ],
+            [
+              -0.386626054602626,
+              -0.03512395903617263,
+              0.28396238214272546
+            ]
+          ],
+          "lab_input_centre": [
+            40.34898899950086,
+            3.6036761853567945,
+            9.47104418688271
+          ],
+          "lab_output_centre": [
+            37.93421305242038,
+            3.989284361062027,
+            8.924167334242792
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "denoise_px": 1.0
+      },
+      "passed": true
+    },
+    {
+      "id": "strip-03",
+      "kind": "strip",
+      "pixels": [
+        768,
+        64
+      ],
+      "size_m": [
+        1.0,
+        0.08333333333333333
+      ],
+      "seed": 195009,
+      "reference": "strip-source.png",
+      "source": "docs/art/quarters/concept-now.png",
+      "crop": [
+        438,
+        259,
+        459,
+        319
+      ],
+      "image": "strip-03.png",
+      "raw": "strip-03-raw.png",
+      "scores": {
+        "delta_e": 3.9400886528516508,
+        "planar_light_gradient": 0.0018629257393365515,
+        "secondary_autocorrelation": 0.3325946161567098,
+        "edge_rust": 0.3290605498397706,
+        "broad_rust": 0.09223656942451777,
+        "edge_broad_ratio": 3.5675714295625323,
+        "paint_mean_delta_e": 2.7507994582472524,
+        "paint_std_delta_e": 7.116099329020361,
+        "rust_mean_delta_e": 4.509876664250727,
+        "rust_std_delta_e": 2.9921285708350456,
+        "no_green": 0.0,
+        "pixels_per_metre": 768.0,
+        "broad_high_frequency": 0.037414448540590145
+      },
+      "treatment": {
+        "quantile_amount": 0.67,
+        "calibration": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              0.6931119165978148,
+              1.5967630452352648,
+              -1.251395598218459
+            ],
+            [
+              -0.07750512403868207,
+              0.7847818944046889,
+              0.39362914095107976
+            ],
+            [
+              -0.3889364812549184,
+              -0.03474553024561953,
+              0.5081703266764626
+            ]
+          ],
+          "lab_input_centre": [
+            39.03432066489751,
+            2.5087555083194673,
+            10.611251161001015
+          ],
+          "lab_output_centre": [
+            37.264401677987244,
+            4.25991760646621,
+            8.754852995307052
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "denoise_px": 0.6
+      },
+      "passed": true
+    },
+    {
+      "id": "strip-04",
+      "kind": "strip",
+      "pixels": [
+        768,
+        128
+      ],
+      "size_m": [
+        1.0,
+        0.16666666666666666
+      ],
+      "seed": 195010,
+      "reference": "strip-source.png",
+      "source": "docs/art/quarters/concept-now.png",
+      "crop": [
+        438,
+        259,
+        459,
+        319
+      ],
+      "image": "strip-04.png",
+      "raw": "strip-04-raw.png",
+      "scores": {
+        "delta_e": 5.025129602017801,
+        "planar_light_gradient": 0.00037653594749645445,
+        "secondary_autocorrelation": 0.4681774875726772,
+        "edge_rust": 0.4680339826654081,
+        "broad_rust": 0.1817823032599258,
+        "edge_broad_ratio": 2.5746949745497414,
+        "paint_mean_delta_e": 3.2335904971620004,
+        "paint_std_delta_e": 2.9057479812039833,
+        "rust_mean_delta_e": 5.622494470718187,
+        "rust_std_delta_e": 1.1011545686864723,
+        "no_green": 0.0,
+        "pixels_per_metre": 768.0,
+        "broad_high_frequency": 0.10342516629827553
+      },
+      "treatment": {
+        "quantile_amount": 0.67,
+        "calibration": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              0.9072052953015688,
+              2.144653378723846,
+              -1.0816285630289713
+            ],
+            [
+              -0.35111378360666173,
+              0.09188709346903609,
+              0.596839530532726
+            ],
+            [
+              -0.22649185588309675,
+              0.15981297789156393,
+              0.7999811941621602
+            ]
+          ],
+          "lab_input_centre": [
+            39.334516401388676,
+            2.5481473250404223,
+            9.996131932329677
+          ],
+          "lab_output_centre": [
+            38.739184973605475,
+            3.7063192181240097,
+            8.752920007495172
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "denoise_px": 0.0
+      },
+      "passed": true
+    },
+    {
+      "id": "top-00",
+      "kind": "top",
+      "pixels": [
+        640,
+        640
+      ],
+      "size_m": [
+        1.0,
+        1.0
+      ],
+      "seed": 195011,
+      "reference": "top-source.png",
+      "source": "docs/art/quarters/concept-now.png",
+      "crop": [
+        656,
+        272,
+        720,
+        304
+      ],
+      "image": "top-00.png",
+      "raw": "top-00-raw.png",
+      "scores": {
+        "delta_e": 2.787760897632013,
+        "planar_light_gradient": 0.00017232417321873185,
+        "secondary_autocorrelation": 0.3621803633367076,
+        "edge_rust": 0.033101399739583336,
+        "broad_rust": 0.0,
+        "edge_broad_ratio": 3310139.9739583335,
+        "paint_mean_delta_e": 0.7657632777798576,
+        "paint_std_delta_e": 4.804347053044997,
+        "rust_mean_delta_e": 4.406711514024715,
+        "rust_std_delta_e": 2.5778114174087388,
+        "no_green": 0.0,
+        "pixels_per_metre": 640.0,
+        "broad_high_frequency": 0.004437629689455867
+      },
+      "treatment": {
+        "quantile_amount": 0.0,
+        "calibration": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              0.4227164681149727,
+              0.9573211827747731,
+              -0.8778736236283803
+            ],
+            [
+              0.027159910754329247,
+              0.8773747886496601,
+              -0.08616898733384737
+            ],
+            [
+              -0.3740111435441904,
+              -0.5085278227926251,
+              0.7349015846464783
+            ]
+          ],
+          "lab_input_centre": [
+            53.80000549609047,
+            -5.7712272568567355,
+            3.4553869487431013
+          ],
+          "lab_output_centre": [
+            51.1188973373177,
+            0.9807568198860028,
+            8.3991843460572
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "denoise_px": 1.0
+      },
+      "passed": true
+    },
+    {
+      "id": "top-01",
+      "kind": "top",
+      "pixels": [
+        768,
+        512
+      ],
+      "size_m": [
+        1.0,
+        0.6666666666666666
+      ],
+      "seed": 195012,
+      "reference": "top-source.png",
+      "source": "docs/art/quarters/concept-now.png",
+      "crop": [
+        656,
+        272,
+        720,
+        304
+      ],
+      "image": "top-01.png",
+      "raw": "top-01-raw.png",
+      "scores": {
+        "delta_e": 3.0220080136024787,
+        "planar_light_gradient": 0.000992967396059646,
+        "secondary_autocorrelation": 0.050264027258980985,
+        "edge_rust": 0.033984796832320495,
+        "broad_rust": 0.0,
+        "edge_broad_ratio": 3398479.6832320495,
+        "paint_mean_delta_e": 0.6184121131764482,
+        "paint_std_delta_e": 4.164929182823556,
+        "rust_mean_delta_e": 4.4325487281783085,
+        "rust_std_delta_e": 1.3933662814770227,
+        "no_green": 0.0,
+        "pixels_per_metre": 768.0,
+        "broad_high_frequency": 0.004959027528215163
+      },
+      "treatment": {
+        "quantile_amount": 0.0,
+        "calibration": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              0.30312357017908736,
+              0.784868718075229,
+              -2.1895174499021635
+            ],
+            [
+              -0.02312515388355212,
+              0.9440351812525204,
+              -0.6191357285769414
+            ],
+            [
+              -0.4091551354528603,
+              -0.6287412469577894,
+              0.8847200937270547
+            ]
+          ],
+          "lab_input_centre": [
+            52.76540627517758,
+            -5.14789781893318,
+            1.600944098919933
+          ],
+          "lab_output_centre": [
+            51.019670517683664,
+            0.8766972564637959,
+            8.30297660146728
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "denoise_px": 1.0
+      },
+      "passed": true
+    },
+    {
+      "id": "top-02",
+      "kind": "top",
+      "pixels": [
+        768,
+        512
+      ],
+      "size_m": [
+        1.0,
+        0.6666666666666666
+      ],
+      "seed": 195013,
+      "reference": "top-source.png",
+      "source": "docs/art/quarters/concept-now.png",
+      "crop": [
+        656,
+        272,
+        720,
+        304
+      ],
+      "image": "top-02.png",
+      "raw": "top-02-raw.png",
+      "scores": {
+        "delta_e": 2.5538596909611178,
+        "planar_light_gradient": 0.001168738962373925,
+        "secondary_autocorrelation": 0.22896315152996533,
+        "edge_rust": 0.03814202327764485,
+        "broad_rust": 0.0,
+        "edge_broad_ratio": 3814202.3277644846,
+        "paint_mean_delta_e": 1.0257231493644576,
+        "paint_std_delta_e": 4.706699737278919,
+        "rust_mean_delta_e": 1.2237915713704768,
+        "rust_std_delta_e": 1.1785031438749276,
+        "no_green": 0.0,
+        "pixels_per_metre": 768.0,
+        "broad_high_frequency": 0.006106306293698071
+      },
+      "treatment": {
+        "quantile_amount": 0.0,
+        "calibration": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              0.6741788081212722,
+              1.6225356732051361,
+              -1.2050095690588507
+            ],
+            [
+              0.03993279118621253,
+              1.0501770346359036,
+              -0.24881685740453033
+            ],
+            [
+              -0.4082685596575826,
+              -0.711041305887483,
+              0.7523469119041185
+            ]
+          ],
+          "lab_input_centre": [
+            51.1351752196202,
+            -4.41083097868694,
+            3.7208128743004623
+          ],
+          "lab_output_centre": [
+            50.80167430261914,
+            1.140587149714368,
+            8.586707771142073
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "denoise_px": 1.0
+      },
+      "passed": true
+    },
+    {
+      "id": "top-03",
+      "kind": "top",
+      "pixels": [
+        768,
+        256
+      ],
+      "size_m": [
+        1.0,
+        0.3333333333333333
+      ],
+      "seed": 195014,
+      "reference": "top-source.png",
+      "source": "docs/art/quarters/concept-now.png",
+      "crop": [
+        656,
+        272,
+        720,
+        304
+      ],
+      "image": "top-03.png",
+      "raw": "top-03-raw.png",
+      "scores": {
+        "delta_e": 2.641985351234844,
+        "planar_light_gradient": 0.0010895499702752727,
+        "secondary_autocorrelation": 0.0,
+        "edge_rust": 0.06569974338253017,
+        "broad_rust": 7.93178663493952e-06,
+        "edge_broad_ratio": 8283.09514695249,
+        "paint_mean_delta_e": 0.7706830472815336,
+        "paint_std_delta_e": 3.633843432669815,
+        "rust_mean_delta_e": 1.397433565575668,
+        "rust_std_delta_e": 0.9128029232931627,
+        "no_green": 0.0,
+        "pixels_per_metre": 768.0,
+        "broad_high_frequency": 0.004481409960772444
+      },
+      "treatment": {
+        "quantile_amount": 0.0,
+        "calibration": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              0.521313100840061,
+              1.0337132256364614,
+              -1.2726737192140463
+            ],
+            [
+              0.14284457065154404,
+              1.315441452047206,
+              -0.6087752768463501
+            ],
+            [
+              -0.47403362685497535,
+              -0.53735642411155,
+              1.0628681075399893
+            ]
+          ],
+          "lab_input_centre": [
+            48.09180178040465,
+            -3.695272930782392,
+            4.903822832948168
+          ],
+          "lab_output_centre": [
+            50.77959382788168,
+            1.1393663786991803,
+            8.468688355692935
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "denoise_px": 1.0
+      },
+      "passed": true
+    }
+  ],
+  "clean": "as_built_paint.png",
+  "hardware": "hardware.png",
+  "fabric": "fabric.png",
+  "rejected": [
+    {
+      "id": "strip-00",
+      "kind": "strip",
+      "pixels": [
+        64,
+        768
+      ],
+      "size_m": [
+        0.08333333333333333,
+        1.0
+      ],
+      "seed": 195006,
+      "reference": "strip-source.png",
+      "source": "docs/art/quarters/concept-now.png",
+      "crop": [
+        438,
+        259,
+        459,
+        319
+      ],
+      "image": "strip-00.png",
+      "raw": "strip-00-raw.png",
+      "scores": {
+        "delta_e": 5.051275247936403,
+        "planar_light_gradient": 0.012592647565539457,
+        "secondary_autocorrelation": 0.7537714597336996,
+        "edge_rust": 0.24433575082925732,
+        "broad_rust": 0.09982464530527659,
+        "edge_broad_ratio": 2.447649576735757,
+        "paint_mean_delta_e": 1.773727983146402,
+        "paint_std_delta_e": 5.440353949402092,
+        "rust_mean_delta_e": 4.346430669402749,
+        "rust_std_delta_e": 1.5415483954416012,
+        "no_green": 0.0,
+        "pixels_per_metre": 768.0,
+        "broad_high_frequency": 0.03675807972680109
+      },
+      "treatment": {
+        "quantile_amount": 0.67,
+        "calibration": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              0.5551698908575832,
+              1.4177051597687218,
+              -0.37378951548887007
+            ],
+            [
+              -0.35208944302197465,
+              0.2707642376910545,
+              0.583425726699101
+            ],
+            [
+              -0.3407736158063631,
+              0.27777501600401244,
+              0.5906745333083059
+            ]
+          ],
+          "lab_input_centre": [
+            39.615779669728774,
+            3.8935337466740094,
+            9.517975951859823
+          ],
+          "lab_output_centre": [
+            39.14924973505033,
+            3.9046502603468767,
+            9.101657785888596
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "denoise_px": 1.0
+      },
+      "passed": false
+    }
+  ]
+}

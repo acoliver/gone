@@ -1,0 +1,75 @@
+{
+  "images_seen": [
+    "hero",
+    "front",
+    "top",
+    "detail"
+  ],
+  "ratings": {
+    "candidate_as_built": {
+      "score": 8,
+      "explanation": "The grey-green paint is consistent and clean across all views, with clear dark trim and hardware, though the surface lacks subtle micro-detail."
+    },
+    "candidate_aged": {
+      "score": 6,
+      "explanation": "The aged state shows convincing broad paint retention and edge corrosion, but the rust runs on vertical faces are too uniform and the dust on upward faces is barely visible."
+    },
+    "locker_as_built": {
+      "score": 8,
+      "explanation": "The reference locker presents a solid, clean finish with correct material roles, though the flat lighting makes the paint appear slightly less dimensional than the candidate."
+    },
+    "locker_aged": {
+      "score": 7,
+      "explanation": "The reference aging is more organic with better edge wear, but the rust texture on the front face appears slightly repetitive and lacks the fine soft dust specified for upward surfaces."
+    }
+  },
+  "features": {
+    "grey-green_paint": {
+      "achieved": true,
+      "observations": "Both candidate and locker show the correct grey-green hue in the as-built state."
+    },
+    "bare_hardware": {
+      "achieved": true,
+      "observations": "Hardware is visible and distinct in the as-built state, though it blends slightly in the aged state."
+    },
+    "dark_trim": {
+      "achieved": true,
+      "observations": "Dark trim is present on the console and locker edges in the as-built state."
+    },
+    "edge_corrosion": {
+      "achieved": true,
+      "observations": "Corrosion is concentrated on edges and corners in the aged state, matching the brief."
+    },
+    "rust_runs": {
+      "achieved": true,
+      "observations": "Narrow downward rust runs are visible on vertical faces, though they appear somewhat regular."
+    },
+    "settled_dust": {
+      "achieved": false,
+      "observations": "Fine soft settled dust on upward faces is not clearly visible in the aged state."
+    },
+    "faded_fabric": {
+      "achieved": false,
+      "observations": "No fabric pads are present on the console or locker, so this feature is not applicable."
+    },
+    "display_finish": {
+      "achieved": true,
+      "observations": "Displays retain their original dark finish in both states."
+    }
+  },
+  "findings": [
+    "The rust runs on vertical faces in the aged state are too uniform and lack the irregularity specified in the brief.",
+    "Fine soft settled dust on upward faces is missing or too subtle in the aged state.",
+    "The rust texture on the locker's front face in the aged state appears slightly repetitive."
+  ],
+  "ready": false,
+  "limitations": "The orthographic views limit the ability to judge the full 3D relief of the corrosion and dust.",
+  "acceptance": {
+    "accepted": false,
+    "candidate_aged": 6,
+    "locker_aged": 7,
+    "numeric_failed": 0,
+    "scope_complete": true,
+    "rule": "candidate aged >= locker aged in this review, numeric gates pass, all four view blocks inspected"
+  }
+}

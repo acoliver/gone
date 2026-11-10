@@ -1,0 +1,34 @@
+{
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/steel_library/strip-01-trim-detail-input.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/steel_library/strip-01-trim-detail-prompt.txt",
+    "--seed",
+    "895007",
+    "--width",
+    "128",
+    "--height",
+    "1536",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/steel_library/strip-01-trim-detail-raw.png"
+  ],
+  "prompt": "Refine this narrow grey-green painted-steel trim texture at its native aspect ratio. Retain the quiet central paint and break up the corrosion along the long outside edges into irregular small chips and separated oxide scars with unequal spacing and scale. Preserve fine photographic detail, softly feathered oxide rims and thin ragged paint edges. A few tapered rust trails must have different lengths, widths and intensity. No continuous rust outline, parallel stripes, coarse blocks, broad pale flaking or new hardware. Shadowless edge-to-edge texture only, orthographic flat material, no object silhouette, frame, lighting gradient, cast shadows or biological growth. 1000 years of dry sterile oxygenated ship aging.\n",
+  "input": "strip-01-trim-detail-input.png",
+  "parent_raw": "strip-01-native-raw.png",
+  "model": "FLUX.2-klein-4B",
+  "seed": 895007,
+  "quantize": 4,
+  "steps": 4,
+  "pixels": [
+    128,
+    1536
+  ]
+}

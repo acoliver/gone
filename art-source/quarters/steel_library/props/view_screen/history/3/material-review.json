@@ -1,0 +1,66 @@
+{
+  "images_seen": [
+    "hero",
+    "front",
+    "top",
+    "detail"
+  ],
+  "ratings": {
+    "candidate_as_built": {
+      "score": 8,
+      "explanation": "The grey-green paint is consistent and clean across all views, with clear dark trim and bare hardware visible in the detail block."
+    },
+    "candidate_aged": {
+      "score": 7,
+      "explanation": "The aged state shows convincing broad paint retention with irregular edge corrosion and downward rust runs, though the dust on upward faces is subtle."
+    },
+    "locker_as_built": {
+      "score": 8,
+      "explanation": "The reference locker presents a clean, uniform grey-green finish with sharp edges and clear hardware definition in the detail view."
+    },
+    "locker_aged": {
+      "score": 7,
+      "explanation": "The reference aged locker displays similar weathering patterns to the candidate, with heavy edge corrosion and rust streaking on vertical faces."
+    }
+  },
+  "features": {
+    "grey-green_paint": {
+      "achieved": true,
+      "observations": "Both candidate and locker show a consistent grey-green base color in the as-built state."
+    },
+    "bare_hardware": {
+      "achieved": true,
+      "observations": "Hardware appears as distinct, unpainted metal elements in the detail block for the as-built state."
+    },
+    "dark_trim": {
+      "achieved": true,
+      "observations": "Dark trim is visible around the display area and base in the as-built views."
+    },
+    "edge_corrosion": {
+      "achieved": true,
+      "observations": "The aged state shows significant rust and paint loss concentrated on corners and edges."
+    },
+    "rust_runs": {
+      "achieved": true,
+      "observations": "Narrow, vertical rust streaks are visible on the front and side faces in the aged state."
+    },
+    "settled_dust": {
+      "achieved": true,
+      "observations": "A light, soft dust layer is visible on the top surface in the aged detail view."
+    }
+  },
+  "findings": [
+    "The aged state's dust on upward faces could be slightly more pronounced to better match the 'fine soft settled dust' brief.",
+    "The transition between paint and rust in the aged state is slightly sharp in some areas of the detail view."
+  ],
+  "ready": true,
+  "limitations": "The top view is very small and difficult to inspect for fine material details.",
+  "acceptance": {
+    "accepted": true,
+    "candidate_aged": 7,
+    "locker_aged": 7,
+    "numeric_failed": 0,
+    "scope_complete": true,
+    "rule": "candidate aged >= locker aged in this review, numeric gates pass, all four view blocks inspected"
+  }
+}

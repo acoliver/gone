@@ -48,6 +48,9 @@ const TOP_NODUST := preload(FACE_ROOT + "top-nodust.png")
 static var _materials: Dictionary = {}
 static var _face_layout: Dictionary = {}
 static var _hinge_mesh: Mesh
+const WARDROBE_ROOT := "res://tools/blender/quarters/wardrobe/"
+const WARDROBE_TEXTURES := "res://assets/props/quarters/wardrobe_"
+static var _wardrobe_layout: Dictionary = {}
 
 const TUNIC_SCENES := {
 	&"as_built": "res://assets/props/quarters/dress_uniform.glb",
@@ -68,6 +71,11 @@ static func prepare_geometry(root: Node3D) -> void:
 
 
 static func material(prop: StringName, state: StringName, part: StringName = &"TunicBody", surface: int = 0) -> ShaderMaterial:
+	if QuartersSteelLibrary.ACCEPTED.has(prop):
+		return QuartersSteelLibrary.material(prop, state)
+	if prop == &"wardrobe":
+		assert(STATES.has(state), "unknown quarters finish: %s" % state)
+		return _wardrobe_material(state)
 	if prop == &"dress_uniform":
 		assert(STATES.has(state), "unknown quarters finish: %s" % state)
 		return _tunic_material(state, part, surface)
@@ -117,16 +125,11 @@ static func _sofa_powder_material(state: StringName) -> ShaderMaterial:
 	return result
 
 static func apply(root: Node3D, prop: StringName, state: StringName) -> void:
-	if prop in [&"wardrobe", &"bed", &"desk_chair", &"dining_table", &"dining_chair", &"desk", &"console", &"bedside", &"view_screen", &"media_cabinet", &"lockers_over_bed"]:
-		for node: MeshInstance3D in root.find_children("*", "MeshInstance3D", true, false):
-			for surface: int in range(node.mesh.get_surface_count()):
-				var slot := StringName(node.mesh.surface_get_material(surface).resource_name)
-				node.set_surface_override_material(surface, interim_material(slot, state))
-			if prop == &"bedside" and node.name == &"LampLens":
-				node.material_override = bedside_lens(state)
-			if state == &"aged":
-				node.set_instance_shader_parameter(&"floor_datum", QuartersLayout.FLOOR_Y)
-				node.set_instance_shader_parameter(&"lateral_bounds", Vector4(41, 49, 1.7, 7.7))
+	if QuartersSteelLibrary.ACCEPTED.has(prop):
+		QuartersSteelLibrary.apply(root, prop, state)
+		return
+	if prop == &"wardrobe":
+		_apply_wardrobe(root, state)
 		return
 	if prop == &"dress_uniform":
 		for node: MeshInstance3D in root.find_children("*", "MeshInstance3D", true, false):
@@ -277,3 +280,54 @@ static func bedside_lens(state: StringName) -> StandardMaterial3D:
 			finish.emission_energy_multiplier = Lighting.REGULAR_EMISSIVE
 		_interim_materials[identity] = finish
 	return _interim_materials[identity]
+
+static func _wardrobe_material(state: StringName) -> ShaderMaterial:
+	var identity := StringName("wardrobe/%s" % state)
+	if _materials.has(identity): return _materials[identity]
+	var result := ShaderMaterial.new()
+	result.shader = load(WARDROBE_ROOT + "material.gdshader")
+	result.set_shader_parameter(&"face_albedo", load(WARDROBE_TEXTURES + "aged_albedo.png"))
+	result.set_shader_parameter(&"face_orm", load(WARDROBE_TEXTURES + "aged_orm.png"))
+	result.set_shader_parameter(&"clean_paint", load(WARDROBE_TEXTURES + "as_built_paint.png"))
+	result.set_shader_parameter(&"albedo_b", Surfaces.HATCH_DETAIL_TEXTURES["albedo_b"])
+	result.set_shader_parameter(&"aged_finish", state == &"aged")
+	result.set_shader_parameter(&"diagnostic", 0)
+	_materials[identity] = result
+	return result
+
+
+static func _wardrobe_rectangle(face: String) -> Vector4:
+	var rectangle: Array = _wardrobe_layout[face]["uv_rectangle"]
+	return Vector4(rectangle[0], rectangle[1], rectangle[2], rectangle[3])
+
+
+static func _apply_wardrobe(root: Node3D, state: StringName) -> void:
+	var finish := _wardrobe_material(state)
+	if _wardrobe_layout.is_empty():
+		_wardrobe_layout = JSON.parse_string(FileAccess.get_file_as_string(WARDROBE_ROOT + "material-layout.json"))["faces"]
+	var panels := {&"Door": "door-outer", &"SidePanel_L": "left-inner", &"SidePanel_R": "right", &"BackPanel": "back", &"TopPanel": "top", &"BottomPanel": "bottom", &"SurroundHead": "header", &"DoorReturn_T": "header", &"DoorReturn_B": "header"}
+	var reverse := {&"Door": "door-inner", &"SidePanel_L": "left", &"SidePanel_R": "right-inner", &"TopPanel": "ceiling"}
+	for piece: MeshInstance3D in root.find_children("*", "MeshInstance3D", true, false):
+		assert(piece.mesh.get_surface_count() == 1, "wardrobe parts have one material class")
+		var imported := piece.mesh.surface_get_material(0) as StandardMaterial3D
+		assert(imported != null, "wardrobe requires imported material classes")
+		var kind := [&"PaintedSteel", &"BareSteel", &"DarkSteel"].find(StringName(imported.resource_name)) + 1
+		assert(kind > 0, "unknown wardrobe material: %s" % imported.resource_name)
+		var bounds := piece.get_aabb()
+		var size := bounds.size
+		var thickness := 0 if size.x < minf(size.y, size.z) else (1 if size.y < size.z else 2)
+		var horizontal := 2 if thickness == 0 else 0
+		var vertical := 2 if thickness == 1 else 1
+		var face: String = panels.get(piece.name, "frame") if kind == 1 else "hardware"
+		if face == "frame" and size[horizontal] > size[vertical]:
+			var swap := horizontal
+			horizontal = vertical
+			vertical = swap
+		piece.material_override = finish
+		piece.set_instance_shader_parameter(&"face_front", _wardrobe_rectangle(face))
+		piece.set_instance_shader_parameter(&"face_back", _wardrobe_rectangle(reverse.get(piece.name, face) if kind == 1 else face))
+		piece.set_instance_shader_parameter(&"face_edge", _wardrobe_rectangle("frame"))
+		piece.set_instance_shader_parameter(&"face_dust", _wardrobe_rectangle("top"))
+		piece.set_instance_shader_parameter(&"local_low", Vector4(bounds.position.x, bounds.position.y, bounds.position.z, 0))
+		piece.set_instance_shader_parameter(&"local_size", Vector4(size.x, size.y, size.z, 0))
+		piece.set_instance_shader_parameter(&"projection", Vector4(thickness, horizontal, vertical, kind))

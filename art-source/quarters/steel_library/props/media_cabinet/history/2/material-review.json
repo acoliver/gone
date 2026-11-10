@@ -1,0 +1,70 @@
+{
+  "images_seen": [
+    "hero",
+    "front",
+    "top",
+    "detail"
+  ],
+  "ratings": {
+    "candidate_as_built": {
+      "score": 9,
+      "explanation": "The grey-green paint is uniform and clean across all views, with sharp edges and clear hardware details visible in the detail block."
+    },
+    "candidate_aged": {
+      "score": 8,
+      "explanation": "The aged state shows convincing broad paint retention with irregular edge corrosion and downward rust runs, though the top surface dust appears slightly patchy in the top view."
+    },
+    "locker_as_built": {
+      "score": 9,
+      "explanation": "The reference locker presents a consistent, high-quality grey-green finish with well-defined panel lines and hardware."
+    },
+    "locker_aged": {
+      "score": 8,
+      "explanation": "The reference aged locker displays realistic weathering with heavy edge rust and paint flaking that matches the brief's requirements for a 1000-year environment."
+    }
+  },
+  "features": {
+    "grey-green_paint": {
+      "achieved": true,
+      "observations": "The base color is a consistent desaturated grey-green across all as-built views."
+    },
+    "bare_hardware": {
+      "achieved": true,
+      "observations": "Handles and latches appear as distinct metallic elements in the as-built detail view."
+    },
+    "dark_trim": {
+      "achieved": true,
+      "observations": "Dark trim is visible along the bottom edges and panel seams in the as-built state."
+    },
+    "edge_corrosion": {
+      "achieved": true,
+      "observations": "Rust is concentrated on corners and edges in the aged state, particularly visible in the hero and detail blocks."
+    },
+    "rust_runs": {
+      "achieved": true,
+      "observations": "Narrow vertical rust streaks are present on the vertical faces of the aged candidate and locker."
+    },
+    "settled_dust": {
+      "achieved": true,
+      "observations": "A soft, light-colored overlay is visible on the upward-facing top surfaces in the aged top view."
+    },
+    "no_biological_growth": {
+      "achieved": true,
+      "observations": "The textures show only mineral-based rust and dust, with no green or organic patterns."
+    }
+  },
+  "findings": [
+    "The rust texture on the aged locker's side panel in the hero view appears slightly more saturated than the candidate, though both are within acceptable range.",
+    "Dust distribution on the top view of the candidate is slightly more mottled than the reference locker's smoother dust layer."
+  ],
+  "ready": true,
+  "limitations": "The orthographic views limit the ability to judge the depth of the rust relief, and the small scale of the top view makes fine dust softness difficult to evaluate.",
+  "acceptance": {
+    "accepted": true,
+    "candidate_aged": 8,
+    "locker_aged": 8,
+    "numeric_failed": 0,
+    "scope_complete": true,
+    "rule": "candidate aged >= locker aged in this review, numeric gates pass, all four view blocks inspected"
+  }
+}

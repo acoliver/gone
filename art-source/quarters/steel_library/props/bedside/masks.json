@@ -1,0 +1,195 @@
+{
+  "version": 1,
+  "seed": 9502,
+  "atlas_size": [
+    2048,
+    2048
+  ],
+  "texels_per_metre": 577.7680508094176,
+  "density_range_px_m": [
+    577.4376272878069,
+    578.0310537097752
+  ],
+  "uv_overlap_texels": 0,
+  "uv_method": "isometric planar face islands, shared pack, 3 px margin",
+  "occupied_texels": 1453679,
+  "ao_method": "Cycles geometry AO, 16 samples, CPU",
+  "channels": {
+    "geometry_masks.png": {
+      "R": "ambient occlusion (1 = open)",
+      "G": "cavity (1 = recessed)",
+      "B": "edge curvature proximity (12 mm falloff)",
+      "A": "surface coverage"
+    },
+    "weather_masks.png": {
+      "R": "up-facing exposure times AO",
+      "G": "gravity streak field",
+      "B": "contact with other parts (5 mm falloff, 25 mm search)",
+      "A": "material class / 4: PaintedSteel=1, BareSteel=2, DarkSteel=3, other=4"
+    }
+  },
+  "parts": [
+    "Back",
+    "Bottom",
+    "DrawerBack_0",
+    "DrawerBack_1",
+    "DrawerBottom_0",
+    "DrawerBottom_1",
+    "DrawerFront_0",
+    "DrawerFront_1",
+    "DrawerPocket_0",
+    "DrawerPocket_1",
+    "DrawerPull_0",
+    "DrawerPull_1",
+    "DrawerRivets_0",
+    "DrawerRivets_1",
+    "DrawerSideL_0",
+    "DrawerSideL_1",
+    "DrawerSideR_0",
+    "DrawerSideR_1",
+    "KickPlate",
+    "LampFoot",
+    "LampHood",
+    "LampLens",
+    "LampStem",
+    "Plinth",
+    "Side_L",
+    "Side_R",
+    "Top",
+    "TopRivets"
+  ],
+  "sources": [
+    {
+      "part": "DrawerRivets_0",
+      "position_blender": [
+        -0.20000000298023224,
+        -0.2244499996304512,
+        0.15599998831748962
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          -0.203000009059906,
+          -0.22609999775886536,
+          0.15599998831748962
+        ],
+        [
+          -0.19699999690055847,
+          -0.22280000150203705,
+          0.16200000047683716
+        ]
+      ]
+    },
+    {
+      "part": "DrawerRivets_0",
+      "position_blender": [
+        0.20000000298023224,
+        -0.2244499996304512,
+        0.15600000321865082
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          0.19700001180171967,
+          -0.22609999775886536,
+          0.15600000321865082
+        ],
+        [
+          0.2029999941587448,
+          -0.22280000150203705,
+          0.16200000047683716
+        ]
+      ]
+    },
+    {
+      "part": "DrawerRivets_1",
+      "position_blender": [
+        -0.20000000298023224,
+        -0.2244499996304512,
+        0.335999995470047
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          -0.203000009059906,
+          -0.22609999775886536,
+          0.335999995470047
+        ],
+        [
+          -0.19699999690055847,
+          -0.22280000150203705,
+          0.34199997782707214
+        ]
+      ]
+    },
+    {
+      "part": "DrawerRivets_1",
+      "position_blender": [
+        0.20000000298023224,
+        -0.2244499996304512,
+        0.335999995470047
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          0.19700001180171967,
+          -0.22609999775886536,
+          0.335999995470047
+        ],
+        [
+          0.2029999941587448,
+          -0.22280000150203705,
+          0.34200000762939453
+        ]
+      ]
+    },
+    {
+      "part": "TopRivets",
+      "position_blender": [
+        -0.20999999344348907,
+        -0.22645000368356705,
+        0.43800002336502075
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          -0.21299999952316284,
+          -0.2281000018119812,
+          0.43800002336502075
+        ],
+        [
+          -0.2069999873638153,
+          -0.2248000055551529,
+          0.4440000057220459
+        ]
+      ]
+    },
+    {
+      "part": "TopRivets",
+      "position_blender": [
+        0.20999999344348907,
+        -0.22645000368356705,
+        0.43800002336502075
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          0.2070000022649765,
+          -0.2281000018119812,
+          0.43800002336502075
+        ],
+        [
+          0.21299998462200165,
+          -0.2248000055551529,
+          0.4440000355243683
+        ]
+      ]
+    }
+  ]
+}

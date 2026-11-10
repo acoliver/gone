@@ -1765,7 +1765,7 @@ The neutral, light-grey comparison sheets are in `tmp/fit/tunic/sim/`: `compare-
 
 ## Batch 1
 
-Rigid furniture follows the pilot's approved image, full Hunyuan3D-2mv guide and clean fitted-part route. `prompts/batch1.json` uses the pilot style and tail, with four seeds per prop. The selected hero and its generation provenance live in `sheets/<prop>/`. `tools/blender/quarters/<prop>/` contains the editable source, build and verification scripts, measurements and visual verdict. No texture maps or aging have been applied. A fit is accepted when its export checks pass and its visual score reaches the requested 7/10. The reviewer's separate readiness flag and remaining findings are retained; a passing score does not mean every visual difference is resolved.
+Rigid furniture follows the pilot's approved image, full Hunyuan3D-2mv guide and clean fitted-part route. `prompts/batch1.json` uses the pilot style and tail, with four seeds per prop. The selected hero and its generation provenance live in `sheets/<prop>/`. `tools/blender/quarters/<prop>/` contains the editable source, build and verification scripts, measurements and visual verdict. The table records fitted geometry before material work; completed finishes are listed under [Batch 1 materials](#batch-1-materials). A fit is accepted when its export checks pass and its visual score reaches the requested 7/10. The reviewer's separate readiness flag and remaining findings are retained; a passing score does not mean every visual difference is resolved.
 
 Authoring uses Blender Z-up with front -Y; exports have +Y up and front +Z, with floor-centred asset roots. Dimensions are asset-local width, height and depth. Wall and desktop mounting heights belong to room placement. Wardrobe bounds refer to its closed carcass, excluding the parked leaf and mating hinge hardware; its open envelope is measured separately. The bed includes the separate layout headboard height and leaves its mattress platform exposed.
 
@@ -2006,3 +2006,119 @@ The final [lit fibres-disabled control](sheets/her_dresses/fibre-visibility.json
 
 
 The [final independent image review](sheets/her_dresses/review.json) rates the remembered pair 7.5/10 and the aged pair 6/10. It confirms recognisable aged silhouettes. The raw response records its remaining visual qualifications separately from the numerical gates.
+
+## Batch 1 materials
+
+### Shared steel-face library decision
+
+The per-prop generation approach at `0c99445` used 13 generated face images for the wardrobe. That run took about 2.5 hours and scored 6/10 aged against the finished locker's 7/10 in the same matched review. All batch-1 rigid furniture uses the same grey-green painted warship steel. We therefore generate one reusable library of broad panels, narrow strips and dusty upward faces, then map those images automatically onto each prop's fitted UVs. This keeps pigment and wear treatment consistent without paying the generation cost again for each prop. The pilot locker, sofa and tunic retain their existing finishes.
+
+`art-source/quarters/steel_library/` contains 15 usable FLUX.2-klein-4B face images: six broad panels, four strips and five tops, with multiple aspect ratios and seeds. All 180 production-image gates pass. Two candidates fail the unchanged autocorrelation limit of 0.5 and are excluded from mapping: `strip-00` at 0.754 and the later `strip-02-trim-detail` refinement at 0.727. The previously passing `strip-02` remains available. Rejected pixels, provenance and failed gates remain recorded under `rejected`. The library retains the same concept-now and rusted-hatch crops, edit inputs, prompts, raw images and calibration lineage. Clean pigment comes from the pilot's as-built paint. Hardware reuses the wardrobe's measured corrosion image; fabric reuses a faded copy of the approved sofa weave without modifying that source. Image gates retain the wardrobe's colour, lighting-gradient, autocorrelation, edge/broad rust, no-green and source-density limits, with an added 20% maximum broad-field rust fraction and a six-Delta-E bound against the intended paint or dusty-top pigment.
+
+The initial shared palette passed 154 gates but rendered brown: painted chair pixels averaged approximately RGB 100/87/77 against the locker's clean pigment 97/118/115. The warm concept crops had become the measurement target. `neutralize_library.py` records a spatially uniform, chroma-conditioned Lab colour transform that aligns paint with the pilot pigment while retaining high-chroma iron-oxide colours. Broad panels and narrow strips use one neutralized steel-palette reference; dusty tops use their corrected concept crop. The source images still determine every wear location. Raw crops, the warm-palette selection and the rejected affine alternative remain available. The original thresholds were not relaxed.
+
+`native_library.py` then makes a second FLUX edit at twice each source dimension, preserving the input composition while generating surface detail. Production broad faces are 768 by 1536, 1280 square or 1536 by 768; strips are 128 by 1536, 256 by 1536, 1536 by 128 or 1536 by 256; tops are 1280 square, 1536 by 1024 or 1536 by 512. This is a model-generated refinement, not ordinary image enlargement. Per-prop gates measure both the fitted atlas and the selected source image at its actual mapped physical size, requiring at least 600 pixels per metre from each.
+
+The first native-resolution matched sheets still showed weak dust and uniform rust runs on some housings. `refine_library.py` edits the four shared tops and six broad panels, retaining their inputs, prompts and raw outputs. The dusty-top pigment target is RGB 0.56/0.58/0.54, with a fine diffuse powder brief. Broad-panel edits retain most paint and vary the tapered edge runs. All 168 source gates pass after these edits. Source green saturation is capped at 0.18 so atlas interpolation, byte rounding and BC7 compression have room below the unchanged 0.23 rendered limit. Before that correction, the desk's affected front pixels increased from 0.221% in its stored atlas to 0.683% in its unlit rendered capture; the permitted fraction remains below 0.5%.
+
+`tools/quarters_aging/map_library.py` reads any fitted `.blend` through Blender, joins adjacent coplanar polygons for mapping, classifies faces by physical area, aspect and world orientation, and chooses images with seeded variation. Selection first excludes sources that would fall below 600 pixels per metre at the actual face dimensions. It rasterizes those complete images into the original UVs. Relief and roughness come from the same `paint_fields()` pigment classification. The source blend and GLB remain unchanged. Display and glass slots are excluded from steel mapping. Per-prop numeric gates and matched neutral-light reviews determine acceptance independently of the library gates. Hardware keeps a 0.20 m swatch pitch; woven pads use a 0.10 m pitch. Both finish states are built and cached without changing meshes, names, pivots or material-slot roles.
+
+With the installed Hunyuan Python, the source stages are `tools/quarters_aging/steel_library.py generate`, `select`, `tools/quarters_aging/neutralize_library.py`, `tools/quarters_aging/native_library.py`, `steel_library.py select`, `tools/quarters_aging/refine_library.py`, then `steel_library.py select` again. Intermediate palette candidates may fail gates; map only after the final selection succeeds. Map each fitted source with `tools/quarters_aging/map_library.py --blend tools/blender/quarters/<prop>/<prop>-working.blend --prop <prop> --resolution 4096`. The bedside, dining table and two chairs use 2048 atlases because their unchanged fitted UVs still exceed 600 pixels per metre at that resolution. Other props use 4096. The mapper writes explicit GPU-compressed, mipmapped texture import settings. Run Godot's headless import before `tools/quarters_aging/preview_library.gd` in a windowed renderer. `library_gates.py --render tmp/mat2/render` composes matched sheets and checks rendered edge/broad rust and clean paint, as well as the source images.
+
+The later trim pass refines `strip-01`, `strip-03` and `strip-04` for separated chips and unequal rust runs. Cylindrical trim is classified using its physical diameter rather than its unwrapped circumference, while source density still uses the complete circumference. This prevents slender chair legs from receiving broad-panel images. Run targeted source edits with `refine_library.py --kind strip --face strip-01 --face strip-03 --face strip-04 --label trim-detail --seed-offset 700000`. The failed `strip-02` refinement remains excluded; its passing source is retained.
+
+The wardrobe roof source, `top-01`, receives a targeted `fine-powder` edit to remove large dust patches. Its secondary autocorrelation falls from 0.397 to 0.140 without changing the 0.5 limit. Reproduce that edit with `refine_library.py --kind top --face top-01 --label fine-powder --seed-offset 800000`, followed by `steel_library.py select`. A separate generated 1536 by 128 `top-04` image fits narrow upward ledges. The screen housing's 1.654 by 0.074 m roof previously compressed a 3:1 top image onto a 22:1 face; it now uses this native narrow source at 928.66 source pixels per metre. Its input, prompt, raw output, generation command and calibration are retained beside the other library images. Every shared change is followed by numeric checks and matched reviews of all 11 props.
+
+The auxiliary mask checks reproduce the earlier wardrobe method with Blender's `tools/blender/quarters_aging/library_masks.py -- --prop <prop>`. This triangulates and isometrically repacks a scratch copy only. Its density-ratio limit remains 1.015. The separate original-fitted-UV check retains its existing density p95/p05 limit of 1.25; these are different UV sets. The runtime atlas never uses the auxiliary pack. `review_library.py` sends one labelled composite containing all four matched views to the installed local image-comparer endpoint and retains its exact input, unedited response, prompt, scores and findings. The wardrobe also includes its per-face finish in the same views. Acceptance requires aged score at least the locker score in that review, passing numeric gates and confirmed coverage of all four views; the wardrobe must also match or exceed its per-face finish. Earlier scores and their actual input images are archived before sheets change. Scratch outputs and long-job logs stay under `tmp/mat2/`.
+
+### Recovered shared-library review results
+
+The later source-refinement pass improved the broad-panel rust variation and dusty-top images. Desk, dining chair and view screen initially failed rendered no-green checks: their source pigment was near the saturation limit, and interpolation, byte rounding and BC7 compression pushed a small fraction over it. The source correction leaves headroom below the unchanged rendered threshold. All current numeric gates pass.
+
+Circular table and chair panels now map the complete square image around their physical rim. The previous rectangular projection sampled the clean interior at much of the circular edge, causing the dining table's two rendered edge/broad rust-ratio failures. The radial mapping accounts for its minimum local source density. Both planar and circular mapping retain the fitted UVs.
+
+The recovered matched reviews are below. Scores compare aged candidate and aged locker in the same review. Wardrobe also matched its per-face reference at 8/10. At recovery, dining chair and view screen were below parity and retained their interim runtime finishes. The review inputs, findings and earlier results are retained under `art-source/quarters/steel_library/props/<prop>/`.
+
+| Prop | Aged candidate / locker | Numeric gates passed / failed | Accepted |
+|---|---:|---:|---|
+| wardrobe | 8 / 8 | 174 / 0 | Yes |
+| desk | 8 / 8 | 198 / 0 | Yes |
+| console | 8 / 8 | 198 / 0 | Yes |
+| bed | 8 / 8 | 162 / 0 | Yes |
+| lockers_over_bed | 7 / 7 | 198 / 0 | Yes |
+| bedside | 8 / 8 | 174 / 0 | Yes |
+| media_cabinet | 8 / 8 | 198 / 0 | Yes |
+| dining_table | 8 / 8 | 163 / 0 | Yes |
+| dining_chair | 7 / 8 | 188 / 0 | No |
+| desk_chair | 9 / 8 | 150 / 0 | Yes |
+| view_screen | 6 / 7 | 198 / 0 | No |
+
+Recovery verification passed 28 Python library/mapper/review tests and 34 focused Godot material tests. The final results below supersede this recovery snapshot and the older batch-wide status in the per-face wardrobe report.
+
+### Final shared-library results
+
+**Ten of 11 props meet matched-review parity and use the shared finishes. Wardrobe remains below parity and keeps its per-face finish.** All five props accepted at handoff remain accepted. Desk, console, media cabinet, dining chair and view screen now also pass. The final library clears 180 source-image gates, and all 2,073 per-prop numeric gates pass without changing thresholds or the acceptance rule.
+
+| Prop | Aged candidate / locker | Numeric gates passed / failed | Accepted |
+|---|---:|---:|---|
+| wardrobe | 7 / 8 | 186 / 0 | No: per-face interim |
+| desk | 8 / 8 | 210 / 0 | Yes |
+| console | 7 / 7 | 210 / 0 | Yes |
+| bed | 7 / 7 | 162 / 0 | Yes |
+| lockers_over_bed | 7 / 7 | 210 / 0 | Yes |
+| bedside | 8 / 8 | 186 / 0 | Yes |
+| media_cabinet | 8 / 8 | 210 / 0 | Yes |
+| dining_table | 8 / 8 | 163 / 0 | Yes |
+| dining_chair | 8 / 8 | 188 / 0 | Yes |
+| desk_chair | 8 / 8 | 150 / 0 | Yes |
+| view_screen | 7 / 7 | 198 / 0 | Yes |
+
+Wardrobe's candidate scores 7/10 against the locker's 8/10 and its per-face reference's 6/10 in the final review. Its roof dust still appears slightly blocky after the targeted source edit, so the shared candidate is not enabled at runtime. Accepted props retain some review findings: media-cabinet dust is slightly repetitive, dining-chair fabric could show more fading, and screen-top dust has slightly blocky edges. Their complete matched results meet the unchanged acceptance rule. Each review covers hero, front, top and detail views; scores compare candidate and reference within that review. The wardrobe's unchanged per-face reference pixels received different scores between reviews, so absolute scores should not be compared across review runs.
+
+`QuartersProps` routes the ten accepted props to cached `as_built` and `aged` materials in `QuartersSteelLibrary`. Both atlas states are built and cached for all 11 candidates, for 22 distinct material resources. Wardrobe's public factory and state swaps retain its per-face materials. Display/glass roles and fitted geometry remain unchanged. The pilot locker, sofa and tunic assets and shaders are untouched.
+
+The final Python aging suite passes 84 tests. All 35 focused Godot material tests pass, covering both cached states for every prop, public accepted routing, review/numeric acceptance consistency, wardrobe interim routing, geometry and display preservation, imports and pilot isolation. The cylindrical classification regression failed before implementation and passes after the diameter-based fix. Targeted-refinement tests verify that other source variants stay unchanged and unknown face IDs fail before generation.
+
+The final guarded full Godot suite, run under `nohup`, passes 823 tests with zero failures. An earlier run caught four script errors in the new interim-material test: it called the atlas factory for props that retain imported materials. The corrected test checks the actual imported/per-face interim contract; the guard and all existing assertions remain in force. Godot retains its existing resource, ObjectDB and allocator teardown warnings. OCR review skipped per Andrew 2026-10-09.
+
+### Wardrobe per-prop pass at 0c99445
+
+**The wardrobe material pass is committed but not visually accepted.** Its numeric gates pass; its aged finish remains below the finished locker in the matched review. No other batch-1 prop received a material pass.
+
+The wardrobe has its own shared, cached `as_built` and `aged` materials. Both keep the fitted GLB, parked door, names, transforms and original UVs. Clean paint uses the locker's grey-green pigment, with separate bare-steel hardware and dark-steel kick plate, latch pockets and vent backing. The remaining batch-1 rigid props have not received their per-prop finishes in this pass.
+
+Thirteen complete generated images cover the outer and inner door, both sides inside and out, back, roof, interior floor, downward-facing ceiling, frame, horizontal header and hardware. The source crops come from `concept-now.png` and `hatch-concept-rusted.png`, using the pilot's crops. FLUX.2-klein-4B edits run sequentially with four steps and 4-bit weights. Every face has at least four raw seeds. `art-source/quarters/wardrobe/` retains the crops, inputs, full prompts, raw generations, refinement lineage, selected images, candidate scores and selection metadata. Unselected grading variants are reproducible rather than committed.
+
+Each selected image maps directly into its own rectangle in the 2048 by 4096 atlas. Paint/rust colour is not composed from geometry masks or procedural wear fields. The unchanged `paint_fields()` rule supplies alpha-derived 1.5 mm paint relief and roughness only. Hardware uses its own corrosion image at a 0.20 m physical pitch; its shallow pits come from that image's luminance. Dust belongs to the generated upward-face images. There is no separate dust layer that can be disabled while keeping an identical substrate, so a generated dust-removal comparison would not establish isolated dust visibility.
+
+The image selection also considers pigment-mean affine calibration and uniform denoising. Exact source-variance fitting amplified one raw side image's broad-face high-frequency RMS contrast from 0.00336 to 0.11542. Uniform Gaussian alternatives of 0.6, 1.0 and 1.5 pixels remove this calibration grain without placing wear or changing the image layout. Every alternative must pass the original colour, gradient, correlation, rust-ratio, no-green and density gates. Candidate ranking then penalizes high-frequency broad-face contrast; it does not relax those gates. Selected radii and their physical scale are recorded in `selection.json`.
+
+The mask bake uses the fitted source's UVs on a triangulated scratch copy. This avoids the shared baker's assumption that the first three corners of a concave polygon define its plane. Neither the saved fitted source nor the game GLB is rewritten. Mask outputs and UV/bake measurements are retained with the wardrobe's source material files.
+
+Reproduce the mask bake with Blender's `--background --factory-startup --python-exit-code 1 --python tools/blender/quarters/wardrobe/bake_material_masks.py`. With the installed Hunyuan Python, run `materials.py select`, `test_materials.py`, `compare_materials.py` and `material_gates.py` from that directory's tool paths. Import the textures in Godot before rendering with `godot --windowed --path . -s tools/blender/quarters/wardrobe/preview_materials.gd`; then compose the sheets and run the rendered gates. `materials.py generate` makes the four initial seeds per face; `refine_materials.py` makes the retained face edits. The header's physical-orientation pass uses `materials.py generate --face header --count 4 --offset 1100`. Each generation metadata file retains its exact prompt and command. Long jobs run under `nohup`; scratch stays under `tmp/mat1/`. No installs or git configuration changes are required.
+
+The neutral comparison sheets are `matched-hero.png`, `matched-front.png`, `matched-top.png`, `matched-roof.png`, `matched-detail.png`, `matched-hardware.png` and `matched-trim.png` in `art-source/quarters/wardrobe/`. Wardrobe is left, finished locker right, clean above aged. The cameras, white lights and physical image scale are shared. The hardware view translates the same camera offset to each middle hinge; the trim view exposes the dark kick plate. The wardrobe is open and the locker closed, so the comparison assesses finish quality rather than identical visible geometry. The vertical roof view avoids confusing runs on the open door with marks on the horizontal roof. Upward-normal and imported-material ID images distinguish surface orientation and routing from visible finish quality. Those two diagnostics and `capture.json` are retained beside the sheets; individual captures remain under `tmp/mat1/wardrobe/render/`.
+
+
+### Wardrobe checks
+
+**187 material gates pass, with zero failures.** The complete per-face values and limits are in `art-source/quarters/wardrobe/gates.json`. Fractions below use 0 to 1.
+
+| Check | Measured | Limit |
+|---|---:|---:|
+| Maximum whole-image or pigment mean/std colour difference | 7.61335 ΔE00 | ≤8 |
+| Maximum secondary autocorrelation | 0.47518 | ≤0.5 |
+| Minimum painted-face edge/broad rust ratio | 2.73699 | ≥1.8 |
+| Neutral hero/front edge/broad rust ratios | 4.93750 / 4.55003 | ≥1.8 each |
+| Maximum newly green fraction, source and rendered | 0 | <0.005 |
+| Minimum complete-face texel density | 689.23 px/m | ≥600 px/m |
+| Clean rust fraction, source and rendered | 0 | <0.01 |
+| Clean pigment difference from locker | 0.00000195 ΔE00 | ≤6 |
+| Aged hardware rust fraction | 0.63568 | ≥0.30 |
+| Original UV triangle overlaps / outside coordinates | 0 / 0 | 0 / 0 |
+| Original UV density p95/p05 | 1.12262 | ≤1.25 |
+| Mask-bake density maximum/minimum | 1.00312 | ≤1.015 |
+
+The matched `image-comparer` review scores wardrobe **8/10 as-built and 6/10 aged**, against locker **9/10 as-built and 7/10 aged**, using one rubric. The aged state therefore fails the requested parity criterion. The reviewer reports broad pale flaking on the door and side, roof marks that look patterned, unclear dark-trim roles and no convincing fine soft dust on upward faces. Hardware corrosion and clean grey-green paint read correctly. `art-source/quarters/wardrobe/material-review.json` retains the observations and the not-ready verdict. Numeric rust and hue gates do not prove visible dust, restrained pale paint failure or material-role clarity. These remain required work, not waived checks.
+
+Seven wardrobe Python tests pass. The guarded Godot suite passes **816 tests, zero failures**. After the last face refinements and hardware-value edits, the four focused wardrobe tests and all 187 material gates pass again. The unchanged locker Python suite passes 37 tests, with only its temporary-directory root redirected into `tmp/mat1/`. All 15 retained locker render controls remain byte-identical. Locker, sofa and tunic shaders/assets are untouched; the wardrobe branch does not mutate their materials. Godot retains its existing resource, ObjectDB and allocator teardown warnings. OCR review is skipped per Andrew 2026-10-09.

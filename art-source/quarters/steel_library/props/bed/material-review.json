@@ -1,0 +1,70 @@
+{
+  "images_seen": [
+    "hero",
+    "front",
+    "top",
+    "detail"
+  ],
+  "ratings": {
+    "candidate_as_built": {
+      "score": 8,
+      "explanation": "The grey-green paint is consistent and clean across all views, with clear hardware and dark trim details visible in the detail block."
+    },
+    "candidate_aged": {
+      "score": 7,
+      "explanation": "The aged state shows convincing broad paint retention with irregular edge corrosion and downward rust runs, though the dust on upward faces appears slightly patchy rather than soft."
+    },
+    "locker_as_built": {
+      "score": 8,
+      "explanation": "The reference locker presents a uniform grey-green finish with sharp edges and clear hardware, matching the material brief for new warship steel."
+    },
+    "locker_aged": {
+      "score": 7,
+      "explanation": "The aged locker displays significant edge corrosion and rust runs that align with the 1000-year brief, though the texture on the door face is slightly more uniform than the candidate."
+    }
+  },
+  "features": {
+    "grey-green_paint": {
+      "achieved": true,
+      "observations": "Both candidate and locker show a consistent grey-green base color in the as-built state."
+    },
+    "bare_hardware": {
+      "achieved": true,
+      "observations": "Hardware elements like handles and hinges are visible and distinct from the painted surfaces in the detail view."
+    },
+    "dark_trim": {
+      "achieved": true,
+      "observations": "Dark trim is visible on the locker door and bed frame edges in the as-built state."
+    },
+    "edge_corrosion": {
+      "achieved": true,
+      "observations": "The aged state shows irregular rust and corrosion concentrated on edges and corners of both objects."
+    },
+    "rust_runs": {
+      "achieved": true,
+      "observations": "Narrow downward rust streaks are visible on vertical faces in the aged state, particularly on the locker."
+    },
+    "settled_dust": {
+      "achieved": true,
+      "observations": "Upward-facing surfaces in the aged state show a lighter, dusty overlay, though it lacks some softness."
+    },
+    "no_biological_growth": {
+      "achieved": true,
+      "observations": "No green or organic textures are present in the aged state, consistent with a sterile environment."
+    }
+  },
+  "findings": [
+    "The dust texture on the candidate's top surface in the aged state appears slightly blotchy rather than a fine, soft settle.",
+    "The locker's aged door texture is slightly more uniform than the candidate's, which shows more varied corrosion patterns."
+  ],
+  "ready": true,
+  "limitations": "The top view of the locker is very small, making it difficult to assess fine surface details or dust distribution on that specific face.",
+  "acceptance": {
+    "accepted": true,
+    "candidate_aged": 7,
+    "locker_aged": 7,
+    "numeric_failed": 0,
+    "scope_complete": true,
+    "rule": "candidate aged >= locker aged in this review, numeric gates pass, all four view blocks inspected"
+  }
+}

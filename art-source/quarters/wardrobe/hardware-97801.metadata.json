@@ -1,0 +1,37 @@
+{
+  "seed": 97801,
+  "face": "hardware",
+  "model": "black-forest-labs/FLUX.2-klein-4B",
+  "steps": 4,
+  "quantize": 4,
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/wardrobe/hardware-input.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/wardrobe/hardware-prompt.txt",
+    "--seed",
+    "97801",
+    "--width",
+    "512",
+    "--height",
+    "512",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/wardrobe/hardware-97801.png"
+  ],
+  "crop": [
+    550,
+    814,
+    806,
+    1032
+  ],
+  "prompt": "Remove all hardware, objects, seams, borders, perspective and shadows. Preserve the extensive dark reddish brown rust and orange corrosion of this reference. Fill the whole image with only continuous flat heavily corroded steel, lit flat and evenly. Fine irregular pits and dark cavities intermix with orange oxide and small grey metal flecks. No repeating shapes. Sealed sterile dry oxygenated ship after 1000 years; no biological growth. \n",
+  "reference": "hardware-source.png",
+  "input": "hardware-input.png"
+}

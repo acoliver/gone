@@ -1,0 +1,71 @@
+{
+  "images_seen": [
+    "hero",
+    "front",
+    "top",
+    "detail"
+  ],
+  "ratings": {
+    "candidate_as_built": {
+      "score": 8,
+      "explanation": "The grey-green paint is consistent and clean across all views, with clear hardware and dark trim details visible in the detail block."
+    },
+    "candidate_aged": {
+      "score": 6,
+      "explanation": "The aged state shows convincing edge corrosion and rust runs, but the broad paint surfaces appear too clean and lack the fine soft settled dust required on upward faces."
+    },
+    "locker_as_built": {
+      "score": 8,
+      "explanation": "The reference locker presents a uniform, high-quality finish with sharp edges and clear material roles for the painted steel and hardware."
+    },
+    "locker_aged": {
+      "score": 7,
+      "explanation": "The reference aged state demonstrates a more organic distribution of rust and wear, particularly on the vertical faces and corners, though it also lacks visible dust."
+    }
+  },
+  "features": {
+    "grey-green_painted_steel": {
+      "achieved": true,
+      "observations": "The base color is a consistent grey-green across both candidate and reference in the as-built state."
+    },
+    "bare_hardware": {
+      "achieved": true,
+      "observations": "Handles and latches are rendered as distinct bare metal elements, contrasting with the painted body."
+    },
+    "dark_trim": {
+      "achieved": true,
+      "observations": "Dark trim is visible along the bottom edges and around the ventilation slits in the as-built views."
+    },
+    "edge_corrosion": {
+      "achieved": true,
+      "observations": "Both candidate and reference show significant rust and paint loss along the vertical edges and corners in the aged state."
+    },
+    "rust_runs": {
+      "achieved": true,
+      "observations": "Narrow downward rust streaks are visible on the vertical faces of the aged candidate, particularly in the front and detail views."
+    },
+    "settled_dust": {
+      "achieved": false,
+      "observations": "Upward-facing surfaces in the aged state appear too clean and lack the fine, soft dust layer specified in the brief."
+    },
+    "faded_fabric": {
+      "achieved": false,
+      "observations": "No fabric pads are visible on the media cabinet geometry in any of the provided views."
+    }
+  },
+  "findings": [
+    "Add a fine, soft dust layer to all upward-facing surfaces in the aged state to match the 1000-year sealed environment brief.",
+    "Increase the variation in the aged paint texture on broad faces to better match the organic wear of the reference locker.",
+    "Ensure the rust runs on vertical faces are more subtle and irregular to avoid a repetitive or painted-on look."
+  ],
+  "ready": false,
+  "limitations": "The top view of the aged state is small and lacks detail, making it difficult to fully assess the dust and wear on the top surface.",
+  "acceptance": {
+    "accepted": false,
+    "candidate_aged": 6,
+    "locker_aged": 7,
+    "numeric_failed": 0,
+    "scope_complete": true,
+    "rule": "candidate aged >= locker aged in this review, numeric gates pass, all four view blocks inspected"
+  }
+}

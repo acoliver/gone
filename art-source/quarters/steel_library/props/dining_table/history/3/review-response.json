@@ -1,0 +1,36 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\n  \"images_seen\": [\n    \"hero\",\n    \"front\",\n    \"top\",\n    \"detail\"\n  ],\n  \"ratings\": {\n    \"candidate_as_built\": {\n      \"score\": 9,\n      \"explanation\": \"The grey-green paint is uniform and clean across all views, with clear separation for the bare metal hardware and dark trim as required.\"\n    },\n    \"candidate_aged\": {\n      \"score\": 8,\n      \"explanation\": \"The aged state shows convincing broad paint retention with irregular edge corrosion and rust runs, though the top-down view shows slightly heavy dust coverage.\"\n    },\n    \"locker_as_built\": {\n      \"score\": 9,\n      \"explanation\": \"The reference locker presents a clean, consistent grey-green finish with sharp edges and clear hardware details.\"\n    },\n    \"locker_aged\": {\n      \"score\": 8,\n      \"explanation\": \"The aged locker shows realistic weathering with rust concentrated at the corners and edges, matching the brief for a sealed environment.\"\n    }\n  },\n  \"features\": {\n    \"grey-green_paint\": {\n      \"achieved\": true,\n      \"observations\": \"The base color is a consistent grey-green across all four view blocks in both states.\"\n    },\n    \"bare_hardware\": {\n      \"achieved\": true,\n      \"observations\": \"Hardware like the locker handle and table base appear as distinct bare metal in the as-built state.\"\n    },\n    \"dark_trim\": {\n      \"achieved\": true,\n      \"observations\": \"Dark trim is visible on the locker base and table edges in the as-built state.\"\n    },\n    \"edge_corrosion\": {\n      \"achieved\": true,\n      \"observations\": \"The aged state shows irregular rust and corrosion specifically along the edges and corners of the furniture.\"\n    },\n    \"rust_runs\": {\n      \"achieved\": true,\n      \"observations\": \"Narrow downward rust runs are visible on the vertical faces of the locker in the aged state.\"\n    },\n    \"settled_dust\": {\n      \"achieved\": true,\n      \"observations\": \"A fine, soft dust layer is visible on the upward-facing surfaces of the table top in the aged state.\"\n    },\n    \"no_biological_growth\": {\n      \"achieved\": true,\n      \"observations\": \"There is no evidence of moss, lichen, or other biological growth in any of the views.\"\n    }\n  },\n  \"findings\": [\n    \"The aged state on the table top (top view) has a slightly high-contrast dust pattern that could be softened for a more realistic 'settled' look.\",\n    \"The rust runs on the locker in the aged state are very prominent and could be slightly more subtle to better match the 'sealed sterile' environment description.\"\n  ],\n  \"ready\": true,\n  \"limitations\": \"The detail view is a close-up crop, so the overall scale of the wear patterns relative to the full object is harder to judge in that specific block.\"\n}"
+      }
+    }
+  ],
+  "created": 1794279293,
+  "model": "qwen3.8-27b",
+  "system_fingerprint": "b1-6d05498",
+  "object": "chat.completion",
+  "usage": {
+    "completion_tokens": 685,
+    "prompt_tokens": 4549,
+    "total_tokens": 5234,
+    "prompt_tokens_details": {
+      "cached_tokens": 27
+    }
+  },
+  "id": "chatcmpl-UytV73GRdu4dqFbqxlEvjS4YC3teFWSC",
+  "timings": {
+    "cache_n": 27,
+    "prompt_n": 4522,
+    "prompt_ms": 32778.765,
+    "prompt_per_token_ms": 7.248731755860239,
+    "prompt_per_second": 137.95516701132578,
+    "predicted_n": 685,
+    "predicted_ms": 41868.631,
+    "predicted_per_token_ms": 61.21144883040936,
+    "predicted_per_second": 16.336813114333733
+  }
+}

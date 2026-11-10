@@ -1,0 +1,37 @@
+{
+  "seed": 99302,
+  "face": "header",
+  "model": "black-forest-labs/FLUX.2-klein-4B",
+  "steps": 4,
+  "quantize": 4,
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/wardrobe/header-input.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/wardrobe/header-prompt.txt",
+    "--seed",
+    "99302",
+    "--width",
+    "768",
+    "--height",
+    "64",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/wardrobe/header-99302.png"
+  ],
+  "crop": [
+    438,
+    259,
+    841,
+    274
+  ],
+  "prompt": "Edit this reference into a flat evenly lit grey-green painted steel material image. The image covers a horizontal strip 0.952 metres wide and 0.06 metres tall. Retain the muted grey paint and dark reddish brown iron oxide palette. Small broken irregular chips and oxide patches cluster close to the upper and lower edges and at the two end corners, leaving the broad middle painted. No continuous border, frame, dark stripe or wide rust band. No vertical trails. Intact paint has slow gentle uneven pigment variation, not speckles, plaster or pebbles. Do not draw an object, seam, hardware, perspective or shadows. Sealed sterile dry oxygenated ship after 1000 years. No biological growth or saturated green. \n",
+  "reference": "header-source.png",
+  "input": "header-input.png"
+}
