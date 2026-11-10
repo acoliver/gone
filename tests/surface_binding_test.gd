@@ -65,7 +65,7 @@ func test_all_shell_and_door_consumers_bind_shared_roles() -> void:
 	if factory == null: return
 	var root := Node3D.new()
 	var game := Game.new(0)
-	var scene := ShipScene.build_into(root, game, false)
+	var scene := ShipScene.build_into(root, game)
 	scene.prepare_near(Vector3(10, 0, 0))
 	scene.prepare_near(Vector3(26, 0, 0))
 	var remote := scene.build_remote(game.layout.connector(&"D30-C-001"))

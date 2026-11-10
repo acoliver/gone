@@ -23,9 +23,9 @@
         "min": 0.004361887376277682,
         "max": 1
       },
-      "edge_to_broad_rust_ratio": {
-        "min": 83.77627832909327,
-        "max": 1000000000.0
+      "rust_localisation": {
+        "edge_rust_min": 0.004427009496436409,
+        "broad_rust_max": 0.001
       },
       "dust_rgb_difference": {
         "min": 9.24378326550956e-05,
@@ -53,9 +53,9 @@
         "min": 0.015222346607354602,
         "max": 1
       },
-      "edge_to_broad_rust_ratio": {
-        "min": 265.71493030765345,
-        "max": 1000000000.0
+      "rust_localisation": {
+        "edge_rust_min": 0.015951527850403963,
+        "broad_rust_max": 0.001
       },
       "dust_rgb_difference": {
         "min": 0.019273323587965244,
@@ -79,9 +79,9 @@
         "min": 0.03482306514964319,
         "max": 1
       },
-      "edge_to_broad_rust_ratio": {
-        "min": 1339.1717902209737,
-        "max": 1000000000.0
+      "rust_localisation": {
+        "edge_rust_min": 0.02302682526407087,
+        "broad_rust_max": 0.001
       },
       "dust_rgb_difference": {
         "min": 0.013034530609330203,
@@ -113,9 +113,9 @@
         "min": 0.008767987881848018,
         "max": 1
       },
-      "edge_to_broad_rust_ratio": {
-        "min": 101.11669354238508,
-        "max": 1000000000.0
+      "rust_localisation": {
+        "edge_rust_min": 0.0089949559317166,
+        "broad_rust_max": 0.001
       },
       "dust_rgb_difference": {
         "min": 0.0019710975133446166,

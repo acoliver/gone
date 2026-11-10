@@ -1,7 +1,7 @@
 extends SimTestCase
 
 const Inventory := preload("res://tools/light_inventory.gd")
-const BASELINE := "res://tests/fixtures/illuminance-217355c.json"
+const BASELINE := "res://tests/fixtures/illuminance-1aeb2a4.json"
 static var _inventory: Dictionary
 
 func _ship() -> Dictionary:
@@ -17,7 +17,7 @@ func test_every_ship_light_has_a_visible_housed_emitter_within_one_centimetre() 
 		checked += 1
 		if not record.get("fixture_valid", false):
 			failures.append("%s %s %s: %s" % [record.owner, record.circuit_state, record.path, record.get("fixture_error", "no housed emitter")])
-	assert_int_equal(checked, 618, "all 309 lights, including inactive circuits and spark strobes, in both circuit states")
+	assert_int_equal(checked, 572, "all 286 lights, including inactive circuits and spark strobes, in both circuit states")
 	assert_true(failures.is_empty(), "%d unhoused or misplaced lights: %s" % [failures.size(), "; ".join(failures)])
 
 func test_every_space_keeps_its_recorded_floor_wall_ceiling_illuminance() -> void:
@@ -56,7 +56,7 @@ func test_illuminance_uses_the_renderer_range_cutoff_and_power_falloff() -> void
 func test_fixture_gate_rejects_missing_hidden_bare_and_displaced_emitters() -> void:
 	var inventory := Inventory.new()
 	var layout := ShipLayout.authored().layout
-	var fixture := Lighting.steady_fixture(Vector3(0, 2.65, 0), 1, 3, 3.2, Surfaces.surface_frame(layout, &"D14-S-041", &"CEILING"))
+	var fixture := Lighting.steady_fixture(Vector3(0, 2.65, 0), 1, 3, Surfaces.surface_frame(layout, &"D14-S-041", &"CEILING"))
 	var light := fixture.get_child(0) as OmniLight3D
 	var lens: MeshInstance3D = fixture.get_node("Lens")
 	assert_true(inventory._fixture_error(light).is_empty(), "real cage passes")

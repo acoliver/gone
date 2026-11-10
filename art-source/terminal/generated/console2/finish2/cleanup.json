@@ -1,0 +1,7 @@
+{
+  "removed_backdrop_faces": 11843,
+  "backdrop_y_cut_m": -0.03,
+  "console_recentred_x_m": 0.06366245448589325,
+  "console_width_scale": 1.3579497927730706,
+  "reason": "Generated rectangular backdrop surrounds the console; remove it, preserve UVs, restore requested 1.10 m console width."
+}

@@ -24,7 +24,7 @@ func test_one_step_and_capture_pause_freeze_all_logic() -> void:
 	var before := player.position
 	var fade_before := hallway.level()
 	var fills := hallway.find_children("EmergencyFill*", "OmniLight3D", true, false)
-	assert_int_equal(fills.size(), 8, "eight hall fills follow the logical clock")
+	assert_int_equal(fills.size(), 1, "one hall end practical follows the logical clock")
 	var fill_before := fills.map(func(fill: OmniLight3D) -> float: return fill.light_energy)
 	var door_before := game.doors.snapshot(ShipLayout.POWER_DOOR_ID).offset
 	assert_true(fade_before > 0 and fade_before < 1, "a fade is running before capture")

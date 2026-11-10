@@ -100,7 +100,7 @@ func test_strip_geometry_stays_within_the_pinned_bounds() -> void:
 	assert_true(bounds.position.z >= -0.8534 - 1e-4 and bounds.end.z <= 0.9037 + 1e-4,
 		"strip z within [-0.8534, 0.9037], got %s" % str(bounds))
 	assert_true(bounds.end.y <= 0.692, "the strip top stays under the 0.692 m pin")
-	assert_true(bounds.end.y < Placement.HANGING_WIRE_CLEARANCE,
+	assert_true(bounds.end.y < Placement.OVERHEAD_CLEARANCE,
 		"the strips stay far under the overhead clearance floor")
 	assert_true(PodStrips.STRIP_RADIUS > CONTACT_TOLERANCE,
 		"the tube radius covers the contact tolerance, so skin contact is guaranteed")

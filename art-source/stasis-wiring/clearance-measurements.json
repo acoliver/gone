@@ -1,0 +1,39 @@
+{
+  "issue": 110,
+  "status": "partial design-pin measurements; no physical collision certificate",
+  "frame": "bay-local metres; +Y up",
+  "source_hashes_sha256": {
+    "route_graph": "39ded6196e0a840c64fea87781309c877f61e901374c6f087150455d1ff8b911",
+    "geometry_builder": "71ea0c0f6212e3d36d41639b892f87c155952831681b55b40092fb4a3358a5b2",
+    "route_spec": "ec35457d1bbc03d5194b9f345ca5507409d0b027ce776bf790beeac145efdb0f",
+    "pod_glb": "833a7b79bf6f4fbf8d22ac6126ee25bda9a850f8b87201a0ae49197eccf28387"
+  },
+  "measurements": {
+    "panel_underside_y": 2.934,
+    "provided_lid_max_y": 2.631425,
+    "power_centerline_y": 2.82,
+    "data_centerline_y": 2.79,
+    "power_centerline_to_panel_bottom_m": 0.114,
+    "data_centerline_to_panel_bottom_m": 0.144,
+    "power_jacket_bottom_to_lid_bound_m": 0.176575,
+    "data_jacket_bottom_to_lid_bound_m": 0.155575,
+    "power_minimum_bend_centerline_m": 0.144,
+    "data_minimum_bend_centerline_m": 0.048,
+    "power_max_support_pitch_m": 0.8,
+    "data_max_tie_pitch_m": 0.4,
+    "pod_glb_local_bounds_m": [[-0.4499698,0.0,-1.19645846],[0.4499698,0.8959952,1.19645846]],
+    "pod_glb_geometry_count": 7,
+    "pod_glb_triangle_count": 27414
+  },
+  "methods": {
+    "design_pin_arithmetic": "direct subtraction from researched layout values, subtracting half jacket OD from centerline-to-lid vertical gap",
+    "pod_mesh": "trimesh loaded assets/props/pod/pod-v4.glb as scene; scene bounds and triangle counts enumerated",
+    "curve_test_sampling": "16 points per manufactured bend in sweep test (40 on explicit fillet test); does not represent bay obstacle sampling"
+  },
+  "not_measured": [
+    "No route-to-pod triangle collision check, all-angle pod hinge sweep, lid/occupant capsule sweep, fixture/sprinkler/detector/service-triangle check, branch packing clearance, cable-to-cable clearance through full authored bay routes, support contact audit, or conduit gap-fit test was run.",
+    "Pod GLB bounds above are not the bay-space transform or swept envelope; bounds do not certify a clear route.",
+    "No minimum distance or sample-step value is claimed for obstacles; route graph remains subject to physical clearance integration.",
+    "Predicted enclosure sockets remain unverified until the other worker's sockets.json arrives."
+  ]
+}

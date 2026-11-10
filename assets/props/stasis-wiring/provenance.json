@@ -1,0 +1,748 @@
+{
+  "asset": "stasis-wiring-enclosure",
+  "issue": 110,
+  "units": "metres",
+  "generator": {
+    "model": "Hunyuan3D-2mv full MLX",
+    "subfolder": "hunyuan3d-dit-v2-mv",
+    "octree_resolution": 320,
+    "seed": 11103,
+    "remove_background": true,
+    "minimum_component_faces": 50,
+    "weights_config": "/Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/weights/Hunyuan3D-2mv/hunyuan3d-dit-v2-mv/config.yaml",
+    "weights": "/Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/weights/Hunyuan3D-2mv/hunyuan3d-dit-v2-mv/model.fp16.safetensors"
+  },
+  "reference": "art-source/stasis-wiring/sealed-harness-enclosure-reference.png",
+  "reference_sha256": "6439dbb8050782f5522afc519ac7d52d94dd3509a9f136b3b79c402dad330d7a",
+  "raw_glb": "art-source/stasis-wiring/hardware/enclosure-raw.glb",
+  "raw_sha256": "00539ce2e241ff20630d9050b84d20b1b725d2eaca952799533e79fff1732744",
+  "fitted_glb": "assets/props/stasis-wiring/stasis-wiring-enclosure.glb",
+  "fitted_glb_sha256": "4386c1187f41c7d9a94b7f0dbc9f0e6f5b6f2e715617ff7e9b340a351480e2c5",
+  "editable_blend": "assets/props/stasis-wiring/stasis-wiring-enclosure.blend",
+  "editable_blend_sha256": "ce52bd23bee341da704dbe1603860ed67471872a2d5bd39b3660e137ed6cabcc",
+  "body_dimensions_local_m": [
+    0.28,
+    0.18,
+    0.11
+  ],
+  "rear_mounting_plane_local_z_m": -0.065,
+  "body_plus_accessories_bounds_glb_m": {
+    "min": [
+      -0.14099999703466892,
+      -0.09010860323905945,
+      -0.0655000030528754
+    ],
+    "max": [
+      0.14099999703466892,
+      0.09290769696235657,
+      0.11999999731779099
+    ]
+  },
+  "triangles_exported_estimate": 32316,
+  "authoring_topology": {
+    "Cast enclosure body | source-fitted sparse cage": {
+      "vertices_welded_before_export": 0,
+      "closed": true,
+      "triangles": 20392,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "Rear mounting flange": {
+      "vertices_welded_before_export": 0,
+      "closed": true,
+      "triangles": 2276,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "Continuous lid seam gasket": {
+      "vertices_welded_before_export": 0,
+      "closed": true,
+      "triangles": 512,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "Mounting ear 1": {
+      "vertices_welded_before_export": 16,
+      "closed": true,
+      "triangles": 288,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "Mount bolt head 1": {
+      "vertices_welded_before_export": 0,
+      "closed": true,
+      "triangles": 164,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "Mount bolt shank 1": {
+      "vertices_welded_before_export": 0,
+      "closed": true,
+      "triangles": 92,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "Mounting ear 2": {
+      "vertices_welded_before_export": 14,
+      "closed": true,
+      "triangles": 336,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "Mount bolt head 2": {
+      "vertices_welded_before_export": 0,
+      "closed": true,
+      "triangles": 164,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "Mount bolt shank 2": {
+      "vertices_welded_before_export": 0,
+      "closed": true,
+      "triangles": 92,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "Mounting ear 3": {
+      "vertices_welded_before_export": 16,
+      "closed": true,
+      "triangles": 288,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "Mount bolt head 3": {
+      "vertices_welded_before_export": 0,
+      "closed": true,
+      "triangles": 164,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "Mount bolt shank 3": {
+      "vertices_welded_before_export": 0,
+      "closed": true,
+      "triangles": 92,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "Mounting ear 4": {
+      "vertices_welded_before_export": 16,
+      "closed": true,
+      "triangles": 288,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "Mount bolt head 4": {
+      "vertices_welded_before_export": 0,
+      "closed": true,
+      "triangles": 164,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "Mount bolt shank 4": {
+      "vertices_welded_before_export": 0,
+      "closed": true,
+      "triangles": 92,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "power-1 black compression gland": {
+      "vertices_welded_before_export": 0,
+      "closed": true,
+      "triangles": 1152,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "power-1 compression nut": {
+      "vertices_welded_before_export": 0,
+      "closed": true,
+      "triangles": 384,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "power-1 sleeve collar 1": {
+      "vertices_welded_before_export": 0,
+      "closed": true,
+      "triangles": 384,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "power-1 sleeve collar 2": {
+      "vertices_welded_before_export": 0,
+      "closed": true,
+      "triangles": 384,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "power-2 black compression gland": {
+      "vertices_welded_before_export": 0,
+      "closed": true,
+      "triangles": 1152,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "power-2 compression nut": {
+      "vertices_welded_before_export": 0,
+      "closed": true,
+      "triangles": 384,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "power-2 sleeve collar 1": {
+      "vertices_welded_before_export": 0,
+      "closed": true,
+      "triangles": 384,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "power-2 sleeve collar 2": {
+      "vertices_welded_before_export": 0,
+      "closed": true,
+      "triangles": 384,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "control-data black compression gland": {
+      "vertices_welded_before_export": 0,
+      "closed": true,
+      "triangles": 1152,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "control-data compression nut": {
+      "vertices_welded_before_export": 0,
+      "closed": true,
+      "triangles": 384,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "control-data sleeve collar 1": {
+      "vertices_welded_before_export": 0,
+      "closed": true,
+      "triangles": 384,
+      "normal_policy": "40-degree manufactured creases"
+    },
+    "control-data sleeve collar 2": {
+      "vertices_welded_before_export": 0,
+      "closed": true,
+      "triangles": 384,
+      "normal_policy": "40-degree manufactured creases"
+    }
+  },
+  "paint_scan_sha256": "53d044501e4fd1e7583496129934d72af853032725f1af59b0c78bc6d6811117",
+  "supersedes_glb_sha256": "3f113dcdd7b18f8837c2da00e6e12e059cb02a861861c663ddc39f9b60d5e380",
+  "source_fit": {
+    "source_vertices": 369664,
+    "source_faces": 739324,
+    "source_connected_component_count": 2,
+    "source_projected_bounds_xz": [
+      [
+        -0.9302470684051514,
+        -0.619227945804596
+      ],
+      [
+        0.9216099381446838,
+        0.6177782416343689
+      ]
+    ],
+    "sparse_outline_samples": 64,
+    "outline_filter": "5-sample circular fairing; median-normalized radius capped 0.76..1.18",
+    "fitted_outline_radii": [
+      0.9480445033508232,
+      0.9439379044157633,
+      0.947681442602137,
+      0.9647022834523284,
+      1.0,
+      1.0420538449947576,
+      1.0772440267926076,
+      1.0933062423794495,
+      1.0967667570786808,
+      1.0830594737981185,
+      1.065696095527609,
+      1.0432648014783399,
+      1.0268509684387552,
+      1.008253744555326,
+      0.9957501414596118,
+      0.985546473958588,
+      0.9810996352281758,
+      0.9793602202602207,
+      0.9882212272971749,
+      1.0042353602428435,
+      1.0190970074843324,
+      1.041482386205575,
+      1.0656377099351269,
+      1.073538361221038,
+      1.0616845666868522,
+      1.0371722509730261,
+      0.9962967838999927,
+      0.9615838553830774,
+      0.9409138266446295,
+      0.9354968774282101,
+      0.9424289508311681,
+      0.9577362450921193,
+      0.9660746439181871,
+      0.9637334919083614,
+      0.9577299416314901,
+      0.9618406701770393,
+      0.9784885293120561,
+      1.0055153979513005,
+      1.038700018207206,
+      1.0691647846677068,
+      1.091646971247653,
+      1.099311496537959,
+      1.0868197425590675,
+      1.0425443641043468,
+      0.9983947443374971,
+      0.9489989097783353,
+      0.9009968088606164,
+      0.866463269385272,
+      0.866999136419701,
+      0.8772294172250777,
+      0.9248091791699147,
+      0.9814073359626951,
+      1.0295993936852452,
+      1.079892815289293,
+      1.1240532552354416,
+      1.1268480765194033,
+      1.1086469178935388,
+      1.0853048254287292,
+      1.0464319723584479,
+      1.0093638563340284,
+      0.9807711859246125,
+      0.9655404310848037,
+      0.959911728479838,
+      0.9562153316625601
+    ],
+    "guide": "raw largest connected Hunyuan mesh projected to X/Z silhouette; 64 angular envelope samples; 5-point cyclic fairing; sparse 8-depth-loop quad cage; Catmull-Clark level 2; no dense projection back to source"
+  },
+  "design_decisions": [
+    "Preserve the selected reference's irregular rounded/domed cast electrical-box form; no rectangular-box replacement, because the brief requires functional wiring hardware rather than an exact rectangular silhouette.",
+    "Use black compression polymer boots as valid protective strain relief, with steel fasteners and a scanned CC0 painted-steel body surface; avoid corrosion on elastomer.",
+    "Fit two 24 mm power and one six-strand 6 mm control/data loom in a 22 mm bore to measured cable diameters even if the concept render's apparent port count or scale is rough."
+  ],
+  "checks": {
+    "socket_file": "assets/props/stasis-wiring/sockets.json",
+    "through_bore_and_cable_clearance": "PASS: 603 jacket rays clear; 36 bore-edge rays hit manufactured walls",
+    "byte_identical_reexport": "PASS; two independent builds yielded identical fitted GLB SHA-256",
+    "body_shell_topology": "PASS: watertight=True, components=1, boundary_edges=0; winding_consistent=True, nonmanifold_edges=0, degenerate_faces=0; bore paths separately pass ray-clearance and wall checks",
+    "physical_parts": "PASS: all 27 parts closed, positive-volume, consistently wound; zero degenerate faces",
+    "socket_interface": "UNCHANGED: power centres (-.043,.032,.09), (.043,.032,.09), 25.6 mm bores; control centre (.09,-.045,.09), 22 mm bore, six 6 mm strands within 20 mm loom; all axes +Z.",
+    "source_guides": "PASS: all 64 fitted outline radii exactly match the pre-fix source extraction; same 739324-face Hunyuan source and seed 11103.",
+    "capture_materials": "Fresh exported-GLB import, neutral lights, no material override. Four 768x768 views; 1280x1280 contact sheet. Aesthetic judgment reserved for image-comparer."
+  },
+  "triangles_exported": 32316,
+  "weights_sha256": "d36f5881bcdc56726b73e517cd444c13c60732431622da7268145355c8d38e9c",
+  "test_metrics": {
+    "bounds_glb_m": [
+      [
+        -0.14099999703466892,
+        -0.09010860323905945,
+        -0.0655000030528754
+      ],
+      [
+        0.14099999703466892,
+        0.09290769696235657,
+        0.11999999731779099
+      ]
+    ],
+    "extents_glb_m": [
+      0.28199999406933784,
+      0.18301630020141602,
+      0.18550000037066638
+    ],
+    "body_shell_bounds_glb_m": [
+      [
+        -0.13472098112106323,
+        -0.08555282652378082,
+        -0.05500008165836334
+      ],
+      [
+        0.1328808069229126,
+        0.08821041136980057,
+        0.05500008165836334
+      ]
+    ],
+    "body_shell_extents_glb_m": [
+      0.26760178804397583,
+      0.1737632378935814,
+      0.11000016331672668
+    ],
+    "body_shell_watertight": true,
+    "body_shell_surface_components": 1,
+    "body_shell_boundary_edges": 0,
+    "body_shell_nonmanifold_edges": 0,
+    "body_shell_degenerate_faces": 0,
+    "body_shell_winding_consistent": true,
+    "triangle_count": 32316,
+    "clear_cable_rays": 603,
+    "bore_edge_wall_hits": 36,
+    "socket_gland_edge_clearances_m": {
+      "power-1 / power-2": 0.05199999999999999,
+      "power-1 / control-data": 0.12268148880070108,
+      "power-2 / control-data": 0.05921086409075128
+    },
+    "physical_parts": {
+      "Rear mounting flange": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 0.0003726044901878373,
+        "triangles": 2276,
+        "minimum_corner_normal_dot_face_normal": 0.9093493343901942,
+        "max_unit_normal_length_error": 2.220446049250313e-16
+      },
+      "power-2 sleeve collar 2": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 1.5594996408754334e-06,
+        "triangles": 384,
+        "minimum_corner_normal_dot_face_normal": 0.9978586629934678,
+        "max_unit_normal_length_error": 2.220446049250313e-16
+      },
+      "power-2 sleeve collar 1": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 5.458247290667033e-06,
+        "triangles": 384,
+        "minimum_corner_normal_dot_face_normal": 0.9978586629934678,
+        "max_unit_normal_length_error": 2.220446049250313e-16
+      },
+      "power-2 compression nut": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 2.353891618179956e-06,
+        "triangles": 384,
+        "minimum_corner_normal_dot_face_normal": 0.9978586629934677,
+        "max_unit_normal_length_error": 2.220446049250313e-16
+      },
+      "power-2 black compression gland": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 1.5407974377991673e-05,
+        "triangles": 1152,
+        "minimum_corner_normal_dot_face_normal": 0.971505622500733,
+        "max_unit_normal_length_error": 2.220446049250313e-16
+      },
+      "power-1 sleeve collar 2": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 1.5594996408754336e-06,
+        "triangles": 384,
+        "minimum_corner_normal_dot_face_normal": 0.9978586629934677,
+        "max_unit_normal_length_error": 2.220446049250313e-16
+      },
+      "power-1 sleeve collar 1": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 5.458247290667033e-06,
+        "triangles": 384,
+        "minimum_corner_normal_dot_face_normal": 0.9978586629934678,
+        "max_unit_normal_length_error": 2.220446049250313e-16
+      },
+      "power-1 compression nut": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 2.353891618179956e-06,
+        "triangles": 384,
+        "minimum_corner_normal_dot_face_normal": 0.9978586629934677,
+        "max_unit_normal_length_error": 2.220446049250313e-16
+      },
+      "power-1 black compression gland": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 1.5407974421972486e-05,
+        "triangles": 1152,
+        "minimum_corner_normal_dot_face_normal": 0.9715055891204937,
+        "max_unit_normal_length_error": 2.220446049250313e-16
+      },
+      "Mounting ear 4": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 2.0003163022120002e-05,
+        "triangles": 288,
+        "minimum_corner_normal_dot_face_normal": 0.9043734951078777,
+        "max_unit_normal_length_error": 3.3306690738754696e-16
+      },
+      "Mounting ear 3": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 2.0003163022120002e-05,
+        "triangles": 288,
+        "minimum_corner_normal_dot_face_normal": 0.9043734951078777,
+        "max_unit_normal_length_error": 3.3306690738754696e-16
+      },
+      "Mounting ear 2": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 1.947673145999249e-05,
+        "triangles": 336,
+        "minimum_corner_normal_dot_face_normal": 0.9043734949647927,
+        "max_unit_normal_length_error": 3.3306690738754696e-16
+      },
+      "Mounting ear 1": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 2.0003163022120002e-05,
+        "triangles": 288,
+        "minimum_corner_normal_dot_face_normal": 0.9043734951078777,
+        "max_unit_normal_length_error": 3.3306690738754696e-16
+      },
+      "Mount bolt shank 4": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 3.8164379686807004e-07,
+        "triangles": 92,
+        "minimum_corner_normal_dot_face_normal": 0.9914444406340729,
+        "max_unit_normal_length_error": 1.1102230246251565e-16
+      },
+      "Mount bolt shank 3": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 3.8164379686807026e-07,
+        "triangles": 92,
+        "minimum_corner_normal_dot_face_normal": 0.9914444406340729,
+        "max_unit_normal_length_error": 1.1102230246251565e-16
+      },
+      "Mount bolt shank 2": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 3.8164379686807004e-07,
+        "triangles": 92,
+        "minimum_corner_normal_dot_face_normal": 0.9914444406340729,
+        "max_unit_normal_length_error": 1.1102230246251565e-16
+      },
+      "Mount bolt shank 1": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 3.8164379686807026e-07,
+        "triangles": 92,
+        "minimum_corner_normal_dot_face_normal": 0.9914444406340729,
+        "max_unit_normal_length_error": 1.1102230246251565e-16
+      },
+      "Mount bolt head 4": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 3.429953728636703e-07,
+        "triangles": 164,
+        "minimum_corner_normal_dot_face_normal": 0.9518857357820312,
+        "max_unit_normal_length_error": 2.220446049250313e-16
+      },
+      "Mount bolt head 3": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 3.429953728636703e-07,
+        "triangles": 164,
+        "minimum_corner_normal_dot_face_normal": 0.9518857357820312,
+        "max_unit_normal_length_error": 2.220446049250313e-16
+      },
+      "Mount bolt head 2": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 3.429953728636703e-07,
+        "triangles": 164,
+        "minimum_corner_normal_dot_face_normal": 0.9518857357820312,
+        "max_unit_normal_length_error": 2.220446049250313e-16
+      },
+      "Mount bolt head 1": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 3.429953728636703e-07,
+        "triangles": 164,
+        "minimum_corner_normal_dot_face_normal": 0.9518857357820312,
+        "max_unit_normal_length_error": 2.220446049250313e-16
+      },
+      "control-data sleeve collar 2": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 9.332759704179803e-07,
+        "triangles": 384,
+        "minimum_corner_normal_dot_face_normal": 0.9978584430435915,
+        "max_unit_normal_length_error": 2.220446049250313e-16
+      },
+      "control-data sleeve collar 1": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 3.266465027282093e-06,
+        "triangles": 384,
+        "minimum_corner_normal_dot_face_normal": 0.9978584430435914,
+        "max_unit_normal_length_error": 2.220446049250313e-16
+      },
+      "control-data compression nut": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 1.2854638147081812e-06,
+        "triangles": 384,
+        "minimum_corner_normal_dot_face_normal": 0.9978584430435914,
+        "max_unit_normal_length_error": 1.1102230246251565e-16
+      },
+      "control-data black compression gland": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 9.67863910197682e-06,
+        "triangles": 1152,
+        "minimum_corner_normal_dot_face_normal": 0.9875901086340781,
+        "max_unit_normal_length_error": 2.220446049250313e-16
+      },
+      "Continuous lid seam gasket": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 6.451987131326478e-06,
+        "triangles": 512,
+        "minimum_corner_normal_dot_face_normal": 0.9833983640749688,
+        "max_unit_normal_length_error": 2.220446049250313e-16
+      },
+      "Cast enclosure body | source-fitted sparse cage": {
+        "watertight": true,
+        "winding_consistent": true,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "degenerate_faces": 0,
+        "components": 1,
+        "volume_m3": 0.00400240829770031,
+        "triangles": 20392,
+        "minimum_corner_normal_dot_face_normal": 0.9897717478121113,
+        "max_unit_normal_length_error": 3.3306690738754696e-16
+      }
+    },
+    "six_strand_packing": {
+      "strand_count": 6,
+      "strand_diameter_m": 0.006,
+      "centers_xy_m": [
+        [
+          0.0965,
+          -0.045
+        ],
+        [
+          0.09325,
+          -0.03937083487540115
+        ],
+        [
+          0.08675,
+          -0.03937083487540115
+        ],
+        [
+          0.08349999999999999,
+          -0.045
+        ],
+        [
+          0.08675,
+          -0.05062916512459885
+        ],
+        [
+          0.09325,
+          -0.05062916512459885
+        ]
+      ],
+      "minimum_center_separation_m": 0.006500000000000001,
+      "packing_outer_diameter_m": 0.019,
+      "declared_loom_outer_diameter_m": 0.02
+    },
+    "materials": {
+      "Cast olive enclosure | scanned painted steel": {
+        "mean_texture_srgb": [
+          0.1199141969878707,
+          0.1550243789051513,
+          0.06516070646362934
+        ],
+        "roughness": 0.6399999856948853,
+        "metallic": 0.25
+      }
+    },
+    "source_contour": {
+      "samples": 64,
+      "support_max_error_m": 0.0008721942202704336,
+      "support_rms_error_m": 0.0004429160445738632,
+      "support_correlation": 0.999934778059331
+    }
+  },
+  "byte_identical_reexport_sha256": "4386c1187f41c7d9a94b7f0dbc9f0e6f5b6f2e715617ff7e9b340a351480e2c5",
+  "captures": [
+    "tmp/verify-stasis-wiring/hardware-fit/front-three-quarter.png",
+    "tmp/verify-stasis-wiring/hardware-fit/power-port-side.png",
+    "tmp/verify-stasis-wiring/hardware-fit/rear-mounting-face.png",
+    "tmp/verify-stasis-wiring/hardware-fit/upper-profile.png"
+  ],
+  "comparison": "tmp/verify-stasis-wiring/hardware-fit/hardware-reference-comparison.png",
+  "verification": "tmp/verify-stasis-wiring/hardware-fit/verification.json",
+  "build_script_sha256": "efe92256e28d64f9210b7dc3833599deb56d87b38d1015318c61a4227ed5a2d3",
+  "test_script_sha256": "0ca29f4b555714005ea713c72cd656cf7669e4455dd860077864e2bb8010ea13",
+  "root_cause_evidence": "tmp/verify-stasis-wiring/hardware-fit/root-cause.json",
+  "actual_material_capture_checks": "tmp/verify-stasis-wiring/hardware-fit/normal-and-capture-checks.json"
+}

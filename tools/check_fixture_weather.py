@@ -84,8 +84,15 @@ def evaluate(result, thresholds):
     checks = {}
     for name, limits in thresholds['views'].items():
         for metric, bounds in limits.items():
-            value = result[name][metric]
-            checks[f'{name}.{metric}'] = bounds['min'] <= value <= bounds['max']
+            if metric == 'rust_localisation':
+                # The ratio's broad-face denominator is below display quantisation.
+                checks[f'{name}.{metric}'] = (
+                    result[name]['edge_rust_difference'] >= bounds['edge_rust_min']
+                    and result[name]['broad_rust_difference'] <= bounds['broad_rust_max']
+                )
+            else:
+                value = result[name][metric]
+                checks[f'{name}.{metric}'] = bounds['min'] <= value <= bounds['max']
     return checks
 
 

@@ -23,7 +23,6 @@ const BAY_ID: StringName = &"D14-BAY"
 const POWER_ID: StringName = &"D14-POWER"
 const BAY_DOOR_ID: StringName = &"D14-BAY-DOOR"
 const BAY_HATCH_KEY_ID: StringName = &"D14-BAY-HATCH-KEY"
-const EMERGENCY_FILL_CEILING_DROP: float = 0.62
 const POWER_DOOR_ID: StringName = &"D14-POWER-DOOR"
 const POWER_CENTER_X: float = 27.0
 const POWER_NEAR_Z: float = -(CORRIDOR_WIDTH / 2.0 + WALL)
@@ -179,12 +178,6 @@ class SectionSpec:
 		for station: int in range(4):
 			frames.append(Transform3D(Basis(), Vector3(_bounds.position.x + (station + 0.5) * pitch, _bounds.end.y - 0.08, _bounds.get_center().z)))
 		return frames
-	func emergency_fill_positions() -> Array[Vector3]:
-		var positions: Array[Vector3] = []
-		if _services.light_role == ArchitecturalLightRole.LOCAL: return positions
-		for index: int in range(7):
-			positions.append(Vector3(_bounds.position.x + 1.5 + index * 3.0, _bounds.end.y - 0.08 - ShipLayout.EMERGENCY_FILL_CEILING_DROP, _bounds.get_center().z))
-		return positions
 	func emergency_end_fill_position() -> Vector3:
 		return Vector3(_bounds.end.x - 0.9, _bounds.position.y + 1.7, _bounds.get_center().z + 1.3)
 
@@ -202,9 +195,8 @@ class SectionSpec:
 			reservations.append(ServiceReservation.new(StringName("LAMP/%s" % frame.origin), ServiceKind.FIXTURE, AABB(frame.origin - Vector3(0.28, 0.20, 0.20), Vector3(0.56, 0.40, 0.40))))
 		for frame: Transform3D in regular_light_frames():
 			reservations.append(ServiceReservation.new(StringName("STRIP/%s" % frame.origin), ServiceKind.REGULAR_STRIP, AABB(frame.origin - Vector3(0.60, 0.20, 0.12), Vector3(1.20, 0.24, 0.24))))
-		var fills := emergency_fill_positions()
-		if _services.light_role != ArchitecturalLightRole.LOCAL: fills.append(emergency_end_fill_position())
-		for point: Vector3 in fills:
+		if _services.light_role != ArchitecturalLightRole.LOCAL:
+			var point := emergency_end_fill_position()
 			reservations.append(ServiceReservation.new(StringName("FILL/%s" % point), ServiceKind.FILL, AABB(point - Vector3.ONE * 0.12, Vector3.ONE * 0.24)))
 		return reservations
 
@@ -547,29 +539,21 @@ class BaySpec:
 		return result
 	func regular_light_frames() -> Array[Transform3D]:
 		var frames: Array[Transform3D] = []
-		for x: float in [-4.0, 0.0, 4.0]:
-			# #88: the ceiling strips retain their offset from the shifted pod rows.
-			for z: float in [-1.6 + Pods.ROW_WALL_OFFSET, 1.6 - Pods.ROW_WALL_OFFSET]:
-				frames.append(Transform3D(Basis(), Vector3(x, Pods.ROOM_CEILING_HEIGHT - 0.08, z)))
+		# Center each generated 1.10 m beam over a 1.18 m panel service area.
+		# Keep the fixture frame at the existing beam's authored ceiling mount plane.
+		for x: float in [-4.2, -0.6, 4.2]:
+			for z: float in [-1.5, 1.5]:
+				frames.append(Transform3D(Basis(), Vector3(x, 3.12, z)))
 		return frames
-	func emergency_fixtures(registry: Pods.PodRegistry) -> Array[EmergencyFixtureSpec]:
+	func emergency_fixtures() -> Array[EmergencyFixtureSpec]:
 		var fixtures: Array[EmergencyFixtureSpec] = []
-		for pod: Pods.Pod in registry.pods():
-			var placement := pod.placement()
-			var side := signf(placement.center.y)
-			var frame := Transform3D(Basis(), Vector3(placement.center.x, 2.65, side * (Pods.ROOM_WIDTH / 2.0 - 0.10)))
-			fixtures.append(EmergencyFixtureSpec.new(StringName("D14-BAY-POD-%d-KEY" % pod.id().index()), ShipLayout.EmergencyLightRole.BAY_POOL, frame))
+		for side: float in [-1.0, 1.0]:
+			for station: float in [-4.5, -1.5, 1.5, 4.5]:
+				var frame := Transform3D(Basis(), Vector3(station, 2.5, side * (Pods.ROOM_WIDTH / 2.0 - 0.10)))
+				fixtures.append(EmergencyFixtureSpec.new(StringName("D14-BAY-WALL-%d-KEY" % fixtures.size()), ShipLayout.EmergencyLightRole.BAY_POOL, frame))
 		var lintel: ShipGeometry.SolidSpec = ShipGeometry.hatch_solids()[2]
 		fixtures.append(EmergencyFixtureSpec.new(ShipLayout.BAY_HATCH_KEY_ID, ShipLayout.EmergencyLightRole.BAY_HATCH, Transform3D(Basis(Vector3.UP, PI / 2.0), lintel.center + Vector3(-0.10, 0.22, 0.0))))
 		return fixtures
-	func emergency_fill_positions() -> Array[Vector3]:
-		var positions: Array[Vector3] = []
-		# The architectural fill stays at its authored stations while #88's
-		# regular strips move inward with the pod rows.
-		for x: float in [-4.0, 0.0, 4.0]:
-			for z: float in [-1.6, 1.6]:
-				positions.append(Vector3(x, Pods.ROOM_CEILING_HEIGHT - 0.08 - ShipLayout.EMERGENCY_FILL_CEILING_DROP, z))
-		return positions
 	func ceiling_vent_frames() -> Array[Transform3D]:
 		return [Transform3D(Basis(), Vector3(-3, 3.05, 0)), Transform3D(Basis(), Vector3(3, 3.05, 0))]
 	func local_bounds() -> AABB:
@@ -609,12 +593,7 @@ class PowerRoomSpec:
 	func emergency_light_role() -> EmergencyLightRole:
 		return ShipLayout.EmergencyLightRole.ROOM_POOL
 	func emergency_fill_positions() -> Array[Vector3]:
-		var positions: Array[Vector3] = []
-		var mount_y := Pods.ROOM_CEILING_HEIGHT - 0.08
-		for x: float in [24.0, ShipLayout.POWER_CENTER_X, 30.0]:
-			for z: float in [-3.7, -7.7]:
-				positions.append(Vector3(x, mount_y - ShipLayout.EMERGENCY_FILL_CEILING_DROP, z))
-		return positions
+		return [Vector3(24, 2.5, -1.9), Vector3(26, 2.5, -1.9), Vector3(28, 2.5, -1.9)]
 	func data() -> Dictionary:
 		var result := super.data()
 		result["section_id"] = _section_id

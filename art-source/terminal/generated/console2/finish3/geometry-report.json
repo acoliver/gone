@@ -1,0 +1,45 @@
+{
+  "source": "meshes/console-s510-rgba-410.glb",
+  "raw_fitted": {
+    "vertices": 307161,
+    "triangles": 613071,
+    "nonmanifold_edges": 1249,
+    "boundary_edges": 1249,
+    "wire_edges": 0,
+    "components": 1
+  },
+  "uniform_scale": 0.6390445747477264,
+  "depth_y_factor": 0.9540024183011049,
+  "backdrop_cut_y_m": -0.03,
+  "back_wall_y_m": 0,
+  "removed_backdrop_faces": 373527,
+  "photo_fit_maximum_x_displacement_m": 0.1478301905854688,
+  "voxel_size_m": 0.005,
+  "smooth_factor": 0.5,
+  "smooth_iterations": 5,
+  "local_repairs": [
+    "Closed side and underside panels reconstructed from the raw fitted silhouette, retaining the ray-sampled front depth and screen recess.",
+    "Side-panel outline straightened with 12 mm feathering; single-row scan notches filtered before voxel rebuilding.",
+    "Deck-to-body joint is a continuous solid shell with no retained scan sliver."
+  ],
+  "after_voxel": {
+    "vertices": 203964,
+    "triangles": 407924,
+    "nonmanifold_edges": 0,
+    "boundary_edges": 0,
+    "wire_edges": 0,
+    "components": 1
+  },
+  "final_geometry": {
+    "vertices": 24001,
+    "triangles": 47998,
+    "nonmanifold_edges": 0,
+    "boundary_edges": 0,
+    "wire_edges": 0,
+    "components": 1
+  },
+  "silhouette_iou": {
+    "front": 0.9948760537901387,
+    "side": 0.9956603349511909
+  }
+}

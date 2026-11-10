@@ -1,0 +1,63 @@
+{
+  "asset": "stasis-wiring-enclosure",
+  "units": "metres",
+  "coordinate_frame": "glTF local; +Y up, front +Z",
+  "sockets": [
+    {
+      "id": "power-1",
+      "class": "power",
+      "center_local_m": [
+        -0.043,
+        0.032,
+        0.09
+      ],
+      "axis_local": [
+        0,
+        0,
+        1
+      ],
+      "cable_outer_diameter_m": 0.024,
+      "bore_diameter_m": 0.0256,
+      "gland_outer_diameter_m": 0.034,
+      "compression_liner_radial_thickness_m": 0.0012
+    },
+    {
+      "id": "power-2",
+      "class": "power",
+      "center_local_m": [
+        0.043,
+        0.032,
+        0.09
+      ],
+      "axis_local": [
+        0,
+        0,
+        1
+      ],
+      "cable_outer_diameter_m": 0.024,
+      "bore_diameter_m": 0.0256,
+      "gland_outer_diameter_m": 0.034,
+      "compression_liner_radial_thickness_m": 0.0012
+    },
+    {
+      "id": "control-data",
+      "class": "control-data",
+      "center_local_m": [
+        0.09,
+        -0.045,
+        0.09
+      ],
+      "axis_local": [
+        0,
+        0,
+        1
+      ],
+      "bundle_outer_diameter_m": 0.02,
+      "strand_outer_diameter_m": 0.006,
+      "strand_count": 6,
+      "bore_diameter_m": 0.022,
+      "gland_outer_diameter_m": 0.028,
+      "compression_liner_radial_thickness_m": 0.0012
+    }
+  ]
+}

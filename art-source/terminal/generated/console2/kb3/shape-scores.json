@@ -1,0 +1,32 @@
+[
+  {
+    "seed": 410,
+    "key_count": 29,
+    "matched_count": 29,
+    "mean_error_normalized": 0.029850602449039546,
+    "max_error_normalized": 0.07690990887294222,
+    "mean_match_error_key_size": 0.2256989221541341,
+    "max_match_error_key_size": 0.5815120001423706,
+    "method": "upper-envelope21-drop0.0003",
+    "threshold": 0.002,
+    "rotation_z_degrees": 0,
+    "unmatched_design": [],
+    "unmatched_generated": 0
+  },
+  {
+    "seed": 411,
+    "key_count": 28,
+    "matched_count": 28,
+    "mean_error_normalized": 0.03238014879522071,
+    "max_error_normalized": 0.07931004846667705,
+    "mean_match_error_key_size": 0.244824696411008,
+    "max_match_error_key_size": 0.5996593363728607,
+    "method": "upper-envelope21-drop0.0005",
+    "threshold": 0.002,
+    "rotation_z_degrees": 0,
+    "unmatched_design": [
+      15
+    ],
+    "unmatched_generated": 0
+  }
+]

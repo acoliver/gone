@@ -1,6 +1,6 @@
 class_name Rod
 extends Node3D
-## A plain metal rod dropped on the stasis-room floor in front of the
+## A detached formed ceiling seat dropped on the stasis-room floor in front of the
 ## empty row-A pod at the room's mid-station — the door's pry bar, and
 ## deliberate set dressing the player can act on: it sits a full step
 ## off the aisle, past the pickup reach of every walking line (the
@@ -13,7 +13,7 @@ extends Node3D
 ## derivation, and the rod is dressing outside the collider set like
 ## the status plates, cable trays, and wire loops.
 
-## Rod length and radius, in meters: a metre of plain round bar.
+## Historical logical prop dimensions; pickup geometry and reach remain unchanged.
 const ROD_LENGTH: float = 1.0
 const ROD_RADIUS: float = 0.022
 
@@ -29,19 +29,10 @@ const YAW_RADIANS: float = deg_to_rad(82.0)
 static func build() -> Rod:
 	var rod := Rod.new()
 	rod.name = "Rod"
-	var bar := MeshInstance3D.new()
+	# #110: the user-redrawn source is the actual missing ceiling seat, not a round bar.
+	var bar := SeatRailComponent.build(&"middle")
 	bar.name = "RodBar"
-	var mesh := CylinderMesh.new()
-	mesh.top_radius = ROD_RADIUS
-	mesh.bottom_radius = ROD_RADIUS
-	mesh.height = ROD_LENGTH
-	mesh.radial_segments = 16
-	bar.mesh = mesh
-	bar.material_override = _plain_metal()
-	bar.position = ShipLayout.authored().layout.bay().rod_local().origin + Vector3(0, ROD_RADIUS, 0)
-	# Lay the cylinder's axis into the floor plane first, then skew the
-	# yaw; the compose order applies the lay-down first.
-	bar.quaternion = Quaternion(Vector3.UP, YAW_RADIANS) * Quaternion(Vector3.RIGHT, PI / 2.0)
+	bar.transform = SeatRailComponent.floor_pose()
 	rod.add_child(bar)
 	return rod
 
@@ -58,14 +49,3 @@ static func floor_center() -> Vector2:
 ## harness can pin the gone-from-the-scene state deterministically.
 func pick_up() -> void:
 	visible = false
-
-## Plain steel: mid-grey albedo, mostly metallic, half-rough, no
-## emission — it reads under the red emergency light without shining
-## like a beacon.
-static func _plain_metal() -> StandardMaterial3D:
-	var material := StandardMaterial3D.new()
-	material.albedo_color = Color(0.52, 0.52, 0.54)
-	material.metallic = 0.85
-	material.roughness = 0.5
-	material.emission_enabled = false
-	return material

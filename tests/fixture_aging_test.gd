@@ -15,7 +15,7 @@ func test_hatch_cage_lods_keep_each_fitting_surface_and_bounds() -> void:
 
 func test_cage_glass_keeps_close_detail_with_distance_lods() -> void:
 	var layout := ShipLayout.authored().layout
-	var fixture := Lighting.steady_fixture(Vector3(0, 2.65, 0), 1, 3, 3.2, Surfaces.surface_frame(layout, &"D14-S-041", &"CEILING"))
+	var fixture := Lighting.steady_fixture(Vector3(0, 2.65, 0), 1, 3, Surfaces.surface_frame(layout, &"D14-S-041", &"CEILING"))
 	var glass: MeshInstance3D = fixture.get_node("Lens")
 	var surface := RenderingServer.mesh_get_surface(glass.mesh.get_rid(), 0)
 	assert_true(surface.has("lods") and not surface.lods.is_empty(), "rounded glass retains its close-up surface and simplifies at distance")
@@ -23,7 +23,7 @@ func test_cage_glass_keeps_close_detail_with_distance_lods() -> void:
 
 func test_cage_glass_maps_weathering_across_its_aperture() -> void:
 	var layout := ShipLayout.authored().layout
-	var fixture := Lighting.steady_fixture(Vector3(0, 2.65, 0), 1, 3, 3.2, Surfaces.surface_frame(layout, &"D14-S-041", &"CEILING"))
+	var fixture := Lighting.steady_fixture(Vector3(0, 2.65, 0), 1, 3, Surfaces.surface_frame(layout, &"D14-S-041", &"CEILING"))
 	var glass: MeshInstance3D = fixture.get_node("Lens")
 	var uv: Variant = glass.mesh.surface_get_arrays(0)[Mesh.ARRAY_TEX_UV]
 	assert_true(uv is PackedVector2Array and not uv.is_empty(), "dirty glass needs aperture UVs rather than one constant texture sample")
@@ -90,7 +90,7 @@ func test_spark_gate_rejects_displaced_or_hidden_active_arcs() -> void:
 
 func test_shared_cage_has_local_weathering_and_dirty_emissive_glass() -> void:
 	var layout := ShipLayout.authored().layout
-	var fixture := Lighting.steady_fixture(Vector3(0, 2.65, 0), 1, 3, 3.2, Surfaces.surface_frame(layout, &"D14-S-041", &"CEILING"))
+	var fixture := Lighting.steady_fixture(Vector3(0, 2.65, 0), 1, 3, Surfaces.surface_frame(layout, &"D14-S-041", &"CEILING"))
 	var steel: MeshInstance3D = fixture.get_node("Steel")
 	var glass: MeshInstance3D = fixture.get_node("Lens")
 	assert_true(steel.material_override.shader.resource_path.ends_with("fixture_steel.gdshader"), "cage weathering uses the fixture's metre-scale geometry")
@@ -101,16 +101,16 @@ func test_shared_cage_has_local_weathering_and_dirty_emissive_glass() -> void:
 	assert_true(material.roughness_texture != null, "dust roughens the glass")
 	fixture.free()
 
-func test_pendant_is_continuously_supported_by_a_ceiling_plate() -> void:
-	var layout := ShipLayout.authored().layout
-	var light := Lighting.emergency_fill(Vector3(0, 2.65, 0), 1, 1)
-	FixtureEmitter.suspended(light, 3.2, Surfaces.surface_frame(layout, &"D14-S-041", &"CEILING"), "emergency", light.lens_material)
+func test_wall_cage_retains_its_hatch_bracket_without_a_ceiling_stem() -> void:
+	var game := Game.new(91)
+	var hall := Hallway.build(game)
+	var light: OmniLight3D = hall.get_node("EmergencyFillEnd")
 	var steel: MeshInstance3D = light.get_node("Steel")
-	var mount: AABB = steel.get_meta(&"mount_bounds")
-	assert_close(Vector3(0, light.position.y + mount.end.y, 0), Vector3(0, 3.2, 0), "plate meets the ceiling")
-	assert_true(mount.size.x >= Vector3(0.12, 0, 0.12).x and mount.size.z >= Vector3(0.12, 0, 0.12).z, "plate is wider than the supporting stem")
-	assert_true(mount.position.y <= 0.01, "stem meets the housing")
-	light.free()
+	assert_false(light.has_node("CeilingMount"), "wall cage has no ceiling drop")
+	assert_false(steel.has_meta(&"mount_bounds"), "native hatch bracket needs no added stem")
+	var box := Surfaces.world_frame(steel) * steel.mesh.get_aabb()
+	assert_true(box.end.z >= 1.5 and box.position.z >= 1.1, "bracket meets starboard wall and cage stays at its edge")
+	hall.free()
 
 func test_spark_source_is_at_the_visible_arc_without_a_lamp_cage() -> void:
 	var hazards := Hazards.build()
@@ -130,26 +130,16 @@ func test_spark_source_is_at_the_visible_arc_without_a_lamp_cage() -> void:
 	assert_float_equal(light.light_energy, 0, "light extinguishes with the arc")
 	hazards.free()
 
-func test_pendants_have_short_thirty_millimetre_conduits_and_fifteen_centimetre_plates() -> void:
+func test_remaining_nonkey_wall_cages_have_no_exposed_ceiling_conduit() -> void:
+	var checked := 0
 	for room: Node3D in [Lighting.build(Game.new(91)), Hallway.build(Game.new(91)), PowerRoom.build(Game.new(91))]:
-		for light: OmniLight3D in room.find_children("EmergencyFill*", "OmniLight3D", true, false):
+		for light: Light3D in room.find_children("EmergencyFill*", "Light3D", true, false):
 			if light.name == "EmergencyFillEnd": continue
-			assert_float_equal(light.position.y, Vector3(0, 2.5, 0).y, "shorten the visible conduit between housing and plate")
+			checked += 1
 			var steel: MeshInstance3D = light.get_node("Steel")
-			var mount: AABB = steel.get_meta(&"mount_bounds")
-			assert_close(Vector3(mount.size.x, 0, mount.size.z), Vector3(0.15, 0, 0.15), "150 mm plate")
-			var cross_section := AABB()
-			var first := true
-			var faces := steel.mesh.get_faces()
-			var plane_y: float = mount.end.y - 0.1
-			for index: int in range(0, faces.size(), 3):
-				for edge: int in range(3):
-					var a := steel.transform * faces[index + edge]
-					var b := steel.transform * faces[index + (edge + 1) % 3]
-					if (a.y - plane_y) * (b.y - plane_y) >= 0.0: continue
-					var point := a.lerp(b, (plane_y - a.y) / (b.y - a.y))
-					cross_section = AABB(point, Vector3.ZERO) if first else cross_section.expand(point)
-					first = false
-			assert_false(first, "conduit joins the plate continuously")
-			assert_close(Vector3(cross_section.size.x, 0, cross_section.size.z), Vector3(0.03, 0, 0.03), "30 mm round conduit instead of a thin connection")
+			var box := Surfaces.world_frame(steel) * steel.mesh.get_aabb()
+			assert_true(box.size.y < 0.32, "only the hatch cage, no suspended conduit")
+			assert_true(box.end.y < 2.7, "cage is below the pipe and duct band")
+			assert_false(steel.has_meta(&"mount_bounds"), "cage uses its own wall bracket")
 		room.free()
+	assert_int_equal(checked, 3, "three non-duplicating near-wall power-room lamps")

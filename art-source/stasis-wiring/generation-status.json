@@ -1,0 +1,20 @@
+[
+  {
+    "file": "/Volumes/XS1000/acoliver/projects/gone/branch-4/art-source/stasis-wiring/installed-routing-concept.png",
+    "seed": 11001,
+    "exit_status": 0,
+    "log": "/Volumes/XS1000/acoliver/projects/gone/branch-4/tmp/verify-stasis-wiring/concept/installed-routing-concept.log"
+  },
+  {
+    "file": "/Volumes/XS1000/acoliver/projects/gone/branch-4/art-source/stasis-wiring/coordinated-failure-concept.png",
+    "seed": 11002,
+    "exit_status": 0,
+    "log": "/Volumes/XS1000/acoliver/projects/gone/branch-4/tmp/verify-stasis-wiring/concept/coordinated-failure-concept.log"
+  },
+  {
+    "file": "/Volumes/XS1000/acoliver/projects/gone/branch-4/art-source/stasis-wiring/conduit-transition-reference.png",
+    "seed": 11003,
+    "exit_status": 0,
+    "log": "/Volumes/XS1000/acoliver/projects/gone/branch-4/tmp/verify-stasis-wiring/concept/conduit-transition-reference.log"
+  }
+]

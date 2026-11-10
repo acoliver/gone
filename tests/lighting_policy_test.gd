@@ -1,9 +1,18 @@
 extends SimTestCase
 
+func test_bay_uses_one_live_wall_source_per_existing_fixture_identity() -> void:
+	var bay := Lighting.build(Game.new(91))
+	assert_int_equal(bay.lights().size(), 9, "eight mirrored row lamps and the existing hatch lamp")
+	assert_true(bay.find_children("EmergencyFill*", "Light3D", true, false).is_empty(), "no duplicate neutral cages")
+	var total := 0.0
+	for source: OmniLight3D in bay.lights(): total += source.light_energy / Lighting.FIXTURE_ENERGY
+	assert_true(is_equal_approx(total, 21.84), "the bay retains its 21.84-share total with an even wall distribution")
+	bay.free()
+
 func test_bay_hatch_identity_selects_its_profile_even_when_fixture_order_changes() -> void:
 	var game := Game.new(91)
-	var specs := game.layout.bay().emergency_fixtures(game.registry)
-	assert_int_equal(specs.size(), 8, "seven pod keys and the hatch key")
+	var specs := game.layout.bay().emergency_fixtures()
+	assert_int_equal(specs.size(), 9, "eight wall keys and the hatch key")
 	specs.reverse()
 	var lighting := Lighting.new()
 	lighting._game = game
@@ -20,11 +29,11 @@ func test_bay_hatch_identity_selects_its_profile_even_when_fixture_order_changes
 		var key := fixture.get_child(0) as OmniLight3D
 		var hatch := spec.id == ShipLayout.BAY_HATCH_KEY_ID
 		assert_int_equal(spec.role, ShipLayout.EmergencyLightRole.BAY_HATCH if hatch else ShipLayout.EmergencyLightRole.BAY_POOL, "identity selects semantic role")
-		assert_float_equal(key.omni_range, 5.5 if hatch else 3.5, "identity selects unchanged range")
-		assert_float_equal(key.omni_attenuation, 1.0, "bay falloff stays unchanged")
+		assert_float_equal(key.omni_range, EmergencyFixtureProfile.BAY_HATCH.z if hatch else EmergencyFixtureProfile.BAY.z, "identity selects its consolidated range")
+		assert_float_equal(key.omni_attenuation, EmergencyFixtureProfile.BAY_HATCH.w if hatch else EmergencyFixtureProfile.BAY.w, "identity selects its consolidated falloff")
 		var isolated := Lighting.switched_key(spec.role, 1.0)
-		assert_float_equal(isolated.omni_range, key.omni_range, "profile resolution does not depend on enumeration order")
-		assert_float_equal(isolated.omni_attenuation, key.omni_attenuation, "central profile owns falloff")
+		assert_float_equal(isolated.omni_range, 5.5 if hatch else 3.5, "base role remains independent of wall profile")
+		assert_float_equal(isolated.omni_attenuation, 1.0, "base role owns its original falloff")
 		isolated.free()
 	assert_true(ids.has(ShipLayout.BAY_HATCH_KEY_ID), "layout authors the hatch key explicitly")
 	for role: int in [game.layout.section(&"D14-S-041").emergency_light_role(), game.layout.power_room().emergency_light_role()]:
@@ -34,30 +43,17 @@ func test_bay_hatch_identity_selects_its_profile_even_when_fixture_order_changes
 		key.free()
 	lighting.free()
 
-func test_bay_and_power_fill_coordinates_preserve_the_authored_six_stations() -> void:
+func test_power_near_wall_is_one_regular_row_without_far_wall_duplicates() -> void:
 	var game := Game.new(91)
-	var bay_expected: Array[Vector3] = [
-		Vector3(-4, 2.5, -1.6), Vector3(-4, 2.5, 1.6),
-		Vector3(0, 2.5, -1.6), Vector3(0, 2.5, 1.6),
-		Vector3(4, 2.5, -1.6), Vector3(4, 2.5, 1.6),
-	]
-	var power_expected: Array[Vector3] = [
-		Vector3(24, 2.5, -3.7), Vector3(24, 2.5, -7.7),
-		Vector3(27, 2.5, -3.7), Vector3(27, 2.5, -7.7),
-		Vector3(30, 2.5, -3.7), Vector3(30, 2.5, -7.7),
-	]
-	var rooms: Array[Node3D] = [Lighting.build(game), PowerRoom.build(game)]
-	var positions := [game.layout.bay().emergency_fill_positions(), game.layout.power_room().emergency_fill_positions()]
-	for index: int in range(rooms.size()):
-		var expected := bay_expected if index == 0 else power_expected
-		assert_int_equal(positions[index].size(), 6, "layout supplies all six final positions")
-		for station: int in range(expected.size()):
-			assert_vec3_equal(positions[index][station], expected[station], "layout preserves the fixed coordinate")
-		var fills := rooms[index].find_children("EmergencyFill*", "OmniLight3D", true, false)
-		assert_int_equal(fills.size(), 6, "six existing fills per room")
-		for station: int in range(fills.size()):
-			assert_vec3_equal(fills[station].position, expected[station], "unchanged final fill coordinate")
-		rooms[index].free()
+	var positions := game.layout.power_room().emergency_fill_positions()
+	var room := PowerRoom.build(game)
+	var fills := room.find_children("EmergencyFill*", "Light3D", true, false)
+	assert_int_equal(positions.size(), 3, "only three distinct near-wall stations remain")
+	assert_int_equal(fills.size(), 3, "far-wall fills merged into existing keys")
+	for index: int in range(3):
+		assert_vec3_equal(positions[index], Vector3(24 + 2 * index, 2.5, -1.9), "single regular wall pitch")
+		assert_vec3_equal(fills[index].position, positions[index], "source follows the layout-owned station")
+	room.free()
 
 func test_smoke_shader_requires_an_explicit_emission_binding_without_a_palette_default() -> void:
 	var source := FileAccess.get_file_as_string("res://app/smoke_puff.gdshader")

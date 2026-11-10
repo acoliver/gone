@@ -46,10 +46,23 @@ class FixtureWeatherTest(unittest.TestCase):
             self.assertEqual(result['broad_shell_black_fraction'], 0)
 
     def test_paint_or_dust_presence_alone_cannot_pass_visibility_gate(self):
-        limits = {'views': {'close': {'dust_rgb_difference': {'min': .02, 'max': 1}, 'edge_to_broad_rust_ratio': {'min': 2, 'max': 100}}}}
-        self.assertFalse(all(WEATHER.evaluate({'close': {'dust_rgb_difference': 0, 'edge_to_broad_rust_ratio': 8}}, limits).values()))
-        self.assertFalse(all(WEATHER.evaluate({'close': {'dust_rgb_difference': .04, 'edge_to_broad_rust_ratio': 1}}, limits).values()))
-        self.assertTrue(all(WEATHER.evaluate({'close': {'dust_rgb_difference': .04, 'edge_to_broad_rust_ratio': 8}}, limits).values()))
+        limits = {'views': {'close': {'dust_rgb_difference': {'min': .02, 'max': 1}, 'rust_localisation': {'edge_rust_min': .01, 'broad_rust_max': .001}}}}
+        result = {'close': {'dust_rgb_difference': 0, 'edge_rust_difference': .02, 'broad_rust_difference': .0001}}
+        self.assertFalse(all(WEATHER.evaluate(result, limits).values()))
+        result['close']['dust_rgb_difference'] = .04
+        self.assertTrue(all(WEATHER.evaluate(result, limits).values()))
+
+    def test_rust_localisation_requires_visible_edges_and_invisible_broad_faces(self):
+        limits = {'views': {'close': {'rust_localisation': {'edge_rust_min': .01, 'broad_rust_max': .001}}}}
+        for edge, broad, ratio, expected in (
+            (.01, .001, 10, True),
+            (.02, .0001, 1, True),
+            (.0099, .000001, 9900, False),
+            (.02, .00101, 10000, False),
+        ):
+            with self.subTest(edge=edge, broad=broad):
+                result = {'close': {'edge_rust_difference': edge, 'broad_rust_difference': broad, 'edge_to_broad_rust_ratio': ratio}}
+                self.assertEqual(WEATHER.evaluate(result, limits), {'close.rust_localisation': expected})
 
     def test_repeating_diagonal_pattern_is_detected(self):
         y, x = np.mgrid[:256, :512]
@@ -78,7 +91,7 @@ class FixtureWeatherTest(unittest.TestCase):
             'maximum_translation_margin': .05,
         })
         common = {'weather_rgb_difference', 'broad_shell_rgb_difference',
-                  'edge_to_broad_rust_ratio', 'dust_rgb_difference',
+                  'rust_localisation', 'dust_rgb_difference',
                   'broad_face_translation_peak'}
         expected = {
             '2p5m': common | {'visible_weather_fraction', 'edge_rust_difference'},
@@ -86,10 +99,20 @@ class FixtureWeatherTest(unittest.TestCase):
             'ledge': common | {'streak_rgb_difference'},
             'corridor': common | {'visible_weather_fraction', 'edge_rust_difference'},
         }
+        merged_edge = {
+            '2p5m': .0049188994404848994,
+            'close': .01772391983378218,
+            'ledge': .02558536140452319,
+            'corridor': .00999439547968511,
+        }
         self.assertEqual(set(gates['views']), set(expected))
+        self.assertEqual(sum(map(len, gates['views'].values())), 28)
         for view, limits in gates['views'].items():
             self.assertEqual(set(limits), expected[view])
             for metric, bounds in limits.items():
+                if metric == 'rust_localisation':
+                    self.assertEqual(bounds, {'edge_rust_min': merged_edge[view] * .90, 'broad_rust_max': .001})
+                    continue
                 reference = accepted['measurements'][view][metric]
                 if metric == 'broad_face_translation_peak':
                     self.assertAlmostEqual(bounds['max'], reference + .05)
@@ -105,7 +128,10 @@ class FixtureWeatherTest(unittest.TestCase):
             for metric in limits:
                 with self.subTest(view=view, metric=metric):
                     result = {name: values.copy() for name, values in accepted['measurements'].items()}
-                    result[view][metric] = 1 if metric == 'broad_face_translation_peak' else 0
+                    if metric == 'rust_localisation':
+                        result[view]['broad_rust_difference'] = .002
+                    else:
+                        result[view][metric] = 1 if metric == 'broad_face_translation_peak' else 0
                     self.assertFalse(WEATHER.evaluate(result, gates)[f'{view}.{metric}'])
 
 

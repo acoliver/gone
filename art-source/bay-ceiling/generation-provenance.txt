@@ -1,0 +1,8 @@
+Input: /Volumes/XS1000/acoliver/projects/gone/branch-4/tmp/verify-stasis-ceiling/panel-reference-approved-source.png
+Context: /Volumes/XS1000/acoliver/projects/gone/branch-4/tmp/verify_drop_ceiling_concept.png
+Model: /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d, full hunyuan3d-dit-v2-mv
+Command: HF_HUB_OFFLINE=1 /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/generate.py --model-path /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/weights/Hunyuan3D-2mv --front /Volumes/XS1000/acoliver/projects/gone/branch-4/tmp/verify-stasis-ceiling/panel-reference-approved-source.png --remove-bg --subfolder hunyuan3d-dit-v2-mv --octree-resolution 320 --min-component-faces 50 --seed 4208 --out /Volumes/XS1000/acoliver/projects/gone/branch-4/tmp/verify-stasis-ceiling/hunyuan/panel-seed-4208.glb
+Seed: 4208
+Initial attempt failed before model load because the CLI was launched from the workspace and its default relative model path resolved there; the shared model tree was not changed. Retry supplies the explicit model path.
+Output: raw candidate remains under tmp until shape stats and render succeed; selected source copy goes to art-source/bay-ceiling/.
+No downloads or installs. One local generation job, serially.

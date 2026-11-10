@@ -1,0 +1,560 @@
+{
+  "screen_rectangle_m": {
+    "x": [
+      -0.3672962053874549,
+      0.3734874118064517
+    ],
+    "z": [
+      0.7602235007865812,
+      1.192594223137421
+    ],
+    "y": -0.510617805480957,
+    "width": 0.7407836171939066,
+    "height": 0.43237072235083973
+  },
+  "screen_raycast_samples": [
+    [
+      -0.3672962053874549,
+      -0.509617805480957,
+      0.7602235007865812
+    ],
+    [
+      -0.18210030108897823,
+      -0.503661036491394,
+      0.7602235007865812
+    ],
+    [
+      0.003095603209498421,
+      -0.5035597085952759,
+      0.7602235007865812
+    ],
+    [
+      0.18829150750797508,
+      -0.5034773349761963,
+      0.7602235007865812
+    ],
+    [
+      0.3734874118064517,
+      -0.504249095916748,
+      0.7602235007865812
+    ],
+    [
+      -0.3672962053874549,
+      -0.5011264085769653,
+      0.8683161813742911
+    ],
+    [
+      -0.18210030108897823,
+      -0.4901696443557739,
+      0.8683161813742911
+    ],
+    [
+      0.003095603209498421,
+      -0.49004673957824707,
+      0.8683161813742911
+    ],
+    [
+      0.18829150750797508,
+      -0.48992812633514404,
+      0.8683161813742911
+    ],
+    [
+      0.3734874118064517,
+      -0.4929769039154053,
+      0.8683161813742911
+    ],
+    [
+      -0.3672962053874549,
+      -0.493141770362854,
+      0.976408861962001
+    ],
+    [
+      -0.18210030108897823,
+      -0.4769936800003052,
+      0.976408861962001
+    ],
+    [
+      0.003095603209498421,
+      -0.47687840461730957,
+      0.976408861962001
+    ],
+    [
+      0.18829150750797508,
+      -0.47674667835235596,
+      0.976408861962001
+    ],
+    [
+      0.3734874118064517,
+      -0.48405706882476807,
+      0.976408861962001
+    ],
+    [
+      -0.3672962053874549,
+      -0.4818812608718872,
+      1.0845015425497109
+    ],
+    [
+      -0.18210030108897823,
+      -0.46335291862487793,
+      1.0845015425497109
+    ],
+    [
+      0.003095603209498421,
+      -0.46319758892059326,
+      1.0845015425497109
+    ],
+    [
+      0.18829150750797508,
+      -0.46309757232666016,
+      1.0845015425497109
+    ],
+    [
+      0.3734874118064517,
+      -0.47620832920074463,
+      1.0845015425497109
+    ],
+    [
+      -0.3672962053874549,
+      -0.4677128791809082,
+      1.192594223137421
+    ],
+    [
+      -0.18210030108897823,
+      -0.44979023933410645,
+      1.192594223137421
+    ],
+    [
+      0.003095603209498421,
+      -0.44979536533355713,
+      1.192594223137421
+    ],
+    [
+      0.18829150750797508,
+      -0.44979000091552734,
+      1.192594223137421
+    ],
+    [
+      0.3734874118064517,
+      -0.46577954292297363,
+      1.192594223137421
+    ]
+  ],
+  "frontmost_surface_y": -0.509617805480957,
+  "plane_offset_m": 0.001,
+  "screen_height_fraction": 0.7658730330869411,
+  "resolution": 2048,
+  "pointiness_quantiles": [
+    0.501960813999176,
+    0.5803921818733215,
+    0.6000000238418579,
+    0.6117647290229797,
+    0.6117647290229797
+  ],
+  "convex_edge_wear": {
+    "method": "UV-baked world-position distance to convex mesh edges with dihedral above 2 degrees; avoids pointiness interpolation across large planar faces.",
+    "feature_edges": 11681,
+    "edge_samples": 81482,
+    "sample_interval_m": 0.002,
+    "band_width_m": 0.014,
+    "full_strength_distance_m": 0.004,
+    "coherent_noise_pitch_m": 0.04,
+    "coherent_noise_gate": [
+      0.46,
+      0.6
+    ]
+  },
+  "paint_albedo_median_srgb_255": [
+    74.0,
+    80.0,
+    51.0
+  ],
+  "paint_texels_measured": 1720111,
+  "paint_mask_definition": "UV-covered texels with paint mask >0.95 and self-AO >0.90, excluding chips, steel, rust and deep crevices",
+  "albedo_calibration_medians_srgb_255": [
+    [
+      60.000003814697266,
+      66.0,
+      35.0
+    ],
+    [
+      74.0,
+      80.0,
+      51.000003814697266
+    ]
+  ],
+  "rust_patches": [
+    {
+      "centre": [
+        -0.1299983710050583,
+        -0.38970947265625,
+        0.04459773749113083
+      ],
+      "radius_m": 0.026
+    },
+    {
+      "centre": [
+        0.12997524440288544,
+        -0.39674001932144165,
+        0.059602171182632446
+      ],
+      "radius_m": 0.023
+    },
+    {
+      "centre": [
+        -0.24999582767486572,
+        -0.4908364415168762,
+        0.2595437467098236
+      ],
+      "radius_m": 0.03
+    },
+    {
+      "centre": [
+        0.12000053375959396,
+        -0.4560614824295044,
+        0.18955785036087036
+      ],
+      "radius_m": 0.022
+    },
+    {
+      "centre": [
+        -0.4000035524368286,
+        -0.7001898884773254,
+        0.5048172473907471
+      ],
+      "radius_m": 0.026
+    },
+    {
+      "centre": [
+        0.40010541677474976,
+        -0.7006173729896545,
+        0.5149163007736206
+      ],
+      "radius_m": 0.024
+    },
+    {
+      "centre": [
+        -0.4000016748905182,
+        -0.509524405002594,
+        0.635883092880249
+      ],
+      "radius_m": 0.021
+    }
+  ],
+  "bakes": {
+    "ao_samples": 16,
+    "edge_mask": "14 mm object-space distance band at actual convex mesh edges; noise-broken chips and steel",
+    "tile_m": 0.6,
+    "box_blend": 0.2,
+    "base_detail_multiply": 0.35,
+    "scuffs": "Anisotropic noise, broken by object-space high-frequency noise",
+    "lower_area_grime": 0.38,
+    "roughness": {
+      "paint": 0.62,
+      "chips": 0.4,
+      "grime": 0.75
+    },
+    "normal": "Cycles tangent-space bake of detail and chip bump nodes"
+  },
+  "front_render_screen_corners_px": [
+    [
+      578.2362461090088,
+      375.8426070213318
+    ],
+    [
+      1025.501823425293,
+      375.8426070213318
+    ],
+    [
+      1025.501823425293,
+      114.78867530822754
+    ],
+    [
+      578.2362461090088,
+      114.78867530822754
+    ]
+  ],
+  "triangles": 47998,
+  "dimensions_m": [
+    1.0999999046325684,
+    0.6999045014381409,
+    1.2748125791549683
+  ],
+  "objects": [
+    "ConsoleBody",
+    "DisplayPlane",
+    "ScreenSocket",
+    "KeyboardSocket"
+  ],
+  "geometry": {
+    "source": "meshes/console-s510-rgba-410.glb",
+    "raw_fitted": {
+      "vertices": 307161,
+      "triangles": 613071,
+      "nonmanifold_edges": 1249,
+      "boundary_edges": 1249,
+      "wire_edges": 0,
+      "components": 1
+    },
+    "uniform_scale": 0.6390445747477264,
+    "depth_y_factor": 0.9540024183011049,
+    "backdrop_cut_y_m": -0.03,
+    "back_wall_y_m": 0,
+    "removed_backdrop_faces": 373527,
+    "photo_fit_maximum_x_displacement_m": 0.1478301905854688,
+    "voxel_size_m": 0.005,
+    "smooth_factor": 0.5,
+    "smooth_iterations": 5,
+    "local_repairs": [
+      "Closed side and underside panels reconstructed from the raw fitted silhouette, retaining the ray-sampled front depth and screen recess.",
+      "Side-panel outline straightened with 12 mm feathering; single-row scan notches filtered before voxel rebuilding.",
+      "Deck-to-body joint is a continuous solid shell with no retained scan sliver."
+    ],
+    "after_voxel": {
+      "vertices": 203964,
+      "triangles": 407924,
+      "nonmanifold_edges": 0,
+      "boundary_edges": 0,
+      "wire_edges": 0,
+      "components": 1
+    },
+    "final_geometry": {
+      "vertices": 24001,
+      "triangles": 47998,
+      "nonmanifold_edges": 0,
+      "boundary_edges": 0,
+      "wire_edges": 0,
+      "components": 1
+    },
+    "silhouette_iou": {
+      "front": 0.9948760537901387,
+      "side": 0.9956603349511909
+    }
+  },
+  "keyboard_deck": {
+    "plane_z_equals_ax_plus_by_plus_c": [
+      0.00025930161082322005,
+      0.4948926607284754,
+      0.8868393253990298
+    ],
+    "height_at_centre_m": 0.5879670755202828,
+    "centre_m": [
+      -0.0008577555418014526,
+      -0.6039128303527832,
+      0.5879670755202828
+    ],
+    "extent_x_m": [
+      -0.4827193319797516,
+      0.4810038208961487
+    ],
+    "extent_y_m": [
+      -0.6773526668548584,
+      -0.530472993850708
+    ],
+    "sample_extent_x_m": [
+      -0.39,
+      0.39
+    ],
+    "sample_extent_y_m": [
+      -0.655,
+      -0.545
+    ],
+    "height_range_m": [
+      0.5625216960906982,
+      0.617295503616333
+    ],
+    "flatness_peak_to_peak_m": 0.0005522651409077817,
+    "flatness_rms_m": 0.0001359376761000169,
+    "ray_samples": [
+      [
+        -0.38999998569488525,
+        -0.6549999713897705,
+        0.5626735091209412
+      ],
+      [
+        -0.19499999284744263,
+        -0.6549999713897705,
+        0.5625542998313904
+      ],
+      [
+        0.0,
+        -0.6549999713897705,
+        0.5625216960906982
+      ],
+      [
+        0.19499999284744263,
+        -0.6549999713897705,
+        0.5626348257064819
+      ],
+      [
+        0.38999998569488525,
+        -0.6549999713897705,
+        0.5628197193145752
+      ],
+      [
+        -0.38999998569488525,
+        -0.6274999976158142,
+        0.5764153599739075
+      ],
+      [
+        -0.19499999284744263,
+        -0.6274999976158142,
+        0.5761871933937073
+      ],
+      [
+        0.0,
+        -0.6274999976158142,
+        0.576160192489624
+      ],
+      [
+        0.19499999284744263,
+        -0.6274999976158142,
+        0.5762948989868164
+      ],
+      [
+        0.38999998569488525,
+        -0.6274999976158142,
+        0.5764831304550171
+      ],
+      [
+        -0.38999998569488525,
+        -0.6000000238418579,
+        0.5899801254272461
+      ],
+      [
+        -0.19499999284744263,
+        -0.6000000238418579,
+        0.5898118615150452
+      ],
+      [
+        0.0,
+        -0.6000000238418579,
+        0.5898061394691467
+      ],
+      [
+        0.19499999284744263,
+        -0.6000000238418579,
+        0.5898686647415161
+      ],
+      [
+        0.38999998569488525,
+        -0.6000000238418579,
+        0.5901652574539185
+      ],
+      [
+        -0.38999998569488525,
+        -0.5724999904632568,
+        0.6035946607589722
+      ],
+      [
+        -0.19499999284744263,
+        -0.5724999904632568,
+        0.603468656539917
+      ],
+      [
+        0.0,
+        -0.5724999904632568,
+        0.6034321784973145
+      ],
+      [
+        0.19499999284744263,
+        -0.5724999904632568,
+        0.6035309433937073
+      ],
+      [
+        0.38999998569488525,
+        -0.5724999904632568,
+        0.6039801836013794
+      ],
+      [
+        -0.38999998569488525,
+        -0.5450000166893005,
+        0.617007851600647
+      ],
+      [
+        -0.19499999284744263,
+        -0.5450000166893005,
+        0.6169468760490417
+      ],
+      [
+        0.0,
+        -0.5450000166893005,
+        0.6169363260269165
+      ],
+      [
+        0.19499999284744263,
+        -0.5450000166893005,
+        0.6170231699943542
+      ],
+      [
+        0.38999998569488525,
+        -0.5450000166893005,
+        0.617295503616333
+      ]
+    ],
+    "note": "Usable sloped deck top sampled downward from z=0.640 m; flatness is residual from its best-fit plane, not its intentional slope."
+  },
+  "incomplete": [],
+  "exported_body_watertight": true,
+  "exported_body_volume_m3": 0.5157059247226276,
+  "silhouette_iou_front_raw_fitted": 0.9948760537901387,
+  "silhouette_iou_side_raw_fitted": 0.9956603349511909,
+  "exposed_steel_texels": 10448,
+  "paint_albedo_p10_p90_srgb_255": [
+    [
+      63.0,
+      68.0,
+      42.0
+    ],
+    [
+      79.0,
+      85.0,
+      54.0
+    ]
+  ],
+  "validation": {
+    "glb_bytes": 9201756,
+    "embedded_images": 3,
+    "embedded_materials": 2,
+    "objects_exact": true,
+    "triangles_by_mesh": {
+      "Clean fitted console shell": 47998,
+      "FittedDisplay": 2
+    },
+    "triangles_exported_total": 48000,
+    "orm_shared_occlusion_and_metallic_roughness": true,
+    "maps_2048": true,
+    "renders_1600x900": true,
+    "cycles_samples": 64,
+    "denoised": true,
+    "uv_unwrap": {
+      "method": "Smart UV Project",
+      "angle_degrees": 66,
+      "margin": 0.02
+    },
+    "hunyuan_paint": {
+      "reference": "inputs/console-s510-rgba.png",
+      "texture_size": 2048,
+      "delight": true,
+      "atlas_transfer": "Generated paint transferred onto the retained Smart UV atlas with selected-to-active emission baking."
+    }
+  },
+  "files": [
+    "console.glb",
+    "console.blend",
+    "console-albedo.png",
+    "console-orm.png",
+    "console-normal.png",
+    "front.png",
+    "three-quarter.png",
+    "side.png",
+    "deck-joint.png",
+    "red.png",
+    "clay-three-quarter.png",
+    "clay-side.png",
+    "clay-underside.png",
+    "contact.png",
+    "geometry-report.json",
+    "deck-report.json",
+    "report.json"
+  ]
+}

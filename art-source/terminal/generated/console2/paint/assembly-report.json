@@ -1,0 +1,34 @@
+{
+  "objects": [
+    [
+      "ConsoleBody",
+      "MESH"
+    ],
+    [
+      "DisplayPlane",
+      "MESH"
+    ],
+    [
+      "ScreenSocket",
+      "EMPTY"
+    ],
+    [
+      "KeyboardSocket",
+      "EMPTY"
+    ]
+  ],
+  "body_triangles": 39000,
+  "body_bounds_min": [
+    -0.54998379945755,
+    -0.7000318765640259,
+    -7.910117346909828e-06
+  ],
+  "body_bounds_max": [
+    0.5499860644340515,
+    3.066797216888517e-05,
+    1.2748844623565674
+  ],
+  "texture_materials": [
+    "Hunyuan3D-2 Painted Steel"
+  ]
+}

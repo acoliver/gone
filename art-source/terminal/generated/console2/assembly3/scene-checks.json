@@ -1,0 +1,110 @@
+{
+  "keyboard_frontmost_world_y_m": -0.7086113691329956,
+  "frontmost_vertical_projection_clearance_mm": 0.09996277815582655,
+  "render_settings_match": true,
+  "frames": {
+    "three-quarter": {
+      "keyboard_ndc_min": [
+        0.4660731852054596,
+        0.31934240460395813,
+        2.9180893898010254
+      ],
+      "keyboard_ndc_max": [
+        0.6593853831291199,
+        0.4732188284397125,
+        3.3008971214294434
+      ],
+      "screen_ndc_min": [
+        0.4224298894405365,
+        0.473493754863739,
+        2.774561882019043
+      ],
+      "screen_ndc_max": [
+        0.6494669914245605,
+        0.8593995571136475,
+        3.347660779953003
+      ]
+    },
+    "side": {
+      "keyboard_ndc_min": [
+        0.35655561089515686,
+        0.3867986798286438,
+        2.45596981048584
+      ],
+      "keyboard_ndc_max": [
+        0.418858140707016,
+        0.48635202646255493,
+        2.9862051010131836
+      ],
+      "screen_ndc_min": [
+        0.4357530176639557,
+        0.5313274264335632,
+        2.291588306427002
+      ],
+      "screen_ndc_max": [
+        0.43575307726860046,
+        0.8878686428070068,
+        3.0704047679901123
+      ]
+    },
+    "operator": {
+      "keyboard_ndc_min": [
+        0.3914565443992615,
+        0.4443291127681732,
+        1.2080421447753906
+      ],
+      "keyboard_ndc_max": [
+        0.6073608994483948,
+        0.5618967413902283,
+        1.250819206237793
+      ],
+      "screen_ndc_min": [
+        0.2625957727432251,
+        0.6501580476760864,
+        0.7735671997070312
+      ],
+      "screen_ndc_max": [
+        0.7414059638977051,
+        0.9744141697883606,
+        1.1462342739105225
+      ]
+    },
+    "keyboard-closeup": {
+      "keyboard_ndc_min": [
+        0.28071948885917664,
+        0.3037901818752289,
+        0.9438626766204834
+      ],
+      "keyboard_ndc_max": [
+        0.7080944776535034,
+        0.7100813984870911,
+        1.2937818765640259
+      ],
+      "screen_ndc_min": [
+        0.18434715270996094,
+        0.6401157379150391,
+        0.7180988788604736
+      ],
+      "screen_ndc_max": [
+        0.6878889203071594,
+        1.5333229303359985,
+        1.3148540258407593
+      ]
+    }
+  },
+  "operator_keyboard_in_frame": true,
+  "operator_screen_in_frame": true,
+  "operator_screen_above_keyboard": true,
+  "maximum_edge_length_stretch_factor": 5.74109821490578,
+  "head_vertices_exactly_unchanged": true,
+  "behind_deck_above_lip_vertices_exactly_unchanged": true,
+  "source_smallest_triangle_altitude_mm": 0.00030672113159796737,
+  "body_vertices": 34120,
+  "body_triangles": 68236,
+  "wall_y_m": 0.0,
+  "floor_z_m": 0.0,
+  "body_back_y_m": 2.4417921018482502e-09,
+  "body_min_z_m": 3.7293617083378194e-09,
+  "nonmanifold_edges": 0,
+  "boundary_edges": 0
+}

@@ -209,12 +209,6 @@ static func build(game: Game) -> Hallway:
 		var fixture := hallway._white_fixture(frame, white_level)
 		hallway.add_child(fixture)
 	var section := game.layout.section(&"D14-S-041")
-	for position: Vector3 in section.emergency_fill_positions():
-		var fill := Lighting.pendant_fill(position, level, Lighting.HALL_FILL_MASK)
-		fill.name = "EmergencyFill%d" % hallway._fill_lights.size()
-		FixtureEmitter.suspended(fill, HALL_CEILING_HEIGHT, Surfaces.surface_frame(game.layout, &"D14-S-041", &"CEILING"), "emergency", fill.lens_material)
-		hallway.add_child(fill)
-		hallway._fill_lights.append(fill)
 	var bounce := Lighting.emergency_fill(section.emergency_end_fill_position(), level, Lighting.HALL_FILL_MASK, Lighting.EMERGENCY_END_FILL_SHARE, Lighting.EMERGENCY_END_FILL_COLOR)
 	bounce.name = "EmergencyFillEnd"
 	FixtureEmitter.wall_source(bounce, Surfaces.surface_frame(game.layout, &"D14-S-041", &"STARBOARD"), "emergency", bounce.lens_material, 0.0)
@@ -242,8 +236,8 @@ func _fixture(fixture_transform: Transform3D, level: float) -> Node3D:
 	fixture.name = "HallFixture"
 	fixture.transform = fixture_transform
 	var light := Lighting.switched_key(_game.layout.section(&"D14-S-041").emergency_light_role(), level)
+	EmergencyFixtureProfile.apply(light, EmergencyFixtureProfile.HALL[_lights.size()], level)
 	fixture.add_child(light)
-	DressingMounts.ceiling_stem(fixture, _game.layout.section(&"D14-S-041").bounds().end.y, Surfaces.surface_frame(_game.layout, &"D14-S-041", &"CEILING"))
 	var lens := FixtureEmitter.cage(fixture, 1, Surfaces.surface_frame(_game.layout, &"D14-S-041", &"CEILING"), _lens_material, Basis(Vector3.UP, PI if fixture_transform.origin.z < 0 else 0.0))
 	FixtureEmitter.bind(light, lens, fixture.get_node("Steel"))
 	_lights.append(light)
@@ -342,8 +336,7 @@ func process_frame(delta_secs: float) -> void:
 func _apply_level(level: float) -> void:
 	var energy: float = Lighting.emergency_energy() * level
 	for light: OmniLight3D in _lights:
-		if light.light_energy != energy:
-			light.light_energy = energy
+		light.light_energy = energy * light.get_meta(&"energy_share")
 	for fill: Lighting.EmergencyFill in _fill_lights:
 		fill.apply_level(level)
 	var emissive := Lighting.emergency_emission(level)
