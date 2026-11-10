@@ -16,6 +16,15 @@ from fringe_cards import cards,fringe_material,image_from_array
 from powder_cards import powder_card
 
 TEXTURES=ASSETS/'her_dresses_textures'
+SHELF_SURFACE=.1448
+POWDER_RADIUS=(.145,.16)
+CORE_RADIUS=(.115,.13)
+CORE_RELIEF=.026
+
+
+def deposit_height(x,y,centre):
+    u=(x-centre)/CORE_RADIUS[0];v=(y+.11)/CORE_RADIUS[1]
+    return SHELF_SURFACE+CORE_RELIEF*max(0,1-u*u-v*v)**2*(1+.12*math.sin(u*6+v*4))
 
 
 def reverse_faces(obj):
@@ -33,7 +42,7 @@ def ragged_edges(obj,index=0):
     locked={v for v in bm.verts if group is not None and deform is not None and v[deform].get(group.index,0)>.99}
     edges=[e for e in bm.edges if e.is_boundary and ((e.verts[0].co.z+e.verts[1].co.z)/2<.90 or 1.50<(e.verts[0].co.z+e.verts[1].co.z)/2<1.67)]
     selected={v for e in edges for v in e.verts}
-    for _ in range(3):
+    for _ in range(6):
         changes={}
         for vertex in selected-locked:
             neighbours=[e.other_vert(vertex) for e in vertex.link_edges if e in edges]
@@ -41,25 +50,30 @@ def ragged_edges(obj,index=0):
                 changes[vertex]=vertex.co.lerp((neighbours[0].co+neighbours[1].co)/2,.45)
         for vertex,point in changes.items():vertex.co=point
     edge_count=len(edges)
-    bmesh.ops.subdivide_edges(bm,edges=edges,cuts=2,use_grid_fill=False)
+    bmesh.ops.subdivide_edges(bm,edges=edges,cuts=3,use_grid_fill=False)
     locked={v for v in bm.verts if group is not None and deform is not None and v[deform].get(group.index,0)>.99}
     affected={v for v in bm.verts if any(e.is_boundary for e in v.link_edges) and (v.co.z<.90 or 1.50<v.co.z<1.67)}
     hem=[v.co.z for v in affected-locked if v.co.z<.90]
     hem_height=float(np.median(hem)) if hem else 0
     centre=float(np.median([v.co.x for v in affected if v.co.z<.90])) if hem else 0
-    losses=((-.10,.010,.018),(.065,.006,.010)) if index==0 else ((-.06,.006,.014),(.12,.011,.023))
+    losses=((-.10,.025,.006),(.065,.020,.003)) if index==0 else ((-.06,.020,.004),(.12,.028,.007))
     for vertex in affected-locked:
         p=vertex.co
         amount=1 if p.z<.90 else .60
         if p.z<.90:
             p.z=.10*p.z+.90*hem_height
             p.z+=sum(depth*math.exp(-((p.x-centre-offset)/width)**2) for offset,width,depth in losses)
-        p.z+=amount*(.003*math.sin(p.x*641+p.y*37)+.002*math.sin(p.x*1511-p.y*93))
-        p.x+=(.0007 if p.z<.90 else .0018)*math.sin(p.z*731+p.x*227)
+        else:
+            weight=math.exp(-((p.x-centre+.09)/.035)**4-((p.z-1.625)/.05)**4)
+            p.z+=(1.625-p.z)*.30*weight
+            p.y+=.0015*weight*math.sin((p.z-1.59)*math.pi/.065)
+        p.z+=amount*(.0007*math.sin(p.x*137+p.y*37)+.0003*math.sin(p.x*319-p.y*93))
+        p.x+=(.0003 if p.z<.90 else .0005)*math.sin(p.z*137+p.x*127)
     bm.normal_update();bm.to_mesh(obj.data);bm.free();obj.data.update()
     recalc(obj)
-    return {'refined_boundary_edges':edge_count,'boundary_subdivisions':3,
-            'hem_vertical_grain_variation_m':.005,'shoulder_variation_scale':.60,
+    return {'refined_boundary_edges':edge_count,'boundary_subdivisions':4,
+            'hem_vertical_grain_variation_m':.001,'shoulder_variation_scale':.60,
+            'shoulder_gap_reduction':.30,'softened_boundary_passes':6,
             'local_grain_losses_m':[list(loss) for loss in losses],
             'locked_support_stitches':len(locked)}
 
@@ -135,7 +149,7 @@ def surface(obj,index):
     fade=.88+.08*np.sin(u*37+z*13)+.05*np.sin(z*51-u*11)
     color=np.array((.46,.33,.29) if index==0 else (.33,.40,.44))
     base=color[None,None,:]*fade[:,:,None]*(.75+.25*woven[:,:,None])
-    mask=np.clip(dust*1.9,0,.95)
+    mask=.95*(1-np.exp(-dust*10))*np.clip(.35+.9*clump_noise(size,95400+index),0,1)
     rgba=np.ones((size,size,4),dtype=np.float32)
     rgba[:,:,:3]=base
     control_name=obj.name+'_NoFoldDust'
@@ -147,7 +161,7 @@ def surface(obj,index):
     mat['dust_control_image']=control.name
     return {'atlas_size':size,'upward_dust_pixels':int(np.count_nonzero(mask>.1)),
             'maximum_dust_mix':float(mask.max()),'roughness':.99,'normal_strength':.40,
-            'method':'Physical sewn-pattern UV atlas, pigment fade and interpolated upward-fold normals; separate repeating weave UV'}
+            'method':'Physical sewn-pattern UV atlas, pigment fade and grain-clustered upward-fold dust; separate repeating weave UV'}
 
 
 def clump_noise(size,seed):
@@ -165,7 +179,7 @@ def clump_noise(size,seed):
 
 
 def powder(name,x,seed):
-    obj=powder_card(name,(x,-.11,.1448),(.135,.16),TEXTURES,seed,sectors=32)
+    obj=powder_card(name,(x,-.11,SHELF_SURFACE),POWDER_RADIUS,TEXTURES,seed,sectors=32)
     obj['aged_export']=True;obj['finish_generated']=True
     mat=obj.data.materials[0]
     shader=mat.node_tree.nodes['Principled BSDF']
@@ -182,11 +196,11 @@ def powder(name,x,seed):
     density=(rgba[:,:,3]>.5)*(.42+.58*cloud)
     grains=rng.random((size,size))
     rgba[:,:,3]=(grains<density).astype(np.float32)
-    rgba[:,:,:3]=np.array((.52,.49,.43))*(.72+.28*cloud[:,:,None])
+    rgba[:,:,:3]=np.array((.54,.50,.44))*(.62+.38*cloud[:,:,None])
     texture.image=image_from_array(name+'_NeutralPowder',rgba,TEXTURES/(name.lower()+'_neutral.png'))
     height=.003*cloud
     gy,gx=np.gradient(height)
-    normals=np.stack([-gx/(.27/size),-gy/(.32/size),np.ones_like(gx)],axis=2)
+    normals=np.stack([-gx/(2*POWDER_RADIUS[0]/size),-gy/(2*POWDER_RADIUS[1]/size),np.ones_like(gx)],axis=2)
     normals/=np.linalg.norm(normals,axis=2,keepdims=True)
     normal_rgba=np.ones((size,size,4),dtype=np.float32);normal_rgba[:,:,:3]=normals*.5+.5
     normal.inputs['Color'].links[0].from_node.image=image_from_array(name+'_PowderClumpsNormal',normal_rgba,TEXTURES/(name.lower()+'_clumps_normal.png'),True)
@@ -201,7 +215,7 @@ def fringe_material_for_dresses():
     image=texture.image
     rgba=np.asarray(image.pixels[:],dtype=np.float32).reshape(image.size[1],image.size[0],4)
     alpha=rgba[:,:,3].copy()
-    for offset in range(-10,11):rgba[:,:,3]=np.maximum(rgba[:,:,3],np.roll(alpha,offset,axis=1))
+    for offset in range(-2,3):rgba[:,:,3]=np.maximum(rgba[:,:,3],np.roll(alpha,offset,axis=1))
     grain=np.clip(rgba[:,:,:3].mean(2)/.34,.8,1.15)
     rgba[:,:,:3]=np.array((.56,.51,.43))*grain[:,:,None]
     texture.image=image_from_array('DressFringeFibres',rgba,TEXTURES/'dress_fringe_fibres.png')
@@ -210,14 +224,15 @@ def fringe_material_for_dresses():
 
 def mound(name,card,x):
     count=24
-    vertices=[(x,-.11,.1588)];uvs=[(.5,.5)];faces=[]
+    vertices=[(x,-.11,deposit_height(x,-.11,x))];uvs=[(.5,.5)];faces=[]
     for ring in range(1,5):
         r=ring/4
         for j in range(count):
             a=2*math.pi*j/count
             u=r*math.cos(a);v=r*math.sin(a)
-            vertices.append((x+.105*u,-.11+.13*v,.1448+.014*(1-r*r)**2))
-            uvs.append((.5+.5*u*.105/.135,.5+.5*v*.13/.16))
+            px=x+CORE_RADIUS[0]*u;py=-.11+CORE_RADIUS[1]*v
+            vertices.append((px,py,deposit_height(px,py,x)))
+            uvs.append((.5+.5*u*CORE_RADIUS[0]/POWDER_RADIUS[0],.5+.5*v*CORE_RADIUS[1]/POWDER_RADIUS[1]))
         start=1+(ring-1)*count
         if ring==1:faces.extend((0,start+j,start+(j+1)%count) for j in range(count))
         else:
@@ -250,12 +265,12 @@ def settled_fibres(name,x,material,seed):
     vertices=[];faces=[];uv=[]
     for i in range(12):
         angle=rng.uniform(0,2*math.pi);radius=rng.uniform(.35,1.12)
-        cx=x+.105*radius*math.cos(angle);cy=-.11+.13*radius*math.sin(angle)
+        cx=x+CORE_RADIUS[0]*radius*math.cos(angle);cy=-.11+CORE_RADIUS[1]*radius*math.sin(angle)
         heading=rng.uniform(0,2*math.pi)
         along=np.array((math.cos(heading),math.sin(heading)))*rng.uniform(.003,.007)
         across=np.array((-math.sin(heading),math.cos(heading)))*rng.uniform(.0008,.0018)
         corners=[np.array((cx,cy))+a*along+b*across for a,b in ((-1,-1),(-1,1),(1,1),(1,-1))]
-        heights=[.1448+.014*max(0,1-((p[0]-x)/.105)**2-((p[1]+.11)/.13)**2)**2 for p in corners]
+        heights=[deposit_height(p[0],p[1],x) for p in corners]
         z=max(heights)+.0008
         base=len(vertices)
         vertices.extend((p[0],p[1],z+(.0006 if j>1 else 0)) for j,p in enumerate(corners))
@@ -302,7 +317,7 @@ def apply():
         fringe.name=name+'_FrayedYarns';fringe['finish_generated']=True
         rng=np.random.default_rng(95341+index)
         for start in range(0,len(fringe.data.vertices),4):
-            factor=1. if rng.random()<.20 else rng.uniform(.25,.55)
+            factor=.50 if rng.random()<.10 else rng.uniform(.15,.30)
             for root,tip in ((start,start+3),(start+1,start+2)):
                 fringe.data.vertices[tip].co=fringe.data.vertices[root].co.lerp(fringe.data.vertices[tip].co,factor)
         interrupt_fringe(fringe,x,index,fringe_record)
@@ -312,7 +327,7 @@ def apply():
         mound(name+'_FibreHeap_Base',card,x)
         settled_fibres(name+'_FibreHeap_Yarns',x,yarn,95350+index)
         record[name]={'tear_lips':edge,'stiff_folds':folds,'fabric':finish,'fringe':fringe_record,
-                      'deposit':'Alpha-scissor granular powder, 14 mm rounded core, 12 fine settled fibre cards per dress, 0.800 mm shelf gap'}
+                      'deposit':'Alpha-scissor granular powder, asymmetric 26 mm core, 12 fine settled fibre cards per dress, 0.800 mm shelf gap'}
     return record
 
 

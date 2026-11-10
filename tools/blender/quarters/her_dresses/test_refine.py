@@ -28,6 +28,15 @@ class DryFinishTests(unittest.TestCase):
         obj.data.calc_loop_triangles()
         self.assertTrue(all(t.area>1e-12 for t in obj.data.loop_triangles))
 
+    def test_short_hem_segments_do_not_alias_into_deep_sawteeth(self):
+        xs=np.linspace(-.25,.25,26)
+        vertices=[(x,0,z) for z in (.5,1.1) for x in xs]
+        obj=mesh('ShortHem',vertices,[(i,i+1,i+27,i+26) for i in range(25)])
+        refine.ragged_edges(obj)
+        lower=np.array([v.co[:] for v in obj.data.vertices if v.co.z<.60 and abs(v.co.x)<.03])
+        self.assertLess(float(np.ptp(lower[:,2])),.004)
+        self.assertGreater(float(np.ptp(lower[:,2])),.0002)
+
     def test_supported_shoulder_stitches_do_not_move(self):
         obj=mesh('Shoulder',[(-.1,0,1.60),(.1,0,1.60),(.1,0,1.65),(-.1,0,1.65)],[(0,1,2,3)])
         group=obj.vertex_groups.new(name='SupportStitches');group.add([2,3],1.,'REPLACE')
@@ -43,6 +52,15 @@ class DryFinishTests(unittest.TestCase):
         normals=np.array([p.normal[:] for p in obj.data.polygons])
         self.assertLess(float(normals[0]@normals[1]),-.99)
 
+    def test_fringe_root_keeps_separate_strands_instead_of_an_opaque_strip(self):
+        material=refine.fringe_material_for_dresses()
+        shader=material.node_tree.nodes['Principled BSDF']
+        image=shader.inputs['Base Color'].links[0].from_node.image
+        alpha=np.asarray(image.pixels[:]).reshape(image.size[1],image.size[0],4)[:,:,3]
+        coverage=float(np.mean(alpha[::256]>.5))
+        self.assertGreater(coverage,.10)
+        self.assertLess(coverage,.50)
+
     def test_powder_card_has_transparent_feathering_and_millimetre_support(self):
         obj=refine.powder('Test_FibreHeap',-.29,1)
         points=np.array([v.co[:] for v in obj.data.vertices])
@@ -52,6 +70,14 @@ class DryFinishTests(unittest.TestCase):
         alpha=np.asarray(image.pixels[:]).reshape(-1,4)[:,3]
         self.assertGreater(float(np.mean(alpha==0)),.1)
         self.assertGreater(float(np.mean(alpha==1)),.1)
+
+    def test_powder_core_retains_shelf_contact_and_game_scale_relief(self):
+        card=refine.powder('Test_FibreHeap',-.29,1)
+        core=refine.mound('Test_Core',card,-.29)
+        points=np.array([v.co[:] for v in core.data.vertices])
+        self.assertAlmostEqual(float(points[:,2].min()),.1448,places=6)
+        self.assertGreater(float(np.ptp(points[:,2])),.022)
+        self.assertLess(float(np.ptp(points[:,2])),.030)
 
     def test_stiffening_keeps_upper_support_band_fixed(self):
         obj=mesh('Fold',[(.035,-.11,1.1),(-.1,-.11,1.1),(0,-.11,1.66)],[(0,1,2)])
