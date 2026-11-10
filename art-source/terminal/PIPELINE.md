@@ -2,6 +2,8 @@
 
 The delivery notes below are retained from the selected generation. Relative paths resolve from `generated/console2/final/README.md`. The game export is reduced separately by `export_game_console.py` from the retained final console GLB. Run that script from the repository root with Blender and pass `art-source/terminal/generated/console2/final/console.glb` after `--`. Source delivery triangle counts below predate this game-only reduction. Machine-specific tool and model paths require the local installations described below.
 
+The exporter welds coincident glTF render vertices before decimation and checks that the shell is manifold before and after reduction. Reducing the disconnected render vertices punched holes in the bezel and hinge: the rejected 48,000-triangle body had 15,142 boundary edges despite retaining the original textures. The repaired export remains at 48,002 triangles including the display. The power-room tests check the imported shell for open edges as well as the existing triangle budget and keyboard contact requirements.
+
 # Standing-height console
 
 The deck centre is now 1.000000 m above the floor. Only the housing below the lip stretches; the deck, lip, head, display, sockets and keyboard move upward without scaling. All files in this delivery are under `/Volumes/XS1000/acoliver/projects/gone/branch-3/tmp/issue91/console2/final`. No tracked repository files were changed.

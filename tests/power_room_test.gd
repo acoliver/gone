@@ -528,6 +528,31 @@ func test_terminal_collision_matches_generated_console_footprint() -> void:
 		var facing := Vector3(sin(station.yaw), 0, cos(station.yaw))
 		assert_vec3_equal(hull.center, station.position + facing * 0.365 + Vector3.UP * 0.85, "hull starts flush on the wall and floor")
 
+func test_console_body_has_no_open_edges_after_budget_reduction() -> void:
+	var model := load("res://assets/props/terminal/console.glb").instantiate() as Node3D
+	var body := model.get_node("ConsoleBody") as MeshInstance3D
+	var faces := body.mesh.get_faces()
+	var vertices := {}
+	var edges := {}
+	for index: int in range(0, faces.size(), 3):
+		var ids: Array[int] = []
+		for corner: int in range(3):
+			var point := faces[index + corner]
+			if not vertices.has(point):
+				vertices[point] = vertices.size()
+			ids.append(vertices[point])
+		for corner: int in range(3):
+			var a := ids[corner]
+			var b := ids[(corner + 1) % 3]
+			var edge := Vector2i(mini(a, b), maxi(a, b))
+			edges[edge] = edges.get(edge, 0) + 1
+	var open_edges := 0
+	for uses: int in edges.values():
+		if uses == 1:
+			open_edges += 1
+	assert_int_equal(open_edges, 0, "render-split vertices still form a closed shell without bezel or hinge holes")
+	model.free()
+
 func test_power_room_glbs_remain_within_the_prop_triangle_budget() -> void:
 	for path: String in [
 		"res://assets/props/terminal/console.glb",
