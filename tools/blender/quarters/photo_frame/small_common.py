@@ -207,6 +207,7 @@ def main(script, item, assemble, deform=None):
                 slot.material = cache[clean.name]
         if deform:
             deform(objects)
+            bt.unwrap(objects)
         root['age_years'] = 1000
         bpy.ops.wm.save_as_mainfile(filepath=str(folder/f'{item}-aged.blend'))
         bt.export(ROOT/f'assets/props/quarters/{item}_aged.glb', objects+[root])

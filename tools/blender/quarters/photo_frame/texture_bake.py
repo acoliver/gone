@@ -79,10 +79,10 @@ def bake(item, surface=False):
                 closer = dist<nearest
                 second = np.where(closer,nearest,np.minimum(second,dist))
                 nearest = np.minimum(nearest,dist)
-            crack_width=.28 if name=='Display' else .38 if item=='jewellery_box' else 1.15
+            crack_width=.28 if name=='Display' else .38 if item=='jewellery_box' else .55 if name=='Leather' else 1.15
             crack = np.sqrt(second)-np.sqrt(nearest)<crack_width
-            rgb[crack] *= .60 if item=='jewellery_box' else .18
-            height = np.where(crack,-.07 if item=='jewellery_box' else -.18,fine*.025)
+            rgb[crack] *= .60 if item=='jewellery_box' else .50 if name=='Leather' else .18
+            height = np.where(crack,-.07 if item=='jewellery_box' else -.12 if name=='Leather' else -.18,fine*.025)
             if name=='Display':
                 rgb = rgb*.25+broad[...,None]*.008
                 rgb[crack]=(.12,.13,.12)

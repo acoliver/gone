@@ -29,7 +29,7 @@ def loft(name, sections, offset, mat, sides=24):
 def assemble(m):
     shader=m['Leather'].node_tree.nodes['Principled BSDF']
     shader.inputs['Base Color'].default_value=(.012,.006,.003,1)
-    shader.inputs['Roughness'].default_value=.40
+    shader.inputs['Roughness'].default_value=.33
     shader.inputs['Specular IOR Level'].default_value=.28
     import bpy
     nodes=m['Leather'].node_tree.nodes
@@ -44,7 +44,7 @@ def assemble(m):
     rubber.inputs['Base Color'].default_value=(.006,.006,.005,1)
     rubber.inputs['Roughness'].default_value=.82
     rubber.inputs['Specular IOR Level'].default_value=.12
-    guide=sc.bt.load_guide(sc.ROOT/'tmp/small/boots/guide.glb',(.30,.44,.32))
+    guide=sc.bt.load_guide(sc.ROOT/'tmp/small/boots/guide.glb',(.30,.41,.32))
     guide['generation']={'model':'hunyuan3d-dit-v2-mv','octree_resolution':320,'seed':0,
                          'remove_bg':True,'min_component_faces':50,
                          'image':'docs/art/quarters/sheets/boots/hero.png'}
@@ -53,22 +53,21 @@ def assemble(m):
     points=np.array([tuple(v.co) for obj in guides for v in obj.data.vertices])
     guide['fitted_sections']={}
     for side,x in [('L',-.082),('R',.082)]:
-        loft('Sole_'+side,[(.018,.061,.159,-.002),(.026,.065,.160,-.002),
+        loft('Sole_'+side,[(.024,.061,.159,-.002),(.030,.065,.160,-.002),
                           (.036,.062,.155,-.002),(.040,.058,.151,-.002)],x,m['Rubber'])
         loft('ForeSole_'+side,[(0,.057,.086,-.071),(.005,.061,.089,-.071),
-                              (.022,.059,.088,-.071)],x,m['Rubber'])
+                              (.027,.059,.088,-.071)],x,m['Rubber'])
         sc.box('Heel_'+side,(.091,.077,.029),(x,.103,.0145),m['Rubber'],.003)
         # The loft turns over the shaft lip and descends to a closed inner floor.
         sections=[(.024,.056,.148,-.002),(.041,.058,.144,-.003),
                   (.065,.054,.133,.002),(.085,.050,.108,.024),
                   (.110,.047,.077,.052),(.119,.048,.070,.057),
                   (.128,.045,.066,.061),(.136,.047,.062,.064),
-                  (.145,.045,.060,.066),(.158,.047,.061,.067),
-                  (.195,.046,.058,.068),(.276,.050,.058,.068),
-                  (.297,.052,.059,.068),(.300,.050,.057,.068),
-                  (.297,.045,.052,.068),(.274,.043,.051,.068),
-                  (.190,.040,.049,.068),(.120,.037,.044,.068),
-                  (.090,.030,.034,.068)]
+                  (.145,.045,.060,.066),(.158,.044,.061,.067),
+                  (.195,.051,.062,.068),(.276,.056,.064,.068),
+                  (.297,.049,.058,.068),(.300,.047,.056,.068),
+                  (.297,.045,.052,.068),(.276,.043,.051,.068),
+                  (.195,.040,.049,.068),(.158,.037,.044,.068)]
         samples=[]
         half=(points[:,0]<0) if x<0 else (points[:,0]>0)
         guide_height=float(points[half,2].max())
@@ -102,7 +101,7 @@ def assemble(m):
         for vertex in obj.data.vertices:
             world=obj.matrix_world@vertex.co
             if world.z>.10:
-                world.z=.10+(world.z-.10)*1.65
+                world.z=.10+(world.z-.10)*1.5
             vertex.co=inv@world
         obj.data.update()
     collection=bpy.data.collections['HunyuanGuide']
@@ -132,15 +131,15 @@ def deform(objects):
             world.z=.024+(z-.024)*.74
             toe=max(0,(-world.y-.065)/.10)
             world.z+=.020*toe**2
-            shaft=min(1,max(0,(z-.12)/.32))
+            shaft=min(1,max(0,(z-.12)/.29))
             world.y+=.012*shaft**2
             world.x+=math.sin(world.y*61+world.x*37)*.0025*shaft
-            if z>.39:
-                curl=min(1,(z-.39)/.05)
+            if z>.36:
+                curl=min(1,(z-.36)/.05)
                 center=-.082 if world.x<0 else .082
                 world.x=center+(world.x-center)*(1+.14*curl)
                 angle=math.atan2(world.y-.068,world.x-center)
-                world.z-=.018*max(0,math.sin(angle*5+1))**4*curl
+                world.z-=.022*max(0,math.sin(angle+1))**2*curl
             vertex.co=inv@world
         obj.data.update()
 
