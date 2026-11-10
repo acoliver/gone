@@ -1,0 +1,36 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "```json\n{\n  \"remembered_score\": 7.5,\n  \"aged_score\": 8.0,\n  \"aged_silhouette_recognisable\": true,\n  \"visible_damage_and_fibre_dust\": true,\n  \"defects\": [\n    {\n      \"severity\": \"minor\",\n      \"location\": \"Aged mesh (C), upper back panel\",\n      \"description\": \"The tearing on the upper back of the jacket is somewhat uniform and resembles a digital 'shred' effect rather than natural, irregular cloth decay.\"\n    },\n    {\n      \"severity\": \"minor\",\n      \"location\": \"Aged mesh (C), seat surface\",\n      \"description\": \"Fibre dust is clearly visible on the seat, but the distribution on the floor is very sparse and subtle, potentially under-representing the 'brittle cloth' requirement.\"\n    }\n  ],\n  \"verdict\": \"The prop successfully transitions from a clean, recognizable uniform jacket in the 'remembered' state to a convincingly aged, 1000-year-old artifact in the 'aged' state. The gravity-based draping is well-executed in both states, and the aged version clearly shows the required brittleness, tearing, and fibre dust. The silhouette remains identifiable as a jacket despite the decay.\"\n}\n```"
+      }
+    }
+  ],
+  "created": 1794274238,
+  "model": "qwen3.8-27b",
+  "system_fingerprint": "b1-6d05498",
+  "object": "chat.completion",
+  "usage": {
+    "completion_tokens": 291,
+    "prompt_tokens": 4288,
+    "total_tokens": 4579,
+    "prompt_tokens_details": {
+      "cached_tokens": 43
+    }
+  },
+  "id": "chatcmpl-RKlxxdASzc8H6RAo2UOtnnOVJhmEa50d",
+  "timings": {
+    "cache_n": 43,
+    "prompt_n": 4245,
+    "prompt_ms": 31241.049,
+    "prompt_per_token_ms": 7.359493286219081,
+    "prompt_per_second": 135.87892007083371,
+    "predicted_n": 291,
+    "predicted_ms": 19280.018,
+    "predicted_per_token_ms": 66.48282068965517,
+    "predicted_per_second": 15.04147973305834
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "```json\n{\n  \"remembered_score\": 6,\n  \"aged_score\": 5,\n  \"aged_silhouette_recognisable\": true,\n  \"visible_damage_and_fibre_dust\": true,\n  \"defects\": [\n    {\n      \"severity\": \"medium\",\n      \"location\": \"Aged mesh (C), upper backrest\",\n      \"description\": \"The aged jacket has collapsed into a dense, amorphous clump. While the sleeves are visible, the body of the jacket lacks the structural definition of the design guide, making it difficult to distinguish specific tailoring features like the collar or open front in the aged state.\"\n    },\n    {\n      \"severity\": \"low\",\n      \"location\": \"Aged mesh (C), seat and floor\",\n      \"description\": \"Fibre dust is present on the seat and floor, but the distribution appears somewhat sparse and uniform, resembling a decal rather than a natural accumulation of debris from a decaying object.\"\n    },\n    {\n      \"severity\": \"low\",\n      \"location\": \"Remembered mesh (B), sleeves\",\n      \"description\": \"The sleeves in the remembered state appear slightly stiff and uniform in their drape, lacking the subtle, irregular sag expected from a real garment draped over a chair.\"\n    }\n  ],\n  \"verdict\": \"The prop successfully meets the core requirements. The remembered state (B) clearly depicts a woman's jacket draped over a chair, with recognizable sleeves and tailoring. The aged state (C) effectively conveys the passage of 1000 years through a slumped, torn form and the presence of fibre dust. The silhouette remains recognizable as a jacket in both states. The main area for improvement is the aged mesh, which could benefit from more distinct, less clumped geometry to better preserve the garment's identity while showing decay.\"\n}\n```"
+      }
+    }
+  ],
+  "created": 1794272190,
+  "model": "qwen3.8-27b",
+  "system_fingerprint": "b1-6d05498",
+  "object": "chat.completion",
+  "usage": {
+    "completion_tokens": 408,
+    "prompt_tokens": 4288,
+    "total_tokens": 4696,
+    "prompt_tokens_details": {
+      "cached_tokens": 43
+    }
+  },
+  "id": "chatcmpl-Kb4dmG3RTK4ijZN91TCbPK8s2dS8sykB",
+  "timings": {
+    "cache_n": 43,
+    "prompt_n": 4245,
+    "prompt_ms": 40551.509,
+    "prompt_per_token_ms": 9.55277008244994,
+    "prompt_per_second": 104.68167781376522,
+    "predicted_n": 408,
+    "predicted_ms": 38776.291,
+    "predicted_per_token_ms": 95.27344226044225,
+    "predicted_per_second": 10.49610443660019
+  }
+}

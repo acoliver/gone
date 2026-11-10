@@ -1,0 +1,315 @@
+{
+  "remembered": {
+    "triangles": 6544,
+    "triangle_limit": 10000,
+    "collider_triangle_crossings": {
+      "BlueDress": 0,
+      "BlueDress_Hanger": 0,
+      "RoseDress": 0,
+      "RoseDress_Hanger": 0
+    },
+    "support_gaps_m": {
+      "RoseDress/hanger": 4.4052768864337395e-05,
+      "RoseDress_Hanger/rail": 0.0008069058855299698,
+      "BlueDress/hanger": 0.000660986830843885,
+      "BlueDress_Hanger/rail": 0.0008069058855297495
+    },
+    "support_limit_m": 0.003,
+    "bounds_gltf_m": [
+      [
+        -0.47200000286102295,
+        0.48362186551094055,
+        -0.23141150176525116
+      ],
+      [
+        0.47200000286102295,
+        1.8417737483978271,
+        0.23466384410858154
+      ]
+    ],
+    "part_bounds_gltf_m": {
+      "BlueDress": [
+        [
+          0.38150569796562195,
+          0.5722794532775879,
+          -0.23141150176525116
+        ],
+        [
+          0.47200000286102295,
+          1.6753000020980835,
+          0.22699002921581268
+        ]
+      ],
+      "BlueDress_Hanger": [
+        [
+          0.43549999594688416,
+          1.6195013523101807,
+          -0.21394352614879608
+        ],
+        [
+          0.4404999911785126,
+          1.8417737483978271,
+          0.21974381804466248
+        ]
+      ],
+      "RoseDress": [
+        [
+          -0.47200000286102295,
+          0.48362186551094055,
+          -0.2310512810945511
+        ],
+        [
+          -0.413296639919281,
+          1.6753000020980835,
+          0.23466384410858154
+        ]
+      ],
+      "RoseDress_Hanger": [
+        [
+          -0.45350000262260437,
+          1.6195013523101807,
+          -0.21394352614879608
+        ],
+        [
+          -0.42250001430511475,
+          1.8417737483978271,
+          0.21974381804466248
+        ]
+      ]
+    },
+    "byte_identical_reexport": true,
+    "axes_y_up_front_z": true,
+    "axis_bounds_max_error_m": 0.0,
+    "degenerate_triangles": {
+      "BlueDress": 0,
+      "BlueDress_Hanger": 0,
+      "RoseDress": 0,
+      "RoseDress_Hanger": 0
+    },
+    "origins_gltf_m": {
+      "RoseDress": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "BlueDress": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "tunic_triangle_crossings": {
+      "BlueDress": 0,
+      "BlueDress_Hanger": 0,
+      "RoseDress": 0,
+      "RoseDress_Hanger": 0
+    },
+    "dress_pair_crossings": 0,
+    "tunic_transform": "wardrobe-local X reflection; hook [0,1.82,0.003038027]; debris separately seated at shelf+0.5mm, as issue-114 demo",
+    "pass": true
+  },
+  "aged": {
+    "triangles": 9430,
+    "triangle_limit": 10000,
+    "collider_triangle_crossings": {
+      "BlueDress_FrayedYarns": 0,
+      "BlueDress_FibreHeap_Base": 0,
+      "RoseDress_FrayedYarns": 0,
+      "RoseDress_FibreHeap_Base": 0,
+      "BlueDress_FibreHeap": 0,
+      "RoseDress_FibreHeap": 0,
+      "BlueDress": 0,
+      "BlueDress_Hanger": 0,
+      "RoseDress": 0,
+      "RoseDress_Hanger": 0
+    },
+    "support_gaps_m": {
+      "RoseDress/hanger": 4.4052768864337395e-05,
+      "RoseDress_Hanger/rail": 0.0008069058855299698,
+      "RoseDress_FibreHeap/shelf": 0.0008000079542398453,
+      "RoseDress_FibreHeap_Base/shelf": 0.0008000079542398453,
+      "BlueDress/hanger": 0.000660986830843885,
+      "BlueDress_Hanger/rail": 0.0008069058855297495,
+      "BlueDress_FibreHeap/shelf": 0.0008000079542398453,
+      "BlueDress_FibreHeap_Base/shelf": 0.0008000079542398453
+    },
+    "support_limit_m": 0.003,
+    "bounds_gltf_m": [
+      [
+        -0.4728829264640808,
+        0.14480000734329224,
+        -0.23214325308799744
+      ],
+      [
+        0.47296687960624695,
+        1.8417737483978271,
+        0.25219446420669556
+      ]
+    ],
+    "part_bounds_gltf_m": {
+      "BlueDress_FrayedYarns": [
+        [
+          0.3820342719554901,
+          0.5520148873329163,
+          -0.22856462001800537
+        ],
+        [
+          0.47296687960624695,
+          1.6678335666656494,
+          0.2273508608341217
+        ]
+      ],
+      "BlueDress_FibreHeap_Base": [
+        [
+          0.33358335494995117,
+          0.14480000734329224,
+          -0.2057504504919052
+        ],
+        [
+          0.44498583674430847,
+          0.15880000591278076,
+          0.18955226242542267
+        ]
+      ],
+      "RoseDress_FrayedYarns": [
+        [
+          -0.4728829264640808,
+          0.4592692255973816,
+          -0.2140800505876541
+        ],
+        [
+          -0.4059966504573822,
+          1.6680480241775513,
+          0.24881643056869507
+        ]
+      ],
+      "RoseDress_FibreHeap_Base": [
+        [
+          -0.4464166462421417,
+          0.14480000734329224,
+          -0.2057504504919052
+        ],
+        [
+          -0.3350141644477844,
+          0.15880000591278076,
+          0.18955226242542267
+        ]
+      ],
+      "BlueDress_FibreHeap": [
+        [
+          0.3251536786556244,
+          0.14480000734329224,
+          -0.20267564058303833
+        ],
+        [
+          0.45315688848495483,
+          0.16367390751838684,
+          0.22816848754882812
+        ]
+      ],
+      "RoseDress_FibreHeap": [
+        [
+          -0.4533948600292206,
+          0.14480000734329224,
+          -0.20885203778743744
+        ],
+        [
+          -0.3258605897426605,
+          0.16271471977233887,
+          0.209737628698349
+        ]
+      ],
+      "BlueDress": [
+        [
+          0.38613662123680115,
+          0.5728933215141296,
+          -0.23214325308799744
+        ],
+        [
+          0.47200000286102295,
+          1.6753000020980835,
+          0.2298354059457779
+        ]
+      ],
+      "BlueDress_Hanger": [
+        [
+          0.43549999594688416,
+          1.6195013523101807,
+          -0.21394352614879608
+        ],
+        [
+          0.4404999911785126,
+          1.8417737483978271,
+          0.21974381804466248
+        ]
+      ],
+      "RoseDress": [
+        [
+          -0.47200000286102295,
+          0.48172980546951294,
+          -0.21482937037944794
+        ],
+        [
+          -0.40390753746032715,
+          1.6753000020980835,
+          0.25219446420669556
+        ]
+      ],
+      "RoseDress_Hanger": [
+        [
+          -0.45350000262260437,
+          1.6195013523101807,
+          -0.21394352614879608
+        ],
+        [
+          -0.42250001430511475,
+          1.8417737483978271,
+          0.21974381804466248
+        ]
+      ]
+    },
+    "byte_identical_reexport": true,
+    "axes_y_up_front_z": true,
+    "axis_bounds_max_error_m": 0.0,
+    "degenerate_triangles": {
+      "BlueDress_FrayedYarns": 0,
+      "BlueDress_FibreHeap_Base": 0,
+      "RoseDress_FrayedYarns": 0,
+      "RoseDress_FibreHeap_Base": 0,
+      "BlueDress_FibreHeap": 0,
+      "RoseDress_FibreHeap": 0,
+      "BlueDress": 0,
+      "BlueDress_Hanger": 0,
+      "RoseDress": 0,
+      "RoseDress_Hanger": 0
+    },
+    "origins_gltf_m": {
+      "RoseDress": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "BlueDress": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "tunic_triangle_crossings": {
+      "BlueDress_FrayedYarns": 0,
+      "BlueDress_FibreHeap_Base": 0,
+      "RoseDress_FrayedYarns": 0,
+      "RoseDress_FibreHeap_Base": 0,
+      "BlueDress_FibreHeap": 0,
+      "RoseDress_FibreHeap": 0,
+      "BlueDress": 0,
+      "BlueDress_Hanger": 0,
+      "RoseDress": 0,
+      "RoseDress_Hanger": 0
+    },
+    "dress_pair_crossings": 0,
+    "tunic_transform": "wardrobe-local X reflection; hook [0,1.82,0.003038027]; debris separately seated at shelf+0.5mm, as issue-114 demo",
+    "pass": true
+  },
+  "pass": true
+}

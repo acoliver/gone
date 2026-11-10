@@ -1,0 +1,153 @@
+{
+  "origin": "wardrobe floor centre, identity transform",
+  "rail_native_m": [
+    0,
+    -0.003038027,
+    1.82
+  ],
+  "tunic_source_branch": "issue-114-quarters-demo",
+  "tunic_wardrobe_local_hook": [
+    0,
+    1.82,
+    0.003038027
+  ],
+  "tunic_width_along_rail": true,
+  "bays": [
+    {
+      "name": "RoseDress",
+      "x": -0.451,
+      "x_limits": [
+        -0.473,
+        -0.428
+      ],
+      "color": [
+        0.235,
+        0.118,
+        0.115
+      ],
+      "aged_color": [
+        0.34,
+        0.275,
+        0.25
+      ],
+      "hem": 0.48
+    },
+    {
+      "name": "BlueDress",
+      "x": 0.438,
+      "x_limits": [
+        0.397,
+        0.473
+      ],
+      "color": [
+        0.125,
+        0.17,
+        0.19
+      ],
+      "aged_color": [
+        0.27,
+        0.3,
+        0.3
+      ],
+      "hem": 0.57
+    }
+  ],
+  "dresses": {
+    "RoseDress": {
+      "sewing_stage": {
+        "frames": 60,
+        "quality": 14,
+        "time_scale": 0.3499999940395355,
+        "sewing": true,
+        "sewing_force_max": 6.0,
+        "bending_stiffness": 0.25,
+        "pin_count": 16,
+        "self_collision_distance_m": 0.0020000000949949026,
+        "colliders_active": false,
+        "self_collision_active": false,
+        "last_five_frames_motion_m": 2.9851961519327428e-05
+      },
+      "seam_gap_before_weld_m": 0.0005999803424663152,
+      "gravity_drape": {
+        "frames": 240,
+        "quality": 20,
+        "time_scale": 0.25,
+        "sewing": false,
+        "sewing_force_max": 6.0,
+        "bending_stiffness": 0.25,
+        "pin_count": 8,
+        "self_collision_distance_m": 0.0020000000949949026,
+        "colliders_active": true,
+        "self_collision_active": true,
+        "last_five_frames_motion_m": 0.013474675758207724
+      },
+      "silhouette_fit": {
+        "reference_weight": 0.8,
+        "locked_support_stitches": 8,
+        "maximum_fit_m": 0.054178431538410454,
+        "raw_simulation_object": "RoseDress_RawSimulationRemembered",
+        "method": "Keep simulated depth and folds; blend width and length toward the sewn pattern measurements to preserve the A-line silhouette"
+      },
+      "collider_fit": {
+        "projected_vertices": 139,
+        "maximum_projection_m": 0.002862811165503255,
+        "constraint": "measured tunic envelope and wardrobe side/front/back interior faces"
+      },
+      "method": "Flat front/back patterns sewn at sides and shoulders, open neck/armholes, shaped upper chest only as in the tunic pass; waist/hem free, height-dependent union of both tunic envelopes reserved. Chest form is removed before aged resimulation."
+    },
+    "BlueDress": {
+      "sewing_stage": {
+        "frames": 60,
+        "quality": 14,
+        "time_scale": 0.3499999940395355,
+        "sewing": true,
+        "sewing_force_max": 6.0,
+        "bending_stiffness": 0.25,
+        "pin_count": 20,
+        "self_collision_distance_m": 0.0020000000949949026,
+        "colliders_active": false,
+        "self_collision_active": false,
+        "last_five_frames_motion_m": 3.435037966726562e-05
+      },
+      "seam_gap_before_weld_m": 0.0006000101618124228,
+      "gravity_drape": {
+        "frames": 240,
+        "quality": 20,
+        "time_scale": 0.25,
+        "sewing": false,
+        "sewing_force_max": 6.0,
+        "bending_stiffness": 0.25,
+        "pin_count": 10,
+        "self_collision_distance_m": 0.0020000000949949026,
+        "colliders_active": true,
+        "self_collision_active": true,
+        "last_five_frames_motion_m": 0.006636724325108937
+      },
+      "silhouette_fit": {
+        "reference_weight": 0.8,
+        "locked_support_stitches": 10,
+        "maximum_fit_m": 0.0569269357211765,
+        "raw_simulation_object": "BlueDress_RawSimulationRemembered",
+        "method": "Keep simulated depth and folds; blend width and length toward the sewn pattern measurements to preserve the A-line silhouette"
+      },
+      "collider_fit": {
+        "projected_vertices": 60,
+        "maximum_projection_m": 0.0019999743040848474,
+        "constraint": "measured tunic envelope and wardrobe side/front/back interior faces"
+      },
+      "method": "Flat front/back patterns sewn at sides and shoulders, open neck/armholes, shaped upper chest only as in the tunic pass; waist/hem free, height-dependent union of both tunic envelopes reserved. Chest form is removed before aged resimulation."
+    }
+  },
+  "bounds_blender_native_m": [
+    [
+      -0.47200000286102295,
+      -0.23466384410858154,
+      0.48362186551094055
+    ],
+    [
+      0.47200000286102295,
+      0.23141150176525116,
+      1.8417737483978271
+    ]
+  ]
+}

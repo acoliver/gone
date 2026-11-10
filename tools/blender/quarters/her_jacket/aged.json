@@ -1,0 +1,32 @@
+{
+  "age_years": 1000,
+  "environment": "sealed sterile dry oxygenated; no biology",
+  "cuts": {
+    "removed_faces": 16,
+    "lost_area_m2": 0.009791882592253387
+  },
+  "gravity_resimulation": {
+    "frames": 180,
+    "quality": 14,
+    "time_scale": 0.25,
+    "sewing": false,
+    "sewing_force_max": 6.0,
+    "bending_stiffness": 0.550000011920929,
+    "pin_count": 18,
+    "self_collision_distance_m": 0.0010000000474974513,
+    "last_five_frames_motion_m": 0.02982788756071442
+  },
+  "tailoring": "Faded lapel facings and three retained buttons fitted to the resimulated surface",
+  "bounds_blender_native_m": [
+    [
+      -0.27512484788894653,
+      -0.1820784956216812,
+      0.0007999999797903001
+    ],
+    [
+      0.2973613739013672,
+      0.448954701423645,
+      0.9861167073249817
+    ]
+  ]
+}
