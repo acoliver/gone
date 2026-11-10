@@ -51,7 +51,7 @@ func _run() -> void:
 				check.assert_float_in_range(uv.x, 0.015, 0.985, "bed part inside horizontal frame: " + str(uv))
 				check.assert_float_in_range(uv.y, 0.015, 0.985, "bed part inside vertical frame: " + str(uv))
 		furnishings.free()
-	var close_items := {"bedside": ["photo_frame"], "table": ["mug_1", "mug_2", "plate_1", "plate_2"], "desk": ["medal_case", "data_tablet_2"]}
+	var close_items := {"bedside": ["photo_frame"], "table": ["mug_1", "mug_2", "plate_1", "plate_2"], "desk": ["medal_case", "data_tablet_2"], "boots": ["boots"]}
 	for state: StringName in QuartersProps.STATES:
 		var furnishings := QuartersFurnishings.build(state)
 		for view: String in close_items:

@@ -18,7 +18,7 @@ func compile() -> void:
 	beats.back().quarters_view = "console"
 	beat("remembered-bed")
 	beats.back().quarters_view = "bed"
-	for view: String in ["bedside", "table", "desk"]:
+	for view: String in ["bedside", "table", "desk", "boots"]:
 		beat("remembered-" + view)
 		beats.back().quarters_view = view
 	_console_path()
@@ -44,7 +44,7 @@ func compile() -> void:
 	beats.back().quarters_view = "console"
 	beat("present-bed")
 	beats.back().quarters_view = "bed"
-	for view: String in ["bedside", "table", "desk"]:
+	for view: String in ["bedside", "table", "desk", "boots"]:
 		beat("present-" + view)
 		beats.back().quarters_view = view
 	walk_to(QuartersLayout.to_world(Vector3(4, 0.305, -0.6)))

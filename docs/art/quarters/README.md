@@ -15,11 +15,13 @@ door now has a dark recess, a steel frame and a rounded pull grip in the
 existing brighter gray hardware material; aiming at that control also operates
 the release. Its ship-text label uses the same attention and
 translation system as the other door labels. Walk across the threshold to
-see Remembered, then use the desk console on the right. Its corruption blocks,
-message and fault text are placeholders under `decisions.md` ruling 16. The
-sequence lasts 300 logical ticks, then switches to Present. Re-entering keeps
-Present for the current play session. The regular white strips follow secondary
-power; the bedside lamps are dead in Present, and the console stays lit.
+see Remembered, then use the desk console on the right. Its message wording and
+retro fault reference remain author-facing placeholders under `decisions.md`
+ruling 16; no development annotation is printed on the screen. The corruption,
+message and fault sequence lasts 300 logical ticks, then switches to Present.
+Re-entering keeps Present for the current play session. The regular white
+strips follow secondary power; the bedside lamps are dead in Present, and the
+console stays lit.
 Both states retain the world exposure multiplier of 2.0. Remembered has four
 warm ceiling keys at energy 3.2 each, colour (1.0, 0.73, 0.46), plus two
 bedside lamps at 0.35, colour (1.0, 0.64, 0.31): state-specific energy 13.5.
@@ -388,6 +390,62 @@ D14 code and lighting are unchanged. Godot still prints ObjectDB, resource,
 allocator and renderer teardown warnings. Harness visual verdicts remain
 pending; this pass verifies placement geometry, capture framing and pixel
 copying, without claiming a visual-quality review.
+
+### Console standby and boots close-ups (demo9)
+
+The display previously printed `PLACEHOLDER TEXT (decisions.md ruling 16)`
+before every phase, and left the fault visible after playback in Present.
+`QuartersRoom` now omits that author annotation when rendering playback and
+uses a single stationary underscore cursor at 25% opacity on the dark screen
+while idle, both before interaction and after completion. It has no logo or
+status wording. The simulation's source annotation remains author-facing;
+the code comment and this note record that the message wording and retro fault
+address are provisional under ruling 16. The corruption, message and fault
+retain their original text, full playback contrast, wrapping and 60/180/60-tick
+boundaries. Existing sequence and legibility tests are unchanged.
+
+Two added views show the boots on the floor beside the right bedside cabinet.
+Both use room-local eye (5.65, 0.65, 4.45), target (5.06, 0.16, 5.28) and a
+58-degree horizontal field. The existing placement and triangle-clearance tests
+check floor contact within 2 mm and no furniture intersections; camera tests
+also require all boot bounds to remain below the protocol crop in both states.
+Boot geometry and placement are unchanged.
+
+Regenerate and capture with:
+
+```sh
+godot --headless --path . -s tools/build_quarters_scenario.gd
+nohup godot --headless --path . -s harness/run.gd -- scenarios/quarters-demo.json --out tmp/demo9/routes/quarters-demo > tmp/demo9/route-quarters-demo.log 2>&1 &
+godot --headless --path . -s tools/quarters_presentation.gd -- tmp/demo9/routes/quarters-demo/run-<id> tmp/demo9
+```
+
+The twenty chip-free copies in `tmp/demo9/` include the five standard images,
+both states' console, desk, bed, bedside and table views, the three playback
+frames, and `remembered-boots.png` / `present-boots.png`. They retain the source
+pixels below the 40-row protocol band, at 1536 by 824. Harness originals stay
+in the run directory.
+
+Demo9 passed **922 headless tests, zero failures**, including three new
+presentation/capture regressions. The full suite and all eight windowed
+scenarios ran under `nohup` and exited 0: `quarters-demo`, `gameplay-full`,
+`rod-pickup`, `gameplay-keyboard-turn`, `hallway`, `power-room`,
+`connector-route` and `click-route`. All twenty quarters beats passed machine
+checks, and all twenty presentation copies match the source pixels below the
+protocol band. The raw quarters run is
+`tmp/demo9/routes/quarters-demo/run-1794274543/`; logs are
+`tmp/demo9/full-suite.log`, `routes.log`, `route-<scenario>.log`,
+`presentation.log` and `image-comparer.log`.
+
+Image-comparer inspected the two boots views, four idle desk/console views and
+three playback frames. It found visible floor contact without obvious clipping,
+only dim cursors on the idle displays, no development annotations, visible
+corruption and readable message/fault text. Still images cannot rule out hidden
+intersections; the geometry tests additionally pass both states' floor contact
+and furniture-triangle clearance. Measured sole clearance is 0.50 mm in each
+state. The corridor-door copy is pixel-identical to demo8. D14 is unchanged;
+the connector lane also passes its D14-return and replay-digest checks. Existing
+Godot resource/renderer teardown warnings remain, and the harness's broader
+visual verdict fields are still pending.
 
 ## Plan view
 

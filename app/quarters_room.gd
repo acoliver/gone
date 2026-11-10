@@ -52,7 +52,7 @@ func _screen(state: Node3D) -> void:
 	screen.material_override = finish
 	screens.append(screen)
 	var label := Label3D.new()
-	label.name = "PlaceholderText"
+	label.name = "ConsoleText"
 	label.position = bounds.get_center() + Vector3(0, 0, bounds.size.z / 2 + 0.0017)
 	label.pixel_size = bounds.size.x / TEXT_WIDTH_PX
 	label.font_size = TEXT_FONT_SIZE
@@ -151,12 +151,17 @@ func process_frame() -> void:
 	for bounce: OmniLight3D in entrance_bounces: bounce.light_energy = Lighting.regular_energy() * 0.35 * level
 	for lamp: OmniLight3D in white_lights: lamp.light_energy = Lighting.regular_energy() * level
 	white_finish.emission = Lighting.REGULAR_WHITE * Lighting.REGULAR_EMISSIVE * level
-	var source := _game.quarters.screen_text()
+	var playing := _game.quarters.state == QuartersMemory.State.PLAYING
+	# Ruling 16 keeps message wording and retro references provisional. The
+	# simulation's author-facing annotation must never appear on the display.
+	var source := _game.quarters.screen_text().trim_prefix(QuartersMemory.PLACEHOLDER + "\n\n") if playing else "_"
 	if source != _screen_text:
 		_screen_text = source
 		var text := _wrapped(source)
-		for label: Label3D in screen_labels: label.text = text
-	corruption.visible = _game.quarters.state == QuartersMemory.State.PLAYING and _game.quarters.elapsed < QuartersMemory.CORRUPT_TICKS
+		for label: Label3D in screen_labels:
+			label.text = text
+			label.modulate.a = 1.0 if playing else 0.25
+	corruption.visible = playing and _game.quarters.elapsed < QuartersMemory.CORRUPT_TICKS
 	if corruption.visible:
 		for index: int in range(corruption.get_child_count()):
 			var block := corruption.get_child(index) as MeshInstance3D
