@@ -131,6 +131,9 @@ func _shot(name: String, eye: Vector3, target: Vector3, fov: float, intended: St
 	var image: Image = root.get_texture().get_image()
 	var error := image.save_png(path)
 	assert(error == OK, "PNG save succeeds for " + name)
+	if name.begins_with("active-console"):
+		var checked: bool = load("res://tests/console_screen_capture.gd").check_background(image, camera, ship.power_room.get_node("ConsoleStation1"))
+		assert(checked, "captured active console has dark glass behind its text")
 	capture_names.append(path)
 	print("CAPTURE ", name, " camera_transform=", camera.global_transform)
 

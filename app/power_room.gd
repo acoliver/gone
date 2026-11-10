@@ -290,18 +290,19 @@ func _build_console(station: ConsoleStation, keyboard_missing: bool) -> Node3D:
 		_screen_material = StandardMaterial3D.new()
 		_screen_material.albedo_color = Color(0.025, 0.035, 0.04)
 		_screen_material.roughness = 0.3
+		_screen_material.metallic_specular = 0.0
 		_screen_material.emission_enabled = true
 		_screen_material.emission = Lighting.REGULAR_WHITE * 0.10
+		_screen_material.emission_energy_multiplier = 0.05
 		var screen := MeshInstance3D.new()
 		screen.name = "ScreenGlass"
-		screen.mesh = _box_mesh(Vector3(0.54, 0.28, 0.008))
 		screen.material_override = _screen_material
-		screen.visible = false
 		group.add_child(screen)
 		var plane_transform := terminal.transform * display_plane.transform
 		var display_frame := _upright_screen_frame(group, plane_transform, display_plane.mesh.get_aabb())
 		screen.transform = display_frame.transform
-		screen.mesh = _box_mesh(Vector3(display_frame.size.x, display_frame.size.y, 0.008))
+		# The glass front is 1 mm ahead of DisplayPlane, behind the text at 3 mm.
+		screen.mesh = _box_mesh(Vector3(display_frame.size.x, display_frame.size.y, 0.002))
 		var plane_size: Vector2 = display_frame.size
 		assert(display_frame.transform.basis.z.dot(Vector3.BACK) > 0.0, "terminal display plane faces out from its screen")
 		display_plane.visible = false
@@ -562,13 +563,6 @@ func _apply_console_state(state: int) -> void:
 		return
 	_console_state = state
 	console_display.set_messages(HEADING_ID, _state_message_id(state))
-	var emission: float = 0.0
-	match state:
-		Game.ConsoleState.INACTIVE:
-			emission = 0.30
-		Game.ConsoleState.ACTIVE:
-			emission = 0.45
-	_screen_material.emission = Lighting.REGULAR_WHITE * emission
 
 ## The door leaf's animated offset from its authored pose, in world
 ## space: the deterministic projection this module's leaf renders.

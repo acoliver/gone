@@ -422,7 +422,9 @@ func test_generated_console_models_and_wall_mounts_are_present() -> void:
 	assert_true((surface.mesh as QuadMesh).size.is_equal_approx(Vector2(plane_size.x, plane_size.y)), "text exactly covers DisplayPlane")
 	var expected := active_plane.transform * active_plane.mesh.get_aabb().get_center() + active_plane.basis.z * 0.003
 	assert_float_in_range(display.position.distance_to(expected), 0, 0.0001, "live display sits 3 mm ahead of DisplayPlane")
-	assert_false(active_station.get_node("ScreenGlass").visible, "no second pane covers the live text")
+	var live_glass := active_station.get_node("ScreenGlass") as MeshInstance3D
+	assert_true(live_glass.visible, "opaque dark glass backs the transparent live text")
+	assert_true(display.position.z > live_glass.position.z + (live_glass.mesh as BoxMesh).size.z * 0.5, "text stays ahead of the glass front")
 	var eye := active_station.transform * Vector3(0, 1.65, 1.10)
 	var first_hit := _test_first_triangle_hit(room, eye, text_frame.origin)
 	assert_true(first_hit == surface, "capture-height eye ray hits live text before the console body: " + str(first_hit))
@@ -724,3 +726,44 @@ func _check_status_board_attention() -> void:
 		board.tick_attention(away, Vector3(0.0, 0.0, -1.0))
 	assert_float_in_range(board.perception.perceive, 0.0, 0.0, "ignoring the board returns it to native text")
 	room.free()
+
+func test_all_console_screen_samples_have_opaque_glass_before_the_body() -> void:
+	var room := PowerRoom.build(_awake_game())
+	for index in range(6):
+		var station := room.get_node("ConsoleStation%d" % index) as Node3D
+		var glass := station.get_node("ScreenGlass") as MeshInstance3D
+		assert_true(glass.visible, "%s needs opaque glass behind transparent text" % station.name)
+		var size := (glass.mesh as BoxMesh).size
+		var eye := station.transform * Vector3(0, 1.65, 1.10)
+		for y: float in [-0.4, 0.0, 0.4]:
+			for x: float in [-0.4, 0.0, 0.4]:
+				var target := station.transform * glass.transform * Vector3(size.x * x, size.y * y, 0)
+				var finish := eye + (target - eye) * 1.5
+				var first := _test_first_triangle_hit(room, eye, finish)
+				assert_true(first != null and first.name in ["ScreenGlass", "TextSurface"], "%s sample %s reaches glass or text before the body" % [station.name, Vector2(x, y)])
+				if index == 1:
+					var surface := station.get_node("ShipDisplay/TextSurface") as MeshInstance3D
+					surface.visible = false
+					assert_true(_test_first_triangle_hit(room, eye, finish) == glass, "live text's transparent pixels reveal glass, not body")
+					surface.visible = true
+	room.free()
+
+func test_status_board_elevation_contains_every_deck_and_marks_d14() -> void:
+	var drawing := StatusBoardData.side_elevation(Rect2(470, 214, 1510, 300))
+	assert_true(StatusBoardData.DECK_COUNT.native == "wupo [" + Naleya.octal(30) + "]", "native label names the deck count in octal")
+	assert_true(StatusBoardData.DECK_COUNT.perceived_es == "30 CUBIERTAS", "Spanish label names all 30 decks")
+	assert_int_equal(drawing.decks.size(), 30, "ship drawing includes all 30 deck levels")
+	assert_int_equal(drawing.hull.size(), 22, "elevation uses both sides of the 11-station atlas profile")
+	var highlighted := 0
+	for index in range(drawing.decks.size()):
+		var deck: Dictionary = drawing.decks[index]
+		assert_int_equal(deck.number, index + 1, "decks are ordered D01 to D30")
+		assert_true(is_equal_approx(deck.floor_y, (14 - deck.number) * 5.5), "deck floors follow the atlas pitch")
+		assert_true(is_equal_approx(deck.line[0].y, deck.line[1].y), "decks are horizontal in side elevation")
+		assert_true(deck.line[0].x < deck.line[1].x, "deck is clipped to a nonempty hull span")
+		if deck.highlighted:
+			highlighted += 1
+			assert_int_equal(deck.number, 14, "only D14 is highlighted")
+			assert_true(is_equal_approx(drawing.marker.y, deck.line[0].y), "you-are-here marker is on D14")
+	assert_int_equal(highlighted, 1, "exactly one opening deck is highlighted")
+	assert_true(drawing.hull[0].x > drawing.hull[10].x, "atlas bow is right and stern is left")
