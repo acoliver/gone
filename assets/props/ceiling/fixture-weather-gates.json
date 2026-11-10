@@ -1,0 +1,134 @@
+{
+  "accepted_record": "art-source/ceiling-props/fixture/aging/downward.json",
+  "historical_record": "art-source/ceiling-props/fixture/aging/accepted.json",
+  "calibration": {
+    "minimum_effect_fraction": 0.9,
+    "maximum_translation_margin": 0.05
+  },
+  "views": {
+    "2p5m": {
+      "weather_rgb_difference": {
+        "min": 0.020153169300961386,
+        "max": 1
+      },
+      "broad_shell_rgb_difference": {
+        "min": 0.0002773040327134762,
+        "max": 1
+      },
+      "visible_weather_fraction": {
+        "min": 0.12968975069252078,
+        "max": 1
+      },
+      "edge_rust_difference": {
+        "min": 0.004361887376277682,
+        "max": 1
+      },
+      "dust_rgb_difference": {
+        "min": 9.24378326550956e-05,
+        "max": 1
+      },
+      "broad_face_translation_peak": {
+        "min": 0,
+        "max": 0.05
+      },
+      "edge_to_broad_rust_ratio": {
+        "min": 83.77627832909327,
+        "max": 1000000000.0,
+        "edge_rust_min": 0.004427009496436409
+      }
+    },
+    "close": {
+      "weather_rgb_difference": {
+        "min": 0.018134197492603508,
+        "max": 1
+      },
+      "broad_shell_rgb_difference": {
+        "min": 0.017014675286038235,
+        "max": 1
+      },
+      "visible_weather_fraction": {
+        "min": 0.16170195359795805,
+        "max": 1
+      },
+      "edge_rust_difference": {
+        "min": 0.015222346607354602,
+        "max": 1
+      },
+      "dust_rgb_difference": {
+        "min": 0.019273323587965244,
+        "max": 1
+      },
+      "streak_rgb_difference": {
+        "min": 0.001435512488057868,
+        "max": 1
+      },
+      "broad_face_translation_peak": {
+        "min": 0,
+        "max": 0.10535126386734997
+      },
+      "edge_to_broad_rust_ratio": {
+        "min": 209.28256840398047,
+        "max": 1000000000.0,
+        "edge_rust_min": 0.015951527850403963
+      }
+    },
+    "ledge": {
+      "weather_rgb_difference": {
+        "min": 0.008278443841765641,
+        "max": 1
+      },
+      "broad_shell_rgb_difference": {
+        "min": 0.03482306514964319,
+        "max": 1
+      },
+      "dust_rgb_difference": {
+        "min": 0.013034530609330203,
+        "max": 1
+      },
+      "streak_rgb_difference": {
+        "min": 0.0021763479540530596,
+        "max": 1
+      },
+      "broad_face_translation_peak": {
+        "min": 0,
+        "max": 0.29019779381862054
+      },
+      "edge_to_broad_rust_ratio": {
+        "min": 1339.1717902209737,
+        "max": 1000000000.0,
+        "edge_rust_min": 0.02302682526407087
+      }
+    },
+    "corridor": {
+      "weather_rgb_difference": {
+        "min": 0.01382322878043892,
+        "max": 1
+      },
+      "broad_shell_rgb_difference": {
+        "min": 0.0027089285912815326,
+        "max": 1
+      },
+      "visible_weather_fraction": {
+        "min": 0.1481090289608177,
+        "max": 1
+      },
+      "edge_rust_difference": {
+        "min": 0.008767987881848018,
+        "max": 1
+      },
+      "dust_rgb_difference": {
+        "min": 0.0019710975133446166,
+        "max": 1
+      },
+      "broad_face_translation_peak": {
+        "min": 0,
+        "max": 0.05
+      },
+      "edge_to_broad_rust_ratio": {
+        "min": 62.69484284406471,
+        "max": 1000000000.0,
+        "edge_rust_min": 0.0089949559317166
+      }
+    }
+  }
+}

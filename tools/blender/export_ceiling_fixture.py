@@ -4,7 +4,7 @@ from pathlib import Path
 import bpy
 
 ROOT = Path(__file__).resolve().parents[2]
-SOURCE = ROOT / 'art-source/ceiling-props/fixture/round6/fixture.blend'
+SOURCE = ROOT / 'art-source/ceiling-props/fixture/aging/fixture.blend'
 PARTS = (
     'Seed720_CleanedGeneratedBeam',
     'GeneratedUnderside_ArmouredGrille',

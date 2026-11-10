@@ -1,0 +1,98 @@
+{
+  "sources": {
+    "production": "tmp/sync/113b/weather.log",
+    "rust_everywhere": "tmp/sync/113b/red-broad-rust.log"
+  },
+  "production": {
+    "2p5m": {
+      "weather_rgb_difference": 0.02257498234750964,
+      "broad_shell_rgb_difference": 0.000340213593598309,
+      "visible_weather_fraction": 0.14897506925207757,
+      "edge_rust_difference": 0.0049188994404848994,
+      "broad_rust_difference": 5.11908434019597e-05,
+      "edge_to_broad_rust_ratio": 96.08943931360571,
+      "dust_rgb_difference": 0.0001121388653690852,
+      "streak_rgb_difference": 0.0001738283966068697,
+      "broad_face_translation_peak": 0.0
+    },
+    "close": {
+      "weather_rgb_difference": 0.021055145227479168,
+      "broad_shell_rgb_difference": 0.02020320817422973,
+      "visible_weather_fraction": 0.19280735626165776,
+      "edge_rust_difference": 0.01772391983378218,
+      "broad_rust_difference": 7.622005010762554e-05,
+      "edge_to_broad_rust_ratio": 232.53618711553386,
+      "dust_rgb_difference": 0.02186797058066213,
+      "streak_rgb_difference": 0.0016937354988399071,
+      "broad_face_translation_peak": 0.034625483699199516
+    },
+    "ledge": {
+      "weather_rgb_difference": 0.00978621528102497,
+      "broad_shell_rgb_difference": 0.04214063406008675,
+      "visible_weather_fraction": 0.09869634340222576,
+      "edge_rust_difference": 0.02558536140452319,
+      "broad_rust_difference": 1.863318426785919e-05,
+      "edge_to_broad_rust_ratio": 1373.107303439057,
+      "dust_rgb_difference": 0.0157804585488903,
+      "streak_rgb_difference": 0.0026225546971162797,
+      "broad_face_translation_peak": 0.21369892094259443
+    },
+    "corridor": {
+      "weather_rgb_difference": 0.016185137558384365,
+      "broad_shell_rgb_difference": 0.00404859495587312,
+      "visible_weather_fraction": 0.17285205897305542,
+      "edge_rust_difference": 0.00999439547968511,
+      "broad_rust_difference": 0.00014347202295552364,
+      "edge_to_broad_rust_ratio": 69.66093649340523,
+      "dust_rgb_difference": 0.0023533146106990603,
+      "streak_rgb_difference": 0.0003917689726731445,
+      "broad_face_translation_peak": 0.0
+    }
+  },
+  "rust_everywhere": {
+    "2p5m": {
+      "weather_rgb_difference": 0.02239588651711839,
+      "broad_shell_rgb_difference": 0.00024108184769718914,
+      "visible_weather_fraction": 0.14869806094182825,
+      "edge_rust_difference": 0.005023048799872834,
+      "broad_rust_difference": 0.0002490996026511315,
+      "edge_to_broad_rust_ratio": 20.16482060353868,
+      "dust_rgb_difference": 0.000132689502338747,
+      "streak_rgb_difference": 0.0002820986550648628,
+      "broad_face_translation_peak": 0.0
+    },
+    "close": {
+      "weather_rgb_difference": 0.021006893982218475,
+      "broad_shell_rgb_difference": 0.020085996926327943,
+      "visible_weather_fraction": 0.19280735626165776,
+      "edge_rust_difference": 0.01790188468025247,
+      "broad_rust_difference": 0.0003071878621474585,
+      "edge_to_broad_rust_ratio": 58.27666677682427,
+      "dust_rgb_difference": 0.021907326401241455,
+      "streak_rgb_difference": 0.0018397707110686503,
+      "broad_face_translation_peak": 0.24057506163649975
+    },
+    "ledge": {
+      "weather_rgb_difference": 0.009770171555638684,
+      "broad_shell_rgb_difference": 0.04209425605791562,
+      "visible_weather_fraction": 0.09831478537360891,
+      "edge_rust_difference": 0.02560188196746137,
+      "broad_rust_difference": 4.951475539710834e-05,
+      "edge_to_broad_rust_ratio": 517.0556082148498,
+      "dust_rgb_difference": 0.01578266732758472,
+      "streak_rgb_difference": 0.0026225546971162797,
+      "broad_face_translation_peak": 0.0
+    },
+    "corridor": {
+      "weather_rgb_difference": 0.01573633803066501,
+      "broad_shell_rgb_difference": 0.0026404736408059764,
+      "visible_weather_fraction": 0.17319098457888493,
+      "edge_rust_difference": 0.01024969035523883,
+      "broad_rust_difference": 0.0010122748286306392,
+      "edge_to_broad_rust_ratio": 10.125402771403651,
+      "dust_rgb_difference": 0.0025692274918884144,
+      "streak_rgb_difference": 0.0008882682647737632,
+      "broad_face_translation_peak": 0.0
+    }
+  }
+}

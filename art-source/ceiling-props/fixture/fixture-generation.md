@@ -84,3 +84,49 @@ Godot's established scene-import settings extract the seven embedded albedo, ORM
 `CeilingFixture` instantiates the complete export without a metal material override. The imported glass surface receives one duplicated material per room circuit, preserving its emission texture. Its emission colour uses the existing regular-white colour, emissive level and fade. The imported emission strength remains 3.0, matching the selected asset; the material-preservation regression checks that circuit control retains it. Emergency leaves the ceiling glass dark, as the old white lens was.
 
 Only the housing moves up to the ceiling. Existing regular light anchors, light-source offsets, energies, ranges, masks, emergency fills and fade timing stay in place. The separate box lenses, paired module placement path and old runtime `module.glb` are removed. Wall lights and collision geometry are unchanged.
+
+## November 9, 2026 aging pass
+
+The selected appearance is now `aging/fixture.blend`, accepted in native game art round 7. It keeps the round-6 seed-720 geometry, UVs, 2,664 triangles, four surfaces and fourteen slots. The earlier rounds above remain historical sources. No new inference, geometry fitting or scene-light energy change was used for this aging pass.
+
+World-position fields, surface normals, sharp edges and fastener positions drive chalked olive paint, uneven pale dust, localized dark oxide, gravity streaks and soot around the recessed grille. The hardware has its own oxidized-steel treatment rather than inheriting the painted housing's chalk fade. Dust on that hardware settles on upward-facing ledges instead of coating its vertical and downward faces. The metal ORM maps are completely rough and nonmetallic. Six apertures have selective staining or weakened output, while eight retain bright cores. Glass stains affect the emission texture, not the scene sources.
+
+Native source isolation corrected the initial specular diagnosis. In the original installation, the source was about 113 mm below the glass and directly illuminated the exterior housing. Disabling that source reduced the fixed bright-edge luma from 0.856700 to 0.038325; forcing specular off did not change it. During art acceptance, the shared fixture work temporarily fitted the beam assembly to the old source. The driver then required restoring the flush ceiling mounting and seating the source at the recessed glass. The integrated `FixtureEmitter.beam` from the shared fixture branch reuses its emitter binding and moves the source, not the housing; no hanging beam support remains. This aging branch keeps that seating implementation unchanged. Runtime metal calibration retains the authored albedo, roughness and metallic maps, disables metal specular, and retains the 0.35 grille albedo calibration. Existing glass glare calibration remains in place.
+
+The source-position, spotlight and falloff prototypes used during diagnosis are not shipped here. The shared fixture branch owns source placement and illuminance policy. This aging branch changes no source energy, range, falloff, receiver mask, fade input, emergency fixture or illumination threshold.
+
+A further material-isolation pass identified pale hardware, rather than glass rim or specular, as the remaining edge problem. Correcting its weather recipe reduced the same fixed round-6 bright-edge mean from 0.734191 to 0.275913. The accepted 2.5 m louvre/slot ratio is 0 and median slot display luma is 0.774467. The unchanged contrast limits remain 0.18 maximum ratio and 0.75 to 0.93 slot luma.
+
+`aging/accepted.json` retains the historical round-7 renderer, asset identity and effect-isolation measurements. `aging/downward.json` records the same asset under #111's final recessed, downward-only emission, accepted by the driver as an asset change with the lighting limit below. The final capture exited successfully with all 44 images and no script or renderer pairing errors. Diagnostic masks include both regular meshes and batched geometry as black occluders, so lit surroundings cannot contaminate feature measurements.
+
+`assets/props/ceiling/fixture-weather-gates.json` fixes 28 requirements against that downward-only baseline. Minimum lit weather/control, broad-shell, visible-weather fraction, dust, edge-rust localization and streak effects remain at 90% of the accepted measurements. Translation-correlation ceilings remain at the reference plus 0.05; the repeating-diagonal regression exceeds 0.99. Every retained gate has a test showing that a missing effect or periodic texture fails.
+
+The driver approved removing seven art checks that relied on the old lighting or hanging assembly: four absolute broad-face brightness minima, the grazing upward-face pixel-count minimum, and two upward-only dust contrast minima. Flush mounting changes visible upward area, and downward-only sources cannot illuminate those faces. Visible-face dust/control checks remain in all four views, including close dust difference 0.021415 and grazing difference 0.014483. These are visual-gate changes, not relaxed code-quality, slot-contrast or test limits. The gate does not infer age from texture coverage alone.
+
+### Known lighting limit
+
+Under physically correct downward-only emission and no global illumination, the housing and ceiling around each beam render near-black from below. Final broad-shell display luma is 0.000367 at 2.5 m, 0.048268 close, 0.059048 grazing and 0.004427 in the corridor. At 2.5 m, 99.67% of sampled broad-shell pixels are below 0.025 luma. The weather/control RGB difference is still 0.022392 across the sampled metal, but only 0.000308 across the broad shell; this does not establish readable olive paint on its unlit underside.
+
+The earlier production-triangle audit with interpolated normals, per-source masks and falloff, and camera-ray visibility found mean incident light of 0.000276543 renderer units on the exterior underside, with 93.13% of sampled area unlit. Flat grille undersides received zero. Lit inner channel walls do not establish exterior paint illumination. An earlier native flat-white control reached only 0.115463 mean broad-face luma, versus 0.653865 in the original self-lit installation. These earlier figures precede the final all-downward emission and are retained as diagnostic history. Real floor/wall diffuse bounce driven by the actual fixtures, or a placement that exposes the housing to other real fixtures, is needed to reveal more of the underside. No ambient, fill, emissive metal or production GI change was added. The driver is investigating engine GI separately.
+
+### Rebuilding and checking the aged appearance
+
+Use a writable copy of this fixture source tree, retaining sibling `round6/fixture.blend` and `round6/build-stats.json`. Set `R` to its `aging/` directory, then run the same Blender/Python executables defined above:
+
+```sh
+"$B" --background --factory-startup --threads 4 --python-exit-code 1 --python "$R/build.py"
+PYTHONDONTWRITEBYTECODE=1 "$P" "$R/weather.py"
+"$B" --background --factory-startup --threads 4 --python-exit-code 1 --python "$R/finish.py"
+```
+
+`build.py` rebakes geometry fields without changing the original mesh or UVs. `weather.py` generates albedo, ORM, glass emission and effect-isolation maps. `finish.py` packs those images and exports with Blender-native Z up and `export_yup=True`. It does not create preview lights. The repository exporter now selects the packed aged blend directly.
+
+After installing the GLB and extracted textures into a worktree, capture the actual production scene and run both gates:
+
+```sh
+GONE_FIXTURE_MAPS="$R" godot --path . -s tools/capture_fixture_weather.gd -- /absolute/path/to/captures
+"$P" tools/check_fixture_weather.py /absolute/path/to/captures
+"$P" tools/check_fixture_contrast.py /absolute/path/to/captures/weathered-2p5m.png
+```
+
+The capture requires a native renderer, uses secondary-white power and seed 91, follows the actual glass centre, and captures weathered, disabled-control and isolated-effect variants at 2.5 m, close, ledge and corridor views. Masks are unshaded measurements only; acceptance and effect differences use lit captures. Native windowed verification must be serialized with other fixture work.
