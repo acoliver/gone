@@ -16,8 +16,8 @@ func test_authored_layout_is_dense_flat_and_limits_damage_to_one_cluster() -> vo
 	assert_int_equal(first.size(), 111, "111 perforated panels plus eight fitted service cassettes fill 119 cells")
 	assert_int_equal(counts.get(&"intact", 0), 109, "more than 90 percent of all 120 cells retain normal intact panels")
 	assert_int_equal(damaged.size(), 2, "only two adjacent panels carry localized mechanical damage")
-	assert_true(damaged.has(Vector2i(3, 9)) and damaged.has(Vector2i(2, 8)), "damage stays beside the one missing tile")
-	assert_true(not occupied.has(Vector2i(3, 8)), "one failed panel exposes a localized frame opening")
+	assert_true(damaged.has(Vector2i(4, 5)) and damaged.has(Vector2i(3, 4)), "damage stays beside the one missing tile")
+	assert_true(not occupied.has(Vector2i(4, 4)), "one failed panel exposes a localized frame opening")
 	assert_true(counts.get(&"intact", 0) + counts.get(&"sag", 0) + counts.get(&"brokenedge", 0) == first.size(), "only the local failure variants are installed")
 
 func test_rendered_ceiling_supports_bounds_and_fixture_clearance() -> void:
@@ -26,7 +26,50 @@ func test_rendered_ceiling_supports_bounds_and_fixture_clearance() -> void:
 	var text := "".join(output)
 	assert_int_equal(code, 0, text)
 	assert_false(text.contains("ERROR:"), text)
-	assert_true(text.contains("CEILING RENDER CONTRACTS passed=4 failed=0"), text)
+	assert_true(text.contains("CEILING RENDER CONTRACTS passed=5 failed=0"), text)
+
+func _check_formed_source_cache_bounds_and_real_bearing_faces() -> void:
+	var root := BayCeiling.build()
+	var batches := root.get_node("CarrierGrid/PanelSupportLedgersCross")
+	var count := 0
+	var samples := 0
+	var max_gap := 0.0
+	var cache_size := BayCeiling.SeatMesh.cache_size()
+	assert_int_equal(cache_size,5,"three source-clipped span meshes plus the two retained source ends")
+	for child: MultiMeshInstance3D in batches.get_children():
+		var batch := child.multimesh
+		var bounds := batch.mesh.get_aabb()
+		assert_true(batch.mesh == BayCeiling.SeatMesh.span(bounds.size.x), "same length reuses exact mesh resource")
+		assert_true(batch.mesh.surface_get_material(0)==SeatRailComponent.material(), "unchanged source PBR on every installed cross seat")
+		assert_float_in_range(bounds.size.y,0.017999,0.018001,"18mm formed profile, not the former flat strip")
+		assert_float_in_range(bounds.size.z,0.041999,0.042001,"42mm rolled envelope preserves 36mm bearing face")
+		for index in range(batch.instance_count):
+			var pose := batch.get_instance_transform(index)
+			assert_true(pose.basis.is_equal_approx(Basis.IDENTITY),"source is never stretched to fit the ceiling")
+			assert_float_in_range(pose.origin.y,2.987999,2.988001,"original bearing plane retained")
+			for x: float in [-0.4,0.0,0.4]:
+				for z: float in [-0.017,0.0,0.017]:
+					var underside := _underside(batch.mesh,Vector3(x*bounds.size.x,0,z),-0.01)
+					assert_float_in_range(underside,-0.002501,-0.002499,"nine actual sheet rays per installed span preserve 2.5mm top gauge")
+					max_gap=maxf(max_gap,absf(underside+0.0025))
+					samples += 1
+			count += 1
+	assert_int_equal(count,130,"all healthy production cross spans use the shared formed source")
+	assert_int_equal(samples,1170,"nine physical top-skin rays for each of 130 installed spans")
+	var again := BayCeiling.build()
+	assert_int_equal(BayCeiling.SeatMesh.cache_size(),cache_size,"building another ceiling adds no mesh variants")
+	again.free()
+	var upper := (root.get_node("CarrierGrid/SupportedCrossRails") as MultiMeshInstance3D).multimesh
+	var upper_at_fault := false
+	for index in range(upper.instance_count):
+		var box := upper.get_instance_transform(index)*upper.mesh.get_aabb()
+		if box.has_point(Vector3(-0.6,3.12,-0.6)):
+			assert_float_in_range(box.size.y,0.054999,0.055001,"55mm upper carrier remains intact")
+			upper_at_fault = true
+	assert_true(upper_at_fault,"actual whole upper carrier above source failure")
+	preload("res://tools/seat_production_dump.gd").write(root,"res://tmp/verify-stasis-wiring/seat-production/installed-meshes.json")
+	print("CEILING_SOURCE spans=%d cache_variants=%d bearing_rays=%d gauge_max_error_m=%s" % [count,cache_size,samples,max_gap])
+	root.free()
 
 func _check_ceiling_uses_metric_fitted_panels_and_batched_carriers() -> void:
 	assert_vec3_equal(BayCeiling.PANEL_SCALE, Vector3.ONE, "fitted exports use their validated metric dimensions directly")
@@ -153,6 +196,7 @@ func _beam_visibility_and_cassette_bearings(root: Node3D, fixtures: Node3D) -> v
 				if sheet.grow(0.000001).has_point(point) and absf(sheet.position.y - point.y) < 0.000001: filled = true
 			assert_true(seated and filled, "service sheet bears on the shared frame at all four edges")
 			contacts += 1
+	assert_int_equal(contacts,32,"all eight service cassettes retain four healthy edge bearings")
 	print("CEILING_BEAM_VISIBILITY fixtures=%d unobstructed_whole_footprints=%d aperture_m=1.106x0.226 clearance_per_side_m=0.003 cassette_edge_contacts=%d" % [visible, visible, contacts])
 
 func _check_actual_ledger_surfaces_have_one_owner_at_every_junction() -> void:
@@ -222,9 +266,7 @@ func _check_actual_panel_undersides_rest_on_continuous_ledge_faces() -> void:
 	var root := BayCeiling.build()
 	var ledges: Array[AABB] = []
 	for name: String in ["PanelSupportLedgersCross", "PanelSupportLedgersLong"]:
-		var batch := (root.get_node("CarrierGrid/" + name) as MultiMeshInstance3D).multimesh
-		for index in range(batch.instance_count):
-			ledges.append(batch.get_instance_transform(index) * batch.mesh.get_aabb())
+		_collect_bounds(root.get_node("CarrierGrid/" + name), Transform3D.IDENTITY, ledges)
 	var measured: Dictionary = {}
 	for variant: StringName in [&"intact", &"sag", &"brokenedge"]:
 		var body := (root.get_node("Panel_" + String(variant)) as MultiMeshInstance3D).multimesh.mesh
@@ -251,22 +293,23 @@ func _check_actual_panel_undersides_rest_on_continuous_ledge_faces() -> void:
 			max_gap = maxf(max_gap, nearest)
 			contacts += 1
 	assert_int_equal(contacts, 7531, "17 real mesh bearing samples on each retained side of 111 fitted panels")
-	var bent := (root.get_node("CarrierGrid/BrokenEdgeFrameRail") as MeshInstance3D).mesh
-	assert_float_in_range(_underside(bent, Vector3(-1.8, 0, 1.8)), 2.94699, 2.94701, "failure lip bows 38 mm at center")
-	for x: float in [-2.38, -1.22]:
-		assert_float_in_range(_underside(bent, Vector3(x, 0, 1.8)), 2.98499, 2.98501, "failure lip retained ends stay flat at the original seat plane")
-	var bounds := bent.get_aabb()
+	var failure := root.get_node("CarrierGrid/BrokenEdgeFrameRail") as Node3D
+	assert_vec3_equal(failure.position,Vector3(-0.6,2.988,-0.6),"#110 actual source failure frame")
 	var joined_ends := 0
-	for ledge: AABB in ledges:
-		if ledge.position.z > bounds.position.z or ledge.end.z < bounds.end.z: continue
-		if absf(ledge.position.y - 2.985) > 0.000001 or absf(ledge.end.y - 2.988) > 0.000001: continue
-		if absf(bounds.position.x - ledge.end.x) < 0.000001: joined_ends += 1
-		if absf(bounds.end.x - ledge.position.x) < 0.000001: joined_ends += 1
-	assert_int_equal(joined_ends, 2, "both flat bowed end caps butt against retained long-ledger vertical faces")
-	print("CEILING_CONTACTS samples=%d max_gap_m=%s bowed_end_connections=%d" % [contacts, max_gap, joined_ends])
+	for child: MeshInstance3D in failure.get_children():
+		var bounds := failure.transform * child.mesh.get_aabb()
+		assert_float_in_range(bounds.position.y,2.96999,2.97001,"formed source returns retain 18mm depth")
+		assert_float_in_range(bounds.end.y,2.98799,2.98801,"retained bearing top stays at original plane")
+		assert_true(bounds.end.x < -1.098 or bounds.position.x > -0.102,"paired tears leave the actual one-metre source missing")
+		for ledge: AABB in ledges:
+			if ledge.position.z > -0.618 or ledge.end.z < -0.582: continue
+			if absf(ledge.position.y-2.985)>0.000001: continue
+			if absf(bounds.position.x-ledge.end.x)<0.000001 or absf(bounds.end.x-ledge.position.x)<0.000001: joined_ends += 1
+	assert_int_equal(joined_ends,2,"clipped outer ends butt the primary long ledger, with no overlapping caps")
+	print("CEILING_CONTACTS samples=%d max_gap_m=%s retained_end_connections=%d" % [contacts,max_gap,joined_ends])
 	root.free()
 
-func _underside(mesh: Mesh, point: Vector3) -> float:
+func _underside(mesh: Mesh, point: Vector3, ray_start: float = -1.0) -> float:
 	var lowest := INF
 	for surface in range(mesh.get_surface_count()):
 		var arrays := mesh.surface_get_arrays(surface)
@@ -277,7 +320,7 @@ func _underside(mesh: Mesh, point: Vector3) -> float:
 			var a := vertices[index if indices.is_empty() else indices[index]]
 			var b := vertices[index + 1 if indices.is_empty() else indices[index + 1]]
 			var c := vertices[index + 2 if indices.is_empty() else indices[index + 2]]
-			var hit: Variant = Geometry3D.segment_intersects_triangle(Vector3(point.x, -1, point.z), Vector3(point.x, 4, point.z), a, b, c)
+			var hit: Variant = Geometry3D.segment_intersects_triangle(Vector3(point.x, ray_start, point.z), Vector3(point.x, 4, point.z), a, b, c)
 			if hit != null: lowest = minf(lowest, hit.y)
 	return lowest
 

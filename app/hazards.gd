@@ -49,10 +49,12 @@ static func build(ventilation: BayVentilation = BayVentilation.new(), bay: ShipL
 	hazards._ventilation = ventilation
 	hazards._rng.randomize()
 	var spots := Placement.spark_spots()
-	assert(spots.size() == SPARK_COUNT, "the authored wires carry exactly three spark spots")
+	assert(spots.size() == SPARK_COUNT, "the installed power_tip_1/2/3 carry exactly three spark spots")
 	var spark_material := _spark_material()
 	for index: int in range(SPARK_COUNT):
-		hazards.add_child(hazards._spark_spot(spots[index], spark_material))
+		var group := hazards._spark_spot(spots[index], spark_material)
+		group.name = "SparkSpot_" + StasisWiringRoutes.TIP_IDS[index]
+		hazards.add_child(group)
 	hazards._smoke_field = hazards._smoke()
 	hazards._smoke_shader = hazards._smoke_field.draw_pass_1.material as ShaderMaterial
 	hazards.add_child(hazards._smoke_field)

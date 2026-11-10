@@ -52,14 +52,14 @@ func _walk_to(motion: PlayerMotion, game: Game, plane: InputPlane,
 func test_rod_sits_beside_a_pod_clear_of_the_walk_and_pods() -> void:
 	var game := _awake_game()
 	var rod := Rod.build()
-	var bar: MeshInstance3D = rod.get_child(0)
+	var bar: Node3D = rod.get_child(0)
 	assert_true(rod.visible, "the rod starts on the floor, visible")
 	var center := Rod.local_floor_center()
-	assert_vec3_equal(bar.position, Vector3(center.x, Rod.ROD_RADIUS, center.y), "the bar rests its round surface on the floor at the authored center")
-	var axis: Vector3 = bar.quaternion * Vector3.UP
+	assert_vec3_equal(bar.position, Vector3(center.x, 0.018042830046183175, center.y), "#110: passed 115-degree formed-seat floor pose at unchanged anchor")
+	var axis: Vector3 = bar.basis * Vector3.RIGHT
 	assert_float_in_range(absf(axis.y), 0.0, 1e-4, "the bar's long axis lies in the floor plane")
 	assert_float_in_range(absf(axis.length() - 1.0), 0.0, 1e-4, "the axis is a unit direction")
-	var half := Rod.ROD_LENGTH / 2.0
+	var half := 1.002995252609253 / 2.0
 	var end_a := center + Vector2(axis.x, axis.z) * half
 	var end_b := center - Vector2(axis.x, axis.z) * half
 	assert_float_in_range(minf(end_a.y, end_b.y), -1.607, 1.002, "the whole body stays clear of the pod row's solids (z >= -1.607)")
@@ -77,9 +77,13 @@ func test_rod_sits_beside_a_pod_clear_of_the_walk_and_pods() -> void:
 			nearest = pod_center
 	assert_float_in_range(center.distance_to(nearest), 0.5, 2.0, "the rod sits beside a pod, not on it and not mid-room")
 	assert_true(center.distance_to(player_center) > center.distance_to(nearest), "the nearest pod is not the player's pod")
-	var material := bar.material_override as StandardMaterial3D
+	var source_mesh := bar.find_children("*", "MeshInstance3D", true, false)[0] as MeshInstance3D
+	assert_true(source_mesh.mesh.resource_path.contains("middle.glb"), "#110 pickup is the passed shared ceiling source")
+	assert_true(source_mesh.material_override == SeatRailComponent.material(), "same image-derived steel as installed ceiling seats")
+	var material := source_mesh.material_override as StandardMaterial3D
 	assert_true(material != null, "the bar carries a standard material")
 	assert_false(material.emission_enabled, "plain metal: no emission, no glow")
+	rod.free()
 
 func test_pickup_lands_once_only_in_reach_while_standing() -> void:
 	var game := _awake_game()
@@ -135,6 +139,7 @@ func test_rod_node_leaves_the_floor_on_pickup() -> void:
 	assert_int_equal(rod.get_child_count(), 1, "hidden, not freed: the bar stays a child")
 	rod.pick_up()
 	assert_false(rod.visible, "a repeated pickup stays hidden")
+	rod.free()
 
 func test_pickup_reachable_through_the_scripted_adapter() -> void:
 	var game := _awake_game()
