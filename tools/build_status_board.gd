@@ -15,13 +15,14 @@ class Canvas extends Node2D:
 	var font: Font
 	var boxes: Array[Rect2] = []
 	var ink_boxes: Array[Rect2] = []
+	var ship_geometry := ""
 
 	func _draw() -> void:
 		font = FontFile.new()
 		assert(font.load_dynamic_font(FONT_PATH) == OK)
 		draw_rect(Rect2(Vector2.ZERO, SIZE), Color("050b10"), true)
 		_header()
-		_ship_plan()
+		_ship_elevation()
 		_systems()
 		_validate()
 
@@ -31,26 +32,33 @@ class Canvas extends Node2D:
 		_draw_label({"native":"te mu nawa lina shenu", "es":"SISTEMA SECUNDARIO ACTIVO"}, Rect2(1540, 46, 940, 54), 38, Color("41f1a2"))
 		_draw_label({"native":"mo lokemi malu", "es":"SIN DAÑOS EN LA NAVE"}, Rect2(1540, 110, 940, 24), 22, Color("9fc4d0"))
 
-	func _ship_plan() -> void:
-		var band := Rect2(40, 150, 2480, 176)
+	func _ship_elevation() -> void:
+		var band := Rect2(40, 150, 2480, 400)
+		boxes.append(band)
 		draw_rect(band, Color("0a151d"), true)
 		draw_rect(band, Color("294251"), false, 2)
-		_draw_label({"native":"malu", "es":"PLANO DE LA NAVE"}, Rect2(62, 158, 370, 42), 34, Color("9fc4d0"))
-		var ship := Rect2(470, 202, 1510, 86)
-		draw_rect(ship, Color("10232c"), true)
-		draw_rect(ship, Color("9fc4d0"), false, 3)
-		for i in range(1, 30):
-			var x := ship.position.x + ship.size.x * float(i) / 30.0
-			draw_line(Vector2(x, ship.position.y + 6), Vector2(x, ship.end.y - 6), Color("294251"), 1)
-		draw_colored_polygon(PackedVector2Array([Vector2(ship.end.x, ship.position.y), Vector2(ship.end.x + 42, ship.get_center().y), Vector2(ship.end.x, ship.end.y)]), Color("9fc4d0"))
-		draw_circle(Vector2(ship.position.x + ship.size.x * 0.31, ship.get_center().y), 20, Color("41f1a2"))
-		draw_circle(Vector2(ship.position.x + ship.size.x * 0.31, ship.get_center().y), 7, Color("050b10"))
-		_draw_label({"native":"wupo to lometa [16] pama", "es":"CUBIERTA 14 · USTED ESTÁ AQUÍ"}, Rect2(1992, 205, 500, 44), 28, Color("41f1a2"))
-		_draw_label({"native":"shulu", "es":"POPA"}, Rect2(62, 256, 300, 48), 36, Color("d7f2f7"))
-		_draw_label({"native":"shulu", "es":"PROA"}, Rect2(2170, 256, 300, 48), 36, Color("d7f2f7"))
+		_draw_label({"native":Data.DECK_COUNT.native, "es":Data.DECK_COUNT.perceived_es}, Rect2(62, 162, 1200, 42), 34, Color("9fc4d0"))
+		var drawing := Data.side_elevation(Rect2(470, 214, 1510, 300))
+		ship_geometry = str(drawing)
+		var hull: PackedVector2Array = drawing.hull
+		draw_colored_polygon(hull, Color("10232c"))
+		for deck: Dictionary in drawing.decks:
+			var color := Color("41f1a2") if deck.highlighted else Color("688996")
+			var line: PackedVector2Array = deck.line
+			draw_line(line[0], line[1], color, 4 if deck.highlighted else 2)
+			boxes.append(Rect2(line[0], line[1] - line[0]))
+		hull.append(hull[0])
+		draw_polyline(hull, Color("9fc4d0"), 3)
+		var marker: Vector2 = drawing.marker
+		draw_circle(marker, 13, Color("41f1a2"))
+		draw_circle(marker, 5, Color("050b10"))
+		_draw_label({"native":Data.HERE.native, "es":Data.HERE.perceived_es}, Rect2(1992, 332, 500, 44), 28, Color("41f1a2"))
+		_draw_label({"native":"shulu", "es":"POPA"}, Rect2(62, 430, 300, 48), 36, Color("d7f2f7"))
+		_draw_label({"native":"shulu", "es":"PROA"}, Rect2(2170, 430, 300, 48), 36, Color("d7f2f7"))
+		assert(drawing.decks.size() == 30, "board elevation draws all 30 deck levels")
 
 	func _systems() -> void:
-		var area := Rect2(40, 350, 2480, 690)
+		var area := Rect2(40, 574, 2480, 466)
 		var gutter := 20.0
 		var width := (area.size.x - gutter * 2) / 3.0
 		for col in range(3):
@@ -71,6 +79,7 @@ class Canvas extends Node2D:
 		assert(ROW_CELL_PX >= 60.0, "Minimum system row cell is 60 px")
 
 	func _draw_label(item: Dictionary, box: Rect2, size: int, color: Color) -> void:
+		boxes.append(box)
 		var text := str(item.es) if perceived else str(item.native)
 		var baseline := box.position.y + box.size.y * 0.76
 		if perceived:
@@ -123,7 +132,7 @@ func _render() -> void:
 		viewport.add_child(canvas)
 		await process_frame
 		await RenderingServer.frame_post_draw
-		var signature := str(canvas.boxes)
+		var signature := str(canvas.boxes) + canvas.ship_geometry
 		if geometry.is_empty():
 			geometry = signature
 		else:

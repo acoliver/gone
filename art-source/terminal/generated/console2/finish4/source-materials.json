@@ -1,0 +1,59 @@
+{
+  "0": {
+    "name": "Console worn olive paint",
+    "faces": 47998,
+    "area_m2": 4.402472715734845,
+    "centres_min": [
+      -0.549962043762207,
+      -0.6998968124389648,
+      3.3946424338182624e-08
+    ],
+    "centres_max": [
+      0.5498585104942322,
+      8.147591490370587e-10,
+      1.2748125791549683
+    ],
+    "nodes": [
+      [
+        "Principled BSDF",
+        "BSDF_PRINCIPLED",
+        null
+      ],
+      [
+        "Material Output",
+        "OUTPUT_MATERIAL",
+        null
+      ],
+      [
+        "Image Texture",
+        "TEX_IMAGE",
+        "art-source/terminal/generated/console2/finish3/console-albedo.png"
+      ],
+      [
+        "Image Texture.001",
+        "TEX_IMAGE",
+        "art-source/terminal/generated/console2/finish3/console-orm.png"
+      ],
+      [
+        "Separate Color",
+        "SEPARATE_COLOR",
+        null
+      ],
+      [
+        "Image Texture.002",
+        "TEX_IMAGE",
+        "art-source/terminal/generated/console2/finish3/console-normal.png"
+      ],
+      [
+        "Normal Map",
+        "NORMAL_MAP",
+        null
+      ],
+      [
+        "Group",
+        "GROUP",
+        null
+      ]
+    ]
+  }
+}

@@ -46,21 +46,22 @@ func _run() -> void:
 	assert(texture_image.save_png(board_path) == OK, "status board texture readback saves")
 	var active: Node3D = ship.power_room.get_node("ConsoleStation1")
 	var facing := Vector3(sin(Geometry.console_stations()[1].yaw), 0.0, cos(Geometry.console_stations()[1].yaw))
-	var tray: Node3D = active.get_node("KeyboardTray")
-	var tray_bounds := _combined_aabb(tray)
-	var lip := _front_lip(tray_bounds, facing)
-	var keyboard_center := tray_bounds.get_center()
-	var console_eye := lip + facing * 0.55
-	console_eye.y = 1.65
+	var keyboard: Node3D = active.get_node("KeyboardModel")
+	var keyboard_bounds := _combined_aabb(keyboard)
+	var lip := _front_lip(keyboard_bounds, facing)
+	var keyboard_center := keyboard_bounds.get_center()
+	var console_eye := active.global_transform * Vector3(0, 1.65, 1.10)
 	var display_target: Vector3 = active.get_node("ShipDisplay").global_position
 	assert(game.console_state == GameModule.ConsoleState.INACTIVE, "inactive captures happen before generator activation")
+	ship.power_room.console_display.perception.perceive = 1.0
+	ship.power_room.console_display._apply_perception()
 	print("CONSOLE_CAPTURE_STATE active-console-inactive ", game.console_state)
-	await _shot("active-console-inactive", console_eye, display_target, 60.0)
+	await _shot("active-console-inactive", console_eye, display_target, 60.0, "TextSurface")
 	ship.power_room.console_display.perception.perceive = 0.0
 	ship.power_room.console_display._apply_perception()
 	assert(game.console_state == GameModule.ConsoleState.INACTIVE, "inactive native capture happens before generator activation")
 	print("CONSOLE_CAPTURE_STATE active-console-inactive-native ", game.console_state)
-	await _shot("active-console-inactive-native", console_eye, display_target, 60.0)
+	await _shot("active-console-inactive-native", console_eye, display_target, 60.0, "TextSurface")
 	game.press_console()
 	for i in range(36):
 		await process_frame
@@ -71,17 +72,17 @@ func _run() -> void:
 	ship.power_room.console_display._apply_perception()
 	assert(game.console_state == GameModule.ConsoleState.ACTIVE, "running captures follow generator activation")
 	print("CONSOLE_CAPTURE_STATE active-console-running-native ", game.console_state)
-	await _shot("active-console-running-native", console_eye, display_target, 60.0)
+	await _shot("active-console-running-native", console_eye, display_target, 60.0, "TextSurface")
 	ship.power_room.console_display.perception.perceive = 1.0
 	ship.power_room.console_display._apply_perception()
 	assert(game.console_state == GameModule.ConsoleState.ACTIVE, "running perceived capture follows generator activation")
 	print("CONSOLE_CAPTURE_STATE active-console-running ", game.console_state)
-	await _shot("active-console-running", console_eye, display_target, 60.0)
+	await _shot("active-console-running", console_eye, display_target, 60.0, "TextSurface")
 	await _shot("west-wall", Vector3(25.0, 1.65, -5.7), Vector3(21.5, 1.35, -5.7), 84.0, "PowerWallWest")
 	await _shot("east-wall", Vector3(29.0, 1.65, -5.7), Vector3(32.5, 1.35, -5.7), 84.0, "PowerWallEast")
-	var keyboard_eye := lip + facing * 0.35
+	var keyboard_eye := lip + facing * 0.45
 	keyboard_eye.y = 1.65
-	await _shot("keyboard-close", keyboard_eye, keyboard_center, 54.0, "KeyboardTray")
+	await _shot("keyboard-close", keyboard_eye, keyboard_center, 54.0, "KeyboardModel")
 	await _teardown()
 	print("DEMO_CAPTURES_OK ", JSON.stringify(capture_names))
 	quit(0)
@@ -132,6 +133,10 @@ func _shot(name: String, eye: Vector3, target: Vector3, fov: float, intended: St
 	var image: Image = root.get_texture().get_image()
 	var error := image.save_png(path)
 	assert(error == OK, "PNG save succeeds for " + name)
+	if name.begins_with("active-console"):
+		print("CONSOLE_MEASUREMENT ", name)
+		var checked: bool = load("res://tests/console_screen_capture.gd").check_background(image, camera, ship.power_room.get_node("ConsoleStation1"))
+		assert(checked, "captured console text contrasts with its lit glass, distinct from the body")
 	capture_names.append(path)
 	print("CAPTURE ", name, " camera_transform=", camera.global_transform)
 

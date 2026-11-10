@@ -14,6 +14,15 @@ uses three systems columns. Keep the 40 px render-ink perimeter, verify no ink
 intersections, and preserve identical layout geometry in both languages.
 `StatusBoardData.MINIMUM_ROW_CELL_PX` is the minimum systems-row cell height.
 
+The main drawing is a side elevation, with stern left and bow right. Its hull
+profile, 30 deck levels and 5.5 m floor pitch come from
+`docs/art/ship/3d/ship_atlas.json` through `StatusBoardData.side_elevation()`.
+D14 is green, with the location marker on its floor line. Both languages name
+the deck count; native quantities use octal Naleya glyphs. The 300 px-high hull
+maps each deck pitch to 8.59 px. The systems keep their 60 px row cells in the
+three columns below it. There is no additional plan inset, so neither the deck
+lines nor the systems rows need to shrink.
+
 For a 1600 × 900 capture with a 60-degree vertical field of view, a front-facing
 screen at distance `d` projects to `900 × 1.02 / (2 × d × tan(30°))` pixels
 tall. Each texture pixel projects to that value divided by 1080. This gives

@@ -1,0 +1,332 @@
+{
+  "screen_rectangle_m": {
+    "x": [
+      -0.3672962053874549,
+      0.3734874118064517
+    ],
+    "z": [
+      0.7602235007865812,
+      1.192594223137421
+    ],
+    "y": -0.505224419593811,
+    "width": 0.7407836171939066,
+    "height": 0.43237072235083973
+  },
+  "screen_raycast_samples": [
+    [
+      -0.3672962053874549,
+      -0.504224419593811,
+      0.7602235007865812
+    ],
+    [
+      -0.18210030108897823,
+      -0.5033254623413086,
+      0.7602235007865812
+    ],
+    [
+      0.003095603209498421,
+      -0.5032073259353638,
+      0.7602235007865812
+    ],
+    [
+      0.18829150750797508,
+      -0.5031338930130005,
+      0.7602235007865812
+    ],
+    [
+      0.3734874118064517,
+      -0.5031448602676392,
+      0.7602235007865812
+    ],
+    [
+      -0.3672962053874549,
+      -0.4945793151855469,
+      0.8683161813742911
+    ],
+    [
+      -0.18210030108897823,
+      -0.49019956588745117,
+      0.8683161813742911
+    ],
+    [
+      0.003095603209498421,
+      -0.49004530906677246,
+      0.8683161813742911
+    ],
+    [
+      0.18829150750797508,
+      -0.48992717266082764,
+      0.8683161813742911
+    ],
+    [
+      0.3734874118064517,
+      -0.49017858505249023,
+      0.8683161813742911
+    ],
+    [
+      -0.3672962053874549,
+      -0.49448859691619873,
+      0.976408861962001
+    ],
+    [
+      -0.18210030108897823,
+      -0.47699201107025146,
+      0.976408861962001
+    ],
+    [
+      0.003095603209498421,
+      -0.47688329219818115,
+      0.976408861962001
+    ],
+    [
+      0.18829150750797508,
+      -0.47673940658569336,
+      0.976408861962001
+    ],
+    [
+      0.3734874118064517,
+      -0.4786651134490967,
+      0.976408861962001
+    ],
+    [
+      -0.3672962053874549,
+      -0.48329949378967285,
+      1.0845015425497109
+    ],
+    [
+      -0.18210030108897823,
+      -0.46336066722869873,
+      1.0845015425497109
+    ],
+    [
+      0.003095603209498421,
+      -0.46320974826812744,
+      1.0845015425497109
+    ],
+    [
+      0.18829150750797508,
+      -0.4631009101867676,
+      1.0845015425497109
+    ],
+    [
+      0.3734874118064517,
+      -0.4794175624847412,
+      1.0845015425497109
+    ],
+    [
+      -0.3672962053874549,
+      -0.469130277633667,
+      1.192594223137421
+    ],
+    [
+      -0.18210030108897823,
+      -0.44966328144073486,
+      1.192594223137421
+    ],
+    [
+      0.003095603209498421,
+      -0.4496479034423828,
+      1.192594223137421
+    ],
+    [
+      0.18829150750797508,
+      -0.4496474266052246,
+      1.192594223137421
+    ],
+    [
+      0.3734874118064517,
+      -0.4670839309692383,
+      1.192594223137421
+    ]
+  ],
+  "frontmost_surface_y": -0.504224419593811,
+  "plane_offset_m": 0.001,
+  "silhouette_iou": 0.9926371286100145,
+  "screen_height_fraction": 0.7658730330869411,
+  "resolution": 2048,
+  "pointiness_quantiles": [
+    0.49803924560546875,
+    0.501960813999176,
+    0.5098039507865906,
+    0.5372549295425415,
+    0.5529412031173706
+  ],
+  "joint_repair": {
+    "projected_faces": 12146,
+    "z_full_strength_m": [
+      0.46,
+      0.68
+    ],
+    "z_feather_m": [
+      0.4,
+      0.74
+    ],
+    "method": "Full-strength box detail cloned to neighbouring Hunyuan olive colour across deck and joint faces; UVs retained.",
+    "neighbour_rgb_srgb": [
+      0.5372549295425415,
+      0.5529412031173706,
+      0.43137258291244507
+    ],
+    "detail_tint_multiplier_linear": [
+      1.2411340475082397,
+      1.1932002305984497,
+      1.0605275630950928
+    ]
+  },
+  "rust_patches": [
+    {
+      "centre": [
+        -0.13000208139419556,
+        -0.38786736130714417,
+        0.045402832329273224
+      ],
+      "radius_m": 0.02
+    },
+    {
+      "centre": [
+        0.12995675206184387,
+        -0.39371609687805176,
+        0.06041068211197853
+      ],
+      "radius_m": 0.017
+    },
+    {
+      "centre": [
+        -0.25000032782554626,
+        -0.4890154302120209,
+        0.26045796275138855
+      ],
+      "radius_m": 0.023
+    },
+    {
+      "centre": [
+        -0.4000023901462555,
+        -0.5996772646903992,
+        0.5891035795211792
+      ],
+      "radius_m": 0.018
+    },
+    {
+      "centre": [
+        0.40000203251838684,
+        -0.5799609422683716,
+        0.5991045236587524
+      ],
+      "radius_m": 0.019
+    }
+  ],
+  "bakes": {
+    "ao_samples": 16,
+    "edge_mask": "Cycles Geometry Pointiness through percentile-calibrated ColorRamp",
+    "tile_m": 0.6,
+    "box_blend": 0.2,
+    "base_detail_multiply": 0.35,
+    "roughness": {
+      "paint": 0.62,
+      "chips": 0.4,
+      "grime": 0.75
+    },
+    "normal": "Cycles tangent-space bake of detail and chip bump nodes"
+  },
+  "front_render_screen_corners_px": [
+    [
+      578.2362461090088,
+      375.8426070213318
+    ],
+    [
+      1025.501823425293,
+      375.8426070213318
+    ],
+    [
+      1025.501823425293,
+      114.78867530822754
+    ],
+    [
+      578.2362461090088,
+      114.78867530822754
+    ]
+  ],
+  "triangles": 27157,
+  "dimensions_m": [
+    1.0985491275787354,
+    0.6699671745300293,
+    1.274845004081726
+  ],
+  "objects": [
+    "ConsoleBody",
+    "DisplayPlane",
+    "ScreenSocket",
+    "KeyboardSocket"
+  ],
+  "incomplete": [
+    "The paint smear and texture seam were repaired, but the generated mesh still has a dark geometric gap at the left deck-to-body joint. That joint was not rebuilt."
+  ],
+  "exposed_steel_texels": 2090,
+  "validation": {
+    "glb_bytes": 9132852,
+    "embedded_images": 3,
+    "embedded_materials": 2,
+    "objects_exact": true,
+    "orm_occlusion_and_metallic_roughness_share_texture": true,
+    "orm_rgb_range": [
+      [
+        2,
+        255
+      ],
+      [
+        21,
+        191
+      ],
+      [
+        0,
+        255
+      ]
+    ],
+    "tangent_normal_rgb_range": [
+      [
+        79,
+        169
+      ],
+      [
+        38,
+        184
+      ],
+      [
+        0,
+        255
+      ]
+    ],
+    "all_requested_renders_1600x900": true,
+    "all_requested_maps_2048": true
+  },
+  "cleanup": {
+    "removed_backdrop_faces": 11843,
+    "backdrop_y_cut_m": -0.03,
+    "console_recentred_x_m": 0.06366245448589325,
+    "console_width_scale": 1.3579497927730706,
+    "reason": "Generated rectangular backdrop surrounds the console; remove it, preserve UVs, restore requested 1.10 m console width."
+  },
+  "silhouette_correction": {
+    "method": "Horizontal cross-section remap to segmented source-photo silhouette. Existing vertex UVs, z and y preserved.",
+    "maximum_x_displacement_m": 0.25353035456830053
+  },
+  "files": [
+    "console.glb",
+    "console.blend",
+    "console-albedo.png",
+    "console-orm.png",
+    "console-normal.png",
+    "console-ao.png",
+    "convex-edge-mask.png",
+    "screen-fit.png",
+    "front.png",
+    "three-quarter.png",
+    "side.png",
+    "deck-joint.png",
+    "red.png",
+    "deck-joint-before.png",
+    "deck-joint-before-after.png",
+    "contact.png"
+  ],
+  "remaining_geometry_note": "Generated geometry retains irregular side surfaces and a recessed deck joint. Albedo repair does not rebuild those surfaces."
+}

@@ -1,0 +1,1503 @@
+{
+  "source": "assembly/console-with-keyboard.blend",
+  "deformation": {
+    "method": "Rigid front lip and front 25 mm top band, in-plane 35 mm translation; front-face falloff linear in source z over 200 mm, local linear side blend; no radial or cubic falloff",
+    "front_band_along_slope_m": 0.025,
+    "linear_z_falloff_height_m": 0.2,
+    "linear_z_falloff_top_m": 0.478,
+    "linear_z_falloff_bottom_m": 0.27799999999999997,
+    "below_falloff_unchanged": true,
+    "front_face_linear_z_verified_vertices": 2743,
+    "extension_along_slope_m": 0.035,
+    "full_displacement_m": [
+      -0.0,
+      -0.03135866505629304,
+      -0.015544585098587417
+    ],
+    "source_vertices": 24001,
+    "source_triangles": 47998,
+    "vertices_after_local_tessellation": 34120,
+    "triangles_after_local_tessellation": 68236,
+    "moved_vertices": 12281,
+    "affected_faces": 25553,
+    "max_triangle_principal_stretch_factor": 267.6379055784599,
+    "stretch_p50_p95_p99": [
+      1.0000000000208134,
+      4.5488086440904665,
+      8.89644522408116
+    ],
+    "locally_reunwrapped_faces": 25553,
+    "local_uv_slot_pixels_2048": [
+      836,
+      112,
+      324,
+      616
+    ],
+    "untouched_face_uvs_unchanged": true,
+    "nonmanifold_edges": 0,
+    "boundary_edges": 0,
+    "head_vertices_unchanged": true,
+    "behind_deck_above_lip_vertices_unchanged": true,
+    "lower_body_front_monotonicity_checks": [
+      {
+        "x_m": -0.25,
+        "z_range_m": [
+          0.28,
+          0.46
+        ],
+        "samples": 181,
+        "maximum_forward_profile_reversal_mm": 0
+      },
+      {
+        "x_m": -0.125,
+        "z_range_m": [
+          0.28,
+          0.46
+        ],
+        "samples": 181,
+        "maximum_forward_profile_reversal_mm": 0
+      },
+      {
+        "x_m": 0,
+        "z_range_m": [
+          0.28,
+          0.46
+        ],
+        "samples": 181,
+        "maximum_forward_profile_reversal_mm": 0
+      },
+      {
+        "x_m": 0.125,
+        "z_range_m": [
+          0.28,
+          0.46
+        ],
+        "samples": 181,
+        "maximum_forward_profile_reversal_mm": 0
+      },
+      {
+        "x_m": 0.25,
+        "z_range_m": [
+          0.28,
+          0.46
+        ],
+        "samples": 181,
+        "maximum_forward_profile_reversal_mm": 0
+      }
+    ],
+    "max_edge_length_stretch_factor": 5.74109821490578
+  },
+  "lip_profile": {
+    "measurement": "Thickness normal to the deck at source y=-0.680 m; front-face least-squares angle from vertical at source z=0.510..0.528 m. After samples translated by the exact in-plane extension.",
+    "before": [
+      {
+        "x_m": -0.39,
+        "normal_thickness_mm": 69.80306643813105,
+        "front_face_angle_from_vertical_deg": 0.5348503164093714,
+        "top_m": [
+          -0.39000004529953003,
+          -0.6801227927207947,
+          0.550418496131897
+        ],
+        "bottom_m": [
+          -0.3899841606616974,
+          -0.649121105670929,
+          0.48787760734558105
+        ]
+      },
+      {
+        "x_m": -0.195,
+        "normal_thickness_mm": 65.1820596491699,
+        "front_face_angle_from_vertical_deg": 0.2493520704833034,
+        "top_m": [
+          -0.1950000375509262,
+          -0.6800864338874817,
+          0.5503946542739868
+        ],
+        "bottom_m": [
+          -0.19498521089553833,
+          -0.6511370539665222,
+          0.4919940233230591
+        ]
+      },
+      {
+        "x_m": 0,
+        "normal_thickness_mm": 65.17715716551353,
+        "front_face_angle_from_vertical_deg": 0.32086028439346076,
+        "top_m": [
+          -3.0187948141247034e-08,
+          -0.6800589561462402,
+          0.550388753414154
+        ],
+        "bottom_m": [
+          1.4789326996833552e-05,
+          -0.6511117815971375,
+          0.4919925034046173
+        ]
+      },
+      {
+        "x_m": 0.195,
+        "normal_thickness_mm": 65.23945240283058,
+        "front_face_angle_from_vertical_deg": 0.2793939180642434,
+        "top_m": [
+          0.19499996304512024,
+          -0.6800624132156372,
+          0.5504451990127563
+        ],
+        "bottom_m": [
+          0.19501478970050812,
+          -0.6510875821113586,
+          0.49199312925338745
+        ]
+      },
+      {
+        "x_m": 0.39,
+        "normal_thickness_mm": 69.2380339295533,
+        "front_face_angle_from_vertical_deg": 0.5127472102108028,
+        "top_m": [
+          0.38999995589256287,
+          -0.6800628304481506,
+          0.5504955053329468
+        ],
+        "bottom_m": [
+          0.39001569151878357,
+          -0.6493120789527893,
+          0.48846086859703064
+        ]
+      }
+    ],
+    "after": [
+      {
+        "x_m": -0.39,
+        "normal_thickness_mm": 69.80306643813105,
+        "front_face_angle_from_vertical_deg": 0.5348503162861536,
+        "top_m": [
+          -0.39000004529953003,
+          -0.7114814519882202,
+          0.534873902797699
+        ],
+        "bottom_m": [
+          -0.3899841606616974,
+          -0.6804797649383545,
+          0.47233301401138306
+        ]
+      },
+      {
+        "x_m": -0.195,
+        "normal_thickness_mm": 65.18211552852438,
+        "front_face_angle_from_vertical_deg": 0.24959008752552844,
+        "top_m": [
+          -0.1950000375509262,
+          -0.7114450931549072,
+          0.5348501205444336
+        ],
+        "bottom_m": [
+          -0.19498521089553833,
+          -0.6824957132339478,
+          0.4764494299888611
+        ]
+      },
+      {
+        "x_m": 0,
+        "normal_thickness_mm": 65.17715716551353,
+        "front_face_angle_from_vertical_deg": 0.3207878449465333,
+        "top_m": [
+          -3.0187948141247034e-08,
+          -0.7114176154136658,
+          0.534844160079956
+        ],
+        "bottom_m": [
+          1.4789326996833552e-05,
+          -0.682470440864563,
+          0.4764479100704193
+        ]
+      },
+      {
+        "x_m": 0.195,
+        "normal_thickness_mm": 65.23945240283058,
+        "front_face_angle_from_vertical_deg": 0.2794353119767737,
+        "top_m": [
+          0.19499996304512024,
+          -0.7114210724830627,
+          0.5349006056785583
+        ],
+        "bottom_m": [
+          0.19501478970050812,
+          -0.6824462413787842,
+          0.47644853591918945
+        ]
+      },
+      {
+        "x_m": 0.39,
+        "normal_thickness_mm": 69.2380339295533,
+        "front_face_angle_from_vertical_deg": 0.5127886020397354,
+        "top_m": [
+          0.38999995589256287,
+          -0.7114214897155762,
+          0.5349509119987488
+        ],
+        "bottom_m": [
+          0.39001569151878357,
+          -0.6806707382202148,
+          0.47291627526283264
+        ]
+      }
+    ],
+    "profile_preserved": true
+  },
+  "protected_objects_before": {
+    "DisplayPlane": {
+      "matrix": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0030956033151596785
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.5106177926063538
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.976408839225769
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "vertices": [
+        [
+          -0.3703918159008026,
+          0.0,
+          -0.21618536114692688
+        ],
+        [
+          0.3703918159008026,
+          0.0,
+          -0.21618536114692688
+        ],
+        [
+          0.3703918159008026,
+          0.0,
+          0.21618536114692688
+        ],
+        [
+          -0.3703918159008026,
+          0.0,
+          0.21618536114692688
+        ]
+      ]
+    },
+    "ScreenSocket": {
+      "matrix": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0030956033151596785
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.5106177926063538
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.976408839225769
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "vertices": []
+    }
+  },
+  "protected_objects_unchanged": true,
+  "deck": {
+    "plane_z_equals_ax_plus_by_plus_c": [
+      0.00020497273927979343,
+      0.4955245461795281,
+      0.8872163504823047
+    ],
+    "ray_samples": [
+      [
+        -0.38999998569488525,
+        -0.6967113614082336,
+        0.5419644117355347
+      ],
+      [
+        -0.19499999284744263,
+        -0.6967113614082336,
+        0.5418875217437744
+      ],
+      [
+        0.0,
+        -0.6967113614082336,
+        0.5418504476547241
+      ],
+      [
+        0.19499999284744263,
+        -0.6967113614082336,
+        0.541965126991272
+      ],
+      [
+        0.38999998569488525,
+        -0.6967113614082336,
+        0.5421117544174194
+      ],
+      [
+        -0.38999998569488525,
+        -0.6614335179328918,
+        0.5594854354858398
+      ],
+      [
+        -0.19499999284744263,
+        -0.6614335179328918,
+        0.5593662261962891
+      ],
+      [
+        0.0,
+        -0.6614335179328918,
+        0.5593360662460327
+      ],
+      [
+        0.19499999284744263,
+        -0.6614335179328918,
+        0.5594494342803955
+      ],
+      [
+        0.38999998569488525,
+        -0.6614335179328918,
+        0.5596315860748291
+      ],
+      [
+        -0.38999998569488525,
+        -0.62615567445755,
+        0.5770799517631531
+      ],
+      [
+        -0.19499999284744263,
+        -0.62615567445755,
+        0.576846182346344
+      ],
+      [
+        0.0,
+        -0.62615567445755,
+        0.5768232345581055
+      ],
+      [
+        0.19499999284744263,
+        -0.62615567445755,
+        0.576957106590271
+      ],
+      [
+        0.38999998569488525,
+        -0.62615567445755,
+        0.5771446228027344
+      ],
+      [
+        -0.38999998569488525,
+        -0.5908778309822083,
+        0.5944992303848267
+      ],
+      [
+        -0.19499999284744263,
+        -0.5908778309822083,
+        0.594378650188446
+      ],
+      [
+        0.0,
+        -0.5908778309822083,
+        0.5943520069122314
+      ],
+      [
+        0.19499999284744263,
+        -0.5908778309822083,
+        0.594394862651825
+      ],
+      [
+        0.38999998569488525,
+        -0.5908778309822083,
+        0.594740092754364
+      ],
+      [
+        -0.38999998569488525,
+        -0.5555999875068665,
+        0.6118736863136292
+      ],
+      [
+        -0.19499999284744263,
+        -0.5555999875068665,
+        0.6117428541183472
+      ],
+      [
+        0.0,
+        -0.5555999875068665,
+        0.6117300987243652
+      ],
+      [
+        0.19499999284744263,
+        -0.5555999875068665,
+        0.6118183135986328
+      ],
+      [
+        0.38999998569488525,
+        -0.5555999875068665,
+        0.6120921969413757
+      ]
+    ],
+    "flatness_peak_to_peak_mm": 0.4110920429230003,
+    "front_y_m": -0.7087113319111514,
+    "rear_y_m": -0.5456,
+    "rear_boundary_samples_y_m": [
+      -0.5402,
+      -0.5412,
+      -0.5456,
+      -0.5431,
+      -0.5425,
+      -0.5403,
+      -0.5418,
+      -0.5406,
+      -0.5411,
+      -0.5406,
+      -0.5404,
+      -0.5409,
+      -0.5413
+    ],
+    "along_slope_depth_m": 0.18203871929397383,
+    "usable_width_m": 0.936,
+    "slope_degrees": 26.359546420330076
+  },
+  "textures": {
+    "reference_paint_median_srgb_255": [
+      117.0,
+      125.0,
+      80.0
+    ],
+    "reference_selected_pixels": 15327,
+    "reference_mask": "reference-paint-mask.png",
+    "reference_selection": "Connected lit yellow-green pixels: G 102..174, G-R >=2, R/G >0.80, B/G 0.50..0.80, image interior; connected patches >=12 pixels. Excludes dark screen, brown background, deep shadows and neutral highlights.",
+    "resolved_paint_median_srgb_255": [
+      117.0,
+      125.0,
+      80.0
+    ],
+    "chip_size_noise": {
+      "fine_scale_per_m": 145,
+      "middle_scale_per_m": 53,
+      "large_scale_per_m": 9,
+      "large_octave_peak_boost": 0.35
+    },
+    "edge_chip_coverage": 0.08999731271087755,
+    "steel_fraction_of_chips": 0.05003151852957765,
+    "rust_fraction_of_chips": 0.24999170565011114,
+    "undercoat_fraction_of_chips": 0.6999767758203113,
+    "rust_median_srgb_255": [
+      96.05962240132762,
+      62.0411978464979,
+      44.03144367041159
+    ],
+    "steel_median_srgb_255": [
+      103.44998488640303,
+      102.45464504411197,
+      86.52920756745495
+    ],
+    "streaks": [
+      {
+        "seam_x_m": -0.36,
+        "start_z_m": 0.684,
+        "length_m": 0.23,
+        "nominal_width_mm": 8.0,
+        "maximum_blend": 0.13
+      },
+      {
+        "seam_x_m": -0.19,
+        "start_z_m": 0.553,
+        "length_m": 0.17,
+        "nominal_width_mm": 5.0,
+        "maximum_blend": 0.15
+      },
+      {
+        "seam_x_m": 0.025,
+        "start_z_m": 0.683,
+        "length_m": 0.31,
+        "nominal_width_mm": 6.4,
+        "maximum_blend": 0.1
+      },
+      {
+        "seam_x_m": 0.225,
+        "start_z_m": 0.553,
+        "length_m": 0.21,
+        "nominal_width_mm": 9.0,
+        "maximum_blend": 0.11
+      },
+      {
+        "seam_x_m": 0.375,
+        "start_z_m": 0.688,
+        "length_m": 0.26,
+        "nominal_width_mm": 5.6,
+        "maximum_blend": 0.14
+      }
+    ],
+    "streak_affected_texels": 4131,
+    "resolution": [
+      2048,
+      2048
+    ],
+    "dust": {
+      "maximum_blend": 0.1179727166891098,
+      "allowed_maximum_blend": 0.15,
+      "upward_ao_driven": true,
+      "median_blend": 0.008466552942991257
+    },
+    "baked_paint_median_srgb_255": [
+      117.0,
+      125.0,
+      80.0
+    ]
+  },
+  "keyboard": {
+    "source_dimensions_m": [
+      0.800000011920929,
+      0.24557149410247803,
+      0.054999999701976776
+    ],
+    "deck_usable_width_m": 0.936,
+    "deck_width_boundary_rays_m": [
+      [
+        0.486,
+        0.546
+      ],
+      [
+        0.486,
+        0.548
+      ],
+      [
+        0.481,
+        0.539
+      ],
+      [
+        0.47500000000000003,
+        0.523
+      ],
+      [
+        0.468,
+        0.504
+      ]
+    ],
+    "side_clearance_mm": 204.05332098023726,
+    "rearward_slide_mm": 2.921769002902212,
+    "uniform_scale": 0.6600278427658685,
+    "scale_constraint": "Uniform scale to deck depth minus 20 mm, or deck width minus 60 mm if narrower. Offset rearward only enough to retain 0.1 mm front vertical silhouette clearance.",
+    "scaled_local_dimensions_m": [
+      0.5280222820808398,
+      0.16208402349724976,
+      0.03630153115541914
+    ],
+    "deck_frame_dimensions_m": [
+      0.5278933579650791,
+      0.16203871016193644,
+      0.03411200053716549
+    ],
+    "source_underside_plane_z_equals_ax_plus_by_plus_c": [
+      0.006159897400542206,
+      0.004391105795260027,
+      0.0028839305043220514
+    ],
+    "source_underside_plane_flatness_mm": 0.14927834272384766,
+    "source_underside_axis_tilt_degrees": 0.4334226447639701,
+    "support_plane_gap_mm": 0.5,
+    "front_clearance_mm": 12.921755071127194,
+    "rear_clearance_mm": 7.078254060910213,
+    "underside_samples": [
+      {
+        "local_underside_m": [
+          -0.30000001192092896,
+          -0.07500000298023224,
+          0.0007125139236450195
+        ],
+        "world_underside_m": [
+          -0.19809100031852722,
+          -0.6691872477531433,
+          0.5561394691467285
+        ],
+        "gap_mm": 0.5474158679135144
+      },
+      {
+        "local_underside_m": [
+          0.0,
+          -0.07500000298023224,
+          0.0025844499468803406
+        ],
+        "world_underside_m": [
+          -7.879026816226542e-05,
+          -0.669194221496582,
+          0.5561942458152771
+        ],
+        "gap_mm": 0.6279298104345798
+      },
+      {
+        "local_underside_m": [
+          0.30000001192092896,
+          -0.07500000298023224,
+          0.004337400197982788
+        ],
+        "world_underside_m": [
+          0.19793294370174408,
+          -0.6691665649414062,
+          0.5561785101890564
+        ],
+        "gap_mm": 0.49863813910633326
+      },
+      {
+        "local_underside_m": [
+          -0.30000001192092896,
+          0.0,
+          0.0010052844882011414
+        ],
+        "world_underside_m": [
+          -0.19809430837631226,
+          -0.6248210668563843,
+          0.5780970454216003
+        ],
+        "gap_mm": 0.5362331867218018
+      },
+      {
+        "local_underside_m": [
+          0.0,
+          0.0,
+          0.0029299482703208923
+        ],
+        "world_underside_m": [
+          -8.189271466108039e-05,
+          -0.6248432993888855,
+          0.578183114528656
+        ],
+        "gap_mm": 0.639034784398973
+      },
+      {
+        "local_underside_m": [
+          0.30000001192092896,
+          0.0,
+          0.00467294454574585
+        ],
+        "world_underside_m": [
+          0.19792981445789337,
+          -0.6248128414154053,
+          0.5781614780426025
+        ],
+        "gap_mm": 0.4883837536908686
+      },
+      {
+        "local_underside_m": [
+          -0.30000001192092896,
+          0.07500000298023224,
+          0.0013309568166732788
+        ],
+        "world_underside_m": [
+          -0.19809749722480774,
+          -0.5804644227027893,
+          0.6000741720199585
+        ],
+        "gap_mm": 0.46436223783530295
+      },
+      {
+        "local_underside_m": [
+          0.0,
+          0.07500000298023224,
+          0.0032355934381484985
+        ],
+        "world_underside_m": [
+          -8.515235094819218e-05,
+          -0.5804808735847473,
+          0.6001483201980591
+        ],
+        "gap_mm": 0.5810464499518275
+      },
+      {
+        "local_underside_m": [
+          0.30000001192092896,
+          0.07500000298023224,
+          0.005003154277801514
+        ],
+        "world_underside_m": [
+          0.19792664051055908,
+          -0.5804575085639954,
+          0.6001412272453308
+        ],
+        "gap_mm": 0.49908191431313753
+      }
+    ],
+    "bvh_triangle_intersections": 0,
+    "visible_keytops": 29,
+    "keytop_count": 29,
+    "keytops": [
+      {
+        "key": 19,
+        "local_top_m": [
+          -0.15791946649551392,
+          -0.07482544332742691,
+          0.05155256390571594
+        ],
+        "world_top_m": [
+          -0.10411504656076431,
+          -0.6835960149765015,
+          0.5858221650123596
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.2141136247654205,
+        "first_hit_distance_m": 1.214113473892212,
+        "console_clearance_mm": 33.56704115867615
+      },
+      {
+        "key": 24,
+        "local_top_m": [
+          0.25570473074913025,
+          -0.06691543012857437,
+          0.054837971925735474
+        ],
+        "world_top_m": [
+          0.16889604926109314,
+          -0.6791220903396606,
+          0.5886127352714539
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.221062087876777,
+        "first_hit_distance_m": 1.2210620641708374,
+        "console_clearance_mm": 33.99781137704849
+      },
+      {
+        "key": 22,
+        "local_top_m": [
+          0.11160683631896973,
+          -0.06498460471630096,
+          0.053997188806533813
+        ],
+        "world_top_m": [
+          0.0737856924533844,
+          -0.6779913306236267,
+          0.5891818404197693
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.2116167974192178,
+        "first_hit_distance_m": 1.2116167545318604,
+        "console_clearance_mm": 34.065280109643936
+      },
+      {
+        "key": 23,
+        "local_top_m": [
+          0.18268024921417236,
+          -0.06598003953695297,
+          0.05435985326766968
+        ],
+        "world_top_m": [
+          0.1206967756152153,
+          -0.6785594820976257,
+          0.5888577699661255
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.215387465322754,
+        "first_hit_distance_m": 1.2153873443603516,
+        "console_clearance_mm": 34.00084376335144
+      },
+      {
+        "key": 20,
+        "local_top_m": [
+          -0.04013325646519661,
+          -0.06315023452043533,
+          0.05308641493320465
+        ],
+        "world_top_m": [
+          -0.02636890299618244,
+          -0.6769110560417175,
+          0.5897082686424255
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.2097129664374873,
+        "first_hit_distance_m": 1.2097127437591553,
+        "console_clearance_mm": 34.091681241989136
+      },
+      {
+        "key": 21,
+        "local_top_m": [
+          0.03620007634162903,
+          -0.06386338919401169,
+          0.053595274686813354
+        ],
+        "world_top_m": [
+          0.024014372378587723,
+          -0.6773449778556824,
+          0.589534342288971
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.2096076740007353,
+        "first_hit_distance_m": 1.2096076011657715,
+        "console_clearance_mm": 34.122154116630554
+      },
+      {
+        "key": 27,
+        "local_top_m": [
+          0.3083387613296509,
+          -0.05982649698853493,
+          0.051981449127197266
+        ],
+        "world_top_m": [
+          0.2036236822605133,
+          -0.6739967465400696,
+          0.5887937545776367
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.2286221301878448,
+        "first_hit_distance_m": 1.2286219596862793,
+        "console_clearance_mm": 31.871329993009567
+      },
+      {
+        "key": 28,
+        "local_top_m": [
+          0.3413979113101959,
+          -0.06124686822295189,
+          0.05176767706871033
+        ],
+        "world_top_m": [
+          0.22544248402118683,
+          -0.674717366695404,
+          0.5881382822990417
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.2326490310765097,
+        "first_hit_distance_m": 1.2326488494873047,
+        "console_clearance_mm": 31.59790113568306
+      },
+      {
+        "key": 15,
+        "local_top_m": [
+          -0.3270363509654999,
+          -0.04106389358639717,
+          0.05069640278816223
+        ],
+        "world_top_m": [
+          -0.21574029326438904,
+          -0.663640022277832,
+          0.5957154631614685
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.2297031170145392,
+        "first_hit_distance_m": 1.2297031879425049,
+        "console_clearance_mm": 33.54988619685173
+      },
+      {
+        "key": 16,
+        "local_top_m": [
+          -0.25424155592918396,
+          -0.03965155407786369,
+          0.05214439332485199
+        ],
+        "world_top_m": [
+          -0.16768893599510193,
+          -0.6630932688713074,
+          0.5967279672622681
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.2215819163424937,
+        "first_hit_distance_m": 1.2215819358825684,
+        "console_clearance_mm": 34.23072770237923
+      },
+      {
+        "key": 17,
+        "local_top_m": [
+          -0.18393510580062866,
+          -0.03893471509218216,
+          0.05092759430408478
+        ],
+        "world_top_m": [
+          -0.12129039317369461,
+          -0.6621891856193542,
+          0.5959678292274475
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.2171826715398075,
+        "first_hit_distance_m": 1.2171827554702759,
+        "console_clearance_mm": 33.17771852016449
+      },
+      {
+        "key": 18,
+        "local_top_m": [
+          -0.11390174925327301,
+          -0.03901434317231178,
+          0.05211488902568817
+        ],
+        "world_top_m": [
+          -0.07506255805492401,
+          -0.6624559760093689,
+          0.5964021682739258
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.2129398854629103,
+        "first_hit_distance_m": 1.212939739227295,
+        "console_clearance_mm": 33.65752100944519
+      },
+      {
+        "key": 26,
+        "local_top_m": [
+          0.3418213725090027,
+          -0.01750030182301998,
+          0.05261392891407013
+        ],
+        "world_top_m": [
+          0.22572270035743713,
+          -0.6490345597267151,
+          0.6013447046279907
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.2338291723903534,
+        "first_hit_distance_m": 1.233829140663147,
+        "console_clearance_mm": 31.993035227060318
+      },
+      {
+        "key": 25,
+        "local_top_m": [
+          0.29681119322776794,
+          -0.01693018339574337,
+          0.05238182842731476
+        ],
+        "world_top_m": [
+          0.19601431488990784,
+          -0.648709774017334,
+          0.6015309691429138
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.228743629038856,
+        "first_hit_distance_m": 1.2287434339523315,
+        "console_clearance_mm": 32.02427551150322
+      },
+      {
+        "key": 9,
+        "local_top_m": [
+          -0.06651037931442261,
+          0.01024154294282198,
+          0.05352577567100525
+        ],
+        "world_top_m": [
+          -0.0437808632850647,
+          -0.6335878372192383,
+          0.6113783717155457
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.213025623687199,
+        "first_hit_distance_m": 1.2130253314971924,
+        "console_clearance_mm": 34.28298234939575
+      },
+      {
+        "key": 8,
+        "local_top_m": [
+          -0.12367171794176102,
+          0.012216361239552498,
+          0.0530795156955719
+        ],
+        "world_top_m": [
+          -0.08151014149188995,
+          -0.632390022277832,
+          0.6118884086608887
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.2151534417505496,
+        "first_hit_distance_m": 1.2151533365249634,
+        "console_clearance_mm": 34.20178219676018
+      },
+      {
+        "key": 5,
+        "local_top_m": [
+          -0.32389527559280396,
+          0.01440672017633915,
+          0.051095277070999146
+        ],
+        "world_top_m": [
+          -0.21366886794567108,
+          -0.6308737397193909,
+          0.6120525002479553
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.2317342759474577,
+        "first_hit_distance_m": 1.2317341566085815,
+        "console_clearance_mm": 33.67212042212486
+      },
+      {
+        "key": 6,
+        "local_top_m": [
+          -0.25246840715408325,
+          0.013878662139177322,
+          0.05188612639904022
+        ],
+        "world_top_m": [
+          -0.1665228307247162,
+          -0.6312886476516724,
+          0.6121167540550232
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.2241694376543875,
+        "first_hit_distance_m": 1.2241694927215576,
+        "console_clearance_mm": 33.93370285630226
+      },
+      {
+        "key": 7,
+        "local_top_m": [
+          -0.18407997488975525,
+          0.012929021380841732,
+          0.051898494362831116
+        ],
+        "world_top_m": [
+          -0.12138526141643524,
+          -0.631732702255249,
+          0.6116078495979309
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.219054805255349,
+        "first_hit_distance_m": 1.2190546989440918,
+        "console_clearance_mm": 33.693552017211914
+      },
+      {
+        "key": 11,
+        "local_top_m": [
+          0.0433768592774868,
+          0.029897846281528473,
+          0.05261105298995972
+        ],
+        "world_top_m": [
+          0.02874170057475567,
+          -0.6214755773544312,
+          0.616159200668335
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.2147931131219656,
+        "first_hit_distance_m": 1.214793086051941,
+        "console_clearance_mm": 33.17767009139061
+      },
+      {
+        "key": 12,
+        "local_top_m": [
+          0.07580097764730453,
+          0.029341014102101326,
+          0.052766844630241394
+        ],
+        "world_top_m": [
+          0.050142787396907806,
+          -0.6217928528785706,
+          0.6159757971763611
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.2154775098895263,
+        "first_hit_distance_m": 1.2154773473739624,
+        "console_clearance_mm": 33.138178288936615
+      },
+      {
+        "key": 13,
+        "local_top_m": [
+          0.10883358865976334,
+          0.029071800410747528,
+          0.05301131308078766
+        ],
+        "world_top_m": [
+          0.07194582372903824,
+          -0.6219643354415894,
+          0.6159263849258423
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.2165241884989237,
+        "first_hit_distance_m": 1.2165241241455078,
+        "console_clearance_mm": 33.13785791397095
+      },
+      {
+        "key": 14,
+        "local_top_m": [
+          0.14421823620796204,
+          0.029021969065070152,
+          0.05353526771068573
+        ],
+        "world_top_m": [
+          0.09530232846736908,
+          -0.6220827102661133,
+          0.6160980463027954
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.2179210515252752,
+        "first_hit_distance_m": 1.2179208993911743,
+        "console_clearance_mm": 33.32505002617836
+      },
+      {
+        "key": 10,
+        "local_top_m": [
+          0.008458745665848255,
+          0.030426744371652603,
+          0.05270342528820038
+        ],
+        "world_top_m": [
+          0.005695517640560865,
+          -0.6212514042854309,
+          0.6164903044700623
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.2143022792578404,
+        "first_hit_distance_m": 1.2143021821975708,
+        "console_clearance_mm": 33.35917741060257
+      },
+      {
+        "key": 2,
+        "local_top_m": [
+          -0.1837969571352005,
+          0.06933904439210892,
+          0.052382081747055054
+        ],
+        "world_top_m": [
+          -0.12119992077350616,
+          -0.5984393954277039,
+          0.6282779574394226
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.2225238028289218,
+        "first_hit_distance_m": 1.22252357006073,
+        "console_clearance_mm": 33.739928156137466
+      },
+      {
+        "key": 3,
+        "local_top_m": [
+          -0.12408779561519623,
+          0.06876976788043976,
+          0.05279235541820526
+        ],
+        "world_top_m": [
+          -0.08178926259279251,
+          -0.5987891554832458,
+          0.6281458735466003
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.2191688332965667,
+        "first_hit_distance_m": 1.219168782234192,
+        "console_clearance_mm": 33.76101329922676
+      },
+      {
+        "key": 4,
+        "local_top_m": [
+          -0.06670724600553513,
+          0.06887301802635193,
+          0.053158462047576904
+        ],
+        "world_top_m": [
+          -0.04391573742032051,
+          -0.5987316370010376,
+          0.6281911134719849
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.2172079455355758,
+        "first_hit_distance_m": 1.2172080278396606,
+        "console_clearance_mm": 33.79712626338005
+      },
+      {
+        "key": 1,
+        "local_top_m": [
+          -0.25044766068458557,
+          0.07023391872644424,
+          0.051955610513687134
+        ],
+        "world_top_m": [
+          -0.16519218683242798,
+          -0.5979044437408447,
+          0.6285194754600525
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.2277527367495913,
+        "first_hit_distance_m": 1.2277525663375854,
+        "console_clearance_mm": 33.72187167406082
+      },
+      {
+        "key": 0,
+        "local_top_m": [
+          -0.3225212097167969,
+          0.07139231264591217,
+          0.05149345099925995
+        ],
+        "world_top_m": [
+          -0.21276378631591797,
+          -0.597212553024292,
+          0.6288353800773621
+        ],
+        "visible": true,
+        "first_hit": "Keyboard",
+        "target_distance_m": 1.2351624883172083,
+        "first_hit_distance_m": 1.2351624965667725,
+        "console_clearance_mm": 33.66759791970253
+      }
+    ],
+    "operator_eye_m": [
+      0.0,
+      -1.258711338043213,
+      1.649999976158142
+    ],
+    "screen_ray_hits": [
+      {
+        "object": "DisplayPlane",
+        "distance_m": 1.0066670179367065
+      },
+      {
+        "object": "ConsoleBody",
+        "distance_m": 1.0474612712860107
+      }
+    ]
+  },
+  "checks": {
+    "underside_9_gaps_0_to_1_5_mm": true,
+    "no_body_bvh_intersections": true,
+    "no_front_overhang": true,
+    "no_rear_overhang": true,
+    "side_clearances_at_least_30_mm": true,
+    "requested_depth_or_width_limit": true,
+    "key_tops_clear_head_bezel": true,
+    "at_least_27_of_29_visible": true,
+    "screen_ray_hits_display_first": true
+  },
+  "keyboard_local_geometry_unchanged": true,
+  "keyboard_socket": {
+    "location_m": [
+      0.0,
+      -0.6271556615829468,
+      0.5764453411102295
+    ],
+    "matrix": [
+      [
+        1.0,
+        -9.100844181375578e-05,
+        -0.00018366081349086016,
+        0.0
+      ],
+      [
+        -1.9701135254429625e-12,
+        0.8960254788398743,
+        -0.4440026581287384,
+        -0.6271556615829468
+      ],
+      [
+        0.00020497276273090392,
+        0.4440026581287384,
+        0.8960254788398743,
+        0.5764453411102295
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ]
+  },
+  "render": {
+    "engine": "CYCLES",
+    "device": "CPU",
+    "device_note": "Metal command buffer was discarded during GPU recovery; rendered all views on CPU.",
+    "samples": 64,
+    "denoising": true,
+    "resolution": [
+      1600,
+      900
+    ],
+    "neutral_light_rgb": [
+      1,
+      1,
+      1
+    ],
+    "wall_y_m": 0,
+    "floor_z_m": 0,
+    "views": [
+      "three-quarter",
+      "side",
+      "operator",
+      "keyboard-closeup"
+    ],
+    "floor_material": "Dark worn steel, metallic 0.75",
+    "wall_material": "Rusty steel, metallic 0.42"
+  },
+  "scene_checks": {
+    "keyboard_frontmost_world_y_m": -0.7086113691329956,
+    "frontmost_vertical_projection_clearance_mm": 0.09996277815582655,
+    "render_settings_match": true,
+    "frames": {
+      "three-quarter": {
+        "keyboard_ndc_min": [
+          0.4660731852054596,
+          0.31934240460395813,
+          2.9180893898010254
+        ],
+        "keyboard_ndc_max": [
+          0.6593853831291199,
+          0.4732188284397125,
+          3.3008971214294434
+        ],
+        "screen_ndc_min": [
+          0.4224298894405365,
+          0.473493754863739,
+          2.774561882019043
+        ],
+        "screen_ndc_max": [
+          0.6494669914245605,
+          0.8593995571136475,
+          3.347660779953003
+        ]
+      },
+      "side": {
+        "keyboard_ndc_min": [
+          0.35655561089515686,
+          0.3867986798286438,
+          2.45596981048584
+        ],
+        "keyboard_ndc_max": [
+          0.418858140707016,
+          0.48635202646255493,
+          2.9862051010131836
+        ],
+        "screen_ndc_min": [
+          0.4357530176639557,
+          0.5313274264335632,
+          2.291588306427002
+        ],
+        "screen_ndc_max": [
+          0.43575307726860046,
+          0.8878686428070068,
+          3.0704047679901123
+        ]
+      },
+      "operator": {
+        "keyboard_ndc_min": [
+          0.3914565443992615,
+          0.4443291127681732,
+          1.2080421447753906
+        ],
+        "keyboard_ndc_max": [
+          0.6073608994483948,
+          0.5618967413902283,
+          1.250819206237793
+        ],
+        "screen_ndc_min": [
+          0.2625957727432251,
+          0.6501580476760864,
+          0.7735671997070312
+        ],
+        "screen_ndc_max": [
+          0.7414059638977051,
+          0.9744141697883606,
+          1.1462342739105225
+        ]
+      },
+      "keyboard-closeup": {
+        "keyboard_ndc_min": [
+          0.28071948885917664,
+          0.3037901818752289,
+          0.9438626766204834
+        ],
+        "keyboard_ndc_max": [
+          0.7080944776535034,
+          0.7100813984870911,
+          1.2937818765640259
+        ],
+        "screen_ndc_min": [
+          0.18434715270996094,
+          0.6401157379150391,
+          0.7180988788604736
+        ],
+        "screen_ndc_max": [
+          0.6878889203071594,
+          1.5333229303359985,
+          1.3148540258407593
+        ]
+      }
+    },
+    "operator_keyboard_in_frame": true,
+    "operator_screen_in_frame": true,
+    "operator_screen_above_keyboard": true,
+    "maximum_edge_length_stretch_factor": 5.74109821490578,
+    "head_vertices_exactly_unchanged": true,
+    "behind_deck_above_lip_vertices_exactly_unchanged": true,
+    "source_smallest_triangle_altitude_mm": 0.00030672113159796737,
+    "body_vertices": 34120,
+    "body_triangles": 68236,
+    "wall_y_m": 0.0,
+    "floor_z_m": 0.0,
+    "body_back_y_m": 2.4417921018482502e-09,
+    "body_min_z_m": 3.7293617083378194e-09,
+    "nonmanifold_edges": 0,
+    "boundary_edges": 0
+  },
+  "validation": {
+    "exact_export_object_sets": true,
+    "display_screen_socket_export_transforms_unchanged": true,
+    "keyboard_socket_at_new_deck_centre": true,
+    "keyboard_local_export_byte_identical": true,
+    "placement_matches_combined_export": true,
+    "body_watertight": true,
+    "body_winding_consistent": true,
+    "body_volume_m3": 0.5226780581623223,
+    "packed_orm_with_occlusion": true,
+    "embedded_images": true,
+    "maps_2048": true,
+    "four_renders_1600x900": true,
+    "all_fit_checks_pass": true
+  },
+  "files": [
+    "console.glb",
+    "keyboard.glb",
+    "keyboard-placement.json",
+    "console-with-keyboard.glb",
+    "console-with-keyboard.blend",
+    "console-albedo.png",
+    "console-ao.png",
+    "console-orm.png",
+    "console-normal.png",
+    "three-quarter.png",
+    "side.png",
+    "operator.png",
+    "keyboard-closeup.png",
+    "contact.png",
+    "side-profile-comparison.png",
+    "report.json"
+  ],
+  "incomplete": []
+}
