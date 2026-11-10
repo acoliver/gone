@@ -1,6 +1,8 @@
 from pathlib import Path
 import json, os, subprocess, time
-root = Path('art-source/terminal/generated/console2')
+root = Path(__file__).resolve().parent
+(root / 'meshes').mkdir(exist_ok=True)
+(root / 'logs').mkdir(exist_ok=True)
 port = Path('/Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d')
 python = port / '.venv/bin/python'
 base = [str(python), str(port / 'generate.py'), '--model-path', str(port / 'weights/Hunyuan3D-2mv'), '--subfolder', ' hunyuan3d-dit-v2-mv'.strip(), '--dtype', 'float16', '--steps', '30', '--guidance-scale', '5.0', '--octree-resolution', '384']

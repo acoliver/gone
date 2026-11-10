@@ -3,7 +3,8 @@ import json, subprocess
 import numpy as np
 import trimesh
 from PIL import Image, ImageOps, ImageDraw
-root=Path('art-source/terminal/generated/console2')
+root=Path(__file__).resolve().parent
+(root/'previews').mkdir(exist_ok=True)
 renderer=Path('/Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/tests/render_mesh.py')
 python=Path('/Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python')
 views={'front':(['0'],0),'side':(['90'],0),'34':(['45'],0),'top':(['0'],90)}
