@@ -386,78 +386,100 @@ func _bay(local: Vector2) -> Vector2:
 func test_generated_console_models_and_wall_mounts_are_present() -> void:
 	var room := PowerRoom.build(_awake_game())
 	var stations := room.get_children().filter(func(node: Node) -> bool: return node.name.begins_with("ConsoleStation"))
-	assert_int_equal(stations.size(), 6, "six stations use generated terminal models")
-	for station: Node3D in stations:
-		assert_true(station.has_node("TerminalModel"), "each station has the terminal body")
-		assert_true(station.get_node("TerminalModel/Terminal_GeneratedFit").visible, "every station keeps its terminal body visible")
-		assert_true(station.has_node("KeyboardTray"), "each station has a separate keyboard tray")
-		assert_true(station.get_node("TerminalModel").find_child("ScreenSocket", true, false) != null, "terminal socket imports")
-		assert_vec3_equal(station.get_node("TerminalModel").position, Vector3.ZERO, "terminal back is on the station wall plane")
-		var roomward := Vector3(27, 0, -5.8) - station.position
-		assert_true(station.basis.z.dot(roomward) > 0.8, "terminal screen faces into the room")
-		assert_true(station.position.x >= PowerRoom.ROOM_START_X and station.position.x <= PowerRoom.ROOM_END_X, "station lies inside room x bounds")
-		assert_true(station.position.z >= PowerRoom.ROOM_END_Z and station.position.z <= PowerRoom.ROOM_START_Z, "station lies inside room z bounds")
-	var active_station: Node3D = stations[1]
-	assert_true(active_station.has_node("ScreenGlass"), "active console puts glass on the imported screen plane")
-	assert_true(active_station.has_node("ShipDisplay"), "active screen keeps the existing state display")
-	assert_true((active_station.get_node("ShipDisplay/TextSurface").mesh as QuadMesh).size.is_equal_approx(Vector2(0.54, 0.28)), "live text fits the terminal screen")
-	var busted_station: Node3D = stations[2]
-	assert_true(busted_station.get_node("ScreenGlass").material_override.albedo_texture != null, "busted screen uses procedural crack glass")
+	assert_int_equal(stations.size(), 6, "six stations use generated consoles")
+	for index: int in range(stations.size()):
+		var station := stations[index] as Node3D
+		var body := station.get_node("TerminalModel/ConsoleBody") as MeshInstance3D
+		assert_true(body.visible, "every station keeps its generated body visible")
+		assert_true(station.has_node("KeyboardModel") == (index != 2), "only the first busted station loses its keyboard")
+		assert_vec3_equal(station.get_node("TerminalModel").position, Vector3.ZERO, "console uses its exported floor and wall origin")
+		var bounds := _test_world_aabb(body, station)
+		assert_float_in_range(bounds.position.y, -0.00001, 0.00001, "console rests on the floor")
+		assert_float_in_range(bounds.position.z, -0.00001, 0.00001, "console back is flush on the wall")
+		assert_float_in_range(bounds.size.x, 1.0999, 1.1001, "generated console is 1.10 m wide")
+		assert_float_in_range(bounds.size.y, 1.698, 1.700, "generated console is standing height")
+		assert_float_in_range(bounds.size.z, 0.730, 0.732, "console extends toward station-local +Z")
+		assert_true(station.basis.z.dot(Vector3(27, 0, -5.8) - station.position) > 0.8, "console faces into the room")
+		var plane := station.get_node("TerminalModel/DisplayPlane") as MeshInstance3D
+		assert_false(plane.visible, "runtime glass or text replaces the imported display")
+		var glass := station.get_node("ScreenGlass") as MeshInstance3D
+		var glass_frame := _test_transform_in_room(glass, room)
+		assert_true(glass_frame.basis.y.dot(Vector3.UP) > 0.99, "screen glass is upright")
+		assert_true(glass_frame.basis.z.dot(station.basis.z) > 0.999, "glass faces the room")
+		if index in [2, 4]:
+			assert_true(glass.material_override.albedo_texture != null, "both busted stations use cracked glass")
+		elif index != 1:
+			assert_true(glass.material_override.albedo_texture == null, "dead glass has no cracks")
+			assert_true(glass.material_override.albedo_color.get_luminance() < 0.03, "dead glass stays dark")
+	var active_station := stations[1] as Node3D
 	var active_plane := active_station.get_node("TerminalModel/DisplayPlane") as MeshInstance3D
-	var active_quad := active_station.get_node("ShipDisplay") as Node3D
-	var text_surface := active_quad.get_node("TextSurface") as MeshInstance3D
-	var text_transform := _test_transform_in_room(text_surface, room)
-	var active_plane_transform := _test_transform_in_room(active_plane, room)
-	assert_true(text_transform.basis.y.dot(Vector3.UP) > 0.99, "native text surface stays upright")
-	assert_true(text_transform.basis.z.dot(active_plane_transform.basis.z.normalized()) > 0.999, "native text surface faces along the imported screen normal")
-	var busted_plane := busted_station.get_node("TerminalModel/DisplayPlane") as MeshInstance3D
-	var busted_glass := busted_station.get_node("ScreenGlass") as MeshInstance3D
-	var busted_glass_transform := _test_transform_in_room(busted_glass, room)
-	var busted_plane_transform := _test_transform_in_room(busted_plane, room)
-	assert_true(busted_glass_transform.basis.y.dot(Vector3.UP) > 0.99, "busted screen crack glass stays upright")
-	assert_true(busted_glass_transform.basis.z.dot(busted_plane_transform.basis.z.normalized()) > 0.999, "busted glass faces along the imported screen normal")
-	assert_false(active_plane.visible, "active text replaces the imported pale display surface")
+	var display := active_station.get_node("ShipDisplay") as Node3D
+	var surface := display.get_node("TextSurface") as MeshInstance3D
+	var text_frame := _test_transform_in_room(surface, room)
+	assert_true(text_frame.basis.y.dot(Vector3.UP) > 0.99, "live text is upright")
+	assert_true(text_frame.basis.z.dot(active_station.basis.z) > 0.999, "live text faces the room")
 	var plane_size := active_plane.mesh.get_aabb().size
-	assert_true(Vector2(plane_size.x, plane_size.y).is_equal_approx((active_quad.get_node("TextSurface").mesh as QuadMesh).size), "live text exactly covers the hidden display plane")
-	assert_false(active_station.get_node("ScreenGlass").visible, "active station does not put a second glass pane over its display")
-	var plane_transform: Transform3D = (active_plane.get_parent() as Node3D).transform * active_plane.transform
-	var expected_display_position: Vector3 = plane_transform * active_plane.mesh.get_aabb().get_center() + plane_transform.basis.z * 0.003
-	assert_float_in_range(active_quad.position.distance_to(expected_display_position), -0.0001, 0.0001, "live display sits 3 mm ahead of the imported screen face")
-	assert_true(active_station.basis.z.dot(Vector3(27.0, 1.65, -5.8) - active_station.position) > 0.0, "imported screen normal points into the room")
-	var facing := Vector3(sin(PowerRoom.console_stations()[1].yaw), 0.0, cos(PowerRoom.console_stations()[1].yaw))
-	var tray_bounds := _test_world_aabb(active_station.get_node("KeyboardTray"), room)
-	var eye := _test_front_lip(tray_bounds, facing) + facing * 0.55
-	eye.y = 1.65
-	var surface := active_quad.get_node("TextSurface") as MeshInstance3D
-	var target := _test_transform_in_room(surface, room).origin
-	var first_hit := _test_first_triangle_hit(room, eye, target)
-	assert_true(first_hit == surface, "capture-height eye ray reaches live text before the terminal shell: " + str(first_hit))
-	var busted_tray := busted_station.get_node("KeyboardTray") as Node3D
-	assert_float_in_range(rad_to_deg(busted_tray.rotation.x), 6.9, 7.1, "busted tray droops seven degrees toward the player")
-	var front_edge := busted_tray.position + busted_tray.basis * Vector3(0.0, 0.0, 0.2)
-	var rear_edge := busted_tray.position + busted_tray.basis * Vector3(0.0, 0.0, -0.2)
-	assert_true(front_edge.y < rear_edge.y, "busted tray droop lowers the front edge")
-	assert_false(busted_tray.get_node("Keycap 03 onset p").visible, "busted station is missing an onset keycap")
-	assert_false(busted_tray.get_node("Keycap 24 control number").visible, "busted station is missing a control keycap")
-	var dead_station: Node3D = stations[0]
-	assert_true(dead_station.get_node("ScreenGlass").material_override.albedo_texture == null, "dead station remains dark glass without cracks")
+	assert_true((surface.mesh as QuadMesh).size.is_equal_approx(Vector2(plane_size.x, plane_size.y)), "text exactly covers DisplayPlane")
+	var expected := active_plane.transform * active_plane.mesh.get_aabb().get_center() + active_plane.basis.z * 0.003
+	assert_float_in_range(display.position.distance_to(expected), 0, 0.0001, "live display sits 3 mm ahead of DisplayPlane")
+	assert_false(active_station.get_node("ScreenGlass").visible, "no second pane covers the live text")
+	var eye := active_station.transform * Vector3(0, 1.65, 1.10)
+	var first_hit := _test_first_triangle_hit(room, eye, text_frame.origin)
+	assert_true(first_hit == surface, "capture-height eye ray hits live text before the console body: " + str(first_hit))
 	var mount := room.get_node("StatusPanelMount") as Node3D
-	assert_vec3_equal(mount.position, Vector3(27, 1.4, PowerRoom.ROOM_END_Z), "panel is centered on north wall with 2.10 m screen center")
-	assert_true(mount.has_node("StatusPanelModel"), "status panel shell loads")
-	assert_true(mount.has_node("StatusBoard"), "runtime status board is attached")
-	assert_float_in_range(mount.position.y + mount.get_node("StatusBoard").position.y, 2.10 - 0.003, 2.10 + 0.003, "status screen center is within 3 mm of the approved height")
+	assert_vec3_equal(mount.position, Vector3(27, 1.4, PowerRoom.ROOM_END_Z), "status panel remains on the north wall")
+	assert_true(mount.has_node("StatusPanelModel") and mount.has_node("StatusBoard"), "status panel retains its shell and board")
+	assert_float_in_range(mount.position.y + mount.get_node("StatusBoard").position.y, 2.097, 2.103, "board keeps its approved height")
 	assert_true(absf(mount.position.x - 24.5) > 1.9 and absf(mount.position.x - 29.5) > 1.9, "panel clears both north stations")
-	assert_true(absf(mount.position.z - PowerRoom.REGULAR_STATIONS_Z[1]) > 1.5, "panel clears the north ceiling fixture row")
-	assert_true(mount.position.distance_to(PowerRoom.door_act_center()) > 5.0, "panel clears the power doorway")
+	assert_true(absf(mount.position.z - PowerRoom.REGULAR_STATIONS_Z[1]) > 1.5, "panel clears the north fixture row")
+	assert_true(mount.position.distance_to(PowerRoom.door_act_center()) > 5.0, "panel clears the doorway")
 	room.free()
+
+func test_keyboard_underside_rests_on_console_deck_without_intersection() -> void:
+	var room := PowerRoom.build(_awake_game())
+	for index: int in [0, 1, 3, 4, 5]:
+		var station := room.get_node("ConsoleStation%d" % index) as Node3D
+		var body := station.get_node("TerminalModel/ConsoleBody") as MeshInstance3D
+		var key := station.get_node("KeyboardModel").find_child("Keyboard", true, false) as MeshInstance3D
+		var body_frame := _test_transform_in_room(body, station)
+		var key_frame := _test_transform_in_room(key, station)
+		var key_query := key.mesh.generate_triangle_mesh()
+		var body_query := body.mesh.generate_triangle_mesh()
+		for sample: Vector2 in [Vector2(-0.3, -0.075), Vector2(0.3, -0.075), Vector2.ZERO, Vector2(-0.3, 0.075), Vector2(0.3, 0.075)]:
+			var underside := key_query.intersect_segment(Vector3(sample.x, -0.02, sample.y), Vector3(sample.x, 0.08, sample.y))
+			assert_false(underside.is_empty(), "sample reaches the actual keyboard underside")
+			if underside.is_empty(): continue
+			var support: Vector3 = body_frame.affine_inverse() * (key_frame * underside.position)
+			var hit := body_query.intersect_ray(support, Vector3.DOWN)
+			assert_false(hit.is_empty(), "downward underside ray hits ConsoleBody")
+			if not hit.is_empty():
+				assert_float_in_range(support.y - hit.position.y, 0, 0.002, "keyboard rests within 2 mm of the deck")
+		assert_true(_test_mesh_edges_clear(key, key_frame, body_query, body_frame), "keyboard edges do not cross the console")
+		assert_true(_test_mesh_edges_clear(body, body_frame, key_query, key_frame), "console edges do not cross the keyboard")
+	room.free()
+
+func _test_mesh_edges_clear(mesh: MeshInstance3D, frame: Transform3D, other: TriangleMesh, other_frame: Transform3D) -> bool:
+	var relative := other_frame.affine_inverse() * frame
+	var faces := mesh.mesh.get_faces()
+	for index: int in range(0, faces.size(), 3):
+		for edge: int in range(3):
+			var a := relative * faces[index + edge]
+			var b := relative * faces[index + (edge + 1) % 3]
+			var edge_vector := b - a
+			if edge_vector.is_zero_approx(): continue
+			var hit := other.intersect_ray(a, edge_vector.normalized())
+			if not hit.is_empty() and a.distance_squared_to(hit.position) <= edge_vector.length_squared(): return false
+	return true
+
 
 func test_every_keyboard_frame_slopes_down_toward_the_room() -> void:
 	var room := PowerRoom.build(_awake_game())
 	var stations := room.get_children().filter(func(node: Node) -> bool: return node.name.begins_with("ConsoleStation"))
 	assert_int_equal(stations.size(), 6, "check every console station's keyboard slope")
 	for station: Node3D in stations:
-		var frame := station.get_node("KeyboardTray").find_child("Rugged olive steel perimeter housing", true, false) as MeshInstance3D
-		assert_true(frame != null, "%s has its keyboard frame" % station.name)
+		if not station.has_node("KeyboardModel"): continue
+		var frame := station.get_node("KeyboardModel").find_child("Keyboard", true, false) as MeshInstance3D
+		assert_true(frame != null, "%s has its generated keyboard" % station.name)
 		var transform := _test_transform_in_room(frame, room)
 		var roomward := station.basis.z.normalized()
 		var vertices := frame.mesh.get_faces()
@@ -496,28 +518,31 @@ func test_status_board_has_one_running_system_and_native_naleya() -> void:
 				continue
 			assert_false(Naleya.syllabify(word).is_empty(), "native board contains Naleya only: " + word)
 
-func test_terminal_collision_uses_keyboard_tray_depth() -> void:
+func test_terminal_collision_matches_generated_console_footprint() -> void:
 	for station: PowerRoom.ConsoleStation in PowerRoom.console_stations():
 		var hull := PowerRoom.console_solid(station)
 		var horizontal := Vector2(hull.size.x, hull.size.z)
-		assert_true(maxf(horizontal.x, horizontal.y) >= 1.005 - 0.0001, "terminal width is represented in the collider")
-		assert_true(minf(horizontal.x, horizontal.y) >= 0.90 - 0.0001, "keyboard tray depth is represented in the collider")
+		assert_float_in_range(maxf(horizontal.x, horizontal.y), 1.0999, 1.1001, "console width matches the generated body")
+		assert_float_in_range(minf(horizontal.x, horizontal.y), 0.7299, 0.732, "console depth matches the generated body")
+		assert_float_in_range(hull.size.y, 1.6999, 1.7001, "console hull is standing height")
+		var facing := Vector3(sin(station.yaw), 0, cos(station.yaw))
+		assert_vec3_equal(hull.center, station.position + facing * 0.365 + Vector3.UP * 0.85, "hull starts flush on the wall and floor")
 
 func test_power_room_glbs_remain_within_the_prop_triangle_budget() -> void:
 	for path: String in [
-		"res://assets/props/terminal/terminal.glb",
-		"res://assets/props/terminal/keyboard-tray.glb",
+		"res://assets/props/terminal/console.glb",
+		"res://assets/props/terminal/keyboard.glb",
 		"res://assets/props/status_panel/panel.glb",
 	]:
 		var model := load(path).instantiate() as Node3D
-		assert_true(_mesh_triangle_count(model) < 50000, "%s remains below the 50k triangle prop budget" % path)
+		assert_true(_mesh_triangle_count(model) <= 50000, "%s stays within the 50k triangle prop budget" % path)
 		model.free()
 
 func test_power_room_prop_glbs_have_exact_mesh_sets() -> void:
 	var expected := {
 		"res://assets/props/status_panel/panel.glb": ["Panel_ArmoredBody", "DisplayPlane"],
-		"res://assets/props/terminal/terminal.glb": ["Terminal_GeneratedFit", "DisplayPlane", "WallMountPlate"],
-		"res://assets/props/terminal/keyboard-tray.glb": _keyboard_tray_mesh_names(),
+		"res://assets/props/terminal/console.glb": ["ConsoleBody", "DisplayPlane"],
+		"res://assets/props/terminal/keyboard.glb": ["Keyboard"],
 	}
 	for path: String in expected:
 		var model := (load(path) as PackedScene).instantiate() as Node3D
@@ -526,6 +551,22 @@ func test_power_room_prop_glbs_have_exact_mesh_sets() -> void:
 		var wanted: Array = expected[path]
 		wanted.sort()
 		assert_true(actual == wanted, "%s mesh names match the complete authored set: %s" % [path, actual])
+		model.free()
+
+func test_generated_console_exports_exact_placement_node_sets() -> void:
+	var expected := {
+		"res://assets/props/terminal/console.glb": ["ConsoleBody", "DisplayPlane", "ScreenSocket", "KeyboardSocket"],
+		"res://assets/props/terminal/keyboard.glb": ["Keyboard", "KeyboardBase"],
+	}
+	for path: String in expected:
+		var model := (load(path) as PackedScene).instantiate() as Node3D
+		var names: Array[String] = []
+		for child: Node in model.find_children("*", "Node3D", true, false):
+			names.append(child.name)
+		names.sort()
+		var wanted: Array = expected[path]
+		wanted.sort()
+		assert_true(names == wanted, "complete exported node set matches: " + str(names))
 		model.free()
 
 func _test_transform_in_room(node: Node3D, room: Node3D) -> Transform3D:
@@ -555,16 +596,8 @@ func _test_world_aabb(parent: Node3D, room: Node3D) -> AABB:
 							initialized = true
 		for child: Node in node.get_children():
 			stack.append(child)
-	assert_true(initialized, "terminal tray has mesh geometry")
+	assert_true(initialized, "generated console has mesh geometry")
 	return result
-
-func _test_front_lip(bounds: AABB, facing: Vector3) -> Vector3:
-	var lip := bounds.get_center()
-	var support := 0.0
-	for x: float in [bounds.position.x, bounds.end.x]:
-		for z: float in [bounds.position.z, bounds.end.z]:
-			support = maxf(support, Vector3(x - lip.x, 0.0, z - lip.z).dot(facing))
-	return lip + facing * support
 
 func _test_first_triangle_hit(root_node: Node, start: Vector3, finish: Vector3) -> MeshInstance3D:
 	var best := INF
@@ -595,37 +628,6 @@ func _mesh_names(node: Node) -> Array[String]:
 		names.append(node.name)
 	for child: Node in node.get_children():
 		names.append_array(_mesh_names(child))
-	return names
-
-func _keyboard_tray_mesh_names() -> Array[String]:
-	var names: Array[String] = [
-		"Rugged olive steel perimeter housing",
-		"Recessed black elastomer membrane",
-		"Bent steel keyboard tray",
-		"Terminal mounting back flange",
-		"Flange back perimeter rubber gasket",
-		"Tray triangular gusset -0_34",
-		"Tray triangular gusset +0_34",
-		"Proud 13 mm hex socket cap screw",
-		"Dark recessed hex socket",
-	]
-	for index: int in range(1, 7):
-		names.append("Flange hex bolt %02d" % index)
-	for index: int in range(1, 10):
-		names.append("Proud 13 mm hex socket cap screw_%03d" % index)
-		names.append("Dark recessed hex socket_%03d" % index)
-	var keys := [
-		"29 control right", "28 control down", "27 control left", "26 control up",
-		"25 control punct", "24 control number", "23 control box", "22 control enter",
-		"21 control back", "20 control space", "19 command help", "18 command systems",
-		"17 command map", "16 command power", "15 vowel u", "14 vowel o", "13 vowel i",
-		"12 vowel e", "11 vowel a", "10 onset carrier", "09 onset ch", "08 onset t",
-		"07 onset sh", "06 onset w", "05 onset k", "04 onset m", "03 onset p",
-		"02 onset l", "01 onset n",
-	]
-	for key: String in keys:
-		names.append("Keycap " + key)
-		names.append("Black rubber bellows " + key)
 	return names
 
 func _mesh_triangle_count(node: Node) -> int:

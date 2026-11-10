@@ -217,7 +217,7 @@ static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 
 	var stations := console_stations()
 	for index: int in range(stations.size()):
-		var console := room._build_console(stations[index])
+		var console := room._build_console(stations[index], index == 2)
 		console.name = "ConsoleStation%d" % index
 		room.add_child(console)
 	room.add_child(room._build_status_panel())
@@ -255,30 +255,33 @@ static func build(game: Game, text_cache: ShipTextCache = null) -> PowerRoom:
 	Lighting.mesh_layers(door_frame, door_mask)
 	return room
 
-## One generated terminal and its matching keyboard tray. Each source model
-## shares the authored station frame; only the active station owns live text.
-func _build_console(station: ConsoleStation) -> Node3D:
+## The generated housing owns its deck. The separate keyboard retains its
+## source frame and takes its placement from the generation record.
+func _build_console(station: ConsoleStation, keyboard_missing: bool) -> Node3D:
 	var group := Node3D.new()
 	group.name = "ConsoleStation"
 	group.position = station.position
 	group.rotation.y = station.yaw
-	var terminal := load("res://assets/props/terminal/terminal.glb").instantiate() as Node3D
+	var terminal := load("res://assets/props/terminal/console.glb").instantiate() as Node3D
 	terminal.name = "TerminalModel"
 	group.add_child(terminal)
-	var keyboard := load("res://assets/props/terminal/keyboard-tray.glb").instantiate() as Node3D
-	keyboard.name = "KeyboardTray"
-	group.add_child(keyboard)
-	if station.health == CONSOLE_HEALTHS["dead_busted"]:
-		var hinge := Vector3(0.0, -0.85, 1.10)
-		var droop := deg_to_rad(7.0)
-		var hinge_rotation := Basis(Vector3.RIGHT, droop)
-		keyboard.position = hinge + hinge_rotation * (keyboard.position - hinge)
-		keyboard.rotation.x = droop
-		assert(is_equal_approx(rad_to_deg(keyboard.rotation.x), 7.0), "busted tray droops seven degrees around its flange hinge")
-		for cap_name: String in ["Keycap 03 onset p", "Keycap 24 control number"]:
-			var missing_cap := keyboard.find_child(cap_name, true, false) as MeshInstance3D
-			assert(missing_cap != null, "busted keyboard contains " + cap_name)
-			missing_cap.visible = false
+	if keyboard_missing:
+		assert(station.health == CONSOLE_HEALTHS["dead_busted"], "only a busted station loses its keyboard")
+	else:
+		var keyboard := load("res://assets/props/terminal/keyboard.glb").instantiate() as Node3D
+		keyboard.name = "KeyboardModel"
+		var placement: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://assets/props/terminal/keyboard-placement.json"))["glTF_y_up"]
+		assert(placement["quaternion_order"] == "x,y,z,w", "keyboard placement uses glTF quaternion order")
+		var location: Array = placement["location"]
+		var rotation: Array = placement["rotation_quaternion"]
+		var scale_values: Array = placement["scale"]
+		var keyboard_base := keyboard.find_child("KeyboardBase", true, false) as Node3D
+		assert(keyboard_base != null, "keyboard GLB exports its placement frame")
+		keyboard_base.transform = Transform3D(
+			Basis(Quaternion(rotation[0], rotation[1], rotation[2], rotation[3])).scaled(Vector3(scale_values[0], scale_values[1], scale_values[2])),
+			Vector3(location[0], location[1], location[2])
+		)
+		group.add_child(keyboard)
 	var socket := terminal.find_child("ScreenSocket", true, false) as Node3D
 	assert(socket != null, "terminal GLB exports its screen socket")
 	var display_plane := terminal.find_child("DisplayPlane", true, false) as MeshInstance3D
@@ -295,8 +298,6 @@ func _build_console(station: ConsoleStation) -> Node3D:
 		screen.material_override = _screen_material
 		screen.visible = false
 		group.add_child(screen)
-		var terminal_fit := terminal.find_child("Terminal_GeneratedFit", true, false) as MeshInstance3D
-		assert(terminal_fit != null, "terminal GLB exports its fitted housing")
 		var plane_transform := terminal.transform * display_plane.transform
 		var display_frame := _upright_screen_frame(group, plane_transform, display_plane.mesh.get_aabb())
 		screen.transform = display_frame.transform
@@ -324,6 +325,7 @@ func _build_console(station: ConsoleStation) -> Node3D:
 		dead_screen.mesh = _box_mesh(Vector3(dead_frame.size.x, dead_frame.size.y, 0.008))
 		dead_screen.material_override = glass
 		dead_screen.transform = dead_frame.transform
+		display_plane.visible = false
 		group.add_child(dead_screen)
 	return group
 
