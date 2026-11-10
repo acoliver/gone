@@ -1421,7 +1421,7 @@ The standalone prompt and seed are in `prompts/batch2.json` and `sheets/her_jack
 
 The [dress comparison](sheets/her_dresses/comparison.png) places the generated guide beside separate broadside captures of the remembered and aged exports. The lower row shows their actual wardrobe placement with the existing tunic, plus isolated shoulders and floor fibres. The pair consists of a dusty-rose cap-sleeved dress and a grey-blue sleeveless dress. Both remain empty garments on steel wire hangers.
 
-`her_dresses.glb` and `her_dresses_aged.glb` use the wardrobe's floor-centre origin and complete transform, with no extra rail-height offset. The hooks meet the real rail at 1.82 m. The tunic transform comes from the Playable demo on local branch `issue-114-quarters-demo`: reflect the tunic's local X, then place its hook at wardrobe-local glTF `(0, 1.82, 0.003038027)` m. Its aged debris is separately seated on the 0.144 m wardrobe shelf. The tunic occupies most of the rail width. The dresses therefore hang with their broad hanger axes front-to-back, rose at X=-0.451 m and blue at X=0.438 m. The left hook neck offsets 26 mm inward to clear the rail socket. Neither the wardrobe nor the tunic is included in these exports.
+`her_dresses.glb` and `her_dresses_aged.glb` use the wardrobe's floor-centre origin and complete transform, with no extra rail-height offset. The hooks meet the real rail at 1.82 m. The tunic transform comes from the Playable demo on local branch `issue-114-quarters-demo`: reflect the tunic's local X, then place its hook at wardrobe-local glTF `(0, 1.82, 0.003038027)` m. Its aged debris is separately seated on the 0.144 m wardrobe shelf. The original front-to-back hangers and depth-independent tunic envelope squeezed the dresses into narrow side slots, hiding their silhouettes in the demo. The hooks now sit at rail X=-0.290 m and +0.290 m. Their necks turn the hanger shoulders toward the room and offset the cloth 130 mm forward of the rail; the rail-wrapping hook portions remain unchanged. The fitted pattern widths are 75% of their former front-to-back span, giving each dress a readable front while leaving the tunic's centre visible. The chosen positions pass exact triangle checks against both tunic states and the wardrobe. Neither the wardrobe nor the tunic is included in these exports.
 
 Each dress starts as retained flat front/back patterns, sewn at the sides and shoulders with open necks and armholes. After sewing closure, gravity settles the garment on its hanger and a temporary upper-chest form, following the tunic method. There are no waist or hem pins. A post-simulation fit blends width and length toward the sewn pattern measurements, preserving simulated depth and folds; projection into the real free hang space then removes collider crossings. The saved sources retain both raw simulations and the cut patterns.
 
@@ -1435,7 +1435,7 @@ Sources are `tools/blender/quarters/her_dresses/her_dresses-{remembered,aged}.bl
 | Exported triangles, limit 10,000 | 6,544 | 9,430 |
 | Exact triangle crossings against wardrobe | 0 | 0 |
 | Crossings against corresponding tunic state / other dress | 0 / 0 | 0 / 0 |
-| Rose / blue cloth-to-hanger support gaps | 0.044 / 0.661 mm | 0.044 / 0.661 mm |
+| Rose / blue cloth-to-hanger support gaps | 0.091 / 0.641 mm | 0.091 / 0.641 mm |
 | Each hanger-to-rail gap | 0.807 mm | 0.807 mm |
 | Each fibre-heap-to-shelf gap | n/a | 0.800 mm |
 | Byte-identical saved-source re-export | Pass | Pass |
