@@ -13,7 +13,7 @@ from PIL import Image, ImageDraw, ImageFilter
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tools/blender/quarters/wardrobe'))
-from materials import measure, mute_green as float_mute_green, design_paint
+from materials import measure, design_paint
 from locker_gates import hsv
 from locker_faces import paint_fields
 from select_locker_faces import calibrate, from_lab
@@ -31,13 +31,27 @@ CROPS = {'broad': ('docs/art/corridors/hatch-concept-rusted.png', [817, 119, 890
          'top': ('docs/art/quarters/concept-now.png', [656, 272, 720, 304])}
 
 
+def gpu_jobs(snapshot):
+    return [line for line in snapshot.splitlines()
+            if ('mflux' in line or 'generate.py' in line) and 'grep' not in line]
+
+
+def wait_for_gpu():
+    while True:
+        snapshot = subprocess.run(['ps', '-axo', 'pid,command'], check=True, capture_output=True, text=True)
+        active = gpu_jobs(snapshot.stdout)
+        if not active: return
+        print('WAIT GPU', active, flush=True)
+        time.sleep(15)
+
+
 def mute_green(image):
-    colour = np.asarray(float_mute_green(image)).copy()
+    colour = np.asarray(image.convert('RGB')).copy()
     hue, saturation, _ = hsv(colour.astype(float)/255)
-    selected = (hue >= 70) & (hue <= 170) & (saturation > .23)
-    # Quantised dark pixels need an integer lower bound; a float saturation
-    # cap can round back above the biological-green limit at low byte values.
-    minimum = np.ceil(colour.max(-1)*.78).astype(np.uint8)
+    selected = (hue >= 70) & (hue <= 170) & (saturation > .18)
+    # Leave room below the .23 rendered limit for atlas interpolation, byte
+    # rounding and BC7 compression, including dark low-byte-value pixels.
+    minimum = np.ceil(colour.max(-1)*.82).astype(np.uint8)
     colour[selected] = np.maximum(colour[selected], minimum[selected, None])
     return Image.fromarray(colour)
 
@@ -114,15 +128,7 @@ def generate():
         output = LIBRARY / row['raw']
         if output.exists():
             continue
-        # Cross-session generation is external and may already own the GPU.
-        while True:
-            active = subprocess.run(['pgrep', '-f', 'mflux-generate|[g]enerate.py'], capture_output=True, text=True)
-            if active.returncode == 1:
-                break
-            if active.returncode != 0:
-                raise RuntimeError(active.stderr)
-            print('WAIT GPU', active.stdout.strip(), flush=True)
-            time.sleep(15)
+        wait_for_gpu()
         command = ['/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit',
                    '--model', 'flux2-klein-4b', '--quantize', '4', '--steps', '4',
                    '--image-paths', str(LIBRARY / f"{row['id']}-input.png"),
@@ -165,7 +171,10 @@ def select():
         raw = Image.open(LIBRARY / row['raw']).convert('RGB')
         reference = Image.open(LIBRARY / row['reference']).convert('RGB')
         if 'treatment' in row and (LIBRARY / row['image']).exists():
-            values, image_gates = gate_image(Image.open(LIBRARY / row['image']), reference, row)
+            image = mute_green(Image.open(LIBRARY / row['image']))
+            image.save(LIBRARY / row['image'])
+            row['treatment']['green_saturation_ceiling'] = .18
+            values, image_gates = gate_image(image, reference, row)
             row['scores'] = values
             row['passed'] = all(g['passed'] for g in image_gates.values())
             if not row['passed'] and values.get('pilot_pigment_delta_e', 0) > 6:
@@ -201,7 +210,7 @@ def select():
         failed, _, image, values, gates, treatment = best
         image.save(LIBRARY / row['image'])
         row['scores'] = values
-        row['treatment'] = treatment
+        row['treatment'] = dict(treatment, green_saturation_ceiling=.18)
         row['passed'] = failed == 0
         all_gates[row['id']] = gates
         print('SELECT', row['id'], failed, values, flush=True)

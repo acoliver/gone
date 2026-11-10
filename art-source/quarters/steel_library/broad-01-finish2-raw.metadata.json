@@ -1,0 +1,34 @@
+{
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/steel_library/broad-01-finish2-input.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/steel_library/broad-01-finish2-prompt.txt",
+    "--seed",
+    "795001",
+    "--width",
+    "768",
+    "--height",
+    "1536",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/steel_library/broad-01-finish2-raw.png"
+  ],
+  "prompt": "Refine this flat vertical grey-green painted-steel texture. Retain most broad central paint. Keep corrosion around the outside edges, corners and isolated old fixture scars near those edges. Give a few narrow tapered downward rust trails unequal widths and lengths, with subtle softly feathered oxide rims. Their placement must be irregular, never parallel repeated stripes. Keep the colour palette. No broad pale flaking, white patches, regular dots or new hardware. Shadowless edge-to-edge texture only, orthographic flat material, no object silhouette, frame, lighting gradient, cast shadows or biological growth. 1000 years of dry sterile oxygenated ship aging.\n",
+  "input": "broad-01-finish2-input.png",
+  "parent_raw": "broad-01-native-raw.png",
+  "model": "FLUX.2-klein-4B",
+  "seed": 795001,
+  "quantize": 4,
+  "steps": 4,
+  "pixels": [
+    768,
+    1536
+  ]
+}

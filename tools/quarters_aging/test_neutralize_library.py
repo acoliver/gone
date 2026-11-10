@@ -33,6 +33,11 @@ class NeutralPaletteTests(unittest.TestCase):
         hue, saturation, _ = hsv(result)
         self.assertFalse(np.any((hue >= 70) & (hue <= 170) & (saturation > .23)))
 
+    def test_green_paint_has_headroom_before_atlas_and_gpu_quantization(self):
+        result = np.asarray(mute_green(Image.new('RGB', (4, 4), (77, 100, 80))), float)/255
+        hue, saturation, _ = hsv(result)
+        self.assertTrue(np.all(saturation <= .18+1e-12))
+
     def test_missing_oxide_is_rejected(self):
         with self.assertRaises(ValueError):
             neutral_transform(Image.new('RGB', (4, 4), (100, 100, 100)), np.array([.38, .46, .45]))

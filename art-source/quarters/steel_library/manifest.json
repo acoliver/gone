@@ -24,22 +24,22 @@
         352
       ],
       "image": "broad-00.png",
-      "raw": "broad-00-native-raw.png",
+      "raw": "broad-00-finish2-raw.png",
       "scores": {
-        "delta_e": 7.125137510636666,
-        "planar_light_gradient": 0.0002658843680981894,
-        "secondary_autocorrelation": 0.24091320847027767,
-        "edge_rust": 0.11791993166797621,
-        "broad_rust": 0.001569125536658133,
-        "edge_broad_ratio": 75.15009405755885,
-        "paint_mean_delta_e": 2.1494993382158514,
-        "paint_std_delta_e": 5.342722377680991,
-        "rust_mean_delta_e": 2.7683532793223464,
-        "rust_std_delta_e": 3.092389888124438,
+        "delta_e": 6.346802797457796,
+        "planar_light_gradient": 0.0004141662628201977,
+        "secondary_autocorrelation": 0.28536516219430597,
+        "edge_rust": 0.1747964314450005,
+        "broad_rust": 0.004436153393267049,
+        "edge_broad_ratio": 39.40270228488875,
+        "paint_mean_delta_e": 2.253237371681355,
+        "paint_std_delta_e": 4.200727710340469,
+        "rust_mean_delta_e": 2.5156315663488655,
+        "rust_std_delta_e": 2.0749267534889935,
         "no_green": 0.0,
         "pixels_per_metre": 1536.0,
-        "broad_high_frequency": 0.008371385070621554,
-        "pilot_pigment_delta_e": 0.4167772623984443
+        "broad_high_frequency": 0.0137060393349794,
+        "pilot_pigment_delta_e": 0.33493946306925093
       },
       "passed": true,
       "raw_reference": "broad-source.png",
@@ -48,43 +48,45 @@
         0.4827450704574585,
         0.4709803652763367
       ],
-      "parent_raw": "broad-00-raw.png",
+      "parent_raw": "broad-00-native-raw.png",
       "native_input": "broad-00-native-input.png",
       "resolution_stage": "native-2x",
+      "refinement": "finish2",
       "treatment": {
         "quantile_amount": 0.0,
         "calibration": {
           "flatten_log_linear_plane": true,
           "lab_affine_matrix": [
             [
-              0.7923106431039866,
-              2.055766491467055,
-              -2.5219934411434113
+              0.9331581776847333,
+              2.3237020446080967,
+              -1.8065855373243946
             ],
             [
-              -0.38496197354666434,
-              -0.6197416117355973,
-              1.0046855280160643
+              -0.509386011322591,
+              -0.8152305308401266,
+              0.7278769870736419
             ],
             [
-              -0.38921110667785996,
-              -1.1693760305305418,
-              1.5742063851231165
+              -0.5896314591120341,
+              -1.121294020252996,
+              0.6908055057655705
             ]
           ],
           "lab_input_centre": [
-            44.463597340551736,
-            -4.054555635099643,
-            0.9305967279869457
+            48.88578096455602,
+            -3.5923138555887997,
+            1.253149732340445
           ],
           "lab_output_centre": [
-            46.61689141931904,
-            -6.128009388520538,
-            0.9329149836291741
+            45.56452258851552,
+            -5.607644081840176,
+            1.1808048727870242
           ],
           "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
         },
-        "denoise_px": 1.0
+        "denoise_px": 1.0,
+        "green_saturation_ceiling": 0.18
       }
     },
     {
@@ -108,22 +110,22 @@
         352
       ],
       "image": "broad-01.png",
-      "raw": "broad-01-native-raw.png",
+      "raw": "broad-01-finish2-raw.png",
       "scores": {
-        "delta_e": 6.808560489097955,
-        "planar_light_gradient": 0.013954083429697573,
-        "secondary_autocorrelation": 0.20966019068192202,
-        "edge_rust": 0.12249742221215489,
-        "broad_rust": 0.0007991162092255585,
-        "edge_broad_ratio": 153.29112436709286,
-        "paint_mean_delta_e": 2.0434153771196777,
-        "paint_std_delta_e": 2.3438950061604986,
-        "rust_mean_delta_e": 5.063003607157301,
-        "rust_std_delta_e": 4.537224616196878,
+        "delta_e": 7.656490032701517,
+        "planar_light_gradient": 0.0006400002446666276,
+        "secondary_autocorrelation": 0.28921948342298626,
+        "edge_rust": 0.1025900574073943,
+        "broad_rust": 0.0003281139402118187,
+        "edge_broad_ratio": 312.66595177628176,
+        "paint_mean_delta_e": 2.468689641100435,
+        "paint_std_delta_e": 6.446217571946059,
+        "rust_mean_delta_e": 1.9957570672128278,
+        "rust_std_delta_e": 1.4937893058026361,
         "no_green": 0.0,
         "pixels_per_metre": 1536.0,
-        "broad_high_frequency": 0.025487849055408743,
-        "pilot_pigment_delta_e": 0.633125111279083
+        "broad_high_frequency": 0.007729835822861861,
+        "pilot_pigment_delta_e": 0.19996164084384366
       },
       "passed": true,
       "raw_reference": "broad-source.png",
@@ -132,43 +134,45 @@
         0.4827450704574585,
         0.4709803652763367
       ],
-      "parent_raw": "broad-01-raw.png",
+      "parent_raw": "broad-01-native-raw.png",
       "native_input": "broad-01-native-input.png",
       "resolution_stage": "native-2x",
+      "refinement": "finish2",
       "treatment": {
-        "quantile_amount": 1.0,
+        "quantile_amount": 0.0,
         "calibration": {
           "flatten_log_linear_plane": true,
           "lab_affine_matrix": [
             [
-              1.0351725477383178,
-              0.313468616746078,
-              -0.3715170794332894
+              1.9246774566633251,
+              3.200650570934679,
+              -1.7813428092893304
             ],
             [
-              -0.403575591706796,
-              -0.005357985956221338,
-              0.3911268306249223
+              -0.6351387266303904,
+              -0.7145649449659741,
+              0.6621921507204226
             ],
             [
-              -0.31563072504981726,
-              -0.157724001629428,
-              0.5680527324766904
+              -1.25500548685694,
+              -2.119387672448144,
+              1.0352691566815668
             ]
           ],
           "lab_input_centre": [
-            41.48653384714564,
-            -3.213596912661986,
-            2.586441835297629
+            50.594312104785416,
+            -3.8889949591638393,
+            2.1064825546859556
           ],
           "lab_output_centre": [
-            45.36325154227222,
-            -5.225902604284837,
-            1.3419579621313331
+            46.43465847519573,
+            -6.035878246819471,
+            1.007182901681638
           ],
           "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
         },
-        "denoise_px": 1.0
+        "denoise_px": 1.0,
+        "green_saturation_ceiling": 0.18
       }
     },
     {
@@ -192,22 +196,22 @@
         352
       ],
       "image": "broad-02.png",
-      "raw": "broad-02-native-raw.png",
+      "raw": "broad-02-finish2-raw.png",
       "scores": {
-        "delta_e": 7.650377796326181,
-        "planar_light_gradient": 0.001695001818093559,
-        "secondary_autocorrelation": 0.26319549669070064,
-        "edge_rust": 0.09388054741753472,
-        "broad_rust": 0.0,
-        "edge_broad_ratio": 9388054.741753472,
-        "paint_mean_delta_e": 2.3361896864797,
-        "paint_std_delta_e": 6.05168142871399,
-        "rust_mean_delta_e": 0.4660827519466729,
-        "rust_std_delta_e": 0.8401844920497146,
+        "delta_e": 7.3092879142249,
+        "planar_light_gradient": 0.001345044803123342,
+        "secondary_autocorrelation": 0.33067903753567196,
+        "edge_rust": 0.11693318684895833,
+        "broad_rust": 5.054473876953125e-05,
+        "edge_broad_ratio": 2313.4591194968552,
+        "paint_mean_delta_e": 2.3216195763471235,
+        "paint_std_delta_e": 6.201512889862628,
+        "rust_mean_delta_e": 2.7604106446518677,
+        "rust_std_delta_e": 1.9441104658710409,
         "no_green": 0.0,
         "pixels_per_metre": 1280.0,
-        "broad_high_frequency": 0.0036003976914369923,
-        "pilot_pigment_delta_e": 0.38490345399783876
+        "broad_high_frequency": 0.006048496029780263,
+        "pilot_pigment_delta_e": 0.24753485508437492
       },
       "passed": true,
       "raw_reference": "broad-source.png",
@@ -216,43 +220,45 @@
         0.4827450704574585,
         0.4709803652763367
       ],
-      "parent_raw": "broad-02-raw.png",
+      "parent_raw": "broad-02-native-raw.png",
       "native_input": "broad-02-native-input.png",
       "resolution_stage": "native-2x",
+      "refinement": "finish2",
       "treatment": {
         "quantile_amount": 0.0,
         "calibration": {
           "flatten_log_linear_plane": true,
           "lab_affine_matrix": [
             [
-              1.06302159936976,
-              0.09976667079401172,
-              -0.19535018993356484
+              1.261379901210021,
+              2.1130327178976835,
+              -2.0125003143841207
             ],
             [
-              0.10156011433067515,
-              0.9945384423110509,
-              0.25905438618152493
+              -0.6133299606404079,
+              -0.5605116032894223,
+              0.649293915906536
             ],
             [
-              -0.1084541303907197,
-              -0.3000760659088404,
-              1.1306058073199587
+              -0.9447896025350029,
+              -1.6104784496181541,
+              1.1222743106982511
             ]
           ],
           "lab_input_centre": [
-            46.00377246221866,
-            -4.133662259136195,
-            1.8213653320085752
+            45.62726111049018,
+            -4.18562517332148,
+            1.6600426688838885
           ],
           "lab_output_centre": [
-            45.89009535046981,
-            -5.8159763913542015,
-            0.9947275289023605
+            46.03295596399277,
+            -5.811655365350834,
+            1.0429564982937025
           ],
           "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
         },
-        "denoise_px": 1.0
+        "denoise_px": 1.0,
+        "green_saturation_ceiling": 0.18
       }
     },
     {
@@ -276,22 +282,22 @@
         352
       ],
       "image": "broad-03.png",
-      "raw": "broad-03-native-raw.png",
+      "raw": "broad-03-finish2-raw.png",
       "scores": {
-        "delta_e": 7.293753764640905,
-        "planar_light_gradient": 0.002926331321194739,
-        "secondary_autocorrelation": 0.2830220500845799,
-        "edge_rust": 0.1054229736328125,
-        "broad_rust": 0.0017671585083007812,
-        "edge_broad_ratio": 59.656772800863465,
-        "paint_mean_delta_e": 2.143935375245814,
-        "paint_std_delta_e": 1.8946010847913621,
-        "rust_mean_delta_e": 0.3204086608192613,
-        "rust_std_delta_e": 0.16284400454710674,
+        "delta_e": 6.693152110256875,
+        "planar_light_gradient": 6.090101797649259e-05,
+        "secondary_autocorrelation": 0.33879130012660386,
+        "edge_rust": 0.1500786675347222,
+        "broad_rust": 0.0012712478637695312,
+        "edge_broad_ratio": 118.05618071184462,
+        "paint_mean_delta_e": 2.166419944914953,
+        "paint_std_delta_e": 5.661058441557638,
+        "rust_mean_delta_e": 2.530117366801348,
+        "rust_std_delta_e": 1.2666164135124554,
         "no_green": 0.0,
         "pixels_per_metre": 1280.0,
-        "broad_high_frequency": 0.026467074528316318,
-        "pilot_pigment_delta_e": 0.5156768385286509
+        "broad_high_frequency": 0.011073392709130074,
+        "pilot_pigment_delta_e": 0.41409364895695444
       },
       "passed": true,
       "raw_reference": "broad-source.png",
@@ -300,43 +306,45 @@
         0.4827450704574585,
         0.4709803652763367
       ],
-      "parent_raw": "broad-03-raw.png",
+      "parent_raw": "broad-03-native-raw.png",
       "native_input": "broad-03-native-input.png",
       "resolution_stage": "native-2x",
+      "refinement": "finish2",
       "treatment": {
-        "quantile_amount": 0.67,
+        "quantile_amount": 0.0,
         "calibration": {
           "flatten_log_linear_plane": true,
           "lab_affine_matrix": [
             [
-              1.0872815768116435,
-              0.5714150990364446,
-              0.09319870190798134
+              1.452129762682637,
+              2.950751980950642,
+              -3.127515575820721
             ],
             [
-              -0.46772631576297097,
-              0.03293974288160696,
-              0.09588251247042673
+              -0.6851555638458613,
+              -1.0537668441067518,
+              1.275032447488366
             ],
             [
-              -0.12120137552216809,
-              -0.015998767062685378,
-              0.8194098715687239
+              -0.7048436846206887,
+              -1.5529344505052505,
+              1.8601906997034539
             ]
           ],
           "lab_input_centre": [
-            43.735095166047806,
-            -4.359760922108032,
-            1.957090060951408
+            44.298928403713596,
+            -5.382895298160913,
+            2.4153665080553925
           ],
           "lab_output_centre": [
-            45.93108407731702,
-            -5.674437274681856,
-            1.1237061429229407
+            46.228300854381025,
+            -5.8788974634228595,
+            1.1313958525738834
           ],
           "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
         },
-        "denoise_px": 1.0
+        "denoise_px": 1.0,
+        "green_saturation_ceiling": 0.18
       }
     },
     {
@@ -360,22 +368,22 @@
         352
       ],
       "image": "broad-04.png",
-      "raw": "broad-04-native-raw.png",
+      "raw": "broad-04-finish2-raw.png",
       "scores": {
-        "delta_e": 7.199892843901972,
-        "planar_light_gradient": 0.004718383148973299,
-        "secondary_autocorrelation": 0.3335622155489914,
-        "edge_rust": 0.1104520153935816,
-        "broad_rust": 0.0024767310325666315,
-        "edge_broad_ratio": 44.5958862473332,
-        "paint_mean_delta_e": 2.172851677796996,
-        "paint_std_delta_e": 2.360262246685549,
-        "rust_mean_delta_e": 1.927359821175727,
-        "rust_std_delta_e": 1.9102579459004776,
+        "delta_e": 6.482363242846337,
+        "planar_light_gradient": 0.0018483636065202208,
+        "secondary_autocorrelation": 0.4330401605718072,
+        "edge_rust": 0.14853720862738992,
+        "broad_rust": 0.002655341443569033,
+        "edge_broad_ratio": 55.93902395759007,
+        "paint_mean_delta_e": 1.9513853449561462,
+        "paint_std_delta_e": 2.753599143722423,
+        "rust_mean_delta_e": 1.0092345277917427,
+        "rust_std_delta_e": 1.6510070295775117,
         "no_green": 0.0,
         "pixels_per_metre": 1536.0,
-        "broad_high_frequency": 0.012803614171997093,
-        "pilot_pigment_delta_e": 0.4552384883027274
+        "broad_high_frequency": 0.025884770114824547,
+        "pilot_pigment_delta_e": 0.8060349100210367
       },
       "passed": true,
       "raw_reference": "broad-source.png",
@@ -384,43 +392,45 @@
         0.4827450704574585,
         0.4709803652763367
       ],
-      "parent_raw": "broad-04-raw.png",
+      "parent_raw": "broad-04-native-raw.png",
       "native_input": "broad-04-native-input.png",
       "resolution_stage": "native-2x",
+      "refinement": "finish2",
       "treatment": {
-        "quantile_amount": 0.67,
+        "quantile_amount": 0.33,
         "calibration": {
           "flatten_log_linear_plane": true,
           "lab_affine_matrix": [
             [
-              1.0283585664836825,
-              0.04216362052004805,
-              0.19245417110062665
+              1.4750510641559047,
+              1.1541030307345501,
+              -0.4950556035915087
             ],
             [
-              -0.03932534222136333,
-              0.7990020450736693,
-              0.08526298108755319
+              0.14975083069761969,
+              1.0902077641874186,
+              0.2616876262771468
             ],
             [
-              -0.10413265311289102,
-              -0.18706887183459192,
-              0.9140269607402576
+              -0.17972736502894426,
+              -0.45141162082653863,
+              0.9422026851188061
             ]
           ],
           "lab_input_centre": [
-            43.04103944382185,
-            -3.848704407847279,
-            2.4478924852550974
+            45.462414897571264,
+            -3.0834274425726034,
+            3.579538047310424
           ],
           "lab_output_centre": [
-            45.05262124833738,
-            -5.179924366828006,
-            1.461594019547566
+            45.63717557673343,
+            -5.389493217028527,
+            1.2317075806632438
           ],
           "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
         },
-        "denoise_px": 1.0
+        "denoise_px": 1.0,
+        "green_saturation_ceiling": 0.18
       }
     },
     {
@@ -444,22 +454,22 @@
         352
       ],
       "image": "broad-05.png",
-      "raw": "broad-05-native-raw.png",
+      "raw": "broad-05-finish2-raw.png",
       "scores": {
-        "delta_e": 7.4109384113307515,
-        "planar_light_gradient": 0.0005468386342263315,
-        "secondary_autocorrelation": 0.4998448509115344,
-        "edge_rust": 0.08842107250131544,
-        "broad_rust": 0.00018390257132839838,
-        "edge_broad_ratio": 480.8038944894371,
-        "paint_mean_delta_e": 2.0502403016623183,
-        "paint_std_delta_e": 3.810919114146315,
-        "rust_mean_delta_e": 2.479588071782915,
-        "rust_std_delta_e": 2.444023462452543,
+        "delta_e": 6.254897289599075,
+        "planar_light_gradient": 0.0047513810749749835,
+        "secondary_autocorrelation": 0.4528354436906195,
+        "edge_rust": 0.19872915649118833,
+        "broad_rust": 0.00555676834229693,
+        "edge_broad_ratio": 35.76344095155175,
+        "paint_mean_delta_e": 2.4452670469904922,
+        "paint_std_delta_e": 3.5447906568827445,
+        "rust_mean_delta_e": 1.020596308167127,
+        "rust_std_delta_e": 0.2224045991648309,
         "no_green": 0.0,
         "pixels_per_metre": 1536.0,
-        "broad_high_frequency": 0.016249963164259237,
-        "pilot_pigment_delta_e": 0.6515899349985466
+        "broad_high_frequency": 0.020641642464641174,
+        "pilot_pigment_delta_e": 0.24562571664830213
       },
       "passed": true,
       "raw_reference": "broad-source.png",
@@ -468,43 +478,45 @@
         0.4827450704574585,
         0.4709803652763367
       ],
-      "parent_raw": "broad-05-raw.png",
+      "parent_raw": "broad-05-native-raw.png",
       "native_input": "broad-05-native-input.png",
       "resolution_stage": "native-2x",
+      "refinement": "finish2",
       "treatment": {
-        "quantile_amount": 0.0,
+        "quantile_amount": 0.67,
         "calibration": {
           "flatten_log_linear_plane": true,
           "lab_affine_matrix": [
             [
-              1.045901941971272,
-              2.6649649733760086,
-              -3.2176505696799325
+              1.2313470282550385,
+              -0.021410324042167157,
+              0.48604366988144004
             ],
             [
-              -0.025838177559735602,
-              1.665441632325357,
-              -1.0729915601826436
+              -0.19889720224967825,
+              -0.1022301490255171,
+              0.702644942663243
             ],
             [
-              -0.6469668434818425,
-              -1.5070763138219319,
-              1.637617209550603
+              -0.004853712271737861,
+              -0.14971903663470845,
+              0.9273322033578475
             ]
           ],
           "lab_input_centre": [
-            46.91292870600566,
-            -4.521130671624825,
-            0.77873690707184
+            44.0513400348566,
+            -3.624132098682458,
+            2.5576316761837
           ],
           "lab_output_centre": [
-            46.20891240256745,
-            -5.990157483663353,
-            1.1144016669181844
+            45.185829784647126,
+            -5.349829478228499,
+            1.417773671698249
           ],
           "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
         },
-        "denoise_px": 0.6
+        "denoise_px": 1.0,
+        "green_saturation_ceiling": 0.18
       }
     },
     {
@@ -530,20 +542,20 @@
       "image": "strip-01.png",
       "raw": "strip-01-native-raw.png",
       "scores": {
-        "delta_e": 6.305134978797109,
-        "planar_light_gradient": 0.0008825108838503957,
-        "secondary_autocorrelation": 0.4663236475888849,
+        "delta_e": 6.301692929721932,
+        "planar_light_gradient": 0.0008717667248805034,
+        "secondary_autocorrelation": 0.46638792606479545,
         "edge_rust": 0.18104568629411177,
         "broad_rust": 0.0020381239779756217,
         "edge_broad_ratio": 88.82957477097955,
-        "paint_mean_delta_e": 2.2796050292958587,
-        "paint_std_delta_e": 5.671954465017122,
+        "paint_mean_delta_e": 2.275487906115391,
+        "paint_std_delta_e": 5.6730676041518215,
         "rust_mean_delta_e": 3.310368017190362,
         "rust_std_delta_e": 3.1309317808346564,
         "no_green": 0.0,
         "pixels_per_metre": 1536.0,
-        "broad_high_frequency": 0.0068141268936529695,
-        "pilot_pigment_delta_e": 0.39522834193113876
+        "broad_high_frequency": 0.006806989204692324,
+        "pilot_pigment_delta_e": 0.394243069411549
       },
       "passed": true,
       "raw_reference": "strip-source.png",
@@ -589,7 +601,8 @@
           ],
           "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
         },
-        "denoise_px": 1.0
+        "denoise_px": 1.0,
+        "green_saturation_ceiling": 0.18
       }
     },
     {
@@ -615,20 +628,20 @@
       "image": "strip-02.png",
       "raw": "strip-02-native-raw.png",
       "scores": {
-        "delta_e": 6.3862432746610684,
-        "planar_light_gradient": 0.000628738213619246,
-        "secondary_autocorrelation": 0.47017183857169476,
+        "delta_e": 6.339839698527934,
+        "planar_light_gradient": 0.0008207444195588478,
+        "secondary_autocorrelation": 0.4696367301364713,
         "edge_rust": 0.19587884279151418,
         "broad_rust": 0.0005596459544741908,
         "edge_broad_ratio": 350.00492941211377,
-        "paint_mean_delta_e": 2.4696757046509594,
-        "paint_std_delta_e": 0.7503492440135529,
+        "paint_mean_delta_e": 2.421755659904669,
+        "paint_std_delta_e": 0.7358294923836113,
         "rust_mean_delta_e": 2.2966522875345867,
         "rust_std_delta_e": 0.728686623938304,
         "no_green": 0.0,
         "pixels_per_metre": 1536.0,
-        "broad_high_frequency": 0.06217146023975799,
-        "pilot_pigment_delta_e": 0.0998255181916252
+        "broad_high_frequency": 0.06228075053216269,
+        "pilot_pigment_delta_e": 0.17134636500084144
       },
       "passed": true,
       "raw_reference": "strip-source.png",
@@ -674,7 +687,8 @@
           ],
           "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
         },
-        "denoise_px": 0.0
+        "denoise_px": 0.0,
+        "green_saturation_ceiling": 0.18
       }
     },
     {
@@ -700,20 +714,20 @@
       "image": "strip-03.png",
       "raw": "strip-03-native-raw.png",
       "scores": {
-        "delta_e": 7.201115166962136,
-        "planar_light_gradient": 0.0038093175684583854,
-        "secondary_autocorrelation": 0.2322468780394628,
+        "delta_e": 7.09498482617493,
+        "planar_light_gradient": 0.003213559408065835,
+        "secondary_autocorrelation": 0.23198557627113164,
         "edge_rust": 0.048728238671255766,
         "broad_rust": 0.0022198172008184094,
         "edge_broad_ratio": 21.951464586043606,
-        "paint_mean_delta_e": 1.3540946702063612,
-        "paint_std_delta_e": 1.6366162465008403,
+        "paint_mean_delta_e": 1.1979199957321114,
+        "paint_std_delta_e": 1.7141029882555467,
         "rust_mean_delta_e": 3.150192595989589,
         "rust_std_delta_e": 1.439002461995344,
         "no_green": 0.0,
         "pixels_per_metre": 1536.0,
-        "broad_high_frequency": 0.009267066675334588,
-        "pilot_pigment_delta_e": 1.351361476435098
+        "broad_high_frequency": 0.009250808497015739,
+        "pilot_pigment_delta_e": 1.404959773769803
       },
       "passed": true,
       "raw_reference": "strip-source.png",
@@ -759,7 +773,8 @@
           ],
           "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
         },
-        "denoise_px": 1.0
+        "denoise_px": 1.0,
+        "green_saturation_ceiling": 0.18
       }
     },
     {
@@ -785,20 +800,20 @@
       "image": "strip-04.png",
       "raw": "strip-04-native-raw.png",
       "scores": {
-        "delta_e": 4.869344822867625,
-        "planar_light_gradient": 0.004274958241718305,
-        "secondary_autocorrelation": 0.4206104786214287,
+        "delta_e": 4.86104339150006,
+        "planar_light_gradient": 0.004299142545542244,
+        "secondary_autocorrelation": 0.42064349408223917,
         "edge_rust": 0.21700136616856963,
         "broad_rust": 0.029772370953978052,
         "edge_broad_ratio": 7.2886827355472965,
-        "paint_mean_delta_e": 1.9468490551862474,
-        "paint_std_delta_e": 0.8026044250972885,
+        "paint_mean_delta_e": 1.9369239935954865,
+        "paint_std_delta_e": 0.799522776414566,
         "rust_mean_delta_e": 2.486611080906781,
         "rust_std_delta_e": 2.3734616645075817,
         "no_green": 0.0,
         "pixels_per_metre": 1536.0,
-        "broad_high_frequency": 0.0059269840563685415,
-        "pilot_pigment_delta_e": 0.6808636627358754
+        "broad_high_frequency": 0.006026827756021662,
+        "pilot_pigment_delta_e": 0.6820341432295025
       },
       "passed": true,
       "raw_reference": "strip-source.png",
@@ -844,7 +859,8 @@
           ],
           "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
         },
-        "denoise_px": 1.0
+        "denoise_px": 1.0,
+        "green_saturation_ceiling": 0.18
       }
     },
     {
@@ -868,67 +884,69 @@
         304
       ],
       "image": "top-00.png",
-      "raw": "top-00-native-raw.png",
+      "raw": "top-00-finish2-raw.png",
       "scores": {
-        "delta_e": 5.5495087098255445,
-        "planar_light_gradient": 0.00044864526844999445,
-        "secondary_autocorrelation": 0.46657861421683616,
-        "edge_rust": 0.024920993381076388,
-        "broad_rust": 2.86102294921875e-06,
-        "edge_broad_ratio": 8710.518518518518,
-        "paint_mean_delta_e": 1.0700071350520846,
-        "paint_std_delta_e": 2.4390217364526054,
-        "rust_mean_delta_e": 1.6320293266941477,
-        "rust_std_delta_e": 2.6364076201062923,
+        "delta_e": 6.488480999754062,
+        "planar_light_gradient": 0.0009127691463843618,
+        "secondary_autocorrelation": 0.3137328858470483,
+        "edge_rust": 0.016411675347222224,
+        "broad_rust": 0.0,
+        "edge_broad_ratio": 1641167.5347222222,
+        "paint_mean_delta_e": 3.6714683619426185,
+        "paint_std_delta_e": 4.313183525895888,
+        "rust_mean_delta_e": 4.442055734797821,
+        "rust_std_delta_e": 2.5739841856189245,
         "no_green": 0.0,
         "pixels_per_metre": 1280.0,
-        "broad_high_frequency": 0.015070933128245747,
-        "pilot_pigment_delta_e": 0.1773063023085197
+        "broad_high_frequency": 0.023806920438425215,
+        "pilot_pigment_delta_e": 0.23176235739986598
       },
       "passed": true,
       "raw_reference": "top-source.png",
       "neutral_paint_target": [
-        0.52,
-        0.55,
-        0.51
+        0.56,
+        0.58,
+        0.54
       ],
-      "parent_raw": "top-00-raw.png",
+      "parent_raw": "top-00-native-raw.png",
       "native_input": "top-00-native-input.png",
       "resolution_stage": "native-2x",
+      "refinement": "finish2",
       "treatment": {
-        "quantile_amount": 0.33,
+        "quantile_amount": 0.0,
         "calibration": {
           "flatten_log_linear_plane": true,
           "lab_affine_matrix": [
             [
-              0.8594999939134639,
-              1.273486912699746,
-              -0.463172811764701
+              1.1176424676679388,
+              2.9026541727517357,
+              -1.2734444107067737
             ],
             [
-              0.09860717591200631,
-              1.3295439904440796,
-              0.14681261793116193
+              0.27705649329729004,
+              2.3733578158686646,
+              0.13997211718689756
             ],
             [
-              -0.4697797292132699,
-              -0.5990002581839594,
-              0.6506347173088045
+              0.4458509953845737,
+              2.3163405014649094,
+              0.33715934202678105
             ]
           ],
           "lab_input_centre": [
-            52.704383755822796,
-            -1.965823118886377,
-            4.372610278824719
+            59.387445452072306,
+            -0.744203611357884,
+            5.9110590277835025
           ],
           "lab_output_centre": [
-            56.02639023521548,
-            -3.206479096817569,
-            5.744884198214518
+            56.24963365376321,
+            -3.472359900068979,
+            5.721745421544699
           ],
           "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
         },
-        "denoise_px": 1.0
+        "denoise_px": 1.0,
+        "green_saturation_ceiling": 0.18
       }
     },
     {
@@ -952,67 +970,69 @@
         304
       ],
       "image": "top-01.png",
-      "raw": "top-01-native-raw.png",
+      "raw": "top-01-finish2-raw.png",
       "scores": {
-        "delta_e": 5.323530972912317,
-        "planar_light_gradient": 0.0004810022046906386,
-        "secondary_autocorrelation": 0.21005548813680047,
-        "edge_rust": 0.03273101624013575,
-        "broad_rust": 5.3648548359695635e-05,
-        "edge_broad_ratio": 610.1006875467571,
-        "paint_mean_delta_e": 1.0632941831166165,
-        "paint_std_delta_e": 6.140022006415406,
-        "rust_mean_delta_e": 2.3538766978934857,
-        "rust_std_delta_e": 2.670423170434788,
+        "delta_e": 6.467848464864228,
+        "planar_light_gradient": 0.0038362970643815567,
+        "secondary_autocorrelation": 0.3970461303677122,
+        "edge_rust": 0.026374107604805117,
+        "broad_rust": 3.973966545162639e-06,
+        "edge_broad_ratio": 6636.721095931049,
+        "paint_mean_delta_e": 3.694998020621788,
+        "paint_std_delta_e": 4.588858306328888,
+        "rust_mean_delta_e": 5.769516117680964,
+        "rust_std_delta_e": 2.2118644621625414,
         "no_green": 0.0,
         "pixels_per_metre": 1536.0,
-        "broad_high_frequency": 0.008345358387185647,
-        "pilot_pigment_delta_e": 0.45449067677347005
+        "broad_high_frequency": 0.019021799081816605,
+        "pilot_pigment_delta_e": 0.21777481767190401
       },
       "passed": true,
       "raw_reference": "top-source.png",
       "neutral_paint_target": [
-        0.52,
-        0.55,
-        0.51
+        0.56,
+        0.58,
+        0.54
       ],
-      "parent_raw": "top-01-raw.png",
+      "parent_raw": "top-01-native-raw.png",
       "native_input": "top-01-native-input.png",
       "resolution_stage": "native-2x",
+      "refinement": "finish2",
       "treatment": {
         "quantile_amount": 0.0,
         "calibration": {
           "flatten_log_linear_plane": true,
           "lab_affine_matrix": [
             [
-              0.6902515685104441,
-              1.9561286630088686,
-              -1.5176137086876624
+              1.4845346111151791,
+              -1.3967963504513907,
+              1.2035787955006234
             ],
             [
-              -0.0027401559583611497,
-              1.7799554142774023,
-              -0.026465642791685635
+              0.6431588456333095,
+              0.15827167948989607,
+              1.5020226041482694
             ],
             [
-              -0.589403232305228,
-              -0.9868080224808122,
-              1.132111559381086
+              0.7686571721512973,
+              0.14864447136098274,
+              1.6360827776269071
             ]
           ],
           "lab_input_centre": [
-            46.6919192148227,
-            -1.8737467488166402,
-            3.7990575546157404
+            59.18408694919536,
+            -0.41294384851886884,
+            4.7020206192267455
           ],
           "lab_output_centre": [
-            56.14126901526118,
-            -3.34267318624206,
-            5.798993317385142
+            56.176020870888905,
+            -3.4508957308056782,
+            5.750938801070787
           ],
           "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
         },
-        "denoise_px": 1.0
+        "denoise_px": 1.0,
+        "green_saturation_ceiling": 0.18
       }
     },
     {
@@ -1036,67 +1056,69 @@
         304
       ],
       "image": "top-02.png",
-      "raw": "top-02-native-raw.png",
+      "raw": "top-02-finish2-raw.png",
       "scores": {
-        "delta_e": 5.278301120031188,
-        "planar_light_gradient": 0.00029849512507960593,
-        "secondary_autocorrelation": 0.20704562926424777,
-        "edge_rust": 0.05317554073454079,
-        "broad_rust": 0.0,
-        "edge_broad_ratio": 5317554.073454079,
-        "paint_mean_delta_e": 1.0548330796054137,
-        "paint_std_delta_e": 5.083291820260095,
-        "rust_mean_delta_e": 4.598167734056705,
-        "rust_std_delta_e": 4.145950205789404,
+        "delta_e": 6.259924785586906,
+        "planar_light_gradient": 0.0022939827377044856,
+        "secondary_autocorrelation": 0.22364160457214005,
+        "edge_rust": 0.03933337218110833,
+        "broad_rust": 6.557044799518355e-05,
+        "edge_broad_ratio": 599.8643197313147,
+        "paint_mean_delta_e": 3.6887559100884095,
+        "paint_std_delta_e": 6.436039081025442,
+        "rust_mean_delta_e": 6.596026500345675,
+        "rust_std_delta_e": 2.363137498676563,
         "no_green": 0.0,
         "pixels_per_metre": 1536.0,
-        "broad_high_frequency": 0.0122941308277702,
-        "pilot_pigment_delta_e": 0.2613403374536331
+        "broad_high_frequency": 0.010798202403431042,
+        "pilot_pigment_delta_e": 0.28793266575331894
       },
       "passed": true,
       "raw_reference": "top-source.png",
       "neutral_paint_target": [
-        0.52,
-        0.55,
-        0.51
+        0.56,
+        0.58,
+        0.54
       ],
-      "parent_raw": "top-02-raw.png",
+      "parent_raw": "top-02-native-raw.png",
       "native_input": "top-02-native-input.png",
       "resolution_stage": "native-2x",
+      "refinement": "finish2",
       "treatment": {
         "quantile_amount": 0.0,
         "calibration": {
           "flatten_log_linear_plane": true,
           "lab_affine_matrix": [
             [
-              0.5364116526348851,
-              2.4311448018486597,
-              -2.2041748352360213
+              1.1414952515436665,
+              -0.47623810325325105,
+              0.3455613044184399
             ],
             [
-              -0.2614848597665288,
-              1.5005178947904174,
-              -0.5978261934160902
+              0.23884193538132173,
+              1.358228056927706,
+              0.8937600562336924
             ],
             [
-              -0.5505865061129527,
-              -1.7972801011250716,
-              1.600518508465199
+              0.38114711911384,
+              1.3165436183618104,
+              1.0304820349541006
             ]
           ],
           "lab_input_centre": [
-            48.93004905810818,
-            -1.7092639204919897,
-            3.4046457983647747
+            60.95329427343033,
+            0.008032055935823675,
+            6.092391488644434
           ],
           "lab_output_centre": [
-            56.14306689649379,
-            -3.1054039510416724,
-            5.782476320595961
+            56.2230425137782,
+            -3.5542578198862094,
+            5.647116919374289
           ],
           "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
         },
-        "denoise_px": 1.0
+        "denoise_px": 1.0,
+        "green_saturation_ceiling": 0.18
       }
     },
     {
@@ -1120,67 +1142,69 @@
         304
       ],
       "image": "top-03.png",
-      "raw": "top-03-native-raw.png",
+      "raw": "top-03-finish2-raw.png",
       "scores": {
-        "delta_e": 5.0422669519311984,
-        "planar_light_gradient": 0.00032718205151607567,
-        "secondary_autocorrelation": 0.1525332559561492,
-        "edge_rust": 0.06563743300055326,
+        "delta_e": 5.955409523001489,
+        "planar_light_gradient": 0.0009604273368210226,
+        "secondary_autocorrelation": 0.1902039707123624,
+        "edge_rust": 0.0717479939810622,
         "broad_rust": 0.0,
-        "edge_broad_ratio": 6563743.300055326,
-        "paint_mean_delta_e": 1.0134423715004355,
-        "paint_std_delta_e": 5.216925692404075,
-        "rust_mean_delta_e": 2.702692627547643,
-        "rust_std_delta_e": 2.6317877033417925,
+        "edge_broad_ratio": 7174799.39810622,
+        "paint_mean_delta_e": 3.6434843330090922,
+        "paint_std_delta_e": 6.438290882441402,
+        "rust_mean_delta_e": 2.3472415116727237,
+        "rust_std_delta_e": 0.9960059839148346,
         "no_green": 0.0,
         "pixels_per_metre": 1536.0,
-        "broad_high_frequency": 0.011656669326504308,
-        "pilot_pigment_delta_e": 0.5301099890302349
+        "broad_high_frequency": 0.009683706605582605,
+        "pilot_pigment_delta_e": 0.2537327832071717
       },
       "passed": true,
       "raw_reference": "top-source.png",
       "neutral_paint_target": [
-        0.52,
-        0.55,
-        0.51
+        0.56,
+        0.58,
+        0.54
       ],
-      "parent_raw": "top-03-raw.png",
+      "parent_raw": "top-03-native-raw.png",
       "native_input": "top-03-native-input.png",
       "resolution_stage": "native-2x",
+      "refinement": "finish2",
       "treatment": {
         "quantile_amount": 0.0,
         "calibration": {
           "flatten_log_linear_plane": true,
           "lab_affine_matrix": [
             [
-              0.3935654785630182,
-              1.5645504888740933,
-              -2.6315504682580304
+              0.4362004294326692,
+              1.1259956117415983,
+              -1.191105922901745
             ],
             [
-              -0.29673974188548297,
-              1.6410637490177817,
-              -1.3297074900077215
+              -0.5211904346404563,
+              -0.5179534315183049,
+              0.9321376430194961
             ],
             [
-              -0.4813786247876034,
-              -0.8987462653096746,
-              1.8543558810621188
+              -0.5958942237639738,
+              -0.7892647164045076,
+              1.0458886666092417
             ]
           ],
           "lab_input_centre": [
-            48.36561078476405,
-            -1.7876610706148923,
-            3.8120305462919157
+            60.795654221180826,
+            -0.44487606670275615,
+            4.95873762834132
           ],
           "lab_output_centre": [
-            56.12435443797648,
-            -3.2118025387524223,
-            5.9511115941072905
+            56.48034212899537,
+            -3.4949397100042443,
+            5.727110130342128
           ],
           "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
         },
-        "denoise_px": 1.0
+        "denoise_px": 1.0,
+        "green_saturation_ceiling": 0.18
       }
     }
   ],
@@ -1258,7 +1282,8 @@
           ],
           "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
         },
-        "denoise_px": 1.0
+        "denoise_px": 1.0,
+        "green_saturation_ceiling": 0.18
       },
       "passed": false
     }

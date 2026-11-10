@@ -2,9 +2,8 @@
 import json
 import os
 import subprocess
-import time
 
-from steel_library import ROOT, LIBRARY, SCRATCH
+from steel_library import ROOT, LIBRARY, SCRATCH, wait_for_gpu
 
 
 def main():
@@ -32,14 +31,7 @@ def main():
                    '--seed', str(seed), '--width', str(pixels[0]), '--height', str(pixels[1]),
                    '--output', str(output)]
         if not output.exists():
-            while True:
-                active = subprocess.run(['pgrep', '-f', 'mflux-generate|[g]enerate.py'], capture_output=True, text=True)
-                if active.returncode == 1:
-                    break
-                if active.returncode != 0:
-                    raise RuntimeError(active.stderr)
-                print('WAIT GPU', active.stdout.strip(), flush=True)
-                time.sleep(15)
+            wait_for_gpu()
             print('NATIVE', name, pixels, flush=True)
             with (SCRATCH / f'{name}-native.log').open('w') as log:
                 subprocess.run(command, check=True, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT,
