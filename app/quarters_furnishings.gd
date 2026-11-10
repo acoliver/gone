@@ -2,6 +2,7 @@ class_name QuartersFurnishings
 extends RefCounted
 
 const ROOT := "res://assets/props/quarters/"
+const SMALL_ITEMS := preload("res://app/quarters_small_items.gd")
 static var _fits: Dictionary = {}
 const REAL_FURNITURE := {
 	"bed": "bed", "desk_chair": "desk_chair", "dining_table": "dining_table",
@@ -48,16 +49,10 @@ static func build(state: StringName) -> Node3D:
 	var worktop := ShipScene._world_frame(top) * top.get_aabb()
 	var console := root.get_node("Placement_console/console") as Node3D
 	console.position.y += worktop.end.y - _bounds(console).position.y
-	var item_finish := StandardMaterial3D.new()
-	item_finish.albedo_color = Color(0.32, 0.33, 0.33)
-	item_finish.roughness = 0.85
+	SMALL_ITEMS.add_to(root, state)
 	for item: Dictionary in QuartersInventory.small_items():
-		var small := box("Standin_" + item.id, item.bounds, item_finish)
-		if item.on == "desk":
-			# The free strip beside the console ends at the worktop's outer edge.
-			small.position.y = worktop.end.y + small.get_aabb().size.y / 2
-			small.position.z = worktop.end.z - small.get_aabb().size.z / 2 - 0.05
-		root.add_child(small)
+		if not SMALL_ITEMS.PLACEMENTS.has(item.id):
+			root.add_child(box("Standin_" + item.id, item.bounds, finish))
 	return root
 
 static func _asset(path: String, prop: StringName, state: StringName) -> Node3D:

@@ -84,17 +84,17 @@ applying it to this closed imported slab would need mesh changes. The wall
 screen starts at room Y 1.00 m; the real over-bed lockers start at 1.90 m.
 Tests cover shell, bed and mutual clearance in both states.
 
-Storage drawer/shelf modules, leftover storage infill, small items and her
+Storage drawer/shelf modules, leftover storage infill, her jacket and her
 dresses remain stand-ins. Their node names begin with `Standin_<id>`.
-Storage subslots add `_slot_<index>` or `_infill`.
+Storage subslots add `_slot_<index>` or `_infill`. The eleven small-belonging
+instances now use the eight real asset pairs described in demo8 below.
 Locker tiles occupy complete 0.6 m slots inside the approved footprints;
 leftover widths remain stand-in infill. The footprint takes precedence where a
 module description suggests more tiles than will fit. Shared footprint
 colliders are unchanged: the new assets fit those envelopes, with the small
-hardware protrusions recorded in each `verify.json`. Small items without
-dimensions in the plan use 0.10 by 0.08 by 0.10 m tabletop boxes; boots use a
-0.28 by 0.25 by 0.24 m floor box. Those dimensions are demo stand-ins, not new
-art specifications.
+hardware protrusions recorded in each `verify.json`. The shared collision
+list retains its existing small-item boxes; rendered belongings retain their
+exported real dimensions rather than fitting those old stand-in envelopes.
 
 `QuartersLayout` maps a room-local point (x, y, z) to ship coordinates
 (49 - x, -11 + y, 1.7 + z). Both state roots and their single shared collider
@@ -320,6 +320,35 @@ The demo branch includes batch 3 from `issue-95-small-items` and only the
 furniture-material branch is not merged. Godot reimport ran under `nohup`;
 its log is `tmp/demo8/import.log`. This retains the existing batch-1 furniture
 finishes and the improved aged bed's authored dry-decay materials.
+
+Remembered loads `<item>.glb`, Present loads `<item>_aged.glb`. The right
+bedside holds the photo frame; the left holds the jewellery box and hairbrush.
+The dining table has two mugs and two plates. The desk has the medal case and
+one tablet, and the sofa has the other tablet. One boots asset supplies the
+pair on the floor in front of the right bedside. Replaced `Standin_` nodes
+are removed; storage, dresses and jacket retain their names.
+
+`QuartersSmallItems` measures the named support meshes. Both bedside `Top`
+meshes end at room Y 0.45 m, `Worktop` at 0.70 m and the dining `Top` at
+0.7497005 m. Items have 0.5 mm clearance above those surfaces or the floor.
+The round tabletop contains every item footprint. The desk items sit beyond
+the console's Z extent, with at least 29.5 mm clearance, and avoid the raised
+upstands. Their GLB dimensions, materials and texture paths are retained.
+The photo-frame Glass slot uses the same simple glossy alpha glass as the
+view screen, roughness 0.07 and alpha 0.10. Pod glass needs its pane-specific
+vertex edge mask, so it is not bound to the imported frame cover.
+
+All eleven placement roots are identical between states. Ten imported item
+transforms are also identical. The sofa tablet is the exception: its actual
+support collapses, so matching its final height would either float Present's
+tablet or bury Remembered's tablet. Its shared root and yaw stay unchanged;
+only the imported child's support offset changes, from room Y 0.569380 m to
+0.439915 m. Triangle clipping measures the seat under the tablet footprint,
+rather than using the whole cushion's bounding-box crown. This prioritises
+contact over identical final asset transforms for that one instance.
+Regression tests check the imported state paths, rigid-support transforms,
+remaining stand-in names, support contact within 2 mm, round-table containment,
+furniture-triangle and item clearance, authored materials and console clearance.
 
 ## Plan view
 
