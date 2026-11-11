@@ -1,5 +1,9 @@
 # Issue 130: pendant concepts, raw shape guide and tunic measurements
 
+The final Present-only brass finish adjustment passed visual QA. See
+[Present brass finish](#present-brass-finish) for its values and final comparison
+paths. Earlier comparison images below retain the initial finish.
+
 The extended button row and fitted brass/enamel medal have passed technical
 acceptance and image-comparer review. The final production assets, editable
 sources, selected concept and full Hunyuan guide are retained here and in the
@@ -401,3 +405,52 @@ lacks its original saved sleeve intermediate; saved-source production export
 is verified. Khronos CLI validation is unavailable on this machine. Godot
 teardown diagnostics remain. The still-image reviews do not establish hidden
 mechanical strength or behavior across all lighting and viewing angles.
+
+## Present brass finish
+
+The integrated and individual raw medal captures were byte-identical. This
+adjustment addresses the existing Present finish, with no integration-render
+repair or geometry change. The formed star's folded planes, 32 mm body,
+2.888224 mm Present envelope and 0.650 mm relief remain unchanged.
+
+Only `Medal_DullBrownBrass` changes: metallic 0.15 to 0.55, roughness 0.94 to
+0.58. Specular stays 0.12. The existing brown-tarnish albedo, its UV binding
+and every embedded image remain exact. The finish retains a rough satin
+response rather than the clean brass's metallic 0.80 / roughness 0.30.
+The change aims to expose the existing rim and facet response under the same
+room light without brightening pigment, adding emission or changing normals.
+It applies to the medal's brass rim, star and attachment only; blue enamel,
+ribbon, buttons, collar insignia and all other surfaces are unchanged.
+
+`baked_age_colour.aged_brass()` applies this finish only when authoring `Medal`.
+The saved `tunic-pilot.blend` carries those same two values; saved-source export
+is through `publish_pilot.py --export-only`. No runtime override was added.
+The new Present GLB has source MD5 `6d73618fbd6a758bec84929df867324a`
+and SHA256 `d99dff8265bc1420f01c9e2f4ae29b95323ce125f8978910e55e5622150ef533`.
+Its saved-source repeat has identical bytes. The editor import's native source
+MD5 matches; earlier MD5 values above describe the preserved prior export.
+The common `medal-fitted.blend`, Remembered source/export and the source
+concept/generated guide remain byte-identical. The earlier row bake repair
+and its regression assertions are retained.
+
+New baseline comparisons preserve the earlier reviewed JPGs at their original
+paths. The following files show baseline `56a656b` on the left and the new
+finish on the right:
+
+- [Present medal](present-medal-metal-finish-baseline-before-after.jpg).
+- [Present wardrobe](present-wardrobe-metal-finish-baseline-before-after.jpg).
+
+The current-finish versus new-finish comparison is
+`tmp/issue130-metal-finish/review/present-medal-finish-before-after.jpg`.
+Single medal and wardrobe JPGs, full raw PNGs, camera/native/runtime records
+and verification logs are in that same scratch root. Packaging uses the
+original individual-capture bicubic resize, quality 93 and 4:4:4 sampling.
+The original game capture helper, cameras, lighting and 40 px protocol crop
+are unchanged. Final visual QA passed in
+`tmp/issue130-metal-finish/review/visual-review.md`: the rim highlight and folded
+star response are clearer while the brass remains aged and subdued. The review
+requires no further finish adjustment. The wardrobe review establishes no visible
+unintended change; exact raw-pixel checks separately establish preservation.
+Technical verification records 29 passing asset commands, guarded Godot 1010/0,
+focused runtime 51/0, aging package 89/0 and fixture weather 11/0 under
+`tmp/issue130-metal-finish/`. No merge is implied.

@@ -91,8 +91,16 @@ func test_brass_ribbon_and_soft_shoulder_remain_separate() -> void:
 		assert_true(enamel.get_shader_parameter("pigment_gain") == Vector3.ONE, "wool calibration never tints enamel")
 		assert_true(ribbon.get_shader_parameter("vertex_colour"), "woven ribbon retains authored colours")
 		var brass := medal.get_surface_override_material(0) as ShaderMaterial
-		_near(brass.get_shader_parameter("metallic"), .15 if state == &"aged" else .8, .00001, "bright/dull brass")
+		_near(brass.get_shader_parameter("metallic"), .55 if state == &"aged" else .8, .00001, "medal brass metal response")
+		_near(brass.get_shader_parameter("roughness"), .58 if state == &"aged" else .3, .00001, "medal brass satin/clean response")
+		_near(brass.get_shader_parameter("specular"), .12 if state == &"aged" else .5, .00001, "medal brass specular preserved")
 		if state == &"aged":
+			for part: String in ["Buttons", "CollarInsignia_L", "CollarInsignia_R"]:
+				var piece := model.find_child(part, true, false) as MeshInstance3D
+				var finish := piece.get_surface_override_material(0) as ShaderMaterial
+				_near(finish.get_shader_parameter("metallic"), .15, .00001, part + " tarnish unchanged")
+				_near(finish.get_shader_parameter("roughness"), .94, .00001, part + " roughness unchanged")
+				_near(finish.get_shader_parameter("specular"), .12, .00001, part + " specular unchanged")
 			var body := model.find_child("TunicBody", true, false) as MeshInstance3D
 			assert_int_equal(body.mesh.get_surface_count(), 3, "soft shoulder rim is not merged into masked cloth")
 			assert_true((body.get_surface_override_material(2) as ShaderMaterial).shader.resource_path.ends_with("_blend.gdshader"), "shoulder keeps fractional alpha")

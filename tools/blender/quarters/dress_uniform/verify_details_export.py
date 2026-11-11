@@ -129,13 +129,36 @@ def inspect(directory, baseline, repeats):
     return result
 
 
+def finish_preservation(directory, before):
+    result = {}
+    for filename in ['dress_uniform.glb', 'dress_uniform_aged.glb']:
+        old, old_raw, old_binary = document(before / filename)
+        new, new_raw, new_binary = document(directory / filename)
+        if filename == 'dress_uniform.glb':
+            assert old_raw == new_raw, 'Remembered export changed'
+        else:
+            brass, = [mat for mat in old['materials'] if mat['name'] == 'Medal_DullBrownBrass']
+            pbr = brass['pbrMetallicRoughness']
+            np.testing.assert_allclose([pbr['metallicFactor'], pbr['roughnessFactor']], [.15, .94], atol=1e-7)
+            pbr.update(metallicFactor=float(np.float32(.55)), roughnessFactor=float(np.float32(.58)))
+            assert old == new, 'Change outside the two Present medal brass finish factors'
+            assert old_raw[old_binary:] == new_raw[new_binary:], 'Geometry, vertex channels or image bytes changed'
+        result[filename] = dict(all_geometry_vertex_channels_and_images_exact=True,
+                                every_other_material_property_exact=True,
+                                remembered_bytes_exact=filename == 'dress_uniform.glb')
+    return result
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--exports', type=Path, required=True)
     parser.add_argument('--baseline', type=Path, required=True)
     parser.add_argument('--repeats', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--finish-baseline', type=Path)
     args = parser.parse_args()
     result = inspect(args.exports, args.baseline, args.repeats)
+    if args.finish_baseline:
+        result['finish_preservation'] = finish_preservation(args.exports, args.finish_baseline)
     args.output.write_text(json.dumps(result, indent=2) + '\n')
     print('PASS: independent trimesh/glTF dimensions, orientation, budgets, materials, UVs, colours and repeat bytes')
