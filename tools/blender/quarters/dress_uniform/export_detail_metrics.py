@@ -1,5 +1,7 @@
 """Independent material preservation and finite-surface attachment measurements."""
 import copy
+import json
+from pathlib import Path
 import hashlib
 
 import numpy as np
@@ -48,11 +50,12 @@ def separation(a, b):
 
 
 def medal_metrics(mesh):
+    budget = json.loads(Path(__file__).with_name('medal-budget.json').read_text())
     welded = mesh.copy()
     welded.merge_vertices(merge_tex=True, merge_norm=True)
     pieces = welded.split(only_watertight=False)
     assert len(pieces) == 4, '#130: three manufactured solids and one looped ribbon'
-    ribbon, = [p for p in pieces if len(p.faces) == 656]
+    ribbon, = [p for p in pieces if len(p.faces) == budget['ribbon_triangles']]
     solids = [p for p in pieces if p is not ribbon]
     assert all(p.is_watertight and p.is_winding_consistent and p.volume > 0 for p in pieces)
     from medal_stage1_manufacture import bounded_separation
@@ -63,8 +66,8 @@ def medal_metrics(mesh):
         separations.append(bounded_separation(scaled, cloth, separation)/1000)
     clearance = min(separations)
     assert clearance >= .00008 - 1e-8, 'Exported metal/ribbon clearance retains 80 micrometres'
-    assert sum(len(p.faces) for p in solids) == 8270
-    assert len(ribbon.faces) == 656
-    return dict(metal_triangles=8270, ribbon_triangles=656,
+    assert sum(len(p.faces) for p in solids) == budget['solid_medal_triangles']
+    assert len(ribbon.faces) == budget['ribbon_triangles']
+    return dict(metal_triangles=budget['solid_medal_triangles'], ribbon_triangles=budget['ribbon_triangles'],
                 metal_watertight=True, metal_winding_consistent=True,
                 actual_metal_ribbon_clearance_m=clearance, per_solid_ribbon_clearance_m=separations)

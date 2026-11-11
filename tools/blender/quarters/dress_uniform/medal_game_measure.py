@@ -124,39 +124,17 @@ def measure(game):
             'contact_visible':.05<=contact<=.20,
             'contact_local':row['outside_3mm_max_ldr_channel_delta']<=1/255+1e-9,
             'age_follows_form':state!='present' or (row['age_occupancy_ratio']>=2 and row['age_off_affected_nmae']>=.03)}
-        data=np.load(game/f'{state}-medal-raw-masks.npz')
-        uv=data['uv']
-        def atlas_mask(name):
-            image=np.asarray(Image.open(ROOT/'tmp/issue130-photoreal/stage2'/f'{name}.png').convert('L'),float)/255
-            coords=np.array([uv[:,:,1]*image.shape[0]-.5,uv[:,:,0]*image.shape[1]-.5])
-            return map_coordinates(image,coords,order=1,mode='nearest')>.5
-        tarnish=atlas_mask('tarnish_mask')&m['brass']
-        cavity=atlas_mask('cavity_mask')&m['brass']
-        edge=atlas_mask('convex_edge_mask')&m['brass']
-        cavity_occupancy=float(np.mean(tarnish[cavity]));edge_occupancy=float(np.mean(tarnish[edge]))
-        row['age_cavity_occupancy']=cavity_occupancy
-        row['age_exposed_edge_occupancy']=edge_occupancy
-        row['age_occupancy_ratio']=cavity_occupancy/max(edge_occupancy,1/int(edge.sum()))
-        row['age_off_affected_nmae']=compare(a,luminance(game/f'{state}-medal-age-off.png'),tarnish)
-        coherent=binary_dilation(binary_erosion(effect>=.03,structure=np.ones((2,2))),iterations=2)
-        row['normal_two_pixel_coherent_bevel_fraction']=float(np.mean(coherent[m['bevel']]))
-        # Radial profiles use physical hit positions and explicit two-pixel half-height widths.
-        local=data['local'];radius=np.hypot(local[:,:,0],local[:,:,2])*1000
-        angle=np.arctan2(local[:,:,2],local[:,:,0]);sectors=[]
-        for sector in range(36):
-            selected=m['rim']&(angle>=-np.pi+sector*np.pi/18)&(angle<-np.pi+(sector+1)*np.pi/18)
-            bins=np.linspace(11.5,16,65)
-            profile=np.array([np.median(a[selected&(radius>=lo)&(radius<hi)]) if np.any(selected&(radius>=lo)&(radius<hi)) else np.nan for lo,hi in zip(bins[:-1],bins[1:])])
-            valid=np.isfinite(profile)
-            if valid.sum()<48: continue
-            profile=np.interp(np.arange(64),np.flatnonzero(valid),profile[valid])
-            profile=gaussian_filter1d(profile,.6)
-            min_width=2/(4.5/64*row['mask_width_px']/32)
-            peaks,_=find_peaks(profile,prominence=.04,width=min_width)
-            valleys,_=find_peaks(-profile,prominence=.04,width=min_width)
-            sectors.append({'sector':sector,'highlight_bands':len(peaks),'shadow_bands':len(valleys)})
-        row['rim_profile_sectors']=sectors
-        row['rim_sectors_with_two_pixel_highlight_and_shadow']=sum(x['highlight_bands']>=1 and x['shadow_bands']>=1 for x in sectors)
+        exposed=m['brass'] & ~cavity & ~edge
+        age_off=luminance(game/f'{state}-medal-age-off.png')
+        row['age_off_exposed_nmae']=compare(a,age_off,exposed)
+        row['age_exposed_changed_fraction']=float(np.mean(abs(a-age_off)[exposed] >= .03*max(float(a[exposed].mean()),.02)))
+        row['age_exposed_mean_y']=float(a[exposed].mean())
+        row['age_off_exposed_mean_y']=float(age_off[exposed].mean())
+        row['weave_ribbon_nmae']=compare(a,luminance(game/f'{state}-medal-weave-off.png'),m['ribbon'])
+        row['local_probe_brass_nmae']=compare(a,luminance(game/f'{state}-medal-local-probe-off.png'),m['brass'])
+        row['gates']['rim_not_clipped']=row['rim_clipped_rgb_fraction']<=.02
+        row['gates']['exposed_oxide_visible']=state!='present' or (row['age_off_exposed_nmae']>=.03 and row['age_exposed_changed_fraction']>=.5)
+        row['gates']['weave_visible']=row['weave_ribbon_nmae']>=.01
         row['gates']={k:bool(v) for k,v in row['gates'].items()}
         row['negative_controls']={'normal_flat_vs_flat_nmae':compare(flat,flat,m['rim']),
             'rough_enamel_vs_itself_nmae':compare(rough,rough,m['enamel']),

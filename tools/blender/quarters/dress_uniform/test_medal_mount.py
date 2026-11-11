@@ -1,10 +1,12 @@
-"""#130: exported lower ribbon loops clear the fixed suspension and frozen wool."""
+"""#130: a full-width ribbon threads a closed slot above the separate ring lug."""
 import json
 import sys
 from pathlib import Path
 
 import bpy
 import numpy as np
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
@@ -19,17 +21,20 @@ for name in ['working', 'pilot']:
     origin, frame = np.array(record['origin']), np.array(record['frame'])
     ribbon = extract_ribbon(medal)
     local = np.einsum('ij,kj->ik', points(ribbon)-origin, frame)
-    lower = local[local[:,2] < .0216]
     assert report['loop_wrap_degrees'] >= 180
-    assert report['folded_tongues'] == 2
+    assert report['folded_tongues'] == 1 and report['full_width']
+    assert report['ring_lug_separate_from_ribbon']
+    assert report['slot_height_m'] >= .0008 + 2*.00008
+    assert report['slot_width_m'] >= .0219 + 2*.00008
     assert not crossing_pairs(medal), 'Metal, ribbon and self surfaces must not cross'
     assert not crossing_pairs(ribbon, bpy.data.objects['TunicBody'])
-    assert np.ptp(local[:,0]) > .021, 'Full sewn ribbon width retained'
-    assert lower[:,1].min() <= -.00359 and lower[:,1].max() >= -.00041, 'Both sides of 0.8 mm U-fold remain geometric'
-    assert abs(lower[:,2].min()-.01725) < 1e-7, 'Measured lower turn around the bar'
-    turn = lower[lower[:,2] < .020,0]
-    slot_width = turn[turn > 0].min()-turn[turn < 0].max()
-    assert slot_width >= .006, 'Measured central ring/claw relief remains open'
-    assert set(ribbon.data.uv_layers.keys()) == {'DetailUV','BakeUV'}
+    ribbon.data.calc_loop_triangles()
+    tree = BVHTree.FromPolygons(local.tolist(), [t.vertices[:] for t in ribbon.data.loop_triangles], all_triangles=True)
+    # A former split-tab or central-slot ribbon cannot hit the front loop at every station.
+    for x in np.linspace(-.010, .010, 81):
+        hit = tree.ray_cast(Vector((x, -.02, .0243)), Vector((0, 1, 0)), .04)[0]
+        assert hit is not None and hit.y < -.0035, ('Missing full-width front fold', x, hit)
+    assert np.ptp(local[:, 0]) > .021, 'Full sewn ribbon width retained'
+    assert set(ribbon.data.uv_layers.keys()) == {'DetailUV', 'BakeUV'}
     assert 'RibbonColours' in ribbon.data.color_attributes
-print('PASS: measured lower ribbon folds, full upper width, open ring relief, zero self/metal/cloth crossings')
+print('PASS: closed-slot full-width ribbon loop, separate lug, zero self/metal/cloth crossings')

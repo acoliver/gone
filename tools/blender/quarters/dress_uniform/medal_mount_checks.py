@@ -6,7 +6,7 @@ def upper_ribbon_samples(obj, frame):
     origin, basis = np.array(frame['origin']), np.array(frame['frame'])
     values = []
     for face in obj.data.polygons:
-        if obj.data.materials[face.material_index].name != 'RibbonFabric': continue
+        if not obj.data.materials[face.material_index].name.startswith('RibbonFabric'): continue
         for index in face.loop_indices:
             i = obj.data.loops[index].vertex_index
             p = np.array(obj.matrix_world @ obj.data.vertices[i].co)

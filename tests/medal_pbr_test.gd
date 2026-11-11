@@ -2,6 +2,34 @@ extends SimTestCase
 
 const MEDAL_SHADER := "res://app/shaders/quarters_medal.gdshader"
 
+func test_wardrobe_reflection_captures_lights_without_changing_receiver_layers() -> void:
+	var game := Game.new(114)
+	var room := QuartersRoom.build(game)
+	for furnishing: Node3D in [room.remembered, room.present]:
+		var probe := furnishing.get_node_or_null("Placement_wardrobe/MedalReflection") as ReflectionProbe
+		assert_true(probe != null, "medal needs a wardrobe-interior native reflection capture")
+		if probe == null: continue
+		assert_int_equal(probe.cull_mask, Lighting.QUARTERS_MASK | 1, "capture light instances on layer 1 and quarters receivers")
+		assert_int_equal(probe.reflection_mask, Lighting.QUARTERS_MASK, "reflection stays on quarters receivers")
+		assert_true(probe.size.is_equal_approx(Vector3(.65, 2.2, 1.0)), "volume follows the carcass, not the open door")
+		assert_true(AABB(-probe.size * .5, probe.size).has_point(probe.origin_offset), "capture origin stays inside the wardrobe")
+		assert_true(probe.max_distance >= QuartersLayout.bounds().size.length(), "far range includes reflected room surfaces")
+		assert_true(probe.interior and probe.box_projection, "interior parallax correction")
+		assert_int_equal(probe.ambient_mode, ReflectionProbe.AMBIENT_ENVIRONMENT, "inherit the existing disabled black ambient")
+		for mesh: MeshInstance3D in furnishing.find_children("*", "MeshInstance3D", true, false):
+			assert_int_equal(mesh.layers, Lighting.QUARTERS_MASK, "no extra receiver layer may admit unrelated lights")
+	game.power_active = not game.power_active
+	room.process_frame()
+	for furnishing: Node3D in [room.remembered, room.present]:
+		var probe := furnishing.get_node_or_null("Placement_wardrobe/MedalReflection") as ReflectionProbe
+		if probe == null: continue
+		assert_int_equal(probe.update_mode, ReflectionProbe.UPDATE_ALWAYS, "local reflection refreshes during power fade")
+	for tick: int in range(60): room.process_frame()
+	for furnishing: Node3D in [room.remembered, room.present]:
+		var probe := furnishing.get_node_or_null("Placement_wardrobe/MedalReflection") as ReflectionProbe
+		if probe != null: assert_int_equal(probe.update_mode, ReflectionProbe.UPDATE_ONCE, "settled lighting stops repeated cubemap renders")
+	room.free()
+
 func _bindings_valid(finish: ShaderMaterial, imported: StandardMaterial3D) -> bool:
 	return finish.shader.resource_path == MEDAL_SHADER and finish.get_shader_parameter("has_normal") == true and finish.get_shader_parameter("normal_texture") != null and finish.get_shader_parameter("orm_texture") != null and finish.get_shader_parameter("normal_texture") == imported.normal_texture and finish.get_shader_parameter("orm_texture") == imported.roughness_texture
 
@@ -23,7 +51,7 @@ func test_medal_pbr_bindings_and_negative_controls() -> void:
 			assert_float_equal(finish.get_shader_parameter("roughness"), 1.0, "final atlas roughness multiplied once")
 			assert_float_equal(finish.get_shader_parameter("metallic"), 1.0, "final atlas metallic multiplied once")
 			assert_float_equal(finish.get_shader_parameter("specular"), .5, "enamel is exempt from generic aged specular")
-			assert_float_equal(finish.get_shader_parameter("coat"), .65 if slot == 1 else 0.0, "coat only on enamel")
+			assert_float_equal(finish.get_shader_parameter("coat"), .35 if slot == 1 else 0.0, "coat only on enamel")
 			assert_true(finish == QuartersProps.material(&"dress_uniform", state, &"Medal", slot), "state/role cached")
 			for parameter: String in ["normal_texture", "orm_texture"]:
 				var missing := finish.duplicate() as ShaderMaterial
@@ -33,17 +61,22 @@ func test_medal_pbr_bindings_and_negative_controls() -> void:
 			swapped.set_shader_parameter("normal_texture", imported.roughness_texture)
 			assert_false(_bindings_valid(swapped, imported), "wrong texture-role negative")
 			assert_true(imported.roughness_texture.get_image().has_mipmaps(), "ORM has filtered minification")
-			if slot == 1: assert_float_equal(finish.get_shader_parameter("coat_roughness"), .23 if state == &"aged" else .13, "state enamel coat")
+			if slot == 1: assert_float_equal(finish.get_shader_parameter("coat_roughness"), .26 if state == &"aged" else .18, "state enamel coat")
 			var ignored := finish.duplicate() as ShaderMaterial
 			ignored.set_shader_parameter("has_normal", false)
 			assert_false(_bindings_valid(ignored, imported), "ignored normal negative")
 		var buttons := source.find_child("Buttons", true, false) as MeshInstance3D
 		assert_true(buttons.get_surface_override_material(0) != medal.get_surface_override_material(0), "shared imported brass never leaks medal adapter")
 		assert_true((buttons.get_surface_override_material(0) as ShaderMaterial).shader.resource_path.ends_with("quarters_tunic_opaque.gdshader"), "buttons retain their shader")
-		assert_true((medal.get_surface_override_material(2) as ShaderMaterial).shader.resource_path.ends_with("quarters_tunic_opaque.gdshader"), "ribbon retains its shader")
+		assert_true((medal.get_surface_override_material(2) as ShaderMaterial).shader.resource_path.ends_with("quarters_ribbon.gdshader"), "ribbon has its own woven finish")
 		for piece: MeshInstance3D in source.find_children("*", "MeshInstance3D", true, false):
 			for slot: int in range(piece.mesh.get_surface_count()):
-				if piece.name == &"Medal" and slot < 2: continue
+				if piece.name == &"Medal":
+					if slot == 2:
+						var ribbon := piece.mesh.surface_get_material(slot) as StandardMaterial3D
+						assert_true(ribbon.roughness_texture != null, "ribbon source retains woven roughness")
+						assert_int_equal(ribbon.roughness_texture_channel, BaseMaterial3D.TEXTURE_CHANNEL_GREEN, "exported ribbon roughness G")
+					continue
 				var imported := piece.mesh.surface_get_material(slot) as StandardMaterial3D
 				assert_true(imported.roughness_texture == null and imported.metallic_texture == null and imported.ao_texture == null, "non-medal slots retain constant ORM")
 		source.free()
@@ -65,7 +98,7 @@ func test_cloth_contact_is_opt_in_and_part_local() -> void:
 		var body := QuartersProps.material(&"dress_uniform", state, &"TunicBody", 0)
 		assert_true(body.get_shader_parameter("contact_enabled") == true, "front cloth contact bound")
 		assert_true(body.get_shader_parameter("contact_texture") != null, "state-specific cloth AO")
-		assert_float_equal(float(body.get_shader_parameter("contact_light_affect")), .75 if state == &"as_built" else .35, "measured local direct-light contact calibration")
+		assert_float_equal(float(body.get_shader_parameter("contact_light_affect")), .85 if state == &"as_built" else .35, "measured local direct-light contact calibration")
 		for part: StringName in [&"Placket", &"Collar", &"RibbonBar"]:
 			var finish := QuartersProps.material(&"dress_uniform", state, part, 0)
 			assert_false(finish.get_shader_parameter("contact_enabled") == true, "shared cloth never leaks contact to " + part)

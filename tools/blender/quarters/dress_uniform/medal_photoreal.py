@@ -78,7 +78,7 @@ def sample(args):
     local = (np.array([medal.matrix_world @ v.co for v in medal.data.vertices]) - origin) @ basis.T
     medal.data.calc_loop_triangles()
     ribbon_faces = [t.vertices[:] for t in medal.data.loop_triangles
-                    if medal.data.materials[t.material_index].name == 'RibbonFabric']
+                    if medal.data.materials[t.material_index].name.startswith('RibbonFabric')]
     ids = sorted({i for f in ribbon_faces for i in f})
     remap = {v: i for i, v in enumerate(ids)}
     from medal_eyelet import ribbon_envelope
@@ -86,7 +86,7 @@ def sample(args):
     x, back, front = ribbon_envelope(local, ribbon_faces, eyelet['threaded_cross_section_z_m'])
     # Frozen old bail vertices retain the cloth-fitted rear return, which is not planar.
     brass_faces = [t.vertices[:] for t in medal.data.loop_triangles
-                   if medal.data.materials[t.material_index].name != 'RibbonFabric']
+                   if not medal.data.materials[t.material_index].name.startswith('RibbonFabric')]
     np.savez_compressed(out / 'ribbon-constraints.npz', vertices=local[ids],
                         faces=np.array([[remap[i] for i in f] for f in ribbon_faces]),
                         envelope_x=x, envelope_back=back, envelope_front=front,

@@ -125,7 +125,7 @@ def extract_ribbon(old):
     bpy.context.collection.objects.link(ribbon)
     bm = bmesh.new()
     bm.from_mesh(ribbon.data)
-    remove = [f for f in bm.faces if old.data.materials[f.material_index].name != 'RibbonFabric']
+    remove = [f for f in bm.faces if not old.data.materials[f.material_index].name.startswith('RibbonFabric')]
     bmesh.ops.delete(bm, geom=remove, context='FACES')
     bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context='VERTS')
     bm.to_mesh(ribbon.data)

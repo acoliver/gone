@@ -24,7 +24,7 @@ def ribbon_signature(obj, uv_names):
     rows = []
     colours = obj.data.color_attributes['RibbonColours'].data
     for face in obj.data.polygons:
-        if obj.data.materials[face.material_index].name != 'RibbonFabric':
+        if not obj.data.materials[face.material_index].name.startswith('RibbonFabric'):
             continue
         corners = []
         for i in face.loop_indices:
@@ -123,7 +123,7 @@ def measure(directory, baseline):
                 ribbon_distances = [tree.find_nearest(Vector(pos[i]))[3] for i in ids if i not in metal]
                 frame = json.loads(obj['medal_frame'])
                 local = np.einsum('ij,kj->ik', pos-np.array(frame['origin']), np.array(frame['frame']))
-                ribbon_vertices = {i for f in obj.data.polygons if obj.data.materials[f.material_index].name == 'RibbonFabric' for i in f.vertices}
+                ribbon_vertices = {i for f in obj.data.polygons if obj.data.materials[f.material_index].name.startswith('RibbonFabric') for i in f.vertices}
                 # #130: exclude the accepted integral claw from the body envelope.
                 plate_ids = list(medal['body_vertex_indices'])
                 reverse = local[list(metal)]

@@ -15,15 +15,15 @@ static func inventory(garment: Node3D, main: Node3D) -> Dictionary:
 			var arrays := piece.mesh.surface_get_arrays(slot)
 			surfaces.append({"part": part, "slot": slot, "shader": finish.shader.resource_path,
 				"albedo": _texture(finish.get_shader_parameter("albedo_texture")),
-				"normal": _texture(finish.get_shader_parameter("normal_texture")),
-				"orm": _texture(finish.get_shader_parameter("orm_texture")) if part == "Medal" and slot < 2 else {},
+				"normal": _texture(finish.get_shader_parameter("weave_normal" if part == "Medal" and slot == 2 else "normal_texture")),
+				"orm": _texture(finish.get_shader_parameter("weave_roughness" if slot == 2 else "orm_texture")) if part == "Medal" else {},
 				"roughness_channel": imported.roughness_texture_channel, "metallic_channel": imported.metallic_texture_channel,
 				"ao_channel": imported.ao_texture_channel, "primary_uv": imported.get_meta("_gltf_primary_texture_coord", 0),
 				"vertices": arrays[Mesh.ARRAY_VERTEX].size(), "tangent_floats": arrays[Mesh.ARRAY_TANGENT].size() if arrays[Mesh.ARRAY_TANGENT] != null else 0,
 				"layers": piece.layers, "shadow": piece.cast_shadow, "lod_bias": piece.lod_bias})
 	var probes := []
 	for probe: ReflectionProbe in main.find_children("*", "ReflectionProbe", true, false):
-		probes.append({"name": str(probe.get_path()), "visible": probe.is_visible_in_tree(), "position": str(probe.global_position), "size": str(probe.size), "cull_mask": probe.cull_mask, "update_mode": probe.update_mode})
+		probes.append({"name": str(probe.get_path()), "visible": probe.is_visible_in_tree(), "position": str(probe.global_position), "size": str(probe.size), "cull_mask": probe.cull_mask, "update_mode": probe.update_mode, "reflection_mask": probe.reflection_mask, "origin_offset": str(probe.origin_offset), "max_distance": probe.max_distance, "ambient_mode": probe.ambient_mode})
 	return {"surfaces": surfaces, "probes": probes}
 
 static func geometry(root: Node3D, path: String) -> void:
@@ -55,6 +55,7 @@ static func camera_record(camera: Camera3D) -> Dictionary:
 
 static func control(garment: Node3D, main: Node3D, lane: String) -> void:
 	var medal := garment.find_child("Medal", true, false) as MeshInstance3D
+	(medal.get_active_material(2) as ShaderMaterial).set_shader_parameter("weave_enabled", lane != "weave-off")
 	for slot: int in [0,1]:
 		var finish := medal.get_active_material(slot) as ShaderMaterial
 		if not finish.has_meta("capture_albedo"):
@@ -62,11 +63,11 @@ static func control(garment: Node3D, main: Node3D, lane: String) -> void:
 			finish.set_meta("capture_orm", finish.get_shader_parameter("orm_texture"))
 		for role: String in ["albedo", "orm"]:
 			finish.set_shader_parameter(role + "_texture", finish.get_meta("capture_" + role))
-		if lane == "age-off":
-			var aged := is_equal_approx(float((medal.get_active_material(1) as ShaderMaterial).get_shader_parameter("coat_roughness")), 0.23)
+		if lane == "age-off" and slot == 0:
+			var aged := is_equal_approx(float((medal.get_active_material(1) as ShaderMaterial).get_shader_parameter("coat_roughness")), 0.26)
 			var prefix := "aged" if aged else "as_built"
 			for role: String in ["albedo", "orm"]:
-				var image := Image.load_from_file("res://tmp/issue130-photoreal/stage2/%s_untarnished_%s.png" % [prefix, role])
+				var image := Image.load_from_file("res://tmp/issue130-photoreal/stage3b/%s_untarnished_%s.png" % [prefix, role])
 				assert(image != null)
 				image.generate_mipmaps()
 				finish.set_shader_parameter(role + "_texture", ImageTexture.create_from_image(image))
@@ -78,7 +79,13 @@ static func control(garment: Node3D, main: Node3D, lane: String) -> void:
 			(piece.get_active_material(slot) as ShaderMaterial).set_shader_parameter("contact_enabled", lane != "contact-off")
 	for probe: ReflectionProbe in main.find_children("*", "ReflectionProbe", true, false):
 		if String(probe.get_path()).contains("Quarters"):
-			probe.visible = not lane.ends_with("probe-off")
+			if probe.name == &"MedalReflection":
+				probe.cull_mask = Lighting.QUARTERS_MASK if lane == "capture-no-lights" else Lighting.QUARTERS_MASK | 1
+				probe.ambient_mode = ReflectionProbe.AMBIENT_DISABLED if lane == "capture-disabled-ambient" else ReflectionProbe.AMBIENT_ENVIRONMENT
+				probe.update_mode = ReflectionProbe.UPDATE_ALWAYS if lane.begins_with("capture-") else ReflectionProbe.UPDATE_ONCE
+			var disabled := lane.ends_with("probe-off")
+			if lane == "local-probe-off": disabled = probe.name == &"MedalReflection"
+			probe.visible = not disabled
 			if lane == "mirror-refresh": probe.update_mode = ReflectionProbe.UPDATE_ALWAYS
 			if lane in ["refreshed", "full"]: probe.update_mode = ReflectionProbe.UPDATE_ONCE
 
@@ -94,7 +101,7 @@ static func sweep(tree: SceneTree, camera: Camera3D, garment: Node3D, state: Str
 		if lane == "strong": path = "res://tmp/issue130-photoreal/stage2/overstrong_normal.png"
 		var image := Image.load_from_file(path)
 		assert(image != null)
-		image.generate_mipmaps()
+		if lane != "strong": image.generate_mipmaps()
 		textures[lane] = ImageTexture.create_from_image(image)
 	var saved := camera.global_transform
 	var target := saved.origin - saved.basis.z * .18

@@ -15,7 +15,7 @@ def luminance(path):
 
 
 def measure(game):
-    report={'method':'Additional +/-0.8 degree 24-frame view arc. Second temporal difference of full-minus-geometry-normal signal; isolated connected components of at most four pixels, above 10% of reference mean luminance. Common uncompressed ImageTexture normals in all three sweep lanes, unlike production imported compression.', 'states':{}}
+    report={'method':'Additional +/-0.8 degree 24-frame view arc. Second temporal difference of full-minus-geometry-normal signal; isolated connected components of at most four pixels, above 10% of reference mean luminance. Uncompressed ImageTexture normals; full and geometry controls are mipmapped, while the overstrong negative has no mipmaps. Production uses imported compression.', 'states':{}}
     for state in ['remembered','present']:
         role=np.load(game/f'{state}-medal-raw-masks.npz')['role']
         mask=binary_erosion(role==1,iterations=8)

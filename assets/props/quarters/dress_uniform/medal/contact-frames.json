@@ -28,8 +28,8 @@
     "samples": 128,
     "radius_m": 0.003,
     "covered_texels": 262144,
-    "footprint_texels": 82341,
-    "changed_texels": 101499,
+    "footprint_texels": 84771,
+    "changed_texels": 99972,
     "outside_bound_max_delta": 0.0,
     "construction": "AO(cloth + final medal)/AO(cloth alone), cosine-weighted deterministic hemisphere; R ratio, G cloth depth (.5+y/.02), B front coverage; linear data",
     "source_frame": {
@@ -87,8 +87,8 @@
     "samples": 128,
     "radius_m": 0.003,
     "covered_texels": 262144,
-    "footprint_texels": 82342,
-    "changed_texels": 113759,
+    "footprint_texels": 84772,
+    "changed_texels": 112769,
     "outside_bound_max_delta": 0.0,
     "construction": "AO(cloth + final medal)/AO(cloth alone), cosine-weighted deterministic hemisphere; R ratio, G cloth depth (.5+y/.02), B front coverage; linear data",
     "source_frame": {

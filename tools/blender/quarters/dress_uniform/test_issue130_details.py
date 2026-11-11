@@ -30,9 +30,9 @@ def check_sources():
         assert 0.002 <= record['body_depth_m'] <= 0.004
         assert record['body_diameter_m'] == .032
         assert record['raw_sample_count'] >= 100
-        ribbon = [p for p in medal.data.polygons if medal.data.materials[p.material_index].name == 'RibbonFabric']
+        ribbon = [p for p in medal.data.polygons if medal.data.materials[p.material_index].name.startswith('RibbonFabric')]
         # #130: the lower U-folds add tessellation without changing the upper sew.
-        assert len(ribbon) == 326, (state, 'Lower ribbon loops and central suspension slot')
+        assert sum(len(p.vertices)-2 for p in ribbon) == json.loads((HERE/'medal-budget.json').read_text())['ribbon_triangles'], (state, 'Closed-slot ribbon allocation')
         assert 'RibbonColours' in medal.data.color_attributes
         assert len(json.loads(medal['attachment'])['metal_base_vertex_indices']) >= 25
     print('PASS: eight endpoint buttons; fitted generated provenance, thickness, enamel and preserved sewn ribbon')

@@ -58,7 +58,7 @@ def mesh(name, vertices, faces, mat, smooth=True):
     recalc(obj)
     for p in data.polygons:
         p.use_smooth = smooth
-    if mat.name == 'RibbonFabric':
+    if mat.name.startswith('RibbonFabric'):
         colors = data.color_attributes.new(name='RibbonColours', type='FLOAT_COLOR', domain='CORNER')
         for color in colors.data:
             color.color = (.40, .025, .045, 1)

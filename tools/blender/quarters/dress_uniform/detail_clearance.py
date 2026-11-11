@@ -142,7 +142,7 @@ def seat_sewn(body, bindings):
 
 def ribbon_vertices(obj):
     return {i for polygon in obj.data.polygons
-            if obj.data.materials[polygon.material_index].name == 'RibbonFabric' for i in polygon.vertices}
+            if obj.data.materials[polygon.material_index].name.startswith('RibbonFabric') for i in polygon.vertices}
 
 
 def seat_medal(body, binding):

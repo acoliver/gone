@@ -24,9 +24,13 @@ def accessor(doc, raw, binary, index):
     view = doc['bufferViews'][source['bufferView']]
     dtype = np.dtype({5121: 'u1', 5123: '<u2', 5125: '<u4', 5126: '<f4'}[source['componentType']])
     dimensions = 1 if source['type'] == 'SCALAR' else int(source['type'][-1])
-    return np.ndarray((source['count'], dimensions), dtype=dtype, buffer=raw,
+    values = np.ndarray((source['count'], dimensions), dtype=dtype, buffer=raw,
                       offset=binary + view.get('byteOffset', 0) + source.get('byteOffset', 0),
                       strides=(view.get('byteStride', dimensions * dtype.itemsize), dtype.itemsize))
+    if source.get('normalized', False):
+        assert source['componentType'] in [5121, 5123], 'Expected unsigned normalized attribute'
+        return values.astype(np.float64) / np.iinfo(dtype).max
+    return values
 
 
 def meshes(path):
@@ -93,7 +97,7 @@ def inspect(directory, baseline, repeats):
             material_names.append(material['name'])
             attributes = primitive['attributes']
             colours = accessor(doc, raw, binary, attributes['COLOR_0'])
-            if material['name'] == 'RibbonFabric':
+            if material['name'].startswith('RibbonFabric'):
                 np.testing.assert_allclose(colours[:, :3], np.tile([.4, .025, .045], (len(colours), 1)), atol=1e-7)
             else:
                 np.testing.assert_array_equal(colours, np.ones_like(colours))

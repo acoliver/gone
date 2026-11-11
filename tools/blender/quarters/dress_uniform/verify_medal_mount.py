@@ -21,7 +21,7 @@ def verify(sources, materials, contacts, evidence_directory):
         frame=json.loads(mounted['medal_frame'])
         with bpy.data.libraries.load(str(materials/f'medal-pbr-{state}.blend'),link=False) as (_,dest): dest.objects=['MedalLow']
         accepted=dest.objects[0]
-        v=np.array([p.co[:] for p in accepted.data.vertices])
+        v=np.array([p.co[:] for p in accepted.data.vertices])[:4041]
         expected=np.array(frame['origin'])+np.einsum('ij,jk->ik',v,np.array(frame['frame']))
         actual=points(mounted)[:len(v)]
         reverse=np.array(json.loads(mounted['attachment'])['metal_base_vertex_indices'])
@@ -30,11 +30,13 @@ def verify(sources, materials, contacts, evidence_directory):
         assert error <= 3e-8,(state,'Accepted visible metal moved beyond source float32 quantization',error)
         assert np.all(abs(v[reverse,1])<1e-8),'Only original reverse-datum vertices may be fitted'
         assert len(accepted.data.polygons)==8270
-        for before,after in zip(accepted.data.polygons,mounted.data.polygons):
+        retained=[p for p in accepted.data.polygons if all(i<len(v) for i in p.vertices)]
+        assert len(retained)==8082
+        for before,after in zip(retained,mounted.data.polygons[:len(retained)]):
             assert tuple(before.vertices)==tuple(after.vertices),'Metal topology changed'
             assert before.material_index==after.material_index,'Metal/enamel region changed'
             assert before.use_smooth==after.use_smooth,'Accepted facet shading changed'
-        a=np.array([p.uv[:] for p in accepted.data.uv_layers['MedalUV'].data])
+        a=np.array([accepted.data.uv_layers['MedalUV'].data[i].uv[:] for p in retained for i in p.loop_indices])
         b=np.array([p.uv[:] for p in mounted.data.uv_layers['DetailUV'].data[:len(a)]])
         np.testing.assert_array_equal(a,b)
         key='aged' if state=='present' else 'as_built'

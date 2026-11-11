@@ -61,6 +61,8 @@ def verify(out):
         width,height,depth,color_type=struct.unpack('>IIBB',path.read_bytes()[16:26])
         # #130: the mounted cloth patch is 512 square; standalone medal maps remain 2048.
         expected = (512,512) if path.name in ['as_built_contact.png','aged_contact.png'] else (2048,2048)
+        if path.name in ['ribbon_weave_albedo.png','ribbon_weave_normal.png','ribbon_weave_roughness.png']:
+            expected = (256,256)
         assert (width,height)==expected
         maps.append(dict(name=path.name,width=width,height=height,bit_depth=depth,png_color_type=color_type))
     rays=json.loads((out/'cage-ray-audit.json').read_text())

@@ -24,7 +24,7 @@ def sheet(panels, destination, columns=2):
     result.save(destination,quality=94,subsampling=0)
 
 
-def make(game,baseline,output):
+def make(game,baseline,original,output):
     output.mkdir(parents=True,exist_ok=True)
     paths=[]
     def save(name,panels,columns=2):
@@ -33,19 +33,23 @@ def make(game,baseline,output):
         for view in ['medal','buttons','wardrobe']:
             name=f'{state}-{view}'
             save(name,[(game/(name+'.png'),f'{state.title()} | {view} | production')],1)
-            save(name+'-before-after',[(baseline/(name+'.png'),'Before | shipped ef57c29'),(game/(name+'.png'),'After | mounted photoreal medal')])
+            save(name+'-before-after',[(baseline/(name+'.png'),'Before | a23b4f6'),(game/(name+'.png'),'After | stage3b fix')])
+            save(name+'-original-before-after',[(original/(name+'.png'),'Before | ef57c29'),(game/(name+'.png'),'After | stage3b fix')])
         def lane(suffix):return game/(f'{state}-medal'+('-'+suffix if suffix else '')+'.png')
+        save(state+'-ribbon-controls',[(lane(''),'Woven ribbon'),(lane('weave-off'),'Weave off')])
+        save(state+'-reflection-controls',[(lane(''),'Full'),(lane('local-probe-off'),'Local probe off'),(lane('probe-off'),'All quarters probes off')],3)
+        save(state+'-probe-cause-controls',[(lane(''),'Full'),(lane('capture-no-lights'),'Local capture excludes light layer 1'),(lane('capture-disabled-ambient'),'Local capture ambient disabled')],3)
         save(state+'-controls',[(lane(''),'Full'),(lane('flat-normal'),'Flat normal'),(lane('contact-off'),'Contact AO off'),(lane('probe-off'),'Quarters probes off')])
         save(state+'-finish-controls',[(lane(''),'Full'),(lane('rough-enamel'),'Rough enamel'),(lane('age-off'),'Untarnished atlas'),(lane('normal-buffer'),'Tangent normal buffer')])
         save(state+'-power-controls',[(lane(''),'Normal power state'),(lane('fade'),'Existing power fade'),(lane('off'),'Existing power off')])
-        save(state+'-sweep',[(game/f'{state}-sweep-{frame:02d}-{control}.png',f'Additional view {frame:02d} | {control}') for frame in [0,12,23] for control in ['full','strong']])
+        save(state+'-sweep',[(game/f'{state}-sweep-{frame:02d}-{control}.png',f'Additional view {frame:02d} | '+('full' if control=='full' else 'overstrong, no mips')) for frame in [0,12,23] for control in ['full','strong']])
         studio=game.parents[1]/'stage2/renders'
-        save(state+'-concept-studio-game',[(ROOT/'docs/art/quarters/sheets/medal/c-machined-rim-seed130303.png','Concept reference'),(studio/f'low-{state}-three-quarter-full.jpg','Baked low | studio lighting'),(studio/f'high-{state}-three-quarter-full.jpg','High | studio lighting'),(lane(''),'Game | unchanged acceptance camera')])
+        save(state+'-concept-studio-game',[(ROOT/'docs/art/quarters/sheets/medal/c-machined-rim-seed130303.png','Concept reference'),(studio/f'low-{state}-three-quarter-full.jpg','Stage 2 low | studio reference'),(studio/f'high-{state}-three-quarter-full.jpg','Stage 2 high | studio reference'),(lane(''),'Game | unchanged acceptance camera')])
     (game.parent/'jpeg-paths.json').write_text(json.dumps(paths,indent=2)+'\n')
     print(json.dumps(paths,indent=2))
 
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--game',type=Path,required=True);p.add_argument('--baseline',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
-    a=p.parse_args();make(a.game.resolve(),a.baseline.resolve(),a.output.resolve())
+    p.add_argument('--original',type=Path,required=True);p.add_argument('--game',type=Path,required=True);p.add_argument('--baseline',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
+    a=p.parse_args();make(a.game.resolve(),a.baseline.resolve(),a.original.resolve(),a.output.resolve())

@@ -113,10 +113,10 @@ func _run() -> void:
 				camera.fov = 30.0 if view == "medal" else 50.0
 			cameras[state + "-" + view] = {"transform": str(camera.global_transform), "fov": camera.fov, "size": [1536, 864]}
 			numeric_cameras[state + "-" + view] = MedalCapture.camera_record(camera)
-			var lanes := ["full", "flat-normal", "contact-off", "rough-enamel", "probe-off", "age-off", "normal-buffer", "flat-normal-buffer"] if diagnostics else ["full"]
+			var lanes := ["full", "flat-normal", "contact-off", "rough-enamel", "probe-off", "local-probe-off", "capture-no-lights", "capture-disabled-ambient", "age-off", "weave-off", "normal-buffer", "flat-normal-buffer"] if diagnostics else ["full"]
 			if probe_diagnostic: lanes = ["full", "mirror", "mirror-probe-off", "mirror-refresh", "mirror-refresh-probe-off", "refreshed", "refreshed-probe-off"]
 			for lane: String in lanes:
-				if (lane.ends_with("buffer") or probe_diagnostic) and view != "medal": continue
+				if (lane.ends_with("buffer") or lane.begins_with("capture-") or probe_diagnostic) and view != "medal": continue
 				MedalCapture.control(garment, main, lane)
 				for index: int in range(24): await process_frame
 				RenderingServer.force_draw(false)

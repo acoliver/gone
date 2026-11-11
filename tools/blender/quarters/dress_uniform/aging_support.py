@@ -193,7 +193,7 @@ def reinforce_and_bind(body):
         if name == 'Medal':
             # #130: enamel is bonded to the metal plate, not sewn ribbon cloth.
             metal = {i for face in obj.data.polygons
-                     if obj.data.materials[face.material_index].name != 'RibbonFabric' for i in face.vertices}
+                     if not obj.data.materials[face.material_index].name.startswith('RibbonFabric') for i in face.vertices}
             groups = [sorted(metal), sorted(set(range(len(original)))-metal)]
         indices = set()
         for group in groups:

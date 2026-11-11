@@ -203,6 +203,8 @@ static func _tunic_material(state: StringName, part: StringName, surface: int) -
 				assert(imported != null, "tunic requires imported PBR surfaces")
 				if node.name == &"Medal" and index < 2:
 					slots.append(_medal_finish(imported, state, index))
+				elif node.name == &"Medal" and index == 2:
+					slots.append(_ribbon_finish(imported, state))
 				elif node.name == &"TunicBody":
 					var finish := _tunic_finish(imported, state)
 					_medal_contact(finish, state)
@@ -258,8 +260,21 @@ static func _medal_finish(imported: StandardMaterial3D, state: StringName, role:
 	result.set_shader_parameter(&"roughness", imported.roughness)
 	result.set_shader_parameter(&"metallic", imported.metallic)
 	result.set_shader_parameter(&"specular", .5)
-	result.set_shader_parameter(&"coat", .65 if role == 1 else 0.0)
-	result.set_shader_parameter(&"coat_roughness", .23 if state == &"aged" else .13)
+	result.set_shader_parameter(&"coat", .35 if role == 1 else 0.0)
+	result.set_shader_parameter(&"coat_roughness", .26 if state == &"aged" else .18)
+	return result
+
+static func _ribbon_finish(imported: StandardMaterial3D, state: StringName) -> ShaderMaterial:
+	assert(imported.albedo_texture != null and imported.normal_texture != null and imported.roughness_texture != null, "Ribbon master must export normal and roughness maps")
+	var result := ShaderMaterial.new()
+	result.shader = load("res://app/shaders/quarters_ribbon.gdshader")
+	result.set_shader_parameter(&"base_colour", imported.albedo_color)
+	result.set_shader_parameter(&"albedo_texture", imported.albedo_texture)
+	result.set_shader_parameter(&"weave_normal", imported.normal_texture)
+	result.set_shader_parameter(&"weave_roughness", imported.roughness_texture)
+	result.set_shader_parameter(&"weave_scale", Vector2(imported.uv1_scale.x, imported.uv1_scale.y))
+	result.set_shader_parameter(&"weave_offset", Vector2(imported.uv1_offset.x, imported.uv1_offset.y))
+	result.set_shader_parameter(&"aged", state == &"aged")
 	return result
 
 static func _medal_contact(finish: ShaderMaterial, state: StringName) -> void:
@@ -268,7 +283,7 @@ static func _medal_contact(finish: ShaderMaterial, state: StringName) -> void:
 	var frame: Dictionary = frames[state]
 	finish.set_shader_parameter(&"contact_enabled", true)
 	# #130: the wider remembered clearance needs more direct-light contact influence.
-	finish.set_shader_parameter(&"contact_light_affect", .75 if state == &"as_built" else .35)
+	finish.set_shader_parameter(&"contact_light_affect", .85 if state == &"as_built" else .35)
 	finish.set_shader_parameter(&"contact_texture", load(MEDAL_ROOT + String(state) + "_contact.png"))
 	for axis: String in ["x", "height", "depth"]:
 		var values: Array = frame.axes[axis]
