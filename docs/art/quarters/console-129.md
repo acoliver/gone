@@ -122,21 +122,69 @@ The regression compares every quad with production expansion.
 
 `bake_legends.py` uses the original keyboard report's measured cap-interior
 UV rectangles. It removes the source's earlier marks, preserves glyph
-aspect, and fits the production quads within 60% of each cap interior.
-Positive glyph Y points toward the display. Ink uses sRGB `(150,146,128)`
-at maximum opacity 0.45 in Remembered and 0.30 in Present. It changes albedo
-only, with no emission, engraving or raised/inlaid normals. Every sign has
-at least 100 half-coverage mask texels. These are printed-looking asset
-legends, not a keyboard input feature.
+aspect, and centres the production quads at 43.5% of each cap interior's
+height, with a 90% width ceiling for narrow caps. Positive glyph Y points
+toward the display. The height allowance accounts for raster rounding while
+keeping the occupied print near 35–45% of cap height. Ink uses sRGB
+`(112,112,102)` at maximum opacity 0.38 in Remembered and 0.30 in Present.
+It changes albedo only, with no emission, engraving or raised/inlaid normals.
+Four-times supersampling preserves crisp antialiased edges. Every sign still
+has at least 100 half-coverage mask texels. These are asset legends, not a
+keyboard input feature.
 
 Both 2048-square state sets live in
-`assets/props/quarters/steel/console_keyboard/`. The new copy's aged case uses
-a complete top-face image from the existing quarters steel-aging library;
-the rubber uses the existing small-prop dry-aged rubber bake. `mapping.json`
-records both source images, glyphs, ink probes and opacities. Remembered
+`assets/props/quarters/steel/console_keyboard/`. `mapping.json` records the
+sealed-storage parameters, glyph bounds, ink probes and opacities. Remembered
 retains the source keyboard's case/rubber finish and normal/ORM maps apart
-from its changed printed legends. Present has aged colour and roughness,
-without changing its mesh. The power-room asset and textures are read-only.
+from its changed printed legends. Present has bounded pigment fade, a fine
+dust veil and higher roughness without changing its mesh. The power-room
+asset and textures are read-only.
+
+### Keyboard finish review correction
+
+The `a99c7ea` bake resampled the hairbrush's `Rubber_aged.png` over every
+non-case texel and `steel_library/top-00.png` over the case. The hairbrush
+baker (`photo_frame/texture_bake.py`) deliberately builds a 38-seed Voronoi
+fracture network, selects cracks with a 1.15-pixel distance difference and
+multiplies crack colour by 0.18. Reusing that image made cracks cross the
+keys and their membrane. Its relief map was not copied; these fractures
+were in albedo. The case image spans RGB `(0,8,11)` to `(255,248,221)` and
+introduced broad bright mottling and chipped borders onto the small olive
+case, including its exposed deck patch. Neither texture suits this copy's
+1000 years of dry, sealed, sterile storage.
+
+The power-room source already has restrained baked wear. Its `kb3/atlas.py`
+sets olive case `(84,90,58)`, charcoal caps `(42,44,46)` and recessed membrane
+`(13,15,15)`, adds curvature/AO-selected case chips and sparse oxide, then
+composites worn printed marks. `PowerRoom._build_console()` instances that
+GLB with its imported material; it does not apply an additional age shader,
+weather texture or room-state finish to the keyboard. The power-room capture
+is supplied as a reference, without an implementer visual judgment.
+
+Only `console/bake_legends.py` and the quarters keyboard atlases change this
+finish. No shared aging defaults or other prop finishes change. Present's
+source-colour variation is multiplied by 0.25 and clamped to ±2.5 sRGB bytes
+around the source pipeline's three material pigments. Case fade mixes 4%
+toward `(100,103,78)`; caps and membrane mix 8% toward `(65,65,63)` and
+`(25,27,25)`. Dust uses `(110,106,96)` at 8% opacity with ±1% fine object-space
+variation. Crack and peeling contributions are zero. The original normal
+map is retained, rather than introducing fracture relief. Roughness floors
+are 224/255 for the case and 240/255 for polymer; metallic is capped at
+24/255. The existing shader additionally floors upper aged surfaces at 0.94
+roughness. Slight embrittlement is represented by dulled rough surfaces,
+without broken geometry.
+
+The earlier legend fit was 60% in both atlas dimensions with ink
+`(150,146,128)` at 0.45/0.30 opacity. Its broad pale marks dominated the caps.
+The new height-led fit and darker ink reduce that contrast, with Present's
+lower opacity retaining further wear. The existing 100-texel legibility
+minimum and all geometry, UV, seating and framing checks remain unchanged.
+
+The previously listed Present full frame exists at
+`tmp/wt-129/tmp/issue129-keyboard/review/present-console-fullframe.jpg`, relative
+to the parent checkout. The failed review lookup omitted `tmp/wt-129` and
+looked under the parent checkout's `tmp/issue129-keyboard/review/` instead.
+The new delivery script checks that every reported absolute JPEG path exists.
 
 The keyboard's existing projected cap UVs have 34 small overlapping triangle
 pairs, maximum UV area 0.000000680057, and p95/p05 density ratio 2.23749.
@@ -428,3 +476,65 @@ retained console part. Both exports have the required +Y-up/+Z-front axes.
 Godot reports resource cleanup diagnostics at shutdown after successful runs.
 Visual review remains pending with the parent. Review skipped per Andrew
 2026-10-09 (OCR disabled).
+
+## Sealed-storage correction captures and verification
+
+The material correction changes seven tracked files: the local baker, its
+Python regressions, this document, the keyboard's Remembered/Present albedo
+images, its Present ORM image and its mapping metadata. Geometry, saved
+Blender sources, normals, UVs, console deck finish, room lights and cameras
+are unchanged. The source power-room files and shared aging library remain
+unchanged.
+
+The final glyph raster occupies 43.1–45.1% of cap-interior height and has
+102–1764 half-coverage texels per sign. All five console Python tests pass,
+including the existing 100-texel minimum, placement and geometry contracts.
+The new tests check print bounds, alignment, actual atlas probe contrast,
+bounded sealed-storage variation and deterministic output. The focused
+guarded quarters/Naleya lane passes 109 tests; the full guarded Godot suite
+passes 1015 with zero failures and exit 0. Aging passes 89 and fixture
+weather passes 11. No existing checks were weakened. The full result is in
+`tmp/issue129-keyboard-fix/test-full-final.log`. An earlier wrapper lost its
+log after being edited while Bash was running, so the full suite was run
+again from an unchanged standalone command. Shutdown resource-cleanup
+diagnostics remain in the successful run.
+
+Console and keyboard exports from their tracked saved Blender sources are
+byte-identical to the delivered GLBs. All seven keyboard atlas PNGs and
+mapping metadata are byte-identical on repeat. Both isolated baseline and
+current projects completed editor imports. Immediately before each capture,
+all 387 checked resources matched the native imported `.md5` `source_md5`,
+not just the source `.import` sidecar. The baseline's first import exposed
+missing scratch-project locker dependencies; copying those unchanged runtime
+resources and importing again resolved it before captures.
+
+The actual windowed production quarters-demo passes all 24 beats for both
+`a99c7ea` and the corrected finish. The unchanged power-room route also
+passes. Detail captures use the same `capture_keys.gd` camera and unchanged
+room lighting. `ps` checks serialize the windowed runs with other sessions;
+no other session was interrupted. Baseline GLBs and affected textures were
+compared byte-for-byte with `a99c7ea` before delivering the comparisons.
+
+Logs and raw runs are under `tmp/issue129-keyboard-fix/`. The delivery script
+checks every reported absolute path for existence, JPEG decoding and a
+maximum dimension of 1400 pixels. It preserves complete frames, including
+the protocol band, with no crop or mask. Comparison sheets put `a99c7ea` on
+the left and the corrected finish on the right. The implementer did not
+judge these images. Review skipped per Andrew 2026-10-09 (OCR disabled).
+
+All JPEGs below exist under
+`/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-129/tmp/issue129-keyboard-fix/review/`:
+
+- `remembered-console-fullframe.jpg`
+- `present-console-fullframe.jpg`
+- `remembered-keyboard-detail.jpg`
+- `present-keyboard-detail.jpg`
+- `power-room-console-inactive.jpg`
+- `remembered-console-before-after.jpg`
+- `present-console-before-after.jpg`
+- `remembered-keyboard-detail-before-after.jpg`
+- `present-keyboard-detail-before-after.jpg`
+- `baseline-remembered-console-fullframe.jpg`
+- `baseline-present-console-fullframe.jpg`
+- `baseline-remembered-keyboard-detail.jpg`
+- `baseline-present-keyboard-detail.jpg`

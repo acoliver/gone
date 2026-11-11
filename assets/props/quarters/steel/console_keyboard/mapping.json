@@ -3,16 +3,69 @@
   "atlas_size": 2048,
   "mesh_source": "assets/props/terminal/keyboard.glb",
   "uv_method": "unchanged power-room keyboard UVs",
-  "steel_weather_source": "art-source/quarters/steel_library/top-00.png",
-  "rubber_weather_source": "assets/props/quarters/textures/hairbrush/Rubber_aged.png",
+  "storage_finish": {
+    "age_years": 1000,
+    "source_variation_gain": 0.25,
+    "source_variation_limit_srgb": 2.5,
+    "case_pigment_srgb": [
+      84,
+      90,
+      58
+    ],
+    "key_pigment_srgb": [
+      42,
+      44,
+      46
+    ],
+    "membrane_pigment_srgb": [
+      13,
+      15,
+      15
+    ],
+    "case_fade_srgb": [
+      100,
+      103,
+      78
+    ],
+    "key_fade_srgb": [
+      65,
+      65,
+      63
+    ],
+    "membrane_fade_srgb": [
+      25,
+      27,
+      25
+    ],
+    "case_fade_mix": 0.04,
+    "polymer_fade_mix": 0.08,
+    "dust_srgb": [
+      110,
+      106,
+      96
+    ],
+    "dust_mix": 0.08,
+    "dust_variation": 0.01,
+    "crack_mix": 0,
+    "peeling_mix": 0
+  },
+  "normal_source": "unchanged power-room keyboard normal map",
+  "aged_roughness_min_byte": {
+    "case": 224,
+    "polymer": 240
+  },
+  "aged_metallic_max_byte": 24,
   "legend_source": "tools/blender/quarters/console/legends.json via production Naleya",
+  "legend_height_fraction": 0.435,
+  "legend_width_limit_fraction": 0.9,
+  "legend_alignment": "centred",
   "legend_colour_srgb": [
-    150,
-    146,
-    128
+    112,
+    112,
+    102
   ],
   "legend_opacity": {
-    "as_built": 0.45,
+    "as_built": 0.38,
     "aged": 0.3
   },
   "native_legends": [
@@ -27,11 +80,29 @@
         307,
         419
       ],
-      "ink_texels": 1769,
+      "ink_bounds_px": [
+        215,
+        325,
+        254,
+        383
+      ],
+      "ink_texels": 930,
       "ink_probe_pixel": [
-        208,
-        316
-      ]
+        215,
+        326
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          29.0,
+          31.0,
+          33.0
+        ],
+        "aged": [
+          46.94891019403935,
+          48.32750151336193,
+          49.08468416690827
+        ]
+      }
     },
     {
       "key": "Cap_02",
@@ -44,11 +115,29 @@
         476,
         421
       ],
-      "ink_texels": 1396,
+      "ink_bounds_px": [
+        390,
+        328,
+        431,
+        385
+      ],
+      "ink_texels": 790,
       "ink_probe_pixel": [
-        383,
-        318
-      ]
+        391,
+        329
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          28.0,
+          30.0,
+          32.0
+        ],
+        "aged": [
+          46.70172940671444,
+          48.10140663444996,
+          48.90076107501984
+        ]
+      }
     },
     {
       "key": "Cap_03",
@@ -61,11 +150,29 @@
         637,
         423
       ],
-      "ink_texels": 1369,
+      "ink_bounds_px": [
+        552,
+        330,
+        592,
+        387
+      ],
+      "ink_texels": 718,
       "ink_probe_pixel": [
-        545,
-        320
-      ]
+        552,
+        331
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          28.0,
+          30.0,
+          32.0
+        ],
+        "aged": [
+          46.42205040991307,
+          47.845585574507716,
+          48.6926559484005
+        ]
+      }
     },
     {
       "key": "Cap_04",
@@ -78,11 +185,29 @@
         791,
         416
       ],
-      "ink_texels": 1196,
+      "ink_bounds_px": [
+        707,
+        335,
+        742,
+        385
+      ],
+      "ink_texels": 668,
       "ink_probe_pixel": [
-        702,
-        327
-      ]
+        708,
+        336
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          27.0,
+          29.0,
+          31.0
+        ],
+        "aged": [
+          47.62818280518056,
+          48.94882849872113,
+          49.59011993050576
+        ]
+      }
     },
     {
       "key": "Cap_05",
@@ -95,11 +220,29 @@
         935,
         426
       ],
-      "ink_texels": 1173,
+      "ink_bounds_px": [
+        846,
+        335,
+        887,
+        390
+      ],
+      "ink_texels": 632,
       "ink_probe_pixel": [
-        839,
-        325
-      ]
+        846,
+        335
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          27.0,
+          29.0,
+          31.0
+        ],
+        "aged": [
+          47.18844161927701,
+          48.5465996414423,
+          49.26291570067406
+        ]
+      }
     },
     {
       "key": "Cap_06",
@@ -112,11 +255,29 @@
         307,
         550
       ],
-      "ink_texels": 1199,
+      "ink_bounds_px": [
+        213,
+        457,
+        253,
+        514
+      ],
+      "ink_texels": 634,
       "ink_probe_pixel": [
-        206,
-        447
-      ]
+        213,
+        458
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          28.0,
+          30.0,
+          32.0
+        ],
+        "aged": [
+          46.66720155000687,
+          48.06982406616211,
+          48.87506912827492
+        ]
+      }
     },
     {
       "key": "Cap_07",
@@ -129,11 +290,29 @@
         474,
         552
       ],
-      "ink_texels": 1431,
+      "ink_bounds_px": [
+        387,
+        459,
+        428,
+        516
+      ],
+      "ink_texels": 807,
       "ink_probe_pixel": [
-        380,
-        449
-      ]
+        388,
+        460
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          28.0,
+          30.0,
+          32.0
+        ],
+        "aged": [
+          46.588199151158335,
+          47.99756102979183,
+          48.816284801959995
+        ]
+      }
     },
     {
       "key": "Cap_08",
@@ -146,11 +325,29 @@
         639,
         552
       ],
-      "ink_texels": 1396,
+      "ink_bounds_px": [
+        552,
+        466,
+        589,
+        519
+      ],
+      "ink_texels": 810,
       "ink_probe_pixel": [
-        545,
-        457
-      ]
+        552,
+        467
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          28.0,
+          30.0,
+          32.0
+        ],
+        "aged": [
+          47.27715160846711,
+          48.62774215936661,
+          49.32892329096794
+        ]
+      }
     },
     {
       "key": "Cap_09",
@@ -163,11 +360,29 @@
         777,
         552
       ],
-      "ink_texels": 1026,
+      "ink_bounds_px": [
+        704,
+        461,
+        743,
+        517
+      ],
+      "ink_texels": 588,
       "ink_probe_pixel": [
-        713,
-        452
-      ]
+        716,
+        462
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          27.0,
+          29.0,
+          31.0
+        ],
+        "aged": [
+          47.59045256614686,
+          48.91431696891785,
+          49.56204577445984
+        ]
+      }
     },
     {
       "key": "Cap_10",
@@ -180,11 +395,29 @@
         931,
         558
       ],
-      "ink_texels": 1179,
+      "ink_bounds_px": [
+        845,
+        464,
+        886,
+        522
+      ],
+      "ink_texels": 642,
       "ink_probe_pixel": [
-        855,
-        455
-      ]
+        858,
+        465
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          27.0,
+          29.0,
+          31.0
+        ],
+        "aged": [
+          46.78652290284634,
+          48.17896679699421,
+          48.9638545703888
+        ]
+      }
     },
     {
       "key": "Cap_11",
@@ -197,11 +430,29 @@
         1090,
         541
       ],
-      "ink_texels": 1043,
+      "ink_bounds_px": [
+        1020,
+        405,
+        1075,
+        488
+      ],
+      "ink_texels": 1130,
       "ink_probe_pixel": [
         1038,
-        408
-      ]
+        406
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          31.0,
+          34.0,
+          33.0
+        ],
+        "aged": [
+          46.48140015482903,
+          47.89987259268761,
+          48.73681746840477
+        ]
+      }
     },
     {
       "key": "Cap_12",
@@ -214,11 +465,29 @@
         1166,
         541
       ],
-      "ink_texels": 952,
+      "ink_bounds_px": [
+        1100,
+        405,
+        1157,
+        488
+      ],
+      "ink_texels": 1573,
       "ink_probe_pixel": [
-        1120,
-        414
-      ]
+        1117,
+        406
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          27.0,
+          29.0,
+          31.0
+        ],
+        "aged": [
+          47.08534040629864,
+          48.452293587327006,
+          49.18619993448257
+        ]
+      }
     },
     {
       "key": "Cap_13",
@@ -231,11 +500,29 @@
         1249,
         543
       ],
-      "ink_texels": 930,
+      "ink_bounds_px": [
+        1180,
+        406,
+        1236,
+        489
+      ],
+      "ink_texels": 1214,
       "ink_probe_pixel": [
-        1197,
-        412
-      ]
+        1195,
+        406
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          27.0,
+          29.0,
+          31.0
+        ],
+        "aged": [
+          46.56091180086136,
+          47.972601394653324,
+          48.79598061203957
+        ]
+      }
     },
     {
       "key": "Cap_14",
@@ -248,11 +535,29 @@
         1325,
         544
       ],
-      "ink_texels": 999,
+      "ink_bounds_px": [
+        1259,
+        407,
+        1317,
+        491
+      ],
+      "ink_texels": 1764,
       "ink_probe_pixel": [
-        1266,
-        417
-      ]
+        1260,
+        408
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          27.0,
+          29.0,
+          31.0
+        ],
+        "aged": [
+          47.25505469739438,
+          48.60753019154072,
+          49.312481224536896
+        ]
+      }
     },
     {
       "key": "Cap_15",
@@ -265,11 +570,29 @@
         1421,
         539
       ],
+      "ink_bounds_px": [
+        1347,
+        412,
+        1403,
+        489
+      ],
       "ink_texels": 1629,
       "ink_probe_pixel": [
         1348,
         413
-      ]
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          37.0,
+          39.0,
+          38.0
+        ],
+        "aged": [
+          47.997441264986996,
+          49.376952996850015,
+          49.50038352012635
+        ]
+      }
     },
     {
       "key": "Cap_16",
@@ -282,11 +605,29 @@
         311,
         669
       ],
-      "ink_texels": 952,
+      "ink_bounds_px": [
+        213,
+        589,
+        247,
+        638
+      ],
+      "ink_texels": 552,
       "ink_probe_pixel": [
-        207,
-        581
-      ]
+        214,
+        590
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          28.0,
+          30.0,
+          32.0
+        ],
+        "aged": [
+          46.98268805205822,
+          48.35839810192585,
+          49.10981815695763
+        ]
+      }
     },
     {
       "key": "Cap_17",
@@ -299,11 +640,29 @@
         475,
         671
       ],
-      "ink_texels": 1502,
+      "ink_bounds_px": [
+        387,
+        587,
+        423,
+        638
+      ],
+      "ink_texels": 784,
       "ink_probe_pixel": [
-        381,
-        578
-      ]
+        388,
+        588
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          42.0,
+          43.0,
+          43.0
+        ],
+        "aged": [
+          49.29028982996941,
+          50.43813564777375,
+          50.733827253580095
+        ]
+      }
     },
     {
       "key": "Cap_18",
@@ -316,11 +675,29 @@
         658,
         668
       ],
-      "ink_texels": 873,
+      "ink_bounds_px": [
+        559,
+        597,
+        590,
+        640
+      ],
+      "ink_texels": 465,
       "ink_probe_pixel": [
-        554,
-        589
-      ]
+        560,
+        597
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          27.0,
+          29.0,
+          31.0
+        ],
+        "aged": [
+          47.068171141147616,
+          48.436588830947876,
+          49.17342424035073
+        ]
+      }
     },
     {
       "key": "Cap_19",
@@ -333,11 +710,29 @@
         828,
         674
       ],
-      "ink_texels": 998,
+      "ink_bounds_px": [
+        733,
+        593,
+        767,
+        642
+      ],
+      "ink_texels": 484,
       "ink_probe_pixel": [
-        729,
-        584
-      ]
+        735,
+        593
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          27.0,
+          29.0,
+          31.0
+        ],
+        "aged": [
+          46.36026298165322,
+          47.789069141149525,
+          48.64668143033982
+        ]
+      }
     },
     {
       "key": "Cap_20",
@@ -350,11 +745,29 @@
         791,
         727
       ],
-      "ink_texels": 199,
+      "ink_bounds_px": [
+        624,
+        690,
+        641,
+        713
+      ],
+      "ink_texels": 102,
       "ink_probe_pixel": [
-        623,
-        687
-      ]
+        626,
+        691
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          41.0,
+          43.0,
+          43.0
+        ],
+        "aged": [
+          49.55396816074849,
+          50.871106716990475,
+          51.0865681040287
+        ]
+      }
     },
     {
       "key": "Cap_21",
@@ -367,11 +780,29 @@
         1011,
         730
       ],
-      "ink_texels": 740,
+      "ink_bounds_px": [
+        912,
+        654,
+        943,
+        700
+      ],
+      "ink_texels": 409,
       "ink_probe_pixel": [
-        910,
-        646
-      ]
+        915,
+        654
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          28.0,
+          30.0,
+          32.0
+        ],
+        "aged": [
+          47.034675676822665,
+          48.40595078706742,
+          49.148501007556916
+        ]
+      }
     },
     {
       "key": "Cap_22",
@@ -384,11 +815,29 @@
         1205,
         733
       ],
-      "ink_texels": 992,
+      "ink_bounds_px": [
+        1094,
+        657,
+        1127,
+        703
+      ],
+      "ink_texels": 539,
       "ink_probe_pixel": [
-        1091,
-        649
-      ]
+        1097,
+        657
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          32.0,
+          35.0,
+          35.0
+        ],
+        "aged": [
+          46.6766838914156,
+          48.29124012827874,
+          48.88212468266487
+        ]
+      }
     },
     {
       "key": "Cap_23",
@@ -401,11 +850,29 @@
         1384,
         735
       ],
-      "ink_texels": 771,
+      "ink_bounds_px": [
+        1280,
+        659,
+        1311,
+        706
+      ],
+      "ink_texels": 427,
       "ink_probe_pixel": [
-        1275,
-        652
-      ]
+        1280,
+        660
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          29.0,
+          31.0,
+          32.0
+        ],
+        "aged": [
+          47.25795761346818,
+          48.61018575429917,
+          49.314641976356505
+        ]
+      }
     },
     {
       "key": "Cap_24",
@@ -418,11 +885,29 @@
         1551,
         736
       ],
-      "ink_texels": 925,
+      "ink_bounds_px": [
+        1449,
+        660,
+        1486,
+        707
+      ],
+      "ink_texels": 506,
       "ink_probe_pixel": [
-        1443,
-        653
-      ]
+        1450,
+        661
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          46.0,
+          48.0,
+          45.0
+        ],
+        "aged": [
+          50.30232189238072,
+          51.6461973875761,
+          51.2816441488266
+        ]
+      }
     },
     {
       "key": "Cap_25",
@@ -435,11 +920,29 @@
         1741,
         740
       ],
-      "ink_texels": 1103,
+      "ink_bounds_px": [
+        1628,
+        662,
+        1666,
+        710
+      ],
+      "ink_texels": 553,
       "ink_probe_pixel": [
-        1621,
-        654
-      ]
+        1628,
+        663
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          48.0,
+          50.0,
+          46.0
+        ],
+        "aged": [
+          49.871407403349885,
+          51.29207702219487,
+          50.852504625320435
+        ]
+      }
     },
     {
       "key": "Cap_26",
@@ -452,11 +955,29 @@
         1797,
         615
       ],
-      "ink_texels": 757,
+      "ink_bounds_px": [
+        1729,
+        545,
+        1763,
+        588
+      ],
+      "ink_texels": 419,
       "ink_probe_pixel": [
-        1724,
-        538
-      ]
+        1730,
+        546
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          27.0,
+          29.0,
+          31.0
+        ],
+        "aged": [
+          46.54414652585984,
+          47.95726636648178,
+          48.78350604772568
+        ]
+      }
     },
     {
       "key": "Cap_27",
@@ -469,11 +990,29 @@
         1904,
         617
       ],
-      "ink_texels": 1106,
+      "ink_bounds_px": [
+        1838,
+        544,
+        1873,
+        588
+      ],
+      "ink_texels": 540,
       "ink_probe_pixel": [
-        1832,
-        536
-      ]
+        1839,
+        544
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          28.0,
+          30.0,
+          32.0
+        ],
+        "aged": [
+          46.92387611806393,
+          48.30460297644139,
+          49.06605670809746
+        ]
+      }
     },
     {
       "key": "Cap_28",
@@ -486,11 +1025,29 @@
         1797,
         704
       ],
-      "ink_texels": 144,
+      "ink_bounds_px": [
+        1764,
+        641,
+        1795,
+        680
+      ],
+      "ink_texels": 359,
       "ink_probe_pixel": [
-        1770,
-        648
-      ]
+        1764,
+        642
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          34.0,
+          36.0,
+          36.0
+        ],
+        "aged": [
+          47.38502317667008,
+          48.76254455327988,
+          49.09401548624039
+        ]
+      }
     },
     {
       "key": "Cap_29",
@@ -503,11 +1060,29 @@
         1905,
         707
       ],
-      "ink_texels": 752,
+      "ink_bounds_px": [
+        1842,
+        644,
+        1868,
+        682
+      ],
+      "ink_texels": 336,
       "ink_probe_pixel": [
-        1837,
-        637
-      ]
+        1842,
+        644
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          38.0,
+          39.0,
+          38.0
+        ],
+        "aged": [
+          48.263266374468806,
+          49.42640095770359,
+          49.540990858078004
+        ]
+      }
     }
   ]
 }

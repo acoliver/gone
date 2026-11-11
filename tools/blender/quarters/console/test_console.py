@@ -84,6 +84,37 @@ class ConsoleTests(unittest.TestCase):
                 self.assertGreaterEqual(row['ink_texels'], 100, row['key'])
                 self.assertIn(row['sign'], json.loads((HERE / 'legends.json').read_text())['syllables'])
 
+    def test_printed_legends_fit_cap_height_without_dominating_it(self):
+        mapping = json.loads((ROOT / 'assets/props/quarters/steel/console_keyboard/mapping.json').read_text())
+        images = {state: np.asarray(Image.open(ROOT / f'assets/props/quarters/steel/console_keyboard/{state}_albedo.png'))
+                  for state in ('as_built', 'aged')}
+        for row in mapping['native_legends']:
+            x0, y0, x1, y1 = row['interior_rect_px']
+            left, top, right, bottom = row['ink_bounds_px']
+            self.assertTrue(.35 <= (bottom-top)/(y1-y0) <= .46, row['key'])
+            self.assertLessEqual(right-left, (x1-x0)*.92, row['key'])
+            self.assertAlmostEqual((left+right)/2, (x0+x1)/2, delta=1)
+            self.assertAlmostEqual((top+bottom)/2, (y0+y1)/2, delta=1)
+            for state, image in images.items():
+                x, y = row['ink_probe_pixel']
+                contrast = image[y, x, :3].astype(float) - row['unprinted_probe_srgb'][state]
+                self.assertTrue(np.all(contrast > 0), (state, row['key']))
+                self.assertLessEqual(float(contrast.max()), 36, (state, row['key']))
+
+    def test_sealed_storage_finish_has_bounded_variation_and_dust(self):
+        from bake_legends import sealed_storage
+        clean = np.array([[[84, 90, 58], [255, 255, 230], [0, 0, 0]],
+                          [[42, 44, 46], [120, 120, 120], [30, 30, 30]]], float)
+        positions = np.zeros((2, 3, 3))
+        case = np.array([[True, True, True], [False, False, False]])
+        aged = sealed_storage(clean, positions, case)
+        # Even source chips cannot turn into black fractures or pale flakes.
+        self.assertLessEqual(float(np.ptp(aged[case], axis=0).max()), 5)
+        self.assertLessEqual(float(np.ptp(aged[~case], axis=0).max()), 5)
+        self.assertTrue(np.all(aged[~case].mean(0) > clean[1, 0]))
+        self.assertTrue(np.all(aged >= 0) and np.all(aged <= 255))
+        np.testing.assert_array_equal(aged, sealed_storage(clean, positions, case))
+
 
 if __name__ == '__main__':
     unittest.main()

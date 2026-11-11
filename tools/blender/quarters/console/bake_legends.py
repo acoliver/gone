@@ -1,7 +1,8 @@
-"""Bake quarters-only native legends and dry-aged finishes on the reused UVs.
+"""Bake quarters-only printed legends and sealed-storage keyboard finishes.
 
-Case weathering uses the existing whole-face steel image library. Rubber
-uses the existing small-prop dry-aging bake. The terminal asset is read-only.
+The power-room mesh, UVs and source textures remain read-only. Aging here
+adds bounded pigment fade and fine dust, without the hairbrush fracture map
+or the steel library's full-face peeling and chips.
 """
 import json
 from pathlib import Path
@@ -15,11 +16,37 @@ import trimesh
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[3]
 sys.path.insert(0, str(ROOT / 'tools/quarters_aging'))
-from map_library import sample_image, triangle_samples
-from steel_library import LIBRARY
+from map_library import triangle_samples
 
 ATLAS = ROOT / 'assets/props/quarters/steel/console_keyboard'
 TERMINAL = ROOT / 'assets/props/terminal'
+STORAGE = dict(age_years=1000, source_variation_gain=.25, source_variation_limit_srgb=2.5,
+               case_pigment_srgb=[84, 90, 58], key_pigment_srgb=[42, 44, 46],
+               membrane_pigment_srgb=[13, 15, 15], case_fade_srgb=[100, 103, 78],
+               key_fade_srgb=[65, 65, 63], membrane_fade_srgb=[25, 27, 25],
+               case_fade_mix=.04, polymer_fade_mix=.08, dust_srgb=[110, 106, 96],
+               dust_mix=.08, dust_variation=.01, crack_mix=0, peeling_mix=0)
+INK_COLOUR = [112, 112, 102]
+INK_OPACITY = dict(as_built=.38, aged=.30)
+
+
+def sealed_storage(clean, positions, case):
+    membrane = ~case & (clean.mean(-1) < 25)
+    pigment = np.where(case[..., None], STORAGE['case_pigment_srgb'],
+                       np.where(membrane[..., None], STORAGE['membrane_pigment_srgb'],
+                                STORAGE['key_pigment_srgb']))
+    fade = np.where(case[..., None], STORAGE['case_fade_srgb'],
+                    np.where(membrane[..., None], STORAGE['membrane_fade_srgb'],
+                             STORAGE['key_fade_srgb']))
+    variation = np.clip((clean-pigment)*STORAGE['source_variation_gain'],
+                        -STORAGE['source_variation_limit_srgb'], STORAGE['source_variation_limit_srgb'])
+    fade_mix = np.where(case, STORAGE['case_fade_mix'], STORAGE['polymer_fade_mix'])[..., None]
+    faded = (pigment+variation)*(1-fade_mix)+fade*fade_mix
+    x, z = positions[..., 0], positions[..., 2]
+    # Object-space fine variation remains continuous across the retained UV seams.
+    fine = np.sin(x*911+z*617)*np.sin(x*1301-z*887)
+    dust = (STORAGE['dust_mix']+STORAGE['dust_variation']*fine)[..., None]
+    return faded*(1-dust)+np.array(STORAGE['dust_srgb'])*dust
 
 
 def bake():
@@ -49,19 +76,12 @@ def bake():
     nearest = distance_transform_edt(~covered, return_distances=False, return_indices=True)
     positions = positions[tuple(nearest)]
     case = (clean[..., 1] > clean[..., 2]*1.15) & (clean.mean(-1) > 40)
-    coordinates = np.column_stack([(positions[..., 0].ravel()+.4)/.8,
-                                   .5-positions[..., 2].ravel()/.2455715])
-    manifest = json.loads((LIBRARY / 'manifest.json').read_text())
-    top = next(r for r in manifest['faces'] if r['kind'] == 'top' and r['passed'])
-    weather = sample_image(np.asarray(Image.open(LIBRARY / top['image']).convert('RGB'), float), coordinates).reshape(clean.shape)
-    rubber_root = ROOT / 'assets/props/quarters/textures/hairbrush'
-    rubber = sample_image(np.asarray(Image.open(rubber_root / 'Rubber_aged.png').convert('RGB'), float), coordinates).reshape(clean.shape)
-    aged = np.where(case[..., None], weather, rubber)
+    aged = sealed_storage(clean, positions, case)
     normals = np.asarray(Image.open(TERMINAL / 'keyboard_keyboard_normal.png').convert('RGB'))
     orm = np.asarray(Image.open(TERMINAL / 'keyboard_keyboard_orm.png').convert('RGB')).copy()
     aged_orm = orm.copy()
-    aged_orm[..., 1] = np.maximum(aged_orm[..., 1], 232)
-    aged_orm[..., 2] = 0
+    aged_orm[..., 1] = np.maximum(aged_orm[..., 1], np.where(case, 224, 240))
+    aged_orm[..., 2] = np.minimum(aged_orm[..., 2], 24)
     mask = Image.new('L', (resolution, resolution))
     records = []
     for legend in legends['keys']:
@@ -69,8 +89,8 @@ def bake():
         x0, y0, x1, y1 = cap['interior_rect_px']
         quads = np.array(legend['quads'])
         lo, hi = quads.reshape(-1, 2).min(0), quads.reshape(-1, 2).max(0)
-        # Printed marks occupy at most 60% of the retained cap interior.
-        scale = min((x1-x0)*.60/(hi[0]-lo[0]), (y1-y0)*.60/(hi[1]-lo[1]))
+        # Height controls the print size, including the wide, shallow bottom-row caps.
+        scale = min((x1-x0)*.90/(hi[0]-lo[0]), (y1-y0)*.435/(hi[1]-lo[1]))
         pixels = (quads-(lo+hi)/2)*[scale, -scale]+[(x0+x1)/2, (y0+y1)/2]
         tile = Image.new('L', ((x1-x0)*4, (y1-y0)*4))
         draw = ImageDraw.Draw(tile)
@@ -80,13 +100,18 @@ def bake():
         mask.paste(tile, (x0, y0))
         ink = np.asarray(tile)
         y, x = np.unravel_index(np.argmax(ink), ink.shape)
+        iy, ix = np.where(ink > 127)
         records.append(dict(key=legend['key'], input=legend['input'], sign=legend['sign'],
                             design_index=legend['design_index'], interior_rect_px=[x0, y0, x1, y1],
-                            ink_texels=int((ink > 127).sum()), ink_probe_pixel=[int(x+x0), int(y+y0)]))
+                            ink_bounds_px=[int(ix.min()+x0), int(iy.min()+y0),
+                                           int(ix.max()+x0+1), int(iy.max()+y0+1)],
+                            ink_texels=int((ink > 127).sum()), ink_probe_pixel=[int(x+x0), int(y+y0)],
+                            unprinted_probe_srgb=dict(as_built=clean[y+y0, x+x0].tolist(),
+                                                      aged=aged[y+y0, x+x0].tolist())))
     alpha = np.asarray(mask, float)[..., None]/255
-    for state, colour, opacity in [('as_built', clean, .45), ('aged', aged, .30)]:
-        ink = alpha*opacity
-        albedo = colour*(1-ink)+np.array([150, 146, 128])*ink
+    for state, colour in [('as_built', clean), ('aged', aged)]:
+        ink = alpha*INK_OPACITY[state]
+        albedo = colour*(1-ink)+np.array(INK_COLOUR)*ink
         Image.fromarray(np.uint8(np.round(albedo))).save(ATLAS / f'{state}_albedo.png')
         Image.fromarray(normals).save(ATLAS / f'{state}_normal.png')
         Image.fromarray(orm if state == 'as_built' else aged_orm).save(ATLAS / f'{state}_orm.png')
@@ -96,13 +121,13 @@ def bake():
     Image.fromarray(regions).save(ATLAS / 'regions.png')
     mapping = dict(prop='console_keyboard', atlas_size=resolution,
                    mesh_source='assets/props/terminal/keyboard.glb', uv_method='unchanged power-room keyboard UVs',
-                   steel_weather_source=str((LIBRARY / top['image']).relative_to(ROOT)),
-                   rubber_weather_source=str((rubber_root / 'Rubber_aged.png').relative_to(ROOT)),
+                   storage_finish=STORAGE, normal_source='unchanged power-room keyboard normal map',
+                   aged_roughness_min_byte=dict(case=224, polymer=240), aged_metallic_max_byte=24,
                    legend_source='tools/blender/quarters/console/legends.json via production Naleya',
-                   legend_colour_srgb=[150, 146, 128], legend_opacity=dict(as_built=.45, aged=.30),
-                   native_legends=records)
+                   legend_height_fraction=.435, legend_width_limit_fraction=.90, legend_alignment='centred',
+                   legend_colour_srgb=INK_COLOUR, legend_opacity=INK_OPACITY, native_legends=records)
     (ATLAS / 'mapping.json').write_text(json.dumps(mapping, indent=2)+'\n')
-    print('Baked 29 muted production Naleya legends and both dry-aged keyboard finish sets')
+    print('Baked 29 smaller printed Naleya legends and quarters-only sealed-storage keyboard finish')
 
 
 if __name__ == '__main__':
