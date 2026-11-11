@@ -12,7 +12,8 @@ ROOT = Path(__file__).resolve().parents[4]
 
 
 def trace(game, state, view):
-    camera = json.loads((game/'numeric-cameras.json').read_text())[f'{state}-{view}']
+    camera = (json.loads((game/f'{state}-oblique-camera.json').read_text()) if view == 'oblique-context'
+              else json.loads((game/'numeric-cameras.json').read_text())[f'{state}-{view}'])
     transform = np.array(camera['matrix_columns'])
     basis, origin = transform[:3].T, transform[3]
     focal = 1536/(2*np.tan(np.radians(camera['fov'])/2))
@@ -90,3 +91,4 @@ if __name__=='__main__':
     game=p.parse_args(sys.argv[sys.argv.index('--')+1:]).game.resolve()
     for state in ['remembered','present']:
         for view in ['medal','buttons','wardrobe']: trace(game,state,view)
+        if (game/f'{state}-oblique-camera.json').exists(): trace(game,state,'oblique-context')

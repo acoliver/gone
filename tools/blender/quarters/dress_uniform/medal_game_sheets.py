@@ -33,8 +33,11 @@ def make(game,baseline,original,output):
         for view in ['medal','buttons','wardrobe']:
             name=f'{state}-{view}'
             save(name,[(game/(name+'.png'),f'{state.title()} | {view} | production')],1)
-            save(name+'-before-after',[(baseline/(name+'.png'),'Before | a23b4f6'),(game/(name+'.png'),'After | stage3b fix')])
-            save(name+'-original-before-after',[(original/(name+'.png'),'Before | ef57c29'),(game/(name+'.png'),'After | stage3b fix')])
+            save(name+'-before-after',[(baseline/(name+'.png'),'Before | 6987fce'),(game/(name+'.png'),'After | physical brass and ribbon')])
+            save(name+'-original-before-after',[(original/(name+'.png'),'Before | ef57c29'),(game/(name+'.png'),'After | physical brass and ribbon')])
+        save(state+'-oblique-context',[(game/f'{state}-oblique-context-full.png','Additional evidence | oblique wool, loop and contact')],1)
+        save(state+'-oblique-context-controls',[(game/f'{state}-oblique-context-{control}.png',title) for control,title in [('full','Additional evidence | full'),('contact-off','Contact AO off'),('weave-off','Ribbon weave off')]],3)
+        save(state+'-probe-viewpoints',[(game.parent/f'{state}-probe-face-{i}.png',f'Additional evidence | local probe direction {i}') for i in range(6)],3)
         def lane(suffix):return game/(f'{state}-medal'+('-'+suffix if suffix else '')+'.png')
         save(state+'-ribbon-controls',[(lane(''),'Woven ribbon'),(lane('weave-off'),'Weave off')])
         save(state+'-reflection-controls',[(lane(''),'Full'),(lane('local-probe-off'),'Local probe off'),(lane('probe-off'),'All quarters probes off')],3)
