@@ -1,5 +1,7 @@
 /target
-/tmp
+/tmp/*
+!/tmp/.gdignore
+/tools/gltf-validator/node_modules/
 .DS_Store
 .llxprt/
 .godot/
