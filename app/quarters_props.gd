@@ -201,8 +201,15 @@ static func _tunic_material(state: StringName, part: StringName, surface: int) -
 			for index: int in range(node.mesh.get_surface_count()):
 				var imported := node.mesh.surface_get_material(index) as StandardMaterial3D
 				assert(imported != null, "tunic requires imported PBR surfaces")
-				if not shared.has(imported): shared[imported] = _tunic_finish(imported, state)
-				slots.append(shared[imported])
+				if node.name == &"Medal" and index < 2:
+					slots.append(_medal_finish(imported, state, index))
+				elif node.name == &"TunicBody":
+					var finish := _tunic_finish(imported, state)
+					_medal_contact(finish, state)
+					slots.append(finish)
+				else:
+					if not shared.has(imported): shared[imported] = _tunic_finish(imported, state)
+					slots.append(shared[imported])
 			parts[node.name] = slots
 		source.free()
 		_tunic_materials[state] = parts
@@ -232,6 +239,40 @@ static func _tunic_finish(imported: StandardMaterial3D, state: StringName) -> Sh
 	var aged_wool := aged_pigment and is_zero_approx(imported.metallic) and not imported.resource_name.begins_with("MedalEnamel")
 	result.set_shader_parameter(&"pigment_gain", TUNIC_AGED_WOOL_GAIN if aged_wool else Vector3.ONE)
 	return result
+
+static func _medal_finish(imported: StandardMaterial3D, state: StringName, role: int) -> ShaderMaterial:
+	assert(role in [0, 1], "medal adapter only accepts brass and enamel")
+	assert(imported.albedo_texture != null and imported.normal_enabled and imported.normal_texture != null, "medal PBR requires albedo and normal")
+	assert(imported.roughness_texture != null and imported.metallic_texture != null and imported.ao_texture != null, "medal PBR requires packed ORM")
+	assert(imported.roughness_texture_channel == BaseMaterial3D.TEXTURE_CHANNEL_GREEN and imported.metallic_texture_channel == BaseMaterial3D.TEXTURE_CHANNEL_BLUE and imported.ao_texture_channel == BaseMaterial3D.TEXTURE_CHANNEL_RED, "medal ORM layout must be R=AO, G=roughness, B=metallic")
+	assert(imported.roughness_texture.get_image().get_data() == imported.metallic_texture.get_image().get_data() and imported.roughness_texture.get_image().get_data() == imported.ao_texture.get_image().get_data(), "medal ORM imports must retain identical packed pixels")
+	assert(is_equal_approx(imported.roughness, 1.0) and is_equal_approx(imported.metallic, 1.0), "final-value ORM uses unit factors")
+	var result := ShaderMaterial.new()
+	result.shader = load("res://app/shaders/quarters_medal.gdshader")
+	result.set_shader_parameter(&"base_colour", imported.albedo_color)
+	result.set_shader_parameter(&"albedo_texture", imported.albedo_texture)
+	result.set_shader_parameter(&"normal_texture", imported.normal_texture)
+	result.set_shader_parameter(&"normal_scale", imported.normal_scale)
+	result.set_shader_parameter(&"orm_texture", imported.roughness_texture)
+	result.set_shader_parameter(&"has_normal", true)
+	result.set_shader_parameter(&"roughness", imported.roughness)
+	result.set_shader_parameter(&"metallic", imported.metallic)
+	result.set_shader_parameter(&"specular", .5)
+	result.set_shader_parameter(&"coat", .65 if role == 1 else 0.0)
+	result.set_shader_parameter(&"coat_roughness", .23 if state == &"aged" else .13)
+	return result
+
+static func _medal_contact(finish: ShaderMaterial, state: StringName) -> void:
+	const MEDAL_ROOT := "res://assets/props/quarters/dress_uniform/medal/"
+	var frames: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(MEDAL_ROOT + "contact-frames.json"))
+	var frame: Dictionary = frames[state]
+	finish.set_shader_parameter(&"contact_enabled", true)
+	# #130: the wider remembered clearance needs more direct-light contact influence.
+	finish.set_shader_parameter(&"contact_light_affect", .75 if state == &"as_built" else .35)
+	finish.set_shader_parameter(&"contact_texture", load(MEDAL_ROOT + String(state) + "_contact.png"))
+	for axis: String in ["x", "height", "depth"]:
+		var values: Array = frame.axes[axis]
+		finish.set_shader_parameter("contact_" + axis, Vector4(values[0], values[1], values[2], values[3]))
 
 # Shared slot finishes remain for storage stand-ins and demo display/glass
 # optics. Rigid batch-1 surfaces use the routed per-prop materials above.

@@ -53,7 +53,7 @@ def inspect(directory, baseline, repeats):
             for field in ['translation', 'rotation', 'scale', 'matrix']:
                 assert node.get(field) == old_nodes[node['name']].get(field), (node['name'], 'Pivot changed')
         for name in before:
-            if name not in ['Buttons', 'Placket', 'Medal']:
+            if name != 'Medal':
                 np.testing.assert_array_equal(triangle_signature(before[name].triangles), triangle_signature(after[name].triangles))
                 old_node = next(node for node in old_doc['nodes'] if node['name'] == name)
                 new_node = next(node for node in doc['nodes'] if node['name'] == name)
@@ -69,22 +69,11 @@ def inspect(directory, baseline, repeats):
                     expected = material_signature(old_doc, old_raw, old_binary, old_doc['materials'][old['material']])
                     actual = material_signature(doc, raw, binary, doc['materials'][new['material']])
                     assert expected == actual, (name, 'Unrelated material or texture changed')
-        for name in ['Placket', 'Buttons']:
-            old_node = next(node for node in old_doc['nodes'] if node['name'] == name)
-            new_node = next(node for node in doc['nodes'] if node['name'] == name)
-            old, = old_doc['meshes'][old_node['mesh']]['primitives']
-            new, = doc['meshes'][new_node['mesh']]['primitives']
-            expected = material_signature(old_doc, old_raw, old_binary, old_doc['materials'][old['material']])
-            actual = material_signature(doc, raw, binary, doc['materials'][new['material']])
-            if suffix:
-                # Only the rebuilt row's base-colour atlases are intentionally rebaked.
-                for signature in [expected, actual]:
-                    signature.pop('name')
-                    signature['pbrMetallicRoughness'].pop('baseColorTexture')
-            assert expected == actual, (state, name, 'Non-bake material properties changed')
         geometry = np.vstack([mesh.vertices for mesh in after.values()])
         count = sum(len(mesh.faces) for mesh in after.values())
-        assert count <= (20652 if suffix else 14999)
+        # #130 asset-art allocation, not a frame-time policy or CI threshold.
+        budget = json.loads((Path(__file__).resolve().parent / 'medal-budget.json').read_text())
+        assert count <= budget['garment_ceiling']['pilot' if suffix else 'working']
         assert np.ptp(geometry[:, 1]) > np.ptp(geometry[:, 2])
         assert abs(after['Hanger'].bounds[1, 1]) < .001
         assert all(after[name].vertices[:, 2].mean() > 0 for name in ['Buttons', 'Medal', 'RibbonBar'])
@@ -114,10 +103,30 @@ def inspect(directory, baseline, repeats):
                     assert np.isfinite(uv).all() and uv.min() >= -1e-6 and uv.max() <= 1 + 1e-6, (state, material['name'], key)
             pbr = material['pbrMetallicRoughness']
             if material['name'].startswith('MedalEnamel'):
-                red, green, blue = pbr['baseColorFactor'][:3]
-                assert blue > green > red and blue > red * 4
-                assert abs(pbr['roughnessFactor'] - (.38 if suffix else .22)) < 1e-6
-                assert abs(pbr.get('metallicFactor', 1)) < 1e-6
+                # #130: final enamel values live in the accepted atlas, not scalars.
+                assert pbr.get('roughnessFactor', 1) == pbr.get('metallicFactor', 1) == 1
+                assert 'normalTexture' in material and 'occlusionTexture' in material
+                assert pbr['metallicRoughnessTexture']['index'] == material['occlusionTexture']['index']
+                from io import BytesIO
+                from PIL import Image
+                def image_data(texture):
+                    source = doc['images'][doc['textures'][texture['index']]['source']]
+                    view = doc['bufferViews'][source['bufferView']]
+                    start = binary + view.get('byteOffset', 0)
+                    return np.asarray(Image.open(BytesIO(raw[start:start+view['byteLength']])).convert('RGB'))
+                uv = accessor(doc, raw, binary, attributes['TEXCOORD_0'])
+                indices = accessor(doc, raw, binary, primitive['indices']).reshape(-1,3)
+                centers = uv[indices].mean(1)
+                pixels = np.clip((centers*2048).astype(int),0,2047)
+                albedo = image_data(pbr['baseColorTexture'])[pixels[:,1],pixels[:,0]].astype(float)
+                orm = image_data(pbr['metallicRoughnessTexture'])[pixels[:,1],pixels[:,0]]
+                albedo = albedo/255
+                albedo = np.where(albedo <= .04045, albedo/12.92, ((albedo+.055)/1.055)**2.4)
+                assert np.all(albedo[:,2] > albedo[:,0]*4), 'Exported enamel UVs must sample navy'
+                assert np.all(orm[:,2] == 0), 'Enamel remains dielectric in the map'
+                expected_roughness = .31 if suffix else .215
+                assert np.max(abs(orm[:,1]/255-expected_roughness)) < .06
+
         repeat = repeats / filename
         assert raw == repeat.read_bytes(), (state, 'Saved source export is not byte-identical')
         result[state] = dict(triangles=count, button_diameters_m=diameters,

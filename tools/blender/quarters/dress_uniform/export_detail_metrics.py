@@ -51,11 +51,20 @@ def medal_metrics(mesh):
     welded = mesh.copy()
     welded.merge_vertices(merge_tex=True, merge_norm=True)
     pieces = welded.split(only_watertight=False)
-    assert len(pieces) == 2, 'Export must retain connected metal and the unchanged ribbon'
-    metal, ribbon = sorted(pieces, key=lambda part: -part.extents[0])
-    assert metal.is_watertight and metal.is_winding_consistent and metal.volume > 0
-    clearance = separation(metal, ribbon)
-    assert clearance >= .00008 - 1e-8, 'Exported metal/ribbon clearance must retain the authored 80 micrometres'
-    return dict(metal_triangles=len(metal.faces), ribbon_triangles=len(ribbon.faces),
+    assert len(pieces) == 4, '#130: three manufactured solids and one looped ribbon'
+    ribbon, = [p for p in pieces if len(p.faces) == 656]
+    solids = [p for p in pieces if p is not ribbon]
+    assert all(p.is_watertight and p.is_winding_consistent and p.volume > 0 for p in pieces)
+    from medal_stage1_manufacture import bounded_separation
+    cloth = ribbon.copy(); cloth.apply_scale(1000)
+    separations = []
+    for solid in solids:
+        scaled = solid.copy(); scaled.apply_scale(1000)
+        separations.append(bounded_separation(scaled, cloth, separation)/1000)
+    clearance = min(separations)
+    assert clearance >= .00008 - 1e-8, 'Exported metal/ribbon clearance retains 80 micrometres'
+    assert sum(len(p.faces) for p in solids) == 8270
+    assert len(ribbon.faces) == 656
+    return dict(metal_triangles=8270, ribbon_triangles=656,
                 metal_watertight=True, metal_winding_consistent=True,
-                actual_metal_ribbon_clearance_m=clearance)
+                actual_metal_ribbon_clearance_m=clearance, per_solid_ribbon_clearance_m=separations)

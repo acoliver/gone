@@ -1,6 +1,10 @@
 extends SceneTree
 ## Issue #130: actual windowed game, unchanged wardrobe camera and room lights.
 
+const MedalCapture := preload("res://tools/medal_capture.gd")
+var diagnostics := false
+var probe_diagnostic := false
+var numeric_cameras: Dictionary = {}
 var output: String
 var main: Node3D
 var cameras: Dictionary = {}
@@ -63,7 +67,9 @@ func _garment_provenance(garment: Node3D, state: String) -> Dictionary:
 
 func _initialize() -> void:
 	var args := OS.get_cmdline_user_args()
-	assert(args.size() == 1, "usage: -- <output directory>")
+	assert(args.size() in [1,2], "usage: -- <output directory> [--diagnostics]")
+	diagnostics = args.size() == 2 and args[1] == "--diagnostics"
+	probe_diagnostic = args.size() == 2 and args[1] == "--probe-diagnostic"
 	output = ProjectSettings.globalize_path(args[0])
 	_run.call_deferred()
 
@@ -90,6 +96,8 @@ func _run() -> void:
 		var furnishings: Node3D = ship.quarters.remembered if state == "remembered" else ship.quarters.present
 		var garment := furnishings.get_node("Placement_wardrobe/HangingUniform") as Node3D
 		provenance[state] = _garment_provenance(garment, state)
+		provenance[state]["runtime"] = MedalCapture.inventory(garment, main)
+		MedalCapture.geometry(furnishings.get_node("Placement_wardrobe"), output.path_join(state + "-geometry.json"))
 		var frame := ShipScene._world_frame(garment)
 		for view: String in ["wardrobe", "buttons", "medal"]:
 			camera.projection = Camera3D.PROJECTION_PERSPECTIVE
@@ -104,18 +112,32 @@ func _run() -> void:
 				camera.keep_aspect = Camera3D.KEEP_WIDTH
 				camera.fov = 30.0 if view == "medal" else 50.0
 			cameras[state + "-" + view] = {"transform": str(camera.global_transform), "fov": camera.fov, "size": [1536, 864]}
-			for index: int in range(12): await process_frame
-			RenderingServer.force_draw(false)
-			await process_frame
-			await RenderingServer.frame_post_draw
-			var image := root.get_texture().get_image()
-			assert(image.save_png(output.path_join(state + "-" + view + "-raw.png")) == OK)
-			var crop := image.get_region(Rect2i(0, HarnessProtocol.chip_size().y, 1536, 824))
-			assert(crop.save_png(output.path_join(state + "-" + view + ".png")) == OK)
+			numeric_cameras[state + "-" + view] = MedalCapture.camera_record(camera)
+			var lanes := ["full", "flat-normal", "contact-off", "rough-enamel", "probe-off", "age-off", "normal-buffer", "flat-normal-buffer"] if diagnostics else ["full"]
+			if probe_diagnostic: lanes = ["full", "mirror", "mirror-probe-off", "mirror-refresh", "mirror-refresh-probe-off", "refreshed", "refreshed-probe-off"]
+			for lane: String in lanes:
+				if (lane.ends_with("buffer") or probe_diagnostic) and view != "medal": continue
+				MedalCapture.control(garment, main, lane)
+				for index: int in range(24): await process_frame
+				RenderingServer.force_draw(false)
+				await process_frame
+				await RenderingServer.frame_post_draw
+				var image := root.get_texture().get_image()
+				var name := state + "-" + view + ("" if lane == "full" else "-" + lane)
+				assert(image.save_png(output.path_join(name + "-raw.png")) == OK)
+				var crop := image.get_region(Rect2i(0, HarnessProtocol.chip_size().y, 1536, 824))
+				assert(crop.save_png(output.path_join(name + ".png")) == OK)
+			MedalCapture.control(garment, main, "full")
+			if diagnostics and view == "medal":
+				await MedalCapture.sweep(self, camera, garment, state, output)
+				await MedalCapture.power_lanes(self, main, state, output)
+
 	var file := FileAccess.open(output.path_join("cameras.json"), FileAccess.WRITE)
 	file.store_string(JSON.stringify(cameras, "\t") + "\n")
 	file = FileAccess.open(output.path_join("provenance.json"), FileAccess.WRITE)
 	file.store_string(JSON.stringify(provenance, "\t") + "\n")
+	file = FileAccess.open(output.path_join("numeric-cameras.json"), FileAccess.WRITE)
+	file.store_string(JSON.stringify(numeric_cameras, "\t") + "\n")
 	main.queue_free()
 	await process_frame
 	print("TUNIC GAME CAPTURES ", output)

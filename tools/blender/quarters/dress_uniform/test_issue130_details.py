@@ -31,7 +31,8 @@ def check_sources():
         assert record['body_diameter_m'] == .032
         assert record['raw_sample_count'] >= 100
         ribbon = [p for p in medal.data.polygons if medal.data.materials[p.material_index].name == 'RibbonFabric']
-        assert len(ribbon) == 68, (state, 'Keep existing sewn ribbon faces')
+        # #130: the lower U-folds add tessellation without changing the upper sew.
+        assert len(ribbon) == 326, (state, 'Lower ribbon loops and central suspension slot')
         assert 'RibbonColours' in medal.data.color_attributes
         assert len(json.loads(medal['attachment'])['metal_base_vertex_indices']) >= 25
     print('PASS: eight endpoint buttons; fitted generated provenance, thickness, enamel and preserved sewn ribbon')

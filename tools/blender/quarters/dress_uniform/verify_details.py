@@ -17,6 +17,7 @@ from aging_support import components
 from common import surface_tree
 from detail_clearance import continuous_gap, triangles
 from reduced_clearance import crossing_pairs
+from medal_mount_checks import upper_ribbon_samples, assert_upper_preserved
 
 
 def ribbon_signature(obj, uv_names):
@@ -71,17 +72,19 @@ def measure(directory, baseline):
     for name in ['working', 'pilot']:
         bpy.ops.wm.open_mainfile(filepath=str(baseline / f'tunic-{name}.blend'))
         frozen_by_state[name] = {o.name: geometry_hash(o) for o in bpy.context.scene.objects
-                                 if o.type == 'MESH' and o.name not in ['Buttons', 'Placket', 'Medal']}
+                                 if o.type == 'MESH' and o.name != 'Medal'}
         medal = bpy.data.objects['Medal']
         uv_names = [layer.name for layer in medal.data.uv_layers]
-        ribbons[name] = (uv_names, ribbon_signature(medal, uv_names))
+        frame = json.loads(medal['medal_frame'])
+        ribbons[name] = (frame, upper_ribbon_samples(medal, frame))
     for name in ['working', 'pilot']:
         bpy.ops.wm.open_mainfile(filepath=str(directory / f'tunic-{name}.blend'))
         for part, expected in frozen_by_state[name].items():
             assert geometry_hash(bpy.data.objects[part]) == expected, ('Frozen geometry changed', name, part)
         medal, body = bpy.data.objects['Medal'], bpy.data.objects['TunicBody']
-        uv_names, expected = ribbons[name]
-        assert ribbon_signature(medal, uv_names) == expected, ('Sewn ribbon geometry/UV/colour changed', name)
+        frame_before, expected = ribbons[name]
+        upper_count = assert_upper_preserved(expected, medal, frame_before)
+        assert json.loads(medal['ribbon_loop'])['loop_wrap_degrees'] >= 180
         buttons = bpy.data.objects['Buttons']
         positions = points(buttons)
         groups = sorted(components(buttons), key=lambda ids: -positions[ids, 2].mean())
@@ -97,8 +100,8 @@ def measure(directory, baseline):
                     button_pitch_m=(-np.diff(centers[:, 2])).tolist(),
                     button_neck_hem_gaps_m=gaps,
                     front_row_neck_hem_z_m=[neck, hem], placket_supported_samples=samples,
-                    frozen_non_detail_geometry=True, ribbon_geometry_uv_vertex_colours_exact=True,
-                    ribbon_faces=expected[1], details={})
+                    frozen_non_detail_geometry=True, upper_ribbon_geometry_uv_vertex_colours_exact=True,
+                    preserved_upper_ribbon_samples=upper_count, details={})
         for part in ['Placket', 'Buttons', 'Medal']:
             obj = bpy.data.objects[part]
             obj.data.calc_loop_triangles()
@@ -119,14 +122,16 @@ def measure(directory, baseline):
                 metal_distances = [tree.find_nearest(Vector(pos[i]))[3] for i in metal]
                 ribbon_distances = [tree.find_nearest(Vector(pos[i]))[3] for i in ids if i not in metal]
                 frame = json.loads(obj['medal_frame'])
-                local = (pos - np.array(frame['origin'])) @ np.array(frame['frame']).T
+                local = np.einsum('ij,kj->ik', pos-np.array(frame['origin']), np.array(frame['frame']))
                 ribbon_vertices = {i for f in obj.data.polygons if obj.data.materials[f.material_index].name == 'RibbonFabric' for i in f.vertices}
-                plate_ids = [i for i in range(len(pos)) if i not in ribbon_vertices and local[i, 2] <= .01601]
+                # #130: exclude the accepted integral claw from the body envelope.
+                plate_ids = list(medal['body_vertex_indices'])
                 reverse = local[list(metal)]
                 thickness = float(local[plate_ids, 1].max() - local[plate_ids, 1].min())
                 assert .002 <= thickness <= .004, (name, 'Actual formed body depth', thickness)
                 metal_ids = sorted(set(range(len(pos))) - ribbon_vertices)
-                assert len(components(obj)) == 2, 'Metal must be one connected fitted component plus original ribbon'
+                assert len(components(obj)) == 4, '#130: closed body/claw, jump ring, bar and looped ribbon'
+                assert len(metal) >= 25, 'Measured reverse anchors'
                 normal = -np.array(frame['frame'])[1]
                 obj.data.calc_loop_triangles()
                 faces = [t.vertices[:] for t in obj.data.loop_triangles if set(t.vertices) <= set(metal_ids)]
@@ -146,7 +151,9 @@ def measure(directory, baseline):
             if obj.type == 'MESH' and obj.get('aged_export' if name == 'pilot' else 'export'):
                 obj.data.calc_loop_triangles()
                 count += len(obj.data.loop_triangles)
-        assert count <= (20652 if name == 'pilot' else 14999), (name, 'Triangle budget', count)
+        # #130 asset-art allocation and its close-camera reason live beside this gate.
+        budget = json.loads((HERE / 'medal-budget.json').read_text())
+        assert count <= budget['garment_ceiling'][name], (name, 'Triangle budget', count)
         item['total_triangles'] = count
         report[name] = item
     assert report['pilot']['total_triangles'] / report['working']['total_triangles'] <= 1.5

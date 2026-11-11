@@ -1,4 +1,4 @@
-"""Fail before capture if Godot's native garment scene came from an older GLB."""
+"""Fail before capture if native garment scenes or medal PNGs have stale source hashes."""
 import argparse
 import hashlib
 import json
@@ -10,9 +10,10 @@ ROOT = Path(__file__).resolve().parents[4]
 
 def verify():
     result = []
-    for name in ('dress_uniform', 'dress_uniform_aged'):
-        asset = ROOT / 'assets/props/quarters' / (name + '.glb')
-        settings = asset.with_suffix('.glb.import').read_text()
+    assets = [ROOT / 'assets/props/quarters' / (name + '.glb') for name in ('dress_uniform','dress_uniform_aged')]
+    assets += sorted((ROOT / 'assets/props/quarters/dress_uniform/medal').glob('*.png'))
+    for asset in assets:
+        settings = Path(str(asset)+'.import').read_text()
         native_path = re.search(r'^path="res://([^"]+)"', settings, re.MULTILINE).group(1)
         native = ROOT / Path(native_path).with_suffix('.md5')
         stored = re.search(r'source_md5="([^"]+)"', native.read_text()).group(1)
@@ -29,4 +30,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     result = verify()
     args.output.write_text(json.dumps(result, indent=2) + '\n')
-    print('PASS: both native garment imports match current source GLBs')
+    print('PASS: native garment and medal PNG imports match every current source')
