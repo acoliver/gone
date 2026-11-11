@@ -242,7 +242,7 @@ func _assert_ribbon(finish: ShaderMaterial, imported: StandardMaterial3D, state:
 	for role: String in ["albedo_texture", "weave_normal", "weave_roughness"]:
 		var texture := finish.get_shader_parameter(role) as Texture2D
 		assert_true(texture != null and texture.get_image().has_mipmaps(), "filtered woven map: " + role)
-	assert_true((finish.get_shader_parameter("weave_scale") as Vector2).is_equal_approx(Vector2(680, 680)), "source controls physical weave frequency")
+	assert_true((finish.get_shader_parameter("weave_scale") as Vector2).is_equal_approx(Vector2(260, 260)), "source controls resolved 0.256 mm ribbon ribs")
 	assert_true(finish.get_shader_parameter("weave_offset") == Vector2(imported.uv1_offset.x, imported.uv1_offset.y), "source weave phase retained")
 	assert_true("METALLIC = 0.0" in finish.shader.code, "ribbon stays dielectric")
 	assert_true("SPECULAR = 0.4" in finish.shader.code, "woven dielectric specular")

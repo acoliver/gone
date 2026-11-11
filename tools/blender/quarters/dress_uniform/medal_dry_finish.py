@@ -26,6 +26,42 @@ def filtered_detail_normal(normal, geometry):
     return result / np.linalg.norm(result, axis=2, keepdims=True)
 
 
+def brass_finish(base, original_roughness, cavity, edge, aged):
+    variation = np.clip(base / np.array([.66, .43, .14]), .85, 1.15)
+    physical = variation * np.array([.90, .64, .24])
+    brushing = (original_roughness - .30) * .65
+    rough = np.clip(.43 - .10 * edge + brushing, .30, .45)
+    if aged:
+        film = variation * np.array([.46, .265, .082])
+        colour = film * (1 - .25 * edge[:, :, None]) + physical * (.25 * edge[:, :, None])
+        rough = np.clip(rough + .10 - .025 * edge, .39, .58)
+        metallic = .94 + .035 * edge
+        stain = cavity
+        oxide = np.array([.045, .022, .006])
+    else:
+        colour = physical
+        metallic = np.full_like(rough, .985)
+        stain = cavity * .10
+        oxide = np.array([.12, .063, .020])
+    colour = colour * (1 - stain[:, :, None]) + oxide * stain[:, :, None]
+    rough = rough * (1 - stain) + (.72 if aged else .48) * stain
+    metallic = metallic * (1 - stain) + .025 * stain
+    return colour, rough, metallic
+
+
+def ribbon_weave():
+    y, x = np.mgrid[:256, :256] / 256
+    warp = np.sin(x * 32 * 2 * np.pi)
+    rib = np.sin(y * 16 * 2 * np.pi)
+    crossing = np.cos(x * 16 * 2 * np.pi) * np.cos(y * 16 * 2 * np.pi)
+    nx = .055 * warp * (.8 + .2 * crossing)
+    ny = .32 * rib * (.9 + .1 * crossing)
+    normal = np.stack([nx, ny, np.sqrt(1 - nx * nx - ny * ny)], -1)
+    rough = .43 + .09 * np.cos(y * 16 * 2 * np.pi) + .025 * crossing
+    fibre = .965 + .025 * np.cos(y * 16 * 2 * np.pi) + .01 * crossing
+    return normal, rough, fibre
+
+
 def finish(bakes, output, normal_source):
     output.mkdir(parents=True, exist_ok=True)
     master = ROOT / 'assets/props/quarters/dress_uniform/medal'
@@ -40,40 +76,13 @@ def finish(bakes, output, normal_source):
     for prefix in ['as_built', 'aged']:
         orm = np.asarray(Image.open(bakes / (prefix + '_untarnished_orm.png')).convert('RGB'), float) / 255
         albedo = base.copy()
-        calibration = .13 if prefix == 'as_built' else .15
-        untreated = base.copy()
+        untreated, untreated_rough, _ = brass_finish(base, orm[:, :, 1], np.zeros_like(cavity), edge, False)
+        albedo, rough, metal = brass_finish(base, orm[:, :, 1], cavity, edge, prefix == 'aged')
+        untreated = np.where(enamel[:, :, None], base, untreated)
         control_orm = orm.copy()
-        untreated_rough = orm[:, :, 1].copy()
-        if prefix == 'as_built':
-            untreated *= .76
-            untreated_rough = np.maximum(.34, untreated_rough + .09) * .6
-        untreated = np.where(enamel[:, :, None], base, untreated * calibration)
         control_orm[:, :, 1] = np.where(enamel, orm[:, :, 1] + .035, untreated_rough)
-        if prefix == 'aged':
-            # Thin oxide preserves the conductor underneath; opaque oxide is confined to recesses.
-            film = base * np.array([.45, .49, .62])
-            film = film * (1 - .20 * edge[:, :, None]) + base * .64 * (.20 * edge[:, :, None])
-            albedo = np.where(enamel[:, :, None], base, film)
-            rough = .535 - .075 * edge + (orm[:, :, 1] - .385) * .35
-            metal = .89 + .045 * edge
-            stain = cavity
-            oxide = np.array([.032, .020, .009])
-            rough = rough * (1 - stain) + .72 * stain
-            metal = metal * (1 - stain) + .025 * stain
-        else:
-            albedo = np.where(enamel[:, :, None], base, base * .76)
-            rough = np.maximum(.34, orm[:, :, 1] + .09)
-            metal = orm[:, :, 2]
-            stain = cavity * .10
-            oxide = np.array([.065, .039, .014])
-            rough = rough * (1 - stain) + .48 * stain
-            metal = metal * (1 - stain) + .025 * stain
-        albedo = np.where(enamel[:, :, None], albedo, albedo * (1 - stain[:, :, None]) + oxide * stain[:, :, None])
-        # Calibrate conductor reflectance to the unchanged high-energy direct rig.
-        # Keep the hue and metallic mask; attenuation is confined to brass, not enamel.
-        albedo = np.where(enamel[:, :, None], albedo, albedo * calibration)
-        if prefix == 'as_built':
-            rough *= .6
+        control_orm[:, :, 2] = np.where(enamel, 0, .985)
+        albedo = np.where(enamel[:, :, None], base, albedo)
         orm[:, :, 1] = np.where(enamel, orm[:, :, 1] + .035, rough)
         orm[:, :, 2] = np.where(enamel, 0, metal)
         # Reserved empty atlas rectangle, UV pixels x=1725..1981, y=0..256.
@@ -97,20 +106,11 @@ def finish(bakes, output, normal_source):
         Image.fromarray(normal).save(master / (prefix + '_normal.png'))
         save(master / (prefix + '_albedo.png'), albedo, True)
         save(master / (prefix + '_orm.png'), orm)
-        report[prefix] = {'linear_reflectance_calibration': calibration, 'exposed_linear_rgb': albedo[exposed].mean(0).tolist(), 'roughness_percentiles': np.percentile(orm[:, :, 1][mask], [0, 50, 100]).tolist(),
+        report[prefix] = {'exposed_linear_rgb': albedo[exposed].mean(0).tolist(), 'roughness_percentiles': np.percentile(orm[:, :, 1][mask], [0, 50, 100]).tolist(),
                           'metallic_percentiles': np.percentile(orm[:, :, 2][mask], [0, 50, 100]).tolist()}
-    # A periodic woven tile, filtered in the runtime shader at minification.
-    y, x = np.mgrid[:256, :256] / 256
-    warp = np.sin(x * 16 * 2 * np.pi)
-    weft = np.sin(y * 16 * 2 * np.pi)
-    parity = np.cos(x * 8 * 2 * np.pi) * np.cos(y * 8 * 2 * np.pi)
-    nx = .14 * warp * (.6 + .4 * parity)
-    ny = .11 * weft * (.6 - .4 * parity)
-    normal = np.stack([nx, ny, np.sqrt(1 - nx * nx - ny * ny)], -1) * .5 + .5
-    save(master / 'ribbon_weave_normal.png', normal)
-    rough = .52 + .065 * parity + .025 * warp * weft
+    normal, rough, fibre = ribbon_weave()
+    save(master / 'ribbon_weave_normal.png', normal * .5 + .5)
     save(master / 'ribbon_weave_roughness.png', np.repeat(rough[:, :, None], 3, 2))
-    fibre = .97 + .015 * parity + .005 * warp * weft
     save(master / 'ribbon_weave_albedo.png', np.repeat(fibre[:, :, None], 3, 2), True)
     (output / 'finish.json').write_text(json.dumps(report, indent=2) + '\n')
 

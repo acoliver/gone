@@ -21,6 +21,8 @@ void fragment() {
 	ROUGHNESS = (weave_enabled ? texture(weave_roughness, weave_uv).g : 0.52) + (aged ? 0.07 : 0.0);
 	METALLIC = 0.0;
 	SPECULAR = 0.4;
+	ANISOTROPY = weave_enabled ? 0.55 : 0.0;
+	ANISOTROPY_FLOW = vec2(1.0, 0.0);
 	RIM = 0.12;
 	RIM_TINT = 0.6;
 }

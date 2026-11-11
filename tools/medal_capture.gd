@@ -1,6 +1,36 @@
 extends RefCounted
 ## Runtime provenance and effect isolation for the fixed #130 cameras.
 
+static func hide_aiming_dot(main: Node3D) -> void:
+	for indicator: ClickIndicators in main.find_children("*", "ClickIndicators", true, false):
+		indicator.hide()
+
+static func oblique_context(tree: SceneTree, main: Node3D, garment: Node3D, state: String, output: String) -> void:
+	# A separate camera keeps the production camera and player-pitch driver untouched.
+	var camera := Camera3D.new()
+	main.add_child(camera)
+	var frame := ShipScene._world_frame(garment)
+	var target := frame * Vector3(.1108, -.3632, .0552)
+	var normal := (frame.basis.inverse().transposed() * Vector3.BACK).normalized()
+	var side := frame.basis.x.normalized()
+	camera.global_position = target + normal * .24 - side * .065 + Vector3.UP * .025
+	camera.look_at(target)
+	camera.keep_aspect = Camera3D.KEEP_WIDTH
+	camera.fov = 32.0
+	camera.make_current()
+	for lane: String in ["full", "contact-off", "weave-off"]:
+		control(garment, main, lane)
+		for settle: int in range(24): await tree.process_frame
+		RenderingServer.force_draw(false)
+		await RenderingServer.frame_post_draw
+		var image := tree.root.get_texture().get_image().get_region(Rect2i(0,40,1536,824))
+		assert(image.save_png(output.path_join("%s-oblique-context-%s.png" % [state,lane])) == OK)
+	var file := FileAccess.open(output.path_join(state + "-oblique-camera.json"), FileAccess.WRITE)
+	file.store_string(JSON.stringify(camera_record(camera), "\t"))
+	control(garment, main, "full")
+	main.camera.make_current()
+	camera.queue_free()
+
 static func _texture(texture: Texture2D) -> Dictionary:
 	if texture == null: return {}
 	return {"path": texture.resource_path, "pixels_sha256": texture.get_image().get_data().hex_encode().sha256_text(), "mipmaps": texture.get_image().has_mipmaps()}
@@ -67,7 +97,7 @@ static func control(garment: Node3D, main: Node3D, lane: String) -> void:
 			var aged := is_equal_approx(float((medal.get_active_material(1) as ShaderMaterial).get_shader_parameter("coat_roughness")), 0.26)
 			var prefix := "aged" if aged else "as_built"
 			for role: String in ["albedo", "orm"]:
-				var image := Image.load_from_file("res://tmp/issue130-photoreal/stage3b/%s_untarnished_%s.png" % [prefix, role])
+				var image := Image.load_from_file("res://tmp/issue130-photoreal/stage3c/%s_untarnished_%s.png" % [prefix, role])
 				assert(image != null)
 				image.generate_mipmaps()
 				finish.set_shader_parameter(role + "_texture", ImageTexture.create_from_image(image))

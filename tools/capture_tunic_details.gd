@@ -86,6 +86,7 @@ func _run() -> void:
 	DemoStart.prepare_ship(main.step.ship_scene, main.player)
 	main.player.set_process(false)
 	main.player.set_physics_process(false)
+	MedalCapture.hide_aiming_dot(main)
 	var ship: ShipScene = main.step.ship_scene
 	assert(ship.quarters != null)
 	var camera: Camera3D = main.camera
@@ -131,6 +132,7 @@ func _run() -> void:
 			if diagnostics and view == "medal":
 				await MedalCapture.sweep(self, camera, garment, state, output)
 				await MedalCapture.power_lanes(self, main, state, output)
+		await MedalCapture.oblique_context(self, main, garment, state, output)
 
 	var file := FileAccess.open(output.path_join("cameras.json"), FileAccess.WRITE)
 	file.store_string(JSON.stringify(cameras, "\t") + "\n")

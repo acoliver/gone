@@ -2,6 +2,22 @@ extends SimTestCase
 
 const MEDAL_SHADER := "res://app/shaders/quarters_medal.gdshader"
 
+func test_asset_capture_hides_the_aiming_overlay_only() -> void:
+	var main := Node3D.new()
+	var dot := ClickIndicators.new()
+	main.add_child(dot)
+	var other := Control.new()
+	main.add_child(other)
+	preload("res://tools/medal_capture.gd").hide_aiming_dot(main)
+	assert_false(dot.visible, "the screen-centre dot is not a medal bake defect")
+	assert_true(other.visible, "capture does not hide unrelated UI")
+	main.free()
+
+func test_ribbon_ribs_are_resolved_and_directional() -> void:
+	var finish := QuartersProps.material(&"dress_uniform", &"as_built", &"Medal", 2)
+	assert_true((finish.get_shader_parameter("weave_scale") as Vector2).is_equal_approx(Vector2(260,260)), "0.256 mm ribs instead of subpixel weave")
+	assert_true("ANISOTROPY_FLOW" in finish.shader.code, "ribbon fibre sheen follows its tangent")
+
 func test_wardrobe_reflection_captures_lights_without_changing_receiver_layers() -> void:
 	var game := Game.new(114)
 	var room := QuartersRoom.build(game)
