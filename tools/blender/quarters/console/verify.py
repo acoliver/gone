@@ -31,10 +31,11 @@ def main():
     emission=np.asarray(screen.visual.material.emissiveFactor)
     keys=sorted(n for n in scene.graph.nodes_geometry if n.startswith('Key_'))
     toggles=sorted(n for n in scene.graph.nodes_geometry if n.startswith('Toggle_'))
+    # #129: the separate power-room keyboard replaces all inset keys and toggles.
     report['console_parts']={'display_material':screen.visual.material.name,'display_emissive_factor':emission.tolist(),
         'key_count':len(keys),'toggle_count':len(toggles),
         'single_shared_asset_states':['remembered','present'],
-        'pass':screen.visual.material.name=='Display' and bool(np.any(emission>0)) and len(keys)==24 and len(toggles)==3}
+        'pass':screen.visual.material.name=='Display' and bool(np.any(emission>0)) and len(keys)==0 and len(toggles)==0}
     report['pass']=report['pass'] and report['console_parts']['pass'] and report['display_fit']['pass']
     (HERE/'verify.json').write_text(json.dumps(report,indent=2)+'\n')
     if not report['pass']:raise SystemExit('Console display or controls contract failed')

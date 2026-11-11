@@ -1,5 +1,21 @@
 extends SimTestCase
 
+func test_keyboard_mesh_is_shared_but_native_finish_sets_are_distinct() -> void:
+	var clean := QuartersFurnishings.KEYBOARD.build(&"as_built")
+	var aged := QuartersFurnishings.KEYBOARD.build(&"aged")
+	var clean_mesh := clean.find_child("Keyboard", true, false) as MeshInstance3D
+	var aged_mesh := aged.find_child("Keyboard", true, false) as MeshInstance3D
+	assert_true(clean_mesh.mesh == aged_mesh.mesh, "states share the reused power-room geometry")
+	assert_true(clean_mesh.transform == aged_mesh.transform, "states retain the same seated pose")
+	assert_true(clean_mesh.material_override != aged_mesh.material_override, "distinct keyboard finishes")
+	for kind: String in ["albedo", "normal", "orm"]:
+		var clean_map: Texture2D = clean_mesh.material_override.get_shader_parameter("baked_" + kind)
+		var aged_map: Texture2D = aged_mesh.material_override.get_shader_parameter("baked_" + kind)
+		assert_true(clean_map != aged_map, "state-specific atlas: " + kind)
+		assert_int_equal(clean_map.get_width(), 2048, "retained keyboard atlas density")
+	clean.free()
+	aged.free()
+
 func test_taller_console_retains_desk_pose_and_cabinet_clearance_in_both_states() -> void:
 	for state: StringName in QuartersProps.STATES:
 		var furnishings := QuartersFurnishings.build(state)
@@ -12,9 +28,12 @@ func test_taller_console_retains_desk_pose_and_cabinet_clearance_in_both_states(
 		var cabinet := QuartersFurnishings._bounds(furnishings.get_node("Placement_lockers_over_bed/lockers_over_bed"))
 		assert_float_in_range(cabinet.position.y - bounds.end.y, .2610, .2612, "trimmed upper cap increases measured cabinet clearance")
 		assert_false(bounds.intersects(cabinet), "console clears upper cabinet mesh envelope")
-		var key := console.find_child("Key_0_0", true, false) as MeshInstance3D
-		assert_close(key.position, Vector3(-.425, .016, .0675), "keyboard remains at accepted deck-local position")
-		assert_int_equal(console.find_children("Key_*", "MeshInstance3D", true, false).size(), 24, "24 keys retained")
+		# #129: a separate 29-cap power-room keyboard replaces the inset 4x6 keys.
+		var keyboard := furnishings.get_node("Placement_console/console_keyboard") as Node3D
+		assert_true(keyboard.scene_file_path.ends_with("/console_keyboard.glb"), "separate reused keyboard asset")
+		assert_true(keyboard.transform.is_equal_approx(console.transform), "keyboard follows identical console fit and seating")
+		assert_int_equal(console.find_children("Key_*", "MeshInstance3D", true, false).size(), 0, "old grid removed")
+		assert_int_equal(console.find_children("Toggle*", "MeshInstance3D", true, false).size(), 0, "detached toggle island removed")
 		furnishings.free()
 
 func test_entire_console_fits_unchanged_close_camera_with_margin() -> void:
@@ -25,7 +44,8 @@ func test_entire_console_fits_unchanged_close_camera_with_margin() -> void:
 
 func test_baked_key_inventory_matches_production_native_stroke_expansion() -> void:
 	var document: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://tools/blender/quarters/console/legends.json"))
-	assert_int_equal(document["keys"].size(), 24, "all key legends documented")
+	# #129: the reused keyboard has 29 caps instead of the old 4x6 grid.
+	assert_int_equal(document["keys"].size(), 29, "all key legends documented")
 	assert_true(document.digits == Naleya.DIGITS, "production octal mapping")
 	for key: Dictionary in document["keys"]:
 		var layout := Naleya.layout(key.input, Naleya.ADVANCE)

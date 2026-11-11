@@ -10,22 +10,22 @@ import numpy as np
 HERE=Path(__file__).resolve().parent
 sys.path.insert(0,str(HERE))
 sys.path.insert(0,str(HERE.parent/'wardrobe'))
-from batch_tools import attach, build_main, cage, cylinder, empty, material, materials, panel, rivets
+from batch_tools import attach, build_main, cage, empty, material, materials, panel, rivets
 
 from refit import apply_refit, HEIGHT_AFTER_TRIM
 
 SPEC={
     'bounds_gltf':[[-.55,0,-.275],[.55,HEIGHT_AFTER_TRIM,.275]],
-    'required_nodes':['Console','ArmouredHousing','LowerDeckHousing','DesktopSupport','Bezel','Display','ControlPanel','Keys','Toggles'],
+    'required_nodes':['Console','ArmouredHousing','LowerDeckHousing','DesktopSupport','Bezel','Display','ControlPanel'],
     'parents':{'ArmouredHousing':'Console','LowerDeckHousing':'Console','DesktopSupport':'Console','Bezel':'ScreenPlane','Display':'ScreenPlane',
-               'ScreenPlane':'Console','ControlPanel':'Console','Keys':'ControlPanel','Toggles':'ControlPanel'},
+               'ScreenPlane':'Console','ControlPanel':'Console'},
     'pivots_gltf':{'Console':[0,0,0]},
     'materials':['PaintedSteel','BareSteel','DarkSteel','Display'],
-    'visible_details':['Display','Key_1_4','Toggle_1','DesktopSupport'],
+    'visible_details':['Display','ControlPanel','DesktopSupport'],
     'hero_camera_native':[-1.4,-4,1.8],'hero_camera_gltf':[-1.4,1.8,4],
     'hero_target_native':[0,0,.34],'triangle_limit':15000,
     'display_states':['remembered','present'],
-    'fit_notes':'Seed 351 has a broad head carried on a narrower tapered support, not the full-width solid wedge described by the prompt. Guide sections below .32 m determine the support widths. The selected image supports a 4-by-6 key grid instead of the prompted 3-by-8 grid; the verified total remains 24 keys and three separate toggles. The original .69 m head is extended to 16:10 by refit.py for issue #129, retaining the support and deck pose. The display is an independent emissive part in both states.',
+    'fit_notes':'Seed 351 has a broad head carried on a narrower tapered support, not the full-width solid wedge described by the prompt. Guide sections below .32 m determine the support widths. Issue #129 replaces the separate old key grid and toggles with the unchanged power-room keyboard, exported by keyboard.py. The original .69 m head is extended to 16:10 by refit.py for issue #129, retaining the support and deck pose. The display is an independent emissive part in both states.',
 }
 
 
@@ -91,13 +91,6 @@ def assemble(guide):
     deck_length=math.hypot(low+.275,.06)-.014
     control=panel('ControlPanel',(1.02,deck_length,.018),(0,(-.275+low)/2,.39),paint,.003,parent=root)
     control.rotation_euler.x=math.atan(.06/(low+.275))
-    keys=local(empty('Keys'),control,(0,0,0)); toggles=local(empty('Toggles'),control,(0,0,0))
-    for row,y in enumerate((-.0675,-.0225,.0225,.0675)):
-        for col in range(6):
-            local(panel(f'Key_{row}_{col}',(.073,.034,.014),(0,0,0),dark,.002),keys,(-.425+col*.105,y,.016))
-    for i,y in enumerate((-.060,0,.060)):
-        local(cylinder(f'ToggleSocket_{i}',.012,.008,(0,0,0),dark,sides=12),toggles,(.34,y,.014))
-        local(cylinder(f'Toggle_{i}',.004,.052,(0,0,0),bare,sides=12),toggles,(.34,y,.041),(math.radians(-18),0,0))
     rivets('HousingRivets',[(x,-.2753,.335) for x in (-.48,.48)],bare,radius=.004,parent=root)
     apply_refit()
 

@@ -1,6 +1,7 @@
 # Taller quarters console and native keys (#129)
 
-The fitted console now has a 16:10 display and 24 Naleya key legends.
+The fitted console has the accepted 16:10 display and a separate power-room
+keyboard with 29 muted Naleya legends.
 The saved source is `tools/blender/quarters/console/console-working.blend`.
 This changes the console only. Room furniture, cameras, lighting, clothes,
 interaction dispatch, the idle underscore, message wording and the
@@ -17,7 +18,7 @@ interaction dispatch, the idle underscore, message wording and the
 | Width | 1.100 m | 1.100 m |
 | Exported depth including front rivets | 0.55310 m | 0.55310 m |
 | Screen backward tilt from vertical | 30.9638 degrees | 30.9638 degrees |
-| Triangles | 5,088 | 5,112 (limit 15,000) |
+| Console triangles | 5,088 | 1,488 (limit 15,000), plus separate 28,998 keyboard |
 | State atlas size | 3072 square | 4096 square |
 
 `refit.py` deforms the saved head cages rather than generating a replacement.
@@ -31,11 +32,11 @@ The initial taller version clipped the unchanged close camera. Trimming
 the glass and contacts with both side rails remain intact. The glass, gasket,
 upper rivets and lower border do not change. No display height is sacrificed.
 The final cap transition occupies 13.8873 mm of vertical height.
-An independent comparison with the baseline GLB found identical world-space
-vertices for all 35 lower parts: lower housing, support, shoe, control panel,
-24 keys, three toggles, three sockets and lower housing rivets. Relative to
-`0f26ad0`, only the housing, left/right rails and top bar change; the other
-39 mesh parts have identical world-space point sets.
+The head-only adjustment originally retained all 35 lower parts, including
+its old controls. The keyboard correction removes those independent controls.
+All 13 remaining mesh parts retain their exact world transforms and point
+sets relative to `d3b0b24`; the separate keyboard is seated above the unchanged
+ControlPanel. The saved deck, lower housing and support have no new geometry.
 
 The layout's nominal console top changes from 1.45 to 1.6988873 m. This is
 its existing 0.76 m datum plus the new source height. It prevents the runtime
@@ -45,38 +46,105 @@ on the actual worktop below the rear upstand. Collision uses the same X/Z
 footprint and the taller head envelope. Existing desk-contact, desk-item,
 walkway, reach and shared-collider tests remain in force.
 
-## Native key layout
+## Power-room keyboard layout correction
 
-`export_legends.gd` calls the production `Naleya.layout()` and
-`Naleya.expand_strokes()` APIs used by `ShipTextCanvas._append_native()`.
-It saves the returned filled quads in `legends.json`. No font or independent
-copy of the glyph paths is involved. The regression test compares every
-exported quad with production stroke expansion.
+Andrew accepted the taller display and requested the power-room keyboard
+layout on PR #134. The quarters copy reuses
+`assets/props/terminal/keyboard.glb`. Its source is
+`art-source/terminal/generated/console2/assembly3/console-with-keyboard.blend`;
+`kb3/prepare.py`, `atlas.py` and `finish.py` under the same `console2`
+directory record its generated-mesh fitting and finish. The power-room
+pipeline and measurements are in `art-source/terminal/PIPELINE.md` and
+`generated/console2/final/README.md`. Git commit `8e74f7a` introduced the game
+asset. Those source files and every power-room file remain unchanged.
 
-Rows run from the front edge toward the display; columns run left to right
-when facing the keys. The tokens below describe the inputs to the exporter,
-not Latin lettering on the asset.
+`keyboard.py --refit` removes the old 24 independent caps, their grouping
+node, all three tall toggles and their sockets from the saved console. The
+existing ControlPanel is a closed solid, so there are no holes to patch.
+Rebaking its finish removes the obsolete inlaid legends. No replacement deck
+geometry is added. The toggles are omitted because their isolated vertical
+bank would retain the layout Andrew rejected; this uses the same complete
+keyboard case and right-side key groups as the power room instead.
 
-| Blender row / keys | Input tokens | Native signs |
-| --- | --- | --- |
-| 0 / `Key_0_0` through `Key_0_5` | 0 1 2 3 4 5 | mo na mu shi le chi |
-| 1 / `Key_1_0` through `Key_1_5` | 6 7 a e i o | wi shu a e i o |
-| 2 / `Key_2_0` through `Key_2_5` | u pa pe pi po pu | u pa pe pi po pu |
-| 3 / `Key_3_0` through `Key_3_5` | ta te ti to tu ka | ta te ti to tu ka |
+The reused keyboard keeps every indexed triangle position and UV corner
+exactly. Blender splits some render vertices at normal seams during
+round-trip, but no physical surface or UV triangle changes. It also retains
+the power-room placement's uniform scale, 0.6600278615951538. No additional
+scaling is needed. Its physical width, depth and thickness before the support
+plane correction are 528.0223, 162.0840 and 36.3015 mm. The corrected seating
+pose has a 527.8934 by 162.0387 mm deck-plane footprint. The slight difference
+comes from leveling the source's tilted underside, as the power room does.
 
-The first eight keys use Naleya's octal digit mapping. The remaining keys
-use valid V/CV signs. Each sign is 24 mm high, with the native stroke width
-and aspect preserved. Positive glyph Y points toward the display on the
-key deck. `bake_legends.py` maps the quads through the actual key-top UVs
-and inlays pale dielectric ink into both state albedo/normal/ORM atlases.
-The aged ink is duller but remains light against the dark keycap. This is
-asset lettering only; there is no keyboard input feature.
+The quarters source is `keyboard-working.blend`; its placement is recorded
+in `keyboard-placement.json`. Its separate export is
+`assets/props/quarters/console_keyboard.glb`. `QuartersConsoleKeyboard`
+instances that model with the same fitted transform and seating lift as the
+console. It shares the existing library shader without adding this accessory
+to the fixed Batch 1 material-review inventory. The console remains 1,488
+triangles against its unchanged 15,000 limit; the separate keyboard retains
+28,998 triangles against a 30,000-triangle regression cap.
 
-The atlas grows to 4096 because the least-inked vowel forms had fewer than
-100 half-coverage texels at 3072 after the taller head's UV repack. Increasing
-resolution retains the maintained stroke geometry instead of thickening or
-inventing signs. Every delivered key passes the 100-texel and light-ink
-checks in both states. Runtime visibility still requires image review.
+| Exported seating measurement | Millimetres |
+| --- | ---: |
+| Front deck-edge clearance | 10.0000 |
+| Rear deck-edge clearance | 51.6586 |
+| Side deck-edge clearance, each side | 246.0533 |
+| Minimum normal gap above actual panel top | 0.5000 |
+| Keyboard-vertex minimum distance to Display surface | 50.4960 |
+| Keyboard-vertex minimum distance to lower bezel | 26.2940 |
+| Keyboard-vertex minimum distance to housing | 63.1311 |
+
+Deck-local glTF bounds are `(-0.263946674, 0.009499993, -0.060190081)` to
+`(0.263946681, 0.043611988, 0.101848650)` metres. The deck-local bounding
+centre is `(0, 0.026555991, 0.020829285)` metres. Positive Z faces the
+operator. All keyboard triangles are tested against all retained console
+parts with triangle/triangle SAT: zero crossings. Nine first-hit underside
+rays measure support gaps of 0.5619 to 0.6496 mm. The source pipeline's
+25-ray underside plane fit is reused for this correction. The 0.5 mm gap is below
+one millimetre, rather than a visibly floating placement. This is measured
+geometry; visible seating still needs the parent's image review.
+
+All 13 retained console mesh parts have exactly the same local point sets
+and world transforms as `d3b0b24`, including the full taller Display, all
+bezel pieces, housing, lower deck, support and closed ControlPanel. No room,
+camera, light, desk, runtime text or playback timing changes are included.
+The old dimensions and capture notes below describe the earlier taller-head
+work; the keyboard correction supersedes their old control counts.
+
+## Native legends and both finish states
+
+`export_legends.gd` calls production `Naleya.layout()` and
+`Naleya.expand_strokes()`. `legends.json` records 29 inputs and their returned
+filled quads, assigned to the retained keyboard's numbered design caps. The
+first eight inputs are octal digits `0` through `7`; the remainder are
+`a e i o u pa pe pi po pu ta te ti to tu ka ke ki ko ku ma`.
+The regression compares every quad with production expansion.
+
+`bake_legends.py` uses the original keyboard report's measured cap-interior
+UV rectangles. It removes the source's earlier marks, preserves glyph
+aspect, and fits the production quads within 60% of each cap interior.
+Positive glyph Y points toward the display. Ink uses sRGB `(150,146,128)`
+at maximum opacity 0.45 in Remembered and 0.30 in Present. It changes albedo
+only, with no emission, engraving or raised/inlaid normals. Every sign has
+at least 100 half-coverage mask texels. These are printed-looking asset
+legends, not a keyboard input feature.
+
+Both 2048-square state sets live in
+`assets/props/quarters/steel/console_keyboard/`. The new copy's aged case uses
+a complete top-face image from the existing quarters steel-aging library;
+the rubber uses the existing small-prop dry-aged rubber bake. `mapping.json`
+records both source images, glyphs, ink probes and opacities. Remembered
+retains the source keyboard's case/rubber finish and normal/ORM maps apart
+from its changed printed legends. Present has aged colour and roughness,
+without changing its mesh. The power-room asset and textures are read-only.
+
+The keyboard's existing projected cap UVs have 34 small overlapping triangle
+pairs, maximum UV area 0.000000680057, and p95/p05 density ratio 2.23749.
+These values match the power-room source exactly. They do not pass the
+rigid-console uniform-density gate; that gate remains unchanged and passes
+for the console, with zero overlaps and ratio 1.09408. No keyboard UVs were
+repacked to conceal inherited source defects. The new regression requires
+all keyboard UV triangle corners and both source/copy UV reports to agree.
 
 ## Runtime text
 
@@ -115,7 +183,7 @@ The larger dark area can make the existing treatment more conspicuous, but
 whether that treatment looks appropriate is for parent image review. Numeric
 material equality does not establish visible reflection quality.
 
-## Reproduction
+## Earlier taller-head reproduction (keyboard additions below)
 
 Use the installed Blender and Hunyuan virtualenv Python. No guide GLB is
 needed to export the tracked saved source. `refit.py` is the recorded
@@ -212,7 +280,7 @@ passed the parent keyboard review in `tmp/issue129/keys-visual-review.md`.
 That review predates the upper-border trim and associated UV repack. The
 current build still requires parent image judgment.
 
-## Verification results
+## Earlier taller-head verification results
 
 The initial independent Python regression failed on the old 0.238 m display
 height and absent native-legend metadata. The final asset passes all three
@@ -286,3 +354,77 @@ The `singles/` subdirectory contains full-frame baseline/current JPEGs at
 1400 by 788. The capture lanes report particle-shader/texture RID cleanup
 diagnostics at shutdown, after successful capture and machine verification.
 These scratch outputs are not committed. Parent visual judgment remains pending.
+
+## Keyboard correction reproduction and verification
+
+```sh
+mkdir -p tmp/issue129-keyboard tmp/verify-stasis-wiring/seat-production tmp/mat/locker/pass5
+$BLENDER --background --factory-startup --python-exit-code 1 \
+  --python tools/blender/quarters/console/keyboard.py -- --refit
+$BLENDER --background --factory-startup --python-exit-code 1 \
+  --python tools/blender/quarters/console/build.py -- --output assets/props/quarters/console.glb
+$BLENDER --background --factory-startup --python-exit-code 1 \
+  --python tools/blender/quarters/console/keyboard.py -- --output tmp/issue129-keyboard/keyboard-repeat.glb
+godot --headless --path . -s tools/blender/quarters/console/export_legends.gd
+$PYTHON tools/quarters_aging/map_library.py \
+  --blend tools/blender/quarters/console/console-working.blend --prop console --resolution 4096
+$PYTHON tools/blender/quarters/console/bake_legends.py
+$PYTHON tools/blender/quarters/console/test_console.py
+godot --headless --editor --path . --import
+godot --headless --path . -s tests/run_tests.gd
+```
+
+Normal exports read the two tracked saved sources and are byte-identical on
+repeat. `--refit` is the recorded source adjustment, not a required step for
+each export. `verify_keyboard.py --baseline <isolated-d3b0b24-project>
+--report tmp/issue129-keyboard/measurements.json` checks exact retained
+geometry, seating, SAT contacts and source/copy UV equality outside Blender.
+The original `verify.py` still checks the console's unchanged 15,000-triangle,
+closure, uniform-UV and display contracts.
+
+### Actual room and capture results
+
+Both runtime finish states retain the existing console depth fit of
+0.994394, which seats its 0.55310 m rivet-inclusive source inside the 0.55 m
+desk footprint. The keyboard inherits that same existing fit so it stays
+seated on the tilted panel. This produces an actual room deck-plane keyboard
+footprint of 527.893 by 161.190 mm, height above its projected bounding base
+34.099 mm, with deck-plane centre `(0, 26.546, 20.627)` mm. No additional
+keyboard-only scale is applied. The source-installed dimensions above remain
+the comparison with the power-room placement. Runtime measurements are in
+`tmp/issue129-keyboard/room-measurements.json`.
+
+The actual windowed production quarters-demo routes pass all 24 beats for
+both the isolated `d3b0b24` project and this keyboard correction. The unchanged
+power-room route also passes. The comparison script requires matching camera
+eyes and ticks, retains the complete 1536 by 864 console frames including the
+protocol band, and delivers 1400-pixel JPEGs with before on the left and after
+on the right. Supplemental detail frames use the existing `capture_keys.gd`
+camera. No image has been judged by the implementer.
+
+Fresh editor imports precede captures. Native `.md5` source hashes match
+all 387 checked resources, including quarters GLBs/PNGs and the source keyboard;
+the isolated baseline checks its corresponding resources. The baseline's
+first scratch captures lacked extracted photo-frame image dependencies, even
+though its GLB native source hashes matched. Those runs are retained under
+`captures-baseline-missing-images`, excluded from comparisons, and replaced
+after restoring identical extracted images and running another editor import.
+The final baseline and current capture logs contain no script errors.
+
+JPEGs for parent review are in `tmp/issue129-keyboard/review/`:
+`remembered-console-fullframe.jpg`, `present-console-fullframe.jpg`,
+`remembered-keyboard-detail.jpg`, `present-keyboard-detail.jpg`,
+`power-room-console-inactive.jpg`, `remembered-console-before-after.jpg` and
+`present-console-before-after.jpg`. The raw production runs, native-hash logs,
+geometry report and test logs remain under `tmp/issue129-keyboard/`.
+
+The console Python tests pass 3/3; the guarded focused quarters/Naleya lane
+passes 109/109 and the guarded full Godot runner passes 1015/1015. The
+existing aging suite passes 89 tests and fixture-weather passes 11. Exported
+console and keyboard repeats are byte-identical to their tracked sources.
+The final seating control uses nine first-hit underside rays, all within
+0.5619 to 0.6496 mm of the deck, with zero triangle crossings against every
+retained console part. Both exports have the required +Y-up/+Z-front axes.
+Godot reports resource cleanup diagnostics at shutdown after successful runs.
+Visual review remains pending with the parent. Review skipped per Andrew
+2026-10-09 (OCR disabled).

@@ -1,0 +1,513 @@
+{
+  "prop": "console_keyboard",
+  "atlas_size": 2048,
+  "mesh_source": "assets/props/terminal/keyboard.glb",
+  "uv_method": "unchanged power-room keyboard UVs",
+  "steel_weather_source": "art-source/quarters/steel_library/top-00.png",
+  "rubber_weather_source": "assets/props/quarters/textures/hairbrush/Rubber_aged.png",
+  "legend_source": "tools/blender/quarters/console/legends.json via production Naleya",
+  "legend_colour_srgb": [
+    150,
+    146,
+    128
+  ],
+  "legend_opacity": {
+    "as_built": 0.45,
+    "aged": 0.3
+  },
+  "native_legends": [
+    {
+      "key": "Cap_01",
+      "input": "0",
+      "sign": "mo",
+      "design_index": 1,
+      "interior_rect_px": [
+        162,
+        289,
+        307,
+        419
+      ],
+      "ink_texels": 1769,
+      "ink_probe_pixel": [
+        208,
+        316
+      ]
+    },
+    {
+      "key": "Cap_02",
+      "input": "1",
+      "sign": "na",
+      "design_index": 2,
+      "interior_rect_px": [
+        345,
+        292,
+        476,
+        421
+      ],
+      "ink_texels": 1396,
+      "ink_probe_pixel": [
+        383,
+        318
+      ]
+    },
+    {
+      "key": "Cap_03",
+      "input": "2",
+      "sign": "mu",
+      "design_index": 3,
+      "interior_rect_px": [
+        507,
+        294,
+        637,
+        423
+      ],
+      "ink_texels": 1369,
+      "ink_probe_pixel": [
+        545,
+        320
+      ]
+    },
+    {
+      "key": "Cap_04",
+      "input": "3",
+      "sign": "shi",
+      "design_index": 4,
+      "interior_rect_px": [
+        658,
+        304,
+        791,
+        416
+      ],
+      "ink_texels": 1196,
+      "ink_probe_pixel": [
+        702,
+        327
+      ]
+    },
+    {
+      "key": "Cap_05",
+      "input": "4",
+      "sign": "le",
+      "design_index": 5,
+      "interior_rect_px": [
+        798,
+        299,
+        935,
+        426
+      ],
+      "ink_texels": 1173,
+      "ink_probe_pixel": [
+        839,
+        325
+      ]
+    },
+    {
+      "key": "Cap_06",
+      "input": "5",
+      "sign": "chi",
+      "design_index": 6,
+      "interior_rect_px": [
+        159,
+        421,
+        307,
+        550
+      ],
+      "ink_texels": 1199,
+      "ink_probe_pixel": [
+        206,
+        447
+      ]
+    },
+    {
+      "key": "Cap_07",
+      "input": "6",
+      "sign": "wi",
+      "design_index": 7,
+      "interior_rect_px": [
+        341,
+        423,
+        474,
+        552
+      ],
+      "ink_texels": 1431,
+      "ink_probe_pixel": [
+        380,
+        449
+      ]
+    },
+    {
+      "key": "Cap_08",
+      "input": "7",
+      "sign": "shu",
+      "design_index": 8,
+      "interior_rect_px": [
+        502,
+        433,
+        639,
+        552
+      ],
+      "ink_texels": 1396,
+      "ink_probe_pixel": [
+        545,
+        457
+      ]
+    },
+    {
+      "key": "Cap_09",
+      "input": "a",
+      "sign": "a",
+      "design_index": 9,
+      "interior_rect_px": [
+        670,
+        426,
+        777,
+        552
+      ],
+      "ink_texels": 1026,
+      "ink_probe_pixel": [
+        713,
+        452
+      ]
+    },
+    {
+      "key": "Cap_10",
+      "input": "e",
+      "sign": "e",
+      "design_index": 10,
+      "interior_rect_px": [
+        800,
+        428,
+        931,
+        558
+      ],
+      "ink_texels": 1179,
+      "ink_probe_pixel": [
+        855,
+        455
+      ]
+    },
+    {
+      "key": "Cap_11",
+      "input": "i",
+      "sign": "i",
+      "design_index": 11,
+      "interior_rect_px": [
+        1005,
+        352,
+        1090,
+        541
+      ],
+      "ink_texels": 1043,
+      "ink_probe_pixel": [
+        1038,
+        408
+      ]
+    },
+    {
+      "key": "Cap_12",
+      "input": "o",
+      "sign": "o",
+      "design_index": 12,
+      "interior_rect_px": [
+        1091,
+        352,
+        1166,
+        541
+      ],
+      "ink_texels": 952,
+      "ink_probe_pixel": [
+        1120,
+        414
+      ]
+    },
+    {
+      "key": "Cap_13",
+      "input": "u",
+      "sign": "u",
+      "design_index": 13,
+      "interior_rect_px": [
+        1167,
+        352,
+        1249,
+        543
+      ],
+      "ink_texels": 930,
+      "ink_probe_pixel": [
+        1197,
+        412
+      ]
+    },
+    {
+      "key": "Cap_14",
+      "input": "pa",
+      "sign": "pa",
+      "design_index": 14,
+      "interior_rect_px": [
+        1251,
+        354,
+        1325,
+        544
+      ],
+      "ink_texels": 999,
+      "ink_probe_pixel": [
+        1266,
+        417
+      ]
+    },
+    {
+      "key": "Cap_15",
+      "input": "pe",
+      "sign": "pe",
+      "design_index": 15,
+      "interior_rect_px": [
+        1329,
+        362,
+        1421,
+        539
+      ],
+      "ink_texels": 1629,
+      "ink_probe_pixel": [
+        1348,
+        413
+      ]
+    },
+    {
+      "key": "Cap_16",
+      "input": "pi",
+      "sign": "pi",
+      "design_index": 16,
+      "interior_rect_px": [
+        149,
+        558,
+        311,
+        669
+      ],
+      "ink_texels": 952,
+      "ink_probe_pixel": [
+        207,
+        581
+      ]
+    },
+    {
+      "key": "Cap_17",
+      "input": "po",
+      "sign": "po",
+      "design_index": 17,
+      "interior_rect_px": [
+        335,
+        554,
+        475,
+        671
+      ],
+      "ink_texels": 1502,
+      "ink_probe_pixel": [
+        381,
+        578
+      ]
+    },
+    {
+      "key": "Cap_18",
+      "input": "pu",
+      "sign": "pu",
+      "design_index": 18,
+      "interior_rect_px": [
+        491,
+        569,
+        658,
+        668
+      ],
+      "ink_texels": 873,
+      "ink_probe_pixel": [
+        554,
+        589
+      ]
+    },
+    {
+      "key": "Cap_19",
+      "input": "ta",
+      "sign": "ta",
+      "design_index": 19,
+      "interior_rect_px": [
+        672,
+        561,
+        828,
+        674
+      ],
+      "ink_texels": 998,
+      "ink_probe_pixel": [
+        729,
+        584
+      ]
+    },
+    {
+      "key": "Cap_20",
+      "input": "te",
+      "sign": "te",
+      "design_index": 20,
+      "interior_rect_px": [
+        474,
+        676,
+        791,
+        727
+      ],
+      "ink_texels": 199,
+      "ink_probe_pixel": [
+        623,
+        687
+      ]
+    },
+    {
+      "key": "Cap_21",
+      "input": "ti",
+      "sign": "ti",
+      "design_index": 21,
+      "interior_rect_px": [
+        844,
+        624,
+        1011,
+        730
+      ],
+      "ink_texels": 740,
+      "ink_probe_pixel": [
+        910,
+        646
+      ]
+    },
+    {
+      "key": "Cap_22",
+      "input": "to",
+      "sign": "to",
+      "design_index": 22,
+      "interior_rect_px": [
+        1016,
+        627,
+        1205,
+        733
+      ],
+      "ink_texels": 992,
+      "ink_probe_pixel": [
+        1091,
+        649
+      ]
+    },
+    {
+      "key": "Cap_23",
+      "input": "tu",
+      "sign": "tu",
+      "design_index": 23,
+      "interior_rect_px": [
+        1207,
+        630,
+        1384,
+        735
+      ],
+      "ink_texels": 771,
+      "ink_probe_pixel": [
+        1275,
+        652
+      ]
+    },
+    {
+      "key": "Cap_24",
+      "input": "ka",
+      "sign": "ka",
+      "design_index": 24,
+      "interior_rect_px": [
+        1384,
+        631,
+        1551,
+        736
+      ],
+      "ink_texels": 925,
+      "ink_probe_pixel": [
+        1443,
+        653
+      ]
+    },
+    {
+      "key": "Cap_25",
+      "input": "ke",
+      "sign": "ke",
+      "design_index": 25,
+      "interior_rect_px": [
+        1553,
+        632,
+        1741,
+        740
+      ],
+      "ink_texels": 1103,
+      "ink_probe_pixel": [
+        1621,
+        654
+      ]
+    },
+    {
+      "key": "Cap_26",
+      "input": "ki",
+      "sign": "ki",
+      "design_index": 26,
+      "interior_rect_px": [
+        1695,
+        518,
+        1797,
+        615
+      ],
+      "ink_texels": 757,
+      "ink_probe_pixel": [
+        1724,
+        538
+      ]
+    },
+    {
+      "key": "Cap_27",
+      "input": "ko",
+      "sign": "ko",
+      "design_index": 27,
+      "interior_rect_px": [
+        1807,
+        515,
+        1904,
+        617
+      ],
+      "ink_texels": 1106,
+      "ink_probe_pixel": [
+        1832,
+        536
+      ]
+    },
+    {
+      "key": "Cap_28",
+      "input": "ku",
+      "sign": "ku",
+      "design_index": 28,
+      "interior_rect_px": [
+        1762,
+        617,
+        1797,
+        704
+      ],
+      "ink_texels": 144,
+      "ink_probe_pixel": [
+        1770,
+        648
+      ]
+    },
+    {
+      "key": "Cap_29",
+      "input": "ma",
+      "sign": "ma",
+      "design_index": 29,
+      "interior_rect_px": [
+        1805,
+        619,
+        1905,
+        707
+      ],
+      "ink_texels": 752,
+      "ink_probe_pixel": [
+        1837,
+        637
+      ]
+    }
+  ]
+}

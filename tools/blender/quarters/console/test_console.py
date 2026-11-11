@@ -12,7 +12,7 @@ HERE = Path(__file__).resolve().parent
 
 
 class ConsoleTests(unittest.TestCase):
-    def test_display_is_16_by_10_without_moving_keyboard_or_support(self):
+    def test_taller_display_and_support_stay_fixed_with_reused_keyboard(self):
         scene = trimesh.load(ROOT / 'assets/props/quarters/console.glb', force='scene')
         matrix, geometry = scene.graph['Display']
         size = scene.geometry[geometry].extents
@@ -22,16 +22,31 @@ class ConsoleTests(unittest.TestCase):
         np.testing.assert_allclose(bottom[:3], [0, .454878712, .062092286], atol=1e-6)
         self.assertGreater(matrix[2, 2], .85)
         self.assertGreater(matrix[1, 2], .5)
-        for row, y in enumerate((-.0675, -.0225, .0225, .0675)):
-            for col in range(6):
-                frame, key = scene.graph[f'Key_{row}_{col}']
-                np.testing.assert_allclose(scene.geometry[key].extents, [.073, .014, .034], atol=1e-6)
-                control, _ = scene.graph['ControlPanel']
-                np.testing.assert_allclose(frame[:3, 3], (control @ [-.425+col*.105, .016, -y, 1])[:3], atol=1e-6)
+        # #129 replaces the inset 4x6 grid and detached toggles with the power-room unit.
+        self.assertFalse(any(n.startswith(('Key_', 'Toggle')) for n in scene.graph.nodes))
         _, support = scene.graph['DesktopSupport']
         np.testing.assert_allclose(scene.geometry[support].bounds,
                                    [[-.342223912, .018, -.204474777], [.342223912, .32, .15447478]], atol=1e-6)
-        self.assertEqual(len([n for n in scene.graph.nodes_geometry if n.startswith('Toggle_')]), 3)
+        keyboard = trimesh.load(ROOT / 'assets/props/quarters/console_keyboard.glb', force='scene')
+        original = trimesh.load(ROOT / 'assets/props/terminal/keyboard.glb', force='scene')
+        actual = keyboard.geometry[keyboard.graph['Keyboard'][1]]
+        source = original.geometry[original.graph['Keyboard'][1]]
+        # Blender can split render vertices at normal seams on import/export.
+        # Compare every indexed triangle and UV corner, not render indexing.
+        np.testing.assert_array_equal(actual.triangles, source.triangles)
+        np.testing.assert_array_equal(actual.visual.uv[actual.faces], source.visual.uv[source.faces])
+        self.assertLessEqual(len(actual.faces), 30000)
+        frame = np.linalg.inv(scene.graph['ControlPanel'][0]) @ keyboard.graph['Keyboard'][0]
+        points = trimesh.transform_points(actual.vertices, frame)
+        # Same 0.66002786 installed scale as power room, with 10 mm front margin.
+        self.assertAlmostEqual(np.linalg.norm(frame[:3, 0]), .6600278615951538, places=6)
+        self.assertAlmostEqual(np.ptp(points[:, 0]), 0.5278933544969685, places=6)
+        self.assertAlmostEqual(points[:, 0].min() + points[:, 0].max(), 0, places=5)
+        self.assertGreaterEqual(points[:, 2].min(), -.11184864)
+        self.assertAlmostEqual(.11184864 - points[:, 2].max(), .010, places=5)
+        self.assertGreaterEqual(points[:, 1].min(), .009 - 1e-7)
+        self.assertLess(points[:, 1].min() - .009, .001)
+
 
     def test_trimmed_top_bar_preserves_glass_gap_and_side_rail_contact(self):
         scene = trimesh.load(ROOT / 'assets/props/quarters/console.glb', force='scene')
@@ -57,15 +72,15 @@ class ConsoleTests(unittest.TestCase):
         self.assertAlmostEqual(float(housing.bounds[1, 1]), .9388873216880659, places=6)
 
     def test_every_key_has_native_ink_in_both_state_atlases(self):
-        mapping = json.loads((ROOT / 'assets/props/quarters/steel/console/mapping.json').read_text())
+        mapping = json.loads((ROOT / 'assets/props/quarters/steel/console_keyboard/mapping.json').read_text())
         legends = mapping['native_legends']
-        self.assertEqual(len(legends), 24)
+        self.assertEqual(len(legends), 29) # #129: the reused power-room mesh has 29 caps.
         self.assertEqual([r['input'] for r in legends[:8]], list('01234567'))
         for state in ('as_built', 'aged'):
-            image = np.asarray(Image.open(ROOT / f'assets/props/quarters/steel/console/{state}_albedo.png'))
+            image = np.asarray(Image.open(ROOT / f'assets/props/quarters/steel/console_keyboard/{state}_albedo.png'))
             for row in legends:
                 x, y = row['ink_probe_pixel']
-                self.assertGreater(int(image[y, x, :3].min()), 160, f'{state} {row["key"]}')
+                self.assertTrue(45 <= int(image[y, x, :3].mean()) <= 120, f'{state} {row["key"]}')
                 self.assertGreaterEqual(row['ink_texels'], 100, row['key'])
                 self.assertIn(row['sign'], json.loads((HERE / 'legends.json').read_text())['syllables'])
 

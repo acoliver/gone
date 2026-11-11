@@ -3,6 +3,7 @@ extends RefCounted
 
 const ROOT := "res://assets/props/quarters/"
 const SMALL_ITEMS := preload("res://app/quarters_small_items.gd")
+const KEYBOARD := preload("res://app/quarters_console_keyboard.gd")
 static var _fits: Dictionary = {}
 const REAL_FURNITURE := {
 	"bed": "bed", "desk_chair": "desk_chair", "dining_table": "dining_table",
@@ -36,6 +37,10 @@ static func build(state: StringName) -> Node3D:
 			_fit(asset, bounds, prop.get("faces", "+z"), source + ".glb")
 			group.add_child(asset)
 			if prop.id == "bed": _bed_soft(group, asset, state)
+			if prop.id == "console":
+				var keyboard := KEYBOARD.build(state)
+				keyboard.transform = asset.transform
+				group.add_child(keyboard)
 		elif prop.id == "headboard":
 			continue
 		elif prop.id.begins_with("storage_"):
@@ -48,7 +53,9 @@ static func build(state: StringName) -> Node3D:
 	var top := desk.find_child("Worktop", true, false) as MeshInstance3D
 	var worktop := ShipScene._world_frame(top) * top.get_aabb()
 	var console := root.get_node("Placement_console/console") as Node3D
-	console.position.y += worktop.end.y - _bounds(console).position.y
+	var seating := worktop.end.y - _bounds(console).position.y
+	console.position.y += seating
+	(root.get_node("Placement_console/console_keyboard") as Node3D).position.y += seating
 	SMALL_ITEMS.add_to(root, state)
 	var jacket := _clothing("her_jacket", state)
 	jacket.name = "Item_her_jacket"
