@@ -22,12 +22,15 @@ TERMINAL = ROOT / 'assets/props/terminal'
 STORAGE = dict(age_years=1000, source_variation_gain=.25, source_variation_limit_srgb=2.5,
                applies_to='caps and membrane only', key_pigment_srgb=[42, 44, 46],
                membrane_pigment_srgb=[13, 15, 15], olive_pigment_srgb=[84, 90, 58],
-               key_fade_srgb=[65, 65, 63], membrane_fade_srgb=[25, 27, 25],
+               key_fade_srgb=[65, 67, 69], membrane_fade_srgb=[25, 27, 25],
                olive_fade_srgb=[100, 103, 78], olive_fade_mix=.04,
-               polymer_fade_mix=.08, dust_srgb=[110, 106, 96],
+               polymer_fade_mix=.08, dust_srgb=[110, 110, 110],
+               olive_dust_srgb=[110, 106, 96],
                dust_mix=.08, dust_variation=.01, crack_mix=0, peeling_mix=0)
-INK_COLOUR = [112, 112, 102]
-INK_OPACITY = dict(as_built=.60, aged=.48)
+INK_COLOUR = [150, 146, 128]
+INK_OPACITY = dict(as_built=.45, aged=.45)
+LEGEND_HEIGHT = .70
+LEGEND_STROKE = .055
 HOUSING_PAINT_METAL = int(.18*255)
 REMEMBERED_WEAR_MIX = .25
 
@@ -62,8 +65,23 @@ def sealed_storage(clean, positions, case):
     # Object-space fine variation remains continuous across the retained UV seams.
     fine = np.sin(x*911+z*617)*np.sin(x*1301-z*887)
     dust = (STORAGE['dust_mix']+STORAGE['dust_variation']*fine)[..., None]
-    polymer = faded*(1-dust)+np.array(STORAGE['dust_srgb'])*dust
+    dust_colour = np.where(olive[..., None], STORAGE['olive_dust_srgb'], STORAGE['dust_srgb'])
+    polymer = faded*(1-dust)+dust_colour*dust
     return np.where(case[..., None], clean, polymer)
+
+
+def legend_pixels(quads, rect, native_stroke):
+    x0, y0, x1, y1 = rect
+    lo, hi = quads.reshape(-1, 2).min(0), quads.reshape(-1, 2).max(0)
+    stroke = max(2, round(min(x1-x0, y1-y0)*LEGEND_STROKE))
+    # Reserve the measured print width before fitting the glyph's centre lines.
+    scale = min(((x1-x0)*.90-stroke)/(hi[0]-lo[0]-native_stroke),
+                ((y1-y0)*LEGEND_HEIGHT-stroke)/(hi[1]-lo[1]-native_stroke))
+    pixels = (quads-(lo+hi)/2)*[scale, -scale]+[(x0+x1)/2, (y0+y1)/2]
+    growth = (stroke-native_stroke*scale)/2
+    centres = pixels.mean(axis=1, keepdims=True)
+    pixels += np.sign(pixels-centres)*growth
+    return pixels, stroke
 
 
 def bake():
@@ -76,13 +94,14 @@ def bake():
     resolution = clean.shape[0]
     assert clean.shape == (2048, 2048, 3)
     caps = {r['design_index']: r for r in report['legends']}
-    # Remove the terminal's original muted marks before applying production Naleya.
-    for cap in caps.values():
+    # Source cap pigment tops out below 65; its printed marks reach about 91.
+    # The rectangle border samples bevel/membrane shading rather than cap pigment.
+    cap_colours = {}
+    for index, cap in caps.items():
         x0, y0, x1, y1 = cap['interior_rect_px']
         tile = clean[y0:y1, x0:x1]
-        border = np.concatenate([tile[:3].reshape(-1, 3), tile[-3:].reshape(-1, 3),
-                                 tile[:, :3].reshape(-1, 3), tile[:, -3:].reshape(-1, 3)])
-        tile[:] = np.median(border, axis=0)
+        cap_colours[index] = np.median(tile[tile.mean(-1) <= 65], axis=0)
+        tile[:] = cap_colours[index]
     positions = np.zeros((resolution, resolution, 3), np.float32)
     covered = np.zeros((resolution, resolution), bool)
     # Existing glTF local axes are X right, Y up, Z toward the operator.
@@ -109,14 +128,11 @@ def bake():
         cap = caps[legend['design_index']]
         x0, y0, x1, y1 = cap['interior_rect_px']
         quads = np.array(legend['quads'])
-        lo, hi = quads.reshape(-1, 2).min(0), quads.reshape(-1, 2).max(0)
-        # Height controls the print size, including the wide, shallow bottom-row caps.
-        scale = min((x1-x0)*.90/(hi[0]-lo[0]), (y1-y0)*.50/(hi[1]-lo[1]))
-        pixels = (quads-(lo+hi)/2)*[scale, -scale]+[(x0+x1)/2, (y0+y1)/2]
+        pixels, stroke = legend_pixels(quads, (x0, y0, x1, y1), legends['stroke_width'])
         tile = Image.new('L', ((x1-x0)*4, (y1-y0)*4))
         draw = ImageDraw.Draw(tile)
         for quad in pixels:
-            draw.polygon([tuple(p) for p in (quad-[x0, y0])*4], fill=255)
+            draw.polygon([tuple(p) for p in (quad-[x0+.5, y0+.5])*4], fill=255)
         tile = tile.resize((x1-x0, y1-y0), Image.Resampling.LANCZOS)
         mask.paste(tile, (x0, y0))
         ink = np.asarray(tile)
@@ -124,6 +140,8 @@ def bake():
         iy, ix = np.where(ink > 127)
         records.append(dict(key=legend['key'], input=legend['input'], sign=legend['sign'],
                             design_index=legend['design_index'], interior_rect_px=[x0, y0, x1, y1],
+                            cap_colour_srgb=cap_colours[legend['design_index']].tolist(),
+                            stroke_width_px=stroke,
                             ink_bounds_px=[int(ix.min()+x0), int(iy.min()+y0),
                                            int(ix.max()+x0+1), int(iy.max()+y0+1)],
                             ink_texels=int((ink > 127).sum()), ink_probe_pixel=[int(x+x0), int(y+y0)],
@@ -155,10 +173,11 @@ def bake():
                    aged_roughness_min_byte=dict(olive_polymer=224, other_polymer=240),
                    aged_metallic_max_byte=dict(polymer=24),
                    legend_source='tools/blender/quarters/console/legends.json via production Naleya',
-                   legend_height_fraction=.50, legend_width_limit_fraction=.90, legend_alignment='centred',
+                   legend_height_fraction=LEGEND_HEIGHT, legend_stroke_fraction=LEGEND_STROKE,
+                   legend_width_limit_fraction=.90, legend_alignment='centred',
                    legend_colour_srgb=INK_COLOUR, legend_opacity=INK_OPACITY, native_legends=records)
     (ATLAS / 'mapping.json').write_text(json.dumps(mapping, indent=2)+'\n')
-    print('Baked 29 smaller printed Naleya legends and quarters-only sealed-storage keyboard finish')
+    print('Baked 29 Naleya legends with power-room print weight and neutral quarters cap finishes')
 
 
 if __name__ == '__main__':

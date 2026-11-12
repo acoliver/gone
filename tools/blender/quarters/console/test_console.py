@@ -88,18 +88,24 @@ class ConsoleTests(unittest.TestCase):
         mapping = json.loads((ROOT / 'assets/props/quarters/steel/console_keyboard/mapping.json').read_text())
         images = {state: np.asarray(Image.open(ROOT / f'assets/props/quarters/steel/console_keyboard/{state}_albedo.png'))
                   for state in ('as_built', 'aged')}
-        self.assertEqual(mapping['legend_colour_srgb'], [112, 112, 102])
-        self.assertEqual(mapping['legend_opacity'], dict(as_built=.60, aged=.48))
-        self.assertEqual(mapping['legend_height_fraction'], .50)
+        # #129 matches the source keyboard's ink, opacity, print height and stroke.
+        self.assertEqual(mapping['legend_colour_srgb'], [150, 146, 128])
+        self.assertEqual(mapping['legend_opacity'], dict(as_built=.45, aged=.45))
+        self.assertEqual(mapping['legend_height_fraction'], .70)
+        self.assertEqual(mapping['legend_stroke_fraction'], .055)
         shapes = {row['design_index']: np.array(row['quads']).reshape(-1, 2)
                   for row in json.loads((HERE / 'legends.json').read_text())['keys']}
         for row in mapping['native_legends']:
             x0, y0, x1, y1 = row['interior_rect_px']
             left, top, right, bottom = row['ink_bounds_px']
             width, height = np.ptp(shapes[row['design_index']], axis=0)
-            expected_height = min((y1-y0)*.50, (x1-x0)*.90*height/width)
+            stroke = max(2, round(min(x1-x0, y1-y0)*.055))
+            self.assertEqual(row['stroke_width_px'], stroke)
+            scale = min(((y1-y0)*.70-stroke)/(height-.72),
+                        ((x1-x0)*.90-stroke)/(width-.72))
+            expected_height = (height-.72)*scale+stroke
             self.assertAlmostEqual(bottom-top, expected_height, delta=1.5, msg=row['key'])
-            self.assertTrue(.35 <= (bottom-top)/(y1-y0) <= .52, row['key'])
+            self.assertTrue(.35 <= (bottom-top)/(y1-y0) <= .72, row['key'])
             self.assertLessEqual(right-left, (x1-x0)*.92, row['key'])
             self.assertAlmostEqual((left+right)/2, (x0+x1)/2, delta=1)
             self.assertAlmostEqual((top+bottom)/2, (y0+y1)/2, delta=1)
@@ -144,6 +150,26 @@ class ConsoleTests(unittest.TestCase):
             self.assertEqual(int(cap_orm[..., 2].max()), 0, row['key'])
             self.assertLess(int(cap_orm[..., 0].min()), 220, row['key'])
             self.assertGreaterEqual(int(aged[y0:y1, x0:x1].min()), 46, row['key'])
+
+    def test_caps_match_source_pigment_with_neutral_present_dust(self):
+        # #129: use the cap surface, not the dark rectangle border, as its pigment.
+        atlas = ROOT / 'assets/props/quarters/steel/console_keyboard'
+        source = np.asarray(Image.open(ROOT / 'assets/props/terminal/keyboard_keyboard_albedo.png'))
+        mapping = json.loads((atlas / 'mapping.json').read_text())
+        self.assertEqual(mapping['storage_finish']['dust_srgb'], [110, 110, 110])
+        self.assertEqual(mapping['storage_finish']['key_fade_srgb'], [65, 67, 69])
+        remembered = np.asarray(Image.open(atlas / 'as_built_albedo.png'))
+        present = np.asarray(Image.open(atlas / 'aged_albedo.png'))
+        for row in mapping['native_legends']:
+            x0, y0, x1, y1 = row['interior_rect_px']
+            tile = source[y0:y1, x0:x1]
+            expected = np.median(tile[tile.mean(-1) <= 65], axis=0)
+            np.testing.assert_array_equal(row['cap_colour_srgb'], expected)
+            np.testing.assert_allclose(np.median(remembered[y0:y1, x0:x1], axis=(0, 1)), expected, atol=.5)
+            dusted = np.median(present[y0:y1, x0:x1], axis=(0, 1))
+            self.assertTrue(np.all(dusted > expected), row['key'])
+            self.assertLessEqual(dusted[0], dusted[1], row['key'])
+            self.assertLessEqual(dusted[1], dusted[2], row['key'])
 
     def test_sealed_storage_finish_has_bounded_variation_and_dust(self):
         from bake_legends import sealed_storage

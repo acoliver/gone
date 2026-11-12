@@ -7,6 +7,10 @@ This changes the console only. Room furniture, cameras, lighting, clothes,
 interaction dispatch, the idle underscore, message wording and the
 60/180/60-tick corruption/message/fault sequence are unchanged.
 
+The latest cap/print correction and numeric layout check are recorded in
+[Matched cap pigment and print weight](#matched-cap-pigment-and-print-weight-129).
+That section supersedes the earlier cap-colour and legend-size notes below.
+
 ## Shape and placement
 
 | Measurement | Accepted baseline | #129 source/export |
@@ -79,8 +83,9 @@ The quarters source is `keyboard-working.blend`; its placement is recorded
 in `keyboard-placement.json`. Its separate export is
 `assets/props/quarters/console_keyboard.glb`. `QuartersConsoleKeyboard`
 instances that model with the same fitted transform and seating lift as the
-console. It shares the existing library shader without adding this accessory
-to the fixed Batch 1 material-review inventory. The console remains 1,488
+console. It duplicates the keyboard's imported PBR material and assigns its
+quarters state maps without adding this accessory to the fixed Batch 1
+material-review inventory. The console remains 1,488
 triangles against its unchanged 15,000 limit; the separate keyboard retains
 28,998 triangles against a 30,000-triangle regression cap.
 
@@ -734,3 +739,218 @@ individual baseline/current frames and the ordinary power-room route view.
 Logs and capture scripts remain under `tmp/issue129-keyboard-fix3/`.
 Raw PNGs and duplicate atlas scratch copies were removed after JPEG delivery.
 No image judgment or OCR was performed.
+
+
+## Matched cap pigment and print weight (#129)
+
+### Numeric layout diagnosis against 58a554b
+
+The layout finding is not reproduced by the game-scene geometry. The
+measurement builds both real room instances and identifies all 29 cap
+interiors using the source report's UV rectangles. It averages unique
+key-top vertices in each rectangle in the keyboard mesh's own local frame,
+so Blender's additional split render vertices cannot bias the comparison.
+The largest centroid difference is 0.0000000679802 m, or 0.000068 mm.
+The full indexed triangle positions and UV corners also remain exactly equal
+to the power-room source. There is no substituted main block or arrow cluster.
+
+| Scene-instance measurement | Power room | Quarters |
+| --- | ---: | ---: |
+| World transform determinant | +0.287532419 | +0.285920203 |
+| Keyboard yaw relative to console, degrees | +0.00575539 | +0.00000003 |
+| Keyboard pitch relative to console, degrees | 26.107958 | 14.369284 |
+| Operator eye in mesh-local Z, m | +0.6267681 | +0.9454117 |
+| Display centre in mesh-local Z, m | -0.4653358 | -0.4941406 |
+
+The power-room eye is recorded from the real powered-route player camera;
+the quarters eye is the existing quarters detail-camera eye.
+
+Neither instance is mirrored or rotated 180 degrees. Both present the
+long-row cap 20 on the operator's side: its centroid is approximately
+`(-0.1701944, 0.0511639, +0.0728154)` m. The four-key cluster remains at
+positive X, with cap centroids spanning X `+0.297529` to `+0.341527` m.
+Both consoles' horizontal forward axes point approximately along world +X.
+Their different deck slopes explain the pitch difference. The quarters
+fitter's existing 0.994394 depth factor explains the small determinant/scale
+difference; neither changes key order. With the matched camera applied to
+both rigid keyboard frames, the largest projected cap-centroid displacement
+is 0.197232 pixels in the 1536-pixel-wide raw frame.
+
+The fix4 power and quarters camera records already use the same rigid
+keyboard-relative pose: eye `(-0.004743, 0.785338, +0.620716)` m, horizontal
+FOV 55 degrees, 1536 by 864 and 4x MSAA. Both cameras face the operator edge.
+The neutral diagnostic removes each keyboard's room transform and reuses
+that same pose and one white directional light. Thus a different camera side
+does not explain the finding either. The compared printed symbols differ:
+the power-room reference has its original script/icons, while the quarters
+copy has complete production Naleya signs. The numerical checks establish
+identical physical layout without claiming what caused the reviewer's
+perception. No geometry, placement, camera or light was changed to address it.
+New matched captures accompany the finish correction.
+
+The unchanged placement passes an independent triangle contact check with
+zero crossings against all retained console parts. It retains the 10 mm
+front margin, equal 246.053 mm side margins, 50.496 mm display clearance and
+nine underside support gaps between 0.5619 and 0.6496 mm.
+
+### Atlas measurements and chosen finish
+
+All colours below are 8-bit sRGB, before rendering. Reported cap triples
+are medians of the 29 per-cap measurements; print percentiles pool the
+selected printed texels. The source pipeline `kb3/atlas.py` authors cap pigment `(42,44,46)`; its recorded final unprinted
+key median is `(41,43,45)`. Its own ink is `(150,146,128)` at maximum opacity
+0.45. Source printed texels have median `(89,88,81)` and 95th percentile
+`(91,90,83)` inside the measured cap interiors.
+
+The earlier quarters bake replaced the whole cap interior with its border
+median. That border includes dark bevel/membrane shading, giving Remembered
+`(28,30,32)` rather than the unprinted cap median. The old Present cap median
+was `(47,48,49)`, with warm dust `(110,106,96)` and fade `(65,65,63)`.
+Its old ink `(112,112,102)` produced print p95 `(84,84,78)` in Remembered and
+`(79,80,75)` in Present. These are measured atlas differences.
+
+The new bake excludes source print above mean sRGB 65 and uses the median
+remaining cap surface separately for every interior. The cap pigment's
+source upper bound is below that threshold; printed cores reach about 91.
+Remembered now has median `(41,43,45)`, matching the source. Present uses
+neutral light-grey dust `(110,110,110)` at the existing 8% mix with ±1% fine
+variation and a neutral-preserving fade target `(65,67,69)` at 8%. Its cap
+median is `(49,51,53)`. Olive polymer retains its earlier dust treatment;
+housing albedo, normals, ORM and shader region masks are unchanged in both
+states. No power-room file or shared aging default changes.
+
+Both quarters states now use the source ink `(150,146,128)` at 0.45 opacity.
+Their actual print p95 is `(91,90,83)` in Remembered and `(95,94,87)` in
+Present, whose cap underneath is lighter from dust. No emission or raised
+geometry is added.
+
+### Source PBR material
+
+Matching the atlases exposed a separate material mismatch. The quarters
+library shader hard-codes specular 0.32; the imported source keyboard uses
+0.5. Its StandardMaterial3D also retains the source normal/AO sampling.
+With the corrected cap atlas but the library shader, neutral Remembered cap
+means were `(42.32,44.02,45.39)`, against reference `(49.36,50.64,51.88)`.
+A controlled diagnostic changing only the duplicate's material to the
+imported PBR response brought Remembered to `(49.32,50.78,51.96)`.
+The cap pigments and lights were unchanged between these measurements.
+
+`QuartersConsoleKeyboard` now duplicates its imported StandardMaterial3D
+and assigns only the quarters albedo, normal and packed ORM state maps.
+The regression compares its specular, scalar multipliers, ORM channels,
+normal/AO settings and texture filter with the real power-room import.
+It failed on the library ShaderMaterial before implementation. Both finish
+states still share the same mesh and seated transform and have distinct
+2048-square maps. Present's polymer roughness floor is already encoded as
+240/255 in its ORM atlas. No shared shader or aging default is edited.
+
+### Print dimensions
+
+The source print recipe uses a 15% inset on each side and a stroke width of
+`max(2, round(0.055 * min(cap_width, cap_height)))` atlas pixels. Its actual
+main-block cap 1 through 10 print height has median 64.0817% of the interior
+height; glyph aspect accounts for the range up to about 70%. Closing the
+small worn holes and measuring distance-transform ridges gives median
+stroke width 5.42636% of the shorter cap dimension, typically 7 pixels on
+these 119 to 130-pixel-high caps. Icons and short vowel marks have different
+aspect ratios and are recorded per cap in the scratch measurement JSON.
+
+The old quarters main-block print was about 50% high with 3.87597% stroke
+width. The corrected Naleya print targets the source's 70% height envelope
+and uses exactly its 5.5% stroke rule, retaining the 90% width ceiling.
+It reserves the stroke width before fitting glyph centre lines, then adjusts
+only the rasterized segment weight. Production Naleya quads and their
+29 input assignments stay unchanged. Four-times supersampling is centred
+on texels. Measured main-block print height is 70.0% in Remembered and
+69.8837% in Present; both have 5.42636% median measured stroke width.
+The narrow cap remains width-limited, and all legends remain inside their
+cap-interior rectangles. Per-cap colours, stroke widths and ink bounds are
+recorded in the delivered `mapping.json`.
+
+The Python regressions replace the old #129 size/ink pins with these exact
+source-based targets and add a per-cap pigment/neutral-dust check. They keep
+the 100-texel minimum, centring tolerances, inherited-dark-detail count,
+housing-map equality, geometry, support and clearance assertions unchanged.
+The two new finish/print expectations failed against 58a554b before rebaking.
+
+
+### Final neutral raw-pixel measurements and captures
+
+The following are mean 8-bit sRGB values from the raw 1536 by 864 PNGs,
+before JPEG conversion. Cap sampling uses a common UV-interior mask across
+all three keyboards, excluding both source and replacement legends, then
+one-pixel erosion in the rendered frame. All three cap means use the same
+19,401 pixels. Legend sampling uses each keyboard's own printed core with
+one-texel erosion in the atlas and fully covered rendered mask pixels.
+Different signs occupy different pixels; legend sample counts are 4,011,
+3,271 and 3,567 respectively.
+
+| Neutral diagnostic | Cap mean RGB | Legend mean RGB |
+| --- | --- | --- |
+| Power room | (49.36, 50.64, 51.88) | (82.55, 82.23, 77.25) |
+| Quarters Present | (54.32, 55.85, 57.16) | (85.96, 85.88, 80.51) |
+| Quarters Remembered | (49.32, 50.78, 51.96) | (81.82, 81.65, 76.20) |
+
+Remembered cap means differ from the reference by at most 0.14 sRGB byte.
+Present is lighter from its grey dust. The retained housing control uses
+65,122 common eroded mask pixels: reference mean `(69.62,75.25,53.53)` and
+Present `(69.70,75.39,53.46)`, a maximum channel difference of 0.14.
+These are measurements, without image judgments.
+
+The powered reference comes from the actual power-room route at tick 3109,
+with console active, white level 1.0 and red level 0.0. The keyboard-relative
+camera origin error is 0.0000005364 m. The complete transform passes the
+same-pose assertion, with the same FOV, resolution and MSAA as both quarters
+detail states. The normal windowed power-room route passes all 11 beats;
+the windowed quarters-demo passes all 24 beats.
+
+The 58a554b room-detail PNGs were captured before changes. For the final
+neutral comparison, the exact two baseline albedos were extracted from that
+commit and imported in an isolated scratch project using their unchanged
+BPTC/mipmap settings. The baseline view uses the original quarters shader
+and those native textures, without swapping project assets. Both reproduced
+room-detail PNGs are pixel-identical to the original live-58a554b captures:
+zero changed pixels and zero maximum channel difference in both states.
+
+Fresh editor import preceded captures. Immediately before each capture,
+all 395 checked sources matched their native imported `.md5` `source_md5`;
+the two isolated baseline textures also passed native hash checks. Windowed
+launches were serialized after `ps` checks while the sibling's headless tests
+continued. No sibling process was stopped.
+
+Logs, raw-pixel measurements and capture scripts are under
+`tmp/issue129-keyboard-fix5/`. The eight JPEGs below decode with maximum
+dimension 1400 pixels and retain the complete frames. Their absolute paths
+are in `tmp/issue129-keyboard-fix5/jpeg-paths.json`; filenames are relative to
+`tmp/issue129-keyboard-fix5/review/`:
+
+- `power-room-powered-quarters-keyboards.jpg`
+- `neutral-diagnostic-keyboards.jpg`
+- `quarters-present-keyboard-detail.jpg`
+- `quarters-remembered-keyboard-detail.jpg`
+- `present-keyboard-before-after-58a554b.jpg`
+- `remembered-keyboard-before-after-58a554b.jpg`
+- `present-neutral-before-after-58a554b.jpg`
+- `remembered-neutral-before-after-58a554b.jpg`
+
+### Final verification
+
+Console Python passes 10 tests, focused guarded quarters/Naleya passes 110,
+and the full guarded Godot suite passes 1,016 with zero failures and exit 0.
+Quarters aging passes 89 and fixture weather passes 11. All seven atlas PNGs
+and mapping JSON are byte-identical to an independent repeated bake.
+The geometry report retains zero crossings, 9.999995 mm front margin,
+246.053310 mm equal side margins, 50.495964 mm display clearance and nine
+support gaps of 0.561850–0.649619 mm. No geometry or UV was changed. Its
+retained UV density subreport still flags ratio 2.237488; no check was changed
+to suppress that flag.
+
+The guarded logs include expected invalid-Naleya input diagnostics and
+Godot resource/RID cleanup diagnostics at shutdown; they are not error-free
+logs. Neither windowed route nor detail/neutral capture reported a script
+error or assertion failure. Their visual verdict remains pending because
+this pass deliberately makes no image judgments. OCR was not run.
+Own raw PNGs, duplicate bake atlases and isolated baseline import/geometry
+scratch were removed after JPEG delivery; scripts, JSON measurements and
+logs remain. Existing untracked imports and assets outside this pass's
+scratch were preserved.

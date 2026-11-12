@@ -8,13 +8,32 @@ func test_keyboard_mesh_is_shared_but_native_finish_sets_are_distinct() -> void:
 	assert_true(clean_mesh.mesh == aged_mesh.mesh, "states share the reused power-room geometry")
 	assert_true(clean_mesh.transform == aged_mesh.transform, "states retain the same seated pose")
 	assert_true(clean_mesh.material_override != aged_mesh.material_override, "distinct keyboard finishes")
-	for kind: String in ["albedo", "normal", "orm"]:
-		var clean_map: Texture2D = clean_mesh.material_override.get_shader_parameter("baked_" + kind)
-		var aged_map: Texture2D = aged_mesh.material_override.get_shader_parameter("baked_" + kind)
+	# #129 retains the imported keyboard's PBR response, with separate state maps.
+	for kind: String in ["albedo_texture", "normal_texture", "roughness_texture"]:
+		var clean_map: Texture2D = clean_mesh.material_override.get(kind)
+		var aged_map: Texture2D = aged_mesh.material_override.get(kind)
 		assert_true(clean_map != aged_map, "state-specific atlas: " + kind)
 		assert_int_equal(clean_map.get_width(), 2048, "retained keyboard atlas density")
 	clean.free()
 	aged.free()
+
+func test_keyboard_preserves_the_source_pbr_response_in_both_states() -> void:
+	var source := (load("res://assets/props/terminal/keyboard.glb") as PackedScene).instantiate()
+	var reference := (source.find_child("Keyboard", true, false) as MeshInstance3D).get_active_material(0) as StandardMaterial3D
+	for state: StringName in QuartersProps.STATES:
+		var keyboard := QuartersFurnishings.KEYBOARD.build(state)
+		var actual := (keyboard.find_child("Keyboard", true, false) as MeshInstance3D).material_override
+		assert_true(actual is StandardMaterial3D, "#129: source material response, without library specular substitution")
+		if failure != "":
+			keyboard.free()
+			source.free()
+			return
+		for property: String in ["albedo_color", "metallic", "metallic_specular", "metallic_texture_channel", "roughness", "roughness_texture_channel", "normal_enabled", "normal_scale", "ao_enabled", "ao_light_affect", "texture_filter"]:
+			assert_true(actual.get(property) == reference.get(property), "source PBR property: " + property)
+		var finish := actual as StandardMaterial3D
+		assert_true(finish.ao_texture == finish.roughness_texture and finish.metallic_texture == finish.roughness_texture, "one packed state ORM with source channels")
+		keyboard.free()
+	source.free()
 
 func test_taller_console_retains_desk_pose_and_cabinet_clearance_in_both_states() -> void:
 	for state: StringName in QuartersProps.STATES:
