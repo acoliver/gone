@@ -122,11 +122,11 @@ The regression compares every quad with production expansion.
 
 `bake_legends.py` uses the original keyboard report's measured cap-interior
 UV rectangles. It removes the source's earlier marks, preserves glyph
-aspect, and centres the production quads at 43.5% of each cap interior's
+aspect, and centres the production quads at 50% of each cap interior's
 height, with a 90% width ceiling for narrow caps. Positive glyph Y points
-toward the display. The height allowance accounts for raster rounding while
-keeping the occupied print near 35–45% of cap height. Ink uses sRGB
-`(112,112,102)` at maximum opacity 0.38 in Remembered and 0.30 in Present.
+toward the display. Rasterized print stays below 52% of cap height; the
+narrowest cap is width-limited to 44.8%. Ink uses sRGB
+`(112,112,102)` at maximum opacity 0.60 in Remembered and 0.48 in Present.
 It changes albedo only, with no emission, engraving or raised/inlaid normals.
 Four-times supersampling preserves crisp antialiased edges. Every sign still
 has at least 100 half-coverage mask texels. These are asset legends, not a
@@ -624,3 +624,113 @@ retains its native 480 by 270 frame. Exact absolute paths are recorded in
 `tmp/issue129-keyboard-fix2/jpeg-paths.json`. Logs remain in that same scratch
 root. Isolated baseline/cache copies, repeat atlases and raw capture PNGs
 were removed after delivery. No image judgment or OCR was performed.
+
+
+## Readable legends and matched keyboard reference
+
+The follow-up to `09a0e47` increases the maximum ink opacity from 0.38 to
+0.60 in Remembered and from 0.30 to 0.48 in Present. Ink stays sRGB
+`(112,112,102)`. Target glyph height increases from 0.435 to 0.50 of the
+cap-interior height, retaining the 0.90 width ceiling, original aspect ratio,
+centering and four-times supersampling. Measured half-coverage print height
+is 50.0–51.0% on 28 caps. Cap 28 remains width-limited at 44.8%; enlarging it
+further would cross the retained width ceiling. No print exceeds 52% height.
+The regression checks each sign against its aspect-constrained expected
+height and exact composited ink colour, alongside the existing 100-texel
+minimum and alignment checks.
+
+### Dark cap marks come from the source atlas
+
+The inspection used texture values and source code, without judging images.
+Checking only the legend-interior rectangles missed the reported marks:
+those rectangles contain no Present albedo channel below 46. The complete
+projected cap-top UV triangles contain 1,248 dark texels with mean Present
+albedo below 30. Every one already has mean albedo below 25 in
+`assets/props/terminal/keyboard_keyboard_albedo.png`, with zero metallic in
+the source ORM. The original `kb3/atlas.py` assigns charcoal cap and darker
+membrane pigments using its height/segmentation masks, then applies baked
+AO/coarse grime. `prepare.py` reserves upper-atlas UVs above 0.60 for the
+projected cap-top triangles, separate from the lower Smart UV islands.
+That allocation identifies all 532,611 cap-top texels independently of RGB.
+The dark source material patches lie outside the rectangles cleared for
+replacement legends. The quarters bake preserves their positions while
+applying the existing sealed-storage pigment mapping.
+
+For example, source pixel `(165,287)` is RGB `(13,15,14)` and Present is
+`(22,23,22)`; `(1424,456)` changes from `(10,12,10)` to `(20,22,20)`.
+The sealed-storage pigment mapping generally brightens those source patches;
+a few near its membrane threshold change by less than one mean sRGB byte
+in the darker direction. They remain unchanged here, as requested for
+marks inherited from the power-room source. The new regression requires
+all 1,248 dark cap-top texels to originate in the source's dark, nonmetallic
+texels. It also checks unchanged source normal and AO maps. The quarters
+library shader does not sample ORM red as AO, so those AO values alone do
+not explain its rendered marks.
+
+Only printed albedo inside cap-interior rectangles changes from `09a0e47`:
+44,492 Remembered texels and 46,752 Present texels. All housing texels,
+cap-aging parameters, normals, ORM, region masks, geometry, UVs, lighting,
+production cameras and power-room resources remain unchanged.
+
+### Like-for-like capture method
+
+Scratch scripts under `tmp/issue129-keyboard-fix3/` preserve the production
+capture scripts. `capture_keys.gd` uses the existing quarters detail pose,
+55-degree horizontal FOV, 1536 by 864 resolution and 4x MSAA. It records
+the camera transform relative to the keyboard mesh's rigid, orthonormalized
+world frame, so the comparison preserves metric distance and orientation
+without carrying the quarters fitter's slight depth scaling into the camera.
+The relative eye is approximately `(-0.004743,0.785338,0.620716)` metres.
+
+`capture_power_keys.gd` subclasses the production harness app. At the
+existing power-room route's `console-inactive` beat, it pauses simulation
+advancement for a supplementary capture of `ConsoleStation1/KeyboardModel`.
+It applies the recorded relative camera transform to that keyboard's own
+rigid frame, with the same FOV, resolution and MSAA. It then restores the
+normal viewport and camera before the unchanged beat capture. No light,
+material, room-state or production camera is altered. The route supplies
+the normal lighting state rather than a new studio setup.
+
+
+### Follow-up verification and delivery
+
+Console Python passes 9 tests, focused guarded quarters/Naleya passes 109,
+and the full guarded Godot suite passes 1,015 with zero failures and exit 0.
+The existing aging suite passes 89 and fixture weather passes 11. The new
+legend requirement failed on the old 0.38/0.30 opacity before the bake.
+The revised size regression checks the requested 0.50 target while keeping
+the narrow-cap width limit; the ink probe now requires the exact requested
+blend instead of the earlier contrast ceiling. No runner, geometry,
+seating, UV, 100-texel minimum or shared aging check was weakened.
+All seven keyboard atlas PNGs and mapping JSON are byte-identical on repeat.
+
+Fresh editor imports preceded baseline and current captures. Immediately
+before every route and detail capture, all 395 checked source resources
+matched the native imported `.md5` `source_md5`. Baseline assets were still
+byte-identical to `09a0e47` when captured, before rebaking in the same
+worktree. Both actual windowed quarters-demo runs pass all 24 beats, with
+matching console camera eyes/ticks and identical detail-camera records.
+The power-room route passes its 11-beat machine checks. Its supplementary
+capture is at tick 3055, console inactive, power off, red level 1.0 and white
+level 0.0. The matched relative eye error is 0.0000005364 m; the full relative
+transform passes the capture assertion. Jobs were serialized using `ps`,
+including waiting for the other worker's `issue130-v3/ingame4/route.py`
+Blender job without interrupting it. Godot reports resource-cleanup
+diagnostics at shutdown after successful checks and captures.
+
+All 15 delivered JPEGs decode, retain the complete frames and have maximum
+dimension 1400 pixels. Exact absolute paths are in
+`tmp/issue129-keyboard-fix3/jpeg-paths.json`. The review directory is
+`/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-129/tmp/issue129-keyboard-fix3/review/`.
+It includes `power-room-keyboard-detail.jpg`, both quarters states as
+`present-keyboard-detail.jpg` and `remembered-keyboard-detail.jpg`, and
+`power-room-quarters-keyboard-like-for-like.jpg`, ordered power room,
+quarters Present, quarters Remembered. Four before/after sheets use
+`09a0e47` on the left and this follow-up on the right:
+`present-console-before-after.jpg`, `remembered-console-before-after.jpg`,
+`present-keyboard-detail-before-after.jpg` and
+`remembered-keyboard-detail-before-after.jpg`. The remaining JPEGs are the
+individual baseline/current frames and the ordinary power-room route view.
+Logs and capture scripts remain under `tmp/issue129-keyboard-fix3/`.
+Raw PNGs and duplicate atlas scratch copies were removed after JPEG delivery.
+No image judgment or OCR was performed.

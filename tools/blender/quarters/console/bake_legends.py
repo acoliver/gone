@@ -27,7 +27,7 @@ STORAGE = dict(age_years=1000, source_variation_gain=.25, source_variation_limit
                polymer_fade_mix=.08, dust_srgb=[110, 106, 96],
                dust_mix=.08, dust_variation=.01, crack_mix=0, peeling_mix=0)
 INK_COLOUR = [112, 112, 102]
-INK_OPACITY = dict(as_built=.38, aged=.30)
+INK_OPACITY = dict(as_built=.60, aged=.48)
 HOUSING_PAINT_METAL = int(.18*255)
 REMEMBERED_WEAR_MIX = .25
 
@@ -111,7 +111,7 @@ def bake():
         quads = np.array(legend['quads'])
         lo, hi = quads.reshape(-1, 2).min(0), quads.reshape(-1, 2).max(0)
         # Height controls the print size, including the wide, shallow bottom-row caps.
-        scale = min((x1-x0)*.90/(hi[0]-lo[0]), (y1-y0)*.435/(hi[1]-lo[1]))
+        scale = min((x1-x0)*.90/(hi[0]-lo[0]), (y1-y0)*.50/(hi[1]-lo[1]))
         pixels = (quads-(lo+hi)/2)*[scale, -scale]+[(x0+x1)/2, (y0+y1)/2]
         tile = Image.new('L', ((x1-x0)*4, (y1-y0)*4))
         draw = ImageDraw.Draw(tile)
@@ -155,7 +155,7 @@ def bake():
                    aged_roughness_min_byte=dict(olive_polymer=224, other_polymer=240),
                    aged_metallic_max_byte=dict(polymer=24),
                    legend_source='tools/blender/quarters/console/legends.json via production Naleya',
-                   legend_height_fraction=.435, legend_width_limit_fraction=.90, legend_alignment='centred',
+                   legend_height_fraction=.50, legend_width_limit_fraction=.90, legend_alignment='centred',
                    legend_colour_srgb=INK_COLOUR, legend_opacity=INK_OPACITY, native_legends=records)
     (ATLAS / 'mapping.json').write_text(json.dumps(mapping, indent=2)+'\n')
     print('Baked 29 smaller printed Naleya legends and quarters-only sealed-storage keyboard finish')

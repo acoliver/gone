@@ -88,18 +88,62 @@ class ConsoleTests(unittest.TestCase):
         mapping = json.loads((ROOT / 'assets/props/quarters/steel/console_keyboard/mapping.json').read_text())
         images = {state: np.asarray(Image.open(ROOT / f'assets/props/quarters/steel/console_keyboard/{state}_albedo.png'))
                   for state in ('as_built', 'aged')}
+        self.assertEqual(mapping['legend_colour_srgb'], [112, 112, 102])
+        self.assertEqual(mapping['legend_opacity'], dict(as_built=.60, aged=.48))
+        self.assertEqual(mapping['legend_height_fraction'], .50)
+        shapes = {row['design_index']: np.array(row['quads']).reshape(-1, 2)
+                  for row in json.loads((HERE / 'legends.json').read_text())['keys']}
         for row in mapping['native_legends']:
             x0, y0, x1, y1 = row['interior_rect_px']
             left, top, right, bottom = row['ink_bounds_px']
-            self.assertTrue(.35 <= (bottom-top)/(y1-y0) <= .46, row['key'])
+            width, height = np.ptp(shapes[row['design_index']], axis=0)
+            expected_height = min((y1-y0)*.50, (x1-x0)*.90*height/width)
+            self.assertAlmostEqual(bottom-top, expected_height, delta=1.5, msg=row['key'])
+            self.assertTrue(.35 <= (bottom-top)/(y1-y0) <= .52, row['key'])
             self.assertLessEqual(right-left, (x1-x0)*.92, row['key'])
             self.assertAlmostEqual((left+right)/2, (x0+x1)/2, delta=1)
             self.assertAlmostEqual((top+bottom)/2, (y0+y1)/2, delta=1)
             for state, image in images.items():
                 x, y = row['ink_probe_pixel']
-                contrast = image[y, x, :3].astype(float) - row['unprinted_probe_srgb'][state]
+                unprinted = np.array(row['unprinted_probe_srgb'][state])
+                contrast = image[y, x, :3].astype(float) - unprinted
                 self.assertTrue(np.all(contrast > 0), (state, row['key']))
-                self.assertLessEqual(float(contrast.max()), 36, (state, row['key']))
+                expected = np.round(unprinted*(1-mapping['legend_opacity'][state])
+                                    + np.array(mapping['legend_colour_srgb'])*mapping['legend_opacity'][state])
+                np.testing.assert_array_equal(image[y, x, :3], expected, err_msg=f'{state} {row["key"]}')
+
+    def test_cap_dark_detail_is_inherited_from_source_maps(self):
+        terminal = ROOT / 'assets/props/terminal'
+        atlas = ROOT / 'assets/props/quarters/steel/console_keyboard'
+        source_albedo = np.asarray(Image.open(terminal / 'keyboard_keyboard_albedo.png').convert('RGB'))
+        source_orm = np.asarray(Image.open(terminal / 'keyboard_keyboard_orm.png').convert('RGB'))
+        source_normal = np.asarray(Image.open(terminal / 'keyboard_keyboard_normal.png').convert('RGB'))
+        mapping = json.loads((atlas / 'mapping.json').read_text())
+        for state in ('as_built', 'aged'):
+            orm = np.asarray(Image.open(atlas / f'{state}_orm.png').convert('RGB'))
+            normal = np.asarray(Image.open(atlas / f'{state}_normal.png').convert('RGB'))
+            np.testing.assert_array_equal(orm[..., 0], source_orm[..., 0])
+            np.testing.assert_array_equal(normal, source_normal)
+        aged = np.asarray(Image.open(atlas / 'aged_albedo.png'))
+        # The source reserves the upper atlas for projected cap-top triangles.
+        source_scene = trimesh.load(terminal / 'keyboard.glb', force='scene')
+        mesh = source_scene.geometry[source_scene.graph['Keyboard'][1]]
+        from bake_legends import triangle_samples
+        tops = np.zeros(aged.shape[:2], bool)
+        for face in mesh.faces:
+            if np.min(mesh.visual.uv[face, 1]) > .54:
+                x, y, _ = triangle_samples(mesh.visual.uv[face], len(aged))
+                tops[y, x] = True
+        dark = tops & (aged.mean(-1) < 30)
+        self.assertEqual(int(dark.sum()), 1248)
+        self.assertTrue(np.all(source_albedo[dark].mean(-1) < 25))
+        self.assertTrue(np.all(source_orm[dark, 2] == 0))
+        for row in mapping['native_legends']:
+            x0, y0, x1, y1 = row['interior_rect_px']
+            cap_orm = source_orm[y0:y1, x0:x1]
+            self.assertEqual(int(cap_orm[..., 2].max()), 0, row['key'])
+            self.assertLess(int(cap_orm[..., 0].min()), 220, row['key'])
+            self.assertGreaterEqual(int(aged[y0:y1, x0:x1].min()), 46, row['key'])
 
     def test_sealed_storage_finish_has_bounded_variation_and_dust(self):
         from bake_legends import sealed_storage
