@@ -1,8 +1,7 @@
 """Bake quarters-only printed legends and sealed-storage keyboard finishes.
 
-The power-room mesh, UVs and source textures remain read-only. Aging here
-adds bounded pigment fade and fine dust, without the hairbrush fracture map
-or the steel library's full-face peeling and chips.
+Present copies the power-room housing maps unchanged; Remembered reduces
+its chip/oxide masks. Only caps and membrane receive sealed-storage aging.
 """
 import json
 from pathlib import Path
@@ -21,32 +20,50 @@ from map_library import triangle_samples
 ATLAS = ROOT / 'assets/props/quarters/steel/console_keyboard'
 TERMINAL = ROOT / 'assets/props/terminal'
 STORAGE = dict(age_years=1000, source_variation_gain=.25, source_variation_limit_srgb=2.5,
-               case_pigment_srgb=[84, 90, 58], key_pigment_srgb=[42, 44, 46],
-               membrane_pigment_srgb=[13, 15, 15], case_fade_srgb=[100, 103, 78],
+               applies_to='caps and membrane only', key_pigment_srgb=[42, 44, 46],
+               membrane_pigment_srgb=[13, 15, 15], olive_pigment_srgb=[84, 90, 58],
                key_fade_srgb=[65, 65, 63], membrane_fade_srgb=[25, 27, 25],
-               case_fade_mix=.04, polymer_fade_mix=.08, dust_srgb=[110, 106, 96],
+               olive_fade_srgb=[100, 103, 78], olive_fade_mix=.04,
+               polymer_fade_mix=.08, dust_srgb=[110, 106, 96],
                dust_mix=.08, dust_variation=.01, crack_mix=0, peeling_mix=0)
 INK_COLOUR = [112, 112, 102]
 INK_OPACITY = dict(as_built=.38, aged=.30)
+HOUSING_PAINT_METAL = int(.18*255)
+REMEMBERED_WEAR_MIX = .25
+
+
+def cleaner_housing(colour, orm):
+    housing = orm[..., 2] > 0
+    intact = orm[..., 2] == HOUSING_PAINT_METAL
+    worn = housing & ~intact
+    # Use neighbouring authored paint while retaining each texel's AO/normal.
+    nearest = distance_transform_edt(~intact, return_distances=False, return_indices=True)
+    colour = colour.copy()
+    material = orm.copy()
+    colour[worn] = colour[tuple(nearest[:, worn])]*(1-REMEMBERED_WEAR_MIX) + colour[worn]*REMEMBERED_WEAR_MIX
+    material[worn, 1:] = np.round(orm[tuple(nearest[:, worn])][:, 1:]*(1-REMEMBERED_WEAR_MIX)
+                                  + orm[worn, 1:]*REMEMBERED_WEAR_MIX).astype(np.uint8)
+    return colour, material
 
 
 def sealed_storage(clean, positions, case):
-    membrane = ~case & (clean.mean(-1) < 25)
-    pigment = np.where(case[..., None], STORAGE['case_pigment_srgb'],
-                       np.where(membrane[..., None], STORAGE['membrane_pigment_srgb'],
-                                STORAGE['key_pigment_srgb']))
-    fade = np.where(case[..., None], STORAGE['case_fade_srgb'],
-                    np.where(membrane[..., None], STORAGE['membrane_fade_srgb'],
-                             STORAGE['key_fade_srgb']))
+    # Retain d203221's colour treatment on olive-tinted polymer texels too.
+    olive = (clean[..., 1] > clean[..., 2]*1.15) & (clean.mean(-1) > 40)
+    membrane = ~olive & (clean.mean(-1) < 25)
+    pigment = np.where(olive[..., None], STORAGE['olive_pigment_srgb'],
+                       np.where(membrane[..., None], STORAGE['membrane_pigment_srgb'], STORAGE['key_pigment_srgb']))
+    fade = np.where(olive[..., None], STORAGE['olive_fade_srgb'],
+                    np.where(membrane[..., None], STORAGE['membrane_fade_srgb'], STORAGE['key_fade_srgb']))
     variation = np.clip((clean-pigment)*STORAGE['source_variation_gain'],
                         -STORAGE['source_variation_limit_srgb'], STORAGE['source_variation_limit_srgb'])
-    fade_mix = np.where(case, STORAGE['case_fade_mix'], STORAGE['polymer_fade_mix'])[..., None]
+    fade_mix = np.where(olive, STORAGE['olive_fade_mix'], STORAGE['polymer_fade_mix'])[..., None]
     faded = (pigment+variation)*(1-fade_mix)+fade*fade_mix
     x, z = positions[..., 0], positions[..., 2]
     # Object-space fine variation remains continuous across the retained UV seams.
     fine = np.sin(x*911+z*617)*np.sin(x*1301-z*887)
     dust = (STORAGE['dust_mix']+STORAGE['dust_variation']*fine)[..., None]
-    return faded*(1-dust)+np.array(STORAGE['dust_srgb'])*dust
+    polymer = faded*(1-dust)+np.array(STORAGE['dust_srgb'])*dust
+    return np.where(case[..., None], clean, polymer)
 
 
 def bake():
@@ -75,13 +92,17 @@ def bake():
         covered[y, x] = True
     nearest = distance_transform_edt(~covered, return_distances=False, return_indices=True)
     positions = positions[tuple(nearest)]
-    case = (clean[..., 1] > clean[..., 2]*1.15) & (clean.mean(-1) > 40)
-    aged = sealed_storage(clean, positions, case)
     normals = np.asarray(Image.open(TERMINAL / 'keyboard_keyboard_normal.png').convert('RGB'))
     orm = np.asarray(Image.open(TERMINAL / 'keyboard_keyboard_orm.png').convert('RGB')).copy()
+    # kb3/atlas.py gives only housing nonzero metal, including chips and oxide.
+    # Colour thresholds miss those exposed-metal regions and dark housing edges.
+    case = orm[..., 2] > 0
+    olive_polymer = ~case & (clean[..., 1] > clean[..., 2]*1.15) & (clean.mean(-1) > 40)
+    aged = sealed_storage(clean, positions, case)
+    clean, clean_orm = cleaner_housing(clean, orm)
     aged_orm = orm.copy()
-    aged_orm[..., 1] = np.maximum(aged_orm[..., 1], np.where(case, 224, 240))
-    aged_orm[..., 2] = np.minimum(aged_orm[..., 2], 24)
+    aged_orm[~case, 1] = np.maximum(aged_orm[~case, 1], np.where(olive_polymer[~case], 224, 240))
+    aged_orm[~case, 2] = np.minimum(aged_orm[~case, 2], 24)
     mask = Image.new('L', (resolution, resolution))
     records = []
     for legend in legends['keys']:
@@ -114,15 +135,25 @@ def bake():
         albedo = colour*(1-ink)+np.array(INK_COLOUR)*ink
         Image.fromarray(np.uint8(np.round(albedo))).save(ATLAS / f'{state}_albedo.png')
         Image.fromarray(normals).save(ATLAS / f'{state}_normal.png')
-        Image.fromarray(orm if state == 'as_built' else aged_orm).save(ATLAS / f'{state}_orm.png')
+        Image.fromarray(clean_orm if state == 'as_built' else aged_orm).save(ATLAS / f'{state}_orm.png')
     regions = np.zeros_like(clean, dtype=np.uint8)
-    regions[..., 1] = case*255
-    regions[..., 2] = (positions[..., 1] > .025)*255
+    # Leave housing outside the library shader's overrides; preserve cap regions.
+    regions[..., 1] = olive_polymer*255
+    regions[..., 2] = ((positions[..., 1] > .025) & ~case)*255
     Image.fromarray(regions).save(ATLAS / 'regions.png')
     mapping = dict(prop='console_keyboard', atlas_size=resolution,
                    mesh_source='assets/props/terminal/keyboard.glb', uv_method='unchanged power-room keyboard UVs',
                    storage_finish=STORAGE, normal_source='unchanged power-room keyboard normal map',
-                   aged_roughness_min_byte=dict(case=224, polymer=240), aged_metallic_max_byte=24,
+                   housing_finish=dict(source='assets/props/terminal/keyboard_keyboard_{albedo,normal,orm}.png',
+                                       regions='source ORM metallic byte > 0, including chips, oxide and padding',
+                                       aged='unchanged source albedo, normal and ORM',
+                                       as_built='chip/oxide albedo and roughness/metal masks reduced toward nearest intact source paint',
+                                       remembered_wear_mix=REMEMBERED_WEAR_MIX,
+                                       intact_paint_metallic_byte=HOUSING_PAINT_METAL,
+                                       normal_and_ao='unchanged in both states',
+                                       shader_overrides='none: housing regions RGB zero'),
+                   aged_roughness_min_byte=dict(olive_polymer=224, other_polymer=240),
+                   aged_metallic_max_byte=dict(polymer=24),
                    legend_source='tools/blender/quarters/console/legends.json via production Naleya',
                    legend_height_fraction=.435, legend_width_limit_fraction=.90, legend_alignment='centred',
                    legend_colour_srgb=INK_COLOUR, legend_opacity=INK_OPACITY, native_legends=records)

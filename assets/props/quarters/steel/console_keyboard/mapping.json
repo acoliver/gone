@@ -7,11 +7,7 @@
     "age_years": 1000,
     "source_variation_gain": 0.25,
     "source_variation_limit_srgb": 2.5,
-    "case_pigment_srgb": [
-      84,
-      90,
-      58
-    ],
+    "applies_to": "caps and membrane only",
     "key_pigment_srgb": [
       42,
       44,
@@ -22,10 +18,10 @@
       15,
       15
     ],
-    "case_fade_srgb": [
-      100,
-      103,
-      78
+    "olive_pigment_srgb": [
+      84,
+      90,
+      58
     ],
     "key_fade_srgb": [
       65,
@@ -37,7 +33,12 @@
       27,
       25
     ],
-    "case_fade_mix": 0.04,
+    "olive_fade_srgb": [
+      100,
+      103,
+      78
+    ],
+    "olive_fade_mix": 0.04,
     "polymer_fade_mix": 0.08,
     "dust_srgb": [
       110,
@@ -50,11 +51,23 @@
     "peeling_mix": 0
   },
   "normal_source": "unchanged power-room keyboard normal map",
-  "aged_roughness_min_byte": {
-    "case": 224,
-    "polymer": 240
+  "housing_finish": {
+    "source": "assets/props/terminal/keyboard_keyboard_{albedo,normal,orm}.png",
+    "regions": "source ORM metallic byte > 0, including chips, oxide and padding",
+    "aged": "unchanged source albedo, normal and ORM",
+    "as_built": "chip/oxide albedo and roughness/metal masks reduced toward nearest intact source paint",
+    "remembered_wear_mix": 0.25,
+    "intact_paint_metallic_byte": 45,
+    "normal_and_ao": "unchanged in both states",
+    "shader_overrides": "none: housing regions RGB zero"
   },
-  "aged_metallic_max_byte": 24,
+  "aged_roughness_min_byte": {
+    "olive_polymer": 224,
+    "other_polymer": 240
+  },
+  "aged_metallic_max_byte": {
+    "polymer": 24
+  },
   "legend_source": "tools/blender/quarters/console/legends.json via production Naleya",
   "legend_height_fraction": 0.435,
   "legend_width_limit_fraction": 0.9,

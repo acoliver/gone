@@ -161,11 +161,13 @@ GLB with its imported material; it does not apply an additional age shader,
 weather texture or room-state finish to the keyboard. The power-room capture
 is supplied as a reference, without an implementer visual judgment.
 
-Only `console/bake_legends.py` and the quarters keyboard atlases change this
-finish. No shared aging defaults or other prop finishes change. Present's
-source-colour variation is multiplied by 0.25 and clamped to ±2.5 sRGB bytes
-around the source pipeline's three material pigments. Case fade mixes 4%
-toward `(100,103,78)`; caps and membrane mix 8% toward `(65,65,63)` and
+The `d203221` correction changed `console/bake_legends.py` and the quarters
+keyboard atlases without changing shared aging defaults or other props.
+That version multiplied Present's source-colour variation by 0.25 and clamped
+it to ±2.5 sRGB bytes around the source pipeline's three material pigments.
+The housing correction below supersedes those case-specific values.
+In that version, case fade mixed 4% toward `(100,103,78)`; caps and membrane
+mixed 8% toward `(65,65,63)` and
 `(25,27,25)`. Dust uses `(110,106,96)` at 8% opacity with ±1% fine object-space
 variation. Crack and peeling contributions are zero. The original normal
 map is retained, rather than introducing fracture relief. Roughness floors
@@ -538,3 +540,87 @@ All JPEGs below exist under
 - `baseline-present-console-fullframe.jpg`
 - `baseline-remembered-keyboard-detail.jpg`
 - `baseline-present-keyboard-detail.jpg`
+
+
+## Preserve the power-room housing finish
+
+The remaining review finding identifies a nearly uniform olive Present
+housing. The keys, legends, layout and seating passed review. In `d203221`,
+`sealed_storage()` replaced the housing albedo with `(84,90,58)` plus source
+variation clamped to ±2.5 sRGB bytes. Its 4% fade and 8% dust then covered
+the source variation. The bake also floored housing roughness at 224/255,
+capped metallic at 24/255, and classified housing by colour. Those operations
+removed the source's exposed metal and oxide response as well as its colour
+detail. The Remembered shader added another paint-grain treatment through
+the region mask.
+
+The power-room `kb3/atlas.py` already describes a worn, as-found keyboard:
+AO/curvature-selected chips, sparse oxide, grime and worn cap print. PowerRoom
+uses that imported material without an additional aging pass. Present now
+copies the source housing albedo, normal and ORM texels exactly, including
+chips, oxide, dark edges and UV padding. Source ORM metallic bytes identify
+the material: 0 for caps/membrane, 45 for intact housing paint, 198 for chips
+and 89 for oxide. This avoids losing dark metal through an RGB threshold.
+
+Remembered derives its cleaner housing from that same authored atlas. At
+chip/oxide texels only, albedo, roughness and metallic mix 25% source wear
+with 75% nearest intact housing paint from the source atlas. This reduces
+both wear masks to one quarter of their original strength while retaining
+the local paint variation. Every intact housing texel, all AO and the normal
+map remain unchanged. The source has 1,446 chip and 1,532 oxide texels,
+including padding; all 2,978 receive this reduction. No new noise or flat
+pigment is introduced. Both states leave housing region RGB at zero so the
+unchanged library shader cannot apply paint grain or a roughness override.
+
+The `d203221` cap/membrane finish and legends are retained: source variation
+gain 0.25, limit ±2.5 sRGB bytes, 8% charcoal/rubber fade, dust `(110,106,96)`
+at 8% ±1%, and no cracks or peeling. Its 8,561 olive-tinted polymer texels
+retain the prior `(84,90,58)` pigment and 4% fade toward `(100,103,78)`;
+their roughness floor remains 224/255, versus 240/255 for other polymer.
+These colour-specific rules apply only to polymer; housing bypasses them.
+Every cap/membrane albedo, normal, ORM and shader-region pixel was compared
+with `d203221` and matches exactly in both states. All legend records match
+as well. Ink remains `(112,112,102)` at 0.38/0.30 opacity, height fraction
+0.435 and width ceiling 0.90. Geometry, UVs, saved Blender sources, placement,
+room lighting, shared aging defaults and every power-room file are unchanged.
+
+
+### Housing correction verification
+
+The console Python suite passes 8 tests, including exact Present housing
+texture equality, the 25% Remembered wear-mask calculation, unchanged AO,
+zero housing shader overrides and retention of the earlier olive-polymer
+finish. The focused guarded quarters/Naleya suite passes 109 tests; the full
+guarded Godot suite passes 1,015 with zero failures and exit 0. Aging passes
+89 tests and fixture weather passes 11. Existing geometry, seating, glyph
+legibility and runner enforcement remain in place. The full runner reports
+resource-cleanup diagnostics after its successful result.
+
+All seven final atlas PNGs and mapping metadata are byte-identical on repeat.
+The baseline's 662 copied tracked runtime files match `d203221` Git blobs,
+excluding generated UID/import metadata. Its interrupted copy omitted locker
+maps, hinge geometry, wardrobe shader/layout and two JSON plans. Those
+unchanged dependencies were restored before the final captures. The first
+baseline run lacked the room plan and is excluded from the comparisons;
+its error log is retained separately.
+
+
+Both final projects completed fresh editor imports without script errors.
+Immediately before every console, detail and reference capture, all 395
+checked source resources matched their native imported `.md5` `source_md5`.
+The actual windowed quarters-demo passes all 24 beats for both `d203221` and
+the correction. The unchanged power-room route passes its 11-beat machine
+checks. Detail captures use the same recorded camera in both versions.
+Before/after console reports have matching camera eyes and simulation ticks.
+All capture jobs were serialized after checking other Blender/Godot jobs;
+no other worker was interrupted.
+
+The 13 JPEGs under `tmp/issue129-keyboard-fix2/review/` include both finish
+states, full frames, keyboard details, four before/after sheets against
+`d203221` and the power-room reference. They retain complete frames without
+cropping or masking, with baseline on the left and correction on the right.
+Every JPEG decodes and has a maximum dimension of 1400 pixels; the reference
+retains its native 480 by 270 frame. Exact absolute paths are recorded in
+`tmp/issue129-keyboard-fix2/jpeg-paths.json`. Logs remain in that same scratch
+root. Isolated baseline/cache copies, repeat atlases and raw capture PNGs
+were removed after delivery. No image judgment or OCR was performed.

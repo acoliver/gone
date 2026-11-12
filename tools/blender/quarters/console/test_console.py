@@ -108,12 +108,65 @@ class ConsoleTests(unittest.TestCase):
         positions = np.zeros((2, 3, 3))
         case = np.array([[True, True, True], [False, False, False]])
         aged = sealed_storage(clean, positions, case)
-        # Even source chips cannot turn into black fractures or pale flakes.
-        self.assertLessEqual(float(np.ptp(aged[case], axis=0).max()), 5)
+        # Housing retains the source chips; only polymer receives bounded aging.
+        np.testing.assert_array_equal(aged[case], clean[case])
         self.assertLessEqual(float(np.ptp(aged[~case], axis=0).max()), 5)
         self.assertTrue(np.all(aged[~case].mean(0) > clean[1, 0]))
         self.assertTrue(np.all(aged >= 0) and np.all(aged <= 255))
         np.testing.assert_array_equal(aged, sealed_storage(clean, positions, case))
+
+    def test_olive_tinted_polymer_keeps_d203221_finish(self):
+        from bake_legends import sealed_storage
+        clean = np.array([[[84, 90, 58], [255, 255, 200], [0, 0, 0]]], float)
+        aged = sealed_storage(clean, np.zeros_like(clean), np.zeros((1, 3), bool))
+        np.testing.assert_allclose(aged[0, 0], [86.6688, 91.7584, 61.776])
+        np.testing.assert_allclose(aged[0, 1], [88.8768, 93.9664, 63.984])
+        self.assertTrue(np.all(aged[0, 2] > clean[0, 2]))
+
+    def test_remembered_housing_reduces_chip_and_oxide_masks_only(self):
+        from bake_legends import cleaner_housing
+        colour = np.array([[[80, 85, 55], [128, 125, 108], [105, 76, 47], [42, 44, 46]]], float)
+        orm = np.array([[[220, 153, 45], [190, 122, 198], [180, 140, 89], [210, 204, 0]]], np.uint8)
+        clean, material = cleaner_housing(colour, orm)
+        np.testing.assert_array_equal(clean[0, [0, 3]], colour[0, [0, 3]])
+        np.testing.assert_allclose(clean[0, 1], colour[0, 0]*.75 + colour[0, 1]*.25)
+        np.testing.assert_allclose(clean[0, 2], colour[0, 0]*.75 + colour[0, 2]*.25)
+        np.testing.assert_array_equal(material[..., 0], orm[..., 0])
+        np.testing.assert_array_equal(material[0, [0, 3]], orm[0, [0, 3]])
+        np.testing.assert_array_equal(material[0, 1, 1:], [145, 83])
+        np.testing.assert_array_equal(material[0, 2, 1:], [150, 56])
+
+    def test_housing_finishes_preserve_power_room_atlas_detail(self):
+        terminal = ROOT / 'assets/props/terminal'
+        atlas = ROOT / 'assets/props/quarters/steel/console_keyboard'
+        source = {kind: np.asarray(Image.open(terminal / f'keyboard_keyboard_{kind}.png').convert('RGB'))
+                  for kind in ('albedo', 'normal', 'orm')}
+        # The source baker assigns nonzero metal to every housing texel, including
+        # exposed chips/oxide and padding, and zero metal to caps and membrane.
+        housing = source['orm'][..., 2] > 0
+        self.assertGreater(int(housing.sum()), 100000)
+        self.assertTrue(np.any(source['orm'][housing, 2] > 190))
+        self.assertTrue(np.any(source['orm'][housing, 2] == 89))
+        worn = housing & (source['orm'][..., 2] != 45)
+        for state in ('as_built', 'aged'):
+            for kind, expected in source.items():
+                actual = np.asarray(Image.open(atlas / f'{state}_{kind}.png').convert('RGB'))
+                unchanged = housing if state == 'aged' or kind == 'normal' else housing & ~worn
+                np.testing.assert_array_equal(actual[unchanged], expected[unchanged], err_msg=f'{state} {kind}')
+                if state == 'as_built' and kind in ('albedo', 'orm'):
+                    from scipy.ndimage import distance_transform_edt
+                    nearest = distance_transform_edt(source['orm'][..., 2] != 45,
+                                                     return_distances=False, return_indices=True)
+                    restored = expected[tuple(nearest[:, worn])].astype(float)*.75 + expected[worn]*.25
+                    if kind == 'orm':
+                        restored[:, 0] = expected[worn, 0]
+                    np.testing.assert_array_equal(actual[worn], np.round(restored).astype(np.uint8))
+                    if kind == 'albedo':
+                        self.assertEqual(int(np.any(actual[worn] != expected[worn], axis=1).sum()), int(worn.sum()))
+                        self.assertGreater(float(actual[housing].std()), 5)
+        regions = np.asarray(Image.open(atlas / 'regions.png').convert('RGB'))
+        # No procedural paint grain or roughness floor may mask the source housing.
+        np.testing.assert_array_equal(regions[housing], 0)
 
 
 if __name__ == '__main__':
