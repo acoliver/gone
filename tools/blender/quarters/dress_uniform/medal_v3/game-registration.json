@@ -1,0 +1,51 @@
+{
+  "scale": 0.022018894293040565,
+  "center": [
+    -0.0032501518726348877,
+    0.0,
+    -0.27231594920158386
+  ],
+  "frame": {
+    "origin": [
+      0.10850599841098815,
+      -0.05112508141085713,
+      -0.3830672607855969
+    ],
+    "frame": [
+      [
+        0.961540808818977,
+        0.27447978392934413,
+        0.01000605765763747
+      ],
+      [
+        -0.27466210691638443,
+        0.9609025300465859,
+        0.03502934161989463
+      ],
+      [
+        0.0,
+        -0.036430426351763266,
+        0.9993361916971831
+      ]
+    ],
+    "body_vertices": 242
+  },
+  "eyelet": {
+    "aperture_width_m": 0.02270298364325152,
+    "aperture_depth_min_max_m": [
+      0.0005999999999999998,
+      0.0013353614480622106
+    ],
+    "rear_section_m": 0.00012,
+    "front_section_m": 0.00055,
+    "vertical_section_m": 0.0004,
+    "ribbon_min_clearance_m": 8e-05,
+    "rear_return_z_m": 0.016233925883509488,
+    "ribbon_bottom_local_z_m": 0.016933925883509487,
+    "threaded_cross_section_z_m": 0.019933925883509486,
+    "cross_section_stations": 15,
+    "decision": "Tilted formed bail has its rear return below the sewn ribbon and its front crossbar above the ribbon tip; rear return follows wool with 0.38 mm authored clearance; joined straps close the real opening without moving ribbon or wool"
+  },
+  "guide_sha256": "cf71dd7144f44bc91e0867ec56f8d23b0289ebf9bf91ec135559f577f4ac26a8",
+  "concept_sha256": "900e566387d32661c16274644f23d14b26a1404bc3ee06931a941c6593eaac3a"
+}

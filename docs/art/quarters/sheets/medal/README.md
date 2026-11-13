@@ -1,20 +1,48 @@
 # Issue 130: pendant concepts, raw shape guide and tunic measurements
 
-The final Present-only brass finish adjustment passed visual QA. See
-[Present brass finish](#present-brass-finish) for its values and final comparison
-paths. Earlier comparison images below retain the initial finish.
+## Current generated-medal pipeline
 
-The extended button row and fitted brass/enamel medal have passed technical
-acceptance and image-comparer review. The final production assets, editable
-sources, selected concept and full Hunyuan guide are retained here and in the
-tunic source directory. [Final review and comparison images](#final-review-and-comparison-images)
-record the accepted outcome and verification limits.
+The current medal uses the c01 Hunyuan-generated shape retained under
+`tools/blender/quarters/dress_uniform/medal_v3/`. A fitted cage follows the
+generated surface. The upper star-tip return is corrected before reduction,
+and high and low body depth are scaled together to meet the 2 to 4 mm target
+at a 32 mm body diameter. The mounted reverse follows the unchanged wool.
+The ring is soldered to the body; a centred bar carries an interlinked loop.
+The ribbon wraps over the bar with a soft, rounded bend. The editable mounted
+sources are `tunic-working.blend` and `tunic-pilot.blend`, beside the pipeline.
+Production GLBs are exported from those saved sources.
 
-The concept, baseline-measurement and raw-guide sections below describe the
-stages before production fitting. Their pending-review statements apply to
-those stages. Candidate C was selected after image-comparer accepted its JPEG
-as generator input; the exact unmodified PNG was processed by the local full
-Hunyuan model, which exited 0. Generation sidecars remain unchanged.
+The finish uses photo-derived brass, enamel and grosgrain maps, with recess
+oxide constrained by geometry. Brass and enamel have separately padded
+albedo, ORM and normal maps to prevent cross-material filtering. Enamel has
+its own coat-weight map. Star normals have a 0.065 mm rounding footprint;
+ribbon roughness combines fine weave with a larger photographic field.
+Under the fixed game rig, broad brass-face mean RGB targets are 170/135/73
+to 193/157/89 for Remembered and 143/113/61 to 170/135/76 for Present, in
+8-bit capture values. These are appearance-calibration targets, not alloy
+reflectance measurements. The measured grosgrain pitch is about 0.298 mm.
+
+`medal-budget.json` records 26,290 metal triangles for Remembered and 26,326
+for Present, plus a 740-triangle ribbon in each state. The #130 generated
+replacement, fitted reverse and soldered attachment raised the earlier
+whole-garment ceilings of 22,943 and 28,728. The final ceilings are 39,942
+Remembered and 46,515 Present triangles, lowered to measured totals after
+the ring and loop tessellation changes. Wool geometry was not reduced to
+make room. Support, clearance, performance policy and the maximum 1.5
+aged/clean ratio remain unchanged.
+
+The result is not yet photographic in review. The main remaining tells are
+the Present enamel perimeter, broad star facets and regular rim rings, and
+the ribbon and attachment in wider views. The ingame11 technical checks
+pass, including guarded Godot 1019/0, focused Godot 39/0, Python and Blender
+regressions, byte-identical saved-source exports and fresh native import
+source checks. Those checks do not establish photographic appearance.
+Local results and captures are under `tmp/issue130-v3/ingame11/`.
+
+The sections below describe earlier stages, including their previous visual
+acceptance, measurements and comparison images. They do not describe the
+current generated replacement. The original selected C image and raw guide
+remain retained as historical inputs.
 
 The isolated worktree is `tmp/wt-130`, branch `issue-130-tunic-details`, based on
 `56a656ba807a477a38503c3b6be0343ebb0b2d4d` (merged PR 118).

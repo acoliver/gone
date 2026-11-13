@@ -128,15 +128,18 @@ def inspect(directory, baseline, repeats):
                 albedo = np.where(albedo <= .04045, albedo/12.92, ((albedo+.055)/1.055)**2.4)
                 assert np.all(albedo[:,2] > albedo[:,0]*4), 'Exported enamel UVs must sample navy'
                 assert np.all(orm[:,2] == 0), 'Enamel remains dielectric in the map'
-                expected_roughness = .31 if suffix else .215
-                assert np.max(abs(orm[:,1]/255-expected_roughness)) < .06
+                if suffix:
+                    # #130: dust-softened Present enamel uses the requested 0.30-0.40 band.
+                    assert np.all((orm[:,1]/255 >= .30) & (orm[:,1]/255 <= .40))
+                else:
+                    assert np.max(abs(orm[:,1]/255-.215)) < .06
 
         repeat = repeats / filename
         assert raw == repeat.read_bytes(), (state, 'Saved source export is not byte-identical')
         result[state] = dict(triangles=count, button_diameters_m=diameters,
                              body_bounds_game_xyz_m=after['TunicBody'].bounds.tolist(),
                              overall_bounds_game_xyz_m=[geometry.min(0).tolist(), geometry.max(0).tolist()],
-                             up='+Y', front='+Z', medal_materials=material_names, medal=medal_metrics(after['Medal']),
+                             up='+Y', front='+Z', medal_materials=material_names, medal=medal_metrics(after['Medal'], state),
                              unrelated_materials_and_embedded_textures_exact=True, unrelated_vertex_channels_exact=True,
                              unchanged_pivots_and_other_triangles=True, byte_identical_saved_source_export=True)
     return result

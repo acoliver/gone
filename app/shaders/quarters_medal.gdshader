@@ -12,6 +12,8 @@ uniform float roughness = 1.0;
 uniform float metallic = 1.0;
 uniform float specular = 0.5;
 uniform float coat = 0.0;
+uniform sampler2D coat_texture : filter_linear_mipmap, repeat_disable;
+uniform bool has_coat_texture = false;
 uniform float coat_roughness = 0.13;
 uniform float ao_light_affect = 0.2;
 uniform bool vertex_colour = false;
@@ -34,7 +36,8 @@ void fragment() {
 	SPECULAR = specular;
 	AO = orm.r;
 	AO_LIGHT_AFFECT = ao_light_affect;
-	CLEARCOAT = rough_enamel ? 0.0 : coat;
+	float coat_weight = coat * (has_coat_texture ? texture(coat_texture, UV).r : 1.0);
+	CLEARCOAT = rough_enamel ? 0.0 : coat_weight;
 	CLEARCOAT_ROUGHNESS = rough_enamel ? 1.0 : coat_roughness;
 	if (diagnostic == 3) {
 		ALBEDO = vec3(1.0); METALLIC = 1.0; ROUGHNESS = 0.0; AO = 1.0; CLEARCOAT = 0.0;

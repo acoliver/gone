@@ -2,6 +2,64 @@ extends SimTestCase
 
 const MEDAL_SHADER := "res://app/shaders/quarters_medal.gdshader"
 
+func test_enamel_padding_stays_blue_and_dielectric_at_every_mip() -> void:
+	for state: StringName in QuartersProps.STATES:
+		var source := (load(QuartersProps.TUNIC_SCENES[state]) as PackedScene).instantiate()
+		var medal := source.find_child("Medal", true, false) as MeshInstance3D
+		var brass := medal.mesh.surface_get_material(0) as StandardMaterial3D
+		var enamel := medal.mesh.surface_get_material(1) as StandardMaterial3D
+		assert_true(enamel.albedo_texture != brass.albedo_texture, "material-isolated albedo padding")
+		assert_true(enamel.roughness_texture != brass.roughness_texture, "material-isolated ORM padding")
+		var colour := enamel.albedo_texture.get_image()
+		var orm := enamel.roughness_texture.get_image()
+		if colour.is_compressed(): assert_int_equal(colour.decompress(), OK, "read enamel mip colours")
+		if orm.is_compressed(): assert_int_equal(orm.decompress(), OK, "read enamel mip ORM")
+		colour.convert(Image.FORMAT_RGB8)
+		orm.convert(Image.FORMAT_RGB8)
+		for level: int in range(colour.get_mipmap_count() + 1):
+			var width := maxi(1, colour.get_width() >> level)
+			var height := maxi(1, colour.get_height() >> level)
+			var start := colour.get_mipmap_offset(level)
+			var orm_start := orm.get_mipmap_offset(level)
+			var image := Image.create_from_data(width, height, false, Image.FORMAT_RGB8,
+				colour.get_data().slice(start, start + width * height * 3))
+			var packed := Image.create_from_data(width, height, false, Image.FORMAT_RGB8,
+				orm.get_data().slice(orm_start, orm_start + width * height * 3))
+			for point: Vector2 in [Vector2.ZERO, Vector2(0.5, 0.5), Vector2(0.999, 0.999)]:
+				var x := mini(int(point.x * image.get_width()), image.get_width() - 1)
+				var y := mini(int(point.y * image.get_height()), image.get_height() - 1)
+				var pixel := image.get_pixel(x, y)
+				assert_true(pixel.b > pixel.r * 4.0, "enamel mip padding cannot sample brass colour")
+				assert_true(packed.get_pixel(x, y).b < 0.01, "enamel mip padding cannot become metallic")
+		source.free()
+	var shader := FileAccess.get_file_as_string("res://app/shaders/quarters_ribbon.gdshader")
+	assert_true("weave_uv * vec2(0.11, 0.071)" in shader, "larger photographic fibre field varies fold roughness")
+
+func test_medal_ribbon_has_restrained_separate_sheen() -> void:
+	for state: StringName in QuartersProps.STATES:
+		var finish := QuartersProps.material(&"dress_uniform", state, &"Medal", 2)
+		assert_true(finish.shader.resource_path.ends_with("quarters_ribbon.gdshader"), "only the medal ribbon uses this finish")
+		assert_true("SPECULAR = 0.4;" in finish.shader.code, "retain the woven dielectric specular invariant")
+		assert_true("ANISOTROPY = weave_enabled ? 0.38" in finish.shader.code, "retain restrained directional fibre sheen")
+		assert_true("RIM = 0.08;" in finish.shader.code, "restrain the medal-only grazing lobe")
+		assert_true("mix(vec3(0.97), texture(albedo_texture, weave_uv).rgb, 0.75)" in finish.shader.code, "medal-only weave colour contrast is reduced by one quarter")
+		assert_true("xy *= 0.8;" in finish.shader.code, "medal-only weave normal slope is reduced by one fifth")
+
+func test_generated_enamel_coat_texture_reaches_the_shader() -> void:
+	for state: StringName in QuartersProps.STATES:
+		var source := (load(QuartersProps.TUNIC_SCENES[state]) as PackedScene).instantiate()
+		QuartersProps.apply(source, &"dress_uniform", state)
+		var medal := source.find_child("Medal", true, false) as MeshInstance3D
+		var finish := medal.get_surface_override_material(1) as ShaderMaterial
+		var texture := load(QuartersProps.MEDAL_ROOT + String(state) + "_coat.png") as Texture2D
+		assert_true(texture != null, "generated enamel has its state-specific coat-weight map")
+		assert_true(finish.get_shader_parameter("coat_texture") == texture, "linear saved master reaches the shader despite native glTF dropping coat")
+		assert_true(finish.get_shader_parameter("has_coat_texture") == true, "coat mask is enabled")
+		assert_true("texture(coat_texture, UV).r" in finish.shader.code, "coat consumes the linear red channel")
+		assert_false("coat_texture : source_color" in finish.shader.code, "coat is linear data")
+		assert_true(texture.get_image().has_mipmaps(), "coat has filtered minification")
+		source.free()
+
 func test_asset_capture_hides_the_aiming_overlay_only() -> void:
 	var main := Node3D.new()
 	var dot := ClickIndicators.new()
@@ -67,7 +125,7 @@ func test_medal_pbr_bindings_and_negative_controls() -> void:
 			assert_float_equal(finish.get_shader_parameter("roughness"), 1.0, "final atlas roughness multiplied once")
 			assert_float_equal(finish.get_shader_parameter("metallic"), 1.0, "final atlas metallic multiplied once")
 			assert_float_equal(finish.get_shader_parameter("specular"), .5, "enamel is exempt from generic aged specular")
-			assert_float_equal(finish.get_shader_parameter("coat"), .35 if slot == 1 else 0.0, "coat only on enamel")
+			assert_float_equal(finish.get_shader_parameter("coat"), 1.0 if slot == 1 else 0.0, "generated coat map uses a unit factor on enamel only")
 			assert_true(finish == QuartersProps.material(&"dress_uniform", state, &"Medal", slot), "state/role cached")
 			for parameter: String in ["normal_texture", "orm_texture"]:
 				var missing := finish.duplicate() as ShaderMaterial
@@ -77,7 +135,7 @@ func test_medal_pbr_bindings_and_negative_controls() -> void:
 			swapped.set_shader_parameter("normal_texture", imported.roughness_texture)
 			assert_false(_bindings_valid(swapped, imported), "wrong texture-role negative")
 			assert_true(imported.roughness_texture.get_image().has_mipmaps(), "ORM has filtered minification")
-			if slot == 1: assert_float_equal(finish.get_shader_parameter("coat_roughness"), .26 if state == &"aged" else .18, "state enamel coat")
+			if slot == 1: assert_float_equal(finish.get_shader_parameter("coat_roughness"), .30 if state == &"aged" else .09, "#130: Present coat matches the softer saved enamel finish")
 			var ignored := finish.duplicate() as ShaderMaterial
 			ignored.set_shader_parameter("has_normal", false)
 			assert_false(_bindings_valid(ignored, imported), "ignored normal negative")

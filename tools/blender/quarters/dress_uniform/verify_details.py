@@ -17,10 +17,10 @@ from aging_support import components
 from common import surface_tree
 from detail_clearance import continuous_gap, triangles
 from reduced_clearance import crossing_pairs
-from medal_mount_checks import upper_ribbon_samples, assert_upper_preserved
+from medal_solder_checks import sewn_ribbon_samples, suspension_measurements
 
 
-def ribbon_signature(obj, uv_names):
+def ribbon_channel_signature(obj, uv_names):
     rows = []
     colours = obj.data.color_attributes['RibbonColours'].data
     for face in obj.data.polygons:
@@ -28,14 +28,13 @@ def ribbon_signature(obj, uv_names):
             continue
         corners = []
         for i in face.loop_indices:
-            vertex = obj.data.loops[i].vertex_index
-            values = list(obj.matrix_world @ obj.data.vertices[vertex].co)
+            values = []
             for name in uv_names:
                 values.extend(obj.data.uv_layers[name].data[i].uv)
             values.extend(colours[i].color)
             corners.append(tuple(values))
         rows.append(tuple(sorted(corners)))
-    return hashlib.sha256(np.array(sorted(rows), dtype='<f8').tobytes()).hexdigest(), len(rows)
+    return hashlib.sha256(json.dumps(sorted(rows), separators=(',', ':')).encode()).hexdigest(), len(rows)
 
 
 def row_limits(body, fit):
@@ -76,14 +75,19 @@ def measure(directory, baseline):
         medal = bpy.data.objects['Medal']
         uv_names = [layer.name for layer in medal.data.uv_layers]
         frame = json.loads(medal['medal_frame'])
-        ribbons[name] = (frame, upper_ribbon_samples(medal, frame))
+        ribbons[name] = (frame, sewn_ribbon_samples(medal), ribbon_channel_signature(medal, uv_names))
     for name in ['working', 'pilot']:
         bpy.ops.wm.open_mainfile(filepath=str(directory / f'tunic-{name}.blend'))
         for part, expected in frozen_by_state[name].items():
             assert geometry_hash(bpy.data.objects[part]) == expected, ('Frozen geometry changed', name, part)
         medal, body = bpy.data.objects['Medal'], bpy.data.objects['TunicBody']
-        frame_before, expected = ribbons[name]
-        upper_count = assert_upper_preserved(expected, medal, frame_before)
+        frame_before, expected, ribbon_before = ribbons[name]
+        current_sewn = sewn_ribbon_samples(medal)
+        np.testing.assert_array_equal(current_sewn, expected, 'All 64 sewn vertices and their UVs/colours must remain exact')
+        upper_count = len(current_sewn)
+        assert ribbon_channel_signature(medal, ['DetailUV', 'BakeUV']) == ribbon_before, 'Full saved ribbon UVs/colours changed'
+        current_frame = json.loads(medal['medal_frame'])
+        assert all(current_frame[key] == frame_before[key] for key in ['origin', 'frame']), 'Saved seat origin/orientation must remain exact'
         assert json.loads(medal['ribbon_loop'])['loop_wrap_degrees'] >= 180
         buttons = bpy.data.objects['Buttons']
         positions = points(buttons)
@@ -130,7 +134,8 @@ def measure(directory, baseline):
                 thickness = float(local[plate_ids, 1].max() - local[plate_ids, 1].min())
                 assert .002 <= thickness <= .004, (name, 'Actual formed body depth', thickness)
                 metal_ids = sorted(set(range(len(pos))) - ribbon_vertices)
-                assert len(components(obj)) == 4, '#130: closed body/claw, jump ring, bar and looped ribbon'
+                assert len(components(obj)) == 3, '#130: soldered body/ring, bar and looped ribbon'
+                entry['suspension'] = suspension_measurements(obj)
                 assert len(metal) >= 25, 'Measured reverse anchors'
                 normal = -np.array(frame['frame'])[1]
                 obj.data.calc_loop_triangles()

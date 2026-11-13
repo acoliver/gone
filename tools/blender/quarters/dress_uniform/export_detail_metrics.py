@@ -49,12 +49,14 @@ def separation(a, b):
     return float(min(distances))
 
 
-def medal_metrics(mesh):
+def medal_metrics(mesh, state):
     budget = json.loads(Path(__file__).with_name('medal-budget.json').read_text())
+    solid_triangles = budget['solid_medal_triangles_by_state'][state]
+    assert max(budget['solid_medal_triangles_by_state'].values()) == budget['solid_medal_triangles']
     welded = mesh.copy()
     welded.merge_vertices(merge_tex=True, merge_norm=True)
     pieces = welded.split(only_watertight=False)
-    assert len(pieces) == 4, '#130: three manufactured solids and one looped ribbon'
+    assert len(pieces) == 3, '#130: soldered body/ring, bar and looped ribbon'
     ribbon, = [p for p in pieces if len(p.faces) == budget['ribbon_triangles']]
     solids = [p for p in pieces if p is not ribbon]
     assert all(p.is_watertight and p.is_winding_consistent and p.volume > 0 for p in pieces)
@@ -66,8 +68,15 @@ def medal_metrics(mesh):
         separations.append(bounded_separation(scaled, cloth, separation)/1000)
     clearance = min(separations)
     assert clearance >= .00008 - 1e-8, 'Exported metal/ribbon clearance retains 80 micrometres'
-    assert sum(len(p.faces) for p in solids) == budget['solid_medal_triangles']
+    body_ring, bar = sorted(solids, key=lambda part: len(part.faces), reverse=True)
+    ring_mm, bar_mm = body_ring.copy(), bar.copy()
+    ring_mm.apply_scale(1000)
+    bar_mm.apply_scale(1000)
+    bearing = bounded_separation(ring_mm, bar_mm, separation) / 1000
+    assert bearing <= .0001, ('Exported ring/bar bearing exceeds 0.1 mm', bearing)
+    assert sum(len(p.faces) for p in solids) == solid_triangles
     assert len(ribbon.faces) == budget['ribbon_triangles']
-    return dict(metal_triangles=budget['solid_medal_triangles'], ribbon_triangles=budget['ribbon_triangles'],
+    return dict(metal_triangles=solid_triangles, ribbon_triangles=budget['ribbon_triangles'],
                 metal_watertight=True, metal_winding_consistent=True,
-                actual_metal_ribbon_clearance_m=clearance, per_solid_ribbon_clearance_m=separations)
+                actual_metal_ribbon_clearance_m=clearance, per_solid_ribbon_clearance_m=separations,
+                body_ring_connected_solid=True, ring_bar_bearing_m=bearing)

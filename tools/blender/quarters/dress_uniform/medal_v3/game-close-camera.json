@@ -1,0 +1,27 @@
+{
+  "camera_key": "remembered-medal (identical to present-medal)",
+  "camera": {
+    "fov": 30.0,
+    "size": [
+      1536,
+      864
+    ],
+    "transform": "[X: (0.000003, 0.0, -1.0), Y: (0.0, 1.0, 0.0), Z: (1.0, 0.0, 0.000003), O: (41.56324, -9.5582, 5.189201)]"
+  },
+  "projected_body_width_height_px": {
+    "high": [
+      483.9105884841975,
+      499.10299700494033
+    ],
+    "low": [
+      483.8782615617006,
+      499.02667935245483
+    ]
+  },
+  "complete_silhouette_error_px": 0.3535533905932738,
+  "raster_quantization_px": 0.125,
+  "boundary_to_boundary_distance_px": 0.3535533905932738,
+  "silhouette_metric": "Symmetric Hausdorff distance between filled silhouette sets, including opening voids. Boundary-to-boundary distance is separately reported because subpixel slits at tangent crossings can open or close without moving the filled silhouette by that slit length.",
+  "perimeter_chord_bound_px_at_490px": 0.1311760682904073,
+  "scope": "Standalone candidate rigidly projected through the frozen registration frame and unchanged camera. Garment origin [41.32804,-9.18,5.3] is reconstructed in the read-only plan; this is not mounting or a runtime capture."
+}

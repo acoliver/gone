@@ -26,7 +26,9 @@ def check_sources():
         materials = {mat.name for mat in medal.data.materials}
         assert 'MedalEnamel' in materials or 'MedalEnamel_Aged' in materials, (state, materials)
         record = json.loads(medal['fitted_medal'])
-        assert record['guide_sha256'] == 'cf71dd7144f44bc91e0867ec56f8d23b0289ebf9bf91ec135559f577f4ac26a8'
+        # #130: corrected upper-tip source and equally depth-scaled high/low.
+        assert record['guide_sha256'] == '796c24f5298353dd35d1f29072158c49dac4e4b788e99f804b1de48fcddeaf4a'
+        assert record['parent_generated_sha256'] == 'b98c7c4e688f1f3f6723db629493f965b2df3bb17b30fe923917092d525c3340'
         assert 0.002 <= record['body_depth_m'] <= 0.004
         assert record['body_diameter_m'] == .032
         assert record['raw_sample_count'] >= 100

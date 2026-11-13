@@ -52,6 +52,7 @@ const WARDROBE_ROOT := "res://tools/blender/quarters/wardrobe/"
 const WARDROBE_TEXTURES := "res://assets/props/quarters/wardrobe_"
 static var _wardrobe_layout: Dictionary = {}
 
+const MEDAL_ROOT := "res://assets/props/quarters/dress_uniform/medal/"
 const TUNIC_SCENES := {
 	&"as_built": "res://assets/props/quarters/dress_uniform.glb",
 	&"aged": "res://assets/props/quarters/dress_uniform_aged.glb",
@@ -260,8 +261,15 @@ static func _medal_finish(imported: StandardMaterial3D, state: StringName, role:
 	result.set_shader_parameter(&"roughness", imported.roughness)
 	result.set_shader_parameter(&"metallic", imported.metallic)
 	result.set_shader_parameter(&"specular", .5)
-	result.set_shader_parameter(&"coat", .35 if role == 1 else 0.0)
-	result.set_shader_parameter(&"coat_roughness", .26 if state == &"aged" else .18)
+	result.set_shader_parameter(&"coat", 0.0)
+	if role == 1:
+		# Godot's native glTF import drops KHR_materials_clearcoat, so bind the saved master.
+		var coat_texture := load(MEDAL_ROOT + String(state) + "_coat.png") as Texture2D
+		assert(coat_texture != null, "enamel requires its generated coat-weight texture")
+		result.set_shader_parameter(&"coat_texture", coat_texture)
+		result.set_shader_parameter(&"has_coat_texture", true)
+		result.set_shader_parameter(&"coat", 1.0)
+		result.set_shader_parameter(&"coat_roughness", .30 if state == &"aged" else .09)
 	return result
 
 static func _ribbon_finish(imported: StandardMaterial3D, state: StringName) -> ShaderMaterial:
@@ -278,7 +286,6 @@ static func _ribbon_finish(imported: StandardMaterial3D, state: StringName) -> S
 	return result
 
 static func _medal_contact(finish: ShaderMaterial, state: StringName) -> void:
-	const MEDAL_ROOT := "res://assets/props/quarters/dress_uniform/medal/"
 	var frames: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(MEDAL_ROOT + "contact-frames.json"))
 	var frame: Dictionary = frames[state]
 	finish.set_shader_parameter(&"contact_enabled", true)
