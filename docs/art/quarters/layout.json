@@ -318,7 +318,7 @@
         2.55
       ],
       "h_from": 0.76,
-      "h": 1.45,
+      "h": 1.698887321688066,
       "faces": "-x",
       "parts": [
         "armoured_housing",
@@ -326,7 +326,7 @@
         "display",
         "control_panel"
       ],
-      "note": "Military console on the desk. Its display works in both states. The video message plays here."
+      "note": "Issue #129: the 16:10 head grows above the fixed deck; h is nominal desk datum plus 0.9543222 m source height, so fitting does not shrink it. Its display works in both states. The video message plays here."
     },
     {
       "id": "desk_chair",

@@ -2,19 +2,20 @@
 
 Each corrected source defect has one probe that reads the built mesh or the exported
 source, not new attributes. Guards pin the geometry that must not change.
-HATCH_SOURCE_JSON selects the exported source (default: tmp/hatch-model/parts-source.json).
+The default input is a fresh simulation export; HATCH_SOURCE_JSON overrides it.
 """
 import importlib.util
 import json
 import os
 from pathlib import Path
+import subprocess
+import tempfile
 import unittest
 
 import bpy
 from mathutils import Matrix, Vector
 
 ROOT = Path(__file__).resolve().parents[2]
-SOURCE = Path(os.environ.get("HATCH_SOURCE_JSON", ROOT / "tmp/hatch-model/parts-source.json"))
 spec = importlib.util.spec_from_file_location("build_hatch", Path(__file__).with_name("build_hatch.py"))
 build = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(build)
@@ -86,9 +87,19 @@ def forged_section_ratio(section):
 class HatchRound3Test(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        if "HATCH_SOURCE_JSON" in os.environ:
+            source = Path(os.environ["HATCH_SOURCE_JSON"])
+        else:
+            scratch = ROOT / "tmp/hatch-round3"
+            scratch.mkdir(parents=True, exist_ok=True)
+            temporary = tempfile.TemporaryDirectory(prefix="contract-", dir=scratch)
+            cls.addClassCleanup(temporary.cleanup)
+            source = Path(temporary.name) / "parts-source.json"
+            subprocess.run(["godot", "--headless", "--path", str(ROOT), "-s",
+                            "tools/export_hatch_parts.gd", "--", "--output", str(source)], check=True)
         bpy.ops.object.select_all(action="SELECT")
         bpy.ops.object.delete(use_global=False)
-        cls.document = __import__("json").loads(SOURCE.read_text())
+        cls.document = json.loads(source.read_text())
         from hatch_generated_frame import load_frames
         cls.objects, cls.nodes, cls.error = build.construct(cls.document, build.material(), load_frames(cls.document))
         cls.by_name = {obj.name: obj for obj in cls.objects}

@@ -1,5 +1,9 @@
 # Quarters art
 
+The [#129 console follow-up](console-129.md) records the taller 16:10 display,
+native Naleya key layout, measured desk/cabinet fit and reproduction commands.
+Its visual review is pending; the console sequence and main cameras are unchanged.
+
 ## Playable demo
 
 Issue [#114](https://github.com/acoliver/gone/issues/114) fixes the room on D16,

@@ -95,15 +95,18 @@ BLENDER=/Volumes/XS1000/acoliver/projects/threedee/branch-1/.tools/Blender-4.5.1
 2. **Validate** (Khronos glTF-Validator, zero errors required):
 
    ```
-   node tmp/pipeline/valtool/validate.cjs tmp/pipeline/pod-probe.glb \
+   npm ci --prefix tools/gltf-validator
+   node tools/gltf-validator/validate.cjs tmp/pipeline/pod-probe.glb \
        tmp/pipeline/validate.json
    ```
 
-   The smoke used the official npm validator build (2.0.0-dev.3.10, the
-   version threedee pins) through a scratch wrapper under `tmp/`. That
-   wrapper is not committed; giving the validator a durable home in this
-   repo (vendored wrapper or a reused threedee script) is open tooling
-   debt tracked on #45.
+   The tracked wrapper and lockfile in `tools/gltf-validator/` use the
+   official npm validator build (2.0.0-dev.3.10). Run `npm ci` after a
+   clean checkout; `node_modules/` is ignored by Git and the directory's
+   `.gdignore` keeps it out of Godot imports. The output parent must exist.
+   Reports record errors and warnings; errors produce a nonzero exit code.
+   Scratch output under `tmp/` remains available through direct file I/O,
+   but `tmp/.gdignore` excludes it from Godot's editor import scan.
 
 3. **Import**:
 
