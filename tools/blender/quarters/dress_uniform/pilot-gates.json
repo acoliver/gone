@@ -344,9 +344,9 @@
   },
   "G31": {
     "value": {
-      "triangles": 20305,
-      "unaged_triangles": 13768,
-      "ratio": 1.4747966298663568
+      "triangles": 20299,
+      "unaged_triangles": 13894,
+      "ratio": 1.460990355549158
     },
     "threshold": "<= 1.5 x unaged triangles",
     "status": "pass",

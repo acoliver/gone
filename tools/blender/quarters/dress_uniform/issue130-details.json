@@ -1,0 +1,250 @@
+{
+  "working": {
+    "button_count": 8,
+    "button_centers_m": [
+      [
+        2.322719915355265e-06,
+        -0.03702785469591618,
+        -0.18000000685453416
+      ],
+      [
+        -7.836308841433492e-06,
+        -0.058706090599298474,
+        -0.2757142961025238
+      ],
+      [
+        -1.7995186244661454e-05,
+        -0.06555718451738357,
+        -0.3714285683631897
+      ],
+      [
+        -2.8154128704045433e-05,
+        -0.07304779887199402,
+        -0.4671428632736206
+      ],
+      [
+        -3.831321519101039e-05,
+        -0.08090447351336479,
+        -0.5628571653366089
+      ],
+      [
+        -4.8472023263457234e-05,
+        -0.09006020128726959,
+        -0.6585714209079743
+      ],
+      [
+        -5.863115598913282e-05,
+        -0.09124241918325424,
+        -0.754285705089569
+      ],
+      [
+        -6.878999680338893e-05,
+        -0.09471640199422836,
+        -0.85
+      ]
+    ],
+    "button_pitch_m": [
+      0.09571428924798964,
+      0.09571427226066592,
+      0.09571429491043087,
+      0.09571430206298831,
+      0.09571425557136537,
+      0.09571428418159478,
+      0.09571429491043093
+    ],
+    "button_neck_hem_gaps_m": [
+      0.015208841772067327,
+      0.015168314287264173
+    ],
+    "front_row_neck_hem_z_m": [
+      -0.15852007129670403,
+      -0.8721732547970603
+    ],
+    "placket_supported_samples": 20155,
+    "frozen_non_detail_geometry": true,
+    "ribbon_geometry_uv_vertex_colours_exact": true,
+    "ribbon_faces": 68,
+    "details": {
+      "Placket": {
+        "triangles": 776,
+        "self_contacts": 0,
+        "body_contacts": 0,
+        "base_gap_min_max_m": [
+          0.0004998702788725495,
+          0.000500129594001919
+        ]
+      },
+      "Buttons": {
+        "triangles": 768,
+        "self_contacts": 0,
+        "body_contacts": 0,
+        "base_gap_min_max_m": [
+          0.0004963454557582736,
+          0.0010192269692197442
+        ]
+      },
+      "Medal": {
+        "triangles": 982,
+        "self_contacts": 0,
+        "body_contacts": 0,
+        "base_gap_min_max_m": [
+          0.0003146401431877166,
+          0.0017430929001420736
+        ],
+        "body_depth_m": 0.003970846537570773,
+        "body_diameter_m": 0.0320000227569017,
+        "star_relief_m": 0.00065,
+        "metal_back_gap_min_max_m": [
+          0.0003146401431877166,
+          0.0017430929001420736
+        ],
+        "ribbon_back_gap_min_max_m": [
+          0.0006998949684202671,
+          0.0007001145859248936
+        ],
+        "continuous_metal_clearance_m": 0.00024999900682776133,
+        "eyelet": {
+          "aperture_width_m": 0.02270298364325152,
+          "aperture_depth_min_max_m": [
+            0.0005999999999999998,
+            0.0013353614480622106
+          ],
+          "rear_section_m": 0.00012,
+          "front_section_m": 0.00055,
+          "vertical_section_m": 0.0004,
+          "ribbon_min_clearance_m": 8e-05,
+          "rear_return_z_m": 0.016233925883509488,
+          "ribbon_bottom_local_z_m": 0.016933925883509487,
+          "threaded_cross_section_z_m": 0.019933925883509486,
+          "cross_section_stations": 15,
+          "decision": "Tilted formed bail has its rear return below the sewn ribbon and its front crossbar above the ribbon tip; rear return follows wool with 0.38 mm authored clearance; joined straps close the real opening without moving ribbon or wool"
+        }
+      }
+    },
+    "total_triangles": 13894
+  },
+  "pilot": {
+    "button_count": 8,
+    "button_centers_m": [
+      [
+        0.0003593399125384167,
+        -0.033299559131264686,
+        -0.18000000298023225
+      ],
+      [
+        0.001655455207801424,
+        -0.05506488956511021,
+        -0.27571429014205934
+      ],
+      [
+        0.002951570604927838,
+        -0.06003819711506367,
+        -0.3714285606145859
+      ],
+      [
+        0.00424768578261137,
+        -0.06794420257210732,
+        -0.4671428710222244
+      ],
+      [
+        0.005543801097664982,
+        -0.0760182811319828,
+        -0.5628571557998657
+      ],
+      [
+        0.006839916630124208,
+        -0.08291842564940452,
+        -0.6585714530944824
+      ],
+      [
+        0.008136031760368496,
+        -0.08642430692911147,
+        -0.7542856955528259
+      ],
+      [
+        0.009432147187180818,
+        -0.09321426197886468,
+        -0.8500000047683716
+      ]
+    ],
+    "button_pitch_m": [
+      0.09571428716182709,
+      0.09571427047252656,
+      0.0957143104076385,
+      0.09571428477764132,
+      0.09571429729461667,
+      0.09571424245834348,
+      0.09571430921554569
+    ],
+    "button_neck_hem_gaps_m": [
+      0.014977769153846854,
+      0.01279761990754491
+    ],
+    "front_row_neck_hem_z_m": [
+      -0.1588242788140639,
+      -0.8697933813020456
+    ],
+    "placket_supported_samples": 20155,
+    "frozen_non_detail_geometry": true,
+    "ribbon_geometry_uv_vertex_colours_exact": true,
+    "ribbon_faces": 68,
+    "details": {
+      "Placket": {
+        "triangles": 776,
+        "self_contacts": 0,
+        "body_contacts": 0,
+        "base_gap_min_max_m": [
+          0.0004998798831366003,
+          0.0005002235993742943
+        ]
+      },
+      "Buttons": {
+        "triangles": 768,
+        "self_contacts": 0,
+        "body_contacts": 0,
+        "base_gap_min_max_m": [
+          0.000495336193125695,
+          0.001165931229479611
+        ]
+      },
+      "Medal": {
+        "triangles": 850,
+        "self_contacts": 0,
+        "body_contacts": 0,
+        "base_gap_min_max_m": [
+          0.0003254366747569293,
+          0.0018000599229708314
+        ],
+        "body_depth_m": 0.002888224206492598,
+        "body_diameter_m": 0.03200001998985222,
+        "star_relief_m": 0.00065,
+        "metal_back_gap_min_max_m": [
+          0.0003254366747569293,
+          0.0008679829770699143
+        ],
+        "ribbon_back_gap_min_max_m": [
+          0.0004999970551580191,
+          0.0018000599229708314
+        ],
+        "continuous_metal_clearance_m": 0.00024999951454735166,
+        "eyelet": {
+          "aperture_width_m": 0.022498974072961777,
+          "aperture_depth_min_max_m": [
+            0.0007489377118336615,
+            0.0008509008660081461
+          ],
+          "rear_section_m": 0.00012,
+          "front_section_m": 0.00055,
+          "vertical_section_m": 0.0004,
+          "ribbon_min_clearance_m": 8e-05,
+          "rear_return_z_m": 0.01605890561242266,
+          "ribbon_bottom_local_z_m": 0.01675890561242266,
+          "threaded_cross_section_z_m": 0.019758905612422658,
+          "cross_section_stations": 7,
+          "decision": "Tilted formed bail has its rear return below the sewn ribbon and its front crossbar above the ribbon tip; rear return follows wool with 0.38 mm authored clearance; joined straps close the real opening without moving ribbon or wool"
+        }
+      }
+    },
+    "total_triangles": 20299
+  }
+}

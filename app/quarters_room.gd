@@ -18,6 +18,7 @@ var white_finish: StandardMaterial3D
 var white_fade: Intensity.FixtureFade
 var _game: Game
 var _screen_text := ""
+var _medal_probes: Array[ReflectionProbe] = []
 
 static func build(game: Game) -> QuartersRoom:
 	var room := QuartersRoom.new()
@@ -37,6 +38,7 @@ static func build(game: Game) -> QuartersRoom:
 		probe.interior = true
 		state.add_child(probe)
 		Lighting.mesh_layers(state, Lighting.QUARTERS_MASK)
+		room._medal_probes.append(QuartersMedalReflection.build(state))
 	room._lights()
 	room.process_frame()
 	return room
@@ -148,8 +150,11 @@ func process_frame() -> void:
 	present.visible = not remembered.visible
 	var white := 1.0 if _game.power_active else 0.0
 	if white_fade.target() != white: white_fade.retarget(white, 30)
+	var previous := white_fade.intensity()
 	white_fade.tick()
 	var level := white_fade.intensity()
+	for probe: ReflectionProbe in _medal_probes:
+		QuartersMedalReflection.refresh(probe, level != previous)
 	for bounce: OmniLight3D in entrance_bounces: bounce.light_energy = Lighting.regular_energy() * 0.35 * level
 	for lamp: OmniLight3D in white_lights: lamp.light_energy = Lighting.regular_energy() * level
 	white_finish.emission = Lighting.REGULAR_WHITE * Lighting.REGULAR_EMISSIVE * level

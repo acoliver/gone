@@ -147,7 +147,12 @@ def main():
     button_diameters = [float(pdist(m.vertices).max()) for m in button_components]
     medal_components = clean(parts['Medal']).split(only_watertight=False)
     medal_disc = max(medal_components, key=lambda m: m.extents[0])
-    medal_diameter = float(pdist(medal_disc.vertices).max())
+    frame = construction['issue130_medal_frame']
+    blender_medal = medal_disc.vertices[:, [0, 2, 1]] * [1, -1, 1]
+    local_medal = (blender_medal - frame['origin']) @ np.array(frame['frame']).T
+    lower = local_medal[local_medal[:, 2] < -.005]
+    medal_diameter = float(2 * np.linalg.norm(lower[:, [0, 2]], axis=1).max())
+    medal_depth = float(np.ptp(local_medal[local_medal[:, 2] <= .01601, 1]))
     emblem_diameters = {}
     for name in ['CollarInsignia_L', 'CollarInsignia_R']:
         center = game_points([construction['attachments'][name]['base_blender_m'][0]])[0]
@@ -157,11 +162,11 @@ def main():
     dimensions = {
         'collar_band_height_min_max_m': [float(band_heights.min()), float(band_heights.max())],
         'button_count': len(button_components), 'button_diameters_m': button_diameters,
-        'emblem_circumscribed_diameters_m': emblem_diameters, 'medal_diameter_m': medal_diameter,
+        'emblem_circumscribed_diameters_m': emblem_diameters, 'medal_diameter_m': medal_diameter, 'medal_body_depth_m': medal_depth,
         'collar_facing_slot_radii_min_max_m': [float(slot_radii.min()), float(slot_radii.max())],
         'facing_to_hook_radial_clearance_max_m': float(slot_radii.max() - .0035),
     }
-    dimensions['pass'] = bool(band_heights.min() >= .040 and band_heights.max() <= .045 and len(button_components) in [5, 6] and all(abs(d - .014) < .0001 for d in button_diameters) and all(abs(d - .020) < .001 for d in emblem_diameters.values()) and abs(medal_diameter - .032) < .0001 and slot_radii.max() - .0035 < .001)
+    dimensions['pass'] = bool(band_heights.min() >= .040 and band_heights.max() <= .045 and len(button_components) == 8 and all(abs(d - .014) < .0001 for d in button_diameters) and all(abs(d - .020) < .001 for d in emblem_diameters.values()) and abs(medal_diameter - .032) < .0001 and .002 <= medal_depth <= .004 and slot_radii.max() - .0035 < .001)
     settling = {name: float(trial['metrics']['last_five_frames_displacement_m']) for name, trial in construction['simulation'].items()}
     settling['last_five_frames_limit_m'] = .001
     settling['pass'] = settling['body'] <= .001 and settling['sleeves'] <= .001
@@ -181,7 +186,7 @@ def main():
     orientation = {'up': '+Y', 'front': '+Z', 'origin_at_hook_top_error_m': float(abs(parts['Hanger'].bounds[1, 1])), 'front_detail_centroids_z_m': front, 'pass': all(v > 0 for v in front.values()) and abs(parts['Hanger'].bounds[1, 1]) < .001 and np.ptp(all_vertices[:, 1]) > np.ptp(all_vertices[:, 2])}
     names_ok = set(EXPECTED) == nodes == meshes
     report = {'step1': step1, 'step2': sleeves, 'step3': {'thickness': thickness, 'details': details, 'dimensions': dimensions}, 'settling_simulation_record_m': settling, 'colliders': collider_report, 'orientation': orientation, 'bounds_game_xyz_m': [all_vertices.min(0).tolist(), all_vertices.max(0).tolist()], 'node_names': sorted(nodes), 'mesh_names': sorted(meshes), 'names_pass': names_ok, 'materials': sorted(materials), 'triangles': triangles, 'triangle_limit_exclusive': 15000, 'byte_identical_reexport': identical, 'garment_watertight': garment.is_watertight, 'garment_winding_consistent': garment.is_winding_consistent}
-    report['pass'] = bool(step1['pass'] and all(s['pass'] and s['body_triangle_crossings_below_armpit'] == 0 for s in sleeves.values()) and all(d['pass'] for d in details.values()) and all(c['inside_cloth_samples'] == 0 and c['edge_crossings'] == 0 for c in collider_report.values()) and self_crossings == 0 and .003 <= thickness['min_m'] <= thickness['max_m'] <= .004 and dimensions['pass'] and settling['pass'] and names_ok and triangles < 15000 and identical and orientation['pass'] and materials == {'NaturalFabric', 'Brass', 'RibbonFabric', 'BareSteel'})
+    report['pass'] = bool(step1['pass'] and all(s['pass'] and s['body_triangle_crossings_below_armpit'] == 0 for s in sleeves.values()) and all(d['pass'] for d in details.values()) and all(c['inside_cloth_samples'] == 0 and c['edge_crossings'] == 0 for c in collider_report.values()) and self_crossings == 0 and .003 <= thickness['min_m'] <= thickness['max_m'] <= .004 and dimensions['pass'] and settling['pass'] and names_ok and triangles < 15000 and identical and orientation['pass'] and materials == {'NaturalFabric', 'Brass', 'MedalEnamel', 'RibbonFabric', 'BareSteel'})
     # NumPy scalar booleans need conversion before JSON serialization.
     (HERE / 'verify.json').write_text(json.dumps(report, indent=2, default=lambda x: x.item()) + '\n')
     print(json.dumps(report, indent=2, default=lambda x: x.item()))

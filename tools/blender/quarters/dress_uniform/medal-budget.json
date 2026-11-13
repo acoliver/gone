@@ -1,0 +1,23 @@
+{
+  "reason": "#130 second geometry fix: retain 96 body stations and the measured turned profile; ten planar star facets and a symmetric land; integral tapered eyelet, separate 1 mm-wire ring and 1.4 mm-section solid ribbon bar. The exact solid allocation follows the existing #130 replacement rule, without cloth reduction. Frame-time policy and the 1.5 aged/clean ratio remain unchanged. #130 mounting: lower ribbon U-folds and the central ring/claw relief slot add 520 triangles (656 instead of 136); upper cloth is unchanged. Add only that measured increase to each accepted ceiling. #130 stage3b: the closed-slot suspender replaces the 188-triangle bar with 228 triangles, a 40-triangle increase within the unchanged garment ceilings. The bevel-offset full-width loop adds 84 ribbon triangles (740 rather than 656) within those same ceilings. #130 generated-and-fitted replacement: the supplied tex2 low has 10,500 metal triangles (5,400 body, 4,000 loop, 1,100 bar), replacing 8,310. Allocate only the measured 2,190-triangle increase to each garment; do not reduce or retessellate the wool to make room. Support, contact and clearance gates, frame-time policy and the aged/clean ratio are unchanged. #130 second in-game pass: the frozen Remembered cloth crease needs a tessellated hidden reverse and shoulder, followed by exact removal of overlapping interior cap surfaces at final stored precision. Allocate the measured 25,660 Remembered and 25,620 Present solid triangles after non-manifold cap-fragment removal and zero-area seam cleanup, adding only 15,160 and 15,120 respectively to the garment ceilings. Per-state allocations remain exact. No wool geometry changes; the 2 mm support, 0.25 mm wool clearance, 0.08 mm ribbon clearance and 1.5 aged/clean ratio remain unchanged. #130 fourth in-game pass: the local solder union adds exactly 104 metal triangles in each state (25,764 Remembered / 25,724 Present). The bar and full-width ribbon moves add zero triangles. Keep both existing garment ceilings unchanged because their headroom covers this measured delta; no reduction or seat change. #130 sixth in-game pass: a 42-by-12 round-wire torus is unioned to the centred bar front-lower edge, with a 0.06 mm two-edge local solder fillet. Metal totals are 26,846 Remembered and 26,780 Present, increases of 1,082 and 1,056. Measured garment totals 40,498 and 46,969 exceed the previous art ceilings by exactly 205 and 931 triangles; add only those overages. Torus tessellation bounds are 0.475 and 0.485 px at the unchanged close camera, below 0.5 px. Wool, numeric support/contact/clearance limits, performance policy and the 1.5 aged/clean ratio are unchanged. #130 seventh in-game pass: restore the generated-size ring, retain local solder union/fillet, and use the smallest symmetric torus resolution meeting the unchanged half-pixel close-camera certificate. Lower both metal allocations and garment ceilings to the measured counts; sewn cloth topology, support/contact/clearance limits, performance policy and aged/clean ratio remain unchanged.",
+  "solid_medal_triangles": 26326,
+  "solid_medal_triangles_by_state": {
+    "remembered": 26290,
+    "present": 26326
+  },
+  "removed_solid_medal_triangles": {
+    "working": 846,
+    "pilot": 714
+  },
+  "original_garment_ceiling": {
+    "working": 14999,
+    "pilot": 20652
+  },
+  "garment_ceiling": {
+    "working": 39942,
+    "pilot": 46515
+  },
+  "aged_clean_ratio_max": 1.5,
+  "ribbon_triangles": 740,
+  "removed_ribbon_triangles": 136
+}

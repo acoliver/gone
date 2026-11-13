@@ -191,8 +191,9 @@ def reinforce_and_bind(body):
         original = np.array([obj.matrix_world @ v.co for v in obj.data.vertices])
         groups = components(obj) if name == 'Buttons' else [list(range(len(original)))]
         if name == 'Medal':
+            # #130: enamel is bonded to the metal plate, not sewn ribbon cloth.
             metal = {i for face in obj.data.polygons
-                     if obj.data.materials[face.material_index].name == 'Brass' for i in face.vertices}
+                     if not obj.data.materials[face.material_index].name.startswith('RibbonFabric') for i in face.vertices}
             groups = [sorted(metal), sorted(set(range(len(original)))-metal)]
         indices = set()
         for group in groups:

@@ -215,6 +215,8 @@ def apply_colours(out, record, palette_path):
                 continue
             if 'Brass' in material.name:
                 obj.data.materials[index] = aged_brass(obj, material, out/'textures', palette)
+            elif material.name.startswith('MedalEnamel'):
+                obj.data.materials[index] = aged_enamel(material)
             elif obj.name.startswith(('Collar', 'ShoulderBoard', 'Placket')) and 'Fringe' not in material.name:
                 obj.data.materials[index] = material.copy()
                 if index == 0:
@@ -267,6 +269,17 @@ def recolour_fibres(out, palette):
     return changed
 
 
+def aged_enamel(source):
+    """#130: vitrified enamel retains blue while brass tarnishes in dry storage."""
+    mat = source.copy()
+    mat.name = 'MedalEnamel_Aged'
+    shader = mat.node_tree.nodes['Principled BSDF']
+    shader.inputs['Base Color'].default_value = (.006, .019, .066, 1)
+    shader.inputs['Roughness'].default_value = .38
+    shader.inputs['Specular IOR Level'].default_value = .12
+    return mat
+
+
 def aged_brass(obj, source, out, palette):
     from bake_down import bake_uv
     if 'BakeUV' not in obj.data.uv_layers:
@@ -292,4 +305,13 @@ def aged_brass(obj, source, out, palette):
     shader.inputs['Metallic'].default_value = .15
     shader.inputs['Roughness'].default_value = .94
     shader.inputs['Specular IOR Level'].default_value = .12
+    if obj.name == 'Medal':
+        medal_brass_finish(mat)
     return mat
+
+
+def medal_brass_finish(mat):
+    """Retain dry brown tarnish while exposing the formed metal's satin response."""
+    shader = mat.node_tree.nodes['Principled BSDF']
+    shader.inputs['Metallic'].default_value = .55
+    shader.inputs['Roughness'].default_value = .58
