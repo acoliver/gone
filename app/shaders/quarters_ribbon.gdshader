@@ -23,6 +23,7 @@ void fragment() {
 		texture(weave_roughness, weave_uv * vec2(0.11, 0.071) + vec2(0.0, 0.8)).g, 0.8);
 	ROUGHNESS = (weave_enabled ? fibre_roughness : 0.52) + (aged ? 0.07 : 0.0);
 	float fibre_visibility = mix(0.35, 0.65, 1.0 - fibre_roughness);
+	fibre_visibility *= 1.0 - smoothstep(0.90, 1.0, fibre_roughness);
 	METALLIC = 0.0;
 	SPECULAR = 0.4;
 	ANISOTROPY = weave_enabled ? 0.38 : 0.0;

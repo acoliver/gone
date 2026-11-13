@@ -43,6 +43,10 @@ In ingame12, the enamel seam came from the low cage's triangle material cutoff c
 The pass adds bounded photo-derived normal and roughness variation to the repeated star planes and ring response without changing geometry or UVs.
 Row-uniform ribbon detail caused molded bands and a hard sheen, so the pass attenuates that component and its normal strength while retaining photographed ribs and raising roughness.
 
+In ingame13, bounded facet pillowing adds about 2.2 degrees of peak normal tilt while preserving the star outline and facet edges.
+The rim retains its profile with roughness lowered by 0.060 and linear reflectance reduced by 3% in Remembered and 5% in Present; higher ribbon roughness and a fading specular lobe suppress sheen as the ribbon becomes matte.
+The generated star remains larger within its enamel field than the photographed star, an open finding not addressed by this pass.
+
 The sections below describe earlier stages, including their previous visual
 acceptance, measurements and comparison images. They do not describe the
 current generated replacement. The original selected C image and raw guide

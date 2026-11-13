@@ -2,6 +2,10 @@ extends SimTestCase
 
 const MEDAL_SHADER := "res://app/shaders/quarters_medal.gdshader"
 
+func test_matte_ribbon_roughness_extinguishes_residual_sheen() -> void:
+	var shader := FileAccess.get_file_as_string("res://app/shaders/quarters_ribbon.gdshader")
+	assert_true("fibre_visibility *= 1.0 - smoothstep(0.90, 1.0, fibre_roughness);" in shader, "matte fibres cannot retain the minimum visibility of the polished fibre lobe")
+
 func test_ribbon_fibre_field_controls_all_specular_lobes() -> void:
 	var shader := FileAccess.get_file_as_string("res://app/shaders/quarters_ribbon.gdshader")
 	assert_true("float fibre_visibility = mix(0.35, 0.65, 1.0 - fibre_roughness);" in shader, "photographic fibre roughness also controls exposed specular area")
