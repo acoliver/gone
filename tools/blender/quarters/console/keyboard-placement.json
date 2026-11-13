@@ -1,0 +1,37 @@
+{
+  "source": "assets/props/terminal/keyboard.glb",
+  "installed_uniform_scale": 0.6600278615951538,
+  "scale_reason": "Retains power-room installed key and case sizes; deck already fits the unit.",
+  "deck_size_m": [
+    1.02,
+    0.22369728982448578
+  ],
+  "front_margin_m": 0.01,
+  "minimum_deck_gap_m": 0.0005,
+  "native_console_frame": [
+    [
+      0.660015344619751,
+      -5.785253526235934e-11,
+      0.004065626300871372,
+      -9.344518184661865e-05
+    ],
+    [
+      0.0010089692659676075,
+      0.6393797993659973,
+      -0.16379642486572266,
+      -0.18218639492988586
+    ],
+    [
+      -0.003938439302146435,
+      0.16379956901073456,
+      0.6393675804138184,
+      0.3921864330768585
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ]
+}

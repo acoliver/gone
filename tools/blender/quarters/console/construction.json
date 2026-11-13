@@ -7,7 +7,7 @@
     ],
     [
       0.55,
-      0.69,
+      0.9388873216880659,
       0.275
     ]
   ],
@@ -18,9 +18,7 @@
     "DesktopSupport",
     "Bezel",
     "Display",
-    "ControlPanel",
-    "Keys",
-    "Toggles"
+    "ControlPanel"
   ],
   "parents": {
     "ArmouredHousing": "Console",
@@ -29,9 +27,7 @@
     "Bezel": "ScreenPlane",
     "Display": "ScreenPlane",
     "ScreenPlane": "Console",
-    "ControlPanel": "Console",
-    "Keys": "ControlPanel",
-    "Toggles": "ControlPanel"
+    "ControlPanel": "Console"
   },
   "pivots_gltf": {
     "Console": [
@@ -48,8 +44,7 @@
   ],
   "visible_details": [
     "Display",
-    "Key_1_4",
-    "Toggle_1",
+    "ControlPanel",
     "DesktopSupport"
   ],
   "hero_camera_native": [
@@ -72,7 +67,7 @@
     "remembered",
     "present"
   ],
-  "fit_notes": "Seed 351 has a broad head carried on a narrower tapered support, not the full-width solid wedge described by the prompt. Guide sections below .32 m determine the support widths. The selected image supports a 4-by-6 key grid instead of the prompted 3-by-8 grid; the verified total remains 24 keys and three separate toggles. The support and head remain inside the .69 m asset-local height and are mounted on the desk by room placement. The display is an independent emissive part in both states.",
+  "fit_notes": "Seed 351 has a broad head carried on a narrower tapered support, not the full-width solid wedge described by the prompt. Guide sections below .32 m determine the support widths. The selected image supports a 4-by-6 key grid instead of the prompted 3-by-8 grid; the verified total remains 24 keys and three separate toggles. The original fitted height was .69 m; room placement mounts the support on the desk. The display is an independent emissive part in both states. Issue #129 grows the saved head, bezel and glass to 16:10 above the fixed lower glass edge. The rear depth and entire lower deck stay fixed. The upper metal border is shortened by 18 mm along the screen plane, leaving a 12 mm top bar and retaining the complete 16:10 glass. The closed housing cap follows this trim above .925 m; all lower parts stay fixed. UVs are repacked at uniform physical density for both finish atlases. #129 keyboard layout correction removes the 4x6 caps and toggles; the closed ControlPanel is retained. A separate unchanged power-room keyboard mesh uses the same installed scale with quarters-only native legend and aging atlases.",
   "guide": {
     "source_bounds_native": [
       [
@@ -185,5 +180,34 @@
     },
     "source": "tmp/props/console/guide.glb"
   },
-  "id": "console"
+  "id": "console",
+  "display_size_m": [
+    0.874,
+    0.54625
+  ],
+  "refit": {
+    "issue": 129,
+    "source": "tracked console-working.blend cages",
+    "old_display_m": [
+      0.874,
+      0.238
+    ],
+    "old_height_m": 0.69,
+    "native_rise_m": 0.26432219435089177,
+    "fixed_parts": [
+      "LowerDeckHousing",
+      "DesktopSupport",
+      "BaseShoe",
+      "ControlPanel",
+      "Keys",
+      "Toggles",
+      "HousingRivets"
+    ],
+    "cap_transition_height_m": 0.925,
+    "cap_front_inset_m": 0.0256,
+    "upper_border_trim_m": 0.018,
+    "housing_trim_m": 0.015434872662825797,
+    "top_bar_height_m": 0.012
+  },
+  "keyboard_source": "assets/props/terminal/keyboard.glb"
 }
