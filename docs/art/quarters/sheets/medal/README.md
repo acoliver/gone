@@ -45,7 +45,10 @@ Row-uniform ribbon detail caused molded bands and a hard sheen, so the pass atte
 
 In ingame13, bounded facet pillowing adds about 2.2 degrees of peak normal tilt while preserving the star outline and facet edges.
 The rim retains its profile with roughness lowered by 0.060 and linear reflectance reduced by 3% in Remembered and 5% in Present; higher ribbon roughness and a fading specular lobe suppress sheen as the ribbon becomes matte.
-The generated star remains larger within its enamel field than the photographed star, an open finding not addressed by this pass.
+
+In ingame14, the star is scaled to the photographed proportions, with tip radii about 0.965 and notch radii about 0.445 of the bezel inner radius, compared with pooled photo medians of 0.975671 and 0.454359.
+Photo-derived enamel adds gloss-coat variation, with higher roughness and no enamel clearcoat in Present to dull its finish.
+The star is closer to the photo but remains slightly broad at the horizontal points.
 
 The sections below describe earlier stages, including their previous visual
 acceptance, measurements and comparison images. They do not describe the
