@@ -2,6 +2,30 @@ extends SimTestCase
 
 const MEDAL_SHADER := "res://app/shaders/quarters_medal.gdshader"
 
+func test_ribbon_fibre_field_controls_all_specular_lobes() -> void:
+	var shader := FileAccess.get_file_as_string("res://app/shaders/quarters_ribbon.gdshader")
+	assert_true("float fibre_visibility = mix(0.35, 0.65, 1.0 - fibre_roughness);" in shader, "photographic fibre roughness also controls exposed specular area")
+	for lobe: String in ["SPECULAR", "ANISOTROPY", "RIM"]:
+		assert_true(lobe + " *= fibre_visibility;" in shader, "fibre visibility attenuates " + lobe)
+
+func test_high_surface_boundary_replaces_triangle_material_cutoff() -> void:
+	for state: StringName in QuartersProps.STATES:
+		var source := (load(QuartersProps.TUNIC_SCENES[state]) as PackedScene).instantiate()
+		QuartersProps.apply(source, &"dress_uniform", state)
+		var medal := source.find_child("Medal", true, false) as MeshInstance3D
+		var boundary := load(QuartersProps.MEDAL_ROOT + String(state) + "_boundary.png") as Texture2D
+		assert_true(boundary != null, "generated high-surface boundary must exist")
+		for slot: int in [0, 1]:
+			var finish := medal.get_active_material(slot) as ShaderMaterial
+			var other := medal.mesh.surface_get_material(1 - slot) as StandardMaterial3D
+			assert_true(finish.get_shader_parameter("boundary_texture") == boundary, "both slots use one antialiased high-surface boundary")
+			assert_true(finish.get_shader_parameter("enamel_surface") == (slot == 1), "surface orientation controls the complementary blend")
+			assert_true(finish.get_shader_parameter("other_albedo") == other.albedo_texture, "boundary samples isolated opposite colour")
+			assert_true(finish.get_shader_parameter("other_normal") == other.normal_texture, "boundary samples isolated opposite normal")
+			assert_true(finish.get_shader_parameter("other_orm") == other.roughness_texture, "boundary samples isolated opposite packed material")
+			assert_true("mix(orm, texture(other_orm, UV).rgb, boundary_weight)" in finish.shader.code, "material transition follows the generated field inside triangles")
+		source.free()
+
 func test_enamel_padding_stays_blue_and_dielectric_at_every_mip() -> void:
 	for state: StringName in QuartersProps.STATES:
 		var source := (load(QuartersProps.TUNIC_SCENES[state]) as PackedScene).instantiate()

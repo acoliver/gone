@@ -203,7 +203,8 @@ static func _tunic_material(state: StringName, part: StringName, surface: int) -
 				var imported := node.mesh.surface_get_material(index) as StandardMaterial3D
 				assert(imported != null, "tunic requires imported PBR surfaces")
 				if node.name == &"Medal" and index < 2:
-					slots.append(_medal_finish(imported, state, index))
+					var opposite := node.mesh.surface_get_material(1 - index) as StandardMaterial3D
+					slots.append(_medal_finish(imported, opposite, state, index))
 				elif node.name == &"Medal" and index == 2:
 					slots.append(_ribbon_finish(imported, state))
 				elif node.name == &"TunicBody":
@@ -243,7 +244,7 @@ static func _tunic_finish(imported: StandardMaterial3D, state: StringName) -> Sh
 	result.set_shader_parameter(&"pigment_gain", TUNIC_AGED_WOOL_GAIN if aged_wool else Vector3.ONE)
 	return result
 
-static func _medal_finish(imported: StandardMaterial3D, state: StringName, role: int) -> ShaderMaterial:
+static func _medal_finish(imported: StandardMaterial3D, opposite: StandardMaterial3D, state: StringName, role: int) -> ShaderMaterial:
 	assert(role in [0, 1], "medal adapter only accepts brass and enamel")
 	assert(imported.albedo_texture != null and imported.normal_enabled and imported.normal_texture != null, "medal PBR requires albedo and normal")
 	assert(imported.roughness_texture != null and imported.metallic_texture != null and imported.ao_texture != null, "medal PBR requires packed ORM")
@@ -262,14 +263,22 @@ static func _medal_finish(imported: StandardMaterial3D, state: StringName, role:
 	result.set_shader_parameter(&"metallic", imported.metallic)
 	result.set_shader_parameter(&"specular", .5)
 	result.set_shader_parameter(&"coat", 0.0)
+	# The generated high-surface edge crosses the low cage's material triangles.
+	var boundary := load(MEDAL_ROOT + String(state) + "_boundary.png") as Texture2D
+	assert(boundary != null, "medal requires its generated high-surface enamel boundary")
+	result.set_shader_parameter(&"boundary_texture", boundary)
+	result.set_shader_parameter(&"enamel_surface", role == 1)
+	result.set_shader_parameter(&"other_albedo", opposite.albedo_texture)
+	result.set_shader_parameter(&"other_normal", opposite.normal_texture)
+	result.set_shader_parameter(&"other_orm", opposite.roughness_texture)
+	# Godot's native glTF import drops KHR_materials_clearcoat, so bind the saved master.
+	var coat_texture := load(MEDAL_ROOT + String(state) + "_coat.png") as Texture2D
+	assert(coat_texture != null, "enamel requires its generated coat-weight texture")
+	result.set_shader_parameter(&"coat_texture", coat_texture)
+	result.set_shader_parameter(&"has_coat_texture", true)
+	result.set_shader_parameter(&"coat_roughness", .30 if state == &"aged" else .09)
 	if role == 1:
-		# Godot's native glTF import drops KHR_materials_clearcoat, so bind the saved master.
-		var coat_texture := load(MEDAL_ROOT + String(state) + "_coat.png") as Texture2D
-		assert(coat_texture != null, "enamel requires its generated coat-weight texture")
-		result.set_shader_parameter(&"coat_texture", coat_texture)
-		result.set_shader_parameter(&"has_coat_texture", true)
 		result.set_shader_parameter(&"coat", 1.0)
-		result.set_shader_parameter(&"coat_roughness", .30 if state == &"aged" else .09)
 	return result
 
 static func _ribbon_finish(imported: StandardMaterial3D, state: StringName) -> ShaderMaterial:

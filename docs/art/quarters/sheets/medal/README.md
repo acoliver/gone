@@ -39,6 +39,10 @@ regressions, byte-identical saved-source exports and fresh native import
 source checks. Those checks do not establish photographic appearance.
 Local results and captures are under `tmp/issue130-v3/ingame11/`.
 
+In ingame12, the enamel seam came from the low cage's triangle material cutoff crossing the generated high-surface boundary, so both medal slots now blend isolated PBR maps through an antialiased high-surface mask.
+The pass adds bounded photo-derived normal and roughness variation to the repeated star planes and ring response without changing geometry or UVs.
+Row-uniform ribbon detail caused molded bands and a hard sheen, so the pass attenuates that component and its normal strength while retaining photographed ribs and raising roughness.
+
 The sections below describe earlier stages, including their previous visual
 acceptance, measurements and comparison images. They do not describe the
 current generated replacement. The original selected C image and raw guide
