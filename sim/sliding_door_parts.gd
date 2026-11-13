@@ -16,18 +16,21 @@ static func applies(door: ShipLayout.DoorSpec) -> bool:
 	return door.kind() in [ShipLayout.DoorKind.POWER, ShipLayout.DoorKind.SIDE]
 
 static func has_pocket(door: ShipLayout.DoorSpec) -> bool:
-	return door.kind() == ShipLayout.DoorKind.POWER
+	return door.animation() == ShipLayout.AnimationRecipe.SLIDE
 
 static func leaf_width(door: ShipLayout.DoorSpec) -> float:
 	# Preserve the 1.15 m stroke and 1 m passage. The overlapping leaf stops
 	# 10 mm beyond the pocket jamb, where its leading edge can still be reached.
-	return 2 * (Doors.POWER_SLIDE - door.aperture().x / 2 - 0.01)
+	return 2 * (Doors.POWER_SLIDE - door.aperture().x / 2 - 0.01) if door.kind() == ShipLayout.DoorKind.POWER else door.aperture().x + 0.12
+
+static func stroke(door: ShipLayout.DoorSpec) -> float:
+	return Doors.POWER_SLIDE if door.kind() == ShipLayout.DoorKind.POWER else door.aperture().x + 0.15
 
 static func cavity(door: ShipLayout.DoorSpec) -> AABB:
 	assert(has_pocket(door), "only the power door opens into a pocket")
 	var width := leaf_width(door)
-	var start := -width / 2 - POCKET_CLEARANCE + minf(0, door.slide_sign() * Doors.POWER_SLIDE)
-	return AABB(Vector3(start, 0, (ShipLayout.WALL - POCKET_DEPTH) / 2), Vector3(width + Doors.POWER_SLIDE + 2 * POCKET_CLEARANCE, door.aperture().y + POCKET_CLEARANCE, POCKET_DEPTH))
+	var start := -width / 2 - POCKET_CLEARANCE + minf(0, door.slide_sign() * stroke(door))
+	return AABB(Vector3(start, 0, (ShipLayout.WALL - POCKET_DEPTH) / 2), Vector3(width + stroke(door) + 2 * POCKET_CLEARANCE, door.aperture().y + POCKET_CLEARANCE, POCKET_DEPTH))
 
 static func pocket(door: ShipLayout.DoorSpec) -> AABB:
 	var result := cavity(door)

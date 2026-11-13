@@ -26,8 +26,12 @@ var hazards: Hazards
 var rod: Rod
 var hallway: Hallway
 var power_room: PowerRoom
+var d16_section: ShipSection
+var d16_lighting: SectionPowerLighting
+var quarters_shell: RoomGeometry
+var quarters: QuartersRoom
 
-static func build_into(parent: Node3D, game: Game, production_wires: bool = true) -> ShipScene:
+static func build_into(parent: Node3D, game: Game) -> ShipScene:
 	var scene := ShipScene.new()
 	scene._parent = parent
 	scene._game = game
@@ -38,19 +42,20 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 	scene.room = RoomGeometry.build(true, game.layout)
 	scene.room.name = "RoomGeometry"
 	scene.bay_root.add_child(scene.room)
+	scene.bay_root.add_child(CeilingProps.build(game.layout, ShipLayout.BAY_ID))
 	scene.pods_node = StasisPods.build(game.registry)
 	scene.bay_root.add_child(scene.pods_node)
 	scene.lighting = Lighting.build(game)
 	scene.bay_root.add_child(scene.lighting)
+	scene.bay_root.add_child(BayCeiling.build())
+	scene.bay_root.add_child(StasisWiring.installation())
 	scene.hazards = Hazards.build(game.ventilation, game.layout.bay())
 	scene.bay_root.add_child(scene.hazards)
-	if production_wires:
-		scene.bay_root.add_child(Wires.build())
 	scene.rod = Rod.build()
 	scene.bay_root.add_child(scene.rod)
 	Lighting.mesh_layers(scene.bay_root, 1 | Lighting.BAY_FILL_MASK)
-	# Pod lighting keeps main's pure-red, long-throw look; architectural fills
-	# and short orange keys remain on the bay walls and hatch.
+	# Wall keys include the former pod channel in their single source.
+	# Status belts retain their own local, always-on layer.
 	Lighting.mesh_layers(scene.pods_node, Lighting.POD_STATUS_MASK)
 	# The shared hatch is split by visible room, including its collar returns.
 	scene.hatch = Hatch.build(game.layout, 1 | Lighting.HALL_FILL_MASK, 1 | Lighting.BAY_FILL_MASK)
@@ -73,6 +78,7 @@ static func build_into(parent: Node3D, game: Game, production_wires: bool = true
 	assert(bay_hatch_key.get_meta(&"light_role") == ShipLayout.EmergencyLightRole.BAY_HATCH, "seat the authored bay hatch key")
 	HatchServices.seat_fixture(scene.hatch.view, 1, bay_hatch_key)
 	HatchServices.seat_nearest(scene.hatch.view, 0, scene.hallway.lights())
+	scene.lighting.bind_status_belts(scene.pods_node)
 	scene.door_views.append(scene.hatch.view)
 	scene.door_views.append(DoorView.adapter(game.layout.door(ShipLayout.POWER_DOOR_ID), scene.power_room.set_door_offset))
 	for id: StringName in scene.hallway.side_leaves:
@@ -286,6 +292,8 @@ func build_remote(spec: ShipLayout.ConnectorSpec) -> Node3D:
 				_add_hatch_label(door, face)
 	_seat_connector_lamps(spec, root)
 	_add_lift_label(spec, root.lift_leaf)
+	if spec.deck_number() == 16 and spec.pitch_index() == 1:
+		ensure_d16()
 	return root
 
 func remove_remote(spec: ShipLayout.ConnectorSpec, root: Node3D) -> void:
@@ -333,3 +341,44 @@ func _seat_section_lamps(spec: ShipLayout.SectionSpec, section: ShipSection) -> 
 		var door := _game.layout.door(id)
 		if door.kind() != ShipLayout.DoorKind.HATCH: continue
 		HatchServices.seat_nearest(_hatches[id], door.spaces().find(spec.id()), lights)
+
+func ensure_d16() -> void:
+	if d16_section != null: return
+	var spec := _game.layout.section(&"D16-S-042")
+	d16_section = ShipSection.build(_game.layout, spec)
+	_parent.add_child(d16_section)
+	for piece: MeshInstance3D in d16_section.find_children("*", "MeshInstance3D", true, false):
+		var header: bool = piece.get_meta(&"solid_id", &"") == &"D16-S-042/STARBOARD/002"
+		var trim: bool = piece.has_meta(&"surface_frame") and piece.get_meta(&"surface_frame").key == StringName("%s/FRAME" % QuartersLayout.DOOR)
+		if header or trim: piece.layers |= Lighting.QUARTERS_MASK
+	d16_lighting = SectionPowerLighting.build(_game, spec, d16_section)
+	d16_section.add_child(d16_lighting)
+	for id: StringName in d16_section.side_leaves:
+		var view := DoorView.bind_leaf(_game.layout.door(id), d16_section.side_leaves[id])
+		d16_section.add_child(view)
+		door_views.append(view)
+		view.present(_game.doors.snapshot(id))
+	_add_hatch(&"D16-C-002-H-FORE", d16_section)
+	quarters_shell = RoomGeometry.build_solids(_game.layout, QuartersGeometry.shell())
+	quarters_shell.name = "Quarters"
+	quarters = QuartersRoom.build(_game)
+	quarters_shell.add_child(quarters)
+	_parent.add_child(quarters_shell)
+	var release := QuartersRelease.build(_game.layout)
+	d16_section.add_child(release)
+	var term := ShipText.message("navigation.hatch")
+	_add_label(QuartersLayout.RELEASE, 16, spec.id(), release.transform * QuartersRelease.LABEL_FRAME, QuartersRelease.LABEL_SIZE, ShipText.LabelText.new(term.native, term.perceived_es), release, QuartersRelease.LABEL_FRAME)
+	labels[QuartersLayout.RELEASE].ink_albedo = ShipTextCanvas.STATE_COLOR
+	_spaces[spec.id()] = true
+	_spaces[ShipLayout.QUARTERS_ID] = true
+	_sync_sliding_labels()
+	for id: StringName in spec.opening_ids():
+		var door := _game.layout.door(id)
+		if door.kind() != ShipLayout.DoorKind.HATCH: continue
+		for face_id: StringName in door.face_ids():
+			var face := _game.layout.face(face_id)
+			if face.source_space() == spec.id(): _add_hatch_label(door, face)
+
+func tick_rooms() -> void:
+	if d16_lighting != null: d16_lighting.process_frame()
+	if quarters != null: quarters.process_frame()

@@ -1,0 +1,76 @@
+{
+  "objects": {
+    "Seed720_CleanedGeneratedBeam": 788,
+    "GeneratedUnderside_ArmouredGrille": 992,
+    "RaisedRails_Rivets_GravityFasteners": 916,
+    "RecessedGlass_13mm": 12
+  },
+  "source_seed": 720,
+  "source_round": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/round4/fixture.blend",
+  "louvre_thickness_m": 0.0095,
+  "louvre_edge_bevel_m": 0.00065,
+  "bent_louvre_centres_x_m": [
+    -0.14
+  ],
+  "dent_depths_m": [
+    0.0014
+  ],
+  "body_bevel_m": 0.00085,
+  "body_bevel_segments": 2,
+  "channel_dimensions_m": [
+    1.014,
+    0.116,
+    0.024
+  ],
+  "side_shadow_gap_m": 0.01,
+  "rail_dimensions_m": [
+    0.985,
+    0.008,
+    0.0078
+  ],
+  "rail_chamfer_m": 0.00085,
+  "side_fasteners": [
+    {
+      "x": -0.3199999928474426,
+      "y": 0.0035191476345062256,
+      "z": -0.04500000178813934
+    },
+    {
+      "x": -0.3199999928474426,
+      "y": 0.10348322987556458,
+      "z": -0.04500000178813934
+    },
+    {
+      "x": 0.3199999928474426,
+      "y": -0.030014872550964355,
+      "z": -0.04500000178813934
+    },
+    {
+      "x": 0.3199999928474426,
+      "y": 0.10307016968727112,
+      "z": -0.04500000178813934
+    }
+  ],
+  "method": "Round4 sealed body and recessed channel; round3 grille with one shallow dent and 1.2 mm lateral bend; tapered 4 mm double-bevel end caps with inset end bolts and bevelled ceiling flanges",
+  "skewed_louvre_centre_x_m": -0.14,
+  "maximum_lateral_bend_m": 0.0012,
+  "terminal_cut_x_m": [
+    -0.51,
+    0.51
+  ],
+  "end_plate_dimensions_m": [
+    0.04,
+    0.218,
+    0.096
+  ],
+  "end_plate_chamfer_m": 0.004,
+  "flange_dimensions_m": [
+    0.046,
+    0.22,
+    0.004
+  ],
+  "end_plate_chamfer_segments": 2,
+  "end_cap_lower_x_taper_m": 0.008,
+  "end_cap_lower_width_taper_fraction": 0.075,
+  "flange_chamfer_m": 0.0012
+}

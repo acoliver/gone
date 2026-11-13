@@ -1,0 +1,230 @@
+{
+  "uv": "UV0 broad faces: u=x/1.18+0.5, v=y/0.58+0.5; image rows vertically flipped. Return edges project bottom UVs 2 mm into the adjacent metal bank. Sloped rim uses planar projection; no extra atlas reservation.",
+  "geometry_manifest_sha256": "d16b67892675e162dbb05024fdac28ed260afe7e59de2bd526467183d9ae523e",
+  "source_sha256": {
+    "generated-charcoal-paint-swatch.png": "358dcf7809a3c0c30b3cea8ac153b2a89bc89f7f641775d19b81b7a6f62e8d4d",
+    "generated-aged-steel-swatch.png": "47b2b3afd4254e7e1865695073ccf28a66d835acdf73fb9da059d5ab716bc6e3"
+  },
+  "binding_handoff": "BayCeilingMaterial binds all five matching map triplets. Shared roughness.png and normal.png alias intact. Control maps retain the same charcoal source with wear disabled.",
+  "normal_convention": "OpenGL tangent XYZ=(-dheight/dcolumn,+dheight/drow,1), normalized; image rows descend as UV +V rises, matching tools/prepare_hatch_paint.py.",
+  "wear_composition": "Source luminance, red-blue chroma and luminance edges select irregular corrosion clusters. Fine filters remain 0.45-0.65 mm; 25 mm source-derived density modulation creates quieter areas between clusters. Damage-location fields bias density only. A 35 mm low-pass of source steel luminance modulates broad paint value; it is not a solid oxide patch or a shadow. No synthetic colour noise, peel outline or baked directional grime. Mirrored source colours and masks remain registered. Geometry edges retain narrow wear. Production height scale 0.24 gives a maximum paint film below 90 micrometres; runtime normal scale remains 0.35.",
+  "source_structure": {
+    "fine_filter_sigma_mm": [
+      0.45,
+      0.65
+    ],
+    "local_contrast_sigma_mm": [
+      12,
+      24
+    ],
+    "mottle_sigma_mm": [
+      3,
+      15
+    ],
+    "density_sigma_mm": 25,
+    "broad_paint_value_sigma_mm": 35,
+    "broad_paint_value_strength": 0.7,
+    "target_pit_flake_mm": [
+      1,
+      4
+    ],
+    "target_mottle_mm": [
+      10,
+      30
+    ],
+    "oxide_single_linear_gain": 1.0645191262958555,
+    "oxide_linear_saturation": 0.55,
+    "production_height_scale": 0.24
+  },
+  "dust_status": "Small existing edge contribution retained; dust visibility is not confirmed.",
+  "resolution": [
+    2048,
+    1024
+  ],
+  "physical_coverage_m": [
+    1.18,
+    0.58
+  ],
+  "base_source": "art-source/bay-ceiling/generated-charcoal-paint-swatch.png",
+  "localized_oxide_source": "art-source/bay-ceiling/generated-aged-steel-swatch.png",
+  "mask_source": "outer/inner contours asserted byte-for-value against the geometry manifest; 28 fitted capsule slot contours reconstructed from tools/blender/bay_ceiling_geometry.py; coverage measured only on panel pixels outside slots",
+  "shade": {
+    "metallic": 0.22,
+    "roughness_texture_range": [
+      0.75,
+      0.8720000001043081
+    ],
+    "paint_height_max_m": 8.801880176179111e-05,
+    "emission": 0.0
+  },
+  "oxide_coverage_percent": 20.37,
+  "paint_visible_percent": 79.63,
+  "variants": {
+    "intact": {
+      "oxide_coverage_percent_of_panel": 20.37,
+      "paint_visible_percent_of_panel": 79.63,
+      "roughness_texture_range": [
+        0.75,
+        0.8720000001043081
+      ],
+      "paint_height_max_m": 8.801880176179111e-05,
+      "authored_fields_m": [],
+      "wear_vs_control_srgb_mean_abs_8bit": 2.4460427056848597,
+      "wear_vs_control_srgb_p95_max_channel_8bit": 13.579391298933542,
+      "visible_contrast_pixels_percent_gt_8_levels": 8.907930418817744,
+      "files": [
+        "intact_albedo.png",
+        "intact_roughness.png",
+        "intact_normal.png"
+      ]
+    },
+    "subtlewarp": {
+      "oxide_coverage_percent_of_panel": 20.85,
+      "paint_visible_percent_of_panel": 79.15,
+      "roughness_texture_range": [
+        0.75,
+        0.8720000001043081
+      ],
+      "paint_height_max_m": 8.801880176179111e-05,
+      "authored_fields_m": [
+        [
+          0.35,
+          0.16,
+          0.13,
+          0.07,
+          0.55
+        ]
+      ],
+      "wear_vs_control_srgb_mean_abs_8bit": 3.2208624759194984,
+      "wear_vs_control_srgb_p95_max_channel_8bit": 14.252109091539507,
+      "visible_contrast_pixels_percent_gt_8_levels": 11.37515896209333,
+      "files": [
+        "subtlewarp_albedo.png",
+        "subtlewarp_roughness.png",
+        "subtlewarp_normal.png"
+      ]
+    },
+    "sag": {
+      "oxide_coverage_percent_of_panel": 27.37,
+      "paint_visible_percent_of_panel": 72.63,
+      "roughness_texture_range": [
+        0.75,
+        0.8720000001043081
+      ],
+      "paint_height_max_m": 8.801880176179111e-05,
+      "authored_fields_m": [
+        [
+          -0.18,
+          -0.03,
+          0.23,
+          0.17,
+          0.86
+        ],
+        [
+          -0.12,
+          0.17,
+          0.075,
+          0.09,
+          0.65
+        ]
+      ],
+      "wear_vs_control_srgb_mean_abs_8bit": 3.6729927808503966,
+      "wear_vs_control_srgb_p95_max_channel_8bit": 17.23583074619639,
+      "visible_contrast_pixels_percent_gt_8_levels": 16.587589166154338,
+      "files": [
+        "sag_albedo.png",
+        "sag_roughness.png",
+        "sag_normal.png"
+      ]
+    },
+    "torncorner": {
+      "oxide_coverage_percent_of_panel": 28.13,
+      "paint_visible_percent_of_panel": 71.87,
+      "roughness_texture_range": [
+        0.75,
+        0.8720000001043081
+      ],
+      "paint_height_max_m": 8.801880176179111e-05,
+      "authored_fields_m": [
+        [
+          0.22,
+          0.09,
+          0.25,
+          0.17,
+          0.92
+        ]
+      ],
+      "wear_vs_control_srgb_mean_abs_8bit": 3.740157602386711,
+      "wear_vs_control_srgb_p95_max_channel_8bit": 17.43226264821381,
+      "visible_contrast_pixels_percent_gt_8_levels": 17.12867012322548,
+      "files": [
+        "torncorner_albedo.png",
+        "torncorner_roughness.png",
+        "torncorner_normal.png"
+      ]
+    },
+    "brokenedge": {
+      "oxide_coverage_percent_of_panel": 27.46,
+      "paint_visible_percent_of_panel": 72.54,
+      "roughness_texture_range": [
+        0.75,
+        0.8720000001043081
+      ],
+      "paint_height_max_m": 8.801880176179111e-05,
+      "authored_fields_m": [
+        [
+          -0.26,
+          -0.09,
+          0.22,
+          0.145,
+          0.9
+        ],
+        [
+          -0.4,
+          0.13,
+          0.12,
+          0.1,
+          0.68
+        ]
+      ],
+      "wear_vs_control_srgb_mean_abs_8bit": 3.680867687291047,
+      "wear_vs_control_srgb_p95_max_channel_8bit": 17.36071185965078,
+      "visible_contrast_pixels_percent_gt_8_levels": 16.61592026578073,
+      "files": [
+        "brokenedge_albedo.png",
+        "brokenedge_roughness.png",
+        "brokenedge_normal.png"
+      ]
+    }
+  },
+  "files": [
+    "*_albedo.png",
+    "*_roughness.png",
+    "*_normal.png",
+    "roughness.png",
+    "normal.png"
+  ],
+  "calibration": "Sources converted sRGB->linear, channel calibrated, then encoded sRGB. Base gains (1.08,1.04,1.00); control maps unchanged. Oxide gains (0.88,0.82,0.76), linear saturation 0.55, and one global scalar matching median luminance to charcoal x0.95. No per-pixel luminance normalization. Broad paint value uses low-pass source steel luminance. Baseline single-input rendered ablations identify albedo/mask contrast as the dominant contributor, not roughness or normals; see tmp/verify-stasis-ceiling/material-balanced/baseline-ab/ab-measurements.json. Numerical evidence does not establish visual acceptance.",
+  "texture_sha256": {
+    "brokenedge_albedo.png": "909e99ee77def49d5e589b22df1065efbc0043c6b91ebb67ee55b3f32c2d1add",
+    "brokenedge_normal.png": "fa2af1d95b283f0bc679afa81de1e7466368ea2e6942497cd16f77d0e91bef22",
+    "brokenedge_roughness.png": "b808bf14a47542f5cb1dc92b71553d49155fd4a8a05a2e64a65dae751a61d3d5",
+    "control_albedo.png": "965c906da32b13f831c4e35484097a51f2da7e776ba7a9085780be91abb7b85d",
+    "control_normal.png": "d7fae9161af2e352e97b34c6d1c03dbc0f2d28677df19cea785d3570da4588d6",
+    "control_roughness.png": "75798c84cc59528219c6ed185f37e650b5d58314abc7b63ee2c70de43ce31ed2",
+    "intact_albedo.png": "dd2383b0f37fbeab393606e07d43685a5305262ec754d463e9038fd74b7e0d67",
+    "intact_normal.png": "ec0706fd59c44576067d2eac4404415e2bb0231af2baf7c49e08d56136403d04",
+    "intact_roughness.png": "0a0f99731a7cb115bea06a5eae3418a8cd3e892ce811ff702aceef92c8181a77",
+    "normal.png": "ec0706fd59c44576067d2eac4404415e2bb0231af2baf7c49e08d56136403d04",
+    "roughness.png": "0a0f99731a7cb115bea06a5eae3418a8cd3e892ce811ff702aceef92c8181a77",
+    "sag_albedo.png": "5dbcdccc817ed5a30133288155859d51d34bc02f0197265f0229b4c8aba73be2",
+    "sag_normal.png": "4ab60a47c4bbb77e4d11d658bbf9ca4a4d715c38c40501879fdfbe16cc674171",
+    "sag_roughness.png": "20d16061248be50a9e57cca39eb24d5e8c54cc6f8baf6a8a99aa2152150fe74b",
+    "subtlewarp_albedo.png": "89d48721cb7a527f793b39793358683ffc5883bf41160a932748848783680c17",
+    "subtlewarp_normal.png": "6eac0fee98b4c8e940a8ed91004f056eff32dd62970e53d5006c5ac932ebb2d5",
+    "subtlewarp_roughness.png": "1484b5170675160aa4b757ea79b3e858118a195c494399a231cf9e910ed6c3d1",
+    "torncorner_albedo.png": "27652da5a1290b92bf27e14cfc7302773113a9dde3cb5fcea1c622450a9445c7",
+    "torncorner_normal.png": "36f2b2640c60135c04f2d1b386afe4b9d1da1bbabf0a11b9153179e79d9d324e",
+    "torncorner_roughness.png": "3f1b9f29cd0045f453c4f9980ee293274e79b9e5c6e94c4eadc462f3954552e7"
+  }
+}

@@ -518,6 +518,14 @@ These eleven roots extend v0.13 and do not appear in the original PDFs. They are
 
 Signs use boxed identifiers read digit by digit: deck 14 is `lometa [16]` (na wi); section 41 is `shelani paki [51]` (chi na). Perceived Spanish shows `CUBIERTA 14` and `SECCIÓN 41`. Square brackets in source text are renderer markup, never printed punctuation. The stroked rectangle, 0.72-unit stroke and one-unit padding beyond digit ink are implementation choices, not additions to the language rules.
 
+## Project additions: fire vocabulary
+
+**Kelawa** (ke-**LA**-wa) means fire or open burning, combustion with flame. It is a project root separate from the v0.13 lexicon and the synopsis additions above; it is not added to or renumbered in the 274-entry tables. The syllables ke-la-wa are valid CV signs, with the reference's regular penultimate stress.
+
+The form draws on the thermal family's **kel-** stem: **kela** (090) is heat or temperature, a condition, and **kelo** (092) is electric current, the technical narrowing of the older flow vocabulary. The ending **-wa** marks active flowing phenomena, as in **nawa** (076), flow/drive/energy, and **tanewa** (214), smoke, built on **tana** (130), air. Keep the terms distinct: **kela** names a thermal condition, not burning; **tanewa** names airborne products of burning, not the fire itself.
+
+The compounds follow modifier-before-head order: **kelawa pasha lina** is a fire suppression system (fire + stop/halt (169) + system (077)); **kelo kelawa** is an electrical fire, including the stasis-bay fire described in [`docs/design/biblia.md`](../biblia.md) §§8, 36. Perceived Spanish gives **kelawa** as **FUEGO** or **INCENDIO** by context, **kelawa pasha lina** as **EXTINCIÓN DE INCENDIOS**, and **kelo kelawa** as **INCENDIO ELÉCTRICO**.
+
 ## Errata and open questions
 
 - **Negation erratum:** source reference line 539 says **nu no kuta**. It should read **nu cha kuta**, consistent with the defined negator cha. No second negator is introduced.

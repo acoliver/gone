@@ -19,6 +19,17 @@ class FaceTests(unittest.TestCase):
             occupied[y0-4:y1+4,x0-4:x1+4] = True
             self.assertGreaterEqual(min(row['pixels_per_metre']),600 if name=='door' else 300)
 
+    def test_runtime_stile_matches_adjacent_door_paint(self):
+        import json
+        selection = json.loads((faces.SOURCE/'selection.json').read_text())
+        door = Image.open(faces.SOURCE/selection['door']['chosen']).convert('RGB')
+        expected = np.asarray(door.crop((380,0,420,2200)).resize((64,3488), Image.Resampling.LANCZOS))
+        np.testing.assert_array_equal(np.asarray(faces.face_image('stile-right', selection)), expected)
+        atlas = np.asarray(Image.open(faces.RUNTIME/'aged-face-albedo.png'))
+        x0,y0,x1,y1 = faces.FACES['stile-right']['rect']
+        np.testing.assert_array_equal(atlas[y0:y1,x0:x1,:3], expected)
+        self.assertEqual(faces.manifest(), json.loads((faces.RUNTIME/'face-layout.json').read_text()))
+
     def test_no_procedural_field_drives_colour(self):
         implementation = inspect.getsource(faces.pack)
         for old_generator in ('noise(', 'blister_field', 'gravity_runs', 'edge_reach'):

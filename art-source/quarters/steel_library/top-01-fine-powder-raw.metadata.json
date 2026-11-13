@@ -1,0 +1,34 @@
+{
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/steel_library/top-01-fine-powder-input.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/steel_library/top-01-fine-powder-prompt.txt",
+    "--seed",
+    "995012",
+    "--width",
+    "1536",
+    "--height",
+    "1024",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/steel_library/top-01-fine-powder-raw.png"
+  ],
+  "prompt": "Refine this flat horizontal painted-steel texture with clearly visible fine soft settled dust. A thin diffuse warm-grey powder veil covers the quiet central paint, with delicate fine particulate detail and soft irregular settling. Remove large mottled patches and block-shaped changes from the central dust: use a continuous softly settled powder tone with much finer variation than the edge chips. It must read as dry matte dust, not fresh pale paint. Keep the existing sparse edge corrosion and most underlying grey-green paint. No blotchy patches, repeated marks, swirls, tracks, flakes, sand, grit piles or vertical rust runs. Shadowless edge-to-edge texture only, orthographic flat material, no object silhouette, frame, lighting gradient, cast shadows or biological growth. 1000 years of dry sterile oxygenated ship aging.\n",
+  "input": "top-01-fine-powder-input.png",
+  "parent_raw": "top-01-finish2-raw.png",
+  "model": "FLUX.2-klein-4B",
+  "seed": 995012,
+  "quantize": 4,
+  "steps": 4,
+  "pixels": [
+    1536,
+    1024
+  ]
+}

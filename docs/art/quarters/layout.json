@@ -1,14 +1,14 @@
 {
   "version": 1,
   "issue": 95,
-  "status": "proposal for Andrew's approval",
+  "status": "approved layout; playable D16 placement decided in #114",
   "frame": "Room-local metres. Floor at y=0. X runs along the entrance wall, 0 at the left as seen from the doorway, 8 at the right. Z runs into the room, 0 at the entrance wall, 6 at the far wall. Boxes are axis-aligned footprints [x0, z0, x1, z1] with a height h. 'faces' is the direction the front of the prop points: -x, +x, -z or +z.",
   "room": {
     "width_x": 8.0,
     "depth_z": 6.0,
     "clear_height": 3.2,
     "wall_thickness": 0.2,
-    "note": "Enlarged from 5.6 x 5.0 after Andrew said it sounded a bit small (2026-11-07). 48 m2 of floor. Deck and exact ship position are open; Andrew is thinking about D16."
+    "note": "48 m2 interior on D16 section 42, starboard station offset 9. Issue #114 fixes the location. QuartersLayout owns the world mapping."
   },
   "door": {
     "wall": "entrance",
@@ -318,7 +318,7 @@
         2.55
       ],
       "h_from": 0.76,
-      "h": 1.45,
+      "h": 1.698887321688066,
       "faces": "-x",
       "parts": [
         "armoured_housing",
@@ -326,7 +326,7 @@
         "display",
         "control_panel"
       ],
-      "note": "Military console on the desk. Its display works in both states. The video message plays here."
+      "note": "Issue #129: the 16:10 head grows above the fixed deck; h is nominal desk datum plus 0.9543222 m source height, so fitting does not shrink it. Its display works in both states. The video message plays here."
     },
     {
       "id": "desk_chair",

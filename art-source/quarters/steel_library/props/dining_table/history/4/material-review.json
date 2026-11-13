@@ -1,0 +1,70 @@
+{
+  "images_seen": [
+    "hero",
+    "front",
+    "top",
+    "detail"
+  ],
+  "ratings": {
+    "candidate_as_built": {
+      "score": 9,
+      "explanation": "The grey-green paint is uniform and clean across all views, with clear separation for the bare metal hardware and dark trim as required."
+    },
+    "candidate_aged": {
+      "score": 8,
+      "explanation": "The aged state shows convincing broad paint retention with irregular edge corrosion and downward rust runs, though the dust on the top surface is slightly patchy."
+    },
+    "locker_as_built": {
+      "score": 9,
+      "explanation": "The reference locker presents a clean, consistent grey-green finish with sharp edges and clear hardware details."
+    },
+    "locker_aged": {
+      "score": 8,
+      "explanation": "The aged locker shows realistic weathering with rust concentrated on edges and corners, matching the brief for a sealed environment."
+    }
+  },
+  "features": {
+    "grey-green_paint": {
+      "achieved": true,
+      "observations": "The base color is a consistent grey-green across both candidate and reference in the as-built state."
+    },
+    "bare_hardware": {
+      "achieved": true,
+      "observations": "Hardware like the locker handle and table base appear as distinct bare metal in the as-built state."
+    },
+    "dark_trim": {
+      "achieved": true,
+      "observations": "Dark trim is visible on the locker base and edges in the as-built state."
+    },
+    "edge_corrosion": {
+      "achieved": true,
+      "observations": "Corrosion is correctly localized to edges and corners in the aged state, leaving broad faces mostly intact."
+    },
+    "rust_runs": {
+      "achieved": true,
+      "observations": "Narrow, downward rust streaks are visible on vertical faces in the aged state."
+    },
+    "settled_dust": {
+      "achieved": true,
+      "observations": "A fine, soft dust layer is visible on upward-facing surfaces like the table top in the aged state."
+    },
+    "no_biological_growth": {
+      "achieved": true,
+      "observations": "No green or organic growth is present; the aging is strictly chemical/physical."
+    }
+  },
+  "findings": [
+    "The dust pattern on the candidate's top surface in the aged state is slightly more mottled than the reference, which is smoother.",
+    "Rust runs on the candidate's vertical faces could be slightly more subtle to better match the 'sealed sterile' environment."
+  ],
+  "ready": true,
+  "limitations": "The detail view is cropped, limiting the ability to assess the full extent of the table's base hardware in the aged state.",
+  "acceptance": {
+    "accepted": true,
+    "candidate_aged": 8,
+    "locker_aged": 8,
+    "numeric_failed": 0,
+    "scope_complete": true,
+    "rule": "candidate aged >= locker aged in this review, numeric gates pass, all four view blocks inspected"
+  }
+}

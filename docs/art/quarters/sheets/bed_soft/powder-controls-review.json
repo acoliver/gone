@@ -1,0 +1,36 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\n  \"visible_panels\": [\n    \"doorway OFF\",\n    \"doorway ON\",\n    \"three_quarter OFF\",\n    \"three_quarter ON\"\n  ],\n  \"doorway_description\": \"Subject is a metal-framed bed with a headboard, a tattered brown cloth draped over the left side, and a segmented mattress. In the OFF state, the floor shows only isolated brown crumbs near the left leg. In the ON state, a soft-edged, tan-colored patch of granular material appears on the floor to the left of the bed, and a faint, soft-edged deposit is visible on the right edge of the platform. The powder reads as a soft stain or granular dust, not a hard disc or shadow.\",\n  \"three_quarter_description\": \"Subject is the same bed viewed from an elevated three-quarter angle. In the OFF state, the floor shows scattered brown crumbs. In the ON state, a distinct, soft-edged patch of tan granular material is visible on the floor in the foreground. A faint, soft-edged deposit is also visible on the right edge of the platform. The powder reads as granular material or a soft stain.\",\n  \"powder_readability_0_to_10\": 7,\n  \"platform_visibility\": \"The platform is partially visible on the right side of the bed in both views. The left side is obscured by the draped cloth. The powder on the platform is faint and soft-edged, visible only on the exposed right edge.\",\n  \"remaining_defects\": [\n    \"The powder on the platform is very faint and could be mistaken for a shadow or a texture artifact.\",\n    \"The floor patch is somewhat isolated and does not show a clear connection to the source of the powder (the bed).\",\n    \"The powder does not appear to be settling on the cloth or the mattress, which might be expected for a 1000-year-old bed.\"\n  ]\n}"
+      }
+    }
+  ],
+  "created": 1794268845,
+  "model": "qwen3.8-27b",
+  "system_fingerprint": "b1-6d05498",
+  "object": "chat.completion",
+  "usage": {
+    "completion_tokens": 417,
+    "prompt_tokens": 4370,
+    "total_tokens": 4787,
+    "prompt_tokens_details": {
+      "cached_tokens": 43
+    }
+  },
+  "id": "chatcmpl-Es015DrlO7uG34xUeOvxM1N70fmOYRVV",
+  "timings": {
+    "cache_n": 43,
+    "prompt_n": 4327,
+    "prompt_ms": 39845.584,
+    "prompt_per_token_ms": 9.208593482782529,
+    "prompt_per_second": 108.59421711575365,
+    "predicted_n": 417,
+    "predicted_ms": 37867.838,
+    "predicted_per_token_ms": 91.02845673076924,
+    "predicted_per_second": 10.985575675062304
+  }
+}

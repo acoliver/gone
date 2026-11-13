@@ -1,0 +1,151 @@
+{
+  "id": "c01-hyseed0",
+  "mesh": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-regen2/meshes/c01-hyseed0.glb",
+  "raw_faces": 372164,
+  "raw_vertices": 186080,
+  "method": "Front-facing raw vertex height interpolation in XY, radial Gaussian sigma 0.10 mm / angular sigma 0.5 degrees; field plane fitted to lower 50 percent of raw front heights in the 6 to 9 mm annulus; contour is the first outward crossing of 0.15 mm above max(field plane, each ray minimum relative height) in the 2.5 to 14.0 mm search band, clipped to the measured front convex-hull support; local minimum offsets are recorded for star/rim contact or nonplanar field; outline angular sigma 0.5 degrees; circular scipy find_peaks at 1 mm prominence. No five-point template, peak-count constraint, mesh edits or symmetry.",
+  "units": "mm after uniform body-width normalization to 32 mm, matching prior fitting scale; raw Hunyuan coordinates have no physical units",
+  "angle_convention": "0 degrees right (+X), 90 degrees up (+Y), counterclockwise from nominal +Z front",
+  "normalization": {
+    "raw_body_center_xy": [
+      0.022903342021057347,
+      -0.2856430219930503
+    ],
+    "raw_body_radius": 0.7110976933488065,
+    "mm_per_raw_unit": 22.618292495603118,
+    "diameter_mm": 32
+  },
+  "star_center_body_mm": [
+    -0.019868359321679924,
+    1.1232630061320412
+  ],
+  "star_center_raw_xy": [
+    0.02202492207288742,
+    -0.2359813153743744
+  ],
+  "radial_search_limit_mm": 14.0,
+  "field_plane_coefficients": [
+    -0.004319659183771371,
+    0.012800866862414145,
+    2.7014026959333277
+  ],
+  "local_minimum_baseline_offset_max_mm": 0.6246027208394467,
+  "local_minimum_baseline_offset_angles_degrees": [
+    231.5,
+    231.75,
+    232.00000000000003,
+    232.25,
+    232.5,
+    232.75000000000003,
+    233.0,
+    233.25,
+    233.49999999999997,
+    233.75000000000003,
+    234.0,
+    234.24999999999997,
+    234.50000000000003,
+    234.75,
+    235.0,
+    235.25000000000003,
+    235.5,
+    235.75,
+    236.00000000000003,
+    236.25,
+    236.5,
+    236.74999999999997,
+    237.00000000000003,
+    237.25,
+    237.49999999999997,
+    237.75000000000003,
+    302.25,
+    302.5,
+    302.75,
+    303.0,
+    303.25,
+    303.5,
+    303.75,
+    304.0,
+    304.25,
+    304.5,
+    304.75,
+    305.0,
+    305.25,
+    305.50000000000006,
+    305.75,
+    306.0,
+    306.25,
+    306.5,
+    306.75,
+    307.0,
+    307.25,
+    307.5,
+    307.75,
+    308.0,
+    308.25,
+    308.5,
+    308.75,
+    309.0,
+    309.25,
+    309.5
+  ],
+  "peak_count": 5,
+  "expected_peak_count": 5,
+  "passes_five_peak_requirement": true,
+  "prominence_mm": 1.0,
+  "tips": [
+    {
+      "angle_degrees": 14.999999999999998,
+      "radius_mm": 13.73641827890748,
+      "prominence_mm": 7.864375820662626
+    },
+    {
+      "angle_degrees": 89.5,
+      "radius_mm": 13.692695649335365,
+      "prominence_mm": 7.499660214648215
+    },
+    {
+      "angle_degrees": 164.5,
+      "radius_mm": 12.973744161164728,
+      "prominence_mm": 6.762513584135733
+    },
+    {
+      "angle_degrees": 237.25,
+      "radius_mm": 11.870488045766308,
+      "prominence_mm": 5.92082999855548
+    },
+    {
+      "angle_degrees": 303.25,
+      "radius_mm": 11.746266140284478,
+      "prominence_mm": 5.583630920795012
+    }
+  ],
+  "notches": [
+    {
+      "angle_degrees": 55.75,
+      "radius_mm": 6.1930354346871495
+    },
+    {
+      "angle_degrees": 120.50000000000001,
+      "radius_mm": 6.211230577028995
+    },
+    {
+      "angle_degrees": 203.25,
+      "radius_mm": 5.872042458244855
+    },
+    {
+      "angle_degrees": 270.25,
+      "radius_mm": 6.162635219489466
+    },
+    {
+      "angle_degrees": 337.0,
+      "radius_mm": 5.949658047210828
+    }
+  ],
+  "notch_radius_spread_mm": 0.3391881187841399,
+  "notch_radius_std_mm": 0.13931003775080816,
+  "limitations": [
+    "Contour is a measured front-height edge proxy, not semantic segmentation of a separate star part.",
+    "Reported count is not forced to five; broad secondary radial lobes are retained.",
+    "Millimetres use a 32 mm body sizing assumption, not an intrinsic raw-mesh dimension."
+  ]
+}

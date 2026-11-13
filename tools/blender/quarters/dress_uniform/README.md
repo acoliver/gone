@@ -532,3 +532,10 @@ wrappers repair short rest edges, resample fringe at physical arclength and
 pack explicit navy/AO/opacity pixels for glTF. The original single-texel strand
 atlas vanishes under close-camera minification; bundled wool roots are tested
 against that negative control.
+
+## Mounted photoreal medal (#130)
+
+See [the stage-three record](medal-stage3.md) for the mounted sources, saved-source exports,
+local PBR/contact paths and fixed-camera controls. The engineering checks pass; the probe
+visibility target and final game image review remain open. The accepted stage-one and
+stage-two inputs are documented in [stage one](medal-stage1.md) and [stage two](medal-stage2.md).

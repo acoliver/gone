@@ -1,0 +1,714 @@
+{
+  "door-outer": {
+    "seed": 98380,
+    "raw": "door-outer-98380.png",
+    "chosen": "door-outer-98380-grade100-denoise1.5.png",
+    "calibration": {
+      "flatten_log_linear_plane": true,
+      "lab_affine_matrix": [
+        [
+          1.3083012603168898,
+          -0.6105923782726641,
+          0.15751866140528836
+        ],
+        [
+          -0.19798613749300178,
+          0.22490364800870355,
+          0.01153632897837528
+        ],
+        [
+          0.08864975162217875,
+          0.6831121357743081,
+          0.5443509831345894
+        ]
+      ],
+      "lab_input_centre": [
+        32.16298793561622,
+        5.6316323889109015,
+        8.53608623562039
+      ],
+      "lab_output_centre": [
+        33.18750883951677,
+        5.112118030289151,
+        8.00048184854279
+      ],
+      "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+    },
+    "quantile_amount": 1.0,
+    "scores": {
+      "delta_e": 0.7326268016865725,
+      "planar_light_gradient": 0.0035009477268344233,
+      "secondary_autocorrelation": 0.23983170185906605,
+      "edge_rust": 0.2856215338834032,
+      "broad_rust": 0.06070749197727251,
+      "edge_broad_ratio": 4.70488113708162,
+      "paint_mean_delta_e": 1.1244821109890217,
+      "paint_std_delta_e": 4.025630546252636,
+      "rust_mean_delta_e": 0.5769328268767712,
+      "rust_std_delta_e": 0.47861080142073187,
+      "no_green": 0.0,
+      "pixels_per_metre": 774.7368421052632,
+      "broad_high_frequency": 0.0071838368448520935
+    },
+    "eligible": true,
+    "denoise_radius_px": 1.5,
+    "denoise_radius_m": 0.001936141304347826
+  },
+  "door-inner": {
+    "seed": 98321,
+    "raw": "door-inner-98321.png",
+    "chosen": "door-inner-98321-grade67-denoise1.5.png",
+    "calibration": {
+      "flatten_log_linear_plane": true,
+      "lab_affine_matrix": [
+        [
+          1.0244070680212847,
+          -1.1331560126376774,
+          1.1498824916835275
+        ],
+        [
+          -0.2037715919892675,
+          0.24963503860871195,
+          -0.14778047661315852
+        ],
+        [
+          0.19043110707463307,
+          0.19863394958483724,
+          1.0402834214167371
+        ]
+      ],
+      "lab_input_centre": [
+        38.73764245080313,
+        3.851452143723942,
+        5.591605789797646
+      ],
+      "lab_output_centre": [
+        35.21006084896191,
+        4.772195808196658,
+        7.512123467749854
+      ],
+      "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+    },
+    "quantile_amount": 0.67,
+    "scores": {
+      "delta_e": 2.3539362565764703,
+      "planar_light_gradient": 0.0004870548517395879,
+      "secondary_autocorrelation": 0.3636041067106542,
+      "edge_rust": 0.126657895060438,
+      "broad_rust": 0.009052592898556531,
+      "edge_broad_ratio": 13.991338888180211,
+      "paint_mean_delta_e": 0.5669309689649492,
+      "paint_std_delta_e": 2.530368603020746,
+      "rust_mean_delta_e": 0.2708030088749135,
+      "rust_std_delta_e": 1.7225056561418555,
+      "no_green": 0.0,
+      "pixels_per_metre": 774.7368421052632,
+      "broad_high_frequency": 0.008282800918827639
+    },
+    "eligible": true,
+    "denoise_radius_px": 1.5,
+    "denoise_radius_m": 0.001936141304347826
+  },
+  "left": {
+    "seed": 98301,
+    "raw": "left-98301.png",
+    "chosen": "left-98301-grade67-denoise1.5.png",
+    "calibration": {
+      "flatten_log_linear_plane": true,
+      "lab_affine_matrix": [
+        [
+          1.4016207397388594,
+          0.7148188802541919,
+          1.7826771640131558
+        ],
+        [
+          -0.333940288004901,
+          0.10880532944390812,
+          0.5601963062219878
+        ],
+        [
+          -0.04667369466065187,
+          0.41451559636645796,
+          1.1023301057221346
+        ]
+      ],
+      "lab_input_centre": [
+        59.136388489793575,
+        2.1663334526580003,
+        8.861897730957578
+      ],
+      "lab_output_centre": [
+        64.10925789523765,
+        -0.11486141357177837,
+        10.183583588355118
+      ],
+      "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+    },
+    "quantile_amount": 0.67,
+    "scores": {
+      "delta_e": 5.507248834466193,
+      "planar_light_gradient": 0.006970838974872936,
+      "secondary_autocorrelation": 0.26600679394344184,
+      "edge_rust": 0.1818546313133563,
+      "broad_rust": 0.01087461554675654,
+      "edge_broad_ratio": 16.722856135139068,
+      "paint_mean_delta_e": 1.1057170585916565,
+      "paint_std_delta_e": 6.494468514050938,
+      "rust_mean_delta_e": 6.1533693441689925,
+      "rust_std_delta_e": 0.23806039709863475,
+      "no_green": 0.0,
+      "pixels_per_metre": 689.2307692307692,
+      "broad_high_frequency": 0.01208909624911621
+    },
+    "eligible": true,
+    "denoise_radius_px": 1.5,
+    "denoise_radius_m": 0.002176339285714286
+  },
+  "right": {
+    "seed": 98400,
+    "raw": "right-98400.png",
+    "chosen": "right-98400-grade100-denoise1.5.png",
+    "calibration": {
+      "flatten_log_linear_plane": true,
+      "lab_affine_matrix": [
+        [
+          -0.4049470104423129,
+          0.33485440263281124,
+          -0.7620881736294113
+        ],
+        [
+          -0.291414067934522,
+          0.023176927833174054,
+          0.5286328844002183
+        ],
+        [
+          -0.47052000871053073,
+          -0.10825715960035898,
+          0.6772292535115751
+        ]
+      ],
+      "lab_input_centre": [
+        61.77112542669567,
+        4.232873010162676,
+        11.813778876732767
+      ],
+      "lab_output_centre": [
+        62.52569039191346,
+        2.816173204290288,
+        9.226136476306156
+      ],
+      "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+    },
+    "quantile_amount": 1.0,
+    "scores": {
+      "delta_e": 2.4389871732992776,
+      "planar_light_gradient": 0.004289272842953842,
+      "secondary_autocorrelation": 0.2843826967898345,
+      "edge_rust": 0.25262335116658635,
+      "broad_rust": 0.06650332833950195,
+      "edge_broad_ratio": 3.798657262339334,
+      "paint_mean_delta_e": 1.4993033870598198,
+      "paint_std_delta_e": 3.692257536116015,
+      "rust_mean_delta_e": 0.6787374178108289,
+      "rust_std_delta_e": 0.8636103667000584,
+      "no_green": 0.0,
+      "pixels_per_metre": 689.2307692307692,
+      "broad_high_frequency": 0.009416345456281375
+    },
+    "eligible": true,
+    "denoise_radius_px": 1.5,
+    "denoise_radius_m": 0.002176339285714286
+  },
+  "back": {
+    "seed": 98330,
+    "raw": "back-98330.png",
+    "chosen": "back-98330-grade100-denoise1.5.png",
+    "calibration": {
+      "flatten_log_linear_plane": true,
+      "lab_affine_matrix": [
+        [
+          1.040170661503041,
+          0.257354474549159,
+          0.7182504713600559
+        ],
+        [
+          -0.11983886281981812,
+          0.6105926185056322,
+          0.3126656021032839
+        ],
+        [
+          -0.04174314307837019,
+          0.002692772524308764,
+          0.9469827680221387
+        ]
+      ],
+      "lab_input_centre": [
+        32.78042700634929,
+        5.527435258430054,
+        8.174139101694209
+      ],
+      "lab_output_centre": [
+        33.96162150560341,
+        5.162068192290037,
+        8.017531444876303
+      ],
+      "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+    },
+    "quantile_amount": 1.0,
+    "scores": {
+      "delta_e": 1.0414087074891405,
+      "planar_light_gradient": 0.0017803129162625195,
+      "secondary_autocorrelation": 0.1746749955670935,
+      "edge_rust": 0.32973598875930565,
+      "broad_rust": 0.045645806722396216,
+      "edge_broad_ratio": 7.223795840977435,
+      "paint_mean_delta_e": 0.5346310803155527,
+      "paint_std_delta_e": 1.432442145165978,
+      "rust_mean_delta_e": 0.7308861912588842,
+      "rust_std_delta_e": 1.4105849723297428,
+      "no_green": 0.0,
+      "pixels_per_metre": 698.1818181818181,
+      "broad_high_frequency": 0.0047843945148793535
+    },
+    "eligible": true,
+    "denoise_radius_px": 1.5,
+    "denoise_radius_m": 0.0021484375
+  },
+  "top": {
+    "seed": 98341,
+    "raw": "top-98341.png",
+    "chosen": "top-98341-grade0-denoise1.5.png",
+    "calibration": {
+      "flatten_log_linear_plane": true,
+      "lab_affine_matrix": [
+        [
+          0.1644945393958259,
+          1.216352102417418,
+          -1.1662585618666779
+        ],
+        [
+          -0.30507536192548,
+          -1.0704974332537636,
+          0.8804662793276437
+        ],
+        [
+          -0.29415319361899595,
+          -1.0874656131412195,
+          1.0623980189010418
+        ]
+      ],
+      "lab_input_centre": [
+        61.46520532939162,
+        0.2751227417877766,
+        -0.33637237857836727
+      ],
+      "lab_output_centre": [
+        51.13510706141624,
+        0.8689111299092823,
+        8.438087695555218
+      ],
+      "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+    },
+    "quantile_amount": 0.0,
+    "scores": {
+      "delta_e": 2.9049084127656397,
+      "planar_light_gradient": 0.0001661159295634033,
+      "secondary_autocorrelation": 0.086200751347327,
+      "edge_rust": 0.05415015747231535,
+      "broad_rust": 0.0,
+      "edge_broad_ratio": 5415015.747231535,
+      "paint_mean_delta_e": 0.5397913309146367,
+      "paint_std_delta_e": 7.333283919779199,
+      "rust_mean_delta_e": 2.0344324862106578,
+      "rust_std_delta_e": 2.6675710234014085,
+      "no_green": 0.0,
+      "pixels_per_metre": 705.8823529411765,
+      "broad_high_frequency": 0.0010067746530743546
+    },
+    "eligible": true,
+    "denoise_radius_px": 1.5,
+    "denoise_radius_m": 0.002125
+  },
+  "bottom": {
+    "seed": 98350,
+    "raw": "bottom-98350.png",
+    "chosen": "bottom-98350-grade67-denoise1.5.png",
+    "calibration": {
+      "flatten_log_linear_plane": true,
+      "lab_affine_matrix": [
+        [
+          0.14364088491012436,
+          -1.0421725471439056,
+          0.597717538193156
+        ],
+        [
+          0.031181195977859014,
+          0.7598450902430014,
+          0.20397034362691702
+        ],
+        [
+          0.10402674526370588,
+          0.024159975230531965,
+          0.9776987810405435
+        ]
+      ],
+      "lab_input_centre": [
+        53.13946425040233,
+        1.9850980883312563,
+        6.4314145781747065
+      ],
+      "lab_output_centre": [
+        50.52775674190287,
+        1.304840452801554,
+        8.645748879102026
+      ],
+      "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+    },
+    "quantile_amount": 0.67,
+    "scores": {
+      "delta_e": 2.465993315279986,
+      "planar_light_gradient": 0.0033400387608945523,
+      "secondary_autocorrelation": 0.01169711017449775,
+      "edge_rust": 0.04309476970251124,
+      "broad_rust": 0.001893320469128502,
+      "edge_broad_ratio": 22.76147667824445,
+      "paint_mean_delta_e": 1.0086392376059332,
+      "paint_std_delta_e": 4.8828997972778705,
+      "rust_mean_delta_e": 1.7739580784339621,
+      "rust_std_delta_e": 0.7723210381737952,
+      "no_green": 0.0,
+      "pixels_per_metre": 705.8823529411765,
+      "broad_high_frequency": 0.004750102697213266
+    },
+    "eligible": true,
+    "denoise_radius_px": 1.5,
+    "denoise_radius_m": 0.002125
+  },
+  "frame": {
+    "seed": 98361,
+    "raw": "frame-98361.png",
+    "chosen": "frame-98361-grade67-denoise1.5.png",
+    "calibration": {
+      "flatten_log_linear_plane": true,
+      "lab_affine_matrix": [
+        [
+          1.2327388766900234,
+          0.7462702418169269,
+          1.3164532454654299
+        ],
+        [
+          -0.47575484284587466,
+          -0.3613239470240483,
+          0.39002702353564866
+        ],
+        [
+          -0.0929848780928049,
+          -0.1832795590723763,
+          0.9083861336869801
+        ]
+      ],
+      "lab_input_centre": [
+        41.37754363253443,
+        5.651551526906086,
+        8.648491472183307
+      ],
+      "lab_output_centre": [
+        38.79821669188079,
+        3.305127913817256,
+        8.490186458135225
+      ],
+      "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+    },
+    "quantile_amount": 0.67,
+    "scores": {
+      "delta_e": 5.489687602802476,
+      "planar_light_gradient": 0.006820519069070038,
+      "secondary_autocorrelation": 0.005810728378120048,
+      "edge_rust": 0.26298947368421055,
+      "broad_rust": 0.0705020820370459,
+      "edge_broad_ratio": 3.730236981455676,
+      "paint_mean_delta_e": 1.1010417526367957,
+      "paint_std_delta_e": 5.117630327813018,
+      "rust_mean_delta_e": 1.3285369834810503,
+      "rust_std_delta_e": 1.8025000767806183,
+      "no_green": 0.0,
+      "pixels_per_metre": 698.1818181818181,
+      "broad_high_frequency": 0.00708068917547572
+    },
+    "eligible": true,
+    "denoise_radius_px": 1.5,
+    "denoise_radius_m": 0.0021484375
+  },
+  "hardware": {
+    "seed": 97801,
+    "raw": "hardware-97801.png",
+    "chosen": "hardware-97801-grade100.png",
+    "calibration": {
+      "flatten_log_linear_plane": true,
+      "lab_affine_matrix": [
+        [
+          1.05364600285134,
+          0.29952902324183184,
+          -0.3270983921787523
+        ],
+        [
+          -0.0011093654801218058,
+          0.8300130775258537,
+          0.10570598015747965
+        ],
+        [
+          0.04215072269788097,
+          -0.23097486937604653,
+          1.0920074167147809
+        ]
+      ],
+      "lab_input_centre": [
+        27.33596773270797,
+        6.638231646615209,
+        12.339997626286253
+      ],
+      "lab_output_centre": [
+        27.126162586705163,
+        6.770858088347027,
+        12.591131342456658
+      ],
+      "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+    },
+    "quantile_amount": 1.0,
+    "scores": {
+      "delta_e": 0.2726912980725959,
+      "planar_light_gradient": 2.7397716784762896e-06,
+      "secondary_autocorrelation": 0.1480053736950446,
+      "edge_rust": 0.6501481083246365,
+      "broad_rust": 0.6274830973033398,
+      "edge_broad_ratio": 1.0361205124388233,
+      "paint_mean_delta_e": 0.2404301776631335,
+      "paint_std_delta_e": 0.29248668261501237,
+      "rust_mean_delta_e": 0.1868228498277595,
+      "rust_std_delta_e": 0.09203518560764484,
+      "no_green": 0.0,
+      "pixels_per_metre": 2560.0
+    },
+    "eligible": true
+  },
+  "left-inner": {
+    "seed": 98390,
+    "raw": "left-inner-98390.png",
+    "chosen": "left-inner-98390-grade33-denoise0.6.png",
+    "calibration": {
+      "flatten_log_linear_plane": true,
+      "lab_affine_matrix": [
+        [
+          -0.014102244071020554,
+          -3.4653858994385294,
+          1.943210934174979
+        ],
+        [
+          -0.17469409450353032,
+          0.7492883779956092,
+          -0.147853208552869
+        ],
+        [
+          -0.11549493965964652,
+          -0.7993840576726965,
+          1.248914023948053
+        ]
+      ],
+      "lab_input_centre": [
+        63.07971300150056,
+        1.0380058193347723,
+        4.668518982871874
+      ],
+      "lab_output_centre": [
+        64.23514872339796,
+        -0.35793568932673464,
+        9.67027711143592
+      ],
+      "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+    },
+    "quantile_amount": 0.33,
+    "scores": {
+      "delta_e": 5.476905021959718,
+      "planar_light_gradient": 0.020190216246021304,
+      "secondary_autocorrelation": 0.3181045165752546,
+      "edge_rust": 0.06810385676158386,
+      "broad_rust": 0.006631747621886127,
+      "edge_broad_ratio": 10.26936799235652,
+      "paint_mean_delta_e": 2.18960731204133,
+      "paint_std_delta_e": 7.613346632188015,
+      "rust_mean_delta_e": 2.1654993366129496,
+      "rust_std_delta_e": 1.2007394508895226,
+      "no_green": 0.0,
+      "pixels_per_metre": 689.2307692307692,
+      "broad_high_frequency": 0.06987958215943638
+    },
+    "eligible": true,
+    "denoise_radius_px": 0.6,
+    "denoise_radius_m": 0.0008705357142857143
+  },
+  "right-inner": {
+    "seed": 98310,
+    "raw": "right-inner-98310.png",
+    "chosen": "right-inner-98310-grade67-denoise1.5.png",
+    "calibration": {
+      "flatten_log_linear_plane": true,
+      "lab_affine_matrix": [
+        [
+          -0.09005677937504572,
+          0.5413843966620848,
+          -0.9621428058363221
+        ],
+        [
+          -0.10181819180646812,
+          0.19146623342310684,
+          0.6460551010160049
+        ],
+        [
+          -0.34358216597532115,
+          -0.04709766827227665,
+          0.8246534822066534
+        ]
+      ],
+      "lab_input_centre": [
+        61.9429457404891,
+        2.9007470401531634,
+        8.13993167808423
+      ],
+      "lab_output_centre": [
+        63.46063484175508,
+        1.4096273788294271,
+        7.299974747913432
+      ],
+      "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+    },
+    "quantile_amount": 0.67,
+    "scores": {
+      "delta_e": 4.600745117068415,
+      "planar_light_gradient": 0.0013149832050392393,
+      "secondary_autocorrelation": 0.1365961889216332,
+      "edge_rust": 0.14292657046699903,
+      "broad_rust": 0.022701156589477595,
+      "edge_broad_ratio": 6.29600390198833,
+      "paint_mean_delta_e": 1.0783071935295263,
+      "paint_std_delta_e": 4.938545344252578,
+      "rust_mean_delta_e": 1.7172643247943995,
+      "rust_std_delta_e": 1.4091394312189403,
+      "no_green": 0.0,
+      "pixels_per_metre": 689.2307692307692,
+      "broad_high_frequency": 0.009374649147901492
+    },
+    "eligible": true,
+    "denoise_radius_px": 1.5,
+    "denoise_radius_m": 0.002176339285714286
+  },
+  "ceiling": {
+    "seed": 98411,
+    "raw": "ceiling-98411.png",
+    "chosen": "ceiling-98411-grade100-denoise1.5.png",
+    "calibration": {
+      "flatten_log_linear_plane": true,
+      "lab_affine_matrix": [
+        [
+          -0.6191224529107716,
+          0.21689057033007494,
+          -1.0328297419015482
+        ],
+        [
+          0.1220994930990071,
+          0.14243180051372295,
+          0.7782442952554922
+        ],
+        [
+          0.0752605771102003,
+          0.11324029930379999,
+          0.8366422784394406
+        ]
+      ],
+      "lab_input_centre": [
+        49.765547652869756,
+        3.691682678948473,
+        10.35058774342518
+      ],
+      "lab_output_centre": [
+        50.54869056267136,
+        1.6322544130890664,
+        9.283259656795817
+      ],
+      "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+    },
+    "quantile_amount": 1.0,
+    "scores": {
+      "delta_e": 1.5510846938343652,
+      "planar_light_gradient": 0.003591049599154096,
+      "secondary_autocorrelation": 0.4751763705003666,
+      "edge_rust": 0.168823252334377,
+      "broad_rust": 0.003086371723647832,
+      "edge_broad_ratio": 54.69958496601379,
+      "paint_mean_delta_e": 1.231903108113615,
+      "paint_std_delta_e": 4.160967792177306,
+      "rust_mean_delta_e": 0.5609817748462117,
+      "rust_std_delta_e": 1.2454445977885378,
+      "no_green": 0.0,
+      "pixels_per_metre": 705.8823529411765,
+      "broad_high_frequency": 0.005966284906696542
+    },
+    "eligible": true,
+    "denoise_radius_px": 1.5,
+    "denoise_radius_m": 0.002125
+  },
+  "header": {
+    "seed": 99301,
+    "raw": "header-99301.png",
+    "chosen": "header-99301-grade100-denoise1.5.png",
+    "calibration": {
+      "flatten_log_linear_plane": true,
+      "lab_affine_matrix": [
+        [
+          1.2747607446879932,
+          1.0318697092812397,
+          -0.020156798687811776
+        ],
+        [
+          -0.35453239304670525,
+          0.0812935339015151,
+          0.5433767134086106
+        ],
+        [
+          -0.3478767064413902,
+          0.07592914351657735,
+          0.6543396455332949
+        ]
+      ],
+      "lab_input_centre": [
+        38.395253404727626,
+        7.175209995878749,
+        11.324850317913992
+      ],
+      "lab_output_centre": [
+        40.44387605893395,
+        6.667357900589038,
+        10.208775519720444
+      ],
+      "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+    },
+    "quantile_amount": 1.0,
+    "scores": {
+      "delta_e": 1.1218744595555878,
+      "planar_light_gradient": 0.004514517466789188,
+      "secondary_autocorrelation": 0.0,
+      "edge_rust": 0.6501939618822735,
+      "broad_rust": 0.23755778734257932,
+      "edge_broad_ratio": 2.7369928351144153,
+      "paint_mean_delta_e": 1.974904111817696,
+      "paint_std_delta_e": 6.455991684305023,
+      "rust_mean_delta_e": 2.4139860663402217,
+      "rust_std_delta_e": 1.857674965159146,
+      "no_green": 0.0,
+      "pixels_per_metre": 806.7226890756303,
+      "broad_high_frequency": 0.010080036850972711
+    },
+    "eligible": true,
+    "denoise_radius_px": 1.5,
+    "denoise_radius_m": 0.0018593749999999997
+  }
+}

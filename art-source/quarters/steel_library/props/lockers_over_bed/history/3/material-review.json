@@ -1,0 +1,66 @@
+{
+  "images_seen": [
+    "hero",
+    "front",
+    "top",
+    "detail"
+  ],
+  "ratings": {
+    "candidate_as_built": {
+      "score": 8,
+      "explanation": "The grey-green paint is consistent and clean across all views, with clear hardware and dark trim details visible in the detail block."
+    },
+    "candidate_aged": {
+      "score": 7,
+      "explanation": "The aged state shows convincing broad paint retention with irregular edge corrosion and downward rust runs, though the top surface dust appears slightly patchy in the top view."
+    },
+    "locker_as_built": {
+      "score": 8,
+      "explanation": "The reference locker presents a uniform grey-green finish with sharp edges and clear hardware, matching the material brief for new warship steel."
+    },
+    "locker_aged": {
+      "score": 7,
+      "explanation": "The reference aged locker displays significant weathering with heavy rust on edges and hardware, providing a strong target for the candidate's aging process."
+    }
+  },
+  "features": {
+    "grey-green_paint": {
+      "achieved": true,
+      "observations": "Both candidate and reference show a consistent grey-green hue in the as-built state across all four view blocks."
+    },
+    "bare_hardware": {
+      "achieved": true,
+      "observations": "Handles and latches are visible as distinct metallic elements in the as-built detail view, contrasting with the painted body."
+    },
+    "dark_trim": {
+      "achieved": true,
+      "observations": "Dark trim lines are visible along the edges and door seams in the as-built state, particularly clear in the front and detail blocks."
+    },
+    "edge_corrosion": {
+      "achieved": true,
+      "observations": "The aged state shows irregular rust and corrosion concentrated on the corners and edges of the locker units in all views."
+    },
+    "rust_runs": {
+      "achieved": true,
+      "observations": "Narrow downward rust streaks are visible on the vertical faces of the aged candidate, particularly in the hero and front blocks."
+    },
+    "settled_dust": {
+      "achieved": true,
+      "observations": "A fine, soft dust layer is visible on the upward-facing top surfaces in the aged state, though it appears slightly uneven in the top view."
+    }
+  },
+  "findings": [
+    "The dust on the top surface of the aged candidate appears slightly patchy and could be more uniform to better match the 'fine soft settled dust' brief.",
+    "The rust runs on the vertical faces could be slightly more varied in width and intensity to avoid a repetitive look in the hero view."
+  ],
+  "ready": true,
+  "limitations": "The top view provides a limited perspective on the vertical rust runs, and the detail block's aged state is heavily cropped, focusing only on a small section of the surface.",
+  "acceptance": {
+    "accepted": true,
+    "candidate_aged": 7,
+    "locker_aged": 7,
+    "numeric_failed": 0,
+    "scope_complete": true,
+    "rule": "candidate aged >= locker aged in this review, numeric gates pass, all four view blocks inspected"
+  }
+}

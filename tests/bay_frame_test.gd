@@ -22,7 +22,7 @@ func test_bay_side_wall_caps_do_not_compete_with_the_hall_facing_wall() -> void:
 func test_bay_shell_weather_uses_the_layout_frame_exactly_once() -> void:
 	var root := Node3D.new()
 	var game := Game.new(0)
-	var scene := ShipScene.build_into(root, game, false)
+	var scene := ShipScene.build_into(root, game)
 	var wall: GeometryInstance3D = scene.room.get_child(2)
 	var frame: Surfaces.SurfaceFrame = wall.get_meta(&"surface_frame")
 	assert_true(frame.world_from_surface == game.layout.bay_to_world(), "weather follows the same bay-local frame as geometry")
@@ -67,9 +67,9 @@ func test_all_pod_and_light_frames_rotate_without_changing_local_fixtures() -> v
 		var center := pod.placement().center
 		assert_close(frame * Vector3(center.x, 0, center.y), pins[pod.id().index()], "world pod pin")
 		assert_close(frame.affine_inverse() * pins[pod.id().index()], Vector3(center.x, 0, center.y), "inverse returns local pod")
-	var fixtures := game.layout.bay().emergency_fixtures(game.registry)
-	for index: int in range(7):
-		assert_vec3_equal(Vector3(0, (frame * fixtures[index].frame).origin.y, 0), Vector3(0, 2.65, 0), "fixture height unchanged")
+	var fixtures := game.layout.bay().emergency_fixtures()
+	for index: int in range(8):
+		assert_vec3_equal(Vector3(0, (frame * fixtures[index].frame).origin.y, 0), Vector3(0, 2.5, 0), "consolidated wall row clears the services at 2.5 m")
 		assert_vec3_equal((frame * fixtures[index].frame).basis.x, Vector3(0, 0, -1), "light frame quarter-turn")
 	var rig := Player.build(game, null)
 	rig.scripted = true

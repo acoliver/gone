@@ -11,7 +11,7 @@ from shapely.strtree import STRtree
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[3]
-sys.path.insert(0, str(HERE.parents[1] / 'quarters_aging'))
+sys.path.append(str(HERE.parents[1] / 'quarters_aging'))
 from triangle_contacts import intersect
 
 PARTS = ('Mattress', 'Quilt', 'Pillow_L', 'Pillow_R')
@@ -84,7 +84,7 @@ def state_report(state, path, repeat):
                 'Pillow_L': meshes['Mattress'], 'Pillow_R': meshes['Mattress']}
     gaps = {name: support_gap(meshes[name], support) for name, support in supports.items()}
     for name, mesh in meshes.items():
-        if name.endswith('_Platform'):
+        if name.endswith(('_Platform', '_Foot')):
             gaps[name] = support_gap(mesh, frame['MattressPlatform'])
         elif name.endswith('_Floor'):
             gaps[name] = float(mesh.bounds[0, 1])

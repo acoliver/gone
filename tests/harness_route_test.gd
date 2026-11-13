@@ -5,7 +5,7 @@ const Route := preload("res://harness/route.gd")
 func test_all_opening_schedules_replay_through_actual_player() -> void:
 	for name: String in ["gameplay-full", "gameplay-keyboard-turn", "rod-pickup", "hallway", "power-room"]:
 		var scenario: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://scenarios/%s.json" % name))
-		var game := Game.new(0)
+		var game := Game.new(int(scenario.seed))
 		var player := Player.build(game, null)
 		player.scripted = true
 		player.rod = Rod.build()
@@ -27,15 +27,38 @@ func test_all_opening_schedules_replay_through_actual_player() -> void:
 		player.free()
 
 func test_fixed_opening_schedule_snapshots() -> void:
-	# Main's fitted pod rows and the stack's parked hatches jointly determine
-	# arrival ticks. Regenerate schedules with unchanged beats, checks and budgets.
+	# Pin capture framing separately so every original input, beat tick, check
+	# and budget byte still matches the existing snapshots.
 	var expected := {
-		"gameplay-full": "31a542d425080d8148b18b87e80767a5746461fd7b660a59f024245a8eb9211d",
-		"gameplay-keyboard-turn": "b3f83b97da223ee17b547866edf75039d8366493efa5965d80bdbbaa2d3758c9",
-		"rod-pickup": "d95d2693a787ee073b842574406e6199d8fa06771c058b222a22f2cdd0fbc372",
-		"hallway": "bc970fd032cc8de07b77325ffd6e1b48a8e5a2deb0eed83f72fac051763f1e44",
-		"power-room": "0b6b3874266687ca36a728f7569403abac802c110c8b019ec9c3f0173e73f339",
-		"connector-route": "3d92c1b461456c6fca61194cf6e56b04cdefd67d77c812f69f6cc559b49abb0b",
+		"gameplay-full": "00b5248ac8bccc8d3111280fa965f3f11574ef752f9b75cb60eff3d54a3c0779",
+		"gameplay-keyboard-turn": "2eb82357723558ec38d1da61af31c766ff5dcce9f6d96d18f1acebf469866970",
+		"rod-pickup": "6ad6d75c76ec032165114dc035b09346e6629de0d7108ad4e8230418f93e50df",
+		"hallway": "52ac14ded190d348566825248fbf5c8d84a0d7b760df6a46a36f5e346cebb849",
+		"power-room": "fccfcd702eeef0d15dd2cd6534ad6ab146f6d516843797e41d3b7b78b8b81170",
+		"connector-route": "12cbdd957741adc8644b595945afeb5ca9d8998b5f7e8e6abf9d948b85341a9a",
+		"click-route": "2f6927124bd407bb087c870bcb4462b2a65dd81987f04035e6904d190f48c069",
 	}
 	for name: String in expected:
-		assert_true(FileAccess.get_sha256("res://scenarios/%s.json" % name) == expected[name], name + " fixed compiled schedule")
+		var source := FileAccess.get_file_as_string("res://scenarios/%s.json" % name)
+		if name in ["power-room", "connector-route", "click-route"]:
+			var scenario: HarnessScenario = HarnessScenario.parse(source).scenario
+			if name == "connector-route":
+				for label: String in ["fore-inner-closed", "fore-inner-mid-crank"]:
+					var beat: Dictionary = scenario.beats.filter(func(value: Dictionary) -> bool: return value.name == label)[0]
+					assert_float_equal(beat.camera_back, 9.0, "frame the next beam beyond the occluding pendant")
+					assert_float_equal(beat.camera_pitch_up, 15.0, "include recessed glass and the whole hatch")
+					var framing := "\t\t\t\"camera_back\": 9.0,\n\t\t\t\"camera_pitch_up\": 15.0,\n\t\t\t\"light\": \"white\",\n\t\t\t\"name\": \"%s\",\n" % label
+					assert_int_equal(source.count(framing), 1, "only this named beat changes its fixture view")
+					var original := framing.replace("\"camera_back\": 9.0", "\"camera_back\": 4.5").replace("\t\t\t\"camera_pitch_up\": 15.0,\n", "")
+					source = source.replace(framing, original)
+			var captures := {"power-active": {"camera_pitch_up": 30.0}}
+			if name != "click-route": captures["hall-white"] = {"camera_back": 2.0, "camera_pitch_up": 15.0}
+			for label: String in captures:
+				var beat: Dictionary = scenario.beats.filter(func(value: Dictionary) -> bool: return value.name == label)[0]
+				for key: String in captures[label]:
+					var value: float = captures[label][key]
+					assert_float_equal(float(beat.get(key, -1.0)), value, name + " pins the fixture view " + key)
+					var field := "\t\t\t\"%s\": %.1f,\n" % [key, value]
+					assert_int_equal(source.count(field), 1, name + " permits only the declared capture framing")
+					source = source.replace(field, "")
+		assert_true(source.sha256_text() == expected[name], name + " fixed compiled schedule")

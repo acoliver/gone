@@ -48,7 +48,11 @@ const TOP_NODUST := preload(FACE_ROOT + "top-nodust.png")
 static var _materials: Dictionary = {}
 static var _face_layout: Dictionary = {}
 static var _hinge_mesh: Mesh
+const WARDROBE_ROOT := "res://tools/blender/quarters/wardrobe/"
+const WARDROBE_TEXTURES := "res://assets/props/quarters/wardrobe_"
+static var _wardrobe_layout: Dictionary = {}
 
+const MEDAL_ROOT := "res://assets/props/quarters/dress_uniform/medal/"
 const TUNIC_SCENES := {
 	&"as_built": "res://assets/props/quarters/dress_uniform.glb",
 	&"aged": "res://assets/props/quarters/dress_uniform_aged.glb",
@@ -68,6 +72,11 @@ static func prepare_geometry(root: Node3D) -> void:
 
 
 static func material(prop: StringName, state: StringName, part: StringName = &"TunicBody", surface: int = 0) -> ShaderMaterial:
+	if QuartersSteelLibrary.ACCEPTED.has(prop):
+		return QuartersSteelLibrary.material(prop, state)
+	if prop == &"wardrobe":
+		assert(STATES.has(state), "unknown quarters finish: %s" % state)
+		return _wardrobe_material(state)
 	if prop == &"dress_uniform":
 		assert(STATES.has(state), "unknown quarters finish: %s" % state)
 		return _tunic_material(state, part, surface)
@@ -117,6 +126,12 @@ static func _sofa_powder_material(state: StringName) -> ShaderMaterial:
 	return result
 
 static func apply(root: Node3D, prop: StringName, state: StringName) -> void:
+	if QuartersSteelLibrary.ACCEPTED.has(prop):
+		QuartersSteelLibrary.apply(root, prop, state)
+		return
+	if prop == &"wardrobe":
+		_apply_wardrobe(root, state)
+		return
 	if prop == &"dress_uniform":
 		for node: MeshInstance3D in root.find_children("*", "MeshInstance3D", true, false):
 			for surface: int in range(node.mesh.get_surface_count()):
@@ -187,8 +202,18 @@ static func _tunic_material(state: StringName, part: StringName, surface: int) -
 			for index: int in range(node.mesh.get_surface_count()):
 				var imported := node.mesh.surface_get_material(index) as StandardMaterial3D
 				assert(imported != null, "tunic requires imported PBR surfaces")
-				if not shared.has(imported): shared[imported] = _tunic_finish(imported, state)
-				slots.append(shared[imported])
+				if node.name == &"Medal" and index < 2:
+					var opposite := node.mesh.surface_get_material(1 - index) as StandardMaterial3D
+					slots.append(_medal_finish(imported, opposite, state, index))
+				elif node.name == &"Medal" and index == 2:
+					slots.append(_ribbon_finish(imported, state))
+				elif node.name == &"TunicBody":
+					var finish := _tunic_finish(imported, state)
+					_medal_contact(finish, state)
+					slots.append(finish)
+				else:
+					if not shared.has(imported): shared[imported] = _tunic_finish(imported, state)
+					slots.append(shared[imported])
 			parts[node.name] = slots
 		source.free()
 		_tunic_materials[state] = parts
@@ -215,5 +240,191 @@ static func _tunic_finish(imported: StandardMaterial3D, state: StringName) -> Sh
 	# Godot omits glTF specularFactor; aged Blender cloth/brass uses .12.
 	var aged_pigment := state == &"aged" and imported.resource_name != "BareSteel" and imported.resource_name != "RibbonFabric"
 	result.set_shader_parameter(&"specular", .12 if aged_pigment else imported.metallic_specular)
-	result.set_shader_parameter(&"pigment_gain", TUNIC_AGED_WOOL_GAIN if aged_pigment and is_zero_approx(imported.metallic) else Vector3.ONE)
+	var aged_wool := aged_pigment and is_zero_approx(imported.metallic) and not imported.resource_name.begins_with("MedalEnamel")
+	result.set_shader_parameter(&"pigment_gain", TUNIC_AGED_WOOL_GAIN if aged_wool else Vector3.ONE)
 	return result
+
+static func _medal_finish(imported: StandardMaterial3D, opposite: StandardMaterial3D, state: StringName, role: int) -> ShaderMaterial:
+	assert(role in [0, 1], "medal adapter only accepts brass and enamel")
+	assert(imported.albedo_texture != null and imported.normal_enabled and imported.normal_texture != null, "medal PBR requires albedo and normal")
+	assert(imported.roughness_texture != null and imported.metallic_texture != null and imported.ao_texture != null, "medal PBR requires packed ORM")
+	assert(imported.roughness_texture_channel == BaseMaterial3D.TEXTURE_CHANNEL_GREEN and imported.metallic_texture_channel == BaseMaterial3D.TEXTURE_CHANNEL_BLUE and imported.ao_texture_channel == BaseMaterial3D.TEXTURE_CHANNEL_RED, "medal ORM layout must be R=AO, G=roughness, B=metallic")
+	assert(imported.roughness_texture.get_image().get_data() == imported.metallic_texture.get_image().get_data() and imported.roughness_texture.get_image().get_data() == imported.ao_texture.get_image().get_data(), "medal ORM imports must retain identical packed pixels")
+	assert(is_equal_approx(imported.roughness, 1.0) and is_equal_approx(imported.metallic, 1.0), "final-value ORM uses unit factors")
+	var result := ShaderMaterial.new()
+	result.shader = load("res://app/shaders/quarters_medal.gdshader")
+	result.set_shader_parameter(&"base_colour", imported.albedo_color)
+	result.set_shader_parameter(&"albedo_texture", imported.albedo_texture)
+	result.set_shader_parameter(&"normal_texture", imported.normal_texture)
+	result.set_shader_parameter(&"normal_scale", imported.normal_scale)
+	result.set_shader_parameter(&"orm_texture", imported.roughness_texture)
+	result.set_shader_parameter(&"has_normal", true)
+	result.set_shader_parameter(&"roughness", imported.roughness)
+	result.set_shader_parameter(&"metallic", imported.metallic)
+	result.set_shader_parameter(&"specular", .5)
+	result.set_shader_parameter(&"coat", 0.0)
+	# The generated high-surface edge crosses the low cage's material triangles.
+	var boundary := load(MEDAL_ROOT + String(state) + "_boundary.png") as Texture2D
+	assert(boundary != null, "medal requires its generated high-surface enamel boundary")
+	result.set_shader_parameter(&"boundary_texture", boundary)
+	result.set_shader_parameter(&"enamel_surface", role == 1)
+	result.set_shader_parameter(&"other_albedo", opposite.albedo_texture)
+	result.set_shader_parameter(&"other_normal", opposite.normal_texture)
+	result.set_shader_parameter(&"other_orm", opposite.roughness_texture)
+	# Godot's native glTF import drops KHR_materials_clearcoat, so bind the saved master.
+	var coat_texture := load(MEDAL_ROOT + String(state) + "_coat.png") as Texture2D
+	assert(coat_texture != null, "enamel requires its generated coat-weight texture")
+	result.set_shader_parameter(&"coat_texture", coat_texture)
+	result.set_shader_parameter(&"has_coat_texture", true)
+	result.set_shader_parameter(&"coat_roughness", .30 if state == &"aged" else .09)
+	if role == 1:
+		result.set_shader_parameter(&"coat", 1.0)
+	return result
+
+static func _ribbon_finish(imported: StandardMaterial3D, state: StringName) -> ShaderMaterial:
+	assert(imported.albedo_texture != null and imported.normal_texture != null and imported.roughness_texture != null, "Ribbon master must export normal and roughness maps")
+	var result := ShaderMaterial.new()
+	result.shader = load("res://app/shaders/quarters_ribbon.gdshader")
+	result.set_shader_parameter(&"base_colour", imported.albedo_color)
+	result.set_shader_parameter(&"albedo_texture", imported.albedo_texture)
+	result.set_shader_parameter(&"weave_normal", imported.normal_texture)
+	result.set_shader_parameter(&"weave_roughness", imported.roughness_texture)
+	result.set_shader_parameter(&"weave_scale", Vector2(imported.uv1_scale.x, imported.uv1_scale.y))
+	result.set_shader_parameter(&"weave_offset", Vector2(imported.uv1_offset.x, imported.uv1_offset.y))
+	result.set_shader_parameter(&"aged", state == &"aged")
+	return result
+
+static func _medal_contact(finish: ShaderMaterial, state: StringName) -> void:
+	var frames: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(MEDAL_ROOT + "contact-frames.json"))
+	var frame: Dictionary = frames[state]
+	finish.set_shader_parameter(&"contact_enabled", true)
+	# #130: the wider remembered clearance needs more direct-light contact influence.
+	finish.set_shader_parameter(&"contact_light_affect", .85 if state == &"as_built" else .35)
+	finish.set_shader_parameter(&"contact_texture", load(MEDAL_ROOT + String(state) + "_contact.png"))
+	for axis: String in ["x", "height", "depth"]:
+		var values: Array = frame.axes[axis]
+		finish.set_shader_parameter("contact_" + axis, Vector4(values[0], values[1], values[2], values[3]))
+
+# Shared slot finishes remain for storage stand-ins and demo display/glass
+# optics. Rigid batch-1 surfaces use the routed per-prop materials above.
+static var _interim_materials: Dictionary = {}
+
+static func interim_material(slot: StringName, state: StringName) -> Material:
+	assert(STATES.has(state), "known interim finish state")
+	assert(slot in [&"PaintedSteel", &"BareSteel", &"DarkSteel", &"Fabric", &"Wood", &"Display", &"Glass"], "unknown furniture material slot: " + String(slot))
+	var identity := StringName("%s/%s" % [slot, state])
+	if _interim_materials.has(identity): return _interim_materials[identity]
+	var result: Material
+	if state == &"aged" and slot in [&"PaintedSteel", &"BareSteel", &"DarkSteel"]:
+		var steel := Surfaces.material(&"pipe").duplicate() as ShaderMaterial
+		steel.set_shader_parameter(&"seam_strength", 0.0)
+		steel.set_shader_parameter(&"colour_gain", Vector3.ONE * (0.45 if slot == &"DarkSteel" else 1.0))
+		result = steel
+	else:
+		var simple := StandardMaterial3D.new()
+		# Same hero ROI median used by bake_finishes.design_paint for the locker.
+		simple.albedo_color = {
+			&"PaintedSteel": Color(97.0 / 255, 118.0 / 255, 115.0 / 255),
+			&"BareSteel": Color(0.72, 0.75, 0.77), &"DarkSteel": Color(0.23, 0.265, 0.26),
+			&"Fabric": Color(0.18, 0.19, 0.20) if state == &"as_built" else Color(0.27, 0.25, 0.22),
+			&"Wood": Color(0.35, 0.22, 0.12) if state == &"as_built" else Color(0.20, 0.15, 0.10),
+			&"Display": Color(0.025, 0.055, 0.065),
+			&"Glass": Color(0.10, 0.12, 0.13, 0.10),
+		}[slot]
+		simple.roughness = 0.9 if state == &"aged" or slot in [&"Fabric", &"Wood"] else (0.35 if slot == &"BareSteel" else 0.45)
+		simple.metallic = 0.45 if slot in [&"BareSteel", &"DarkSteel"] else 0.02
+		if slot == &"Glass":
+			# The pod shader needs a mesh-specific vertex edge mask.
+			simple.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			simple.roughness = 0.07
+		result = simple
+	_interim_materials[identity] = result
+	return result
+
+static func bedside_lens(state: StringName) -> StandardMaterial3D:
+	var identity := StringName("bedside_lens/%s" % state)
+	if not _interim_materials.has(identity):
+		var finish := (interim_material(&"Display", state) as StandardMaterial3D).duplicate() as StandardMaterial3D
+		if state == &"as_built":
+			finish.albedo_color = Color(1.0, 0.69, 0.38)
+			finish.emission_enabled = true
+			finish.emission = finish.albedo_color
+			finish.emission_energy_multiplier = Lighting.REGULAR_EMISSIVE
+		_interim_materials[identity] = finish
+	return _interim_materials[identity]
+
+static func _wardrobe_material(state: StringName) -> ShaderMaterial:
+	var identity := StringName("wardrobe/%s" % state)
+	if _materials.has(identity): return _materials[identity]
+	var result := ShaderMaterial.new()
+	result.shader = load(WARDROBE_ROOT + "material.gdshader")
+	result.set_shader_parameter(&"face_albedo", load(WARDROBE_TEXTURES + "aged_albedo.png"))
+	result.set_shader_parameter(&"face_orm", load(WARDROBE_TEXTURES + "aged_orm.png"))
+	result.set_shader_parameter(&"clean_paint", load(WARDROBE_TEXTURES + "as_built_paint.png"))
+	result.set_shader_parameter(&"albedo_b", Surfaces.HATCH_DETAIL_TEXTURES["albedo_b"])
+	result.set_shader_parameter(&"aged_finish", state == &"aged")
+	result.set_shader_parameter(&"diagnostic", 0)
+	_materials[identity] = result
+	return result
+
+
+static func storage_material(state: StringName) -> Material:
+	assert(STATES.has(state), "unknown storage finish: %s" % state)
+	if state == &"as_built": return interim_material(&"PaintedSteel", state)
+	var identity := StringName("storage/%s" % state)
+	if not _materials.has(identity):
+		var finish := _wardrobe_material(state).duplicate() as ShaderMaterial
+		finish.set_shader_parameter(&"face_albedo", FACE_ALBEDO)
+		finish.set_shader_parameter(&"face_orm", FACE_ORM)
+		_materials[identity] = finish
+	return _materials[identity]
+
+
+static func prepare_storage(piece: MeshInstance3D) -> void:
+	if _face_layout.is_empty():
+		_face_layout = JSON.parse_string(FileAccess.get_file_as_string(FACE_ROOT + "face-layout.json"))["faces"]
+	var front: Array = _face_layout["door"]["uv_rectangle"]
+	var top: Array = _face_layout["top"]["uv_rectangle"]
+	var bounds := piece.get_aabb()
+	piece.set_instance_shader_parameter(&"face_front", Vector4(front[0], front[1], front[2], front[3]))
+	piece.set_instance_shader_parameter(&"face_back", Vector4(front[0], front[1], front[2], front[3]))
+	piece.set_instance_shader_parameter(&"face_dust", Vector4(top[0], top[1], top[2], top[3]))
+	piece.set_instance_shader_parameter(&"local_low", Vector4(bounds.position.x, bounds.position.y, bounds.position.z, 0))
+	piece.set_instance_shader_parameter(&"local_size", Vector4(bounds.size.x, bounds.size.y, bounds.size.z, 0))
+	piece.set_instance_shader_parameter(&"projection", Vector4(2, 0, 1, 0))
+
+static func _wardrobe_rectangle(face: String) -> Vector4:
+	var rectangle: Array = _wardrobe_layout[face]["uv_rectangle"]
+	return Vector4(rectangle[0], rectangle[1], rectangle[2], rectangle[3])
+
+
+static func _apply_wardrobe(root: Node3D, state: StringName) -> void:
+	var finish := _wardrobe_material(state)
+	if _wardrobe_layout.is_empty():
+		_wardrobe_layout = JSON.parse_string(FileAccess.get_file_as_string(WARDROBE_ROOT + "material-layout.json"))["faces"]
+	var panels := {&"Door": "door-outer", &"SidePanel_L": "left-inner", &"SidePanel_R": "right", &"BackPanel": "back", &"TopPanel": "top", &"BottomPanel": "bottom", &"SurroundHead": "header", &"DoorReturn_T": "header", &"DoorReturn_B": "header"}
+	var reverse := {&"Door": "door-inner", &"SidePanel_L": "left", &"SidePanel_R": "right-inner", &"TopPanel": "ceiling"}
+	for piece: MeshInstance3D in root.find_children("*", "MeshInstance3D", true, false):
+		assert(piece.mesh.get_surface_count() == 1, "wardrobe parts have one material class")
+		var imported := piece.mesh.surface_get_material(0) as StandardMaterial3D
+		assert(imported != null, "wardrobe requires imported material classes")
+		var kind := [&"PaintedSteel", &"BareSteel", &"DarkSteel"].find(StringName(imported.resource_name)) + 1
+		assert(kind > 0, "unknown wardrobe material: %s" % imported.resource_name)
+		var bounds := piece.get_aabb()
+		var size := bounds.size
+		var thickness := 0 if size.x < minf(size.y, size.z) else (1 if size.y < size.z else 2)
+		var horizontal := 2 if thickness == 0 else 0
+		var vertical := 2 if thickness == 1 else 1
+		var face: String = panels.get(piece.name, "frame") if kind == 1 else "hardware"
+		if face == "frame" and size[horizontal] > size[vertical]:
+			var swap := horizontal
+			horizontal = vertical
+			vertical = swap
+		piece.material_override = finish
+		piece.set_instance_shader_parameter(&"face_front", _wardrobe_rectangle(face))
+		piece.set_instance_shader_parameter(&"face_back", _wardrobe_rectangle(reverse.get(piece.name, face) if kind == 1 else face))
+		piece.set_instance_shader_parameter(&"face_edge", _wardrobe_rectangle("frame"))
+		piece.set_instance_shader_parameter(&"face_dust", _wardrobe_rectangle("top"))
+		piece.set_instance_shader_parameter(&"local_low", Vector4(bounds.position.x, bounds.position.y, bounds.position.z, 0))
+		piece.set_instance_shader_parameter(&"local_size", Vector4(size.x, size.y, size.z, 0))
+		piece.set_instance_shader_parameter(&"projection", Vector4(thickness, horizontal, vertical, kind))

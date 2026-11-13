@@ -1,0 +1,360 @@
+{
+  "issue": 130,
+  "baseline": "56a656ba807a477a38503c3b6be0343ebb0b2d4d",
+  "stage": "raw shape guide generation, not fitted or approved for production",
+  "input": {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/c-machined-rim-seed130303.png",
+    "sha256": "900e566387d32661c16274644f23d14b26a1404bc3ee06931a941c6593eaac3a",
+    "unmodified": true,
+    "source_review": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-review/c-source-review.md",
+    "sha256_after": "900e566387d32661c16274644f23d14b26a1404bc3ee06931a941c6593eaac3a"
+  },
+  "output": {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/c-machined-rim-seed130303-hunyuan-full-seed0-oct320-guide.glb",
+    "sha256": "cf71dd7144f44bc91e0867ec56f8d23b0289ebf9bf91ec135559f577f4ac26a8",
+    "bytes": 5309036
+  },
+  "cwd": "/Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d",
+  "argv": [
+    "/Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python",
+    "/Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/generate.py",
+    "--front",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/c-machined-rim-seed130303.png",
+    "--remove-bg",
+    "--subfolder",
+    "hunyuan3d-dit-v2-mv",
+    "--octree-resolution",
+    "320",
+    "--min-component-faces",
+    "50",
+    "--seed",
+    "0",
+    "--out",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/c-machined-rim-seed130303-hunyuan-full-seed0-oct320-guide.glb"
+  ],
+  "shell_command": "HF_HUB_OFFLINE=1 HF_HOME=/Volumes/XS1000/hf-cache PYTHONUNBUFFERED=1 /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python /Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/generate.py --front /Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/c-machined-rim-seed130303.png --remove-bg --subfolder hunyuan3d-dit-v2-mv --octree-resolution 320 --min-component-faces 50 --seed 0 --out /Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/c-machined-rim-seed130303-hunyuan-full-seed0-oct320-guide.glb",
+  "environment": {
+    "HF_HUB_OFFLINE": "1",
+    "HF_HOME": "/Volumes/XS1000/hf-cache",
+    "PYTHONUNBUFFERED": "1",
+    "python": "3.12.12 (main, Jan 27 2026, 23:41:44) [Clang 21.1.4 ]",
+    "platform": "macOS-26.4-arm64-arm-64bit",
+    "machine": "arm64",
+    "packages": {
+      "mlx": "0.32.0",
+      "numpy": "2.5.2",
+      "trimesh": "5.0.0",
+      "Pillow": "12.3.0",
+      "scipy": "1.18.0"
+    }
+  },
+  "model": {
+    "path": "/Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/weights/Hunyuan3D-2mv",
+    "subfolder": "hunyuan3d-dit-v2-mv",
+    "variant": "full, not turbo",
+    "dtype": "float16",
+    "steps": 30,
+    "guidance_scale": 5.0,
+    "octree_resolution": 320,
+    "num_chunks": 50000,
+    "mc_level": 0.0,
+    "box_v": 1.01,
+    "min_component_faces": 50,
+    "seed": 0,
+    "remove_bg": true,
+    "views": [
+      "front"
+    ]
+  },
+  "log": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/generation.log",
+  "started_utc": "2026-11-10T19:38:09.451847+00:00",
+  "returncode": 0,
+  "gpu_preflight": "Only other graphics process observed was wt-129 Godot --headless --editor --import; no active Blender render, windowed Godot capture, mflux or Hunyuan job. Not killed or modified.",
+  "finished_utc": "2026-11-10T19:41:37.775227+00:00",
+  "observed_generator_summary": {
+    "pipeline_seconds": 201.2,
+    "peak_mlx_memory_gb": 6.67,
+    "components_pruned": 0,
+    "vertices": 147450,
+    "faces": 294904,
+    "watertight": true
+  },
+  "metrics": {
+    "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/guide-metrics.json",
+    "inspection_script": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/inspect_guide.py",
+    "log": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/inspection.log"
+  },
+  "previews": {
+    "mesh": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/c-machined-rim-seed130303-hunyuan-full-seed0-oct320-guide.glb",
+    "mesh_sha256_before": "cf71dd7144f44bc91e0867ec56f8d23b0289ebf9bf91ec135559f577f4ac26a8",
+    "renderer": "/Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/tests/render_mesh.py",
+    "renderer_sha256": "94ef41803ab2719c8c176c3ef36ccb6738efb9203450b821ad624e4b4454fd89",
+    "method": "Existing NumPy CPU orthographic Lambertian z-buffer, orange diagnostic material, no GPU/display/viewer; raw guide unmodified.",
+    "axes": "+Y up, +Z expected front. Camera is at +Z looking toward origin at zero azimuth/elevation; image right is +X.",
+    "angle_definition": "Renderer rotates object by R_x(elevation) @ R_y(azimuth), then projects onto XY with +Z toward camera. Thus camera position in original coordinates is proportional to (-sin(a)*cos(e), sin(e), cos(a)*cos(e)). 90 views from -X, 180 from -Z, 270 from +X. Positive elevation views from above.",
+    "normalization": "Renderer recenters full bounding box, then scales maximum absolute coordinate to 1; each tile uses 0.82 screen margin. Same normalization and camera for all views.",
+    "started_utc": "2026-11-10T19:42:13.424852+00:00",
+    "commands": [
+      {
+        "argv": [
+          "/Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python",
+          "/Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/tests/render_mesh.py",
+          "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/c-machined-rim-seed130303-hunyuan-full-seed0-oct320-guide.glb",
+          "--out",
+          "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-cardinal-raw.png",
+          "--size",
+          "1024",
+          "--angles",
+          "0",
+          "35",
+          "90",
+          "180",
+          "270",
+          "--elevation",
+          "0"
+        ],
+        "log": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/render-cardinal.log",
+        "exit": 0
+      },
+      {
+        "argv": [
+          "/Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/.venv/bin/python",
+          "/Volumes/XS1000/acoliver/projects/3dlocal/hunyuan3d/tests/render_mesh.py",
+          "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/c-machined-rim-seed130303-hunyuan-full-seed0-oct320-guide.glb",
+          "--out",
+          "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-elevated-raw.png",
+          "--size",
+          "1024",
+          "--angles",
+          "35",
+          "215",
+          "--elevation",
+          "20"
+        ],
+        "log": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/render-elevated.log",
+        "exit": 0
+      }
+    ],
+    "images": [
+      {
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-cardinal-raw.png",
+        "type": "full-resolution raw PNG strip",
+        "angles": [
+          "0",
+          "35",
+          "90",
+          "180",
+          "270"
+        ],
+        "elevation": "0"
+      },
+      {
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-front-000.jpg",
+        "raw_png": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-front-000-raw.png",
+        "azimuth_degrees": 0.0,
+        "elevation_degrees": 0.0,
+        "size": [
+          1024,
+          1072
+        ]
+      },
+      {
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-front-oblique-035.jpg",
+        "raw_png": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-front-oblique-035-raw.png",
+        "azimuth_degrees": 35.0,
+        "elevation_degrees": 0.0,
+        "size": [
+          1024,
+          1072
+        ]
+      },
+      {
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-edge-090.jpg",
+        "raw_png": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-edge-090-raw.png",
+        "azimuth_degrees": 90.0,
+        "elevation_degrees": 0.0,
+        "size": [
+          1024,
+          1072
+        ]
+      },
+      {
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-rear-180.jpg",
+        "raw_png": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-rear-180-raw.png",
+        "azimuth_degrees": 180.0,
+        "elevation_degrees": 0.0,
+        "size": [
+          1024,
+          1072
+        ]
+      },
+      {
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-edge-270.jpg",
+        "raw_png": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-edge-270-raw.png",
+        "azimuth_degrees": 270.0,
+        "elevation_degrees": 0.0,
+        "size": [
+          1024,
+          1072
+        ]
+      },
+      {
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-elevated-raw.png",
+        "type": "full-resolution raw PNG strip",
+        "angles": [
+          "35",
+          "215"
+        ],
+        "elevation": "20"
+      },
+      {
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-front-threequarter-035-e20.jpg",
+        "raw_png": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-front-threequarter-035-e20-raw.png",
+        "azimuth_degrees": 35.0,
+        "elevation_degrees": 20.0,
+        "size": [
+          1024,
+          1072
+        ]
+      },
+      {
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-rear-threequarter-215-e20.jpg",
+        "raw_png": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-rear-threequarter-215-e20-raw.png",
+        "azimuth_degrees": 215.0,
+        "elevation_degrees": 20.0,
+        "size": [
+          1024,
+          1072
+        ]
+      },
+      {
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-shape-review.jpg",
+        "layout_row_major": [
+          "front-000",
+          "front-oblique-035",
+          "edge-090",
+          "rear-180"
+        ],
+        "size": [
+          1280,
+          1376
+        ]
+      },
+      {
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-depth-review.jpg",
+        "layout_row_major": [
+          "front-threequarter-035-e20",
+          "rear-threequarter-215-e20",
+          "edge-090",
+          "edge-270"
+        ],
+        "size": [
+          1280,
+          1376
+        ]
+      }
+    ],
+    "visual_review": "Not performed by leaf worker; parent image-comparer must judge shape, front identity and attachment.",
+    "mesh_sha256_after": "cf71dd7144f44bc91e0867ec56f8d23b0289ebf9bf91ec135559f577f4ac26a8",
+    "finished_utc": "2026-11-10T19:42:36.692625+00:00",
+    "returncode": 0,
+    "image_integrity_checks": [
+      {
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-cardinal-raw.png",
+        "size": [
+          5120,
+          1024
+        ],
+        "sha256": "5f75c5adab22b0d5b644ed35c593be2942324e418775c27c16fe995156128eaa"
+      },
+      {
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-front-000.jpg",
+        "size": [
+          1024,
+          1072
+        ],
+        "sha256": "d224b495f066cc3a0d7736de9b7b69260695a375a0e12e6ec7db830ddf2ea8fc"
+      },
+      {
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-front-oblique-035.jpg",
+        "size": [
+          1024,
+          1072
+        ],
+        "sha256": "887883df2954549ff47eb99066edf10f68ad50d291d1913882e19e9530d45ec5"
+      },
+      {
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-edge-090.jpg",
+        "size": [
+          1024,
+          1072
+        ],
+        "sha256": "1baebb3b2453357cf9bad7904ebf89e124c003aaef9ad4d78ad7e11ff87bcd42"
+      },
+      {
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-rear-180.jpg",
+        "size": [
+          1024,
+          1072
+        ],
+        "sha256": "35e4d493c23a60fa634e78abccc02d3cd89315f4a417263dc9839d547b572c80"
+      },
+      {
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-edge-270.jpg",
+        "size": [
+          1024,
+          1072
+        ],
+        "sha256": "3454d01c80b5cf07000b8e0e09e971a1e2810483d00cdff957b41c83f2c2a3d5"
+      },
+      {
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-elevated-raw.png",
+        "size": [
+          2048,
+          1024
+        ],
+        "sha256": "489f7df73df04e56fe053dcceeb3ba72853fa9bac17ab359f5fde3a0c5c31b73"
+      },
+      {
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-front-threequarter-035-e20.jpg",
+        "size": [
+          1024,
+          1072
+        ],
+        "sha256": "920929508effc59bfe5dc331e1020d733a93ec97d592ffcd7999daa12b321d61"
+      },
+      {
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-rear-threequarter-215-e20.jpg",
+        "size": [
+          1024,
+          1072
+        ],
+        "sha256": "0cde045ae942ce58b2492d90b7af9443306603314dd817d1e5c44ef02d8f7940"
+      },
+      {
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-shape-review.jpg",
+        "size": [
+          1280,
+          1376
+        ],
+        "sha256": "87a6ddbd89ffa3828df4d362aebc0be36f43dc9ce18872ee76248866ca03e874"
+      },
+      {
+        "path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-mesh/guide-depth-review.jpg",
+        "size": [
+          1280,
+          1376
+        ],
+        "sha256": "267ccf2fa00eb016a246704c3eb0f979fbb950173008cad29a5d44d20fae5dc5"
+      }
+    ],
+    "front_rear_pixel_difference_fraction": 0.26631641387939453
+  },
+  "scope_limitations": [
+    "No visual judgment by leaf; parent image-comparer review pending.",
+    "No fitting, production mesh edits, cloth simulation, button edits, material painting or aging.",
+    "32 mm normalization is an estimate based on X diameter, not a modification to the guide.",
+    "Body depth estimate 4.534 mm exceeds later 2 to 4 mm target; attachment accounts for 11.650 mm overall depth.",
+    "Self-intersections, attachment functionality and supported back seating not certified."
+  ]
+}

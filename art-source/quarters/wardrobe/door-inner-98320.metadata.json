@@ -1,0 +1,38 @@
+{
+  "face": "door-inner",
+  "seed": 98320,
+  "model": "black-forest-labs/FLUX.2-klein-4B",
+  "steps": 4,
+  "quantize": 4,
+  "command": [
+    "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-flux2-edit",
+    "--model",
+    "flux2-klein-4b",
+    "--quantize",
+    "4",
+    "--steps",
+    "4",
+    "--image-paths",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/wardrobe/door-inner-refine-input.png",
+    "--prompt-file",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/wardrobe/door-inner-refine-prompt.txt",
+    "--seed",
+    "98320",
+    "--width",
+    "736",
+    "--height",
+    "1536",
+    "--output",
+    "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-95p/art-source/quarters/wardrobe/door-inner-98320.png"
+  ],
+  "prompt": "Edit this flat painted steel material image. Keep its exact muted grey paint and brown iron oxide palette. This is a material colour image, not a shaded object: flat even diffuse illumination, no relief lighting or shadows. Replace the coarse speckles and pebbled appearance within intact paint with quiet smooth old rolled-steel paint. Retain subtle slow pigment variation over large areas, not tiny noisy dots, gritty stone, rough plaster or gravel. Most of the broad field remains uninterrupted grey paint. Remove the broad orange smears and wide continuous perimeter bands. Keep small irregular chips and ragged broken corrosion at isolated edges, corners and fixture outlets. Edge chips are a few millimetres to two centimetres, not wide strips. Never draw a complete rectangular rust frame. A few thin dark reddish brown rusty trails, only two to five millimetres wide, descend vertically from fixtures. They have tapered ends and do not branch or spread into orange clouds. No broad rust washes. Sealed sterile dry oxygenated ship after 1000 years. No biological growth, moss, mould or saturated green. Do not draw an object, hardware, seam, border or perspective. ",
+  "input": "door-inner-refine-input.png",
+  "input_generated_from": "door-inner-97103-grade100.png",
+  "crop": [
+    817,
+    119,
+    890,
+    352
+  ],
+  "reference": "door-inner-source.png"
+}

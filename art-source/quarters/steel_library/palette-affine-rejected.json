@@ -1,0 +1,2374 @@
+{
+  "manifest": {
+    "version": 1,
+    "age_years": 1000,
+    "seed": 9502,
+    "faces": [
+      {
+        "id": "broad-00",
+        "kind": "broad",
+        "pixels": [
+          384,
+          768
+        ],
+        "size_m": [
+          0.5,
+          1.0
+        ],
+        "seed": 195000,
+        "reference": "broad-neutral-source.png",
+        "source": "docs/art/corridors/hatch-concept-rusted.png",
+        "crop": [
+          817,
+          119,
+          890,
+          352
+        ],
+        "image": "broad-00.png",
+        "raw": "broad-00-raw.png",
+        "scores": {
+          "delta_e": 4.179591347274045,
+          "planar_light_gradient": 0.000529695658893566,
+          "secondary_autocorrelation": 0.12915211380595623,
+          "edge_rust": 0.18910156728585295,
+          "broad_rust": 0.01115436561531739,
+          "edge_broad_ratio": 16.9531440699931,
+          "paint_mean_delta_e": 0.16954218759891015,
+          "paint_std_delta_e": 2.561506012540724,
+          "rust_mean_delta_e": 1.5373338199317463,
+          "rust_std_delta_e": 5.255245714867017,
+          "no_green": 0.0,
+          "pixels_per_metre": 768.0,
+          "broad_high_frequency": 0.01891001108209409
+        },
+        "treatment": {
+          "quantile_amount": 0.0,
+          "calibration": {
+            "flatten_log_linear_plane": true,
+            "lab_affine_matrix": [
+              [
+                0.8873122739851376,
+                2.065521294013492,
+                -2.585883349374646
+              ],
+              [
+                0.08993831784234661,
+                0.722686275672625,
+                -0.42628105228674784
+              ],
+              [
+                -0.3275544167473035,
+                -0.8143253181702106,
+                1.056176756720875
+              ]
+            ],
+            "lab_input_centre": [
+              45.90509148325699,
+              -4.8347996330024365,
+              5.780220806862419
+            ],
+            "lab_output_centre": [
+              35.89586587253571,
+              4.625038021759506,
+              7.306531744071017
+            ],
+            "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+          },
+          "denoise_px": 1.0
+        },
+        "passed": true,
+        "neutral_refit": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              3.529569397004443,
+              5.913106423107341,
+              -0.06552089319918802
+            ],
+            [
+              -0.5511802389991753,
+              -1.3586989471802489,
+              1.4158692587170685
+            ],
+            [
+              -0.22922522006803067,
+              -0.990819601100213,
+              1.4961790544548002
+            ]
+          ],
+          "lab_input_centre": [
+            48.16729053258951,
+            -7.189626906743683,
+            -0.1591032381682709
+          ],
+          "lab_output_centre": [
+            46.37918345199196,
+            -5.967927020626028,
+            1.1156236390606034
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "raw_reference": "broad-source.png"
+      },
+      {
+        "id": "broad-01",
+        "kind": "broad",
+        "pixels": [
+          384,
+          768
+        ],
+        "size_m": [
+          0.5,
+          1.0
+        ],
+        "seed": 195001,
+        "reference": "broad-neutral-source.png",
+        "source": "docs/art/corridors/hatch-concept-rusted.png",
+        "crop": [
+          817,
+          119,
+          890,
+          352
+        ],
+        "image": "broad-01.png",
+        "raw": "broad-01-raw.png",
+        "scores": {
+          "delta_e": 3.069325700199092,
+          "planar_light_gradient": 0.0012166480243869207,
+          "secondary_autocorrelation": 0.22159770209559715,
+          "edge_rust": 0.11388504057225254,
+          "broad_rust": 0.01735123540160483,
+          "edge_broad_ratio": 6.563511930782705,
+          "paint_mean_delta_e": 3.4799779697556614,
+          "paint_std_delta_e": 5.125036029881007,
+          "rust_mean_delta_e": 28.26153098602075,
+          "rust_std_delta_e": 7.076771764763406,
+          "no_green": 3.3908420138888887e-06,
+          "pixels_per_metre": 768.0,
+          "broad_high_frequency": 0.011405276640260567
+        },
+        "treatment": {
+          "quantile_amount": 0.0,
+          "calibration": {
+            "flatten_log_linear_plane": true,
+            "lab_affine_matrix": [
+              [
+                0.20387504798430886,
+                -1.4624905776083568,
+                1.008955809748726
+              ],
+              [
+                -0.000276160877273352,
+                0.3643194096763723,
+                0.02871922958756675
+              ],
+              [
+                -0.15618628992268035,
+                -0.5445913122726533,
+                0.8791325538136576
+              ]
+            ],
+            "lab_input_centre": [
+              46.55702241452722,
+              -5.647542822857955,
+              2.070714711880882
+            ],
+            "lab_output_centre": [
+              35.750779034579175,
+              4.540208205662279,
+              7.296274581670151
+            ],
+            "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+          },
+          "denoise_px": 1.0
+        },
+        "passed": false,
+        "neutral_refit": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              2.5080902128292566,
+              1.2073655333155013,
+              2.9817294622858697
+            ],
+            [
+              -0.4550432342117267,
+              -0.3815578168220897,
+              1.5035693623304367
+            ],
+            [
+              0.2900915998661893,
+              0.2700712630506062,
+              1.5451008616771083
+            ]
+          ],
+          "lab_input_centre": [
+            48.21302580947127,
+            -7.3357690263732565,
+            -0.21773878175610273
+          ],
+          "lab_output_centre": [
+            44.73918522447672,
+            -5.183072708803804,
+            1.5046466623043113
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "raw_reference": "broad-source.png"
+      },
+      {
+        "id": "broad-02",
+        "kind": "broad",
+        "pixels": [
+          640,
+          640
+        ],
+        "size_m": [
+          1.0,
+          1.0
+        ],
+        "seed": 195002,
+        "reference": "broad-neutral-source.png",
+        "source": "docs/art/corridors/hatch-concept-rusted.png",
+        "crop": [
+          817,
+          119,
+          890,
+          352
+        ],
+        "image": "broad-02.png",
+        "raw": "broad-02-raw.png",
+        "scores": {
+          "delta_e": 3.813404261424396,
+          "planar_light_gradient": 0.0021285077297428625,
+          "secondary_autocorrelation": 0.18019543522234255,
+          "edge_rust": 0.18695068359375,
+          "broad_rust": 3.4332275390625e-05,
+          "edge_broad_ratio": 5445.333333333333,
+          "paint_mean_delta_e": 0.846063047994997,
+          "paint_std_delta_e": 7.923189848617253,
+          "rust_mean_delta_e": 3.9501507639984057,
+          "rust_std_delta_e": 7.918443288517795,
+          "no_green": 0.0,
+          "pixels_per_metre": 640.0,
+          "broad_high_frequency": 0.010565744152091968
+        },
+        "treatment": {
+          "quantile_amount": 0.0,
+          "calibration": {
+            "flatten_log_linear_plane": true,
+            "lab_affine_matrix": [
+              [
+                0.8385188563649637,
+                2.0667528183795207,
+                -2.470345774549988
+              ],
+              [
+                0.0745648691287083,
+                0.7100974463068113,
+                -0.572165231990394
+              ],
+              [
+                -0.4052154929355421,
+                -0.8822166452350373,
+                1.047047386352575
+              ]
+            ],
+            "lab_input_centre": [
+              42.71803442553396,
+              -4.848294523365268,
+              5.11382525903703
+            ],
+            "lab_output_centre": [
+              35.36031409196956,
+              4.785561025796532,
+              7.57116170677288
+            ],
+            "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+          },
+          "denoise_px": 1.0
+        },
+        "passed": true,
+        "neutral_refit": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              2.909276564271242,
+              2.2795862335942974,
+              1.700403897501538
+            ],
+            [
+              -0.3623219236302399,
+              -1.0905297838718224,
+              1.644765169985932
+            ],
+            [
+              -1.1651275222006627,
+              -0.6186414549571504,
+              -0.5935312839400219
+            ]
+          ],
+          "lab_input_centre": [
+            47.026921003442496,
+            -6.601349146186043,
+            0.39607269915887555
+          ],
+          "lab_output_centre": [
+            45.87465566421732,
+            -5.89993569129951,
+            1.4462928500379795
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "raw_reference": "broad-source.png"
+      },
+      {
+        "id": "broad-03",
+        "kind": "broad",
+        "pixels": [
+          640,
+          640
+        ],
+        "size_m": [
+          1.0,
+          1.0
+        ],
+        "seed": 195003,
+        "reference": "broad-neutral-source.png",
+        "source": "docs/art/corridors/hatch-concept-rusted.png",
+        "crop": [
+          817,
+          119,
+          890,
+          352
+        ],
+        "image": "broad-03.png",
+        "raw": "broad-03-raw.png",
+        "scores": {
+          "delta_e": 6.397712670770849,
+          "planar_light_gradient": 0.005487665363441341,
+          "secondary_autocorrelation": 0.20741325456114593,
+          "edge_rust": 0.05381944444444445,
+          "broad_rust": 0.00341033935546875,
+          "edge_broad_ratio": 15.78125776783495,
+          "paint_mean_delta_e": 0.6536614931763574,
+          "paint_std_delta_e": 7.810947232108493,
+          "rust_mean_delta_e": 3.4687610941652225,
+          "rust_std_delta_e": 5.0994964991265945,
+          "no_green": 0.0,
+          "pixels_per_metre": 640.0,
+          "broad_high_frequency": 0.005809268420471772
+        },
+        "treatment": {
+          "quantile_amount": 0.0,
+          "calibration": {
+            "flatten_log_linear_plane": true,
+            "lab_affine_matrix": [
+              [
+                0.7875343441223837,
+                2.5545709860876493,
+                -2.9604522002472744
+              ],
+              [
+                0.18666289174801706,
+                1.087092433906043,
+                -0.7450448628063281
+              ],
+              [
+                -0.36354230677406196,
+                -1.2841915448823413,
+                1.6467651935074918
+              ]
+            ],
+            "lab_input_centre": [
+              48.57978155420765,
+              -5.426526147277971,
+              3.521659386340097
+            ],
+            "lab_output_centre": [
+              35.814609493073654,
+              4.616106221093826,
+              7.361653544054247
+            ],
+            "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+          },
+          "denoise_px": 1.0
+        },
+        "passed": true,
+        "raw_reference": "broad-source.png"
+      },
+      {
+        "id": "broad-04",
+        "kind": "broad",
+        "pixels": [
+          768,
+          384
+        ],
+        "size_m": [
+          1.0,
+          0.5
+        ],
+        "seed": 195004,
+        "reference": "broad-neutral-source.png",
+        "source": "docs/art/corridors/hatch-concept-rusted.png",
+        "crop": [
+          817,
+          119,
+          890,
+          352
+        ],
+        "image": "broad-04.png",
+        "raw": "broad-04-raw.png",
+        "scores": {
+          "delta_e": 0.7688687982984723,
+          "planar_light_gradient": 0.0006349133113689309,
+          "secondary_autocorrelation": 0.5438842582012989,
+          "edge_rust": 0.2611703280650664,
+          "broad_rust": 0.01428457932787797,
+          "edge_broad_ratio": 18.28337552477748,
+          "paint_mean_delta_e": 4.48372091586324,
+          "paint_std_delta_e": 5.079351988109464,
+          "rust_mean_delta_e": 9.554556367392069,
+          "rust_std_delta_e": 9.61847256431684,
+          "no_green": 0.0007052951388888889,
+          "pixels_per_metre": 768.0,
+          "broad_high_frequency": 0.025075211423786384
+        },
+        "treatment": {
+          "quantile_amount": 0.67,
+          "calibration": {
+            "flatten_log_linear_plane": true,
+            "lab_affine_matrix": [
+              [
+                1.0111423321402608,
+                0.7159479355074805,
+                0.22793382710872614
+              ],
+              [
+                0.10393048192089059,
+                0.3355330707754506,
+                0.4513656136244444
+              ],
+              [
+                0.011177509352390074,
+                -0.25376960635610823,
+                0.7870736245693046
+              ]
+            ],
+            "lab_input_centre": [
+              37.73381865132777,
+              1.580641383057338,
+              7.92015220147771
+            ],
+            "lab_output_centre": [
+              34.20334547618735,
+              5.164177562241841,
+              7.9438794501094625
+            ],
+            "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+          },
+          "denoise_px": 1.0
+        },
+        "passed": false,
+        "neutral_refit": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              0.2214193360034729,
+              -4.621084909059599,
+              3.2681271636759766
+            ],
+            [
+              1.172731841552774,
+              2.6030037586846575,
+              0.20624791478925933
+            ],
+            [
+              0.7664129244850375,
+              1.3662183079268704,
+              0.7109849555822588
+            ]
+          ],
+          "lab_input_centre": [
+            44.545198566846906,
+            -5.049128174922942,
+            1.8070410428887667
+          ],
+          "lab_output_centre": [
+            42.649163836098694,
+            -4.710791948099378,
+            1.8705256101173457
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "raw_reference": "broad-source.png"
+      },
+      {
+        "id": "broad-05",
+        "kind": "broad",
+        "pixels": [
+          768,
+          384
+        ],
+        "size_m": [
+          1.0,
+          0.5
+        ],
+        "seed": 195005,
+        "reference": "broad-neutral-source.png",
+        "source": "docs/art/corridors/hatch-concept-rusted.png",
+        "crop": [
+          817,
+          119,
+          890,
+          352
+        ],
+        "image": "broad-05.png",
+        "raw": "broad-05-raw.png",
+        "scores": {
+          "delta_e": 4.550044513431577,
+          "planar_light_gradient": 0.0011684705630172622,
+          "secondary_autocorrelation": 0.5951612627848077,
+          "edge_rust": 0.1838992714900996,
+          "broad_rust": 0.0012923386562855856,
+          "edge_broad_ratio": 142.2995981708535,
+          "paint_mean_delta_e": 1.1760076110384257,
+          "paint_std_delta_e": 1.998412952249602,
+          "rust_mean_delta_e": 18.71224712566827,
+          "rust_std_delta_e": 13.886687322305974,
+          "no_green": 0.0,
+          "pixels_per_metre": 768.0,
+          "broad_high_frequency": 0.01123141754210419
+        },
+        "treatment": {
+          "quantile_amount": 0.0,
+          "calibration": {
+            "flatten_log_linear_plane": true,
+            "lab_affine_matrix": [
+              [
+                1.1555269003767925,
+                2.181709802693857,
+                -3.255100059671418
+              ],
+              [
+                0.24636740511051616,
+                0.8350093517196877,
+                -0.6482832987736505
+              ],
+              [
+                -0.48788453990562475,
+                -0.8674302184236606,
+                1.6786314106534912
+              ]
+            ],
+            "lab_input_centre": [
+              49.239631409784046,
+              -7.773349827315902,
+              4.971691111838052
+            ],
+            "lab_output_centre": [
+              35.65440470398878,
+              4.644331323531888,
+              7.4807807254346175
+            ],
+            "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+          },
+          "denoise_px": 1.0
+        },
+        "passed": false,
+        "neutral_refit": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              2.6439258877846585,
+              2.9458979474869276,
+              0.5239820554063099
+            ],
+            [
+              -1.3355531063806603,
+              -0.320783922271355,
+              -0.91954285982224
+            ],
+            [
+              -0.30130264074092994,
+              -0.17979561476998523,
+              0.5717331383728184
+            ]
+          ],
+          "lab_input_centre": [
+            47.61998004662048,
+            -7.03672914889855,
+            0.08204053713192552
+          ],
+          "lab_output_centre": [
+            46.75823796885714,
+            -5.89814277727612,
+            0.9187596699406686
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "raw_reference": "broad-source.png"
+      },
+      {
+        "id": "strip-01",
+        "kind": "strip",
+        "pixels": [
+          64,
+          768
+        ],
+        "size_m": [
+          0.08333333333333333,
+          1.0
+        ],
+        "seed": 195007,
+        "reference": "strip-neutral-source.png",
+        "source": "docs/art/quarters/concept-now.png",
+        "crop": [
+          438,
+          259,
+          459,
+          319
+        ],
+        "image": "strip-01.png",
+        "raw": "strip-01-raw.png",
+        "scores": {
+          "delta_e": 7.63395448719758,
+          "planar_light_gradient": 0.0019081170363797026,
+          "secondary_autocorrelation": 0.18527486201680662,
+          "edge_rust": 0.25687299713273737,
+          "broad_rust": 0.02365694245177746,
+          "edge_broad_ratio": 10.858250074216048,
+          "paint_mean_delta_e": 2.5492477789383843,
+          "paint_std_delta_e": 2.6657741172561664,
+          "rust_mean_delta_e": 2.478639581825052,
+          "rust_std_delta_e": 1.6468609787626007,
+          "no_green": 0.033243815104166664,
+          "pixels_per_metre": 768.0,
+          "broad_high_frequency": 0.05884313023276768
+        },
+        "treatment": {
+          "quantile_amount": 0.67,
+          "calibration": {
+            "flatten_log_linear_plane": true,
+            "lab_affine_matrix": [
+              [
+                1.165956720274062,
+                2.253806491932633,
+                -1.202658546205471
+              ],
+              [
+                0.01757304783052209,
+                0.9600250704128452,
+                0.5095631317259167
+              ],
+              [
+                -0.23762301791170962,
+                0.19826701921152412,
+                0.8877752829809554
+              ]
+            ],
+            "lab_input_centre": [
+              39.94496095281435,
+              3.414715529361477,
+              11.231800182712648
+            ],
+            "lab_output_centre": [
+              38.3814350850993,
+              4.088101581924417,
+              9.008827909610938
+            ],
+            "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+          },
+          "denoise_px": 1.0
+        },
+        "passed": false,
+        "neutral_refit": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              1.3291774903789955,
+              2.505004863863486,
+              -1.7723618204159655
+            ],
+            [
+              1.0397955724868806,
+              0.37325814897967635,
+              1.5242169060958926
+            ],
+            [
+              -0.028566683741395676,
+              -0.45604888522670367,
+              1.2939160450445315
+            ]
+          ],
+          "lab_input_centre": [
+            45.418438846993205,
+            -3.2193213636641254,
+            3.2495877160413067
+          ],
+          "lab_output_centre": [
+            44.11041614077687,
+            -2.16262999455006,
+            4.371365177876723
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "raw_reference": "strip-source.png"
+      },
+      {
+        "id": "strip-02",
+        "kind": "strip",
+        "pixels": [
+          128,
+          768
+        ],
+        "size_m": [
+          0.16666666666666666,
+          1.0
+        ],
+        "seed": 195008,
+        "reference": "strip-neutral-source.png",
+        "source": "docs/art/quarters/concept-now.png",
+        "crop": [
+          438,
+          259,
+          459,
+          319
+        ],
+        "image": "strip-02.png",
+        "raw": "strip-02-raw.png",
+        "scores": {
+          "delta_e": 4.1152715261285815,
+          "planar_light_gradient": 0.0007112507393189569,
+          "secondary_autocorrelation": 0.32513667085282033,
+          "edge_rust": 0.5434365971566693,
+          "broad_rust": 0.18726024153445417,
+          "edge_broad_ratio": 2.9020393902283943,
+          "paint_mean_delta_e": 0.7902022625374818,
+          "paint_std_delta_e": 7.538013891310699,
+          "rust_mean_delta_e": 2.538273645523909,
+          "rust_std_delta_e": 1.772271814242078,
+          "no_green": 0.0,
+          "pixels_per_metre": 768.0,
+          "broad_high_frequency": 0.026874446164126226
+        },
+        "treatment": {
+          "quantile_amount": 0.67,
+          "calibration": {
+            "flatten_log_linear_plane": true,
+            "lab_affine_matrix": [
+              [
+                0.579871978945323,
+                1.5715647732636298,
+                -1.3684148467952304
+              ],
+              [
+                -0.40999326764613186,
+                -0.010065124710514102,
+                0.39555780118502626
+              ],
+              [
+                -0.386626054602626,
+                -0.03512395903617263,
+                0.28396238214272546
+              ]
+            ],
+            "lab_input_centre": [
+              40.34898899950086,
+              3.6036761853567945,
+              9.47104418688271
+            ],
+            "lab_output_centre": [
+              37.93421305242038,
+              3.989284361062027,
+              8.924167334242792
+            ],
+            "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+          },
+          "denoise_px": 1.0
+        },
+        "passed": true,
+        "neutral_refit": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              1.347008136417012,
+              1.4757405779477895,
+              -1.044342845986574
+            ],
+            [
+              -0.22762604025828773,
+              -0.5274009187637477,
+              1.529415912337439
+            ],
+            [
+              -0.10825361118601176,
+              -0.805594721503048,
+              1.7890967549824623
+            ]
+          ],
+          "lab_input_centre": [
+            44.64350211556883,
+            -2.970432199334397,
+            3.7143494844986438
+          ],
+          "lab_output_centre": [
+            42.2498175567801,
+            0.22373062354154483,
+            6.712371273563771
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "raw_reference": "strip-source.png"
+      },
+      {
+        "id": "strip-03",
+        "kind": "strip",
+        "pixels": [
+          768,
+          64
+        ],
+        "size_m": [
+          1.0,
+          0.08333333333333333
+        ],
+        "seed": 195009,
+        "reference": "strip-neutral-source.png",
+        "source": "docs/art/quarters/concept-now.png",
+        "crop": [
+          438,
+          259,
+          459,
+          319
+        ],
+        "image": "strip-03.png",
+        "raw": "strip-03-raw.png",
+        "scores": {
+          "delta_e": 9.014691290978796,
+          "planar_light_gradient": 0.0017414029217382556,
+          "secondary_autocorrelation": 0.46190585472283396,
+          "edge_rust": 0.26564344746162927,
+          "broad_rust": 0.10776343057548222,
+          "edge_broad_ratio": 2.46506116261361,
+          "paint_mean_delta_e": 1.493493887945378,
+          "paint_std_delta_e": 3.1550798144850467,
+          "rust_mean_delta_e": 6.6639957552749065,
+          "rust_std_delta_e": 0.7609356282455129,
+          "no_green": 0.0,
+          "pixels_per_metre": 768.0,
+          "broad_high_frequency": 0.06990098037077584
+        },
+        "treatment": {
+          "quantile_amount": 0.67,
+          "calibration": {
+            "flatten_log_linear_plane": true,
+            "lab_affine_matrix": [
+              [
+                0.6931119165978148,
+                1.5967630452352648,
+                -1.251395598218459
+              ],
+              [
+                -0.07750512403868207,
+                0.7847818944046889,
+                0.39362914095107976
+              ],
+              [
+                -0.3889364812549184,
+                -0.03474553024561953,
+                0.5081703266764626
+              ]
+            ],
+            "lab_input_centre": [
+              39.03432066489751,
+              2.5087555083194673,
+              10.611251161001015
+            ],
+            "lab_output_centre": [
+              37.264401677987244,
+              4.25991760646621,
+              8.754852995307052
+            ],
+            "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+          },
+          "denoise_px": 0.6
+        },
+        "passed": false,
+        "neutral_refit": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              1.9500558942227408,
+              -0.38463731142177304,
+              1.402008856252977
+            ],
+            [
+              -0.6584564144239269,
+              0.1306725709555545,
+              0.1179765667780009
+            ],
+            [
+              -0.12680250764381437,
+              -0.8550183775513824,
+              1.3751263396057316
+            ]
+          ],
+          "lab_input_centre": [
+            44.57748418018542,
+            -2.5896446202007186,
+            3.8414091645327613
+          ],
+          "lab_output_centre": [
+            44.117482633148754,
+            -2.6815439740760585,
+            4.29932595084865
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "raw_reference": "strip-source.png"
+      },
+      {
+        "id": "strip-04",
+        "kind": "strip",
+        "pixels": [
+          768,
+          128
+        ],
+        "size_m": [
+          1.0,
+          0.16666666666666666
+        ],
+        "seed": 195010,
+        "reference": "strip-neutral-source.png",
+        "source": "docs/art/quarters/concept-now.png",
+        "crop": [
+          438,
+          259,
+          459,
+          319
+        ],
+        "image": "strip-04.png",
+        "raw": "strip-04-raw.png",
+        "scores": {
+          "delta_e": 4.4185332868591605,
+          "planar_light_gradient": 1.2903265246890416e-05,
+          "secondary_autocorrelation": 0.3883019473721146,
+          "edge_rust": 0.4804771303526989,
+          "broad_rust": 0.26357249980266795,
+          "edge_broad_ratio": 1.8229410530780852,
+          "paint_mean_delta_e": 2.5307446546856798,
+          "paint_std_delta_e": 3.2625909598121376,
+          "rust_mean_delta_e": 2.4850861042647505,
+          "rust_std_delta_e": 1.2369764604704556,
+          "no_green": 0.0,
+          "pixels_per_metre": 768.0,
+          "broad_high_frequency": 0.13802508237580954
+        },
+        "treatment": {
+          "quantile_amount": 0.67,
+          "calibration": {
+            "flatten_log_linear_plane": true,
+            "lab_affine_matrix": [
+              [
+                0.9072052953015688,
+                2.144653378723846,
+                -1.0816285630289713
+              ],
+              [
+                -0.35111378360666173,
+                0.09188709346903609,
+                0.596839530532726
+              ],
+              [
+                -0.22649185588309675,
+                0.15981297789156393,
+                0.7999811941621602
+              ]
+            ],
+            "lab_input_centre": [
+              39.334516401388676,
+              2.5481473250404223,
+              9.996131932329677
+            ],
+            "lab_output_centre": [
+              38.739184973605475,
+              3.7063192181240097,
+              8.752920007495172
+            ],
+            "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+          },
+          "denoise_px": 0.0
+        },
+        "passed": false,
+        "neutral_refit": {
+          "flatten_log_linear_plane": true,
+          "lab_affine_matrix": [
+            [
+              1.1127871404623673,
+              3.5086899195355103,
+              -3.532602854677933
+            ],
+            [
+              -0.1924348352651796,
+              -1.319372994854802,
+              2.3799517847402765
+            ],
+            [
+              -0.09335557666387481,
+              -1.00417795439198,
+              2.005400466574704
+            ]
+          ],
+          "lab_input_centre": [
+            45.66163902440574,
+            -3.6529372824529207,
+            3.018297491881827
+          ],
+          "lab_output_centre": [
+            42.549466313921286,
+            0.18635959990137504,
+            6.559749387154466
+          ],
+          "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+        },
+        "raw_reference": "strip-source.png"
+      },
+      {
+        "id": "top-00",
+        "kind": "top",
+        "pixels": [
+          640,
+          640
+        ],
+        "size_m": [
+          1.0,
+          1.0
+        ],
+        "seed": 195011,
+        "reference": "top-neutral-source.png",
+        "source": "docs/art/quarters/concept-now.png",
+        "crop": [
+          656,
+          272,
+          720,
+          304
+        ],
+        "image": "top-00.png",
+        "raw": "top-00-raw.png",
+        "scores": {
+          "delta_e": 4.56923583132188,
+          "planar_light_gradient": 0.003834896057366779,
+          "secondary_autocorrelation": 0.36592000456081325,
+          "edge_rust": 0.025132921006944444,
+          "broad_rust": 0.0,
+          "edge_broad_ratio": 2513292.1006944445,
+          "paint_mean_delta_e": 0.3202908644726053,
+          "paint_std_delta_e": 7.291049296565236,
+          "rust_mean_delta_e": 4.643420600499772,
+          "rust_std_delta_e": 2.4886110495357388,
+          "no_green": 0.0,
+          "pixels_per_metre": 640.0,
+          "broad_high_frequency": 0.0055660709027913775
+        },
+        "treatment": {
+          "quantile_amount": 0.0,
+          "calibration": {
+            "flatten_log_linear_plane": true,
+            "lab_affine_matrix": [
+              [
+                0.4227164681149727,
+                0.9573211827747731,
+                -0.8778736236283803
+              ],
+              [
+                0.027159910754329247,
+                0.8773747886496601,
+                -0.08616898733384737
+              ],
+              [
+                -0.3740111435441904,
+                -0.5085278227926251,
+                0.7349015846464783
+              ]
+            ],
+            "lab_input_centre": [
+              53.80000549609047,
+              -5.7712272568567355,
+              3.4553869487431013
+            ],
+            "lab_output_centre": [
+              51.1188973373177,
+              0.9807568198860028,
+              8.3991843460572
+            ],
+            "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+          },
+          "denoise_px": 1.0
+        },
+        "passed": true,
+        "raw_reference": "top-source.png"
+      },
+      {
+        "id": "top-01",
+        "kind": "top",
+        "pixels": [
+          768,
+          512
+        ],
+        "size_m": [
+          1.0,
+          0.6666666666666666
+        ],
+        "seed": 195012,
+        "reference": "top-neutral-source.png",
+        "source": "docs/art/quarters/concept-now.png",
+        "crop": [
+          656,
+          272,
+          720,
+          304
+        ],
+        "image": "top-01.png",
+        "raw": "top-01-raw.png",
+        "scores": {
+          "delta_e": 4.789944642451022,
+          "planar_light_gradient": 0.004037596863409616,
+          "secondary_autocorrelation": 0.05804902227626819,
+          "edge_rust": 0.02128725799507344,
+          "broad_rust": 0.0,
+          "edge_broad_ratio": 2128725.799507344,
+          "paint_mean_delta_e": 0.1989181500983793,
+          "paint_std_delta_e": 6.252112171143112,
+          "rust_mean_delta_e": 5.559180041025497,
+          "rust_std_delta_e": 2.6338280357369355,
+          "no_green": 0.0,
+          "pixels_per_metre": 768.0,
+          "broad_high_frequency": 0.005981832886173664
+        },
+        "treatment": {
+          "quantile_amount": 0.0,
+          "calibration": {
+            "flatten_log_linear_plane": true,
+            "lab_affine_matrix": [
+              [
+                0.30312357017908736,
+                0.784868718075229,
+                -2.1895174499021635
+              ],
+              [
+                -0.02312515388355212,
+                0.9440351812525204,
+                -0.6191357285769414
+              ],
+              [
+                -0.4091551354528603,
+                -0.6287412469577894,
+                0.8847200937270547
+              ]
+            ],
+            "lab_input_centre": [
+              52.76540627517758,
+              -5.14789781893318,
+              1.600944098919933
+            ],
+            "lab_output_centre": [
+              51.019670517683664,
+              0.8766972564637959,
+              8.30297660146728
+            ],
+            "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+          },
+          "denoise_px": 1.0
+        },
+        "passed": true,
+        "raw_reference": "top-source.png"
+      },
+      {
+        "id": "top-02",
+        "kind": "top",
+        "pixels": [
+          768,
+          512
+        ],
+        "size_m": [
+          1.0,
+          0.6666666666666666
+        ],
+        "seed": 195013,
+        "reference": "top-neutral-source.png",
+        "source": "docs/art/quarters/concept-now.png",
+        "crop": [
+          656,
+          272,
+          720,
+          304
+        ],
+        "image": "top-02.png",
+        "raw": "top-02-raw.png",
+        "scores": {
+          "delta_e": 4.12755729968679,
+          "planar_light_gradient": 0.0050198697404840046,
+          "secondary_autocorrelation": 0.24433586790799933,
+          "edge_rust": 0.030434567796669983,
+          "broad_rust": 0.0,
+          "edge_broad_ratio": 3043456.7796669984,
+          "paint_mean_delta_e": 0.7312793264238453,
+          "paint_std_delta_e": 7.1317159863774835,
+          "rust_mean_delta_e": 1.5957399335836335,
+          "rust_std_delta_e": 1.3214519010212913,
+          "no_green": 0.0,
+          "pixels_per_metre": 768.0,
+          "broad_high_frequency": 0.007240232643947002
+        },
+        "treatment": {
+          "quantile_amount": 0.0,
+          "calibration": {
+            "flatten_log_linear_plane": true,
+            "lab_affine_matrix": [
+              [
+                0.6741788081212722,
+                1.6225356732051361,
+                -1.2050095690588507
+              ],
+              [
+                0.03993279118621253,
+                1.0501770346359036,
+                -0.24881685740453033
+              ],
+              [
+                -0.4082685596575826,
+                -0.711041305887483,
+                0.7523469119041185
+              ]
+            ],
+            "lab_input_centre": [
+              51.1351752196202,
+              -4.41083097868694,
+              3.7208128743004623
+            ],
+            "lab_output_centre": [
+              50.80167430261914,
+              1.140587149714368,
+              8.586707771142073
+            ],
+            "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+          },
+          "denoise_px": 1.0
+        },
+        "passed": true,
+        "raw_reference": "top-source.png"
+      },
+      {
+        "id": "top-03",
+        "kind": "top",
+        "pixels": [
+          768,
+          256
+        ],
+        "size_m": [
+          1.0,
+          0.3333333333333333
+        ],
+        "seed": 195014,
+        "reference": "top-neutral-source.png",
+        "source": "docs/art/quarters/concept-now.png",
+        "crop": [
+          656,
+          272,
+          720,
+          304
+        ],
+        "image": "top-03.png",
+        "raw": "top-03-raw.png",
+        "scores": {
+          "delta_e": 4.244161215130676,
+          "planar_light_gradient": 0.007909269973439761,
+          "secondary_autocorrelation": 0.0,
+          "edge_rust": 0.05408815731643344,
+          "broad_rust": 0.0,
+          "edge_broad_ratio": 5408815.731643344,
+          "paint_mean_delta_e": 0.4177375204856389,
+          "paint_std_delta_e": 5.783488363883477,
+          "rust_mean_delta_e": 1.9894651273001098,
+          "rust_std_delta_e": 0.7728179010509519,
+          "no_green": 0.0,
+          "pixels_per_metre": 768.0,
+          "broad_high_frequency": 0.005153427842711761
+        },
+        "treatment": {
+          "quantile_amount": 0.0,
+          "calibration": {
+            "flatten_log_linear_plane": true,
+            "lab_affine_matrix": [
+              [
+                0.521313100840061,
+                1.0337132256364614,
+                -1.2726737192140463
+              ],
+              [
+                0.14284457065154404,
+                1.315441452047206,
+                -0.6087752768463501
+              ],
+              [
+                -0.47403362685497535,
+                -0.53735642411155,
+                1.0628681075399893
+              ]
+            ],
+            "lab_input_centre": [
+              48.09180178040465,
+              -3.695272930782392,
+              4.903822832948168
+            ],
+            "lab_output_centre": [
+              50.77959382788168,
+              1.1393663786991803,
+              8.468688355692935
+            ],
+            "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+          },
+          "denoise_px": 1.0
+        },
+        "passed": true,
+        "raw_reference": "top-source.png"
+      }
+    ],
+    "clean": "as_built_paint.png",
+    "hardware": "hardware.png",
+    "fabric": "fabric.png",
+    "rejected": [
+      {
+        "id": "strip-00",
+        "kind": "strip",
+        "pixels": [
+          64,
+          768
+        ],
+        "size_m": [
+          0.08333333333333333,
+          1.0
+        ],
+        "seed": 195006,
+        "reference": "strip-source.png",
+        "source": "docs/art/quarters/concept-now.png",
+        "crop": [
+          438,
+          259,
+          459,
+          319
+        ],
+        "image": "strip-00.png",
+        "raw": "strip-00-raw.png",
+        "scores": {
+          "delta_e": 5.051275247936403,
+          "planar_light_gradient": 0.012592647565539457,
+          "secondary_autocorrelation": 0.7537714597336996,
+          "edge_rust": 0.24433575082925732,
+          "broad_rust": 0.09982464530527659,
+          "edge_broad_ratio": 2.447649576735757,
+          "paint_mean_delta_e": 1.773727983146402,
+          "paint_std_delta_e": 5.440353949402092,
+          "rust_mean_delta_e": 4.346430669402749,
+          "rust_std_delta_e": 1.5415483954416012,
+          "no_green": 0.0,
+          "pixels_per_metre": 768.0,
+          "broad_high_frequency": 0.03675807972680109
+        },
+        "treatment": {
+          "quantile_amount": 0.67,
+          "calibration": {
+            "flatten_log_linear_plane": true,
+            "lab_affine_matrix": [
+              [
+                0.5551698908575832,
+                1.4177051597687218,
+                -0.37378951548887007
+              ],
+              [
+                -0.35208944302197465,
+                0.2707642376910545,
+                0.583425726699101
+              ],
+              [
+                -0.3407736158063631,
+                0.27777501600401244,
+                0.5906745333083059
+              ]
+            ],
+            "lab_input_centre": [
+              39.615779669728774,
+              3.8935337466740094,
+              9.517975951859823
+            ],
+            "lab_output_centre": [
+              39.14924973505033,
+              3.9046502603468767,
+              9.101657785888596
+            ],
+            "method": "global spatially uniform Lab affine, no pigment replacement or spatial colour masks"
+          },
+          "denoise_px": 1.0
+        },
+        "passed": false
+      }
+    ],
+    "neutral_palette": {
+      "broad": {
+        "matrix": [
+          [
+            1.744412644655732,
+            -0.19236980415163715,
+            -0.26458184720889694
+          ],
+          [
+            -0.7151647847288382,
+            1.1848116237171913,
+            0.2541864665528584
+          ],
+          [
+            -0.4439030878274577,
+            0.11471265390335614,
+            1.1577736485298935
+          ]
+        ],
+        "centre": [
+          21.861287261400587,
+          8.229864608611445,
+          12.245144246315713
+        ],
+        "paint_target_srgb": [
+          0.40039213418960573,
+          0.4827450704574585,
+          0.4709803652763367
+        ],
+        "method": "global Lab affine: neutral pilot paint mean, unchanged iron oxide mean; no spatial masks"
+      },
+      "strip": {
+        "matrix": [
+          [
+            1.2500626250964078,
+            -0.2983623934667068,
+            -0.2709733317796512
+          ],
+          [
+            -0.2574435533198599,
+            1.3071689530631523,
+            0.278971467093012
+          ],
+          [
+            -0.20021767071125265,
+            0.2388898517909562,
+            1.2169602486292086
+          ]
+        ],
+        "centre": [
+          30.683349199569733,
+          13.188742557640861,
+          17.376421338932523
+        ],
+        "paint_target_srgb": [
+          0.40039213418960573,
+          0.4827450704574585,
+          0.4709803652763367
+        ],
+        "method": "global Lab affine: neutral pilot paint mean, unchanged iron oxide mean; no spatial masks"
+      },
+      "top": {
+        "matrix": [
+          [
+            1.1293332919114356,
+            -0.20467149124425457,
+            -0.23249304746230337
+          ],
+          [
+            -0.10864082712055993,
+            1.1719254166359636,
+            0.19529570927012735
+          ],
+          [
+            -0.07097486482980389,
+            0.11231857792286608,
+            1.1275863497606307
+          ]
+        ],
+        "centre": [
+          44.26455703576216,
+          11.51617692315289,
+          20.529003600078745
+        ],
+        "paint_target_srgb": [
+          0.52,
+          0.55,
+          0.51
+        ],
+        "method": "global Lab affine: neutral pilot paint mean, unchanged iron oxide mean; no spatial masks"
+      }
+    },
+    "palette_reason": "The warm concept crops classified low-chroma brown as paint. Matched renders therefore lost the grey-green base. Align reference paint with the pilot pigment before scoring; retain raw source statistics and all original thresholds."
+  },
+  "gates": {
+    "images": {
+      "broad-00": {
+        "delta_e": {
+          "value": 4.179591347274045,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_mean_delta_e": {
+          "value": 0.16954218759891015,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_std_delta_e": {
+          "value": 2.561506012540724,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_mean_delta_e": {
+          "value": 1.5373338199317463,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_std_delta_e": {
+          "value": 5.255245714867017,
+          "threshold": 8,
+          "passed": true
+        },
+        "planar_light_gradient": {
+          "value": 0.000529695658893566,
+          "threshold": 0.06,
+          "passed": true
+        },
+        "secondary_autocorrelation": {
+          "value": 0.12915211380595623,
+          "threshold": 0.5,
+          "passed": true
+        },
+        "no_green": {
+          "value": 0.0,
+          "threshold": 0.005,
+          "passed": true
+        },
+        "edge_broad_ratio": {
+          "value": 16.9531440699931,
+          "threshold": 1.8,
+          "passed": true
+        },
+        "pixels_per_metre": {
+          "value": 768.0,
+          "threshold": 600,
+          "passed": true
+        },
+        "broad_rust": {
+          "value": 0.01115436561531739,
+          "threshold": 0.2,
+          "passed": true
+        }
+      },
+      "broad-01": {
+        "delta_e": {
+          "value": 3.069325700199092,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_mean_delta_e": {
+          "value": 3.4799779697556614,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_std_delta_e": {
+          "value": 5.125036029881007,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_mean_delta_e": {
+          "value": 28.26153098602075,
+          "threshold": 8,
+          "passed": false
+        },
+        "rust_std_delta_e": {
+          "value": 7.076771764763406,
+          "threshold": 8,
+          "passed": true
+        },
+        "planar_light_gradient": {
+          "value": 0.0012166480243869207,
+          "threshold": 0.06,
+          "passed": true
+        },
+        "secondary_autocorrelation": {
+          "value": 0.22159770209559715,
+          "threshold": 0.5,
+          "passed": true
+        },
+        "no_green": {
+          "value": 3.3908420138888887e-06,
+          "threshold": 0.005,
+          "passed": true
+        },
+        "edge_broad_ratio": {
+          "value": 6.563511930782705,
+          "threshold": 1.8,
+          "passed": true
+        },
+        "pixels_per_metre": {
+          "value": 768.0,
+          "threshold": 600,
+          "passed": true
+        },
+        "broad_rust": {
+          "value": 0.01735123540160483,
+          "threshold": 0.2,
+          "passed": true
+        }
+      },
+      "broad-02": {
+        "delta_e": {
+          "value": 3.813404261424396,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_mean_delta_e": {
+          "value": 0.846063047994997,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_std_delta_e": {
+          "value": 7.923189848617253,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_mean_delta_e": {
+          "value": 3.9501507639984057,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_std_delta_e": {
+          "value": 7.918443288517795,
+          "threshold": 8,
+          "passed": true
+        },
+        "planar_light_gradient": {
+          "value": 0.0021285077297428625,
+          "threshold": 0.06,
+          "passed": true
+        },
+        "secondary_autocorrelation": {
+          "value": 0.18019543522234255,
+          "threshold": 0.5,
+          "passed": true
+        },
+        "no_green": {
+          "value": 0.0,
+          "threshold": 0.005,
+          "passed": true
+        },
+        "edge_broad_ratio": {
+          "value": 5445.333333333333,
+          "threshold": 1.8,
+          "passed": true
+        },
+        "pixels_per_metre": {
+          "value": 640.0,
+          "threshold": 600,
+          "passed": true
+        },
+        "broad_rust": {
+          "value": 3.4332275390625e-05,
+          "threshold": 0.2,
+          "passed": true
+        }
+      },
+      "broad-03": {
+        "delta_e": {
+          "value": 6.397712670770849,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_mean_delta_e": {
+          "value": 0.6536614931763574,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_std_delta_e": {
+          "value": 7.810947232108493,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_mean_delta_e": {
+          "value": 3.4687610941652225,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_std_delta_e": {
+          "value": 5.0994964991265945,
+          "threshold": 8,
+          "passed": true
+        },
+        "planar_light_gradient": {
+          "value": 0.005487665363441341,
+          "threshold": 0.06,
+          "passed": true
+        },
+        "secondary_autocorrelation": {
+          "value": 0.20741325456114593,
+          "threshold": 0.5,
+          "passed": true
+        },
+        "no_green": {
+          "value": 0.0,
+          "threshold": 0.005,
+          "passed": true
+        },
+        "edge_broad_ratio": {
+          "value": 15.78125776783495,
+          "threshold": 1.8,
+          "passed": true
+        },
+        "pixels_per_metre": {
+          "value": 640.0,
+          "threshold": 600,
+          "passed": true
+        },
+        "broad_rust": {
+          "value": 0.00341033935546875,
+          "threshold": 0.2,
+          "passed": true
+        }
+      },
+      "broad-04": {
+        "delta_e": {
+          "value": 0.7688687982984723,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_mean_delta_e": {
+          "value": 4.48372091586324,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_std_delta_e": {
+          "value": 5.079351988109464,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_mean_delta_e": {
+          "value": 9.554556367392069,
+          "threshold": 8,
+          "passed": false
+        },
+        "rust_std_delta_e": {
+          "value": 9.61847256431684,
+          "threshold": 8,
+          "passed": false
+        },
+        "planar_light_gradient": {
+          "value": 0.0006349133113689309,
+          "threshold": 0.06,
+          "passed": true
+        },
+        "secondary_autocorrelation": {
+          "value": 0.5438842582012989,
+          "threshold": 0.5,
+          "passed": false
+        },
+        "no_green": {
+          "value": 0.0007052951388888889,
+          "threshold": 0.005,
+          "passed": true
+        },
+        "edge_broad_ratio": {
+          "value": 18.28337552477748,
+          "threshold": 1.8,
+          "passed": true
+        },
+        "pixels_per_metre": {
+          "value": 768.0,
+          "threshold": 600,
+          "passed": true
+        },
+        "broad_rust": {
+          "value": 0.01428457932787797,
+          "threshold": 0.2,
+          "passed": true
+        }
+      },
+      "broad-05": {
+        "delta_e": {
+          "value": 4.550044513431577,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_mean_delta_e": {
+          "value": 1.1760076110384257,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_std_delta_e": {
+          "value": 1.998412952249602,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_mean_delta_e": {
+          "value": 18.71224712566827,
+          "threshold": 8,
+          "passed": false
+        },
+        "rust_std_delta_e": {
+          "value": 13.886687322305974,
+          "threshold": 8,
+          "passed": false
+        },
+        "planar_light_gradient": {
+          "value": 0.0011684705630172622,
+          "threshold": 0.06,
+          "passed": true
+        },
+        "secondary_autocorrelation": {
+          "value": 0.5951612627848077,
+          "threshold": 0.5,
+          "passed": false
+        },
+        "no_green": {
+          "value": 0.0,
+          "threshold": 0.005,
+          "passed": true
+        },
+        "edge_broad_ratio": {
+          "value": 142.2995981708535,
+          "threshold": 1.8,
+          "passed": true
+        },
+        "pixels_per_metre": {
+          "value": 768.0,
+          "threshold": 600,
+          "passed": true
+        },
+        "broad_rust": {
+          "value": 0.0012923386562855856,
+          "threshold": 0.2,
+          "passed": true
+        }
+      },
+      "strip-01": {
+        "delta_e": {
+          "value": 7.63395448719758,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_mean_delta_e": {
+          "value": 2.5492477789383843,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_std_delta_e": {
+          "value": 2.6657741172561664,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_mean_delta_e": {
+          "value": 2.478639581825052,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_std_delta_e": {
+          "value": 1.6468609787626007,
+          "threshold": 8,
+          "passed": true
+        },
+        "planar_light_gradient": {
+          "value": 0.0019081170363797026,
+          "threshold": 0.06,
+          "passed": true
+        },
+        "secondary_autocorrelation": {
+          "value": 0.18527486201680662,
+          "threshold": 0.5,
+          "passed": true
+        },
+        "no_green": {
+          "value": 0.033243815104166664,
+          "threshold": 0.005,
+          "passed": false
+        },
+        "edge_broad_ratio": {
+          "value": 10.858250074216048,
+          "threshold": 1.8,
+          "passed": true
+        },
+        "pixels_per_metre": {
+          "value": 768.0,
+          "threshold": 600,
+          "passed": true
+        },
+        "broad_rust": {
+          "value": 0.02365694245177746,
+          "threshold": 0.2,
+          "passed": true
+        }
+      },
+      "strip-02": {
+        "delta_e": {
+          "value": 4.1152715261285815,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_mean_delta_e": {
+          "value": 0.7902022625374818,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_std_delta_e": {
+          "value": 7.538013891310699,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_mean_delta_e": {
+          "value": 2.538273645523909,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_std_delta_e": {
+          "value": 1.772271814242078,
+          "threshold": 8,
+          "passed": true
+        },
+        "planar_light_gradient": {
+          "value": 0.0007112507393189569,
+          "threshold": 0.06,
+          "passed": true
+        },
+        "secondary_autocorrelation": {
+          "value": 0.32513667085282033,
+          "threshold": 0.5,
+          "passed": true
+        },
+        "no_green": {
+          "value": 0.0,
+          "threshold": 0.005,
+          "passed": true
+        },
+        "edge_broad_ratio": {
+          "value": 2.9020393902283943,
+          "threshold": 1.8,
+          "passed": true
+        },
+        "pixels_per_metre": {
+          "value": 768.0,
+          "threshold": 600,
+          "passed": true
+        },
+        "broad_rust": {
+          "value": 0.18726024153445417,
+          "threshold": 0.2,
+          "passed": true
+        }
+      },
+      "strip-03": {
+        "delta_e": {
+          "value": 9.014691290978796,
+          "threshold": 8,
+          "passed": false
+        },
+        "paint_mean_delta_e": {
+          "value": 1.493493887945378,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_std_delta_e": {
+          "value": 3.1550798144850467,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_mean_delta_e": {
+          "value": 6.6639957552749065,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_std_delta_e": {
+          "value": 0.7609356282455129,
+          "threshold": 8,
+          "passed": true
+        },
+        "planar_light_gradient": {
+          "value": 0.0017414029217382556,
+          "threshold": 0.06,
+          "passed": true
+        },
+        "secondary_autocorrelation": {
+          "value": 0.46190585472283396,
+          "threshold": 0.5,
+          "passed": true
+        },
+        "no_green": {
+          "value": 0.0,
+          "threshold": 0.005,
+          "passed": true
+        },
+        "edge_broad_ratio": {
+          "value": 2.46506116261361,
+          "threshold": 1.8,
+          "passed": true
+        },
+        "pixels_per_metre": {
+          "value": 768.0,
+          "threshold": 600,
+          "passed": true
+        },
+        "broad_rust": {
+          "value": 0.10776343057548222,
+          "threshold": 0.2,
+          "passed": true
+        }
+      },
+      "strip-04": {
+        "delta_e": {
+          "value": 4.4185332868591605,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_mean_delta_e": {
+          "value": 2.5307446546856798,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_std_delta_e": {
+          "value": 3.2625909598121376,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_mean_delta_e": {
+          "value": 2.4850861042647505,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_std_delta_e": {
+          "value": 1.2369764604704556,
+          "threshold": 8,
+          "passed": true
+        },
+        "planar_light_gradient": {
+          "value": 1.2903265246890416e-05,
+          "threshold": 0.06,
+          "passed": true
+        },
+        "secondary_autocorrelation": {
+          "value": 0.3883019473721146,
+          "threshold": 0.5,
+          "passed": true
+        },
+        "no_green": {
+          "value": 0.0,
+          "threshold": 0.005,
+          "passed": true
+        },
+        "edge_broad_ratio": {
+          "value": 1.8229410530780852,
+          "threshold": 1.8,
+          "passed": true
+        },
+        "pixels_per_metre": {
+          "value": 768.0,
+          "threshold": 600,
+          "passed": true
+        },
+        "broad_rust": {
+          "value": 0.26357249980266795,
+          "threshold": 0.2,
+          "passed": false
+        }
+      },
+      "top-00": {
+        "delta_e": {
+          "value": 4.56923583132188,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_mean_delta_e": {
+          "value": 0.3202908644726053,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_std_delta_e": {
+          "value": 7.291049296565236,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_mean_delta_e": {
+          "value": 4.643420600499772,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_std_delta_e": {
+          "value": 2.4886110495357388,
+          "threshold": 8,
+          "passed": true
+        },
+        "planar_light_gradient": {
+          "value": 0.003834896057366779,
+          "threshold": 0.06,
+          "passed": true
+        },
+        "secondary_autocorrelation": {
+          "value": 0.36592000456081325,
+          "threshold": 0.5,
+          "passed": true
+        },
+        "no_green": {
+          "value": 0.0,
+          "threshold": 0.005,
+          "passed": true
+        },
+        "edge_broad_ratio": {
+          "value": 2513292.1006944445,
+          "threshold": 1.8,
+          "passed": true
+        },
+        "pixels_per_metre": {
+          "value": 640.0,
+          "threshold": 600,
+          "passed": true
+        },
+        "broad_rust": {
+          "value": 0.0,
+          "threshold": 0.2,
+          "passed": true
+        }
+      },
+      "top-01": {
+        "delta_e": {
+          "value": 4.789944642451022,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_mean_delta_e": {
+          "value": 0.1989181500983793,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_std_delta_e": {
+          "value": 6.252112171143112,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_mean_delta_e": {
+          "value": 5.559180041025497,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_std_delta_e": {
+          "value": 2.6338280357369355,
+          "threshold": 8,
+          "passed": true
+        },
+        "planar_light_gradient": {
+          "value": 0.004037596863409616,
+          "threshold": 0.06,
+          "passed": true
+        },
+        "secondary_autocorrelation": {
+          "value": 0.05804902227626819,
+          "threshold": 0.5,
+          "passed": true
+        },
+        "no_green": {
+          "value": 0.0,
+          "threshold": 0.005,
+          "passed": true
+        },
+        "edge_broad_ratio": {
+          "value": 2128725.799507344,
+          "threshold": 1.8,
+          "passed": true
+        },
+        "pixels_per_metre": {
+          "value": 768.0,
+          "threshold": 600,
+          "passed": true
+        },
+        "broad_rust": {
+          "value": 0.0,
+          "threshold": 0.2,
+          "passed": true
+        }
+      },
+      "top-02": {
+        "delta_e": {
+          "value": 4.12755729968679,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_mean_delta_e": {
+          "value": 0.7312793264238453,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_std_delta_e": {
+          "value": 7.1317159863774835,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_mean_delta_e": {
+          "value": 1.5957399335836335,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_std_delta_e": {
+          "value": 1.3214519010212913,
+          "threshold": 8,
+          "passed": true
+        },
+        "planar_light_gradient": {
+          "value": 0.0050198697404840046,
+          "threshold": 0.06,
+          "passed": true
+        },
+        "secondary_autocorrelation": {
+          "value": 0.24433586790799933,
+          "threshold": 0.5,
+          "passed": true
+        },
+        "no_green": {
+          "value": 0.0,
+          "threshold": 0.005,
+          "passed": true
+        },
+        "edge_broad_ratio": {
+          "value": 3043456.7796669984,
+          "threshold": 1.8,
+          "passed": true
+        },
+        "pixels_per_metre": {
+          "value": 768.0,
+          "threshold": 600,
+          "passed": true
+        },
+        "broad_rust": {
+          "value": 0.0,
+          "threshold": 0.2,
+          "passed": true
+        }
+      },
+      "top-03": {
+        "delta_e": {
+          "value": 4.244161215130676,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_mean_delta_e": {
+          "value": 0.4177375204856389,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_std_delta_e": {
+          "value": 5.783488363883477,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_mean_delta_e": {
+          "value": 1.9894651273001098,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_std_delta_e": {
+          "value": 0.7728179010509519,
+          "threshold": 8,
+          "passed": true
+        },
+        "planar_light_gradient": {
+          "value": 0.007909269973439761,
+          "threshold": 0.06,
+          "passed": true
+        },
+        "secondary_autocorrelation": {
+          "value": 0.0,
+          "threshold": 0.5,
+          "passed": true
+        },
+        "no_green": {
+          "value": 0.0,
+          "threshold": 0.005,
+          "passed": true
+        },
+        "edge_broad_ratio": {
+          "value": 5408815.731643344,
+          "threshold": 1.8,
+          "passed": true
+        },
+        "pixels_per_metre": {
+          "value": 768.0,
+          "threshold": 600,
+          "passed": true
+        },
+        "broad_rust": {
+          "value": 0.0,
+          "threshold": 0.2,
+          "passed": true
+        }
+      }
+    },
+    "rejected": {
+      "strip-00": {
+        "delta_e": {
+          "value": 5.051275247936403,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_mean_delta_e": {
+          "value": 1.773727983146402,
+          "threshold": 8,
+          "passed": true
+        },
+        "paint_std_delta_e": {
+          "value": 5.440353949402092,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_mean_delta_e": {
+          "value": 4.346430669402749,
+          "threshold": 8,
+          "passed": true
+        },
+        "rust_std_delta_e": {
+          "value": 1.5415483954416012,
+          "threshold": 8,
+          "passed": true
+        },
+        "planar_light_gradient": {
+          "value": 0.012592647565539457,
+          "threshold": 0.06,
+          "passed": true
+        },
+        "secondary_autocorrelation": {
+          "value": 0.7537714597336996,
+          "threshold": 0.5,
+          "passed": false
+        },
+        "no_green": {
+          "value": 0.0,
+          "threshold": 0.005,
+          "passed": true
+        },
+        "edge_broad_ratio": {
+          "value": 2.447649576735757,
+          "threshold": 1.8,
+          "passed": true
+        },
+        "pixels_per_metre": {
+          "value": 768.0,
+          "threshold": 600,
+          "passed": true
+        },
+        "broad_rust": {
+          "value": 0.09982464530527659,
+          "threshold": 0.2,
+          "passed": true
+        }
+      }
+    },
+    "passed": 144,
+    "failed": 10,
+    "reference_note": "neutralized reference crops; raw warm-palette crops and gates retained separately"
+  }
+}

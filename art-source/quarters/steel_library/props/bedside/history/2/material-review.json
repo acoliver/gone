@@ -1,0 +1,66 @@
+{
+  "images_seen": [
+    "hero",
+    "front",
+    "top",
+    "detail"
+  ],
+  "ratings": {
+    "candidate_as_built": {
+      "score": 9,
+      "explanation": "The grey-green paint is uniform and clean across all views, with sharp edges and clear hardware contrast."
+    },
+    "candidate_aged": {
+      "score": 8,
+      "explanation": "The aged state shows convincing broad paint retention with irregular edge corrosion and downward rust runs, though the top surface dust is slightly patchy."
+    },
+    "locker_as_built": {
+      "score": 9,
+      "explanation": "The reference locker presents a consistent, high-quality grey-green finish with well-defined dark trim and hardware."
+    },
+    "locker_aged": {
+      "score": 8,
+      "explanation": "The aged locker displays realistic weathering with heavy edge corrosion and rust streaking that matches the brief's requirements."
+    }
+  },
+  "features": {
+    "grey_green_paint": {
+      "achieved": true,
+      "observations": "Both candidate and locker show a consistent grey-green hue in the as-built state."
+    },
+    "bare_hardware": {
+      "achieved": true,
+      "observations": "Handles and fixtures appear as distinct metallic elements against the painted surfaces."
+    },
+    "dark_trim": {
+      "achieved": true,
+      "observations": "Dark accents are visible on drawer fronts and locker edges in the new state."
+    },
+    "edge_corrosion": {
+      "achieved": true,
+      "observations": "The aged state shows significant rust and paint loss concentrated on corners and edges."
+    },
+    "rust_runs": {
+      "achieved": true,
+      "observations": "Narrow vertical rust streaks are visible on the front and hero views of the aged candidate."
+    },
+    "settled_dust": {
+      "achieved": true,
+      "observations": "A soft, light-colored layer is visible on the top faces of the aged furniture."
+    }
+  },
+  "findings": [
+    "The aged candidate's top surface dust appears slightly more mottled than the brief's 'fine soft settled dust' description.",
+    "Some rust runs on the candidate's front face are slightly more saturated than the locker's, creating a minor consistency gap."
+  ],
+  "ready": true,
+  "limitations": "The orthographic views make it difficult to judge the exact depth of the corrosion relief on the edges.",
+  "acceptance": {
+    "accepted": true,
+    "candidate_aged": 8,
+    "locker_aged": 8,
+    "numeric_failed": 0,
+    "scope_complete": true,
+    "rule": "candidate aged >= locker aged in this review, numeric gates pass, all four view blocks inspected"
+  }
+}

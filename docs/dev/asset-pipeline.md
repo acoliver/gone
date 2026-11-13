@@ -95,15 +95,18 @@ BLENDER=/Volumes/XS1000/acoliver/projects/threedee/branch-1/.tools/Blender-4.5.1
 2. **Validate** (Khronos glTF-Validator, zero errors required):
 
    ```
-   node tmp/pipeline/valtool/validate.cjs tmp/pipeline/pod-probe.glb \
+   npm ci --prefix tools/gltf-validator
+   node tools/gltf-validator/validate.cjs tmp/pipeline/pod-probe.glb \
        tmp/pipeline/validate.json
    ```
 
-   The smoke used the official npm validator build (2.0.0-dev.3.10, the
-   version threedee pins) through a scratch wrapper under `tmp/`. That
-   wrapper is not committed; giving the validator a durable home in this
-   repo (vendored wrapper or a reused threedee script) is open tooling
-   debt tracked on #45.
+   The tracked wrapper and lockfile in `tools/gltf-validator/` use the
+   official npm validator build (2.0.0-dev.3.10). Run `npm ci` after a
+   clean checkout; `node_modules/` is ignored by Git and the directory's
+   `.gdignore` keeps it out of Godot imports. The output parent must exist.
+   Reports record errors and warnings; errors produce a nonzero exit code.
+   Scratch output under `tmp/` remains available through direct file I/O,
+   but `tmp/.gdignore` excludes it from Godot's editor import scan.
 
 3. **Import**:
 
@@ -177,5 +180,11 @@ BLENDER=/Volumes/XS1000/acoliver/projects/threedee/branch-1/.tools/Blender-4.5.1
 - #35 wall textures ride the same validator and import gates: geometry
   first, then PBR from ambientCG CC0 bases plus locally generated
   decals.
-- Hunyuan3D dressing props stay blocked on weights; the survey and the
-  open question for Andrew are on #45.
+- The local Hunyuan3D-2mv MLX output path supplies the #91 terminal and
+  status-panel props. Its license restrictions are recorded below.
+
+## Power-room terminal and status-panel props (#91)
+
+The standing console and separate generated keyboard are in `assets/props/terminal/`; the north-wall status panel and its native/perceived board layers are in `assets/props/status_panel/`. The GLBs embed their images. The console exports `DisplayPlane`, `ScreenSocket` and `KeyboardSocket`; the keyboard's `KeyboardBase` takes its transform from `keyboard-placement.json`. Triangle totals are 48,002 for the console, 28,998 for the keyboard, and 44,972 for the status panel, within the 50,000-triangle budget per GLB. The console body is reduced from the supplied standing-height mesh with a deck-protecting Blender decimation pass. Source images, raw meshes, scripts, provenance and license records are under `art-source/terminal/` and `art-source/status_panel/`.
+
+The active terminal uses the shared console text cache and perception timing. The wall board uses native Naleya and perceived Spanish layers with the same attention memory. The Hunyuan3D-2mv community license excludes the European Union, the United Kingdom and South Korea, and restricts use, distribution and display of outputs outside those territories. These assets must not be treated as unrestricted worldwide content; see the copied license and notice records before distributing them. FLUX.2-klein-4B is Apache-2.0, which does not change Hunyuan's output terms.

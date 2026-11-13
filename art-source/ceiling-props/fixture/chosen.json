@@ -1,0 +1,167 @@
+{
+  "seed": 720,
+  "viewset": "front-only",
+  "input_views": {
+    "front": {
+      "seed": 611,
+      "view": "front",
+      "image": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/views/611/front.png",
+      "rgba": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/views/611/front-aligned.png",
+      "bbox": [
+        100,
+        264,
+        946,
+        724
+      ],
+      "aspect": 1.8391304347826087,
+      "coverage": 0.1935110092163086,
+      "aligned": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/views/611/front-aligned.png",
+      "roll_degrees": -16.246024364719943,
+      "aligned_aspect": 3.346007604562738
+    }
+  },
+  "mesh": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/hunyuan/720/mesh.glb",
+  "triangles": 315154,
+  "vertices": 938215,
+  "extents_gltf": [
+    1.9989562881518466,
+    0.571386843919754,
+    0.3455692639239228
+  ],
+  "bounds": [
+    [
+      -1.0016738622252008,
+      -0.29030415415763855,
+      -0.11892867518322943
+    ],
+    [
+      0.9972824259266456,
+      0.2810826897621155,
+      0.22664058874069337
+    ]
+  ],
+  "length_width_ratio": 5.7845314871287785,
+  "length_height_ratio": 3.4984289705357328,
+  "watertight": true,
+  "underside_recess_count_lines": [
+    8,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "underside_recess_count": 0,
+  "recess_prominence_mean": 0.08766766637563705,
+  "renders": {
+    "front": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/hunyuan/720/clay/front.png",
+    "three-quarter": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/hunyuan/720/clay/three-quarter.png",
+    "side": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/hunyuan/720/clay/side.png",
+    "back": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/hunyuan/720/clay/back.png",
+    "below": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/hunyuan/720/clay/below.png"
+  },
+  "directional_metrics": {
+    "bottom": {
+      "recess_count_median": 0.0,
+      "counts": [
+        8,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "prominence_mean": 0.07508128373744367,
+      "spacing_cv_median": 1.0,
+      "length_width_ratio_if_facing_down": 5.784531770412009,
+      "score": -5.6
+    },
+    "front": {
+      "recess_count_median": 2.0,
+      "counts": [
+        2,
+        5,
+        9,
+        0,
+        0,
+        5,
+        0,
+        0,
+        14
+      ],
+      "prominence_mean": 0.015893276480368788,
+      "spacing_cv_median": 1.0,
+      "length_width_ratio_if_facing_down": 3.4984292134175092,
+      "score": -3.0
+    },
+    "back": {
+      "recess_count_median": 0.0,
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "prominence_mean": 0,
+      "spacing_cv_median": 1.0,
+      "length_width_ratio_if_facing_down": 3.4984292134175092,
+      "score": -5.6
+    },
+    "top": {
+      "recess_count_median": 0.0,
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "prominence_mean": 0,
+      "spacing_cv_median": 1.0,
+      "length_width_ratio_if_facing_down": 5.784531770412009,
+      "score": -5.6
+    }
+  },
+  "best_grille_surface": "front",
+  "selection_score": -3.0763619341228106,
+  "raw_extents_gltf": [
+    1.9952208399772644,
+    0.571386843919754,
+    0.3461749851703644
+  ],
+  "raw_bounds_gltf": [
+    [
+      -0.9999156594276428,
+      -0.29030415415763855,
+      -0.13849103450775146
+    ],
+    [
+      0.9953051805496216,
+      0.2810826897621155,
+      0.20768395066261292
+    ]
+  ],
+  "raw_vertices": 157371,
+  "alignment": {
+    "yaw_rotation_degrees": 0.0032495991838080458,
+    "raw_mesh": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/hunyuan/720/raw-mesh.glb",
+    "aligned_mesh": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/hunyuan/720/mesh.glb",
+    "oriented_extents_blender": [
+      1.998968243598938,
+      0.34556886553764343,
+      0.5713868141174316
+    ],
+    "operation": "rigid rotation only; no deformation or rescaling"
+  },
+  "clay_display": {
+    "rotation_about_blender_x_degrees": 90,
+    "reason": "conditioning front is the intended underside; display only, source file unchanged"
+  },
+  "raw_mesh": "/Volumes/XS1000/acoliver/projects/gone/branch-1/tmp/lights-redo/hunyuan/720/raw-mesh.glb"
+}

@@ -1,0 +1,66 @@
+{
+  "images_seen": [
+    "hero",
+    "front",
+    "top",
+    "detail"
+  ],
+  "ratings": {
+    "candidate_as_built": {
+      "score": 9,
+      "explanation": "The grey-green finish is consistent across all views, with clean edges and clear separation between the painted steel and the bare metal hardware."
+    },
+    "candidate_aged": {
+      "score": 8,
+      "explanation": "The aged state shows convincing broad paint retention with irregular edge corrosion and downward rust runs, though the dust on the top surface is slightly patchy."
+    },
+    "locker_as_built": {
+      "score": 9,
+      "explanation": "The reference locker presents a clean, uniform grey-green finish with sharp panel lines and well-defined hardware."
+    },
+    "locker_aged": {
+      "score": 8,
+      "explanation": "The aged locker exhibits realistic weathering with significant paint loss at the corners and rust streaking that matches the brief's requirements."
+    }
+  },
+  "features": {
+    "grey-green_paint": {
+      "achieved": true,
+      "observations": "The base color is a consistent desaturated grey-green across all four view blocks in both states."
+    },
+    "bare_hardware": {
+      "achieved": true,
+      "observations": "Hardware elements like the table pedestal and locker handles appear as distinct, unpainted metal surfaces."
+    },
+    "dark_trim": {
+      "achieved": true,
+      "observations": "Subtle dark lines are visible at the base of the locker and along the table's structural joints in the as-built state."
+    },
+    "edge_corrosion": {
+      "achieved": true,
+      "observations": "The aged state shows concentrated rust and paint flaking specifically along the vertical edges and corners of the locker."
+    },
+    "rust_runs": {
+      "achieved": true,
+      "observations": "Narrow, vertical rust streaks are visible on the locker's front face and the table's pedestal in the aged view."
+    },
+    "settled_dust": {
+      "achieved": true,
+      "observations": "A soft, light-colored overlay is present on the upward-facing table top and locker roof in the aged state."
+    }
+  },
+  "findings": [
+    "The dust pattern on the table top in the aged state is slightly too uniform and could benefit from more irregular softness.",
+    "The transition between the painted surface and the rusted edges on the locker could be slightly more gradual to avoid a hard cut."
+  ],
+  "ready": true,
+  "limitations": "The detail view is cropped, limiting the assessment of the full texture tiling and the specific relief of the hardware.",
+  "acceptance": {
+    "accepted": true,
+    "candidate_aged": 8,
+    "locker_aged": 8,
+    "numeric_failed": 0,
+    "scope_complete": true,
+    "rule": "candidate aged >= locker aged in this review, numeric gates pass, all four view blocks inspected"
+  }
+}

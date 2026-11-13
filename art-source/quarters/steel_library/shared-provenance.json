@@ -1,0 +1,6 @@
+{
+  "hardware": "art-source/quarters/wardrobe/hardware-97801-grade100.png",
+  "fabric": "assets/props/quarters/sofa/weave.png",
+  "fabric_treatment": "grey-green faded pigment multiplied by approved woven scan luminance",
+  "clean": "pilot design_paint() pigment"
+}

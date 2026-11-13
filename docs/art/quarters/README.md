@@ -1,5 +1,853 @@
 # Quarters art
 
+The [#129 console follow-up](console-129.md) records the taller 16:10 display,
+native Naleya key layout, measured desk/cabinet fit and reproduction commands.
+Its visual review is pending; the console sequence and main cameras are unchanged.
+
+## Playable demo
+
+Issue [#114](https://github.com/acoliver/gone/issues/114) fixes the room on D16,
+starboard of section 42 at station offset 9. From the repository root, run:
+
+```sh
+godot --path . -- --start quarters
+```
+
+The player starts in the corridor facing the door, with secondary power active.
+Space operates the corridor-face manual release. The plate to the right of the
+door now has a dark recess, a steel frame and a rounded pull grip in the
+existing brighter gray hardware material; aiming at that control also operates
+the release. Its ship-text label uses the same attention and
+translation system as the other door labels. Walk across the threshold to
+see Remembered, then use the desk console on the right. Its message wording and
+retro fault reference remain author-facing placeholders under `decisions.md`
+ruling 16; no development annotation is printed on the screen. The corruption,
+message and fault sequence lasts 300 logical ticks, then switches to Present.
+Re-entering keeps Present for the current play session. The regular white
+strips follow secondary power; the bedside lamps are dead in Present, and the
+console stays lit.
+Both states retain the world exposure multiplier of 2.0. Remembered has four
+warm ceiling keys at energy 3.2 each, colour (1.0, 0.73, 0.46), plus two
+bedside lamps at 0.35, colour (1.0, 0.64, 0.31): state-specific energy 13.5.
+Present keeps four secondary-power regular strips at 1.969542 each, colour
+(1.0, 0.97, 0.90): state-specific energy 7.878170, with no bedside light. The
+previous warm keys were only 1.1 each, making Remembered's total 5.1, below
+Present.
+Increasing only the room's remembered keys makes the memory warm and brighter
+without changing corridor strips, other rooms, or exposure. Their shared-range
+ceiling keys also give an RGB-weighted light-energy contrast above 1.25:1.
+The earlier partial-batch captures at unchanged exposure measured mean linear luminance of
+0.153123 / 0.076009 for Remembered / Present at the doorway and
+0.139794 / 0.086268 for the wide view. Present is 49.6% and 61.7% of the
+corresponding remembered image; these image means include the changed finishes.
+Without the start option, play still begins in stasis. The aft ladder well
+reaches D16, where `D16-C-001-H-AFT` cranks open onto the quarters corridor.
+
+Both states now use all 11 accepted batch-1 furniture assets: wardrobe, bed
+frame with headboard, desk, console, desk chair, dining table, dining chair,
+bedside, view screen, media cabinet and over-bed lockers. The dining chair and
+bedside asset each appear twice. The existing locker modules, sofa and hanging
+tunic also remain real assets. Footprints and facing follow the layout; the
+bed asset includes the separate 1.10 m headboard. Remembered now uses
+`bed_soft.glb`; Present uses `bed_soft_aged.glb`, including its collapsed mattress,
+torn quilt, flattened pillows, foam crust, powder and crumbs. Each imported
+`bed_soft` root copies the bed frame's exact transform rather than fitting its
+changed bounds independently. The soft goods retain their imported cotton,
+wool and foam materials, without furniture-steel overrides. The redundant
+headboard and soft-goods stand-in boxes are gone. The wardrobe uses the documented room
+origin (7.675, 0, 3.6), room Y rotation -90 degrees and the exported 100-degree
+parked door. The room-to-ship mapping mirrors X, including the hinge placement.
+The old tunic preview turn protruded through the real carcass. Its hook now
+sits on the real 1.82 m rail, with its width aligned along the rail; both the
+hanging garment and fallen fibres fit inside the actual panel interior.
+
+Ten batch-1 props now use the accepted per-prop atlases from the shared
+steel-face library: desk, console, bed, over-bed lockers, bedside, media
+cabinet, dining table, dining chair, desk chair and view screen. Remembered
+selects `as_built`; Present selects `aged`. `QuartersProps.material` routes
+each prop/state to one cached `QuartersSteelLibrary` material shared across
+instances. The wardrobe keeps its cached per-face interim finish in both
+states because its library candidate remains below matched-review parity.
+These routes replace the demo's shared slot steel on the real furniture,
+including its fabric and wood surfaces. Storage stand-ins use the pilot face
+finish in Present and keep the shared as-built paint in Remembered.
+Display/glass optics, bedside lens emission and console playback
+remain demo-owned; the pilot lockers, sofa and tunic keep their existing
+material paths. See **Batch 1 materials** below for acceptance and atlas details.
+
+The console sequence now uses the imported `Display` mesh under `ScreenPlane`
+in both states. Its emissive finish, text and corruption blocks follow that
+sloped surface, replacing the separate demo quad. The interaction target and
+300-tick sequence are unchanged. The layout's 0.76 m desk envelope includes the
+rear upstand; the accepted desk's actual `Worktop` ends at 0.70 m. Placement
+measures that surface and seats the console base directly on it, retaining its
+0.69 m height and layout X/Z footprint. Mesh-pair checks cover the upstand and
+support as well as the worktop, with contact checked within 2 mm. The shared
+desk collider already covers that lower 60 mm, so no collider change is needed.
+
+Both bedside instances use their imported lamp and `LampLens`. Remembered
+lenses emit warm light, with the existing 0.35-energy lights seated 8 mm below
+the lenses. Present lenses do not emit and have no active bedside lights.
+The wall view screen is **off in both states**, including Remembered. Its
+separate Glass slot uses simple glossy alpha glass, roughness 0.07 and alpha
+0.10. The pod shader expects a vertex edge mask specific to the pod pane;
+applying it to this closed imported slab would need mesh changes. The wall
+screen starts at room Y 1.00 m; the real over-bed lockers start at 1.90 m.
+Tests cover shell, bed and mutual clearance in both states.
+
+Only storage drawer/shelf modules and leftover storage infill remain stand-ins.
+Their node names begin with `Standin_storage_`; subslots add `_slot_<index>`
+or `_infill`. Her jacket and both dresses now use their real clean/aged asset
+pairs, as described in demo10 below. The eleven small-belonging instances use
+the eight real asset pairs described in demo8 below.
+Locker tiles occupy complete 0.6 m slots inside the approved footprints;
+leftover widths remain stand-in infill. The footprint takes precedence where a
+module description suggests more tiles than will fit. Shared footprint
+colliders are unchanged: the new assets fit those envelopes, with the small
+hardware protrusions recorded in each `verify.json`. The shared collision
+list retains its existing small-item boxes; rendered belongings retain their
+exported real dimensions rather than fitting those old stand-in envelopes.
+
+`QuartersLayout` maps a room-local point (x, y, z) to ship coordinates
+(49 - x, -11 + y, 1.7 + z). Both state roots and their single shared collider
+list use the same approved placements. The interior is 8 by 6 m, with 3.2 m
+clear height and 0.2 m shell walls. Capsule and walkway tests cover the paths
+to the plan's reach targets. The corridor wall owns the entrance header from
+2.4 to 3.2 m. A room-owned head return closes the sliding pocket's 20 mm
+clearance above the passage, between the wall faces at ship Z 1.5 and 1.7.
+Rendered-triangle tests cover 209 crown rays across that thickness and 330
+through-wall rays above the aperture, while leaving the intended passage open.
+Pixel rays through the remaining black band hit the header's downward-facing
+steel at 2.4 m, rather than passing through a hole. A local threshold bounce at
+ship (45, -9.3, 1.05), range 1.8 m, now lights that return and the release grip.
+Its regular energy is 1.418070 under secondary power, a local 0.72 share of
+the regular fixture energy. The initial 0.12 end-bounce share still read as black.
+Emergency uses the existing emergency end-bounce colour and 0.84 energy share.
+Both follow the same power fade; the threshold bounce is common to both room
+states. Its quarters-only receiver layer covers the header, the six doorway
+trim pieces and the release hardware, excluding the main corridor walls. The
+head trim initially lacked that layer, leaving a separate three-pixel black
+line at capture rows 22 to 24; pixel rays identified its 12 mm underside.
+A rendered control changed the sampled band from near-zero RGB to
+(0.227, 0.212, 0.185) without changing the corridor strip levels.
+The release label also supplies unshaded albedo. GPU controls showed that its
+raster was ready by frame 21, but emission-only ink contributed no visible
+pixels; adding albedo produced native glyphs. This override is local to the
+release; existing labels retain their original material defaults.
+The Present wardrobe's named `FibreDust` mesh and detached hem fragments are
+seated from their visible bounds against the real bottom panel, with 0.5 mm
+clearance. The original preview offset left the heap 64.984 mm above the old
+stand-in shelf; the accepted wardrobe has a raised floor at room Y 0.144 m.
+
+The black region along the wide view's upper-left storage edge was unlit solid
+furniture. At the unchanged 1536 by 864 camera, rays through pixels (200, 250),
+(225, 350) and (250, 400) hit `Standin_storage_left_near_infill`, on its
+entrance-facing surface at ship Z 2.5. Adjacent black pixels hit the locker's
+side panel and surround. All those normals face ship -Z, away from the room's
+ceiling keys. Shell-only rays also hit the wall or ceiling behind them.
+The apparent cutout therefore required lighting rather than a shell patch.
+Two local diffuse bounce proxies sit at room (0.9, 2.6, 0.05) and
+(7.1, 2.6, 0.05), range 3.2 m, on the quarters receiver mask only. Both follow
+secondary power's existing fade at 0.35 of regular energy each, with no
+point-source specular contribution, ambient change or D14 change. A matched
+left-bounce control changes pixel (200, 250) from RGB (0, 0, 0) to (74, 66, 53),
+and adjacent rusty steel at (100, 250) to (181, 123, 81). The ray regression
+checks opaque front-facing triangles, positive light incidence, range and
+receiver mask; a separate check covers both power handoffs. Image-comparer's
+matched left-edge crop also distinguishes the formerly black region from the
+now visible textured surface. The separate right-edge black area was the
+room-facing +Z surface of corridor-owned `D16-S-042/STARBOARD/001` at ship
+Z 1.7, outside the quarters light mask. It was solid front-facing steel,
+not a backface or space outside the room. Three room-owned 2 mm inner panels
+now cover the entrance spans and lintel, with the same wall finish and receiver
+mask as the rest of the room. The 1.2 by 2.4 m passage and sliding pocket stay
+clear; the corridor geometry, lighting and D14 are unchanged. The corridor-door
+capture is pixel-identical to demo3. A matched control
+changes wide pixel (1400, 350) from RGB (0, 0, 0) to (94, 89, 80). The regression
+casts all 1,327,104 pixels from each wide camera and the doorway camera, checking
+front-facing opaque enclosure and incident light. In each wide frame, 1,568
+rays pass through the exact working doorway to lit corridor steel; all other
+rays hit the room shell. The doorway view has no portal rays.
+
+The orange-brown left-edge sliver was the near locker's `SurroundStile_R` paint
+swatch. Cyan, flat-normal and unshaded controls isolated horizontal pigment
+bands, without overlapping geometry. That stile now takes a matching-scale
+40 mm strip of the adjacent door paint, within its original padded atlas slot.
+The three pale floor spots are the sofa's authored `FineFloorPowder_SeatCushion_*`
+deposits, confirmed by a removal control. They remain beneath the sofa seats.
+The demo5 standard captures, two desk/console close-ups and console message
+frame remain under `tmp/demo5/`. The owner presentation cleanup is in
+`tmp/demo6/`; the real bed soft-goods captures are in `tmp/demo7/`.
+
+D16's corridor now switches all eight red keys by their circuit metadata,
+not their display names, which Godot renames when siblings share a name. The
+old lookup missed seven keys; each stayed at energy 6.861170 even after 120
+ticks under secondary power. The switched circuit uses D14's emergency key
+profile, seven pool fills, end bounce and four regular strips. Tests compare
+both power handoffs tick by tick, including energy, colour, range and falloff.
+No D14 lighting values or behavior changed.
+
+Regenerate the ordinary-input scenario and run its windowed capture lane with:
+
+```sh
+godot --headless --path . -s tools/build_quarters_scenario.gd
+nohup godot --headless --path . -s harness/run.gd -- scenarios/quarters-demo.json --out tmp/demo8/routes/quarters-demo > tmp/demo8/route-quarters-demo.log 2>&1 &
+```
+
+The harness writes eighteen beats and a report under the printed run directory.
+Use `tools/quarters_presentation.gd` as shown in the demo8 section below to
+make the five standard copies in `tmp/demo8/`: `corridor-door.png`,
+`remembered-doorway.png`, `remembered-wide.png`, `present-doorway.png` and
+`present-wide.png`. Extra captures include both states' bed, console, right
+bedside, dining-table and desk close-ups and the three console-playback phases.
+The shared console close-up camera uses room-local (6.1, 1.6, 2.6), aimed at
+(7.65, 1.05, 2.0), with a 65-degree horizontal field.
+The doorway pair uses the exact camera in `layout.json`; the wider pair uses
+room-local position (0.75, 2.2, 0.10), aimed at (4.0, 1.15, 3.6), with a
+132-degree horizontal field. Frustum tests use the actual 1536 by 864 capture
+size, the sofa bounds in both states and the full mounted fixture models,
+keeping them inside the unchanged 1.5% frame margin. Godot's default 64 by 64
+headless viewport previously hid the 16:9 vertical crop. The former wide camera
+was at 3.0 m and aimed down at 0.5 m, cropping those features.
+Capture cameras do not move the player.
+The scenario opens the door, walks around furniture, uses the console and
+walks out and back in. The separate `d16_route_test.gd` follows ordinary input
+from the D14 stasis start through the aft well to this door. Run the full suite
+with `godot --headless --path . -s tests/run_tests.gd`.
+
+The demo5 pass verified **906 headless tests, zero failures**, including six
+new furniture tests. The focused quarters subset passed all 26 tests. Nine
+locker-material Python tests also passed in the existing Hunyuan environment.
+The full suite and all eight windowed routes ran under `nohup` and exited 0.
+The seven existing routes (`gameplay-full`, `rod-pickup`,
+`gameplay-keyboard-turn`, `hallway`, `power-room`, `connector-route` and
+`click-route`) passed their machine checks, as did all ten quarters-demo beats.
+Logs and captures are under `tmp/demo5/`; the full-suite log is
+`full-suite.log` and route logs are `route-<scenario>.log`.
+
+Harness visual verdict fields remain pending. An enlarged image-comparer crop
+confirms that the console message stays inside the blue display. Its rendered
+label bounds are 0.637 by 0.123 m inside the 0.874 by 0.238 m display; all 451
+sampled rays behind the text rectangle hit the visible imported `Display`.
+The initial full-frame image judgment incorrectly reported text overflow;
+the crop and geometric check agree that no placement correction is needed.
+The broad room comparison also misidentified the already accepted collapsed
+sofa as a floating bed; sofa geometry was not changed in this pass. Existing
+ObjectDB, resource and allocator teardown warnings remain after the passing
+tests.
+
+### Owner presentation cleanup (demo6)
+
+The eleven `Standin_storage_*` meshes now share the real furniture's interim
+steel finishes instead of the brown soft-part material. Small-item boxes are
+neutral grey. `Standin_medal_case` and `Standin_data_tablet_2` now rest on the
+actual worktop, clear of the console; both previously intersected it and
+floated 60 mm above the desk. Names and storage footprints are unchanged.
+
+The console has a dark, unshaded emissive base, brighter text, faint scanlines
+and animated black/cyan/white corruption blocks. Glyph-width wrapping keeps
+the uppercase fault inside the bezel. Placeholder wording and the 300-tick
+sequence are unchanged. Five hundred interior rays confirm solid panels in
+the Present wardrobe and over-bed cabinets; their dark interiors are unlit.
+
+The black/cyan numbers are the harness's 96 by 40 pixel protocol chip, absent
+from normal `--start quarters` play. Machine captures and decoding are unchanged.
+Make the ten owner copies from a completed run with:
+
+```sh
+godot --headless --path . -s tools/quarters_presentation.gd -- tmp/demo6/routes-final/quarters-demo/run-<id> tmp/demo6
+```
+
+This crops only the top 40 rows, producing 1536 by 824 images. The five standard
+files are `corridor-door.png`, `remembered-doorway.png`, `remembered-wide.png`,
+`present-doorway.png` and `present-wide.png`; desk views are
+`remembered-console.png` and `present-console.png`; playback phases are
+`console-corruption.png`, `console-message.png` and `console-fault.png`.
+
+Demo6 passed **912 headless tests, zero failures**, including six new
+regressions. The full suite and all eight windowed scenarios ran under `nohup`;
+all eight passed their machine checks, including the ten quarters beats.
+Logs are `tmp/demo6/full-suite-final.log`, `routes-final.log` and
+`route-final-<scenario>.log`. All ten owner images match their source pixels
+below the cropped protocol band. Image-comparer confirms storage colour
+agreement, readable message/fault text and visible block corruption. Existing
+ObjectDB/resource/allocator teardown warnings remain. D14 is unchanged.
+
+### Real bed soft goods (demo7)
+
+The `issue-95-props` merge supplies both bed soft-goods exports, their textures
+and editable Blender sources. `Placement_bed/bed_soft` contains the matching
+state asset beside `Placement_bed/bed`. The four main parts are `Mattress`,
+`Quilt`, `Pillow_L` and `Pillow_R`; Present also retains the authored crust,
+platform/floor powder and crumbs. These materials are provisional as described
+in **Batch 2: bed soft goods** below. No new colliders are added, including for
+floor powder; the existing shared bed collider remains.
+
+Regression tests check both GLB paths, exact frame transforms, absence of the
+old soft-goods stand-in, unchanged imported materials, the shared collider and
+mesh-pair clearance from both bedside units and the over-bed lockers. The
+remembered mattress still satisfies the existing 1 mm platform-contact limit.
+That sub-millimetre measurement translates the shared frame to zero inside the
+test fixture, avoiding float cancellation at ship Y = -11 m; placement is
+checked separately without changing either transform.
+
+The quarters scenario now captures twelve beats. Its two added bed views share
+room-local eye (2.5, 2.4, 2.25), target (4.0, 0.3, 4.6) and an 80-degree
+horizontal field. Both states' soft-goods mesh bounds, including floor debris,
+fit the existing 1.5% frame margin at 1536 by 864. The camera does not move the
+player or alter the console sequence.
+
+Regenerate and capture with:
+
+```sh
+godot --headless --path . -s tools/build_quarters_scenario.gd
+nohup godot --headless --path . -s harness/run.gd -- scenarios/quarters-demo.json --out tmp/demo7/routes/quarters-demo > tmp/demo7/route-quarters-demo.log 2>&1 &
+godot --headless --path . -s tools/quarters_presentation.gd -- tmp/demo7/routes/quarters-demo/run-<id> tmp/demo7
+```
+
+The chip-free presentation files are `tmp/demo7/corridor-door.png`,
+`remembered-doorway.png`, `remembered-wide.png`, `present-doorway.png` and
+`present-wide.png`, plus `remembered-bed.png` and `present-bed.png`. The five
+console/playback copies are also retained. All presentation images are 1536
+by 824, cropped only below the unchanged 40-pixel protocol band. Harness
+originals remain in the run directory.
+
+Demo7 passed **916 headless tests, zero failures**, including four new bed
+soft-goods regressions. The full suite and all eight windowed scenarios ran
+under `nohup` and exited 0: `quarters-demo`, `gameplay-full`, `rod-pickup`,
+`gameplay-keyboard-turn`, `hallway`, `power-room`, `connector-route` and
+`click-route`. All twelve quarters beats passed their machine checks. All
+twelve presentation copies match their source pixels below the cropped band.
+Logs are `tmp/demo7/full-suite.log`, `routes.log`, `route-<scenario>.log`,
+`presentation.log` and `presentation-check.log`. The raw quarters run is
+`tmp/demo7/routes/quarters-demo/run-1794261519/`. D14 code and lighting are
+unchanged. ObjectDB/resource/allocator and renderer teardown warnings remain;
+harness visual verdicts are pending, and no visual-quality review was performed
+in this integration pass.
+
+### Small belongings and dry bed decay (demo8)
+
+The demo branch includes batch 3 from `issue-95-small-items` and only the
+`c09d3ea` and `82bcbf3` bed refinements from `issue-95-props`. The unfinished
+furniture-material branch is not merged. Godot reimport ran under `nohup`;
+its log is `tmp/demo8/import.log`. This retains the existing batch-1 furniture
+finishes and the improved aged bed's authored dry-decay materials.
+
+Remembered loads `<item>.glb`, Present loads `<item>_aged.glb`. The right
+bedside holds the photo frame; the left holds the jewellery box and hairbrush.
+The dining table has two mugs and two plates. The desk has the medal case and
+one tablet, and the sofa has the other tablet. One boots asset supplies the
+pair on the floor in front of the right bedside. Replaced `Standin_` nodes
+are removed; storage, dresses and jacket retain their names.
+
+`QuartersSmallItems` measures the named support meshes. Both bedside `Top`
+meshes end at room Y 0.45 m, `Worktop` at 0.70 m and the dining `Top` at
+0.7497005 m. Items have 0.5 mm clearance above those surfaces or the floor.
+The round tabletop contains every item footprint. The desk items sit beyond
+the console's Z extent, with at least 29.5 mm clearance, and avoid the raised
+upstands. Their GLB dimensions, materials and texture paths are retained.
+The photo-frame Glass slot uses the same simple glossy alpha glass as the
+view screen, roughness 0.07 and alpha 0.10. Pod glass needs its pane-specific
+vertex edge mask, so it is not bound to the imported frame cover.
+
+All eleven placement roots are identical between states. Ten imported item
+transforms are also identical. The sofa tablet is the exception: its actual
+support collapses, so matching its final height would either float Present's
+tablet or bury Remembered's tablet. Its shared root and yaw stay unchanged;
+only the imported child's support offset changes, from room Y 0.569380 m to
+0.439915 m. Triangle clipping measures the seat under the tablet footprint,
+rather than using the whole cushion's bounding-box crown. This prioritises
+contact over identical final asset transforms for that one instance.
+Regression tests check the imported state paths, rigid-support transforms,
+remaining stand-in names, support contact within 2 mm, round-table containment,
+furniture-triangle and item clearance, authored materials and console clearance.
+
+The quarters scenario adds matched `bedside`, `table` and `desk` views in
+both states, for eighteen beats total. The bedside view isolates the photo
+frame; the table view contains all four pieces of tableware; the desk view
+contains both belongings beside the console. Frustum tests check all seven
+items below the 40-pixel protocol crop and inside the unchanged 1.5% margins.
+Cameras do not move the player, and the console sequence remains 300 ticks.
+
+After the windowed harness run, make presentation copies with:
+
+```sh
+godot --headless --path . -s tools/quarters_presentation.gd -- tmp/demo8/routes/quarters-demo/run-<id> tmp/demo8
+```
+
+The thirteen requested files are `corridor-door.png`,
+`remembered-doorway.png`, `remembered-wide.png`, `present-doorway.png`,
+`present-wide.png`, `remembered-bed.png`, `present-bed.png`,
+`remembered-bedside.png`, `present-bedside.png`, `remembered-table.png`,
+`present-table.png`, `remembered-desk.png` and `present-desk.png` under
+`tmp/demo8/`. The five console/playback copies are also retained. All copies
+are 1536 by 824, cropped only below the protocol chip; machine originals
+remain in the harness run directory.
+
+Demo8 passed **919 headless tests, zero failures**, including three new
+small-item regressions. The focused placement/material/bed subset passed all
+eight tests. The full suite and all eight windowed scenarios ran under
+`nohup` and exited 0: `quarters-demo`, `gameplay-full`, `rod-pickup`,
+`gameplay-keyboard-turn`, `hallway`, `power-room`, `connector-route` and
+`click-route`. All eighteen quarters beats passed machine checks. The
+connector lane also passed its D14-return state and replay-digest checks.
+All eighteen presentation copies match their source RGB pixels below the
+protocol band. The raw quarters run is
+`tmp/demo8/routes/quarters-demo/run-1794271964/`; logs are
+`tmp/demo8/full-suite.log`, `routes.log`, `route-<scenario>.log`,
+`presentation.log`, `focused-final.log` and `cameras2.log`.
+D14 code and lighting are unchanged. Godot still prints ObjectDB, resource,
+allocator and renderer teardown warnings. Harness visual verdicts remain
+pending; this pass verifies placement geometry, capture framing and pixel
+copying, without claiming a visual-quality review.
+
+### Console standby and boots close-ups (demo9)
+
+The display previously printed `PLACEHOLDER TEXT (decisions.md ruling 16)`
+before every phase, and left the fault visible after playback in Present.
+`QuartersRoom` now omits that author annotation when rendering playback and
+uses a single stationary underscore cursor at 25% opacity on the dark screen
+while idle, both before interaction and after completion. It has no logo or
+status wording. The simulation's source annotation remains author-facing;
+the code comment and this note record that the message wording and retro fault
+address are provisional under ruling 16. The corruption, message and fault
+retain their original text, full playback contrast, wrapping and 60/180/60-tick
+boundaries. Existing sequence and legibility tests are unchanged.
+
+Two added views show the boots on the floor beside the right bedside cabinet.
+Both use room-local eye (5.65, 0.65, 4.45), target (5.06, 0.16, 5.28) and a
+58-degree horizontal field. The existing placement and triangle-clearance tests
+check floor contact within 2 mm and no furniture intersections; camera tests
+also require all boot bounds to remain below the protocol crop in both states.
+Boot geometry and placement are unchanged.
+
+Regenerate and capture with:
+
+```sh
+godot --headless --path . -s tools/build_quarters_scenario.gd
+nohup godot --headless --path . -s harness/run.gd -- scenarios/quarters-demo.json --out tmp/demo9/routes/quarters-demo > tmp/demo9/route-quarters-demo.log 2>&1 &
+godot --headless --path . -s tools/quarters_presentation.gd -- tmp/demo9/routes/quarters-demo/run-<id> tmp/demo9
+```
+
+The twenty chip-free copies in `tmp/demo9/` include the five standard images,
+both states' console, desk, bed, bedside and table views, the three playback
+frames, and `remembered-boots.png` / `present-boots.png`. They retain the source
+pixels below the 40-row protocol band, at 1536 by 824. Harness originals stay
+in the run directory.
+
+Demo9 passed **922 headless tests, zero failures**, including three new
+presentation/capture regressions. The full suite and all eight windowed
+scenarios ran under `nohup` and exited 0: `quarters-demo`, `gameplay-full`,
+`rod-pickup`, `gameplay-keyboard-turn`, `hallway`, `power-room`,
+`connector-route` and `click-route`. All twenty quarters beats passed machine
+checks, and all twenty presentation copies match the source pixels below the
+protocol band. The raw quarters run is
+`tmp/demo9/routes/quarters-demo/run-1794274543/`; logs are
+`tmp/demo9/full-suite.log`, `routes.log`, `route-<scenario>.log`,
+`presentation.log` and `image-comparer.log`.
+
+Image-comparer inspected the two boots views, four idle desk/console views and
+three playback frames. It found visible floor contact without obvious clipping,
+only dim cursors on the idle displays, no development annotations, visible
+corruption and readable message/fault text. Still images cannot rule out hidden
+intersections; the geometry tests additionally pass both states' floor contact
+and furniture-triangle clearance. Measured sole clearance is 0.50 mm in each
+state. The corridor-door copy is pixel-identical to demo8. D14 is unchanged;
+the connector lane also passes its D14-return and replay-digest checks. Existing
+Godot resource/renderer teardown warnings remain, and the harness's broader
+visual verdict fields are still pending.
+
+### Her jacket and dresses (demo10)
+
+The `issue-95-small-items` merge adds the four clothing exports described in
+**Batch 2b: her clothes** below. `Item_her_jacket` copies the complete transform
+of `Placement_dining_chair_1/dining_chair`. `Placement_wardrobe/her_dresses`
+copies the wardrobe's complete transform, including the room-to-ship reflection.
+Neither receives an extra height offset. Remembered uses `her_jacket.glb` and
+`her_dresses.glb`; Present uses the `_aged.glb` pair. Their imported wool,
+steel hangers, buttons, tears and fibre deposits retain their authored materials.
+The tunic and its separately seated debris keep their existing placements.
+Only storage drawer/shelf modules and leftover infill remain stand-ins.
+
+The clothing regressions check state paths, exact furniture transforms,
+removal of every `Standin_her_*` node, preserved imported materials and
+bidirectional triangle-edge clearance against the chair, wardrobe and visible
+tunic meshes. A crossing-box control checks the collision test itself. Support
+rays check the aged jacket's seat deposit and both dresses' loose fibres and
+compact heap bases against the real seat and bottom panel, within the asset's
+3 mm contact limit. The jacket's floor deposit is checked against the room floor.
+
+The scenario now has twenty-four beats, adding `remembered-jacket`,
+`present-jacket`, `remembered-wardrobe` and `present-wardrobe`. Each state's
+jacket view uses room-local eye (4.05, 1.25, 0.20), aimed at (5.15, 0.48, 1.02).
+The open-wardrobe view uses eye (4.0, 1.5, 3.05), aimed at (7.3, 1.17, 3.6).
+Both use an 88-degree horizontal field, framing the furniture and all clothing,
+including the floor scatter and open door. Frustum tests retain the existing
+1.5% margin and require the content to remain below the protocol crop.
+Cameras do not move the player or change the console sequence.
+
+Regenerate the scenario, run the windowed lane and copy the presentation images:
+
+```sh
+godot --headless --path . -s tools/build_quarters_scenario.gd
+nohup godot --headless --path . -s harness/run.gd -- scenarios/quarters-demo.json --out tmp/demo10/routes/quarters-demo > tmp/demo10/route-quarters-demo.log 2>&1 &
+godot --headless --path . -s tools/quarters_presentation.gd -- tmp/demo10/routes/quarters-demo/run-<id> tmp/demo10
+```
+
+The nine requested chip-free files in `tmp/demo10/` are `corridor-door.png`,
+`remembered-doorway.png`, `remembered-wide.png`, `present-doorway.png`,
+`present-wide.png`, `remembered-jacket.png`, `present-jacket.png`,
+`remembered-wardrobe.png` and `present-wardrobe.png`. The fifteen existing
+close-up and playback copies are retained. Each is 1536 by 824, cropped only
+below the unchanged 40-row protocol band; harness originals stay in the run
+directory.
+
+Demo10 passed **927 headless tests, zero failures**, including five new clothing
+regressions. The focused clothing, furniture, inventory and capture subset
+passed all 23 tests. All twenty-four quarters beats passed machine checks, and
+all twenty-four presentation copies match the source RGB pixels below the
+protocol band. The raw quarters run is
+`tmp/demo10/routes/quarters-demo/run-1794281047/`. Logs include
+`tmp/demo10/import.log`, `full-suite.log`, `focused-final.log`, `routes.log`,
+`route-<scenario>.log`, `presentation.log` and `image-comparer.log`.
+The full suite and all eight windowed scenarios ran under `nohup` and exited
+0: `quarters-demo`, `gameplay-full`, `rod-pickup`, `gameplay-keyboard-turn`,
+`hallway`, `power-room`, `connector-route` and `click-route`. Each scenario's
+machine verdict is PASS. The connector route passes its D14-return and replay
+digest checks; D14 production code and lighting are unchanged. Two click-route
+lamp-sample diagnostics still print FAIL with the exact demo9 pixel samples
+and luminance values, while its machine verdict passes. Existing Godot
+ObjectDB/resource/allocator teardown warnings also remain.
+
+Image-comparer sees the jacket on its chair, the remembered/present condition
+change and pale deposits on the seat and floor. It cannot distinguish both
+partly occluded dresses clearly, identify the shelf fragments as a fibre heap,
+or establish contact from these stills. It also flags possible apparent overlaps
+and conspicuously ragged Present silhouettes. The triangle-clearance and support
+tests pass independently; this integration does not claim a visual-quality pass
+for the imported clothing. The harness's broader visual verdicts remain pending.
+
+### Finished furniture materials (demo11)
+
+Merge `22cb2df` brings in `issue-95-props` at `489a538`. The two conflicts
+were in `app/quarters_props.gd` and this README. The resolution retains the
+props branch's per-prop factory, accepted-library routing and per-face
+wardrobe mapping, alongside the demo's shared-slot helpers and documentation
+for bed soft goods, belongings and clothing. Placement, support offsets,
+state transitions, colliders and the console sequence retain the demo behavior.
+Godot re-import ran under `nohup`; its log is `tmp/demo11/import.log`,
+and `import.exit` records exit 0.
+
+The ten accepted props now use their routed `as_built` / `aged` finishes in
+Remembered / Present. Wardrobe retains its per-face interim material. The demo
+furniture builder separately restores the existing display/glass optics and
+warm Remembered bedside lenses; Present lenses remain dead. Pilot locker,
+sofa and tunic factories, textures and shaders are unchanged.
+
+The final guarded full suite passes **942 headless tests, zero failures** under
+`nohup`: 812 shared tests, 115 from the demo branch, 11 from the props branch
+and four new integration regressions. All 28 focused material tests also pass.
+The four new regressions cover every furniture instance in both states,
+shared cache identities, every pilot material and shader parameter, and
+front/back visibility under reflected transforms.
+The old slot-assignment test now checks active routed finishes in both states,
+while retaining its shared-slot cache and ship-steel checks. The first full
+run found that the cabinet ray helper recognized only the old steel shaders.
+Its exact-resource list now includes the library and wardrobe shaders; its
+opacity and back-face-culling assertions and all 500 cabinet rays are unchanged.
+
+All eight windowed scenarios ran under `nohup`, exited 0 and report machine
+PASS: `quarters-demo`, `gameplay-full`, `rod-pickup`, `gameplay-keyboard-turn`,
+`hallway`, `power-room`, `connector-route` and `click-route`. All twenty-four
+quarters beats pass. The connector route also passes its D14-return and replay
+digest checks. D14 production code and lighting are unchanged. The two existing
+click-route lamp diagnostics retain exactly the demo10 sample pixels and values;
+they still print FAIL independently of the passing machine verdict.
+
+The raw quarters capture is
+`tmp/demo11/routes/quarters-demo/run-1794288367/`. Regenerate the scenario and
+copy a completed run with:
+
+```sh
+godot --headless --path . -s tools/build_quarters_scenario.gd
+nohup godot --headless --path . -s harness/run.gd -- scenarios/quarters-demo.json --out tmp/demo11/routes/quarters-demo > tmp/demo11/route-quarters-demo.log 2>&1 &
+godot --headless --path . -s tools/quarters_presentation.gd -- tmp/demo11/routes/quarters-demo/run-<id> tmp/demo11
+```
+
+All twenty-four chip-free copies are in `tmp/demo11/`. The five standard files
+are `corridor-door.png`, `remembered-doorway.png`, `remembered-wide.png`,
+`present-doorway.png` and `present-wide.png`. Both states also have
+`<state>-desk.png`, `<state>-bedside.png`, `<state>-table.png`,
+`<state>-wardrobe.png` and `<state>-bed.png`, where state is `remembered` or
+`present`. Console, playback, boots and jacket views are retained too. Every
+copy is 1536 by 824 and matches the source RGB pixels below the unchanged
+40-row protocol band. `presentation.log` records that comparison. Harness
+visual verdicts remain pending; this pass does not claim a new art-quality review.
+
+The frozen `perf-smoke` policy measures a stasis-room orbit, not the quarters.
+The separate quarters diagnostic uses the existing wide camera at 1536 by 864,
+vsync disabled, 60 warmup frames and 300 measured frames per state. It does not
+change or replace the frozen policy. `tmp/demo11/quarters_perf.gd` records
+wall-clock frame intervals and texture memory in `quarters-perf.json`.
+On this machine's Apple M4 Max, Metal 4.0 / Forward+ produced:
+
+| State | Mean frame interval | p95 frame interval | Whole-scene renderer texture memory |
+| --- | ---: | ---: | ---: |
+| Remembered | 4.148 ms | 12.159 ms | 3260.161 MiB |
+| Present | 4.672 ms | 12.705 ms | 3260.161 MiB |
+
+Both quarters states remain resident, with only the selected state visible.
+Their 257 unique source and active material textures total **2,492,261,065
+bytes (2376.805 MiB)**. This deduplicated payload includes shared wall/steel
+scans and imported materials retained beneath overrides, while excluding fonts,
+reflection/render targets and driver allocation overhead. The accepted library's
+70 compressed atlases account for **1,096,113,312 bytes (1045.335 MiB)**.
+The renderer counter is **3,418,526,720 bytes (3260.161 MiB)** for the entire
+loaded ship scene, including other resident rooms and rendering resources.
+These are observed stationary-view timings and memory totals, without a
+quarters-specific performance threshold.
+
+Final logs are `tmp/demo11/full-suite-final.log`, `focused-final.log`,
+`routes.log`, `route-<scenario>.log`, `presentation.log` and
+`quarters-perf.log`. The first full run's guard failure remains in
+`full-suite.log`; `full-suite-final.exit` records 0 after the shader adapter
+correction. Existing Godot ObjectDB, resource, allocator and renderer teardown
+warnings remain. No test thresholds or production lighting settings changed.
+
+### Rendering corrections and atlas reduction (demo12)
+
+The doorway rectangle raycasts to
+`Placement_storage_left_far/Standin_storage_left_far_slot_0`. Its shared
+PaintedSteel fallback was dark raw ship steel. Geometry and normals were
+present; shadows and SSAO were disabled. Storage now has its own cached finish
+using the pilot locker's accepted door and dust images. Box faces project across
+their actual bounds, rather than a narrow frame strip. Remembered storage and
+the generic ship-steel slot materials retain their existing behavior.
+
+The wardrobe's black lower corners raycast to the blue and rose dress fibre-heap
+bases. Their source normals point upward. The reflected wardrobe placement made
+the imported two-sided clothing's front/back normal handling produce black
+reverse faces, also visible at garment edges. `QuartersClothing` reflects each
+imported mesh's local X coordinates and normals, reverses triangle winding and
+tangent handedness, and compensates its draw transform. World positions, normals, UVs,
+materials and the wardrobe support transform are preserved. Every triangle and
+both cloth sides remain; the fix does not enable back-face culling or remove
+heap cards. The regression covers both states and packed-normal round-trip
+precision.
+
+The desk Worktop maps library `top-03` (1536 by 512) over approximately
+1.594 by 0.694 m, giving 964 by 738 source px/m. Its source aspect is 3:1,
+against the face's 2.30:1. The dining tabletop maps `top-00` (1280 square)
+onto the 0.886 m disc, with a 1251 px/m minimum after disc projection.
+Whole-face clouds consequently became furniture-sized stains. These faces now
+use a mapper treatment that separates detail at a physical 3 mm scale, retains
+80% of fine variation and 15% of broad paint variation, and leaves source oxide
+pixels unchanged. Corrosion placement, UVs, geometry and normal/roughness
+derivation are retained.
+The treatment applies to painted top faces of at least 0.1 square metre; only
+desk and dining-table atlases were remapped in this pass.
+
+Remembered paint is unchanged. Library, wardrobe and pilot paint sources all
+contain sRGB `[97,118,115]`. Two coplanar material samples under the same warm
+Remembered lights render desk `[133,116,70]` and pilot `[135,117,70]` in the
+same frame (`tmp/demo12/remembered-paint-control.png`). Both acquire the warm
+shift. No furniture recoloring or D14 lighting change was made.
+
+Unchanged 4096 UV atlases cannot be halved to 2048 while keeping 600 px/m:
+the weakest exported directions would be 400.2 to 543.9 px/m. Six accepted
+props instead use 3072, preserving all geometry and UVs:
+
+| Prop | Minimum exported px/m at 3072 |
+| --- | ---: |
+| Bed | 600.300 |
+| Console | 815.863 |
+| Desk | 636.706 |
+| Over-bed lockers | 609.371 |
+| Media cabinet | 608.813 |
+| View screen | 655.300 |
+
+These figures use singular values of each exported triangle's physical-to-UV
+mapping, including the weakest direction, rather than only an area-density
+estimate. Fitting does not enlarge the bed; the other fitted scales leave their
+600 px/m margins intact. Existing 2048 atlases remain 2048. Resize preserves
+mipmaps and compressed data roles, renormalizes normal maps and samples region
+labels with nearest-neighbor filtering. All original gate thresholds remain
+unchanged. Fresh checks pass all 180 source-image gates and 63 exported-density,
+atlas-size and mapped corrosion checks for the seven rebuilt or resized props.
+
+The same 1536 by 864 stationary-view memory probe measures the following,
+with both states resident, 257 unique quarters textures and 70 library atlases:
+
+| Texture measure | Demo11 MiB | Demo12 MiB | Saved MiB |
+| --- | ---: | ---: | ---: |
+| Deduplicated quarters material payload | 2376.805 | 1984.806 | 391.999 |
+| Accepted library atlases | 1045.335 | 653.336 | 391.999 |
+| Whole-scene renderer counter, either state | 3260.161 | 2870.349 | 389.813 |
+
+The quarters payload falls from 2,492,261,065 to 2,081,220,169 bytes, saving
+411,040,896 bytes (16.49%). The library reduction is 37.50%. These scopes and
+mipmap accounting match demo11; renderer allocation totals are separate from
+the deduplicated material payload. `tmp/demo12/quarters-perf.json` records the
+measurements. Observed mean frame intervals are 3.742 ms Remembered and 3.350 ms
+Present, with p95 9.553 and 8.445 ms. These remain diagnostic observations,
+without a quarters performance threshold or a change to the frozen policy.
+
+Final verification passes **944 guarded headless tests, zero failures**, all
+89 quarters-aging Python tests and 14 focused furniture/clothing tests. All eight
+windowed scenarios ran under `nohup`, exited 0 and report machine PASS. All
+24 quarters beats pass, including state swaps and the console sequence.
+D14-return and replay checks remain in the connector route. Existing click-route
+lamp diagnostics and Godot teardown warnings remain; no quality thresholds,
+shader-recognition rules or test-runner guards were relaxed.
+
+All 24 chip-free copies are in `tmp/demo12/`, at 1536 by 824. The standard five
+are `corridor-door.png`, `remembered-doorway.png`, `remembered-wide.png`,
+`present-doorway.png` and `present-wide.png`. Both states' `desk`, `wardrobe`
+and `table` close-ups are included. `presentation.log` confirms that every RGB
+pixel below the 40-row protocol band matches the original windowed capture.
+The raw quarters run is
+`tmp/demo12/routes/quarters-demo/run-1794293838/`. Logs are `full-suite.log`,
+`full-suite.exit`, `python-suite.log`, `focused-final.log`, `finish-gates.log`,
+`routes.log`, `route-<scenario>.log`, `presentation.log` and `quarters-perf.log`
+under `tmp/demo12/`.
+
+Image-comparer findings are in `image-final.log`. Garment-edge lines now read
+as ordinary separations, and resized furniture wear remains legible at gameplay
+distance. The review also notes that the lit fibre-heap bases remain conspicuously
+pale and the tabletop is more uniform. At the former black wardrobe samples,
+`(700,588)` and `(865,588)`, RGB changes from `[0,0,0]` to `[217,201,174]` and
+`[215,199,173]`. These are existing cloth bases with their authored materials
+retained. Storage finish changes expose existing faces; no locker panels were
+added. Harness visual verdicts remain pending; automated machine PASS does not
+claim final art approval.
+
+Finish-source changes on this demo branch are in
+`tools/quarters_aging/map_library.py`, `settled_dust.py`, `resize_library.py`
+and `tools/blender/quarters/wardrobe/material.gdshader`, with runtime atlases,
+mapping records and measured atlas gates updated here. Library source images
+and source prop GLBs and UVs are unchanged. Reconcile these changes into the
+props branch later; no other worktree was modified.
+
+### Combined dress integration (demo13)
+
+The playable branch `issue-114-quarters-demo` retains the accepted demo12 defect
+corrections and integrates only the changed paths in `c37f530..92d4d45` from
+`issue-95-small-items`: `cbd77c5`, `abe0d09`, `8dabe46`, `f172920` and `92d4d45`.
+That includes both GLBs, packed editable Blender sources, source texture files,
+construction/export tools, tests and dress review sheets. The README was the only
+overlap with dirty tracked files; its Her dresses section was replaced separately,
+retaining the Playable demo history and the other material sections. The source
+worktree was read-only.
+
+The new dresses have single-sided materials with physical front/back plies and
+explicit opposite faces on fibre cards. `QuartersClothing.prepare` now leaves
+those imported meshes and their reflected draw transforms unchanged. It only
+moves reflection into a mesh when that mesh has an active two-sided PBR surface.
+This avoids applying the demo12 two-sided correction redundantly to these exports.
+The three reflection regressions check both states, imported mesh identity,
+backface culling, triangle/surface counts, world vertices and normals, both UV
+sets and authored/active materials. A two-sided control retains the packed-normal
+round-trip coverage and checks idempotence. Existing furniture-transform,
+triangle-clearance and shelf-contact tests remain unchanged. The new single-sided
+regression failed before this policy change and passes afterward.
+
+The combined demo passes **945 guarded headless tests, zero failures**, all
+15 focused furniture/clothing tests, 89 quarters-aging Python tests and all
+31 targeted dress controls. The latter comprise eight Blender construction,
+eleven dry-finish/restoration, three arrangement, two exported pigment/doorway
+and seven shared geometry/support controls. Saved-source exports are byte-identical
+to the delivered GLBs. The complete cloth simulation was not rerun. Independent
+export gates retain 6,544 / 9,387 triangles, zero wardrobe/tunic/pair crossings,
+maximum support gap 0.806906 mm and 0.800008 mm heap clearance. Doorway visible
+projected area is 99.34% / 100% remembered and 99.00% / 100% aged for rose / blue.
+Godot imports both states with backface-culling PBR materials; aged retains eight
+alpha-scissor surfaces. All quality limits and the guarded runner are unchanged.
+
+All eight windowed scenarios have final machine PASS and exit 0:
+`quarters-demo`, `gameplay-full`, `rod-pickup`, `gameplay-keyboard-turn`, `hallway`,
+`power-room`, `connector-route` and `click-route`. All 24 quarters beats pass.
+The first connector run stopped after Metal fence timeouts during unchanged
+remote-hatch streaming, with the sampled main thread waiting in
+`IOSurfaceSharedEvent`; its later captures were invalid. That failed run and log
+remain under `tmp/demo13/routes/connector-route/run-1794320460/` and
+`route-connector-route.log`. One fresh-process run with the same inputs and
+checks passes all 25,213 logical ticks, the compiled replay digest and D14-return
+checks: `routes/connector-route/run-1794320759/`, logged in
+`route-connector-route-final.log`. The underlying renderer fault is unproven;
+no connector code or checks were changed. `routes.log` and `verify.exit` retain
+the initial failure; `routes-final.log` and `complete.exit` record final results.
+The two existing click-route lamp FAIL diagnostics have exactly the demo12
+sample pixels, luminance and RGB values, independently of machine PASS. Existing
+ObjectDB/resource/allocator and renderer teardown warnings also remain.
+
+All 24 chip-free PNG copies are in `tmp/demo13/`, including the standard five
+and both states' wardrobe, desk, jacket and table views. Each is 1536 by 824 and
+matches every original RGB pixel below the 40-row protocol band. Raw captures
+remain in `tmp/demo13/routes/quarters-demo/run-1794320238/`. Twelve 1400-pixel-wide
+JPEG copies are in `tmp/demo13/rv/`: `<state>-<view>.jpg`, where state is
+`remembered` or `present`, and view is `doorway`, `wide`, `wardrobe`, `desk`,
+`table` or `jacket`. Their report events confirm matching ticks/frames, the
+correct visible state and completed playback before Present. Six before/after
+sheets are `tmp/demo13/comparison-<view>.jpg`, with demo12 on the left, demo13
+on the right, remembered above present. The corridor-door PNG remains
+pixel-identical to demo12. The 12 actual-capture JPEGs were inspected across the
+room and details reviews. This is a WIP demo, not a polished showcase: all three
+garments are recognisable in wardrobe close-ups, while the tunic separates less
+clearly from the present doorway view. Wide frames are too small to infer garment
+separation; identifying all three from a wide view was not a requirement. The
+review found no black wardrobe voids or obvious wrong-sided geometry. Remaining
+visible issues are a pale, flat desk, tabletop staining/mottling, dark aged
+bedding, strong rust dominance, and ambiguous angular jacket/chair gaps. Matched
+demo12/13 controls found the jacket body unchanged, so there is no new jacket
+regression; stills do not prove clipping. Issue [#126](https://github.com/acoliver/gone/issues/126)
+tracks jacket polish. The existing click-route lamp diagnostics remain tracked
+by [#117](https://github.com/acoliver/gone/issues/117). The first connector run's
+Metal fence stall is tracked by [#127](https://github.com/acoliver/gone/issues/127);
+a fresh-process pass does not resolve the initial fault. Harness visual verdicts
+for unrelated routes remain pending.
+
+The unchanged 1536 by 864 wide-camera probe, with 60 warmup and 300 sampled
+frames per state and both states resident, reports:
+
+```text
+QUARTERS_TEXTURES count=263 bytes=2144833777 library_bytes=685072416
+renderer_texture_bytes=3073446912 (Remembered and Present)
+```
+
+The deduplicated quarters material payload is **2,144,833,777 bytes
+(2045.473 MiB)**, up 63,613,608 bytes (60.667 MiB) from demo12. The accepted
+library remains **685,072,416 bytes (653.336 MiB)**. The separate whole-scene
+renderer counter is **3,073,446,912 bytes (2931.067 MiB)** in either state,
+up 63,668,224 bytes. Mean/p95 frame intervals are 2.680/3.009 ms remembered
+and 2.915/3.728 ms present. These remain observations rather than a performance
+threshold. Exact samples and texture entries are in `tmp/demo13/quarters-perf.json`;
+raw printed output is in `quarters-perf.log`.
+
+The demo12 storage whole-box finish, settled desk/table dust treatment and six
+3072 atlases are retained. Only storage drawer/shelf modules and leftover infill
+remain stand-ins. D14 lighting, gameplay/capture cameras and pilot asset/material
+sources were not changed by this integration. The matched source dress ratings
+remain 8/10 remembered and 7/10 aged, with subtle upward-fold dust, pale
+patch-like deposits at game distance, unresolved individual fibres and a
+conspicuous rose shoulder opening in close-up. No additional art iteration was
+performed. Launch the combined demo from this worktree with:
+
+```sh
+godot --path . -- --start quarters
+```
+
+Verification logs are `tmp/demo13/import.log`, `full-suite.log`,
+`focused-green.log`, `reflection-red.log`, `python-suite.log`, `dress-test_build.log`,
+`dress-test_refine.log`, `dress-arrangement.log`, `dress-export-tests.log`,
+`clothing-gate-controls.log`, `dress-gates.log`, `dress-runtime.log`,
+`route-<scenario>.log`, `route-connector-route-final.log`, `presentation.log`,
+`review-copies.log` and `quarters-perf.log`. `capture-checks.json` records the
+review frames/states. `integrated-paths.txt` lists the dress integration;
+`new-source-files.txt` lists its 19 required source/code files, and
+`new-dress-assets.txt` lists the 15 source textures packed into the GLBs.
+`finish.py` was replaced by `dress_finish.py`; generated Godot imports and
+extracted GLB textures are local outputs and are not source inputs.
+
 ## Plan view
 
 Regenerate `plan.png` and its check report from the repository root with `/Volumes/XS1000/tools/mlximg-venv/bin/python tools/art/quarters_plan.py --layout docs/art/quarters/layout.json --out docs/art/quarters/plan.png --report docs/art/quarters/plan-checks.json`. The checks cover room bounds, intersecting floor footprints, player reachability and route clearance, entrance-wall storage, and the clear doorway opening. The command exits with a nonzero status when a check fails.
@@ -1247,7 +2095,7 @@ The neutral, light-grey comparison sheets are in `tmp/fit/tunic/sim/`: `compare-
 
 ## Batch 1
 
-Rigid furniture follows the pilot's approved image, full Hunyuan3D-2mv guide and clean fitted-part route. `prompts/batch1.json` uses the pilot style and tail, with four seeds per prop. The selected hero and its generation provenance live in `sheets/<prop>/`. `tools/blender/quarters/<prop>/` contains the editable source, build and verification scripts, measurements and visual verdict. No texture maps or aging have been applied. A fit is accepted when its export checks pass and its visual score reaches the requested 7/10. The reviewer's separate readiness flag and remaining findings are retained; a passing score does not mean every visual difference is resolved.
+Rigid furniture follows the pilot's approved image, full Hunyuan3D-2mv guide and clean fitted-part route. `prompts/batch1.json` uses the pilot style and tail, with four seeds per prop. The selected hero and its generation provenance live in `sheets/<prop>/`. `tools/blender/quarters/<prop>/` contains the editable source, build and verification scripts, measurements and visual verdict. The table records fitted geometry before material work; completed finishes are listed under [Batch 1 materials](#batch-1-materials). A fit is accepted when its export checks pass and its visual score reaches the requested 7/10. The reviewer's separate readiness flag and remaining findings are retained; a passing score does not mean every visual difference is resolved.
 
 Authoring uses Blender Z-up with front -Y; exports have +Y up and front +Z, with floor-centred asset roots. Dimensions are asset-local width, height and depth. Wall and desktop mounting heights belong to room placement. Wardrobe bounds refer to its closed carcass, excluding the parked leaf and mating hinge hardware; its open envelope is measured separately. The bed includes the separate layout headboard height and leaves its mattress platform exposed.
 
@@ -1321,39 +2169,74 @@ The soft goods are a separate asset at the fitted bed's origin: `bed_soft.glb` a
 
 `age.py` derives the second state from the baked remembered source. Age is 1000 years in sealed, sterile, dry, oxygenated air, following ruling 25. The shared `foam_collapse` module supplies closed cracked foam plates and a settled upper cover. Point-touching cover panels are separated before thickness is added, keeping the torn cover watertight. The quilt starts clear of the whole rail/crust envelope, slides 0.31 m sideways and settles without suspended stitches. Coarse tears break cloth load paths before the gravity solve; the small triangles at refined tear edges are added after that solve. A retained wrap ridge prevents reduction from replacing the rail turn with a chord through steel. Pillows flatten to roughly 18–19.5 mm and split. The shared cloth attachment-distance helper, stress cuts, debris scatter and powder cards are reused without changing any shared module. There is no mould, vegetation or biological rot.
 
-Materials remain provisional cotton, wool and brown foam slots. The quilt uses fine yarn detail from the sofa's existing generated weave, with a median tile pitch of 0.12 m and 0.4 mm normal-height scale. The remembered quilt has an undyed turned underside and dark binding, with a short drape that exposes the stuffed mattress. The aged quilt is faded, the exposed foam is brown, and the cover and pillows have discoloured. Floor crumbs are 12–35 mm wide and 6–13 mm thick. The shared powder texture is sparsified into individual grains and irregular pools so the support remains visible through it.
+The remembered source and `bed_soft.glb` remain unchanged. Its quilt has an undyed turned underside, dark binding and fine yarn detail from the sofa's generated weave at a median 0.12 m pitch. The original aged simulation is retained in `bed-soft-aged.blend`. The aged-only finishing source is `bed-soft-aged-finished.blend`; `build.py -- --state aged` re-exports that file.
 
-Rebuild from the repository root using the installed Blender 4.5.11 LTS and the existing Hunyuan Python environment. Use Blender flags `--background --factory-startup --threads 6 --python-exit-code 1 --python` for these scripts:
+### Dry-decay causes and changes
 
-1. Run `tools/blender/quarters/bed_soft/build.py -- --assemble`, then run `fit_contacts.py --state remembered` with Python.
-2. Run `age.py` with Blender, then `fit_contacts.py --state aged` with Python.
-3. Run `weave_textures.py` with Python and `apply_weave.py -- --state remembered` and `--state aged` with Blender.
-4. Re-export each retained source with `build.py -- --state remembered|aged --output <file.glb>`, targeting `tmp/bed_soft/remembered-repeat.glb` and `aged-repeat.glb`.
-5. Run `verify.py` and `test_verify.py` with Python. Run `render.py` with Blender, then `comparison.py` with Python.
+Inspection of the retained source found four causes before the finishing pass:
 
-`fit_contacts.py` places each pillow 1 mm from the real headboard, then measures exact projected intersections of exported triangle planes to put quilt and pillow undersides 1 mm above the mattress. Vertex-only sampling missed an interior mattress crest, so the contact test includes a regression for that case. `verify.py` checks the exported GLBs with trimesh and triangle SAT, including both the complete aged mattress and its isolated foam-crust volume. `test_verify.py` has six crossing, contact, headboard-placement, volume-band and axis controls. The determinism gate re-exports each retained `.blend` source. `render.py` uses the exported GLBs on the unchanged frame with CPU Cycles. The doorway camera is at its room-relative doorway position, with a tighter lens for a prop-sized crop; the second camera is an elevated three-quarter view. Scratch and logs stay in `tmp/bed_soft/`.
+| Problem | Cause in the original aged asset | Aged-only change |
+|---|---|---|
+| Intact cream cloth | Cotton slots used uniform colours without fold or top-dust masks; the wool texture only supplied fine weave variation. | `finish_materials.py` bakes local 45 mm fold occlusion, upward normals and pigment variation into masks. The albedos use dusty yellow-brown cotton and faded brown wool, with darker folds and lighter dusty tops. A wider baked pigment range keeps top dust from flattening the variation; the control at mask values 0.2 and 0.8 changes from a 1.132 to a 1.658 red-channel ratio. The concept's dusty grey-brown palette supplies the direction. |
+| Flat exposed mattress | Foam reached 0.579160 m, 29.160 mm above the 0.55 m side rails. Narrow 6 mm gaps were partly covered, and the curved pressure-shell underside retained empty space. | `refine.py` compacts the existing plate footprints onto the platform, retaining 21 after the missing corner. It adds a central depression, opens 0.3831 m² of cover and adds 24 crust chips. Plate tops reach 0.547445 m; the chips remain below 0.549 m. Wider exposed central cracks and plate-level offsets from -1.774 to +3.557 mm reveal fracture edges. Their area-weighted offset is zero, so those height differences do not add filling volume. Surviving cotton rags lie slack above the crust. |
+| Angular tears and hanging fragment | Face-centre cuts followed coarse triangles; decimation followed edge refinement, removing contour detail. There was no alpha fringe. The first finish's 12 mm smoothing limit retained broad corners. Normal recalculation also rotated some fringe quad loops, misaligning the strand roots. At 4 × 4 pixels per card, every original strand variant filtered below 0.169 alpha and disappeared under the 0.5 cutoff. | Finish contours after reduction, allow 28 mm of contour smoothing and up to 85 mm at the low front-left tip, retain grain-directed long splits and remove eight detached unsupported scraps. Add 197 contact-checked alpha-blended fringe cards. Align their UVs by authored corner identity, preserving strand roots at the cloth edge. Group yarns into eight tapering rag roots per card so coverage survives filtering; retain the fine hairs and transparent tips. Keep the measured side and foot rail wraps. |
+| Specks instead of deposits | A second binary random mask sparsified the powder into isolated grains. The platform card was only 18 mm deep. The first continuous deposit used dark pigment without visible grain, so it read as a shadow; the shared normal map also divided millimetre heights by micron-sized texels. ON/OFF controls showed the thin platform strips were unreadable behind the rails and cloth. | Reuse the sofa's powder-card method with continuous irregular density, soft alpha falloff, warm dusty pigment and bilinear grain. Calculate normals with separate physical X/Y texel pitches. Add 2.15–2.25 mm of shallow relief over a 10 × 16 grid. The floor spill covers a 0.66 × 1.40 m card outside the hanging cloth. A 0.12 × 0.08 m deposit sits in a missing foot-right crust corner, where the platform can be seen over the rail; a foot-strip card is also retained. There are no opaque discs. |
+
+The missing corner uses a diagonal cut at Blender `x - y = 1.35 m`, applied to both the crust footprints and cover. The remaining crust underside sits 0.1 mm above the platform instead of 1 mm. This retains filling volume without raising the upper crust or inventing more mattress loft.
+
+Fold masks, albedos, fringe and powder textures are under `assets/props/quarters/bed_soft_aged_textures/`; [`refinement.json`](../../../tools/blender/quarters/bed_soft/refinement.json) records settings and measured values. The wool normal retains its original physical weave UVs on a separate layer. The exported GLB contains the baked pigments and porous foam normal, so the game does not depend on Blender procedural nodes. Floor crumbs remain 12–35 mm wide and 6–13 mm thick. The new crust chips sit 0.8 mm above their supporting plates; fringe roots are at most 2.606 mm from the finished cloth surface, with 62.26% authored boundary coverage. At 4 × 4 pixels per card, the grouped roots retain at least 0.873 alpha while the tips average 0.032; the exported fringe material uses `BLEND`.
+
+`powder_visibility.py` samples 2,000 alpha-weighted points per card and view against the exported blockers. The platform deposit is 96.33% unoccluded from the doorway and 100% from three-quarter; the floor spill is 74.10% and 99.93%. The retained foot strip is hidden in both views and does not establish platform readability. The ON/OFF image review assesses whether the visible deposits actually read as material.
+
+### Reproduce the aged finish
+
+Run from the repository root with the installed Blender 4.5.11 LTS and Hunyuan Python environment. Use Blender flags `--background --factory-startup --threads 6 --python-exit-code 1 --python`. No original remembered simulation or remembered texture regeneration is needed:
+
+1. Run `tools/blender/quarters/bed_soft/refine.py` with Blender. It reads the retained original aged simulation and writes the finished source and GLB.
+2. Run `tools/blender/quarters/bed_soft/fit_contacts.py --state aged` with Python, then `finish_materials.py` with Blender.
+3. Re-export the retained sources with `build.py -- --state remembered --output tmp/bed_soft2/remembered-repeat.glb` and `--state aged --output tmp/bed_soft2/aged-repeat.glb`. These outputs do not replace the remembered game asset.
+4. Run `verify.py --remembered-repeat tmp/bed_soft2/remembered-repeat.glb --aged-repeat tmp/bed_soft2/aged-repeat.glb` and `python -m unittest discover -s tools/blender/quarters/bed_soft -p 'test_*.py'` with the installed Python.
+5. Run `render.py -- aged` with Blender, then `comparison.py aged` and `finish_sheet.py` with Python. The committed `aged-before-*` images are byte-identical to the original `de14030` matched captures.
+6. For the powder control, render with `render.py -- aged --without-powder --out tmp/bed_soft2/powder-off`, then run `finish_sheet.py --powder-control`. The [ON/OFF sheet](sheets/bed_soft/powder-controls.png) changes only the continuous deposits, not the individual crumbs.
+
+Run long commands under `nohup`; scratch and logs stay under `tmp/bed_soft2/`. GPU requests are serialized. Material baking and the matched renders use CPU Cycles. Both views retain the original lights, exposure, 1280 × 1000 dimensions and camera transforms: doorway `(0, -4.75, 1.65)` with a 55 mm lens, and orthographic three-quarter `(-3.1, -3.7, 2.45)` at scale 3.15. The full-resolution before/after sheet does not resize the panels.
+
+`fit_contacts.py` places each pillow 1 mm from the real headboard, then measures exact projected intersections of exported triangle planes to put quilt and pillow undersides 1 mm above the mattress. Vertex-only sampling missed an interior mattress crest, so the contact test includes a regression for that case. `verify.py` checks the exported GLBs with trimesh and triangle SAT, including both the complete aged mattress and its isolated foam-crust volume. The new foot-strip card is included in the existing platform-support check. No existing gate threshold was relaxed. Fourteen tests pass: the original six measurement controls plus plate-footprint, clipped-corner, soft-powder, occluded-card visibility, physical normal-pitch, retained pigment contrast, fringe mip coverage and fold/top-pigment controls. OCR review was skipped per Andrew's instruction.
 
 
 ### Bed soft-goods gates and review
 
-Both states pass the geometry gates and received 8/10 from the local image-comparer for the interim-material stage. Measurements come from the exported GLBs; [`verify.json`](../../../tools/blender/quarters/bed_soft/verify.json) retains the per-part values.
+Both states pass the geometry gates. Measurements come from the exported GLBs; [`verify.json`](../../../tools/blender/quarters/bed_soft/verify.json) retains the per-part values.
 
 | Gate | Remembered | Aged 1000 years |
 |---|---:|---:|
-| Triangles, maximum 15,000 | 10,476 | 14,798 |
+| Triangles, maximum 15,000 | 10,476 | 13,496 |
 | Triangle crossings with frame | 0 | 0 |
 | Crossings between soft-goods parts | 0 | 0 |
-| Support gaps, maximum 3 mm | 1.000 mm | 0.700–1.000 mm |
+| Body/powder support gaps, maximum 3 mm | 1.000 mm | 0.100–1.000 mm |
 | Pillow-to-headboard clearance | 1.000 mm | 1.000 mm |
+| Fringe-root attachment, maximum 3 mm | Not present | 2.606 mm |
 | Byte-identical saved-source re-export | Pass | Pass |
 | Exported +Y up, front +Z | Pass | Pass |
 | Watertight mattress | Pass | Pass, including isolated foam crust |
 
-The remembered mattress volume is 0.427450 m³. The aged crust and cover occupy 0.144110 m³, a ratio of 0.337138; the foam crust alone occupies 0.140953 m³, a ratio of 0.329753. Both ratios are inside the required 0.25–0.40 band. Six measurement-control tests pass. The exported bounds in metres are remembered `[-0.791097, 0.501000, -0.999000]` to `[0.770054, 0.852411, 1.096274]`, and aged `[-1.126975, 0.000700, -0.999000]` to `[0.699097, 0.677207, 1.201491]`. The aged bounds include the floor deposits and hanging quilt.
+The remembered mattress volume remains 0.427450 m³. The aged crust and cover occupy 0.108621 m³, a ratio of 0.254114; the foam crust and its chips occupy 0.107446 m³, a ratio of 0.251365. Both ratios are inside the unchanged 0.25–0.40 band. The original aged ratios were 0.337138 and 0.329753 respectively. The aged bounds include floor deposits, fringe and the hanging quilt; the per-part bounds and zero origins are in `verify.json`. The source is authored Z-up, front -Y, and the exported GLB is measured +Y-up, front +Z outside Blender.
 
-The local `image-comparer` route (`qwen38-llamacpp`) reviewed the labelled concept/design comparisons and both full-resolution captures, with GPU requests serialized. Remembered scored **8/10**, accepted for interim materials. It identified two pillows, the turned cuff, a stuffed mattress and soft gravity drape. Remaining defects: the fine wool weave is difficult to resolve, and the drape is more casual than a strict military bed. Aged scored **8/10**, also accepted. It identified the low brown crust, flattened pillows, split and slumped quilt, and platform/floor deposits. Remaining defects: the crust is somewhat uniform, the powder patch still reads decal-like, and some torn edges remain geometric. These are recorded in [`remembered-review.json`](sheets/bed_soft/remembered-review.json) and [`aged-review.json`](sheets/bed_soft/aged-review.json), alongside the review prompts.
+The local `image-comparer` route (`qwen38-llamacpp`, actual model `qwen3.8-27b`) scored both aged states together in the [matched before/after sheet](sheets/bed_soft/dry-decay-before-after.png). Both states use the same 0–10 dry-decay rubric: 0 absent, 5 partly legible, 7 convincing with visible limitations, 10 fully convincing. These scores assess 1000-year decay, not demo usability. The unchanged remembered asset retains its earlier 8/10 interim-material rating.
 
-Captures: [remembered doorway](sheets/bed_soft/remembered-doorway.png), [remembered three-quarter](sheets/bed_soft/remembered-three_quarter.png), [aged doorway](sheets/bed_soft/aged-doorway.png), and [aged three-quarter](sheets/bed_soft/aged-three_quarter.png). The [remembered comparison](sheets/bed_soft/remembered-comparison.png) and [aged comparison](sheets/bed_soft/aged-comparison.png) retain the relevant reference crops. Godot scene integration is left to the separate demo worktree.
+| Dry-decay criterion | Original aged | Finished aged |
+|---|---:|---:|
+| Cloth aging | 2 | 6 |
+| Sunken cracked crust | 2 | 6 |
+| Tear silhouettes | 1 | 5 |
+| Powder deposits | 2 | 5 |
+| Overall | 2 | 6 |
+
+The reviewer observed dusty matte folds, a cracked plate-like surface reading as sunken crust, softer tear contours and diffuse powder. It reported no regressions, but did **not** accept the complete visual brief. Remaining concerns are the dark cloth, regular fracture layout, concentrated floor spill and comparatively supple drape. The unedited response and prompt are [retained here](sheets/bed_soft/dry-decay-sheet-review.json).
+
+The separate [powder ON/OFF review](sheets/bed_soft/powder-controls-review.json) scored readability **7/10**. It identified a granular floor deposit and a faint soft-edged platform deposit in both views, rather than hard discs or isolated specks. It still found the platform deposit faint and the floor patch disconnected from the bed. GPU review requests were serialized. The existing geometry, contact, volume and determinism gates remain separate from these visual assessments.
+
+Captures: [remembered doorway](sheets/bed_soft/remembered-doorway.png), [remembered three-quarter](sheets/bed_soft/remembered-three_quarter.png), [aged doorway](sheets/bed_soft/aged-doorway.png), and [aged three-quarter](sheets/bed_soft/aged-three_quarter.png). The [remembered comparison](sheets/bed_soft/remembered-comparison.png) and [aged comparison](sheets/bed_soft/aged-comparison.png) retain the relevant reference crops. The playable demo now integrates both exports as described above.
 
 ## Batch 3: small items
 
@@ -1452,3 +2335,138 @@ The [measured gates](../../../tools/blender/quarters/her_dresses/verify.json) in
 `her_dresses/render.py -- --state <state> --out <directory>` renders the matched perspective cameras and close-ups. Its final X reflection matches the room-to-ship handedness; the camera transforms, FOVs and lighting qualification are in [cameras.json](sheets/her_dresses/cameras.json). `capture.gd` records the actual wardrobe and doorway poses in an isolated copy of the Playable demo. `runtime.gd` checks the imported material contract. `controls.py -- --output <path> --no-fold-dust` changes only the cloth's dust atlas; `--no-fibres` removes edge fibres and dress deposits. `sheets.py` publishes the paired captures from `tmp/clothes2/`.
 
 The [lit controls](sheets/her_dresses/fibre-visibility.json) measure changed pixels and contrast, including shadows. Disabling fold dust changes 38,398 wardrobe-view pixels by more than 0.01 linear RGB, with a mean 29.37-level sRGB difference across those pixels. Removing dress edge fibres and deposits changes 2,339 pixels, with a mean 11.93-level difference. These are full-frame measurements, not coverage percentages of the fabric. The [independent image review](sheets/her_dresses/review.md) records perceived quality, before/after scores on a common 1–10 scale, and remaining limitations. The reviewer finds all three garments recognisable in both actual game cameras. Aged close-up scores are 7/10 for hems and dry fabric, 6/10 for shoulders and deposits, and 5/10 for upward-fold dust. The rose shoulder opening remains conspicuous in close-up. At game distance, deposits read mainly as pale patches and fold dust is subtle; individual fibres are not resolved. These are remaining visual limitations, not geometric gate failures. The older `review.json`, trial responses and broadside sheets describe earlier builds and remain historical references.
+
+## Batch 1 materials
+
+### Shared steel-face library decision
+
+The per-prop generation approach at `0c99445` used 13 generated face images for the wardrobe. That run took about 2.5 hours and scored 6/10 aged against the finished locker's 7/10 in the same matched review. All batch-1 rigid furniture uses the same grey-green painted warship steel. We therefore generate one reusable library of broad panels, narrow strips and dusty upward faces, then map those images automatically onto each prop's fitted UVs. This keeps pigment and wear treatment consistent without paying the generation cost again for each prop. The pilot locker, sofa and tunic retain their existing finishes.
+
+`art-source/quarters/steel_library/` contains 15 usable FLUX.2-klein-4B face images: six broad panels, four strips and five tops, with multiple aspect ratios and seeds. All 180 production-image gates pass. Two candidates fail the unchanged autocorrelation limit of 0.5 and are excluded from mapping: `strip-00` at 0.754 and the later `strip-02-trim-detail` refinement at 0.727. The previously passing `strip-02` remains available. Rejected pixels, provenance and failed gates remain recorded under `rejected`. The library retains the same concept-now and rusted-hatch crops, edit inputs, prompts, raw images and calibration lineage. Clean pigment comes from the pilot's as-built paint. Hardware reuses the wardrobe's measured corrosion image; fabric reuses a faded copy of the approved sofa weave without modifying that source. Image gates retain the wardrobe's colour, lighting-gradient, autocorrelation, edge/broad rust, no-green and source-density limits, with an added 20% maximum broad-field rust fraction and a six-Delta-E bound against the intended paint or dusty-top pigment.
+
+The initial shared palette passed 154 gates but rendered brown: painted chair pixels averaged approximately RGB 100/87/77 against the locker's clean pigment 97/118/115. The warm concept crops had become the measurement target. `neutralize_library.py` records a spatially uniform, chroma-conditioned Lab colour transform that aligns paint with the pilot pigment while retaining high-chroma iron-oxide colours. Broad panels and narrow strips use one neutralized steel-palette reference; dusty tops use their corrected concept crop. The source images still determine every wear location. Raw crops, the warm-palette selection and the rejected affine alternative remain available. The original thresholds were not relaxed.
+
+`native_library.py` then makes a second FLUX edit at twice each source dimension, preserving the input composition while generating surface detail. Production broad faces are 768 by 1536, 1280 square or 1536 by 768; strips are 128 by 1536, 256 by 1536, 1536 by 128 or 1536 by 256; tops are 1280 square, 1536 by 1024 or 1536 by 512. This is a model-generated refinement, not ordinary image enlargement. Per-prop gates measure both the fitted atlas and the selected source image at its actual mapped physical size, requiring at least 600 pixels per metre from each.
+
+The first native-resolution matched sheets still showed weak dust and uniform rust runs on some housings. `refine_library.py` edits the four shared tops and six broad panels, retaining their inputs, prompts and raw outputs. The dusty-top pigment target is RGB 0.56/0.58/0.54, with a fine diffuse powder brief. Broad-panel edits retain most paint and vary the tapered edge runs. All 168 source gates pass after these edits. Source green saturation is capped at 0.18 so atlas interpolation, byte rounding and BC7 compression have room below the unchanged 0.23 rendered limit. Before that correction, the desk's affected front pixels increased from 0.221% in its stored atlas to 0.683% in its unlit rendered capture; the permitted fraction remains below 0.5%.
+
+`tools/quarters_aging/map_library.py` reads any fitted `.blend` through Blender, joins adjacent coplanar polygons for mapping, classifies faces by physical area, aspect and world orientation, and chooses images with seeded variation. Selection first excludes sources that would fall below 600 pixels per metre at the actual face dimensions. It rasterizes those complete images into the original UVs. Relief and roughness come from the same `paint_fields()` pigment classification. The source blend and GLB remain unchanged. Display and glass slots are excluded from steel mapping. Per-prop numeric gates and matched neutral-light reviews determine acceptance independently of the library gates. Hardware keeps a 0.20 m swatch pitch; woven pads use a 0.10 m pitch. Both finish states are built and cached without changing meshes, names, pivots or material-slot roles.
+
+With the installed Hunyuan Python, the source stages are `tools/quarters_aging/steel_library.py generate`, `select`, `tools/quarters_aging/neutralize_library.py`, `tools/quarters_aging/native_library.py`, `steel_library.py select`, `tools/quarters_aging/refine_library.py`, then `steel_library.py select` again. Intermediate palette candidates may fail gates; map only after the final selection succeeds. Map each fitted source with `tools/quarters_aging/map_library.py --blend tools/blender/quarters/<prop>/<prop>-working.blend --prop <prop> --resolution 4096`. The bedside, dining table and two chairs use 2048 atlases because their unchanged fitted UVs still exceed 600 pixels per metre at that resolution. Other props use 4096. The mapper writes explicit GPU-compressed, mipmapped texture import settings. Run Godot's headless import before `tools/quarters_aging/preview_library.gd` in a windowed renderer. `library_gates.py --render tmp/mat2/render` composes matched sheets and checks rendered edge/broad rust and clean paint, as well as the source images.
+
+The later trim pass refines `strip-01`, `strip-03` and `strip-04` for separated chips and unequal rust runs. Cylindrical trim is classified using its physical diameter rather than its unwrapped circumference, while source density still uses the complete circumference. This prevents slender chair legs from receiving broad-panel images. Run targeted source edits with `refine_library.py --kind strip --face strip-01 --face strip-03 --face strip-04 --label trim-detail --seed-offset 700000`. The failed `strip-02` refinement remains excluded; its passing source is retained.
+
+The wardrobe roof source, `top-01`, receives a targeted `fine-powder` edit to remove large dust patches. Its secondary autocorrelation falls from 0.397 to 0.140 without changing the 0.5 limit. Reproduce that edit with `refine_library.py --kind top --face top-01 --label fine-powder --seed-offset 800000`, followed by `steel_library.py select`. A separate generated 1536 by 128 `top-04` image fits narrow upward ledges. The screen housing's 1.654 by 0.074 m roof previously compressed a 3:1 top image onto a 22:1 face; it now uses this native narrow source at 928.66 source pixels per metre. Its input, prompt, raw output, generation command and calibration are retained beside the other library images. Every shared change is followed by numeric checks and matched reviews of all 11 props.
+
+The auxiliary mask checks reproduce the earlier wardrobe method with Blender's `tools/blender/quarters_aging/library_masks.py -- --prop <prop>`. This triangulates and isometrically repacks a scratch copy only. Its density-ratio limit remains 1.015. The separate original-fitted-UV check retains its existing density p95/p05 limit of 1.25; these are different UV sets. The runtime atlas never uses the auxiliary pack. `review_library.py` sends one labelled composite containing all four matched views to the installed local image-comparer endpoint and retains its exact input, unedited response, prompt, scores and findings. The wardrobe also includes its per-face finish in the same views. Acceptance requires aged score at least the locker score in that review, passing numeric gates and confirmed coverage of all four views; the wardrobe must also match or exceed its per-face finish. Earlier scores and their actual input images are archived before sheets change. Scratch outputs and long-job logs stay under `tmp/mat2/`.
+
+### Recovered shared-library review results
+
+The later source-refinement pass improved the broad-panel rust variation and dusty-top images. Desk, dining chair and view screen initially failed rendered no-green checks: their source pigment was near the saturation limit, and interpolation, byte rounding and BC7 compression pushed a small fraction over it. The source correction leaves headroom below the unchanged rendered threshold. All current numeric gates pass.
+
+Circular table and chair panels now map the complete square image around their physical rim. The previous rectangular projection sampled the clean interior at much of the circular edge, causing the dining table's two rendered edge/broad rust-ratio failures. The radial mapping accounts for its minimum local source density. Both planar and circular mapping retain the fitted UVs.
+
+The recovered matched reviews are below. Scores compare aged candidate and aged locker in the same review. Wardrobe also matched its per-face reference at 8/10. At recovery, dining chair and view screen were below parity and retained their interim runtime finishes. The review inputs, findings and earlier results are retained under `art-source/quarters/steel_library/props/<prop>/`.
+
+| Prop | Aged candidate / locker | Numeric gates passed / failed | Accepted |
+|---|---:|---:|---|
+| wardrobe | 8 / 8 | 174 / 0 | Yes |
+| desk | 8 / 8 | 198 / 0 | Yes |
+| console | 8 / 8 | 198 / 0 | Yes |
+| bed | 8 / 8 | 162 / 0 | Yes |
+| lockers_over_bed | 7 / 7 | 198 / 0 | Yes |
+| bedside | 8 / 8 | 174 / 0 | Yes |
+| media_cabinet | 8 / 8 | 198 / 0 | Yes |
+| dining_table | 8 / 8 | 163 / 0 | Yes |
+| dining_chair | 7 / 8 | 188 / 0 | No |
+| desk_chair | 9 / 8 | 150 / 0 | Yes |
+| view_screen | 6 / 7 | 198 / 0 | No |
+
+Recovery verification passed 28 Python library/mapper/review tests and 34 focused Godot material tests. The final results below supersede this recovery snapshot and the older batch-wide status in the per-face wardrobe report.
+
+### Final shared-library results
+
+**Ten of 11 props meet matched-review parity and use the shared finishes. Wardrobe remains below parity and keeps its per-face finish.** All five props accepted at handoff remain accepted. Desk, console, media cabinet, dining chair and view screen now also pass. The final library clears 180 source-image gates, and all 2,073 per-prop numeric gates pass without changing thresholds or the acceptance rule.
+
+| Prop | Aged candidate / locker | Numeric gates passed / failed | Accepted |
+|---|---:|---:|---|
+| wardrobe | 7 / 8 | 186 / 0 | No: per-face interim |
+| desk | 8 / 8 | 210 / 0 | Yes |
+| console | 7 / 7 | 210 / 0 | Yes |
+| bed | 7 / 7 | 162 / 0 | Yes |
+| lockers_over_bed | 7 / 7 | 210 / 0 | Yes |
+| bedside | 8 / 8 | 186 / 0 | Yes |
+| media_cabinet | 8 / 8 | 210 / 0 | Yes |
+| dining_table | 8 / 8 | 163 / 0 | Yes |
+| dining_chair | 8 / 8 | 188 / 0 | Yes |
+| desk_chair | 8 / 8 | 150 / 0 | Yes |
+| view_screen | 7 / 7 | 198 / 0 | Yes |
+
+Wardrobe's candidate scores 7/10 against the locker's 8/10 and its per-face reference's 6/10 in the final review. Its roof dust still appears slightly blocky after the targeted source edit, so the shared candidate is not enabled at runtime. Accepted props retain some review findings: media-cabinet dust is slightly repetitive, dining-chair fabric could show more fading, and screen-top dust has slightly blocky edges. Their complete matched results meet the unchanged acceptance rule. Each review covers hero, front, top and detail views; scores compare candidate and reference within that review. The wardrobe's unchanged per-face reference pixels received different scores between reviews, so absolute scores should not be compared across review runs.
+
+`QuartersProps` routes the ten accepted props to cached `as_built` and `aged` materials in `QuartersSteelLibrary`. Both atlas states are built and cached for all 11 candidates, for 22 distinct material resources. Wardrobe's public factory and state swaps retain its per-face materials. Display/glass roles and fitted geometry remain unchanged. The pilot locker, sofa and tunic assets and shaders are untouched.
+
+The final Python aging suite passes 84 tests. All 35 focused Godot material tests pass, covering both cached states for every prop, public accepted routing, review/numeric acceptance consistency, wardrobe interim routing, geometry and display preservation, imports and pilot isolation. The cylindrical classification regression failed before implementation and passes after the diameter-based fix. Targeted-refinement tests verify that other source variants stay unchanged and unknown face IDs fail before generation.
+
+The final guarded full Godot suite, run under `nohup`, passes 823 tests with zero failures. An earlier run caught four script errors in the new interim-material test: it called the atlas factory for props that retain imported materials. The corrected test checks the actual imported/per-face interim contract; the guard and all existing assertions remain in force. Godot retains its existing resource, ObjectDB and allocator teardown warnings. OCR review skipped per Andrew 2026-10-09.
+
+### Wardrobe per-prop pass at 0c99445
+
+**The wardrobe material pass is committed but not visually accepted.** Its numeric gates pass; its aged finish remains below the finished locker in the matched review. No other batch-1 prop received a material pass.
+
+The wardrobe has its own shared, cached `as_built` and `aged` materials. Both keep the fitted GLB, parked door, names, transforms and original UVs. Clean paint uses the locker's grey-green pigment, with separate bare-steel hardware and dark-steel kick plate, latch pockets and vent backing. The remaining batch-1 rigid props have not received their per-prop finishes in this pass.
+
+Thirteen complete generated images cover the outer and inner door, both sides inside and out, back, roof, interior floor, downward-facing ceiling, frame, horizontal header and hardware. The source crops come from `concept-now.png` and `hatch-concept-rusted.png`, using the pilot's crops. FLUX.2-klein-4B edits run sequentially with four steps and 4-bit weights. Every face has at least four raw seeds. `art-source/quarters/wardrobe/` retains the crops, inputs, full prompts, raw generations, refinement lineage, selected images, candidate scores and selection metadata. Unselected grading variants are reproducible rather than committed.
+
+Each selected image maps directly into its own rectangle in the 2048 by 4096 atlas. Paint/rust colour is not composed from geometry masks or procedural wear fields. The unchanged `paint_fields()` rule supplies alpha-derived 1.5 mm paint relief and roughness only. Hardware uses its own corrosion image at a 0.20 m physical pitch; its shallow pits come from that image's luminance. Dust belongs to the generated upward-face images. There is no separate dust layer that can be disabled while keeping an identical substrate, so a generated dust-removal comparison would not establish isolated dust visibility.
+
+The image selection also considers pigment-mean affine calibration and uniform denoising. Exact source-variance fitting amplified one raw side image's broad-face high-frequency RMS contrast from 0.00336 to 0.11542. Uniform Gaussian alternatives of 0.6, 1.0 and 1.5 pixels remove this calibration grain without placing wear or changing the image layout. Every alternative must pass the original colour, gradient, correlation, rust-ratio, no-green and density gates. Candidate ranking then penalizes high-frequency broad-face contrast; it does not relax those gates. Selected radii and their physical scale are recorded in `selection.json`.
+
+The mask bake uses the fitted source's UVs on a triangulated scratch copy. This avoids the shared baker's assumption that the first three corners of a concave polygon define its plane. Neither the saved fitted source nor the game GLB is rewritten. Mask outputs and UV/bake measurements are retained with the wardrobe's source material files.
+
+Reproduce the mask bake with Blender's `--background --factory-startup --python-exit-code 1 --python tools/blender/quarters/wardrobe/bake_material_masks.py`. With the installed Hunyuan Python, run `materials.py select`, `test_materials.py`, `compare_materials.py` and `material_gates.py` from that directory's tool paths. Import the textures in Godot before rendering with `godot --windowed --path . -s tools/blender/quarters/wardrobe/preview_materials.gd`; then compose the sheets and run the rendered gates. `materials.py generate` makes the four initial seeds per face; `refine_materials.py` makes the retained face edits. The header's physical-orientation pass uses `materials.py generate --face header --count 4 --offset 1100`. Each generation metadata file retains its exact prompt and command. Long jobs run under `nohup`; scratch stays under `tmp/mat1/`. No installs or git configuration changes are required.
+
+The neutral comparison sheets are `matched-hero.png`, `matched-front.png`, `matched-top.png`, `matched-roof.png`, `matched-detail.png`, `matched-hardware.png` and `matched-trim.png` in `art-source/quarters/wardrobe/`. Wardrobe is left, finished locker right, clean above aged. The cameras, white lights and physical image scale are shared. The hardware view translates the same camera offset to each middle hinge; the trim view exposes the dark kick plate. The wardrobe is open and the locker closed, so the comparison assesses finish quality rather than identical visible geometry. The vertical roof view avoids confusing runs on the open door with marks on the horizontal roof. Upward-normal and imported-material ID images distinguish surface orientation and routing from visible finish quality. Those two diagnostics and `capture.json` are retained beside the sheets; individual captures remain under `tmp/mat1/wardrobe/render/`.
+
+
+### Wardrobe checks
+
+**187 material gates pass, with zero failures.** The complete per-face values and limits are in `art-source/quarters/wardrobe/gates.json`. Fractions below use 0 to 1.
+
+| Check | Measured | Limit |
+|---|---:|---:|
+| Maximum whole-image or pigment mean/std colour difference | 7.61335 ΔE00 | ≤8 |
+| Maximum secondary autocorrelation | 0.47518 | ≤0.5 |
+| Minimum painted-face edge/broad rust ratio | 2.73699 | ≥1.8 |
+| Neutral hero/front edge/broad rust ratios | 4.93750 / 4.55003 | ≥1.8 each |
+| Maximum newly green fraction, source and rendered | 0 | <0.005 |
+| Minimum complete-face texel density | 689.23 px/m | ≥600 px/m |
+| Clean rust fraction, source and rendered | 0 | <0.01 |
+| Clean pigment difference from locker | 0.00000195 ΔE00 | ≤6 |
+| Aged hardware rust fraction | 0.63568 | ≥0.30 |
+| Original UV triangle overlaps / outside coordinates | 0 / 0 | 0 / 0 |
+| Original UV density p95/p05 | 1.12262 | ≤1.25 |
+| Mask-bake density maximum/minimum | 1.00312 | ≤1.015 |
+
+The matched `image-comparer` review scores wardrobe **8/10 as-built and 6/10 aged**, against locker **9/10 as-built and 7/10 aged**, using one rubric. The aged state therefore fails the requested parity criterion. The reviewer reports broad pale flaking on the door and side, roof marks that look patterned, unclear dark-trim roles and no convincing fine soft dust on upward faces. Hardware corrosion and clean grey-green paint read correctly. `art-source/quarters/wardrobe/material-review.json` retains the observations and the not-ready verdict. Numeric rust and hue gates do not prove visible dust, restrained pale paint failure or material-role clarity. These remain required work, not waived checks.
+
+Seven wardrobe Python tests pass. The guarded Godot suite passes **816 tests, zero failures**. After the last face refinements and hardware-value edits, the four focused wardrobe tests and all 187 material gates pass again. The unchanged locker Python suite passes 37 tests, with only its temporary-directory root redirected into `tmp/mat1/`. All 15 retained locker render controls remain byte-identical. Locker, sofa and tunic shaders/assets are untouched; the wardrobe branch does not mutate their materials. Godot retains its existing resource, ObjectDB and allocator teardown warnings. OCR review is skipped per Andrew 2026-10-09.
+
+
+## Issue #130: extended button row and generated medal fitting
+
+The saved Remembered and Present tunics now have eight 14 mm buttons, with actual posed centre heights from -0.180 to -0.850 m at 95.714286 mm intervals. The 28 mm placket extends from -0.168 to -0.862 m. Its lateral row follows the saved garment. Measured button-edge gaps to the front neckline/hem are 15.209/15.168 mm in Remembered and 14.978/12.798 mm in Present. These measurements use the front row, not the off-centre low cloth extension.
+
+The replacement medal uses the selected [full Hunyuan guide and fitting record](sheets/medal/README.md#production-fitting-issue-130). A sampled, editable concentric cage supplies the 32 mm brass body, raised star and separate navy enamel. A closed, tilted bail connects that metal to the unchanged sewn ribbon. The body, sleeves, collar, hanger, debris, unrelated material settings and embedded textures are preserved. No cloth simulation, room-light change, garment-placement change or wardrobe-camera change was made. Enamel remains dielectric and has its own aging; it is explicitly excluded from wool colour calibration.
+
+The actual formed body depths are 3.971 mm Remembered and 2.888 mm Present. Both states retain zero strict detail self/body crossings, supported bases within 2 mm, and at least 0.25 mm continuous metal/wool clearance. All 20,155 placket support samples pass in each state. Export totals are 13,894 and 20,299 triangles; the original 15,000-exclusive clean limit, 20,652 aged ceiling and 1.5 ratio limit remain enforced. `tools/blender/quarters/dress_uniform/issue130-details.json` records both states, while `pilot-seating.json`, `pilot-gates.json` and `verify.json` carry the updated measurements without relaxed limits.
+
+`build.py` exports the saved clean source; `build.py --aged` and `publish_pilot.py --export-only` export the accepted saved pilot. Both exports reproduce byte for byte. The assembly path also applies the generated fitting instead of leaving the previous six-button medal arrangement as its final result. The detailed fitting/source instructions are in the medal README.
+
+Image-comparer review passes for the medal, row placement and wardrobe preservation, including the corrected Present materials. Six compact, reviewed [before/after comparisons](sheets/medal/README.md#final-review-and-comparison-images) are retained with the art sources. The full captures and review reports remain under `tmp/issue130-fit/review/` and `tmp/issue130-fix-bake/review/`. They retain the main wardrobe camera and game lighting; presentation copies remove only the 40 px protocol band and fit within 1400 px. Fresh native imports are checked against the actual GLBs before capture.
+
+The final guarded Godot suite passes **1010/0** with no script errors or guard violations. All **26 asset-verification commands** pass, including **18 tunic/attachment regression scripts**. The separate aging package passes **89 tests**; **66 portable plus 10 Blender-hosted aging units** and the mask-baker fixtures pass. The earlier focused runtime cohort passes **51/0**, including all 11 fixture-aging cases. Existing Godot teardown resource diagnostics remain. Detailed commands, measurements, review limits and log paths are in the medal fitting record above.
+
+The row's Present materials are rebaked after fitting. The old six-button atlases did not match the replacement geometry: the placket copied world-position coordinates into `BakeUV`, and the buttons had no `BakeUV`. `tunic_details.rebake_row()` now unwraps both final meshes and bakes their surface-linked wool exposure and brass variation. Only `placket_aged_base.png` and `buttons_brass_aged.png` change in this correction. The clean source/export, all geometry, existing `DetailUV` channels, ribbon, cloth, hanger and unrelated material payloads remain unchanged. `test_detail_bakes.py` recomputes expected source pixels and verifies the actual GLB's selected UV set, position/UV pairs and embedded PNG bytes. The preservation verifier permits only these two aged base-colour atlas replacements while checking the remaining row material properties.
+
+The refreshed actual-game files are in `tmp/issue130-fix-bake/review/`, with raw captures, camera manifests and runtime provenance in its sibling `before/` and `after/` directories. Fresh imports and runtime mesh inventories establish six baseline buttons and eight current buttons in both states. Every old before crop is pixel-identical to the freshly verified six-button baseline capture, including both button views. The earlier reported eight-button before count therefore does not establish a stale capture. The old files and logs are retained. Technical acceptance is PASS in `tmp/issue130-fix-bake/acceptance-verification.md`; final Present material/row/context image-comparer review is PASS in `tmp/issue130-fix-bake/review/final-visual-review.md`.

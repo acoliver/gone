@@ -43,7 +43,11 @@ func test_packed_atlases_preserve_colour_independent_of_alpha() -> void:
 
 func _factory() -> GDScript:
 	assert_true(ResourceLoader.exists("res://app/quarters_props.gd"), "quarters material factory exists")
-	return load("res://app/quarters_props.gd") if ResourceLoader.exists("res://app/quarters_props.gd") else null
+	if not ResourceLoader.exists("res://app/quarters_props.gd"): return null
+	var factory: GDScript = load("res://app/quarters_props.gd")
+	# Scene integration may have warmed other prop caches before this fixture.
+	factory._materials.clear()
+	return factory
 
 func test_two_finishes_are_cached_and_distinct() -> void:
 	var factory := _factory()

@@ -1,0 +1,1281 @@
+{
+  "prop": "console_keyboard",
+  "atlas_size": 2048,
+  "mesh_source": "assets/props/terminal/keyboard.glb",
+  "uv_method": "unchanged power-room keyboard UVs",
+  "storage_finish": {
+    "age_years": 1000,
+    "source_variation_gain": 0.25,
+    "source_variation_limit_srgb": 2.5,
+    "applies_to": "caps and membrane only",
+    "key_pigment_srgb": [
+      42,
+      44,
+      46
+    ],
+    "membrane_pigment_srgb": [
+      13,
+      15,
+      15
+    ],
+    "olive_pigment_srgb": [
+      84,
+      90,
+      58
+    ],
+    "key_fade_srgb": [
+      65,
+      67,
+      69
+    ],
+    "membrane_fade_srgb": [
+      25,
+      27,
+      25
+    ],
+    "olive_fade_srgb": [
+      100,
+      103,
+      78
+    ],
+    "olive_fade_mix": 0.04,
+    "polymer_fade_mix": 0.08,
+    "dust_srgb": [
+      110,
+      110,
+      110
+    ],
+    "olive_dust_srgb": [
+      110,
+      106,
+      96
+    ],
+    "dust_mix": 0.08,
+    "dust_variation": 0.01,
+    "crack_mix": 0,
+    "peeling_mix": 0
+  },
+  "normal_source": "unchanged power-room keyboard normal map",
+  "housing_finish": {
+    "source": "assets/props/terminal/keyboard_keyboard_{albedo,normal,orm}.png",
+    "regions": "source ORM metallic byte > 0, including chips, oxide and padding",
+    "aged": "unchanged source albedo, normal and ORM",
+    "as_built": "chip/oxide albedo and roughness/metal masks reduced toward nearest intact source paint",
+    "remembered_wear_mix": 0.25,
+    "intact_paint_metallic_byte": 45,
+    "normal_and_ao": "unchanged in both states",
+    "shader_overrides": "none: housing regions RGB zero"
+  },
+  "aged_roughness_min_byte": {
+    "olive_polymer": 224,
+    "other_polymer": 240
+  },
+  "aged_metallic_max_byte": {
+    "polymer": 24
+  },
+  "legend_source": "tools/blender/quarters/console/legends.json via production Naleya",
+  "legend_height_fraction": 0.7,
+  "legend_stroke_fraction": 0.055,
+  "legend_width_limit_fraction": 0.9,
+  "legend_alignment": "centred",
+  "legend_colour_srgb": [
+    150,
+    146,
+    128
+  ],
+  "legend_opacity": {
+    "as_built": 0.45,
+    "aged": 0.45
+  },
+  "native_legends": [
+    {
+      "key": "Cap_01",
+      "input": "0",
+      "sign": "mo",
+      "design_index": 1,
+      "interior_rect_px": [
+        162,
+        289,
+        307,
+        419
+      ],
+      "cap_colour_srgb": [
+        41.0,
+        43.0,
+        44.0
+      ],
+      "stroke_width_px": 7,
+      "ink_bounds_px": [
+        202,
+        308,
+        266,
+        399
+      ],
+      "ink_texels": 2476,
+      "ink_probe_pixel": [
+        203,
+        309
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          41.0,
+          43.0,
+          44.0
+        ],
+        "aged": [
+          48.77060714066029,
+          50.615143802762034,
+          52.24755874872208
+        ]
+      }
+    },
+    {
+      "key": "Cap_02",
+      "input": "1",
+      "sign": "na",
+      "design_index": 2,
+      "interior_rect_px": [
+        345,
+        292,
+        476,
+        421
+      ],
+      "cap_colour_srgb": [
+        41.0,
+        43.0,
+        45.0
+      ],
+      "stroke_width_px": 7,
+      "ink_bounds_px": [
+        377,
+        311,
+        443,
+        401
+      ],
+      "ink_texels": 1938,
+      "ink_probe_pixel": [
+        378,
+        311
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          41.0,
+          43.0,
+          45.0
+        ],
+        "aged": [
+          49.191068769097335,
+          51.022938967347145,
+          52.85480916559697
+        ]
+      }
+    },
+    {
+      "key": "Cap_03",
+      "input": "2",
+      "sign": "mu",
+      "design_index": 3,
+      "interior_rect_px": [
+        507,
+        294,
+        637,
+        423
+      ],
+      "cap_colour_srgb": [
+        41.0,
+        43.0,
+        45.0
+      ],
+      "stroke_width_px": 7,
+      "ink_bounds_px": [
+        539,
+        313,
+        604,
+        403
+      ],
+      "ink_texels": 1861,
+      "ink_probe_pixel": [
+        540,
+        313
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          41.0,
+          43.0,
+          45.0
+        ],
+        "aged": [
+          49.4038146930933,
+          51.229275842309,
+          53.0547369915247
+        ]
+      }
+    },
+    {
+      "key": "Cap_04",
+      "input": "3",
+      "sign": "shi",
+      "design_index": 4,
+      "interior_rect_px": [
+        658,
+        304,
+        791,
+        416
+      ],
+      "cap_colour_srgb": [
+        40.0,
+        43.0,
+        45.0
+      ],
+      "stroke_width_px": 6,
+      "ink_bounds_px": [
+        697,
+        320,
+        751,
+        399
+      ],
+      "ink_texels": 1676,
+      "ink_probe_pixel": [
+        697,
+        321
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          40.0,
+          43.0,
+          45.0
+        ],
+        "aged": [
+          48.69385360300541,
+          50.74598066151142,
+          52.586453359723095
+        ]
+      }
+    },
+    {
+      "key": "Cap_05",
+      "input": "4",
+      "sign": "le",
+      "design_index": 5,
+      "interior_rect_px": [
+        798,
+        299,
+        935,
+        426
+      ],
+      "cap_colour_srgb": [
+        41.0,
+        42.0,
+        45.0
+      ],
+      "stroke_width_px": 7,
+      "ink_bounds_px": [
+        833,
+        317,
+        899,
+        407
+      ],
+      "ink_texels": 1514,
+      "ink_probe_pixel": [
+        833,
+        318
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          41.0,
+          42.0,
+          45.0
+        ],
+        "aged": [
+          48.91622475147248,
+          50.54475739479065,
+          52.59652451038361
+        ]
+      }
+    },
+    {
+      "key": "Cap_06",
+      "input": "5",
+      "sign": "chi",
+      "design_index": 6,
+      "interior_rect_px": [
+        159,
+        421,
+        307,
+        550
+      ],
+      "cap_colour_srgb": [
+        41.0,
+        43.0,
+        45.0
+      ],
+      "stroke_width_px": 7,
+      "ink_bounds_px": [
+        200,
+        440,
+        265,
+        530
+      ],
+      "ink_texels": 1623,
+      "ink_probe_pixel": [
+        201,
+        440
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          41.0,
+          43.0,
+          45.0
+        ],
+        "aged": [
+          49.37543317675591,
+          51.20174929499626,
+          53.028065413236625
+        ]
+      }
+    },
+    {
+      "key": "Cap_07",
+      "input": "6",
+      "sign": "wi",
+      "design_index": 7,
+      "interior_rect_px": [
+        341,
+        423,
+        474,
+        552
+      ],
+      "cap_colour_srgb": [
+        41.0,
+        43.0,
+        45.0
+      ],
+      "stroke_width_px": 7,
+      "ink_bounds_px": [
+        374,
+        442,
+        440,
+        532
+      ],
+      "ink_texels": 1985,
+      "ink_probe_pixel": [
+        375,
+        442
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          41.0,
+          43.0,
+          45.0
+        ],
+        "aged": [
+          49.47374794840813,
+          51.29710243105888,
+          53.120456913709646
+        ]
+      }
+    },
+    {
+      "key": "Cap_08",
+      "input": "7",
+      "sign": "shu",
+      "design_index": 8,
+      "interior_rect_px": [
+        502,
+        433,
+        639,
+        552
+      ],
+      "cap_colour_srgb": [
+        41.0,
+        43.0,
+        45.0
+      ],
+      "stroke_width_px": 7,
+      "ink_bounds_px": [
+        540,
+        450,
+        600,
+        534
+      ],
+      "ink_texels": 2086,
+      "ink_probe_pixel": [
+        541,
+        451
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          41.0,
+          43.0,
+          45.0
+        ],
+        "aged": [
+          48.82556966900826,
+          50.66845063328743,
+          52.51133159756661
+        ]
+      }
+    },
+    {
+      "key": "Cap_09",
+      "input": "a",
+      "sign": "a",
+      "design_index": 9,
+      "interior_rect_px": [
+        670,
+        426,
+        777,
+        552
+      ],
+      "cap_colour_srgb": [
+        42.0,
+        44.0,
+        46.0
+      ],
+      "stroke_width_px": 6,
+      "ink_bounds_px": [
+        692,
+        444,
+        754,
+        533
+      ],
+      "ink_texels": 1341,
+      "ink_probe_pixel": [
+        711,
+        445
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          42.0,
+          44.0,
+          46.0
+        ],
+        "aged": [
+          48.5692249751091,
+          50.42626180410385,
+          52.2832986330986
+        ]
+      }
+    },
+    {
+      "key": "Cap_10",
+      "input": "e",
+      "sign": "e",
+      "design_index": 10,
+      "interior_rect_px": [
+        800,
+        428,
+        931,
+        558
+      ],
+      "cap_colour_srgb": [
+        41.0,
+        43.0,
+        45.0
+      ],
+      "stroke_width_px": 7,
+      "ink_bounds_px": [
+        832,
+        447,
+        898,
+        538
+      ],
+      "ink_texels": 1526,
+      "ink_probe_pixel": [
+        852,
+        447
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          41.0,
+          43.0,
+          45.0
+        ],
+        "aged": [
+          49.37964372754097,
+          51.20583312630653,
+          53.0320225250721
+        ]
+      }
+    },
+    {
+      "key": "Cap_11",
+      "input": "i",
+      "sign": "i",
+      "design_index": 11,
+      "interior_rect_px": [
+        1005,
+        352,
+        1090,
+        541
+      ],
+      "cap_colour_srgb": [
+        41.0,
+        43.0,
+        45.0
+      ],
+      "stroke_width_px": 5,
+      "ink_bounds_px": [
+        1009,
+        386,
+        1086,
+        506
+      ],
+      "ink_texels": 1390,
+      "ink_probe_pixel": [
+        1035,
+        387
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          41.0,
+          43.0,
+          45.0
+        ],
+        "aged": [
+          48.33208029210568,
+          50.189827608466146,
+          52.04757492482663
+        ]
+      }
+    },
+    {
+      "key": "Cap_12",
+      "input": "o",
+      "sign": "o",
+      "design_index": 12,
+      "interior_rect_px": [
+        1091,
+        352,
+        1166,
+        541
+      ],
+      "cap_colour_srgb": [
+        40.0,
+        41.0,
+        44.0
+      ],
+      "stroke_width_px": 4,
+      "ink_bounds_px": [
+        1094,
+        396,
+        1162,
+        496
+      ],
+      "ink_texels": 1401,
+      "ink_probe_pixel": [
+        1116,
+        397
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          40.0,
+          41.0,
+          44.0
+        ],
+        "aged": [
+          48.686223939061165,
+          50.31524494290352,
+          52.36762733757496
+        ]
+      }
+    },
+    {
+      "key": "Cap_13",
+      "input": "u",
+      "sign": "u",
+      "design_index": 13,
+      "interior_rect_px": [
+        1167,
+        352,
+        1249,
+        543
+      ],
+      "cap_colour_srgb": [
+        40.0,
+        42.0,
+        44.0
+      ],
+      "stroke_width_px": 5,
+      "ink_bounds_px": [
+        1170,
+        392,
+        1245,
+        502
+      ],
+      "ink_texels": 1287,
+      "ink_probe_pixel": [
+        1191,
+        392
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          40.0,
+          42.0,
+          44.0
+        ],
+        "aged": [
+          49.28732664048672,
+          51.10998267591,
+          52.932638711333276
+        ]
+      }
+    },
+    {
+      "key": "Cap_14",
+      "input": "pa",
+      "sign": "pa",
+      "design_index": 14,
+      "interior_rect_px": [
+        1251,
+        354,
+        1325,
+        544
+      ],
+      "cap_colour_srgb": [
+        39.0,
+        41.0,
+        43.0
+      ],
+      "stroke_width_px": 4,
+      "ink_bounds_px": [
+        1254,
+        399,
+        1321,
+        498
+      ],
+      "ink_texels": 1350,
+      "ink_probe_pixel": [
+        1254,
+        400
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          39.0,
+          41.0,
+          43.0
+        ],
+        "aged": [
+          48.732592818140986,
+          50.56557428538799,
+          52.398555752635005
+        ]
+      }
+    },
+    {
+      "key": "Cap_15",
+      "input": "pe",
+      "sign": "pe",
+      "design_index": 15,
+      "interior_rect_px": [
+        1329,
+        362,
+        1421,
+        539
+      ],
+      "cap_colour_srgb": [
+        40.0,
+        42.0,
+        44.0
+      ],
+      "stroke_width_px": 5,
+      "ink_bounds_px": [
+        1333,
+        391,
+        1416,
+        509
+      ],
+      "ink_texels": 2137,
+      "ink_probe_pixel": [
+        1334,
+        392
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          40.0,
+          42.0,
+          44.0
+        ],
+        "aged": [
+          48.301039413809775,
+          50.153304890990256,
+          52.00557036817074
+        ]
+      }
+    },
+    {
+      "key": "Cap_16",
+      "input": "pi",
+      "sign": "pi",
+      "design_index": 16,
+      "interior_rect_px": [
+        149,
+        558,
+        311,
+        669
+      ],
+      "cap_colour_srgb": [
+        41.0,
+        43.0,
+        45.0
+      ],
+      "stroke_width_px": 6,
+      "ink_bounds_px": [
+        202,
+        574,
+        257,
+        652
+      ],
+      "ink_texels": 1397,
+      "ink_probe_pixel": [
+        203,
+        575
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          41.0,
+          43.0,
+          45.0
+        ],
+        "aged": [
+          48.74520685851574,
+          50.59050860583782,
+          52.43581035315991
+        ]
+      }
+    },
+    {
+      "key": "Cap_17",
+      "input": "po",
+      "sign": "po",
+      "design_index": 17,
+      "interior_rect_px": [
+        335,
+        554,
+        475,
+        671
+      ],
+      "cap_colour_srgb": [
+        42.0,
+        44.0,
+        46.0
+      ],
+      "stroke_width_px": 6,
+      "ink_bounds_px": [
+        376,
+        571,
+        433,
+        653
+      ],
+      "ink_texels": 1861,
+      "ink_probe_pixel": [
+        377,
+        572
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          42.0,
+          44.0,
+          46.0
+        ],
+        "aged": [
+          49.20856509149075,
+          51.04627475678921,
+          52.88398442208767
+        ]
+      }
+    },
+    {
+      "key": "Cap_18",
+      "input": "pu",
+      "sign": "pu",
+      "design_index": 18,
+      "interior_rect_px": [
+        491,
+        569,
+        658,
+        668
+      ],
+      "cap_colour_srgb": [
+        41.0,
+        43.0,
+        45.0
+      ],
+      "stroke_width_px": 5,
+      "ink_bounds_px": [
+        549,
+        583,
+        599,
+        653
+      ],
+      "ink_texels": 1161,
+      "ink_probe_pixel": [
+        550,
+        584
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          41.0,
+          43.0,
+          45.0
+        ],
+        "aged": [
+          48.84156761646271,
+          50.683966617584225,
+          52.52636561870575
+        ]
+      }
+    },
+    {
+      "key": "Cap_19",
+      "input": "ta",
+      "sign": "ta",
+      "design_index": 19,
+      "interior_rect_px": [
+        672,
+        561,
+        828,
+        674
+      ],
+      "cap_colour_srgb": [
+        41.0,
+        42.0,
+        45.0
+      ],
+      "stroke_width_px": 6,
+      "ink_bounds_px": [
+        722,
+        577,
+        777,
+        657
+      ],
+      "ink_texels": 1316,
+      "ink_probe_pixel": [
+        726,
+        578
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          41.0,
+          42.0,
+          45.0
+        ],
+        "aged": [
+          48.55058073520661,
+          50.18886170446873,
+          52.252910609245305
+        ]
+      }
+    },
+    {
+      "key": "Cap_20",
+      "input": "te",
+      "sign": "te",
+      "design_index": 20,
+      "interior_rect_px": [
+        474,
+        676,
+        791,
+        727
+      ],
+      "cap_colour_srgb": [
+        43.0,
+        46.0,
+        46.0
+      ],
+      "stroke_width_px": 3,
+      "ink_bounds_px": [
+        619,
+        683,
+        645,
+        719
+      ],
+      "ink_texels": 318,
+      "ink_probe_pixel": [
+        621,
+        684
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          43.0,
+          46.0,
+          46.0
+        ],
+        "aged": [
+          48.8960782802105,
+          50.9628421753645,
+          52.390114102959636
+        ]
+      }
+    },
+    {
+      "key": "Cap_21",
+      "input": "ti",
+      "sign": "ti",
+      "design_index": 21,
+      "interior_rect_px": [
+        844,
+        624,
+        1011,
+        730
+      ],
+      "cap_colour_srgb": [
+        42.0,
+        45.0,
+        46.0
+      ],
+      "stroke_width_px": 6,
+      "ink_bounds_px": [
+        902,
+        639,
+        952,
+        714
+      ],
+      "ink_texels": 1176,
+      "ink_probe_pixel": [
+        906,
+        640
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          42.0,
+          45.0,
+          46.0
+        ],
+        "aged": [
+          49.00825952827931,
+          51.06405739307404,
+          52.6957893306017
+        ]
+      }
+    },
+    {
+      "key": "Cap_22",
+      "input": "to",
+      "sign": "to",
+      "design_index": 22,
+      "interior_rect_px": [
+        1016,
+        627,
+        1205,
+        733
+      ],
+      "cap_colour_srgb": [
+        42.0,
+        44.0,
+        46.0
+      ],
+      "stroke_width_px": 6,
+      "ink_bounds_px": [
+        1084,
+        642,
+        1136,
+        717
+      ],
+      "ink_texels": 1556,
+      "ink_probe_pixel": [
+        1087,
+        643
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          42.0,
+          44.0,
+          46.0
+        ],
+        "aged": [
+          48.47727176427841,
+          50.33708831548691,
+          52.196904866695405
+        ]
+      }
+    },
+    {
+      "key": "Cap_23",
+      "input": "tu",
+      "sign": "tu",
+      "design_index": 23,
+      "interior_rect_px": [
+        1207,
+        630,
+        1384,
+        735
+      ],
+      "cap_colour_srgb": [
+        42.0,
+        44.0,
+        46.0
+      ],
+      "stroke_width_px": 6,
+      "ink_bounds_px": [
+        1270,
+        645,
+        1320,
+        719
+      ],
+      "ink_texels": 1107,
+      "ink_probe_pixel": [
+        1270,
+        646
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          42.0,
+          44.0,
+          46.0
+        ],
+        "aged": [
+          49.717420612573626,
+          51.539747630357745,
+          53.36207464814186
+        ]
+      }
+    },
+    {
+      "key": "Cap_24",
+      "input": "ka",
+      "sign": "ka",
+      "design_index": 24,
+      "interior_rect_px": [
+        1384,
+        631,
+        1551,
+        736
+      ],
+      "cap_colour_srgb": [
+        42.0,
+        44.0,
+        46.0
+      ],
+      "stroke_width_px": 6,
+      "ink_bounds_px": [
+        1438,
+        646,
+        1496,
+        720
+      ],
+      "ink_texels": 1302,
+      "ink_probe_pixel": [
+        1439,
+        647
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          42.0,
+          44.0,
+          46.0
+        ],
+        "aged": [
+          49.11089931607247,
+          50.951561318635946,
+          52.79222332119942
+        ]
+      }
+    },
+    {
+      "key": "Cap_25",
+      "input": "ke",
+      "sign": "ke",
+      "design_index": 25,
+      "interior_rect_px": [
+        1553,
+        632,
+        1741,
+        740
+      ],
+      "cap_colour_srgb": [
+        43.0,
+        45.0,
+        46.0
+      ],
+      "stroke_width_px": 6,
+      "ink_bounds_px": [
+        1615,
+        647,
+        1678,
+        724
+      ],
+      "ink_texels": 1479,
+      "ink_probe_pixel": [
+        1616,
+        648
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          43.0,
+          45.0,
+          46.0
+        ],
+        "aged": [
+          49.35054811418057,
+          51.190361585021016,
+          52.818596506714826
+        ]
+      }
+    },
+    {
+      "key": "Cap_26",
+      "input": "ki",
+      "sign": "ki",
+      "design_index": 26,
+      "interior_rect_px": [
+        1695,
+        518,
+        1797,
+        615
+      ],
+      "cap_colour_srgb": [
+        39.0,
+        41.0,
+        43.0
+      ],
+      "stroke_width_px": 5,
+      "ink_bounds_px": [
+        1719,
+        532,
+        1772,
+        600
+      ],
+      "ink_texels": 911,
+      "ink_probe_pixel": [
+        1719,
+        533
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          39.0,
+          41.0,
+          43.0
+        ],
+        "aged": [
+          48.484867379069335,
+          50.32526032626629,
+          52.165653273463256
+        ]
+      }
+    },
+    {
+      "key": "Cap_27",
+      "input": "ko",
+      "sign": "ko",
+      "design_index": 27,
+      "interior_rect_px": [
+        1807,
+        515,
+        1904,
+        617
+      ],
+      "cap_colour_srgb": [
+        40.0,
+        42.0,
+        44.0
+      ],
+      "stroke_width_px": 5,
+      "ink_bounds_px": [
+        1827,
+        530,
+        1883,
+        601
+      ],
+      "ink_texels": 1278,
+      "ink_probe_pixel": [
+        1827,
+        530
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          40.0,
+          42.0,
+          44.0
+        ],
+        "aged": [
+          48.16680746734143,
+          50.023102576136594,
+          51.87939768493176
+        ]
+      }
+    },
+    {
+      "key": "Cap_28",
+      "input": "ku",
+      "sign": "ku",
+      "design_index": 28,
+      "interior_rect_px": [
+        1762,
+        617,
+        1797,
+        704
+      ],
+      "cap_colour_srgb": [
+        43.0,
+        45.0,
+        47.0
+      ],
+      "stroke_width_px": 2,
+      "ink_bounds_px": [
+        1763,
+        640,
+        1795,
+        680
+      ],
+      "ink_texels": 219,
+      "ink_probe_pixel": [
+        1764,
+        641
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          43.0,
+          45.0,
+          47.0
+        ],
+        "aged": [
+          49.365005774497995,
+          51.204380793571474,
+          53.04375581264497
+        ]
+      }
+    },
+    {
+      "key": "Cap_29",
+      "input": "ma",
+      "sign": "ma",
+      "design_index": 29,
+      "interior_rect_px": [
+        1805,
+        619,
+        1905,
+        707
+      ],
+      "cap_colour_srgb": [
+        42.0,
+        44.0,
+        45.0
+      ],
+      "stroke_width_px": 5,
+      "ink_bounds_px": [
+        1833,
+        631,
+        1876,
+        694
+      ],
+      "ink_texels": 981,
+      "ink_probe_pixel": [
+        1833,
+        632
+      ],
+      "unprinted_probe_srgb": {
+        "as_built": [
+          42.0,
+          44.0,
+          45.0
+        ],
+        "aged": [
+          48.835809628963474,
+          50.68478767156601,
+          52.321133239269265
+        ]
+      }
+    }
+  ]
+}

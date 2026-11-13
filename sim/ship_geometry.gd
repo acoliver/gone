@@ -23,9 +23,6 @@ const HATCH_FLOOR_SKIN_HEIGHT: float = 0.001
 const HATCH_RIVET_RADIUS: float = 0.021
 const HATCH_RIVET_DEPTH: float = 0.025
 const HATCH_RIVET_PITCH: float = 0.13
-const TRAY_WIDTH: float = 0.3
-const TRAY_HEIGHT: float = 0.08
-const TRAY_CEILING_DROP: float = 0.15
 const WIRE_INNER_RADIUS: float = 0.035
 const WIRE_OUTER_RADIUS: float = 0.11
 
@@ -72,7 +69,7 @@ const CONSOLE_HEALTHS := {
 }
 const GENERATOR_CENTER: Vector3 = ShipLayout.POWER_GENERATOR_CENTER
 const GENERATOR_RADIUS: float = 0.8
-const GENERATOR_HEIGHT: float = 2.6
+const GENERATOR_HEIGHT: float = ROOM_CEILING
 
 class SolidSpec:
 	extends RefCounted
@@ -290,10 +287,10 @@ static func door_act_center() -> Vector3:
 static func console_solid(station: ConsoleStation) -> ShipGeometry.SolidSpec:
 	var facing := Vector3(sin(station.yaw), 0.0, cos(station.yaw))
 	var along := Vector3(facing.z, 0.0, -facing.x)
-	var local_size := Vector3(1.25, 1.75, 0.56)
-	var center := station.position + facing * 0.28
+	var local_size := Vector3(1.10, 1.70, 0.73)
+	var center := station.position + facing * (local_size.z / 2.0)
 	return ShipGeometry.SolidSpec.new(
-		Vector3(center.x, 0.875, center.z),
+		Vector3(center.x, local_size.y / 2.0, center.z),
 		Vector3(
 			absf(along.x) * local_size.x + absf(facing.x) * local_size.z,
 			local_size.y,
@@ -424,7 +421,7 @@ static func section_solids(layout: ShipLayout, section: ShipLayout.SectionSpec) 
 	var portals: Dictionary = {}
 	for id: StringName in section.opening_ids():
 		var door := layout.door(id)
-		if door.kind() in [ShipLayout.DoorKind.BAY, ShipLayout.DoorKind.POWER]:
+		if door.kind() in [ShipLayout.DoorKind.BAY, ShipLayout.DoorKind.POWER] or door.id() == ShipLayout.QUARTERS_DOOR_ID:
 			var side := -1 if door.frame().basis.z.z < 0 else 1
 			assert(not portals.has(side), "one room portal per section wall")
 			portals[side] = door
@@ -793,6 +790,12 @@ static func deck_static_solids(layout: ShipLayout, deck: int) -> Array[SolidSpec
 	if deck == 14:
 		return opening_scene_solids(layout.bay().template(), true, true, layout, {}, false)
 	var solids: Array[SolidSpec] = []
+	for id: StringName in layout.deck(deck).section_ids():
+		for solid: SolidSpec in section_solids(layout, layout.section(id)):
+			if solid.id != StringName("%s/LEAF" % ShipLayout.QUARTERS_DOOR_ID): solids.append(solid)
+	if deck == 16:
+		solids.append_array(QuartersGeometry.shell())
+		solids.append_array(QuartersGeometry.furniture())
 	for id: StringName in layout.deck(deck).connector_ids():
 		solids.append_array(connector_solids(layout, layout.connector(id)))
 	for id: StringName in layout.door_ids():

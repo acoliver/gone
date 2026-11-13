@@ -216,6 +216,7 @@
         831,
         319
       ],
+      "material_source": "door image pixels [380, 0, 420, 2200], a 40 mm strip at matching physical scale; replaces the banded concept swatch",
       "uv_rectangle": [
         0.30078125,
         0.001953125,

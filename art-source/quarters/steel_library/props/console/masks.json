@@ -1,0 +1,212 @@
+{
+  "version": 1,
+  "seed": 9502,
+  "atlas_size": [
+    2048,
+    2048
+  ],
+  "texels_per_metre": 454.3216734264926,
+  "density_range_px_m": [
+    454.2059485427252,
+    454.5053803918719
+  ],
+  "uv_overlap_texels": 0,
+  "uv_method": "isometric planar face islands, shared pack, 3 px margin",
+  "occupied_texels": 1270121,
+  "ao_method": "Cycles geometry AO, 16 samples, CPU",
+  "channels": {
+    "geometry_masks.png": {
+      "R": "ambient occlusion (1 = open)",
+      "G": "cavity (1 = recessed)",
+      "B": "edge curvature proximity (12 mm falloff)",
+      "A": "surface coverage"
+    },
+    "weather_masks.png": {
+      "R": "up-facing exposure times AO",
+      "G": "gravity streak field",
+      "B": "contact with other parts (5 mm falloff, 25 mm search)",
+      "A": "material class / 4: PaintedSteel=1, BareSteel=2, DarkSteel=3, other=4"
+    }
+  },
+  "parts": [
+    "ArmouredHousing",
+    "BaseShoe",
+    "BezelBottom",
+    "BezelLeft",
+    "BezelRight",
+    "BezelRivets",
+    "BezelTop",
+    "ControlPanel",
+    "DesktopSupport",
+    "Display",
+    "HousingRivets",
+    "Key_0_0",
+    "Key_0_1",
+    "Key_0_2",
+    "Key_0_3",
+    "Key_0_4",
+    "Key_0_5",
+    "Key_1_0",
+    "Key_1_1",
+    "Key_1_2",
+    "Key_1_3",
+    "Key_1_4",
+    "Key_1_5",
+    "Key_2_0",
+    "Key_2_1",
+    "Key_2_2",
+    "Key_2_3",
+    "Key_2_4",
+    "Key_2_5",
+    "Key_3_0",
+    "Key_3_1",
+    "Key_3_2",
+    "Key_3_3",
+    "Key_3_4",
+    "Key_3_5",
+    "Keys",
+    "LowerDeckHousing",
+    "ScreenGasket",
+    "ToggleSocket_0",
+    "ToggleSocket_1",
+    "ToggleSocket_2",
+    "Toggle_0",
+    "Toggle_1",
+    "Toggle_2",
+    "Toggles"
+  ],
+  "sources": [
+    {
+      "part": "BezelRivets",
+      "position_blender": [
+        -0.48249998688697815,
+        -0.061209071427583694,
+        0.4667978584766388
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          -0.48649999499320984,
+          -0.06401307135820389,
+          0.4667978584766388
+        ],
+        [
+          -0.47849997878074646,
+          -0.0584050714969635,
+          0.4742237627506256
+        ]
+      ]
+    },
+    {
+      "part": "BezelRivets",
+      "position_blender": [
+        -0.48249995708465576,
+        0.046835048124194145,
+        0.6468713879585266
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          -0.48649996519088745,
+          0.0440310500562191,
+          0.6468713879585266
+        ],
+        [
+          -0.4784999489784241,
+          0.04963904619216919,
+          0.6542972922325134
+        ]
+      ]
+    },
+    {
+      "part": "BezelRivets",
+      "position_blender": [
+        0.4825000464916229,
+        -0.0612090565264225,
+        0.4667978882789612
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          0.47850003838539124,
+          -0.0640130564570427,
+          0.4667978882789612
+        ],
+        [
+          0.4865000545978546,
+          -0.05840505659580231,
+          0.4742237627506256
+        ]
+      ]
+    },
+    {
+      "part": "BezelRivets",
+      "position_blender": [
+        0.4825000464916229,
+        0.046835048124194145,
+        0.6468713879585266
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          0.47850003838539124,
+          0.0440310500562191,
+          0.6468713879585266
+        ],
+        [
+          0.4865000545978546,
+          0.04963904619216919,
+          0.6542972922325134
+        ]
+      ]
+    },
+    {
+      "part": "HousingRivets",
+      "position_blender": [
+        -0.47999998927116394,
+        -0.2764499932527542,
+        0.3310000002384186
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          -0.48399999737739563,
+          -0.27809998393058777,
+          0.3310000002384186
+        ],
+        [
+          -0.47599998116493225,
+          -0.27480000257492065,
+          0.33900001645088196
+        ]
+      ]
+    },
+    {
+      "part": "HousingRivets",
+      "position_blender": [
+        0.47999998927116394,
+        -0.2764499932527542,
+        0.3310000002384186
+      ],
+      "width_m": 0.0075,
+      "length_m": 0.15,
+      "bounds_blender": [
+        [
+          0.47599998116493225,
+          -0.27809998393058777,
+          0.3310000002384186
+        ],
+        [
+          0.48399999737739563,
+          -0.27480000257492065,
+          0.33899998664855957
+        ]
+      ]
+    }
+  ]
+}

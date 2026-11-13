@@ -1,0 +1,140 @@
+{
+  "issue": 130,
+  "baseline": "56a656ba807a477a38503c3b6be0343ebb0b2d4d",
+  "model": "filipstrand/Z-Image-Turbo-mflux-4bit",
+  "tool": "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-z-image-turbo",
+  "environment": {
+    "HF_HOME": "/Volumes/XS1000/hf-cache",
+    "HF_HUB_OFFLINE": "1"
+  },
+  "purpose": "Pendant concept generation history; candidate C subsequently selected by parent source review and used unchanged for full Hunyuan raw shape guide generation.",
+  "candidates": [
+    {
+      "name": "a-stepped-rim",
+      "seed": 130101,
+      "prompt": "Product photograph of a small manufactured metal medal pendant with its integral attachment loop, metal pendant only, no fabric ribbon. A fictional five-point star motif matching simple brass uniform insignia, no existing national symbols and no invented rank marks. Warm brass metal and deep navy-blue vitreous enamel. A physically plausible circular medal body about 32 mm in diameter and 3 mm thick, with a small closed brass attachment eyelet projecting from the top edge, its open hole clearly visible. A continuous circular stepped brass rim with two concentric bevels surrounds a recessed deep-blue enamel field. One raised five-point brass star sits above the enamel, with gently folded facets meeting at a low central ridge. The plain back and thick rounded edge belong to one solid pendant. Show the real sidewall thickness, formed bevels and raised sculptural relief, not a flat graphic or printed badge. Single complete object only, entire pendant and loop in frame and centered, isolated on a plain light grey studio background, soft even diffuse lighting. Slightly elevated three-quarter view from the front left, orthographic-looking product camera with little perspective; face and side edge both visible. A small wearable decoration, not a shield or trophy. No human, no uniform, no hand, no display stand, no fabric, no ribbon, no chain, no writing, no lettering, no numbers, no logos, no scene, no additional objects.",
+      "prompt_path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/a-stepped-rim.prompt.txt",
+      "requested_png": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/a-stepped-rim-seed130101.png",
+      "jpeg": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-review/a-stepped-rim-seed130101.jpg",
+      "command": [
+        "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-z-image-turbo",
+        "--model",
+        "filipstrand/Z-Image-Turbo-mflux-4bit",
+        "--quantize",
+        "4",
+        "--steps",
+        "8",
+        "--seed",
+        "130101",
+        "--width",
+        "1024",
+        "--height",
+        "1024",
+        "--metadata",
+        "--output",
+        "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/a-stepped-rim-seed130101.png",
+        "--prompt-file",
+        "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/a-stepped-rim.prompt.txt"
+      ],
+      "started_utc": "2026-11-10T19:21:40.726136+00:00",
+      "returncode": 0,
+      "finished_utc": "2026-11-10T19:23:22.116029+00:00",
+      "actual_png": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/a-stepped-rim-seed130101.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB",
+      "generator_metadata": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/a-stepped-rim-seed130101.metadata.json"
+    },
+    {
+      "name": "b-scalloped-rim",
+      "seed": 130202,
+      "prompt": "Product photograph of a small manufactured metal medal pendant with its integral attachment loop, metal pendant only, no fabric ribbon. A fictional five-point star motif matching simple brass uniform insignia, no existing national symbols and no invented rank marks. Warm brass metal and deep navy-blue vitreous enamel. A physically plausible circular medal body about 32 mm in diameter and 3 mm thick, with a small closed brass attachment eyelet projecting from the top edge, its open hole clearly visible. A restrained softly scalloped circular brass rim has ten shallow rounded lobes, with a smooth inner bevel around a deep-blue enamel field. One raised five-point brass star has broad formed facets and a slightly domed center. The thickness is that of a small die-struck metal decoration, with a solid back. Show the real sidewall thickness, formed bevels and raised sculptural relief, not a flat graphic or printed badge. Single complete object only, entire pendant and loop in frame and centered, isolated on a plain light grey studio background, soft even diffuse lighting. Slightly elevated three-quarter view from the front left, orthographic-looking product camera with little perspective; face and side edge both visible. A small wearable decoration, not a shield or trophy. No human, no uniform, no hand, no display stand, no fabric, no ribbon, no chain, no writing, no lettering, no numbers, no logos, no scene, no additional objects.",
+      "prompt_path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/b-scalloped-rim.prompt.txt",
+      "requested_png": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/b-scalloped-rim-seed130202.png",
+      "jpeg": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-review/b-scalloped-rim-seed130202.jpg",
+      "command": [
+        "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-z-image-turbo",
+        "--model",
+        "filipstrand/Z-Image-Turbo-mflux-4bit",
+        "--quantize",
+        "4",
+        "--steps",
+        "8",
+        "--seed",
+        "130202",
+        "--width",
+        "1024",
+        "--height",
+        "1024",
+        "--metadata",
+        "--output",
+        "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/b-scalloped-rim-seed130202.png",
+        "--prompt-file",
+        "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/b-scalloped-rim.prompt.txt"
+      ],
+      "started_utc": "2026-11-10T19:23:22.156245+00:00",
+      "returncode": 0,
+      "finished_utc": "2026-11-10T19:24:57.541735+00:00",
+      "actual_png": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/b-scalloped-rim-seed130202.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB",
+      "generator_metadata": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/b-scalloped-rim-seed130202.metadata.json"
+    },
+    {
+      "name": "c-machined-rim",
+      "seed": 130303,
+      "prompt": "Product photograph of a small manufactured metal medal pendant with its integral attachment loop, metal pendant only, no fabric ribbon. A fictional five-point star motif matching simple brass uniform insignia, no existing national symbols and no invented rank marks. Warm brass metal and deep navy-blue vitreous enamel. A physically plausible circular medal body about 32 mm in diameter and 3 mm thick, with a small closed brass attachment eyelet projecting from the top edge, its open hole clearly visible. A simple circular brass body has a wide single chamfered outer rim and a narrow recessed concentric channel. A deep-blue enamel inset surrounds one raised five-point brass star with crisp beveled edges and shallow sculpted radial facets. Short subtle radial relief lines stay inside the rim, with a plain solid back. Show the real sidewall thickness, formed bevels and raised sculptural relief, not a flat graphic or printed badge. Single complete object only, entire pendant and loop in frame and centered, isolated on a plain light grey studio background, soft even diffuse lighting. Slightly elevated three-quarter view from the front left, orthographic-looking product camera with little perspective; face and side edge both visible. A small wearable decoration, not a shield or trophy. No human, no uniform, no hand, no display stand, no fabric, no ribbon, no chain, no writing, no lettering, no numbers, no logos, no scene, no additional objects.",
+      "prompt_path": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/c-machined-rim.prompt.txt",
+      "requested_png": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/c-machined-rim-seed130303.png",
+      "jpeg": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-review/c-machined-rim-seed130303.jpg",
+      "command": [
+        "/Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-z-image-turbo",
+        "--model",
+        "filipstrand/Z-Image-Turbo-mflux-4bit",
+        "--quantize",
+        "4",
+        "--steps",
+        "8",
+        "--seed",
+        "130303",
+        "--width",
+        "1024",
+        "--height",
+        "1024",
+        "--metadata",
+        "--output",
+        "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/c-machined-rim-seed130303.png",
+        "--prompt-file",
+        "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/c-machined-rim.prompt.txt"
+      ],
+      "started_utc": "2026-11-10T19:24:57.575112+00:00",
+      "returncode": 0,
+      "finished_utc": "2026-11-10T19:26:23.556023+00:00",
+      "actual_png": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/c-machined-rim-seed130303.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB",
+      "generator_metadata": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/c-machined-rim-seed130303.metadata.json"
+    }
+  ],
+  "generator_metadata_model": "Tongyi-MAI/Z-Image-Turbo",
+  "mflux_version": "0.17.5",
+  "review_status": "Parent image-comparer source review accepted C as generation input. Generated guide awaits parent shape review. No image judgment by leaf.",
+  "selected_candidate": {
+    "name": "c-machined-rim",
+    "seed": 130303,
+    "input_png": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/docs/art/quarters/sheets/medal/c-machined-rim-seed130303.png",
+    "input_sha256": "900e566387d32661c16274644f23d14b26a1404bc3ee06931a941c6593eaac3a",
+    "reviewed_jpeg": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-review/c-machined-rim-seed130303.jpg",
+    "source_review": "/Volumes/XS1000/acoliver/projects/gone/branch-2/tmp/wt-130/tmp/issue130-review/c-source-review.md"
+  },
+  "mesh_generation_provenance": "mesh-generation.json",
+  "raw_guide_metrics": "guide-metrics.json"
+}

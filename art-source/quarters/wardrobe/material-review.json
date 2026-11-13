@@ -1,0 +1,137 @@
+{
+  "images_seen": [
+    "tmp/mat1/wardrobe/render/matched-hero.png",
+    "tmp/mat1/wardrobe/render/matched-front.png",
+    "tmp/mat1/wardrobe/render/matched-top.png",
+    "tmp/mat1/wardrobe/render/matched-roof.png",
+    "tmp/mat1/wardrobe/render/matched-detail.png",
+    "tmp/mat1/wardrobe/render/matched-hardware.png",
+    "tmp/mat1/wardrobe/render/matched-trim.png",
+    "tmp/mat1/wardrobe/render/wardrobe-aged-roof-regions.png",
+    "tmp/mat1/wardrobe/render/wardrobe-aged-trim-materials.png",
+    "tmp/mat1/wardrobe/render/wardrobe-as_built-hero.png",
+    "tmp/mat1/wardrobe/render/wardrobe-aged-hero.png",
+    "tmp/mat1/wardrobe/render/storage_locker_module-as_built-hero.png",
+    "tmp/mat1/wardrobe/render/storage_locker_module-aged-hero.png"
+  ],
+  "ratings": {
+    "wardrobe_as_built": {
+      "score": 8,
+      "rubric": "1 = unusable/material failure; 10 = convincing finished presentation",
+      "explanation": "Clean, coherent muted grey-green painted metal; the open-door form, interior bar, vents, hinges and base read clearly. Compared with the locker, the wardrobe panels look somewhat smooth and hardware contrast is subdued."
+    },
+    "wardrobe_aged": {
+      "score": 6,
+      "rubric": "1 = unusable/material failure; 10 = convincing finished presentation",
+      "explanation": "The age read is clear, with edge corrosion, peeling, hardware corrosion and roof streaks. Large pale peeling regions across the central/lower door and side, plus broad roof peeling and regular high-contrast tracks, overpower the painted-metal form and weaken material-role clarity."
+    },
+    "locker_as_built": {
+      "score": 9,
+      "rubric": "1 = unusable/material failure; 10 = convincing finished presentation",
+      "explanation": "Strong accepted reference: muted grey-green paint, closed cabinet silhouette, vents, hinges, latch and trim are cleanly legible under matched lighting and scale."
+    },
+    "locker_aged": {
+      "score": 7,
+      "rubric": "1 = unusable/material failure; 10 = convincing finished presentation",
+      "explanation": "Weathering and material breakup read clearly, but broad high-contrast peeling and rust are more extensive than localized age cues; the upward surface reads as coarse and streaked rather than fine, soft settled dust."
+    }
+  },
+  "features": {
+    "as_built_clean_grey_green_painted_steel": {
+      "achieved": true,
+      "observations": "Both assets show coherent muted grey-green painted fields. The wardrobe's panels look smoother and flatter than the locker reference."
+    },
+    "as_built_bare_steel_hardware": {
+      "achieved": true,
+      "observations": "Hinges, fasteners, vents and latch hardware are visible and metallic; wardrobe hardware is less separated by contrast than the locker hardware."
+    },
+    "as_built_dark_steel_trim": {
+      "achieved": "partly",
+      "observations": "Dark kick/latch details are visible, but perimeter surround versus painted panel distinction is not consistently clear in the beauty views."
+    },
+    "aged_irregular_edge_corner_fixture_paint_failure": {
+      "achieved": "partly",
+      "observations": "Irregular peeling/corrosion is visible around edges, corners, seams and fixtures. Large pale patches also occupy broad central and lower door/side regions, beyond localized failure."
+    },
+    "aged_narrow_downward_rust_trails": {
+      "achieved": "partly",
+      "observations": "Vertical-face trails and horizontal-roof runoff are visible. Some roof tracks are long, thin, straight and parallel; broad or high-contrast marks compete with the intended narrow trails. The matched roof views show the horizontal roof plane; the open door remains vertical in the oblique top view."
+    },
+    "aged_corroded_hardware": {
+      "achieved": true,
+      "observations": "Hinges and fixtures show corrosion and remain identifiable, though dense bright rust crowds some hinge/frame boundaries."
+    },
+    "aged_fine_soft_settled_dust_on_upward_faces": {
+      "achieved": false,
+      "observations": "No fine soft settled dust reads clearly on the upward faces. The locker top appears coarse and streaked, and the wardrobe roof is dominated by peeling and rust tracks."
+    },
+    "no_biological_growth_or_saturated_new_green": {
+      "achieved": true,
+      "observations": "No visible biological growth or saturated new green in the reviewed beauty views."
+    },
+    "complete_face_layouts_with_relief_from_same_images": {
+      "achieved": "uncertain",
+      "observations": "The visible matched views do not establish that generated layouts cover complete faces or that relief derives from the same images. No obvious large seam is apparent, but source/relief correspondence cannot be verified visually from these renders."
+    },
+    "material_role_clarity_in_aged_render": {
+      "achieved": "partly",
+      "observations": "The diagnostic trim map shows separate PaintedSteel, BareSteel and DarkSteel routing IDs, and the roof-region map distinguishes upward-facing painted normals from other faces. Those maps establish routing/regions, not beauty quality. In the rendered aged asset, similar bright rust and pale flaking cross visual boundaries and make panel, exposed substrate and structural edging less immediately distinct."
+    },
+    "texture_geometry_and_render_artifacts": {
+      "achieved": "partly",
+      "observations": "No conspicuous missing geometry, global axis error, or silhouette discontinuity is visible. Roof streaks look regular/stripe-like in places. The reviewed images do not establish pixel-level seam, UV repetition, normal, or relief-source correctness."
+    }
+  },
+  "findings": [
+    {
+      "severity": "Major",
+      "location": "Aged wardrobe front door and visible side panel, especially central and lower areas in matched-hero.png and wardrobe-aged-hero.png.",
+      "description": "Large pale irregular peeling regions cover substantial broad-face areas. Their scale and contrast make the asset read as extensively flaked or crusted rather than predominantly painted steel with localized coating failure; weathering competes with the cabinet silhouette and detail.",
+      "confidence": "certain",
+      "comparison_basis": "Wardrobe aged compared with its as-built state and the matched locker finish reference.",
+      "fix": "Reduce broad-face peeling coverage and retain larger coherent painted fields. Concentrate paint failure at edges, corners, seams and fixtures, with smaller varied patches."
+    },
+    {
+      "severity": "Major",
+      "location": "Horizontal cabinet roof in matched-top.png and matched-roof.png.",
+      "description": "The roof has broad pale peeling coverage and several long, high-contrast rust tracks. Tracks appear notably straight and parallel in places, producing a stripe-like repeated appearance. This is the horizontal roof plane, not the vertical open door.",
+      "confidence": "probable",
+      "comparison_basis": "Aged roof against as-built roof in the matched top/roof sheets; the corresponding upward-facing regions are also shown in wardrobe-aged-roof-regions.png.",
+      "fix": "Break up track alignment and length, vary width and contrast, keep runs tied to plausible seams/edges, and replace broad crust-like roof coverage with low-contrast fine dust and localized corrosion."
+    },
+    {
+      "severity": "Major",
+      "location": "Aged wardrobe kick plate and perimeter surround in matched-trim.png and wardrobe-aged-trim-materials.png.",
+      "description": "Rendered aged wear makes the lower trim roles visually uncertain: dark kick/latch backing and painted perimeter surround do not remain consistently distinct from bright corrosion and adjacent panel weathering. The material ID colors show routing only and do not demonstrate visual clarity.",
+      "confidence": "probable",
+      "comparison_basis": "Beauty trim sheet compared with the as-built wardrobe and the diagnostic PaintedSteel/BareSteel/DarkSteel map.",
+      "fix": "Keep the kick plate and latch/vent backing visibly dark steel; retain the perimeter surround's painted-steel role. Restrict corrosion so it does not erase the base material-role read."
+    },
+    {
+      "severity": "Minor",
+      "location": "Door edge, frame and middle hinge close-ups in matched-detail.png and matched-hardware.png.",
+      "description": "Bright dense rust creates a strong continuous perimeter outline and crowds some hinge barrels and frame boundaries, reducing separation between corroded hardware and adjacent steel. Hardware remains present and recognizable.",
+      "confidence": "probable",
+      "comparison_basis": "Matched as-built and aged detail/hardware sheets using the same close-up camera offset and physical scale.",
+      "fix": "Reduce continuous edge saturation and preserve small clean value/roughness distinctions around hinge barrels and frame edges."
+    },
+    {
+      "severity": "Minor",
+      "location": "Wardrobe as-built broad panels in matched-hero.png and wardrobe-as_built-hero.png.",
+      "description": "The clean painted finish reads slightly smoother and flatter than the locker reference under matched light and pixels per metre.",
+      "confidence": "probable",
+      "comparison_basis": "Wardrobe as-built compared with accepted locker as-built.",
+      "fix": "If additional finish variation is desired, add restrained fine roughness variation without changing the clean grey-green painted-steel character."
+    }
+  ],
+  "ready": {
+    "value": false,
+    "reason": "The wardrobe is readable and its geometry/orientation present correctly, but the aged material treatment overpowers broad faces, the roof tracks look patterned, and trim roles are not consistently legible. Revise weathering and dust before showing it as a finished owner-facing asset."
+  },
+  "limitations": [
+    "The matched sheets, two diagnostic maps and four individual hero renders listed in images_seen were inspected. The separate individual front/top/detail alternatives were not opened.",
+    "The sheets use black backgrounds and relatively small framing in some views; subtle pixel-level color and texture measurements are not claimed.",
+    "The diagnostic maps establish routing/region classes, not perceived material quality or semantic correctness by themselves.",
+    "Still images cannot establish temporal popping or shimmer. UV seams, repetition, normal correctness and correspondence between color images and relief require source or dedicated diagnostic inspection beyond what the rendered views prove."
+  ]
+}

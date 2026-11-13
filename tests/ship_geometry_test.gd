@@ -34,7 +34,7 @@ func test_extracted_opening_recipes_match_presentation_placements() -> void:
 	assert_int_equal(ShipGeometry.hallway_solids().size(), 8, "eight hall slabs; rounded openings no longer add corner filler solids")
 	assert_int_equal(ShipGeometry.power_room_solids().size(), 5, "five power pieces; hall owns the shared south wall")
 	assert_vec3_equal(ShipGeometry.power_doorway_wall_solids()[1].center, Vector3(30.35, 1.6, -1.6), "shared power wall reaches X=33.2")
-	assert_vec3_equal(ShipGeometry.generator_solid().size, Vector3(1.6, 2.6, 1.6), "generator hull")
+	assert_vec3_equal(ShipGeometry.generator_solid().size, Vector3(1.6, 3.2, 1.6), "generator hull reaches the ceiling without changing its footprint")
 	for index: int in range(6):
 		var actual := ShipGeometry.console_solid(ShipGeometry.console_stations()[index])
 		var rendered := PowerRoom.console_solid(PowerRoom.console_stations()[index])
@@ -57,8 +57,8 @@ func test_pod_geometry_preserves_cavity_tray_and_top_recipes() -> void:
 func test_shared_scene_seam_preserves_structure_and_identity_frame() -> void:
 	var production := Node3D.new()
 	var harness := Node3D.new()
-	var main_scene := ShipScene.build_into(production, Game.new(0), true)
-	var harness_scene := ShipScene.build_into(harness, Game.new(0), false)
+	var main_scene := ShipScene.build_into(production, Game.new(0))
+	var harness_scene := ShipScene.build_into(harness, Game.new(0))
 	for node_name: String in ["RoomGeometry", "StasisPods", "Hatch", "Lighting", "Hazards", "Rod", "Hallway", "PowerRoom"]:
 		assert_true(production.has_node(NodePath(node_name if node_name in ["Hallway", "PowerRoom"] else "BayRoot/" + node_name)), "production structural node: " + node_name)
 		assert_true(harness.has_node(NodePath(node_name if node_name in ["Hallway", "PowerRoom"] else "BayRoot/" + node_name)), "harness structural node: " + node_name)
@@ -66,8 +66,8 @@ func test_shared_scene_seam_preserves_structure_and_identity_frame() -> void:
 	assert_true(main_scene.bay_root.transform == ShipLayout.authored().layout.bay_to_world(), "single bay frame")
 	assert_true(production.has_node("RoomEnvironment"), "one root environment")
 	assert_true(main_scene.hallway.transform == harness_scene.hallway.transform, "same hallway frame")
-	assert_true(production.has_node("BayRoot/HangingWires"), "production keeps wires")
-	assert_false(harness.has_node("BayRoot/HangingWires"), "audio-free harness keeps existing dressing policy")
+	assert_false(production.has_node("BayRoot/HangingWires"), "production omits obsolete hanging wires")
+	assert_false(harness.has_node("BayRoot/HangingWires"), "harness omits obsolete hanging wires")
 	assert_true(main_scene.power_room == production.get_node("PowerRoom"), "typed handles point to common tree")
 	production.free()
 	harness.free()

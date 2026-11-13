@@ -5,8 +5,8 @@ starship. You wake in a stasis pod in a red-lit room, climb out, cross the
 floor on unsteady legs, pick up a dropped metal rod, and pry the only door
 open into a pitch-dark hallway whose red emergency lights wait behind a
 switch beside the doorway. This
-repository currently implements that opening beat plus the hallway
-crossing, which is milestone 1 of the design;
+repository implements that opening, the hallway and secondary-power room,
+the ladder wells, and a playable D16 quarters demo;
 the long-form plan is survival through repair, with the ship's systems as
 both the puzzle and the story. Read
 [docs/design/concept.md](docs/design/concept.md) for the design pillars and
@@ -47,6 +47,19 @@ command prompt:
 
 The first run imports the project's resources before the window opens, so
 expect it to take longer than later runs.
+
+### Quarters demo
+
+Run `godot --path . -- --start quarters` to start in the D16 corridor facing
+the protagonist's quarters, with secondary power active. Space opens the
+manual-release door. The framed pull handle to its right is also selectable
+and uses the existing ship-text attention and translation system.
+Walk inside, then use the desk console on the right.
+Its placeholder message switches the room from Remembered to Present.
+Re-entering keeps Present. Without the option, the game still starts in stasis.
+The full route reaches the same room through the aft ladder well on D16.
+See [the quarters README](docs/art/quarters/README.md) for the real assets,
+stand-ins, capture command and layout frame.
 
 ## Controls
 
@@ -151,3 +164,7 @@ deviations, is in [docs/dev/godot-port.md](docs/dev/godot-port.md).
 The `godot` commands above were verified on macOS with Godot 4.7.2.stable.
 The Windows and Linux invocations follow Godot's documented CLI
 conventions and have not been run by this project.
+
+## Power-room hardware demo
+
+Run the game with `godot --path .`, then wake, take the metal rod, pry open the stasis-bay hatch, cross the hallway, open the power-room door, and enter the room. The six stations line its side and north walls. The active secondary-power terminal is the second station along the west wall. Use Space or click when in reach to activate it. The ship status board is centered on the north wall between the two north-wall terminals. Hold your view on either display to read the native Naleya writing resolve into Spanish.

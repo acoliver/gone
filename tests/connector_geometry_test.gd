@@ -121,7 +121,7 @@ func _group_bounds(mesh: Mesh, prefix: String, straps_only: bool = false) -> AAB
 func test_all_hatch_bulkheads_share_plated_wall_material_and_mapping() -> void:
 	var root := Node3D.new()
 	var game := Game.new(0)
-	var scene := ShipScene.build_into(root, game, false)
+	var scene := ShipScene.build_into(root, game)
 	scene.prepare_near(Vector3(26, 0, 0))
 	scene.prepare_near(Vector3(10, 0, 0))
 	var count := 0
@@ -141,7 +141,7 @@ func test_connector_lights_reach_hatches_floor_ladder_and_lift_inside_falloff() 
 	var game := Game.new(0)
 	var layout := game.layout
 	var root := Node3D.new()
-	var scene := ShipScene.build_into(root, game, false)
+	var scene := ShipScene.build_into(root, game)
 	scene.prepare_near(Vector3(10, 0, 0))
 	scene.prepare_near(Vector3(26, 0, 0))
 	for id: StringName in layout.connector_ids():
@@ -194,7 +194,7 @@ func test_d14_topology_and_exact_openability() -> void:
 	for id: StringName in layout.door_ids():
 		if layout.door(id).policy() == ShipLayout.Policy.CRANK:
 			cranks.append(id)
-	assert_true(cranks == [&"D14-C-000-H-AFT", &"D14-C-000-H-FORE", &"D14-C-001-H-AFT", &"D14-C-001-H-FORE"], "only four inner hatches crank")
+	assert_true(cranks == [&"D14-C-000-H-AFT", &"D14-C-000-H-FORE", &"D14-C-001-H-AFT", &"D14-C-001-H-FORE", &"D16-C-001-H-AFT"], "#114 adds the D16 quarters route crank")
 
 func test_setback_collar_sides_use_the_approach_rooms_light_mask() -> void:
 	var layout := ShipLayout.authored().layout
@@ -247,7 +247,7 @@ func test_new_geometry_contains_landings_and_no_duplicate_power_wall() -> void:
 func test_real_scene_has_shared_hatch_details_and_lazy_red_rooms() -> void:
 	var root := Node3D.new()
 	var game := Game.new(0)
-	var scene := ShipScene.build_into(root, game, false)
+	var scene := ShipScene.build_into(root, game)
 	var hatches: Array[DoorView] = []
 	for view: DoorView in scene.door_views:
 		if game.layout.door(view.door_id()).kind() == ShipLayout.DoorKind.HATCH:
@@ -295,7 +295,7 @@ func test_four_open_hatches_allow_both_directions_and_locked_faces_contain() -> 
 func test_prefetch_and_independent_red_light_masks() -> void:
 	var root := Node3D.new()
 	var game := Game.new(0)
-	var scene := ShipScene.build_into(root, game, false)
+	var scene := ShipScene.build_into(root, game)
 	for x: float in [18, 25.9]:
 		scene.prepare_near(Vector3(x, 0, 0))
 		assert_false(root.has_node("D14-C-001"), "no connector construction before final four meters")

@@ -1,0 +1,80 @@
+{
+  "images_seen": [
+    "hero",
+    "front",
+    "top",
+    "detail"
+  ],
+  "ratings": {
+    "candidate_as_built": {
+      "score": 8,
+      "explanation": "The grey-green paint is consistent and clean across all views, with clear hardware and dark trim details visible in the detail block."
+    },
+    "candidate_aged": {
+      "score": 7,
+      "explanation": "The aged state shows convincing broad paint retention with irregular edge corrosion and rust runs, though the top view shows a slightly blocky dust patch."
+    },
+    "locker_as_built": {
+      "score": 9,
+      "explanation": "The reference locker presents a highly convincing finished look with sharp geometry, clean paint, and well-defined hardware in the detail view."
+    },
+    "locker_aged": {
+      "score": 8,
+      "explanation": "The aged locker features realistic peeling paint and corroded hardware, with a strong sense of material degradation on the vertical faces."
+    },
+    "legacy_as_built": {
+      "score": 7,
+      "explanation": "The legacy finish is acceptable but appears slightly flatter and less detailed than the candidate and locker versions, particularly in the hero view."
+    },
+    "legacy_aged": {
+      "score": 6,
+      "explanation": "The aged legacy finish shows significant rust but lacks the subtle dust and fine corrosion details seen in the other columns, appearing somewhat muddied."
+    }
+  },
+  "features": {
+    "grey-green_paint": {
+      "achieved": true,
+      "observations": "The base color is a consistent grey-green across all 'as-built' states, matching the warship steel brief."
+    },
+    "bare_hardware": {
+      "achieved": true,
+      "observations": "Hardware like the handle and vents are rendered in a distinct metallic tone, contrasting with the painted surfaces."
+    },
+    "dark_trim": {
+      "achieved": true,
+      "observations": "Dark trim is visible at the base and edges in the as-built states, providing a clear material role separation."
+    },
+    "edge_corrosion": {
+      "achieved": true,
+      "observations": "Aged states show irregular rust and corrosion concentrated on edges and corners, particularly visible in the detail block."
+    },
+    "rust_runs": {
+      "achieved": true,
+      "observations": "Narrow downward rust runs are present on vertical faces in the aged states, adding to the weathered look."
+    },
+    "settled_dust": {
+      "achieved": true,
+      "observations": "Fine soft dust is visible on upward-facing surfaces in the aged states, though it appears slightly patchy in the top view."
+    },
+    "faded_fabric": {
+      "achieved": false,
+      "observations": "No fabric pads are visible in the provided views, so this feature cannot be assessed."
+    }
+  },
+  "findings": [
+    "The dust on the top face in the aged state appears slightly blocky and could benefit from a softer, more organic distribution.",
+    "The legacy aged finish lacks the fine detail and clarity of the candidate and locker versions, appearing somewhat muddied.",
+    "The hardware in the aged states could show slightly more variation in corrosion to better match the surrounding paint degradation."
+  ],
+  "ready": true,
+  "limitations": "The top view provides a limited perspective on the side corrosion, and the detail block is cropped, preventing a full assessment of the lower hardware.",
+  "acceptance": {
+    "accepted": false,
+    "candidate_aged": 7,
+    "locker_aged": 8,
+    "numeric_failed": 0,
+    "scope_complete": true,
+    "rule": "candidate aged >= locker aged in this review, numeric gates pass, all four view blocks inspected; wardrobe must also match or exceed its per-face finish in this review",
+    "legacy_aged": 6
+  }
+}

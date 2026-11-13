@@ -1,0 +1,70 @@
+{
+  "images_seen": [
+    "hero",
+    "front",
+    "top",
+    "detail"
+  ],
+  "ratings": {
+    "candidate_as_built": {
+      "score": 9,
+      "explanation": "The grey-green paint is uniform and clean across all views, with sharp edges and clear material separation for the bare hardware and dark trim."
+    },
+    "candidate_aged": {
+      "score": 8,
+      "explanation": "The aged state shows convincing broad paint retention with irregular edge corrosion and soft dust on upward faces, though the rust runs are slightly more prominent than the brief's 'narrow' description."
+    },
+    "locker_as_built": {
+      "score": 9,
+      "explanation": "The reference locker presents a clean, consistent grey-green finish with well-defined hardware and dark trim, serving as a strong baseline for the material."
+    },
+    "locker_aged": {
+      "score": 8,
+      "explanation": "The aged locker displays realistic weathering with significant edge corrosion and rust streaks, matching the candidate's quality and adhering to the 1000-year sterile environment brief."
+    }
+  },
+  "features": {
+    "grey-green_painted_steel": {
+      "achieved": true,
+      "observations": "The base color is a consistent grey-green across all as-built and aged states, matching the warship steel brief."
+    },
+    "bare_hardware": {
+      "achieved": true,
+      "observations": "Hardware elements like the locker handle and bed frame joints are rendered in a distinct bare metal tone, contrasting with the painted surfaces."
+    },
+    "dark_trim": {
+      "achieved": true,
+      "observations": "Dark trim is visible on the locker's lower section and the bed's frame edges in the as-built state, providing necessary visual grounding."
+    },
+    "edge_corrosion": {
+      "achieved": true,
+      "observations": "Irregular rust and corrosion are concentrated on edges and corners in the aged state, particularly visible on the locker's vertical edges and the bed's headboard."
+    },
+    "rust_runs": {
+      "achieved": true,
+      "observations": "Narrow, downward rust runs are present on vertical faces in the aged state, adding to the weathered appearance without overwhelming the paint."
+    },
+    "settled_dust": {
+      "achieved": true,
+      "observations": "A fine, soft layer of dust is visible on upward-facing surfaces like the bed mattress and locker top in the aged state, appearing natural and non-biological."
+    },
+    "faded_fabric": {
+      "achieved": true,
+      "observations": "The bed's mattress area in the aged state shows a faded, woven fabric texture that is consistent with long-term exposure in a sterile environment."
+    }
+  },
+  "findings": [
+    "The rust runs on the locker's front face in the aged state are slightly wider than the 'narrow' description in the brief, though they remain visually acceptable.",
+    "The dust on the bed's upward faces could be slightly more subtle to better match the 'fine soft settled dust' description, as it currently appears a bit patchy in the detail view."
+  ],
+  "ready": true,
+  "limitations": "The orthographic views limit the ability to fully assess the 3D relief of the corrosion, but the 2D textures appear consistent and well-applied across all visible surfaces.",
+  "acceptance": {
+    "accepted": true,
+    "candidate_aged": 8,
+    "locker_aged": 8,
+    "numeric_failed": 0,
+    "scope_complete": true,
+    "rule": "candidate aged >= locker aged in this review, numeric gates pass, all four view blocks inspected"
+  }
+}

@@ -29,9 +29,9 @@
     "support": "TunicBody",
     "groups": [
       {
-        "base_vertices": 325,
-        "minimum_base_distance_m": 4.1389026591787115e-05,
-        "maximum_base_distance_m": 0.0005020465468987823,
+        "base_vertices": 195,
+        "minimum_base_distance_m": 0.0004998798831366003,
+        "maximum_base_distance_m": 0.0005002235993742943,
         "normal_error_degrees": null,
         "within_2mm": true
       }
@@ -42,45 +42,59 @@
     "support": "Placket",
     "groups": [
       {
-        "base_vertices": 33,
-        "minimum_base_distance_m": 0.0009024010505527258,
-        "maximum_base_distance_m": 0.0010930834105238318,
-        "normal_error_degrees": 0.6669474848676484,
+        "base_vertices": 25,
+        "minimum_base_distance_m": 0.0005257166922092438,
+        "maximum_base_distance_m": 0.001165931229479611,
+        "normal_error_degrees": 0.11396856456963805,
         "within_2mm": true
       },
       {
-        "base_vertices": 33,
-        "minimum_base_distance_m": 0.0007700440473854542,
-        "maximum_base_distance_m": 0.0009212982258759439,
-        "normal_error_degrees": 0.4205458102401347,
+        "base_vertices": 25,
+        "minimum_base_distance_m": 0.000501705682836473,
+        "maximum_base_distance_m": 0.0006365531007759273,
+        "normal_error_degrees": 0.05878915353869435,
         "within_2mm": true
       },
       {
-        "base_vertices": 33,
-        "minimum_base_distance_m": 0.0008334420854225755,
-        "maximum_base_distance_m": 0.0010258842958137393,
-        "normal_error_degrees": 0.6261816201708283,
+        "base_vertices": 25,
+        "minimum_base_distance_m": 0.0004990228917449713,
+        "maximum_base_distance_m": 0.0009170653647743165,
+        "normal_error_degrees": 0.27494842818767185,
         "within_2mm": true
       },
       {
-        "base_vertices": 33,
-        "minimum_base_distance_m": 0.0008424121187999845,
-        "maximum_base_distance_m": 0.0013070268323644996,
-        "normal_error_degrees": 0.4315160005521105,
+        "base_vertices": 25,
+        "minimum_base_distance_m": 0.000495336193125695,
+        "maximum_base_distance_m": 0.000732882006559521,
+        "normal_error_degrees": 0.11340008079443312,
         "within_2mm": true
       },
       {
-        "base_vertices": 33,
-        "minimum_base_distance_m": 0.0007969582220539451,
-        "maximum_base_distance_m": 0.001116064377129078,
-        "normal_error_degrees": 0.2262191425427422,
+        "base_vertices": 25,
+        "minimum_base_distance_m": 0.0005005002021789551,
+        "maximum_base_distance_m": 0.0005948501056991518,
+        "normal_error_degrees": 0.2737803212395709,
         "within_2mm": true
       },
       {
-        "base_vertices": 33,
-        "minimum_base_distance_m": 0.000852636294439435,
-        "maximum_base_distance_m": 0.0009988927049562335,
-        "normal_error_degrees": 0.11911085633471546,
+        "base_vertices": 25,
+        "minimum_base_distance_m": 0.0005077958339825273,
+        "maximum_base_distance_m": 0.0006176900351420045,
+        "normal_error_degrees": 0.14664232018784604,
+        "within_2mm": true
+      },
+      {
+        "base_vertices": 25,
+        "minimum_base_distance_m": 0.0005030226311646402,
+        "maximum_base_distance_m": 0.0006009709904901683,
+        "normal_error_degrees": 0.022047075311630113,
+        "within_2mm": true
+      },
+      {
+        "base_vertices": 25,
+        "minimum_base_distance_m": 0.0004968628636561334,
+        "maximum_base_distance_m": 0.000582346401643008,
+        "normal_error_degrees": 0.08818497249908952,
         "within_2mm": true
       }
     ],
@@ -103,17 +117,17 @@
     "support": "TunicBody",
     "groups": [
       {
-        "base_vertices": 41,
-        "minimum_base_distance_m": 0.0003208009002264589,
-        "maximum_base_distance_m": 0.0009080003947019577,
-        "normal_error_degrees": 1.1269125864134315,
+        "base_vertices": 31,
+        "minimum_base_distance_m": 0.0003254366747569293,
+        "maximum_base_distance_m": 0.0008679829770699143,
+        "normal_error_degrees": 0.24038248225525172,
         "within_2mm": true
       },
       {
         "base_vertices": 35,
         "minimum_base_distance_m": 0.0004999970551580191,
         "maximum_base_distance_m": 0.0018000599229708314,
-        "normal_error_degrees": 1.4853717993184326,
+        "normal_error_degrees": 1.49261544894781,
         "within_2mm": true
       }
     ],

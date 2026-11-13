@@ -9,7 +9,7 @@
       ],
       [
         0.550000011920929,
-        0.6899999976158142,
+        0.938887357711792,
         0.27809999650982575
       ]
     ],
@@ -21,7 +21,7 @@
       ],
       [
         0.55,
-        0.69,
+        0.9388873216880659,
         0.275
       ]
     ],
@@ -71,16 +71,6 @@
     "ControlPanel": {
       "actual": "Console",
       "expected": "Console",
-      "pass": true
-    },
-    "Keys": {
-      "actual": "ControlPanel",
-      "expected": "ControlPanel",
-      "pass": true
-    },
-    "Toggles": {
-      "actual": "ControlPanel",
-      "expected": "ControlPanel",
       "pass": true
     }
   },
@@ -199,222 +189,6 @@
       "positive_volume": true,
       "pass": true
     },
-    "Key_0_0": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Key_0_1": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Key_0_2": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Key_0_3": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Key_0_4": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Key_0_5": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Key_1_0": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Key_1_1": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Key_1_2": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Key_1_3": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Key_1_4": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Key_1_5": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Key_2_0": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Key_2_1": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Key_2_2": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Key_2_3": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Key_2_4": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Key_2_5": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Key_3_0": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Key_3_1": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Key_3_2": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Key_3_3": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Key_3_4": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Key_3_5": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
     "LowerDeckHousing": {
       "component_count": 1,
       "probe_count": 54,
@@ -432,64 +206,10 @@
       "winding_consistent": true,
       "positive_volume": true,
       "pass": true
-    },
-    "ToggleSocket_0": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "ToggleSocket_1": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "ToggleSocket_2": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Toggle_0": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Toggle_1": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
-    },
-    "Toggle_2": {
-      "component_count": 1,
-      "probe_count": 54,
-      "missed_rays": 0,
-      "watertight": true,
-      "winding_consistent": true,
-      "positive_volume": true,
-      "pass": true
     }
   },
   "degenerate_faces": 0,
-  "triangle_count": 5088,
+  "triangle_count": 1488,
   "triangle_limit": 15000,
   "material_slots": [
     "BareSteel",
@@ -503,11 +223,11 @@
     "max_overlap_area_uv2": 0.0,
     "out_of_unit_square_coordinates": 0,
     "linear_texel_density_p05_p50_p95": [
-      0.28874949925910903,
-      0.30500219447484433,
-      0.3168045808915054
+      0.2763312636905515,
+      0.2915995638894797,
+      0.3023295615731279
     ],
-    "density_p95_p05_ratio": 1.0971606243625767,
+    "density_p95_p05_ratio": 1.0940838091765488,
     "pass": true
   },
   "hero_first_hit_visibility": {
@@ -519,18 +239,10 @@
       "minimum": 0.6,
       "pass": true
     },
-    "Key_1_4": {
+    "ControlPanel": {
       "sample_count": 54,
-      "visible_projected_area_fraction": 0.8471480021961956,
-      "visible_triangle_fraction": 0.9074074074074074,
-      "projection": "orthographic",
-      "minimum": 0.6,
-      "pass": true
-    },
-    "Toggle_1": {
-      "sample_count": 102,
-      "visible_projected_area_fraction": 0.9934320565548946,
-      "visible_triangle_fraction": 0.803921568627451,
+      "visible_projected_area_fraction": 0.9493003373209468,
+      "visible_triangle_fraction": 0.5555555555555556,
       "projection": "orthographic",
       "minimum": 0.6,
       "pass": true
@@ -547,6 +259,25 @@
   "byte_identical_reexport": true,
   "axis_contract": "Blender Z-up/-Y front -> exported glTF +Y up/+Z front; bounds measured outside Blender",
   "pass": true,
+  "display_fit": {
+    "size_m": [
+      0.8740000128746033,
+      0.5462499856948853,
+      0.004000000189989805
+    ],
+    "aspect": 1.6000000654696345,
+    "lower_edge_gltf_m": [
+      0.0,
+      0.45487870006440273,
+      0.06209227002566867
+    ],
+    "front_normal_gltf": [
+      0.0,
+      0.5144957558209481,
+      0.8574929254764913
+    ],
+    "pass": true
+  },
   "console_parts": {
     "display_material": "Display",
     "display_emissive_factor": [
@@ -554,8 +285,8 @@
       0.0026999999910592987,
       0.00285000002160668
     ],
-    "key_count": 24,
-    "toggle_count": 3,
+    "key_count": 0,
+    "toggle_count": 0,
     "single_shared_asset_states": [
       "remembered",
       "present"

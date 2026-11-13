@@ -1,0 +1,5 @@
+Full Hunyuan3D-2mv, seed 4208, octree resolution 320, 30 inference steps, min component faces 50, remove-bg enabled. Generation succeeded in 175.8 seconds with peak MLX memory 6.67 GB. Mesh output: 134,460 vertices, 270,284 triangles, watertight, 2 connected components (270,192 and 92 triangles). Raw output and complete stdout log remain in tmp/verify-stasis-ceiling/hunyuan/.
+
+The first invocation used the CLI default relative model path from the game workspace and failed before model loading. The retry supplied the absolute local model root; no model files were changed and offline mode remained enabled.
+
+Render logs and raw fixed-angle passes are in tmp/verify-stasis-ceiling/hunyuan/render.log and panel-seed-4208-{above,underside}.png. Combined parent-review sheet: candidate-seed-4208-multiview.png. Review the image externally; this producer did not visually judge it.

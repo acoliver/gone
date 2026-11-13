@@ -39,6 +39,9 @@ func _ready() -> void:
 	hallway = ship.hallway
 	power_room = ship.power_room
 	_add_player()
+	if DemoStart.selected(OS.get_cmdline_user_args()) == "quarters":
+		DemoStart.quarters(game, player)
+		DemoStart.prepare_ship(ship, player)
 	_add_wake_presentation()
 	_add_wake_audio()
 	_add_smoke_symptoms()
@@ -52,6 +55,7 @@ func _ready() -> void:
 	step.fixtures.assign([ship.lighting, hallway, power_room])
 	voice_presentation = VoicePresentation.build(game, player)
 	add_child(voice_presentation)
+	add_child(HelpPanel.build(player))
 
 func _physics_process(_delta: float) -> void:
 	step.advance()

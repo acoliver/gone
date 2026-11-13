@@ -1,0 +1,75 @@
+{
+  "images_seen": [
+    "hero",
+    "front",
+    "top",
+    "detail"
+  ],
+  "ratings": {
+    "candidate_as_built": {
+      "score": 8,
+      "explanation": "The grey-green paint is consistent and clean across all views, with clear dark trim and hardware, though the surface appears slightly flat in the detail view."
+    },
+    "candidate_aged": {
+      "score": 7,
+      "explanation": "The aged state shows convincing broad paint retention with irregular edge corrosion and rust runs, but the rust texture on the locker front appears somewhat blotchy and lacks fine detail."
+    },
+    "locker_as_built": {
+      "score": 8,
+      "explanation": "The reference locker presents a solid, uniform grey-green finish with distinct dark hardware and trim, matching the brief for new warship steel."
+    },
+    "locker_aged": {
+      "score": 7,
+      "explanation": "The aged locker shows significant weathering with rust concentrated on edges and corners, though the transition between paint and rust is slightly abrupt in the front view."
+    }
+  },
+  "features": {
+    "grey-green_painted_steel": {
+      "achieved": true,
+      "observations": "The base color is a consistent grey-green across all as-built views, matching the warship steel brief."
+    },
+    "bare_hardware": {
+      "achieved": true,
+      "observations": "Hardware elements like handles and vents are visible and distinct in the as-built state, appearing as bare metal or dark trim."
+    },
+    "dark_trim": {
+      "achieved": true,
+      "observations": "Dark trim is present around the console screen and on the locker door edges in the as-built state."
+    },
+    "edge_corrosion": {
+      "achieved": true,
+      "observations": "The aged state shows clear rust and corrosion concentrated on the edges and corners of both the console and locker."
+    },
+    "rust_runs": {
+      "achieved": true,
+      "observations": "Narrow downward rust runs are visible on the vertical faces of the aged locker and console."
+    },
+    "settled_dust": {
+      "achieved": true,
+      "observations": "A fine, soft dust layer is visible on the upward-facing surfaces of the aged console and locker."
+    },
+    "faded_fabric": {
+      "achieved": false,
+      "observations": "No fabric pads are visible on the console or locker in any view."
+    },
+    "retained_glass": {
+      "achieved": true,
+      "observations": "The console screen retains its dark, original finish in both as-built and aged states."
+    }
+  },
+  "findings": [
+    "The rust texture on the aged locker front appears slightly blotchy and lacks fine detail, particularly in the front view.",
+    "The transition between paint and rust on the aged locker is somewhat abrupt, which could be smoothed for a more natural look.",
+    "The as-built surface in the detail view appears slightly flat, lacking subtle surface variation that would enhance the material's realism."
+  ],
+  "ready": true,
+  "limitations": "The images are orthographic and neutral-lit, which may not fully reveal the material's response to dynamic lighting or shadows.",
+  "acceptance": {
+    "accepted": true,
+    "candidate_aged": 7,
+    "locker_aged": 7,
+    "numeric_failed": 0,
+    "scope_complete": true,
+    "rule": "candidate aged >= locker aged in this review, numeric gates pass, all four view blocks inspected"
+  }
+}

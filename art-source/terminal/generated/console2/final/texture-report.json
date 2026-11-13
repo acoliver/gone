@@ -1,0 +1,83 @@
+{
+  "reference_paint_median_srgb_255": [
+    117.0,
+    125.0,
+    80.0
+  ],
+  "reference_selected_pixels": 15327,
+  "reference_mask": "reference-paint-mask.png",
+  "reference_selection": "Connected lit yellow-green pixels: G 102..174, G-R >=2, R/G >0.80, B/G 0.50..0.80, image interior; connected patches >=12 pixels. Excludes dark screen, brown background, deep shadows and neutral highlights.",
+  "resolved_paint_median_srgb_255": [
+    117.0,
+    125.0,
+    80.0
+  ],
+  "chip_size_noise": {
+    "fine_scale_per_m": 145,
+    "middle_scale_per_m": 53,
+    "large_scale_per_m": 9,
+    "large_octave_peak_boost": 0.35
+  },
+  "edge_chip_coverage": 0.09000100499626716,
+  "steel_fraction_of_chips": 0.05000997008973081,
+  "rust_fraction_of_chips": 0.2500099700897308,
+  "undercoat_fraction_of_chips": 0.6999800598205383,
+  "rust_median_srgb_255": [
+    95.83365517347409,
+    61.88505916440235,
+    43.9122730419526
+  ],
+  "steel_median_srgb_255": [
+    104.01275547609778,
+    103.01264740173981,
+    87.01091821201254
+  ],
+  "streaks": [
+    {
+      "seam_x_m": -0.36,
+      "start_z_m": 1.1075546588897707,
+      "length_m": 0.4451124637388965,
+      "nominal_width_mm": 8.0,
+      "maximum_blend": 0.13
+    },
+    {
+      "seam_x_m": -0.19,
+      "start_z_m": 0.9765546588897706,
+      "length_m": 0.3289961688504887,
+      "nominal_width_mm": 5.0,
+      "maximum_blend": 0.15
+    },
+    {
+      "seam_x_m": 0.025,
+      "start_z_m": 1.1065546588897706,
+      "length_m": 0.5999341902567735,
+      "nominal_width_mm": 6.4,
+      "maximum_blend": 0.1
+    },
+    {
+      "seam_x_m": 0.225,
+      "start_z_m": 0.9765546588897706,
+      "length_m": 0.4064070321094272,
+      "nominal_width_mm": 9.0,
+      "maximum_blend": 0.11
+    },
+    {
+      "seam_x_m": 0.375,
+      "start_z_m": 1.1115546588897705,
+      "length_m": 0.5031706111831004,
+      "nominal_width_mm": 5.6,
+      "maximum_blend": 0.14
+    }
+  ],
+  "streak_affected_texels": 4919,
+  "resolution": [
+    2048,
+    2048
+  ],
+  "dust": {
+    "maximum_blend": 0.10947707295417786,
+    "allowed_maximum_blend": 0.15,
+    "upward_ao_driven": true,
+    "median_blend": 0.00946795754134655
+  }
+}

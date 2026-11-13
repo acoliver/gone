@@ -45,10 +45,13 @@ func test_imported_alpha_modes_two_sided_cards_and_pbr_survive() -> void:
 			for surface: int in range(primitives.size()):
 				var source: Dictionary = data.materials[primitives[surface].material]
 				var finish := piece.get_surface_override_material(surface) as ShaderMaterial
+				if node.name == "Medal" and surface == 2:
+					_assert_ribbon(finish, piece.mesh.surface_get_material(surface), state)
+					continue
 				var mode: String = source.get("alphaMode", "OPAQUE")
 				var expected: String = {"OPAQUE": "opaque", "MASK": "mask", "BLEND": "blend"}[mode]
-				assert_true(finish.shader.resource_path.ends_with("quarters_tunic_%s.gdshader" % expected), "exported alpha mode: " + source.name)
-				assert_true("cull_disabled" in finish.shader.code, "two-sided cloth/cards")
+				assert_true(finish.shader.resource_path.ends_with("quarters_medal.gdshader" if node.name == "Medal" and surface < 2 else "quarters_tunic_%s.gdshader" % expected), "exported alpha mode: " + source.name)
+				if node.name != "Medal" or surface == 2: assert_true("cull_disabled" in finish.shader.code, "two-sided cloth/cards")
 				if mode == "MASK": _near(finish.get_shader_parameter("alpha_cutoff"), source.get("alphaCutoff", .5), .00001, "cloth alpha cutoff")
 				_near(finish.get_shader_parameter("metallic"), source.pbrMetallicRoughness.get("metallicFactor", 1.0), .00001, "metallic retained")
 				_near(finish.get_shader_parameter("roughness"), source.pbrMetallicRoughness.get("roughnessFactor", 1.0), .00001, "roughness retained")
@@ -66,6 +69,9 @@ func test_embedded_textures_have_mips_and_correct_colour_roles() -> void:
 		for piece: MeshInstance3D in model.find_children("*", "MeshInstance3D", true, false):
 			for surface: int in range(piece.mesh.get_surface_count()):
 				var finish := piece.get_surface_override_material(surface) as ShaderMaterial
+				if piece.name == &"Medal" and surface == 2:
+					_assert_ribbon(finish, piece.mesh.surface_get_material(surface), state)
+					continue
 				assert_true("filter_linear_mipmap" in FileAccess.get_file_as_string("res://app/shaders/quarters_tunic.gdshaderinc"), "filtered minification")
 				for texture: Texture2D in [finish.get_shader_parameter("albedo_texture"), finish.get_shader_parameter("normal_texture")]:
 					if texture != null: assert_true(texture.get_image().has_mipmaps(), "embedded colour/data texture has mips")
@@ -80,11 +86,26 @@ func test_brass_ribbon_and_soft_shoulder_remain_separate() -> void:
 		var model := _model(state)
 		QuartersProps.apply(model, &"dress_uniform", state)
 		var medal := model.find_child("Medal", true, false) as MeshInstance3D
-		assert_int_equal(medal.mesh.get_surface_count(), 2, "medal and ribbon are distinct surfaces")
+		assert_int_equal(medal.mesh.get_surface_count(), 3, "issue #130 keeps brass, enamel and sewn ribbon distinct")
 		assert_true(medal.get_surface_override_material(0) != medal.get_surface_override_material(1), "brass never replaces ribbon")
+		var enamel := medal.get_surface_override_material(1) as ShaderMaterial
+		var ribbon := medal.get_surface_override_material(2) as ShaderMaterial
+		assert_true(enamel.get_shader_parameter("albedo_texture") != null, "#130 enamel blue comes from the accepted atlas; exported UV samples checked independently")
+		_near(enamel.get_shader_parameter("roughness"), 1.0, .00001, "#130 enamel roughness is in ORM.G, unit factor")
+		_near(enamel.get_shader_parameter("metallic"), 1.0, .00001, "#130 enamel dielectric mask is in ORM.B, unit factor")
+		assert_false("pigment_gain" in enamel.shader.code, "#130 dedicated enamel has no wool calibration input")
+		_assert_ribbon(ribbon, medal.mesh.surface_get_material(2), state)
 		var brass := medal.get_surface_override_material(0) as ShaderMaterial
-		_near(brass.get_shader_parameter("metallic"), .15 if state == &"aged" else .8, .00001, "bright/dull brass")
+		_near(brass.get_shader_parameter("metallic"), 1.0, .00001, "#130 brass metallic is in ORM.B, unit factor")
+		_near(brass.get_shader_parameter("roughness"), 1.0, .00001, "#130 brass roughness is in ORM.G, unit factor")
+		_near(brass.get_shader_parameter("specular"), .5, .00001, "#130 medal PBR bypasses the aged pigment specular rule")
 		if state == &"aged":
+			for part: String in ["Buttons", "CollarInsignia_L", "CollarInsignia_R"]:
+				var piece := model.find_child(part, true, false) as MeshInstance3D
+				var finish := piece.get_surface_override_material(0) as ShaderMaterial
+				_near(finish.get_shader_parameter("metallic"), .15, .00001, part + " tarnish unchanged")
+				_near(finish.get_shader_parameter("roughness"), .94, .00001, part + " roughness unchanged")
+				_near(finish.get_shader_parameter("specular"), .12, .00001, part + " specular unchanged")
 			var body := model.find_child("TunicBody", true, false) as MeshInstance3D
 			assert_int_equal(body.mesh.get_surface_count(), 3, "soft shoulder rim is not merged into masked cloth")
 			assert_true((body.get_surface_override_material(2) as ShaderMaterial).shader.resource_path.ends_with("_blend.gdshader"), "shoulder keeps fractional alpha")
@@ -116,9 +137,16 @@ func test_wool_display_calibration_does_not_tint_brass_or_clean_wool() -> void:
 		for piece: MeshInstance3D in model.find_children("*", "MeshInstance3D", true, false):
 			for surface: int in range(piece.mesh.get_surface_count()):
 				var finish := piece.get_surface_override_material(surface) as ShaderMaterial
-				var gain: Vector3 = finish.get_shader_parameter(&"pigment_gain")
 				var source := piece.mesh.surface_get_material(surface) as StandardMaterial3D
-				var wool := state == &"aged" and is_zero_approx(source.metallic) and source.resource_name != "RibbonFabric"
+				if piece.name == &"Medal" and surface < 2:
+					assert_false("pigment_gain" in finish.shader.code, "#130 medal never receives wool calibration")
+					assert_true(finish.get_shader_parameter(&"albedo_texture") == source.albedo_texture, "medal atlas unchanged")
+					continue
+				if piece.name == &"Medal" and surface == 2:
+					_assert_ribbon(finish, source, state)
+					continue
+				var gain: Vector3 = finish.get_shader_parameter(&"pigment_gain")
+				var wool := state == &"aged" and is_zero_approx(source.metallic) and source.resource_name != "RibbonFabric" and not source.resource_name.begins_with("MedalEnamel")
 				assert_true(gain == (QuartersProps.TUNIC_AGED_WOOL_GAIN if wool else Vector3.ONE), "calibration is confined to aged wool/dust/fibres")
 				assert_true(finish.get_shader_parameter(&"albedo_texture") == source.albedo_texture, "no texture is copied or recoloured")
 				_near(finish.get_shader_parameter(&"normal_scale"), source.normal_scale, .00001, "normal strength retained")
@@ -129,6 +157,14 @@ func test_export_uses_constant_orm_and_linear_normal_data() -> void:
 	for state: StringName in QuartersProps.STATES:
 		var data := _gltf(state)
 		for source: Dictionary in data.materials:
+			if source.name.begins_with("MedalBrass") or source.name.begins_with("MedalEnamel"):
+				assert_true(source.pbrMetallicRoughness.has("metallicRoughnessTexture") and source.has("occlusionTexture"), "#130 medal packed ORM required")
+				continue
+			if source.name == "RibbonFabric_Medal":
+				assert_true(source.pbrMetallicRoughness.has("metallicRoughnessTexture") and source.has("normalTexture"), "woven source exports roughness and normal")
+				assert_false(source.has("occlusionTexture"), "ribbon has no baked ambient tint")
+				_near(source.pbrMetallicRoughness.metallicFactor, 0, .00001, "ribbon stays dielectric")
+				continue
 			assert_false(source.pbrMetallicRoughness.has("metallicRoughnessTexture"), "this tunic export uses constant metallic/roughness, not an ORM atlas")
 			assert_false(source.has("occlusionTexture"), "ambient occlusion is baked into the supplied colour")
 		var model := _model(state)
@@ -137,7 +173,7 @@ func test_export_uses_constant_orm_and_linear_normal_data() -> void:
 			for surface: int in range(piece.mesh.get_surface_count()):
 				var finish := piece.get_surface_override_material(surface) as ShaderMaterial
 				var source := piece.mesh.surface_get_material(surface) as StandardMaterial3D
-				assert_true(finish.get_shader_parameter(&"normal_texture") == source.normal_texture, "linear normal texture retained")
+				assert_true(finish.get_shader_parameter(&"weave_normal" if piece.name == &"Medal" and surface == 2 else &"normal_texture") == source.normal_texture, "linear normal texture retained")
 		model.free()
 
 func test_two_sided_normals_are_flipped_only_by_the_renderer() -> void:
@@ -158,7 +194,7 @@ func test_baked_maps_use_remapped_uvs_and_generated_tangents() -> void:
 			var imported := piece.mesh.surface_get_material(surface) as StandardMaterial3D
 			if not source.has("normalTexture"): continue
 			var coordinates: int = source.normalTexture.get("texCoord", 0)
-			assert_int_equal(imported.get_meta("_gltf_primary_texture_coord"), coordinates, "normal and colour use the importer's primary UV remapping")
+			assert_int_equal(imported.get_meta("_gltf_primary_texture_coord", 0), coordinates, "normal and colour use the importer's primary UV remapping")
 			var arrays := piece.mesh.surface_get_arrays(surface)
 			var normals: PackedVector3Array = arrays[Mesh.ARRAY_NORMAL]
 			var tangents: PackedFloat32Array = arrays[Mesh.ARRAY_TANGENT]
@@ -192,3 +228,21 @@ func _gltf(state: StringName) -> Dictionary:
 
 func _near(actual: float, expected: float, tolerance: float, message: String) -> void:
 	assert_true(absf(actual - expected) <= tolerance, message)
+
+func _assert_ribbon(finish: ShaderMaterial, imported: StandardMaterial3D, state: StringName) -> void:
+	assert_true(finish.shader.resource_path.ends_with("quarters_ribbon.gdshader"), "dedicated woven ribbon shader")
+	assert_true("cull_disabled" in finish.shader.code and "COLOR.rgb" in finish.shader.code, "two-sided ribbon retains authored stripe colours")
+	assert_false("pigment_gain" in finish.shader.code, "ribbon never receives wool calibration")
+	assert_true(finish.get_shader_parameter("base_colour") == imported.albedo_color, "ribbon base colour retained")
+	assert_true(finish.get_shader_parameter("aged") == (state == &"aged"), "dry fading is state-local")
+	assert_true(imported.normal_enabled and imported.normal_texture != null, "editable source carries the weave normal")
+	assert_true(finish.get_shader_parameter("weave_normal") == imported.normal_texture, "runtime consumes the exported weave normal")
+	assert_true(finish.get_shader_parameter("weave_roughness") == imported.roughness_texture, "runtime consumes the exported packed roughness")
+	assert_true("texture(weave_roughness, weave_uv).g" in finish.shader.code, "ribbon roughness consumes packed G")
+	for role: String in ["albedo_texture", "weave_normal", "weave_roughness"]:
+		var texture := finish.get_shader_parameter(role) as Texture2D
+		assert_true(texture != null and texture.get_image().has_mipmaps(), "filtered woven map: " + role)
+	assert_true((finish.get_shader_parameter("weave_scale") as Vector2).is_equal_approx(Vector2(260, 260)), "source controls resolved 0.256 mm ribbon ribs")
+	assert_true(finish.get_shader_parameter("weave_offset") == Vector2(imported.uv1_offset.x, imported.uv1_offset.y), "source weave phase retained")
+	assert_true("METALLIC = 0.0" in finish.shader.code, "ribbon stays dielectric")
+	assert_true("SPECULAR = 0.4" in finish.shader.code, "woven dielectric specular")

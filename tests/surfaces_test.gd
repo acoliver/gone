@@ -43,7 +43,7 @@ func test_surface_materials_wear_the_approved_shared_scan_maps() -> void:
 func test_room_shell_swaps_textured_materials_in_place() -> void:
 	var room := RoomGeometry.build()
 	var shell: Array[Placement.SolidPlacement] = Placement.room_shell()
-	assert_int_equal(room.get_child_count(), 7, "six shell boxes plus the ceiling damage group")
+	assert_int_equal(room.get_child_count(), 6, "six shell boxes only after removing the bay tray presenter")
 	for index: int in range(shell.size()):
 		var box: MeshInstance3D = room.get_child(index)
 		var expected := RoomGeometry.wall_material()
@@ -63,17 +63,10 @@ func test_room_shell_swaps_textured_materials_in_place() -> void:
 	)
 	assert_int_equal(
 		_count_instances(room, MeshInstance3D),
-		shell.size() + Placement.cable_trays().size() + Placement.wire_loops().size(),
-		"the pass swaps materials in place; no meshes are added"
+		shell.size(),
+		"removing three trays and six hangers leaves only shell meshes"
 	)
-	var damage := room.get_child(shell.size())
-	for child: Node in damage.get_children():
-		var dressing: MeshInstance3D = child
-		assert_true(
-			dressing.material_override is StandardMaterial3D
-				and dressing.material_override.albedo_texture == null,
-			"tray and wire dressing keeps its flat grey material"
-		)
+	assert_false(room.has_node("CeilingDamage"), "no empty tray presenter remains")
 
 	room.free()
 
