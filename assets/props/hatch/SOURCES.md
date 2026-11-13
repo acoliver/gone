@@ -91,7 +91,9 @@ Measure per-pixel linear RGB in the unchanged rectangles with `tests/test_hatch_
 
 ### Asset rebuild
 
-Keep the supplied GLB and PNG `.import` files. From the repository root:
+Keep the supplied GLB and PNG `.import` files. The abbreviated command in
+`build_hatch.py` assumes its `--input` already exists. The export step below
+creates the input on a clean checkout. From the repository root:
 
 ```sh
 mkdir -p tmp/hatch-model/round10
@@ -103,7 +105,8 @@ godot --headless --path . -s tools/export_hatch_parts.gd -- \
   --background --factory-startup --python-exit-code 1 --python tools/blender/build_hatch.py -- \
   --input tmp/hatch-model/round10/parts-source.json --output assets/props/hatch/hatch.glb \
   --resolution 2048 --samples 8
-node tmp/pipeline/valtool/validate.cjs assets/props/hatch/hatch.glb \
+npm ci --prefix tools/gltf-validator
+node tools/gltf-validator/validate.cjs assets/props/hatch/hatch.glb \
   tmp/hatch-model/round10/validate.json
 godot --headless --path . --import
 godot --headless --path . --import

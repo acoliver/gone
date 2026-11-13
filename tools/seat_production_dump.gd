@@ -47,6 +47,8 @@ static func write(ceiling: Node3D, path: String) -> void:
 		var source := SeatRailComponent.build(part)
 		_collect(source,Transform3D.IDENTITY,"/Source_"+String(part),data)
 		source.free()
+	var error := DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(path.get_base_dir()))
+	assert(error==OK,"numeric production readback parent directory")
 	var file := FileAccess.open(path,FileAccess.WRITE)
 	assert(file!=null,"numeric production readback output")
 	file.store_string(JSON.stringify(data)+"\n")
