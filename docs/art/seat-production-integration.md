@@ -1,33 +1,31 @@
-# Production ceiling seat and pickup, issue 110
+# Ceiling seat and pickup
 
-The production bay now uses the passed formed-seat source for its lower cross supports and the detached pickup. The source GLBs, image-derived PBR, shared component API and 115-degree floor pose are unchanged. Upper 55 mm carriers, webs, primary longitudinal ledgers, fixtures and service positions remain in place.
+The lower formed ceiling seat supports bay panels. At the fault station, a missing interval matches the floor fragment that the player picks up and uses to pry the hatch. The upper 55 mm carriers remain continuous. [Wiring layout](stasis-wiring-layout.md) describes the panel opening and exposed power tips at that station.
 
-## Installed geometry
+## Sources and installation
 
-`app/seat_rail_mesh.gd` provides `span(length)`, `clipped(part, low, high)` and `cache_size()`. It clips imported source triangles in source-local X, interpolates UVs and normals, and closes the physical sheet cuts with concave caps. It does not scale the profile, holes or UV atlas. Intersection ordering is deterministic across incident faces. Cap triangulation uses millimetres so Godot's polygon tolerance does not erase the small bend radii.
+`tools/seat_rail.py` defines the shared formed profile, cut contours, material and floor pose. `art-source/stasis-wiring/seat-rail/` retains its generated guide and image-derived PBR source. `tools/build_seat_rail.py` builds the source family under `assets/props/stasis-wiring/seat-rail/`: `full.glb`, `left.glb`, `middle.glb` and `right.glb`, with finish textures and manifests.
 
-The production ceiling has 130 healthy spans sharing three meshes: 1.164 m, 0.9635 m and 0.143499 m. Two additional cached meshes retain the left and right source ends, clipped at X = -0.582 and +0.582 m. These butt against the primary long ledgers. No old flat cross strip remains beneath the new seats or the missing middle.
+`app/seat_rail_mesh.gd` clips imported source triangles to the installed span lengths, interpolates UVs and normals, and caps the sheet cuts. It preserves the profile rather than scaling it. `app/bay_ceiling.gd` installs the spans and retained ends. The bearing top is Y=2.988 m in bay coordinates; the profile is 42 mm wide, 18 mm deep and 2.5 mm thick, with a 36 mm bearing face.
 
-The bearing top stays at Y = 2.988 m. The overall profile is 42 mm wide and 18 mm deep, with the original 36 mm bearing and 2.5 mm gauge. During the existing panel merge, horizontal flange planes are restored to their exported -2 mm underside. Godot's compressed imports otherwise move those planes by approximately 0.15 to 0.4 micrometres. The panel rim, texture coordinates and asset files are retained.
+The failed seat is centered at bay `(-0.6, 2.988, -0.6)`, beside the empty panel cell `(4,4)`. `app/rod.gd` uses the same middle source for the pickup. Its floor pose rolls 115 degrees about the longitudinal axis; translation is derived from transformed vertices so its lowest point meets Y=0. The pickup anchor, reach and click proxy belong to gameplay and must remain aligned when changing the mesh.
 
-## Coordinate correction
+## Rebuild and verify
 
-The empty cell is (4,4), centered at bay (-0.6,2.99,-0.9). Sag is (3,4); broken edge is (4,5). The previous damaged cells and bowed strip at Z = 1.8 are repaired.
+Run from the repository root with the art Python environment and Blender 4.5.11 available at the path in `tools/build_seat_rail.py`:
 
-**The installed failed-seat center is (-0.6,2.988,-0.6), rather than the requested Z = -1.2.** Z = -1.2 borders beam-aperture cassette (4,3), removing a healthy cassette bearing. Keeping the broken-edge panel at (4,5) also caused up to 10 mm of real penetration into the intact seat at Z = -0.6. Using the north boundary aligns the one matched source gap with that panel's missing flange, preserves every healthy bearing, and requires no asset redesign or fixture movement.
+```sh
+python tools/build_seat_rail.py
+godot --headless --editor --path . --import
+python -m unittest discover -s tools -p 'test_seat_rail.py'
+godot --headless --path . -s tools/run_seat_production_tests.gd
+python tools/check_seat_production.py
+```
 
-## Verification
+The builder updates source assets and proof geometry. Its `--floor-only` option updates the baked proof fragment pose without rebuilding the source family. The guarded Godot runner writes the native instance readback consumed by the Python checker. Checks cover closed metal volumes, retained UVs/normals, panel bearings, ledger junctions, rail/panel penetration, pickup bounds and hatch-pry behavior.
 
-The focused runner inherits the production child-process script-error guard. It covers ceiling layout, bounds, bearings, ledger junctions, fixture visibility, source identity, pickup, click-proxy boundaries and hatch prying. Native checks retain all 7,531 panel-bearing samples and all 32 cassette-edge contacts. Nine top-skin rays on each installed span add 1,170 physical gauge samples. All six beam footprints remain unobstructed; ledger junctions have zero positive-area horizontal overlaps.
+Use `godot --path . -s tools/capture_seat_production.gd` for production-light inspection views. The script selects its own output directory. [Standalone rail inspection](seat-rail-readability.md) provides neutral profile and fracture views.
 
-`tools/check_seat_production.py` audits native instance readback. All five cached meshes have closed, consistently wound metal volumes and an open channel. Source UV error is at most 6.26e-8; source-normal interpolation error is below 7.78e-5 after normal packing. It checks 223 installed rail/panel candidate pairs, representing seven relative source arrangements, with zero below-bearing edge intersections or contained vertices. The original penetration tolerance is retained.
+## Known limitations
 
-`Rod/RodBar` now contains the passed `middle.glb` with its floor transform applied once. Its actual floor contact is Y = 0 and maximum height is 43.692789 mm. The logical anchor, walking-only 1.3 m reach, 0.22 x 0.10 x 1.15 m world click proxy, carried flag, hide-on-pickup path and hatch-pry behavior are unchanged.
-
-## Captures and scope
-
-`tools/capture_seat_production.gd` instantiates `main.tscn` and takes four diagnostic native-GPU views under production lighting, at 1280 x 900. It freezes that instance, hides its eyelid overlay for the inspection camera, and advances the console only for white-light captures. It adds no lights or material overrides. PNGs, hashes, native readback and logs are under `tmp/verify-stasis-wiring/seat-production/`.
-
-Normal startup, smoke, eyes, emergency power, simulation, colliders and pod placements are unchanged. The supported-wiring prototype remains separate and is not installed. No full test suite or code review was run as part of this unit. Image-comparer assessment and final normal game launch remain with the parent after wiring integration.
-
-The final capture exits with code 0 and writes all four PNGs and their hash manifest. Shutdown then prints geometry/light unpair and particle/texture cleanup messages. Their cause remains unverified; no production renderer or startup changes were made to suppress them. The focused test runner exits 0 with 42 passed and no failed tests; its native ceiling subprocess passes all five contracts. The separate mesh audit also exits 0.
+The seat family is a static mesh system; it has no fracture physics. Native capture shutdown can print resource cleanup diagnostics. The source family and installed spans have different responsibilities, so inspect both when changing end cuts or source UVs. The floor piece must remain within the unchanged gameplay proxy.

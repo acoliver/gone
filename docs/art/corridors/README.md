@@ -1,34 +1,35 @@
 # Corridor and connector art
 
-These images are concept and planning art. They show proposals, not built geometry, except for `corridor-current.png`, which records the opening as it is built today. Concept images were generated with an image model. They set direction, not exact geometry.
+These images provide concepts and metric planning views for the ship's corridors, wheel hatches, ladder wells and closed lifts. The playable layout is defined by `sim/ship_layout.gd`; the [runtime layout guide](../../dev/ship-layout.md) describes current traversal and door policies.
 
 ## Maps
 
-- **[corridor-current.png](corridor-current.png)** shows the built opening today: the stasis bay, corridor, and secondary power room. The corridor's other side doors remain closed.
-- **[ship-scale.png](ship-scale.png)** locates the built rooms on the proposed 2,400 m, 30-deck ship. The built corridor spans X=6..30 on deck 14. The ship envelope and surrounding layout are planning proposals.
-- **[d14-local-plan.png](d14-local-plan.png)** shows the proposed deck 14 arrangement. The built stasis bay is at the starboard side door at X=15; the power room is unchanged. S03 keeps X=6 and X=30 sealed. The other corridor side doors stay closed. A connector sits at each end of the corridor, with a hatch at both ends. Each connector has an open ladder doorway in the port wall and dead lifts on the starboard wall. The aft connector's ladder doorway sits at X=34.5 to clear the power room.
-- **[connector-section.png](connector-section.png)** cuts through a connector across decks 12 to 16. The planned D14 hatches open by cranking; hatches on other decks remain shut. These connector rooms are not built in S03.
+- [corridor-current.png](corridor-current.png): exported opening geometry, including the stasis bay, hall and secondary-power room.
+- [ship-scale.png](ship-scale.png): the opening within the proposed 2400 m, 30-deck ship.
+- [d14-local-plan.png](d14-local-plan.png): D14 sections, connectors, ladder access and the bay/power-room relationship.
+- [connector-section.png](connector-section.png): a connector section across several decks.
 
-## Concept images
+The ship envelope and surrounding districts remain planning proposals. The playable route includes D14 connectors and ladder wells, plus the D16 quarters exception. Older map annotations may describe an earlier construction slice; consult the runtime layout for the current allowed-door set.
 
-The hatch images show three operating ideas: a manual wheel turn, powered operation with a button and card reader, and a hatch rusted shut. The connector images show an overview, a ladder well, and closed lift doors with call buttons. `connector-concept-ladder.png` shows a hinged door swung open. The design calls for an open doorway with no door.
+## Concepts
 
-These concept images are visual references, not precise plans. Use the maps above for the current built layout and the proposed corridor arrangement. For the whole-ship atlas, see the [ship art guide](../ship/README.md).
+The hatch images explore manual-wheel, powered and rusted-shut operation. Connector concepts show the room, ladder well and closed lift fronts. They guide appearance rather than exact construction. In particular, `connector-concept-ladder.png` shows a hinged ladder door while the implemented access is an open doorway.
 
-## Rebuild the maps
+The concepts are generated images and do not provide measured clearance or matching unseen geometry. Use layout data for dimensions, and inspect the [whole-ship atlas](../ship/README.md) for broader proposals.
 
-From the repository root, run both builders with a Python environment that has Pillow installed:
+## Rebuild and verify
+
+From the repository root, using Godot and a Python environment with Pillow:
 
 ```sh
 godot --headless --path . -s tools/export_ship_layout.gd
-/Volumes/XS1000/tools/mlximg-venv/bin/python docs/art/corridors/build-corridor-maps.py
-/Volumes/XS1000/tools/mlximg-venv/bin/python docs/art/corridors/build-connector-maps.py
+python docs/art/corridors/build-corridor-maps.py
+python docs/art/corridors/build-connector-maps.py
+godot --headless --path . -s tests/run_tests.gd
 ```
 
-The export command updates `docs/art/ship/3d/built-layout.json` and the atlas's built records from ShipLayout. The first Python command writes `corridor-current.png`. The second writes `ship-scale.png`, `d14-local-plan.png`, and `connector-section.png`. Each builder reads its source data from the repository and writes the PNGs beside its script.
+The export writes `docs/art/ship/3d/built-layout.json` and updates atlas built records. The first builder writes the opening PNG; the second writes the scale, local plan and connector section beside its script. Their assertions check image dimensions and label layout. `tests/ship_layout_test.gd` and `tests/connector_geometry_test.gd` cover the runtime geometry behind the maps.
 
-## Troubleshooting
+## Known limitations
 
-- If a builder reports `No module named PIL`, run it with a Python environment that has Pillow installed. The command above uses the local MLX image environment.
-- If a builder fails its label-overlap or image validation assertions, treat that as a build error. Fix the drawing or label layout before using its output.
-- Both builders read `docs/art/ship/3d/built-layout.json`; the connector builder retains proposed ship context from `ship_atlas.json`. Run it from the repository root so the documented paths resolve as shown.
+Concepts and proposed ship context are not construction drawings. Map builders retain planning annotations alongside exported built data. A failed builder assertion needs correction in the drawing or source layout before publishing its output.
