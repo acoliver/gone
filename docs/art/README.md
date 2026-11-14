@@ -1,68 +1,29 @@
-# gone: concept art
+# Art direction and production guides
 
-Direction (Andrew, 2026-09-17): the ship reads as an old, broken-down
-colonial warship in the Battlestar Galactica / Stargate Universe
-tradition. Walls are paneled, ribbed, piped structure, not flat cubes.
-The stasis pods are rounded capsules with smooth, shiny white molded
-plastic shells. The plastic never corroded, and the maintenance robot
-keeps the pods clean. The metal hull corrodes in the ship's oxygenated
-atmosphere. This material contrast makes the pods look brand-new beside
-the worn compartment without implying that they were recently installed.
-Shells use neutral near-white dielectric plastic with low roughness and
-no textures or grunge. Raised canopies use dark tinted glossy glass;
-the padded couch and pillow use darker rough fabric. Sealed pods have
-closed lids, empty pods open 70 degrees, and the player pod opens 78 degrees
-for ceiling clearance (#88).
-These images guide the capsule form and worn-ship contrast; the current
-material direction supersedes the older off-white wording in the prompts.
+The ship is an old colonial military vessel with paneled bulkheads, ribs, pipes, conduits and worn hardware. Personal rooms add fabric and belongings to that structure. The ship has been adrift about 1000 years. The [quarters guide](quarters/README.md#two-finish-states) defines the dry-storage treatment for its two room states.
 
-## Production pod (#88)
+Stasis pods contrast with the worn compartment. Their smooth white plastic shells remain clean under the maintenance robot's care. Raised canopies use dark glossy glass, with a separate padded couch and pillow inside. Material contrast should remain visible without suggesting that the pods were recently installed.
 
-`assets/props/pod/pod-v4.glb` is the Hunyuan-derived clean-cage pass-13
-model, not the original parametric probe. It has a glossy white tub,
-a separate pivoted white lid with an opaque dark pane, a couch and a
-pillow. Its nominal size is 2393 × 900 × 896 mm, with a 240 mm couch
-plateau. The player lid opens 78 degrees and reaches 3.145976 m, leaving
-54.024 mm below the 3.2 m ceiling (#88). This is the largest whole-degree
-opening with at least 50 mm clearance; 79 degrees leaves only 37.684 mm.
-Empty-open pods retain their 70-degree pose.
-The retained editable source and export instructions are in
-[`tools/blender/pod_v4/`](../../tools/blender/pod_v4/README.md); material and
-coordinate details are in [the asset pipeline](../dev/asset-pipeline.md).
+## Concept images
 
-## Pieces
+| Image | Subject |
+| --- | --- |
+| [room-walls.png](room-walls.png) | Riveted compartment panels, ribs, pipes, damage and emergency lighting |
+| [pod-design-sheet.png](pod-design-sheet.png) | Rounded capsule form, canopy and padded interior |
+| [stasis-bay-context.png](stasis-bay-context.png) | Repeated capsule pods in the worn compartment, including open lids |
 
-| File | Subject | Serves |
-| --- | --- | --- |
-| `room-walls.png` | Worn compartment interior: riveted seamed bulkheads, pipe runs, cable conduits, hazard plates, battle damage, red emergency mood. | #35 wall/floor/ceiling textures, anti-cube wall geometry |
-| `pod-design-sheet.png` | Stasis pod design sheet: rounded horizontal capsule, off-white composite shell, dark glass canopy over a single padded couch with pillow and straps, red spine light. Three views. | #37 pod meshes: rounded and newer than the ship |
-| `stasis-bay-context.png` | The bay in context: one consistent capsule-pod design (matching the sheet) on cradles in the grimy riveted compartment; five pods open clamshell-style with raised canopy lids, empty couches, hanging blankets; one sealed. | Composite mood target for #35/#37/#40, the crew-left story beat |
+These locally generated Z-Image-Turbo images guide form and composition. Their older off-white shell treatment is superseded by the production pod's neutral glossy white plastic. They are concept images rather than measurements of the installed scene.
 
-## Verification
+## Recreate the concept images
 
-Each piece passed an independent Eyes review (vision subagent, strict
-pass/fail with quoted observations). The wall piece passed first pass.
-The pod sheet and bay piece were each regenerated once (the sheet had
-an automotive cockpit inside the pod; the bay had all pods sealed), then
-passed. The bay piece was revised a second time after review feedback
-that the pods must visibly match the sheet design and read as open with
-raised lids (crew already left stasis); that revision passed with the
-pod family, open-canopy story beat, worn-ship contrast, and coherence
-all confirmed. Generation prompts are recorded below.
+The retained source recipes use Z-Image-Turbo 4-bit through mflux. Set `MFLUX` to the installed `mflux-generate-z-image-turbo` executable and `HF_HOME` to an existing model cache. No image model is bundled in this repository. For example, with the cached model available:
 
-## Provenance
-
-Generated locally on this machine (M4 Max, MLX) with
-Z-Image-Turbo 4-bit via mflux; no external service.
-
-Reproduce with:
-
+```sh
+mkdir -p art-output
+"$MFLUX" --model filipstrand/Z-Image-Turbo-mflux-4bit --quantize 4 --steps 8 --seed 11 --width 1536 --height 864 --output art-output/room-walls.png --prompt "$PROMPT"
 ```
-HF_HOME=/Volumes/XS1000/hf-cache \
-  /Volumes/XS1000/tools/mlximg-venv/bin/mflux-generate-z-image-turbo \
-  --model filipstrand/Z-Image-Turbo-mflux-4bit --quantize 4 --steps 8 \
-  --seed <seed> --width <w> --height <h> --output <out.png> --prompt "<prompt>"
-```
+
+Set `PROMPT` to the matching retained prompt below and substitute the seed, dimensions and output name for the other images. mflux creates a suffixed filename if the target already exists. These inputs preserve the source recipe; exact regeneration depends on the model and tool versions.
 
 | Piece | Seed | Size |
 | --- | --- | --- |
@@ -104,8 +65,25 @@ Prompts (verbatim, final revisions):
   Galactica meets Stargate Universe, dark filmic mood. No people, no
   text, no vehicles."
 
-Operational note: mflux does not clobber an existing output file; it
-writes `<name>_1.png`. Delete or move the target before regenerating.
-The cached 4-bit snapshot also needed its `tokenizer_config.json`
-patched with the upstream chat template before prompts would encode
-(one-time local fix, 2026-09-17).
+## Production pod
+
+The game uses `assets/props/pod/pod-v4.glb`. Its editable tagged source, `build.py` exporter and geometry/optics checks are in [tools/blender/pod_v4](../../tools/blender/pod_v4/README.md). That guide provides the build command and records open glass limitations. The source includes the base, hinged lid, window pane, couch and pillow. Runtime uses `app/pod_mesh.gd` and `app/pod_glass.gdshader`.
+
+For import conventions and verification, see [the asset pipeline](../dev/asset-pipeline.md). Run the game tests from the repository root:
+
+```sh
+godot --headless --path . -s tests/run_tests.gd
+```
+
+## Other production guides
+
+- [Quarters](quarters/README.md): furniture, clothes, belongings, two-state finishes and captures.
+- [Corridors](corridors/README.md): metric maps and connector concepts.
+- [Whole-ship atlas](ship/README.md): planning data and interactive overview.
+- [Stasis wiring](stasis-wiring-production-installation.md): installed source-to-pod network and build instructions.
+- [Ceiling seat and pickup](seat-production-integration.md): shared formed rail and fallen pry tool.
+- [Lighting fixtures](../dev/light-fixture-mounting.md): mounted emitters, circuit behavior and captures.
+
+## Known limitations
+
+Concept sheets do not specify hidden construction or guarantee generated views agree. Production sources and runtime checks take precedence for dimensions and placement. Some installed assets retain visual or reconstruction limitations, listed in their guides.

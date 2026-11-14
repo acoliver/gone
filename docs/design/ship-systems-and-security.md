@@ -10,7 +10,7 @@ Established story and gameplay direction is stated separately from design propos
 
 ### Established behavior
 
-The maintenance machine's designation is **SAINT-5**. Main power visibly reactivates it. Its first useful work is at the stasis bay: it extinguishes the electrical fire and repairs wiring, establishing its maintenance purpose before the player encounters its hostility. It is a large, durable industrial machine with manipulators, tools and a drill, without conventional military armament. It is not a combat boss the player can destroy. (Sources: `tmp/lore-intake/gone_story_summary.md` §§6, 36-37; `tmp/lore-intake/reconciliation.md` §§1.11, 2.17.)
+The maintenance machine's designation is **SAINT-5**. Main power visibly reactivates it. Its first useful work is at the stasis bay: it extinguishes the electrical fire and repairs wiring, establishing its maintenance purpose before the player encounters its hostility. It is a large, durable industrial machine with manipulators, tools and a drill, without conventional military armament. It is not a combat boss the player can destroy. (Sources: [story summary](sources/gone_story_summary.md) §§6, 36-37; reconciliation notes (source file not retained in the repository) §§1.11, 2.17.)
 
 SAINT-5 is hostile because the protagonist has been classified as a threat under its containment instructions. When it finds the protagonist conscious, lethal force is permitted if it cannot contain him safely; if it finds him unconscious, it may return him to stasis. The exact decision rules remain open. (Sources: story summary §§6, 8; reconciliation §1.11.)
 
@@ -92,7 +92,7 @@ The protagonist eventually acquires a wearable arm console. It can provide a str
 
 The opening stasis bay contains an electrical fire, sparks and smoke. The intended opening asks the player to take a fallen metal structural piece, force the jammed hatch and leave before smoke incapacitates or kills him. SAINT-5 can extinguish a small electrical fire and repair wiring; major structural fires require further intervention. (Sources: story summary §§4, 6, 36; bible Part IV §36; reconciliation §§1.11, 1.14.)
 
-At the inspected repository baseline, smoke symptoms are reversible exposure, audio and vision effects, not a completed death timer. The opening's intended lethal urgency must not be described as already implemented. (Sources: `tmp/lore-intake/reconciliation.md` §5; verified in `sim/smoke_symptoms.gd`.)
+At the inspected repository baseline, smoke symptoms are reversible exposure, audio and vision effects, not a completed death timer. The opening's intended lethal urgency must not be described as already implemented. (Sources: reconciliation notes (source file not retained in the repository) §5; verified in `sim/smoke_symptoms.gd`.)
 
 ## Radiation
 

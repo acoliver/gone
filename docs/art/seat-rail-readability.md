@@ -1,28 +1,25 @@
-# Ceiling seat rail: historical readability capture
+# Ceiling seat inspection views
 
-This document records the earlier standalone capture at the obsolete Z=-1.2 failure station. Its profile, PBR and floor-pose evidence is retained, but its installed-context coordinates, PNGs, manifests and test counts are historical. Active proofs now fail at production Z=-0.6 and place the healthy central neighbor at Z=-1.2. See [corrected installation notes](stasis-wiring-production-installation.md) for current proof sources, fingerprints and verification.
+The seat rail is the formed lower support beneath the stasis-bay ceiling panels. Its detached middle section is the player's pickup and pry tool. The [production seat guide](seat-production-integration.md) describes its source assets, dimensions, current fault station and gameplay constraints.
 
-The detachable component is the lower formed seat. Its source remains unchanged: 36 mm flat bearing, 42 mm overall width, 18 mm depth and 2.5 mm metal gauge. The separate 55 mm upper carrier stays intact. This supersedes the upper-carrier fracture proposal in `stasis-wiring-layout.md`.
+## Inspection tools
 
-The floor piece now rolls 115 degrees about the old rod's actual long axis. Its bay-local XZ center remains `(-0.6,-1.4)`. Translation Y is computed from transformed source vertices, not an approximate section box. Contact is Y=0; maximum height is 43.692789 mm. The unchanged 220 x 100 x 1150 mm world-space pickup proxy contains it, with 16.447 mm minimum X clearance, floor contact at the lower Y face, 56.307 mm overhead clearance, and 75.365 mm minimum Z clearance. Inverse-pose error is below `4e-16 m`.
+`tools/capture_seat_rail_readability.gd` renders the shared source profile, installed seat detail, floor fragment and separated fracture mates under inspection lighting. `tools/compose_seat_rail_readability.py` lays out those captures and their source-derived annotations. Both tools choose their output locations internally.
 
-## Prototype identities and materials
+Run from the repository root after the source and proof assets have been rebuilt with `tools/build_seat_rail.py`:
 
-In the `StasisWiringProof/fault-frame-pair` subtree:
+```sh
+godot --headless --editor --path . --import
+godot --path . -s tools/capture_seat_rail_readability.gd
+python tools/compose_seat_rail_readability.py
+```
 
-- `SeatRail_left/seat_rail_left` and `SeatRail_right/seat_rail_right` are individual imports from the unchanged left/right source GLBs, positioned at `(-0.6,2.988,-1.2)`. They replace the old grouped retained mesh, which is removed rather than drawn twice.
-- `seat_healthy` contains the unchanged full-source neighbors. The labeled neighbor is centered at `(-0.6,2.988,-0.6)`.
-- `fallen_fragment` is the same middle source under the measured floor pose. Only this mesh's baked position/normal buffer ranges changed.
-- `steel_frame` is separate carrier/web/long-ledger context. It now uses the actual `BayCeiling._hardware_material()` resource: intact panel albedo/roughness textures, metallic 0.62, roughness 0.78. Other wiring materials are unchanged.
+The composer requires the capture's native mesh readbacks and source manifests. It derives leaders from rendered source surfaces and projects the removed middle mesh to show the missing interval. Its same-scale source sheet supports comparison of the bearing profile and fracture match. These inspection lights are separate from game lighting.
 
-The actual baked frame has 28 components, zero duplicate bounds, no replaced flat cross-ledgers and one continuous upper carrier across the failure. Existing longitudinal ledgers remain. Accepted panel contact still has zero below-bearing intersections and nine flange contact samples.
+## Verification
 
-## Captures and reproduction
+Use `python -m unittest discover -s tools -p 'test_seat_rail.py'` for source identity, cut and floor-pose checks. The production seat guide gives the native installed-mesh runner and audit commands. Rebuild captures after source or placement changes rather than reusing an earlier image set.
 
-Four deliverables are under `tmp/verify-stasis-wiring/seat-rail/readability/`: `shared-component-sheet.png`, `installed-seat-detail.png`, `fallen-stick-standing.png`, and `fracture-match-close.png`. The sheet uses one orthographic camera, scale and fixed light set for all three rows. The standing camera is `(-0.8,1.6,-2.65)`, 1.265899 m in plan from the original pickup center. Fracture inspection mates are separated 12 mm along their original axis.
+## Known limitations
 
-`capture-manifest.json` records source mesh paths, surface triangle indices, camera projections, ray-verified visible object identities, final annotation pixels, camera poses and material references. Labels come from actual rendered-source surface points; the missing-piece outline projects the real middle source. Native mesh normals and material normal maps remain enabled as authored. Neutral inspection lighting exists only in this capture script.
-
-Use `tools/build_seat_rail.py --floor-only` to update the baked floor pose without rebuilding the source component, `tools/capture_seat_rail_readability.gd` for native Godot readbacks, then `tools/compose_seat_rail_readability.py` for layout. Python checks need the existing 3D virtual environment. Five focused seat tests, two existing fault/contact regressions and five Godot wiring tests pass. Native Metal capture exits 0 without script errors.
-
-The source meshes/PBR, original six proof PNGs and final housing SHA `4386c118...` are preserved. No production installation, global material/light edits, concept generation or model-body changes were made. Image-comparer review belongs to the parent agent; these checks do not claim a visual verdict.
+Standalone inspection does not show the ordinary opening camera or establish game-scale readability. The composer depends on local generated readbacks and measurements and cannot compose a sheet from the tracked GLBs alone. The production capture is the appropriate check for installed lighting and pickup visibility.

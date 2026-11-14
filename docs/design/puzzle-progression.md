@@ -4,7 +4,7 @@
 
 ## 1. Purpose and non-negotiable principles
 
-Design the ship as an interconnected environment where the player survives by exploring, diagnosing, repairing, improvising and using system behavior. Avoid a sequence of one-solution escape rooms or a guided objective-marker tour. (Source: `tmp/lore-intake/GONE_puzzle_progression_agent_handoff.md` §§0, 1.)
+Design the ship as an interconnected environment where the player survives by exploring, diagnosing, repairing, improvising and using system behavior. Avoid a sequence of one-solution escape rooms or a guided objective-marker tour. (Source: [puzzle handoff](sources/GONE_puzzle_progression_agent_handoff.md) §§0, 1.)
 
 **Handoff engineering direction:** Keep simulation deterministic and testable headless, with tests independent of visual rendering. Keep rendering separate from simulation state, following the repository's `sim/` and `app/` separation. Extend the existing headless simulation tests and harness lanes rather than building a parallel harness. This direction applies to engineering work across the proposed systems, not just atmosphere tests, and does not claim these tests already exist or pass. (Source: handoff §§9, 11-12.)
 
@@ -24,7 +24,7 @@ These principles guide the proposal. They do not assert that the systems are imp
 
 ## 2. First-hour experience
 
-The opening sequence is intentionally direct: wake in the smoky stasis room, take the fallen metal pry bar, force the jammed hatch, reach the dark corridor, use the nearby emergency-light switch if found, and activate the secondary generator. The corridor light is a steady red circuit in the current build; blinking belongs to the automatic fire circuit. The intended hazardous smoke escape is not yet a finished lethal timer. (Sources: handoff §§0, 5; `tmp/lore-intake/gone_story_summary.md` §4; `tmp/lore-intake/reconciliation.md` §§1.14, 5; baseline code verified in `app/hallway.gd`, `sim/smoke_symptoms.gd`, `tests/hallway_test.gd`.)
+The opening sequence is intentionally direct: wake in the smoky stasis room, take the fallen metal pry bar, force the jammed hatch, reach the dark corridor, use the nearby emergency-light switch if found, and activate the secondary generator. The corridor light is a steady red circuit in the current build; blinking belongs to the automatic fire circuit. The intended hazardous smoke escape is not yet a finished lethal timer. (Sources: handoff §§0, 5; [story summary](sources/gone_story_summary.md) §4; reconciliation notes (source file not retained in the repository) §§1.14, 5; baseline code verified in `app/hallway.gd`, `sim/smoke_symptoms.gd`, `tests/hallway_test.gd`.)
 
 After secondary power, the design opens into overlapping goals: learn the protagonist's identity and find his quarters, improve air safety, and work toward main power. The cabin route is a proposal that permits early exploration before main power; the story summary's reveal sequence is emotional guidance, not a mandatory movement order. No cabin visit or story pickup should gate life support. (Sources: handoff §§0, 4, 8; reconciliation §§1.15, 2.18, 3.10, 3.12.)
 
@@ -199,11 +199,11 @@ H. The accepted account is accidental death while he restrains her, with respons
 
 I. The approximate five-year S+H and thirty-Earth-year S+conventional estimates are settled per `docs/design/decisions.md`. Exact dates and distances, and whether the S component can be substituted at substantial cost, remain open.
 
-(Source: `tmp/lore-intake/GONE_puzzle_progression_agent_handoff.md` §13; wording follows the reconciled question list in `tmp/lore-intake/reconciliation.md` §4.6.)
+(Source: [puzzle handoff](sources/GONE_puzzle_progression_agent_handoff.md) §13; wording follows the reconciled question list in reconciliation notes (source file not retained in the repository) §4.6.)
 
 ## Appendix: Baseline at 450234f
 
-This appendix records the local repository baseline at commit `450234f6fbfab904349604c4fef8adb857a15ccc`, as reported by reconciliation §5 and checked against its cited files here. It is a static inspection, not a test run. No claims are made about remote branches, current issue status or features outside the inspected files. (Source: `tmp/lore-intake/reconciliation.md` §5.)
+This appendix records the local repository baseline at commit `450234f6fbfab904349604c4fef8adb857a15ccc`, as reported by reconciliation §5 and checked against its cited files here. It is a static inspection, not a test run. No claims are made about remote branches, current issue status or features outside the inspected files. (Source: reconciliation notes (source file not retained in the repository) §5.)
 
 ### Opening and corridor
 

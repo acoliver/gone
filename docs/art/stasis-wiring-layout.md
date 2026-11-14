@@ -1,30 +1,28 @@
-# Issue 110: installed wiring and coordinated fault
+# Stasis wiring layout and fault
 
-The production bay now installs the source-to-seven-pod network and its localized power fault through `StasisWiring.installation()`. [Production installation notes](stasis-wiring-production-installation.md) give the coordinates, build commands, physical checks and native capture limits. Earlier five-riser, Z=-1.2 fault and upper-carrier fracture proposals are superseded.
+The stasis bay has one installed network connecting its source enclosure to all seven pod bases. `StasisWiring.installation()` places it beneath `BayRoot`. The [installation guide](stasis-wiring-production-installation.md) lists source files, outputs, rebuild commands and tests.
 
-The source is mounted at `(-5.935,2.75,-3.1)`, yaw +90 degrees. Two 24 mm power jackets and six 6 mm data strands use measured clamps, source compression fittings, and one wall-drop pair. Power crosses the floor at `(-4.02,0,-3.93)` in 60 mm conduit; data at `(-4.18,0,-3.955)` in 25 mm conduit. Hidden distribution reaches seven stationary plinths without exposed hoses across walking gaps.
+All coordinates here are bay-local metres, +Y up. The source enclosure is at `(-5.935, 2.75, -3.1)`, yaw +90 degrees. Two power jackets and six data strands follow supported overhead routes, descend between pods and enter floor conduit. Hidden distribution reaches stationary pod bases without hoses across the walking gaps.
 
-## One coordinated failure
+Power crosses the floor at `(-4.02, 0, -3.93)` in 60 mm conduit; data crosses at `(-4.18, 0, -3.955)` in 25 mm conduit. Buried junctions have physical apertures, terminated jackets and separate copper links inside their enclosures. Pod terminals remain hidden inside their stationary bases.
 
-The only missing panel remains cell `(4,4)`, center `(-0.6,2.99,-0.9)`. Only the lower formed seat fails, at `(-0.6,2.988,-0.6)`. Upper carriers remain continuous. The accepted seat profile/material, matching floor fragment, 115-degree roll, pickup anchor/proxy/collider/reach, and hatch-pry behavior are unchanged.
+## Coordinated damage
 
-Three released 8 mm insulated power cores emerge through tapered boots from clamped 24 mm jacket ends. The fourth jacket is closed with an opaque insulating cap. No cable ends are left floating without a termination. Each released core turns through a measured 160 mm radius and exposes only its last 4 mm of copper, with 1.6 mm copper radius.
+One ceiling panel cell, `(4,4)`, is empty, centered at `(-0.6, 2.99, -0.9)`. The lower formed seat fails at `(-0.6, 2.988, -0.6)`. Upper carriers stay continuous. The matching floor fragment is the pickup used to pry the bay hatch. Its source and placement are described in the [seat guide](seat-production-integration.md).
 
-| Physical jacket end | Jacket endpoint, bay-local metres | Treatment | Copper tip endpoint |
-| --- | --- | --- | --- |
-| Left power 1 | `(-1.15,2.82,-0.587)` | Released core, approaches +X then turns down | `(-0.77,2.486,-0.587)` |
-| Left power 2 | `(-1.15,2.82,-0.613)` | Released core, approaches +X then turns down | `(-0.83,2.556,-0.613)` |
-| Right power 1 | `(-0.05,2.82,-0.613)` | Released core, approaches -X then turns down | `(-0.35,2.526,-0.613)` |
-| Right power 2 | `(-0.05,2.82,-0.587)` | Closed insulating cap, nose at `(-0.068,2.82,-0.587)` | None |
+Three released insulated power cores emerge from clamped jacket ends, turn downward and expose only their final 4 mm of copper. The fourth jacket has a closed insulating cap. Data remains supported and has no sparks.
 
-`tools/stasis_wiring_fault.py` authors these physical cores and copper solids. Their generated records in `production-routes.json` supply `StasisWiringRoutes`, `Placement.spark_spots()` and the three named `Hazards` emitters. The semantic graph connects each tip and the sealed fourth end to the source as well as retaining all seven power/data feed pairs. Data is supported and has no sparks. Spark timing, smoke, wake/eyes, power behavior and gameplay are unchanged.
+| Jacket end | Jacket endpoint | Copper tip endpoint |
+| --- | --- | --- |
+| Left power 1 | `(-1.15, 2.82, -0.587)` | `(-0.77, 2.486, -0.587)` |
+| Left power 2 | `(-1.15, 2.82, -0.613)` | `(-0.83, 2.556, -0.613)` |
+| Right power 1 | `(-0.05, 2.82, -0.613)` | `(-0.35, 2.526, -0.613)` |
+| Right power 2 | `(-0.05, 2.82, -0.587)` | Closed cap; no exposed copper |
 
-The retired twelve-run `Wires.build()` presenter had no production call site. It and its loose-wire recipes have been removed. The tests now pin the three specific physical tips, 4 mm exposure, retained supports and closed fourth jacket instead of the old loops/strands/frays inventory. No second dressing is installed.
+`tools/stasis_wiring_fault.py` authors the cores and copper solids. `assets/props/stasis-wiring/production-routes.json` supplies semantic routes to `sim/stasis_wiring_routes.gd`. Spark placement follows those physical tips through `Placement.spark_spots()` and `Hazards`.
 
-## Physical verification and captures
+## Verification and limitations
 
-The builder separately audits the new fault against complete native lid arcs, fixture/service reservations and continuous standing/get-up camera/capsule height envelopes. The supported-network clearance result is not used as proof for released leads. Exported GLB copper components are checked outside Blender for exactly three exposed closed solids at the expected positions and lengths.
+Use the build and test commands in the [installation guide](stasis-wiring-production-installation.md#rebuild-and-verify). The checks cover source-to-pod continuity, physical interfaces, exported conductor separation, lid sweeps, support and service clearances. `tools/test_stasis_wiring_fault.py` covers the exposed tips and closed fourth jacket.
 
-Native `main.tscn` captures include the natural wake blinks, open-eye frame and Standing reached by ordinary Space input. Separate diagnostic cameras record the installed source, routing, floor entry, fault, copper tips, matching fragment and non-bay hallway. White diagnostic views use the existing secondary circuit with no added lamps or material overrides. Inspection views are not evidence of the ordinary opening.
-
-Current corrected logs, exported junction/overhead checks, fingerprinted snapshots, PNGs and capture readbacks are under `tmp/verify-stasis-wiring/production-corrected/`. The earlier `production-final/` directory is historical and contains the pipe-wall and takeoff overlaps identified by the review. See the installation notes for current results and commands. Appearance assessment remains with the separate visual worker.
+The network is static dressing. It has no cable physics or independently repairable cable interactions. Diagnostic white-light captures reveal construction and are separate from the ordinary red-lit opening.

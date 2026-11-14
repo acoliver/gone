@@ -157,9 +157,7 @@ The guarded unit suite covers the catalog, both render layers, blank standby,
 attention geometry, shared memory, exact tick timings, resets and determinism.
 A real `Player` rig wired to `PowerRoom` stands at the interaction point with
 level look state and advances its own physics ticks to resolve the inactive
-console, then turns its yaw 90 degrees to verify decay. The capture script at
-`tmp/naleya/capture_console.gd` uses the same player-driven attention path
-without aiming the camera down at the screen.
+console, then turns its yaw 90 degrees to verify decay.
 The `scenarios/power-room.json` harness lane checks both full label strings at
 console-inactive and power-active while retaining its gameplay and lighting
 checks. Run it as described in [harness.md](harness.md). Harness console events
