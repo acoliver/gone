@@ -282,6 +282,54 @@ func test_mount_rejects_unknown_well_bad_deck_capsule_facing_and_unsupported_pos
 	capsule.foot.x = NAN
 	assert_int_equal(Ladder.try_mount(layout, &"C-000-LADDER", 14, capsule, Vector3.FORWARD).error.kind, Ladder.LadderError.Kind.NON_FINITE_INPUT, "nonfinite rejected")
 
+func _landing_pose(layout: ShipLayout, id: StringName, deck: int, offset: Vector2) -> Resolve.Capsule:
+	var capsule := Resolve.Capsule.new()
+	capsule.foot = Vector3(layout.well(id).climb_line().origin.x + offset.x, layout.floor_y(deck) + 0.385, offset.y)
+	capsule.head = capsule.foot + Vector3.UP * 1.15
+	return capsule
+
+func _toward_ladder(layout: ShipLayout, id: StringName, capsule: Resolve.Capsule) -> Vector3:
+	var toward := layout.well(id).climb_line().origin - capsule.foot
+	return Vector3(toward.x, 0, toward.z).normalized()
+
+# The landing's doorway half was outside a 2.2 m radius about the climb line, so a
+# player standing there facing the ladder got nothing from Space. The mount region
+# is the landing a walking capsule can occupy. Each such pose must also sweep its
+# transfer to the climb line and return there, on the end decks and around D14.
+func test_every_walkable_landing_extreme_mounts_and_returns() -> void:
+	var layout := ShipLayout.authored().layout
+	var collision := ShipCollision.new(layout)
+	# Doorway plane, then wall contacts as walking leaves them: doorway jambs, port wall
+	# back face, alcove front corners, side walls and back corners at the shaft edge.
+	var offsets: Array[Vector2] = [Vector2(0, -1.5), Vector2(-0.349, -1.5), Vector2(0.349, -1.5), Vector2(-0.349, -1.75), Vector2(0.349, -1.75), Vector2(-0.5, -2.0005), Vector2(0.5, -2.0005), Vector2(-0.5484, -2.0001), Vector2(0.5484, -2.0001), Vector2(-0.5497, -2.5), Vector2(0.5497, -2.5), Vector2(-0.5484, -2.995), Vector2(0.5484, -2.995)]
+	for id: StringName in layout.well_ids():
+		for deck: int in [1, 14, 15, 16, 30]:
+			for offset: Vector2 in offsets:
+				var start := _landing_pose(layout, id, deck, offset)
+				var mounted := Ladder.try_mount(layout, id, deck, start, _toward_ladder(layout, id, start))
+				assert_true(mounted.is_ok(), "%s D%02d landing pose %s mounts" % [id, deck, offset])
+				if not mounted.is_ok():
+					return
+				for tick: int in range(Ladder.TRANSFER_TICKS):
+					assert_true(_tick(mounted.state, collision).is_ok(), "%s D%02d %s mount transfer is clear" % [id, deck, offset])
+				assert_int_equal(mounted.state.mode(), Ladder.Mode.CLIMBING, "transfer reaches the climb line")
+				for tick: int in range(Ladder.TRANSFER_TICKS):
+					assert_true(_tick(mounted.state, collision, 0, tick == 0).is_ok(), "%s D%02d %s dismount transfer is clear" % [id, deck, offset])
+				assert_close(mounted.state.capsule().foot, start.foot, "dismount returns to the accepted landing pose")
+
+func test_mount_still_rejects_corridor_wrong_facing_other_deck_and_wall_poses() -> void:
+	var layout := ShipLayout.authored().layout
+	for id: StringName in layout.well_ids():
+		var front := _landing_pose(layout, id, 14, Vector2(0, -1.6))
+		var toward := _toward_ladder(layout, id, front)
+		assert_true(Ladder.try_mount(layout, id, 14, front, toward).is_ok(), "doorway-half landing pose mounts")
+		assert_int_equal(Ladder.try_mount(layout, id, 14, front, -toward).error.kind, Ladder.LadderError.Kind.NOT_FACING, "back to the ladder")
+		assert_int_equal(Ladder.try_mount(layout, id, 14, front, Vector3.RIGHT).error.kind, Ladder.LadderError.Kind.NOT_FACING, "facing along the corridor")
+		assert_int_equal(Ladder.try_mount(layout, id, 16, front, toward).error.kind, Ladder.LadderError.Kind.NOT_ON_LANDING, "another deck's landing")
+		for offset: Vector2 in [Vector2(0, -1.45), Vector2(0, -0.5), Vector2(0.56, -2.5), Vector2(-0.56, -2.5), Vector2(0, -3.0)]:
+			var pose := _landing_pose(layout, id, 14, offset)
+			assert_int_equal(Ladder.try_mount(layout, id, 14, pose, _toward_ladder(layout, id, pose)).error.kind, Ladder.LadderError.Kind.NOT_ON_LANDING, "corridor, side wall or shaft edge %s" % offset)
+
 func test_rejected_ticks_preserve_capsule_height_pending_clock_and_events() -> void:
 	var layout := ShipLayout.authored().layout
 	var collision := ShipCollision.new(layout)

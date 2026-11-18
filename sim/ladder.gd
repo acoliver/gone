@@ -7,7 +7,6 @@ const TRANSFER_TICKS: int = 24
 const CLIMB_SPEED: float = 1.5
 const DISMOUNT_REACH: float = 0.15
 const LANDING_CAPTURE_REACH: float = 0.3
-const MOUNT_REACH: float = 2.2
 const FACING_DOT: float = 0.7071067811865476
 const HEIGHT_EPSILON: float = 1e-10
 
@@ -16,7 +15,7 @@ enum EventKind { MOUNT, CLIMB, LANDING, DISMOUNT, LANDED }
 
 class LadderError:
 	extends RefCounted
-	enum Kind { UNKNOWN_WELL, INVALID_DECK, NON_FINITE_INPUT, NOT_ON_LANDING, OUT_OF_REACH, NOT_FACING, INVALID_INTENT, INVALID_TICK, STEP_ALREADY_TAKEN, WRONG_MODE, PATH_BLOCKED }
+	enum Kind { UNKNOWN_WELL, INVALID_DECK, NON_FINITE_INPUT, NOT_ON_LANDING, NOT_FACING, INVALID_INTENT, INVALID_TICK, STEP_ALREADY_TAKEN, WRONG_MODE, PATH_BLOCKED }
 	var kind: int
 	var collider_id: StringName
 	var resolver: Resolve.ResolveError
@@ -232,17 +231,14 @@ static func try_mount(layout: ShipLayout, well_id: StringName, deck: int, capsul
 	if not capsule.foot.is_finite() or not capsule.head.is_finite() or not facing.is_finite():
 		return _failure(LadderError.Kind.NON_FINITE_INPUT)
 	var well := layout.well(well_id)
-	var landing := well.landing_bounds(deck)
 	var inset := Controller.CAPSULE_RADIUS + Controller.PENETRATION_TOLERANCE
 	var foot_offset := capsule.foot.y - layout.floor_y(deck)
-	var supported := capsule.foot.x >= landing.position.x + inset and capsule.foot.x <= landing.end.x - inset and capsule.foot.z >= landing.position.z + inset and capsule.foot.z <= landing.end.z
+	var supported := in_mount_region(mount_region(layout, well_id, deck), capsule.foot)
 	var standing := foot_offset >= Controller.CAPSULE_RADIUS - Controller.PENETRATION_TOLERANCE and foot_offset <= inset + DISMOUNT_REACH and capsule.head.y > capsule.foot.y
 	if not supported or not standing:
 		return _failure(LadderError.Kind.NOT_ON_LANDING)
 	var toward := well.climb_line().origin - capsule.foot
 	toward.y = 0
-	if toward.length() > MOUNT_REACH:
-		return _failure(LadderError.Kind.OUT_OF_REACH)
 	var planar_facing := Vector3(facing.x, 0, facing.z)
 	if planar_facing.length_squared() == 0 or planar_facing.normalized().dot(toward.normalized()) < FACING_DOT:
 		return _failure(LadderError.Kind.NOT_FACING)
@@ -258,6 +254,22 @@ static func try_mount(layout: ShipLayout, well_id: StringName, deck: int, capsul
 	state._transfer_start = Walk._copy_capsule(capsule)
 	state._transfer_end = state._pose(state._height)
 	return state._success([Event.new(EventKind.MOUNT, well_id, deck)])
+
+## The plan region (x, z as Rect2 x, y) a mount is accepted from: the well's
+## landing on that deck, the whole alcove a walking capsule can stand in. The
+## doorway plane is its open front edge. The back keeps a capsule radius from the
+## shaft opening, where walking support stops. The side walls stop a walking capsule
+## at its radius, which the resolver settles within tolerance of contact. A ladder
+## is in reach anywhere in this region, however far its climb line sits behind.
+static func mount_region(layout: ShipLayout, well_id: StringName, deck: int) -> Rect2:
+	var landing := layout.well(well_id).landing_bounds(deck)
+	var side := Controller.CAPSULE_RADIUS - Controller.PENETRATION_TOLERANCE
+	var back := Controller.CAPSULE_RADIUS + Controller.PENETRATION_TOLERANCE
+	return Rect2(landing.position.x + side, landing.position.z + back, landing.size.x - 2 * side, landing.size.z - back)
+
+## Inclusive on every edge: a foot exactly on the doorway plane is on the landing.
+static func in_mount_region(region: Rect2, foot: Vector3) -> bool:
+	return foot.x >= region.position.x and foot.x <= region.end.x and foot.z >= region.position.y and foot.z <= region.end.y
 
 static func _failure(kind: int) -> Result:
 	return _with_error(LadderError.new(kind))

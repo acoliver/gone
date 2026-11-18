@@ -16,7 +16,7 @@ The bay keeps its authored local coordinates. `ShipLayout.bay_to_world()` applie
 
 `app/interactions.gd` selects after accepted movement and dispatches an actionable edge. `app/game_step.gd` advances logical state at the fixed 60 Hz rate in production and harness play. Capture holds pause movement, doors, attention and fades together. Door audio follows logical work and latch events.
 
-`sim/ladder.gd` owns climbing and landing transfers. Walking stops at supported landing boundaries; transfers use authored clearance paths. Collision does not depend on whether a room's rendered nodes are resident. `app/ship_stream.gd` manages presentation around the player while simulation persists.
+`sim/ladder.gd` owns climbing and landing transfers. Walking stops at supported landing boundaries; transfers use authored clearance paths. Space or a click mounts from anywhere on the landing alcove, from the doorway plane back to the shaft edge and against either side wall (`Ladder.mount_region`), while the player faces the ladder; the corridor outside the doorway does not count. Collision does not depend on whether a room's rendered nodes are resident. `app/ship_stream.gd` manages presentation around the player while simulation persists.
 
 `sim/ship_dressing.gd` generates room-owned dressing batches with exclusions for portals, hinges, ladders, services and damage. `app/corridor_dressing.gd` uploads their MultiMeshes without adding interaction or collision. Grating sits above a recessed tray while walk support remains in the simulation slab.
 

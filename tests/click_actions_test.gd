@@ -355,3 +355,69 @@ func test_requested_dispatch_rechecks_visibility_at_accepted_pose() -> void:
 	assert_false(player.game.hallway_lit, "queued action cannot bypass final visibility check")
 	assert_int_equal(player.motion.hallway_switch_flips, 0, "no through-wall action at dispatch")
 	player.free()
+
+func _aim_at_rungs(player: Player, id: StringName, deck: int, yaw_offset: float = 0.0) -> void:
+	var well := player.game.layout.well(id)
+	var rungs := Vector3(well.climb_line().origin.x, player.game.layout.floor_y(deck) + 1.2, well.climb_line().origin.z - 0.95)
+	var delta := (rungs - player.motion.eye(player.game)).normalized()
+	player._look_yaw = atan2(-delta.x, -delta.z) + yaw_offset
+	player._look_pitch = asin(delta.y)
+
+func _space_mounts(player: Player) -> bool:
+	player.adapter.press(InputPlane.Buttons.INTERACT)
+	_ticks(player, 1)
+	return player.motion.mounted()
+
+# Andrew stood at the D14 aft ladder facing it and Space did nothing: the doorway
+# half of every landing lay beyond 2.2 m of the climb line, and walking into an
+# alcove side wall left the capsule inside the old landing inset.
+func test_space_mounts_from_the_doorway_half_and_walls_of_every_landing() -> void:
+	var layout := ShipLayout.authored().layout
+	# Doorway plane and jambs, the seeded 2.41 m report pose, both D14 aft hatch-side arrivals, the old reach edge.
+	var offsets: Array[Vector2] = [Vector2(0, -1.5), Vector2(-0.35, -1.55), Vector2(0.35, -1.55), Vector2(0, -1.89), Vector2(-0.305, -1.909), Vector2(0.287, -1.908), Vector2(0.3, -2.1)]
+	for id: StringName in layout.well_ids():
+		var x := layout.well(id).climb_line().origin.x
+		for deck: int in [14, 16]:
+			for offset: Vector2 in offsets:
+				var player := _player(Vector3(x + offset.x, layout.floor_y(deck) + 0.385, offset.y), deck)
+				_aim_at_rungs(player, id, deck)
+				assert_true(_space_mounts(player), "Space mounts %s D%d from %s" % [id, deck, offset])
+				_ticks(player, Ladder.TRANSFER_TICKS)
+				assert_int_equal(player.motion.locomotion.mode(), Locomotion.Mode.CLIMBING, "accepted transfer reaches the climb line")
+				player.free()
+			for strafe: float in [-1.0, 1.0]:
+				var player := _player(Vector3(x, layout.floor_y(deck) + 0.385, -2.5), deck)
+				player.adapter.hold(0.0, strafe)
+				_ticks(player, 90)
+				player.adapter.release()
+				_ticks(player, 30)
+				assert_float_in_range(absf(player.motion.capsule().foot.x - x), 0.549, 0.5501, "walked into the alcove side wall")
+				_aim_at_rungs(player, id, deck)
+				assert_true(_space_mounts(player), "Space mounts %s D%d against side wall %s" % [id, deck, strafe])
+				player.free()
+
+func test_space_ladder_still_rejects_back_side_aim_corridor_and_wall() -> void:
+	var layout := ShipLayout.authored().layout
+	for id: StringName in layout.well_ids():
+		var x := layout.well(id).climb_line().origin.x
+		for deck: int in [14, 16]:
+			var floor_y := layout.floor_y(deck) + 0.385
+			# Back to the ladder, and aimed 40 degrees off so the view ray misses the ladder face.
+			for yaw_offset: float in [PI, deg_to_rad(40.0), deg_to_rad(-40.0)]:
+				var player := _player(Vector3(x, floor_y, -1.9), deck)
+				_aim_at_rungs(player, id, deck, yaw_offset)
+				assert_false(_space_mounts(player), "%s D%d yaw offset %.2f does not mount" % [id, deck, yaw_offset])
+				player.free()
+			# In the corridor in front of the doorway Space does not walk in; behind the port wall it cannot see the ladder.
+			for foot: Vector3 in [Vector3(x, floor_y, -1.15), Vector3(x - 1.0, floor_y, -1.15), Vector3(x + 1.0, floor_y, -1.15)]:
+				var player := _player(foot, deck)
+				_aim_at_rungs(player, id, deck)
+				assert_false(_space_mounts(player), "%s D%d corridor pose %s does not mount" % [id, deck, foot])
+				player.free()
+		# A landing pose never selects another deck's ladder.
+		var player := _player(Vector3(x, layout.floor_y(14) + 0.385, -1.9), 14)
+		_aim_at_rungs(player, id, 14)
+		var context := Interactions.context_for(player.game, player.motion, player.sim_forward())
+		assert_true(Interactions.hit_distance(Interactions.ladder_target(layout, id, 14), context, []) >= 0, "own deck ladder is aimed")
+		assert_float_equal(Interactions.hit_distance(Interactions.ladder_target(layout, id, 16), context, []), -1.0, "other deck ladder rejected")
+		player.free()

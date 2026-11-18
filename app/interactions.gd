@@ -25,6 +25,9 @@ class Target:
 	var frame := Transform3D.IDENTITY
 	var size := Vector2(1.2, 2.4)
 	var bounds := AABB()
+	## Ladder targets only: Ladder.mount_region. A ladder is in reach anywhere on
+	## its landing; its centre is the climb line, well behind the doorway.
+	var landing := Rect2()
 
 class Context:
 	extends RefCounted
@@ -143,6 +146,7 @@ static func ladder_target(layout: ShipLayout, id: StringName, deck: int, exiting
 		target.center = doorway.origin
 		target.frame = doorway * Transform3D(Basis(Vector3.LEFT, Vector3.UP, Vector3.FORWARD), Vector3.ZERO)
 	target.size = well.doorway_size()
+	target.landing = Ladder.mount_region(layout, id, deck)
 	return target
 
 func targets_on_deck(deck: int) -> Array[Target]:
@@ -265,7 +269,10 @@ static func eligible(targets: Array[Target], context: Context, solids: Array[AAB
 static func hit_distance(target: Target, context: Context, solids: Array[AABB]) -> float:
 	if not context.walking or target.deck != context.deck:
 		return -1.0
-	if Vector2(context.foot.x - target.center.x, context.foot.z - target.center.z).length() > target.reach:
+	if target.kind == Kind.LADDER:
+		if not Ladder.in_mount_region(target.landing, context.foot):
+			return -1.0
+	elif Vector2(context.foot.x - target.center.x, context.foot.z - target.center.z).length() > target.reach:
 		return -1.0
 	if target.policy == Selection.LEGACY_PROXIMITY:
 		return 0.0
