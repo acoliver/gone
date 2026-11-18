@@ -270,7 +270,8 @@ class WalkState:
 
 	## Consume the tick: sweep the intent's displacement through the
 	## colliders with the landed resolver, land the capsule at the
-	## resolved position, and advance the steadying clock by dt. The tick
+	## resolved position, step it down onto any support within step height
+	## below, and advance the steadying clock by dt. The tick
 	## moves at the speed the ramp held when the call arrived; the clock
 	## advances after the sweep. Errors never mutate.
 	func step(intent: Walk.MoveIntent, dt: float, colliders: ColliderSet, support: Callable = Callable()) -> Walk.StepResult:
@@ -297,21 +298,28 @@ class WalkState:
 		var resolved := Resolve.resolve_constrained_motion(_capsule, supported, colliders)
 		if not resolved.is_ok():
 			return Walk.StepResult.with_error(Walk.WalkError.resolver_error(resolved.error))
+		var moved := Walk._copy_capsule(_capsule)
+		moved.foot += resolved.motion.displacement
+		moved.head += resolved.motion.displacement
+		var settled := Resolve.resolve_step_down(moved, colliders)
+		if not settled.is_ok():
+			return Walk.StepResult.with_error(Walk.WalkError.resolver_error(settled.error))
+		var displacement := resolved.motion.displacement + settled.motion.displacement
 		var contact: int = Walk._classify_contact(resolved.motion.displacement, intended, resolved.motion.contact_normals)
 		_velocity_x = vx
 		_velocity_z = vz
 		if supported != intended or not resolved.motion.contact_normals.is_empty():
 			_velocity_x = float(resolved.motion.displacement.x) / dt
 			_velocity_z = float(resolved.motion.displacement.z) / dt
-		_capsule.foot += resolved.motion.displacement
-		_capsule.head += resolved.motion.displacement
+		_capsule.foot += displacement
+		_capsule.head += displacement
 		_steadied_seconds += dt
 		_tick_stepped = true
 		var outcome: Walk.WalkOutcome = Walk.WalkOutcome.new()
-		outcome.displacement = resolved.motion.displacement
+		outcome.displacement = displacement
 		outcome.contact = contact
 		outcome.contact_normals = resolved.motion.contact_normals
-		outcome.grounded = resolved.motion.grounded
+		outcome.grounded = settled.motion.grounded
 		return Walk.StepResult.with_outcome(outcome)
 
 	## Close the fixed tick: the next step belongs to a fresh tick.

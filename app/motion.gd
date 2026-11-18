@@ -143,21 +143,39 @@ func mount_target(layout: ShipLayout, facing: Vector3) -> StringName:
 	if locomotion == null or mounted():
 		return &""
 	for id: StringName in layout.well_ids():
-		var doorway := layout.ladder_doorway_frame(id, deck())
-		if (doorway.affine_inverse() * capsule().foot).z > 0:
-			continue
-		if not Ladder.try_mount(layout, id, deck(), capsule(), facing).is_ok():
-			continue
-		var target := Interactions.ladder_target(layout, id, deck())
-		var context := Interactions.Context.new()
-		context.walking = true
-		context.deck = deck()
-		context.foot = capsule().foot
-		context.eye = standing_eye(capsule())
-		context.forward = facing
-		if Interactions.hit_distance(target, context, []) >= 0:
+		if _mount_refusal(layout, id, facing).is_empty():
 			return id
 	return &""
+
+## Per well on the current deck, the first check that refuses a Space mount for
+## this facing, or "" where Space would mount. Diagnostics only; mount_target
+## runs the same checks.
+func mount_refusals(layout: ShipLayout, facing: Vector3) -> Dictionary:
+	var refusals := {}
+	for id: StringName in layout.well_ids():
+		refusals[id] = _mount_refusal(layout, id, facing)
+	return refusals
+
+func _mount_refusal(layout: ShipLayout, id: StringName, facing: Vector3) -> String:
+	var doorway := layout.ladder_doorway_frame(id, deck())
+	if (doorway.affine_inverse() * capsule().foot).z > 0:
+		return "corridor side"
+	var mounted := Ladder.try_mount(layout, id, deck(), capsule(), facing)
+	if not mounted.is_ok():
+		match mounted.error.kind:
+			Ladder.LadderError.Kind.NOT_ON_LANDING: return "off landing"
+			Ladder.LadderError.Kind.NOT_FACING: return "facing away"
+			_: return "ladder error %d" % mounted.error.kind
+	var target := Interactions.ladder_target(layout, id, deck())
+	var context := Interactions.Context.new()
+	context.walking = true
+	context.deck = deck()
+	context.foot = capsule().foot
+	context.eye = standing_eye(capsule())
+	context.forward = facing
+	if Interactions.hit_distance(target, context, []) < 0:
+		return "view misses ladder"
+	return ""
 
 ## The walk's current steadying speed, in meters per second.
 func walk_speed() -> float:

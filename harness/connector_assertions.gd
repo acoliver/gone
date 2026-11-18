@@ -154,7 +154,7 @@ static func evaluate(report, scenario) -> Array[Dictionary]:
 			var dest := int(event.destination_deck)
 			if not mounted or event.id != "C-001-LADDER" or int(event.source_deck) != landing_deck or absi(dest - landing_deck) != 1 or int(event.mode) != Locomotion.Mode.CLIMBING:
 				errors.append("landing transition order/id/mode")
-			if absf(float(event.capsule.foot[1]) - layout.floor_y(dest) - 0.385) > 0.02502:
+			if absf(float(event.capsule.foot[1]) - layout.floor_y(dest) - Controller.CAPSULE_RADIUS - Controller.PENETRATION_TOLERANCE) > 0.02502:
 				errors.append("landing capsule height")
 			landing_deck = dest
 			journey_landings.append(dest)
@@ -225,7 +225,7 @@ static func evaluate(report, scenario) -> Array[Dictionary]:
 			var expected_state := Doors.State.CLOSED if suffix == "closed" else (Doors.State.CRANKING if suffix == "mid-crank" else Doors.State.OPEN)
 			resident_ok = resident_ok and int(door.get("state", -1)) == expected_state
 	_add(outcomes, "capture residency, bounded queues and closed/cranking/open hatch snapshots", resident_ok)
-	var returned: bool = not final.is_empty() and int(final.deck) == 14 and int(final.mode) == Locomotion.Mode.WALK and final.rod_carried and final.bay_open and final.power_open and final.power_active and int(final.console_presses) == 1 and absf(float(final.capsule.foot[1]) - 0.385) < 0.00002
+	var returned: bool = not final.is_empty() and int(final.deck) == 14 and int(final.mode) == Locomotion.Mode.WALK and final.rod_carried and final.bay_open and final.power_open and final.power_active and int(final.console_presses) == 1 and absf(float(final.capsule.foot[1]) - Controller.CAPSULE_RADIUS - Controller.PENETRATION_TOLERANCE) < 0.00002
 	_add(outcomes, "D14 return preserves opening state", returned)
 	var persisted_digest := Evidence.digest(report.events)
 	_add(outcomes, "every logical tick and compiled replay digest", ticks == int(scenario.connector.route_ticks) and report.logical_ticks == ticks and report.logical_steps_per_present == scenario.logical_steps_per_present and report.logical_digest == persisted_digest and report.logical_digest == scenario.connector.digest, "ticks=%d reported=%d compiled=%d; digest reported=%s persisted=%s compiled=%s" % [ticks, report.logical_ticks, int(scenario.connector.route_ticks), report.logical_digest, persisted_digest, scenario.connector.digest])

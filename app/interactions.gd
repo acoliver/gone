@@ -25,6 +25,12 @@ class Target:
 	var frame := Transform3D.IDENTITY
 	var size := Vector2(1.2, 2.4)
 	var bounds := AABB()
+	## Ladder targets only: Ladder.mount_region. A ladder is in reach anywhere on
+	## its landing; its centre is the climb line, well behind the doorway.
+	var landing := Rect2()
+	## Ladder targets only: Ladder.shaft_opening. The view ray reaches the ladder
+	## through this face of the landing alcove.
+	var opening := AABB()
 
 class Context:
 	extends RefCounted
@@ -143,6 +149,8 @@ static func ladder_target(layout: ShipLayout, id: StringName, deck: int, exiting
 		target.center = doorway.origin
 		target.frame = doorway * Transform3D(Basis(Vector3.LEFT, Vector3.UP, Vector3.FORWARD), Vector3.ZERO)
 	target.size = well.doorway_size()
+	target.landing = Ladder.mount_region(layout, id, deck)
+	target.opening = Ladder.shaft_opening(layout, id, deck)
 	return target
 
 func targets_on_deck(deck: int) -> Array[Target]:
@@ -265,7 +273,10 @@ static func eligible(targets: Array[Target], context: Context, solids: Array[AAB
 static func hit_distance(target: Target, context: Context, solids: Array[AABB]) -> float:
 	if not context.walking or target.deck != context.deck:
 		return -1.0
-	if Vector2(context.foot.x - target.center.x, context.foot.z - target.center.z).length() > target.reach:
+	if target.kind == Kind.LADDER:
+		if not Ladder.in_mount_region(target.landing, context.foot):
+			return -1.0
+	elif Vector2(context.foot.x - target.center.x, context.foot.z - target.center.z).length() > target.reach:
 		return -1.0
 	if target.policy == Selection.LEGACY_PROXIMITY:
 		return 0.0
@@ -275,9 +286,19 @@ static func hit_distance(target: Target, context: Context, solids: Array[AABB]) 
 		return -1.0
 	var distance := -eye.z / direction.z
 	var hit := eye + direction * distance
-	if absf(hit.x) > target.size.x / 2.0 + 0.2 or hit.y < -0.2 or hit.y > target.size.y + 0.2:
+	if absf(hit.x) > target.size.x / 2.0 + 0.2:
 		return -1.0
 	var end := context.eye + context.forward * distance
+	if target.kind == Kind.LADDER:
+		# The rungs run the whole shaft, so the climb plane has no height window:
+		# looking level at the rungs, down the shaft or up it all aim at the ladder.
+		# What the eye can see of the shaft from the landing is bounded by the
+		# alcove's open shaft side; a ray leaving through the landing floor, the
+		# alcove ceiling or a side wall never reaches the ladder.
+		if segment_hit(context.eye, end, target.opening) < 0:
+			return -1.0
+	elif hit.y < -0.2 or hit.y > target.size.y + 0.2:
+		return -1.0
 	for solid: AABB in solids:
 		var fraction := segment_hit(context.eye, end, solid)
 		if fraction >= 0 and fraction < 1.0 - 0.00001:
