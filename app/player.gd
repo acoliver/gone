@@ -40,6 +40,9 @@ var _get_up_look_start := Vector2.ZERO
 var _get_up_look_target := 0.0
 ## A device Space press arrived this tick; step logs one SPACE line for it.
 var _space_pressed := false
+## Space key presses _input saw since the last tick. A press that reaches game
+## code but yields no interact edge still logs, as result=no edge.
+var _space_keys := 0
 
 const VIEW_FOV_DEGREES := rad_to_deg(2.0 * atan(9.0 / 16.0))
 const GET_UP_LOOK_TICKS := 30
@@ -100,6 +103,8 @@ func _input(event: InputEvent) -> void:
 	if scripted or not _device_actions:
 		return
 	if event is InputEventKey:
+		if event.is_action_pressed("interact"):
+			_space_keys += 1
 		if event.is_action("release_cursor") and not event.echo:
 			if event.is_pressed():
 				_tab_released_cursor = true
@@ -179,8 +184,9 @@ func step() -> void:
 		_look_pitch = objective_look.y
 	var facing := sim_forward()
 	var before := motion.state()
-	var space_state := _body_state_name() if _space_pressed else ""
-	var space_foot := motion.capsule().foot if _space_pressed and motion.capsule() != null else position
+	var space_logged := _space_pressed or _space_keys > 0
+	var space_state := _body_state_name() if space_logged else ""
+	var space_foot := motion.capsule().foot if space_logged and motion.capsule() != null else position
 	# The checks mount_target runs this tick, before the walk moves the foot.
 	var space_refusals := motion.mount_refusals(game.layout, facing) if space_state == "walking" else {}
 	motion.advance(plane, game, _look_yaw, Sim.LOGICAL_TICK_SECS, facing)
@@ -194,9 +200,10 @@ func step() -> void:
 	var selected := interactions.process(plane, context, click_navigation.interaction_id)
 	if selected == &"D14-BAY-ROD" and rod != null:
 		rod.pick_up()
-	if _space_pressed:
+	if space_logged:
+		_log_space(space_state, space_foot, space_refusals, selected, _space_pressed)
 		_space_pressed = false
-		_log_space(space_state, space_foot, space_refusals, selected)
+		_space_keys = 0
 	if not motion.failure().is_empty():
 		push_error("halting on player motion failure: " + motion.failure())
 		get_tree().quit(1)
@@ -216,7 +223,12 @@ func _body_state_name() -> String:
 
 ## Issue #144: one line per device Space press, so a press that does nothing
 ## in a manual session says why. Only device presses log; scripted runs stay quiet.
-func _log_space(state: String, foot: Vector3, refusals: Dictionary, selected: StringName) -> void:
+## A Space key that reached _input but gave no interact edge this tick logs
+## result=no edge; a key the game never received logs nothing.
+func _log_space(state: String, foot: Vector3, refusals: Dictionary, selected: StringName, edge: bool) -> void:
+	if not edge:
+		print(space_report(state, motion.deck(), foot, look_angles(), "no edge", {}))
+		return
 	var result := "none"
 	for event: Ladder.Event in motion.ladder_events:
 		if event.kind == Ladder.EventKind.MOUNT:
