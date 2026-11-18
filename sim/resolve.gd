@@ -189,6 +189,24 @@ static func sweep_with_bound(capsule: Capsule, displacement: Vector3, colliders:
 static func resolve_constrained_motion(capsule: Capsule, displacement: Vector3, colliders: ColliderSet) -> Result:
 	return _sweep(capsule, displacement, colliders, Controller.SWEEP_ITERATION_BOUND, 0.0)
 
+## The counterpart of the step-up: lower a walking capsule onto the support
+## beneath it, so a capsule that stepped onto a coaming or a ledge comes back
+## down once it has walked off. The reach matches the highest raise a step-up
+## can make. With no support in reach the displacement is zero: motion has no
+## general gravity. A capsule already grounded stays put, so standing far from
+## the origin does not creep by rounding. A vertical sweep strikes only
+## horizontal faces, so it never triggers a step-up itself.
+static func resolve_step_down(capsule: Capsule, colliders: ColliderSet) -> Result:
+	if _is_grounded(capsule.foot, colliders):
+		var resting := ResolvedMotion.new()
+		resting.grounded = true
+		return Result.with_motion(resting)
+	var reach := Controller.STEP_UP_HEIGHT + 2.0 * Controller.PENETRATION_TOLERANCE
+	var probe := resolve_constrained_motion(capsule, Vector3.DOWN * reach, colliders)
+	if not probe.is_ok() or probe.motion.contact_normals.has(Vector3.UP):
+		return probe
+	return Result.with_motion(ResolvedMotion.new())
+
 static func _sweep(capsule: Capsule, displacement: Vector3, colliders: ColliderSet, bound: int, settle_tolerance: float) -> Result:
 	var input_failure := _input_error(capsule, displacement)
 	if input_failure != null:

@@ -111,6 +111,45 @@ func test_head_on_contact_stops_into_the_face() -> void:
 	assert_vec3_array_equal(stepped.outcome.contact_normals, [Vector3(0.0, 0.0, -1.0)], "wall normal")
 	assert_true(stepped.outcome.grounded, "the capsule stays grounded on the floor")
 
+## Issue #142: a capsule that stepped up kept that height for the rest of the
+## walk. Off a coaming it must come back down onto the floor beyond.
+func test_walking_off_a_coaming_steps_back_down_onto_the_floor() -> void:
+	var world := scene([box_between(Vector3(1.0, 0.0, -4.0), Vector3(1.4, 0.08, 4.0))])
+	var state := started()
+	var highest := 0.0
+	var last: Walk.WalkOutcome = null
+	for _tick: int in range(60):
+		var stepped := state.step(intent(PI / 2, 1.0, 0.0), 0.1, world)
+		assert_true(stepped.is_ok(), "walk across the coaming")
+		state.end_tick()
+		last = stepped.outcome
+		highest = maxf(highest, state.capsule().foot.y)
+	var standing_foot := Controller.CAPSULE_RADIUS + Controller.PENETRATION_TOLERANCE
+	assert_true(state.capsule().foot.x > 1.4 + Controller.CAPSULE_RADIUS, "walked clear of the coaming")
+	assert_float_in_range(highest, 0.08 + standing_foot - 1e-5, 0.08 + standing_foot + 1e-5, "stepped up onto the coaming")
+	assert_float_in_range(state.capsule().foot.y, standing_foot - 1e-5, standing_foot + 1e-5, "stepped back down onto the floor")
+	assert_float_in_range(state.capsule().head.y - state.capsule().foot.y, 1.15 - 1e-5, 1.15 + 1e-5, "head follows the foot down")
+	assert_true(last.grounded, "standing on the floor again")
+
+## The step down reaches as far as a step up does and no further: walking has
+## no general gravity, so a deeper drop is not taken.
+func test_step_down_reaches_the_step_height_only() -> void:
+	for drop: float in [0.2, 0.5]:
+		var world := ColliderSet.new()
+		world.insert(box_between(Vector3(-10.0, -1.0, -10.0), Vector3(1.0, drop, 10.0)))
+		world.insert(box_between(Vector3(1.0, -1.0, -10.0), Vector3(10.0, 0.0, 10.0)))
+		var state := Walk.WalkState.start(Phase.Machine.new(Phase.Wake.STANDING), standing(0.0, drop, 0.0)).state
+		var last: Walk.WalkOutcome = null
+		for _tick: int in range(60):
+			var stepped := state.step(intent(PI / 2, 1.0, 0.0), 0.1, world)
+			assert_true(stepped.is_ok(), "walk off the %.1f m edge" % drop)
+			state.end_tick()
+			last = stepped.outcome
+		assert_true(state.capsule().foot.x > 1.0 + Controller.CAPSULE_RADIUS, "walked past the %.1f m edge" % drop)
+		var expected := Controller.CAPSULE_RADIUS + Controller.PENETRATION_TOLERANCE if drop <= Controller.STEP_UP_HEIGHT else drop + Controller.CAPSULE_RADIUS
+		assert_float_in_range(state.capsule().foot.y, expected - 1e-5, expected + 1e-5, "a %.1f m drop lands at %.3f" % [drop, expected])
+		assert_true(last.grounded == (drop <= Controller.STEP_UP_HEIGHT), "grounded only where the drop was taken")
+
 func test_intent_is_consumed_exactly_once_per_tick() -> void:
 	var state := started()
 	assert_true(state.step(intent(0.0, 1.0, 0.0), 0.1, empty_scene()).is_ok(), "first step resolves")

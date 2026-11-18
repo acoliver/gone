@@ -24,7 +24,7 @@ class SpaceMain:
 			game.wake_state.tick()
 		game.phase = Phase.Machine.new(Phase.Wake.STANDING)
 		var well := game.layout.well(&"C-001-LADDER")
-		foot = Vector3(well.climb_line().origin.x, game.layout.floor_y(14) + 0.385, -2.95)
+		foot = Vector3(well.climb_line().origin.x, game.layout.floor_y(14) + Controller.CAPSULE_RADIUS + Controller.PENETRATION_TOLERANCE, -2.95)
 		# Hold lengths in 60 Hz frames: about 40, 80 and 150 ms.
 		for look: Vector2 in [Vector2(-20, -48), Vector2(0, 0), Vector2(0, -30)]:
 			for hold: int in [3, 5, 9]:

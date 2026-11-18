@@ -28,4 +28,4 @@ func test_space_key_events_mount_and_every_press_reports() -> void:
 			mounts += 1
 	assert_int_equal(mounts, 9, "every key press mounts:\n" + "\n".join(reports))
 	var last := reports[reports.size() - 1] if not reports.is_empty() else ""
-	assert_true(last == "SPACE state=walking deck=14 foot=(34.500, 0.385, -2.950) yaw=-20.0 pitch=-48.0 result=no edge", "a key without an interact edge reports: " + last)
+	assert_true(last == "SPACE state=walking deck=14 foot=(34.500, 0.305, -2.950) yaw=-20.0 pitch=-48.0 result=no edge", "a key without an interact edge reports: " + last)

@@ -1,6 +1,8 @@
 extends HarnessRoute
 ## Shared real-input journey for guarded tests and windowed captures.
 
+const STANDING_FOOT := Controller.CAPSULE_RADIUS + Controller.PENETRATION_TOLERANCE
+
 var crossings: Array[int] = []
 var digest_lines: PackedStringArray = []
 
@@ -14,7 +16,7 @@ func step(offered: Array = []) -> void:
 			var pose := player.motion.capsule()
 			var well := player.game.layout.well(event.well_id)
 			assert(absf(state.height() - player.game.layout.floor_y(event.deck)) < 0.02501, "every crossed landing height")
-			assert(absf(pose.foot.y - player.game.layout.floor_y(event.deck) - 0.385) < 0.02502, "capsule height at every crossed landing")
+			assert(absf(pose.foot.y - player.game.layout.floor_y(event.deck) - STANDING_FOOT) < 0.02502, "capsule height at every crossed landing")
 			assert(absf(pose.foot.x - well.climb_line().origin.x) < 1e-5 and absf(pose.foot.z - well.climb_line().origin.z) < 1e-5, "every crossed landing stays on climb axis")
 	for event: Doors.Event in player.game.doors.events():
 		digest_lines.append("%d:%s:%d:%d" % [tick, event.door_id(), event.kind(), event.attempt()])
@@ -81,7 +83,7 @@ func dismount(deck: int) -> void:
 	hold(23)
 	assert(player.motion.locomotion.mode() == Locomotion.Mode.WALK, "Space commits WALK after swept transfer")
 	assert(player.motion.locomotion.deck() == deck, "deck commits only on landing")
-	assert(absf(player.motion.capsule().foot.y - player.game.layout.floor_y(deck) - 0.385) < 0.00002, "standing foot at destination landing")
+	assert(absf(player.motion.capsule().foot.y - player.game.layout.floor_y(deck) - STANDING_FOOT) < 0.00002, "standing foot at destination landing")
 
 func refusals(index: int, deck: int) -> void:
 	var layout := player.game.layout

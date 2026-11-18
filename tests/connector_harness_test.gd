@@ -75,7 +75,7 @@ func test_connector_real_input_replay_batches_capture_stops_and_assertion_failur
 	var spec: HarnessScenario = HarnessScenario.parse(FileAccess.get_file_as_string("res://scenarios/connector-route.json")).scenario
 	# The compiled route includes the thirty-tick get-up view and its seeded
 	# hatch releases, preserving every beat, check and budget.
-	assert_true(spec.connector.digest == "8b4573dedb7e955992984abb17ca68541b1a303ec48924fe2ee835f22d4c5936", "pinned connector capture schedule")
+	assert_true(spec.connector.digest == "9e429ed7f6807f02a3cd850bbcdb18f10ab599503be2f98f8adcf2905a3bf943", "pinned connector capture schedule")
 	var digests: Array[String] = []
 	for batch: int in [1, 4]:
 		var game := Game.new(spec.seed)

@@ -64,4 +64,4 @@ Coverage includes `tests/ship_layout_test.gd`, `tests/ship_stream_test.gd`, `tes
 
 ## Known limitations
 
-Lifts do not operate. Most side doors and other-deck hatches do not open. Atlas facilities, remote rooms, radiation zones and hull dimensions are proposals rather than playable compartments. Motion uses conservative capsule collision without general gravity. Shadowless fixtures require explicit room masks. Harness capture success does not establish visual or listening acceptance.
+Lifts do not operate. Most side doors and other-deck hatches do not open. Atlas facilities, remote rooms, radiation zones and hull dimensions are proposals rather than playable compartments. Motion uses conservative capsule collision without general gravity. Walking steps up onto a ledge of at most 0.25 m and steps back down onto support within the same reach, so a capsule that crosses a hatch coaming or brushes a jamb corner stands on the deck again beyond it. Shadowless fixtures require explicit room masks. Harness capture success does not establish visual or listening acceptance.
