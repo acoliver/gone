@@ -267,6 +267,14 @@ static func mount_region(layout: ShipLayout, well_id: StringName, deck: int) -> 
 	var back := Controller.CAPSULE_RADIUS + Controller.PENETRATION_TOLERANCE
 	return Rect2(landing.position.x + side, landing.position.z + back, landing.size.x - 2 * side, landing.size.z - back)
 
+## The landing alcove's open shaft side: where the landing floor ends and the
+## shaft begins, across the well's width and from the floor to the alcove ceiling,
+## as a zero-depth box. From the landing the ladder is seen only through it, but
+## at any height, since the rungs run the length of the shaft.
+static func shaft_opening(layout: ShipLayout, well_id: StringName, deck: int) -> AABB:
+	var landing := layout.well(well_id).landing_bounds(deck)
+	return AABB(landing.position, Vector3(landing.size.x, landing.size.y, 0))
+
 ## Inclusive on every edge: a foot exactly on the doorway plane is on the landing.
 static func in_mount_region(region: Rect2, foot: Vector3) -> bool:
 	return foot.x >= region.position.x and foot.x <= region.end.x and foot.z >= region.position.y and foot.z <= region.end.y

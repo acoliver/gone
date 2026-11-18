@@ -421,3 +421,101 @@ func test_space_ladder_still_rejects_back_side_aim_corridor_and_wall() -> void:
 		assert_true(Interactions.hit_distance(Interactions.ladder_target(layout, id, 14), context, []) >= 0, "own deck ladder is aimed")
 		assert_float_equal(Interactions.hit_distance(Interactions.ladder_target(layout, id, 16), context, []), -1.0, "other deck ladder rejected")
 		player.free()
+
+func _aim_at(player: Player, point: Vector3) -> void:
+	var delta := (point - player.motion.eye(player.game)).normalized()
+	player._look_yaw = atan2(-delta.x, -delta.z)
+	player._look_pitch = asin(delta.y)
+
+func _look(player: Player, yaw_degrees: float, pitch_degrees: float) -> void:
+	player._look_yaw = deg_to_rad(yaw_degrees)
+	player._look_pitch = deg_to_rad(pitch_degrees)
+
+# Andrew walked to the D14 aft landing, looked down the shaft at the ladder and
+# Space did nothing. Rendering the production scene and matching his window puts
+# him at the shaft edge (foot 0.35 m short of the opening) looking 20 degrees
+# right of the climb line and 48 degrees down. The view-ray test only accepted
+# rays that met the climb plane between 0.2 m below the landing floor and 0.2 m
+# above the 2.4 m doorway, so from that spot looking down the shaft at the ladder
+# failed past about 53 degrees down, and looking up past about 33. The matched
+# view itself sits inside that window; the steeper looks here did not.
+func test_space_mounts_looking_down_or_up_the_shaft_at_the_ladder() -> void:
+	var layout := ShipLayout.authored().layout
+	for id: StringName in layout.well_ids():
+		var well := layout.well(id)
+		var x := well.climb_line().origin.x
+		var face_z := well.climb_line().origin.z - 0.95 + 0.04
+		for deck: int in [14, 16]:
+			var floor_y := layout.floor_y(deck)
+			# The matched live view, then steeper and upward looks from the same spot.
+			for look: Vector2 in [Vector2(-20, -48), Vector2(-20, -56), Vector2(-20, -64), Vector2(0, -70), Vector2(10, 50), Vector2(-15, 60)]:
+				var player := _player(Vector3(x, floor_y + 0.385, -2.95), deck)
+				_look(player, look.x, look.y)
+				assert_true(_space_mounts(player), "%s D%d shaft-edge look %s mounts" % [id, deck, look])
+				player.free()
+			# Rungs well below and above the landing, from the shaft edge, the middle and the doorway half.
+			var aims: Array[Vector3] = [Vector3(0, -2.995, -3.0), Vector3(0, -2.995, -6.0), Vector3(0.3, -2.995, 5.0), Vector3(-0.3, -2.995, 8.0), Vector3(0, -2.5, -1.5), Vector3(0.3, -2.5, 4.0), Vector3(0, -2.0, -1.2), Vector3(-0.3, -2.0, 3.6)]
+			for aim: Vector3 in aims:
+				var player := _player(Vector3(x + aim.x, floor_y + 0.385, aim.y), deck)
+				_aim_at(player, Vector3(x, floor_y + aim.z, face_z))
+				assert_true(_space_mounts(player), "%s D%d from %s aimed at rung height %.1f mounts" % [id, deck, Vector2(aim.x, aim.y), aim.z])
+				_ticks(player, Ladder.TRANSFER_TICKS)
+				assert_int_equal(player.motion.locomotion.mode(), Locomotion.Mode.CLIMBING, "pitched mount reaches the climb line")
+				player.free()
+			# Walked up to the shaft edge, then the live look and a steeper one.
+			for look: Vector2 in [Vector2(-20, -48), Vector2(-20, -60)]:
+				var player := _player(Vector3(x, floor_y + 0.385, -2.0), deck)
+				player.adapter.hold(-1.0, 0.0)
+				_ticks(player, 180)
+				player.adapter.release()
+				_ticks(player, 30)
+				assert_float_in_range(player.motion.capsule().foot.z, -2.9951, -2.9949, "walking stops at the shaft edge")
+				_look(player, look.x, look.y)
+				assert_true(_space_mounts(player), "%s D%d walked-in look %s mounts" % [id, deck, look])
+				player.free()
+
+func test_space_ladder_still_rejects_pitched_looks_that_miss_the_shaft() -> void:
+	var layout := ShipLayout.authored().layout
+	for id: StringName in layout.well_ids():
+		var well := layout.well(id)
+		var x := well.climb_line().origin.x
+		var face_z := well.climb_line().origin.z - 0.95 + 0.04
+		for deck: int in [14, 16]:
+			var floor_y := layout.floor_y(deck)
+			# The landing floor hides rungs this far down from the doorway half.
+			var player := _player(Vector3(x, floor_y + 0.385, -2.0), deck)
+			_aim_at(player, Vector3(x, floor_y - 3.0, face_z))
+			assert_false(_space_mounts(player), "%s D%d floor hides low rungs" % [id, deck])
+			player.free()
+			# Feet, the landing floor at the shaft edge, the alcove ceiling, the shaft behind and the side wall.
+			var looks: Array[Vector3] = [Vector3(-2.5, 0, -85), Vector3(-2.995, 0, -89), Vector3(-2.0, 0, 80), Vector3(-2.5, 180, -60), Vector3(-2.5, 180, 60), Vector3(-2.995, 55, -40), Vector3(-2.995, -55, 40)]
+			for look: Vector3 in looks:
+				player = _player(Vector3(x, floor_y + 0.385, look.x), deck)
+				_look(player, look.y, look.z)
+				assert_false(_space_mounts(player), "%s D%d from z %.3f look (%.0f, %.0f) does not mount" % [id, deck, look.x, look.y, look.z])
+				player.free()
+		# Pitched down the shaft from a D14 landing never selects the D16 ladder.
+		var player := _player(Vector3(x, layout.floor_y(14) + 0.385, -2.95), 14)
+		_look(player, 0, -70)
+		var context := Interactions.context_for(player.game, player.motion, player.sim_forward())
+		assert_true(Interactions.hit_distance(Interactions.ladder_target(layout, id, 14), context, []) >= 0, "own deck ladder seen down the shaft")
+		assert_float_equal(Interactions.hit_distance(Interactions.ladder_target(layout, id, 16), context, []), -1.0, "other deck ladder rejected")
+		player.free()
+
+func test_space_refusal_names_the_rejecting_ladder_check() -> void:
+	var layout := ShipLayout.authored().layout
+	var x := layout.well(&"C-001-LADDER").climb_line().origin.x
+	var player := _player(Vector3(x, 0.385, -2.5), 14)
+	_look(player, 0, -85)
+	var refusals := player.motion.mount_refusals(layout, player.sim_forward())
+	assert_true(refusals[&"C-001-LADDER"] == "view misses ladder" and refusals[&"C-000-LADDER"] == "off landing", "looking at the feet: %s" % refusals)
+	_look(player, 180, 0)
+	assert_true(player.motion.mount_refusals(layout, player.sim_forward())[&"C-001-LADDER"] == "facing away", "back to the ladder")
+	_look(player, 0, -60)
+	assert_true(player.motion.mount_refusals(layout, player.sim_forward())[&"C-001-LADDER"] == "", "looking down the shaft mounts")
+	player.free()
+	player = _player(Vector3(x, 0.385, -1.2), 14)
+	assert_true(player.motion.mount_refusals(layout, player.sim_forward())[&"C-001-LADDER"] == "corridor side", "corridor in front of the doorway")
+	player.free()
+	var line := Player.space_report("walking", 14, Vector3(34.5, 0.385, -2.95), Vector2(deg_to_rad(-20), deg_to_rad(-48)), "none", {&"C-001-LADDER": "view misses ladder"})
+	assert_true(line == "SPACE state=walking deck=14 foot=(34.500, 0.385, -2.950) yaw=-20.0 pitch=-48.0 result=none C-001-LADDER=view misses ladder", "one diagnostic line: " + line)

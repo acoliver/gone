@@ -38,6 +38,8 @@ var indicators: ClickIndicators
 var _get_up_look_tick := -1
 var _get_up_look_start := Vector2.ZERO
 var _get_up_look_target := 0.0
+## A device Space press arrived this tick; step logs one SPACE line for it.
+var _space_pressed := false
 
 const VIEW_FOV_DEGREES := rad_to_deg(2.0 * atan(9.0 / 16.0))
 const GET_UP_LOOK_TICKS := 30
@@ -177,6 +179,10 @@ func step() -> void:
 		_look_pitch = objective_look.y
 	var facing := sim_forward()
 	var before := motion.state()
+	var space_state := _body_state_name() if _space_pressed else ""
+	var space_foot := motion.capsule().foot if _space_pressed and motion.capsule() != null else position
+	# The checks mount_target runs this tick, before the walk moves the foot.
+	var space_refusals := motion.mount_refusals(game.layout, facing) if space_state == "walking" else {}
 	motion.advance(plane, game, _look_yaw, Sim.LOGICAL_TICK_SECS, facing)
 	if before == PlayerMotion.BodyState.GET_UP and motion.state() == PlayerMotion.BodyState.WALK:
 		_get_up_look_tick = 0
@@ -188,6 +194,9 @@ func step() -> void:
 	var selected := interactions.process(plane, context, click_navigation.interaction_id)
 	if selected == &"D14-BAY-ROD" and rod != null:
 		rod.pick_up()
+	if _space_pressed:
+		_space_pressed = false
+		_log_space(space_state, space_foot, space_refusals, selected)
 	if not motion.failure().is_empty():
 		push_error("halting on player motion failure: " + motion.failure())
 		get_tree().quit(1)
@@ -196,6 +205,37 @@ func step() -> void:
 	if power_room != null:
 		power_room.tick_console_attention(position, facing)
 	plane.end_frame()
+
+func _body_state_name() -> String:
+	match motion.state():
+		PlayerMotion.BodyState.LYING: return "lying"
+		PlayerMotion.BodyState.GET_UP: return "getting up"
+	if not motion.mounted():
+		return "walking"
+	return String(Ladder.Mode.find_key(motion.locomotion.ladder_state().mode())).to_lower()
+
+## Issue #144: one line per device Space press, so a press that does nothing
+## in a manual session says why. Only device presses log; scripted runs stay quiet.
+func _log_space(state: String, foot: Vector3, refusals: Dictionary, selected: StringName) -> void:
+	var result := "none"
+	for event: Ladder.Event in motion.ladder_events:
+		if event.kind == Ladder.EventKind.MOUNT:
+			result = "mount %s" % event.well_id
+		elif event.kind == Ladder.EventKind.DISMOUNT:
+			result = "dismount %s D%d" % [event.well_id, event.deck]
+	if result == "none" and selected != &"":
+		result = "act %s" % selected
+	if result != "none":
+		refusals = {}
+	elif state == "climbing":
+		refusals = {&"ladder": "no landing in reach"}
+	print(space_report(state, motion.deck(), foot, look_angles(), result, refusals))
+
+static func space_report(state: String, deck: int, foot: Vector3, look: Vector2, result: String, refusals: Dictionary) -> String:
+	var line := "SPACE state=%s deck=%d foot=(%.3f, %.3f, %.3f) yaw=%.1f pitch=%.1f result=%s" % [state, deck, foot.x, foot.y, foot.z, rad_to_deg(look.x), rad_to_deg(look.y), result]
+	for id: StringName in refusals:
+		line += " %s=%s" % [id, refusals[id]]
+	return line
 
 func present() -> void:
 	position = motion.eye(game)
@@ -239,6 +279,7 @@ func _collect_device_input(delta: float) -> void:
 		plane.offer_press(InputPlane.Buttons.ACTIVATE)
 	if Input.is_action_just_pressed("interact"):
 		plane.offer_press(InputPlane.Buttons.INTERACT)
+		_space_pressed = true
 	if _mouse_pixels != Vector2.ZERO:
 		plane.offer_look_pixels(_mouse_pixels)
 		_mouse_pixels = Vector2.ZERO
