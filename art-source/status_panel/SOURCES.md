@@ -14,7 +14,7 @@ The front views, candidate meshes and design sheet were recovered from the origi
 
 ## Build
 
-`build_panel.py` runs in Blender 4.5 (`blender --background --python art-source/status_panel/build_panel.py`). It scores both candidates by front silhouette IoU against `inputs/front-s410-rgba.png`, fits the better one, applies the two tracked steel scans from `art-source/steel/`, renders the current runtime board into a preview, and writes `panel.glb`, `panel.blend`, `textures/`, `renders/`, `logs/` and `build-report.json` in this directory. `build-report.json` is the record from the original build; a rebuild replaces it.
+`build_panel.py` runs in Blender 4.5 (`blender --background --python art-source/status_panel/build_panel.py`). It scores both candidates by front silhouette IoU against `inputs/front-s410-rgba.png`, fits the better one, applies the two tracked steel scans from `art-source/steel/`, renders the current runtime board into a preview, applies the runtime triangle budget, and writes `panel.glb`, `panel.blend`, `textures/`, `renders/`, `logs/` and `build-report.json` in this directory. With Blender 4.5.11 its `panel.glb` is byte-identical to `assets/props/status_panel/panel.glb`; copy it there only after a deliberate change.
 
 `inspect_mesh.py` prints bounds for the candidate meshes, or for GLB paths passed after Blender's `--` argument.
 

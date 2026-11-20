@@ -54,6 +54,6 @@
     "panel-side.png",
     "panel-board-v2-perceived.png"
   ],
-  "board_native_source": "/Volumes/XS1000/acoliver/projects/gone/branch-3/tmp/issue91/display/board-v2-native.png",
+  "board_native_source": "assets/props/status_panel/board-native.png",
   "selected_shape_front_silhouette_iou": 0.9107806691449815
 }
