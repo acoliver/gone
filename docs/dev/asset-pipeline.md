@@ -10,7 +10,7 @@ Production props retain an editable source, an exporter, the GLB and any externa
 | Quarters | [Quarters art](../art/quarters/README.md) | `assets/props/quarters/` |
 | Stasis wiring and seat | [Installed wiring](../art/stasis-wiring-production-installation.md), [seat](../art/seat-production-integration.md) | `assets/props/stasis-wiring/` |
 | Power-room console and keyboard | `art-source/terminal/`, including `export_game_console.py` and the retained generated assembly | `assets/props/terminal/` |
-| Power-room status panel | `art-source/status_panel/build_panel.py` and `decimate_panel.py` | `assets/props/status_panel/` |
+| Power-room status panel | `art-source/status_panel/` (see its [source notes](../../art-source/status_panel/SOURCES.md)) | `assets/props/status_panel/` |
 
 The pod source has tagged glass regions, a hinged lid, couch and pillow. Runtime restores shell clearcoat and binds the pane to `app/pod_glass.gdshader`. `sim/pod_geometry.gd` owns its production opening angle. Consult the pod source guide for current geometry, optical diagnostics and limitations rather than reusing dimensions from the original probe.
 
