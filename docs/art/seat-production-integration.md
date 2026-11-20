@@ -4,7 +4,7 @@ The lower formed ceiling seat supports bay panels. At the fault station, a missi
 
 ## Sources and installation
 
-`tools/seat_rail.py` defines the shared formed profile, cut contours, material and floor pose. `art-source/stasis-wiring/seat-rail/` retains its generated guide and image-derived PBR source. `tools/build_seat_rail.py` builds the source family under `assets/props/stasis-wiring/seat-rail/`: `full.glb`, `left.glb`, `middle.glb` and `right.glb`, with finish textures and manifests.
+`tools/seat_rail.py` defines the shared formed profile, cut contours, material and floor pose. `art-source/stasis-wiring/seat-rail/` retains its generated guide and image-derived PBR source. Its `generate_concept.sh` regenerates the concept and guide in place. It needs `HUNYUAN3D_ROOT` set to an external Hunyuan3D checkout and an mflux Z-Image-Turbo generator on `PATH` or named by `MFLUX_GENERATOR`; set `HF_HOME` when the model cache is not in the default location. `tools/build_seat_rail.py` builds the source family under `assets/props/stasis-wiring/seat-rail/`: `full.glb`, `left.glb`, `middle.glb` and `right.glb`, with finish textures and manifests.
 
 `app/seat_rail_mesh.gd` clips imported source triangles to the installed span lengths, interpolates UVs and normals, and caps the sheet cuts. It preserves the profile rather than scaling it. `app/bay_ceiling.gd` installs the spans and retained ends. The bearing top is Y=2.988 m in bay coordinates; the profile is 42 mm wide, 18 mm deep and 2.5 mm thick, with a 36 mm bearing face.
 
