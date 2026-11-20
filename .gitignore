@@ -8,3 +8,7 @@
 *.translation
 __pycache__/
 /voice/source/C-reference-20s.wav
+# Godot no longer imports these directories (.gdignore); sidecars from older imports are stale.
+/docs/art/corridors/*.import
+/docs/art/quarters/sheets/**/*.import
+/tools/blender/quarters/dress_uniform/medal_v3/*.import
