@@ -1,0 +1,59 @@
+{
+  "candidates": [
+    {
+      "mesh": "panel-s410.glb",
+      "silhouette_iou": 0.9107806691449815,
+      "vertices": 450625,
+      "faces": 901234
+    },
+    {
+      "mesh": "panel-s411.glb",
+      "silhouette_iou": 0.9053493944692701,
+      "vertices": 449534,
+      "faces": 899076
+    }
+  ],
+  "selected_mesh": "panel-s410.glb",
+  "uniform_height_scale": 1.415447942756806,
+  "axis_correction_before_remesh": [
+    0.9944387542202495,
+    1.0,
+    1.0
+  ],
+  "generated_depth_after_uniform_scale_m": 1.7969543933868408,
+  "depth_reduced_by_flattened_rear_crop": true,
+  "post_remesh_adjustment": [
+    1.0110950669727028,
+    1.0,
+    1.002731510026258
+  ],
+  "final_dimensions_width_depth_height_m": [
+    2.8000000715255737,
+    0.3474467396736145,
+    1.3999999908264726
+  ],
+  "depth_target_m": 0.35,
+  "voxel_size_m": 0.009,
+  "boundary_edges": 0,
+  "nonmanifold_edges": 0,
+  "screen_dimensions_m": [
+    2.4,
+    1.02
+  ],
+  "screen_aspect": 2.3529411764705883,
+  "textures": [
+    "panel-albedo.png",
+    "panel-normal.png",
+    "panel-orm.png",
+    "panel-ao.png"
+  ],
+  "texture_resolution": 2048,
+  "renders": [
+    "panel-front.png",
+    "panel-threequarter.png",
+    "panel-side.png",
+    "panel-board-v2-perceived.png"
+  ],
+  "board_native_source": "/Volumes/XS1000/acoliver/projects/gone/branch-3/tmp/issue91/display/board-v2-native.png",
+  "selected_shape_front_silhouette_iou": 0.9107806691449815
+}

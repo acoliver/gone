@@ -1,8 +1,8 @@
 extends SceneTree
 
-const Data = preload("res://tmp/issue91/display/board_data.gd")
+const Data = preload("res://art-source/status_panel/board_data_reference.gd")
 const Writing = preload("res://app/naleya.gd")
-const OUT := "res://tmp/issue91/display/"
+const OUT := "res://tmp/status-panel-display/"
 const FONT_PATH := "/System/Library/Fonts/SFCompact.ttf"
 const SCREEN := Rect2(Vector2.ZERO, Vector2(Data.SIZE))
 const PUNCTUATION := [".", ",", ":", ";", "!", "?", "(", ")", "\""]
@@ -342,6 +342,11 @@ class Board extends Node2D:
 var geometry_signature := ""
 
 func _initialize() -> void:
+	if DisplayServer.get_name() == "headless":
+		push_error("Run with a windowed renderer; headless mode never emits frame_post_draw")
+		quit(1)
+		return
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUT))
 	call_deferred("_render_all")
 
 func _make_viewport(size: Vector2i) -> Array:

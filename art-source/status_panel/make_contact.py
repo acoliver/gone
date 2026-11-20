@@ -1,7 +1,7 @@
 from pathlib import Path
 from PIL import Image, ImageOps, ImageDraw
 root=Path(__file__).resolve().parent
-sheet=Image.open(root.parent/'room2/design-sheet-v3.png').convert('RGB')
+sheet=Image.open(root/'inputs/design-sheet-v3.png').convert('RGB')
 w,h=sheet.size
 sheet=sheet.crop((0,0,w//2,h))
 refs=[('Design sheet',sheet),('Front',Image.open(root/'renders/panel-front.png').convert('RGB')),('3/4',Image.open(root/'renders/panel-threequarter.png').convert('RGB')),('Side',Image.open(root/'renders/panel-side.png').convert('RGB')),('Board',Image.open(root/'renders/panel-board-v2-perceived.png').convert('RGB'))]

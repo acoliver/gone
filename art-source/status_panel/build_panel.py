@@ -4,6 +4,12 @@ import bpy, bmesh
 from mathutils import Vector
 
 ROOT=Path(__file__).resolve().parent
+REPO=ROOT.parents[1]
+ALPHA=ROOT/'inputs/front-s410-rgba.png'
+STEEL=REPO/'art-source/steel/rusty_metal_04_albedo.jpg'
+GREEN=REPO/'art-source/steel/green_metal_rust_albedo.jpg'
+BOARD=REPO/'assets/props/status_panel/board-perceived.png'
+BOARD_NATIVE=REPO/'assets/props/status_panel/board-native.png'
 VOXEL=.009
 FRONT=-1
 
@@ -81,12 +87,13 @@ def silhouette_iou(obj,alpha_path):
 def main():
     candidates=sorted((ROOT/'meshes').glob('panel-s*.glb'))
     if len(candidates)<2: raise RuntimeError('Both Hunyuan candidate meshes are required')
-    alpha=ROOT/'inputs/front-s410-rgba.png'
+    missing=[p for p in (ALPHA,STEEL,GREEN,BOARD,BOARD_NATIVE) if not p.is_file()]
+    if missing: raise RuntimeError('Missing status panel inputs: '+', '.join(map(str,missing)))
     scores=[]
     for path in candidates:
         bpy.ops.wm.read_factory_settings(use_empty=True); bpy.ops.import_scene.gltf(filepath=str(path))
         meshes=[o for o in bpy.context.scene.objects if o.type=='MESH']; obj=join(meshes,'candidate')
-        scores.append({'mesh':path.name,'silhouette_iou':silhouette_iou(obj,alpha),'vertices':len(obj.data.vertices),'faces':len(obj.data.polygons)})
+        scores.append({'mesh':path.name,'silhouette_iou':silhouette_iou(obj,ALPHA),'vertices':len(obj.data.vertices),'faces':len(obj.data.polygons)})
     selected=max(scores,key=lambda r:r['silhouette_iou'])['mesh']
     bpy.ops.wm.read_factory_settings(use_empty=True); bpy.ops.import_scene.gltf(filepath=str(ROOT/'meshes'/selected))
     obj=join([o for o in bpy.context.scene.objects if o.type=='MESH'],'Panel_ArmoredBody')
@@ -149,15 +156,13 @@ def main():
     if boundary or nonmanifold: raise RuntimeError(f'Watertight check failed boundary={boundary} nonmanifold={nonmanifold}')
     olive=mat('OliveDrab_WornMetal',(.16,.18,.075),.32,.56); metal=mat('RivetSteel',(.12,.11,.075),.72,.38); rubber=mat('RubberBumper',(.012,.015,.013),.02,.8); black=mat('Screen',(.003,.005,.006),.08,.12)
     # Scan texture on the shell, tinted toward the approved olive paint; subtle pointiness wear.
-    steel=ROOT.parent/'rustlook/art-source/steel/rusty_metal_04_albedo.jpg'
-    green=ROOT.parent/'rustlook/art-source/steel/green_metal_rust_albedo.jpg'
     nt=olive.node_tree; nt.nodes.clear(); n=nt.nodes; l=nt.links
     bs=n.new('ShaderNodeBsdfPrincipled'); output=n.new('ShaderNodeOutputMaterial'); l.new(bs.outputs[0],output.inputs['Surface'])
     coord=n.new('ShaderNodeTexCoord'); mapping=n.new('ShaderNodeVectorMath'); mapping.operation='SCALE'; mapping.inputs[3].default_value=7; l.new(coord.outputs['Generated'],mapping.inputs[0])
-    tex=n.new('ShaderNodeTexImage'); tex.image=bpy.data.images.load(str(green),check_existing=True); tex.image.colorspace_settings.name='sRGB'; l.new(mapping.outputs[0],tex.inputs['Vector'])
+    tex=n.new('ShaderNodeTexImage'); tex.image=bpy.data.images.load(str(GREEN),check_existing=True); tex.image.colorspace_settings.name='sRGB'; l.new(mapping.outputs[0],tex.inputs['Vector'])
     tint=n.new('ShaderNodeMixRGB'); tint.blend_type='MULTIPLY'; tint.inputs[0].default_value=.62; tint.inputs[2].default_value=(1.49,1.12,.66,1); l.new(tex.outputs['Color'],tint.inputs[1])
     geom=n.new('ShaderNodeNewGeometry'); edge=n.new('ShaderNodeMapRange'); edge.inputs['From Min'].default_value=.72; edge.inputs['From Max'].default_value=.93; edge.inputs['To Min'].default_value=0; edge.inputs['To Max'].default_value=.68; edge.clamp=True; l.new(geom.outputs['Pointiness'],edge.inputs['Value'])
-    rusty=n.new('ShaderNodeTexImage'); rusty.image=bpy.data.images.load(str(steel),check_existing=True); rusty.image.colorspace_settings.name='sRGB'; l.new(mapping.outputs[0],rusty.inputs['Vector'])
+    rusty=n.new('ShaderNodeTexImage'); rusty.image=bpy.data.images.load(str(STEEL),check_existing=True); rusty.image.colorspace_settings.name='sRGB'; l.new(mapping.outputs[0],rusty.inputs['Vector'])
     mix=n.new('ShaderNodeMixRGB'); mix.blend_type='MIX'; l.new(edge.outputs['Result'],mix.inputs[0]); l.new(tint.outputs[0],mix.inputs[1]); l.new(rusty.outputs['Color'],mix.inputs[2])
     bs=next(x for x in n if x.type=='BSDF_PRINCIPLED'); l.new(mix.outputs[0],bs.inputs['Base Color']); bs.inputs['Metallic'].default_value=.02; bs.inputs['Roughness'].default_value=.68
     obj.data.materials.append(olive)
@@ -195,8 +200,7 @@ def main():
     for name,cam in cams.items():
         scene.camera=cam; scene.render.filepath=str(ROOT/'renders'/f'panel-{name}.png'); bpy.ops.render.render(write_still=True)
     # Emissive board image render; native image preserved beside the perceived screen texture.
-    board=ROOT.parent/'display/board-v2-perceived.png'; board_native=ROOT.parent/'display/board-v2-native.png'
-    im=bpy.data.images.load(str(board),check_existing=True)
+    im=bpy.data.images.load(str(BOARD),check_existing=True)
     sm=bpy.data.materials.new('ScreenBoardEmission'); sm.use_nodes=True; sn=sm.node_tree.nodes; sl=sm.node_tree.links; sn.clear(); ti=sn.new('ShaderNodeTexImage'); ti.image=im; ti.image.colorspace_settings.name='sRGB'; em=sn.new('ShaderNodeEmission'); out=sn.new('ShaderNodeOutputMaterial'); sl.new(ti.outputs['Color'],em.inputs['Color']); sl.new(em.outputs[0],out.inputs['Surface']); screen.data.materials.clear(); screen.data.materials.append(sm)
     scene.camera=cams['front']; scene.render.filepath=str(ROOT/'renders/panel-board-v2-perceived.png'); bpy.ops.render.render(write_still=True)
     # Repack body UVs and bake base albedo, tangent normal, and ORM at 2048.
@@ -238,6 +242,6 @@ def main():
     bpy.data.objects['ScreenSocket'].rotation_euler=(0,0,0)
     bpy.context.view_layer.objects.active=export_objects[0]
     bpy.ops.export_scene.gltf(filepath=str(ROOT/'panel.glb'),export_format='GLB',export_apply=True,export_image_format='AUTO',export_materials='EXPORT',use_selection=True)
-    report={'candidates':scores,'selected_mesh':selected,'uniform_height_scale':scale,'axis_correction_before_remesh':corr,'generated_depth_after_uniform_scale_m':depth_before_crop,'depth_reduced_by_flattened_rear_crop':True,'post_remesh_adjustment':adjust,'final_dimensions_width_depth_height_m':dims,'depth_target_m':.35,'voxel_size_m':VOXEL,'boundary_edges':boundary,'nonmanifold_edges':nonmanifold,'screen_dimensions_m':[2.40,1.02],'screen_aspect':2.4/1.02,'textures':['panel-albedo.png','panel-normal.png','panel-orm.png','panel-ao.png'],'texture_resolution':2048,'renders':['panel-front.png','panel-threequarter.png','panel-side.png','panel-board-v2-perceived.png'],'board_native_source':str(board_native),'selected_shape_front_silhouette_iou':next(r['silhouette_iou'] for r in scores if r['mesh']==selected)}
+    report={'candidates':scores,'selected_mesh':selected,'uniform_height_scale':scale,'axis_correction_before_remesh':corr,'generated_depth_after_uniform_scale_m':depth_before_crop,'depth_reduced_by_flattened_rear_crop':True,'post_remesh_adjustment':adjust,'final_dimensions_width_depth_height_m':dims,'depth_target_m':.35,'voxel_size_m':VOXEL,'boundary_edges':boundary,'nonmanifold_edges':nonmanifold,'screen_dimensions_m':[2.40,1.02],'screen_aspect':2.4/1.02,'textures':['panel-albedo.png','panel-normal.png','panel-orm.png','panel-ao.png'],'texture_resolution':2048,'renders':['panel-front.png','panel-threequarter.png','panel-side.png','panel-board-v2-perceived.png'],'board_native_source':str(BOARD_NATIVE.relative_to(REPO)),'selected_shape_front_silhouette_iou':next(r['silhouette_iou'] for r in scores if r['mesh']==selected)}
     (ROOT/'build-report.json').write_text(json.dumps(report,indent=2)+'\n'); print('BUILD_REPORT',json.dumps(report),flush=True)
 if __name__=='__main__': main()
